@@ -92,3 +92,7 @@ path is `UNVERIFIED` until a canary on warehouse-rct01 with its overlay enabled.
 > `.git/info/exclude` lines 77-79; local-knowledge-ansible `ansible-wifi/roles/smc_change/` (uncommitted at writing) · Falsifier: a symlink into this folder that `git status` lists as untracked 31
 > paths in the ansible-wifi checkout are symlinks into this folder, all ignored through `.git/info/exclude`; a new local playbook or role follows the same pattern (the role's runs/ records stay in the
 > knowledge repository). No visual surface.
+
+> **Learned 2026-10-26** · VERIFIED_PRIMARY · local-only `roles/smc_change` now contains controller journals, explicit safe resume,
+> read-only assess and phase timing; `justfile` catalogs four recovery fixtures. Source: role README and `references/19_smc-change-role.md`,
+> Interrupted-change recovery section. No new diagnostic script was added to this pack; the helpers are runtime implementation owned by the role.

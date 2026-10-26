@@ -16,6 +16,7 @@ Summary: >-
 
 ## Contents
 
+- [Interrupted-change recovery and production PHP review (2026-10-26)](#interrupted-change-recovery-and-production-php-review-2026-10-26)
 - [When to use it](#when-to-use-it)
 - [Where it is](#where-it-is)
 - [Running it](#running-it)
@@ -286,3 +287,113 @@ As of 2026-10-23:
 >     smc_change_soak_left: >-
 >       {{ [smc_change_soak | int * 60 - (now().timestamp() | int - smc_change_restarted_at | default(now().timestamp()) | int), 0] | max }}
 > ```
+
+## Interrupted-change recovery and production PHP review (2026-10-26)
+
+`VERIFIED_PRIMARY` (source and direct runtime, ansible-wifi branch `rise`; local-knowledge base `aacf57c` plus uncommitted recovery work):
+production RCT PHP apply 20261026_161421 passed 11/11 gates in 792 s. Seven `.18` packages became `.28` live and in the lower dir; lower dir ro,
+no reboot, portal/terms/TSTIK render, 24 AVR reads without errors, unchanged modules, no deleted PHP maps. Fresh read-only checks confirmed
+package/service/mount/pages/cleanup state; controller config tar and seven saved old builds exist. PIN activation and forced reboot survival
+were not demonstrated. Review: local-knowledge `evidence/smc-change-recovery-20261026_1701.md`.
+
+`USER_STATED` (2026-10-26): add a generic recovery journal and safe explicit resume; optimize only after phase timings exist.
+`VERIFIED_PRIMARY`: prior `verify.yml` called `record.yml`, which marked done before cleanup. Interim records now say `verified`; only final
+verified-and-cleaned applies/rollbacks say `passed` and update state. Journals under `runs/journal/<host>.json` are controller-only, 0600,
+written before writes/phases, retaining the original baseline/id/backup/cleanup ownership. Attempts have separate record timestamps.
+
+Use `-e smc_change_mode=assess` for read-only recovery safety (skips application commands); it reports complete, safe_to_restart,
+safe_to_resume or needs_repair. Resume is on by default (`smc_change_resume: true`, operator 2026-10-26; `false` refuses an unfinished SMC), in the original mode. An unfinished journal blocks a new apply even
+with force. Changed spec/code/assets, incomplete dpkg state, chroot residue, changed overlay or missing backup evidence refuse recovery.
+Phase 5 repeats backup; 6 replays only actions declaring `resume_safe: true`; 7/8 repeats restart/close; 9/10 reverifies then repeats cleanup.
+PHP's exact-version action opts in. Writable lower layers route through restart/close and must be ro at verification. A partly deleted
+remote backup cannot truncate the controller shared-file manifest: cleanup uses the original journaled list. Do not run competing controllers
+for the same SMC/change; atomic journal replacement is not an operator lock. Legacy failures have no inferred resume checkpoint. Legacy check-mode/read-only records neither invent a failure nor hide a prior real failure.
+
+```yaml
+# roles/smc_change/tasks/record.yml (base aacf57c + uncommitted 2026-10-26 recovery)
+- name: Store this host's state when the apply or rollback passed
+  ansible.builtin.include_tasks: state.yml
+  vars:
+    smc_change_state_step: write
+  when:
+    - smc_change_mode in ['apply', 'rollback']
+    - smc_change_record.result == 'passed'
+    - smc_change_cleanup_complete | default(false) | bool
+```
+
+Validation: five unit-test methods (~0.013 s, stage/safety scenarios), real controller journal/state fixture, red/green partial-cleanup
+regression; read-only live resume-fact fixture (25 OK, changed=0) and assessment passed. A real interrupted mutating SMC has not been
+fault-injected. `lint_new.sh` all language/inventory checks passed in 9.26 s. Records now include phase timings, elapsed seconds, budget and
+over-budget flag (900 s default; report, never abandon an in-flight SMC). Prior run lacked phase timings: 302 s came after the final probe;
+performance optimization is deferred to measured subsequent runs. Flow map adds Assess/Resume; renders/checks and six changed pages reviewed.
+Screenshots: `screenshots/20261026-smc-change-recovery/` (generic pages, no customer identifiers).
+
+> **Learned 2026-10-26 (evening)** · overlay Pi reboot fallback, Pi clock, satellite session drops, resume by default · VERIFIED_PRIMARY
+> (live read-only: adjamarragu-smc01 records 20261026_173435/180915/182818, assess runs; alice-well, cave-hill portal timings) · Source:
+> roles/smc_change tasks/persist_overlay.yml, reboot.yml, probe.yml, recovery.yml, files/probe/40_http.py, files/recovery.py (local-knowledge-ansible,
+> uncommitted at write time) · Falsifier: a fallback reboot whose record has no `lower_busy`, or an after-probe that fails on a page answering in 3 s
+> - **Portal home page is slow by design**: `/` calls the WiFi API upstream (`Model::factory('WIFI_API')` in `controller/wifi.php`), 2.8-10 s on
+>   unpatched RCT SMCs; `/index.php/wifi/terms` answers in 0.04 s. adjamarragu-smc01 missed the probe's fixed 20 s right after its fallback reboot
+>   (curl rc 28) while terms answered: http checks now take per-endpoint `timeout` (portal 45) and `retries` (1, only on curl 7/28/52/56).
+> - **A Pi has no RTC**: after a boot its clock is wrong until NTP corrects it (adjamarragu's apache logged its post-boot start ~8 min early);
+>   HTTPS calls fail (tstik logs `certificate is not yet valid`) and Teleport is slow to connect (operator). `timedatectl` NTPSynchronized stays
+>   `no` under ntpd (warehouse-rct01), so reboot.yml waits until the SMC clock is within 60 s of the controller's (10 min, not fatal).
+> - **Lower dir EBUSY**: the remount was tried once, straight after the restarts; it is now tried every 10 s for 90 s before the fallback reboot,
+>   and the record keeps `lower_busy` (error, attempts, holders: mapped and open deleted files, `/var/log` left out). What held adjamarragu's
+>   lower dir is unknown: holders were only printed then, and the reboot cleared the overlay upper layer.
+> - **Teleport tunnels drop sessions** ("Connection closed by UNKNOWN port 65535") while `tsh ls` still lists the node: the probe ignores one
+>   unreachable result, waits with `wait_for_connection` (600 s) and probes again. Ansible's docs do not say `until`/`retries` repeat an
+>   unreachable task, so the role does not rely on that.
+> - **Records feed recovery**: a failed run that stopped before stage 5 with no backup changed nothing and is skipped by `legacy_failed`
+>   (aeroplane-1-smc01 was refused `needs_repair` twice over its own pre-change refusals); `already_done` is not tied to the role-code
+>   fingerprint (a role edit would otherwise re-run restarts and a possible reboot on every patched SMC) but to `target`, a hash of the spec's
+>   actions without `resume_safe`, stored with the state: a spec moved to a newer build re-runs its SMCs; older states without it count as done.
+> - **Resume**: on by default; nothing unfinished means a normal run (one command for a batch); code changed since the start refuses phases 5-8
+>   but lets 9-10 (verify, cleanup) run on the current code (`drifted` in the decision); a writable lower dir with drift is refused.
+>
+> ```yaml
+> - name: Probe the host ({{ 'before' if smc_change_probe_base is none else 'after' }})
+>   ansible.builtin.command: &smc_change_probe_cmd
+>     cmd: python3 -
+>     stdin: "{{ smc_change_probe_src }}"
+>   register: smc_change_probe_first
+>   ignore_unreachable: true
+> - name: Wait for the connection after it dropped mid-probe
+>   ansible.builtin.wait_for_connection: {timeout: 600, sleep: 10}
+>   when: smc_change_probe_first.unreachable | default(false)
+> ```
+
+> **Learned 2026-10-26 (19:30)** · smc_change run time on satellite SMCs · VERIFIED_PRIMARY (aeroplane-1-smc01 apply 185058 phase timings and
+> its /var/log/dpkg.log; warehouse-rct01 check runs; alice-well read-only pool match) · Source: roles/smc_change (local-knowledge-ansible,
+> uncommitted at write time) · Falsifier: a probe whose AVR read takes > 30 s with no cron run in progress
+> - A remote Ansible call costs ~3.5 s over Teleport+satellite; a reconnect 11-15 s (ControlPersist 60 s drops it after each soak or wait).
+>   The play now sets `ansible_ssh_args` with ControlPersist 10m and ServerAliveInterval 15 x 3.
+> - `pgrep -f` inside a shell matches the shell's own command line whenever the script text contains the pattern's target, even with the
+>   `[a]rtisan` trick if the script also runs `php artisan ...` literally: the AVR check waited 60 s every probe. Spell the command through
+>   a variable (`a=artisan; php "$a" update:stats`).
+> - Two `dpkg-repack` copies of one installed build are different files (control holds "Repackaged on <date>", archive metadata differs) with
+>   identical `md5sums`; comparing sha256 of `/var/lib/dpkg/info/<pkg>[:arch].md5sums` with the pooled .deb's md5sums, plus a clean
+>   `dpkg --verify`, identifies the build. Stage 5 now reuses pooled builds that way and skips installing dpkg-repack when all match.
+> - apt's cache keeps the .debs of the live install (`/var/cache/apt/archives`, RAM upper layer on overlay Pis: gone after a restart); the
+>   lower-dir install copies them instead of `apt-get download` again.
+>
+> ```bash
+> a=artisan
+> for i in $(seq 1 60); do pgrep -f '[a]rtisan update:stats' >/dev/null || break; sleep 1; done
+> cd /var/www/html/rct-tstik && timeout 120 php "$a" update:stats >/dev/null 2>&1
+> ```
+> - Resume after a code change (2026-10-26, widened by the operator after akwalirrumanja-smc01 was cut off in stage 7): only backup and
+>   actions (5-6) are refused; restart, close, verify and cleanup (7-10) run on current code. Rollback material is judged per file on the
+>   SMC or the controller (pooled builds live only in the pool). Journal timings are named from the phase number.
+> - `pkill -f` from a task whose `environment:` holds the pattern kills the task itself: Ansible puts environment variables on the remote
+>   command line (akwalirrumanja-smc01 lost its session at the stop/start step twice). The pattern now goes base64-encoded:
+>
+> ```yaml
+>   environment:
+>     SMC_PATTERN_B64: "{{ smc_change_proc.pattern | b64encode }}"
+>   # in the script: pat=$(printf '%s' "$SMC_PATTERN_B64" | base64 -d); pkill -f -- "$pat"
+> ```
+> - Root's `57 23 * * * pkill -9 php` on RCT SMCs is a workaround (operator, 2026-10-26): it clears PHP and Python processes that pile up
+>   from cron jobs started without a running-check (e.g. `*/5 ... nohup php -S 10.254.0.1:8080`). Proposed, not decided: guard those cron
+>   lines with `flock -n` (or a pgrep check) and drop the nightly kill.
+

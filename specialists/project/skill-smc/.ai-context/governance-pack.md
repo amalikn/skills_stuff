@@ -47,6 +47,13 @@ The content is organized as follows:
   index.guide.md
   settings.json
 references/
+  screenshots/
+    20261026-smc-change-recovery/
+      readme.md
+  vendor-sources-dallas-delta-20261008_1043/
+    readme.md
+  vendor-sources-raspberry-pi-20261008_1043/
+    readme.md
   01_overview.md
   02_service-map.md
   03_communication-flows.md
@@ -63,6 +70,9 @@ references/
   14_pin-activation-diagnosis.md
   15_cambium-asset-registers.md
   16_tplink-site-switches.md
+  17_site-ata-dallas-delta.md
+  18_local-knowledge-ansible.md
+  19_smc-change-role.md
 scripts/
   README.md
 .mise.toml
@@ -325,6 +335,223 @@ An accepted document is not immutable: amend it in place with a dated note namin
 }
 ````
 
+## File: references/screenshots/20261026-smc-change-recovery/readme.md
+````markdown
+---
+Title: Generic SMC recovery flow screenshots
+Category: evidence-index
+Status: current
+Authority: rendered-canonical-flow-map
+Scope: Generic Assess and Resume flow-map pages with no customer identifiers
+Last reviewed: 2026-10-26
+Summary: PNG exports reviewed against the role's updated flow-map source.
+---
+
+# Recovery flow review
+
+- `assess.png`: generic flow page 9, read-only journal and package/chroot assessment.
+- `resume.png`: generic flow page 10, explicit original-transaction continuation and cleanup-before-done.
+
+Taken from the draw.io desktop export of `roles/smc_change/drawio/flows.drawio`, source `drawio/parts/master.yaml`, 2026-10-26.
+Both exports visually inspected. Overview, E2E, Apply and Rollback exports were also inspected; retained in the local task evidence while the canonical drawing is durable.
+````
+
+## File: references/vendor-sources-dallas-delta-20261008_1043/readme.md
+````markdown
+---
+Title: Dallas Delta Corp VoIP vendor sources
+Category: vendor-sources-index
+Status: current
+Authority: reference-capture
+Scope: Dallas Delta Corporation (DDC) VoIP help-point and door-station documents kept for the DDC_VoIP-m unit found at community Wi-Fi sites
+Last reviewed: 2026-10-08
+Summary: >-
+  Verbatim DDC manuals, datasheets and web pages (PDF plus .txt extraction) retrieved 2026-10-08, with the SNMP, firmware, default-credential and model-naming facts they
+  support and the live SNMP test result for the DDC_VoIP-m. No firmware image or MIB file is publicly downloadable.
+---
+
+# Dallas Delta Corp VoIP vendor sources
+
+Collected 2026-10-08 for the DDC VoIP ATA/help point seen at community Wi-Fi sites: web title "DDC_VoIP Login", HTML comment "Dallas Delta Corp VoIP telephone Feb 2009 ver2.0", settings page "Model:
+DDC_VoIP-m", "Version No.: 042112", MAC OUI 00:18:1F. Files are kept verbatim. Each PDF has a `.txt` beside it from `pdftotext -layout`; the six image-only datasheets (CST, Guard, Hygienic, Sentinel,
+Sentry, Weathertough) were OCR'd with tesseract instead, so their text may hold OCR errors. Web pages are kept as text only. Firmware: see [firmware-manifest.yaml](firmware-manifest.yaml); no image
+could be downloaded.
+
+## Contents
+
+- [Files](#files)
+- [Facts for the DDC_VoIP-m](#facts-for-the-ddc_voip-m)
+- [Not found](#not-found)
+
+## Files
+
+| File | What it is | Source URL | Retrieved | Covers |
+|---|---|---|---|---|
+| wayback-DDC_VoIP_m_v4_2015_12_15.pdf (+ .txt) | DDC VoIP V2 help point / Sentry / | https://web.archive.org/web/20230630224841id_/https://dallasdelta.com/wp-content/uploads/2018/08/DDC_VoIP_m_v4_2015_12_15.pdf | 2026-10-08 | DDC_VoIP-m |
+|  |   Guard user manual, |  |  |   generation |
+|  |   `DDC_VoIP_m_v4.cdr 15/12/2015`; no |  |  |   (closest |
+|  |   SNMP section |  |  |   match) |
+| VoIP-S11-Manual.pdf (+ .txt) | VoIP Doorstation S-11 user manual, | https://dallasdelta.com/api/resources/manuals/VoIP-S11-Manual.pdf | 2026-10-08 | S11 |
+|  |   release note 21/10/2021 PCB S_11 |  |  |   (successor) |
+| seadan-DDLSENTRYVOIPKPV_SENTRYVOIPKPV_user-manual_1.pdf (+ .txt) | Sentry VoIP keypad manual hosted by | https://resources.seadan.com.au/resources/products/DDLSENTRYVOIPKPV/attachments/DDLSENTRYVOIPKPV_SENTRYVOIPKPV_user-manual_1.pdf | 2026-10-08 | S11 |
+|  |   Seadan, |  |  |   Sentry |
+|  |   `Manual-VoIP-s11 r1.cdr 08-03-2019`, |  |  |   keypad |
+|  |   pcb s11 Apr19; source of the |  |  |  |
+|  |   45255 claim |  |  |  |
+| seadan-DDLSENTRYVOIPCAM1BV_SENTRYVOIP1BVCAM_installation-manual_1.pdf | Sentry VoIP 1-button camera | https://resources.seadan.com.au/resources/products/DDLSENTRYVOIPCAM1BV/attachments/DDLSENTRYVOIPCAM1BV_SENTRYVOIP1BVCAM_installation-manual_1.pdf | 2026-10-08 | VoIP camera |
+|   (+ .txt) |   installation manual, v1.3 02-02-2018 |  |  |   door station |
+| Sentinel-VoIP-Manual.pdf (+ .txt) | Sentinel VoIP manual, | https://dallasdelta.com/api/resources/manuals/Sentinel-VoIP-Manual.pdf | 2026-10-08 | S11 Sentinel |
+|  |   `Manual-VoIP-s11_S r1 28-05-2020` |  |  |  |
+| VoIP-Hygienic.pdf (+ .txt) | Hygienic VoIP manual, | https://dallasdelta.com/api/resources/manuals/VoIP-Hygienic.pdf | 2026-10-08 | S11 Hygienic |
+|  |   `Manual-VoIP-HYG-S11 15-11-2022` |  |  |  |
+| VoIPCam-Manual.pdf (+ .txt) | VoIP camera Mk2 manual v4, 1/9/2024, | https://dallasdelta.com/api/resources/manuals/VoIPCam-Manual.pdf | 2026-10-08 | VoIP Cam Mk2 |
+|  |   pcb iX60 rev2 |  |  |  |
+| wayback-VoIP-Camera-UserManual.pdf (+ .txt) | Older VoIP camera door station manual | https://web.archive.org/web/20230630194807id_/https://dallasdelta.com/wp-content/uploads/2021/03/VoIP-Camera-UserManual.pdf | 2026-10-08 | VoIP |
+|  |  |  |  |   Cam (older) |
+| wayback-sentry.web_.pdf (+ .txt) | Sentry series datasheet, 2016 | https://web.archive.org/web/20180921164310id_/http://dallasdelta.com:80/wp-content/uploads/2016/11/sentry.web_.pdf | 2026-10-08 | Sentry family |
+|  |   web edition |  |  |  |
+| wayback-PIN-Reset-Request-form.pdf (+ .txt) | DDC PIN reset request form | https://web.archive.org/web/20190407064843id_/http://dallasdelta.com/wp-content/uploads/2016/07/PIN-Reset-Request-form.pdf | 2026-10-08 | All DDC (PIN |
+|  |  |  |  |   reset |
+|  |  |  |  |   process) |
+| Sentry-datasheet.pdf (+ OCR .txt) | Current Sentry datasheet | https://dallasdelta.com/api/resources/datasheets/Sentry-datasheet.pdf | 2026-10-08 | Sentry family |
+| Sentry-Camera-datasheet.pdf (+ .txt) | Current Sentry camera datasheet | https://dallasdelta.com/api/resources/datasheets/Sentry-Camera-datasheet.pdf | 2026-10-08 | Sentry camera |
+| Sentinel-datasheet.pdf (+ OCR .txt) | Current Sentinel datasheet | https://dallasdelta.com/api/resources/datasheets/Sentinel-datasheet.pdf | 2026-10-08 | Sentinel |
+|  |  |  |  |   family |
+| CST-datasheet.pdf (+ OCR .txt) | Customer service / help-point | https://dallasdelta.com/api/resources/datasheets/CST-datasheet.pdf | 2026-10-08 | CST family |
+|  |   telephone datasheet |  |  |  |
+| Guard-datasheet.pdf (+ OCR .txt) | Guard door station datasheet | https://dallasdelta.com/api/resources/datasheets/Guard-datasheet.pdf | 2026-10-08 | Guard family |
+| Hygienic-datasheet.pdf (+ OCR .txt) | Hygienic telephone datasheet | https://dallasdelta.com/api/resources/datasheets/Hygienic-datasheet.pdf | 2026-10-08 | Hygienic |
+|  |  |  |  |   family |
+| Weathertough-datasheet.pdf (+ OCR .txt) | Weathertough telephone datasheet | https://dallasdelta.com/api/resources/datasheets/Weathertough-datasheet.pdf | 2026-10-08 | Weathertough |
+|  |  |  |  |   family |
+| dallasdelta-brochure.pdf (+ .txt) | Current product brochure | https://dallasdelta.com/api/resources/datasheets/dallasdelta-brochure.pdf | 2026-10-08 | All |
+|  |  |  |  |   DDC products |
+| TeamsSetUp.pdf (+ .txt) | MS Teams SIP Gateway setup for DDC | https://dallasdelta.com/api/resources/miscellaneous/TeamsSetUp.pdf | 2026-10-08 | DDC |
+|  |   VoIP phones |  |  |   VoIP |
+|  |  |  |  |   (current) |
+| web-dallasdelta-support-downloads.txt | Downloads page; firmware section has | https://dallasdelta.com/support/downloads | 2026-10-08 | All DDC |
+|  |   no public file |  |  |  |
+| web-dallasdelta-support-compliance.txt | ACMA compliance page: firmware release | https://dallasdelta.com/support/compliance | 2026-10-08 | S11, S11 |
+|  |   notes and support periods |  |  |   Sentinel, |
+|  |  |  |  |   VoIP Cam |
+| web-dallasdelta-support-compliance-security-details.txt | Firmware remediation and | https://dallasdelta.com/support/compliance/security-details | 2026-10-08 | Current |
+|  |   lifecycle policy |  |  |   DDC VoIP/4G |
+| web-dallasdelta-support-faq.txt | Support FAQ (SIP registration, Teams) | https://dallasdelta.com/support/faq | 2026-10-08 | All DDC |
+| web-dallasdelta-support.txt | Support landing page | https://dallasdelta.com/support | 2026-10-08 | All DDC |
+| web-dallasdelta-products-sentry.txt | Sentry product page | https://dallasdelta.com/products/sentry | 2026-10-08 | Sentry |
+| web-dallasdelta-products-sentry-sentry-keypad-voip.txt | Sentry keypad (VoIP) product page | https://dallasdelta.com/products/sentry/sentry-keypad-voip/ | 2026-10-08 | Sentry |
+|  |  |  |  |   keypad VoIP |
+| web-dallasdelta-products-sentinel.txt | Sentinel product page | https://dallasdelta.com/products/sentinel | 2026-10-08 | Sentinel |
+| web-dallasdelta-products-polephone.txt | Pole phone (roadside help point) page | https://dallasdelta.com/products/polephone | 2026-10-08 | Pole phone |
+| web-dallasdelta-products-guard.txt | Guard product page | https://dallasdelta.com/products/guard | 2026-10-08 | Guard |
+| web-dallasdelta-products-weathertough.txt | Weathertough product page | https://dallasdelta.com/products/weathertough | 2026-10-08 | Weathertough |
+| iana-enterprise-numbers-45255-excerpt.txt | IANA Private Enterprise Number | https://www.iana.org/assignments/enterprise-numbers.txt | 2026-10-08 | Enterprise |
+|  |   entry 45255 |  |  |   45255 |
+| ieee-oui-00-18-1F-excerpt.txt | IEEE OUI registry entry 00-18-1F | https://standards-oui.ieee.org/oui/oui.txt | 2026-10-08 | MAC OUI |
+
+Listed on the downloads page but not kept, as they are analogue, 4G or PABX products rather than VoIP help points: 4G-Series datasheet, 4GS manual, SimFone 4G manual, LP8 manual, DoorCom manual,
+Sentinel Analogue manual, Enclosures datasheet, DDConnect datasheet, warranty terms, and the Windows tools `SentPro8_9.exe` and `DDC-Client-4GS-Configurator.exe` (all under
+`https://dallasdelta.com/api/resources/`).
+
+## Facts for the DDC_VoIP-m
+
+- **SNMP.** S11-generation manuals (2019 to 2022) say the unit "can send SNMP traps to a server", v2c, community and one or two server IPs configured, enterprise `1.3.6.1.4.1.45255.1.1.1.0` to `.10`,
+  example `snmpget -v2c -c DDC_VoIP ...` (Sentinel VoIP manual prints the community as `DDCVoIP`). VERIFIED_PRIMARY for S11 only. The 2015 DDC_VoIP_m manual has no SNMP section and lists Syslog as its
+  only event output. **Live test 2026-10-08 on the DDC_VoIP-m (version 042112): no answer to SNMP v2c community `DDC_VoIP` or `public`, and its settings page has no SNMP field.** Do not assume SNMP on
+  this model.
+- **Enterprise 45255** is registered to Dallas Delta Corp (IANA PEN, VERIFIED_PRIMARY). No MIB file is published.
+- **OUI 00:18:1F** is Palmmicro Communications, Beijing (IEEE registry, VERIFIED_PRIMARY); consistent with the manual's "Dedicated VoIP chip set". The chip itself is UNVERIFIED.
+- **Model naming.** The 2015 manual's file name is `DDC_VoIP_m_v4` and its cover reads "DDC VoIP V2 ... Help Point Telephone", "Model DDC VoIP"; the unit's "ver2.0" comment matches. That `-m` names
+  this manual's generation is inferred (UNVERIFIED).
+- **Credentials.** DDC_VoIP_m and S11 manuals: shipped with no admin password; rear keypad `*#*#7*1` sets static 192.168.1.100 (mask 255.255.0.0 in the 2015 manual, 255.255.255.0 in S11) and clears
+  the admin password, `*#*#7*2` sets DHCP and clears it, S11 `*#*#7*9` factory reset. S11 relay code factory default `123`. The VoIP camera manuals use `admin`/`admin`. The 2026 compliance page says
+  products now ship with unique per-unit credentials; that applies to current firmware, not a 2009-era unit.
+- **Firmware.** The 2015 manual says "Firmware up-gradable" but its Upgrade page only loads ring-tone `.DAT` files. Version `042112` appears in no vendor source (UNVERIFIED; it may be a date code).
+  Current published lines: S11 `s11.2604.09`, S11 Sentinel `s11.2606.09`, VoIP Cam `v2605.14`.
+- **Management protocols (2015 manual).** HTTP web UI for all settings, SIP (port 5060, PRACK, STUN), Syslog, rear keypad. S11 adds SNMP traps and an auto-provisioning server.
+
+## Not found
+
+- Any firmware image (none public; downloads page section is empty, files likely via customertools.dallasdelta.com or the vendor).
+- Any MIB for enterprise 45255 (vendor, Seadan, observium, oidview searches).
+- Any vendor document naming `DDC_VoIP-m` or version `042112` as such.
+- Whirlpool forum thread https://forums.whirlpool.net.au/archive/995799 (VoIP door station on Asterisk) returned HTTP 403; not kept.
+````
+
+## File: references/vendor-sources-raspberry-pi-20261008_1043/readme.md
+````markdown
+---
+Title: Raspberry Pi 4 Model B vendor sources
+Category: vendor-sources
+Status: current
+Authority: >-
+  Verbatim copies of Raspberry Pi Ltd documents, documentation sources and rpi-eeprom release notes, plus read-only captures from four SMC boxes; the vendor
+  originals stay authoritative.
+Scope: Raspberry Pi 4 Model B (revision d03115) used as SMC site controllers (Ubuntu 22.04.1, kernel 5.15.0-1078-raspi, overlayroot)
+Last reviewed: 2026-10-08
+Summary: >-
+  Product brief, datasheet, mechanical drawing, BCM2711 peripherals, revision-code, bootloader EEPROM and OTP documentation, EEPROM release notes, firmware
+  manifest and per-box firmware captures for the Raspberry Pi SMC flavour.
+---
+
+# Raspberry Pi 4 Model B vendor sources
+
+Collected 2026-10-08 under the operator rule that every device keeps its product documents, MIB details, firmware details and firmware files. PDFs are kept as downloaded with a `pdftotext -layout`
+copy beside them; documentation pages are kept as their official AsciiDoc source text. Firmware binaries are committed in [firmware-files/raspberry-pi/](../../firmware-files/raspberry-pi/) and
+described in [firmware-manifest.yaml](firmware-manifest.yaml).
+
+## Documents
+
+| File | What it is | Source URL | Retrieved |
+|---|---|---|---|
+| [raspberry-pi-4-product-brief.pdf](raspberry-pi-4-product-brief.pdf) / [.txt](raspberry-pi-4-product-brief.txt) | Raspberry Pi 4 Model B | https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-product-brief.pdf | 2026-10-08 |
+|  |   product brief |  |  |
+| [raspberry-pi-4-datasheet.pdf](raspberry-pi-4-datasheet.pdf) / [.txt](raspberry-pi-4-datasheet.txt) | Raspberry Pi 4 Model B datasheet, | https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-datasheet.pdf | 2026-10-08 |
+|  |   Release 1.1 |  |  |
+| [raspberry-pi-4-mechanical-drawing.pdf](raspberry-pi-4-mechanical-drawing.pdf) | Mechanical drawing (vector only, no | https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf | 2026-10-08 |
+|  |   extractable text) |  |  |
+| [bcm2711-peripherals.pdf](bcm2711-peripherals.pdf) / [.txt](bcm2711-peripherals.txt) | BCM2711 ARM peripherals datasheet | https://datasheets.raspberrypi.com/bcm2711/bcm2711-peripherals.pdf | 2026-10-08 |
+| [rpi-docs-revision-codes.adoc.txt](rpi-docs-revision-codes.adoc.txt) | Revision codes page | https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#raspberry-pi-revision-codes | 2026-10-08 |
+|  |   (decodes `d03115`) |   (source: github.com/raspberrypi/documentation, master |  |
+|  |  |   2f403648, `documentation/asciidoc/computers/raspberry-pi/revision-codes.adoc`) |  |
+| [rpi-docs-eeprom-bootloader.adoc.txt](rpi-docs-eeprom-bootloader.adoc.txt) | Bootloader EEPROM | https://www.raspberrypi.com/documentation/computers/raspberry-pi.html (source: same | 2026-10-08 |
+|  |   configuration page |   repo, `eeprom-bootloader.adoc`) |  |
+| [rpi-docs-boot-eeprom.adoc.txt](rpi-docs-boot-eeprom.adoc.txt) | Boot EEPROM page (release | https://www.raspberrypi.com/documentation/computers/raspberry-pi.html (source: same | 2026-10-08 |
+|  |   channels, `rpi-eeprom-update`) |   repo, `boot-eeprom.adoc`) |  |
+| [rpi-docs-otp-bits.adoc.txt](rpi-docs-otp-bits.adoc.txt) | OTP register page; states the | https://www.raspberrypi.com/documentation/computers/raspberry-pi.html (source: same | 2026-10-08 |
+|  |   64-bit serial is in |   repo, `otp-bits.adoc`) |  |
+|  |   `/proc/device-tree/serial-number` |  |  |
+| [rpi-eeprom-firmware-2711-release-notes.md.txt](rpi-eeprom-firmware-2711-release-notes.md.txt) | rpi-eeprom firmware-2711 | https://github.com/raspberrypi/rpi-eeprom/blob/master/firmware-2711/release-notes.md | 2026-10-08 |
+|  |   release notes |  |  |
+| [firmware-manifest.yaml](firmware-manifest.yaml) | Firmware files kept, versions, | Built from the rpi-eeprom repo and the captures below | 2026-10-08 |
+|  |   sha256, which boxes run them |  |  |
+
+## Captures
+
+Read-only, 2026-10-08 10:44 AEDT, over `ssh root@<node>.teleport.apn.au`: `vcgencmd bootloader_version`, `vcgencmd version`, `rpi-eeprom-update`, device-tree model, cpuinfo revision and the firmware
+packages. Nothing was written to the boxes.
+
+| File                                    | What it is                                   | Source                           | Retrieved  |
+| --------------------------------------- | -------------------------------------------- | -------------------------------- | ---------- |
+| [captures/20-mile-smc01-20261008.txt](captures/20-mile-smc01-20261008.txt) | Firmware and model read of 20-mile-smc01     | 20-mile-smc01 (APN Teleport)     | 2026-10-08 |
+| [captures/adjamarragu-smc01-20261008.txt](captures/adjamarragu-smc01-20261008.txt) | Firmware and model read of adjamarragu-smc01 | adjamarragu-smc01 (APN Teleport) | 2026-10-08 |
+| [captures/areyonga-smc01-20261008.txt](captures/areyonga-smc01-20261008.txt) | Firmware and model read of areyonga-smc01    | areyonga-smc01 (APN Teleport)    | 2026-10-08 |
+| [captures/glen-hill-smc01-20261008.txt](captures/glen-hill-smc01-20261008.txt) | Firmware and model read of glen-hill-smc01   | glen-hill-smc01 (APN Teleport)   | 2026-10-08 |
+
+## MIBs
+
+Raspberry Pi Ltd publishes no SNMP MIB for the Raspberry Pi 4. SNMP on these boxes, if enabled, would be net-snmp serving the standard MIBs (MIB-II, HOST-RESOURCES-MIB, UCD-SNMP-MIB and the like), so
+no MIB file is kept here.
+
+## Findings
+
+- `d03115` decodes, per the official revision-codes table, to Model 4B, Revision 1.5, 8 GB, manufacturer Sony UK (new-style code: memory 5 = 8 GB, processor 3 = BCM2711, type 0x11 = 4B, revision 5).
+- All four boxes run bootloader EEPROM 2023-01-11 (git `8ba17717`, timestamp 1673458852) and VL805 `000138c0`. The image `pieeprom-2023-01-11.bin` carries the same version and timestamp strings.
+- Ubuntu's `rpi-eeprom` 13.12 package only ships the 2022-01-25 image, which is older than what the boxes run, so `rpi-eeprom-update` reports "up to date". Upstream's default channel is 2026-09-23
+  (promoted 2026-09-27), so the boxes are behind upstream.
+- The 2026-09-23 release notes add an MFG-version check on updates; read them before any EEPROM update.
+````
+
 ## File: references/01_overview.md
 ````markdown
 # SMC Overview
@@ -539,6 +766,10 @@ Operational implications:
 - Prometheus remote_write and federation scrapes must tolerate high latency
 - Any continuous disk writer (pcap, journal, large logs) has compounding impact since data cannot be quickly offloaded over the link
 
+**Learned 2026-10-16 — a working Teleport SSH read takes 7–9 s** (unified-network-controller host verifier, VERIFIED_PRIMARY): fresh `tsh ssh`
+reads from an AWS host to norton-bore, indulkana and areyonga took 7–9 s, so a 6 s deadline failed healthy boxes. Give each attempt 10 s and allow
+two attempts; put outer deadlines on `tsh status` and `tsh ls` too; pick random current `*-smc01` nodes from `tsh ls` rather than one fixed box.
+
 ### WAN Uplink Topology Pattern — Direct-to-NTD and Switch-Trunked Access-VLANs Can Coexist on One Box
 
 Confirmed at `galiwinku-smc01` (`nbn_accelerate`, multi-WAN NBN business site), 2026-09-08. Do not assume every `role: internet`/`role: starlink` interface on a multi-WAN site shares the same
@@ -606,6 +837,11 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 - **Rob and the SMC.** Rob gives hardware input and can raise concerns on SMC decisions; the SMC decisions are Malik's.
 - **Who knows what.** Gravolin — level 2 engineer, primary on low touch. Germain — NOC, Cambium and the Wi-Fi dashboard. Brendan — the field team. Mark — NOC, desktop RF study for each
   deployment. Rob — electronics, new hardware and radio; main user of the UPS and battery data.
+
+- **Site topology (operator, 13 Oct 2026, `USER_STATED`).** No community has a loop or ring topology except Kalumburu: each site is a tree from its SMC
+  (switches, tower radios, subscribers, then each subscriber's router). A drawn loop anywhere else is a discovery error, typically a unit behind a
+  subscriber radio whose MAC a switch learnt on the port towards the tower. A few routers are cabled at towers rather than behind an SM (no Option 82
+  Remote ID; old-looma 3 of 66). unified-network-controller enforces this in its topology rules (`correlate.py`, `topology_push.py`).
 ````
 
 ## File: references/02_service-map.md
@@ -674,6 +910,12 @@ inventory group (which get bind9/RPZ instead via `smc_dns_mgmt`); this is orthog
 Separately, **the SMC's own DNS queries never go through unbound/stubby/bind at all** — they go through `systemd-resolved`/glibc directly to the same upstream servers, because the client-facing
 PREROUTING DNS redirect (`roles/smc_iptables/templates/iptables.smp.j2`) is scoped to the LAN-facing bridge interface, not the host's own OUTPUT traffic. Conflating "host DNS" and "client DNS" is a
 common source of confusion when debugging DNS delays reported from the box itself vs. from a connected client.
+
+**Names in the `smc_ltp` RPZ zone (2026-10-14, unified-network-controller):** BIND's `check-names` defaults to `fail` for a primary zone, so an A or AAAA
+owner name with an underscore (an asset-register name such as `WDY_XV2_AP1_IP3_10`) makes `named` refuse to load the zone; the check covers owner names of
+A, AAAA and MX records (and NS, SOA, MX, SRV data), not CNAME or TXT records. A name meant for `db.cambium-rpz` is lowercase with hyphens
+(`wdy-xv2-ap1-ip3-10`). `VERIFIED_PRIMARY` (BIND 9 ARM 9.20.29, `check-names`: primary fail, secondary warn, response ignore; read 2026-10-14); not yet
+loaded on a live box.
 
 **Live-verified network layout (RCT):**
 - `eth1.500` → `bridge_500` (management VLAN, 10.255.0.0/24, DHCP .100-.110)
@@ -850,7 +1092,7 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
 
 | Service       | Role                       | Unit            | Config                  | Notes                                     |
 | ------------- | -------------------------- | --------------- | ----------------------- | ----------------------------------------- |
-| chrony        | NTP time sync              | `chrony`        | `/etc/chrony.conf`      |                                           |
+| ntpd          | NTP time sync              | `ntp`           | `/etc/ntp.conf`         | Role `smc_ntpd`; not chrony (2026-10-21, `07_hardware-overlay.md` last section) |
 | overlayroot   | tmpfs overlay filesystem   | (kernel)        | `/etc/overlayroot.conf` | Critical — see Section 8                  |
 | zram          | Compressed swap (RCT only) | (kernel)        | `/etc/default/zramswap` | `/dev/zram0` ~4.6 GB on 8 GB RAM box      |
 | postfix       | Mail relay (outbound)      | `postfix`       | `/etc/postfix/`         |                                           |
@@ -868,6 +1110,33 @@ pending vs. offline is distinguished by whether the watchdog series has ever exi
 | Service  | Role                         | Unit       | Config           | Notes                                                            |
 | -------- | ---------------------------- | ---------- | ---------------- | ---------------------------------------------------------------- |
 | asterisk | VoIP/PBX (built from source) | `asterisk` | `/etc/asterisk/` | Extensions at `extensions.conf` (generated by smc_asterisk role) |
+
+**What the dialplan does** (read 2026-10-22 for enterprise-strategy's RouterOS future study; `VERIFIED-CODE`, ansible-wifi `roles/smc_asterisk`,
+last commit 35b32c36; gate `inventory_dir.split('/')|last == 'rcp'` in `smc_bases.yml`, so **rcp only**, not "non-RCT" generally; `nbn_accelerate` has
+none). One PJSIP registration trunk to the central PBX0008 (`pjsip.conf.j2`, `type = registration`, retry 20 s, expiry 120 s); alaw and slin only;
+RTP 10000–10100 (`vars/main.yml`). Extensions are 4-digit, provisioned per site by `smc_bases_extension_count` (84 to 1,000 in rcp host_vars, so
+credentials, not active phones). Inbound: routed by the `Extension` header PBX0008 sends (DID mapping, where `did_range` is set) or answered with an
+"enter the extension" prompt. Outbound: each extension's caller ID added as `X-CallerID`; 13, 1300 and 0011 barred with an "access denied" prompt;
+8888 reads the caller's extension back. No voicemail, recordings or CDR database (`cdr_sqlite` noload; the CSV CDR still grows, see
+`07_hardware-overlay.md`). So a replacement must be a small PBX (prompts and dialplan), not a SIP proxy, unless PBX0008 takes the prompt rules.
+
+```text
+; roles/smc_asterisk/templates/extensions.conf.j2 (ansible-wifi 35b32c36), [from-user]
+[from-user]
+;### PlayBack ####;
+exten => 8888,1,Goto(test-call,${EXTEN},1)
+;### Local Dialing ####;
+exten => _XXXX,1,Goto(internal-call,${EXTEN},1)
+{% for item in additional_dialplan %}
+exten => {{ item.values() | list | first }},1,Goto(external-call,${EXTEN},1)
+{% endfor %}
+;### Denied Calls ####;
+exten => _13XXXX,1,Goto(call-denied,${EXTEN},1)
+exten => _1300XXXXXX,1,Goto(call-denied,${EXTEN},1)
+exten => _0011!,1,Goto(call-denied,${EXTEN},1)
+;### External Dialing ####;
+exten => _X!,1,Goto(external-call,${EXTEN},1)
+```
 
 ### HA / Failover (non-RCT flavors)
 
@@ -903,7 +1172,23 @@ dhcpd udp/67, stubby 127.0.0.1:60053, speedtest_exporter 127.0.0.1:9798, and the
 The internet VLAN interfaces (`vlan5NN`, not bridged) carry their own locally administered MACs (`72:77:77:...`), not their parent port's; the
 bridged `enpXs0.50N` sub-interfaces and the starlink ones carry the port's MAC; bridge_500 and bridge_501 share the set MAC 72:77:77:00:00:01.
 unified-network-controller's proposal for which of these Nautobot records:
-[smc-services-in-nautobot-proposal-20260930_1421.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/architecture/smc-services-in-nautobot-proposal-20260930_1421.md).
+[smc-services-in-nautobot-proposal-20260930_1421.md](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/architecture/site-model/smc-services-in-nautobot-proposal-20260930_1421.md).
+
+### Listeners on five SMCs, read from apn-unc01 (2026-10-15)
+
+VERIFIED-OBSERVED 2026-10-15, read-only `ss -Htlnup` over Teleport (the host's tbot identities, both proxies) by unified-network-controller's
+`wc-local/scripts/smc/smc_services.py`: old-looma, umoona, yakanarra (`rcp`, all `smc_ltp`) and arawerr, wandawuy (`nbn_accelerate`).
+
+- **smc_ltp boxes:** `named` answers tcp+udp/53 on every address (bridges, uplinks, 192.168.11.100, loopback) and unbound moves to 0.0.0.0:5353, as
+  `unbound.conf.j2` sets for the group; non-ltp boxes run unbound on 0.0.0.0:53.
+- **Apache listens on 443 on `rcp` too**, although rcp's `smc_bases_portal_protocol` is `http`: `smc_application` runs `a2enmod ssl`, so the
+  stock ports.conf adds `Listen 443` on every flavour.
+- **Asterisk exposes more than SIP** on old-looma and yakanarra: tcp/1720, tcp/2000, udp/2727, udp/4520, udp/4569 and udp/5000 on 0.0.0.0, the
+  channel drivers `autoload=yes` in `roles/smc_asterisk/files/modules.conf` pulls in, beside SIP udp/5060. umoona had no Asterisk listener at all.
+- **fluent-bit (Graylog sidecar) listens on 0.0.0.0:2020** on the three `rcp` boxes, not on the two `nbn_accelerate` ones; no role on `big_push`
+  installs it.
+- postfix still listens on 0.0.0.0:25 on all five (the 2026-10-06 loopback decision above is not yet in `smc_postfix`); no `snmpd` on any of them.
+- One `tsh ssh` session took about 11 s on the communitywifi.net.au cluster against about 2 s on apn.au, from the same host.
 
 ## snmpd on the SMC (canary, 2026-09-24)
 
@@ -915,6 +1200,16 @@ is the cluster's existing read-only one from the vault (`cambium-devices/apn-snm
 management address on all three. Still a hand install, not an ansible-wifi role; a reimaged box loses it, and the fleet rollout belongs in the role with the community from the vault. **Pitfall
 recorded:** feeding the community as the first stdin line to `ssh host sh -s` executes it as a command and echoes it in stderr; carry it inside the script body (a quoted here-doc) instead. That
 mistake printed both read-only communities into one agent session's transcript on 2026-09-24 01:20; rotation of the two RO communities is recommended.
+
+**SNMP client concurrency on an x86 SMC (VERIFIED-OBSERVED 2026-10-15, old-looma-smc01, `rcp`, read-only).** The box ran four
+`snmpbulkwalk`/`snmpget` processes at once (`xargs -P 4`; `seq` and `xargs` are present on jammy) inside one SSH session, while two more
+sessions shared the same ControlMaster (a ping sweep and another SNMP session): no session failed and no walk returned worse than serial. A
+52-SM bridge walk, two cycles, took 35 s against 162 s serial; 121 sysUpTime gets 1.6 s against 55 s. unified-network-controller's
+`smc_snmp.run` now defaults to 4 at once (one command per device; writes stay serial). The same day `fping` was absent on old-looma-smc01: the
+reachability probe fell back to `ping` (131 addresses, 6 down, about 8 s).
+
+**Raspberry Pi boxes: no agent, by decision (operator, 2026-10-08).** VERIFIED-OBSERVED 2026-10-08: no `snmpd` on 20-mile, adjamarragu (`rct`), areyonga or glen-hill (`wh`); the root is
+overlayroot, so a hand install would not survive a reboot. The operator decided no SNMP on the Pis for now. Details: `07_hardware-overlay.md`, Raspberry Pi SMC identity.
 ````
 
 ## File: references/03_communication-flows.md
@@ -958,6 +1253,49 @@ SMC box — port 22 (SSH)
     └── Prometheus central (scrape via federation tunnel)
 ```
 
+### Teleport Machine ID (tbot) for unattended access (learned 2026-10-12/13 on apn-unc01, unified-network-controller)
+
+A host that reads SMCs without a person's `tsh login` runs one Machine ID bot per cluster (`tbot@apn`, `tbot@nbn`), joined by AWS IAM delegated join. Four
+behaviours cost time the first time (source: unified-network-controller `infra/apn-unc01/tbot/readme.md` and its CHANGELOG 20261013_1221, 20261012_1822):
+
+- **Use the bot output as a non-root reader.** The output directory is root-owned and the reader user gets it through POSIX ACLs, so `ls` shows the key as
+  0660 (the group bits are the ACL mask). OpenSSH checks a key's mode only when the key belongs to the user running ssh: root gets "UNPROTECTED PRIVATE KEY
+  FILE", the ACL reader does not. Run `ssh -F /opt/tbot-<c>/ssh_config root@<smc>.teleport.<domain>` as that user (e.g. `ubuntu`), never as root.
+- **An IAM-joined bot re-joins with its token at every renewal**, so a token with an expiry stops the bot when it lapses ("token expired or not found",
+  restart loop). Teleport 12.4.34 reads a token's expiry unconditionally in `tctl bots add --token` (`lib/auth/bot.go:183`), so such tokens get an expiry by
+  necessity; 13.4.24 reads it only when present (`bot.go:170-173`). Give a bot's IAM token `expires: "9999-12-31T23:59:59Z"`. VERIFIED_PRIMARY (Teleport source).
+- **tctl 12.4.34 has `bots ls`, `add` and `rm` only, no `bots update`**: changing a bot's roles means `bots rm` then `bots add`, then clearing the host's bot
+  state directory before restarting tbot, or it loads the old identity and fails on a `*.teleport.cluster.local` certificate.
+- **An IAM token's `aws_arn` pattern is a trust boundary.** A token allowing `<role>/*` lets any instance carrying that role's profile join as that bot; a
+  second host given the same profile could join as another service's bot (the `apn-dashboard-iam` token allows `teleport-ec2-bot-role-apn/*`). Give each
+  host its own role and token.
+
+### SMC Teleport node join: static token, default data dir (read at source 2026-10-14)
+
+`roles/smc_teleport/templates/teleport.yaml.j2` joins the node with `auth_token: {{ teleport_token }}`, a static alphanumeric token the cluster defines under
+`tokens:` (`roles/teleport_core/templates/teleport-server.yaml.j2`); no per-box certificate is issued for the join. No `data_dir` is set, so the node's
+host identity lives in the default `/var/lib/teleport`. Static labels are site-level (`env`, `site`, `flavor`, `iridium`); the rest are `commands:` labels
+run on a period (hostname, `site.txt`, Teleport version, `disk` when `disk_count == '2'`, DMI model on x86, overlay state on the Pi flavours). Operator,
+2026-10-14: if `/var/lib/teleport` is lost, deleting it and restarting Teleport re-joins the node from `/etc/teleport.yaml`; smc-resiliency's identity
+partition design relies on this.
+
+**Command labels as read (2026-10-20, `tsh ls --format=json`, read-only):** each node object carries them under `spec.cmd_labels.<name>.result`
+and the static ones under `metadata.labels`, so one list per cluster gives the whole fleet's labels with no login (0.9 s for teleport.apn.au's 340
+nodes, 0.5 s for teleport.communitywifi.net.au's 34). Seen on a Pi: `hostname`, `id` (site.txt, 20-mile `183`), `kernel`, `os`, `overlay`,
+`lat`, `lon`, `teleport`, `fluent-bit`, `kohana`, `sidecar`, `telemetry`, `uuid`, `watchdog`, `wifi`, `zram`, `healthcheck`. `overlay` runs
+`[ -f /root/.overlay_bash_settings ] && (mount | grep -q 'overlayroot on / type overlay' && echo readonly || echo persistent) || echo unconfigured`:
+309 Pis report one, 306 `readonly` and 3 `unconfigured` (bungardi, kupungarri, warehouse-rct01); x86 boxes have none. The `lat` label is not
+`/var/local/tstiklatlon/lat`: 20-mile's label says -16.08550 and the file -16.08567, so read the file for a Pi's position (operator, 2026-10-20).
+A failed label command shows as `exit status N output:` (bungardi's `versions`). VERIFIED-OBSERVED 2026-10-20.
+
+Excerpt (unified-network-controller `wc-local/scripts/collector/teleport_labels.py`, commit b0f5bfc):
+
+```python
+nodes = json.loads(subprocess.run(teleport.tsh("ls", proxy, "--format=json"), capture_output=True, text=True, timeout=120).stdout)
+modes = {n["spec"]["hostname"]: r for n in nodes
+         if (r := str((n["spec"].get("cmd_labels") or {}).get("overlay", {}).get("result", "")).strip()) in ("readonly", "persistent", "unconfigured")}
+```
+
 ### Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)
 
 Use this when `tsh ssh <site>` hangs, refuses to connect, or the box is registered in Teleport (shows up in `tsh ls`) but is unresponsive over it — the Teleport agent on the SMC has stalled, but the
@@ -975,6 +1313,11 @@ authenticates with a raw OpenSSH key (`/var/local/autossh/ssh-portfwding.id_rsa`
 
 **Port formula** (`smc_bases.yml:78`): `openssh_remoteport = 50000 + site_eclipse_siteid`. `site_eclipse_siteid` is a globally unique Eclipse site ID (required var, `smc_definition` role) — the
 resulting port uniquely identifies one site fleet-wide, regardless of which project/teleport cluster it belongs to.
+
+> **Learned 2026-10-23** · reading the site ID from the box · VERIFIED-OBSERVED (php-rct-smc01, `ps -eo args`) · Falsifier: a box whose -R port
+> differs from 50000 + its host vars ID after a RISE run
+> The box shows its own ID: `autossh ... -R <50000+id>:127.0.0.1:22 ssh-portfwding@<bastion>`. A box imaged from a generic build can still carry
+> the image's ID (181 = `generic-rct01*`), which is not unique; `scripts/smc_inventory_add.py --siteid-from-box` reads it and flags the clash.
 
 **Which bastion, per project** (`group_vars/smc_bases.yml` per inventory; each project has multiple flavors nested under it — see `01_overview.md` "Remote Access"):
 
@@ -1189,6 +1532,8 @@ gl.aws.apn.au  Route 53 alias A (zone aws.apn.au Z06674973R861WSOMMI9V) -> apn-g
      listener HTTPS:443 only, TLS ends here (ACM cert, policy ELBSecurityPolicy-TLS-1-2-2017-01)
   -> plain HTTP inside VPC apn-vpc 10.240.0.0/18
   -> EC2 apn-graylog01 i-077c7d21df1872ccc 10.240.11.10 (c5.xlarge, private subnet 10.240.11.0/24, no public IP; egress via NAT, APN ranges via VGW)
+     Graylog 6.3.1 (graylog-server + mongod) stores through a Graylog Data Node on EC2 apn-datanode01 i-0e76ade1f8c75091c (a Teleport node; no
+     elasticsearch_hosts in server.conf). If the Data Node is down Graylog never opens 9000/12202 and every API path answers 500 (2026-10-09).
 ```
 
 | ALB rule | Match | Target group | Target port |
@@ -1324,6 +1669,14 @@ Consequences worth knowing before diagnosing any WAN routing question:
 - **`interfacecheckv2.sh` does not delete routes.** It pings `8.8.8.8` (`-c 4 -W 3`) per interface and on failure runs `systemctl restart dhclient@<iface>.service`, writing
   `my_node_interfacecheck_success{device="…"} 0`. Route disappearance is second-order. That series is a usable per-interface failure-onset history without box access (`mcp-grafana-apn` for
   rcp/rct/wh).
+- **What the WAN-side equipment can tell the SMC about its site (researched 2026-10-22 for smc-resiliency's site fingerprint, decision 20261022_1426).** A Starlink dish answers a
+  local gRPC interface at `192.168.100.1:9200` (`SpaceX.API.Device.Device/Handle`, request `get_location`) with latitude, longitude and altitude, **only when "allow access on local network" is
+  on** in the Starlink app (Settings, Advanced, Debug Data); otherwise the location comes back empty. Unofficial and undocumented by SpaceX (community tools and a Teltonika forum report,
+  `VERIFIED_SECONDARY`; untested on the fleet; the SMC images carry no `grpcurl`). Starlink's Enterprise Telemetry API is behind account-manager access; a third-party integration lists the
+  terminal location as an H3 cell (`UNVERIFIED`). The nbn Sky Muster (Plus) NTD has no documented local status page or API (nbn and provider user guides searched 2026-10-22, negative finding),
+  and the gateway beyond it is the provider's, so it does not tell sites apart. Sources: community.teltonika.lt/t/grpcurl-stralink-location/16381;
+  starlink.com/au/support/article/2a140927-d1e3-de25-9a73-71e1410a76e9; docs.opsramp.com/integrations/saas-applications/starlink/;
+  nbnco.com.au/content/dam/nbn/documents/support/satellite/sky-muster-user-guide.pdf.
 - **`192.168.100.0/24` is the modem's own DHCP scope**, not an SMC address range. Both `roles/smc_network/files/dhclient.conf` and `dhclient-starlink.conf` carry `reject 192.168.100.0/24;` with the
   comments "nbn modem dhcp scope" / "starlink modem dhcp scope". On a primary uplink this is the **Starlink dish management address** (Starlink's standard `192.168.100.1`). Seeing ARP from it on a WAN
   VLAN means the dish's LAN side shares that broadcast domain — the dish is not in a clean bypass state, a real finding worth chasing — but **live-verified 2026-07-29 not to be the cause of "lease
@@ -1436,6 +1789,11 @@ This pair found Pandanus Park/Umoona/Beagle Bay's `vlan621` backup circuit provi
 Island's `starlink01`/`starlink02` topology block is applied even at sites with no backup circuit ever ordered — see `13_known-issues.md`. Source: `local-knowledge-ansible/ansible-wifi/
 issues/apn/routing-issue/docs/starlink-backup-no-lease-l2-investigation-20260730_1400.md`.
 
+**Recurrence, 2026-10-13 (UNC scheduled uplink check, `VERIFIED_PRIMARY`):** umoona's `starlink01` (`vlan621`) reached nothing on consecutive 15-minute checks from
+23:28 AEDT (pings to 8.8.8.8 and 1.1.1.1 and a DNS query, each sent out of that uplink), while its four internet uplinks reached everything; UNC raised `uplink_down`
+for it. The 2026-07-30 switch-side fix above has not held at umoona, or the backup has gone dark again; the cause is not yet read (try the RX counter and sibling-VLAN
+tests first). The check costs one SSH session per SMC: 15 to 19 s for four or five uplinks, about 22 s for two SMCs checked in parallel.
+
 ### Local (LAN) Traffic
 
 ```
@@ -1465,6 +1823,85 @@ malik, generic and similar test entries). Compared with the Mk3 connection diagr
 - `192.168.5.100` exists for the Dallas Delta ATA UI (`192.168.5.253`), which predates the 10.255 scheme (skill-mikrotik `references/01_overview.md`).
 - `192.168.100.50` reaches the satellite modem's own scope (`192.168.100.0/24`, NTD at `.1`) over `bridge-vlan521`, for installer mode.
 - Where the diagram and ansible differ, ansible-wifi is what the SMC runs; the diagram is a v0.5 design drawing.
+
+VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyonga and glen-hill `wh`, Teleport apn):
+
+- `bridge_500` holds both addresses live, `10.255.0.1/24` and `192.168.5.100/24`. In topology_vars this is `layer3.links.management.subnets: [10.255.0.0/24, 192.168.5.0/24]` with addresses
+  `[+1, +100]`, paired by position. Every `rct` (319), `wh` (28) and `nbn_wh` (3) topology file carries this pair; no x86 file does. `192.168.5.100` is the gateway kept for the rct site ATA at
+  `192.168.5.253` (`17_site-ata-dallas-delta.md`).
+- topology_vars defines the same four site VLANs on every Pi site checked: 500 management, 501 public, 521 nbn_modem, 522 internet02.
+- All of them ride the Pi's one wired port, `eth0` (`07_hardware-overlay.md`, Raspberry Pi SMC identity).
+
+> **Learned 2026-10-20** · Pi SMC uplinks (`rct`) · VERIFIED-OBSERVED 2026-10-20 on akwalirrumanja, adjamarragu, alamirra, alice-well and
+> alkngarrija (Teleport apn, read-only from apn-unc01; arrkapa did not answer) · Source: unified-network-controller
+> `wc-local/scripts/smc/uplink_provider.py` `read` (commit 03e4a8e) · Falsifier: a Pi site whose default route leaves on vlan521 or vlan522
+> The internet leaves on `eth0` untagged: it holds the default route (`10.181.x.x/30` DHCP from the switch's untagged VLAN 521, the Sky Muster
+> NTD on the switch's ether2) and `curl --interface eth0 https://ipinfo.io` answers an `AS38172 IPSTAR Australia` address (119.12.x.x).
+> `vlan521` (`192.168.100.50/24`) only reaches the satellite modem's own subnet: `curl --interface vlan521` fails at once (rc 7, no route out).
+> `vlan522` (internet02) has no address (rc 28). A reader that picks uplinks by a role (Nautobot's Internet role on vlan521/vlan522, since eth0
+> is also the switch trunk) misses the real one; read the interface carrying the default route as well:
+>
+> ```python
+> # uplink_provider.read (03e4a8e): the listed uplinks, then the default route's interface when it is not one of them
+> fn = (f"u() {{ echo \"@@ $1\"; ... curl -s --max-time 8 --interface \"$1\" https://ipinfo.io/json ...; }}")
+> default = ("d=$(ip -4 route show default | awk '{for (i = 1; i < NF; i++) if ($i == \"dev\") { print $(i + 1); exit }}'); "
+>            f"case \" {' '.join(interfaces)} \" in *\" $d \"*) ;; *) [ -n \"$d\" ] && u \"$d\" ;; esac")
+> lines = [fn] + [f"u {shlex.quote(i)}" for i in interfaces] + [default]
+> ```
+>
+> No visual surface.
+
+> **Learned 2026-10-20 (b)** · Pi SMC uplinks in an inventory (`rct`) · VERIFIED-OBSERVED on akwalirrumanja (Circuits dry run on apn-unc01,
+> 16:24) · Source: unified-network-controller `wc-local/scripts/smc/uplink_sites.py` `draft_text`, `wc-local/scripts/smc/smc_uplink_circuits.py`
+> `circuit_plan` (commits 5f02e18, 3f3d847) · Falsifier: a Pi site whose eth0 is not the switch trunk
+> A Pi's `eth0` is both the trunk to the site switch (tagged VLANs, so an inventory gives it a trunk role) and the internet (untagged). An uplink
+> Circuit therefore sits on `eth0` named by interface, not by label (the port keeps the operator's `Port 1`), with its NTD on the switch port
+> that carries the untagged VLAN (the Sky Muster NTD on ether2); the trunk counts as the uplink only on that path (named interface, NTD on
+> another device):
+>
+> ```python
+> # smc_uplink_circuits.circuit_plan (3f3d847)
+> through_switch = (role == TRUNK_ROLE and spec.get("interface") and (spec.get("ntd") or {}).get("device") not in (None, plan["smc"]))
+> if role != INTERNET_ROLE and not through_switch:
+>     errors.append(f"{lid}: {iface['name']} has role {role!r}, not {INTERNET_ROLE!r}; an uplink Circuit needs an uplink")
+> ```
+>
+> Screenshot pending: the akwalirrumanja Circuit page, after the operator approves its Circuits stage.
+
+> **Learned 2026-10-20 (c)** · OpenSSH through the Teleport ProxyCommand (`*.teleport.<domain>`), Linux and macOS · VERIFIED-OBSERVED on
+> apn-unc01 (`ps -eo pid,ppid,pgid,sid` during a collector cycle: forwards with parent 1 and a session of their own; `tsh proxy ssh` in the
+> caller's session) and reproduced with `ProxyCommand=sleep` · Source: unified-network-controller `src/unc/drivers/transports/process.py`,
+> `wc-local/scripts/collector/batch_push_devices.py` `_close_on_term` (commits 3efcb27, 36fa18e) · Falsifier: an ssh release whose `-f` keeps the session
+> `ssh` starts `tsh proxy ssh` as its own child. Killing `ssh` (a `subprocess.run` timeout) leaves that proxy running for minutes; end the
+> process group instead. `ssh -f -N -L` forwards detach into a session of their own once established, so no group kill reaches them: the
+> program that opened them must close each by name (`pkill -f -- "-L <port:ip:port> "`), also on SIGTERM:
+>
+> ```python
+> # batch_push_devices (36fa18e): forwards are closed by name, also when the caller's time limit sends SIGTERM
+> def _close_on_term(signum, _frame):
+>     close_tunnels(sorted(OPEN_FORWARDS))      # one pkill -f -- "-L <spec> " each
+>     os._exit(128 + signum)
+> ```
+>
+> No visual surface.
+
+> **Learned 2026-10-22** · autossh backdoor (`50000 + site_eclipse_siteid` on `apn-teleport01` / `cw-teleport01`) · VERIFIED-OBSERVED
+> (read-only sessions from the operator's Mac, ansible-wifi PHP CVE assessment) · Source: skill-smc `scripts/backdoor_exec.sh` (this commit) ·
+> Falsifier: a listening backdoor port that always reaches the box its siteid names
+> A listening backdoor port does not prove the box is up: `family-friendly-smc01`'s 50501 answered as `nocprov-smc01`, a box in no inventory,
+> so `backdoor-watch.sh` reported UP for a box that was not reached. Read `hostname` before attributing anything to the site. Separately, both
+> nbn_wh boxes ran `teleport` (`systemctl is-active` = active) while the cluster held no reverse tunnel for them (`no node reverse tunnel ...
+> found`); the backdoor reached both. Key login from the bastion is refused (`publickey,password`), so the fleet root password is needed:
+>
+> ```bash
+> # backdoor_exec.sh: the credential goes from KeePassXC to sshpass by environment only; hostname is checked before any command runs
+> SSHPASS="$(kp show -s -a Password "$KP_ENTRY" 2>/dev/null)"; export SSHPASS
+> sshpass -e ssh ... -o ProxyCommand="tsh ssh --proxy=$cluster root@$bastion nc 127.0.0.1 $port" "root@backdoor-$port" "$@"
+> actual="$(bd_ssh hostname </dev/null | tr -d '\r')"
+> [ "$actual" != "$host" ] && [ "${FORCE:-0}" != 1 ] && exit 4
+> ```
+>
+> No visual surface.
 
 ### Alert Flows
 
@@ -2338,7 +2775,9 @@ own watchdog for the SMC is not established. History: `storage/logs/laravel.log*
 `rct` box in the same state self-recovers within minutes and nobody opens a ticket. `wh` has no equivalent, and nothing in software substitutes for it:
 
 Rechecked 2026-10-07 at Bitbucket `activ8me/rct-tstik` head `8e3f5b0` (2026-08-06): `IOManager::ResetPower` switches the phone UI, NTD, LAN switch, Thuraya modem, Aux1, Aux2 and external I2C rails. No
-rail is named for the SMC. The satellite modem is **Thuraya**, used for the backup phone (emergency number, SMS settings); the repo has no Iridium code. No code path lets an inbound Thuraya message
+rail is named for the SMC. The code calls the satellite modem **Thuraya** (backup phone: emergency number, SMS settings) and has no
+Iridium code, but RCT is moving to **Iridium**: tested at a few sites, with replacement at all RCT sites started (USER_STATED 2026-10-07). RCT sites need a
+visit for it. WH sites have no satellite modem at all. No code path lets an inbound Thuraya message
 trigger a reset. Thuraya commands are sent only from the local web UI (`td` page). The AVR firmware is not in this repo, so an AVR-level SMC watchdog or SMS reset is still unverified.
 
 - `watchdog.auto_reboot: 0` in `inventories/{wh,nbn_wh,rct}/group_vars/smc_bases.yml` does **not** stop reboots (corrected 2026-10-07): the template renders it as the string `"0"`, which Python treats
@@ -2454,8 +2893,8 @@ Enable a hardware watchdog on every flavor that lacks one:
   and `.timeout` defaults to that maximum. Any `RuntimeWatchdogSec` above it is clamped to the nearest supported value, so set it at or below 15 s.
 - **Persistence on overlayroot:** the `systemd` drop-in and any module-load config must be written to the lower dir (`/media/root-ro`) or they vanish on the first reboot — the reboot the watchdog
   itself causes. Not yet tested on any `wh` box.
-- The SMC resiliency plan in `apn/enterprise-strategy/workstreams/continuity/` scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does not cover it.
-  Options note: `smc-hang-recovery-options-20261006_1214.md` in that folder.
+- The SMC resiliency plan (since 2026-10-14 in the `apn/smc-resiliency` project) scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does
+  not cover it. Options note: `smc-resiliency/docs/recovery/smc-hang-recovery-options-20261006_1214.md`.
 
 ---
 
@@ -2467,6 +2906,22 @@ Enable a hardware watchdog on every flavor that lacks one:
 mount lands at 50% of RAM — consistent with the existing "`overlay.size_ratio` is inert" finding in `07_hardware-overlay.md` §8.
 
 ---
+
+
+#### kupungarri, dark 2026-10-05: tech LED report, and the "reboot" was a spare disk (2026-10-09)
+
+- **On site (`USER_STATED`, operator relaying the techs, 2026-10-09):** solid red LED, no green, before the techs restarted it. On the Pi 4
+  (this site's board is a Pi 4 Model B Rev 1.5) red is the power LED and green is SD activity, so the board had power but the system was not
+  running. Read: a hang, not a lost supply (inference, `UNVERIFIED` against Raspberry Pi documentation).
+- **What came back was not the disk that went dark (`VERIFIED-OBSERVED`, Teleport + Prometheus, 2026-10-09).** The dark unit ran kernel
+  `5.15.0-1078-raspi` with overlayroot on `/`. The box online at boot 2026-10-09 15:37 AEDT booted as `generic-wh01-20240408` (2024 spare image,
+  kernel `1070`), root rw ext4, `/etc/overlayroot.conf` the package default (`overlayroot=""`), journal jumping from 2025-01-16 to today, and was
+  renamed by an `ansible-hostname` run at 15:41:22. RISE is not applied; `isc-dhcp-server6`, `rc-local` and `hciuart` failed at boot.
+  Whether only the SD card or the whole unit changed is unknown: no Pi serial was recorded for the old unit (the running one is `100000007bb53770`).
+- **Consequence:** no evidence from the hung boot. Its logs were in the tmpfs upper layer, Graylog had no SMC logs 2026-09-12 to 10-07, and
+  the old disk is off site.
+- **Rule:** after any tech "reboot" of a dark box, run `scripts/pi_identity_probe.sh` before trusting the box: `boot_hostname=generic-wh01-*`,
+  a different kernel, or `root_fs` on ext4 where RISE ran means a spare went in and RISE must be re-run. Ask the techs to return the old SD card.
 
 ### Daily Winter Power Loss at Solar Sites — dark before dawn, boots mid-morning (`wh`, 2026-10-07)
 
@@ -2685,6 +3140,36 @@ port. Worth checking on a production box after any of those: `systemctl is-activ
 unc-dhcpd-debounce --collect systemctl restart isc-dhcp-server`, re-armed per event) kept it active with 1 restart in each case. The drop-in survives the storm, the debounce removes it; both together
 cover a handler restart landing inside a burst. Recorded, with the box restored, in local-knowledge-ansible issues/rcp-fleet/rcp-dhcpd-start-limit-on-link-flap-20260927_0238.md. `UNVERIFIED` on a
 physical SMC: the count of links that flap under a real reload there.
+
+## A netplan change to a VLAN, bond or bridge does not take effect until a reboot (2026-10-20)
+
+> **Learned 2026-10-20** · systemd-networkd 255 (Ubuntu 24.04; 249 on 22.04 works the same way, `UNVERIFIED` on a site) · VERIFIED_PRIMARY ·
+> Source: networkctl(1) on the smc-resiliency spike VM; smc-resiliency `docs/pi/pi-spike-s2-config-swap-20261020_1856.md` S2-1 · Falsifier: a
+> `netplan apply` that changes an existing VLAN's id on a running box
+> networkctl(1): "even if an existing .netdev is modified or removed, systemd-networkd does not update or remove the netdev." So an ansible-wifi
+> run that changes a VLAN id, a bond mode or a bridge setting through `netplan apply` leaves the old device running; the change bites at the next
+> reboot, when nobody is checking. Deleting the device after `networkctl reload` is not enough: networkd recreated it from the old definition.
+> What works: write the new config (`netplan generate`), delete the changed devices, restart systemd-networkd, then `netplan apply`.
+>
+> ```python
+> # smc-resiliency spike/onbox/smcbox/activate.py (apply_runtime)
+> sh(["netplan", "generate"])
+> gone = drop_changed_netdevs(before_defs, netdev_defs())   # ip link delete each VLAN/bridge/bond whose netplan stanza changed
+> if gone:
+>     sh(["systemctl", "restart", "systemd-networkd"])
+> sh(["netplan", "apply"])
+> ```
+
+> **Learned 2026-10-23** · tstik "Unable to read the data from AVR" · VERIFIED_PRIMARY · Source: php-rct-smc01 `storage/logs/laravel.log`,
+> journal; 20-mile-smc01 comparison; operator confirmed no AVR on the unit · Falsifier: a box with an AVR fitted that logs only empty reads with this
+> serial setup
+> `Total Read Data[]` then `Unable to read the data from AVR` on every `update:stats` run means nothing answers on `/dev/ttyS0` (19200 baud, mini
+> UART, `enable_uart=1`). On the bench Pi php-rct-smc01 no AVR is fitted (operator, 2026-10-23), so it is expected there; a working box logs bytes,
+> e.g. `Total Read Data[126,2,129,3,1,122]` (20-mile-smc01: 0 failures, 346,826 good reads), with the identical UART config and the same harmless
+> `bcm2835-aux-uart ... not valid maps for state default` boot line. Check by hand: `cd /var/www/html/rct-tstik && php artisan update:stats`
+> then `tail storage/logs/laravel.log`; `php artisan self:tests` also rebuilds the self-tests page; never `avr:update` (flashes the AVR).
+> A Pi has no RTC: a box powered on after months off shows one boot spanning the gap until "Clock change detected" in the journal, so a
+> "792-day uptime" there is the saved clock, not a running box.
 ````
 
 ## File: references/07_hardware-overlay.md
@@ -2746,6 +3231,13 @@ physical SMC: the count of links that flap under a real reload there.
   - [rsyslogd spread is 6.7× and unexplained](#rsyslogd-spread-is-67-and-unexplained)
 - [AAEON DMI serials follow the BIOS build, not the OS (fleet survey 2026-09-29)](#aaeon-dmi-serials-follow-the-bios-build-not-the-os-fleet-survey-2026-09-29)
 - [Cambium radio and AP estate by flavour (operator-stated 2026-09-14)](#cambium-radio-and-ap-estate-by-flavour-operator-stated-2026-09-14)
+- [What fills the WH overlay tmpfs, and the fixes (laramba, mimbi, canteen-creek, 2026-10-07)](#what-fills-the-wh-overlay-tmpfs-and-the-fixes-laramba-mimbi-canteen-creek-2026-10-07)
+- [RISE journald is sized against the SD card, not the overlay (honeymoon-bay-smc01, 2026-10-07)](#rise-journald-is-sized-against-the-sd-card-not-the-overlay-honeymoon-bay-smc01-2026-10-07)
+- [Raspberry Pi SMC identity, ports and bootloader (rct and wh, 2026-10-08)](#raspberry-pi-smc-identity-ports-and-bootloader-rct-and-wh-2026-10-08)
+- [Overlay building blocks already on the fleet (read 2026-10-15)](#overlay-building-blocks-already-on-the-fleet-read-2026-10-15)
+- [What writes into /etc at run time, and the read-only /etc of the new image (2026-10-20)](#what-writes-into-etc-at-run-time-and-the-read-only-etc-of-the-new-image-2026-10-20)
+- [Executables under /etc and other new-image constraints from the S2 spike (2026-10-20)](#executables-under-etc-and-other-new-image-constraints-from-the-s2-spike-2026-10-20)
+- [snapd, clock and NTP drift state on a rebuild of the writable area (2026-10-21)](#snapd-clock-and-ntp-drift-state-on-a-rebuild-of-the-writable-area-2026-10-21)
 
 - Hardware differences: x86 vs Raspberry Pi
 - NBN Accelerate / NBN WH hardware inventory (first live fleet sweep)
@@ -2757,6 +3249,7 @@ physical SMC: the count of links that flap under a real reload there.
 - Verifying 12-fix parity on-box (probe gotchas + healthy-node write profile)
 - rcp disk write profile
 - Legacy url_capture disk-write behavior
+- Raspberry Pi identity (no DMI), single-port layout, no snmpd, bootloader EEPROM
 
 ## 7. Hardware Differences: x86 vs Raspberry Pi
 
@@ -2835,12 +3328,19 @@ confinement](https://documentation.ubuntu.com/security/security-features/privile
 **Design recommendation — not implemented or canary-tested:** no other operating system is recommended over Ubuntu Server LTS for the current full SMC workload. Standardise new Raspberry Pi SMCs on
 the same Server release that has been ARM-canary-qualified for the fleet; OS release selection is separate from this operating-system choice.
 
-| Candidate | Fit for the current SMC | Decision |
-| --- | --- | --- |
-| Raspberry Pi OS Lite | The closest alternative: a 64-bit, Debian/APT-based Pi OS with vendor firmware packaging. It still needs a full port and qualification of the Ubuntu-specific Ansible assumptions (netplan, systemd units, package names, boot paths and update policy), with no demonstrated reliability or operations benefit over Ubuntu Server. | Do not adopt routinely. Reconsider only if a future Pi board/HAT requires a vendor driver or firmware unavailable on qualified Ubuntu Server. |
-| Debian Stable | Also requires a package/network/boot and fleet-operations port, while removing alignment with the existing Ubuntu SMC stack. | No benefit established; do not adopt. |
-| OpenWrt | A strong router/AP OS, but it is a different appliance ecosystem. Its image/package and network-management model would require reimplementing the SMC's host configuration, services, observability and application stack. | Consider only for a deliberately reduced router/AP product, not an SMC replacement. |
-| Fedora IoT/CoreOS, NixOS, similar declarative or immutable systems | Repeat the Core problem in different forms: a new image, package, service and operational model must be designed and supported. | No current case for adoption. |
+| Candidate                    | Fit for the current SMC                                                                                         | Decision                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Raspberry Pi OS Lite         | The closest alternative: a 64-bit, Debian/APT-based Pi OS with vendor firmware packaging. It still needs a full | Do not adopt routinely. Reconsider only if a future |
+|                              |   port and qualification of the Ubuntu-specific Ansible assumptions (netplan, systemd units, package names,     |   Pi board/HAT requires a vendor driver or firmware |
+|                              |   boot paths and update policy), with no demonstrated reliability or operations benefit over Ubuntu Server.     |   unavailable on qualified Ubuntu Server.           |
+| Debian Stable                | Also requires a package/network/boot and fleet-operations port, while removing alignment with the existing      | No benefit established; do not adopt.               |
+|                              |   Ubuntu SMC stack.                                                                                             |                                                     |
+| OpenWrt                      | A strong router/AP OS, but it is a different appliance ecosystem. Its image/package and network-management      | Consider only for a deliberately reduced router/AP  |
+|                              |   model would require reimplementing the SMC's host configuration, services, observability and                  |   product, not an SMC replacement.                  |
+|                              |   application stack.                                                                                            |                                                     |
+| Fedora IoT/CoreOS, NixOS,    | Repeat the Core problem in different forms: a new image, package, service and operational model must be         | No current case for adoption.                       |
+|   similar declarative or     |   designed and supported.                                                                                       |                                                     |
+|   immutable systems          |                                                                                                                 |                                                     |
 
 **VERIFIED_PRIMARY (retrieved 2026-09-17):** Raspberry Pi OS is Debian-based and supports APT-managed packages, including Pi kernel and firmware updates; OpenWrt is a Linux distribution for embedded
 devices, typically wireless routers. The suitability decisions above are an inference from those models and the verified SMC workload, not claims of general-purpose superiority.
@@ -2852,16 +3352,17 @@ overview](https://openwrt.org/docs/start) (retrieved 2026-09-17).
 
 The table above says x86 storage is "monitored by SBDM/SMART" — this undersells how split the two mechanisms actually are. Confirmed live 2026-07-13:
 
-| Tool                   | Binary                         | Works on                         | Fails on                                                                                                |
-| ---------------------- | ------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `smartmon.py`          | n/a (uses system `smartctl`)   | x86 rcp: Innodisk CFast,         | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't expose classic ATA     |
-|   (wraps `smartctl`)   |                                |   Transcend SSD (both report via |   SMART attributes the way SATA/USB-SAT drives do                                                       |
-|                        |                                |   ATA SMART)                     |                                                                                                         |
-| `sbdm.py` (wraps       | `roles/smc_node_exporter/files/{x86-64,aarch64}/sbdm-cli`    | RPi/rct/wh: genuine              | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns "No supported disks    |
-|   `sbdm-cli`,          |      |   Swissbit-branded industrial    |   found" (exit 3), and `sbdm.py` currently exits 0 with **zero stdout output**, producing a 0-byte      |
-|   "Swissbit            |     — deployed to             |   microSD cards (model "SD card  |   `sbdm.prom`. This is the root cause of the standing "sbdm.prom = 0 bytes" bug tracked as a known      |
-|   Device Manager")     |   **both** architectures       |   SB AFNI0", series S-58)        |   issue on tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit hardware, not a    |
-|                        |                                |                                  |   bug in those specific nodes.                                                                          |
+| Tool               | Binary                                                        | Works on                     | Fails on                                                                         |
+| ------------------ | ------------------------------------------------------------- | ---------------------------- | -------------------------------------------------------------------------------- |
+| `smartmon.py`      | n/a (uses system `smartctl`)                                  | x86 rcp: Innodisk CFast,     | RPi/mmcblk SD cards — `smartctl --scan-open` finds zero devices; SD/eMMC doesn't |
+|   (wraps           |                                                               |   Transcend SSD (both report |   expose classic ATA SMART attributes the way SATA/USB-SAT drives do             |
+|   `smartctl`)      |                                                               |   via ATA SMART)             |                                                                                  |
+| `sbdm.py` (wraps   | `roles/smc_node_exporter/files/{x86-64,aarch64}/sbdm-cli` —   | RPi/rct/wh: genuine          | x86 rcp: Innodisk/Transcend hardware isn't Swissbit-branded — `sbdm-cli` returns |
+|   `sbdm-cli`,      |   deployed to **both** architectures                          |   Swissbit-branded           |   "No supported disks found" (exit 3), and `sbdm.py` currently exits 0 with **zero** |
+|   "Swissbit        |                                                               |   industrial microSD cards   |   **stdout output**, producing a 0-byte `sbdm.prom`. This is the root cause of the |
+|   Device Manager") |                                                               |   (model "SD card SB AFNI0", |   standing "sbdm.prom = 0 bytes" bug tracked as a known issue on                 |
+|                    |                                                               |   series S-58)               |   tjuntjuntjara/burringurrah/warburton — expected behavior for non-Swissbit      |
+|                    |                                                               |                              |   hardware, not a bug in those specific nodes.                                   |
 
 So: x86 rcp nodes are monitored by `smartmon.py`/`smartctl` only (SBDM silently no-ops there). RPi rct/wh nodes are monitored by `sbdm.py`/`sbdm-cli` only (SMART silently no-ops there, confirmed
 `smartmon.prom` has metric headers but zero data lines on every RPi node checked). Never assume both tools produce meaningful data on both platforms.
@@ -2974,17 +3475,37 @@ No live hardware inventory existed for this cluster before this sweep — everyt
 total, `aurukun-smc03` unreachable at capture time), via `scripts/collect-fleet-health.sh`. **`nbn_wh` is the operator-confirmed `wh`-flavor equivalent on this cluster** — compare it against the
 `rct`/`wh` row in the platform table above, not against `nbn_accelerate`'s x86 baseline.
 
-| Chassis                             | Count | CPU                   | RAM   | Storage                                                        | Flavor           | Kernel                             |
-| ----------------------------------- | ----- | --------------------- | ----- | -------------------------------------------------------------- | ---------------- | ---------------------------------- |
-| AAEON BOXER-6641                    | 11    | Intel Core i5-8500T   | 15Gi  | Transcend TS128GSSD420K SSD                                    | `nbn_accelerate` | `5.15.0-119-generic`               |
-|                                     |       |   @ 2.10GHz           |       |                                                                |                  |   (fleet-uniform)                  |
-| AAEON BOXER-6404                    | 15    | Intel Celeron J1900   | 7.7Gi | Innodisk CFast 3ME3                                            | `nbn_accelerate` | `5.15.0-117-generic` (2 outliers — |
-|                                     |       |   @ 1.99GHz           |       |                                                                |                  |   see below)                       |
-| Raspberry Pi, Cortex-A72 (`-raspi`  | 2     | ARM64,                | 7.6Gi | Swissbit SB AFNI0 microSD (`sbdm.prom` populated,              | `nbn_wh`         | `5.15.0-1064-raspi`                |
-|   kernel, no dmidecode)             |       |   4-core Cortex-A72   |       |   `smartmon.prom` header-only — same split as `rct`/`wh`)      |                  |   / `5.15.0-1078-raspi`            |
+| Chassis                               | Count | CPU                    | RAM   | Storage                                                         | Flavor           | Kernel                         |
+| ------------------------------------- | ----- | ---------------------- | ----- | --------------------------------------------------------------- | ---------------- | ------------------------------ |
+| AAEON BOXER-6641                      | 11    | Intel Core i5-8500T    | 15Gi  | Transcend TS128GSSD420K SSD                                     | `nbn_accelerate` | `5.15.0-119-generic`           |
+|                                       |       |   @ 2.10GHz            |       |                                                                 |                  |   (fleet-uniform)              |
+| AAEON BOXER-6404                      | 15    | Intel Celeron J1900    | 7.7Gi | Innodisk CFast 3ME3                                             | `nbn_accelerate` | `5.15.0-117-generic` (2        |
+|                                       |       |   @ 1.99GHz            |       |                                                                 |                  |   outliers — see below)        |
+| Raspberry Pi, Cortex-A72 (`-raspi`    | 2     | ARM64,                 | 7.6Gi | Swissbit SB AFNI0 microSD (`sbdm.prom` populated,               | `nbn_wh`         | `5.15.0-1064-raspi`            |
+|   kernel, no dmidecode)               |       |   4-core Cortex-A72    |       |   `smartmon.prom` header-only — same split as `rct`/`wh`)       |                  |   / `5.15.0-1078-raspi`        |
 
 Same BOXER-6641/BOXER-6404 chassis family already documented for the `rcp` fleet (`amata-smc01` was independently confirmed BOXER-6641 during the earlier disk-fault incident) — this is not new
 hardware, just the first time it's been inventoried for this specific cluster.
+
+#### Whole x86 fleet by model, and its load (2026-10-22)
+
+Read 2026-10-22 for enterprise-strategy's RouterOS future study, from smc-resiliency's firmware-access probe (live, 20261022_1506; sources in
+`smc-resiliency/docs/os-lifecycle/firmware-access-probe-sources-20261022_1506/`) and Prometheus (7-day window, both clusters). `VERIFIED-OBSERVED`.
+
+| Model        | Cores | rcp boxes | nbn_accelerate boxes | Total | 7-day CPU average / peak (rcp, with Asterisk) | Peak RAM used |
+| ------------ | ----- | --------- | -------------------- | ----- | --------------------------------------------- | ------------- |
+| BOXER-6404   | 4     | 11        | 17                   | 28    | 5–13% / 13–40%                                | 17–29%        |
+| BOXER-6641   | 6     | 8         | 11                   | 19    | 7–13% / 15–23%                                | 11–14%        |
+
+- Counts include non-site boxes (rcp: warehouse-smc01, nocprov-smc01; nbn_accelerate: a test box, and aurukun has three). ansible-wifi has no small or
+  large x86 concept; both models are in both flavours. The "small box / big box" wording in `01_overview.md` (x86 as "small") is not a model class.
+- Prometheus has no process metrics (no process-exporter), so Asterisk's or Squid's own CPU and RAM are not measurable from it; per-process cost needs
+  a `ps` on the box.
+- Asterisk resident memory, measured 2026-10-22 on all 17 rcp boxes (`collect-smc-evidence-full.sh --only voip`, `asterisk-rss`; operator approved):
+  77–153 MB per box, about 100 MB typical (warburton 153, mornington 130, tjuntjuntjara 127, bidyadanga 119); full source build with
+  `autoload=yes`. umoona-smc01 and nocprov-smc01 had no Asterisk process. `VERIFIED-OBSERVED`
+- Anomalies seen 2026-10-22: koonibba-smc01 (nbn_accelerate, 6404) root 98% full, warakurna-smc01 65%; warehouse-smc01 has 3 GB RAM; nocprov,
+  wangkatjungka and warehouse have no node_exporter series.
 
 **Kernel/OS version drift, live-confirmed — corroborates the already-documented "no automated kernel-update pipeline for cw-cluster" structural finding** (`01_overview.md` "APN Cluster vs NBN
 Accelerate Cluster"): most BOXER-6404 hosts run `5.15.0-117-generic`, but `koonibba-smc01` is on `5.15.0-79-generic` (significantly older) and `warakurna-smc01` is on `5.15.0-133-generic`
@@ -3153,11 +3674,11 @@ The scan is `-xdev`, so it is forward-compatible with the structural fix: anythi
 Operator, 2026-09-22: only RPi and WH boxes run overlayroot. x86 SMCs have a plain LVM/ext4 root (`overlayroot=""` in `/etc/overlayroot.conf`), so an `apt install` survives a reboot there. Scratch
 data that must not touch disk goes on a tmpfs mount, and those mounts differ box to box:
 
-| Box (x86)          | `/`  | `/tmp` | `/run` | `/dev/shm` |
-| ------------------ | ---- | ------ | ------ | ---------- |
-| mowanjum-smc01     | ext4 | tmpfs  | tmpfs  | tmpfs      |
-| hope-vale-smc01    | ext4 | ext4   | tmpfs  | tmpfs      |
-| horn-island-smc01  | ext4 | —      | tmpfs  | —          |
+| Box (x86)         | `/`  | `/tmp` | `/run` | `/dev/shm` |
+| ----------------- | ---- | ------ | ------ | ---------- |
+| mowanjum-smc01    | ext4 | tmpfs  | tmpfs  | tmpfs      |
+| hope-vale-smc01   | ext4 | ext4   | tmpfs  | tmpfs      |
+| horn-island-smc01 | ext4 | —      | tmpfs  | —          |
 
 `—` = not checked.
 
@@ -3165,8 +3686,8 @@ Use `/run` (systemd's tmpfs) for throwaway files and check it with `stat -f -c %
 `/var/lib/node_exporter/textfile_collector`, `/var/lib/prometheus` and `/var/log/smc-groups` (the last from `/etc/tmpfiles.d/smc-log-groups.conf`).
 
 **fping** (2026-09-22): not in any ansible-wifi role. Installed by hand with apt (5.1-1, jammy) on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability
-pre-check (`wc-local/scripts/collector/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That script
-falls back to `ping`, and a fleet install belongs in an ansible-wifi role.
+pre-check (`wc-local/scripts/collector/reachability.py`, one ICMP + `ip neigh` pass per site, results kept in a `mktemp` file under `/run`). On overlayroot boxes a hand install is lost on reboot. That
+script falls back to `ping`, and a fleet install belongs in an ansible-wifi role.
 
 **fping fleet install (2026-09-23, operator: "install fping where needed").** A survey of all 36 `<site>-smc01` nodes in Nautobot found fping on only those three; `apt-get install -y fping` (5.1-1,
 jammy) then ran on the other 32 reachable boxes plus aurukun-smc02 and aurukun-smc03, all x86 22.04 with an ext4 root except bungardi and darlngunaya (aarch64, no overlay mounted, so the install
@@ -3175,11 +3696,17 @@ the instruction and was removed the same evening (`apt-get remove --purge fping`
 with the command passed as separate ssh arguments is re-joined on the box, so `command -v` tested nothing and reported yes everywhere; pass the whole remote command as one string. Still not in any
 ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
 
+**What "don't touch nbn_wh" means (operator, 2026-10-22).** No changes on `bungardi-smc01` or `darlngunaya-smc01`: no installs, upgrades, config edits or restarts without an explicit operator decision. Exploratory, read-only commands are always allowed on both. On 2026-10-22 both were reached that way through the autossh backdoor (`cw-teleport01`, ports 60016 / 60018): Teleport's service was active on each box, but the cluster held no reverse tunnel for either.
+
 **fping approval per flavour, and the install guard (2026-09-27, operator: "I am fine with installing fping to rcp and nbn_accelerate flavors when needed").** fping may be installed wherever it is
-missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc/smc_package_check.py` builds its
-node list from every Nautobot Location with a programme tenant, so seeding the nine `smc_ltp` Locations that day had silently widened `--install` to nine more production boxes; its `install_targets`
-guard now installs only on a node whose package is approved for its flavour (`APPROVED_INSTALLS`), whose SMC Device exists in Nautobot, or that was named with `--nodes`. Both approved flavours are x86
-with a plain ext4 root, so the approval never meets an overlayroot (those are the RPi and WH flavours: `rct`, `wh`, `nbn_wh`); `nbn_wh` stays skipped.
+missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc/smc_package_check.py` builds
+its node list from every Nautobot Location with a programme tenant, so seeding the nine `smc_ltp` Locations that day had silently widened `--install` to nine more production boxes; its
+`install_targets` guard now installs only on a node whose package is approved for its flavour (`APPROVED_INSTALLS`), whose SMC Device exists in Nautobot, or that was named with `--nodes`. Both
+approved flavours are x86 with a plain ext4 root, so the approval never meets an overlayroot (those are the RPi and WH flavours: `rct`, `wh`, `nbn_wh`); `nbn_wh` stays skipped.
+
+**fping absent on yakanarra-smc01 (2026-10-15, read-only check from apn-unc01's tbot).** `command -v fping` (one quoted remote command) printed nothing on this `rcp` box, so the 2026-09-23 fleet
+install did not reach it (or a reimage removed it). iputils `ping -c 4 -W 1 -n <ip>` is present and answered in 12 s cold through Teleport (4/4 to yakanarra-sm-1, rtt 17.5/19.7/21.0 ms);
+unified-network-controller's Device Ping uses iputils `ping` for that reason and does not depend on fping.
 
 ### Checking Overlayroot Status
 
@@ -3235,6 +3762,12 @@ failover trigger, not a storage-health trigger, and it is not guaranteed to run 
 that state — confirmed live on amata-smc01, see the storage incident in `06_failure-modes.md` "Disk Path Failure Forcing Root Read-Only"). If a disk is failing hard enough to force the root filesystem
 read-only, do not assume `smc_disk_failover` will cut over automatically — verify EFI tooling is actually responsive (`efibootmgr -v`) before relying on it, and be ready to set the one-time boot entry
 manually or fall back to a BIOS/UEFI console boot to the alternate disk.
+
+**Mechanics read at source and live (2026-10-14, smc-resiliency x86 plan).** `smc_bases.yml` applies the role to every `rcp` and `nbn_accelerate` box. It installs os-prober, sets
+`GRUB_DISABLE_OS_PROBER=false`, copies `/disk_failover.sh` and runs it hourly (minute 13): 24 failed hours of pings to 8.8.8.8, 8.8.4.4 and 1.1.1.1 (counter in `/var/log/internet_failure_count`) set
+`BootNext` to another `ubuntu` entry and reboot a minute later. On a one-disk BOXER-6404 (jigalong-smc01: one 60 GB CFast, entries `ubuntu`, `UEFI OS`, `Hard Drive`) there is no other `ubuntu` entry,
+so the script exits 1 every hour and never reboots. BOXER-6641 (horn-island-smc01) has two 119 GB SSDs, each ESP + ext4 root, one `ubuntu` entry per disk. Neither box loads a hardware watchdog (no
+`/dev/watchdog`), though `iTCO_wdt`, `it87_wdt` and `f71808e_wdt` ship with the kernel; both run systemd 249. Operator, 2026-10-14: future x86 SMCs have one disk; no two-disk models.
 
 ### rcp Disk Write Profile (confirmed jigalong-smc01, 2026-04-20; re-confirmed 3 more nodes 2026-07-20)
 
@@ -3356,15 +3889,15 @@ known-good nodes is a probe bug, not a fleet event. All three were wrong-path as
 
 | Wrong check                                | Correct check                          | Why                                                                                                            |
 | ------------------------------------------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `test -L /var/log/interfacecheck`          | `test -L /var/log/interfacecheck.log`  | `smc_rsyslog` symlinks the **log file**, not a directory:                                                      |
-|                                            |                                        |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto *are* directory |
-|                                            |                                        |   symlinks, so the three are not symmetrical.                                                                  |
-| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.json -path '*mqtt*'`    | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on most nodes,  |
-|                                            |                   |   or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. Both forms are the *fixed*  |
-|                                            |                                        |   state — a real file under `/run` is not a gap.                                                               |
-| `systemctl is-active fluent-bit`           | `pgrep -c fluent-bit`                  | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child:                           |
-|                                            |                                        |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. `is-active`  |
-|                                            |                                        |   returns `inactive` on a perfectly healthy node.                                                              |
+| `test -L /var/log/interfacecheck` | `test -L /var/log/interfacecheck.log` | `smc_rsyslog` symlinks the **log file**, not a directory: |
+|  |  |   `/var/log/interfacecheck.log -> /var/log/smc-groups/interfacecheck.log`. squid and mosquitto |
+|  |  |   *are* directory symlinks, so the three are not symmetrical. |
+| `test -L /opt/apn-mqtt-client/status.json` | `find / -maxdepth 5 -name status.json -path '*mqtt*'` | The app lives at `/run/apn-mqtt-client/` (a real file, already on tmpfs since `/run` is tmpfs) on |
+|  |  |   most nodes, or `/var/www/apn-mqtt-client/` (a symlink into `/run`) on others. Never `/opt/`. |
+|  |  |   Both forms are the *fixed* state — a real file under `/run` is not a gap. |
+| `systemctl is-active fluent-bit` | `pgrep -c fluent-bit` | fluent-bit has **no systemd unit**. `graylog-sidecar` spawns it directly as a child: |
+|  |  |   `/opt/fluent-bit/bin/fluent-bit -c /var/lib/graylog-sidecar/generated/<id>/apn-gelf-http.conf`. |
+|  |  |   `is-active` returns `inactive` on a perfectly healthy node. |
 
 **Rule:** before recording a negative status finding, check whether the *known-good* nodes also fail it. If they do, fix the probe, not the fleet. Recording these three unverified would have produced
 three false fleet-wide regressions in the canonical tracker.
@@ -3407,16 +3940,17 @@ for `fatrace`.
 Some of the largest writers on an SMC fire **once or twice a day for a few seconds** and move hundreds of MB. No sampling window of practical length catches them. Two independent windows (300 s and
 600 s) run on 2026-08-26 agreed closely on continuous writers and **missed every one of the following**:
 
-| Writer                         | Volume per event                                                      | Notes                                                                                       |
-| ------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `snapd` snap refresh           | **image written twice** — `/var/lib/snapd/cache/` then                | Refresh times scatter across the clock (observed 02:25/10:00/14:23/17:20/19:55) — snapd's   |
-|                                |   `/var/lib/snapd/snaps/`. `lxd_40575.snap` = 115.3 MB × 2 = **230.6 MB** |   own randomised timer. Same node looks clean one day, heavy the next.                      |
-| `squidguard` blacklist refresh | 24.3 MB `.tar.gz` + 24.3 MB `.bak`, then extraction into a 624–657    | Observed at **15:29 on 7 of 9 nodes simultaneously** — one fleet-wide cron                  |
-|                                |   MB tree                                                             |                                                                                             |
-| `apt` metadata churn           | `pkgcache.bin` ~67 MB + `srcpkgcache.bin` ~67 MB + ~117 MB lists ≈    | Only on nodes where apt timers are unmasked                                                 |
-|                                |   250 MB/day                                                          |                                                                                             |
-| `dhcpd` lease-DB rewrite       | full-file rewrite, up to 294 MB                                       | Episodic. `dhcpd` measured 1.30 MB in one 5-min window and 0.02 MB in the next 10-min       |
-|                                |                                                                       |   window on the same node.                                                                  |
+| Writer                         | Volume per event                                                | Notes                                                                                             |
+| ------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `snapd` snap refresh           | **image written twice** — `/var/lib/snapd/cache/` then          | Refresh times scatter across the clock (observed 02:25/10:00/14:23/17:20/19:55) — snapd's own     |
+|                                |   `/var/lib/snapd/snaps/`. `lxd_40575.snap` = 115.3 MB × 2 =    |   randomised timer. Same node looks clean one day, heavy the next.                                |
+|                                |   **230.6 MB**                                                  |                                                                                                   |
+| `squidguard` blacklist refresh | 24.3 MB `.tar.gz` + 24.3 MB `.bak`, then extraction into a      | Observed at **15:29 on 7 of 9 nodes simultaneously** — one fleet-wide cron                        |
+|                                |   624–657 MB tree                                               |                                                                                                   |
+| `apt` metadata churn           | `pkgcache.bin` ~67 MB + `srcpkgcache.bin` ~67 MB + ~117 MB      | Only on nodes where apt timers are unmasked                                                       |
+|                                |   lists ≈ 250 MB/day                                            |                                                                                                   |
+| `dhcpd` lease-DB rewrite       | full-file rewrite, up to 294 MB                                 | Episodic. `dhcpd` measured 1.30 MB in one 5-min window and 0.02 MB in the next 10-min window on   |
+|                                |                                                                 |   the same node.                                                                                  |
 
 **Method rule going forward: pair every sampling window with a 24 h large-file scan.** Neither alone is sufficient.
 
@@ -3523,20 +4057,19 @@ the unremediated auth-filter.
 
 ## AAEON DMI serials follow the BIOS build, not the OS (fleet survey 2026-09-29)
 
-Read-only `dmidecode` over every reachable x86 SMC (unified-network-controller `captures/smc-dmi-serial-survey-20260929_1829.tsv`). The system serial is a
-placeholder on every box; the baseboard serial is real or a placeholder by BIOS build, which marks the factory batch:
+Read-only `dmidecode` over every reachable x86 SMC (unified-network-controller `captures/smc-dmi-serial-survey-20260929_1829.tsv`). The system serial is a placeholder on every box; the baseboard
+serial is real or a placeholder by BIOS build, which marks the factory batch:
 
-| Model | BIOS | Baseboard serial | Boxes |
-|---|---|---|---|
-| BOXER-6404 | B404BM16 (2022-05-18) | real (`2401…`, `2302…`, `2600…`) | 14 of 14 |
-| BOXER-6404 | B404BM14 (2019-02-19), B404BM10 (2015-07-16, kalumburu) | `To be filled by O.E.M.` | 10 of 10 |
-| BOXER-6641 | B641HM17 (2021-09-08) | real (`24A0…`, `2400…`, `2302…`) | 12 of 13 (doomadgee: `Default string`) |
-| BOXER-6641 | B641HM20 (2024-09-19) | `Default string` | 3 of 3 (beagle-bay, old-looma, warburton) |
+| Model      | BIOS                                                    | Baseboard serial                 | Boxes                                     |
+| ---------- | ------------------------------------------------------- | -------------------------------- | ----------------------------------------- |
+| BOXER-6404 | B404BM16 (2022-05-18)                                   | real (`2401…`, `2302…`, `2600…`) | 14 of 14                                  |
+| BOXER-6404 | B404BM14 (2019-02-19), B404BM10 (2015-07-16, kalumburu) | `To be filled by O.E.M.`         | 10 of 10                                  |
+| BOXER-6641 | B641HM17 (2021-09-08)                                   | real (`24A0…`, `2400…`, `2302…`) | 12 of 13 (doomadgee: `Default string`)    |
+| BOXER-6641 | B641HM20 (2024-09-19)                                   | `Default string`                 | 3 of 3 (beagle-bay, old-looma, warburton) |
 
-Ubuntu 22.04.1, .3 and .4 appear on both sides, so the OS does not decide it; `dmidecode` only reads the SMBIOS table the factory wrote. For the 14 boxes with
-no real serial, unified-network-controller's SMC seed records the identity anchor (lowest port MAC) as the serial: hex, upper case, no separators, leading
-zeros dropped (`00:07:32:92:3F:E7` -> `732923FE7`; operator, 2026-09-29). Two boxes answer to `mungkarta-smc01`: the nbn one is a BOXER-6404, the apn one a
-Raspberry Pi (kernel `5.15.0-1078-raspi`, no DMI), so a read by name must name the proxy.
+Ubuntu 22.04.1, .3 and .4 appear on both sides, so the OS does not decide it; `dmidecode` only reads the SMBIOS table the factory wrote. For the 14 boxes with no real serial,
+unified-network-controller's SMC seed records the identity anchor (lowest port MAC) as the serial: hex, upper case, no separators, leading zeros dropped (`00:07:32:92:3F:E7` -> `732923FE7`; operator,
+2026-09-29). Two boxes answer to `mungkarta-smc01`: the nbn one is a BOXER-6404, the apn one a Raspberry Pi (kernel `5.15.0-1078-raspi`, no DMI), so a read by name must name the proxy.
 
 ## Cambium radio and AP estate by flavour (operator-stated 2026-09-14)
 
@@ -3575,30 +4108,31 @@ Full analysis, evidence and tests live in the cambium-swap project; do not dupli
 The upper layer is a 3.9–4.1 GB tmpfs. Daily `rise_watchdog_disk_used_pct` climbs 3–5 points a day (~120–200 MB) until a reboot, or until the watchdog's 70% cleanup holds it at 65–74%.
 `scripts/overlay-usage-breakdown.sh` (read-only) measured:
 
-| Consumer | laramba | mimbi | canteen-creek | Cause |
-| --- | --- | --- | --- | --- |
-| `auth.log` + `.1` | 550 MB | ~300 MB | 65 MB | Portal `sudo iptables` / `sudo rmtrack`: three lines per call (command, PAM open, PAM close); 409,346 sessions in one weekly rotation at laramba |
-| `syslog` + `.1` | 242 MB | 230 MB | 163 MB | Weekly rotation, `.1` uncompressed (delaycompress), healthcheck restart chatter |
-| journal | 416 MB | 240 MB | 424 MB | See the journald section below |
-| squidGuard | 316 MB | 609 MB | 293 MB | `blocklists_download.sh && blocklists_update.sh` at 03:29 and 15:29; mimbi keeps `db` and `newdb` |
-| snapd | 315 MB | 546 MB | 315 MB | `lxd`, `core20`, `core22` refreshing; mimbi keeps two revisions |
-| apt | 351 MB | 351 MB | 351 MB | `apt-daily` / `apt-daily-upgrade` timers still active with overlay on |
-| `fluent-bit.log` | – | – | 250 MB | Error logging during the Graylog cert outage |
+| Consumer          | laramba | mimbi   | canteen-creek | Cause                                                                                                                                        |
+| ----------------- | ------- | ------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth.log` + `.1` | 550 MB  | ~300 MB | 65 MB         | Portal `sudo iptables` / `sudo rmtrack`: three lines per call (command, PAM open, PAM close); 409,346 sessions in one weekly rotation        |
+|                   |         |         |               |   at laramba                                                                                                                                 |
+| `syslog` + `.1`   | 242 MB  | 230 MB  | 163 MB        | Weekly rotation, `.1` uncompressed (delaycompress), healthcheck restart chatter                                                              |
+| journal           | 416 MB  | 240 MB  | 424 MB        | See the journald section below                                                                                                               |
+| squidGuard        | 316 MB  | 609 MB  | 293 MB        | `blocklists_download.sh && blocklists_update.sh` at 03:29 and 15:29; mimbi keeps `db` and `newdb`                                            |
+| snapd             | 315 MB  | 546 MB  | 315 MB        | `lxd`, `core20`, `core22` refreshing; mimbi keeps two revisions                                                                              |
+| apt               | 351 MB  | 351 MB  | 351 MB        | `apt-daily` / `apt-daily-upgrade` timers still active with overlay on                                                                        |
+| `fluent-bit.log`  | –       | –       | 250 MB        | Error logging during the Graylog cert outage                                                                                                 |
 
-Fixes, largest first (none applied yet): command-scoped sudoers `Defaults!<alias> !syslog, !pam_session` for the portal commands (granted in `roles/smc_application`; check the option
-names against sudoers(5) for sudo 1.9.9 first); daily rotation with `maxsize` and immediate `compress` on overlay hosts; the journald cap; turn off the apt timers and empty the lists while
-overlay is on; hold or remove snaps; weekly squidGuard rebuild without keeping `newdb`; `Type=oneshot` healthcheck; watchdog cleanup from 60% without the Graylog gate. The gate never opens
-on WH: no `rise_watchdog_graylog_*` series exist for any WH site, so rotated logs are never purged.
+Fixes, largest first (none applied yet): command-scoped sudoers `Defaults!<alias> !syslog, !pam_session` for the portal commands (granted in `roles/smc_application`; check the option names against
+sudoers(5) for sudo 1.9.9 first); daily rotation with `maxsize` and immediate `compress` on overlay hosts; the journald cap; turn off the apt timers and empty the lists while overlay is on; hold or
+remove snaps; weekly squidGuard rebuild without keeping `newdb`; `Type=oneshot` healthcheck; watchdog cleanup from 60% without the Graylog gate. The gate never opens on WH: no
+`rise_watchdog_graylog_*` series exist for any WH site, so rotated logs are never purged.
 
 ## RISE journald is sized against the SD card, not the overlay (honeymoon-bay-smc01, 2026-10-07)
 
-The `smc_rise_logcaps` warning "Oversized files found that rise_logcap will never truncate" listing `system@...journal` files at exactly 67108864 bytes is a boundary false positive: the scan
-uses `>=` against `hard_cap_mb: 64`, journal files are binary (so "ineligible"), and journald grows files in 8 MiB steps, so 64 MiB is a natural size. Archived journals are sealed and never
-written, so they never copy_up; the real risk is journald's own limits.
+The `smc_rise_logcaps` warning "Oversized files found that rise_logcap will never truncate" listing `system@...journal` files at exactly 67108864 bytes is a boundary false positive: the scan uses `>=`
+against `hard_cap_mb: 64`, journal files are binary (so "ineligible"), and journald grows files in 8 MiB steps, so 64 MiB is a natural size. Archived journals are sealed and never written, so they
+never copy_up; the real risk is journald's own limits.
 
-Live on honeymoon-bay-smc01 (systemd 249, overlay not yet enabled, 57G ext4 root, no journald overrides): `System Journal ... is 328.0M, max 4.0G`. Defaults are 10% of the filesystem capped at
-4G, file size one eighth of that capped at 128M (journald.conf(5)). Once overlayroot is on, that 4G limit is meaningless against the tmpfs upper layer. Why the two files closed at 64 MiB (not 128M)
-is UNVERIFIED; no journal messages survive in either window.
+Live on honeymoon-bay-smc01 (systemd 249, overlay not yet enabled, 57G ext4 root, no journald overrides): `System Journal ... is 328.0M, max 4.0G`. Defaults are 10% of the filesystem capped at 4G,
+file size one eighth of that capped at 128M (journald.conf(5)). Once overlayroot is on, that 4G limit is meaningless against the tmpfs upper layer. Why the two files closed at 64 MiB (not 128M) is
+UNVERIFIED; no journal messages survive in either window.
 
 Fix drafted in ansible-wifi (branch `rise`, uncommitted at time of writing): `rise_logcaps.journald` (`max_use: 200M`, `max_file: 32M`, `max_file` must stay below `hard_cap_mb`) deployed by
 `smc_rise_logcaps` as `/etc/systemd/journald.conf.d/50-rise.conf`, with a `Restart journald` handler, and `/var/log/journal` added to `rise_logcaps.exclude_paths` in rct, wh and nbn_wh. Without the
@@ -3609,9 +4143,167 @@ Repo-search gotcha: `grep` on this Mac is aliased to ugrep, which ignores `--inc
 **Verified on pago-point-smc01 (stage1 canary, 2026-10-07 13:32):** stage1 passed the preflight that had failed on a 64 MiB archived journal. After the reboot: overlayroot active (tmpfs upper 3.9G,
 247M used), `50-rise.conf` present, journald reports `System Journal ... is 112.0M, max 200.0M`, and the logcaps report shows `ineligible 0`.
 
-**Correction (2026-10-07):** after overlayroot is on, journald does not keep the 4G ceiling: it sizes against the filesystem holding `/var/log/journal`,
-which is then the tmpfs upper layer (default about 10% of 3.9G, ~390M; see the 2026-09-03 jarlmadangah-burru measurement). The 200M pin is still the
-tighter, deterministic bound and is what clears the preflight.
+**Correction (2026-10-07):** after overlayroot is on, journald does not keep the 4G ceiling: it sizes against the filesystem holding `/var/log/journal`, which is then the tmpfs upper layer (default
+about 10% of 3.9G, ~390M; see the 2026-09-03 jarlmadangah-burru measurement). The 200M pin is still the tighter, deterministic bound and is what clears the preflight.
+
+## Raspberry Pi SMC identity, ports and bootloader (rct and wh, 2026-10-08)
+
+VERIFIED-OBSERVED 2026-10-08, read-only over Teleport apn on 20-mile-smc01 and adjamarragu-smc01 (`rct`) and areyonga-smc01 and glen-hill-smc01 (`wh`). Vendor documents, the per-box captures and the
+firmware manifest are in [vendor-sources-raspberry-pi-20261008_1043/](vendor-sources-raspberry-pi-20261008_1043/readme.md); the EEPROM images are committed (not gitignored, operator 2026-10-08) in
+[firmware-files/raspberry-pi/](../firmware-files/raspberry-pi/).
+
+**Identity.** There is no DMI: `dmidecode` prints nothing. The model is in `/proc/device-tree/model` (`Raspberry Pi 4 Model B Rev 1.5`) and `/proc/cpuinfo` `Revision: d03115`, which the official
+revision-codes table decodes as Model 4B, Revision 1.5, 8 GB, Sony UK, BCM2711. The SoC serial is in `/proc/device-tree/serial-number` and equals the cpuinfo `Serial` (for example `10000000624bb9a3`);
+it is unique per box, so it is the identity anchor in place of the x86 baseboard serial. The eth0 MAC (OUI `D8:3A:DD`) is not derived from the serial on the Pi 4 (serial `...624bb9a3`, eth0
+`d8:3a:dd:29:4f:7f`), contrary to the older Pi assumption that the MAC repeats the serial's low bytes. OS: Ubuntu 22.04.1 LTS, kernel `5.15.0-1078-raspi`, aarch64, about 7 GB RAM.
+
+**Ports.** One wired port, `eth0` (`bcmgenet`, 1 Gb/s), plus `wlan0` (`brcmfmac`). `eth0` carries the untagged WAN `/30` address and the tagged `eth0.500` (in `bridge_500`), `eth0.501` (in
+`bridge_501`), `vlan521` (`192.168.100.50/24`, the nbn_modem link) and `vlan522` (internet02). The x86 cabling convention in `02_service-map.md` (ports 1-2 internet, 3-4 switch trunks) does not apply:
+everything rides the one port into the MikroTik switch (skill-mikrotik). On areyonga `wlan0` is up as a 5 GHz access point (channel 36, 20 MHz, SSID `A8_Management`, type AP; `hostapd` and
+`wpa_supplicant` both active).
+
+**SD card identity and size (2026-10-21, `VERIFIED_PRIMARY`).** Asked by smc-resiliency (the storage CID as UNC's lookup key). Read-only over `tsh ssh --proxy=teleport.apn.au` on random current Pis
+(djirrbiyuk, kusi-block, charlotte-waters, babungi, then five more for size), all `Raspberry Pi 4 Model B Rev 1.5`: the card sits on the direct MMC path, so `/sys/block/mmcblk0/device/` exposes `cid`,
+`csd`, `serial`, `manfid`, `oemid`, `name`, `date` and the rest. Every card read is the same unbranded part: `manfid` 0x000000, `oemid` 0x5342, `name` `AFNI0`, size 62,277,025,792 bytes (a 64 GB
+card), manufacture month and year differ per card (read truncated); `serial` differs per card. So a CID is readable fleet-wide, but the
+manufacturer field identifies nothing: use the full CID as the key, never `manfid`, and pair it with the SoC serial (above). Values were printed truncated to six characters; no full CID was
+recorded. Command (ad hoc: no catalogued script reads the MMC fields; `pi_identity_probe.sh`
+could gain them):
+
+```bash
+# read-only, per host, with a kill deadline around tsh
+tr -d '\0' </proc/device-tree/model; ls /sys/block/mmcblk0/device/
+for f in cid serial manfid oemid name date; do printf '%s=' $f; sed 's/^\(.\{6\}\).*/\1.../' /sys/block/mmcblk0/device/$f; done
+lsblk -bdno NAME,SIZE /dev/mmcblk0
+```
+
+Screenshot: not applicable (no visual surface).
+
+**Probe.** [`scripts/pi_identity_probe.sh`](../scripts/pi_identity_probe.sh) (`just pi_identity_probe <proxy> <node>...`) reads all of the above in one read-only pass: device-tree model and serial,
+cpuinfo, dmidecode, os-release, NICs with MAC, driver and speed, bridges, VLANs and memory. Name the proxy; it is never guessed.
+
+**SNMP.** No `snmpd` on any of the four (20-mile has only the net-snmp client package, `snmp` 5.9.1). The root is overlayroot, so a plain `apt install snmpd` would vanish at the next reboot (section
+8). Operator decision 2026-10-08: no SNMP agent on the Pis for now; the x86 canary in `02_service-map.md` (snmpd on the SMC) stays x86 only.
+
+**Bootloader.** All four run bootloader EEPROM 2023-01-11 (VL805 `000138c0`). Upstream's default channel is 2026-09-23. Ubuntu's `rpi-eeprom` package carries only the 2022-01-25 image, older than what
+the boxes run, so `rpi-eeprom-update` wrongly reports "up to date"; compare `vcgencmd bootloader_version` with the manifest instead. Read the 2026-09-23 release notes (MFG-version check) before any
+update.
+
+**A/B boot support (2026-10-14, `VERIFIED_PRIMARY`):** the 2023-01-11 bootloader already supports partition-level A/B through `autoboot.txt` with `tryboot_a_b=1` (Pi 4 EEPROM beta 2022-10-18, default
+2022-12-01): a one-shot `reboot "0 tryboot"` boots the other slot once and any later reboot returns to the committed one. Whether it honours `autoboot.txt` on a GPT card is not yet tested. Source and
+design: the smc-resiliency project (`/Volumes/Data/_ai/_project/project_stuff/apn/smc-resiliency/docs/pi/`).
+
+## Overlay building blocks already on the fleet (read 2026-10-15)
+
+Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for unified-network-controller's direct device reach proposal (UNC options register D1.2, proposed, not decided):
+
+| SMC               | Flavour | Kernel             | `wireguard.ko` | `xt_NETMAP.ko` | iptables          | netplan.io             | Root        | bridge_500                      |
+| ----------------- | ------- | ------------------ | -------------- | -------------- | ----------------- | ---------------------- | ----------- | ------------------------------- |
+| umoona-smc01      | rcp     | 5.15.0-43-generic  | present        | present        | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1       | ext4        | 10.255.0.1/19                   |
+| old-looma-smc01   | rcp     | 5.15.0-101-generic | present        | present        | 1.8.7 (nf_tables) | 0.105-0ubuntu2~22.04.3 | ext4        | 10.255.0.1/19                   |
+| adjamarragu-smc01 | rct     | 5.15.0-1078-raspi  | present        | present        | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1       | overlayroot | 10.255.0.1/24, 192.168.5.100/24 |
+| alamirra-smc01    | rct     | 5.15.0-1078-raspi  | present        | present        | 1.8.7 (nf_tables) | 0.104-0ubuntu2.1       | overlayroot | 10.255.0.1/24, 192.168.5.100/24 |
+
+- A kernel WireGuard tunnel and a NETMAP rule need **no package** on either platform: the modules ship in the stock Ubuntu 22.04 kernels, systemd-networkd 249 and netplan (jammy manual lists `mode:
+  wireguard`) configure the interface. `wireguard-tools` and `tailscale` are installed on none of the four; adding either is a package install under the box-by-box approval rule.
+- The management prefix length differs by flavour: rcp `bridge_500` is /19, rct is /24 (with a second 192.168.5.100/24). Anything sized per site should take the /19.
+- On rct the files of any such change must reach the lower layer (overlayroot), or they vanish on reboot.
+
+## What writes into /etc at run time, and the read-only /etc of the new image (2026-10-20)
+
+> **Learned 2026-10-20** · SMC run-time writes under /etc; systemd 255 confext · VERIFIED_PRIMARY · Source: smc-file-writing-analysis
+> `artifacts/20260827/write24/fatrace/*.counts` (nine x86 sites, 24 h, real disk); ansible-wifi 0979a596; smc-resiliency `docs/pi/pi-spike-s2-r2-confext-options-20261020_1612.md` (G1 to G3, G16, G17,
+> spike VM) · Falsifier: a 24 h fatrace on an x86 SMC with no write under /etc, or a merged confext on systemd 255 that leaves /etc writable Four writers put files in `/etc` while a box runs:
+> `teleport-tags-exporter.py` (role smc_graylog, `STATE_DIR = Path("/etc")`: `/etc/teleport-tags.env`, its `.tmp`, `/etc/teleport-cache.json`, 170 to 424 writes a day per site), fake-hwclock
+> (smc_system, `/etc/fake-hwclock.data`, hourly), the squid blocklist scripts (smc_squid, `/etc/squid/blocklists/`, twice a day) and multipathd (`/etc/multipath/`). On Pi and WH boxes the same writes
+> go to overlayroot's tmpfs, which fatrace does not see; reading `/media/root-rw/overlay/etc` (read-only, 2026-10-20 on two rct and one wh box) adds `rise_logcap.py` (smc_rise_logcaps, wh:
+> `/etc/logrotate.d/rise-logcaps`, on its timer) and snapd (`/etc/systemd/system/snap-*` units at each snap refresh). The upper dir is the cheap census of a Pi's run-time `/etc` writes. A census of
+> four more Pis up over a year (`overlay-usage-breakdown.sh --etc`) showed only fake-hwclock and snapd in a year; machine-id, `.pwd.lock` and multipath sit in the upper dir with 2022 times (opened for
+> writing, not changed). On nbn_wh (no overlay yet) `fqdn2ip.py` (`/etc/iptables/ipset.d/`) and `sslcertcopy.sh` (`/etc/ssl/<domain>/`) also write; fqdn2ip should be gone (13_known-issues,
+> 2026-10-20). On the new read-only image (smc-resiliency) a merged site confext makes all of `/etc` read-only and noexec on systemd 255, the OS's own scripts included; `--noexec=false` restores
+> execution, not writes, so these writers must move out of `/etc` (risk R18 there).
+>
+> ```python
+> # ansible-wifi roles/smc_graylog/files/teleport-tags-exporter/teleport-tags-exporter.py (0979a596)
+> TP_YAML = Path("/etc/teleport.yaml") OUT_ENV = Path("/etc/teleport-tags.env") STATE_DIR = Path("/etc") CACHE_JSON = STATE_DIR / "teleport-cache.json"
+> ```
+>
+> Screenshot: not applicable (no visual surface).
+
+## Executables under /etc and other new-image constraints from the S2 spike (2026-10-20)
+
+> **Learned 2026-10-20** · Ubuntu 22.04 rct and wh Pis; Ubuntu 24.04 spike VM · VERIFIED_PRIMARY · Source: read-only `find /etc -xdev -type f -perm
+> /111` on frasier-downs-station-smc01 and kunawarritji-smc01 (same set); smc-resiliency S2 reports · Falsifier: a Pi whose /etc holds no executables run at run time Run at run time from `/etc`, so
+> stopped by a noexec `/etc` (a merged confext on systemd 255 unless `--noexec=false`): `/etc/cron.daily` (8), `/etc/networkd-dispatcher/routable.d` and `carrier.d` (4), `/etc/network/if-up.d` (2),
+> `/etc/rc.local`, `/etc/update-motd.d` (13), the squid blocklist scripts, `/etc/init.d` (43, for services without units). Also for the new image: Unbound needs systemd-resolved's stub off
+> (`DNSStubListener=no`, as `resolved.conf.j2` sets) and its remote-control keys from `unbound-control-setup` in `/etc/unbound/` (a per-box secret written into `/etc`). `overlay-usage-breakdown.sh
+> --etc` now prints the executables list too.
+
+## snapd, clock and NTP drift state on a rebuild of the writable area (2026-10-21)
+
+> **Learned 2026-10-21** · rct, wh and rcp on Ubuntu 22.04 · VERIFIED_PRIMARY · Source: read-only `tsh ssh` on wiligi-smc01 and turkey-bore-smc01
+> (rct), laramba-smc01 (wh), mowanjum-smc01 (rcp): `snap list`, `du`, `systemctl`, `timedatectl show`, the lower and upper copies under `/media/root-ro` and `/media/root-rw/overlay`; ansible-wifi
+> 0979a596 · Falsifier: an SMC whose time is synced by chrony or timesyncd, or one where an lxd container exists
+>
+> - **snapd still runs on Pis and on at least one rcp box.** All four boxes have snapd active and enabled, with `core20`, `core22`, `lxd` (5.0/stable)
+> and `snapd`. `/var/lib/snapd` is 625 to 923 MB: about 535 MB in the Pi image (lower layer) plus 315 to 546 MB of refreshed revisions in the tmpfs upper layer. `lxd` is unused:
+> `snap.lxd.daemon.service` is inactive and no containers exist; only `snap.lxd.daemon.unix.socket` is active. No SMC unit or cron calls `/snap/`. mowanjum-smc01 (rcp) still has snapd, so the
+> 2026-09-01 removal (14/17 rcp nodes, above) did not reach every rcp box.
+> - **Time is synced by ntpd** (`ntp` package, role `smc_ntpd`, `driftfile /var/lib/ntp/drift`), not chrony (chrony is installed only on
+> the Teleport, Jenkins and Graylog servers) and not timesyncd (masked). `timedatectl` shows `NTP=no` because it only tracks timesyncd. The drift file is `/var/lib/ntp/drift` (-3.7 ppm on rcp, -10.7
+> and -11.1 ppm on the Pis), rewritten by ntpd while it runs.
+> - **fake-hwclock is installed and enabled on every flavour** (0.12; `load` at boot before sysinit, `save` at shutdown, plus `/etc/cron.hourly/fake-hwclock`).
+> Pis have no `/dev/rtc`; the x86 box has `/dev/rtc0`, so fake-hwclock does nothing useful there.
+> - **On overlayroot the saved clock is a year old at boot.** The hourly save goes to the tmpfs upper layer, so after a reboot the Pi loads the
+> lower-layer copy: `2025-09-22 13:01:41` on laramba and `2025-09-21 04:51:03` on wiligi (the date the overlay was last switched off). Until ntpd steps the clock, the box runs about 13 months in the
+> past: TLS (Teleport, Graylog, the portal's Eclipse calls) can fail on certificate dates. The drift file has the same split (lower copy from the same date).
+> - **ntpd steps a clock that is a year out** (read 2026-10-21 on wiligi (rct), laramba (wh), mowanjum (rcp)): `/etc/default/ntp` has
+> `NTPD_OPTS='-g'`, the unit runs `/usr/lib/ntp/ntp-systemd-wrapper`, and the running process is `/usr/sbin/ntpd -p /var/run/ntpd.pid -g -u ...`. `-g` lets the first correction exceed the 1000 s panic
+> limit. `ntp.conf` has no `tinker`; its servers are `0..3.au.pool.ntp.org`, so the box needs working DNS and internet before it can correct. x86 adds the local clock `127.127.1.0` (stratum 10), set
+> by `smc_ntpd/templates/ntp.conf.j2` only when `device_architecture == 'x86_64'`. The current-boot ntp journal has no step line on any of the three (Pi journals are empty for this boot; uptime on
+> wiligi is 47 weeks), so the boot-time step itself is not yet observed.
+>
+> Screenshot: not applicable (no visual surface).
+
+> **Learned 2026-10-22** · Ubuntu 24.04 site config rendered into a confext · VERIFIED_PRIMARY · Source: smc-resiliency S2 report section 6 (S2-8 to S2-15), spike VM `smc-pi-spike01` (Ubuntu 24.04 arm64, systemd 255), code `spike/onbox/smcbox/site.py` (uncommitted at writing; smc-resiliency commit pending) · Falsifier: `dhcpd -t -cf /run/...` passing under the stock AppArmor profile, or systemd-confext.service enabled on a stock 24.04 install
+> Rendering an SMC's site config into `/run` and merging it as a confext on 24.04 needs four things the stock image does not give:
+> - **dhcpd's AppArmor profile** only lets `dhcpd` read under `/etc/dhcp`, so `dhcpd -t -cf <rendered file>` fails; run the syntax check in a
+>   private mount namespace with the rendered file bind-mounted at `/etc/dhcp/dhcpd.conf`.
+> - **`unbound-checkconf`** fails unless `/run/unbound` exists (the pidfile directory); create it first.
+> - **netplan's systemd generator runs before the confext merge**, so at boot it sees the base `/etc/netplan`; a `netplan apply` after the merge
+>   is needed for the rendered netplan to take effect.
+> - **`systemd-confext.service` is disabled** on a stock 24.04 install; with `/etc` read-only the units that enable it must ship in `/usr/lib`.
+> Measured on the VM: render and checks 0.3 s; merged 5.4 s after kernel start. Screenshot: not applicable (no visual surface).
+
+## Firmware access from the OS: x86 UEFI and Pi EEPROM (read 2026-10-22)
+
+Read-only over Teleport with `scripts/x86_resiliency_probe.sh` (UEFI lines added 2026-10-22) on all 47 x86 SMCs (19 rcp, 28 nbn_accelerate) and
+`scripts/pi_identity_probe.sh` (EEPROM lines added 2026-10-22) on six Pi canaries (rct, wh, nbn_wh, both clusters). `VERIFIED_PRIMARY` for that day;
+raw output in smc-resiliency `docs/os-lifecycle/firmware-access-probe-sources-20261022_1506/`.
+
+| Model | BIOS builds in service (boxes) | ESRT capsule entry | ROM |
+| --- | --- | --- | --- |
+| AAEON BOXER-6404 | B404BM10 2015-07-16 (2), B404BM14 2019-02-19 (10), B404BM16 2022-05-18 (16) | 1, system firmware, version field `1`, flags 0 | AMI, 1 MB, socketed |
+| AAEON BOXER-6641 | B641HM17 2021-09-08 (15), B641HM20 2024-09-19 (4) | none | AMI, 16 MB, socketed |
+
+- Every x86 box boots UEFI with `/sys/firmware/efi/efivars` mounted read-write, so `BootNext` and `BootOrder` are settable from Linux (what
+  `smc_disk_failover` relies on). `SecureBoot`=0 and `SetupMode`=1 everywhere: no platform key enrolled. No `/dev/efi_capsule_loader`, no
+  `/dev/watchdog` (the watchdog drivers ship but none is loaded). fwupd is installed on 46 of 47 (not burringurrah-smc01).
+- Only the BOXER-6404 advertises a UEFI capsule update path (ESRT); whether AAEON publishes capsules for it is `UNVERIFIED`. The BOXER-6641 has no
+  OS-visible update path: vendor tool or bench. BIOS setup items (power on after AC loss and the like) are not visible from Linux without AMI's tool.
+- Pi canaries: Pi 4B rev 1.5 (`d03115`), EEPROM 2023-01-11 17:40:52, config only `BOOT_UART=0`, `WAKE_ON_GPIO=1`, `POWER_OFF_ON_HALT=0` (no
+  `BOOT_ORDER`, no `BOOT_WATCHDOG_TIMEOUT`), `autoboot.txt` absent, BCM2835 watchdog present. `rpi-eeprom-update` reports the bundled image as
+  2022-01-25, older than the running EEPROM, so a box cannot update its EEPROM from its own package: a newer EEPROM has to come with the card.
+
+The probes' remote lines (excerpt; source `scripts/x86_resiliency_probe.sh`, `scripts/pi_identity_probe.sh`, as of commit of 2026-10-22; version in `manifest.json`):
+
+```bash
+echo uefi_mode=$([ -d /sys/firmware/efi ] && echo uefi || echo legacy) efivars=$(findmnt -n -o OPTIONS /sys/firmware/efi/efivars 2>/dev/null | cut -d, -f1)
+sb=/sys/firmware/efi/efivars/SecureBoot-8be4df61-93ca-11d2-aa0d-00e098032b8c; echo secure_boot=$([ -r $sb ] && od -An -t u1 $sb | awk "{print \$NF}" || echo unreadable)
+echo esrt_entries=$(ls -d /sys/firmware/efi/esrt/entries/entry* 2>/dev/null | wc -l) capsule_loader=$([ -e /dev/efi_capsule_loader ] && echo yes || echo no)
+echo eeprom_version=$(vcgencmd bootloader_version 2>/dev/null | tr "\n" " ")
+echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" | tr "\n" ";")
+```
 ````
 
 ## File: references/08_ansible-authoring.md
@@ -3664,6 +4356,52 @@ For any SMC incident/debug fix in `ansible-wifi` that changes behavior, defaults
    - fix pattern
    - validation command(s)
 3. Treat the reference update as part of done criteria for the task, not optional follow-up.
+
+### Adding a new SMC to an inventory (operator, 2026-10-23)
+
+Use `scripts/smc_inventory_add.py` (`just smc_inventory_add ...`), plan first, then `--apply`. Do not hand-copy another site's files.
+Every site, prod or stage, is the same six pieces (VERIFIED_PRIMARY, `inventories/rct/prod` arrkapa and every other site, 2026-10-23):
+
+| Piece                                    | Content                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------ |
+| `[<site>_smc_bases]` in `<flavor>/<env>` | the host, one per line                                                   |
+| `[smc_bases:children]`                   | a `<site>_smc_bases` line                                                |
+| `[<site>:children]`                      | `<site>_smc_bases`                                                       |
+| `group_vars/<site>.yml`                  | `site_name: <site>`                                                      |
+| `host_vars/<host>.yml`                   | `site_eclipse_siteid: <id>` (rct: `smc_bases_iridium` when Iridium)      |
+| `topology_vars/<site>.yml`               | the flavor's standard topology from the generator template, host renamed |
+
+- Site name is the host without its `-smcNN` suffix (`map-smc01` -> `map`, `php-rct-smc01` -> `php-rct`).
+- The templates live in `roles/smc_generate_smc_files/templates/<flavor>/` (rct, wh, nbn_accelerate, plus `topology_vars_booth.j2`). There are none
+  for rcp or nbn_wh: add those by hand from a sibling site and diff every `vlanid` against the box (see the cloning risk below).
+- The generator role itself (`smc_generate_smc_files`, CSV input `smc_name,eclipse_site_ID,site_name[,smc_size]`) rewrites the whole inventory file through
+  a JSON round-trip, so it reorders groups and drops comments; the script renders the same templates and inserts text instead.
+- Site ID: `site_eclipse_siteid` sets the backdoor port (50000 + id). Read it from the box when nobody has it: `--siteid-from-box` takes the
+  `autossh -R <port>:127.0.0.1:22` port. A box built from a generic image can still carry that image's ID: on 2026-10-23 php-rct-smc01 held 181, the
+  ID in the `generic-rct01*` host vars, so two boxes on one image would fight for one bastion port. The script refuses a shared ID until
+  `--allow-shared-siteid`. The operator kept 181 for the bench unit php-rct-smc01 (2026-10-23).
+- Check the live box before trusting the standard topology: `ip -br addr` should show lo `10.254.0.1/32`, bridge_500 `10.255.0.1/24` +
+  `192.168.5.100/24`, bridge_501 `10.0.0.1/23`, vlan521 `192.168.100.50/24`, vlan522 (rct standard; matched on php-rct-smc01, 2026-10-23).
+- Then `./lint_new.sh` in the repo and a read-only run (`smc_change.yml -l <host>` defaults to check mode). The hidden topology cache
+  (`topology_vars/.<site>.yml`) appears on the first playbook run that loads the vars plugin.
+- Reading inventory vars from a shell trips the ansible-vars guard hook (`ansible-inventory --host`, `cat`/`cp`/`diff` on a vars file). Read single
+  keys with `ansible -i <inv> <host> -m ansible.builtin.debug -a "msg={{ site_name }}"`, or compare with `cmp -s`.
+
+Insertion logic (`scripts/smc_inventory_add.py` in this pack):
+
+```python
+lines = text.split("\n")
+kids = lines.index("[smc_bases:children]")
+end = kids + 1
+while end < len(lines) and lines[end].strip() and not lines[end].startswith("["):
+  end += 1
+lines.insert(end, f"{site}_smc_bases")                 # child at the end of smc_bases:children
+lines[kids:kids] = [f"[{site}_smc_bases]", host, ""]   # site group just above it
+tail = len(lines)
+while tail > 0 and (not lines[tail - 1].strip() or lines[tail - 1].lstrip().startswith("#")):
+  tail -= 1
+lines[tail:tail] = ["", f"[{site}:children]", f"{site}_smc_bases"]  # before any trailing "# End of File" comment
+```
 
 ### Task key order: `when:` goes LAST, with `tags:` after it (operator convention, 2026-08-27)
 
@@ -4794,6 +5532,11 @@ rm inventories/<flavor>/topology_vars/.<site>.yml
 find inventories/<flavor>/topology_vars/ -name '.*.yml' -delete
 ```
 
+**A cache is not the source, and branches differ in which sites they hold (2026-10-14).** `rise` has no `inventories/rcp/topology_vars/yakanarra.yml`
+(nor wangkatjungka's); both are on `big_push`, and a Mac checkout on `rise` held only their gitignored `.<site>.yml` caches. A tool that lists sites
+from one ref must read their topology_vars from the same ref (`git show <ref>:inventories/<flavor>/topology_vars/<site>.yml`), never the working
+tree: unified-network-controller's uplink labels failed for yakanarra this way (its CHANGELOG 20261014_2338, fixed cc72a25).
+
 ### Inventory Path Convention
 
 Each flavor's `inventories/<flavor>/` directory contains **two separate inventory files**, `prod` and `stage` (e.g. `inventories/rcp/prod`, `inventories/rcp/stage`) — not a nested directory structure.
@@ -5671,6 +6414,16 @@ On re-run, the unhold step should list only `1065` packages on a fresh upgrade. 
 
 **General lesson:** `dpkg_selections` works only on packages already in dpkg's database. Filter its loop through `dpkg-query` first. `apt-mark` on a package
 that is not installed carries the same risk.
+
+### Rendering a role's template outside the role: copy the task's options (2026-10-20)
+
+> **Learned 2026-10-20** · ansible-core 2.21.5 · VERIFIED_PRIMARY · Source: smc-resiliency `spike/render_site.sh` against ansible-wifi f3a5dca8 ·
+> Falsifier: `netplan.yml.j2` rendering cleanly without `lstrip_blocks`
+> The smc_network and smc_dhcpd template tasks set `lstrip_blocks: yes`; a render without it produced an unparseable netplan file, while the live
+> file (honeymoon-bay, written 2026-10-04) is clean. A render outside the role must also pass the role vars `smc_bases.yml` passes
+> (`interfaces: '{{ topology_interfaces }}'`, `dhcp_scopes: '{{ topology_dhcp_scopes }}'`, `bridges`, `portal_fqdn`, `portal_address`; the role
+> defaults are null placeholders) and load role defaults at role precedence (a throwaway role whose `defaults/main.yml` links the real one),
+> never `include_vars`, which would outrank the inventory. The topology plugin is found with `ANSIBLE_VARS_PLUGINS=<ansible-wifi>/vars_plugins`.
 ````
 
 ## File: references/09_url-capture-pcap.md
@@ -6037,6 +6790,7 @@ tsh ssh root@<host> "ssh -i /var/local/sslurlcapture/sslurlcapture.id_rsa -o Str
 - Kohana exception handler issues
 - End-to-end portal verification
 - `Directory APPPATH/cache must be writable` — portal dead at bootstrap
+- What the portal keeps on the box (state inventory for a disposable writable area)
 
 ## 11. Captive Portal — Architecture, Known Gaps, and Troubleshooting
 
@@ -6296,6 +7050,94 @@ Implications worth checking before assuming §11.1–11.8 troubleshooting steps 
 
 See `01_overview.md` "APN Cluster vs NBN Accelerate Cluster — Structural Comparison" for the source of these two var values, and `13_known-issues.md` "NBN Accelerate cluster coverage gap" for the
 broader live-validation gap this note is part of.
+
+### 11.10 What the portal keeps on the box (2026-10-21, repo and live)
+
+Asked by smc-resiliency: can a rebuild of the writable area lose `/var/www/html/wifi`? Read-only on two rct boxes, 2026-10-21 17:24 AEDT:
+`black-craggy-smc01` and `paradise-farm-smc01` (portal commit `c11c230`, overlayroot mounted on both). Repo: ansible-wifi `c0ea35ec`.
+
+**Answer: the portal holds no local data of its own. Everything is pulled again from Eclipse within 5 minutes, and on an overlayroot rct box it is
+already lost at every reboot.**
+
+| Store | Live (both boxes) | Source | Lost at a rebuild |
+| --- | --- | --- | --- |
+| Code tree | 7.1 MB, `git status`: only the four paths below differ | wifi.git `wifi_git.commit` | Nothing, if the image ships it |
+| `config/site.txt` | modified vs git | `eclipse_siteid` (Ansible) | Identity: must be rewritten, or portal and Teleport `id` label break |
+| `config/config.txt` | 1,849 and 2,650 bytes, rewritten 17:20 (untracked) | Eclipse reply to `status:update:status` | Rewritten within 5 min; until then `site_config()` falls back to defaults |
+| `config/sites/<id>/` | 244 files, all dated 2025-08-15 (clone date) | Tracked in wifi.git | Nothing |
+| `application/cache`, `application/logs` | empty (only `.gitignore`, mode 0777) | none | Nothing; must exist at 0777 (§11.8) |
+| SQLite / MySQL | none; no `/var/lib/mysql`, mariadb inactive | none | Nothing |
+| `ECLIPSE_MARK` (iptables, not disk) | 0 and 1 rules | Eclipse `fetch_clients_by_classes` | Re-added at the next 5-min status run |
+
+Commands: `ls`, `find`, `stat`, `du`, `git status` and `grep`/`sed` of the PHP, over `tsh ssh` with a TERM/KILL deadline watcher; from data files only the
+JSON key names of `config.txt` were printed.
+
+**How sessions come back** (on-box code, `application/command/status.php` and `classes/model/wifi/config.php`): `status:update:status` posts status to
+Eclipse, stores the reply as `config.txt`, then `enforce_config()` calls `confirm_clients()`, which fetches the site's active PINs from Eclipse and adds an
+`ECLIPSE_MARK` rule for each one missing locally. `status:clean:up` (daily) flushes the chain and rebuilds it from Eclipse the same way.
+
+```php
+// application/command/status.php (update_status), portal c11c230
+if (is_object($response) && !empty($response)) {
+    file_put_contents('application/config/config.txt',json_encode($response));
+} else { syslog(LOG_NOTICE,"WiFi: Invalid Config Download"); }   // keeps the last one
+$config = Model::factory('WiFi_Config');
+$config->enforce_config();                                          // -> confirm_clients()
+// classes/model/wifi/config.php confirm_clients()
+$current_clients = $iptables->authorised_clients_byclass();
+$clients = Model::factory('WIFI_API')->fetch_clients_by_classes($site);
+foreach ($clients as $client) foreach ($client as $mac => $class)
+    if (!isset($current_clients[$class])) { $iptables->deauthorise_client($mac,$class); $iptables->authorise_client($mac,$class); }
+```
+
+`status:update:usage` (every minute, `smc_bases_usage_cron` is 1 in all five flavours) reads the iptables byte counters and posts usage to
+Eclipse. It writes nothing to disk; usage counted since the last post (at most 1 min) is lost when the counters reset.
+
+**No local database is deployed for the portal.** The MariaDB import in `smc_application` is commented out. It was for `mobile_app`/`community_connect`
+(nbn_accelerate, see `14_pin-activation-diagnosis.md` §14.6), not Kohana:
+
+```yaml
+# roles/smc_application/tasks/ubuntu-apache-install-configure.yml:110
+# - name: Install and configure mariadb on Ubuntu
+#   import_tasks: ubuntu-mariadb-install-configure.yml
+```
+
+The disk-write audit's "DB + cache writes every 1min; operational" row (smc-file-writing-analysis `docs/smc-audit-data.csv` row 31) came from
+`malik-rct01`, the Vagrant lab VM, on 2026-04-20. Production boxes show no such database or cache.
+
+Effect of a rebuild: a guest who is online keeps their PIN (held in Eclipse) and is re-marked within 5 minutes. If Eclipse cannot be reached after the
+rebuild, there is no `config.txt`, so portal settings run on defaults and the chain stays empty until Eclipse answers. On overlayroot boxes the same is
+already true after every reboot, because `config.txt` lives in the tmpfs upper layer.
+
+## PHP security status: CVE-2026-109618 / CVE-2026-109619 (2026-10-22)
+
+php.net's 2026-10-21 advisory covers two unauthenticated RCEs and rates Apache mod_php the highest-risk setup, which is what every SMC runs. Ubuntu 22.04's fix is `php8.1 8.1.2-1ubuntu2.28` (USN-8948-1). `php -v` prints `8.1.2` on every box, patched or not, so compare the package version (`dpkg-query -W libapache2-mod-php8.1`). On 2026-10-22 no reachable SMC had the fix, and builds differ even on the Pis: `.13`, `.14`, `.18`, `.19`, `.20`, `.21` and `.24` were all seen. No SMC has `php*-fpm` or `php*-cgi`. The rcp boxes held stale apt lists (newest candidate `.26`), so they need `apt-get update` first. On rct/wh the upgrade must reach the lower root, or a reboot drops it (`07_hardware-overlay.md`). The non-SMC servers (cnMaestro, Graylog, Jenkins, Prometheus, Teleport) have no PHP. Fleet CSV, report and probe scripts: `local-knowledge-ansible/ansible-wifi/evidence/php-cve-2026-109618-20261022_1128/`. Re-run it with `scripts/php_package_probe.sh` (`just php_package_probe`). Probe logic (`raw/php_probe.sh`):
+
+```bash
+v=$(php -r 'echo PHP_VERSION;' 2>/dev/null || echo none)
+m=$(dpkg-query -W -f='${Package}=${Version}\n' 'libapache2-mod-php*' 2>/dev/null | grep -v '=$' | tr '\n' ' ')
+c=$(apt-cache policy php8.1-common 2>/dev/null | awk '/Candidate/{print $2}')
+```
+
+Backdoor pitfall found the same day: port 50501 (`family-friendly-smc01`'s backdoor) answered as `nocprov-smc01`, a box in no inventory. Check `hostname` before attributing a backdoor session to a site.
+
+**Other PHP processes to restart after a PHP upgrade (survey 2026-10-22).** Restarting apache2 is not enough on every flavor:
+
+- **rct:** `php -S 10.254.0.1:8080`, PHP's built-in web server for rct-tstik (`/var/www/html/rct-tstik/public`), runs as root, started by a cron entry every 5 minutes. It is a second PHP web server beside Apache; INPUT accepts 8080 on `bridge_500` and the policy is ACCEPT. Source, `roles/smc_application/tasks/main.yml` (branch `rise`, 0979a596):
+
+```yaml
+        - name: Tstik PHP Built-In Web Server
+          minute: "*/5"
+          job: "cd /var/www/html/rct-tstik/public && nohup php -S 10.254.0.1:8080 &>/dev/null"
+          state: present
+      ...
+      when: hotspot_flavor == 'rct'
+```
+
+- **rcp, nbn_accelerate, nbn_wh:** `apn-mqtt-client` (`cd /var/www/apn-mqtt-client && php Start.php`, root, cron `*/5`, crontab tag `#Ansible: apn-mqtt-client`, not defined in ansible-wifi roles). No listening port.
+- `pkill` either one after the upgrade; cron starts it again within 5 minutes on the new build. `kohana` / `php artisan` cron jobs are short-lived.
+- `dpkg-query -W 'php8.1-*'` lists about 20 known-but-not-installed packages; filter on `${db:Status-Abbrev}` = `ii` before passing the list to `apt-get install`.
+- No SMC holds any PHP or Apache package, and unattended-upgrades is disabled (masked on rcp), so no box patches itself.
 ````
 
 ## File: references/11_vagrant-lab.md
@@ -6309,6 +7151,7 @@ broader live-validation gap this note is part of.
 - Bring-up procedure
 - Useful commands
 - OrbStack virtual SMC (malik-rcp01): container-style host adaptations
+- Ubuntu 24.04 arm64 spike VM (smc-pi-spike01) for the read-only Pi image
 
 ## 12. Vagrant Lab — family-friendly-vsmc01
 
@@ -6492,6 +7335,27 @@ Two Mac-side facts from the same run: `setsid` does not exist on macOS, so a pla
 shell unless the tool's own background mode is used; and `ntp`'s postinst takes about a minute in the container before `ntpd` comes up
 (not a hang). The roles' package tasks retry until success (`retries: 60`, `delay: 60`), so a package that cannot install shows as up to
 an hour of silence, not an error.
+
+### 12.7 Ubuntu 24.04 arm64 spike VM (`smc-pi-spike01`) for the read-only Pi image
+
+> **Learned 2026-10-20** · Ubuntu 24.04 arm64 under Parallels · VERIFIED_PRIMARY · Source: `vagrant up` and `vagrant ssh` on smc-pi-spike01; Vagrant Cloud API
+> `bento/ubuntu-24.04`; smc-resiliency CHANGELOG 20261020_1223 · Falsifier: a 24.04 box where `systemd-sysupdate` is not in package `systemd`
+> On Apple Silicon a Parallels VM is arm64, the Pi's CPU architecture, so the Pi image's systemd steps (sysext, confext, sysupdate) can be tried
+> before a spare Pi exists; the Pi firmware's tryboot A/B boot cannot (a VM boots through UEFI). `bento/ubuntu-24.04` 202510.26.0 has a Parallels
+> arm64 build. On it: Ubuntu 24.04.3, systemd 255.4-1ubuntu8.18, kernel 6.8.0-86-generic; `systemd-sysext`, `systemd-confext` and
+> `/usr/lib/systemd/systemd-sysupdate` ship in package `systemd`, `systemd-dissect` in `systemd-container`; the erofs module loads. The
+> 22.04 boxes (`malik-rct01`, systemd 249) have no confext or sysupdate. Keep Teleport off such a VM so it never joins a production cluster.
+>
+> ```ruby
+> # /Volumes/Data/_vagrant/vagrant_stuff/smc-pi-spike01/Vagrantfile (excerpt)
+> config.vm.box = "bento/ubuntu-24.04"
+> config.vm.box_version = "202510.26.0"
+> config.vm.provider "parallels" do |p|
+>   p.memory = 4096
+>   p.cpus = 4
+> end
+> # provisioner report: for t in systemd-sysext systemd-confext systemd-dissect /usr/lib/systemd/systemd-sysupdate; do ...; done
+> ```
 ````
 
 ## File: references/12_content-filtering.md
@@ -6629,6 +7493,9 @@ curl -sv http://1.1.1.1/ 2>&1 | grep -E "Location|302|wifi"
 - [2026-09-24 — neighbour table: mornington hits the 1024 hard cap (2,230 table-fulls); proposed `gc_thresh` standard (PROPOSAL, not applied)](#2026-09-24--neighbour-table-mornington-hits-the-1024-hard-cap-2230-table-fulls-proposed-gc_thresh-standard-proposal-not-applied)
 - [2026-09-30 — `bot-cw-dashboard` restarts netfilter-persistent on koonibba and amata, wiping every device's access mark (OPEN, owner outside this repo)](#2026-09-30--bot-cw-dashboard-restarts-netfilter-persistent-on-koonibba-and-amata-wiping-every-devices-access-mark-open-owner-outside-this-repo)
 - [2026-10-05 — cnMaestro shows Wi-Fi clients as 0.0.0.0: SMC DHCP is healthy, the gap is on the AP/controller side (OPEN)](#2026-10-05--cnmaestro-shows-wi-fi-clients-as-0000-smc-dhcp-is-healthy-the-gap-is-on-the-apcontroller-side-open)
+- [2026-10-07 — `gl.aws.apn.au` cert expiry stopped SMC log shipping for 25 days (RESOLVED; gap not recoverable)](#2026-10-07--glawsapnau-cert-expiry-stopped-smc-log-shipping-for-25-days-resolved-gap-not-recoverable)
+- [2026-10-07 — two-inventory runs lose topology variables; kernel unhold fails before the target kernel is installed](#2026-10-07--two-inventory-runs-lose-topology-variables-kernel-unhold-fails-before-the-target-kernel-is-installed)
+- [2026-10-08 — Raspberry Pi SMCs and the rct site ATA: gaps seen in a four-site read](#2026-10-08--raspberry-pi-smcs-and-the-rct-site-ata-gaps-seen-in-a-four-site-read)
 
 ---
 
@@ -7497,6 +8364,12 @@ ran) inside the bad window keeps serving the broken redirect indefinitely afterw
   since before the bug existed, so it never carried either value. It does have an orphaned `teleport.*` Apache vhost from Oct 2024, unrelated to this specific regression.
 - **The remaining ~21 sites** have `squid.conf` predating 2025-06-27 entirely (fleet-wide `smc_squid` run of 2024-08-07) — never affected.
 
+**Update 2026-10-15 (Prometheus, `node_nf_conntrack_entries`):** the user impact at hope-vale, kowanyama and galiwinku began on **2026-09-01**, not when the bad value landed in 2025. Sessions for 1-7 Sep fell to 32-50% of the prior week at those three sites only; the other 26 nbn_accelerate/nbn_wh sites ranged 74-150%. 1 Jul, 1 Aug and 1 Oct show no drop. None of the three rebooted in the window except hope-vale (5 Sep 10:51), and none went offline, so no availability alert fired. Recovery: galiwinku 8 Sep between 15:00 and 16:00 AEST (box rebuild); hope-vale and kowanyama 11 Sep 11:34 AEST (squid re-run). Galiwinku's sessions drop every midnight and return about 07:00 on normal days, so a midnight dip there is not an outage onset. The operator states free PINs expire on the 1st of each month (operator, 2026-10-15), which fits the 1 Sep onset; why 1 Aug did not break the same sites is still unexplained.
+
+**Update 2026-10-15 (later) — how a 2025 misconfiguration stayed harmless, and what is still unproven.** A run of `smc_dns` inside the bad window also wrote the wrong name into Unbound: `roles/smc_dns/templates/unbound.conf.j2:118` emits `local-data: "{{ portal_fqdn }}. IN A {{ portal_address }}"`. With that line, a client sent to `https://teleport.communitywifi.net.au` resolved it to `10.254.0.1`, and the leftover `teleport.communitywifi.net.au.conf` vhost serves the real portal there (`DocumentRoot /var/www/html/wifi`, cert copied nightly by `/sslcertcopy.sh teleport.communitywifi.net.au`). So the wrong `deny_info` only bites once Unbound stops answering the box address for that name. On hope-vale and kowanyama, `/etc/unbound/unbound.conf` was rewritten at **2026-09-05 20:47** (an operator Ansible run, Teleport audit: `malik.ahmad`, 78 sessions on all three sites 20:40-20:50 AEST); its earlier content was not captured, so whether it held the teleport line is inferred, not read. Checked and ruled out as the 1 Sep trigger: the central Let's Encrypt cert for `teleport.communitywifi.net.au` (cert13, 2026-07-28 to 2026-10-26, covered the outage) and a Route 53 change to the `teleport.` record (each box's Teleport agent resolves the same name through 8.8.8.8 and stayed connected through Jul-Aug). Route 53 now holds `*.communitywifi.net.au CNAME communitywifi.net.au` (A `10.254.0.1`), `teleport.` A `3.104.50.51`, `*.teleport.` A `3.104.50.51`; CloudTrail history was not readable (`noc-admin` lacks `cloudtrail:LookupEvents`). These three sites ship nothing to Graylog. Teleport audit also shows `trent.sarfisis` interactive sessions on hope-vale (1 Sep 09:32, 2 Sep 08:57-09:09, 3 Sep 09:13) and galiwinku (1 Sep 09:42) AEST, so staff were on two of the boxes from the first morning. Trigger for 1 Sep: still open.
+
+**Update 2026-10-15 (operator's account, sent to the team).** In August 2026 technicians reported that users reaching `communitywifi.net.au` without being on the WiFi were sent to an incorrect page, which looked like the WiFi being down. The Route 53 `A` record for `communitywifi.net.au` was changed to `10.254.0.1` (the SMC's local portal address) to stop that; the operator states this change exposed the latent wrong redirect on the three sites (USER_STATED, operator 2026-10-15). Verified: the record now reads `A 10.254.0.1`, with `*.communitywifi.net.au CNAME communitywifi.net.au`. Not verified: the record's earlier value and change date (CloudTrail not readable with `noc-admin`), and how the apex change reaches on-box clients, whose Unbound already answers the apex with `10.254.0.1` locally. The response sent to nbn's team (both issues) is kept at `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/teleport-fqdn/`. Use `scripts/teleport_sessions.py` for who-was-on-the-box questions and `scripts/dns_capture_top.sh` for per-client attribution after Squid's 3-day logs rotate.
+
 **Process lesson:** the `nbn_wh` fix landing inside an unrelated commit (headline: blocklist-feed transport, not portal FQDN) is exactly the kind of change where a targeted write-back audit misses
 things — `git show --stat` on every commit that touches a shared vars file, not just commits whose headline names the file, should be part of any future sweep for this class of regression.
 
@@ -7586,6 +8459,8 @@ making the restart non-destructive; this is not applied.
 drops to zero mean a wipe. Then run `journalctl -u teleport | grep "teleportUser:bot-cw-dashboard"`. Full RCA and evidence:
 `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/koonibba-usage-drop/`.
 
+**Update 2026-10-15 (live, koonibba-smc01):** the bot's `netfilter-persistent` restarts stopped at **2026-10-01 13:06 AEST** (journal: 586 and 560 restart lines/day on 29-30 Sep, none after 13:06 on 1 Oct). The bot still connects (about 7,700 `bot-cw-dashboard` teleport journal lines a day through 15 Oct), so only the restart step was removed; who removed it is not recorded here. Client traffic (bridge_501 tx) stayed at 6-13 GB/day for 1-8 Oct, spiked 181 GB on 9 Oct and 132 GB on 10 Oct (AEDT), and has held about 30-37 GB/day since 12 Oct. The spike began in the hour an **Xbox One** (`10.0.4.133`, UA `...Xbox; Xbox One; WebView/3.0...`) activated a PIN, 2026-10-09 16:04:22 AEDT; bridge_501 then ran a flat ~50 Mbps from 16:00 to 04:00 and again 16:00-19:00 on 10 Oct. DNS capture for 16:00-24:00 on 9 Oct (`/url_capture/202610/`): the top two clients queried netflix.com, xboxlive.com (`assets1.xboxlive.com`, `update.xboxlive.com`) and microsoft.com. DNS shows names, not bytes, so the per-device split of the 181 GB is inferred, not measured. Squid keeps only 3 days of logs, so the URL-capture pcaps are the only per-client record past that.
+
 **Side findings (same session):**
 - The hourly WAN bursts in Grafana are `speedtest_exporter`'s own tests, roughly 1.2 GB/hour of WAN data (5-minute-rate estimate).
 - `scripts/correlate-pin-activation.sh` has two bugs:
@@ -7645,6 +8520,9 @@ The ACM cert on the Graylog ALB (`gl.aws.apn.au`) expired 2026-09-12 09:59:59 AE
   - `kupungarri-smc01` (wh): rebooted 2026-10-01 23:06 AEST (31 RISE status messages reached Graylog at boot). Before the last scrape at
     **2026-10-05 05:02 AEST**, `vlan522` failed every check and `eth0` was flapping (success 0/1 alternating). It is not in Teleport now. Likely a
     WAN or site problem, consistent with its power-quality history.
+    **Update 2026-10-09:** techs on site saw a solid red LED with no green and restarted it; the box online at 15:37 AEDT is a spare disk
+    (`generic-wh01-20240408`, no overlay, no RISE), not the unit that went dark. Detail: `06_failure-modes.md`, Silent Total Hang, kupungarri
+    2026-10-09. Open: SD card or whole unit swapped, get the old SD back, run RISE on the spare.
 - Other `wh` hosts not in Teleport on 2026-10-07: `generic-wh01`, `kintore-smc01`, `orrtipa-thurra-bonya-smc01`, `yuelamu-smc01` (not investigated).
 
 ## 2026-10-07 — two-inventory runs lose topology variables; kernel unhold fails before the target kernel is installed
@@ -7661,6 +8539,367 @@ The ACM cert on the Graylog ALB (`gl.aws.apn.au`) expired 2026-09-12 09:59:59 AE
   :2020 is scraped today was not checked.
 - **Graylog EC2 security groups are wide (observation, nothing changed):** `noc-sg-graylog` allows 80, 9000 and 27017 (MongoDB) from 0.0.0.0/0;
   `apn=graylog-backend-sg` allows 5044, 12202 and udp/514 from 0.0.0.0/0. The instance has no public IP and no IGW route, so these are reachable only from inside the VPC or over the VPN.
+
+## 2026-10-08 — Raspberry Pi SMCs and the rct site ATA: gaps seen in a four-site read
+
+VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, glen-hill; ATA reads at five more rct sites).
+
+- **kintore-smc01 is not registered in Teleport:** `subsystem request failed`, twice. Check the backdoor (`scripts/backdoor-watch.sh`) before calling it down.
+- **aeroplane-1's ATA drops the HTTP connection;** 20-mile's ATA never answers HTTP. The ATA's web UI is its only management surface (`17_site-ata-dallas-delta.md`).
+- **The ATA web PIN is empty** on every unit read (adjamarragu, alamirra, akwalirrumanja, alice-well, alkngarrija). Open, not changed.
+- **Pi bootloaders are behind upstream and the package hides it:** EEPROM 2023-01-11 on all four, upstream default 2026-09-23; Ubuntu's `rpi-eeprom` reports "up to date" (`07_hardware-overlay.md`).
+- **No SNMP on the Pis,** by operator decision 2026-10-08 (`02_service-map.md`).
+
+## 2026-10-08 — topology_vars uplink names do not say the provider (OPEN)
+
+- **What:** an uplink's topology id (`internet01`, `internet02`, `starlink01`, `starlink02`, `internetNN`) is positional. An `internetNN` can be Sky Muster or
+  Starlink, and a backup `starlinkNN` can be Sky Muster (operator, 2026-10-08). VERIFIED-OBSERVED 20261008: at warburton, old-looma and umoona the
+  VLAN 52x uplinks named `internet03`... are Starlink and the VLAN 621 uplink named `starlink01` is a Sky Muster service.
+- **How to tell (read-only):** the public IP's ASN read from the uplink (AS14593 SpaceX = Starlink; AS38172 IPSTAR = Sky Muster), and for Starlink the
+  dish's own status call on 192.168.100.1:9200 (its id `ut...`). Locally, Starlink uplinks hold 100.64.0.0/10 behind 100.64.0.1; Sky Muster uplinks a
+  private /30 behind a `bc:4a:56` gateway. Tool: unified-network-controller `wc-local/scripts/smc/uplink_provider.py`.
+- **Impact:** anything that takes the provider from the name (a `role: starlink` reader, a renderer) is wrong at these sites. Fix: in ansible-wifi
+  (operator); until then, take the provider from the far side.
+- **In UNC (2026-10-13, operator: a description line, regarded as drift):** each uplink Circuit's description says its id is a role label
+  (internet = active, starlink = standby) and names the far-side provider; a label naming another carrier is tagged `uplink-label-drift` (umoona
+  `starlink01` = NBN Co). Nothing is renamed; `smc_uplink_circuits.py` `label_note()`.
+
+## 2026-10-08 — finding which switch port an x86 SMC NIC is cabled to (INFO)
+
+- **TP-Link MAC table, read-only:** `scripts/tplink-switch.sh <site> <ip> "show mac address-table"` lists `MAC VLAN Port` with ports as `Gi1/0/N`
+  (Nautobot `gigabitEthernet 1/0/N`). VERIFIED-OBSERVED old-looma, warburton, umoona 20261008.
+- **The SMC's NIC MAC may never reach the switch:** uplink VLAN interfaces (`vlan521@enp2s0`...) send from their own locally administered MACs
+  (`72:77:77:xx`), and the bridges from the fleet-wide `72:77:77:00:00:01`; at warburton no NIC's burned-in MAC was in any switch table. A VLAN
+  interface's own MAC identifies its parent NIC; the bridge MAC identifies nothing (every SMC has it).
+- **Each switch sees the other on its SMC-facing port:** the SMC bridges VLAN 500 across both NICs (`enp1s0.500`, `enp2s0.500` in `bridge_500`), so a
+  port holding another switch's MAC is not by that alone a switch-to-switch link. Decide across all of a site's switches: a MAC learned on one port is
+  first-hand. old-looma: `enp2s0` on Switch1 Gi1/0/1, `enp1s0` on Switch2 Gi1/0/1.
+- Tool: unified-network-controller `wc-local/scripts/site_onboarding/site_cables.py`.
+
+## 2026-10-09 — reading which unit is on which TP-Link port over SNMP (INFO)
+
+- **Bridge port N is port 1/0/N on 5.30.1.** `dot1qTpFdbPort` returns bridge port numbers (1 to 28) while `dot1dBasePortIfIndex` is indexed 49153 and
+  up, so the two do not join. Port N is `gigabitEthernet 1/0/N` (ifIndex 49152+N): 91 of 92 rows agreed with `show mac address-table` on hope-vale
+  Switch1, 2026-10-08.
+- **LLDP is per switch.** bidyadanga's switch answers lldpRemTable; hope-vale's three answer No Such Object. Do not rely on LLDP for SMC-site links.
+- **Read the MAC table from the SMC down.** A switch's up port is the one that learns the SMC; another switch's MAC on a non-up port is a
+  switch-to-switch link; a unit is on the one port where it is learnt that is neither. Because the SMC bridges VLAN 500 across its NICs, two switches on
+  different NICs each learn the other on their SMC-facing port: that is not a cable. Implemented in unified-network-controller
+  `wc-local/scripts/topology/correlate.py` (hope-vale: Switch3 is daisy-chained on Switch1 1/0/3, Switch2 is on the SMC's enp1s0).
+- **Never store a raw walk.** Keep only MACs the inventory knows (exactly or one apart); the table holds public Wi-Fi clients (VLAN 501).
+
+## 2026-10-09 — the DHCP leases name the SM a client came through (INFO)
+
+At low-touch (`smc_ltp`) sites the 3000L APs relay DHCP with Option 82, and the SMC's dhcpd passes `option agent.remote-id` to the provisioning hook
+(`/etc/dhcp/dhcpd.conf` `on commit`, `cnmaestro-provisioning.py`) and keeps it in `/var/lib/dhcp/dhcpd.leases` as `option agent.remote-id x:x:xx:...;`
+(leading zeros dropped). The Remote ID is the radio MAC of the SM the request came through (its record + 1). old-looma-smc01: 212 of 1,949 leases
+carry one, all public Wi-Fi clients; the R195Ps' own leases carry none. The file holds public client MACs: read it in memory and keep only what
+Nautobot knows, never store it raw (superseded 2026-10-20: storing client MACs is allowed, see that entry) (unified-network-controller topology reader `smc-dhcp-relay`; skill-cambium 05_known-issues for the join that
+places a router behind its SM). Nothing here depends on cnMaestro: the AP inserts the option and dhcpd records it.
+
+## 2026-10-09 — the provisioning hook's logs are the site's install-time pairing (INFO)
+
+`cnmaestro-provisioning.py` keeps one log per unit it provisioned, `/var/local/cnmaestro-provisioning/log.<MAC with dashes>` (`VAR_DIR`), from the
+day the site was built: old-looma-smc01 holds 146 (154 MB), 2026-07-16 to 07-23, read-only 2026-10-09. Each logs, at DEBUG, the DHCP vendor class
+(`self._vci`) and the Option 82 Remote ID (`self._remote_id`) it was called with, and the cnMaestro description it wrote, a JSON with `us` (the
+upstream unit's cnMaestro name, from cnMaestro's `parent_mac` or else the Remote ID), `lot no`, `ext`, `locid`, `mgmt_ip` and `name`.
+
+- **Routers.** 63 of old-looma's 66 R195P logs carry one SM's radio MAC as Remote ID and name that SM in `us`; no SM holds two routers. The other 3
+  (home-9, home-44, home-66) were provisioned with an empty Remote ID: the tower routers the as-built drawings show cabled to a Nano switch
+  (T2, T4) and to Switch 2 port 8 (T1), not behind an SM.
+- **Wi-Fi APs.** An XV2 behind an SM is recorded the same way (ap-4 behind sm-22 at lot 82). One beyond a PtP link carries the Remote ID of the
+  first SM on its path (ap-8: sm-45) while `us` names its real parent (sm-ep2p-1).
+- **Sites as built, not as now.** A unit replaced or moved after install has a new log, or none. The current `dhcpd.leases` no longer holds the
+  routers' provisioning leases (the entry above), so these logs are the only place the router's Remote ID survives.
+- **Read it reduced.** The logs are mostly polled cnMaestro response bodies. unified-network-controller reduces them on the SMC with an awk
+  program sent on stdin (`topology/sources.py` `PROVISIONING_AWK`, about 40 kB for old-looma) and reads them in every discovery run (reader
+  `smc-dhcp-relay`, correlate rule 4h). Ten units logged at old-looma were never landed in Nautobot (sm-11/home-12, sm-13/home-14, sm-19/home-20,
+  sm-20/home-21, sm-21/home-22, sm-43/home-45, sm-48/home-50, sm-50/home-52, sm-53/home-55, sm-63/home-65).
+- **Same-tower hint.** Provisioning hands out management addresses in order, so units installed together sit next to each other: old-looma's
+  3000L-ap-3 (.21) and home-9 (.20) two seconds apart, 3000L-ap-5 (.94) and home-44 (.95) one second apart. A hint for a person, not a rule.
+
+## 2026-10-09 — low-touch addresses: DHCP to provision, then a configured management address (INFO)
+
+Operator, 2026-10-09: low-touch sites give their units addresses through DHCP; sites built without low touch use static addresses. Read-only at
+old-looma-smc01 (`/etc/dhcp/dhcpd.conf`, generated by Ansible) and `cnmaestro-provisioning.py` on ansible-wifi `origin/big_push`:
+
+- **Provisioning.** A new Cambium unit asks on `shared-network provisioning`, `subnet 192.168.11.0/24` (20 s leases, Cambium vendor class only). The
+  `on commit` hook there passes MAC, leased IP, vendor class and the Option 82 Remote ID (the SM a router's request came through) to the script. The
+  hook sits in this subnet only, so day-to-day renewals elsewhere never run it, and syslog (`cnmaestro-provisioning@<mac>`) is quiet between installs.
+- **Management address.** The script allocates `mgmt_ip` from `inventories/rcp/group_vars/smc_ltp.yml` ranges `10.255.1.0-10.255.9.255` and
+  `10.255.11.0-10.255.31.255` (lowest free value) and pushes it in the unit's template; dhcpd's management pool is only `10.255.10.0-254`. So the
+  10.255.1.x addresses units run on are configured by provisioning, not leased, and `dhcpd.leases` holds a router's provisioning lease
+  (old-looma home-57: 192.168.11.137, 2026-07-22, vendor class `Cambium-cnPilot R195P`) but no management lease.
+- **Pairing hint.** A router is provisioned only after its upstream SM is onboarded, and allocation takes the lowest free address, so a router
+  usually holds the address after its SM's (old-looma sm-46 .104 / home-48 .105). A hint, not proof: a unit provisioned in between breaks it.
+- The script's upstream is cnMaestro's `parent_mac` for the device, with the Remote ID as the fallback (`upstream_device_mac`).
+
+## 2026-10-09 — Graylog 500 since 2026-10-08: its Data Node did not come back after an AWS scheduled reboot (RESOLVED 2026-10-09 13:13)
+
+Operator report: Graylog answers Internal Server Error since 2026-10-08. Read-only diagnosis, 2026-10-09:
+
+- Every API path through the `apn-graylog` Teleport app, `/api/system/lbstatus` included, answers **500**. AWS target groups `apn-graylog-api-tg`,
+  `apn-graylog-web-tg` (9000) and `apn-graylog-gelf-tg` (12202) are all `unhealthy` (`Target.FailedHealthChecks`), so **SMC logs (GELF) are not
+  ingested** while this lasts. The EC2 `apn-graylog01` is running with both AWS status checks `ok`.
+- On `apn-graylog01` (Graylog 6.3.1, `graylog-server` and `mongod` both enabled at boot): `server.conf` has no `elasticsearch_hosts`, so storage is
+  found through a **Graylog Data Node**. From 2026-10-08 14:33 `ClusterAdapterOS2` logs "Check for connectivity failed … Request execution
+  cancelled"; `graylog-server` restarted 14:37 and then loops on "Datanode is not available. Retry #n" (over 16,000 by 13:10 next day) without
+  opening 9000 or 12202 (only mongod's 27017 listens).
+- The Data Node is a separate Teleport node, **`apn-datanode01`** (EC2 `i-0e76ade1f8c75091c`). It booted 2026-10-08 14:01:16: AWS event
+  `system-reboot` "[Completed] scheduled reboot", window 2026-10-08 02:00-04:00 UTC. **`graylog-datanode` is `disabled`** at boot, so it stayed
+  down. Its last journal shows a crash loop on 2025-08-16 (restart counter 38, exit status 1) and a start at 23:13 that day, apparently by hand
+  after the last reboot, and never enabled. Disk 175 of 291 GB used, 3.9 GB RAM.
+- Fix (writes production; the operator's to approve): on apn-datanode01 `systemctl enable --now graylog-datanode`, then watch
+  `journalctl -u graylog-datanode -f` (the 2025 crash loop may recur), apn-graylog01's server.log for the retries stopping, ports 9000 and 12202
+  opening, and the target groups turning healthy. Retention is about two months, so the gap is permanent for SMC logs from 2026-10-08 14:01.
+- Lesson: an AWS scheduled reboot restarts only what is enabled. Check `systemctl is-enabled` for every service a backend needs after any manual
+  start. `noc-admin` lacks `cloudtrail:LookupEvents` and `ssm:DescribeInstanceInformation`; the EC2 instance events answer "why did it reboot".
+- **Resolved 2026-10-09 (operator: "enable that service on reboot").** `systemctl enable --now graylog-datanode` on apn-datanode01 at 13:12: active, 0
+  restarts, listening on 8999, 9200, 9300. Graylog opened 9000 and 12202 within a minute and took GELF again; `/api/system/indexer/cluster/health`
+  green (49 active shards, none unassigned); all three target groups healthy at 13:13. Graylog then logged GELF `invalid "timestamp"` warnings for
+  messages from 10.240.2.151 (the ALB side); whether those predate the outage is not checked.
+
+## 2026-10-09 — what Graylog holds of the units behind a low-touch SMC (INFO)
+
+Searched read-only through `scripts/smc_graylog.py` after the 2026-10-09 recovery (unified-network-controller, old-looma): the units' own syslog
+reaches the SMC as `/var/log/smc-groups/wifi.log` (system messages in `/var/log/smc-groups/system.log`) and Graylog keeps it, tagged by the unit's
+hostname (`sm-48 DEVICE-AGENT[pid] ...`): old-looma 3,092 such lines with "cnmaestro" from 2026-08-19. The Force 300 SMs log there; the R195P
+routers do not (0 lines from home-57 in two months), so a router-side WAN link drop is not recorded anywhere central. The provisioning hook's own
+syslog (`cnmaestro-provisioning@<mac>`) had no match in the two months kept, as expected: old-looma's units were provisioned in July.
+
+## 2026-10-09 — unit syslog reaches Graylog only for listed program names (INFO)
+
+The SMC's rsyslog takes unit syslog on UDP 514 (`imudp`) and `/etc/rsyslog.d/10-log-groups.conf` files it by `$programname`: `DEVICE-AGENT`,
+`hostapd*`, `cnPilot`, `WIFI-*-CLIENT-*`, `cnmaestro-provisioning` and similar go to `/var/log/smc-groups/wifi.log`; `dhcpd`, `dhclient` and a
+systemd/teleport list to their own files. Anything else falls through to `/var/log/syslog`, which fluent-bit does not ship (it tails
+`smc-groups/*.log`). So a unit that logs under another program name reaches the SMC but not Graylog (old-looma-smc01, read 2026-10-09). The
+R195P routers send nothing at all as provisioned (skill-cambium 05_known-issues, 2026-10-09).
+
+## 2026-10-09 — a home's SM and router as the SMC sees them (operator; site view)
+
+Operator, 2026-10-09: each home is a Force 300 SM plus one cnPilot R195P, one to one; the router powers the SM over PoE and the SM's radio link
+is the router's only path to the SMC. From the SMC this means:
+
+- **Both silent:** a power cut at the premises or the router's power failing (both reboot together; skill-cambium 05_known-issues has the boot
+  window), or the SM down with the router still powered behind it. The SMC cannot tell these apart until they return: then the router's uptime
+  is old if only the SM rebooted.
+- **SM answers, router silent:** the router is powered (it feeds the SM) but faulty.
+- **Router answers, SM silent:** not possible while both are healthy; the SM is reachable whenever its router's path is up.
+- **Provisioning order (low-touch):** the router is provisioned only after its upstream SM is onboarded (the hook needs the Option 82 upstream),
+  and management addresses are allocated lowest-free, so a router usually holds the address after its SM's (entry above, 2026-10-09). Sites built
+  without low touch use static addresses (operator), so neither the hook nor the address order exists there.
+- **Logs:** the SMs' Device Agent syslog reaches the SMC and Graylog; the routers send none as provisioned (entries above), so a router-side link
+  drop is not recorded centrally.
+
+## 2026-10-09 — where an SMC's DHCP history is, and why it is not a unit's boot history (INFO)
+
+Read on old-looma-smc01 (`tsh ssh --proxy=teleport.apn.au`, read-only, 2026-10-09 14:1x AEDT; unified-network-controller pairing work):
+- isc-dhcp-server (`dhcpd -f -4 ... bridge_500 bridge_501 bridge_502`) logs to the systemd journal only; `/var/log/syslog` and its rotations hold
+  no DHCPDISCOVER line. The journal (200 MB on disk) reached back only about 13 hours (first entry 2026-10-09 01:09), dominated by public Wi-Fi
+  clients (~22,000 DHCP lines).
+- Prometheus on the SMCs keeps no per-unit up/down history: its remote_write allowlist (02_service-map.md) passes only `up`, node and RISE
+  families, none per subscriber unit.
+- A low-touch unit takes DHCP only while it is provisioned and then runs on a configured management address (12_ and 13_ entries above), so its
+  DHCP lines are not a reboot record. A unit's last boot is read from its own sysUpTime; history of who answered with whom has to be sampled
+  (unified-network-controller `topology.py uptime`).
+- The low-touch hook's per-unit logs (`/var/local/cnmaestro-provisioning/log.<MAC>`, one per unit provisioned, with the Option 82 Remote ID it
+  saw) exist only on the SMC; nothing ships them off the box, so a replaced or reimaged SMC loses the install-time pairing record. Read
+  2026-10-09 (`du -sm`, read-only): warburton 280 MB / 279 logs, beagle-bay 274 / 220, old-looma 154 / 146, guda-guda 46 / 29, yakanarra 18 / 77,
+  pandanus-park 17 / 74, umoona 5 / 19; about 800 MB compresses to 16 MB. Copies: unified-network-controller `just wc::provisioning-backup`
+  (archives committed in that project's `backups/`, verified, unchanged runs not stored twice). pia-smc01 and new-looma-smc01 were absent from Teleport on both clusters
+  that day.
+- Beyond the pairing (section "the provisioning hook's logs are the site's install-time pairing" above), each `log.<MAC>` dumps the unit's
+  provisioning state on every run (`_ip` on 192.168.11.x, `_variables`, `_configurations`, `_provisioning_defaults`, `_managed_account` = the
+  site, and `_client_secret`, the cnMaestro API secret, so any copy of the logs holds it) and logs events: onboarding initiated and done,
+  configuration loaded, `Using default configuration "<home|sm|ap|ent_outdoor|ap_ep2p>"`, `Using value "<v>" defined on device for "<var>"`
+  (`preferred_ssid`, `antenna_gain`, `poe_out`, `power`, `seqid`, `frequency`), `Replaced device mac` and `Upstream device "<MAC>" not yet fully
+  onboarded ... for device "<MAC>"`. That upstream MAC is the SM's own MAC, one below the Remote ID's radio MAC (old-looma 2026-10-09: 60 of 60).
+  An SM's `preferred_ssid` `WifiBridge_N` names its AP: it matched the SM's `us` `3000L-ap-N` on 59 of 59. Descriptions can also carry `align`,
+  `test`, `antenna_type`, `public_ip`, `prov_ip`. Parsed by unified-network-controller `topology/sources.py` `provisioning_logs()` (2026-10-09).
+
+## 2026-10-09 — Sidekick and the low-touch hook: what releases a unit (INFO)
+
+Sidekick is APN's handheld field installer: a Raspberry Pi with keypad, LCD, GPS and PoE out, deployed by its own ansible
+(`sidekick_provisioning`, `sidekick_teleport`; units `sidekick-v1-01` to `-20`, Teleport `teleport.apn.au`, label `flavor: sidekick`). It talks
+only to the unit in front of it (ePMP at 169.254.1.1 from 169.254.1.17; Enterprise AP 192.168.0.1; R195P 192.168.11.1 with a TFTP config, then
+.12.1) and never to the SMC or cnMaestro. The hook (`cnmaestro-provisioning.py` `is_ready()`) provisions an ePMP unit only when its sysDescr
+record has `confirmed: true` **and**, for an SM, the unit can no longer ping 169.254.1.17: confirm on the keypad, then unplug the Sidekick.
+Until then each DHCP event logs "Provisioning info not yet confirmed" or "Sidekick still connected", then "being provisioned by Sidekick.
+Sleeping 30 seconds", and exits. The hook copies `locid`, `tower` and `sector_direction` (as `antenna_type`) into the cnMaestro description and
+sends the record's lat/lon on approval, giving a router or XV2 behind an SM the SM's position; Sidekick writes `lotno` (not `locid`) and stopped
+writing `tower` on 2025-12-02, so neither reaches the description from Sidekick. Sidekick does not install or record the R195P beside an SM.
+Replace writes `type: replacement` and `replaced_mac` (ePMP), `location <mac>` (XV2) or the old MAC in `acsUsername` (R195P). The repository
+holds credentials in code and templates (not copied here). Device field formats: skill-cambium 05_known-issues; full write-up:
+unified-network-controller `docs/reports/device-families/sidekick-field-installer-20261009_1804.md`.
+
+
+## 2026-10-15 — tunnels from apn-unc01: NBN Accelerate costs several times APN per unit (INFO, measured)
+
+Reading a unit's config through an SMC from apn-unc01 (one `ssh -f -L` forward per unit to `root@<smc>.teleport.<domain>`, run as `ubuntu` with
+the tbot ssh_configs; unified-network-controller Golden Config canary, 2026-10-15): an Enterprise Wi-Fi read took about 6 s per unit through an
+APN box (`teleport.apn.au`) and about 30 s through arawerr and wandawuy (`teleport.communitywifi.net.au`); ePMP SMs 6 s against 20 s. The unit
+answers as fast in both; the difference is tunnel set-up on the NBN Accelerate cluster. Budget a per-site job on the NBN cluster at several times
+the APN figure, and reuse one connection per SMC where the code allows it (the collector's `smc_snmp.SSH_REUSE`). Classification: candidate
+(two sites, one day).
+
+## 2026-10-20 — skill scripts on a Machine ID host need the bot identity and sshpass (INFO)
+
+On apn-unc01 (tbot per cluster, no user `tsh login`), `mikrotik_exec.sh` and `tplink-switch.sh` reach the SMC only when the caller passes
+`TSH_IDENTITY=/opt/tbot-<cluster>/identity` (both scripts accept it): without it the port-forward "did not come up". `mikrotik_exec.sh` also needs
+`sshpass` on the host running it; apn-unc01 had none until it was pinned (1.09-1) and installed. Unified-network-controller passes the identity
+for every skill-script call through `common.teleport.script_env(proxy)`. VERIFIED-OBSERVED 2026-10-19 (20-mile land dry run from apn-unc01).
+
+## 2026-10-20 — client MACs may be stored in UNC; dhcpd lease times in epoch form (INFO, supersedes the never-store rule)
+
+Operator, 2026-10-20: "We can save the client MAC address in UNC. There is no problem in that." The rule below and in the 2026-10-09 entry that
+public client MACs never leave the box or are never stored was an agent's assumption, not the operator's; it is superseded (USER_STATED). UNC now
+reads every active lease (address, MAC, hostname, shared network, start, end) and keeps lease sessions with 90 days of history. Randomised client
+MACs make a stored MAC a record of one session, not a lasting device identity (UNC options register, T1/T2 test). The lease file's times come in
+two forms: `starts 1 2026/10/19 20:50:31;` (UTC) and, with `db-time-format local`, `starts epoch 1792403431; # Mon Oct 19 20:50:31 2026`
+(gan-gan, nbn_accelerate); a parser must accept both. VERIFIED-OBSERVED 2026-10-20 (gan-gan 28 leases, old-looma 135, read-only).
+
+Excerpt (unified-network-controller `wc-local/scripts/collector/dhcp_leases.py` `AGENT`, commit 5281117), run on the SMC:
+
+```python
+def when(body, word):
+    m = re.search(word + r"\s+epoch\s+(\d+);", body)                  # db-time-format local
+    if m:
+        return datetime.datetime.fromtimestamp(int(m.group(1)), datetime.timezone.utc).isoformat()
+    m = re.search(word + r"\s+\d\s+(\d{4})/(\d\d)/(\d\d)\s+(\d\d:\d\d:\d\d);", body)   # default, UTC
+    return "%s-%s-%sT%s+00:00" % m.groups() if m else None
+```
+
+## 2026-10-20 — dhcpd's shared networks and a lease summary that keeps client MACs on the box (INFO)
+
+> **Superseded 2026-10-20** (operator): client MACs may be stored in UNC; see the entry above. The shared-network facts here stand.
+
+
+The SMC's `/etc/dhcp/dhcpd.conf` groups subnets in named shared networks: `public`, `management`, and on low-touch sites `provisioning`
+(old-looma: public 10.0.0.0/18 range 10.0.32.0-10.0.63.254, provisioning 192.168.11.0/24, management 10.255.0.0/19 range 10.255.10.0-254;
+20-mile: public 10.0.0.0/23, management 10.255.0.0/24 range .100-.110). The boxes run Python 3.10.12, so a summary can be computed on the SMC:
+pool size per shared network from its `range` lines and active leases from `binding state active`, with only the `management` network's leases
+returned in full (old-looma 2026-10-20: 204 active of 21,256 lease-file lines). Public clients then never leave the box as MACs (the rule above).
+Implemented by unified-network-controller `wc-local/scripts/collector/dhcp_leases.py`. VERIFIED-OBSERVED 2026-10-20 (read-only).
+
+## 2026-10-20 — an uplink's gateway is in its policy routing table (INFO)
+
+With per-uplink policy routing (`ip rule` from the uplink's address), the main table may hold no default route for that uplink. Read its gateway
+with `ip -4 route show table all dev <iface>` and take the first `default via` (unified-network-controller `uplink_health.py`, 2026-10-19).
+
+## 2026-10-20 — `tsh proxy` children can outlive a timed-out ssh on a Machine ID host (INFO, cause UNVERIFIED)
+
+On apn-unc01, when a script's `ssh root@<smc>.teleport.apn.au` hit its `subprocess` timeout (20-mile, SMC unreachable over Teleport), several
+`tsh -i /opt/tbot-apn/identity proxy ... ssh` processes to that SMC were still running afterwards (oldest about 10 minutes, host load average 7.6)
+and ended on their own later; at 11:35 none was left. Python's `subprocess.run(timeout=)` kills `ssh`, not the ProxyCommand `tsh` it started, so
+a caller that must leave nothing behind starts the command in its own session and ends the process group on timeout. Not yet reproduced
+deliberately (unified-network-controller bug tracker, "Onboarding and host").
+
+```python
+# the pattern a caller needs (not yet in unified-network-controller; seed_smc_devices.py facts() uses subprocess.run(..., timeout=90))
+p = subprocess.Popen(cmd, start_new_session=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+try:
+    out, err = p.communicate(timeout=90)
+except subprocess.TimeoutExpired:
+    os.killpg(p.pid, signal.SIGTERM)          # ssh and its tsh proxy child together
+    raise
+```
+
+## 2026-10-20 — fqdn2ip still runs on some nbn_wh boxes though it is to be disabled everywhere (OPEN, look at later)
+
+The operator's intent (2026-10-20, `USER_STATED`): fqdn2ip is disabled on every flavour, nbn_wh included, as on rcp, wh and rct. ansible-wifi
+`smc_bases.yml` play "Disable and remove fqdn2ip" runs role smc_fqdn2ip `when: smc_bases_smp|default(false)`, and `smc_bases_smp` is `true` in
+nbn_wh's `group_vars/smc_bases.yml` as in wh's, so a run of that play removes it. Read on 2026-10-20 (read-only, `tsh --proxy=teleport.communitywifi.net.au`):
+
+| Box | fqdn2ip | Evidence |
+| --- | --- | --- |
+| darlngunaya-smc01 (nbn_wh) | **active and enabled**, unit from 22 Oct 2024 | `fqdn2ip.py` running; resyncs ipset `restricted` every few minutes; writes `/etc/iptables/ipset.d/restricted` (15:44) and `/var/local/fqdn2ip/cache` |
+| bungardi-smc01 (nbn_wh) | removed (no unit, no `/etc/iptables/ipset.d`) | `ansible_role_versions.txt` at 7cfb7a3 |
+
+So the play has not been run on darlngunaya since its build; the nbn_accelerate boxes were not checked. Next step (operator: "something to look at
+later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play with `--tags fqdn2ip` box by box under the usual approval.
+
+> **Learned 2026-10-20 (d)** · reading units through a Sky Muster Plus SMC (Pi sites) · VERIFIED-OBSERVED (read-only dry runs from apn-unc01,
+> bidyadanga, 20 units per family) and USER_STATED (operator: the cause is Sky Muster Plus latency) · Source: unified-network-controller
+> collector log `canary-collector.log` and `batch_push_devices.py --dry-run --per-family-limit 20` (2026-10-20) · Falsifier: a satellite site
+> whose per-unit read time falls to terrestrial levels at the same concurrency
+> Each unit read through the SMC (tunnel set-up, login, several requests) costs about 40 to 50 s over the satellite path: 20 R195P took 260 s
+> and 20 ePMP SMs 279 s with 4 reads in flight. A site of about 300 units cannot be read inside a 15-minute window at that concurrency
+> (bidyadanga: about 90 of 292 reachable units per cycle). The work waits on the link, not on bandwidth, so more reads in flight is the lever;
+> a terrestrial site of the same size finishes well inside the window. No visual surface.
+
+> **Learned 2026-10-20 (e)** · reading units through a Sky Muster Plus SMC, concurrency and session set-up · VERIFIED-OBSERVED (read-only dry
+> runs and ssh timings from apn-unc01, bidyadanga against umoona over Starlink) · Source: unified-network-controller
+> `docs/reports/monitoring/collector-satellite-concurrency-20261020_2023.md` and its sources folder · Falsifier: a GEO site whose per-unit time
+> falls linearly with reads in flight
+> A fresh Teleport ssh session to a Sky Muster SMC takes 6.9 to 8.0 s (Starlink: 1.3 s); a forward added to an open shared connection 0.01 s.
+> The same 23 units read at 8.3, 5.8 and 4.3 s per unit with 4, 8 and 12 in flight and chunks of 24 (13 s at 4 and chunks of 10): each read
+> slows as more share the link (33, 46, 52 s), so returns fall with concurrency, and the SMC's load rose to about 2. The fresh-session time,
+> not a Circuit's type, tells which link a site is on now (a site with a GEO Circuit may run over Starlink). No visual surface.
+
+> **Learned 2026-10-22 (f)** · ansible-wifi inventories and fleet patching · VERIFIED-OBSERVED (`ansible-inventory --list` per
+> `inventories/<flavor>/prod`, read-only probes of 85 boxes) · Source: ansible-wifi `rise` branch at 0979a596; evidence in
+> local-knowledge-ansible `ansible-wifi/evidence/php-cve-2026-109618-20261022_1128/` · Falsifier: an inventory run where each host is in one flavor
+> - `mungkarta-smc01` is in both `nbn_accelerate` and `wh`, and `bungardi-smc01` in both `nbn_wh` and `rct`: a per-flavor count or playbook run
+>   counts or touches them twice. `nocprov-smc01` (x86, live, PHP installed) is in no inventory, so no playbook reaches it.
+> - Some `host_vars` files are CRLF (`aurukun-test-smc01.yml`): a value read with `grep | awk` carries a trailing `\r` (`backdoor-watch.sh` crashed
+>   on `9002\r` until it stripped it).
+> - Nothing patches itself: unattended-upgrades is `masked` on rcp and `disabled` on nbn_accelerate, rct, wh and nbn_wh, and no PHP or Apache
+>   package is held. The rcp apt lists were stale (php8.1-common candidate `.26` when jammy-security had `.28`). Security fixes reach the fleet
+>   only by a deliberate run, and builds drift box to box (seven php8.1 builds seen, `.13` to `.24`, including on the Pis). No visual surface.
+
+> **Learned 2026-10-23** · PHP upgrade verification on x86 SMCs · VERIFIED-OBSERVED (warehouse-smc01, rcp stage, 2026-10-23 12:10) · Source:
+> local-knowledge-ansible `ansible-wifi/playbooks/smc_update_php.yml` (symlinked into the ansible-wifi root), `-e smc_php_mode=verify` · Falsifier: an
+> apache2 whose `/proc/<pid>/maps` shows no `(deleted)` libphp after a package upgrade with no restart
+> An installed package version does not prove the running code is fixed. warehouse-smc01 had every php8.1 package at `8.1.2-1ubuntu2.28`
+> (unattended-upgrades, enabled on this stage box, ran at 06:56) but apache2, started 2026-10-12, still mapped the deleted old
+> `libphp8.1.so` and its extensions. Check the running processes, not dpkg:
+>
+> ```python
+> # smc_update_php.yml probe (local-knowledge playbooks/, 2026-10-23)
+> for maps in glob.glob("/proc/[0-9]*/maps"):
+>     with open(maps) as fh:
+>         if any("(deleted)" in l and re.search(r"php", l) for l in fh):
+>             stale.append(pid)   # still runs a replaced PHP build: restart it
+> ```
+>
+> The 2026-10-22 (f) note that nothing patches itself holds for the prod boxes surveyed, not for stage boxes.
+> rct hosts carry no `topology_interfaces` (empty on 20-mile-smc01 and warehouse-rct01), so a play that derives the portal address from
+> `topology_interfaces['portal']` gets nothing there. Read it from the box instead: `apache2ctl -S` on warehouse-rct01 shows
+> `10.254.0.1:80 wifi.a8me.au`; the playbook matches the ServerName in that output and curls with `--resolve`. No visual surface.
+
+> **Learned 2026-10-23 (b)** · counting SMC processes from an Ansible task · VERIFIED-OBSERVED (warehouse-smc01, nocprov-smc01, warehouse-rct01,
+> 2026-10-23 13:33-13:34, role check runs against `ps -eo args`) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/probe.py`
+> (`ancestors`, `count_procs`; uncommitted at writing) · Falsifier: an Ansible `environment:` value absent from the remote shell's /proc cmdline
+> `pgrep -f 'php -S '` from a probe run with Ansible `environment: {PROBE_CONFIG: ...}` counted processes that did not exist (warehouse-smc01: 1 `php -S`,
+> none in `ps`): Ansible puts environment values on the remote shell's command line, so the shell that started the probe matched its own patterns.
+> Leave the probe's own process chain out of every count:
+>
+> ```python
+> # roles/smc_change/files/probe.py (local-knowledge-ansible, 2026-10-23)
+> def ancestors():
+>     pids, pid = set(), str(os.getpid())
+>     while pid not in ("0", "") and pid not in pids:
+>         pids.add(pid)
+>         with open(f"/proc/{pid}/stat") as fh:
+>             pid = fh.read().rsplit(")", 1)[1].split()[1]      # ppid
+>     return pids
+> count = len([p for p in run(["pgrep", "-f", pattern])[1].split() if p not in ancestors()])
+> ```
+>
+> On these boxes `php Start.php` (apn-mqtt-client) and `php -S` (rct-tstik) are cron */5 and come and go; a single count of 0 is not proof the client
+> is off. Also seen: `pgrep -f 'php Start.php'` counts the cron `/bin/sh -c cd ... && php Start.php` wrapper too (nocprov-smc01: 2). No visual surface.
+
+## 2026-10-22 — umoona still has no Asterisk process (known: no active SIP clients); evidence scripts lacked a tsh deadline (RESOLVED 2026-10-22)
+
+- umoona-smc01: the 2026-10-22 voip capture found no Asterisk process, as on 2026-08-25 (unit `active (exited)`, see `scripts/README.md`), and the operator confirms
+  umoona has no active SIP clients (known, 2026-10-22), so this is not an outage. nocprov-smc01 (provisioning box) has none either. `VERIFIED-OBSERVED` 2026-10-22.
+- `scripts/collect-smc-evidence-full.sh` calls `tsh ssh` without a deadline (lines with `tsh ssh "${SSH_USER}@${host}"`), against this pack's access
+  rule. The 2026-10-22 run wrapped each host in `perl -e 'alarm 150; exec @ARGV'` (no `timeout` on macOS). Fix: a per-call deadline inside the script.
+- Resolved 2026-10-22: both evidence scripts call `tsh ssh` through `with_deadline` (watcher, TERM then KILL); offline test `just test-deadline`;
+  smoke run on kalumburu-smc01 (73 s, 11 of 11 captures).
+- Follow-up 2026-10-22: a cut session now reports `SESSION TIMED OUT` and "not run" captures (tsh exits 1 on TERM, so the helper returns 124 on its
+  own clock). Counting not-run captures exposed an older defect: a capture whose output lacks a trailing newline (`interfacecheckv2.sh`) had the
+  end marker glued to its last line and was never closed or counted; the marker now starts on its own line (kalumburu: 145 of 145 captures).
 ````
 
 ## File: references/14_pin-activation-diagnosis.md
@@ -7819,6 +9058,8 @@ the data gaps found live on this fleet: an IP with no lease record at all in the
 
 This is why the two mechanisms normally track each other tightly (9-second gap, confirmed above) — but see [14.6](#146-pitfalls) for the one path that decouples them.
 
+**Free PINs expire on the 1st of each month (operator, 2026-10-15).** Every user must pass the T&C page again at the month rollover, so a site whose portal path is broken looks healthy until the 1st and then collapses (the 2026-09-01 three-site outage). A broken portal path can therefore stay invisible for weeks; check issuance (§ mechanism 2) on the 1st-2nd of the month, not only usage.
+
 ## 14.6 Pitfalls
 
 - **Log location varies by box.** On some boxes `/var/log/apache2/access.log` is missing or empty and portal hits land in `other_vhosts_access.log` instead — confirmed live on `bungardi-smc01`, where
@@ -7915,6 +9156,7 @@ so they are the "switching layer" that `01_overview.md` refers to. First reached
 ## Contents
 
 - [Where they are](#where-they-are)
+- [Central chassis port plan, from an as-built (rcp low-touch, old-looma, 2026-10-13)](#central-chassis-port-plan-from-an-as-built-rcp-low-touch-old-looma-2026-10-13)
 - [Credentials](#credentials)
 - [Access path and SSH quirks](#access-path-and-ssh-quirks)
 - [Privilege: enable with and without a password](#privilege-enable-with-and-without-a-password)
@@ -7926,28 +9168,56 @@ so they are the "switching layer" that `01_overview.md` refers to. First reached
 - [Kalumburu as found (2026-09-24)](#kalumburu-as-found-2026-09-24)
 - [Bidyadanga as found (2026-09-30)](#bidyadanga-as-found-2026-09-30)
 - [Pitfalls](#pitfalls)
+- [Hosts answering an `IPSSH` banner (measured 2026-10-05, UNVERIFIED as TP-Link)](#hosts-answering-an-ipssh-banner-measured-2026-10-05-unverified-as-tp-link)
 
 ## Where they are
 
 Candidates from unified-network-controller's discovery sweeps (`docs/reports/inventory/*-discovery-sweep-*.md`), by TP-Link OUI only; a TP-Link OUI is not proof of a switch until `--discover` shows
 the `TPSSH` banner or a login confirms it:
 
-| Site         | TP-Link addresses in the sweep           | Confirmed 2026-09-30 (`--discover` TPSSH, then a login)                  |
-| ------------ | ---------------------------------------- | ------------------------------------------------------------------------ |
-| kalumburu    | 10.255.0.2, 10.255.0.3                   | Both (first reached 2026-09-24)                                          |
-| bidyadanga   | 10.255.0.2-4                             | 10.255.0.2 only; .3 and .4 are TP-Link OUIs but not switches             |
-| burringurrah | 10.255.0.2-3                             | 10.255.0.3 only (named Switch2)                                          |
-| hope-vale    | 10.255.0.2-4                             | All three                                                                |
-| kowanyama    | 10.255.0.2-3                             | Both                                                                     |
-| pukatja      | 10.255.0.2-3                             | Both                                                                     |
-| aurukun      | 10.255.1.1-2, 10.255.2.1-2, 10.255.3.1-2 | None answered as TPSSH on the management subnet                          |
-| doomadgee    | 10.255.0.2-3                             | None answered as TPSSH                                                   |
-| galiwinku    | 10.255.0.2-4                             | None answered as TPSSH                                                   |
+| Site         | TP-Link addresses in the sweep           | Confirmed 2026-09-30 (`--discover` TPSSH, then a login)      |
+| ------------ | ---------------------------------------- | ------------------------------------------------------------ |
+| kalumburu    | 10.255.0.2, 10.255.0.3                   | Both (first reached 2026-09-24)                              |
+| bidyadanga   | 10.255.0.2-4                             | 10.255.0.2 only; .3 and .4 are TP-Link OUIs but not switches |
+| burringurrah | 10.255.0.2-3                             | 10.255.0.3 only (named Switch2)                              |
+| hope-vale    | 10.255.0.2-4                             | All three                                                    |
+| kowanyama    | 10.255.0.2-3                             | Both                                                         |
+| pukatja      | 10.255.0.2-3                             | Both                                                         |
+| aurukun      | 10.255.1.1-2, 10.255.2.1-2, 10.255.3.1-2 | None answered as TPSSH on the management subnet              |
+| doomadgee    | 10.255.0.2-3                             | None answered as TPSSH                                       |
+| galiwinku    | 10.255.0.2-4                             | None answered as TPSSH                                       |
 
 All 11 are SG2428P hardware 5.30; ten run firmware 5.30.1 Build 20240202, bidyadanga 5.30.5 Build 20250117. Every one enables with no password.
 
 The pattern at most sites is `10.255.0.2` upward, directly after the SMC's own `bridge_500` address `10.255.0.1`. Galiwinku's WAN trunks name their switches `switch01`/`switch02` in topology_vars
 (`01_overview.md` "WAN Uplink Topology Pattern").
+
+## Central chassis port plan, from an as-built (rcp low-touch, old-looma, 2026-10-13)
+
+The as-built chassis drawing of old-looma (rcp, low-touch; unified-network-controller `docs/sites/old-looma/as-built/`, v1.0 2026-08-03) gives the central port plan; it is one site's, but low-touch
+builds follow one design, so check another site's drawing before assuming a difference. `SWP n` in a drawing is the TP-Link port `gigabitEthernet 1/0/n`.
+
+| Switch  | Port                       | Drawn to                                                                                       | Checked against Nautobot cables / LLDP (2026-10-13)          |
+| ------- | -------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Switch1 | SWP 1                      | SMC LAN3                                                                                       | agrees (SMC enp2s0)                                          |
+| Switch1 | SWP 2, 3                   | 3000L SouthEast / SouthWest sectors, each through a 30 V PoE injector (UPS)                    | no cable recorded: the injectors hide the radios from LLDP   |
+| Switch1 | SWP 4                      | AP1 (XV2)                                                                                      | agrees                                                       |
+| Switch1 | SWP 5                      | V5000 (cnWave DN)                                                                              | LLDP agrees; a switch-table sighting had cabled a remote XV2 |
+|         |                            |                                                                                                |   there instead                                              |
+| Switch1 | SWP 9-14                   | Starlink Direct 1-6 NTDs, SMC VLAN interfaces `enp2s0.521`-`.526` (drawn as Internet 3-8)      | SWP 9 agrees; 10 named one number off; 11-14 not found       |
+| Switch1 | SWP 17                     | nbn backup NTD (UNI-D1), SMC `enp2s0.621`                                                      | not found                                                    |
+| Switch2 | SWP 1                      | SMC LAN4                                                                                       | agrees (SMC enp1s0)                                          |
+| Switch2 | SWP 24                     | the UPS picture (corrected 2026-10-14: the line is joined to Switch2 in the XML and enters     | -                                                            |
+|         |                            |   Switch2 in the PDF; earlier read as Switch1)                                                 |                                                              |
+| Switch2 | SWP 8                      | the central tower's router (R195P), cabled, no SM                                              | agrees                                                       |
+| SMC     | LAN1 `eno1`, LAN2 `enp3s0` | Internet 1 and 2 (Telstra Starlink), NTDs straight on the SMC                                  | agrees                                                       |
+
+So an rcp low-touch central chassis carries two uplinks directly on SMC ports and the rest as VLAN sub-interfaces of the SMC's switch trunk, one switch access port per NTD; tower radios hang off
+Switch1, the tower router off Switch2.
+
+Two more central drawings (2026-10-14, read with unified-network-controller `just wc::asbuilt-generate` and checked against their PDFs) keep the same frame (Switch1 SWP 1 to SMC LAN3, Switch2 SWP 1 to
+LAN4, Starlink from SWP 9 up, nbn backup SWP 17, router Switch2 SWP 8, UPS on Switch2 SWP 24) but move the radios: wangkatjungka (Large_SMC v1.1) V5000 SWP 2, 3000L NNE SWP 3, Omni SWP 4, AP1 SWP 5,
+nine Internet interfaces of which four "Not in Use"; yakanarra 3000L Omni SWP 2, Sector South SWP 3, V5000 SWP 4, AP1 SWP 5. The radio ports 2-5 are per site: read each site's drawing.
 
 ## Credentials
 
@@ -7987,10 +9257,9 @@ The driver also answers an in-CLI `User:`/`Username:` prompt, in case a firmware
 
 ## Discovery: why ARP is not enough
 
-The SMC's ARP table cannot be used as the host list. Once a table holds more than `gc_thresh1` entries, the kernel purges any entry unused for
-`gc_stale_time` (60 s); the SMCs hold 169-795 entries, above both their `gc_thresh1` of 1 and the kernel default of 128, and the switches rarely talk to the SMC, so they vanish between runs
-(`13_known-issues.md`, neighbour table 2026-09-24). `--discover` therefore runs `fping -a` over the management subnet only (routes on `bridge_500` or in `10.255.x`) and probes each
-live host's SSH banner for `TPSSH` (about 30 s at kalumburu's /19).
+The SMC's ARP table cannot be used as the host list. Once a table holds more than `gc_thresh1` entries, the kernel purges any entry unused for `gc_stale_time` (60 s); the SMCs hold 169-795 entries,
+above both their `gc_thresh1` of 1 and the kernel default of 128, and the switches rarely talk to the SMC, so they vanish between runs (`13_known-issues.md`, neighbour table 2026-09-24). `--discover`
+therefore runs `fping -a` over the management subnet only (routes on `bridge_500` or in `10.255.x`) and probes each live host's SSH banner for `TPSSH` (about 30 s at kalumburu's /19).
 
 **Never sweep the client bridges.** A first version swept every connected `10.x` route, which included `bridge_501`, a /18 of public Wi-Fi clients: it pinged customer devices, took 4.5 minutes, and
 flooded the neighbour table with thousands of `INCOMPLETE` entries. Without `fping` the script falls back to ARP and warns that quiet switches can be missed.
@@ -8010,36 +9279,33 @@ sites (2026-09-30) by comparing in memory, never printed, then confirmed on all 
 `cambium-devices/*-snmp-*`, not the login password, not `public`/`private`. Two consequences:
 
 - It is guessable from the site name and grants write. Changing it, and whether it goes into the vault, is the operator's decision.
-- The trap host line carries it in the clear. `--backup` redacted only `snmp-server community` until 2026-09-30, so the 2026-09-24 kalumburu captures
-  held it (committed in unified-network-controller `3b54e4c`); since then the trap host name is redacted too and every community value found is
-  leak-checked before a file is written.
+- The trap host line carries it in the clear. `--backup` redacted only `snmp-server community` until 2026-09-30, so the 2026-09-24 kalumburu captures held it (committed in unified-network-controller
+  `3b54e4c`); since then the trap host name is redacted too and every community value found is leak-checked before a file is written.
 
-Query from the SMC, as for any device behind it (UNC `smc_snmp`), with `-t 5 -r 3`: the agent is slow after a large walk, and the default `-t 2 -r 1`
-turned half the subtrees into timeouts that looked like missing MIBs. Which OIDs the project uses, and which are absent, is in
-[snmp-oid-registry-tplink.yaml](snmp-oid-registry-tplink.yaml); one record per switch is in [tplink-site-switches.yaml](tplink-site-switches.yaml).
+Query from the SMC, as for any device behind it (UNC `smc_snmp`), with `-t 5 -r 3`: the agent is slow after a large walk, and the default `-t 2 -r 1` turned half the subtrees into timeouts that looked
+like missing MIBs. Which OIDs the project uses, and which are absent, is in [snmp-oid-registry-tplink.yaml](snmp-oid-registry-tplink.yaml); one record per switch is in
+[tplink-site-switches.yaml](tplink-site-switches.yaml).
 
 ## In Nautobot
 
 Unified-network-controller carries the model in its catalog (`vendors/tp-link/`: manufacturer TP-Link, device type SG2428P with its 28 ports named as ifName reports them, platform `TP-Link Omada
-switch`, role `Switch`) and seeds a switch from its redacted capture with `wc-local/scripts/smc/seed_switch_devices.py`: name `<site>-<sysName>`, Staged, serial, firmware, management VLAN interface with
-its address as primary. Since 2026-09-30 switches are onboarded through UNC's sweep, identify and land stages like Cambium units: the sweep reads each pinged non-Cambium host's SSH banner from the SMC
-(this script's `--discover` probe) and a `TPSSH` banner marks it a switch; identify runs `--backup` once per switch; land knows a switch by the base MAC on its management-only VLAN interface. Canary
-on 2026-09-30, all Staged: nbn_accelerate `hope-vale-Switch1`, `kowanyama-Switch1`, `pukatja-Switch1`; rcp `bidyadanga-Switch1`, `burringurrah-Switch2`, `kalumburu-Switch1`. The management mask is per
-site (37 sites /19, six /22 in topology_vars, 2026-09-30): the address takes its site's Prefix, which must equal topology_vars, and a switch configured otherwise (kalumburu and kowanyama Switch1, /22
-on /19 sites) keeps the site's mask in Nautobot with the difference noted as drift.
+switch`, role `Switch`) and seeds a switch from its redacted capture with `wc-local/scripts/smc/seed_switch_devices.py`: name `<site>-<sysName>`, Staged, serial, firmware, management VLAN interface
+with its address as primary. Since 2026-09-30 switches are onboarded through UNC's sweep, identify and land stages like Cambium units: the sweep reads each pinged non-Cambium host's SSH banner from
+the SMC (this script's `--discover` probe) and a `TPSSH` banner marks it a switch; identify runs `--backup` once per switch; land knows a switch by the base MAC on its management-only VLAN interface.
+Canary on 2026-09-30, all Staged: nbn_accelerate `hope-vale-Switch1`, `kowanyama-Switch1`, `pukatja-Switch1`; rcp `bidyadanga-Switch1`, `burringurrah-Switch2`, `kalumburu-Switch1`. The management mask
+is per site (37 sites /19, six /22 in topology_vars, 2026-09-30): the address takes its site's Prefix, which must equal topology_vars, and a switch configured otherwise (kalumburu and kowanyama
+Switch1, /22 on /19 sites) keeps the site's mask in Nautobot with the difference noted as drift.
 
 ## VLANs: parsing and drift against topology_vars
 
-No FOSS project parses this config (unified-network-controller research, 2026-09-30). netutils' `linux` config parser nests it correctly (the Cisco
-IOS parser fails on the bare `#` lines), and `netutils.vlan.vlanconfig_to_list` expands `500-501,503` and `vlan 621-626` ranges; UNC's
-`seed_switch_devices.parse_config` maps the result. Ports run in general mode: tagged members, untagged members and a PVID; a port starts untagged in
-VLAN 1 until `no switchport general allowed vlan 1`. A PVID outside a port's untagged members is a fault to report (bidyadanga 1/0/17 and 1/0/18:
-untagged 623/624, PVID 621/622, both shut down).
+No FOSS project parses this config (unified-network-controller research, 2026-09-30). netutils' `linux` config parser nests it correctly (the Cisco IOS parser fails on the bare `#` lines), and
+`netutils.vlan.vlanconfig_to_list` expands `500-501,503` and `vlan 621-626` ranges; UNC's `seed_switch_devices.parse_config` maps the result. Ports run in general mode: tagged members, untagged
+members and a PVID; a port starts untagged in VLAN 1 until `no switchport general allowed vlan 1`. A PVID outside a port's untagged members is a fault to report (bidyadanga 1/0/17 and 1/0/18: untagged
+623/624, PVID 621/622, both shut down).
 
-topology_vars assigns VLANs per SMC port (`switch01`, `switch02`), so the switch that is `switch01` is found by exact MAC: an SMC port's MAC, or one
-of its VLAN interfaces' own MACs, in the switch's MAC table (dot1qTpFdbPort). Drift found on 2026-09-30: hope-vale Switch1 defines 503, 522, 524,
-526, 528 and trunks 521-528 to the SMC where topology_vars splits odd and even internets between two switches; bidyadanga Switch1 (`switch01`, SMC
-enp2s0 on 1/0/1) defines 522, 524-528 and 622-626 beyond topology_vars.
+topology_vars assigns VLANs per SMC port (`switch01`, `switch02`), so the switch that is `switch01` is found by exact MAC: an SMC port's MAC, or one of its VLAN interfaces' own MACs, in the switch's
+MAC table (dot1qTpFdbPort). Drift found on 2026-09-30: hope-vale Switch1 defines 503, 522, 524, 526, 528 and trunks 521-528 to the SMC where topology_vars splits odd and even internets between two
+switches; bidyadanga Switch1 (`switch01`, SMC enp2s0 on 1/0/1) defines 522, 524-528 and 622-626 beyond topology_vars.
 
 ## Kalumburu as found (2026-09-24)
 
@@ -8069,10 +9335,576 @@ days.
 
 ## Hosts answering an `IPSSH` banner (measured 2026-10-05, UNVERIFIED as TP-Link)
 
-Source: UNC capture corpus: newest discovery sweep per site (43 sites, about 4,000 hosts, 2026-09-23 to 2026-09-30) and 44 identify reads, aggregated read-only on 2026-10-05. 52 hosts across 25 sites answer SSH with the banner `IPSSH`, not `TPSSH`, and none has a Cambium OUI; they include hosts at sites listed
-above as "TP-Link OUIs but none answered TPSSH" (for example aurukun 4, doomadgee 2, galiwinku 3). OUIs seen include `98:25:4A`, `A8:42:A1` and
-`5C:E9:31`. Whether they are TP-Link switches (another firmware's banner) is **UNVERIFIED**: confirm one with a read-only login before adding `IPSSH` to
-the discovery signature; until then the sweep should keep them in an unmatched-banner bucket rather than drop them.
+**Update 2026-10-20:** UNC's discovery now treats `IPSSH` as TP-Link (`discovery.ssh_banner: [TPSSH, IPSSH]`), on the wandawuy proof below; its
+identify login reads the model before anything lands, so a host that is not a TP-Link stops there. gan-gan (nbn_accelerate) has two hosts at
+10.255.0.2 and 10.255.0.3 answering `SSH-1.99-IPSSH-6.6.0` and no SNMP; before the change its Switch ports stage failed with no switch found.
+Not logged in to (VERIFIED-OBSERVED banner only, 2026-10-20). The catalog line (unified-network-controller `wc-local/nautobot/catalog/vendors/tp-link/manufacturer.yaml`, commit 04c3a7f):
+
+```yaml
+discovery: {ssh_banner: [TPSSH, IPSSH], family: tplink-switch}
+```
+
+**Update 2026-10-14 (VERIFIED_PRIMARY for one site, read-only login):** wandawuy (nbn_accelerate) has two hosts at 10.255.0.2 and 10.255.0.3, OUI `98:25:4A`, banner `SSH-1.99-IPSSH-6.6.0`.
+`scripts/tplink-switch.sh wandawuy <ip> --backup` logged in to both with the `/Network/tplink switch` entry (`enable-no-password`): TP-Link SG2428P, firmware 5.20.0 Build 20230818 Rel.72032, system
+names `Wan-sw01` and `Wan-sw02`. So `IPSSH` is at least this SG2428P firmware's banner; the other OUIs above stay unconfirmed. UNC's onboarding switch stage needs a capture for every switch, which a
+site never surveyed lacks: take one with `--backup` first (arawerr's dated from the 2026-09-30 survey, wandawuy had none).
+
+Source: UNC capture corpus: newest discovery sweep per site (43 sites, about 4,000 hosts, 2026-09-23 to 2026-09-30) and 44 identify reads, aggregated read-only on 2026-10-05. 52 hosts across 25 sites
+answer SSH with the banner `IPSSH`, not `TPSSH`, and none has a Cambium OUI; they include hosts at sites listed above as "TP-Link OUIs but none answered TPSSH" (for example aurukun 4, doomadgee 2,
+galiwinku 3). OUIs seen include `98:25:4A`, `A8:42:A1` and `5C:E9:31`. Whether they are TP-Link switches (another firmware's banner) is **UNVERIFIED**: confirm one with a read-only login before adding
+`IPSSH` to the discovery signature; until then the sweep should keep them in an unmatched-banner bucket rather than drop them.
+````
+
+## File: references/17_site-ata-dallas-delta.md
+````markdown
+---
+Title: rct site ATA (Dallas Delta DDC_VoIP-m)
+Category: reference
+Status: current
+Authority: >-
+  Read-only observations of live units over Teleport apn, 2026-10-08; vendor documents in vendor-sources-dallas-delta-20261008_1043/ stay authoritative for
+  vendor claims.
+Scope: The Dallas Delta Corp VoIP ATA behind the MikroTik switch at rct sites, reached from the SMC on 192.168.5.0/24
+Last reviewed: 2026-10-08
+Summary: >-
+  Identity, address, management surface (web UI only, no SNMP, no SSH), SIP registration readout, which settings are site-unique, and the quirks seen when
+  reading the rct site ATA.
+---
+
+# rct Site ATA — Dallas Delta DDC_VoIP-m
+
+## Contents
+
+- [Identity and placement](#identity-and-placement)
+- [Management surface](#management-surface)
+- [Settings and SIP registration](#settings-and-sip-registration)
+- [Reading quirks and unreachable units](#reading-quirks-and-unreachable-units)
+- [Vendor sources](#vendor-sources)
+
+All facts VERIFIED-OBSERVED 2026-10-08, read-only from the site's SMC over Teleport apn, unless labelled otherwise. No PIN, password or SIP secret is recorded here.
+
+## Identity and placement
+
+- Dallas Delta Corp `DDC_VoIP-m`, firmware `042112`. Web page title `DDC_VoIP Login`; the page source carries the comment `Dallas Delta Corp VoIP telephone Feb 2009 ver2.0`.
+- Address `192.168.5.253/24`, gateway `192.168.5.100` (the second address on the SMC's `bridge_500`, kept for this unit; `03_communication-flows.md`, rct Site Addressing).
+- Cabled to the MikroTik switch's `ether4` (skill-mikrotik reads it from the bridge host table). 20-mile's unit is MAC `38:B1:9E:D0:02:14`.
+
+## Management surface
+
+- **Web UI only.** The login is a password-only form. The PIN was empty on every unit read (adjamarragu, alamirra, akwalirrumanja, alice-well, alkngarrija); treat that as a finding to fix, not a
+  credential to rely on.
+- **No SSH.** Telnet is closed on adjamarragu; on 20-mile the port is open but silent and drops the connection on the first keystroke.
+- **No SNMP.** No answer to SNMP v2c with community `DDC_VoIP` or `public`, and the settings page has no SNMP setting. Only the later S11 generation sends SNMP traps (enterprise 45255; vendor manuals,
+  VERIFIED_PRIMARY for S11 only). Monitor it by its web page or by SIP registration, not SNMP.
+
+## Settings and SIP registration
+
+- The settings page shows `Registered : Yes` or `Registered : No`: that is the unit's SIP registration state, readable without changing anything.
+- Across five units (adjamarragu, alamirra, akwalirrumanja, alice-well, alkngarrija), 83 of 93 settings fields are identical. The site-unique ones are `user_number` and `auth_id` (the SIP number, for
+  example `09990455`), `sip_proxy` (`125.213.160.7` at four sites, `sip00.mvp.symbionetworks.com` at alice-well), `syslog_ip`, `user_name` (set at alice-well only), and the volume settings. The
+  phonebook is identical everywhere (button 1 = Emergency 000).
+- A per-site template therefore needs only those few fields; the rest is a fleet-wide constant.
+- Read and compare units with [`scripts/ata_settings_read.py`](../scripts/ata_settings_read.py) (`just ata_settings_read <proxy> <node>...`): read-only, empty PIN,
+  secret-named fields dropped on the SMC, `Registered` shown per unit. A rerun on 2026-10-08 (adjamarragu, akwalirrumanja, alamirra) counted 92 named settings
+  fields, 86 identical across the three, and found the digitmap differs too: entry `m003` is `1800xxxxxx` at akwalirrumanja and `1800xxxxxxxx` at the other two.
+
+## Reading quirks and unreachable units
+
+- The settings page declares 43 bytes more `Content-Length` than it sends. Python's `http.client` raises `IncompleteRead`; `curl` tolerates it. Catch the exception and keep the partial body.
+- 20-mile's unit never answers HTTP. **Superseded 2026-10-20:** it answers; see "The S11 generation" below.
+- aeroplane-1's unit drops the HTTP connection.
+- kintore-smc01 is not registered in Teleport (`subsystem request failed`, twice), so its ATA could not be reached.
+
+## The S11 generation (20-mile, 2026-10-20)
+
+VERIFIED-OBSERVED 2026-10-20, read-only from 20-mile-smc01 over Teleport apn, one login with the empty PIN.
+
+- 20-mile's ATA is a **DDC_VoIP-BIA** on firmware **s11.0920.04** (the vendor's S11 generation), MAC `38:b1:9e:d0:02:14`, at 192.168.5.253. It is not
+  silent: its replies start with a blank line before the status line, so `curl` refuses them ("Received HTTP/0.9 when not allowed") unless given
+  `--http0.9`, and Python's `http.client` refuses them too (read with a plain socket). That is why it looked as if it never answered HTTP.
+- Its page (`DDC_VoIP Settings`, footer "Dallas Delta Corp Web Page") has no login form and fills its fields by script. The script's reads:
+  `GET /auth=<PIN>,<ms>` logs in (200, body `OK`, with the empty PIN), then `GET /SYS` gives `model,mac,firmware,...`
+  (`DDC_VoIP-BIA,38:b1:9e:d0:02:14,s11.0920.04,show`), `GET /_REG` the registration (`Yes > Server 1,27,0`), and `GET /webdata` the settings as JSON
+  `{"i": {checkboxes}, "n": {field: value}}` with the same field names as DDC_VoIP-m's form (`user_number`, `sip_proxy`; the SIP password is in there,
+  so parse it on the box). Before `/auth` they return 404. `/dotest`, `/getrst` and `POST /settings` also exist; they test, reset or write, so a
+  reader never calls them.
+- A marker matching both generations' pages is "Dallas Delta Corp" (DDC_VoIP-m's comment and the S11 footer).
+- adjamarragu's DDC_VoIP-m now reports MAC `00:18:1F:01:F1:6A`, not the `00-18-1F-01-E6-16` read on 2026-10-08: the unit may have been replaced
+  (UNVERIFIED; same model and firmware 042112, registered).
+
+UNC reads both generations (`identify_candidates.identify_ddc`, `s11_identity`); its catalog has the DDC_VoIP-BIA type.
+
+Excerpt (unified-network-controller `wc-local/scripts/site_onboarding/identify_candidates.py` `DDC_AGENT`, commit 04c3a7f), run on the SMC:
+
+```python
+def raw_get(path):                       # the S11 reply starts with a blank line: http.client and curl refuse it
+    s = socket.create_connection((ip, 80), timeout=20)
+    s.sendall(("GET %s HTTP/1.0\r\nHost: %s\r\n\r\n" % (path, ip)).encode())
+    ...                                  # read to EOF, cut at the first "HTTP/", split head and body at the blank line
+if raw_get("/auth=,%d" % int(time.time() * 1000))[0] == "200":   # empty PIN
+    facts = s11_identity(raw_get("/SYS")[1], raw_get("/_REG")[1], raw_get("/webdata")[1])
+# s11_identity: /SYS "model,mac,firmware,..." split on ","; /_REG starts "Yes"; /webdata JSON n.user_number, n.sip_proxy only
+```
+
+Screenshot pending: the ATA's `DDC_VoIP Settings` page, taken from the SMC through a port forward with its SIP number and server redacted.
+
+> **Learned 2026-10-20 (b)** · Dallas Delta ATA web pages, both generations · VERIFIED-OBSERVED (seven rct SMCs, read-only `curl --http0.9` through
+> Teleport apn; six DDC_VoIP-m, one S11) · Source: unified-network-controller `wc-local/scripts/site_onboarding/discover_site.py` and its catalog
+> (commit 075d6b9), `scripts/checks/ata_chain_check.py` (commit 5b3d4e6), real S11 page kept as `tests/fixtures/ddc-voip/s11-home-page.txt` ·
+> Falsifier: an S11 page without "DDC_VoIP" near its start, or a DDC_VoIP-m page without it in its first 4 KB
+> Refines the "Dallas Delta Corp" marker above: true of both pages, but on S11 it first appears at byte 24,545 of 24,860 printable characters
+> (the footer), so a reader that keeps only the start of a page misses the unit (a 4 KB read classed the S11 unit "other"). "DDC_VoIP" is in both
+> generations' first 2 KB: the S11 title "DDC_VoIP Settings" at byte 92; the whole DDC_VoIP-m home page is 1,747 characters. On each of the six
+> DDC_VoIP-m sites the ATA was the only host answering on 192.168.5.0/24 besides the SMC (.100), at 192.168.5.253, firmware 042112, MACs in
+> 00:18:1F:01:xx:xx; the one S11 unit's MAC is 38:b1:9e:... (a different block, so the MAC prefix does not identify the generation alone).
+>
+> ```python
+> # discover_site.py (075d6b9): the probe keeps PAGE_BYTES of each page, printable characters only, run on the SMC
+> PAGE_BYTES = 32768
+> probe() { t=$(curl -s --http0.9 -m 6 "http://$1/" 2>/dev/null | head -c PAGE_BYTES | tr -cd '[:print:]') ...
+> # catalog vendors/dallas-delta/manufacturer.yaml: the title marker first, the comment marker for the old firmware
+> discovery: {http_marker: [DDC_VoIP, Dallas Delta Corp], family: ddc-voip}
+> ```
+
+## Vendor sources
+
+Manuals, datasheets, web pages, the IANA and IEEE excerpts and a firmware note are in [vendor-sources-dallas-delta-20261008_1043/](vendor-sources-dallas-delta-20261008_1043/readme.md). No firmware
+image or MIB is publicly downloadable. The ATA's switch port and the switch itself belong to skill-mikrotik.
+````
+
+## File: references/18_local-knowledge-ansible.md
+````markdown
+---
+Title: Local-knowledge folder for ansible-wifi
+Category: reference
+Status: current
+Authority: local-supplement
+Scope: /Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi and how it is wired into the ansible-wifi checkout
+Last reviewed: 2026-10-23
+Summary: >-
+  What lives in the local-only ansible-wifi knowledge folder, how its playbooks, roles and governance files appear in the ansible-wifi repo without
+  reaching Bitbucket, what operator tooling is built there (smc_change role), and the standing rule to read it at the start of SMC work.
+---
+
+# Local-knowledge folder for ansible-wifi
+
+## Contents
+
+- [Standing rule](#standing-rule)
+- [Layout](#layout)
+- [How it is wired into ansible-wifi](#how-it-is-wired-into-ansible-wifi)
+- [Operator tooling built here](#operator-tooling-built-here)
+- [Learned](#learned)
+
+## Standing rule
+
+`/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi` is where ansible-wifi work that must not reach the Bitbucket repo is done and kept: governance, investigations, evidence, plans and
+local-only operator playbooks and roles (operator, 2026-10-23). This pack must stay across it:
+
+- At the start of SMC work, run `just local_knowledge_index` (or `scripts/local_knowledge_index.sh --days 3`) to see what is wired in and what changed lately, and read anything new under `playbooks/`,
+  `roles/`, `evidence/` and `issues/` that bears on the task.
+- When something new is built there (a playbook, a role, a change spec, a script, an evidence set), add it to [Operator tooling built here](#operator-tooling-built-here) or [Layout](#layout) in the same session, with its path and how to run
+  it.
+- Facts learned while working there still go to the matching `references/*.md` file; this file records the folder itself.
+
+## Layout
+
+| Folder                           | Holds                                                                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `ansible-wifi-root-governance/`  | the repo's governance files (AGENTS.md, CLAUDE.md, CHANGELOG.md, SCRATCHPAD.md, ROADMAP.md, .archcore, ...) |
+| `evidence/`                      | dated evidence sets, e.g. `php-cve-2026-109618-20261022_1128/` (assessment, CSV, raw probes)                |
+| `issues/`                        | per-fleet investigation folders (`rct-fleet`, `wh-fleet`, `apn`, `rcp-fleet`, ...)                          |
+| `plans/`                         | design plans (`<slug>-YYYYMMDD_hhmm.md`)                                                                    |
+| `playbooks/`                     | local-only operator playbooks, symlinked into the repo root                                                 |
+| `roles/`                         | local-only roles, symlinked into `roles/` of the repo                                                       |
+| `scripts/`                       | ansible-lint baseline and delta-gate scripts (promoted copies live in this pack's `scripts/`)               |
+| `opa/`, `snapshots/`, `history/` | OPA policies and tests, state snapshots, archived history                                                   |
+| `graphify-out/`, `ai-tooling/`   | generated knowledge graph; AI tooling notes                                                                 |
+
+The folder is part of the `local-knowledge-ansible` git repository (remote on GitHub, private), not the ansible-wifi one.
+
+## How it is wired into ansible-wifi
+
+Every file the repo should see but not commit is an absolute symlink from the ansible-wifi checkout into this folder, and its repo-relative path is listed in the checkout's `.git/info/exclude` (not
+`.gitignore`, which is committed). `git status --ignored` shows them as `!!`. To add one:
+
+```bash
+ln -s /Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/playbooks/<name>.yml /Volumes/Data/_ansible/ansible-wifi/<name>.yml
+printf '<name>.yml\n' >> /Volumes/Data/_ansible/ansible-wifi/.git/info/exclude
+git -C /Volumes/Data/_ansible/ansible-wifi check-ignore -v <name>.yml     # must name .git/info/exclude
+```
+
+One linter per language at the checkout root, each config a symlink into `ansible-wifi-root-governance/` and git-excluded the same way
+(operator, 2026-10-23: two-space indent, new files only, existing files listed as excluded): `ruff.toml` (Python; 22 files
+`force-exclude`d), `djlint.toml` (Jinja2, lint only, HTML rules ignored; 123 templates excluded), `.taplo.toml` (TOML), `biome.jsonc`
+(JSON, biome 2.5.15 via npx; 18 files excluded), `.editorconfig` + `.shellcheckrc` (shell: shfmt honours the editorconfig `ignore = true`
+list of the 24 existing scripts, shellcheck checks what shfmt lists). `./lint_new.sh` at the root runs them all plus an `ansible-inventory`
+parse of every inventory (about 8 s); a negative test with one bad file per language failed every step. Tools that skip a git-excluded or
+symlinked tree (ruff, shfmt, djlint) get the physical path of the local-only roles; `.editorconfig` is also linked into
+`local-knowledge-ansible/ansible-wifi/` so shfmt finds it from there. A symlinked role resolves because `ansible.cfg` sets `roles_path = ./roles`. Keep a symlinked playbook self-contained or role-based: do not rely on paths relative to the playbook file.
+
+## Operator tooling built here
+
+| Item                                             | What it is                                                        | Run                                                                           |
+| ------------------------------------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `roles/smc_change/` + `playbooks/smc_change.yml` | generic change role: one spec per change in                       | `ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <h>`        |
+|                                                  |   `files/changes/<name>.yml`; before-probe, guard, backup,        |   `-e smc_change=<spec> [-e smc_change_mode=apply]`; default mode `check`     |
+|                                                  |   actions (apt_pin, template, copy, ini, command) live and in the |   (read only)                                                                 |
+|                                                  |   overlayroot lower dir, restart, reboot, after-probe and gates.  |                                                                               |
+|                                                  |   Every run's JSON record lands in                                |                                                                               |
+|                                                  |   `roles/smc_change/runs/<spec>/`. README in the role; skill-smc guide: `19_smc-change-role.md`.            |                                                                               |
+| spec `php-cve-2026-109618`                       | php8.1 to 8.1.2-1ubuntu2.28 on rcp, nbn_accelerate, rct, wh (nbn_wh | as above                                                                      |
+|                                                  |   only when allowed)                                              |                                                                               |
+| spec `php-ini-upload-progress-off`               | interim php.ini mitigation (assessment 5.1)                       | as above                                                                      |
+| `playbooks/smc_update_php.yml`                   | the single-file predecessor of the PHP spec; keep until the       | `ansible-playbook ... smc_update_php.yml -l <h> -e smc_php_mode=check`        |
+|                                                  |   role's apply path is proven, then retire                        |                                                                               |
+
+State on 2026-10-23: the role's `check` and `verify` modes ran on warehouse-smc01, nocprov-smc01 (x86) and warehouse-rct01 (Pi, overlay off). `apply` has not run anywhere; the overlay lower-dir chroot
+path is `UNVERIFIED` until a canary on warehouse-rct01 with its overlay enabled.
+
+## Learned
+
+> **Learned 2026-10-23** · local-knowledge wiring · VERIFIED-OBSERVED (`git check-ignore -v`, `scripts/local_knowledge_index.sh`) · Source: ansible-wifi
+> `.git/info/exclude` lines 77-79; local-knowledge-ansible `ansible-wifi/roles/smc_change/` (uncommitted at writing) · Falsifier: a symlink into this folder that `git status` lists as untracked 31
+> paths in the ansible-wifi checkout are symlinks into this folder, all ignored through `.git/info/exclude`; a new local playbook or role follows the same pattern (the role's runs/ records stay in the
+> knowledge repository). No visual surface.
+
+> **Learned 2026-10-26** · VERIFIED_PRIMARY · local-only `roles/smc_change` now contains controller journals, explicit safe resume,
+> read-only assess and phase timing; `justfile` catalogs four recovery fixtures. Source: role README and `references/19_smc-change-role.md`,
+> Interrupted-change recovery section. No new diagnostic script was added to this pack; the helpers are runtime implementation owned by the role.
+````
+
+## File: references/19_smc-change-role.md
+````markdown
+---
+Title: smc_change role - making any change to SMCs with before/after proof
+Category: reference
+Status: current
+Authority: local-supplement
+Scope: >-
+  roles/smc_change and smc_change.yml (source local-knowledge-ansible/ansible-wifi, symlinked into the ansible-wifi checkout); usable from any
+  project that changes SMC boxes
+Last reviewed: 2026-10-26
+Summary: >-
+  How to run smc_change, write a change spec, read its stages, gates and run records, how it persists a change on overlayroot Pis, what it
+  leaves on a box (nothing, after a success), how to roll back, how to extend it, and what is proven so far.
+---
+
+# smc_change role
+
+## Contents
+
+- [Interrupted-change recovery and production PHP review (2026-10-26)](#interrupted-change-recovery-and-production-php-review-2026-10-26)
+- [When to use it](#when-to-use-it)
+- [Where it is](#where-it-is)
+- [Running it](#running-it)
+- [Stages and output](#stages-and-output)
+- [Writing a change spec](#writing-a-change-spec)
+- [What it checks](#what-it-checks)
+- [Overlayroot persistence](#overlayroot-persistence)
+- [Nothing left on the box, run records, rollback](#nothing-left-on-the-box-run-records-rollback)
+- [Already done, and force](#already-done-and-force)
+- [Extending it](#extending-it)
+- [Status and open items](#status-and-open-items)
+- [Pitfalls it already handles](#pitfalls-it-already-handles)
+
+## When to use it
+
+Any change to SMC boxes that must be proven harmless: a package to a fixed version, a config file from a template, an ini option, a scripted step. Built for the PHP CVE-2026-109618 rollout
+(2026-10-23, operator: "not limited to just this kind of change"). A project outside ansible-wifi that needs to change SMCs adds a spec rather than writing its own playbook.
+
+## Where it is
+
+| Path                                                                                   | Seen in the ansible-wifi checkout as |
+| -------------------------------------------------------------------------------------- | ------------------------------------ |
+| `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/roles/smc_change/`        | `roles/smc_change` (symlink)         |
+| `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/playbooks/smc_change.yml` | `smc_change.yml` (symlink)           |
+| `.../ansible-wifi-root-governance/ruff.toml`                                           | `ruff.toml` (symlink)                |
+
+All listed in the checkout's `.git/info/exclude`, so none reaches Bitbucket. The role's `README.md` is the full manual and the header of `smc_change.yml` explains every `-e` option. Wiring and the
+rest of that folder: `18_local-knowledge-ansible.md`.
+
+## Running it
+
+```bash
+ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec>                        # check: read only
+ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec> -e smc_change_mode=apply
+ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec> -e smc_change_mode=verify
+```
+
+Main options: `smc_change_serial` (default 1), `smc_change_on_refusal` (`skip` default: a refused host is recorded and skipped), `smc_change_rollback` (`repack` default), `smc_change_soak_minutes`
+(5), `smc_change_reboot` (true), `smc_change_allow_unhealthy_baseline`, `smc_change_allow_nbn_wh`, `smc_change_report_dir` (default `roles/smc_change/files/changes`), `smc_change_runs_dir` (default `<report_dir>/<change>/runs`). An unreachable host is recorded and
+skipped, so one offline box does not stop a fleet run (side-agent review, 2026-10-23); a host that fails after its change started stops the run.
+
+Rollout pattern (operator, depth before breadth): one stage box in `check`, then `apply`; one prod box per flavor; then the flavor with `-e smc_change_serial=5`, run by the operator from the
+handed-over command.
+
+## Stages and output
+
+Eleven stages, each printed as `STAGE n/11 NAME - what it does now` (operator, 2026-10-23: show where the play is): 1 SPEC, 2 SCOPE, 3 PROBE, 4 GUARD, 5 BACKUP, 6 ACTIONS, 7 RESTART, 8 REBOOT, 9
+VERIFY, 10 CLEANUP, 11 RECORD. check runs 1-4 and 11; verify 1-4, 9 and 11; apply all. The output has **Change requested** (stage 1), **Planned on this host** (stage 4, e.g. `1. apt_pin: php8.1-common
+8.1.2-1ubuntu2.18 -> 8.1.2-1ubuntu2.28`), a HOST/HEALTH/CHECK summary, a **RESULT** block (`PASSED: all 10 gates hold (...)` plus one `CHECK` line per check), and a final play listing every host of
+the run with its result (`passed`, `gates_failed`, `failed`, `refused`, `unreachable`, `probed`).
+
+## Writing a change spec
+
+`files/changes/<name>/<name>.yml` (one folder per change: the spec, its flow-map parts and its `runs/`; operator, 2026-10-26), `name` equal to the file name; templates in `templates/<name>/`, copied files in `files/<name>/`. A check runs only when the spec lists it. The PHP spec, abridged (source:
+`roles/smc_change/files/changes/php-cve-2026-109618/php-cve-2026-109618.yml`):
+
+```yaml
+name: php-cve-2026-109618
+applies_to: {flavors: [rcp, nbn_accelerate, rct, wh, nbn_wh], arch: [x86_64, aarch64]}
+actions:
+  - {type: apt_pin, packages: ['php8.1*', 'libapache2-mod-php8.1'], version: 8.1.2-1ubuntu2.28}
+backup: {paths: [/etc/php, /etc/apache2], repack: true, shared: ['*.deb']}
+restart:
+  services: [apache2]
+  processes:
+    - {pattern: 'php Start.php', respawn: cron}   # apn-mqtt-client
+    - {pattern: 'php -S ', respawn: cron, start_now: true}   # rct-tstik on 10.254.0.1:8080
+reboot: overlay_only
+verify:
+  services_active: [apache2]
+  commands: [{cmd: apache2ctl configtest}, {cmd: apache2ctl -M, expect_text: php_module}]
+  same_as_before: ['php -m']
+  stale_maps: [php]
+  http: [{name: portal, fqdn_var: smc_bases_portal_fqdn, protocol_var: smc_bases_portal_protocol, same_status: true,
+          bad_markers: [must be writable, Undefined variable, Fatal error, Kohana_Exception, '<?php']}]
+  logs: [{path: /var/log/apache2/error.log, fail_on: 'PHP (Fatal|Parse) error|Segmentation fault'}]
+  report_only: [{path: /var/log/apache2/access.log, count: {5xx: '" 5\d\d ', pin_activations: 'wifi/access/\d+ HTTP/[\d.]+" 302 '}}]
+```
+
+Action types: `apt_pin` (packages, version), `template` and `copy` (src, dest, owner, group, mode), `ini` (path, section, option, value), `command` (cmd, check, chroot; on an overlay box `chroot` is
+required). Other specs: `php-ini-upload-progress-off` (an `ini` action).
+
+## What it checks
+
+Only checks the spec configures produce a gate: `overlay` (always), `services`, `commands`, `same_as_before`, `http`, `http_same_status`, `packages`, `files`, `persisted` (overlay boxes), `stale` (no
+process maps a deleted file matching `stale_maps`), `logs`, `processes` (each cron-respawned process that ran before runs again). Before an apply, the configured `services`, `commands` and `http` must
+hold, else the host is refused. HTTP endpoints are fetched by their real ServerName with `curl --resolve` to the address `apache2ctl -S` binds (rct hosts have no `topology_interfaces`; a `localhost`
+probe hits the default vhost, `10_captive-portal.md` 11.8).
+
+## Overlayroot persistence
+
+The lower dir `/media/root-ro` is remounted rw for the write phase and always back to ro. File actions write to both paths; `apt_pin` installs live, then `dpkg -i` of the same .debs in a chroot of the
+lower dir with `policy-rc.d` returning 101, and refuses to go on unless the lower dir's dpkg database shows the version, so a box is never rebooted onto the old build. Then one reboot (operator choice
+over the two- reboot disable/enable-overlay path). `UNVERIFIED` until the warehouse-rct01 canary. Core (source `roles/smc_change/tasks/actions/apt_pin.yml`):
+
+```yaml
+- name: Install the .debs inside the chroot
+  ansible.builtin.shell:
+    cmd: >-
+      chroot {{ smc_change_lower_dir }} /bin/sh -c 'DEBIAN_FRONTEND=noninteractive
+      dpkg --force-confdef --force-confold -i {{ smc_change_stage_dir }}/*.deb'
+```
+
+## Nothing left on the box, run records, rollback
+
+Operator, 2026-10-23: nothing may be left on an SMC after a successful change. The role writes nothing on the box except the change and, during the run, its backup. Stage 10 (successful apply only)
+copies the backup to `files/changes/<spec>/runs/backups/<host>-<start>/` on the controller, removes it from the box (lower dir included), removes the .debs apt downloaded and dpkg-repack if the run installed it,
+and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `files/changes/<spec>/runs/<host>-<spec>-<mode>-<start>.json` on the controller only: result, stage and task of a
+failure, refusal or unreachable reason, gates, plan, backup path, both probes.
+
+Rollback is a mode: `-e smc_change_mode=rollback` (operator, 2026-10-23). It finds the newest backup of the change for the host (controller
+`files/changes/<spec>/runs/backups/<host>-*` first, else one a failed apply left on the box; `-e smc_change_rollback_from=<host>-<start>` picks one),
+stages it, and undoes the actions last first through `tasks/actions/<type>_rollback.yml`: `apt_pin` reinstalls the saved .debs with
+`dpkg -i` (live, and in a lower-dir chroot on overlay boxes), `template`/`copy`/`ini` restore the file from `paths.tgz`, `command` runs the
+spec's `undo`. It restarts, reboots per the spec, and is judged on health plus `restored`. Allowed on an unhealthy box. Check-mode run on
+nocprov-smc01 found the box backup of the operator's apply and its six `.18` builds; a real rollback has not run (it would reinstate the
+vulnerable build).
+
+## Already done, and force
+
+Each passed apply or rollback is stored per host in `files/changes/<spec>/runs/state/<host>.json` on the controller (operator, 2026-10-23: a rerun must
+skip the SMCs already done). The next apply skips such a host as `already_done`, records it and goes on with the rest; `-e
+smc_change_force=true` re-runs them (tested in check mode on nocprov-smc01 with a stored state: skipped, then not skipped with force).
+
+## Extending it
+
+The role's tasks name no action or check type (operator, 2026-10-23: generic). Type knowledge lives in two places: `tasks/actions/<type>.yml` (how to make a change; register anything to remove in
+`smc_change_cleanup_paths`/`_globs`/`_packages`) and `files/probe/NN_<check>.py`, one file per check type that calls `register(Check(...))` with `collect`, `healthy`, `gates`, `persisted`, `describe`
+and, for an action type, `plan`. `tasks/probe.yml` joins the parts in name order and pipes them to `python3 -`, so nothing is written to the box. Python is two-space indented and checked with ruff
+(`files/probe/check.sh`: lint on the joined program, format per part) against the project-root `ruff.toml`, which excludes the 22 existing four-space files with `force-exclude` (operator: new files
+only).
+
+```python
+# roles/smc_change/files/probe/99_main.py (2026-10-23)
+for check in CHECKS:
+  check.call("collect", cfg, out, base)
+...
+gates = {"overlay": out["overlay"] == base["overlay"]}
+for check in CHECKS:
+  gates.update(check.call("gates", cfg, out, base, default={}))
+```
+
+The split was proven behaviour-neutral: four runs (check and verify on warehouse-smc01 and nocprov-smc01) gave identical records before and after, timestamps and live traffic counts aside.
+
+## Status and open items
+
+As of 2026-10-23:
+
+- nocprov-smc01 (x86 stage bench box): `apply` by the operator moved php8.1 .18 to .28, all gates passed (before the cleanup stage existed, so its backup, 7 host-side records, dpkg-repack and 7 cached
+  .debs are still on it).
+- warehouse-smc01: packages at .28 by unattended-upgrades, apache still on the deleted old libphp (`verify` fails `stale`).
+- Pi canary warehouse-rct01 off Teleport since about 13:45 (backdoor up); the overlay path is `UNVERIFIED`.
+- Not yet run: an `apply` with the cleanup stage (the agent's apply was refused by the auto-mode classifier; operator to run it).
+- `playbooks/smc_update_php.yml` stays until the role's overlay apply path is proven.
+
+## Pitfalls it already handles
+
+- Installed version is not running code: the `stale` gate reads `/proc/*/maps` (13_known-issues, Learned 2026-10-23).
+- Ansible `environment:` values sit on the remote command line, so `pgrep -f` matched the probe's own shell; the probe leaves its ancestor chain out (13_known-issues, Learned 2026-10-23 (b)).
+- A skipped task re-registers its variable; chroot open/close share a fact instead (skill-coder `languages/ansible.md`).
+- A YAML folded scalar passes `'\n'` to Jinja as a literal backslash-n; the probe join uses a newline variable from a double-quoted string.
+- A `-l` limit also filters a `hosts: localhost` play; the run stamp and summary run on the managed group, delegated to localhost.
+- ruff honours `.git/info/exclude` through the checkout's symlink and then finds no files; `check.sh` works from the physical path.
+- A `command` action on an overlay box must set `chroot`, or the role's own reboot undoes it unseen (side-agent review).
+
+> **Learned 2026-10-23** · overlay lower dir close and reboot policy · VERIFIED-OBSERVED (php-rct-smc01, first real overlay apply and rollback) ·
+> Source: roles/smc_change/tasks/main.yml, tasks/persist_overlay.yml, tasks/reboot.yml (local-knowledge, uncommitted local-only role) · Falsifier: an
+> overlay apply that replaces a file a running process maps and still remounts the lower dir ro before that process restarts
+> The first overlay apply failed at stage 6: `mount -o remount,ro /media/root-ro` gave "mount point is busy". dpkg in the chroot had replaced
+> `libphp8.1.so`, the PHP extensions and `/usr/bin/php8.1` in the lower dir while apache2 and cron's `php -S` still mapped the old inodes
+> (`/proc/<pid>/maps` "(deleted)"); a filesystem with unlinked-but-open inodes refuses a read-only remount. Restarting apache2 and killing `php -S`
+> (cron relaunches it) emptied the list and the remount worked. Fix: the lower dir now closes after stage 7 (restart), and only a failed backup or
+> action closes it at once; a close that still fails names the holders. New spec policy `reboot: overlay_fallback` (operator, 2026-10-23: reboot only
+> as the last resort): an overlay box reboots only when the lower dir stays read-write after the restarts, then the role checks it came back ro;
+> otherwise the apt_pin chroot check of the lower dir's dpkg database is the persistence proof. The PHP spec uses it. Rollback then passed with no
+> reboot (lower dir ro, `.18` live and lower). The kernel calls changes to a mounted overlay's lower layer undefined behaviour (VERIFIED_PRIMARY,
+> docs.kernel.org/filesystems/overlayfs.html, "Changes to underlying filesystems"); the upper tmpfs copy masks it until the next reboot.
+>
+> ```yaml
+> - name: Restart
+>   ansible.builtin.include_tasks: restart.yml
+> # The restarts above released the replaced files, so the lower dir can go read-only again.
+> - name: Close the lower dir
+>   ansible.builtin.include_tasks: persist_overlay.yml
+>   vars:
+>     smc_change_overlay_step: close
+>     smc_change_overlay_tolerate: "{{ smc_change_spec.reboot | default('never') == 'overlay_fallback' and smc_change_reboot | bool }}"
+>   when: smc_change_before.overlay
+> ```
+>
+> Flow map: `roles/smc_change/drawio/parts/master.yaml` and its parts assemble to `drawio/flows.yaml`, which renders `drawio/flows.drawio`, both with
+> `just smc_change_flows`; `just smc_change_flows_check` reports drift in either. Pages: Overview, `E2E flow` (the modes Check, Apply,
+> Verify, Rollback), one `E2E: <change>` page per change spec, then the mode pages. A change spec's folder `files/changes/<spec>/` holds its parts
+> `flow-components.yaml` and `flow-flows.yaml`, included from master, and a family in `drawing.families` with `own_page: true, flow_pages: false`: its flows explain
+> the change itself (where the affected code runs, the fix, why it takes effect, the proof, the rollback), each step naming the stage that
+> does it, numbered from 1 and kept off the `E2E flow` page. Written by hand from the spec; nothing generates them (operator, 2026-10-26).
+
+> **Learned 2026-10-23** · spec fields proves and soak_minutes, undo backup path · VERIFIED_PRIMARY · Source: php-rct-smc01 runs of
+> etc-hosts-hostname (apply refused, then rollback, apply); roles/smc_change files/probe/30_commands.py, tasks/load_spec.yml,
+> tasks/actions/command_rollback.yml, tasks/verify.yml · Falsifier: an apply refused as unhealthy only because a `proves` check is false before the change
+> `verify.commands` doubles as baseline health, so a spec whose checks describe the fixed state was refused as "already unhealthy" (needed
+> `-e smc_change_allow_unhealthy_baseline=true`). New `verify.proves` (same form as commands): run in both probes, never counted as health,
+> judged as the `proves` gate after an apply and ignored by a rollback (which is judged on health plus `restored`). New spec `soak_minutes`
+> (operator, 2026-10-23): `-e smc_change_soak_minutes` wins, then the spec, then 5; 0 for a change that restarts nothing (hosts change: 45 s, not
+> 6 min). A `command` action's `undo` gets `SMC_CHANGE_BACKUP`, the folder of the backup being restored as seen live or inside the chroot:
+> after a passed apply the cleanup stage leaves no backup on the box, and rollback stages the controller copy in `/var/cache/smc_change/rollback`
+> (lower dir on overlay boxes); the spec itself is templated at load and cannot name role variables. Spec `etc-hosts-hostname` writes the
+> smc_network form (`127.0.0.1 localhost <host>`, `127.0.1.1 <host>`) live and in the lower dir; proven apply, rollback, apply.
+>
+> ```yaml
+> - name: Run the undo live
+>   ansible.builtin.command:
+>     argv: [/bin/sh, -c, "{{ smc_change_action.undo }}"]
+>   environment:
+>     SMC_CHANGE_BACKUP: "{{ smc_change_rb_dir }}"
+> ```
+
+> **Learned 2026-10-26** · spec field backup.shared: name-identified backup files kept once for all SMCs · VERIFIED_PRIMARY (offline) · Source:
+> local-knowledge-ansible `2ade781`, roles/smc_change tasks/cleanup.yml, tasks/rollback_locate.yml, tasks/load_spec.yml; warehouse-rct01 apply
+> 20261026_145159 fetched the same seven php8.1 .debs per SMC · Falsifier: a second SMC at an already pooled version still fetches its .debs
+> Operator, 2026-10-26: the same build must not be copied from every SMC, and which files that applies to is the change spec's choice, not the
+> role's (the role stays generic; a future change may want per-SMC copies or share another file type). Spec `backup.shared` is a list of globs;
+> stage 10 fetches only backup files whose name the controller pool `files/changes/<spec>/runs/backups/shared/`
+> lacks, links fetched ones into the pool (`ln` never overwrites, so two SMCs fetching the same name at once leave one copy) and writes
+> `shared.txt` in the host folder; rollback copies the listed files back beside `paths.tgz`. Absent or `[]` = full copy per SMC (etc-hosts-hostname,
+> php-ini-upload-progress-off). The match is by name only: dpkg-repack of one build on two SMCs gives different bytes (embedded timestamps), so a
+> checksum compare would never share anything. Only list files whose name changes when the content does (`<package>_<version>_<arch>.deb`); the
+> spec loader refuses globs matching `paths.tgz` (same name on every SMC, that SMC's own config). Per-SMC config differences stay in `paths.tgz`,
+> restored after `dpkg -i --force-confold`. Tested offline (glob split, pool skip, race guard, missing `shared.txt`); not yet run on an SMC.
+>
+> ```yaml
+> # roles/smc_change/tasks/cleanup.yml (local-knowledge-ansible 2ade781)
+> - name: Copy the backups to the controller
+>   ansible.builtin.fetch:
+>     src: "{{ smc_change_file }}"
+>     dest: "{{ smc_change_ctl_backup }}/"
+>     flat: true
+>   loop: "{{ smc_change_backup_files.files | default([]) | map(attribute='path') | reject('in', smc_change_pooled_on_box) | list }}"
+> ```
+
+> **Learned 2026-10-26** · soak counted from the restart, start_now, PHP checks beyond the portal home page · VERIFIED_PRIMARY (offline role
+> code; live probes read-only) · Source: roles/smc_change tasks/restart.yml, tasks/reboot.yml, tasks/verify.yml, playbooks/smc_change.yml (Run
+> summary); warehouse-rct01 apply 20261026_145159 (17 min: ~3.5 min cron wait then a 5 min soak that saw 1 access-log line); access logs of 4
+> prod RCT SMCs (adjamarragu, alice-well, bidyadanga-airport, cave-hill: 13-123 page loads over all kept logs) · Falsifier: a soak that runs
+> the full soak_minutes after a cron wait, or a start_now process that runs twice
+> The soak waits only for what is left of `soak_minutes` after the restart (or the reboot), so the cron wait counts toward it. A `restart.processes`
+> entry with `start_now: true` is started at once from root's own cron line (cron's `/bin/sh`, `PATH=/usr/bin:/bin` and the crontab's `NAME=value`
+> lines, via `setsid -f`), after waiting up to 10 s for the old process to exit. Only for programs that cope with cron starting them again: rct-tstik
+> (`cd /var/www/html/rct-tstik/public && nohup php -S 10.254.0.1:8080 &>/dev/null`, no "already running?" check) does, because a second copy cannot
+> bind the port. Spec php-cve-2026-109618 now soaks 1 minute and checks the portal's `/index.php/wifi/terms` (a second view, loaded by real
+> clients; `/` and `/index.php/wifi/index` are the same page) and the tstik page on 8080 by port test plus page text. `pgrep -f 'php -S '` inside
+> a shell matches the shell's own command line, so shell checks test the port instead. Root's crontab also runs `57 23 * * * pkill -9 php` (kills
+> CLI PHP nightly; cron restarts it). The final Run summary now prints each host's gates (`gates 10/10 hold: ...` or the failed ones).
+> Probe commands take optional `name` (labels the line and shows the command's last output line) and `timeout` (s, default 30). The PHP spec
+> checks rct-tstik's AVR by running `php artisan update:stats` (root cron */5; ~15 s, 24 serial reads over `SerialIIO("serial4", 19200 ...)`
+> in app/Services/IOManager.php) and judging the lines it appends to storage/logs/laravel.log: at least one `Total Read Data[126,...]` and no
+> `Unable to read the data from AVR`. Every RCT SMC has an AVR except the bench Pi php-rct-smc01 (operator, 2026-10-26), whose log holds only
+> empty reads and that error; a log that never held a `Total Read Data[126` line is taken as no AVR and passes. laravel.log is one large
+> file (270-436 MB on prod) with thousands of network `local.ERROR` lines (cURL 6/28, socket_connect), so a gate on any ERROR would fail every
+> site; 0 AVR errors ever on warehouse-rct01, alice-well, cave-hill, adjamarragu. Check mode on warehouse-rct01 (2026-10-26, 120 s): portal-terms
+> 200, tstik page renders, 24 AVR reads, no errors. `/index.php/wifi/terms` answers 200 with HTML on prod wh, nbn_accelerate, nbn_wh and rcp too.
+>
+> ```yaml
+> - name: Let client traffic reach the changed box (what is left of the soak)
+>   ansible.builtin.pause:
+>     seconds: "{{ smc_change_soak_left }}"
+>   vars:
+>     smc_change_soak_left: >-
+>       {{ [smc_change_soak | int * 60 - (now().timestamp() | int - smc_change_restarted_at | default(now().timestamp()) | int), 0] | max }}
+> ```
+
+## Interrupted-change recovery and production PHP review (2026-10-26)
+
+`VERIFIED_PRIMARY` (source and direct runtime, ansible-wifi branch `rise`; local-knowledge base `aacf57c` plus uncommitted recovery work):
+production RCT PHP apply 20261026_161421 passed 11/11 gates in 792 s. Seven `.18` packages became `.28` live and in the lower dir; lower dir ro,
+no reboot, portal/terms/TSTIK render, 24 AVR reads without errors, unchanged modules, no deleted PHP maps. Fresh read-only checks confirmed
+package/service/mount/pages/cleanup state; controller config tar and seven saved old builds exist. PIN activation and forced reboot survival
+were not demonstrated. Review: local-knowledge `evidence/smc-change-recovery-20261026_1701.md`.
+
+`USER_STATED` (2026-10-26): add a generic recovery journal and safe explicit resume; optimize only after phase timings exist.
+`VERIFIED_PRIMARY`: prior `verify.yml` called `record.yml`, which marked done before cleanup. Interim records now say `verified`; only final
+verified-and-cleaned applies/rollbacks say `passed` and update state. Journals under `runs/journal/<host>.json` are controller-only, 0600,
+written before writes/phases, retaining the original baseline/id/backup/cleanup ownership. Attempts have separate record timestamps.
+
+Use `-e smc_change_mode=assess` for read-only recovery safety (skips application commands); it reports complete, safe_to_restart,
+safe_to_resume or needs_repair. Resume with the original mode and `-e smc_change_resume=true`. An unfinished journal blocks a new apply even
+with force. Changed spec/code/assets, incomplete dpkg state, chroot residue, changed overlay or missing backup evidence refuse recovery.
+Phase 5 repeats backup; 6 replays only actions declaring `resume_safe: true`; 7/8 repeats restart/close; 9/10 reverifies then repeats cleanup.
+PHP's exact-version action opts in. Writable lower layers route through restart/close and must be ro at verification. A partly deleted
+remote backup cannot truncate the controller shared-file manifest: cleanup uses the original journaled list. Do not run competing controllers
+for the same SMC/change; atomic journal replacement is not an operator lock. Legacy failures have no inferred resume checkpoint. Legacy check-mode/read-only records neither invent a failure nor hide a prior real failure.
+
+```yaml
+# roles/smc_change/tasks/record.yml (base aacf57c + uncommitted 2026-10-26 recovery)
+- name: Store this host's state when the apply or rollback passed
+  ansible.builtin.include_tasks: state.yml
+  vars:
+    smc_change_state_step: write
+  when:
+    - smc_change_mode in ['apply', 'rollback']
+    - smc_change_record.result == 'passed'
+    - smc_change_cleanup_complete | default(false) | bool
+```
+
+Validation: five unit-test methods (~0.013 s, stage/safety scenarios), real controller journal/state fixture, red/green partial-cleanup
+regression; read-only live resume-fact fixture (25 OK, changed=0) and assessment passed. A real interrupted mutating SMC has not been
+fault-injected. `lint_new.sh` all language/inventory checks passed in 9.26 s. Records now include phase timings, elapsed seconds, budget and
+over-budget flag (900 s default; report, never abandon an in-flight SMC). Prior run lacked phase timings: 302 s came after the final probe;
+performance optimization is deferred to measured subsequent runs. Flow map adds Assess/Resume; renders/checks and six changed pages reviewed.
+Screenshots: `screenshots/20261026-smc-change-recovery/` (generic pages, no customer identifiers).
 ````
 
 ## File: scripts/README.md
@@ -8115,10 +9947,14 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 | Script                              | Touches                 | Safety    | Notes                                                                                                                    |
 | ----------------------------------- | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | [survey_snmp_tooling.sh](survey_snmp_tooling.sh) | Live SMC appliances | **read-only** | Reports per box whether `snmpget` is present and whether overlayroot is mounted, scoped by Teleport flavour label (`FLAVOURS`, default `rcp,nbn_accelerate`). Both facts vary per box and neither can be inferred from the flavour — that mistake is what it exists to prevent |
+| [local_knowledge_index.sh](local_knowledge_index.sh) | Local files only | **read-only** | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder, uncommitted changes. ~1 s. `just local_knowledge_index` |
+| [smc_change_compare_records.py](smc_change_compare_records.py) | Local files only | **read-only** | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, volatile fields ignored. <0.1 s. `just smc_change_compare` |
+| [smc_inventory_add.py](smc_inventory_add.py) | ansible-wifi inventory files; tsh read of one box | **modifies-state** (plan by default, `--apply` writes) | Adds a new SMC the way every site is added: `[<site>_smc_bases]`, `smc_bases:children`, `[<site>:children]` and group/host/topology vars rendered from the repo's generator templates. Refuses an existing host, site or file; flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add` |
 | [install_packages.sh](install_packages.sh) | Live SMC appliances | **modifies-state** | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul |
 | [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
 |                                     |   over Teleport         |           |   **arguments — no default site list** (genericized from the original, which defaulted to one investigation's            |
 |                                     |                         |           |   specific sites)                                                                                                        |
+| [test_with_deadline.sh](test_with_deadline.sh) | Local only (no network)  | **read-only** | Offline test of `with_deadline` in both evidence scripts: stdin passes through, exit status kept, killed at the deadline (`just test-deadline`). |
 | [collect-smc-evidence-full.sh](collect-smc-evidence-full.sh) | Live SMC appliances     | **read-only** | The wide companion to `collect-smc-evidence.sh`: 144 captures across 17 subsystem groups, for triage and pre/post-deploy |
 |                                     |   over Teleport         |           |   baselines rather than the routing question. Same hardcoded-command, host-names-only contract. **One SSH session per host** |
 |                                     |                         |           |   (delimited stream split locally) instead of one per capture — 144 captures in ~25s. `--only`/`--skip` select groups;   |
@@ -8253,6 +10089,13 @@ module docstring.
 
 ### `collect-smc-evidence-full.sh`
 
+**Deadlines (2026-10-22):** every `tsh ssh` call runs under `with_deadline` (a watcher: TERM, then KILL 5 s later; macOS has no `timeout`). Platform probe
+`SMC_TSH_PROBE_DEADLINE` (default 60 s), the one capture session per host `SMC_TSH_DEADLINE` (default 300 s); the narrow `collect-smc-evidence.sh` uses
+`SMC_TSH_DEADLINE` per command (default 60 s). Smoke run 2026-10-22 on kalumburu-smc01, `--only voip`: 73 s, 11 of 11 captures. Full captures measured 2026-10-22: bidyadanga-smc01 (Sky Muster)
+86 s, kalumburu-smc01 93–97 s, 145 captures each, so the 300 s default leaves about 3x headroom; raise `SMC_TSH_DEADLINE` for a slower link. A session the
+deadline cuts prints `SESSION TIMED OUT` and counts the captures it never reached as **not run**, never as absent or failed (`with_deadline` returns 124,
+since tsh traps TERM and exits 1).
+
 The broad one. Use it when the question is "what is going on with this box" rather than a specific routing fault, and when you want a **baseline before a deploy and a matching capture after it**.
 
 ```bash
@@ -8290,6 +10133,8 @@ here" stays visible while the secret does not. Redaction is pattern-based — a 
 - **`systemctl status asterisk` reporting `active (exited)` is not proof Asterisk is running.** The unit is an LSB init wrapper, so systemd reports success once the script returns 0 whether or not a
   daemon survives. On umoona-smc01 the unit was `active (exited)` with **zero** asterisk processes, no control socket, and every `asterisk -rx` query failing. The `voip|asterisk-procs` and
   `voip|asterisk-ctl-socket` captures exist so this reads as a diagnosis instead of five confusing failures.
+- **`voip|asterisk-rss`** (2026-10-22) records each Asterisk process's resident memory, VSZ and age with `ps`; Prometheus has no process metrics, so this is
+  the only per-process sizing source (`./collect-smc-evidence-full.sh <host> --only voip`, read-only).
 - **A textfile collector that stopped writing does not alert as broken** — it alerts as no-data, or not at all. `monitoring|textfile-mtimes` is therefore captured alongside the contents; the staleness
   windows are in `../references/02_service-map.md`.
 
@@ -8524,11 +10369,25 @@ fixed `local_port` so tunnels never collide and a stale leftover on a shared por
 | `teleport-tunnel.sh` | `tsh` (Teleport session), ansible-wifi                  | `external-network`,             | Opens a real tunnel to a live device; never writes anything, never                |
 |                      |   inventories (read-only)                               |   `requires-credentials`        |   touches ansible-wifi                                                            |
 
+### `site_device_probe.sh`
+
+Read-only probe of a site's device addresses from its SMC over Teleport (2026-10-21, from unified-network-controller U1.2): for each IP the ARP
+entry, one ping and the TLS certificate the unit presents on 443 (handshake only, never a login). Answers "is a unit cnMaestro lost still
+working on site" and "when does its web certificate expire". Safety: `safe`, `external-network`, `requires-credentials` (a `tsh login`).
+Inputs: `--proxy` (required, never guessed), optional `--deadline` seconds (default 90, applied to the tsh call), the SMC node, dotted IPv4
+addresses (validated; nothing else reaches the box). Output: one `== <ip>` block per address. Exit 0 answered, 1 unreachable or cut off
+(check `backdoor-watch.sh` before calling it down), 2 bad usage. Measured: 3 addresses in 12.6 s at kakalpurannha-homeland (2026-10-22).
+
+```bash
+./site_device_probe.sh --proxy teleport.apn.au kakalpurannha-homeland-smc01 10.255.0.20 10.255.0.21 10.255.0.11
+```
+
 ### `backdoor-watch.sh`
 
 Checks, and optionally watches, a box's autossh backdoor: the reverse tunnel `autossh-teleport-openssh` holds open to the project bastion on port `50000 + site_eclipse_siteid`. Written
 2026-10-07 for kupungarri-smc01. Run it before calling any box unreachable; a box missing from `tsh ls` can still be up behind this tunnel. Site, host, siteid, port and bastion are resolved from
 ansible-wifi's inventory, the same way `teleport-tunnel.sh` does it.
+Since 2026-10-23 it also resolves stage hosts (any exact inventory host in `*/prod` or `*/stage`, e.g. `warehouse-rct01`), then a site name in prod then stage.
 
 ```bash
 ./backdoor-watch.sh kupungarri                 # check: is 50468 listening on apn-teleport01 now
@@ -8546,6 +10405,54 @@ against `apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (5047
 | `backdoor-watch.sh`  | bastion via `tsh` (`ss`, auth logs), ansible-wifi        | **read-only**, `external-network` | Never touches the SMC box or ansible-wifi; history writes one temp file on the     |
 |                      |   inventories (read-only)                               |                                 |   bastion and removes it                                                          |
 
+### `smc_change_compare_records.py`
+
+Added 2026-10-23, promoted from the proof that splitting the smc_change probe into per-check files changed nothing. Run the same check and
+verify runs with `-e smc_change_report_dir=<before>`, change the role, rerun with `<after>`, then `smc_change_compare_records.py <before>
+<after>`: exit 0 when every pair is identical. Ignores timestamps, free space, log positions, hit counts and samples. Background:
+`../references/19_smc-change-role.md`.
+
+### `local_knowledge_index.sh`
+
+Added 2026-10-23 (operator: the pack must stay across what is built in the local-knowledge folder). `local_knowledge_index.sh [--root DIR] [--repo DIR]
+[--days N] [--per-dir N]` prints every symlink from the ansible-wifi checkout into `local-knowledge-ansible/ansible-wifi` with whether git ignores it, the
+newest entries per top-level folder within the window, and uncommitted changes there. Read-only; about 1 s on the full folder (7,000+ files per big folder).
+Background: `../references/18_local-knowledge-ansible.md`.
+
+### `smc_inventory_add.py`
+
+Added 2026-10-23 (operator: adding a new SMC to the inventory must be straightforward, not guessed each time). `smc_inventory_add.py --flavor
+<rct|wh|nbn_accelerate> --env <stage|prod> --host <host> (--siteid N | --siteid-from-box) [--site S] [--iridium] [--booth] [--allow-shared-siteid]
+[--apply]`. Renders `roles/smc_generate_smc_files/templates/<flavor>/*.j2` through `ansible-playbook` (same engine as the generator role, so identical
+output) and inserts the three groups by text, because the generator role itself round-trips the whole inventory through JSON. Proven 2026-10-23 on
+php-rct-smc01: output byte-identical to the hand-made files; refuses a second apply. Background: `../references/08_ansible-authoring.md` (Adding a new
+SMC to an inventory).
+
+### `php_package_probe.sh` and `backdoor_exec.sh`
+
+`php_package_probe.sh --proxy <proxy> <node>...` prints one `PHPPROBE|<node>|host=...|key=value|...` line per box: installed (`ii`) PHP and
+`libapache2-mod-php` package versions, loaded Apache PHP modules, the apt candidate, overlay and lower-dir state, holds, unattended-upgrades,
+long-running PHP processes (`php -S` built-in servers, cron-run CLI jobs) and PHP listening sockets. `php -v` alone never shows Ubuntu patch
+state: compare the package version with the USN's fixed build. `DEEP=1` also searches the disk for PHP binaries. Written 2026-10-22 for the
+CVE-2026-109618/109619 assessment; tested on beagle-bay-smc01 (x86) and fish-river-smc01 (Pi), and an unknown node gives `FAIL` and exit 1.
+
+`backdoor_exec.sh <site> [cmd | -]` runs a command (or a script on stdin with `-`) through the autossh backdoor, using `backdoor-watch.sh` to
+resolve the port and the KeePassXC entry named by KP_ENTRY (default Network/SMC) via `sshpass -e` (the password never reaches an argument or the output). It reads
+the box's hostname first and stops with exit 4 when the port belongs to another box. Tested 2026-10-22: darlngunaya ran (exit 0),
+family-friendly stopped because 50501 answers as nocprov-smc01 (exit 4), new-looma down (exit 3).
+
+```bash
+./php_package_probe.sh --proxy teleport.apn.au beagle-bay-smc01 fish-river-smc01
+./backdoor_exec.sh darlngunaya 'hostname; uptime'
+./backdoor_exec.sh bungardi - < some_read_only_probe.sh
+```
+
+| Script                 | Touches                                                    | Safety                                | Notes                                                                   |
+| ---------------------- | ---------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------- |
+| `php_package_probe.sh` | `tsh` sessions to each node                                | **read-only**, `external-network`     | Reads packages, processes and mounts; writes nothing                    |
+| `backdoor_exec.sh`     | bastion via `tsh`, the box's sshd via the backdoor, `kp`   | `external-network`,                   | Runs what it is given as root with no Teleport recording: reads only    |
+|                        |                                                            |   `requires-credentials`              |   unless a change is approved (nbn_wh: reads only)                      |
+
 ### Fleet stability: `fleet-reboot-timeline.py`, `predark-snapshot.py`, `fleet-resource-profile.py`, `undervoltage-profile.py`, `overlay-usage-breakdown.sh`
 
 Written 2026-10-07 for the WH "sites get stuck until a technician reboots them" investigation (report:
@@ -8561,7 +10468,8 @@ Written 2026-10-07 for the WH "sites get stuck until a technician reboots them" 
 4. `fleet-resource-profile.py [selector] [window]` gives one CSV row per site (memory, PSI, temperature, overlay peak, hours >=70%, watchdog
    cleanup minutes, auto_reboot) for a stable-vs-unstable comparison.
 5. `overlay-usage-breakdown.sh <host>...` lists what fills the overlayroot tmpfs upper layer, plus the auth.log message shapes, timers, cron
-   and snaps behind the growth.
+   and snaps behind the growth. `--etc` prints only the `/etc` census (every `/etc` file changed since boot, or modified since boot on a box
+   without overlayroot) with true uptime, then the executables under `/etc` per folder; `HOST_DEADLINE` (60 s) bounds each host.
 
 6. `vlan-traffic-timeline.py <site> --gap '<last_seen>' '<back>'` shows what crossed each interface while a box was invisible
    (cumulative counters, valid when it did not reboot). Only the WAN interface silent = WAN/satellite fault; every VLAN on the trunk
@@ -8578,10 +10486,11 @@ work as CLIs. Recipes: `just -f fleet-health.justfile stability-timeline|stabili
 | `fleet-reboot-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | 90d WH run takes about 1 minute                             |
 | `predark-snapshot.py`         | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` |                                                             |
 | `fleet-resource-profile.py`   | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | CSV to stdout; failed columns are reported on stderr        |
+| `graylog-health.sh`           | AWS ELB/EC2 (noc-admin), apn-graylog01 and apn-datanode01 via `tsh ssh`, Graylog API | **read-only**, `external-network` | Every layer of the 2026-10-08/09 outage; exit 1 on any failure; `just -f fleet-health.justfile graylog-health` |
 | `undervoltage-profile.py`     | Graylog (via `smc_graylog.py`)                   | **read-only**, `external-network` | `hourly` makes 24 queries per day; keep ranges short        |
-| `overlay-usage-breakdown.sh`  | Live SMC appliances via `tsh ssh`                | **read-only**                     | du/find under nice+ionice; `TSH_PROXY` for the CW cluster   |
+| `overlay-usage-breakdown.sh`  | Live SMC appliances via `tsh ssh`                | **read-only**                     | du/find under nice+ionice; `TSH_PROXY` for the CW cluster; `--etc` census; per-host deadline |
 | `vlan-traffic-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | Per-interface rates, or counter deltas across a dark gap |
-| `tstik-capture.sh`            | Live RCT box via `tsh ssh`                       | **read-only**                     | TSTIK stats + reset history + eth0 link log; `WAIT_UP=1` polls Teleport first; never copies `config.json` |
+| `tstik-capture.sh`            | Live RCT box via `tsh ssh`                       | **read-only**                     | TSTIK stats + reset history + eth0 link log + AVR reads/errors and ERROR kinds (07, ~90 s in all); `WAIT_UP=1` polls Teleport first; never copies `config.json` |
 
 ### `tplink-switch.sh` and `tplink_cli_driver.py`
 
@@ -8610,6 +10519,77 @@ read-write community), and refuses to write if the login or enable password or a
 |                         |   (read-only), live switches                            |   `requires-credentials`        |   redacted configs to the given directory; `--discover` pings bridge_500 only     |
 | `tplink_cli_driver.py`  | Runs on the SMC; SSH to one switch                      | `external-network`,             | Never run directly from the workstation; fed by `tplink-switch.sh`                |
 |                         |                                                         |   `requires-credentials`        |                                                                                   |
+
+### `x86_resiliency_probe.sh`
+
+Promoted 2026-10-14 from the smc-resiliency x86 plan session. `x86_resiliency_probe.sh --proxy <proxy> <node>...` prints, per x86 SMC, the DMI model and
+BIOS, memory, each disk, the root source and use, LVM volume groups with free space, the EFI boot entries, the hardware watchdog (device, identity, timeouts,
+which watchdog drivers ship with the kernel, `RuntimeWatchdogSec`), the soft-lockup detector, systemd and kernel versions, and the size of the state
+directories that must survive a reboot. The remote command set is fixed; node names only; proxy required. Exits 1 when any node is unreachable or does not
+finish. Interpretation: `../references/07_hardware-overlay.md` (`smc_disk_failover` mechanics) and smc-resiliency's x86 plan, sections 3 and 6.7 (stage XQ). Since 2026-10-22 it also prints the UEFI surface the OS sees (UEFI or legacy, efivars mount mode, Secure Boot and Setup Mode, ESRT entries,
+the capsule loader, fwupd, DMI BIOS characteristics), puts a deadline on every `tsh` call (`--deadline`, default 90 s) and closes stdin.
+
+```bash
+just x86_resiliency_probe teleport.apn.au horn-island-smc01 jigalong-smc01
+```
+
+| Script                    | Touches                               | Safety        | Notes                                                                      |
+| ------------------------- | ------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| `x86_resiliency_probe.sh` | Live x86 SMC appliances via `tsh ssh` | **read-only** | Fixed command set, node names only; idempotent; proxy required             |
+
+### `pi_identity_probe.sh` and `ata_settings_read.py`
+
+Promoted 2026-10-08 from a unified-network-controller session that read the Raspberry Pi SMCs and the rct site ATAs. Both take the Teleport proxy as a
+required argument and never guess it, because a node name can exist on both clusters as different boxes.
+
+`pi_identity_probe.sh --proxy <proxy> <node>...` prints, per Pi SMC, the device-tree model and serial-number, cpuinfo Serial/Revision/Model, dmidecode
+(empty on a Pi: no DMI), os-release, arch and kernel, each physical NIC with MAC, driver and speed, bridges, VLAN interfaces and memory. The remote command
+set is fixed in the script; it takes node names only. Exits 1 when any node is unreachable or does not finish the probe. Interpretation (serial as the
+identity anchor, the single-port layout, `Revision` decoding) is in `../references/07_hardware-overlay.md`, Raspberry Pi SMC identity.
+
+Since 2026-10-09 it also prints swap-check lines: `hostname` and `boot_hostname` (from this boot's journal), `root_fs` and the `overlayroot=`
+setting, `boot_now`, `journal_boots` and `prev_boot_end`. A `boot_hostname` of `generic-wh01-*`, or ext4 root on a RISE box, means a spare went in
+during a site visit (kupungarri, `../references/06_failure-modes.md`). Recipe unchanged: `just pi_identity_probe teleport.apn.au <node>`. Since 2026-10-22 it also prints the EEPROM lines (`vcgencmd bootloader_version` and `bootloader_config`, the bare `rpi-eeprom-update`
+report, autoboot.txt presence, the watchdog identity), a deadline on every `tsh` call (`--deadline`, default 90 s), and closes stdin (a
+background run hung with it open, 2026-10-22).
+
+`ata_settings_read.py --proxy <proxy> <node>...` sends a small stdlib agent (Python 3.10, embedded in the script) to each SMC through `tsh ssh`. The agent
+logs in to the Dallas Delta DDC_VoIP-m web UI at `--ip` (default `192.168.5.253`) with the **empty PIN**, which is what the units in service have
+(operator, 2026-10-08: try it), reads the `settings`, `phonebook` and `digitmap` pages and returns `{page: {field: value}}`. Any field named like
+`pin|pass|pwd|pw|secret` is dropped on the SMC and again locally, so no PIN, password or SIP secret is printed or stored. It tolerates the unit's short
+body (`IncompleteRead`: 43 bytes less than `Content-Length`). `_registered` is the settings page's `Registered : Yes|No`, the SIP registration state.
+With several nodes it lists, per page, how many fields are identical and the values of every field that differs; `--json` prints everything, and
+`--local HOST[:PORT]` runs the agent on the workstation (lab unit or test server). Exits 1 when any node or unit could not be read. Facts and the
+site-unique field list: `../references/17_site-ata-dallas-delta.md`.
+
+```bash
+just pi_identity_probe teleport.apn.au 20-mile-smc01 adjamarragu-smc01
+just ata_settings_read teleport.apn.au adjamarragu-smc01 akwalirrumanja-smc01 alamirra-smc01
+just ata_settings_read teleport.apn.au --json adjamarragu-smc01
+```
+
+| Script                 | Touches                                              | Safety                            | Notes                                                                                                   |
+| ---------------------- | ---------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `pi_identity_probe.sh` | Live Pi SMC appliances via `tsh ssh`                 | **read-only**                     | Fixed command set, node names only; idempotent; proxy required                                          |
+| `ata_settings_read.py` | `tsh ssh` to SMCs; HTTP from the SMC to the site ATA | **read-only**, `external-network` | One login POST per page read with the empty PIN, never a form submission; secret-named fields dropped on the box; idempotent; proxy required |
+
+### `dns_capture_top.sh` and `teleport_sessions.py`
+
+Incident-window evidence when the box's own logs have rotated. `dns_capture_top.sh` reads the url_capture DNS pcaps on one SMC for a date and
+local time window and prints the top clients, the top domains, and each busy client's domains (Koonibba 9 Oct 2026: an Xbox One and Netflix
+behind a 181 GB day). DNS gives names, not bytes. `teleport_sessions.py` lists who had Teleport sessions on named hosts over a date range, from the
+cluster's session recordings, one UTC day per query so bot sessions cannot crowd out people (2026-09-01: staff on hope-vale and galiwinku the
+first morning of the PIN outage). About 10 s per day queried.
+
+```bash
+just dns_capture_top teleport.communitywifi.net.au 20261009 16:00 23:59 koonibba-smc01
+just teleport_sessions teleport.communitywifi.net.au 2026-08-31 2026-09-06 hope-vale kowanyama galiwinku
+```
+
+| Script                  | Touches                                        | Safety                            | Notes                                                                       |
+| ----------------------- | ---------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------- |
+| `dns_capture_top.sh`    | Live SMC via `tsh ssh`: `/url_capture` pcaps   | **read-only**                     | Fixed command set; validated inputs only; temp file on the box removed      |
+| `teleport_sessions.py`  | Teleport audit (`tsh recordings ls`)           | **read-only**, `external-network` | Needs the auditor role; `--exclude-user bot-cw-dashboard` for human sessions |
 
 ## Usage
 
@@ -8647,6 +10627,12 @@ reusable knowledge and tooling, not case-specific evidence. See the parent repo'
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
 <!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+
+## doc-freshness-baseline.json
+
+Data, not a script: the findings skill-ai-it's `doc_freshness` grandfathered when this pack adopted the governed-file standard (2026-10-10).
+`just check` fails only on findings not in it; regenerate with `just stale` reviewed first, then `doc_freshness.py --project-root . --write-baseline`
+from the skill-ai-it package. A file over its budget may shrink, never grow.
 
 ## Execution Policy
 
@@ -8704,6 +10690,7 @@ Summary: Agent guidance for maintaining and using the skill-smc specialist pack.
 - [AI navigation and context preflight](#ai-navigation-and-context-preflight)
 - [Governance coherence checks](#governance-coherence-checks)
 - [Canonical governance linkage](#canonical-governance-linkage)
+- [Code changes](#code-changes)
 
 ---
 
@@ -8720,6 +10707,8 @@ Summary: Agent guidance for maintaining and using the skill-smc specialist pack.
 - After adding a new reference file, update the `RUNBOOK.md` routing table, `SKILL.md` References section, `AI_NAVIGATION.md` tables and `context-map.yaml` routing in the same pass.
 - Follow naming convention for time-bound docs: `<slug>-YYYYMMDD_hhmm.md`.
 - Keep `CHANGELOG.md` current — append entries when content or structure changes.
+- Triage before opening: `just docs <folder>` gives one header line per file; run `just stale` before editing. Old CHANGELOG and SCRATCHPAD
+  entries live in `docs/history/`; do not read them by default: `just history <term>` or `just history-show <stamp>` when a live entry cites one.
 
 ## Project-coherence checklist
 
@@ -8862,6 +10851,11 @@ pattern](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/
 
 - Parent guidance: [../../../AGENTS.md](../../../AGENTS.md)
 - Cross-repo governance root: [/Volumes/Data/_ai/governance/README.md](/Volumes/Data/_ai/governance/README.md)
+
+## Code changes
+
+Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply
+(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.
 ````
 
 ## File: AI_NAVIGATION.md
@@ -8931,6 +10925,9 @@ When sources conflict:
 | Pin validity (mangle) vs pin issuance (Apache access log) diagnosis, marks-≠-activations pitfalls                    | `references/14_pin-activation-diagnosis.md` |
 | Cambium asset-register — ansible-wifi site_name join point (full content moved to skill-cambium)                     | `references/15_cambium-asset-registers.md`  |
 | TP-Link site switches: access, SSH quirks, enable cases, discovery, config capture, SNMP community, Nautobot        | `references/16_tplink-site-switches.md`     |
+| rct site ATA (Dallas Delta DDC_VoIP-m): web UI, no SNMP, SIP registration, site-unique settings                      | `references/17_site-ata-dallas-delta.md`    |
+| Local-only ansible-wifi knowledge folder: layout, repo symlinks, local playbooks/roles (smc_change)                  | `references/18_local-knowledge-ansible.md`  |
+| Make any change to SMCs with proof: smc_change role, change specs, gates, overlay persistence, run records           | `references/19_smc-change-role.md`          |
 | SMC box definition, inventory flavors, Teleport access pattern, APN vs NBN Accelerate cluster differences            | `references/01_overview.md`                 |
 
 ## Project context files
@@ -9077,1907 +11074,206 @@ and no separate adapter document; those, the profile file and the dedicated-agen
 
 ## File: CHANGELOG.md
 ````markdown
+---
+Title: Changelog
+Category: change-log
+Status: current
+Summary: Newest entries only; older ones rotate to docs/history (search with --find, print with --show).
+Kind: log
+Budget: 200 lines, 25 KB
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261026_1617
+---
+
 # skill-smc Changelog
 
 ## Contents
 
-- [20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)](#20261007_1645--version-scheme-patch-runs-0-to-9-then-the-minor-bumps-renumbered-to-020-v01100---v020)
-- [20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)](#20261007_1637--layout-brought-in-line-with-the-newer-project-packs-skillmd-slimmed-profile-system-prompt-and-exports-adapter-retired-v0199---v01100)
-- [20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)](#20261007_1625--skill-ai-it-refresh-managed-blocks-to-template-sourced-blocks-v1-archcore-filenames-to-the-slugtypemd-form-v0198---v0199)
-- [20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)](#20261007_1623--rct-site-addressing-from-ansible-wifi-vs-the-mk3-diagram-v0197---v0198)
-- [20261007_1229 — Backdoor-first rule for unreachable boxes, backdoor-watch.sh, kupungarri re-check (v0.1.91 -> v0.1.92)](#20261007_1229--backdoor-first-rule-for-unreachable-boxes-backdoor-watchsh-kupungarri-re-check-v0191---v0192)
-- [20261007_1150 — Graylog AWS path, cert dependency, log-gap triage, wh dark-box update, alert gap (v0.1.90 -> v0.1.91)](#20261007_1150--graylog-aws-path-cert-dependency-log-gap-triage-wh-dark-box-update-alert-gap-v0190---v0191)
-- [20261007_1141 — Two-inventory runs lose topology vars; smc_update_kernel unhold regression fixed on branch (v0.1.89 -> v0.1.90)](#20261007_1141--two-inventory-runs-lose-topology-vars-smc_update_kernel-unhold-regression-fixed-on-branch-v0189---v0190)
-- [20261007_1137 — gl.aws.apn.au cert expiry stopped SMC log shipping; Graylog aggregate API; nyirripi and kupungarri dark (v0.1.88 -> v0.1.89)](#20261007_1137--glawsapnau-cert-expiry-stopped-smc-log-shipping-graylog-aggregate-api-nyirripi-and-kupungarri-dark-v0188---v0189)
-- [20261006_1842 — MQTT broker password is a literal in the role (v0.1.87 -> v0.1.88)](#20261006_1842--mqtt-broker-password-is-a-literal-in-the-role-v0187---v0188)
-- [20261006_1840 — Product name is Litebooth (v0.1.86 -> v0.1.87)](#20261006_1840--product-name-is-litebooth-v0186---v0187)
-- [20261006_1834 — Operator answers, second round: portal, filtering, url_capture, VoIP, switches, links, monitoring, resiliency scope (v0.1.85 -> v0.1.86)](#20261006_1834--operator-answers-second-round-portal-filtering-url_capture-voip-switches-links-monitoring-resiliency-scope-v0185---v0186)
-- [20261006_1805 — Operator answers from the enterprise-strategy register: platforms and counts corrected, hosting, MQTT, low touch, people (v0.1.84 -> v0.1.85)](#20261006_1805--operator-answers-from-the-enterprise-strategy-register-platforms-and-counts-corrected-hosting-mqtt-low-touch-people-v0184---v0185)
-- [20261006_1217 — Hardware watchdog constraints: RuntimeWatchdogSec semantics, Raspberry Pi 15 s ceiling, overlayroot persistence (v0.1.83 -> v0.1.84)](#20261006_1217--hardware-watchdog-constraints-runtimewatchdogsec-semantics-raspberry-pi-15-s-ceiling-overlayroot-persistence-v0183---v0184)
-- [20261005_1505 — cnMaestro 0.0.0.0 client IPs: SMC DHCP verified healthy; dhcpd unexpected-ICMP log line explained (v0.1.82 -> v0.1.83)](#20261005_1505--cnmaestro-0000-client-ips-smc-dhcp-verified-healthy-dhcpd-unexpected-icmp-log-line-explained-v0182---v0183)
-- [20261005_1442 — IPSSH banner hosts recorded as unverified switch candidates (v0.1.81 -> v0.1.82)](#20261005_1442--ipssh-banner-hosts-recorded-as-unverified-switch-candidates-v0181---v0182)
-- [20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.1.80 -> v0.1.81)](#20261005_1350--related-skills-platform-packs-skill-nautobot-and-skill-openwisp-v0180---v0181)
-- [Generic topology authoring and inventory integration](#20261002_1641--generic-topology-authoring-and-inventory-integration-v0179---v0180)
-- [20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)](#20260930_1959--never-push-ansible-wifi-from-a-git-worktree-which-ref-unified-network-controller-reads-v0178---v0179)
-- [20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)](#20260930_1424--tp-link-vlan-parsing-and-drift-live-smc-services-and-interface-macs-v0177---v0178)
-- [20260930_1307 — TP-Link switches at six sites: SNMP community, the OIDs the controller uses, backup redaction fixed, Nautobot canary (v0.1.76 -> v0.1.77)](#20260930_1307--tp-link-switches-at-six-sites-snmp-community-the-oids-the-controller-uses-backup-redaction-fixed-nautobot-canary-v0176---v0177)
-- [20260930_1803 — Prometheus usage sums need a `> 0` filter (spurious zero samples) (v0.1.76 -> v0.1.77)](#20260930_1803--prometheus-usage-sums-need-a--0-filter-spurious-zero-samples-v0176---v0177)
-- [20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)](#20260930_1221--terminology-access-is-free-via-tc-acceptance-not-a-paid-pin-v0175---v0176)
-- [20260930_1210 — RCP has its own bot (bot-apn-dashboard), ping-only, no mark wipe; skill-cambium now co-invoked (v0.1.74 -> v0.1.75)](#20260930_1210--rcp-has-its-own-bot-bot-apn-dashboard-ping-only-no-mark-wipe-skill-cambium-now-co-invoked-v0174---v0175)
-- [20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)](#20260930_1202--bot-cw-dashboard-wipes-pin-marks-on-koonibbaamata-a-zero-eclipse_mark-count-is-not-normal-v0173---v0174)
-- [20260930_0326 — The low-touch script's contract with cnMaestro, read end to end (v0.1.72 -> v0.1.73)](#20260930_0326--the-low-touch-scripts-contract-with-cnmaestro-read-end-to-end-v0172---v0173)
-- [20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)](#20260929_1821--nbn-low-touch-lives-on-big_push-with-an-access-key-play-the-test-smcs-stage-inventory-v0171---v0172)
-- [20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)](#20260928_2206--low-touch-is-visible-per-box-the-test-box-daniel-test-nbn-smc01-v0170---v0171)
-- [20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)](#20260927_2024--pre-push-gate-lint-the-pushed-commit-compare-a-new-branch-with-its-nearest-remote-branch-skip-jinja-for-shellcheck-v0169---v0170)
-- [20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)](#20260927_1954--r195-tftp-files-varlibtftpboot-missing-on-fresh-2204-wangkatjungka-runs-an-uncommitted-template-with-apn-cnmaestro01-v0168---v0169)
-- [20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)](#20260927_1752--the-rcp-seven-sites-observations-are-dated-as-at-2026-07-2930-v0167---v0168)
-- [20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)](#20260927_1704--fping-approved-per-flavour-rcp-nbn_accelerate-the-package-install-guard-that-followed-a-location-driven-widening-v0166---v0167)
-- [20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)](#20260927_1632--smc_ltp-has-nine-sites-not-seven-pia-and-yakanarra-were-missing-topology_vars-layout-the-nine-seeded-into-unified-network-controllers-nautobot-v0165---v0166)
-- [20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)](#20260927_1617--_update_dns-location-corrected-line-2855-not-2407-one-production-rpz-zone-read-cnmaestro-names-a-fleet-wide-template-low-touch-sites-absent-from-nautobot-v0164---v0165)
-- [20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)](#20260927_0322--what-a-low-touch-smc-keeps-per-device-extensions-csv-tftp-configs-the-cnmaestro-fed-rpz-zone-no-dhcp-reservations-v0163---v0164)
-- [20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)](#20260927_0308--smc_dhcpd-debounced-hook-and-startlimit-adopted-on-the-rehearsal-branch-the-vars-plugin-and-dhcpdconfj2-cautions-recorded-v0162---v0163)
-- [20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)](#20260927_0258--apn-cnmaestro01-hostname-corrected-to-apn-cnmaestro01apnau-operator-v0161---v0162)
-- [20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)](#20260927_0252--dhcpd-start-limit-both-fixes-proved-on-the-virtual-smc-the-issue-is-filed-in-local-knowledge-ansible-v0160---v0161)
-- [20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)](#20260927_0230--netplan-apply-vs-the-dhcpd-restart-hook-isc-dhcp-server-start-limit-hit-recorded-reload-surface-named-v0159---v0160)
-- [20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)](#20260926_2121--orbstack-virtual-smc-malik-rcp01-container-style-host-adaptations-recorded-working-cache-venvs-absent-v0158---v0159)
-- [20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)](#20260926_1815--low-touch-hook-verified-live-on-umoona-smc01-leases-persist-the-hook-variables-all-devices-on-apn-cnmaestro01-v0157---v0158)
-- [20260924_1957 — SMC physical port order and usual cabling recorded (v0.1.56 -> v0.1.57)](#20260924_1957--smc-physical-port-order-and-usual-cabling-recorded-v0156---v0157)
-- [20260924_1945 — x86 VLAN interface layout recorded with its Nautobot mirror; `ip -j` read confirmed (v0.1.55 -> v0.1.56)](#20260924_1945--x86-vlan-interface-layout-recorded-with-its-nautobot-mirror-ip--j-read-confirmed-v0155---v0156)
-- [20260924_1522 — `ifPhysAddress` verified on all three snmpd canaries; the identity anchor is now confirmed over SNMP every collector cycle (v0.1.54 -> v0.1.55)](#20260924_1522--ifphysaddress-verified-on-all-three-snmpd-canaries-the-identity-anchor-is-now-confirmed-over-snmp-every-collector-cycle-v0154---v0155)
-- [20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)](#20260924_1222--neighbour-table-mornington-has-refused-2230-allocations-at-the-1024-cap-gc_thresh1--1-corrected-as-not-the-cause-of-arp-loss-v0153---v0154)
-- [20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)](#20260924_1205--tp-link-site-switches-reached-behind-the-smc-tplink-switchsh-access-discovery-and-redacted-config-capture-v0152---v0153)
-- [20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)](#20260922_1750--overlayroot-is-rpi-and-wh-only-x86-tmpfs-paths-differ-per-box-fping-on-three-x86-smcs-v0151---v0152)
-- [20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)](#20260921_2242--low-touch-provisioning-the-redis-backed-script-is-the-fleets-version-from-ansible-wifis-big_push-branch-not-master-v0150---v0151)
-- [20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)](#20260921_1310--multi-smc-sites-any-box-reaches-the-whole-management-address-space-jump-host-and-host-key-consequences-v0149---v0150)
-- [20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)](#20260921_1237--plain-openssh-proxyjump-to-devices-behind-an-smc-box-verified-nbn_accelerate-sshconfig-block-per-site-device-host-keys-v0148---v0149)
-- [20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)](#20260920_2342--path-checking-widened-past-five-files-20-split-filenames-joined-ansible-wifi-declared-as-a-sibling-root-v0147---v0148)
-- [20260920_1846 — `snmpget` installed across rcp/nbn_accelerate; two fleet assumptions disproved (v0.1.46 -> v0.1.47)](#20260920_1846--snmpget-installed-across-rcpnbn_accelerate-two-fleet-assumptions-disproved-v0146---v0147)
-- [20260918_1700 — teleport-tunnel.sh port convention for concurrent dispatch (v0.1.45 -> v0.1.46)](#20260918_1700--teleport-tunnelsh-port-convention-for-concurrent-dispatch-v0145---v0146)
-- [20260918_1620 — `--cluster=` vs `--proxy=` incident documented: an agent misdiagnosis that faked a real outage (v0.1.44 -> v0.1.45)](#20260918_1620----cluster-vs---proxy-incident-documented-an-agent-misdiagnosis-that-faked-a-real-outage-v0144---v0145)
-- [20260918_1153 — unified-network-controller added as a Related Workspace (v0.1.43 -> v0.1.44)](#20260918_1153--unified-network-controller-added-as-a-related-workspace-v0143---v0144)
-- [20260917_0001 — Other Raspberry Pi OS options assessed; Ubuntu Server remains the only recommended full-SMC platform (v0.1.42 -> v0.1.43)](#20260917_0001--other-raspberry-pi-os-options-assessed-ubuntu-server-remains-the-only-recommended-full-smc-platform-v0142---v0143)
-- [20260917_0000 — Ubuntu Server retained for Raspberry Pi SMCs; Core is a greenfield-only option pending an appliance canary (v0.1.41 -> v0.1.42)](#20260917_0000--ubuntu-server-retained-for-raspberry-pi-smcs-core-is-a-greenfield-only-option-pending-an-appliance-canary-v0141---v0142)
-- [20260917_1620 — teleport-tunnel.sh added: generic ansible-wifi-inventory-driven tunnel helper, moved from skill-cambium (v0.1.40 -> v0.1.41)](#20260917_1620--teleport-tunnelsh-added-generic-ansible-wifi-inventory-driven-tunnel-helper-moved-from-skill-cambium-v0140---v0141)
-- [20260914_1300 — Cambium radio/AP estate by flavour recorded from the cambium-swap continuity project (v0.1.39 -> v0.1.40)](#20260914_1300--cambium-radioap-estate-by-flavour-recorded-from-the-cambium-swap-continuity-project-v0139---v0140)
-- [20260911_1732 — Per-pin activation timeline tool added: correlate-pin-activation.sh, fixes a live-confirmed lease join-order bug (v0.1.38 -> v0.1.39)](#20260911_1732--per-pin-activation-timeline-tool-added-correlate-pin-activationsh-fixes-a-live-confirmed-lease-join-order-bug-v0138---v0139)
-- [20260911_1240 — Incident closed: all 3 sites' fix + recovery confirmed live in references/13_known-issues.md (v0.1.37 -> v0.1.38)](#20260911_1240--incident-closed-all-3-sites-fix--recovery-confirmed-live-in-references13_known-issuesmd-v0137---v0138)
-- [20260911_1210 — Correction: kaltjiti-fergon-smc01 was never affected; bungardi-smc01 fixed live (v0.1.36 -> v0.1.37)](#20260911_1210--correction-kaltjiti-fergon-smc01-was-never-affected-bungardi-smc01-fixed-live-v0136---v0137)
-- [20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)](#20260911_1120--bungardi-smc01-confirmed-as-third-broken-site-eclipse-pin-last-issued-admin-report-documented-as-a-third-corroborating-evidence-source-v0135---v0136)
-- [20260911_1115 — Pin-activation diagnosis added: two independent mechanisms, `audit-pin-activation.sh`, portal-FQDN-regression capture, live fleet case study (v0.1.34 -> v0.1.35)](#20260911_1115--pin-activation-diagnosis-added-two-independent-mechanisms-audit-pin-activationsh-portal-fqdn-regression-capture-live-fleet-case-study-v0134---v0135)
-- [20260908_1955 — skill-ai-it refresh: navigation-control upgrade, `check_governance.py` adopted, `AI_NAVIGATION.md` declared project-managed (v0.1.33 -> v0.1.34)](#20260908_1955--skill-ai-it-refresh-navigation-control-upgrade-check_governancepy-adopted-ai_navigationmd-declared-project-managed-v0133---v0134)
-- [20260908_1515 — `wifi-02.activ8me.net.au` is APN's own LVS VIP, not a third party; port-80 source-IP allowlist failure mode; reject-vs-drop diagnostics (v0.1.32 -> v0.1.33)](#20260908_1515--wifi-02activ8menetau-is-apns-own-lvs-vip-not-a-third-party-port-80-source-ip-allowlist-failure-mode-reject-vs-drop-diagnostics-v0132---v0133)
-- [20260908_1430 — galiwinku-smc01 multi-WAN session write-back: ECMP hash-pinning root cause, VRF-disable landed, topology/monitoring gaps (v0.1.31 -> v0.1.32)](#20260908_1430--galiwinku-smc01-multi-wan-session-write-back-ecmp-hash-pinning-root-cause-vrf-disable-landed-topologymonitoring-gaps-v0131---v0132)
-- [20260908_1330 — Backdoor SSH access documented: raw reverse-tunnel path around a hung Teleport node agent, confirmed live against nbn_accelerate (v0.1.30 -> v0.1.31)](#20260908_1330--backdoor-ssh-access-documented-raw-reverse-tunnel-path-around-a-hung-teleport-node-agent-confirmed-live-against-nbn_accelerate-v0130---v0131)
-- [20260908_1200 — Pack-structure self-audit: RUNBOOK version drift, install.md staleness, reference-update-discipline gap, vestigial evidence/, and archcore status promotion (v0.1.29 -> v0.1.30)](#20260908_1200--pack-structure-self-audit-runbook-version-drift-installmd-staleness-reference-update-discipline-gap-vestigial-evidence-and-archcore-status-promotion-v0129---v0130)
-- [20260907_1600 — Two Ansible silent-failure gotchas, an `rcp` systemd-mask fix, and the `auto_reboot: 0` truthy-string bug fed back from `ansible-wifi` (v0.1.28 -> v0.1.29)](#20260907_1600--two-ansible-silent-failure-gotchas-an-rcp-systemd-mask-fix-and-the-auto_reboot-0-truthy-string-bug-fed-back-from-ansible-wifi-v0128---v0129)
-- [20260907_1530 — Silent Total Hang confirmed on `rcp` (pandanus-park-smc01), first non-`wh` instance (v0.1.27 -> v0.1.28)](#20260907_1530--silent-total-hang-confirmed-on-rcp-pandanus-park-smc01-first-non-wh-instance-v0127---v0128)
-- [20260907_1200 — Standing write-back contract added to SKILL.md: the update obligation now travels with the skill, not each consuming project's governance file (v0.1.26 -> v0.1.27)](#20260907_1200--standing-write-back-contract-added-to-skillmd-the-update-obligation-now-travels-with-the-skill-not-each-consuming-projects-governance-file-v0126---v0127)
-- [20260904_1000 — WAN uplink dead-DHCP failure mode documented, self-heal cron distinguished from real flapping (v0.1.25 -> v0.1.26)](#20260904_1000--wan-uplink-dead-dhcp-failure-mode-documented-self-heal-cron-distinguished-from-real-flapping-v0125---v0126)
-- [20260827_1800 — Code notes documented as an authoring surface; stale lint paragraph corrected (v0.1.24 -> v0.1.25)](#20260827_1800--code-notes-documented-as-an-authoring-surface-stale-lint-paragraph-corrected-v0124---v0125)
-- [20260825_1800 — Raspberry Pi capture group added to the broad collector (v0.1.23 -> v0.1.24)](#20260825_1800--raspberry-pi-capture-group-added-to-the-broad-collector-v0123---v0124)
-- [20260825_1745 — broad diagnostic collector added; narrow collector's interfacecheck path corrected (v0.1.22 -> v0.1.23)](#20260825_1745--broad-diagnostic-collector-added-narrow-collectors-interfacecheck-path-corrected-v0122---v0123)
-- [20260818_1350 — pre-push gate mechanics corrected, plaintext-secret exposure recorded (v0.1.21 -> v0.1.22)](#20260818_1350--pre-push-gate-mechanics-corrected-plaintext-secret-exposure-recorded-v0121---v0122)
-- [20260818_1300 — delye-smc01 RESOLVED; `overlay.size_ratio` proven inert; fleet percentages corrected (v0.1.20 -> v0.1.21)](#20260818_1300--delye-smc01-resolved-overlaysize_ratio-proven-inert-fleet-percentages-corrected-v0120---v0121)
-- [20260818_1200 — RISE metric delivery path: agent mode, remote_write allowlist, and the alerting void (v0.1.19 -> v0.1.20)](#20260818_1200--rise-metric-delivery-path-agent-mode-remote_write-allowlist-and-the-alerting-void-v0119---v0120)
-- [20260818_1130 — overlayroot copy_up cost model, `smc_rise_logcaps`, and three fleet-class findings (v0.1.18 → v0.1.19)](#20260818_1130--overlayroot-copy_up-cost-model-smc_rise_logcaps-and-three-fleet-class-findings-v0118--v0119)
-- [20260803_1825 — new-looma-smc01 second whole-host outage confirmed via live Prometheus (v0.1.17 → v0.1.18)](#20260803_1825--new-looma-smc01-second-whole-host-outage-confirmed-via-live-prometheus-v0117--v0118)
-- [20260803_1810 — Grafana CW exploration unblocked: dashboard inventory + RISE metric names (v0.1.16 → v0.1.17)](#20260803_1810--grafana-cw-exploration-unblocked-dashboard-inventory--rise-metric-names-v0116--v0117)
-- [20260803_1745 — ClamAV freshclam root cause confirmed: ClamAV 0.103.x end-of-life (v0.1.15 → v0.1.16)](#20260803_1745--clamav-freshclam-root-cause-confirmed-clamav-0103x-end-of-life-v0115--v0116)
-- [20260803_1730 — Full NBN Accelerate fleet sweep: 28 hosts, hardware inventory, fleet-wide ClamAV finding (v0.1.14 → v0.1.15)](#20260803_1730--full-nbn-accelerate-fleet-sweep-28-hosts-hardware-inventory-fleet-wide-clamav-finding-v0114--v0115)
-- [20260803_1615 — First live NBN Accelerate validation: confirms cluster comparison, finds ClamAV CDN-block (v0.1.13 → v0.1.14)](#20260803_1615--first-live-nbn-accelerate-validation-confirms-cluster-comparison-finds-clamav-cdn-block-v0113--v0114)
-- [20260803_1545 — project-coherence sweep: routing/architecture staleness fixed (v0.1.12 → v0.1.13)](#20260803_1545--project-coherence-sweep-routingarchitecture-staleness-fixed-v0112--v0113)
-- [20260803_1530 — smc_ltp/"low touch" mechanism confirmed: manual step, no enforcement (v0.1.11 → v0.1.12)](#20260803_1530--smc_ltplow-touch-mechanism-confirmed-manual-step-no-enforcement-v0111--v0112)
-- [20260803_1515 — smc_ltp/"low touch" correlation resolved: 3 sites added to the group, 7 members confirmed (v0.1.10 → v0.1.11)](#20260803_1515--smc_ltplow-touch-correlation-resolved-3-sites-added-to-the-group-7-members-confirmed-v0110--v0111)
-- [20260803_1445 — "Low touch" onboarding method and site deployment history added (v0.1.9 → v0.1.10)](#20260803_1445--low-touch-onboarding-method-and-site-deployment-history-added-v019--v0110)
-- [20260803_1400 — smc_ltp properly explored and documented; membership undercount fixed (v0.1.8 → v0.1.9)](#20260803_1400--smc_ltp-properly-explored-and-documented-membership-undercount-fixed-v018--v019)
-- [20260803_1230 — NBN Accelerate cluster gap-fill (v0.1.7 → v0.1.8)](#20260803_1230--nbn-accelerate-cluster-gap-fill-v017--v018)
-- [20260731_1312 — Fed back Pia Wadjari labeling case + proposed convention; multiwan-disable git archaeology](#20260731_1312--fed-back-pia-wadjari-labeling-case--proposed-convention-multiwan-disable-git-archaeology)
-- [20260731_1215 — Two residual gaps closed from the routing-issue Problem 3 deep-dive](#20260731_1215--two-residual-gaps-closed-from-the-routing-issue-problem-3-deep-dive)
-- [20260731_1330 — Broadened cross-repo feed-back governance (prevent future full-sweep need)](#20260731_1330--broadened-cross-repo-feed-back-governance-prevent-future-full-sweep-need)
-- [20260731_1245 — Full local-knowledge-ansible/ansible-wifi extraction pass](#20260731_1245--full-local-knowledge-ansibleansible-wifi-extraction-pass)
-- [20260729_2324 — WAN-routing coverage expansion + reusable diagnostic scripts (APN routing-issue investigation)](#20260729_2324--wan-routing-coverage-expansion--reusable-diagnostic-scripts-apn-routing-issue-investigation)
-- [20260728_1240 — v0.1.5: captive-portal PHP SAPI correction + APPPATH/cache failure mode + Ansible tag hazard (project-coherence run)](#20260728_1240--v015-captive-portal-php-sapi-correction--apppathcache-failure-mode--ansible-tag-hazard-project-coherence-run)
-- [20260703_1300 — v0.1.4: DNS architecture corrections + garimba-smc01 failure mode (project-coherence run)](#20260703_1300--v014-dns-architecture-corrections--garimba-smc01-failure-mode-project-coherence-run)
-- [20260626_1845 — v0.1.3: project-coherence checklist + references/10-13 content update](#20260626_1845--v013-project-coherence-checklist--references10-13-content-update)
-- [20260626_1820 — Coherence sweep: repomix config, adapter.md, spec, ARCHITECTURE.md](#20260626_1820--coherence-sweep-repomix-config-adaptermd-spec-architecturemd)
-- [20260626_1812 — README and ARCHITECTURE added](#20260626_1812--readme-and-architecture-added)
-- [20260626_1810 — Archcore promotion](#20260626_1810--archcore-promotion)
-- [20260626_1808 — Governance scaffold bootstrap](#20260626_1808--governance-scaffold-bootstrap)
-- [0.1.2 — 2026-06-26](#012--2026-06-26)
-- [0.1.1 — 2026-06-26](#011--2026-06-26)
-- [Unreleased — 2026-05-08](#unreleased--2026-05-08)
-- [0.1.0 — 2026-04-15](#010--2026-04-15)
+- [20261026_1701 — smc_change safe recovery and phase timing](#20261026_1701--smc_change-safe-recovery-completion-after-cleanup-and-phase-timing-v078---v079)
+- [20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)](#20261026_1617--smc_change-php-verify-soak-from-the-restart-start_now-named-command-checks-tstik-avr-and-8080-checks-tstik-capture-avr-counts-v077---v078)
+- [20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)](#20261026_1534--smc_change-backupshared-name-identified-backup-files-kept-once-for-all-smcs-v076---v077)
+- [20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)](#20261026_1506--smc_change-flow-map-in-parts-one-e2e-page-per-change-spec-v075---v076)
+- [20261023_1737 — smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)](#20261023_1737--smc_change-on-an-overlay-pi-close-after-restart-overlay_fallback-proves-soak_minutes-tstik-bench-note-identity-probe-hosts_name-v074---v075)
+- [20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)](#20261023_1625--smc_inventory_addpy-add-a-new-smc-to-an-inventory-without-guessing-v073---v074)
+- [20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)](#20261023_1536--smc_change-rollback-mode-and-done-tracking-root-linters-for-every-language-v072---v073)
+- [20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)](#20261023_1455--smc_change-generic-role-probe-split-per-check-cleanup-skip-unreachablerefused-stages-ruff-root-config-v071---v072)
+- [20261023_1351 — backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1)](#20261023_1351--backdoor-watchsh-resolves-stage-hosts-smc_change-command-guard-v070---v071)
+- [20261023_1339 — Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)](#20261023_1339--local-knowledge-folder-reference-and-index-script-php-verification-by-mapped-files-smc_change-role-recorded-v069---v070)
+- [20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)](#20261022_1718--evidence-capture-timeouts-reported-as-such-full-capture-timing-end-marker-fix-v068---v069)
+- [20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)](#20261022_1703--evidence-scripts-a-deadline-on-every-tsh-call-with-an-offline-test-v067---v068)
+- [20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)](#20261022_1653--asterisk-memory-measured-on-the-rcp-fleet-umoona-still-without-asterisk-evidence-script-lacks-a-tsh-deadline-v066---v067)
+- [20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)](#20261022_1623--collect-smc-evidence-fullsh-voip-group-records-asterisk-resident-memory-v065---v066)
+- [20261022_1621 — rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)](#20261022_1621--rcp-asterisk-dialplan-summarised-x86-fleet-by-model-with-its-7-day-load-v064---v065)
+- [20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)](#20261022_1506--firmware-access-from-the-os-uefi-and-eeprom-lines-in-the-x86-and-pi-probes-deadlines-v063---v064)
+- [20261022_1426 — What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3)](#20261022_1426--what-wan-side-equipment-tells-an-smc-about-its-site-starlink-position-sky-muster-ntd-nothing-v062---v063)
+- [20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)](#20261022_1226--backdoor_execsh-passes-a-stdin-script-through-v061---v062)
+- [20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)](#20261022_1200--php-cve-fleet-status-extra-php-processes-backdoor-hostname-check-nbn_wh-read-rule-v060---v061)
+- [20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)](#20261020_2028--sky-muster-reads-session-set-up-and-the-concurrency-curve-v059---v060)
+- [20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)](#20261020_1905--networkd-keeps-changed-netdevs-render-with-the-tasks-options-etc-executables-fleet-health-tsh_proxy-and-fqdn2ip-bundle-v058---v059)
+- [20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)](#20261020_1752--pi-uplink-on-the-eth0-trunk-ssh-forwards-detach-from-the-caller-sky-muster-read-cost-v057---v058)
+
+## 20261026_1701 — smc_change safe recovery, completion after cleanup and phase timing (v0.7.8 -> v0.7.9)
+
+## 20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)
+
+- `references/19_smc-change-role.md`: Learned 2026-10-26 entry: soak counted from the restart or reboot, `restart.processes[].start_now` (root's
+  cron line run at once; only for programs that cope with a second start, as rct-tstik's `php -S` does), probe commands' `name`/`timeout`/note,
+  the PHP spec's portal-terms, tstik 8080 and AVR read checks (`php artisan update:stats`, `Total Read Data[126,...]`, no AVR error; no AVR ever
+  logged passes), RCT AVR fact (all but php-rct-smc01, operator), `pgrep -f` self-match in shells, nightly `pkill -9 php`, Run summary gates;
+  with the verify.yml excerpt (local-knowledge-ansible `17a5803`, skill-smc `f13c22f`).
+- `scripts/tstik-capture.sh`: capture 07 counts AVR reads, empty reads, AVR errors and `local.ERROR` per laravel.log file plus the top error kinds
+  (smoke run warehouse-rct01 2026-10-26: 164,169 reads, 0 AVR errors, 308 network errors; ~90 s for the whole capture). Header: the cron
+  frequency was written as every minute (arrkapa, 2026-10-07); root's crontab on warehouse-rct01, alice-well, cave-hill and adjamarragu runs
+  `update:stats` every 5 minutes, so reset limits count runs. Catalogue row updated.
+- manifest 0.7.7 -> 0.7.8.
+
+## 20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)
+
+- `references/19_smc-change-role.md`: Learned 2026-10-26 entry for spec field `backup.shared` (globs; matching backup files kept once per change on the
+  controller under `runs/backups/shared/`, `shared.txt` per host, rollback copies them back; default per-SMC copies; name-only match, `paths.tgz`
+  refused at spec load; dpkg-repack output differs per run so no checksum compare), with the cleanup.yml excerpt (local-knowledge-ansible `2ade781`);
+  PHP spec example gains `shared: ['*.deb']`.
+- manifest 0.7.6 -> 0.7.7.
+
+## 20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)
+
+- `references/19_smc-change-role.md`: the smc_change flow map is assembled from `roles/smc_change/drawio/parts/` (role parts) and each change
+  folder's flow parts; each change spec gets its own `E2E: <change>` page explaining the change, its steps naming the stage (operator, 2026-10-26).
+- `justfile`: `smc_change_flows` assembles `drawio/flows.yaml` from `drawio/parts/master.yaml` before rendering; `smc_change_flows_check` checks both.
+- `references/19_smc-change-role.md`: one folder per change, `files/changes/<name>/` with the spec `<name>.yml`, its flow-map parts
+  (`flow-components.yaml`, `flow-flows.yaml`) and `runs/` (records, `backups/`, `state/`; was `runs/<name>/`), `smc_change_runs_dir` (operator, 2026-10-26).
+
+## 20261023_1737 — smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)
+
+- `references/19_smc-change-role.md`: EBUSY on the first overlay apply (deleted-but-open inodes), lower dir now closed after stage 7, `reboot:
+  overlay_fallback`, `verify.proves`, spec `soak_minutes`, `SMC_CHANGE_BACKUP` for command undo; proven on php-rct-smc01 (commits 01083c8, faf6866).
+- `references/06_failure-modes.md`: tstik empty AVR reads mean nothing answers on ttyS0; the bench unit has no AVR; manual check commands.
+- `references/08_ansible-authoring.md`: operator kept site ID 181 for php-rct-smc01. `justfile`: `smc_change_flows`, `smc_change_flows_check`.
+- `scripts/pi_identity_probe.sh`: prints `hosts_name` (the 127.0.1.1 name in /etc/hosts) beside hostname and boot_hostname.
+
+## 20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)
+
+- `scripts/smc_inventory_add.py` + `just smc_inventory_add`: the three groups and three vars files for a new SMC, rendered from the repo's
+  generator templates; plan by default, `--apply` writes; refuses an existing host/site/file; flags a shared site ID; `--siteid-from-box`.
+  Proven on php-rct-smc01 (byte-identical to hand-made files, second apply refused, live box read). Operator, 2026-10-23.
+- `references/08_ansible-authoring.md`: new section "Adding a new SMC to an inventory" (six pieces, site naming, generator caveat, standard rct
+  interfaces, reading vars past the guard hook).
+- `references/03_communication-flows.md`: site ID readable from the box's autossh -R port; generic image ID 181 is shared.
+- `SKILL.md` decision tree: new point 6 for adding a box.
+
+## 20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)
+
+`19_smc-change-role.md`: rollback is a mode (per-type `<type>_rollback.yml`, controller or box backup, health plus restored gates);
+per-host state in `runs/<spec>/state/` skips hosts already done, `smc_change_force` re-runs them. `18_local-knowledge-ansible.md`: one
+root config per language (ruff, djlint, taplo, biome, shfmt/shellcheck via .editorconfig) and `lint_new.sh`. manifest 0.7.2 -> 0.7.3.
+
+## 20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)
+
+`19_smc-change-role.md` rewritten for the role as it now is: 11 announced stages, plan and result summaries worded by the probe, probe split
+into `files/probe/NN_*.py` with a check registry (proven identical on four runs), only configured checks gated, stage 10 CLEANUP (nothing left
+on the box after success, backups copied to the controller), records on the controller only, unreachable and refused hosts recorded and
+skipped, run summary, rollback steps, ruff with two-space indent and `force-exclude` of the 22 existing files. manifest 0.7.1 -> 0.7.2.
+
+## 20261023_1351 — backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1)
+
+`scripts/backdoor-watch.sh` matched only `*-smc0N` hosts in `inventories/*/prod`; it now takes any exact inventory host in prod or stage, then a site
+name in prod then stage (operator, 2026-10-23). Tested: warehouse-rct01 (rct stage) 50484 UP while it is off Teleport; kupungarri and nocprov-smc01
+unchanged. `19_smc-change-role.md`: a `command` action on an overlay box must set `chroot`. manifest 0.7.0 -> 0.7.1.
+
+## 20261023_1339 — Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)
+
+New `references/18_local-knowledge-ansible.md` (operator, 2026-10-23: the pack must stay across what is built in local-knowledge-ansible): layout,
+symlink-plus-`.git/info/exclude` wiring, operator tooling (the new `smc_change` role, its PHP and php.ini specs, `smc_update_php.yml`), standing rule
+to read it at the start of SMC work. New `references/19_smc-change-role.md` (operator: any project should be able to use smc_change): running it, spec format, gates, overlay
+lower-dir persistence, run records, status; SKILL.md decision tree step 5 sends box changes to it. New read-only `scripts/local_knowledge_index.sh` (`just local_knowledge_index`, ~1 s). SKILL.md and RUNBOOK
+point to both. `13_known-issues.md`: installed package version is not running code (warehouse-smc01 apache on a deleted libphp after
+unattended-upgrades); rct has no `topology_interfaces`, read the portal from `apache2ctl -S`; Ansible `environment:` makes `pgrep -f` match the
+probe's own shell. manifest 0.6.9 -> 0.7.0.
+
+## 20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)
 
----
+Side note (the 300 s default was timed only on a voip run): full captures measured 86 s (bidyadanga, Sky Muster) and 93–97 s (kalumburu); default kept
+with about 3x headroom. `with_deadline` returns 124 when its deadline is reached (tsh traps TERM and exits 1); `collect-smc-evidence-full.sh` prints
+`SESSION TIMED OUT` and counts unreached captures as "not run" (live check with a 5 s limit). That count exposed a defect: output without a trailing
+newline glued the RC marker to its last line, so `network/interfacecheck-script` was never closed or counted; the marker now starts on its own line
+(kalumburu 145 of 145, other captures unchanged). `just test-deadline` gains a TERM-trapping case (12 checks). manifest 0.6.8 -> 0.6.9.
 
-## 20261007_1645 — Version scheme: patch runs 0 to 9, then the minor bumps; renumbered to 0.2.0 (v0.1.100 -> v0.2.0)
-
-- Operator rule (2026-10-07): the patch number runs 0 to 9 only; after `x.y.9` the next version is `x.(y+1).0`. This pack had reached `0.1.100`, so it moves to
-  `0.2.0` now. Entries below keep the versions they were released under.
-- `.archcore/rules/manifest-version-discipline.rule.md` states the scheme and names the checks that enforce it. Its `updated_at` line said ISO 8601; it now says
-  `YYYYMMDD_hhmm`, which is what this pack has used in practice.
-- `scripts/check_governance.py`: new `check_version_format`. It fails when the manifest patch is more than one digit, or when the newest CHANGELOG heading's
-  `-> vX.Y.Z` differs from `manifest.json`. Proved red against `0.1.100` before the bump.
-- `AGENTS.md` Tier 3 line updated to the scheme.
-- `check_version_single_source` false positive fixed: at 0.2.x its pattern matched `0.2.0` inside the IP `10.0.2.0` in `08_ansible-authoring.md`. The pattern now
-  rejects a match preceded or followed by digits and dots. Still proved red by an injected `v0.2.0` stamp in `RUNBOOK.md` (removed).
+## 20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)
 
-## 20261007_1637 — Layout brought in line with the newer project packs; SKILL.md slimmed; profile, system prompt and exports adapter retired (v0.1.99 -> v0.1.100)
+`scripts/collect-smc-evidence-full.sh` and `scripts/collect-smc-evidence.sh` call `tsh ssh` through `with_deadline` (the watcher from
+`overlay-usage-breakdown.sh`, plus `<&0` so piped stdin survives when job control is on): probe 60 s, session 300 s, narrow per command 60 s, all
+overridable. New `scripts/test_with_deadline.sh` (`just test-deadline`, offline): passes, and fails when the kill is disabled. Smoke run on kalumburu-smc01:
+73 s, 11 of 11 voip captures. Known issue 2026-10-22 resolved. manifest 0.6.7 -> 0.6.8.
 
-### Added
+## 20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)
 
-- Root `justfile` (`bootstrap`, `runtimes`, `check`, `preflight`, `context-pack`, `lint-md`, `fleet`, `routing`, `nav-*`), `.mise.toml` (Python 3.14),
-  `.markdownlint-cli2.jsonc` (skill-ai-it template plus `evidence/` ignores), `.gitignore` (`.staleness-audit/`), and `.archcore/index.guide.md`.
-- `requirements.txt` with PyYAML only: the `nav-*` recipes call skill-ai-it's navigation validator, which parses `context-map.yaml`. Once Python came from the venv,
-  `just nav-validate` failed on that undeclared import, which the host interpreter had been supplying. The pack's own scripts stay standard library only.
-- Working-cache venv built: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`, Python 3.14.5. Both scoped justfiles under `scripts/` now run Python through
-  it (`{{py}}`) instead of the host interpreter via each script's shebang.
+Operator approved the read-only voip capture on all 17 rcp boxes (enterprise-strategy RouterOS study, 58 s): Asterisk 77–153 MB resident, about 100 MB
+typical (`references/07_hardware-overlay.md`). `references/13_known-issues.md`: umoona-smc01 still has no Asterisk process (as on 2026-08-25), nocprov none;
+`collect-smc-evidence-full.sh` has no per-call `tsh` deadline (run wrapped in a perl alarm). manifest 0.6.6 -> 0.6.7.
+Corrected the same day (operator): umoona has no active SIP clients, so its missing Asterisk is known and not an outage.
 
-### Changed
-
-- `SKILL.md` 247 -> 144 lines. The inline decision tree, alerts table, Ansible rules, communication flows and runtime notes are replaced by "What This Pack Covers",
-  "Access in One Paragraph" and a five-step "Diagnosis Decision Tree" that point into the references, as in skill-cambium and skill-mikrotik. The references already held
-  that content in more detail; the alerts table in `SKILL.md` still called `sbdm` a Samsung SSD alert, corrected in `06_failure-modes.md` on 2026-07-13.
-- Facts that existed only in `SKILL.md` moved: the backdoor-first rule and the bastion `cannot listen to port` stale-session check to `03_communication-flows.md`;
-  the backdoor-first and outage-classification preamble to `05_troubleshooting.md` Tier 1; corrected runtime paths to `08_ansible-authoring.md` §Skill Runtime Paths
-  (its old text named two venvs that do not exist).
-- Facts that existed only in the retired files moved: Grafana MCP build and config location to `03_communication-flows.md` (the install doc said `~/.claude/settings.json`;
-  the entries are in `~/.claude.json`, checked 2026-10-07); the `topology_vars` plugin outputs to `08_ansible-authoring.md` §Canonical Source Rules.
-- `.archcore/specs/specialist-pack-file-roles.spec.md` amended (dated note, file table, install surface is a symlink); `.archcore/rules/reference-update-discipline.rule.md`
-  narrowed from six surfaces to four. `ARCHITECTURE.md`, `README.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `repomix.config.json`, `AGENTS.md`, `scripts/README.md`
-  updated to match. Three cross-references to `SKILL.md` sections in references 05, 06 and 13 repointed.
-- `scripts/check_governance.py`: dropped the stale `justfile` and `graphify-out/` exemptions (both exist now); retired filenames registered as history.
+## 20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)
 
-### Removed
+New capture `voip|asterisk-rss` (`ps -C asterisk -o pid=,rss=,vsz=,etime=,args=`): Prometheus has no process metrics, so this is the only per-process
+sizing source; enterprise-strategy's RouterOS study needs it to size a containerised Asterisk. `bash -n` passes; not yet run on a box (the session's
+fleet probe was denied by auto mode). Catalogued in `scripts/README.md`. manifest 0.6.5 -> 0.6.6.
 
-- The profile file, the dedicated-agent system prompt, and `exports/claude_code/project/skill-smc/` (adapter and copy-based install doc). Install is the symlink
-  `~/.claude/skills/skill-smc` -> this folder. The empty repo-level `exports/claude_code/project/skill-smc/` directory was removed too.
+Incident: commit df32f48 was made while `just check` failed (CHANGELOG 201 lines, over budget): the command piped the check into `tail`, so its exit
+code did not gate the commit. Fixed in the next commit by rotating the CHANGELOG; the check passes.
 
-## 20261007_1625 — skill-ai-it refresh: managed blocks to template-sourced-blocks-v1; Archcore filenames to the <slug>.<type>.md form (v0.1.98 -> v0.1.99)
+## 20261022_1621 — rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)
 
-<!-- skill-ai-it-upgrade: 2026-09-23-template-sourced-blocks-v1 -->
+From enterprise-strategy's RouterOS future study (operator answers 20261022_1535). `references/02_service-map.md` VoIP: what the rcp dialplan does
+(trunk to PBX0008, 4-digit extensions, DID or prompt inbound, barring, caller ID, 8888), with a code excerpt (ansible-wifi 35b32c36); the section is rcp
+only, not "non-RCT". `references/07_hardware-overlay.md`: whole x86 fleet by model (28 BOXER-6404, 19 BOXER-6641, cores 4 and 6) with 7-day CPU and RAM
+from Prometheus; no process metrics exist; anomalies (koonibba 98% root, warehouse 3 GB RAM, three boxes missing from Prometheus). manifest 0.6.4 -> 0.6.5.
 
-- Ran the `skill-ai-it` deterministic navigation-control upgrade (`refresh` mode).
-- `AGENTS.md` and `scripts/README.md`: managed `navigation` / `scripts` blocks upgraded from `2026-08-11-governance-checks-layer-v1` to
-  `2026-09-23-template-sourced-blocks-v1`. Content outside the blocks untouched.
-- `context-map.yaml`: `skill_ai_it_version` restamped; one long `description` value re-wrapped by the YAML writer, same text.
-- `AI_NAVIGATION.md`: skipped, carries the `skill-ai-it:manual` opt-out. The generic `.proposed-navigation-block` file was discarded.
-- The upgrader appends its entry at the end of the file; moved here because this CHANGELOG is newest-first.
-- `AGENTS.md` item 12/14 re-upgraded after the skill-ai-it template fix: the audit/check sentence now opens item 14 instead of trailing item 12.
-- `.archcore/`: the ADR, 3 rules and spec renamed to `<slug>.<type>.md` (e.g. `manifest-version-discipline.rule.md`), as skill-cambium did on 2026-10-05.
-  `archcore status` now reports no issues. Live references updated in `SKILL.md`, `ARCHITECTURE.md`, `scripts/README.md`, the ADR and `scripts/check_governance.py`;
-  the old paths are registered in its `CONDITIONAL_PATHS` so history in this file and `SCRATCHPAD.md` still resolves.
-- A parallel session's commit `fbc0aff` (16:28) picked up most of this entry's file changes, including the manifest at 0.1.99, while its message says "skill-smc 0.1.98".
-  The message was left as it is.
+## 20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)
 
-## 20261007_1623 — rct site addressing from ansible-wifi vs the Mk3 diagram (v0.1.97 -> v0.1.98)
+`scripts/x86_resiliency_probe.sh` and `scripts/pi_identity_probe.sh`: UEFI and EEPROM lines; a deadline on every `tsh` call (`--deadline`, default
+90 s; they had none) and stdin closed. `references/07_hardware-overlay.md` "Firmware access from the OS": all 47 x86 SMCs (two models, five BIOS
+builds, ESRT on the BOXER-6404 only, Secure Boot off with no keys) and six Pi canaries (EEPROM 2023-01-11, minimal config, bundled image older).
+Run for smc-resiliency's warehouse and retrofit flows.
 
-- `references/03_communication-flows.md`: new subsection, SMC VLAN addresses and DHCP scopes from `inventories/rct/topology_vars` (319 of 325 sites
-  identical), compared with the Mk3 connection diagram v0.5 the operator supplied (held in skill-mikrotik). The diagram is stale on management DNS and on a
-  `192.168.100.2` note; ansible-wifi is authoritative.
+## 20261022_1426 — What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3)
 
-## 20261007_1605 — arrkapa root cause: MikroTik switch crash loop (v0.1.96 -> v0.1.97)
+`references/03_communication-flows.md`: a Starlink dish gives latitude, longitude and altitude on its local gRPC interface (192.168.100.1:9200,
+`get_location`) only when "allow access on local network" is on in the Starlink app (community tools, `VERIFIED_SECONDARY`, unofficial, untested on
+the fleet); the Enterprise Telemetry API is behind account-manager access; the Sky Muster NTD has no documented local status page or API (negative
+finding). Researched for smc-resiliency's site fingerprint (decision 20261022_1426).
 
-- `references/06_failure-modes.md`: arrkapa trunk silence explained: the site switch is in a kernel-failure / watchdog reboot loop; eth0 flapped 249 times in 14.5 h; TSTIK resets 80-104 a day had no effect.
+## 20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)
 
-## 20261007_1425 — Cross-link to new skill-mikrotik (v0.1.95 -> v0.1.96)
+`scripts/backdoor_exec.sh`: the `tsh` inside `backdoor-watch.sh` and `kp` read stdin, so a script given with `-` was eaten before it reached the box (rc 0,
+no output). Every helper now runs with `</dev/null`. Retested 2026-10-22: goojarr-goonyool and mount-peachy (rct, Teleport down) probed through the backdoor.
 
-- `SKILL.md` Related Skills: new `skill-mikrotik` pack for the site MikroTik switch and AP (RB450Gx4 `10.255.0.5`, Metal 52 ac `10.255.0.20`).
+## 20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)
 
-## 20261007_1405 — TSTIK reset logic from source, tstik-capture.sh (v0.1.94 -> v0.1.95)
+From the ansible-wifi PHP CVE-2026-109618/109619 assessment. `references/10_captive-portal.md`: PHP security status (Ubuntu fixed build
+`8.1.2-1ubuntu2.28`, USN-8948-1; mod_php fleet-wide; builds drift, Pis included) and the other PHP processes to restart (rct-tstik
+`php -S 10.254.0.1:8080` as root from cron; `apn-mqtt-client`). `references/07_hardware-overlay.md`: what "don't touch nbn_wh" means (no
+changes; reads always allowed; operator, 2026-10-22). `references/03_communication-flows.md` Learned 2026-10-22: a backdoor port can answer
+as another box (50501 = nocprov-smc01); nbn_wh Teleport running but no tunnel. `references/13_known-issues.md` Learned (f): dual-inventory
+hosts, CRLF host_vars, no self-patching. New scripts `php_package_probe.sh` and `backdoor_exec.sh` (recipes, catalogue, smoke-tested);
+`backdoor-watch.sh` strips `\r` from a CRLF siteid.
 
-- `references/06_failure-modes.md`: the RCT TSTIK resets are the rct-tstik Laravel app on the SMC (phone, NTD, MikroTik switch rails), not AVR firmware; thresholds and history location.
-- `scripts/tstik-capture.sh` (new, read-only): TSTIK stats, reset history from `laravel.log*`, eth0 link log; `WAIT_UP=1` waits for Teleport. Tested on delye-smc01.
+## 20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)
 
-## 20261007_1350 — arrkapa trunk-silence diagnosis, vlan-traffic-timeline.py (v0.1.93 -> v0.1.94)
+`references/13_known-issues.md` Learned (e): a fresh Teleport session to a Sky Muster SMC 7 to 8 s against 0.01 s on a shared connection;
+8.3, 5.8 and 4.3 s per unit at 4, 8 and 12 in flight (unified-network-controller satellite concurrency report).
 
-- `scripts/vlan-traffic-timeline.py` (new, read-only): per-interface rates, or counter deltas across a dark gap, to place an outage on the wire.
-- `references/06_failure-modes.md`: whole switch trunk goes silent while the SMC keeps transmitting (arrkapa); RCT/WH wiring is Pi eth0 -> MikroTik switch.
-- `references/08_ansible-authoring.md`: `.yamllint` relaxation, unparseable-file baseline gap, and pushing under a pseudo-terminal from non-terminal shells.
+## 20261020_1905 — networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9)
 
-## 20261007_1314 — WH stability: power-loss and undervoltage classes, auto_reboot correction, overlay contents, fleet-stability scripts (v0.1.92 -> v0.1.93)
+From smc-resiliency's S2 spike and slurp. `references/06_failure-modes.md`: a netplan change to a VLAN, bond or bridge takes effect only at reboot
+(networkctl(1)). `references/08_ansible-authoring.md`: rendering a role template outside the role. `references/07_hardware-overlay.md`: executables
+under /etc, Unbound's stub and keys on the new image. `scripts/collect-fleet-health.sh`: `TSH_PROXY` (it used only the active profile, so every CW
+capture failed) and a read-only `06-fqdn2ip-state` bundle (smoke: darlngunaya, all six ok). `scripts/overlay-usage-breakdown.sh --etc`: executables list.
 
-- `references/06_failure-modes.md`: corrected "auto_reboot: 0 — the RISE watchdog never reboots" (string `"0"` is truthy; `reboot_after_cleanup` ignores the flag). New sections: daily winter
-  power loss at solar sites (alpurrurulam, haasts-bluff, canteen-creek, glen-hill) and continuous Pi undervoltage that `node_hwmon_in_lcrit_alarm_volts` misses.
-- `references/07_hardware-overlay.md`: what fills the WH overlay tmpfs (portal sudo logging in auth.log, rotations, journal, squidGuard, snapd, apt, fluent-bit) and the fixes.
-- `SKILL.md`: Tier 1 asks for outage classification with `fleet-reboot-timeline.py` before calling a hang.
-- `scripts/` (new, read-only): `smc_prom.py`, `smc_graylog.py`, `fleet-reboot-timeline.py`, `predark-snapshot.py`, `fleet-resource-profile.py`, `undervoltage-profile.py`,
-  `overlay-usage-breakdown.sh`; catalogued in `scripts/README.md`, recipes in `fleet-health.justfile`.
-- Report: `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/wh-stability-reboot-analysis-20261007_1310.md` (includes arrkapa `rct`: SMC up since 2026-07-03, outages are WAN).
+## 20261020_1752 — Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky Muster read cost (v0.5.7 -> v0.5.8)
 
-## 20261007_1229 — Backdoor-first rule for unreachable boxes, backdoor-watch.sh, kupungarri re-check (v0.1.91 -> v0.1.92)
-
-- `SKILL.md`: Tier 1 now requires the autossh backdoor check before any box is reported unreachable (operator, 2026-10-07), plus a "Backdoor port" row.
-- `scripts/backdoor-watch.sh` (new, read-only): resolves site to port and bastion from ansible-wifi inventory; `check`, `history` (stale-session bind failures), `watch` (UP/DOWN
-  changes, `UNTIL_UP`). Catalogued in `scripts/README.md`; linked from `references/03_communication-flows.md` §Backdoor SSH Access.
-- `references/06_failure-modes.md`: kupungarri-smc01 re-check: 37 h outage 2026-09-14/16 with no reboot, `eth0` flapping 4-8 times a day, `vlan522` always failing.
-
-## 20261007_1150 — Graylog AWS path, cert dependency, log-gap triage, wh dark-box update, alert gap (v0.1.90 -> v0.1.91)
-
-- `references/03_communication-flows.md`: new section "Graylog Backend Path in AWS": DNS alias, ALB rules and target groups, EC2, SGs, endpoint per inventory, 403 by design, ACM/CAA dependency.
-- `references/04_dependency-tree.md`: Level 3 adds graylog-sidecar + fluent-bit and the cert/CAA dependency.
-- `references/05_troubleshooting.md`: Tier 7 item 5, logs missing in Graylog (fluent-bit log strings, openssl check, 403 is normal).
-- `references/06_failure-modes.md`: Silent Total Hang fleet update: nyirripi-smc01 matches (dark 2026-09-16), kupungarri-smc01 WAN loss (dark 2026-10-05), four more wh absent from Teleport.
-- `references/13_known-issues.md`: 2026-10-07 entry adds the no-alert coverage gap with candidate alerts, and the wide Graylog EC2 security groups.
-- `RUNBOOK.md`: routing row for missing Graylog logs and the Graylog AWS path.
-
-## 20261007_1141 — Two-inventory runs lose topology vars; smc_update_kernel unhold regression fixed on branch (v0.1.89 -> v0.1.90)
-
-- `references/08_ansible-authoring.md`: new section "Two failures from one RISE run on `rct`": `topology_vars.py` module-level cache loads one
-  inventory's `topology_vars/` per run (OPEN, reproduced, proposed per-directory fix); `smc_update_kernel` unhold of uninstalled target packages
-  (regression from `848e9841`), fixed on branch `unc-virtual-smc-malik-rcp01` with a `dpkg-query` filter, not yet run on a Pi.
-- `references/13_known-issues.md`: 2026-10-07 entry pointing to that section.
-- `SKILL.md`: Ansible authoring rule 7, one inventory per run.
-
-## 20261007_1137 — gl.aws.apn.au cert expiry stopped SMC log shipping; Graylog aggregate API; nyirripi and kupungarri dark (v0.1.88 -> v0.1.89)
-
-- `references/13_known-issues.md`: 2026-10-07 entry: ACM `CAA_ERROR` let the Graylog ALB cert expire; fluent-bit (`tls.verify On`) stopped shipping from 2026-09-12 to
-  2026-10-07 with no backfill, while sidecars (`tls_skip_verify`) looked healthy; ALB default 403; nyirripi-smc01 and kupungarri-smc01 dark for other reasons.
-- `references/03_communication-flows.md`: Graylog `/api/search/aggregate` for per-source counts (the `/terms` endpoint returns nothing); fluent-bit vs sidecar TLS handling.
-
-## 20261006_1842 — MQTT broker password is a literal in the role (v0.1.87 -> v0.1.88)
-
-- `references/01_overview.md`: `smc_mqtt` writes the broker password as a literal, file mode 0644, on HEAD, `big_push` and `master`; rotate and move to the secrets store.
-
-## 20261006_1840 — Product name is Litebooth (v0.1.86 -> v0.1.87)
-
-- `references/01_overview.md`: the product is Litebooth, not Light Booth (operator, 6 Oct 2026).
-
-
-## 20261006_1834 — Operator answers, second round: portal, filtering, url_capture, VoIP, switches, links, monitoring, resiliency scope (v0.1.85 -> v0.1.86)
-
-- `references/01_overview.md` section 2: captive portal on every product and fail closed; content filtering at all community sites; url_capture on all x86 (RPi and Light Booth under
-  consideration); VoIP on rcp (Asterisk with R195 endpoints) and rct (Dallas Delta UI); two switches per rcp and nbn_accelerate site; Sky Muster Plus at most sites and Starlink on the past
-  year's x86 deployments; LibreNMS not in use; NOC alert paths; SMC resiliency scope is A/B only; Rob's role on SMC decisions. Operator, 6 Oct 2026.
-
-
-## 20261006_1805 — Operator answers from the enterprise-strategy register: platforms and counts corrected, hosting, MQTT, low touch, people (v0.1.84 -> v0.1.85)
-
-- `references/01_overview.md`: `wh` and `nbn_wh` corrected from x86 to Raspberry Pi (APN vs NBN table and flavour table); `rcp` 18 and `wh` 24 production sites; new section 2 records the operator
-  answers of 6 Oct 2026 (hosting, satellite latency, VRRP, MQTT, Tstik, postfix, tunnels, A/B, watchdog, low touch, people).
-- `SKILL.md`: `smc_ltp` is 8 production sites per the operator; `pia` is not low touch.
-- `SKILL.md`: the platform-pack pointer now uses the pack-relative path `../../platform/`; the governance path check failed on `specialists/platform`.
-- `references/06_failure-modes.md`: Teleport connectivity on 6 Oct 2026 (five `wh` hubs not connected) and the operator's acceptance of a hardware watchdog, spare first.
-- `references/02_service-map.md`: postfix decision (loopback only), not yet implemented.
-
-## 20261006_1217 — Hardware watchdog constraints: RuntimeWatchdogSec semantics, Raspberry Pi 15 s ceiling, overlayroot persistence (v0.1.83 -> v0.1.84)
-
-From apn/enterprise-strategy (pain point P17, Hub SMCs that hang and stay down). `references/06_failure-modes.md` "Silent Total Hang" gains *Verified constraints on the fix*:
-`RuntimeWatchdogSec=` semantics from systemd-system.conf(5); the `bcm2835_wdt` maximum timeout of about 15 s from the raspberrypi/linux driver source; the overlayroot persistence trap
-(the watchdog's own reboot discards a config written only to the upper dir); and that the enterprise-strategy SMC resiliency plan covers failed updates only. Read back after writing.
-
-## 20261005_1505 — cnMaestro 0.0.0.0 client IPs: SMC DHCP verified healthy; dhcpd unexpected-ICMP log line explained (v0.1.82 -> v0.1.83)
-
-- `references/13_known-issues.md`: new section. DHCP healthy at 10 sites while cnMaestro shows `0.0.0.0`; benign dhcpd "unexpected ICMP Echo Reply";
-  unexplained kalumburu dhcpd restart 2026-10-05 14:54 AEDT. AP-side cause cross-referenced to skill-cambium v0.6.30. Source: ansible-wifi session
-  2026-10-05.
-
-## 20261005_1442 — IPSSH banner hosts recorded as unverified switch candidates (v0.1.81 -> v0.1.82)
-
-- `references/16_tplink-site-switches.md`: new section. 52 hosts at 25 sites answer `IPSSH`; not yet confirmed as TP-Link; keep them in an unmatched-banner bucket.
-
-## 20261005_1350 — Related skills: platform packs skill-nautobot and skill-openwisp (v0.1.80 -> v0.1.81)
-
-- `SKILL.md` Related Skills: routes Nautobot and OpenWISP platform questions to the two platform packs, and platform-generic learnings to their
-  write-back contract, so they are not filed here.
-
-## 20261002_1641 — Generic topology authoring and inventory integration (v0.1.79 -> v0.1.80)
-
-- Revised `references/08_ansible-authoring.md` to distinguish generated YAML, in-memory reuse of `Topology.flatten()`, and direct inventory JSON.
-- Captured the `wan_pair_count` definition, dictionary/parent/name contract, plugin responsibilities and inventory/group/flavor safeguards.
-- Qualified prior CUE preference and Jsonnet rankings; linked the consolidated local plan. No implementation, cache refresh or live deployment.
-- Evidence branch: `unc-virtual-smc-malik-rcp01`; production tree clean at update start. Intended big-profile DHCP baseline remains unresolved.
-
-## 20260930_1959 — Never push ansible-wifi from a git worktree; which ref unified-network-controller reads (v0.1.78 -> v0.1.79)
-
-- `references/08_ansible-authoring.md` (pre-push hook): pushing from a linked worktree makes the knowledge-capture step act on ansible-wifi itself
-  (local `user.name`/`user.email` overwritten, a snapshot commit on the worktree's branch); recovery steps; push from the main checkout. Met and
-  cleaned up 2026-09-30 while cherry-picking wangkatjungka's inventory onto big_push (`756e86b6`). The helper was fixed the same evening
-  (skill-repo-knowledge-capture 0.1.1).
-- Same file: unified-network-controller reads `origin/big_push` whatever is checked out; `UNC_ANSIBLE_WIFI_REF` overrides it per command.
-
-## 20260930_1424 — TP-Link VLAN parsing and drift; live SMC services and interface MACs (v0.1.77 -> v0.1.78)
-
-- `16_tplink-site-switches.md`: new section on parsing the switch config with netutils' `linux` parser (no FOSS TP-Link parser exists), general-mode
-  port semantics, finding which topology `switchNN` a switch is by exact MAC, and the VLAN drift found at hope-vale and bidyadanga.
-- `02_service-map.md`: the live services and listeners of hope-vale-smc01 (60 running; postfix on 0.0.0.0:25, snapd, packagekit, ModemManager
-  noted), and which SMC interfaces carry which MACs (internet VLAN interfaces have their own locally administered ones).
-- `16_tplink-site-switches.md` "In Nautobot": switches are onboarded through UNC's sweep (the `--discover` banner probe), identify (`--backup`) and
-  land stages.
-
-## 20260930_1307 — TP-Link switches at six sites: SNMP community, the OIDs the controller uses, backup redaction fixed, Nautobot canary (v0.1.76 -> v0.1.77)
-
-- **Where they are** (`16_tplink-site-switches.md`): `--discover` over nine candidate sites found 11 SG2428P switches at six (kalumburu 2, bidyadanga 1,
-  burringurrah 1, hope-vale 3, kowanyama 2, pukatja 2); aurukun, doomadgee and galiwinku answered no TPSSH. The KeePass login worked on all 11, both
-  clusters, one attempt each; every one enables with no password. Firmware 5.30.1 on ten, 5.30.5 on bidyadanga.
-- **SNMP community**: one v2c community per switch, read-write, equal to `SNMP-<location>` and also the v2c trap community to the SMC; in no vault
-  entry. Identified by comparing in memory, never printed. Recorded as a risk for the operator (guessable, grants write).
-- **Redaction fix** (`scripts/tplink-switch.sh`): `--backup` now redacts the `snmp-server host` community name and leak-checks every community value
-  found. Before this, the trap host line carried the community in clear text; the 2026-09-24 kalumburu captures in unified-network-controller held it
-  (redacted in place there; still in that repo's history at `3b54e4c`).
-- **OIDs** (new `snmp-oid-registry-tplink.yaml`, in skill-cambium's registry shape; operator: keep TP-Link's list as Cambium's is kept): 32 OIDs
-  read live on bidyadanga and hope-vale Switch1, each naming the unit that proved it and the use the controller has for it (identity, health, interfaces, MAC table, LLDP, TP-Link VLAN MIB, TP-Link PoE MIB), and the MIBs checked and absent
-  (POWER-ETHERNET, ENTITY, HOST-RESOURCES, RMON, Q-BRIDGE VLAN tables; DDM empty without an SFP). The agent needs `-t 5 -r 3`.
-- **Per-switch record and survey** (new `tplink-site-switches.yaml`, `tplink-snmp-enablement-survey-20260930.csv`, the counterparts of
-  skill-cambium's site-addressing.yaml and SNMP survey): all 11 switches answered SNMP with `SNMP-<location>`, and each serial read over SNMP
-  equals its capture. JSON schemas and observations, the third Cambium kind, wait for a switch adapter whose output they are derived from.
-- **Nautobot**: unified-network-controller seeds switches from their captures (`seed_switch_devices.py`, catalog `vendors/tp-link/`); canary of six,
-  Staged: nbn_accelerate hope-vale, kowanyama, pukatja; rcp bidyadanga, burringurrah, kalumburu. Management masks differ per site (37 /19, six /22):
-  each address takes its site's Prefix, checked against topology_vars; kalumburu and kowanyama Switch1 configure /22 on /19 sites (drift).
-
-## 20260930_1803 — Prometheus usage sums need a `> 0` filter (spurious zero samples) (v0.1.76 -> v0.1.77)
-
-- `references/13_known-issues.md` (2026-09-30 side findings): amata-smc01 counters contain spurious 0 samples. `rate()` reads each as a reset, which
-  inflated Amata's August to 62,830 GB (true: 598 GB). The fix is to filter `(metric > 0)` before `rate`. The result had initially been misread as an
-  L2 loop.
-
-## 20260930_1221 — Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76)
-
-- `references/13_known-issues.md` (2026-09-30 section): "paid PIN" / "paid device" wording replaced with "access mark" / "T&C-accepted device". Per the
-  operator, users at these sites never buy a PIN: they accept a terms-and-conditions page and a PIN/mark is issued in the background (Eclipse
-  free-PIN flow). A note saying so was added. The heading changed, so its anchor changed too. The v0.1.74 CHANGELOG entry keeps its original wording
-  (append-only).
-
-## 20260930_1210 — RCP has its own bot (bot-apn-dashboard), ping-only, no mark wipe; skill-cambium now co-invoked (v0.1.74 -> v0.1.75)
-
-- `references/13_known-issues.md` (2026-09-30 section): RCP check across 18 `flavor=rcp` SMCs. `bot-apn-dashboard` only pings APs (8 sites). There
-  were 0 firewall or `netfilter-persistent` restarts and non-zero `ECLIPSE_MARK` everywhere. Two gotchas recorded: `tsh ls` label truncation
-  (use `flavor=rcp --format=names`) and `new-looma-smc01` being unlabelled and unreachable.
-- Operator rule (2026-09-30), recorded in ansible-wifi AGENTS.md: invoke skill-cambium alongside skill-smc for ansible-wifi analysis that touches
-  Cambium devices or AP monitoring, and feed findings back to both packs. The AP-ping monitoring path now lives in skill-cambium 05_known-issues.
-
-## 20260930_1202 — bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)
-
-- `references/13_known-issues.md`: new 2026-09-30 section. Teleport user `bot-cw-dashboard` (54.66.73.128) restarts netfilter-persistent on koonibba (137/24h) and amata (45/24h) through a "usage fix"
-  routine. Each restart reloads a mark-less `rules.v4` and removes every paid PIN, leaving koonibba with 0 authorised devices for 45% of sampled minutes. This is the root cause of koonibba's ~90%
-  usage drop. The 2026-09-15 carrier-throttling conclusion is withdrawn. Fleet survey of 31 SMCs included; side findings and 2 `correlate-pin-activation.sh` bugs recorded.
-- `references/14_pin-activation-diagnosis.md`: CORRECTED the 2026-09-11 bullet that called a 0-mark snapshot normal on a healthy site (amata). Healthy sites hold a steady non-zero count; a zero means
-  the chain was wiped. Added per-minute sampling as the detection method and the correct mark-count command.
-
-## 20260930_0326 — The low-touch script's contract with cnMaestro, read end to end (v0.1.72 -> v0.1.73)
-
-- Write-back from unified-network-controller (CHANGELOG 20260930_0325): `references/08_ansible-authoring.md` gains the cnmaestro-provisioning.py contract (calls through the wifi-dashboard proxy, what
-  each expects, new/replacement/reset, the replaced-MAC sources per family, the RPZ rewrite).
-- `references/01_overview.md` (coherence, 2026-09-30): the flavour table no longer says `smc_ltp` has no cw-cluster equivalent; nbn low-touch is on big_push's stage inventory only (daniel-test-nbn),
-  no production site.
-- `references/01_overview.md`: `--proxy` must precede the host in `tsh ssh` (after it, tsh uses the default profile; verified 2026-09-30).
-
-## 20260929_1821 — nbn low-touch lives on big_push with an access-key play; the test SMC's stage inventory (v0.1.71 -> v0.1.72)
-
-- Write-back from unified-network-controller (its CHANGELOG 20260929_1819): `references/08_ansible-authoring.md` corrects "rcp-only, no cw-cluster equivalent" for `smc_ltp`: big_push carries nbn
-  low-touch (daniel-test-nbn in `smc_ltp`, `inventories/nbn_accelerate/group_vars/smc_ltp.yml`, `lt-cnmaestro.communitywifi.net.au`) and a play that creates a per-site access key before the
-  provisioning role; the test box's hook script is absent.
-- `references/07_hardware-overlay.md`: AAEON DMI serials follow the BIOS build (fleet survey), the MAC-serial rule, and the two `mungkarta-smc01` boxes.
-- `references/01_overview.md`: always name the proxy, never try both (operator, 2026-09-29): `mungkarta-smc01` exists on both clusters as different boxes.
-- Corrected the same day: big_push's nbn low-touch host is `nbn.prod.apn-services.com.au` (52.63.121.56) since `4431e2dc`; rcp's is `wifi.prod.apn-services.com.au`; `lt-cnmaestro.communitywifi.net.au`
-  was its name in `9e60b1c9`.
-
-## 20260928_2206 — Low-touch is visible per box; the test box daniel-test-nbn-smc01 (v0.1.70 -> v0.1.71)
-
-`references/08_ansible-authoring.md`: boxes that are not low-touch have no RPZ zone file, BIND inactive and no provisioning hook (junjuwa-smc01, arawerr-smc01, read-only 2026-09-28), so an absent zone
-means "not low-touch"; daniel-test-nbn-smc01 on the cw cluster carries the machinery with a header-only zone and is in no `smc_ltp` group; the operator approved converting it and testing on it.
-Written back from unified-network-controller. Read back after writing.
-
-## 20260927_2024 — pre-push gate: lint the pushed commit, compare a new branch with its nearest remote branch, skip Jinja for shellcheck (v0.1.69 -> v0.1.70)
-
-`scripts/ansible-lint-delta-gate.sh` honours `DELTA_BASE` (set by the hook) before `@{upstream}`/`origin/master`, and reads the baseline from the git common dir so it works from a linked worktree. The
-same patch went into the copy the ansible-wifi hook calls (local-knowledge-ansible). The hook itself was fixed in the ansible-wifi clone (untracked); `references/08_ansible-authoring.md` records the
-three defects, the fix and the tests. Read back after writing.
-
-## 20260927_1954 — R195 TFTP files: /var/lib/tftpboot missing on fresh 22.04; wangkatjungka runs an uncommitted template with apn-cnmaestro01 (v0.1.68 -> v0.1.69)
-
-Found by unified-network-controller Step 8 (report `docs/reports/smc-and-site-network/step8-extensions-tftp-intent-20260927_1949.md` there). `references/08_ansible-authoring.md`, the TFTP bullet of
-"What a low-touch SMC keeps per device": the role never creates `/var/lib/tftpboot` (22.04's `tftpd-hpa` makes `/srv/tftp`), the seven per-extension keys and the tab-separated lines,
-wangkatjungka-smc01's configs from an uncommitted template variant, the `extension_end` hosts the role cannot render, low-touch CSVs starting at 1000 against cnMaestro ranges at x001, and the older
-10.255.1.x layout. `references/07_hardware-overlay.md`: the "template hard-codes Cloud" line corrected for what boxes actually serve. Read back after writing.
-
-## 20260927_1752 — the rcp "seven sites" observations are dated as at 2026-07-29/30 (v0.1.67 -> v0.1.68)
-
-`references/03_communication-flows.md`: four statements about the rcp fleet ("all seven sites", "six of seven", "two of seven") read as current, though `inventories/rcp/host_vars` now holds many more
-host files (production group membership not recounted here). They were live-verified or operator-reported on 2026-07-29/30 and are now framed as at those dates, with a note that the switch02
-cold-standby observation was not re-verified since. No claim was changed; re-verifying them needs Grafana against today's fleet. Found by skill-project-coherence's new `stale_refs.py` sweep; these
-lines are about rcp, not the `smc_ltp` group (whose count was corrected to nine in v0.1.66). Documentation only.
-
-## 20260927_1704 — fping approved per flavour (rcp, nbn_accelerate); the package-install guard that followed a Location-driven widening (v0.1.66 -> v0.1.67)
-
-From unified-network-controller's seventh staleness audit (its CHANGELOG `20260927_1659`). `references/07_hardware-overlay.md` fping section: the operator's approval of fping installs on every `rcp`
-and `nbn_accelerate` box, and the guard in that project's package checker, added after seeding the nine `smc_ltp` Locations silently widened its install reach. Documentation only.
-
-## 20260927_1632 — smc_ltp has nine sites, not seven (pia and yakanarra were missing); topology_vars layout; the nine seeded into unified-network-controller's Nautobot (v0.1.65 -> v0.1.66)
-
-Operator (2026-09-27) named yakanarra; re-reading `inventories/rcp/prod` on `big_push` shows `smc_ltp:children` has nine members: guda-guda, pia, umoona, warburton, beagle-bay, pandanus-park,
-new-looma, old-looma, yakanarra. The seven-site list is corrected where it states current membership (SKILL.md, `references/01_overview.md` and `02_service-map.md` counts with a note under the table,
-`05_troubleshooting.md`, `08_ansible-authoring.md`); dated history (the 2026-08-03 "now lists all 7") is left as written. `08_ansible-authoring.md` also gains the `topology_vars` layout
-(`inventory.hosts`, `switching.bridges`, `layer3.links` / `layer3.vrfs`) and the fact that all nine `smc_ltp` sites share the same three link subnets; the umoona bullet now says the sites had no
-Nautobot records when checked and were seeded the same day. Documentation only.
-
-## 20260927_1617 — _update_dns() location corrected (line 2855, not 2407); one production RPZ zone read: cnMaestro names, a fleet-wide template, low-touch sites absent from Nautobot (v0.1.64 -> v0.1.65)
-
-From unified-network-controller's Step 8 RPZ work (its CHANGELOG `20260927_1555` and `20260927_1611`). `references/08_ansible-authoring.md`: the `_update_dns()` line numbers were wrong (the function
-is at line 2855 of `roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py` on `big_push`, called at 3258); new bullet on umoona-smc01's live `db.cambium-rpz` (one operator-approved
-read-only look): 21 records under cnMaestro's names, last written 2026-04-16, template md5 identical to the virtual SMC's, names unique only per site, and none of the seven `smc_ltp` sites modelled in
-Nautobot or in cambium-swap's inventory. Documentation only.
-
-## 20260927_0322 — what a low-touch SMC keeps per device: extensions CSV, TFTP configs, the cnMaestro-fed RPZ zone, no DHCP reservations (v0.1.63 -> v0.1.64)
-
-`references/08_ansible-authoring.md`: new section answering "what does the SMC maintain for low-touch device provisioning" from the roles on the rehearsal branch: the extension arithmetic behind
-`<SITE>-extensions.csv` (`mgmt_ip`/`public_ip` from the extension number), the per-extension R195P files on TFTP, the absence of DHCP reservations (static `mgmt_ip` comes from cnMaestro template
-variables), and `db.cambium-rpz` rebuilt by the provisioning script's `_update_dns()` from cnMaestro's `name`/`mgmt_ip`/`public_ip` variables. Operator correction folded in: 8.8.8.8/8.8.4.4 are the
-box's forwarders; user clients get the gateway as DNS. Asked by the operator for the Nautobot SSOT design; the mapping is recorded as a proposal in unified-network-controller.
-
-## 20260927_0308 — smc_dhcpd: debounced hook and StartLimit adopted on the rehearsal branch; the vars-plugin and dhcpd.conf.j2 cautions recorded (v0.1.62 -> v0.1.63)
-
-`references/08_ansible-authoring.md`: new section on the `smc_dhcpd` change committed on ansible-wifi branch `unc-virtual-smc-malik-rcp01` (operator's yes, 2026-09-27): the dispatcher hook debounced
-through one re-armed transient unit, `StartLimitIntervalSec=60`/`StartLimitBurst=20` in the role's unit file; 1 restart under a full apply and a bridge bounce on the stage box. Two cautions learnt
-applying it: a play outside the repo gets no topology variables from the vars plugin (pass them with `-e @`), and a full `smc_dhcpd` run on the stage box would drop the Step 4 device-seen `execute()`
-line from `dhcpd.conf` until Q10's template variable exists in `dhcpd.conf.j2`.
-
-## 20260927_0258 — apn-cnmaestro01 hostname corrected to apn-cnmaestro01.apn.au (operator) (v0.1.61 -> v0.1.62)
-
-`references/08_ansible-authoring.md`: the on-prem cnMaestro hostname read `apn-cnmaestro01.apn.net.au` (2026-09-26 write-back); the operator corrected it to `apn-cnmaestro01.apn.au` on 2026-09-27, and
-it resolves (52.64.230.196). One-word fix; `USER_STATED`.
-
-## 20260927_0252 — dhcpd start-limit: both fixes proved on the virtual SMC; the issue is filed in local-knowledge-ansible (v0.1.60 -> v0.1.61)
-
-`references/06_failure-modes.md`: the 2026-09-27 section now carries the proof — on `malik-rcp01` a `StartLimitIntervalSec=60`/`StartLimitBurst=20` drop-in kept `isc-dhcp-server` active through a full
-`netplan apply` (6 restarts) and a three-bridge bounce (3 restarts); a debounced hook (`systemd-run --on-active=5`, re-armed per event) did the same with 1 restart each. The issue with the hook's
-source, the unit file and the options lives in local-knowledge-ansible issues/rcp-fleet/rcp-dhcpd-start-limit-on-link-flap-20260927_0238.md (commit `8a43a95`, proof section added the same night). No
-playbook changed; physical hardware still `UNVERIFIED`.
-
-## 20260927_0230 — netplan apply vs the dhcpd restart hook: isc-dhcp-server start-limit-hit recorded, reload surface named (v0.1.59 -> v0.1.60)
-
-`references/06_failure-modes.md`: new section on the `smc_dhcpd` role's networkd-dispatcher `routable.d` hook restarting `isc-dhcp-server` for every link that becomes routable, so a full `netplan
-apply` (twelve links bouncing at once on `malik-rcp01`) drives the unit into systemd's `start-limit-hit` even on an unchanged config; the reload surface the role's own handler uses (`netplan generate`
-then `networkctl reload`) touches only changed links, and a reset-failed plus restart of the bridge-bound services belongs after any apply or rollback. Found 2026-09-27 during
-unified-network-controller's Step 7 rehearsal (its `wc-local/scripts/smc_intent.py`), on the virtual SMC only; the physical-box link count under a real reload is marked `UNVERIFIED`. No change to any
-playbook.
-
-## 20260926_2121 — OrbStack virtual SMC malik-rcp01: container-style host adaptations recorded; working-cache venvs absent (v0.1.58 -> v0.1.59)
-
-From the unified-network-controller supplement Step 4 rehearsal (2026-09-26 evening).
-
-- `references/11_vagrant-lab.md` §12.6 (new): the stage host `malik-rcp01` is an OrbStack amd64 Ubuntu 22.04 machine (`lxc`), not a Vagrant VM. Every real-box assumption `smc_bases.yml` made false
-  there and its one adaptation, all behind the stage host var `smc_bases_container: true`: no bootloader (GRUB block skipped), the management NIC is also the WAN (`use-routes: true`), networkd's DUID
-  moved the DHCP lease (`dhcp-identifier: mac`), `/etc/cloud` absent (already ignored), and the `on commit` block only for `smc_ltp` (stage-only `[malik_smc_ltp]` group; never `smc_ltp.yml` against
-  it, a logging stand-in replaces the cnMaestro script). Also: `setsid` is not on macOS; `ntp`'s postinst takes a minute in the container; package retries hide a failure for an hour.
-- `SKILL.md` Runtime Environments: both working-cache venvs the section named are absent on this Mac (verified); Homebrew `ansible-playbook` core 2.21.4, `ansible-lint` and `yamllint` are what run
-  ansible-wifi until a venv is created.
-- `references/06_failure-modes.md` (new subsection) and `references/01_overview.md`: an expired `tsh` certificate makes every device look failed (94 of 156 critical on 2026-09-25, 17,309 `cert has
-  expired` lines, no alarm); `aurukun-smc01` refusing SSH on 2026-09-22/23 read as a site failure while smc02 and smc03 were fine. Check `tsh status` per cluster first; the multi-SMC fallback recorded
-  as `USER_STATED` on 2026-09-21 is now implemented in the controller's pushes.
-- `references/08_ansible-authoring.md`: the controller's proposed second `execute()` line on the low-touch hook (gated, Option 43 unchanged per Q9), where the spool lives, and the stage rehearsal
-  pointer.
-
-## 20260926_1815 — Low-touch hook verified live on umoona-smc01; leases persist the hook variables; all devices on apn-cnmaestro01 (v0.1.57 -> v0.1.58)
-
-`references/08_ansible-authoring.md`: read-only verification on umoona-smc01 for the unified-network-controller's Step 4 baseline. The live `on commit` block equals the `master` template and
-`big_push` does not change it (only the script: the box runs the 4,509-line build with redis-server active); provisioning shared-network `192.168.11.0/24`, 20-second Cambium leases, Option 43 still
-`https://3.105.84.178`; `dhcpd.leases` persists `clhw`, `clip`, `clvci` per lease (811 Cambium blocks of 1,338); one `log.<MAC>` per device under `/var/local/cnmaestro-provisioning/`. Aurukun's smc02
-and smc03 are Teleport nodes but not Nautobot Devices. Operator statement, 2026-09-26: every apn and nbn device is managed by on-prem `apn-cnmaestro01` (Teleport node present; the stated hostname
-`apn-cnmaestro01.apn.net.au` did not resolve publicly). Capture kept in unified-network-controller `captures/`.
-
-## 20260924_1957 — SMC physical port order and usual cabling recorded (v0.1.56 -> v0.1.57)
-
-`references/02_service-map.md`: left-to-right port order for the BOXER-6404 and BOXER-6641 as the operator stated it, the usual cabling (ports 1-2 internet, port 3 trunk to switch 1, port 4 trunk to
-switch 2) confirmed on mornington, kalumburu and hope-vale, how the uplink VLANs split across the two trunks, and that `vlan621`/`vlan631` held no address on either 6641 site.
-
-## 20260924_1945 — x86 VLAN interface layout recorded with its Nautobot mirror; `ip -j` read confirmed (v0.1.55 -> v0.1.56)
-
-`references/02_service-map.md`: the x86 boxes' bridge-member sub-interfaces and standalone internet VLAN interfaces, counted on the three canaries (10 on the BOXER-6404, 16 on each 6641), the one-call
-JSON read (`ip -d -j link show type vlan`, iproute2 5.15), and unified-network-controller's per-box Nautobot record of them (`virtual` interfaces with parent, bridge and site VLAN; bridges per device,
-not in the device-type template; drift reported against the box and `topology_vars`). Also recorded there: the operator's target (2026-09-24), Nautobot as the source each SMC syncs its network setup
-from and applies, with rollback; the box read is the retrofit.
-
-## 20260924_1522 — `ifPhysAddress` verified on all three snmpd canaries; the identity anchor is now confirmed over SNMP every collector cycle (v0.1.54 -> v0.1.55)
-
-`references/snmp-oid-registry.yaml`: `.1.3.6.1.2.1.2.2.1.6` ifPhysAddress moves from `not_yet_read` to the verified set, walked on kalumburu-smc01, mornington-smc01 (apn) and hope-vale-smc01 (nbn).
-The physical `enp*` ports report their burned-in MACs, equal to what Nautobot holds; the lowest (the identity anchor) is `enp1s0` on all three. Consumer: unified-network-controller
-`wc-local/scripts/smc_collect.py`, now run by the 20-minute collector cycle, which reports anchor drift and never writes it. Also recorded: `sysUpTime` is the snmpd agent's uptime, not the host's (0
-days on all three, snmpd installed today), so the SMC uptime OpenWISP shows is agent uptime; `hrSystemUptime` is added to `not_yet_read`. Two governance failures that predated this entry are fixed:
-`SKILL.md` now names the consumer by its full path under the `apn-projects` sibling root, and the example marker in `references/08_ansible-authoring.md` is back on the line it exempts (a rewrap had
-moved it down one).
-
-## 20260924_1222 — Neighbour table: mornington has refused 2,230 allocations at the 1024 cap; `gc_thresh1` = 1 corrected as not the cause of ARP loss (v0.1.53 -> v0.1.54)
-
-`ip -s ntable show name arp_cache` (read-only): mornington-smc01, 48 weeks up at 795 entries, shows `forced_gc_runs` 5,666,597 and `table_fulls` 2,230, so it has hit the 1024 hard cap and dropped
-packets; kalumburu-smc01 shows 145 and 0. `13_known-issues.md`'s neighbour-table section now carries the counters, what each threshold does to customer traffic, monitoring and the SMC, why
-whole-subnet sweeps make it worse, and the proposal reordered (`gc_thresh3` is the fix, `gc_thresh1` a nice-to-have) with a fleet `table_fulls` survey as the first rollout step. Correction to v0.1.53:
-the `gc_thresh1` of 1 is not why quiet devices leave ARP; both tables exceed the kernel default of 128 too. `16_tplink-site-switches.md` and `scripts/tplink-switch.sh` say so now.
-
-## 20260924_1205 — TP-Link site switches reached behind the SMC; `tplink-switch.sh` access, discovery and redacted config capture (v0.1.52 -> v0.1.53)
-
-Both kalumburu switches (10.255.0.2 Switch1, 10.255.0.3 Switch 2, SG2428P firmware 5.30.1) logged into with KeePass `/Network/tplink switch` from kalumburu-smc01. New
-`references/16_tplink-site-switches.md`: the per-site candidates from unified-network-controller's sweeps, the credential, the SSH quirks (`HostKeyAlgorithms=+ssh-rsa`, `MACs=hmac-sha2-256`, no exec
-channel, CR for Enter, swallowed first keystroke, client-first banner), the three `enable` cases, why discovery cannot use ARP (`gc_thresh1` is 1 on the SMCs, not the kernel's 128), and the rule never
-to sweep `bridge_501`. New `scripts/tplink-switch.sh` with `tplink_cli_driver.py`: read-only commands, `--discover`, `--shell` and `--backup` (redacted running-config, leak-checked against the known
-passwords). Telnet is refused on both switches. The login password was once typed into Switch1's CLI after an `enable` that needed none; the driver now sends a password only when a prompt asks for
-one. RUNBOOK routing, SKILL.md references and `scripts/README.md` updated. `13_known-issues.md` gains a neighbour-table finding and a proposed `gc_thresh1/2/3` standard of 1024/4096/16384 (proposal
-only; the SMCs run 1/512/1024 and mornington holds 757 entries).
-
-## 20260922_1750 — Overlayroot is RPi and WH only; x86 tmpfs paths differ per box; fping on three x86 SMCs (v0.1.51 -> v0.1.52)
-
-SKILL.md said "All SMC boxes run overlayroot". Wrong, per the operator (2026-09-22): only RPi and WH boxes do. It now says so, matching what `references/07_hardware-overlay.md` already recorded per
-flavour. `07_hardware-overlay.md` gains an x86 section: plain ext4 root (an apt install persists), and the tmpfs mounts, which differ per box. `/tmp` is tmpfs on mowanjum-smc01 but ext4 on
-hope-vale-smc01, so use `/run`. fping 5.1 was installed by apt on mowanjum-smc01, hope-vale-smc01 and horn-island-smc01 for unified-network-controller's reachability pre-check. No ansible-wifi role
-installs it yet.
-
-## 20260921_2242 — Low-touch provisioning: the Redis-backed script is the fleet's version, from ansible-wifi's big_push branch, not master (v0.1.50 -> v0.1.51)
-
-`references/04_dependency-tree.md` resolves its open "naming collision" item: the Redis-dependent `cnmaestro-provisioning` service and the `smc_ltp` low-touch script are one mechanism at two versions.
-`master` holds the older 3,222-line script with no Redis; the unmerged `big_push` branch (Daniel Gravolin, 36 commits) holds the 4,514-line Redis version. Checked live, read-only: `umoona-smc01` runs
-`big_push` commit `40c283b6`; `pandanus-park-smc01` runs a copy matching no commit (deployed from uncommitted changes). Consumer: `unified-network-controller`'s architecture brief, point 3.
-
-## 20260921_1310 — Multi-SMC sites: any box reaches the whole management address space; jump-host and host-key consequences (v0.1.49 -> v0.1.50)
-
-`references/01_overview.md` "Remote Access": at a multi-SMC site the boxes share one management address space as a VRRP-style set, and failover runs through the switching layer and the wireless
-network, so any box is a valid jump host for every device at the site (operator-stated, 2026-09-21, aurukun as the example). A fixed `ProxyJump` does not fail over on its own; device host keys stay
-keyed by site. Consumer: `unified-network-controller`'s options register, D3.6 sketch — one site agent and one Nautobot Namespace per site, not per box.
-
-## 20260921_1237 — Plain-OpenSSH `ProxyJump` to devices behind an SMC box verified; nbn_accelerate `~/.ssh/config` block; per-site device host keys (v0.1.48 -> v0.1.49)
-
-`references/01_overview.md` "Remote Access" gains a verified path from the operator Mac straight to a device behind an SMC box: OpenSSH `ProxyJump`, with `tsh proxy ssh` as the first hop's
-`ProxyCommand` and an ordinary `-W` channel through the box. Nothing is installed on the box and the device credential stays on the Mac. Verified 2026-09-21 against `galiwinku-smc01` →
-`GAL_XV2_AP32_IP3_32` (`10.255.3.32`).
-
-- `~/.tsh/known_hosts` trusts the host CA only for `*.teleport.<domain>`; a bare node name as `HostName` fails host-key verification. `HostKeyAlias` to the FQDN form, or using the FQDN, fixes it.
-- An `nbn_accelerate` wildcard block (`*.teleport.communitywifi.net.au`, `--proxy=` only) now sits in the operator's `~/.ssh/config` beside the `tsh config`-generated APN one, verified live.
-- Device host keys collide across sites because management subnets overlap: key them per site (`HostKeyAlias=<site>-<ip>` or a per-site `UserKnownHostsFile`).
-- Device password via `sshpass -e` from an env var, never `-p` (argv exposure).
-
-Consumer: `unified-network-controller` `docs/inventory/device-access-via-proxyjump-and-tbot-20260921_1232.md`, which also records the tbot (production) form and its open checks.
-
-## 20260920_2342 — Path checking widened past five files; 20 split filenames joined; ansible-wifi declared as a sibling root (v0.1.47 -> v0.1.48)
-
-Ported from `unified-network-controller`'s staleness audit of the same evening, which found the same defects there and promoted the underlying rule to
-`unified-network-controller/.archcore/rules/govern-a-derived-population-never-a-hand-list.rule.md`.
-
-**Nineteen split filenames, the most of any package in this family.** A wide table cell wraps mid-filename and leaves the token ending in a backslash with its tail on the next row — unfollowable for a
-reader, and invisible to `check_referenced_paths`, which skips anything that does not look like a path. So the defect hid from the very check that should have caught it. All joined across `SKILL.md`,
-`references/07_hardware-overlay.md`, `references/13_known-issues.md` and `scripts/README.md`; one was a THREE-row split. `check_split_path_tokens()` now asserts the shape directly and scans every
-markdown file in the package, not only the governance surfaces.
-
-**`SURFACES` was a hand-list of five files**, so `ARCHITECTURE.md`, `PROFILE.md`, `SYSTEM_PROMPT.md` and anything added later were outside every path check. Now derived from the tree. `CHANGELOG.md`
-and `SCRATCHPAD.md` are excluded with the reason stated in the code: both are append-only history, and SCRATCHPAD's 2026-06-26 entry recording that a dead `references/PROFILE.md` pointer was *removed*
-reads to a path check as a live broken reference. Exempt history by marker, never by rewriting it. `references/**` is excluded for a different stated reason — its slash notation is mostly device
-paths, CIDR blocks and systemd units rather than repo paths.
-
-**`SIBLING_ROOTS` added, with `ansible-wifi` as the important one.** This package's entire subject is that repository, and its prose names roles, inventories and flavour files by their path there.
-Those references are now *verified* rather than merely unchecked: if ansible-wifi renames a role, this package's routing into it fails loudly. An absent root prints SKIPPED, never passed.
-
-**Bare basenames resolve on a unique match only.** `01_overview.md` unambiguously means `references/01_overview.md` within one package, so it resolves; a name carried by more than one file is reported
-as ambiguous rather than silently accepted, and a rename still fails. Evidence-collector OUTPUT filenames (`MANIFEST.txt`, `SUMMARY.txt`, the numbered capture files), git refs (`origin/main`) and the
-Apache log name `wifi/access` are registered as conditional paths with per-entry reasons — they are not repo paths despite the shape.
-
-Both new check behaviours negative-tested in both directions. Checks **184 -> 286**.
-
-
-## 20260920_1846 — `snmpget` installed across rcp/nbn_accelerate; two fleet assumptions disproved (v0.1.46 -> v0.1.47)
-
-### Done — all 45 rcp/nbn_accelerate boxes now have `snmpget`
-
-19 already had it, 25 were installed, and `mindi-rardi-smc01` completed on a retry after a dpkg lock cleared. Verified by a full re-run reporting **45/45 already present**. The other 314 SMC boxes
-(`rct` 292, `wh` 20, `nbn_wh` 2) were deliberately left alone — do not assume `snmpget` exists on an `rct` box.
-
-This closes the failure the work started from: a device sweep shelling out to `snmpget` from a box that lacked it recorded 20 healthy APs across two sites as unreachable.
-
-### Two fleet-wide assumptions this disproved
-
-- **`snmpget` presence never followed the flavour.** An earlier entry recorded it as an `rcp`-versus-`nbn_accelerate` split, drawn from three boxes that happened to line up. Surveying showed both
-  flavours on both sides. Probe for a binary; never infer it from a label.
-- **Overlayroot is not fleet-wide.** This pack states that all SMC boxes run overlayroot and lose writes on reboot. **None of the 45 rcp/nbn_accelerate boxes had it mounted**, which is why an apt
-  install persists on them. The rule appears to hold on the `rct`/`wh` side, where it was presumably written. Check per box.
-
-### Added — `scripts/install_packages.sh`, generic by request
-
-Replaces the one-off snmp installer. Takes `--packages` and `--verify`, scopes by Teleport flavour, and assumes Ubuntu 22.04+ with no OS branching. It verifies the resulting binary rather than apt's
-exit code, skips boxes that already have it, refuses boxes with overlayroot mounted unless `--force-overlay`, and defaults to 5 workers because these sites sit on constrained, sometimes satellite,
-backhaul.
-
-It also passes `DPkg::Lock::Timeout` so apt waits for the dpkg lock instead of losing the race. That came from `mindi-rardi-smc01`, which blocked itself: an earlier `apt-get install` of the same
-package was **orphaned when its `tsh` session dropped** and held the lock while every later attempt failed against it. Do not kill an apt holding the lock without checking what it is — killing
-mid-transaction can leave dpkg half-configured.
-
-### Added — `scripts/survey_snmp_tooling.sh`
-
-Read-only per-box report of `snmpget` presence and overlayroot state, flavour-scoped. Both scripts are cataloged in `scripts/README.md`.
-
-## 20260918_1700 — teleport-tunnel.sh port convention for concurrent dispatch (v0.1.45 -> v0.1.46)
-
-Operator instruction, while dispatching a live `get_config()` verification across the 4 Cambium device families: when more than one tunnel might be open at once — parallel subagents, or several device
-families worked in one session — each family needs a fixed local port so concurrent tunnels never collide and a stale leftover on a shared port can't mask a fresh one. Also: agents were found calling
-`tsh ssh -L ...` by hand instead of `scripts/teleport-tunnel.sh` for this dispatch — reinforced that the script is the required path, not raw `tsh`.
-
-### Changed — `scripts/teleport-tunnel.sh`, `scripts/README.md`
-
-- Added a port-convention block to both: reserved range `20101`-`20199` for ad hoc Cambium device-tunnel work, current fixed assignments XV2 `20101`, ePMP `20102`, cnWave `20103` (R195P needs no
-  tunnel — nested SSH via the SMC box). Future assignments extend this list rather than picking numbers ad hoc.
-- Also swapped remaining "cluster" wording in both files' prose for "Teleport target"/"Teleport deployment" (operator instruction, matching the 20260918_1620 entry's convention) — the literal
-  `--cluster=` CLI flag name and the script's internal `CLUSTER` shell variable are the only exceptions, left as-is (real Teleport syntax / code rename out of scope).
-
-### Notes
-
-- No `check_governance.py` failure expected — verified by reading both files back after writing.
-
-## 20260918_1620 — `--cluster=` vs `--proxy=` incident documented: an agent misdiagnosis that faked a real outage (v0.1.44 -> v0.1.45)
-
-Two independent `cambium-swap` agent sessions ran `tsh ls`/`tsh ssh` against `teleport.communitywifi.net.au` using `--cluster=` instead of `--proxy=`, got `transport: authentication handshake failed:
-EOF` on every attempt, and concluded (wrongly, on both counts) that the Teleport target was suffering a fleet-wide outage and that `hope-vale-smc01` was missing/decommissioned. The operator reproduced
-and disproved both claims directly in under a minute: `tsh status` showed a fully valid cached session, `curl .../webapi/ping` returned a clean 200, and `tsh ls --proxy=teleport.communitywifi.net.au`
-listed the full node roster including `hope-vale-smc01`, which then connected cleanly via `tsh ssh --proxy=... root@hope-vale-smc01`.
-
-### Changed — `references/01_overview.md`
-
-- Added an incident-dated addendum to the "Remote Access" section, directly under the existing 2026-09-17 `--proxy` tunnel note: `--cluster=` is never a substitute for `--proxy=` on this Teleport
-  target, for any command (not just `-L` tunnels) — `teleport.communitywifi.net.au` is its own root Teleport target with its own login profile, not subordinate to `teleport.apn.au`, so `--cluster=`
-  tries to route to it via a trust relationship that doesn't exist and fails with a transport-layer error indistinguishable from a real outage. Points to `scripts/teleport-tunnel.sh` (already correct)
-  for the tunnel case, and flags that a hand-written `tsh ls`/`tsh ssh <cmd>` call still needs `--proxy=` added explicitly since the script doesn't cover that shape.
-
-### Notes
-
-- No new script — `scripts/teleport-tunnel.sh` already hardcoded `--proxy` correctly before this incident; the gap was agents bypassing it with raw `tsh` calls, not a defect in the script itself.
-- No `check_governance.py` in this pack to run; verified by reading `references/01_overview.md` back after writing.
-
-## 20260918_1153 — unified-network-controller added as a Related Workspace (v0.1.43 -> v0.1.44)
-
-Operator split the "Option 3" FOSS controller workstream out of `cambium-swap` into its own sibling project, `unified-network-controller`, and asked that this pack and `skill-cambium` both know about
-it, and it about them.
-
-### Changed — `SKILL.md`
-
-- Added `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller` to the Related Workspaces table: the FOSS network controller build (Nautobot + adapter layer) intended to eventually
-  replace/complement `smc_cnmaestro_provisioning`'s role. Same cross-reference discipline as the existing `skill-cambium` relationship — call `skill-cambium` first for device-layer questions, this
-  pack for SMC/Ansible-layer questions.
-
-### Notes
-
-- No `check_governance.py` in this pack to run; verified by reading `SKILL.md` back after writing.
-
-## 20260917_0001 — Other Raspberry Pi OS options assessed; Ubuntu Server remains the only recommended full-SMC platform (v0.1.42 -> v0.1.43)
-
-Extended the Raspberry Pi operating-system assessment in `references/07_hardware-overlay.md`. Raspberry Pi OS Lite is the closest technical alternative, but its Pi-specific Debian/APT model still
-requires a complete port and qualification of the Ubuntu-based SMC automation without an established benefit. Debian has the same porting cost. OpenWrt is suitable only for a reduced router/AP
-product; Fedora IoT/CoreOS, NixOS and comparable immutable/declarative choices create another full appliance-platform redesign. No production repository, fleet configuration or device image changed.
-Primary Raspberry Pi and OpenWrt documentation was read directly on 2026-09-17. Manifest bumped to v0.1.43.
-
-## 20260917_0000 — Ubuntu Server retained for Raspberry Pi SMCs; Core is a greenfield-only option pending an appliance canary (v0.1.41 -> v0.1.42)
-
-Recorded a design recommendation in `references/07_hardware-overlay.md`: retain Ubuntu Server LTS for new Raspberry Pi SMCs. The existing fleet is a root-managed, package-based network appliance with
-direct systemd, filesystem, netfilter, DHCP/DNS, hostapd, Teleport and monitoring control; RISE overlayroot already supplies a disposable-root strategy without changing that operating model. Ubuntu
-Core is a valid embedded platform but is not a drop-in Server replacement: Core uses image/snap lifecycle management and strict confinement, and does not run classic snaps. Reconsider it only as a
-separately designed, reduced-scope appliance with a Pi canary proving privileged networking, access, observability, update/recovery and constrained-link behaviour. No production repository, fleet
-configuration or device image was changed. Canonical documentation was read directly on 2026-09-17. Manifest bumped to v0.1.42.
-
-## 20260917_1620 — teleport-tunnel.sh added: generic ansible-wifi-inventory-driven tunnel helper, moved from skill-cambium (v0.1.40 -> v0.1.41)
-
-### Added
-
-- `scripts/teleport-tunnel.sh` — opens a `tsh` local-port-forward tunnel to any device reachable from a site's SMC box. Written first in `skill-cambium` for its own Cambium device-access work, then
-  moved here on operator correction ("it's not Cambium tunnel, it's teleport tunnel") since this pack owns `tsh`/Teleport mechanics, per each pack's boundary. Resolves site -> SMC-host live from
-  ansible-wifi's own `[<site>_smc_bases]` inventory groups (never hardcoded); only the flavour->cluster split is a small fixed table in the script, since that's structural (see
-  `references/01_overview.md`'s Cluster split table), not per-site data.
-- `scripts/README.md` — new `teleport-tunnel.sh` section and safety-table row.
-
-### Notes
-
-- `skill-cambium`'s own `just tunnel` recipe now calls this script's canonical path directly rather than keeping a copy — same cross-pack pattern `cambium-portal.sh` already uses in the other
-  direction (that script lives in `skill-cambium`, `skill-smc` had nothing calling it).
-- `python3 scripts/check_governance.py`: 182/182 passing.
-
-## 20260914_1300 — Cambium radio/AP estate by flavour recorded from the cambium-swap continuity project (v0.1.39 -> v0.1.40)
-
-**Trigger:** bootstrapping `apn/cambium-swap` (Cambium / cnMaestro vendor-continuity investigation after the reported Cambium Networks, Ltd administration notice) invoked this skill for SMC-side
-Cambium touchpoints. Standing write-back contract applied.
-
-**Added** to `references/07_hardware-overlay.md` a new section, "Cambium radio and AP estate by flavour (operator-stated 2026-09-14)":
-
-- RCT runs ePMP 1000 2.4 GHz and 5 GHz Connectorized APs; WH runs ePMP 1000.
-- Both are being migrated to MikroTik "metal" APs (operator confirmed) and XV2-2T0, because ePMP 1000 is old and unsupported.
-- The `smc_ltp` hardware profiles are listed, alongside the full fleet list.
-- ePMP terminology: AP and SM, not DN.
-- SMC-side continuity facts:
-  - DHCP option 43 carries the cnMaestro IP, not the FQDN.
-  - `lt-cnmaestro.apn.au` is On-Premises.
-  - The r195P routers are pinned to cnMaestro Cloud.
-  - The live `cambium-rpz` zone contents are unrecorded.
-  - The cnMaestro 90-day Anchor grace period ends device onboarding.
-
-No ansible-wifi change. Read back after writing.
-
-## 20260911_1732 — Per-pin activation timeline tool added: correlate-pin-activation.sh, fixes a live-confirmed lease join-order bug (v0.1.38 -> v0.1.39)
-
-**Trigger:** while confirming `bungardi-smc01`'s portal-FQDN fix (v0.1.38), the operator asked for a specific per-pin view that neither existing script gives: "for this site, tell me when a pin was
-activated, what IP it had, what MAC address, when did the lease start, when did it end" — a timeline, not `audit-pin-activation.sh`'s per-site totals. A manual one-off version of this join, run live
-against `hope-vale-smc01` to answer the immediate question, worked but used `tail -1` to pick the current lease block for each activated IP.
-
-**Bug found during that manual run, before it was promoted to a script:** `dhcpd.leases` is append-only, and `tail -1` picks the LAST lease block recorded for an IP — which is not necessarily the one
-that was actually in force at a given historical activation time. Confirmed live: `hope-vale-smc01`, IP `10.0.36.28` — its last-in-file lease block has `starts epoch` = 15:53:29, but the real
-`wifi/access` activation for that IP was logged at 15:52:41, **48 seconds earlier**. The correct block (an earlier renewal) was further up the file.
-
-**Fix: `scripts/correlate-pin-activation.sh` added**, doing the join properly — for each IP, scans every recorded lease block and picks the one whose `starts` epoch is the *latest one still `<=` the
-activation epoch*, not the file's last word on that IP. Falls back to the earliest known lease (flagged with an explicit WARNING note) when no lease had started by activation time at all — confirmed
-on a live 30-activation sample against `hope-vale-smc01`, this happened for 4 of 30 IPs. Also handles two other data gaps found live rather than failing silently: an IP with no lease record at all
-(`no-lease-found`) and a matched lease block missing its `hardware ethernet` line (`no-mac-in-lease-record`, added after a live run produced a blank, unlabelled field for exactly this case). Runs from
-a non-Linux operator machine: the one GNU-`date`-dependent step happens remotely on the Ubuntu appliance over `tsh ssh`; the join and lease-epoch formatting happen locally with a portable `date
--d`/`date -r` fallback.
-
-**Also updated:** `references/14_pin-activation-diagnosis.md` §14.4 rewritten with the join-order bug, the confirmed evidence, and the correct algorithm (previously just a one-line manual `grep`
-example); §14.8 tooling list gained the new script. `scripts/README.md` gained a full write-up (table + usage) mirroring the existing `audit-pin-activation.sh` entry, plus updates to the file's
-top-of-doc summary/read-first pointers. `fleet-health.justfile` gained a `pin-correlate` recipe alongside the existing `pin-audit`/`pin-audit-sites`.
-
-**Verification:** live-run against `hope-vale-smc01` (30-row and 60-row lookback), plus three isolated synthetic-fixture unit tests covering the no-lease, lease-starts-after-activation (WARNING), and
-missing-hardware-ethernet-line code paths individually — all three confirmed correct in isolation before trusting the live-data run's coverage of them.
-
-## 20260911_1240 — Incident closed: all 3 sites' fix + recovery confirmed live in references/13_known-issues.md (v0.1.37 -> v0.1.38)
-
-**Trigger:** the previous entry's known-issues update left a dangling "see the fix confirmation above" reference that pointed at nothing — the actual fix-and-recovery evidence (11:37:50 first new
-activation on `hope-vale`/`kowanyama`, `bungardi` fixed ~11:58) had only been written to the `ansible-wifi`-side RCA doc, `SCRATCHPAD.md`, and memory-keeper, never into `skill-smc` itself. Closed that
-gap and updated with the full live recovery trajectory tracked afterward.
-
-- `references/13_known-issues.md`: rewrote the "Still actively broken" bullet (now stale — all 3 fixed) into a "RESOLVED 2026-09-11" bullet with the actual fix mechanism (`smc_squid` tag only), timing
-  (11:34 for hope-vale/kowanyama, ~11:58 for bungardi via backdoor-SSH), first-activation confirmation timing (3–9 minutes), and the observed post-fix trajectory (`kowanyama` 1→10, `hope-vale` 2→6
-  across ~1 hour of live tracking) — useful as a reference shape for how fast recovery should look after this class of fix in future incidents.
-
-Applied to: `references/13_known-issues.md`, `manifest.json`, `CHANGELOG.md`.
-
----
-
-## 20260911_1210 — Correction: kaltjiti-fergon-smc01 was never affected; bungardi-smc01 fixed live (v0.1.36 -> v0.1.37)
-
-**Trigger:** Operator asked which sites carry the stale `teleport.communitywifi.net.au.conf` vhost/cron for cleanup. A fresh, isolated live re-check (fixing an exit-code handling bug in the sweep
-script itself along the way — `grep -c` returning 1 on zero matches was making `tsh` report a false connection error) found `kaltjiti-fergon-smc01` has a single vhost only, `squid.conf` dated
-2024-08-07 (predates the regression entirely), and correct `deny_info`. It was **never affected** — the v0.1.35/v0.1.36 entries wrongly listed it as a 4th site "fixed 2026-09-08, same batch as
-`galiwinku`". Traced to output-interleaving corruption in the very first parallel-`tsh ssh` sweep (multiple sessions appending to one shared file with no per-host isolation), which a later "clean"
-rerun did not fully purge before the finding was written up and catalogued.
-
-- `references/13_known-issues.md`: corrected the "fixed but with leftover cruft" list (now `hope-vale`/`kowanyama`/`bungardi`/`galiwinku`/`doomadgee`/`darlngunaya`, not `kaltjiti-fergon`) and added an
-  explicit correction note with the root cause and a process lesson (verify a fleet-sweep finding against a single, isolated, freshly-read capture before writing it into this file).
-- `references/14_pin-activation-diagnosis.md`: relabeled `kaltjiti-fergon-smc01`'s row in the §14.7 case-study table from "(fixed 2026-09-08, same batch)" to "(control — never affected)"; the numeric
-  data in that row (150 marks, 179 activations) was independently re-verified live and is accurate, only the narrative label was wrong.
-- **`bungardi-smc01` fixed live ~11:58** (operator, via the backdoor-SSH path documented in `03_communication-flows.md` §Backdoor SSH Access) — re-verified: `deny_info` correct, `squid.conf`
-  regenerated. All 3 originally-broken sites (`hope-vale`/`kowanyama`/`bungardi`) are now fixed; recovery-confirmation watch extended to cover `bungardi` the same way as the other two.
-- Superseded, not silently edited: the v0.1.35/v0.1.36 `CHANGELOG.md` entries above are left as the historical record of what was believed at the time, per this pack's convention of correcting forward
-  rather than rewriting past entries.
-
-Applied to: `references/13_known-issues.md`, `references/14_pin-activation-diagnosis.md`, `manifest.json`, `CHANGELOG.md`. Also corrected in `ansible-wifi`'s own case files:
-`local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/teleport-fqdn/portal-fqdn-regression-20260911_1140.md` and `SCRATCHPAD.md`.
-
----
-
-## 20260911_1120 — bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)
-
-**Trigger:** Operator shared a screenshot of the Eclipse admin "PIN Last Issued" report (per-site last-issue date, all `nbn_accelerate`/`nbn_wh` communities) and flagged `bungardi` as still
-suspiciously unresolved from the prior session's "unreachable" status, plus a batch of sites showing `Sep 10` as possibly-nothing-but-worth-checking.
-
-- `bungardi-smc01`'s Teleport tunnel recovered on retry (the earlier "no tunnel connection found" was transient). Live-audited: `deny_info` still points at `teleport.communitywifi.net.au`,
-  `squid.conf` mtime 2025-09-18, 2 marks / 2 activations in the log window — same dead signature as `hope-vale`/`kowanyama`. **Third confirmed-broken site.**
-- Ran `audit-pin-activation.sh` against the six operator-flagged `Sep 10`/`Sep 9` sites (`arawerr`, `loanbun`, `burawa`, `warakurna`, `pipalyatjara`, `mungkarta`): all showed healthy 302 counts
-  (57–526) — cleared as false alarms, normal daily variance.
-- Documented the Eclipse "PIN Last Issued" report itself in `references/14_pin-activation-diagnosis.md` §14.6 as a third independent evidence source (outside this fleet's own tooling) — corrects the
-  prior framing that pin-generation data was Eclipse-side and effectively unreachable; it's unreachable from *this fleet's* tooling specifically, but the operator has a working admin view for it.
-  Landed on the same three sites as both of this pack's own mechanisms, independently.
-- Updated `references/13_known-issues.md`'s `bungardi-smc01` entry from "could not be verified live" to confirmed-broken, and updated the "still actively broken" list fleet-wide from 2 sites to 3.
-- Updated the §14.7 case-study table with `bungardi`'s real numbers.
-
-Applied to: `references/13_known-issues.md`, `references/14_pin-activation-diagnosis.md`, `manifest.json`, `CHANGELOG.md`.
-
----
-
-## 20260911_1115 — Pin-activation diagnosis added: two independent mechanisms, `audit-pin-activation.sh`, portal-FQDN-regression capture, live fleet case study (v0.1.34 -> v0.1.35)
-
-**Trigger:** Operator-directed investigation into low utilization at 3 suspected `nbn_accelerate` sites, escalated to a full fleet sweep across `nbn_accelerate` + `nbn_wh`, then handed the operator's
-own diagnostic methodology (previously undocumented in this pack) for distinguishing pin validity from pin issuance, with an instruction to turn it into reusable tooling.
-
-- New `references/14_pin-activation-diagnosis.md`: the two independent mechanisms — `iptables -t mangle -L ECLIPSE_MARK` (pin valid right now, a snapshot) vs the Apache `wifi/access` log audit trail
-  (pin actually issued, an audit trail over time; `302`=success, `200`=failure) — plus tier routing (`iptables -t nat -L SQUID_REDIRECT`, ports 3128/3130/3131), MAC↔IP correlation via `dhcpd.leases`,
-  the controller code path (`wifi.php action_access` → Eclipse `get_free_pin_monthly` → mark applied → redirect, verified 9-second mark-to-first-allowed-flow timing), and five pitfalls found live
-  during this investigation (log location varies by box — `access.log` absent entirely on `bungardi-smc01`; marks ≠ activations — an Eclipse-pushed mark on `hope-vale-smc01` had no local activation
-  POST; the inverse — `amata-smc01` read 0 current marks against 628 recent activations, so mark count alone is not a reliable "is this site dead" signal; pin-generation timestamps are Eclipse-side
-  only; local per-box MariaDB is in-progress work, not the production pin store — operator-confirmed, do not chase it).
-- New `scripts/audit-pin-activation.sh`: runs both mechanisms per host in one SSH round-trip, prints a comparison table (marks / 3128 / 3131 / 302 / 200 / 404). Same hardcoded-command,
-  host-names-only, no-default-site-list contract as the existing fleet scripts. Dogfooded live against `hope-vale-smc01` and `amata-smc01` before being catalogued — the `amata` zero-marks finding
-  above came directly out of that dogfooding run, not a hypothetical.
-- `scripts/collect-fleet-health.sh`: added capture 5, `05-portal-fqdn-status` (`deny_info`, `squid.conf` mtime, enabled Apache vhosts, `sslcertcopy` cron) — the config-side half of this diagnosis.
-  Dogfooded live against `hope-vale-smc01`.
-- `scripts/fleet-health.justfile`: added `pin-audit`/`pin-audit-sites` (wraps the new script) and `portal-fqdn-check` (quick cross-host summary of capture 5, same pattern as `freshclam-check`) — logic
-  verified against a real capture before being trusted.
-- `references/13_known-issues.md`: new dated entry documenting **two separate portal-FQDN regressions**, not one — `nbn_accelerate` (2025-06-27 to 2025-07-28, ~1 month, deliberate revert) and `nbn_wh`
-  (2025-07-01 to 2026-09-03, **~14 months**, fixed *incidentally* inside an unrelated squid-blocklist-transport commit whose headline never mentions the portal fix). Live fleet-sweep status as of
-  2026-09-11: `hope-vale-smc01` and `kowanyama-smc01` still actively broken (confirmed by both mechanisms — 1–2 successful activations in a 15-day window vs 179–893 at every control site);
-  `galiwinku-smc01` and `kaltjiti-fergon-smc01` fixed 2026-09-08 (same batch, `kaltjiti-fergon` not previously documented as affected); `doomadgee-smc01` fixed at the original 2025-07-28 revert;
-  `bungardi-smc01` (`nbn_wh`) unverifiable live — Teleport tunnel registration failure, matches a known intermittent pattern on this fleet, flagged as the highest-priority open unknown;
-  `darlngunaya-smc01` (`nbn_wh`) never affected (config predates the regression entirely). Process lesson recorded: a fix bundled inside an unrelated commit is exactly what a headline-only write-back
-  sweep misses — `git show --stat` on every commit touching a shared vars file, not just commits that name it, needed for this class of regression.
-- `references/10_captive-portal.md` §11.7: cross-reference added — "portal responding" (existing end-to-end verification) is not the same claim as "pins are being issued" (new reference).
-- Catalogued the new reference file in all four required surfaces (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`) and the new script in `scripts/README.md`, per
-  `rule-reference-update-discipline.md`.
-
-Applied to: `references/14_pin-activation-diagnosis.md` (new), `scripts/audit-pin-activation.sh` (new), `scripts/collect-fleet-health.sh`, `scripts/fleet-health.justfile`, `scripts/README.md`,
-`references/13_known-issues.md`, `references/10_captive-portal.md`, `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `manifest.json`, `CHANGELOG.md`.
-
----
-
-## 20260908_1955 — skill-ai-it refresh: navigation-control upgrade, `check_governance.py` adopted, `AI_NAVIGATION.md` declared project-managed (v0.1.33 -> v0.1.34)
-
-**Trigger:** `/skill-ai-it bootstrap` invoked against this pack. All base governance (`README.md`, `AGENTS.md`, `CLAUDE.md`) and navigation (`AI_NAVIGATION.md`, `context-map.yaml`) files already
-existed, so per skill-ai-it's own mode-selection rules the correct action was `refresh`, not a fresh bootstrap.
-
-- Ran the deterministic navigation-control upgrade (`upgrade_navigation_control_layer.py`): refreshed `context-map.yaml` (added `audit_checks`, `promotion_rules`, `context_recovery`, `update_rules`,
-  `skill_ai_it_version`) and inserted a managed inventory block into `scripts/README.md`.
-- `AGENTS.md`'s `skill-ai-it:navigation` block predated the version-marker convention and carried only generic, non-project-specific content; upgraded it in place to the current template
-  (`2026-08-11-governance-checks-layer-v1`).
-- `AI_NAVIGATION.md`'s `skill-ai-it:navigation` block is genuinely project-specific — a 13-file task-to-reference routing table and specialist-pack file-role priorities the generic template has no
-  equivalent for. Overwriting it would have destroyed real content, so it was declared project-managed (`<!-- skill-ai-it:manual reason="..." -->`) instead; the two sections the validator still
-  expected (generated-context support-only policy, context compaction recovery, companion consistency) were hand-added, tailored to this pack's actual files rather than copied verbatim from the
-  generic template.
-- Adopted `scripts/check_governance.py` (this pack had none): turns `.archcore/rules/rule-reference-update-discipline.md` (references named in `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`,
-  `context-map.yaml`) and `.archcore/rules/rule-manifest-version-discipline.md` (`manifest.json` as sole version-of-record) into executable assertions. First run surfaced 35 false positives from a
-  generic first pass — remote-appliance script paths (`sbdm.py`, `smartmon.py`, etc.), sibling-repo (`ansible-wifi`) file mentions, and a version regex that collided with unrelated software versions
-  (ClamAV `0.103.11`, ansible-lint `0.0.53`) — each was traced to its actual source and either registered in `CONDITIONAL_PATHS` with a reason or fixed at the regex level (the version check now
-  derives its match pattern from `manifest.json`'s own major.minor at run time instead of matching any semver-shaped number). One genuine finding survived: the checker itself was not yet cataloged in
-  `scripts/README.md`; fixed by adding a fourth script category there.
-- Wired the checker into `AGENTS.md` via the `skill-ai-it:governance-checks` managed block.
-- `validate_navigation_control_layer.py` now reports a clean PASS (26/26) with 0 warnings, 0 failures.
-- The mechanical upgrade step's own `CHANGELOG.md` entry had been appended at the end of the file (chronological), breaking this pack's newest-first convention with no `Contents` row; folded into this
-  entry instead, at the top, in the pack's own order.
-
-Applied to: `AGENTS.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `scripts/README.md`, `scripts/check_governance.py` (new), `manifest.json`, `CHANGELOG.md`.
-
----
-
-## 20260908_1515 — `wifi-02.activ8me.net.au` is APN's own LVS VIP, not a third party; port-80 source-IP allowlist failure mode; reject-vs-drop diagnostics (v0.1.32 -> v0.1.33)
-
-**Trigger:** a live diagnostic session investigating why `galiwinku-smc01` (`nbn_accelerate`) could not reach `wifi-02.activ8me.net.au` on port 80 produced eight findings — one of them an architecture
-correction that changes escalation routing. Applying the skill's standing write-back contract (`SKILL.md`), extending the references that already cover this territory rather than duplicating them.
-
-**Corrected (the important one):**
-1. `references/03_communication-flows.md` — new `### wifi-02.activ8me.net.au / 202.171.100.138 is APN's OWN keepalived/LVS VIP` subsection. **Despite the `activ8me` domain, this endpoint is APN
-   infrastructure, not an external vendor service** — keepalived `vrrp_instance VI_138`, director pair `202.171.100.132`/`.133` on `bond1.1005`, load-balancing to real servers `lweb03.apn.net.au`
-   (`172.16.254.73`) and `lweb04.apn.net.au` (`172.16.254.74`). The pack previously did not document this host **at all**; the only nearby entry was `wifi.activ8me.net.au:443` (the remote Eclipse
-   portal-config server in `10_captive-portal.md`), which the new section explicitly distinguishes so the two are not conflated. Also records that the name is a **static `/etc/hosts` entry** on every
-   `nbn_accelerate` SMC, so DNS is never a variable in failures involving it. **This changes escalation routing: failures here are APN-internal, not a vendor ticket.**
-
-**Added:**
-1. `references/06_failure-modes.md` — new "Port-80 Source-IP Allowlist on the APN VIP" entry. The port-80 virtual service enforces a source-IP ACL: `119.12.209.0/24` (the fleet's NAT pool) permitted,
-   everything else rejected at the director with ICMP type 3 code 13 (admin prohibited); port 443 is unrestricted. Documents the memorable symptom signature (**port 80 fails "No route to host" in ~1
-   RTT while ping succeeds and 443 works** = an ICMP admin-prohibited reject, not a routing failure) and the distinction that matters most in practice: `curl` **exit 56** / "Connection reset by peer"
-   means TCP fully ESTABLISHED then app-reset — the *normal* behaviour of this endpoint — whereas `curl` **exit 7** / "No route to host" means it never established. Root cause at galiwinku: carrier
-   NAT placed the site in `119.12.211.0/24` instead of the pool, with **no config change on either side and no alerting**. Confirmed with two independent out-of-range sources (`119.12.211.80`,
-   `3.104.50.51`). Fix path: add the range to the allowlist, or preferably restore the site to the pool. Investigation limit recorded: `202.171.100.132:22` is filtered from `cw-teleport01`, so the
-   rule text itself could not be read in-session.
-2. `references/03_communication-flows.md` — new `### Per-Site Public Egress IP` subsection. All of a multi-WAN SMC's circuits can share **one** public IP (galiwinku: all 7 circuits → `119.12.211.80`,
-   converging at carrier hop `10.191.0.13`), which invalidates most per-circuit theories about remote-end behaviour. Records the check (`curl -sS https://api.ipify.org` — HTTPS deliberately, since
-   port 80 may be the thing under investigation), the known 2026-09-08 values (galiwinku `119.12.211.80` out-of-pool, amata `119.12.209.20`, kowanyama `119.12.209.111`), and a recommendation for a
-   fleet-wide audit that would catch this class of silent breakage.
-3. `references/03_communication-flows.md` §Backdoor SSH Access — `cw-teleport01` documented as an **APN-side diagnostic vantage point**, not only an SSH stepping stone: internal APN reachability to
-   `172.16.254.73`/`.74` at ~10.5–10.8 ms and `202.171.100.132` at ~11.8 ms, useful for testing LVS backends and VIPs directly. Added as a capability note on the existing subsection rather than a new
-   one, since the backdoor-SSH mechanics were already covered by the v0.1.31 write-back. Includes the SSH-filtered caveat.
-4. `references/05_troubleshooting.md` — new `### Cross-Tier: Reject vs Drop, Where a Rejection Was Generated, and On-Box Tooling Gotchas` section. The generalizable method: **compare the returned ICMP
-   error's TTL against known-good replies from the same host** — matching TTLs prove a far-end origin, a much higher TTL means a nearby middlebox forged it (worked example: admin-prohibited at `ttl
-   49` identical to genuine ping replies, ~13–14 hops away; the quoted SYN at `ttl 51`, sent at 64). Plus reject-vs-drop by latency (~1 RTT vs multi-second timeout), and six on-box tooling gotchas: no
-   `traceroute` (use `mtr`/`nping`/`nmap`/`tracepath`/`busybox`); `mtr --interface` binds in `-T` but **not** in ICMP mode (silently egressed via `eno1` when `vlan534` was requested — always check hop
-   1); `mtr` "0.0% loss" counts an ICMP *rejection* as a response; `tcpdump` buffers so mid-run reads show nothing; a `host <ip>` filter misses returning ICMP errors (use `'host <ip> or icmp'` with
-   `-vv`); and `curl ... 2>&1 | tail -1` masks the exit code that distinguishes 7 from 56.
-5. `references/13_known-issues.md` — new dated section recording an **upstream keepalived config bug not owned by `ansible-wifi`**: the virtual_server uses `lb_algo rr`, which does not honour
-   `real_server` weights (only `wrr` does), so the `weight 65535` on lweb04 against lweb03's default `1` reads as a drain intent that is silently ignored — lweb03 still takes ~50% of new connections.
-   Explicitly recorded as **not** the cause of the 2026-09-08 incident (both backends verified healthy, HTTP 200 plain and with `Host: corellia`), so the entry is not misread as a resolved root cause.
-   Also notes `persistence_timeout 86400` pins each client source IP to one real server for 24 hours.
-6. `references/03_communication-flows.md` §WAN Uplink Addressing — two bullets extending the existing source-policy-routing coverage rather than duplicating it. (a) **A stale `ip rule` does not always
-   mean a stale render**: rules persist when a DHCP lease drops too (observed at galiwinku for `vlan525`/`vlan523` after both lost their addresses), so check whether the rule's source IP is still
-   assigned to distinguish lease residue from render residue — the pre-existing "topology file can shrink" bullet only covered the render case. (b) **Squid's transparent redirect is scoped to LAN
-   clients**: `-A PREROUTING -i bridge_501 -p tcp --dport 80 -j SQUID_REDIRECT` never sees traffic the SMC originates itself, a common false lead when diagnosing port-80 failures from a root shell.
-7. `RUNBOOK.md` — three new routing rows: the APN VIP / public-egress-IP entry, the port-80 allowlist symptom, and the "is it them or us?" diagnostic section.
-
-**Already covered, extended rather than duplicated:** per-WAN-source `ip rule` → dedicated routing table was already documented in `03_communication-flows.md` (the `dhclient-enter-hooks` branch table)
-and `02_service-map.md`; only the lease-residue nuance and the Squid scoping were new. `cw-teleport01` already had a backdoor-SSH section from the v0.1.31 write-back; only its diagnostic-vantage
-capability was added.
-
-**Manifest/version:** `manifest.json` version bumped `0.1.32` -> `0.1.33`, `updated_at` set to `2026-09-08T15:15:00Z`, and a new `stable_facts` entry added recording the VIP ownership correction, the
-static `/etc/hosts` resolution, and the port-80 allowlist as durable architectural facts.
-
-## 20260908_1430 — galiwinku-smc01 multi-WAN session write-back: ECMP hash-pinning root cause, VRF-disable landed, topology/monitoring gaps (v0.1.31 -> v0.1.32)
-
-**Trigger:** a live diagnostic session against `galiwinku-smc01` (`nbn_accelerate`) investigating a WAN circuit outage surfaced eight findings spanning topology, a self-heal script hazard, two
-already-tracked-but-now-superseded VRF/multi-WAN facts, a fleet-wide ECMP routing root cause, a monitoring blind spot, and an access-automation pattern. Applying the skill's standing write-back
-contract (`SKILL.md`) across the reference set that already covers this territory, correcting rather than duplicating where content already existed.
-
-**Added:**
-1. `references/01_overview.md` — new "WAN Uplink Topology Pattern" subsection: direct-to-NTD physical ports and switch-trunked multi-circuit access-VLAN ports can coexist on one multi-WAN box
-   (confirmed at galiwinku: `eno1`/`enp3s0` direct-to-NTD, `enp2s0`/`enp1s0` trunking 4 access-VLANs each to two separate switches), and why that split matters for triage. Cross-referenced against the
-   pre-existing switch01/switch02 active-standby bonding design in `08_ansible-authoring.md` to distinguish the two patterns explicitly.
-2. `references/06_failure-modes.md` — new "interfacecheckv2.sh's Unconditional dhclient Restart Can Worsen a Marginal Link" entry, directly following the pre-existing aurukun-smc03 self-heal-cron
-   entry it qualifies: that entry concluded the cron was blameless against an already-dead circuit; this one documents the opposite case (galiwinku `vlan523`, 2026-09-08) where the same restart-with-
-   no-backoff behavior turned a recoverable, briefly-degraded link into a full DHCP lease loss.
-3. `references/06_failure-modes.md` — new "ECMP Multipath Hashing Pins Fixed-Destination Traffic to a Single (Possibly Dead) Nexthop" entry — the most generalizable finding of the session.
-   `net.ipv4.fib_multipath_hash_policy` defaults to `0` (L3-only) fleet-wide (nothing in Ansible sets it), so any fixed-destination flow (DNS to `8.8.8.8`, a monitoring target, the Teleport bastion IP
-   itself) is permanently pinned to one ECMP nexthop regardless of its health. Documents the recognizable symptom signature ("FQDN ping fails inconsistently, IP ping doesn't, `/etc/hosts` 'fixes'
-   it"), the live-testable no-reboot fix (`fib_multipath_hash_policy=1`, verified via `ip route get ... sport <N>`), and the important caveat that the fix does not give seamless mid-connection
-   failover — backed by real `autossh-teleport-openssh` log evidence of a failed reconnect attempt hashing onto a dead nexthop. Applied on galiwinku only
-   (`/etc/sysctl.d/60-smc-multiwan-fib-hash.conf`, on-box, uncommitted to ansible-wifi); fleet-wide rollout proposed but deliberately deferred pending observation.
-4. `references/05_troubleshooting.md` Tier 1 — cross-reference from the autossh tunnel check to the new ECMP hash-pinning entry, since a reconnect failure there can look like a broken tunnel when it's
-   actually a hash-pinned dead nexthop.
-5. `references/13_known-issues.md` "Fleet-Wide Architecture Risks" — new row documenting the missing per-device `role="internet"` Prometheus alert: `NodeStarlinkInterfacecheckPacketLoss` only covers
-   aggregated `role="starlink"`, and `HostInterfacecheckTextfileCollectorNotUpdated` only detects the collector script itself going stale, not an individual internet-role device failing while the
-   script keeps running. This is why the galiwinku outage needed manual SSH diagnosis. Cross-referenced from `SKILL.md`'s and `06_failure-modes.md`'s own "Key Prometheus Alerts" tables so neither
-   reads as complete coverage on its own.
-6. `references/03_communication-flows.md` §Backdoor SSH Access — added the specific credential-delivery mechanism for agentic/automated sessions: `kp clip -a Password "<entry>"` (silent, no stdout)
-   plus an AppleScript `write text (the clipboard)` targeted at a specific iTerm session GUID, so the plaintext never appears in any tool-call argument or output. The `kp clip`-to-vault workflow
-   itself was already documented; only this specific automation-safe delivery detail was missing.
-
-**Corrected:**
-1. `references/03_communication-flows.md` — the "Nothing in ansible-wifi builds the ECMP multipath default" bullet previously theorized (explicitly flagged "inferred, not verified") that the Kohana
-   wifi app builds the multipath route via `kohana status:gateway`. Corrected: that call only registers a lease with the portal app: it does not construct or manage any route. The real mechanism,
-   confirmed live at galiwinku 2026-09-08, is emergent kernel behavior — independent per-interface `dhclient` instances each install a same-metric default route, and the kernel merges same-
-   destination/same-metric routes from different devices into one ECMP group with **no health-based nexthop eviction of any kind**. This is the mechanism the new ECMP hash-pinning failure-mode entry
-   (above) depends on, and now correctly attributes it.
-2. `references/03_communication-flows.md` and `references/08_ansible-authoring.md` — the VRF-allocation-in-`netplan.yml.j2` "still live and rendered into every deploy today" claim (2026-07-31) and the
-   "commented out at source... uncommitted" note (2026-08-25) are both now stale in the same way: the interim disable landed as commit `f2fb439f` ("Onboard yakanarra, disable VRF emission...",
-   2026-08-27), confirmed present on `internet-label-rename`/`squid-redesign` and confirmed **absent from `master`** as of 2026-09-08 (`git merge-base --is-ancestor` check). Both files updated to
-   state the branch-scoped, commit-pinned current reality rather than a since-superseded snapshot. `multiwan-setup.sh.j2`'s deploying task block remains commented out on the same commit — neither
-   mechanism is live anywhere in the fleet; this reconfirms, rather than changes, the pack's prior "not deployed" conclusion for both.
-
-**Not applicable, no action taken:** the session also confirmed `multiwan-setup.sh` itself (the fwmark/nft/tc-shaping allocator) remains fully undeployed with no doc drift to correct beyond the VRF
-branch/commit update above — the pack already documented it correctly as dead code.
-
-**Manifest/version:** `manifest.json` version bumped `0.1.31` -> `0.1.32`, `updated_at` set to `2026-09-08T14:30:00Z`, and a new `stable_facts` entry added summarizing the
-ECMP/`fib_multipath_hash_policy` finding as a fleet-wide architectural fact (see the file for full text).
-
-## 20260908_1330 — Backdoor SSH access documented: raw reverse-tunnel path around a hung Teleport node agent, confirmed live against nbn_accelerate (v0.1.30 -> v0.1.31)
-
-**Trigger:** operator used a previously-undocumented "backdoor" SSH path to reach `galiwinku-smc01` (`nbn_accelerate`) after being blocked on the normal `tsh ssh` route, and asked for the mechanism to
-be captured for future use. Operator confirmed the same path also works across the `APN` project fleet (`rcp`/`wh`/`rct` flavors), though that side was not independently re-validated live in this
-session. Operator also corrected pre-existing terminology drift: the Teleport cluster domain splits by **project** (APN, nbn_accelerate), not by flavor — flavors nest under a project, so
-`01_overview.md` and the diagrams in `03_communication-flows.md` were also fixed (`teleport.<flavor>.au` -> `teleport.<project>.au`).
-
-**Added:**
-1. `references/03_communication-flows.md` — new `### Backdoor SSH Access` subsection under `## 3. Communication Flows`, documenting the `smc_autossh` role's independent `autossh-teleport-openssh`
-   reverse tunnel: the port formula (`50000 + site_eclipse_siteid`, `smc_bases.yml:78`), the per-project bastion table (nbn_accelerate project → `teleport.communitywifi.net.au` / `cw-teleport01` /
-   `3.104.50.51`; APN project → `teleport.apn.au` / `13.54.242.59`), the two-hop procedure (`tsh ssh` to the bastion, then `ssh -p <port> root@127.0.0.1` straight into the box's own sshd), and the
-   credential source (KeePassXC `Network/SMC`, retrieved via `kp clip` per `security-and-secrets-guide.md` — never the literal value in this doc). Also notes the two caveats that matter operationally:
-   no Teleport session recording on this path, and it only rescues a *stuck Teleport agent*, not a *stuck kernel* (the tunnel service itself has to still be alive).
-2. `manifest.json` `stable_facts[1]` expanded from a one-line port-formula fact to cross-reference the new subsection and record the live-confirmation date/scope.
-3. `RUNBOOK.md` routing-table row for `references/03_communication-flows.md` extended to surface the backdoor-access use case alongside the existing Grafana/Graylog/Teleport-App entries.
-4. `references/03_communication-flows.md`'s own `## Contents` block gained indented, hyperlinked sub-entries for all 11 `###` subsections (previously only its single `##` heading was listed). Required
-   a `*`-bullet marker rather than `-` — the repo's `markdown-wrap-toc.sh` hook only manages `- [text](#anchor)` entries tied to real `##` headings and silently strips anything else added that way; a
-   `*`-bullet link renders identically in GFM but falls outside the hook's managed block.
-
-**Follow-up staleness pass (same session, same fix):** a detailed staleness audit scoped to this write-back found the `teleport.<flavor>.au` mislabel also present in `SKILL.md` (x2) and `PROFILE.md` —
-sibling surfaces that should have been caught in the original terminology fix above but were missed because the audit only checked `01_overview.md`/`03_communication-flows.md`. Fixed both, and fixed
-this pack's own `SCRATCHPAD.md` "Phase" line which still asserted `v0.1.30` as current. Regenerated `.ai-context/governance-pack.md` via `repomix` (per its own generated-file convention — never
-hand-edited) so all fixes propagate there too. Verified the `apn`/`cw` central-infra claim in the new bastion table against live inventory (`host_vars` glob for `*-smc0*.yml`: 0 matches in both `apn/`
-and `cw/`, confirming central-infra-only, no site hosts) rather than trusting the pre-existing `01_overview.md` assertion at face value.
-
-**Not independently re-tested:** the `apn`-side claim (`rcp`/`wh`/`rct`) is operator-stated, not re-validated against a live `apn` host in this session — recorded as such in the new subsection rather
-than asserted as independently confirmed.
-
-**Follow-up coherence sweep (same session, pushing the fix outward):** the staleness pass above only found direct restatements of the old wording. A coherence sweep found two places that assumed the
-old flavor-based model without containing the literal stale string: (1) `references/05_troubleshooting.md` Tier 1 ("Box Unreachable") didn't mention that a box absent from the `tsh ls` roster is still
-reachable via the backdoor tunnel — added a cross-reference so operators get a working root shell instead of being stuck external-only. (2) `references/13_known-issues.md`'s "Flavor → Teleport cluster
-domain mapping" row title and content asserted the split was by flavor — retitled to "Project → Teleport cluster domain mapping" with a corrective note, and added a pointer to the new backdoor
-section. Reviewed and left alone: `13_known-issues.md`'s brief "per flavor's Teleport cluster" parenthetical elsewhere (line ~29) — imprecise but not false, since each flavor does map to exactly one
-cluster; not worth the churn. `AI_NAVIGATION.md`/`context-map.yaml` already route generically to `03_communication-flows.md` for "external comms paths" and needed no new dedicated row. `.archcore/`
-rules and `scripts/*` were checked and don't encode this assumption (the one script referencing a Teleport domain, `fleet-health.justfile`, hardcodes the literal domain rather than assuming a
-flavor-keyed split). Regenerated `.ai-context/governance-pack.md` again after these two edits.
-
-## 20260908_1200 — Pack-structure self-audit: RUNBOOK version drift, install.md staleness, reference-update-discipline gap, vestigial evidence/, and archcore status promotion (v0.1.29 -> v0.1.30)
-
-**Trigger:** operator asked for a detailed structural review of the pack itself (not its SMC content) — is `skill-smc` organized correctly as a Claude Code skill, and does the file layout match what a
-skill should look like. Confirmed the installed surface (`SKILL.md` + `RUNBOOK.md` + `references/` + `scripts/`) is correctly lean and matches `.archcore/specs/spec-specialist-pack-file-roles.md`, but
-found five governance/hygiene defects in the surrounding pack scaffolding.
-
-**Fixed:**
-1. `RUNBOOK.md` carried its own `**Version:** 0.1.28` line, stale against `manifest.json`'s `0.1.29` — a duplicate version stamp in a file declared "navigation index only" is a guaranteed drift source
-   since no rule updates it on every bump. Removed the line entirely rather than syncing it once; `manifest.json` is already the sole version authority per `context-map.yaml`'s `authority_order`.
-2. `exports/claude_code/project/skill-smc/install.md`'s "Current Install State" section had been frozen at `Canonical version: 0.1.6` since the 2026-04-17 Phase 2 MCP-wiring entry — 20+ versions
-   stale, and misleadingly labeled "Current". Retitled to "Install History" (a point-in-time log, not a live tracker), added an explicit note to check `manifest.json` for the live version, and
-   appended a 2026-09-08 re-sync entry.
-3. `.archcore/rules/rule-reference-update-discipline.md` listed only 4 surfaces to update when adding a new reference file (`RUNBOOK.md`, `SKILL.md`, `adapter.md`, `install.md`) — it never mentioned
-   `AI_NAVIGATION.md` or `context-map.yaml`, even though both carry the same task-to-reference routing table and this pack's own `AGENTS.md` Tier 2 checklist already expected them kept current.
-   Widened the rule to 6 surfaces to match actual practice and close the gap between codified rule and enforced behavior.
-4. Removed the empty, untracked `evidence/` directory left over in canonical source — the pack's actual evidence-retention policy (documented in `scripts/README.md`) relocates captured evidence to
-   `local-knowledge-ansible/ansible-wifi/issues/...`, so a permanent local `evidence/` stub serves no purpose and could be mistaken for the real retention location.
-5. Promoted all four `.archcore/` governance docs (`adr-progressive-disclosure-structure.md`, `rule-manifest-version-discipline.md`, `rule-progressive-disclosure-loading.md`,
-   `rule-reference-update-discipline.md`, `spec-specialist-pack-file-roles.md`) from `status: proposed` to `status: accepted` — all five are actively enforced and cited elsewhere in the pack as
-   settled fact (this pack's own `AGENTS.md` treats them as working rules), so "proposed" understated their authority.
-
-**Checked, not a defect:** `.graylog-token` (a Grafana/Graylog credential sitting in the pack root) was flagged during the initial pass as an ungitignored secret risk, then verified against
-`skills_stuff/.gitignore:3` (`specialists/project/skill-smc/.graylog-token`) and confirmed already covered — `git check-ignore -v` returns a clean match. No action needed; recorded here so a future
-pass doesn't re-flag it without checking.
-
-**Not changed:** the installed skill surface itself (`SKILL.md`, `RUNBOOK.md` body content, `references/*.md`, `scripts/`) — this pass was governance/meta-hygiene only, no SMC operational content
-changed.
-
-**Evidence basis:** direct read of every top-level file, `manifest.json`, `.archcore/**`, `exports/claude_code/project/skill-smc/**`, `context-map.yaml`, `AI_NAVIGATION.md`, and `git ls-files` / `git
-check-ignore` against the actual `skills_stuff` git root (not assumed from memory-keeper history).
-
-## 20260907_1600 — Two Ansible silent-failure gotchas, an `rcp` systemd-mask fix, and the `auto_reboot: 0` truthy-string bug fed back from `ansible-wifi` (v0.1.28 -> v0.1.29)
-
-**Trigger:** scheduled write-back audit of `ansible-wifi`'s own governance (`SCRATCHPAD.md` session history, `git log`) against `skill-smc`'s references, prompted by the operator asking whether recent
-`ansible-wifi` session work — not just the pandanus-park investigation already fed back — had made it into the skill. Three recent sessions (2026-09-01, -03, -04) turned out to carry findings never
-written back: the squid blocklist migration itself was already documented (`08_ansible-authoring.md` "smc_squid's blocklist refresh"), but four items bundled into or alongside that same push were not.
-
-**Added to `08_ansible-authoring.md`:** two Ansible authoring gotchas found while fixing `smc_system`/`smc_update_kernel`. (1) A `command: lxd.lxc list ...` guard task silently no-opped fleet-wide
-because `/snap/bin` is not on the `command` module's non-interactive `PATH` — the guard never actually ran, on every invocation, since it was written; fixed by using the absolute `/snap/bin/lxd.lxc`
-path. (2) `failed_when: reboot_result.rc != 0` disbelieved every successful reboot because `ansible.builtin.reboot` is an action plugin that returns no `rc` key at all — this caused a real
-reboot-retry loop (fifteen successful reboots each reissued) in `roles/smc_update_kernel`; fixed by deleting the `failed_when` and matching the working `smc_rise_common` handler pattern.
-
-**Added to `13_known-issues.md`:** (1) A new "Fleet-Wide Architecture Risks" row — `watchdog.auto_reboot: 0` does not actually disable automatic RISE-watchdog reboots. Two independent template/logic
-defects confirmed live via `/opt/rise/status/watchdog.json` (which emits the quoted string `"0"`, truthy in Python); unresolved, flagged do-not-apply-blind pending an operator decision, since a prior
-commit (`fb7ff6fa`) deliberately narrowed a related reboot condition and may be guarding a case this defect's fix would reopen. (2) A new "Known Operational Bugs (rcp fleet)" row — four units
-(`isc-dhcp-server6`, `fwupd-refresh`, `dhclient@eth0`, an ASUS keyboard-backlight unit) fail on every boot on `rcp` hardware for structural, non-configurable reasons and are now masked
-(`hotspot_flavor == 'rcp'` only, commit `2dee86a8`) with a `reset-failed` pass to clear the stale state masking alone leaves behind. Kept distinct from the superficially similar
-`isc-dhcp-server6`/`fwupd-refresh` rows already documented under the NBN Accelerate cluster sweep — same service names, different fleet, different fix, not the same finding.
-
-**Not written back — flagged, not guessed:** the `2026-09-03` overlay/journald correction ("enabling overlay shrinks the journal budget, not grows it") and the squidGuard-tree overlay copy-up estimate
-(~550-600 MB one-off per boot) were checked against `07_hardware-overlay.md` and judged adequately covered by existing content there (the squidguard-as-largest-writer and journald-volatile-trap
-sections) rather than write-back gaps — left alone to avoid duplicating or subtly re-deriving numbers that are already sourced elsewhere in that file.
-
-## 20260907_1530 — Silent Total Hang confirmed on `rcp` (pandanus-park-smc01), first non-`wh` instance (v0.1.27 -> v0.1.28)
-
-**Trigger:** operator report ("pandanus park is offline") in `ansible-wifi`, unrelated to any fleet sweep. Investigation followed the `06_failure-modes.md` §Silent Total Hang playbook
-(`up{instance=~...}` on `apn-prometheus01`) and, once the new Teleport-App Graylog access method from `03_communication-flows.md` was available, cross-checked with a full Graylog message search — the
-first time this signature has had real log corroboration rather than Prometheus alone, since both prior `wh` cases had non-functional Graylog sidecars.
-
-**Finding: the signature is not RPi/`wh`-specific.** pandanus-park-smc01 (`rcp`, x86, single-SMC site, no `smc02`) went dark 2026-09-05 ~08:29-08:40 UTC with the identical fingerprint: `prometheus`,
-`node_exporter` and `speedtest_exporter` all stop in the same scrape; `node_load1`/`MemAvailable` flat with no trend beforehand; boot time unchanged (no reboot, ~78 days uptime at death); zero
-`panic`/`OOM`/`I/O error`/`EXT4-fs error` in the hour before. Full Graylog search confirmed **zero log messages of any kind, any path**, from the last line (08:40:03 UTC) through the investigation
-time (2026-09-07 05:00 UTC) — a genuinely dead box, not a metrics-only gap.
-
-**Fix: `references/06_failure-modes.md` §Silent Total Hang rewritten as cross-flavor.** Retitled from "on RPi `wh`" to flavor-neutral; added a "Why `rcp` is exposed too" subsection (simpler cause than
-`wh` — `rcp` never ran RISE at all, so there's no inert safety net to explain, there's just none); added a dedicated pandanus-park evidence subsection; corrected the forensic-destruction section to
-note `rcp` is **not** overlayroot, so unlike the `wh` cases this is the first real chance to pull on-disk `dmesg`/kernel evidence after the next recovery reboot (`journalctl -k -b -1`); updated "Fleet
-status" and "Recommended fix" to cover both flavors (x86 hardware-watchdog driver, e.g. `iTCO_wdt`/`sp5100_tco`, TBD per chassis). `RUNBOOK.md`'s three §Silent Total Hang routing rows were broadened
-to mention both flavors and to point at `03_communication-flows.md` for the actual Graylog query method.
-
-**Open follow-up, not done in this pass:** no fleet-wide `up{flavor="rcp"}` absence sweep has been run to check whether other single-SMC `rcp` sites carry the same undetected exposure. pandanus-park
-itself is still dark as of this writing — no on-site power cycle performed yet, so the on-disk forensic opportunity above is theoretical until the next reboot.
-
-## 20260907_1200 — Standing write-back contract added to SKILL.md: the update obligation now travels with the skill, not each consuming project's governance file (v0.1.26 -> v0.1.27)
-
-**Trigger:** operator observation from `apn/smc-file-writing-analysis` — a Graylog REST API access method (Teleport Application Access + mTLS) had existed in that project's own tooling since
-2026-07-23 but sat undocumented in `skill-smc` for six weeks, because no existing routing-table category matched "how do I reach an external system's API." That project's `AGENTS.md` was patched to
-add the missing category (see that project's own changelog/scratchpad), but the operator raised a sharper structural question: why does *every* consuming project need its own copy of "you must update
-skill-smc" boilerplate at all? A brand-new third project that has never heard of skill-smc, and invokes it for the first time, should not need pre-existing governance text telling it to write back
-here — the obligation should be inherent to invoking the skill.
-
-**Fix: added a "Standing Write-Back Contract" section to `SKILL.md`, immediately after "Use When."** It states plainly that this skill is the shared cross-project source of truth, that any session
-invoking it for SMC/`ansible-wifi` work must write new findings back to the appropriate `references/*.md` file before ending the session *regardless of what the calling project's own governance file
-says*, and that a project's own `AGENTS.md`/`CLAUDE.md` restating this is reinforcement, not the source of the rule. Because `SKILL.md` is what loads into context on every invocation of this skill
-(`/skill-smc`, or automatic matching against its one-line description), this travels with the skill itself rather than needing to be re-derived or copy-pasted into each new project's governance.
-
-**Also corrected in the same pass:** `SKILL.md`'s own `## Source` footer had drifted — it still read `version: 0.1.24` while `manifest.json` was already at `0.1.26`, a small instance of the exact
-class of staleness this skill exists to catch elsewhere. Both are now `0.1.27` and will be bumped together going forward.
-
-## 20260904_1000 — WAN uplink dead-DHCP failure mode documented, self-heal cron distinguished from real flapping (v0.1.25 -> v0.1.26)
-
-**New entry in `references/06_failure-modes.md`: "WAN Uplink Stuck With No DHCP Lease, Self-Heal Cron Masquerades as 'Flapping'."** Root-caused live on `aurukun-smc03` (`nbn_accelerate`) via `tsh`.
-Operator reported `enp2s0` (uplink into NTD2) failing to ping and later refined it to "flapping every five minutes." Physical layer was clean throughout — carrier up, 1Gbps full duplex, only 2 real
-`igb` link transitions in 24h — but the interface had held no DHCP lease for 11+ days (lease expired 2026-08-24, confirmed from `/var/lib/dhcp/dhclient.<iface>.leases`), predating the NTD's own
-20h-uptime figure by over a week.
-
-**The reusable finding: `/interfacecheckv2.sh` (Ansible-deployed, `*/5 * * * *` cron on every SMC box) is a false-flap generator whenever an uplink is genuinely dead.** It pings 8.8.8.8 out every
-`internet0X`/`vlanNNN` interface and restarts `dhclient@<iface>` on failure. A permanently-dead uplink fails every single check, so the box bounces its own DHCP client on an exact 5-minute cadence
-forever — 288 restarts/24h, matching 24h/5min precisely. That churn is indistinguishable from real flapping in logs/monitoring unless you check the kernel `igb` driver log for the TRUE physical
-transition count.
-
-**One live confirmation test separated "probably upstream" from "confirmed upstream":** manually bounced the interface (`ip link down`/`up`) and force-restarted `dhclient` fresh — same zero-DHCPOFFER
-result immediately after a clean reset. Rules out stuck local NIC/driver state; the fault sits on the carrier/NTD DHCP path, not fixable from ansible/smc.
-
-**Also recorded:** a `tsh ssh` gotcha (a bare `--` separator before the remote command is forwarded literally to the remote bash and errors "invalid option" — drop it) and a cross-reference to the
-2026-08-03 fleet-hardware-audit manifest entry noting `aurukun-smc03` was already unreachable during that earlier sweep, which may or may not be related to this circuit's history.
-
-## 20260827_1800 — Code notes documented as an authoring surface; stale lint paragraph corrected (v0.1.24 -> v0.1.25)
-
-**New section in `references/08_ansible-authoring.md`: "Code notes: where the long explanation goes, and what it can and cannot survive."** RULE-006's comment/note split was governed but undocumented
-here, so an agent reading the authoring reference had no idea the surface existed. Covers the routing test (**if being unaware of it would cause a bug, it goes in the file**), the prohibition on
-referencing notes from code, and what a note now records.
-
-**Provenance and its ranking are the load-bearing part.** A note carries a normalized `sha256`, three lines of verbatim context either side, the authoring branch, and the commit with a `(dirty)`
-marker. Ranked strictly: content hash authoritative, commit tested by *ancestry rather than equality* so it survives a merge, branch a display label — and **metadata may only clear a warning, never
-raise one**.
-
-**The measurement worth carrying forward:** of 24 notes anchored on `internet-label-rename`, tested against `master`, **21 were out of range**, 1 moved, 2 drifted, 0 exact —
-`smc_rsyslog/tasks/main.yml` is 26 lines there against ~300 on the branch. Out-of-range **crashes extension activation**, and a crashed activation never regenerates `INDEX.json`, so a reload does not
-clear it. Hence the operational rule: run `check_note_anchors.py` after any branch switch or out-of-editor edit, not only after authoring — re-anchoring is driven by `onDidChangeTextDocument`, which
-fires for nothing when a checkout, a `sed` pass or a lint autofix rewrites a closed file.
-
-**Corrected a paragraph that had gone stale.** The key-order section said `key-order` "belongs in `.ansible-lint` `skip_list`" *if the noise is ever worth silencing* — that was done on 2026-08-27. The
-rule had been firing **94 times across 42 role files**. Now records the skip as applied and scoped to the `[task]` subrule, with the consequence stated: `.ansible-lint` and `CONVENTIONS.md` are both
-governance symlinks, so the convention and its enforcement are **operator-local** and a colleague cloning the repo gets neither.
-
-**Also recorded:** the extension is a private fork (`amalikn.code-context-notes`), not the Marketplace build, and the publisher differs deliberately so VS Code cannot auto-update over it; storage is
-`.code-context-notes/` and the MCP `--storage-dir` must match the extension setting; and the store has **no history and no file-level recovery** — verified, not assumed, by `git ls-files` returning
-zero and no commit in the governance repo ever touching it.
-
-Routing added to `RUNBOOK.md` and to the section list at the head of `08_ansible-authoring.md`, so the new content is reachable rather than only present.
-
-## 20260825_1800 — Raspberry Pi capture group added to the broad collector (v0.1.23 -> v0.1.24)
-
-Completes the collector added earlier the same day, which shipped the x86 set only. **164 captures now, across 18 groups.**
-
-### Added
-
-- `scripts/collect-smc-evidence-full.sh` — new **`rpi` group, 20 captures**, and real per-host platform gating rather than the previous "detect and warn" placeholder. The capture list is now filtered
-  from the detected platform: `rpi` runs only on a Pi, and the four x86-only probes (`dmidecode` ×3, `smartctl`) are dropped there instead of filling the summary with absences that read like findings.
-  `--only rpi` against an x86 host skips cleanly with a message.
-- The group is built around the questions the Ubuntu 26.04 migration has to answer, so `--only rpi` across the fleet doubles as the phase-0 audit that
-  `ansible-wifi.tasks.ubuntu-migration-open-items.20260821` asks for: EEPROM date against the 26.04 boot floor, boot-partition size against the three-asset-set requirement, `copymods` state, piboot
-  layout presence, revision code for tryboot eligibility, plus throttling, SD health and zram.
-
-### Verified live
-
-Validated against **marta-marta-smc01** (`rct`) and **violet-valley-smc01** (`wh`), both Pi 4B Rev 1.5 / aarch64 / Ubuntu 22.04: all 20 rpi captures return, **zero genuine failures** on either host,
-and the only non-ok results are the two correct pre-piboot absences (`autoboot-txt`, `piboot-units`). x86 gating re-checked on yakanarra-smc01.
-
-Two findings surfaced by the first run, both concrete migration input rather than tool output:
-
-- **EEPROM on marta-marta is 2023-01-11**, comfortably past the 2022-11-25 floor, so that box clears the 26.04 boot prerequisite. Worth noting the report's `LATEST` (2022-01-25) is *older* than
-  `CURRENT` — "up to date" there means "nothing newer in `/lib/firmware`", not "current with upstream".
-- **`/boot/firmware` is 253 MB with 119 MB already used for a single asset set (47%).** 26.04 keeps up to three. Three sets do not fit in 253 MB, which makes the boot-partition item a measured blocker
-  rather than a theoretical one.
-
-### Learned
-
-- **`life_time` / `pre_eol_info` do not exist on an SD-booted Pi 4** — they are eMMC attributes. `/sys/block/mmcblk0/device/` exposes `cid`, `csd`, `ssr`, `fwrev`, `manfid`, `oemid`, `serial`, `date`
-  and no wear-level pair. The plan written the day before had specified those two files; the hardware disagreed, and the capture now reads what is actually there. Any guidance claiming to read SD
-  wear-levelling from them on this hardware is wrong.
-- Writing shell into a bash array from a generator script is an escaping trap: a double-escaped `$` produced `\\$a`, which expanded **locally** at array-definition time and tripped `set -u` with "a:
-  unbound variable". Both offending captures were rewritten to use `head -n 1` with brace expansion and no shell variables at all, and the generator now asserts that no capture line contains a
-  double-escaped `$`.
-
-## 20260825_1745 — broad diagnostic collector added; narrow collector's interfacecheck path corrected (v0.1.22 -> v0.1.23)
-
-Onboarding a new RCP site (yakanarra) needed a wider capture than the routing-focused collector provides, and running the existing one surfaced a path bug in it.
-
-### Added
-
-- `scripts/collect-smc-evidence-full.sh` — broad read-only capture: **144 captures across 17 groups** (`identity os overlay storage services network dhcp dns firewall qos wifi voip portal monitoring
-  rise access logs`), covering every subsystem in `references/02_service-map.md`. Complements rather than replaces `collect-smc-evidence.sh`, which stays narrow and stable because two analysers depend
-  on its output contract.
-  - **One SSH session per host.** The narrow collector opens a Teleport session per capture; at this scale that would be 144 sequential sessions. This builds a single remote script with
-    `===SMC-CAPTURE===` delimiters and splits the stream locally. Measured 144 captures in ~25s against yakanarra-smc01 and umoona-smc01.
-  - **Credential redaction on by default.** A broad capture reads service configs, and this fleet has no ansible-vault, so Teleport join tokens and SIP secrets would otherwise land on disk. The key is
-    kept and the value replaced with `<REDACTED>`; `--no-redact` opts out. Pattern-based, so a sensible default and not a guarantee.
-  - **Absences are classified, not lumped in with failures** — `absent (no such systemd unit)` / `(command not installed)` / `(no such file or directory)` vs a genuine `FAILED (rc=N)`. On a healthy
-    box most non-zero rcs mean "not deployed on this flavour", which is the finding.
-  - x86 capture set. Platform is detected per host; a Pi runs the platform-neutral groups and is reported as not-yet-implemented for the Pi-specific set rather than being probed with
-    `dmidecode`/`smartctl`. The RPi capture list is specified in a comment block at the foot of the script.
-
-### Fixed
-
-- `scripts/collect-smc-evidence.sh` — the `interfacecheck` capture read `/usr/local/bin/interfacecheckv2.sh`. `smc_network` renders it to the **filesystem root**
-  (`roles/smc_network/tasks/ubuntu.yml:346` -> `/interfacecheckv2.sh`). The capture had therefore been failing on **every site, silently, for the life of the script** — it reports `FAILED` in the
-  manifest, which reads as a finding about the box rather than a bug in the tool. Verified absent at the old path and present at the new one on yakanarra, umoona and pandanus-park.
-
-### Learned (live, 2026-08-25)
-
-- **`systemctl status asterisk` reporting `active (exited)` is not proof Asterisk is running.** The unit is an LSB init wrapper, so systemd reports success once the script returns 0 whether or not a
-  daemon survives. Confirmed on **umoona-smc01**: unit `active (exited)` since 09:41, **zero** asterisk processes, no `/var/run/asterisk/` control socket, every `asterisk -rx` query failing with
-  "Unable to connect to remote asterisk". Note this is the same site whose 2026-08-19 CDR investigation concluded "handsets not in use" from an unchanged `Master.csv` — worth re-reading that
-  conclusion against this, since a dead PBX and an unused one produce the same empty CDR file. Not chased in this session.
-- Portal layout is not what a `application/config` glob assumes: `/var/www/` holds `kohana-base` (which uses `system/config`), `apn-mqtt-client` and `html`. The capture now lists `/var/www` and finds
-  config dirs rather than guessing a path.
-- **umoona-smc01 has no database server at all** — `mariadb`/`mysql` units not-found and zero `mariadb-server`/`mysql-server` packages installed. The capture now distinguishes "not running" from "not
-  installed".
-- `GROUPS` is a **bash special variable** (the current user's group IDs). Assigning to it in a script is silently ignored — it cost one debug cycle here, and any future script in this pack should
-  avoid the name.
-
-## 20260818_1350 — pre-push gate mechanics corrected, plaintext-secret exposure recorded (v0.1.21 -> v0.1.22)
-
-Pushing the `rise` branch turned the pre-push hook into its own investigation, and it corrected guidance this pack had been giving.
-
-### Changed
-
-- `references/08_ansible-authoring.md` — **correction**: the Validation section previously advised putting `/Volumes/Data/_ai/_skills/skills-runtime/ansible-wifi/.venv/bin` on `PATH` when the hook
-  fails. That venv is now known to be the *cause*, not the cure — it carries `ansible-core 2.17` with two collections and no `netaddr` against brew's 95, so it cannot resolve `selinux`
-  (`ansible.posix`) at `roles/smc_system/tasks/main.yml:137` and fails the syntax-check stage for any push reaching that role, whatever you changed.
-- Same file — new section documenting the gate's four stages and their differing semantics: only the ansible-lint stage has a baseline; yamllint has none and fails on any error in a touched file;
-  syntax-check covers root-level playbooks only. Plus the properties that matter in practice — `line_is_changed` is evaluated **before** the baseline (so a baseline entry can never hide your own
-  line), every finding in a new file blocks unconditionally, the baseline is `file|rule` keyed and lives in `.git/` so it is per-machine, the parser stores a finding's **column** as its rule when one
-  is present, and the correct order of work is own-lines first, baseline second, whitespace last — getting that order wrong turned a 43-finding job into a 404-finding one.
-- `references/13_known-issues.md` — new section on plaintext secrets in `group_vars` with no `ansible-vault` anywhere, and the `cw/group_vars/graylog.yml` copy that carried APN's cluster UUID, master
-  `password_secret`, root password hash, three tokens and Teams webhook. Records the client/server asymmetry worth checking whenever a cluster is cloned: the client half had been adapted for
-  communitywifi, the server half had not.
-
-### Status
-
-Repo side: `origin/rise` e1077c17 -> 213c0e4a (8 commits), governance repo main c6228ce -> 1f09cee. Detail in `ansible-wifi` `CHANGELOG.md` `20260818_1350`.
-
-## 20260818_1300 — delye-smc01 RESOLVED; `overlay.size_ratio` proven inert; fleet percentages corrected (v0.1.20 -> v0.1.21)
-
-Operator deployed `smc_rise_logcaps` to `delye-smc01` and re-enabled overlayroot. Verified on-box: reboot loop broken (1 h 18 min uptime, single boot), `laravel.log` 2.63 GiB -> **753 KB**, overlay at
-15% used, latent log exposure down from ~85% of budget to **4%**, `rise-logcaps.timer` active, `rise-watchdog` running normally again now that `/media/root-ro` exists.
-
-Verifying that deployment surfaced an error in this pack's own numbers. `df` reported a 3.9 GiB overlay where the documented budget was 3.05 GiB, which traced to **`overlay.size_ratio` being
-completely inert**: overlayroot 0.47ubuntu1 mounts the upper layer as `mount -t tmpfs tmpfs-root "${root_rw}"` with no `-o size`, and the only option keys it parses are `swap`, `recurse`, `debug`,
-`dir` and `driver`. `size=40%` is parsed into an unused shell variable by a generic key/value parser that validates nothing, so it is discarded without error or warning. The real budget is always the
-kernel tmpfs default of **50% of RAM** — measured 3.812 GiB on a 7.625 GiB box, exactly 50.0%.
-
-### Changed
-
-- `references/07_hardware-overlay.md` §8 — new subsection "`overlay.size_ratio` is inert" walking the five-step parse-and-discard path with the source lines; the ASCII structure diagram and the cost
-  model's budget sentence corrected from "~40% RAM / ~3.05 GiB" to "always 50% of RAM / 3.81 GiB measured", with an explicit warning that earlier notes used the wrong denominator.
-- `references/13_known-issues.md` — the `delye-smc01` entry retitled **RESOLVED** with a before/after verification table; its arithmetic corrected (laravel.log was **69%** of budget, not 86%); and the
-  six-host fleet exposure table re-divided against the real budget (mimbi **32%** not 40%, hoppys-camp **15%** not 19%, etc.), with post-fix delye added at 4%.
-- Repo side (`ansible-wifi`): `rise_logcap.py` now **measures** the budget via `statvfs` on the live tmpfs instead of computing `RAM x size_ratio` — verified to match `df` exactly on three hosts; the
-  three RISE `group_vars` carry a block comment recording that `size_ratio` is inert so nobody tunes it expecting an effect.
-
-### Note on the correction
-
-The failure analysis is unchanged — only the denominator moved, and it moved in the safe direction (more headroom than assumed, not less). But every percentage published in `20260818_1130` and
-`20260818_1200` was overstated by ~22%, which is why the tables were corrected in place rather than left standing with a footnote.
-
-## 20260818_1200 — RISE metric delivery path: agent mode, remote_write allowlist, and the alerting void (v0.1.19 -> v0.1.20)
-
-Follow-up to `20260818_1130`. Asking what the log-cap work should emit surfaced that **no `rise_*` metric was alerted on anywhere** — the central rule set carries 29 alerts and zero references to the
-RISE surface, despite it having been emitted for over a year. `delye-smc01` reboot-looped with every relevant signal present on the box and nothing watching any of them. Three facts explain how that
-was possible, and all three are now documented because each one is a trap for the next person.
-
-### Changed
-
-- `references/02_service-map.md` — new "RISE metric delivery" section recording that **Prometheus runs in agent mode on the SMC boxes** (no local TSDB, **no rule evaluation**, so
-  `smc_prometheus/templates/rules.yml.j2` has never been evaluated and all SMC alerting must be central); that `remote_write` applies a **keep-allowlist** which silently drops anything unmatched
-  (measured: 6.36M samples sent, 4.89M dropped, 0 failed); and that `node_textfile_mtime_seconds` survives that allowlist via `node_.*`, which is why the `Host*TextfileCollectorNotUpdated` pattern is
-  the reliable dead-collector detector — and the only correct way to detect a dead `rise_watchdog`, whose own `rise_watchdog_unit_active` goes **stale rather than to 0** when it dies.
-- Same file — full metric table for `rise_logcaps.prom`, marking `total_log_bytes` / `largest_file_bytes` / `overlay_budget_bytes` as **leading** indicators and `rise_overlay_used_pct` as **trailing**
-  (it only moves after copy_up has already happened, by which point the host is looping).
-- Same file — Graylog shipping for RISE confirmed live: `/var/log/rise/*.log` and `/opt/rise/status/*.json` are already tailed, so anything written under `rise_paths.log_dir` / `status_dir` ships with
-  no config change. Plus the trap that `roles/smc_graylog/files/apn-fluentbit-config-file` is referenced by **no task in any role** — the live config is served by the Graylog server, so editing the
-  repo file changes nothing on the fleet.
-
-### Status
-
-Repo-side changes (6 new central alert rules, 3 new leading-indicator metrics, `rise_.*` added to the remote_write allowlist) live in `ansible-wifi` `CHANGELOG.md` `20260818_1200`. Alert rules
-validated with `promtool check rules` on `black-hill-3-smc01` (rc=0). Central ingestion could not be verified end to end — the Grafana tunnel is refused and agent mode blocks querying the box's own
-TSDB — so the evidence is indirect: `samples_failed_total` 0 on a working `remote_write`, and the pre-existing `HostSbdm*` alerts depend on the same pipe and allowlist. Nothing deployed.
-
-## 20260818_1130 — overlayroot copy_up cost model, `smc_rise_logcaps`, and three fleet-class findings (v0.1.18 → v0.1.19)
-
-`delye-smc01` was reboot-looping every ~5 minutes. Root cause was a 2.63 GiB Laravel log with no logrotate stanza anywhere on the box, against a 3.05 GiB overlay budget. The generalisable lesson — and
-the reason this warranted reference changes rather than just an issue note — is that **overlayroot copy_up charges a file's size at first write, not its write rate**, which inverts normal disk-space
-intuition: a 2.6 GiB log appended at 4 KB/min is far more dangerous than a 10 MB log appended at 4 MB/min.
-
-Verified at source (overlayroot 0.47ubuntu1) that `recurse=0` — already set fleet-wide — leaves every non-`/` fstab entry outside the overlay entirely, so moving volatile paths onto their own mount is
-the permanent fix. That is deferred (no spare partition on most boxes); `roles/smc_rise_logcaps` is the interim mitigation, built on filesystem discovery rather than an enumerated path list.
-
-Five classification bugs and two silent-failure modes were found by running read-only scans against six live production hosts rather than by reasoning — recorded because the method mattered more than
-any individual bug.
-
-### Changed
-
-- `references/07_hardware-overlay.md` §8 — three new subsections: the copy_up cost model (including that **reading does not trigger copy_up**, which is what makes live fleet assessment safe);
-  `recurse=0` verified at source with the actual shell snippet, plus why a loop-mounted image file cannot substitute for a real partition; and `smc_rise_logcaps`' five-bucket model with the mechanics
-  that are easy to get wrong (`copytruncate` mandatory, `size` not `daily`, rsyslog not reopening on truncate, never truncating a `.gz`, `su root adm` not `su root root`).
-- `references/13_known-issues.md` — four new sections: the `delye-smc01` reboot loop with triage notes; `rise-watchdog.service` failing `226/NAMESPACE` on any overlay-disabled or x86 host
-  (fleet-class, previously undetected, scope still unmeasured); Ubuntu's stock rsyslog logrotate having no size limit, with measured `auth.log`/`syslog.1` sizes across three hosts and the harness
-  warning about omitting `/etc/logrotate.conf`; and the legacy `ozai/hc.log` still writing post-RISE plus the graylog-sidecar logs that accumulate forever because they are already under any size
-  threshold. Includes the six-host fleet log-exposure table (mimbi-smc01 at ~40% of its overlay budget).
-- `references/05_troubleshooting.md` — new **Tier 8b: Box Reboot-Looping Every Few Minutes**, a six-step workflow whose first step is establishing that `rise_watchdog.py` reboots and
-  `rise_healthcheck.py` never does.
-- `references/02_service-map.md` — `rise_logcap.py` / `rise-logcaps.timer` registered with its outputs.
-- `RUNBOOK.md`, `SKILL.md`, `manifest.json` — version 0.1.18 → 0.1.19; routing row added for reboot-loop triage.
-
-### Status
-
-The role and the watchdog fix are **written but deployed nowhere**. `delye-smc01` remains running with overlayroot disabled and unremediated. `nbn_wh` was not assessed (expired Teleport profile).
-Repo-side detail lives in `ansible-wifi` `CHANGELOG.md` `20260818_1115` and memory-keeper keys `ansible-wifi.*.20260818`.
-
-## 20260803_1825 — new-looma-smc01 second whole-host outage confirmed via live Prometheus (v0.1.17 → v0.1.18)
-
-Operator reported "new-looma-smc01 is back online." Rather than take the status at face value, queried `mcp-grafana-apn` (already live from the previous session's Grafana work) for
-`up{instance=~"new-looma.*"}` over the last 7 days.
-
-**Confirmed:** both the self-scrape (`job="prometheus"`) and `node_exporter` targets for `new-looma-smc01` went dark simultaneously from **2026-08-01 23:40 UTC to 2026-08-03 06:40 UTC (31h)**, then
-both resumed together — the signature of a whole-host/network outage, not a single failed service. A second, earlier 18h gap in the same window (2026-07-29 11:10 → 2026-07-30 05:10 UTC) lines up
-exactly with the already-documented topology cross-wiring fix (`08_ansible-authoring.md`), confirming that gap is already explained. This newer 31h gap is not — no `tsh ssh` access was used this
-session, so root cause is confirmed-timeline-only, not diagnosed.
-
-### Changed
-
-- `references/13_known-issues.md` — new paragraph appended to the existing "new-looma-smc01" section documenting the confirmed 31h outage, its whole-host signature, cross-reference to the
-  already-explained earlier gap, and an open question about whether it relates to the still-open `my_node_network_device_info` zero-series gap (also new-looma-specific).
-- `manifest.json` — new `diagnostics` entry (6th); version bumped 0.1.17 → 0.1.18.
-
-### Evidence basis
-
-Live `mcp-grafana-apn` `query_prometheus` reads this session (`up{instance=~"new-looma.*"}`, instant + 7-day range). Timestamps converted via direct `date -u -r <epoch>` — not estimated. No SSH/tsh
-access to the box itself this session.
-
-## 20260803_1810 — Grafana CW exploration unblocked: dashboard inventory + RISE metric names (v0.1.16 → v0.1.17)
-
-Operator supplied the missing NBN-instance service-account token and confirmed a session restart had happened, unblocking the `mcp-grafana-nbn` connection left stuck at the end of the previous session
-(blank-token 401, MCP process caching old env). Explored both flavor-specific Grafana instances rather than just confirming connectivity.
-
-**Confirmed:** `mcp-grafana-apn` (20 dashboards) and `mcp-grafana-nbn` (9 dashboards) are not mirrors. The 11 APN-only dashboards include a RISE health/watchdog framework (RISE SMC Health Detail, RISE
-SMC Table, RISE Dashboard) that has no NBN counterpart because RISE is deployed only to `rct`/`wh` flavors — confirmed via the `flavor=~"rct|wh"` gate in the "Pending sites" panel query, not just
-dashboard absence. Pulled the actual Prometheus metric names behind the four `rise_*` textfile collectors that previously had `—` placeholders in `02_service-map.md`
-(`rise_healthcheck_health_score_*`, `rise_healthcheck_health_penalty*`, `rise_overlay_used_pct`/`_inodes_free_pct`/`_active`, `rise_zram_*`,
-`rise_watchdog_up`/`_active`/`_boot_firmware_used_pct`/`_unit_active`), plus the offline-vs-pending fleet-rollup logic (offline = watchdog seen in last 30d but not last 5m; pending = node_exporter up
-on rct/wh but watchdog series never existed).
-
-### Changed
-
-- `references/03_communication-flows.md` — new "Dashboard inventory" subsection under Grafana/Prometheus MCP Access: full table of the 11 APN-only dashboards with UIDs and purpose, plus the
-  RISE-flavor-gate explanation for why they're absent from the NBN instance.
-- `references/02_service-map.md` — Monitoring/Metrics textfile-collector table rows for the four `rise_*` scripts now note their systemd unit/flavor gate; new "RISE Health/Watchdog Framework"
-  subsection with the full metric table and the offline/pending distinction.
-- `manifest.json` — new `diagnostics` entry (5th) capturing the dashboard-inventory and RISE-metric findings; version bumped 0.1.16 → 0.1.17.
-
-### Evidence basis
-
-Live `mcp-grafana-apn`/`mcp-grafana-nbn` reads this session: `search_dashboards` (both instances), `get_dashboard_summary` and `get_dashboard_panel_queries` (RISE SMC Health Detail, RISE SMC Table,
-Sites not reporting, SMC Table, Data Backlog, RPi SD Card Status). RPi hardware detail cross-checked against already-confirmed `07_hardware-overlay.md` content — no new hardware facts, dashboard is a
-visualization of already-documented state.
-
-## 20260803_1745 — ClamAV freshclam root cause confirmed: ClamAV 0.103.x end-of-life (v0.1.15 → v0.1.16)
-
-Operator asked "what could be the reason for the ClamAV error" following the fleet sweep in the previous entry. Rather than restate the open hypotheses, verified via `WebSearch` against clamav.net and
-the Cisco-Talos/clamav GitHub issue tracker before answering.
-
-**Confirmed root cause**: ClamAV's 0.103 branch reached end-of-life for database updates on 2025-09-14. This fleet runs `clamav 0.103.11`/`.12` uniformly, squarely in the EOL'd branch — after the
-cutoff, ClamAV's CDN actively rejects `freshclam` from any 0.103.x client with HTTP 403 ("Forbidden; Blocked by CDN"), exactly the signature captured on all 26 hosts. This also explains the 10-month
-staggered failure-date spread from the previous entry: each host only flips to `failed` the first time its `freshclam` timer runs *after* the cutoff, so hosts with different timer schedules trip it at
-different times rather than all at once. Not a cw-cluster-specific network/firewall issue — this is documented, expected upstream behavior for any fleet still on 0.103.x. Fix is a version upgrade (1.0
-or 1.4 LTS), not a retry; no automated ClamAV-version-update pipeline exists for this cluster to do that automatically.
-
-### Changed
-
-- `references/13_known-issues.md` — ClamAV bug row rewritten from "root cause not investigated, 3 open hypotheses" to "root cause confirmed," with the EOL date, the CDN-block mechanism, and the
-  staggered-date explanation; "Fix location" column updated from "not investigated" to the concrete upgrade path.
-- `references/08_ansible-authoring.md`, `references/01_overview.md` — ClamAV/Lynis rows updated to reference the confirmed root cause instead of open hypotheses.
-- `manifest.json` — new `diagnostics` entry (3rd) capturing the confirmed root cause with its sources; version bumped 0.1.15 → 0.1.16.
-
-### Evidence basis
-
-`WebSearch` against `blog.clamav.net` (the official EOL announcement) and `github.com/Cisco-Talos/clamav` issue tracker (multiple community reports of the identical error signature) — external,
-citable sources, not inferred from this fleet's data alone. Cross-checked against this session's own captured data (uniform 0.103.x package version, exit code 17, exact error text match) for internal
-consistency.
-
-## 20260803_1730 — Full NBN Accelerate fleet sweep: 28 hosts, hardware inventory, fleet-wide ClamAV finding (v0.1.14 → v0.1.15)
-
-Operator requested a thorough analysis of "all the NBN Accelerate sites" including hardware details and the state of installed apps/scripts/services — a full fleet sweep, not a spot-check, superseding
-the 2-host check in the previous entry. Built two new reusable tools (`scripts/collect-fleet-health.sh`, `scripts/fleet-health.justfile`) and ran them against all 26 reachable `nbn_accelerate` hosts
-plus both `nbn_wh` hosts (28 total).
-
-**Hardware inventory (new — no prior live chassis data existed for this cluster):** 11× AAEON BOXER-6641 (i5-8500T, 15Gi RAM, Transcend SSD) + 15× AAEON BOXER-6404 (Celeron J1900, 7.7Gi RAM, Innodisk
-CFast) for `nbn_accelerate`; both `nbn_wh` hosts are genuine Raspberry Pi-class (Cortex-A72, Swissbit microSD) — operator confirmed `nbn_wh` is the `wh`-flavor equivalent on this cluster.
-
-**Major finding: `clamav-freshclam` confirmed failed fleet-wide, 26/26 `nbn_accelerate` hosts** (not the 2 found in the earlier spot-check) — same CDN-blocked exit-17 signature on every host, but
-failure *dates* span 10 continuous months (2025-10-02 → 2026-07-30), indicating an ongoing degradation still actively catching hosts, not a single past incident.
-
-**Resolved during write-up (operator-confirmed mid-session):** `nbn_wh` overlayroot is not yet active on either host — this is a planned-but-not-yet-executed rollout (`smc_rise_deploy.yml` already
-targets `nbn_wh`), not a bug or stalled deployment.
-
-**Other findings:** kernel-version drift (5.15.0-79 to 5.15.0-133) corroborating the earlier no-automated-kernel-pipeline structural finding; `koonibba-smc01` at 95% disk usage with the fleet's oldest
-kernel; `isc-dhcp-server6` failed on 28/28 hosts (confirmed benign — IPv6 disabled by policy); `fwupd-refresh` failed on 3/28 hosts (minor); `nbn_wh` swap/zram absence contradicting the platform
-table's universal RPi-zram claim (unresolved).
-
-### Added
-
-- `scripts/collect-fleet-health.sh` — new reusable, flavor-agnostic hardware/security/service-health evidence-capture script (read-only, hardcoded command bundles, same safety contract as
-  `collect-smc-evidence.sh`). Bundles ~20 commands into 4 grouped captures per host to stay tractable over satellite links at fleet scale.
-- `scripts/fleet-health.justfile` — task-runner wrapping the script, ships with the current NBN Accelerate site list plus `freshclam-check`/`failed-units-check`/`chassis-models` quick-check recipes.
-  Dogfooded after writing — found and fixed 2 real bugs (a `just`-working-directory path assumption, and the same exit-code-of-last-command quirk documented in the collection script) before trusting
-  it.
-- `scripts/README.md` — new safety-classification rows, "What each script is for" section, and a documented lesson on `just -f <path>`'s working-directory behavior.
-- `references/07_hardware-overlay.md` — new "NBN Accelerate / NBN WH Hardware Inventory" section with the full chassis/CPU/RAM/storage/kernel table and all findings above.
-- `references/13_known-issues.md` — "Known Operational Bugs (NBN Accelerate cluster)" section rewritten for the full 28-host sweep (was 2-host); coverage-gap row updated to "largely closed."
-- `references/01_overview.md`, `references/08_ansible-authoring.md` — evidence-basis and flavor-gate rows updated to reflect full-fleet validation.
-- `references/04_dependency-tree.md` — separately, added `smc_ltp`/ClamAV/Lynis Level-4 entries and flagged a naming-collision risk between `smc_ltp`'s CNMaestro provisioning and a pre-existing
-  generic `cnmaestro-provisioning`/`redis` dependency row (unresolved — may be the same mechanism described two ways, or two genuinely separate paths).
-- `manifest.json` — new `diagnostics` entry for the full sweep; version bumped 0.1.14 → 0.1.15.
-
-### Operational note
-
-Raw per-host evidence relocated from `skill-smc/evidence/` to `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/fleet-hardware-audit-20260803/` per this pack's evidence-retention policy —
-skill-smc holds analysis and tooling, not case-specific raw captures.
-
-### Evidence basis
-
-Direct `tsh ssh root@<host>` read-only commands, this session, 28/28 targeted hosts. Two-batch capture: batch 1 crashed at 11/28 hosts after a same-session edit to the running script file corrupted
-its execution (a documented gotcha now — never edit a script file while it's still running); batch 2 recaptured the remainder with the fixed script. Not covered: `cw` flavor (central-infra only),
-`aurukun-smc03` (unreachable at capture time).
-
-## 20260803_1615 — First live NBN Accelerate validation: confirms cluster comparison, finds ClamAV CDN-block (v0.1.13 → v0.1.14)
-
-Operator made `tsh login` available for the NBN Accelerate cluster (`teleport.communitywifi.net.au`) and invited exploratory commands — the first-ever live access this pack has had to that cluster,
-closing (partially) the "code-inspection-only" caveat that's sat on every NBN Accelerate claim since the gap-fill earlier today. Ran read-only diagnostic commands against two `nbn_accelerate` hosts,
-`warakurna-smc01` and `indulkana-smc01`.
-
-**Every prior code-inspection-only claim checked came back confirmed, 2/2 hosts:** Teleport domain (`teleport.communitywifi.net.au:443`), HTTPS-only portal (permanent HTTP→HTTPS redirect, on-box TLS
-termination at `/etc/ssl/communitywifi.net.au/`), `wifi-community-app-backend` present, ClamAV + Lynis both installed, Asterisk absent, DNS stack is standard unbound+stubby (not `smc_ltp`/bind9, as
-expected — neither host is an `smc_ltp` member).
-
-**New finding, not previously known:** `clamav-freshclam.service` has been failing on both hosts — `warakurna-smc01` since 2026-07-23, `indulkana-smc01` since 2026-06-21 — identical signature (exit
-code 17, `Forbidden; Blocked by CDN`, freshclam gives up permanently rather than retrying). ClamAV's virus database is stale/frozen on both; the daemon itself stays active but with degraded detection.
-Root cause not investigated (read-only session, no remediation attempted).
-
-### Added / Changed
-
-- `references/13_known-issues.md` — new "Known Operational Bugs (NBN Accelerate cluster — first live check, 2026-08-03)" section with the confirmed-claims summary and the ClamAV/freshclam bug row;
-  "NBN Accelerate cluster coverage gap" row updated from "not live-validated" to "first live spot-check done."
-- `references/08_ansible-authoring.md` — ClamAV+Lynis gate row updated with the live-confirmed install + the freshclam finding.
-- `references/01_overview.md` — evidence-basis paragraph updated: partially live-validated as of 2026-08-03; `nbn_wh`/`cw` flavors still unvalidated.
-- `manifest.json` — new `diagnostics` entry (first use of this previously-empty field) capturing the live-validation results and the ClamAV finding; version bumped 0.1.13 → 0.1.14.
-
-### Evidence basis
-
-Direct `tsh ssh root@<host>` read-only commands against `warakurna-smc01` and `indulkana-smc01`, this session. No writes/remediation performed. `nbn_wh` and `cw` flavors, and every other NBN
-Accelerate site, remain unvalidated — this is a 2-host spot-check, not a fleet sweep.
-
-## 20260803_1545 — project-coherence sweep: routing/architecture staleness fixed (v0.1.12 → v0.1.13)
-
-`project-coherence` run covering today's cumulative changes (NBN Accelerate gap-fill through the smc_ltp manual-mechanism confirmation). Content files (Tier 1) were already coherent — this pass caught
-two Tier 2/routing staleness items that hadn't been touched during the piecemeal content edits:
-
-### Changed
-
-- `context-map.yaml` — `ansible_authoring` and `smcbox_basics` routing descriptions extended to mention `smc_ltp`/"low touch" onboarding and the APN-vs-NBN-Accelerate comparison respectively;
-  previously only the underlying reference files had been updated, not this machine-readable routing layer.
-- `ARCHITECTURE.md` — governance-pack size figure corrected from a stale "~125k chars" (last accurate 2026-06-26) to the current ~470k chars / 35 files — had drifted across multiple sessions' worth of
-  content growth, not just today's.
-- `RUNBOOK.md`, `AI_NAVIGATION.md` — `08_ansible-authoring.md` routing rows extended to mention `smc_ltp` and onboarding history, matching the pattern already applied to the `01_overview.md` row for
-  NBN Accelerate.
-
-### Validated
-
-Stale-reference grep across the whole pack for old figures/phrases ("cnMaestro mDNS", "only rcp/guda-guda", "Community WiFi cluster", "~125k chars") — all remaining hits are correctly-framed
-historical/correction narrative in `CHANGELOG.md`/`SCRATCHPAD.md`/the "corrected 2026-08-03" notes, no live incorrect claims found. `README.md`, `SYSTEM_PROMPT.md` reviewed — generic pointers, no
-stale figures. `.remember/today-2026-08-03.md` reviewed — out of scope for this pack's own coherence pass (self-managed by the global `remember` skill, not a skill-smc-authored file).
-
-Version bumped 0.1.12 → 0.1.13; governance pack regenerated.
-
-## 20260803_1530 — smc_ltp/"low touch" mechanism confirmed: manual step, no enforcement (v0.1.11 → v0.1.12)
-
-Final piece of the smc_ltp/"low touch" thread, same day: operator confirmed the one remaining open question — whether low-touch onboarding tooling itself assigns `smc_ltp` group membership, or it's a
-manual step. **It's manual.** No tooling automatically adds a new low-touch site to `smc_ltp:children`, and nothing checks or enforces that it happened. This directly explains the root cause of the
-3-site gap fixed in the previous entry — a manual, unenforced step is exactly the kind of thing that silently drops during a busy onboarding.
-
-### Changed
-
-- `references/08_ansible-authoring.md` — "smc_ltp Sub-Group" low-touch resolution paragraph updated with the confirmed mechanism and an explicit operational implication: verify `smc_ltp:children`
-  membership explicitly for any future low-touch site rather than assuming it's automatic.
-- `references/13_known-issues.md` — the "low touch ↔ `smc_ltp` link" row's status upgraded to include "mechanism confirmed manual"; reframed as a standing risk for future low-touch sites, not a
-  one-off closed by this correction.
-- `manifest.json` — `smc_ltp`/low-touch `stable_facts` entry updated with the confirmed mechanism; confidence raised to 0.92; version bumped 0.1.11 → 0.1.12.
-
-### Evidence basis
-
-Operator-confirmed directly, relayed to this session. No independent verification possible from Ansible source alone (absence of automation is what's being confirmed, not a positive code finding).
-
-## 20260803_1515 — smc_ltp/"low touch" correlation resolved: 3 sites added to the group, 7 members confirmed (v0.1.10 → v0.1.11)
-
-Follow-up to the "low touch" onboarding entry below, same day. That entry flagged, but did not conclude, whether "low touch" onboarding and `smc_ltp` membership were mechanistically linked (4 of 7
-low-touch sites were `smc_ltp` members; 3 — `umoona`/`warburton`/`beagle-bay` — were not). Operator confirmed the link is real: every low-touch site is meant to be an `smc_ltp` member, and the 3
-missing ones were a plain inventory gap, not a coincidental overlap of two unrelated rollout decisions.
-
-Operator made and verified the fix directly in `ansible-wifi`: added `warburton_smc_ltp`/`beagle-bay_smc_ltp`/`umoona_smc_ltp` host groups to `inventories/rcp/prod`, plus each site's own `:children`
-block, matching the existing pattern for the other 4 sites. Verified via `ansible-inventory --list` (all 7 now under `smc_ltp:children`) and `ansible-playbook --syntax-check smc_ltp.yml` (clean).
-**Uncommitted** — a real production Ansible inventory change, not yet run against any live SMC.
-
-### Changed
-
-- `references/08_ansible-authoring.md` — "smc_ltp Sub-Group" section updated: membership is now 7 sites, not 4; the site/date table's `smc_ltp member?` column updated; the low-touch section's
-  "flagged, not concluded" framing replaced with "Resolved 2026-08-03 (link confirmed, not coincidental)" and the fix/verification steps documented. The underlying *mechanism* (does low-touch tooling
-  itself assign `smc_ltp` membership, or is it manual) remains unestablished — only the intended end-state membership is now confirmed.
-- `references/02_service-map.md`, `references/13_known-issues.md` — DNS resolver row and coverage-gap row updated to 7 sites and "resolved" status.
-- `references/01_overview.md`, `SKILL.md`, `references/05_troubleshooting.md` — quick-reference/table mentions of `smc_ltp` membership updated from 4 to 7 sites.
-- `manifest.json` — both `smc_ltp`-related `stable_facts` entries updated to reflect 7 members and the resolved correlation; version bumped 0.1.10 → 0.1.11.
-
-### Evidence basis
-
-Operator-directed and operator-verified (`ansible-inventory --list`, `ansible-playbook --syntax-check`) file-level change relayed to this session; not independently re-verified by this session, and
-not yet run against any live SMC or committed to the ansible-wifi repo.
-
-## 20260803_1445 — "Low touch" onboarding method and site deployment history added (v0.1.9 → v0.1.10)
-
-Operator supplied install dates for a cohort of `rcp` sites, confirming a named **"low touch" onboarding method**: `guda-guda` (pilot, 2025-04-15), then a year later `umoona` (2026-04-12),
-`warburton`, `beagle-bay`, `pandanus-park`, `old-looma`, `new-looma`. Genuinely new information not previously documented anywhere in this pack.
-
-### Added
-
-- `references/08_ansible-authoring.md` — new "'Low Touch' Onboarding Method and Site Deployment History" section (added to Contents list): the full site/date/`smc_ltp`-membership table; the
-  flagged-not-concluded observation that all 4 `smc_ltp` sites are also low-touch sites (3 of 4 `smc_ltp` non-pilot members plus the pilot itself), while `umoona`/`warburton`/`beagle-bay` are
-  low-touch without `smc_ltp`; and a direct-grep finding that "low touch" currently has no Ansible-code representation — the one `low_touch`-named var in the repo (`smc_bases_low_touch_provisioning`
-  on `pierre-rcp01`, not a cohort member) is set but never read by any role or playbook.
-- `references/13_known-issues.md` — new open-question row capturing the unresolved `smc_ltp`/low-touch correlation; updated the pre-existing "cnmaestro-provisioning internals" coverage-gap row to
-  reflect that the deployment side is now well-documented (only the CNMaestro API's own runtime behavior remains unknown).
-- `manifest.json` — new `stable_facts` entry for the low-touch cohort/dates and the orphaned-var finding; version bumped 0.1.9 → 0.1.10.
-
-### Evidence basis
-
-Site list and dates are operator-provided, cross-referenced against independently-observed netplan/hook render timestamps already in this pack's routing-issue-derived content (consistent, not
-contradictory — renders land 1-92 days after each stated install date, matching later unrelated remediation work touching those files). The `smc_ltp` overlap and the orphaned
-`smc_bases_low_touch_provisioning` var are this session's own repo-wide grep findings. Not live-validated against any site.
-
-## 20260803_1400 — smc_ltp properly explored and documented; membership undercount fixed (v0.1.8 → v0.1.9)
-
-Operator flagged that `smc_ltp` "has not been explored and documented properly" — a fair call. Prior coverage was a side effect of the 2026-07-03 DNS RCA (which only established that `smc_ltp` gates
-the unbound-vs-bind DNS split) and had never been independently re-verified since. Direct read of `smc_ltp.yml`, `inventories/rcp/group_vars/smc_ltp.yml`, `inventories/rcp/prod`,
-`roles/smc_cnmaestro_provisioning/`, and `roles/smc_dns_mgmt/tasks/main.yml` (this session, cross-checked against a parallel same-day pass done from the ansible-wifi side, which reached the same
-conclusions independently) found two things wrong with the prior documentation:
-
-1. **Membership undercount.** Every prior mention said "currently only `rcp`/guda-guda". That was based on a `.yml`-scoped grep that missed `inventories/rcp/prod` — an INI-format static inventory
-   file, not a `topology_vars`-generated one. The group actually has 4 members: `guda-guda`, `pandanus-park`, `old-looma`, `new-looma`.
-2. **Purpose mislabeled.** Prior docs called it "cnMaestro mDNS" — wrong on both halves. It has two unrelated purposes, neither of which is mDNS: (1) a separate `smc_ltp.yml` playbook runs
-   CNMaestro-managed Cambium ePMP/cnPilot wireless-backhaul provisioning (auto-allocates management IPs, SSIDs, per-model config for cnPilot/XV2/ePMP Force/ePMP 3000L hardware); (2) `smc_bases.yml`'s
-   `dns_mgmt` play switches the DNS resolver stack from unbound+stubby to bind9+RPZ (zone file literally named `db.cambium-rpz`, tying the DNS switch to the same Cambium backhaul context).
-
-### Added / Fixed
-
-- `references/08_ansible-authoring.md` — new "smc_ltp Sub-Group — CNMaestro Backhaul Provisioning + DNS Architecture Switch" section: membership mechanism (static INI group, not topology_vars), both
-  purposes in full, the `smc_dhcpd` LTP-specific apparmor/service-user fix, and an explicit "LTP acronym not expanded anywhere in the codebase — do not guess" note. Added to the Contents list.
-- `references/01_overview.md`, `references/02_service-map.md`, `references/13_known-issues.md` — corrected the "only `rcp`/guda-guda" undercount to the 4-site list and cross-referenced the new
-  08_ansible-authoring.md section instead of restating it.
-- `SKILL.md` Tier 3 DNS quick-reference and `references/05_troubleshooting.md` Tier 3b/3c — same undercount fixed; Tier 3c now notes the CNMaestro-provisioning angle so a "DNS is fine but backhaul
-  radios aren't provisioning" report on one of these 4 sites doesn't get misdiagnosed as a DNS issue.
-- `manifest.json` — new `stable_facts` entry capturing the corrected membership, dual purpose, and the open "LTP acronym" question; version bumped 0.1.8 → 0.1.9.
-
-### Evidence basis
-
-Direct read of the playbook/role/inventory files listed above (this session). Not live-validated against any of the 4 member hosts via `tsh ssh` — the CNMaestro-provisioning and DNS-switch mechanisms
-are confirmed from Ansible source, not from a live box.
-
-## 20260803_1230 — NBN Accelerate cluster gap-fill (v0.1.7 → v0.1.8)
-
-Operator request: ~95% of this pack's operational detail was extracted from APN-cluster (`rcp`/`rct`/`wh`, `teleport.apn.au`) work; the NBN Accelerate cluster (`cw`/`nbn_accelerate`/`nbn_wh`,
-`teleport.communitywifi.net.au`) had only the flavor→domain mapping documented (from the 2026-07-31 SSH/Teleport corrections). Ran a three-pronged research sweep (inventory group_vars diff across all
-7 flavors, repo-wide grep for flavor-conditional branching in roles/templates, doc/ADR/OPA search in local-knowledge-ansible/ansible-wifi) to fill the gap with a structured comparison rather than
-assuming parity between the two clusters.
-
-### Added
-
-- `references/01_overview.md` — new "APN Cluster vs NBN Accelerate Cluster — Structural Comparison" section: both clusters share a 1-central-infra + N-site-fleet topology, but NBN Accelerate is
-  materially thinner (no graylog/opensearch, no kernel-update Jenkins pipeline) and has real functional differences beyond the SSH endpoint (mobile-app backend + kiosk mode on `nbn_accelerate` only,
-  HTTPS-only portal protocol, different blocked-URL redirect domain, ClamAV+Lynis hardening on `nbn_accelerate` only, VoIP/Asterisk on `rcp` only). Documents the selector mechanism (`hotspot_flavor`
-  hardware-class split spans both clusters; `inventory_dir.split('/')|last` drives flavor-exclusive gates; nothing branches on the literal strings cw/community/communitywifi).
-- `references/08_ansible-authoring.md` — new "Flavor/Cluster Conditional Branching (Selector Reference)" section: table of confirmed flavor-exclusive role gates (ClamAV/Lynis, VoIP/Asterisk,
-  `smc_qos`, `smc_ltp`) with their exact conditions, plus the `smc_autossh` Teleport-endpoint selection mechanism (`teleport_fqdn` per-inventory group_var, host_var overrides for staging domains).
-- `references/10_captive-portal.md` — new §11.9: `smc_bases_portal_protocol` (http vs https) and `smc_bases_blocked_url_redirect` differences between clusters, flagged explicitly as
-  code-inspection-only (not live-validated against a cw-cluster host), with implications for §11.1–11.8's APN-cluster-derived verification commands.
-- `references/13_known-issues.md` — new "NBN Accelerate cluster coverage gap" row (Knowledge Gaps table) stating the live-validation boundary explicitly; two new Skill Staleness Risks entries: a
-  "community wifi" naming-collision warning (used generically for `rcp` sites in `issues/apn/routing-issue/`, distinct from the cw-flavor customer — a false-positive risk for future greps), and an OPA
-  `flavors.json`/`environments.json` coverage note (no `cw`/`apn`/`rct`/`wh` entries — not established whether intentional).
-- `RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md` — `01_overview.md` routing rows updated to mention the new APN vs NBN Accelerate comparison content.
-
-### Evidence basis
-
-Structural findings: direct read of all 7 inventories' `group_vars/*.yml` and `prod` files. Behavioral findings: repo-wide grep across `roles/*/tasks/main.yml`, `roles/*/templates/*.j2`,
-`smc_bases.yml`. Doc/ADR/OPA findings: search of `local-knowledge-ansible/ansible-wifi/{.archcore,issues,opa,docs,.remember}`. None of this is live-validated against a running `nbn_accelerate`/
-`nbn_wh`/`cw` host — flagged as such in every new section rather than presented as fleet-confirmed fact, consistent with this pack's existing evidence-labeling convention.
-
-## 20260731_1312 — Fed back Pia Wadjari labeling case + proposed convention; multiwan-disable git archaeology
-
-Operator worked in `local-knowledge-ansible/ansible-wifi/issues/internet-link-handling/` on internet-link topics (dual-switch bonding, label/metadata convention, manual ingress shaping, dormant
-multi-WAN VRF/fwmark), initially without checking here first — that workspace's own governance now flags this happened and corrects the resulting mechanism mis-citations. Two genuinely new pieces of
-information from that session, not previously here, fed back per operator request:
-
-### Added
-
-- `references/03_communication-flows.md` — under the existing label-inversion note: Pia Wadjari as a second confirmed instance (Starlink active/`internet` label, SkyMuster Plus backup/`starlink` label
-  — inverse of Horn Island), agreed with the operator's colleague Sandro that deployment proceeds as scheduled, and the concrete retrofit proposal (role-based `active-internet`/ `standby-internet`
-  labels + `provider:`/`link_type:` metadata fields) with a rough 2-3 week timeline once agreed — the existing note only said a retrofit was "planned" with no detail on what it would look like.
-- `references/03_communication-flows.md` — under the existing multiwan/VRF note: the specific disable commit (`c19a61fa`, apparent incidental collateral of an unrelated URL-capture refactor, not a
-  deliberate decision) and an important nuance the existing note didn't have — the fwmark script being dead does not mean VRF is fully out of play; `netplan.yml.j2`'s per-WAN VRF *allocation* is still
-  live and rendered into every deploy today, only the fwmark `ip rule`s that would use those tables are missing. Flagged as an open, not-yet-checked question whether any live SMC carries orphaned
-  `vrf-<tableid>` devices as a result.
-
-### Not added (already covered, verified during this pass)
-
-- Topic 1 (dual-switch bonding design) — already fully promoted into `references/08_ansible-authoring.md`, correctly citing the source workspace's own analysis doc. No gap found.
-- Topic 3 (manual ingress-shaping script) — already fully documented (`references/03_communication-flows.md`, `13_known-issues.md`), established 2026-07-29. The source workspace had independently
-  rediscovered this and initially mis-described it as "unknown" — corrected there after this check, not here (nothing here was stale).
-- The core label-inversion mechanism and the `dhclient-enter-hooks.j2` override itself — already accurate and complete here; it was the *source workspace's* citation of `ubuntu-dhclient-script.j2`
-  that was wrong, not anything in this file.
-
-## 20260731_1215 — Two residual gaps closed from the routing-issue Problem 3 deep-dive
-
-Operator asked, from the routing-issue investigation folder, "was all the information in this project fed back to skill-smc?" — a spot-check after the 20260731_1245 full extraction pass (below,
-despite the out-of-order stamp — see the note on CHANGELOG stamps not matching wall-clock order) and the earlier 20260729_2324 pass. Both were thorough; this check found the coverage was otherwise
-complete, with two specific, narrow gaps in the Problem 3 (starlink `INPUT` DROP) deep-dive.
-
-### Added
-
-- `references/03_communication-flows.md` — the DHCP-bypasses-netfilter-`INPUT` mechanism: ISC `dhclient` uses a raw `AF_PACKET` socket for its own port-68 traffic, tapping frames at the link layer
-  before/parallel to `NF_INET_LOCAL_IN`, for both the initial lease and later renewals — this is *why* the starlink DROP rule (already documented) never blocks DHCP, and generalizes to any
-  interface-scoped DROP/REJECT rule on this fleet. Live-confirmed on Warburton.
-- `references/13_known-issues.md` — new Known Site Issues row: warburton-smc01's unexplained 1.68M-packet/3.3GB starlink DROP-rule counter (live tcpdump ruled out self-generated traffic and
-  public-internet exposure; source remains unresolved).
-
-## 20260731_1330 — Broadened cross-repo feed-back governance (prevent future full-sweep need)
-
-Follow-up to the 20260731_1245 extraction pass: the operator asked that ansible-wifi and local-knowledge-ansible/ansible-wifi (current and future subfolders) always consult skill-smc and always feed
-new knowledge back via `skill-slurp-chat`/`project-coherence`, so this kind of exhaustive sweep never has to happen again.
-
-### Changed
-
-- `AGENTS.md` "Cross-repo trigger rule" — broadened scope from "when triggered from ansible-wifi" to explicitly cover the whole `local-knowledge-ansible/ansible-wifi` tree (current and future
-  subfolders, via the existing `@`-import convention those subfolders already use). Broadened the trigger-condition list beyond "fixes, architecture decisions, failure modes" to explicitly include
-  unimplemented design recommendations, ADRs/rules/specs, OPA policy changes, reusable scripts, and ROADMAP decisions. Named `skill-slurp-chat` as an equally mandatory trigger point alongside
-  `project-coherence` (previously only the latter was named). Added a closeout self-check.
-
-### Corresponding changes in ansible-wifi's own governance (not this pack, but the other half of the loop)
-
-- `ansible-wifi-root-governance/AGENTS.md` (symlinked as `/Volumes/Data/_ansible/ansible-wifi/AGENTS.md` — a single edit covers both), `.archcore/rule-002`, `.agents/task-patterns.md`, and
-  `.agents/validation.md` were broadened identically, and rule-002 was renamed to drop the "incident/debug fixes" framing that had been the actual root cause of the extraction-pass gaps. See that
-  repo's own `CHANGELOG.md` entry `20260731_1330` for detail.
-
-## 20260731_1245 — Full local-knowledge-ansible/ansible-wifi extraction pass
-
-Operator asked for an exhaustive sweep of every markdown file under `local-knowledge-ansible/ansible-wifi/` and subfolders to confirm nothing was missed. Covered directly: `ai-tooling/`, `opa/`,
-`plans/`, `scripts/` (top-level lint scripts), `history/`, `graphify-out/GRAPH_REPORT.md`, `issues/garimba-smc01/`, `issues/amata-smc01/`, `issues/rcp-fleet/`, `issues/internet-link-handling/`, and
-the `ansible-wifi-root-governance/` top-level docs (ROADMAP.md, CONVENTIONS.md, `.serena/memories/`). Delegated to subagents: `ansible-wifi-root-governance/.archcore/` (6 ADRs, 5 rules, 1 guide, 2
-specs) and `issues/apn/routing-issue/docs/` (20 files) against current pack content; a third background sweep covered `.remember/` daily logs for anything that fell through the ADR-promotion workflow.
-`snapshots/` (59 timestamped dirs) and `history/current/` confirmed to be point-in-time copies of the ansible-wifi repo's own AGENTS.md, not distinct knowledge — spot-checked via diff, not deep-read.
-
-### Added
-
-- `references/06_failure-modes.md` — amata-smc01 disk-path failure (ATA/COMRESET, `DID_BAD_TARGET`, forced read-only root) as a new failure-mode entry, flagged still-open per ROADMAP.md.
-- `references/07_hardware-overlay.md` — `smc_disk_failover` role mechanism (EFI BootNext on connectivity failure, not storage-health failure; not guaranteed to run cleanly under active I/O
-  corruption).
-- `references/13_known-issues.md` — amata-smc01 open-incident row; `smc_qos` misgated to `rct`-only (silently no-ops on rcp/nbn_accelerate); Horn Island's unconditional `starlink01`/`starlink02`
-  topology block; Pandanus Park chronic `interfacecheckv2.sh` restart loop; Old Looma `smc_iptables` ACL drift (Asterisk/MQTT/Cambium-TFTP rules missing); mercedes-cove null-property portal bug;
-  duplicate `[horn-island_smc_bases]` inventory declaration; bungardi-smc01 multi-incident cluster (hostapd driver hang masquerading as apt lock contention, nl80211 netlink wedge, Teleport
-  cert/reverse-tunnel issues, WAN-level eth0 flakiness); an unreconciled-duplicate-fix flag for two differently-described apt-daily-upgrade fixes that may or may not be the same change.
-- `references/08_ansible-authoring.md` — OPA policy layer overview (packages, `opa eval`/`opa test`/`conftest` usage, ADR-001's env-gate-before-flavor-gate precedence); a design recommendation for
-  bonding (not bridging) doubled RCP/NBN-Accelerate internet circuits (`mode=active-backup`, ARP-based monitoring, systemd-networkd VLAN-as-bond-slave race-bug risk); a third topology_vars
-  authoring-bug class (role mistagging, confirmed at rocket-bore-smc01, alongside the existing vlanid-cloning and physical-interface-naming bugs); the SSH cipher-negotiation fix's correct home
-  (`smc_sshd`'s `ssh_config` template, not per-script patches); a guardrailed single-site interface-key rename pattern (pia-wadjari) with the two preconditions that make it safe to reuse.
-- `references/12_content-filtering.md` — SPEC-002's bridge_500-unconditional-ACCEPT fact as an explicit differential-diagnosis note ("VLAN 500 works, 501 doesn't" = by design, not a fault).
-- `references/03_communication-flows.md` — corrected the stale "`smc_qos` planned, not started" claim (the role exists, is just misgated) with the per-site missing-shaping data; two generalizable
-  WAN-path diagnostic techniques (RX=0 rules out firewall causes; sibling-VLAN isolation test) from the dark-VLAN Starlink-backup investigation.
-- `references/05_troubleshooting.md` / `06_failure-modes.md` — noted the `custom_apt_install.yml` "invalid loop data" fix was superseded by a wholesale file replacement, not the originally documented
-  in-place patch.
-- **`scripts/lint-baseline-refresh.sh` + `scripts/ansible-lint-delta-gate.sh`** — promoted and genericized from `local-knowledge-ansible/ansible-wifi/scripts/`. Config path is now repo-root-relative
-  (`ANSIBLE_LINT_CONFIG` override) instead of two hardcoded paths that disagreed with each other (`local-knowledge/` vs `local-knowledge-ansible/`). See `scripts/README.md` (retitled to cover both the
-  WAN-routing and lint-gate script categories).
-
-### Corrected (post-pass, operator-flagged, two rounds)
-
-- `install.md` + `adapter.md` — first correction round stated SMC access "must go through `tsh ssh` via the `ssh-manager` MCP." **Also wrong** — no `ssh-manager` (or any SSH-wrapping) MCP is used at
-  all; access is a direct `tsh ssh root@<hostname>` shell command, no MCP involved. Rewrote both to remove the MCP framing entirely: a plain "Live SSH access — direct `tsh ssh`, no MCP" section, and
-  `mcp-grafana` as the only MCP left in the execution layer. Fixed the stale `ssh_list_servers`/ `ssh_execute` verification steps to a direct `tsh ssh` check.
-- `references/01_overview.md` "Remote Access" + `references/13_known-issues.md` — the Teleport cluster domain was previously assumed single-value fleet-wide (`teleport.apn.au`). Operator confirmed the
-  actual split: `rcp`/`rct`/`wh`/`apn` → `teleport.apn.au`; `nbn_accelerate`/`nbn_wh`/`cw` → `teleport.communitywifi.net.au` (all 7 flavors covered). Added this mapping table to `01_overview.md`,
-  `install.md`, and closed the coverage-gap row in `13_known-issues.md` that had briefly flagged it as unresolved.
-
-### Not promoted (reviewed, judged not durable/in-scope)
-
-- `ai-tooling/*.md` — meta design-rationale docs for skill-smc itself (already implemented, matches current pack state); not operational SMC knowledge.
-- `plans/20260317_1656_interface-id-rename-plan.md` — historical, fully superseded by the guardrailed-rename pattern now captured in `08_ansible-authoring.md`.
-- `graphify-out/` — mostly vendored-Ansible-collection graph noise; the one durable pointer (overlayroot-persistence roadmap item) was already covered by existing Tier 8 content.
-- `snapshots/`, `history/` (except the one url-capture-v2 migration doc, already captured pre-session) — point-in-time governance-file backups, not distinct knowledge.
-
-## 20260729_2324 — WAN-routing coverage expansion + reusable diagnostic scripts (APN routing-issue investigation)
-
-Full pass to make sure the APN routing-issue investigation's learnings actually made it into this pack, prompted by an operator audit question ("did you capture all the information in the docs folder
-into skill-smc?"). Answer was initially no — a subagent audit against all 11 investigation docs found real gaps, all closed in this pass.
-
-### Added
-
-- `references/03_communication-flows.md` — new "Manual TBF/`ifb` Ingress Shaping" subsection: a live, fleet-wide, NOT-Ansible-managed shaping mechanism previously undocumented anywhere in this pack.
-  Also added: the extensionless-`dhclient-enter-hooks`-vs-`.d/`-decoy capture trap; `dhclient@<iface>.service`'s instantiation-only-when-the-netplan-device-is-real behaviour; switch02 (`53x`) being
-  cold-standby by design at every site except Horn Island, with the leased-vs-empty-slot triage refinement; the `LAN1`/`LAN2` Testra-managed uplink pair, outside the VLAN scheme and unmapped to
-  `topology_vars`; the missing-route-vs-real-ARP-failure diagnostic (the actual Problem 2 mechanism at old-looma/umoona, live-verified 2026-07-29 — supersedes the dish-bypass theory for those two
-  sites specifically).
-- `references/08_ansible-authoring.md` — the confirmed list of roles that consume `interface.role` and go stale on topology drift the same way `smc_application` does (`smc_iptables`, `smc_qos`,
-  `smc_node_exporter` — the last in a *separate playbook*, easy to miss); the topology-cloning authoring risk (a new site's `topology_vars` copied from an existing site can carry wrong VLAN IDs
-  silently past every lint/syntax check); the standalone principle that one templated artifact being self-cleaning doesn't imply a sibling artifact from the same role is too; handler-name reuse across
-  different `listen` topics being safe, not a collision.
-- `references/13_known-issues.md` — new Known Operational Bug row: `my_node_network_device_info` returns zero series on old-looma/new-looma/horn-island despite `node_exporter` being up.
-- `references/05_troubleshooting.md` — Tier 1 gained the `tsh ls`-vs-single-`ssh` technique for distinguishing a transient connection blip from a box that's fully deregistered from Teleport; Tier 7
-  gained a step for metric-specific monitoring gaps that survive `up{instance=...} == 1`.
-- `references/12_content-filtering.md` — one-line cross-reference so its existing "no per-user `tc`/`htb` shaping" claim isn't misread as "no `tc` shaping anywhere on the fleet."
-- **New `scripts/` directory** — `collect-smc-evidence.sh` (read-only evidence capture) and `analyse-routing-drift.py` (the "hook covers netplan" drift discriminator), promoted from the investigation
-  folder and genericized for reuse (no hardcoded default site list; `--flavor`/`--commit` override the investigation-specific defaults). Plus `routing-diagnostics.justfile`, a template task-runner to
-  copy into a future investigation folder. See `scripts/README.md`.
-
-### Corrected
-
-- `references/03_communication-flows.md` — the dish-management-address bullet previously stated the dish-not-in-clean-bypass theory as the accepted cause of "lease held, gateway unreachable." Live
-  testing 2026-07-29 showed this is not the cause on the two sites where it reproduced (the same MAC legitimately answers as gateway on every WAN interface there, healthy and broken alike) — qualified
-  accordingly, downgraded from "the cause" to "a real, separate observation."
-- `references/03_communication-flows.md` — the `smc_application` dhclient-restart-handler-has-no-safety-net bullet was stale relative to a same-day fix; updated from present-tense gap description to
-  past-tense-fixed-with-caveat (ported, dry-run validated, not yet tested under a real connection loss).
-
-Full narrative: `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/docs/problem2-live-root-cause-20260729_2112.md` and `old-looma-umoona-topology-fix-20260729_2316.md`.
-
-## 20260728_1240 — v0.1.5: captive-portal PHP SAPI correction + APPPATH/cache failure mode + Ansible tag hazard (project-coherence run)
-
-Triggered by `project-coherence` on ansible-wifi after a 7-day captive-portal outage across 10 of 16 in-scope `rcp` sites (2026-07-21 → 07-28). Investigating it surfaced two materially wrong
-architecture claims in this pack, both of the same kind the 2026-07-03 run already flagged: a single host's behaviour written up as fleet-wide truth.
-
-### Corrected
-
-- `references/10_captive-portal.md` §11.1 — previously stated flatly that "PHP-FPM processes `.php` files". **Wrong for the production fleet.** Verified on three sampled `rcp` hosts (horn-island,
-  kalumburu, mornington): zero `php*-fpm` packages installed, `libapache2-mod-php` present, `apache2ctl -M` shows `php_module (shared)`, and no `/etc/php/8.1/fpm/` directory exists. Production runs
-  **mod_php as `www-data`**. Replaced with a scoped, evidence-cited statement.
-- `references/10_captive-portal.md` §11.4 — claimed a permanent Ansible `SetHandler` fix "landed 2026-06-26". **False.** Repo-wide grep finds no `SetHandler` in any role template (only a vendored
-  `community.general` test fixture), and the enabled-modules list in `ubuntu-apache-install-configure.yml` is only `rewrite` and `ssl` — no `proxy`, no `proxy_fcgi`. This matches the long-standing
-  ansible-wifi SCRATCHPAD open item recording the change was reverted. Section retitled as historical/ff-smc01-only with a supersession note at the top; the trailing "the Ansible template approach is
-  now canonical" line corrected.
-- `references/10_captive-portal.md` §11.7 — the verification snippet told you to test PHP-FPM processing and to read `error.log`. Replaced with a SAPI check (`apache2ctl -M`), a cache/logs perms
-  check, an explicit warning that the §11.8 failure leaves the error log empty, and a warning not to probe `localhost` with a `Host:` header (Apache serves `000-default` and returns a healthy-looking
-  10671-byte page on a fully dead portal — this produced a wrong "no impact" conclusion during the incident).
-
-### Added
-
-- `references/10_captive-portal.md` §11.8 — new failure mode: `Directory APPPATH/cache must be writable`. Covers the Kohana `core.php:281` bootstrap check, the matching `log/file.php:31` check on
-  `APPPATH/logs` (fix both or the failure just moves one step later), why the response is **HTTP 200** with an empty apache error log, the correct probe form, and the fix command.
-- `references/06_failure-modes.md` — matching failure-mode table entry with error signature, cause class, source-of-truth paths, immediate checks, resolution, and the detection gap.
-- `references/08_ansible-authoring.md` — new "Tag Hazard" entry: a tagged block that destroys and recreates state must carry its repair tasks under the same tag, including any `stat` task whose
-  registered variable gates the repair block's `when` (otherwise a tag-limited run evaluates `when` against an undefined variable and fails). Includes the `--list-tasks` audit pattern.
-- `references/13_known-issues.md` — new fleet-wide risk row: no HTTP-level captive-portal monitoring exists anywhere, and the Kohana usage/status crons run as **root** so they keep succeeding through
-  an outage; also notes a status-code-only probe cannot detect this failure. Plus a staleness-risk note recording this as the **third** instance of the single-host-generalized-to-fleet pattern in this
-  pack (after the 2026-07-03 DNS row and the 2026-07-09 MySQL row).
-- `manifest.json` — three new `stable_facts` entries (mod_php not PHP-FPM; the Kohana writability check and its HTTP-200 signature; the Ansible tag-hazard rule). Version bumped 0.1.4 → 0.1.5;
-  `updated_at` set to 2026-07-28T12:40:00Z.
-
-### Related (outside this pack)
-
-- `local-knowledge-ansible/ansible-wifi/issues/rcp-fleet/rcp-captive-portal-cache-perms-outage-20260728_1240.md` — full RCA.
-- `ansible-wifi/.archcore/rules/rule-005-tagged-destroy-blocks-must-carry-repair-tasks.md` — new permanent rule.
-- `ansible-wifi/roles/smc_application/tasks/main.yml` — the actual fix (uncommitted at time of writing).
-
-## 20260703_1300 — v0.1.4: DNS architecture corrections + garimba-smc01 failure mode (project-coherence run)
-
-Triggered by `project-coherence` on ansible-wifi after the garimba-smc01 DNS RCA (revisions 2-3) surfaced factual errors in this pack's DNS documentation that predated the incident — rule-002 had
-never actually been applied for a DNS-domain incident before, and the domain routing table had no explicit DNS row.
-
-### Corrected
-
-- `references/02_service-map.md` — DNS resolver row previously claimed "unbound = RCT flavor / bind = non-RCT flavors", generalized from the single initial RCT-only validation. Corrected: the real
-  gate is `smc_ltp` inventory-group membership (orthogonal to flavor, currently only coincides with `rcp`/guda-guda). Also fixed Stubby's documented listen port (was wrongly given as `127.0.0.1:5353`
-  — that's actually unbound's own `smc_ltp`-only port; Stubby listens on `127.0.0.1@60053`).
-- `references/13_known-issues.md` — added a staleness-risk note generalizing the lesson: single-host-validated claims in this pack should not be assumed to hold across all flavors without an
-  independent check.
-
-### Added
-
-- `references/02_service-map.md` — new `systemd-resolved` row documenting the SMC's own DNS path (separate from the DHCP/LAN unbound/stubby/bind path), and Stubby's upstream chain (single upstream, no
-  failover, reached via an autossh **local port forward** — not a reverse tunnel — to Teleport).
-- `references/06_failure-modes.md` — new failure-mode entry: domain-specific host DNS resolution delay on non-`smc_ltp` hosts (`DNSStubListener=no` exposes host glibc directly to WAN-path DNS
-  anomalies). First confirmed on garimba-smc01, 2026-07-03.
-- `references/13_known-issues.md` — new "Fleet-Wide Architecture Risks" section: Stubby's single-upstream-no-failover design and the lack of monitoring for the autossh local forward / Stubby upstream
-  reachability, both fleet-wide, both discovered incidentally during the garimba-smc01 RCA.
-- `.archcore/rules/rule-002-*.md` (ansible-wifi repo) and `AGENTS.md` (ansible-wifi repo) — added an explicit DNS domain row to the domain-routing tables, since none existed despite DNS being a
-  documented troubleshooting area.
-- `manifest.json` — new `stable_facts` entry on the `smc_ltp`-vs-flavor DNS gating; version bumped 0.1.3 → 0.1.4; `updated_at` set to 2026-07-03T13:00:00Z.
-- `SCRATCHPAD.md` — current state and session history updated.
-
-## 20260626_1845 — v0.1.3: project-coherence checklist + references/10-13 content update
-
-### Added
-
-- `AGENTS.md` — `## Project-coherence checklist` section: explicit Tier 1-4 update instructions for when `project-coherence` runs on this pack, with domain-to-reference routing table and cross-repo
-  trigger rule from ansible-wifi sessions.
-
-### Updated
-
-- `references/10_captive-portal.md` — captive portal two-tier arch, Eclipse config.txt sync mechanism, PHP-FPM SetHandler + a2enconf alternative, PHP short_open_tag (PHP 8.1), Kohana exception
-  handler.
-- `references/11_vagrant-lab.md` — vsmc networkd race condition full root cause chain (eth1 bounce → stale DHCP lease → default route drop → Teleport unreachable); Vagrant guard fix.
-- `references/12_content-filtering.md` — Eclipse identity model (T&C → auto-PIN → MAC binding → connmark), MAC randomization impact table (stable/bypass/rotate), CAKE fair queuing on bridge_501 with
-  WAN capacity rationale.
-- `manifest.json` — version bumped 0.1.2 → 0.1.3; `updated_at` set to 2026-06-26T18:45:00Z.
-- `SCRATCHPAD.md` — current state updated; session history entry added; open items updated for v0.1.3.
-
-### Notes
-
-- Content updates fed from ansible-wifi 2026-06-26 session RUNBOOK audit (MK keys: `ansible-wifi.runbook.sections-11-12-13.20260626`, `ansible-wifi.runbook.gap-fill-audit.20260626`).
-- Governance-pack regeneration pending (`.ai-context/governance-pack.md` is stale after this change).
-
-## 20260626_1820 — Coherence sweep: repomix config, adapter.md, spec, ARCHITECTURE.md
-
-### Fixed
-
-- `repomix.config.json` — added `README.md`, `ARCHITECTURE.md`, `SCRATCHPAD.md`, `.archcore/**/*.md`, `.archcore/**/*.json` to `include`; moved `.archcore/**` out of `ignore`
-- `exports/claude_code/project/skill-smc/adapter.md` — added install-status rows for all 12 governance files added since initial adapter.md creation: `manifest.json`, `README.md`, `ARCHITECTURE.md`,
-  `AGENTS.md`, `CLAUDE.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `SCRATCHPAD.md`, `repomix.config.json`, `.archcore/`
-- `.archcore/specs/spec-specialist-pack-file-roles.md` — added file-role rows for `README.md`, `ARCHITECTURE.md`, `SCRATCHPAD.md`, `repomix.config.json`, `.archcore/`
-- `ARCHITECTURE.md` — corrected stale repomix token count (was "25 files / ~33k tokens"; now "~125k chars")
-
-### Notes
-
-- Generated by `skill-project-coherence`.
-- Coherence greps: clean — no live stale references found.
-
-## 20260626_1812 — README and ARCHITECTURE added
-
-### Added
-
-- `README.md` — folder index, purpose, key file table, governance pointers, install link
-- `ARCHITECTURE.md` — component table, information flow, installed surface diagram, key decisions, related workspaces
-
-## 20260626_1810 — Archcore promotion
-
-### Added
-
-- `.archcore/rules/rule-progressive-disclosure-loading.md` — load only the specific reference needed for the task
-- `.archcore/rules/rule-reference-update-discipline.md` — cross-file consistency on reference add/edit
-- `.archcore/rules/rule-manifest-version-discipline.md` — bump version + updated_at on any content change
-- `.archcore/adr/adr-progressive-disclosure-structure.md` — ADR documenting the v0.1.2 monolithic→split decision
-- `.archcore/specs/spec-specialist-pack-file-roles.md` — authoritative table of file roles and install surface
-
-### Deleted
-
-- `ARCHCORE_PROMOTION_CANDIDATES.md` — consumed by promotion (all 5 candidates written successfully)
-
-### Notes
-
-- Generated by `skill-ai-it` in `promote` mode.
-
-## 20260626_1808 — Governance scaffold bootstrap
-
-### Added
-
-- `AGENTS.md` — agent policy for maintaining this specialist pack; @-imports `skills_stuff/AGENTS.md`
-- `CLAUDE.md` — thin Claude Code wrapper over `AGENTS.md`
-- `AI_NAVIGATION.md` — human-readable context router with task-to-reference routing table
-- `context-map.yaml` — machine-readable routing map for all 13 references
-- `SCRATCHPAD.md` — working memory, populated from session history
-- `repomix.config.json` — packs all 25 pack files into `.ai-context/governance-pack.md`
-- `.archcore/` — initialized via `archcore init`
-- `ARCHCORE_PROMOTION_CANDIDATES.md` — 5 candidates: 3 rules, 1 ADR, 1 spec
-
-### Notes
-
-- Generated by `skill-ai-it` in `bootstrap` mode.
-- Graphify: no code files found, no graph output (docs-only pack — expected).
-- Repomix: 25 files / 32,896 tokens packed to `.ai-context/governance-pack.md`.
-
-## 0.1.2 — 2026-06-26
-
-- Split the monolithic `RUNBOOK.md` into focused progressive-disclosure files under `references/`.
-- Replaced root `RUNBOOK.md` with a concise navigation index and task-to-reference routing table.
-- Moved known issues into `references/13_known-issues.md`.
-- Removed empty placeholder resource directories.
-- Updated Claude Code adapter/install docs to copy the indexed runbook plus focused references.
-
-## 0.1.1 — 2026-06-26
-
-- Aligned canonical source references with installed client adapter references.
-- Added known issues as an explicit discoverable reference for coverage gaps and staleness risk.
-- Corrected skill venv guidance to use `skills-working-cache/<skill>/venv` and reserve `skills-runtime/` for ephemeral runtime state.
-- Normalized OS wording to Ubuntu 20.04+ with Ubuntu 22.04 confirmed in production.
-- Updated package metadata version to 0.1.1.
-
-## Unreleased — 2026-05-08
-
-- Corrected SMC expansion to **Site Management Controller** across skill source and exported adapter references.
-- Added related workspace mapping for `ansible-wifi`, `ansible-malik`, `dns_query`, and `local-knowledge-ansible/ansible-wifi`.
-- Updated runbook guidance so URL-capture/PCAP layout changes are reconciled across the related SMC workspaces.
-
-## 0.1.0 — 2026-04-15
-
-Initial creation.
-
-- SKILL.md: SMC box definition, troubleshooting decision tree (Tiers 1-7), Prometheus alert reference, Ansible authoring rules, communication flows quick reference
-- RUNBOOK.md: 9-section deep reference — service map (50+ services), comms flows, dependency tree, failure modes, hardware differences, overlayroot detail, full Ansible workflows
-- PROFILE.md: SMC box definition, inventory flavors (apn, cw, nbn_accelerate, nbn_wh, rcp, rct, wh), Teleport access pattern, overlayroot structure
-- Validated against live malik-rct01 (RCT flavor, ARM64, Raspberry Pi 4, Ubuntu 22.04)
-
-### Key corrections from live validation (differ from generic docs)
-
-| Assumption                   | Validated Reality (RCT)                                              |
-| ---------------------------- | -------------------------------------------------------------------- |
-| DNS = BIND/named             | RCT uses Unbound + Stubby (DNS-over-TLS)                             |
-| Traditional swap             | RCT uses zram (`/dev/zram0`, ~1.2 GB)                                |
-| iptables chain = `ECLIPSE_*` | Actual chain: `MANAGEMENT`                                           |
-| asterisk present             | Not deployed on RCT                                                  |
-| keepalived present           | Not deployed on RCT                                                  |
-| 40 GB storage                | Real ext4 FS = 60 GB at `/media/root-ro`; overlayroot = 984 MB tmpfs |
-
-## 2026-10-07 — deterministic navigation-control upgrade
-
-<!-- skill-ai-it-upgrade: 2026-10-07-snake-case-recipes-v1 -->
-
-- Applied `skill-ai-it` deterministic navigation-control upgrade.
-- Upgraded managed navigation/scripts blocks to version `2026-10-07-snake-case-recipes-v1`.
-- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
-- Preserved user-authored content outside managed blocks.
-- Generated outputs remain support-only; no `.archcore/` promotion was performed.
-
-Applied to: context-map.yaml, AGENTS.md, scripts/README.md, justfile, SCRATCHPAD.md
+`references/03_communication-flows.md`: Learned (b) a Pi's uplink Circuit sits on `eth0` (named interface, NTD on the switch), (c) `ssh` leaves
+its `tsh proxy` child on a kill and `ssh -f` forwards leave the caller's session, so they are closed by name (confirms the 20261020_1141
+lingering-proxy note). `references/13_known-issues.md`: Learned (d) about 40 to 50 s per unit read over Sky Muster Plus (unified-network-controller).
 ````
 
 ## File: CLAUDE.md
@@ -10991,6 +11287,7 @@ Applied to: context-map.yaml, AGENTS.md, scripts/README.md, justfile, SCRATCHPAD
 
 ## File: context-map.yaml
 ````yaml
+# Machine-readable context map: this project's governance files, routing, update rules and generated outputs (skill-ai-it).
 version: 1
 project:
   name: skill-smc
@@ -11105,6 +11402,20 @@ routing:
     - references/tplink-site-switches.yaml
     - references/tplink-snmp-enablement-survey-20260930.csv
     - scripts/tplink-switch.sh
+  site_ata:
+    description: The rct site ATA (Dallas Delta DDC_VoIP-m at 192.168.5.253) -- web UI
+      only, no SNMP or SSH, SIP registration readout, site-unique settings, read quirks.
+    read:
+    - references/17_site-ata-dallas-delta.md
+    - references/18_local-knowledge-ansible.md
+    - references/19_smc-change-role.md
+    - references/vendor-sources-dallas-delta-20261008_1043/readme.md
+  raspberry_pi_smc:
+    description: Raspberry Pi SMC (rct, wh) identity without DMI, one-port eth0 layout,
+      no snmpd, bootloader EEPROM vs upstream; vendor sources and firmware manifest.
+    read:
+    - references/07_hardware-overlay.md
+    - references/vendor-sources-raspberry-pi-20261008_1043/readme.md
   smcbox_basics:
     description: SMC box definition, inventory flavors, Teleport access pattern, satellite
       constraints, APN vs NBN Accelerate cluster structural comparison.
@@ -11222,6 +11533,7 @@ set dotenv-load := false
 
 wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc"
 py := wc + "/.venv/bin/python"
+ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 
 # skill-ai-it package, for the nav-* recipes. Override: just skill_dir=/path/to/skill-ai-it nav_validate
 skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
@@ -11249,6 +11561,28 @@ runtimes:
 # Governance coherence checks — must exit 0 before durable work is called complete.
 check: _require-venv
     @{{py}} scripts/check_governance.py
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+
+# Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
+stale: _require-venv
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+
+# Triage: one line per file (status, review date, summary) from its header, so a file is judged without being opened
+docs *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/file_headers.py" --project-root . {{ARGS}}
+
+# Rotated history on demand: `just history <term>` searches the CHANGELOG archives (SCRATCHPAD: `just history <term> SCRATCHPAD.md`)
+history TERM RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
+
+# Print one rotated entry by its stamp, when a live entry cites it: `just history-show 20260918_1200`
+history-show STAMP RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
+
+# Keep CHANGELOG and SCRATCHPAD within budget: plan by default; `just rotate --apply` (slurp runs it)
+rotate *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
 
 # Run safe local preflight checks
 preflight: runtimes check
@@ -11266,9 +11600,73 @@ lint_md:
 fleet *args:
     @just -f scripts/fleet-health.justfile {{args}}
 
+# Offline test of the evidence scripts' tsh deadline helper (no network): stdin passthrough, exit status, kill at the deadline.
+test-deadline:
+    bash scripts/test_with_deadline.sh
+
 # WAN-routing diagnostics template (read-only). Copy into an investigation folder before real use.
 routing *args:
     @just -f scripts/routing-diagnostics.justfile {{args}}
+
+# Site device probe from the SMC over Teleport (read-only): ARP, ping, TLS certificate on 443. Example: just site_device_probe teleport.apn.au kakalpurannha-homeland-smc01 10.255.0.20
+site_device_probe proxy node +ips:
+    @bash scripts/site_device_probe.sh --proxy "{{proxy}}" "{{node}}" {{ips}}
+
+# Raspberry Pi SMC identity probe over Teleport (read-only). Example: just pi_identity_probe teleport.apn.au 20-mile-smc01
+pi_identity_probe proxy +nodes:
+    @bash scripts/pi_identity_probe.sh --proxy "{{proxy}}" {{nodes}}
+
+# PHP exposure probe over Teleport (read-only): installed php/mod_php versions, PHP processes, overlay. Example: just php_package_probe teleport.apn.au beagle-bay-smc01
+php_package_probe proxy +nodes:
+    @bash scripts/php_package_probe.sh --proxy "{{proxy}}" {{nodes}}
+
+# Compare two sets of smc_change run records, ignoring timestamps and live traffic, to prove a refactor changed nothing. Example: just smc_change_compare /tmp/before /tmp/after
+smc_change_compare before after:
+    @python3 scripts/smc_change_compare_records.py "{{before}}" "{{after}}"
+
+# What is in the local-only ansible-wifi knowledge folder and what is symlinked into the repo (read-only). Example: just local_knowledge_index 3
+local_knowledge_index days="14":
+    @bash scripts/local_knowledge_index.sh --days "{{days}}"
+
+# Add a new SMC to an ansible-wifi inventory (3 groups + group/host/topology vars). Plan only unless args include --apply.
+# Example: just smc_inventory_add --flavor rct --env stage --host php-rct-smc01 --siteid-from-box
+smc_inventory_add *args:
+    @python3 scripts/smc_inventory_add.py {{args}}
+
+# smc_change flow map: assemble roles/smc_change/drawio/flows.yaml from drawio/parts/master.yaml (role parts, plus the flow parts in each
+# files/changes/<change>/ folder), then
+# render drawio/flows.drawio with skill-drawio (writes both), or check both for drift.
+smc_change_role := "/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/roles/smc_change"
+drawio_skill := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/platform/skill-drawio"
+drawio_py := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-drawio/.venv/bin/python"
+
+smc_change_flows:
+    @cd {{smc_change_role}} && {{drawio_py}} {{drawio_skill}}/scripts/assemble_flowmap.py --master drawio/parts/master.yaml --out drawio/flows.yaml --command "just smc_change_flows (skill-smc)" --write
+    @{{drawio_py}} {{drawio_skill}}/scripts/render_flowmap.py --root {{smc_change_role}} --map drawio/flows.yaml --write
+
+smc_change_flows_check:
+    @cd {{smc_change_role}} && {{drawio_py}} {{drawio_skill}}/scripts/assemble_flowmap.py --master drawio/parts/master.yaml --out drawio/flows.yaml --command "just smc_change_flows (skill-smc)"
+    @{{drawio_py}} {{drawio_skill}}/scripts/render_flowmap.py --root {{smc_change_role}} --map drawio/flows.yaml
+
+# Run a command on a box through its autossh backdoor when Teleport cannot reach it; checks hostname first. Example: just backdoor_exec darlngunaya "hostname; uptime"
+backdoor_exec target cmd="hostname":
+    @bash scripts/backdoor_exec.sh "{{target}}" "{{cmd}}"
+
+# x86 SMC resiliency probe over Teleport (read-only): disks, boot entries, watchdog, state sizes. Example: just x86_resiliency_probe teleport.apn.au horn-island-smc01
+x86_resiliency_probe proxy +nodes:
+    @bash scripts/x86_resiliency_probe.sh --proxy "{{proxy}}" {{nodes}}
+
+# rct site ATA settings through each SMC, compared across units (read-only). Example: just ata_settings_read teleport.apn.au adjamarragu-smc01 alamirra-smc01
+ata_settings_read proxy +nodes: _require-venv
+    @{{py}} scripts/ata_settings_read.py --proxy "{{proxy}}" {{nodes}}
+
+# Top clients and domains from an SMC's DNS capture for a local time window (read-only). Example: just dns_capture_top teleport.communitywifi.net.au 20261009 16:00 23:59 koonibba-smc01
+dns_capture_top proxy date from to node:
+    @bash scripts/dns_capture_top.sh --proxy "{{proxy}}" --date "{{date}}" --from "{{from}}" --to "{{to}}" "{{node}}"
+
+# Who had Teleport sessions on hosts over UTC days, bot excluded (read-only). Example: just teleport_sessions teleport.communitywifi.net.au 2026-08-31 2026-09-06 hope-vale kowanyama
+teleport_sessions proxy from to +hosts:
+    @python3 scripts/teleport_sessions.py --proxy "{{proxy}}" --from "{{from}}" --to "{{to}}" --exclude-user bot-cw-dashboard $(printf -- '--host %s ' {{hosts}})
 
 # --- skill-ai-it navigation-control layer -------------------------------------------------------
 
@@ -11317,13 +11715,13 @@ nav_check_diff: _require-venv
   ],
   "source_bias": "stable-operational",
   "created_at": "2026-04-15T00:00:00Z",
-  "updated_at": "20261007_1645",
-  "version": "0.2.0",
+  "updated_at": "2026-10-26",
+  "version": "0.7.9",
   "dependencies": [],
   "known_constraints": [
-    "SMC boxes run overlayroot \u2014 changes do not persist across reboot unless lower dir is remounted rw",
+    "SMC boxes run overlayroot — changes do not persist across reboot unless lower dir is remounted rw",
     "Ansible connects via Teleport proxy, not direct SSH",
-    "topology_vars.py plugin output is cached in hidden .*.yml files \u2014 mtime-based, may be stale after git checkout"
+    "topology_vars.py plugin output is cached in hidden .*.yml files — mtime-based, may be stale after git checkout"
   ],
   "stable_facts": [
     {
@@ -11394,7 +11792,7 @@ nav_check_diff: _require-venv
       ]
     },
     {
-      "statement": "Kohana::init() unconditionally requires APPPATH/cache AND APPPATH/logs to be writable by the web user, throwing 'Directory :dir must be writable' before routing. It prints rather than raises, so the response is HTTP 200 with a ~40-byte body and apache error.log stays empty \u2014 status-code-only health checks cannot detect a dead portal.",
+      "statement": "Kohana::init() unconditionally requires APPPATH/cache AND APPPATH/logs to be writable by the web user, throwing 'Directory :dir must be writable' before routing. It prints rather than raises, so the response is HTTP 200 with a ~40-byte body and apache error.log stays empty — status-code-only health checks cannot detect a dead portal.",
       "confidence": 0.99,
       "tags": [
         "captive-portal",
@@ -11589,6 +11987,8 @@ practical.
 | Local Vagrant lab bring-up and known virtualization issues                                                                                          | `references/11_vagrant-lab.md`                 |
 | Family-friendly VLAN 501 access, filtering stack, MAC randomization, CAKE                                                                           | `references/12_content-filtering.md`           |
 | Coverage gaps, live-validation limits, stale assumptions                                                                                            | `references/13_known-issues.md`                |
+| What is in the local-only ansible-wifi knowledge folder, what is symlinked into the repo, local playbooks/roles (smc_change), change specs          | `references/18_local-knowledge-ansible.md`     |
+| Make any change to SMCs with proof: smc_change role, change specs, gates, overlay persistence, run records                                          | `references/19_smc-change-role.md`             |
 | Verified SNMP OIDs on the SMC box itself (net-snmp agent, canary 2026-09-24), the machine-readable list the controller reads                         | `references/snmp-oid-registry.yaml`          |
 | Pin validity (mangle) vs pin issuance (Apache access log) — two mechanisms, marks-≠-activations pitfalls, fleet case study                          | `references/14_pin-activation-diagnosis.md`    |
 | TP-Link site switches: where they are, KeePass entry, SSH quirks (ssh-rsa host key, MAC, pty, CR), enable with/without password,                    | `references/16_tplink-site-switches.md`        |
@@ -11599,6 +11999,12 @@ practical.
 | Reusable read-only scripts: WAN-routing/topology-drift investigation tooling (evidence capture, drift analyser, topology/hardware cross-check),     | `scripts/README.md`                            |
 |   plus ansible-lint pre-push/CI gate scripts, fleet hardware/service-health + portal-FQDN-status audit, and pin-activation diagnosis                |                                                |
 | Cambium asset-register naming grammar, per-site drift, `rcp`-vs-`nbn_accelerate` R195P rule, R195P IP-derivation formula, extraction gotchas        | `references/15_cambium-asset-registers.md`     |
+| Raspberry Pi SMC (`rct`, `wh`): identity without DMI (device-tree model, SoC serial), the one-port `eth0` layout, `wlan0` AP, no snmpd, bootloader EEPROM | `references/07_hardware-overlay.md`            |
+|   vs upstream (`rpi-eeprom-update` misreports "up to date")                                                                                           |   §Raspberry Pi SMC identity                   |
+| Raspberry Pi vendor sources: product brief, datasheet, BCM2711, revision codes, EEPROM docs and release notes, per-box captures, firmware manifest;   | `references/vendor-sources-raspberry-pi-20261008_1043/readme.md` |
+|   EEPROM images in `firmware-files/raspberry-pi/`                                                                                                     |                                                |
+| rct site ATA (Dallas Delta DDC_VoIP-m at `192.168.5.253`): web UI only, no SNMP or SSH, SIP `Registered` readout, site-unique settings, read quirks   | `references/17_site-ata-dallas-delta.md`       |
+| Dallas Delta vendor sources: manuals, datasheets, web pages, IANA/IEEE excerpts, firmware note                                                        | `references/vendor-sources-dallas-delta-20261008_1043/readme.md` |
 
 ## Runtime Paths
 
@@ -11611,13 +12017,25 @@ Prefer the working-cache venvs when running SMC validation tooling (`ansible-lin
 
 ## File: SCRATCHPAD.md
 ````markdown
+---
+Title: Scratchpad
+Category: working-state
+Status: current
+Summary: Current working state, newest first per section; superseded entries rotate to docs/history (search with --find).
+Kind: state
+Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
+Open items tracker: docs/trackers/open-items-20261010_1821.md
+Budget: 200 lines, 25 KB
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261026_1516
+---
+
 # SCRATCHPAD — skill-smc
 
 Agent working memory for the skill-smc specialist pack. Use for: draft plans, terminal output, intermediate analysis, refactor outlines. Cleared between sessions unless content is explicitly marked
 KEEP.
 
 ---
-
 <!-- KEEP: populated 2026-06-26 from session history (UserPromptSubmit hook context) --> <!-- KEEP: updated 2026-06-26 (ansible-wifi session) — references/10-13 content updated from ansible-wifi
 RUNBOOK audit; AGENTS.md project-coherence checklist added; manifest bumped to v0.1.3 --> <!-- KEEP: updated 2026-07-28 (ansible-wifi session, project-coherence) — captive-portal PHP SAPI corrected:
 10_captive-portal.md claimed PHP-FPM processes .php and that an Ansible SetHandler fix landed 2026-06-26; BOTH false (production runs mod_php as www-data, zero php*-fpm packages on 3 sampled rcp
@@ -11651,9 +12069,9 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 - [Next actions](#next-actions)
 - [Memory pointers (navigation only)](#memory-pointers-navigation-only)
 
----
-
 ## Current state
+
+**2026-10-26 KEEP, v0.7.9, branch rise:** PHP verified; journal/resume/timing implemented; tests passed. Mutating interruption canary pending; optimize after timings. See reference 19.
 
 **2026-10-07 16:43 `KEEP` — v0.1.100 (renumbered 0.2.0 at 16:45 under the new 0–9 patch rule), layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav_validate`,
 `just fleet …`, `just routing …`), `.mise.toml`, `requirements.txt` (PyYAML for the nav validator only), lint config, `.gitignore`, `.archcore/index.guide.md`. `SKILL.md` is a short router
@@ -11703,53 +12121,17 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Open items
 
-- [ ] **2026-10-07 `KEEP`:** commit `fbc0aff` (parallel session) is labelled "skill-smc 0.1.98" but committed manifest 0.1.99 — amend only if unpushed and the operator wants it.
-- [ ] **2026-10-07 `KEEP`, proposed, not decided:** skill-ai-it's upgrader appends its CHANGELOG entry at the end of the file; this pack's CHANGELOG is newest-first, so every refresh needs a
-  manual move (2026-09-08 and 2026-10-07). Fix belongs in skill-ai-it (detect ordering, insert at top, add the TOC line); recorded in skill-ai-it's SCRATCHPAD.
+- [ ] **Review the overdue open-items tracker** (2026-10-26). `docs/trackers/open-items-20261010_1821.md` (13 open items) was due 2026-10-24;
+  `just check` fails on it alone. Operator chose to commit and review later: close, decide or drop each item, then set Last reviewed.
+- Older open items are tracked in [open-items-20261010_1821.md](docs/trackers/open-items-20261010_1821.md).
+- [ ] **2026-10-08 `KEEP`, proposed, not decided:** extend the 0–9 patch scheme (operator rule 2026-10-07, skill-smc only so far) to skill-cambium (0.6.45) and
+  skill-mikrotik (0.1.24), each with `check_version_format`. Asked 2026-10-07, no answer yet.
+- [x] **2026-10-07 `KEEP`:** commit `fbc0aff` is labelled "skill-smc 0.1.98" but committed manifest 0.1.99. Closed 2026-10-08: pushed, so it stays as a known
+  mislabel; CHANGELOG 20261007_1625 records the real content.
+- [x] **2026-10-07 `KEEP`:** ~~skill-ai-it's upgrader appends its CHANGELOG entry at the end~~ — fixed upstream in `cc0fa32` (2026-10-07 21:26): it now places the entry by
+  the file's order. Closed 2026-10-08.
 
-- [ ] **2026-09-24 `KEEP`:** push `d5566c2` + `8db6d56`; fleet read-only `table_fulls` survey (offered); find the `gc_thresh1` = 1 setter; live-test the enable-password, already-privileged,
-  `--shell` and `--write` paths of `tplink-switch.sh` when a suitable switch appears; fix the two pre-existing governance failures.
-
-- [x] ~~Install v0.1.15 per the copy-based install doc~~ — obsolete 2026-10-07: `~/.claude/skills/skill-smc` is a symlink to the canonical pack and the install doc is retired.
-- [x] ~~Investigate root cause of the `clamav-freshclam` CDN-block~~ — resolved 2026-08-03: **ClamAV 0.103.x reached end-of-life for database updates on 2025-09-14; the CDN now hard-blocks any 0.103.x
-  client.** This fleet runs 0.103.11/.12 uniformly. Verified via `WebSearch` against `blog.clamav.net` and the Cisco-Talos/clamav GitHub issue tracker — not a cw-cluster network/firewall issue, a
-  documented upstream EOL enforcement. Fix (not yet done): upgrade to 1.0 or 1.4 LTS fleet-wide.
-- [x] ~~Check whether the CDN-block is genuinely cw-cluster-specific~~ — resolved 2026-08-03: **not cluster-specific at all** — it's a ClamAV-upstream version-EOL enforcement (0.103.x blocked CDN-wide
-  since 2025-09-14) that would affect any fleet anywhere still on that version, confirmed via external sources, not an artifact of this cluster's network path
-- [x] ~~Extend the NBN Accelerate live-validation spot-check to more `nbn_accelerate` sites~~ — done 2026-08-03, full fleet sweep (26/26 reachable `nbn_accelerate` + both `nbn_wh` hosts). Still not
-  done: `cw` flavor (no site-level hosts exist to check) and `aurukun-smc03` (unreachable via `tsh ls` at capture time)
-- [ ] Live-validate the `smc_ltp` documentation (CNMaestro provisioning behavior, bind9/RPZ DNS switch) against one of the 7 real member hosts (`guda-guda`, `pandanus-park`, `old-looma`, `new-looma`,
-  `warburton`, `beagle-bay`, `umoona`) via `tsh ssh` — everything added 2026-08-03 is from Ansible source inspection only; these are `rcp` (APN cluster) sites, not reachable from the
-  `teleport.communitywifi.net.au` session used for the fleet sweep
-- [ ] Ask the operator (or check further afield — commit history, old design docs) whether "LTP" has a known expansion; currently documented as an open question, not guessed
-- [ ] Resolve the naming-collision question flagged 2026-08-03 in `04_dependency-tree.md`: is the generic "cnmaestro-provisioning"/`redis` Level-4 dependency row (RCT-oriented, `05_troubleshooting.md`
-  Tier 4) the same mechanism as `smc_ltp`'s `roles/smc_cnmaestro_provisioning` (no Redis observed), or two genuinely separate provisioning paths?
-- [ ] Confirm the `inventories/rcp/prod` `smc_ltp` group change (adding `warburton`/`beagle-bay`/`umoona`) gets committed to the `ansible-wifi` repo and run against those 3 sites — as of this update
-  it's a verified-but-uncommitted file-level change
-- [ ] Consider whether a lightweight enforcement check (e.g. a periodic `ansible-inventory` diff, or a checklist item) is worth proposing for future low-touch onboardings, given the mechanism is now
-  confirmed manual/unenforced — not this pack's call to implement, but worth flagging if asked
-- [ ] Re-check `mount | grep overlay` on `bungardi-smc01`/`darlngunaya-smc01` after the operator's planned `nbn_wh` overlay rollout lands, to confirm it took
-- [ ] Resolve the `nbn_wh` zram/swap discrepancy flagged 2026-08-03 in `07_hardware-overlay.md` (`Swap: 0B`, no `zram0` device on either `nbn_wh` host) against the platform table's universal "RPi →
-  zram" claim — may mean the claim itself needs re-checking against a live `rct`/`wh` host, never actually confirmed there either
-- [ ] `koonibba-smc01` flagged at 95% disk usage with the fleet's oldest kernel (`5.15.0-79-generic`) — worth a maintenance pass, not investigated further this sweep
-- [ ] Resolve the OPA `flavors.json`/`environments.json` coverage question flagged in `13_known-issues.md` (no `cw`/`apn`/`rct`/`wh` entries — intentional scoping or gap?) — needs whoever owns the OPA
-  policy layer
-- [ ] Validate `references/13_known-issues.md` entries against current ansible-wifi state when next working on that repo
 - [x] ~~Regenerate `.ai-context/governance-pack.md` after today's content + governance changes~~ — done, regenerated 3× today as content landed in stages
-- [ ] The bonding design (08_ansible-authoring.md, RCP/NBN-Accelerate doubled circuits) and the `smc_host_dns_mode: resolved_stub` DNS mitigation (06_failure-modes.md) are both unimplemented design
-  recommendations, not confirmed fixes — re-check their status next time this pack is touched and update the wording if either has since been canaried/adopted/rejected.
-- [ ] The apt-lock-race vs. apt-daily-upgrade-timer-mask duplicate-fix question flagged in `13_known-issues.md` (Skill Staleness Risks) needs resolving against actual ansible-wifi commits before
-  either fix's documentation can be fully trusted.
-- [x] ~~Grafana CW exploration — blocked, not started~~ — resolved 2026-08-03: session restart picked up the fixed token, `mcp-grafana-nbn` confirmed live. Explored both `mcp-grafana-apn` (20
-  dashboards) and `mcp-grafana-nbn` (9 dashboards); documented the 11 APN-only dashboards (RISE health/watchdog framework, fleet reporting/offline tables, backlog monitoring) and pulled exact `rise_*`
-  Prometheus metric names into `02_service-map.md`/`03_communication-flows.md`. See memory-keeper key `skill-smc.discovery.grafana-dashboard-inventory-rise-metrics-20260803`.
-- [ ] Root-cause the new confirmed 31h new-looma-smc01 outage (2026-08-01 23:40 → 2026-08-03 06:40 UTC) — Prometheus history confirms whole-host unreachability but no `tsh ssh` was done this session
-  to check WAN/power/backhaul logs; worth checking next time that site is accessed live. Not confirmed related to the still-open `my_node_network_device_info` zero-series gap on
-  new-looma/old-looma/horn-island.
-- [ ] Grafana dashboards not yet explored in detail: "Data Backlog" (0 panels — appears unused/placeholder, confirm before assuming dead), the two Prometheus RW Receiver+Sender Backlog dashboards
-  (federation pipeline health — not yet cross-referenced against the `autossh-prometheus-federation` service row in `02_service-map.md`), "Servers Network"/"Servers System Information" (backend infra,
-  likely out of skill-smc scope but not confirmed), "RISE Dashboard" (`rise-stage0_5` — earlier-stage rollout view, not compared against the newer RISE SMC Table/Health Detail dashboards for
-  redundancy)
 
 ---
 
@@ -11788,96 +12170,6 @@ manual step someone has to remember**, with no tooling or enforcement — the co
   `—` placeholders in `02_service-map.md`, plus the offline-vs-pending fleet-rollup distinction (30d-seen-but-not-5m vs. series-never-existed). Documented in `02_service-map.md` (new RISE
   Health/Watchdog Framework subsection) and `03_communication-flows.md` (new Dashboard inventory subsection). Manifest bumped to v0.1.17.
 
-- 2026-08-03 (earlier session) — Operator offered the CW/NBN-Accelerate Grafana instance (`mcp-grafana-nbn`) for exploration. Spent the session getting the MCP connection working rather than exploring
-  content: found 3 grafana MCP instances in `~/.claude.json` (unsuffixed = unrelated APN main-org grafana; `-apn` = port 53000; `-nbn` = port 63000, the actual CW instance). Root-caused two
-  independent breakages (blank service-account token on `-nbn`, no tunnel on `-apn`), got operator to supply a token and start both tunnels, edited the token into `~/.claude.json` — but `-nbn` still
-  401'd at the time. Confirmed via direct `curl` with the `Authorization` header (200 OK) that the token and tunnel were both fine; the blocker was the already-running MCP process caching its old
-  blank-token env, needing a restart to pick up the fix. Resolved in the follow-up session above.
-
-- 2026-08-03 — Operator asked what could be causing the fleet-wide ClamAV `freshclam` failure documented in the previous entry. Used `WebSearch` against `blog.clamav.net` and the Cisco-Talos/clamav
-  GitHub issues (external, citable sources) rather than speculating from this pack's own data alone. **Confirmed root cause**: ClamAV's 0.103 branch reached end-of-life for database updates on
-  2025-09-14; the ClamAV CDN now hard-blocks `freshclam` from any 0.103.x client with HTTP 403. This fleet runs 0.103.11/.12 uniformly. This also explains the 10-month staggered failure-date spread
-  from the fleet sweep — each host only flips to `failed` the first time its `freshclam` timer runs after the cutoff, not simultaneously. Converts what had been "root cause not investigated, 3 open
-  hypotheses" into a confirmed, externally-verified fact with a concrete fix (upgrade to 1.0/1.4 LTS — not yet done, no automated pipeline exists to do it). Manifest bumped to v0.1.16.
-
-- 2026-08-03 — Operator asked for a thorough analysis of "all the NBN Accelerate sites," including hardware details and the state of installed apps/scripts/services, and asked that reusable scripts be
-  captured under `scripts/` with a justfile. Built `scripts/collect-fleet-health.sh` + `scripts/fleet-health.justfile` (new, flavor-agnostic, same read-only safety contract as
-  `collect-smc-evidence.sh`) and ran a full sweep of all 26 reachable `nbn_accelerate` hosts plus both `nbn_wh` hosts (28 total) — not a spot-check. First-ever live chassis-model inventory for this
-  cluster: 11× AAEON BOXER-6641 + 15× AAEON BOXER-6404 (`nbn_accelerate`, x86), both `nbn_wh` hosts genuine Raspberry Pi (Cortex-A72) — operator confirmed `nbn_wh` is the `wh`-flavor equivalent on
-  this cluster. Major finding: `clamav-freshclam` confirmed failed on **26/26** `nbn_accelerate` hosts (escalated from the earlier 2-host finding), with failure dates spanning 10 continuous months —
-  an active, ongoing degradation, not a settled past incident. Mid-write-up, operator confirmed `nbn_wh`'s missing overlayroot is a planned-but-not-yet-executed rollout, not a bug — corrected the
-  finding's framing accordingly before it shipped as an "unexplained gap." Also found and fixed real bugs in the tooling itself via dogfooding: a mid-run script-file edit that corrupted the first
-  capture batch, a `just`-working-directory path assumption that broke all three quick-check recipes, and the same exit-code-of-last-command false-negative bug from the earlier smc_ltp work. Raw
-  evidence relocated to `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/fleet-hardware-audit-20260803/` per the pack's evidence-retention policy. Manifest bumped to v0.1.15.
-
-- 2026-08-03 — Operator made `tsh login` available for the NBN Accelerate cluster and invited exploratory commands — the first-ever live access this pack has had to that cluster. Ran read-only
-  diagnostics against `warakurna-smc01` and `indulkana-smc01` (both `nbn_accelerate`). Every code-inspection-only claim from earlier today's gap-fill checked out confirmed on 2/2 hosts (Teleport
-  domain, HTTPS-only portal with on-box TLS termination, mobile-app backend present, ClamAV+Lynis installed, Asterisk absent, non-`smc_ltp` DNS stack). New finding, previously unknown:
-  `clamav-freshclam` chronically failing on both hosts (CDN-blocked, exit 17) since 2026-06-21/07-23 — ClamAV's virus database is stale on both, degraded detection despite the daemon staying active.
-  Not investigated further and no remediation attempted — read-only exploratory session, root cause left open. Written up in `13_known-issues.md` (new "Known Operational Bugs (NBN Accelerate cluster)"
-  section), `08_ansible-authoring.md` (ClamAV/Lynis gate row), `01_overview.md` (evidence-basis note). `nbn_wh`/`cw` flavors remain unvalidated. Manifest bumped to v0.1.14.
-
-- 2026-08-03 — Operator confirmed the final open question from the `smc_ltp`/"low touch" thread: the group-membership mechanism is **a manual step someone has to remember** — no low-touch onboarding
-  tooling automatically assigns `smc_ltp` membership, and nothing enforces or checks that it happened. This is the confirmed root cause of the 3-site gap fixed in the immediately-preceding decision (a
-  manual, unenforced step is exactly what silently drops during a busy onboarding), and stands as an ongoing risk for any future low-touch site, not a one-off closed by that fix. Added an explicit
-  operational note to `08_ansible-authoring.md` recommending `smc_ltp:children` membership be verified explicitly (not assumed) whenever a new low-touch site goes live. Manifest bumped to v0.1.12.
-- 2026-08-03 — Operator confirmed and resolved the `smc_ltp`/"low touch" correlation flagged earlier today: every low-touch-onboarded site is meant to be an `smc_ltp` member, and the 3 that weren't
-  (`umoona`, `warburton`, `beagle-bay`) were a plain inventory gap, not a coincidental overlap. Operator made and verified the fix directly in `ansible-wifi`: added
-  `warburton_smc_ltp`/`beagle-bay_smc_ltp`/`umoona_smc_ltp` host groups plus each site's `:children` block to `inventories/rcp/prod`, matching the existing 4-site pattern. Verified via
-  `ansible-inventory --list` (all 7 now under `smc_ltp:children`) and `ansible-playbook --syntax-check smc_ltp.yml` (clean) — a real, uncommitted production Ansible inventory change, not yet run
-  against any live SMC. `smc_ltp` membership updated to 7 sites throughout this pack (`08_ansible-authoring.md`, `01_overview.md`, `02_service-map.md`, `13_known-issues.md`, `SKILL.md`,
-  `05_troubleshooting.md`, `manifest.json`). Manifest bumped to v0.1.11.
-
-- 2026-08-03 — Operator relayed a newly-confirmed "low touch" onboarding method and site deployment history (from parallel work on the ansible-wifi side): `guda-guda` was the pilot (2025-04-15, a full
-  year before the next site), followed by `umoona` (2026-04-12), `warburton`, `beagle-bay`, `pandanus-park`, `old-looma`, `new-looma` in 2026. Cross-checked against
-  `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/{CHANGELOG,SCRATCHPAD}.md` and the root governance `SCRATCHPAD.md`, all consistent. Notable finding surfaced while writing this up: all
-  4 `smc_ltp` sites (from the correction earlier today) are also in the low-touch cohort — flagged as an unresolved, not-concluded correlation rather than asserted as causal, since the mechanism (if
-  any) is unconfirmed. Separately grepped the whole `ansible-wifi` repo for `low_touch` and found only one hit, an orphaned host_var (`smc_bases_low_touch_provisioning: true` on `pierre-rcp01`, not a
-  cohort member) that no role or playbook reads — "low touch" currently has no Ansible-code representation, it's a process/operational distinction only. Manifest bumped to v0.1.10.
-- 2026-08-03 — Operator flagged that `smc_ltp` "has not been explored and documented properly" — correct: prior coverage was only a side effect of the 2026-07-03 DNS RCA, never independently
-  re-verified. Direct read of `smc_ltp.yml`, `inventories/rcp/group_vars/smc_ltp.yml`, `inventories/rcp/prod`, `roles/smc_cnmaestro_provisioning/`, `roles/smc_dns_mgmt/tasks/main.yml` found two things
-  wrong: (1) membership undercounted as "only guda-guda" — the actual grep-source (`inventories/rcp/prod`) is INI-format, not `.yml`, and was missed by the original grep; real membership is 4 sites
-  (`guda-guda`, `pandanus-park`, `old-looma`, `new-looma`). (2) purpose mislabeled "cnMaestro mDNS" — actually two unrelated purposes, neither mDNS: CNMaestro-managed Cambium ePMP/cnPilot
-  wireless-backhaul provisioning (separate `smc_ltp.yml` playbook) and a DNS-resolver-stack switch from unbound+stubby to bind9+RPZ (`smc_bases.yml`'s `dns_mgmt` play, zone file literally named
-  `db.cambium-rpz`). This session's findings were independently cross-checked against a parallel same-day pass done from the ansible-wifi side, which reached the same conclusions. New dedicated
-  section added to `08_ansible-authoring.md`; `01_overview.md`/`02_service-map.md`/`13_known-issues.md`/`SKILL.md`/`05_troubleshooting.md` corrected. LTP's literal expansion is not documented anywhere
-  in the codebase — left as an open question rather than guessed. Manifest bumped to v0.1.9.
-- 2026-08-03 — Operator asked to fill the NBN Accelerate (`teleport.communitywifi.net.au`) documentation gap: ~95% of the pack was APN-cluster-derived (`apn`/`rcp`/`rct`/`wh`), with NBN Accelerate
-  (`cw`/`nbn_accelerate`/`nbn_wh`) only covered by the flavor→domain mapping from 2026-07-31. Ran three parallel research passes (inventory group_vars diff across all 7 flavors; repo-wide grep for
-  flavor-conditional branching in roles/templates/playbooks; doc/ADR/OPA search in local-knowledge-ansible/ansible-wifi) rather than assuming the two clusters are identical. Findings: real structural
-  differences (no graylog/opensearch or kernel-update pipeline on the cw side; mobile-app backend + kiosk mode on `nbn_accelerate` only; HTTPS-only portal + different blocked-URL domain), a small
-  number of genuine flavor-exclusive role gates (ClamAV/Lynis on `nbn_accelerate` only, VoIP/Asterisk on `rcp` only), and that most hardware-class branching (`hotspot_flavor` small-box/big-box) is
-  identical across both clusters — it's a hardware split, not a cluster split. Also surfaced a "community wifi" naming collision (used generically for `rcp` sites in `issues/apn/routing-issue/`) and
-  an OPA policy coverage gap (`flavors.json`/`environments.json` have no `cw`/`apn`/`rct`/`wh` entries). All new content explicitly flagged as code-inspection-only — no live cw-cluster host was
-  accessed this session. Manifest bumped to v0.1.8.
-- 2026-07-31 — Removed an incorrect ssh-manager MCP framing from `install.md`/`adapter.md` after two rounds of operator correction, and added the confirmed flavor→Teleport-domain mapping (never
-  previously documented). Access is exclusively a direct `tsh ssh root@<hostname>` shell command — no MCP, no `ssh-config.toml`. Domain mapping: `rcp`/`rct`/`wh`/`apn` → `teleport.apn.au`;
-  `nbn_accelerate`/`nbn_wh`/`cw` → `teleport.communitywifi.net.au` (all 7 flavors). Added to `01_overview.md` "Remote Access", `install.md`, closed the brief `13_known-issues.md` coverage gap once
-  confirmed.
-- 2026-07-31 — Broadened the cross-repo feed-back rule (operator-requested, follow-up to the extraction pass) so this pack never needs another full-directory sweep. Root cause of the extraction pass's
-  gaps: the existing rule (`AGENTS.md`, ansible-wifi's `rule-002`/`task-patterns.md`/`validation.md`) was worded narrowly around "SMC incident/debug fixes," so design docs, ADRs, OPA changes, and
-  scripts never triggered it, and only `project-coherence` (not `skill-slurp-chat`) was named as a trigger. Broadened both sides symmetrically: scope now covers the whole
-  `local-knowledge-ansible/ansible-wifi` tree including current/future subfolders (via the `@`-import convention those subfolders already use), the knowledge-type list now explicitly includes
-  unimplemented design recommendations/ADRs/OPA/scripts/ROADMAP items, and both `skill-slurp-chat` and `project-coherence` are named as mandatory trigger points with a closeout self-check. Manifest
-  bumped to v0.1.7.
-- 2026-07-31 — Full extraction pass over `local-knowledge-ansible/ansible-wifi/` (operator-requested, exhaustive). Two subagent audits (`.archcore/` ADRs+rules+specs; `apn/routing-issue/docs/` 20
-  files) plus a background `.remember/` completeness sweep found: amata-smc01's disk-failure incident was entirely uncaptured (added to 06/07/13); a bonding-vs-bridging design recommendation for
-  RCP/NBN-Accelerate dual-switch WAN circuits (dated the same day, 2026-07-31) was brand new; the OPA policy layer (env-gate/flavor-gate precedence, policy packages) had zero coverage despite one
-  passing mention of "the OPA gate" in 08_ansible-authoring.md; `smc_qos`'s "planned, not started" framing in 03_communication-flows.md was stale (the role exists, is just misgated to rct-only); a
-  third topology_vars authoring-bug class (role mistagging, rocket-bore-smc01) and a distinct multi-incident site cluster (bungardi-smc01) surfaced only in raw `.remember` daily logs, never promoted
-  to an ADR/issue-report. `snapshots/` (59 dirs) and `history/` confirmed via diff to be point-in-time copies of the same governance file, not distinct content — not deep-read. Manifest bumped to
-  v0.1.6.
-- 2026-07-03 — DNS documentation in `02_service-map.md` had been silently wrong since v0.1.0: the "unbound = RCT flavor, bind = non-RCT flavors" framing was a generalization from the single initial
-  RCT-only validation that was never checked against other flavors. Corrected to the real gate (`smc_ltp` inventory-group membership, orthogonal to flavor) via a repo-wide grep during the
-  garimba-smc01 RCA. Lesson generalized into `13_known-issues.md`: treat single-host-validated claims in this pack as unverified for other flavors until independently checked.
-- 2026-07-03 — Added an explicit "DNS resolution architecture" row to the domain-routing tables in ansible-wifi's `rule-002` and `AGENTS.md` — this domain had no routing entry despite being a
-  documented troubleshooting area, which is likely why the garimba-smc01 DNS incident wasn't fed back into this pack until a later `project-coherence` run caught the gap.
-- 2026-06-26 — Split monolithic RUNBOOK.md into 13 numbered focused reference files. RUNBOOK.md is now a navigation index only.
-- 2026-06-26 — SYSTEM_PROMPT.md line 32 fixed: stale "Reference RUNBOOK.md for full service map…" replaced with specific numbered reference list.
-- 2026-06-26 — Dead `references/PROFILE.md` pointer removed from SKILL.md (PROFILE.md is not installed per adapter.md).
-- 2026-06-26 — Bootstrap governance scaffold added: AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, context-map.yaml, SCRATCHPAD.md.
-- 2026-06-26 — Coherence sweep: repomix.config.json fixed (added .archcore/ content); adapter.md expanded to 16 rows; spec expanded to 17 rows; ARCHITECTURE.md stale token count corrected.
-
 ---
 
 ## Session history (summaries)
@@ -11886,230 +12178,12 @@ manual step someone has to remember**, with no tooling or enforcement — the co
   `SKILL.md` slimmed to the cambium/mikrotik shape with SKILL-only facts moved into references 03/05/08; profile, system prompt and exports adapter retired.
 - **2026-10-07 (16:25) — skill-ai-it refresh (v0.1.98 -> v0.1.99).** `AGENTS.md` and `scripts/README.md` managed blocks upgraded to `2026-09-23-template-sourced-blocks-v1`;
   `AI_NAVIGATION.md` stays project-managed. Template item 12/14 defect fixed in skill-ai-it and re-applied; `.archcore/` files renamed to `<slug>.<type>.md`, `archcore status` clean.
-- **2026-09-24 (10:44–12:25) — TP-Link switches + neighbour table** (from unified-network-controller). Switch access worked out and scripted; neighbour-table overflow found on mornington;
-  gc_thresh1 attribution corrected in v0.1.54. Detail: memory-keeper channel `unc`, keys `unc.tplink-*`, `unc.neighbour-table.20260924`. `KEEP`
-
-### 2026-09-17 — Other OS alternatives assessed for Raspberry Pi SMCs (v0.1.42 -> v0.1.43)
-
-- No operating system is recommended over Ubuntu Server LTS for the current full SMC workload. Raspberry Pi OS Lite and Debian retain APT but still require an unproven OS/automation port; OpenWrt is
-  viable only for a deliberately reduced router/AP appliance; immutable/declarative systems require a full platform redesign.
-- Written to `references/07_hardware-overlay.md`; manifest bumped to v0.1.43. Evidence basis: ansible-wifi workload inspection plus Raspberry Pi and OpenWrt primary documentation, retrieved
-  2026-09-17.
-
-### 2026-09-17 — Ubuntu Core assessment for Raspberry Pi SMCs (v0.1.41 -> v0.1.42)
-
-- Design recommendation only; no production change or canary: retain Ubuntu Server LTS for Raspberry Pi SMCs. The current appliance depends on root-managed APT packages, ordinary host files,
-  systemd units and privileged network services; RISE overlayroot already provides a disposable-root mitigation without replacing that operational model.
-- Canonical Ubuntu Core documentation read directly: Core is image/snap-managed, immutable and transaction-based, with strict confinement and no classic snaps. It is viable only as a separately designed
-  greenfield appliance that proves the full privileged networking, access, telemetry, update/recovery and constrained-link surface on a Pi canary.
-- Written to `references/07_hardware-overlay.md`; manifest bumped to v0.1.42. Evidence basis: ansible-wifi role/playbook inspection plus Canonical documentation, retrieved 2026-09-17.
-
-### 2026-08-03 — new-looma-smc01 second whole-host outage confirmed via live Prometheus (v0.1.17 → v0.1.18)
-- Operator reported "new-looma-smc01 is back online" — a bare status ping. Rather than just acknowledge it, queried live Prometheus (`mcp-grafana-apn`, still connected from the previous exploration)
-  to verify and get exact timestamps.
-- Confirmed: `up{job="prometheus"}` and `up{job="node_exporter"}` for `new-looma-smc01` both went dark simultaneously 2026-08-01 23:40 UTC → 2026-08-03 06:40 UTC (31h), then both resumed together —
-  whole-host/network outage signature, not a single service crash.
-- Found and ruled out a red herring: a second, earlier 18h gap in the same 7-day window (2026-07-29 11:10 → 2026-07-30 05:10 UTC) exactly matches the already-documented topology cross-wiring fix —
-  good cross-validation, not a new finding.
-- Root cause of the new 31h gap NOT established — no `tsh ssh` this session, Prometheus history only. Logged as confirmed-timeline, open root cause.
-- Written to `13_known-issues.md` (new paragraph in the existing new-looma section). Manifest bumped v0.1.17 → v0.1.18; CHANGELOG.md entry added.
-- Evidence basis: live `mcp-grafana-apn` `query_prometheus` reads this session; timestamps converted via direct `date -u -r <epoch>`, not estimated.
-
-### 2026-08-03 — Grafana CW exploration unblocked: dashboard inventory + RISE metric names (v0.1.16 → v0.1.17)
-- Follow-up to the blocked exploration attempt below: operator confirmed the token fix landed and a restart happened. Confirmed `mcp-grafana-nbn` live (9 dashboards).
-- Compared against `mcp-grafana-apn` (20 dashboards) rather than stopping at "it connects now" — found 11 APN-only dashboards, most notably a RISE health/watchdog framework with no NBN counterpart.
-- Confirmed (not assumed) that RISE deploys only to `rct`/`wh` via the `flavor=~"rct|wh"` gate in a live panel query. Pulled exact `rise_*` Prometheus metric names for 4 previously-placeholder (`—`)
-  textfile collectors in `02_service-map.md`, plus the offline-vs-pending fleet-rollup distinction.
-- Wrote a new "RISE Health/Watchdog Framework" subsection into `02_service-map.md` and a new "Dashboard inventory" subsection into `03_communication-flows.md` (11-row table with UIDs/purpose).
-- Manifest bumped v0.1.16 → v0.1.17; CHANGELOG.md entry added.
-- Evidence basis: live `mcp-grafana-apn`/`mcp-grafana-nbn` reads this session (`search_dashboards`, `get_dashboard_summary`, `get_dashboard_panel_queries`) — not inferred from prior documentation.
-- Not yet explored: Data Backlog (0 panels), the two RW-backlog dashboards, Servers Network/System Information (likely out of scope), RISE Dashboard (`rise-stage0_5`, older rollout view) — flagged in
-  Open Items.
-
-### 2026-08-03 — ClamAV freshclam root cause confirmed via WebSearch (v0.1.15 → v0.1.16)
-- Operator asked what could be causing the fleet-wide ClamAV failure documented in the previous entry, rather than settling for the 3 open hypotheses already written up.
-- Verified via `WebSearch` against `blog.clamav.net` and Cisco-Talos/clamav GitHub issues before answering, per the "never guess, verify" convention.
-- Confirmed: ClamAV 0.103.x reached end-of-life for database updates on 2025-09-14; the CDN hard-blocks any 0.103.x client since then. This fleet runs 0.103.11/.12 uniformly. Explains the 10-month
-  staggered failure-date spread from the fleet sweep exactly (each host trips the block on its own timer's first post-cutoff run, not simultaneously).
-- Not cw-cluster-specific — documented upstream behavior affecting any fleet on this ClamAV branch. Fix: upgrade to 1.0/1.4 LTS (not yet done, no automated version pipeline exists for this cluster).
-- Updated `13_known-issues.md` (bug row rewritten from "not investigated" to "confirmed"), `08_ansible-authoring.md`, `01_overview.md`; `manifest.json` gained a 3rd diagnostics entry.
-- Manifest bumped v0.1.15 → v0.1.16; CHANGELOG.md entry added.
-- Evidence basis: external sources (ClamAV's own EOL announcement, community-reported GitHub issues matching the exact error signature), cross-checked against this session's own captured data for
-  consistency.
-
-### 2026-08-03 — Full NBN Accelerate fleet sweep: 28 hosts, hardware inventory, fleet-wide ClamAV finding (v0.1.14 → v0.1.15)
-- Operator asked for a thorough analysis of all NBN Accelerate sites (hardware + installed apps/scripts/services state), and to capture reusable scripts under `scripts/` with a justfile.
-- Built `scripts/collect-fleet-health.sh` (new, flavor-agnostic, read-only, 4 bundled captures/host to stay tractable at fleet scale over satellite) and `scripts/fleet-health.justfile`. Ran against
-  all 26 reachable `nbn_accelerate` hosts + both `nbn_wh` hosts (28 total, `aurukun-smc03` unreachable).
-- First-ever live hardware inventory for this cluster: 11× BOXER-6641 + 15× BOXER-6404 (`nbn_accelerate`), 2× genuine Raspberry Pi/Cortex-A72 (`nbn_wh` — operator-confirmed `wh`-flavor equivalent).
-- Major finding: `clamav-freshclam` confirmed failed on **26/26** `nbn_accelerate` hosts (up from the earlier 2), failure dates spanning 10 continuous months — an active, ongoing degradation.
-- Mid-session, operator confirmed `nbn_wh`'s missing overlayroot is a planned rollout, not a bug — corrected that finding's framing before it shipped incorrectly.
-- Also found and fixed real tooling bugs via dogfooding: a mid-run script-file edit that corrupted the first capture batch (11/28 hosts real, 17/28 crashed to zero-byte files, required a second batch
-  run); a `just`-working-directory path assumption that silently broke all 3 quick-check recipes; a nested-directory `mv` bug when merging the two capture batches; the same exit-code-of-last-command
-  false-negative from the earlier smc_ltp session, recurring in the justfile recipes.
-- Other findings: kernel-version drift (5.15.0-79 to -133) corroborating the earlier no-automated-kernel-pipeline structural finding; `koonibba-smc01` at 95% disk usage with the oldest kernel;
-  `isc-dhcp-server6` failed 28/28 (confirmed benign, IPv6 disabled by policy); `fwupd-refresh` failed on 3/28 (minor); `nbn_wh` zram/swap absence contradicting the platform table's universal RPi-zram
-  claim (unresolved).
-- Written to `07_hardware-overlay.md` (new hardware-inventory section), `13_known-issues.md` (bugs section rewritten for full fleet), `01_overview.md`, `08_ansible-authoring.md`,
-  `04_dependency-tree.md` (separately, smc_ltp/ClamAV/Lynis entries + a flagged naming-collision question).
-- Raw evidence relocated to `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/fleet-hardware-audit-20260803/` per the pack's evidence-retention policy (skill-smc holds analysis/tooling, not
-  case evidence).
-- Manifest bumped v0.1.14 → v0.1.15; CHANGELOG.md entry added.
-- Evidence basis: direct `tsh ssh root@<host>` read-only commands, this session, 28/28 hosts confirmed by file-size verification post-merge.
-
-### 2026-08-03 — First live NBN Accelerate validation: cluster comparison confirmed, ClamAV CDN-block found (v0.1.13 → v0.1.14)
-- Operator made `tsh login` for the NBN Accelerate cluster (`teleport.communitywifi.net.au`) available and invited exploratory commands — first-ever live access this pack has had to that cluster,
-  after a full day of code-inspection-only NBN Accelerate content.
-- Ran read-only diagnostics against `warakurna-smc01` and `indulkana-smc01` (both `nbn_accelerate`): Teleport domain, HTTPS-only portal (permanent redirect, on-box TLS termination), mobile-app
-  backend, ClamAV+Lynis presence, Asterisk absence, non-`smc_ltp` DNS stack — every claim confirmed, 2/2 hosts.
-- New finding: `clamav-freshclam.service` failing on both hosts (identical signature — exit 17, `Forbidden; Blocked by CDN`, permanent give-up) since 2026-06-21 (`indulkana`) / 2026-07-23
-  (`warakurna`) — ClamAV's virus database is stale/frozen on both, a real degradation of the documented cw-only security hardening. Not investigated further; no remediation attempted (read-only
-  session).
-- Written to `13_known-issues.md` (new "Known Operational Bugs (NBN Accelerate cluster)" section + coverage-gap row update), `08_ansible-authoring.md` (ClamAV/Lynis gate row), `01_overview.md`
-  (evidence-basis paragraph), `manifest.json` (new `diagnostics` entry — first use of that field).
-- Manifest bumped v0.1.13 → v0.1.14; CHANGELOG.md entry added.
-- Evidence basis: direct `tsh ssh root@<host>` read-only commands, this session. `nbn_wh`/`cw` flavors and every other `nbn_accelerate` site beyond these 2 remain unvalidated.
-
-### 2026-08-03 — project-coherence sweep: routing/architecture staleness fixed (v0.1.12 → v0.1.13)
-- Ran `project-coherence` across today's cumulative content changes (NBN Accelerate gap-fill → smc_ltp exploration → 7-site correction → manual-mechanism confirmation). Content files (Tier 1) were
-  already coherent from the piecemeal edits; this pass caught Tier 2/routing-layer drift.
-- Fixed: `context-map.yaml`'s `ansible_authoring`/`smcbox_basics` routing descriptions (hadn't been extended to mention `smc_ltp`/onboarding or NBN Accelerate); `ARCHITECTURE.md`'s governance-pack
-  size figure (stale "~125k chars" since 2026-06-26, now ~470k); `RUNBOOK.md`/`AI_NAVIGATION.md`'s `08_ansible-authoring.md` rows (extended to match the pattern already applied to `01_overview.md`).
-- Stale-reference grep validated clean — all "old phrase" hits are correctly-framed historical narrative, no live incorrect claims.
-- `.remember/today-2026-08-03.md` reviewed and found out of scope — self-managed by the global `remember` skill, not authored by skill-smc's own governance.
-- Manifest bumped v0.1.12 → v0.1.13; CHANGELOG.md entry added; governance pack regenerated (final pass).
-- Evidence basis: this session's own systematic file-by-file scan per the `skill-project-coherence` checklist.
-
-### 2026-08-03 — smc_ltp/"low touch" mechanism confirmed: manual, unenforced step (v0.1.11 → v0.1.12)
-- Final piece of the same-day `smc_ltp`/"low touch" thread: operator confirmed the mechanism is a manual step someone has to remember — no tooling automatically assigns `smc_ltp` membership for a new
-  low-touch site, and nothing checks or enforces it.
-- This directly explains the root cause of the 3-site gap fixed in the previous entry, and reframes it as an ongoing risk (any future low-touch site could be missed the same way), not a closed
-  one-off.
-- Added an explicit operational note to `08_ansible-authoring.md` ("smc_ltp Sub-Group") recommending membership be verified explicitly for future low-touch sites; updated the `13_known-issues.md`
-  row's status and framing; `manifest.json` stable_fact updated, confidence raised to 0.92.
-- Manifest bumped v0.1.11 → v0.1.12; CHANGELOG.md entry added.
-- Evidence basis: operator-confirmed directly, relayed to this session; not independently verifiable from Ansible source (confirms an absence of automation, not a code finding).
-
-### 2026-08-03 — smc_ltp/"low touch" correlation resolved: 3 sites added, 7 members confirmed (v0.1.10 → v0.1.11)
-- Direct follow-up to the "low touch" onboarding entry below, same day: operator confirmed the previously-flagged correlation is real, not coincidental — every low-touch site is meant to be an
-  `smc_ltp` member.
-- Operator made and verified the fix directly in `ansible-wifi`: added `warburton_smc_ltp`/`beagle-bay_smc_ltp`/`umoona_smc_ltp` host groups + `:children` blocks to `inventories/rcp/prod`, matching
-  the existing 4-site pattern. Verified via `ansible-inventory --list` (all 7 under `smc_ltp:children`) and `ansible-playbook --syntax-check smc_ltp.yml` (clean) — uncommitted, not yet run against any
-  live SMC.
-- Updated `smc_ltp` membership from 4 to 7 sites everywhere it's mentioned in this pack: `08_ansible-authoring.md`, `01_overview.md`, `02_service-map.md`, `13_known-issues.md`, `SKILL.md`,
-  `05_troubleshooting.md`, `manifest.json`. The "flagged, not concluded" framing replaced with "resolved" throughout.
-- Underlying mechanism (does low-touch tooling itself assign `smc_ltp` membership, or is it manual) remains unestablished — only the intended end-state membership is now confirmed.
-- Manifest bumped v0.1.10 → v0.1.11; CHANGELOG.md entry added.
-- Evidence basis: operator-directed and operator-verified change relayed to this session; not independently re-verified, not yet run against any live SMC or committed to `ansible-wifi`.
-
-### 2026-08-03 — "Low touch" onboarding method and site deployment history added (v0.1.9 → v0.1.10)
-- Operator relayed operator-confirmed install dates for a cohort of `rcp` sites, naming a "low touch" onboarding method: `guda-guda` pilot (2025-04-15), then
-  `umoona`/`warburton`/`beagle-bay`/`pandanus-park`/`old-looma`/`new-looma` across 2026.
-- Cross-checked against `local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/{CHANGELOG,SCRATCHPAD}.md` and root governance `SCRATCHPAD.md` — consistent, and those docs had already
-  independently noted the same finding from the ansible-wifi side same day.
-- Surfaced (this session) that all 4 `smc_ltp` sites are also low-touch sites — flagged as unresolved correlation, not concluded. Also grepped `ansible-wifi` for `low_touch`: exactly one hit, an
-  orphaned host_var on an uninvolved host, never read by any role/playbook.
-- New "'Low Touch' Onboarding Method and Site Deployment History" section added to `08_ansible-authoring.md`; `13_known-issues.md` gained an open-question row; the pre-existing "cnmaestro-provisioning
-  internals" coverage-gap row updated to reflect the smc_ltp findings from the prior session.
-- Manifest bumped v0.1.9 → v0.1.10; CHANGELOG.md entry added.
-- Evidence basis: operator-provided dates, cross-referenced against `local-knowledge-ansible/ansible-wifi` docs and this session's own repo-wide grep; not live-validated against any site.
-
-### 2026-08-03 — smc_ltp properly explored and documented (v0.1.8 → v0.1.9)
-- Operator flagged smc_ltp as under-explored — a fair call: prior coverage was purely a side effect of the 2026-07-03 DNS RCA, never independently re-verified since.
-- Direct read of `smc_ltp.yml`, `inventories/rcp/group_vars/smc_ltp.yml`, `inventories/rcp/prod`, `roles/smc_cnmaestro_provisioning/`, `roles/smc_dns_mgmt/tasks/main.yml` found and fixed two errors:
-  membership undercount (was "only guda-guda", actually 4 sites — the INI-format `prod` file was missed by the original `.yml`-scoped grep) and a purpose mislabel ("cnMaestro mDNS" — actually two
-  unrelated purposes: CNMaestro Cambium ePMP/cnPilot wireless-backhaul provisioning via a separate `smc_ltp.yml` playbook, and a DNS-resolver-stack switch to bind9/RPZ via `smc_bases.yml`'s `dns_mgmt`
-  play).
-- Findings cross-checked against an independent same-day pass on the ansible-wifi side — same conclusions reached.
-- New "smc_ltp Sub-Group" section added to `08_ansible-authoring.md`; `01_overview.md`, `02_service-map.md`, `13_known-issues.md`, `SKILL.md`, `05_troubleshooting.md` corrected/cross-referenced. LTP's
-  literal acronym expansion documented as an open question, not guessed.
-- Manifest bumped v0.1.8 → v0.1.9; CHANGELOG.md entry added.
-- Evidence basis: this session's direct file reads of ansible-wifi source; not live-validated against any of the 4 member hosts.
-
-### 2026-08-03 — NBN Accelerate cluster gap-fill (v0.1.7 → v0.1.8)
-- Operator-requested: document how the NBN Accelerate cluster (`cw`/`nbn_accelerate`/`nbn_wh`, `teleport.communitywifi.net.au`) differs from the APN cluster (`apn`/`rcp`/`rct`/`wh`,
-  `teleport.apn.au`), since ~95% of prior content was APN-derived.
-- Three parallel Explore-agent research passes: (1) inventory `group_vars`/`prod` diff across all 7 flavors — found cw-cluster is structurally thinner (no graylog/opensearch, no kernel-update Jenkins
-  pipeline) with its own extras (mobile-app backend, kiosk mode, HTTPS-only portal, distinct blocked-URL redirect); (2) repo-wide grep for flavor-conditional branching in roles/templates — found the
-  selector is `hotspot_flavor` (hardware class, spans both clusters identically) or `inventory_dir.split('/')|last` (exact flavor, drives a small number of genuine flavor-exclusive gates: ClamAV/Lynis
-  on `nbn_accelerate` only, VoIP/Asterisk on `rcp` only), and nothing branches on the literal strings cw/community/communitywifi; (3) doc/ADR/OPA search in local-knowledge-ansible/ansible-wifi — found
-  a "community wifi" naming collision (generic term for `rcp` sites in `issues/apn/routing-issue/`) and an OPA policy coverage gap (`flavors.json`/`environments.json` missing `cw`/`apn`/`rct`/`wh`).
-- Wrote findings into `01_overview.md` (new comparison section + selector mechanism), `08_ansible-authoring.md` (new flavor-gate reference table), `10_captive-portal.md` (new §11.9 protocol diffs),
-  `13_known-issues.md` (coverage-gap row + 2 new staleness-risk entries) — all explicitly labeled code-inspection-only, not live-validated.
-- Routing tables (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`) updated for the `01_overview.md` row; manifest bumped v0.1.7 → v0.1.8; CHANGELOG.md entry added.
-- Evidence basis: this session's direct file reads + three Explore-agent research passes (no prior memory-keeper/project-context entry existed for this topic).
-
-### 2026-07-31 — Full extraction pass + ssh-access/Teleport-domain corrections + feed-back governance broadening
-- Exhaustive sweep of `local-knowledge-ansible/ansible-wifi/**` (operator-requested): ~15 new knowledge items across 8 reference files, 2 lint-gate scripts promoted/genericized, full coherence pass.
-  v0.1.5 → v0.1.6.
-- Operator corrected an invented ssh-manager MCP framing (twice) — access is direct `tsh ssh`, no MCP — and provided the confirmed flavor→Teleport-domain mapping, both fixed across
-  `install.md`/`adapter.md`/`01_overview.md`/`13_known-issues.md`.
-- Root-caused why the extraction pass found gaps at all: the cross-repo feed-back rule (this pack's `AGENTS.md` + ansible-wifi's `AGENTS.md`/`rule-002`/`task-patterns.md`/`validation.md`) was worded
-  narrowly around "incident/debug fixes" and only named `project-coherence`, not `skill-slurp-chat`, as a trigger. Broadened all of it symmetrically to whole-tree scope, a wider knowledge-type list,
-  both trigger points, and a closeout self-check. v0.1.6 → v0.1.7.
-- Evidence basis: this session; memory-keeper keys `skill-smc.extraction.local-knowledge-sweep-20260731`, `skill-smc.correction.ssh-access-and-teleport-domains-20260731`,
-  `skill-smc.governance.feedback-rule-broadening-20260731`
-
-### 2026-07-03 (ansible-wifi session, project-coherence run) — DNS architecture corrections + garimba-smc01 failure mode
-- Triggered by `project-coherence` on ansible-wifi after the garimba-smc01 DNS RCA (revisions 2-3) surfaced factual errors and a coverage gap in this pack's DNS documentation.
-- `references/02_service-map.md`: fixed the DNS-resolver-by-flavor mental model (real gate is `smc_ltp` group, not flavor), fixed Stubby's documented listen port (60053, not 5353), added the
-  previously-undocumented `systemd-resolved` host-DNS row and Stubby's single-upstream/no-failover autossh-local-forward chain.
-- `references/06_failure-modes.md`: added the garimba-smc01 domain-specific DNS resolution delay failure signature.
-- `references/13_known-issues.md`: added a coverage-gap entry for the host-DNS architecture and a new "Fleet-Wide Architecture Risks" section (Stubby no-failover, no monitoring on the autossh local
-  forward).
-- `.archcore/rules/rule-002-*.md` and `AGENTS.md` (both ansible-wifi): added an explicit DNS domain routing row — this domain had no routing entry, which is likely why the incident wasn't fed back
-  into this pack sooner.
-- Version bumped 0.1.3 → 0.1.4; CHANGELOG.md updated.
-- Evidence basis: ansible-wifi 2026-07-03 session MK keys `ansible-wifi.smc.garimba-smc01.dns-rca-revision2-corrections.20260703`,
-  `ansible-wifi.smc.garimba-smc01.dns-rca-revision3-corrections.20260703`, `ansible-wifi.smc.garimba-smc01.dns-repo-facts.20260703`
-
-### 2026-06-26 (ansible-wifi session) — references/10-13 content updates + AGENTS.md project-coherence checklist
-- `references/10_captive-portal.md`, `references/11_vagrant-lab.md`, `references/12_content-filtering.md` received content updates from ansible-wifi RUNBOOK audit: captive portal two-tier arch,
-  Eclipse config.txt sync, PHP-FPM SetHandler, a2enconf alternative, PHP short_open_tag, vsmc networkd race chain, Eclipse identity model, MAC randomization table, CAKE fair queuing on bridge_501.
-- Added `## Project-coherence checklist` to `AGENTS.md` — explicit Tier 1-4 update instructions for when project-coherence runs on skill-smc, plus cross-repo trigger rule for ansible-wifi sessions.
-- Version bumped to v0.1.3; CHANGELOG.md updated.
-- Evidence basis: ansible-wifi 2026-06-26 session MK keys `ansible-wifi.runbook.sections-11-12-13.20260626`, `ansible-wifi.runbook.gap-fill-audit.20260626`
-
-### 2026-06-26 — Progressive-disclosure restructure
-- Split 1724-line RUNBOOK.md into 13 numbered reference files (01_ through 13_).
-- Moved KNOWN_ISSUES.md to references/13_known-issues.md.
-- RUNBOOK.md replaced with 48-line navigation index.
-- All cross-references updated; version bumped to 0.1.2.
-- Evidence basis: session hook history (UserPromptSubmit context)
-
-### 2026-06-26 — Pack audit and fixes
-- Identified dead PROFILE.md reference in SKILL.md; removed.
-- Fixed stale SYSTEM_PROMPT.md reference to monolithic RUNBOOK.md content.
-- Confirmed adapter.md, install.md, manifest.json consistent with new structure.
-- Evidence basis: direct file reads this session
-
-### 2026-06-26 — Bootstrap governance scaffold + archcore promote + docs
-- Added AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, context-map.yaml, repomix.config.json, SCRATCHPAD.md.
-- Initialized .archcore/, promoted 5 candidates (3 rules, 1 ADR, 1 spec).
-- Added README.md, ARCHITECTURE.md.
-
-### 2026-06-26 — Coherence sweep
-- Fixed repomix.config.json: .archcore/ content now included; README.md, ARCHITECTURE.md, SCRATCHPAD.md added.
-- Expanded adapter.md (5 → 16 rows) and spec file-roles (12 → 17 rows) to cover all governance files.
-- Corrected ARCHITECTURE.md stale repomix count. Governance bundle: 145,706 chars.
-
----
 
 ## Next actions
 
 - On a new machine: `ln -s` the pack to `~/.claude/skills/skill-smc`, then `just bootstrap`; run `just check` and `just nav_validate` before calling any change done.
 - New reference file: update the four index surfaces (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`); the checker fails until all four name it.
-- Root-cause the new-looma-smc01 31h outage (2026-08-01→2026-08-03) next time `tsh ssh` access to that site is available — check WAN/backhaul/power logs; confirm or rule out any link to the still-open
-  `my_node_network_device_info` gap
-- Explore the remaining unreviewed Grafana dashboards flagged 2026-08-03 (Data Backlog, RW-backlog pair, Servers Network/System Information, RISE Dashboard `rise-stage0_5`) next time Grafana access is
-  used — see Open Items
 - Cross-reference the RW-backlog dashboards against `autossh-prometheus-federation` in `02_service-map.md` once reviewed — may reveal federation-pipeline health signals not currently documented
-- Propose/plan a fleet-wide ClamAV upgrade to 1.0 or 1.4 LTS next time remediation authorization is available — root cause confirmed 2026-08-03, no automated pipeline exists to do this without a
-  deliberate rollout
-- Fix mechanism found 2026-08-03 (memory-only so far, not yet in `references/13_known-issues.md`): `roles/smc_clamav/tasks/ubuntu.yml` installs with `state: present` (never upgrades an
-  already-installed package) + this fleet's already-documented masking of `unattended-upgrades`/`apt-daily` compound to explain why ClamAV never self-healed. Canary-first remediation plan proposed to
-  operator, not yet executed (offered a read-only `apt-cache policy clamav` check on a live host, awaiting go-ahead). If operator wants this folded into the pack's docs, run `project-coherence` — it
-  currently only lives in memory-keeper key `skill-smc.discovery.clamav-fix-mechanism-20260803`
 - Re-check `nbn_wh` overlayroot status after the operator's planned rollout lands
 - `cw` flavor still has no site-level hosts to check (central-infra only); `aurukun-smc03` still unreachable — note if either changes
 - Resolve the smc_ltp/generic-cnmaestro-provisioning naming-collision question flagged in `04_dependency-tree.md`
@@ -12125,34 +12199,15 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Memory pointers (navigation only)
 
+- 2026-10-08 14:27: memory-keeper `skill-smc.progress.slurp-delta-20261008`; project-context `0bf38158` note; checkpoint `slurp-20261008-skill-smc-version-delta`
+  (memory-keeper `84ffcf40`, project-context `f07a8367`). `KEEP`
+
 - 2026-10-07 16:43: memory-keeper `skill-smc` keys `skill-smc.progress.skill-ai-it-refresh-v0199-20261007`, `skill-smc.finding.skill-ai-it-template-item12-20261007`,
   `skill-smc.progress.archcore-rename-20261007`, `skill-smc.error.concurrent-commit-fbc0aff-20261007`, `skill-smc.progress.layout-parity-v01100-20261007`,
   `skill-smc.finding.content-moved-on-slim-20261007`, `skill-smc.error.venv-missing-pyyaml-20261007`, `skill-smc.progress.cambium-spec-fix-20261007`,
   `skill-smc.decision.layout-parity-and-commit-scope-20261007`, `skill-smc.decision.version-scheme-patch-0-9-20261007`; project-context `0bf38158` note + decision; checkpoint `slurp-20261007-skill-smc-layout-parity`
   (memory-keeper `8ab3b9e2`, project-context `709e1015`). `KEEP`
 
-- 2026-09-24 12:25: memory-keeper `unc` keys `unc.tplink-switch-access.20260924`, `unc.tplink-tooling.20260924`, `unc.neighbour-table.20260924`, `unc.errors.20260924-tplink`; project-context
-  `0bf38158` note; checkpoint `slurp-20260924-tplink-switches-neigh-table` (`98c3a99e`). `KEEP`
-
-- memory-keeper channel: `skill-smc` / keys added 2026-09-08 (skill-ai-it refresh slurp): `skill-smc.decision.skill-ai-it-refresh-mode-correction-20260908`,
-  `skill-smc.decision.ai-navigation-declared-manual-20260908`, `skill-smc.note.check-governance-adopted-and-tuning-20260908`, `skill-smc.progress.v0134-refresh-20260908`,
-  `skill-smc.note.mk-pc-backend-divergence-20260908`. Checkpoint: `slurp-20260908-skill-ai-it-refresh` (both backends).
-- project-context project ID `0bf38158-d30f-4b0f-8653-f6f93d22a068`: notes added 2026-09-08 mirroring the same session; **note this backend was ~5 weeks stale (last prior entry 2026-08-03) before this
-  update** — see `skill-smc.note.mk-pc-backend-divergence-20260908` for the memory-keeper-only entries from 2026-09-07 that were never mirrored here.
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (this pass): `skill-smc.discovery.new-looma-outage-confirmed-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.discovery.grafana-dashboard-inventory-rise-metrics-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.task.grafana-cw-exploration-blocked-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.discovery.clamav-fix-mechanism-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.correction.clamav-freshclam-root-cause-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.extraction.nbn-accelerate-full-fleet-sweep-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.coherence.routing-sweep-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.correction.smc-ltp-manual-mechanism-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.correction.smc-ltp-seven-sites-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.discovery.low-touch-onboarding-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.correction.smc-ltp-exploration-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-08-03 (earlier pass): `skill-smc.extraction.nbn-accelerate-cluster-gapfill-20260803`, `skill-smc.decision.nbn-accelerate-naming-20260803`
-- memory-keeper channel: `skill-smc` / keys added 2026-07-31: `skill-smc.extraction.local-knowledge-sweep-20260731`, `skill-smc.correction.ssh-access-and-teleport-domains-20260731`,
-  `skill-smc.governance.feedback-rule-broadening-20260731`
 - memory-keeper channel: `skill-smc` / earlier keys: `skill-smc.structure.progressive-disclosure-20260626`, `skill-smc.audit.fixes-20260626`, `skill-smc.governance.bootstrap-20260626`,
   `skill-smc.governance.archcore-promote-20260626`, `skill-smc.docs.readme-architecture-20260626`, `skill-smc.coherence-sweep-20260626`
 - memory-keeper checkpoint: `slurp-20260803-skill-smc-new-looma-outage` (ID: af68fc31) — 402 context items; earlier today: `slurp-20260803-skill-smc-grafana-rise-dashboard-inventory` (ID: ce01b46c) —
@@ -12162,11 +12217,6 @@ manual step someone has to remember**, with no tooling or enforcement — the co
   a0b0525f), `slurp-20260803-skill-smc-ltp-seven-sites` (ID: 0e74230f), `slurp-20260803-skill-smc-low-touch-onboarding` (ID: 7c2ca18e), `slurp-20260803-skill-smc-smc-ltp-correction` (ID: d6fbd843),
   `slurp-20260803-skill-smc-nbn-accelerate-gapfill` (ID: 4052409c); earlier: `slurp-20260731-skill-smc-extraction-and-governance` (ID: 4fc94978), `slurp-20260626-skill-smc-governance` (ID: 7a4df5b2),
   `slurp-20260626-skill-smc-coherence` (ID: 85dae74b)
-- project-context project ID: `0bf38158-d30f-4b0f-8653-f6f93d22a068` / checkpoint: `64a823ab-dce6-4614-a7a9-6fbe917847da` (2026-08-03, new-looma-outage); earlier today:
-  `44e60b56-3e94-43fc-9ab8-23ab53a420a1` (grafana-rise-dashboard-inventory); earlier today: `37a5570c-f630-45ec-9f98-1290c6fadaa9` (grafana-cw-blocked); earlier today:
-  `6c74412b-4985-447d-8e8d-3b41a30c21d2`; earlier today: `3bdde77e-2467-40ff-b901-fc62af00e8ed`, `89ad9338-2f8d-4310-bc73-98426b36c17b`, `ec1c8cdd-403a-44cd-b801-855e30857430`,
-  `15a8bedd-5d96-4695-a317-4ad3de431974`, `bc5e696a-2db0-4a1b-ba39-6915250fbb0e`, `0df101a9-ff28-4b63-b586-6763d9c2b4ce`, `60be456a-1295-4cca-bb57-358cdc54d21b`,
-  `24964bec-35f6-41f9-bbff-015223d7f993`, `683aadef-e04b-4e0d-8cca-429f3cf2f67a`; earlier: `8564d8a7-eba1-405e-a019-4575a12311c5` (2026-07-31), `1b4851d2`, `e07d1aff`
 ````
 
 ## File: SKILL.md
@@ -12218,11 +12268,20 @@ work in **any** project, you discover a new fact, fix, access method, root cause
 remind you; invoking this skill at all carries that obligation, including the first time a brand-new project ever touches SMC work.
 
 - Pick the right file with `RUNBOOK.md`'s Domain → file routing table (add a row there if a genuinely new domain surfaces — don't force-fit into an existing one).
+- **Backends without a skill of their own come here too (operator, 2026-10-09).** Whatever is learned about Graylog, Prometheus, Grafana or any
+  other deployed tool that has no pack of its own is written back to this pack, even when found while working on another project.
 - Verify the update by **reading the file back** after writing, in the same session. A session-history note, a `SCRATCHPAD.md` claim, or a file timestamp is not proof the content is present — only
   reading the file body counts. (See any consuming project's own `RULE-007`-equivalent for the failure mode this guards against: a project claimed "skill-smc updated" across several sessions while the
   actual content was never added.)
 - A project's own `AGENTS.md`/`CLAUDE.md` MAY restate this obligation with project-specific detail (its own routing-table rows, its own verification rule number) — that's reinforcement, not the source
   of the rule. A project that says nothing about skill-smc at all still carries this obligation the moment it invokes this skill.
+
+**Evidence with every entry (operator, 2026-10-20; every calling project owes it).** A write-back that records how something is done carries
+(1) a **code excerpt** of the logic that does it: the few lines that matter (about 30 at most), as a fenced block with its source path and
+commit, secrets and customer identifiers removed; and (2) for anything with a visual surface (Nautobot, OpenWISP, a device web UI, a draw.io
+render) a **screenshot** as reference, saved under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image, what it
+shows and where it was taken. Site names, addresses, MACs and serials are redacted or the shot is taken on a lab or sample instance; when the
+surface is not live yet, the entry says "screenshot pending: <page>, after <deploy>" and the next engagement adds it.
 
 ## What This Pack Covers
 
@@ -12250,7 +12309,11 @@ agent. **Never report a box as unreachable until that backdoor has been checked*
 3. **Service down, or DHCP/DNS/WiFi/VoIP/HA misbehaving?** `references/05_troubleshooting.md` Tiers 2–6. DNS differs by host: Unbound + Stubby on most boxes, BIND on the `smc_ltp`
    low-touch sites, and the box's own resolution bypasses both.
 4. **Metrics missing?** Tier 7: textfile collectors have staleness windows (`references/02_service-map.md`), and federation rides its own autossh tunnel.
-5. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
+5. **Changing boxes (a package, a config file, a setting) on one or many SMCs?** Use the `smc_change` role with a change spec, not an ad hoc
+   playbook: `references/19_smc-change-role.md`.
+6. **Adding a new SMC to an inventory?** `just smc_inventory_add --flavor <f> --env <stage|prod> --host <host> --siteid-from-box`, then `--apply`;
+   never hand-copy another site's files (`references/08_ansible-authoring.md`, Adding a new SMC).
+7. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
    flavors; one inventory per run (`-i A -i B` loses B's topology vars); validate with yamllint, ansible-lint, ansible-inventory, then `--syntax-check`.
 
 ## Related Workspaces
@@ -12265,6 +12328,10 @@ Treat these paths as part of the SMC working surface:
 | `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi`   | Local-only plans, reports, OPA artifacts, and SMC investigation knowledge for `ansible-wifi`                                       |
 | `/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller`        | FOSS network controller build (Nautobot + adapter layer) intended to eventually replace/complement `smc_cnmaestro_provisioning`'s  |
 |                                             |   role — call `skill-cambium` first for device-layer questions, this pack for SMC/Ansible-layer questions                          |
+
+**Stay across the local-knowledge folder (operator, 2026-10-23).** At the start of SMC work run `just local_knowledge_index` to see what is symlinked into
+ansible-wifi and what changed there lately; when something is built there (playbook, role, change spec, evidence set), record it in
+`references/18_local-knowledge-ansible.md` in the same session.
 
 When behavior, layout, or troubleshooting assumptions change in one of these surfaces, update the corresponding references in the others during the same session where practical.
 
@@ -12298,6 +12365,14 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
   in `skill-cambium` — see Related Skills below.
 - `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the `SNMP-<location>` read-write
   community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
+- `references/19_smc-change-role.md` — `smc_change`: the spec-driven role for any change to SMCs (packages, templates, ini, commands) with
+  before/after probe, gates, overlayroot lower-dir persistence and a JSON record of every run; how to run it, write a spec, read its gates.
+- `references/18_local-knowledge-ansible.md` — the local-only ansible-wifi knowledge folder: layout, how its playbooks/roles/governance are symlinked into the
+  repo and kept out of Bitbucket (`.git/info/exclude`), operator tooling built there (`smc_change` role), and the standing rule to read it at the start of
+  SMC work (`just local_knowledge_index`).
+- `references/17_site-ata-dallas-delta.md` — the rct site ATA (Dallas Delta DDC_VoIP-m): address, web-UI-only management, no SNMP, SIP registration readout, site-unique settings.
+- `references/vendor-sources-raspberry-pi-20261008_1043/readme.md` and `references/vendor-sources-dallas-delta-20261008_1043/readme.md` — verbatim vendor documents, captures and firmware
+  manifests for the Raspberry Pi SMC and the site ATA; Pi EEPROM images in `firmware-files/raspberry-pi/`.
 - `scripts/` — read-only diagnostics (backdoor check, outage classification, fleet health, WAN-routing drift, pin activation, Prometheus/Graylog query helpers) and the
   ansible-lint pre-push gate; catalogued with safety labels in `scripts/README.md`. Run them through the pack-root `justfile` (`just --list`).
 

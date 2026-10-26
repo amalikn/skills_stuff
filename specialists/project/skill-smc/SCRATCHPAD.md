@@ -17,7 +17,6 @@ Agent working memory for the skill-smc specialist pack. Use for: draft plans, te
 KEEP.
 
 ---
-
 <!-- KEEP: populated 2026-06-26 from session history (UserPromptSubmit hook context) --> <!-- KEEP: updated 2026-06-26 (ansible-wifi session) — references/10-13 content updated from ansible-wifi
 RUNBOOK audit; AGENTS.md project-coherence checklist added; manifest bumped to v0.1.3 --> <!-- KEEP: updated 2026-07-28 (ansible-wifi session, project-coherence) — captive-portal PHP SAPI corrected:
 10_captive-portal.md claimed PHP-FPM processes .php and that an Ansible SetHandler fix landed 2026-06-26; BOTH false (production runs mod_php as www-data, zero php*-fpm packages on 3 sampled rcp
@@ -52,6 +51,8 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 - [Memory pointers (navigation only)](#memory-pointers-navigation-only)
 
 ## Current state
+
+**2026-10-26 KEEP, v0.7.9, branch rise:** PHP verified; journal/resume/timing implemented; tests passed. Mutating interruption canary pending; optimize after timings. See reference 19.
 
 **2026-10-07 16:43 `KEEP` — v0.1.100 (renumbered 0.2.0 at 16:45 under the new 0–9 patch rule), layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav_validate`,
 `just fleet …`, `just routing …`), `.mise.toml`, `requirements.txt` (PyYAML for the nav validator only), lint config, `.gitignore`, `.archcore/index.guide.md`. `SKILL.md` is a short router
