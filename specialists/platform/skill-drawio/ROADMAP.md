@@ -37,6 +37,9 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 - [ ] **Archcore flow-map spec and adoption guide** — unblocked by the second project; write them (see `.archcore/index.guide.md`).
 - [ ] **C-D16 on the current app** — re-check "static export draws orthogonal edges through boxes" on draw.io desktop 32.5.5 (checked only on 32.4.1; `compatibility.yaml`).
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (3.11 is not installed, so the declared floor is untested).
+- [ ] **E2E dependency connector picks the nearest actor, not the writer** (found 2026-10-26, smc-resiliency flow 14 `box-operation`): a store the flow's
+  steps write (`writes:` on the agent's steps) is joined by its dashed line to UNC, the nearest actor, rather than to the component that writes it; prefer the
+  actor whose steps name the store in `reads`/`writes`. Screenshot: smc-resiliency drawing page 11 (E2E: On-box operations).
 - [ ] **Redaction test decision** — vendor captures under `documents/drawio-sources-20261019/` hold example private addresses from the vendor docs; decide before adding a redaction test like
   skill-nautobot's (verbatim captures are exempt by design).
 
