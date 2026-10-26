@@ -82,7 +82,7 @@ restart:
   services: [apache2]
   processes:
     - {pattern: 'php Start.php', respawn: cron}   # apn-mqtt-client
-    - {pattern: 'php -S ', respawn: cron}         # rct-tstik on 10.254.0.1:8080
+    - {pattern: 'php -S ', respawn: cron, start_now: true}   # rct-tstik on 10.254.0.1:8080
 reboot: overlay_only
 verify:
   services_active: [apache2]
@@ -254,4 +254,35 @@ As of 2026-10-23:
 >     dest: "{{ smc_change_ctl_backup }}/"
 >     flat: true
 >   loop: "{{ smc_change_backup_files.files | default([]) | map(attribute='path') | reject('in', smc_change_pooled_on_box) | list }}"
+> ```
+
+> **Learned 2026-10-26** · soak counted from the restart, start_now, PHP checks beyond the portal home page · VERIFIED_PRIMARY (offline role
+> code; live probes read-only) · Source: roles/smc_change tasks/restart.yml, tasks/reboot.yml, tasks/verify.yml, playbooks/smc_change.yml (Run
+> summary); warehouse-rct01 apply 20261026_145159 (17 min: ~3.5 min cron wait then a 5 min soak that saw 1 access-log line); access logs of 4
+> prod RCT SMCs (adjamarragu, alice-well, bidyadanga-airport, cave-hill: 13-123 page loads over all kept logs) · Falsifier: a soak that runs
+> the full soak_minutes after a cron wait, or a start_now process that runs twice
+> The soak waits only for what is left of `soak_minutes` after the restart (or the reboot), so the cron wait counts toward it. A `restart.processes`
+> entry with `start_now: true` is started at once from root's own cron line (cron's `/bin/sh`, `PATH=/usr/bin:/bin` and the crontab's `NAME=value`
+> lines, via `setsid -f`), after waiting up to 10 s for the old process to exit. Only for programs that cope with cron starting them again: rct-tstik
+> (`cd /var/www/html/rct-tstik/public && nohup php -S 10.254.0.1:8080 &>/dev/null`, no "already running?" check) does, because a second copy cannot
+> bind the port. Spec php-cve-2026-109618 now soaks 1 minute and checks the portal's `/index.php/wifi/terms` (a second view, loaded by real
+> clients; `/` and `/index.php/wifi/index` are the same page) and the tstik page on 8080 by port test plus page text. `pgrep -f 'php -S '` inside
+> a shell matches the shell's own command line, so shell checks test the port instead. Root's crontab also runs `57 23 * * * pkill -9 php` (kills
+> CLI PHP nightly; cron restarts it). The final Run summary now prints each host's gates (`gates 10/10 hold: ...` or the failed ones).
+> Probe commands take optional `name` (labels the line and shows the command's last output line) and `timeout` (s, default 30). The PHP spec
+> checks rct-tstik's AVR by running `php artisan update:stats` (root cron */5; ~15 s, 24 serial reads over `SerialIIO("serial4", 19200 ...)`
+> in app/Services/IOManager.php) and judging the lines it appends to storage/logs/laravel.log: at least one `Total Read Data[126,...]` and no
+> `Unable to read the data from AVR`. Every RCT SMC has an AVR except the bench Pi php-rct-smc01 (operator, 2026-10-26), whose log holds only
+> empty reads and that error; a log that never held a `Total Read Data[126` line is taken as no AVR and passes. laravel.log is one large
+> file (270-436 MB on prod) with thousands of network `local.ERROR` lines (cURL 6/28, socket_connect), so a gate on any ERROR would fail every
+> site; 0 AVR errors ever on warehouse-rct01, alice-well, cave-hill, adjamarragu. Check mode on warehouse-rct01 (2026-10-26, 120 s): portal-terms
+> 200, tstik page renders, 24 AVR reads, no errors. `/index.php/wifi/terms` answers 200 with HTML on prod wh, nbn_accelerate, nbn_wh and rcp too.
+>
+> ```yaml
+> - name: Let client traffic reach the changed box (what is left of the soak)
+>   ansible.builtin.pause:
+>     seconds: "{{ smc_change_soak_left }}"
+>   vars:
+>     smc_change_soak_left: >-
+>       {{ [smc_change_soak | int * 60 - (now().timestamp() | int - smc_change_restarted_at | default(now().timestamp()) | int), 0] | max }}
 > ```
