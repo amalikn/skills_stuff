@@ -84,6 +84,7 @@ class Profile:
         own_families: families with `own_page: true`, drawn only on their own End-to-end page and left off the full one, their flows numbered
             from 1 on their own (operator, 2026-10-26).
         family_prefix: {own family id: the word before its flow numbers on tabs and the index, `prefix` else the family name}.
+        no_flow_pages: families with `flow_pages: false`: no page per flow and no index row, only their End-to-end page (operator, 2026-10-26).
         band_title: the heading of the band below the columns.
         kind_shapes: {component kind: flow page shape} from `drawing.kind_shapes` (flowmap.shapes.DEFAULT_KIND_SHAPES fills the rest).
         io_vias: transports that cross a network, lower case, from `drawing.io_vias` (default flowmap.shapes.DEFAULT_IO_VIAS).
@@ -110,6 +111,7 @@ class Profile:
     family_by_category: dict = field(default_factory=dict)
     own_families: frozenset = frozenset()
     family_prefix: dict = field(default_factory=dict)
+    no_flow_pages: frozenset = frozenset()
     band_title: str = "Stores and secrets"
     kind_shapes: dict = field(default_factory=dict)
     io_vias: tuple = DEFAULT_IO_VIAS
@@ -166,6 +168,7 @@ class Profile:
                    kind_tier=dict(d.get("kind_tier") or {}), default_tier=int(d.get("default_tier", 0)), families=families,
                    family_by_category=by_cat, own_families=frozenset(f["id"] for f in d.get("families") or () if f.get("own_page")),
                    family_prefix={f["id"]: f.get("prefix", f["name"]) for f in d.get("families") or () if f.get("own_page")},
+                   no_flow_pages=frozenset(f["id"] for f in d.get("families") or () if f.get("flow_pages") is False),
                    band_title=d.get("band_title", "Stores and secrets"),
                    kind_shapes=dict(d.get("kind_shapes") or {}), io_vias=tuple(v.lower() for v in d.get("io_vias", DEFAULT_IO_VIAS)),
                    look={**DEFAULT_LOOK, **(d.get("look") or {})})

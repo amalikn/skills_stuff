@@ -22,7 +22,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from drawio.audit import faults, page_audit
-from flowmap import e2e, e2e_family, model, options, overview, pages
+from flowmap import e2e, e2e_family, map_parts, model, options, overview, pages
 from flowmap.profile import Profile, look_report
 
 #: The oldest Python this script runs on (stdlib; PyYAML to read the map).
@@ -69,6 +69,7 @@ def audit(root: Path, profile: Profile) -> list[str]:
             + [f"{name}: {f}" for pid, name, block in model.option_blocks(data)
                for f in faults(page_audit(options.options_page(data, profile, block, pid, name)))]
             + [f"Flow {i + 1} ({fl['id']}): {f}" for i, fl in enumerate(data["flows"])   # flow pages too (2026-10-21: overlaps went unseen)
+               if fl in map_parts.paged_flows(data, profile)
                for f in faults(page_audit(pages.flow_page(fl, {c["id"]: c for c in data["components"]}, i + 1, profile)))])
 
 
@@ -164,7 +165,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     if args.write:
         try:
-            print(f"wrote {pages.write_drawing(root, profile, outcome).relative_to(root)}")
+            out = pages.write_drawing(root, profile, outcome)
+            print(f"wrote {out.relative_to(root) if out.is_relative_to(root) else out}")   # --output may sit outside the root
             print("\n".join(look_report(model.read_map(root, profile.map) or {})))
         except FileExistsError as exc:
             print(f"render_flowmap: {exc}", file=sys.stderr)

@@ -124,6 +124,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/overview.py` | The Overview page: groups, thick and thin arrows, counts, dots, layers, index, legends | `safe` |
 | `scripts/flowmap/e2e_grid.py` | End-to-end grid: placement, link plans, row heights, ports, channel and corridor tracks | `safe` |
 | `scripts/flowmap/e2e.py` | End-to-end polylines, crossing-cutting local search, and the drawing | `safe` |
+| `scripts/flowmap/crossing_search.py` | End-to-end local search: plain track and port swaps, and joint moves (two ports swapped with one link's track moved beside the other's); the run with fewer crossings is kept | `safe` |
 | `scripts/flowmap/e2e_family.py` | One End-to-end page per flow family after the full one (`look.e2e_family_pages`): that family's flows and components, the map's flow numbers (an `own_page` family's own, drawn even with the look off), ids renamed `e2f-<family>-` | `safe` |
 | `scripts/flowmap/step_labels.py` | End-to-end step arrow labels: x.y and the flow's step count (`look.e2e_step_total`: sub, sup, slash), label font and size, the spots tried on a run; the legend's reading line, wrapped on a narrow page | `safe` |
 | `scripts/flowmap/loops.py` | End-to-end self-loops (`look.e2e_loops`): a step that stays in its box drawn as a loop on the roomier of its top and bottom edges, gaps widened only where room lacks | `safe` |

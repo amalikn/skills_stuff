@@ -20,6 +20,7 @@ from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
 from .loops import draw_loops, plan_loops
+from .crossing_search import improve
 from .isolate import BOX_TAG, E2E_DIMMED, LEGEND_TAG, dim_level, group_tag, isolate_link
 from .tips import comp_tags, comp_tip
 
@@ -203,22 +204,8 @@ class EndToEnd(E2EGrid):
         return changed
 
     def _improve(self) -> None:
-        """Local search: swap neighbouring tracks in each channel and corridor, and neighbouring ports in each pool, while crossings drop."""
-        self.pts, self.segs, self.bbox = {}, {}, {}
-        self._refresh({link.cid for link in self.links})
-        vusers = {ct: {key.split("|")[0] for key in keys} for ct, keys in self.vruns.items()}
-        gusers: dict[tuple[int, int], set] = {}
-        for (cid, g), t in self.gtrack.items():
-            gusers.setdefault((g, t), set()).add(cid)
-        for _ in range(4):
-            changed = self._sweep_slots(self.vslot, vusers, False)
-            changed = self._sweep_slots(self.gslot, gusers, True) or changed
-            for _key, users in sorted(self.pools.items()):
-                for i in range(len(users) - 1):
-                    if self._try(_swapper(users, i, i + 1), {users[i][0], users[i + 1][0]}, check_runs=True):
-                        changed = True
-            if not changed:
-                break
+        """Cut crossings by local search (flowmap.crossing_search.improve: plain swaps, and joint port-and-track moves, best of both kept)."""
+        improve(self)
 
     def _box_span(self, comp: str) -> tuple[float, float]:
         """A box's top and height: it covers its own ports with E2E_BOX_PAD to spare and fits its text, centred in its row when it has few ports.

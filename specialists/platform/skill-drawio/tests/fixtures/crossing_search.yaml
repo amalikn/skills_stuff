@@ -1,0 +1,274 @@
+# Test fixture for tests/test_crossing_search.py: the flows of one change through a generic change role, taken from ansible-wifi's smc_change
+# map (2026-10-26). Its End-to-end page has out-and-back pairs the plain swap search leaves crossing.
+schema_version: 1
+title: joint move fixture
+updated: '2026-10-26'
+drawing:
+  kinds:
+    person:
+    - '#ffffff'
+    - '#000000'
+    controller:
+    - '#dae8fc'
+    - '#6c8ebf'
+    data:
+    - '#e6e6e6'
+    - '#4d4d4d'
+    access:
+    - '#dfe7f3'
+    - '#3d5a80'
+    smc:
+    - '#ffe6cc'
+    - '#d79b00'
+    service:
+    - '#d5e8d4'
+    - '#82b366'
+    external:
+    - '#fff2cc'
+    - '#d6b656'
+  tiers:
+  - name: Controller
+    groups:
+    - Controller
+  - name: Access
+    groups:
+    - Access
+  - name: SMC
+    groups:
+    - SMC
+  - name: Outside services
+    groups:
+    - Outside services
+  below:
+    groups:
+    - Role data
+  band_title: Role data
+components:
+- id: playbook
+  name: smc_change.yml
+  kind: controller
+  group: Controller
+  host: a host
+  health: ok
+  depends_on:
+  - role
+  - teleport
+- id: role
+  name: smc_change role
+  kind: controller
+  group: Controller
+  host: a host
+  health: ok
+  depends_on:
+  - spec
+  - probe
+  - records
+- id: spec
+  name: Change spec
+  kind: data
+  group: Role data
+  host: a host
+  health: ok
+- id: probe
+  name: Probe scripts
+  kind: data
+  group: Role data
+  host: a host
+  health: ok
+- id: records
+  name: Run records
+  kind: data
+  group: Role data
+  host: a host
+  health: ok
+- id: teleport
+  name: Teleport
+  kind: access
+  group: Access
+  host: a host
+  health: ok
+  depends_on:
+  - live-root
+- id: live-root
+  name: Live root
+  kind: smc
+  group: SMC
+  host: a host
+  health: ok
+  depends_on:
+  - lower-dir
+  - services
+  - apt-mirror
+- id: lower-dir
+  name: Overlay lower dir
+  kind: smc
+  group: SMC
+  host: a host
+  health: ok
+- id: backup
+  name: SMC backup
+  kind: smc
+  group: SMC
+  host: a host
+  health: ok
+- id: php-packages
+  name: PHP 8.1 packages
+  kind: smc
+  group: SMC
+  host: a host
+  health: ok
+  depends_on:
+  - apt-mirror
+- id: apache2
+  name: apache2
+  kind: service
+  group: SMC
+  host: a host
+  health: ok
+  depends_on:
+  - php-packages
+- id: php-cron
+  name: Cron PHP processes
+  kind: service
+  group: SMC
+  host: a host
+  health: ok
+  depends_on:
+  - php-packages
+- id: apt-mirror
+  name: Ubuntu archive
+  kind: external
+  group: Outside services
+  host: a host
+  health: ok
+flows:
+- id: php-plan
+  title: Plan
+  category: change
+  purpose: a phase of one change
+  trigger:
+    kind: command
+    detail: run
+  runs_on: playbook
+  owner: role
+  dependencies:
+    components:
+    - spec
+    - probe
+    - teleport
+  steps:
+  - id: spec
+    actor: role
+    action: a step
+    via:
+    - file
+  - id: probe
+    actor: live-root
+    action: a step
+    via:
+    - SSH
+  - id: guard
+    actor: role
+    action: a step
+    via:
+    - internal
+- id: php-backup
+  title: Back up
+  category: change
+  purpose: a phase of one change
+  trigger:
+    kind: after
+    detail: run
+  runs_on: playbook
+  owner: role
+  dependencies:
+    flows:
+    - php-plan
+  steps:
+  - id: open
+    actor: lower-dir
+    action: a step
+    via:
+    - SSH
+  - id: backup
+    actor: backup
+    action: a step
+    via:
+    - SSH
+- id: php-upgrade
+  title: Upgrade
+  category: change
+  purpose: a phase of one change
+  trigger:
+    kind: after
+    detail: run
+  runs_on: playbook
+  owner: role
+  dependencies:
+    flows:
+    - php-backup
+    components:
+    - apt-mirror
+  steps:
+  - id: live
+    actor: php-packages
+    action: a step
+    via:
+    - apt
+  - id: chroot
+    actor: lower-dir
+    action: a step
+    via:
+    - apt
+- id: php-restart
+  title: Restart
+  category: change
+  purpose: a phase of one change
+  trigger:
+    kind: after
+    detail: run
+  runs_on: playbook
+  owner: role
+  dependencies:
+    flows:
+    - php-upgrade
+  steps:
+  - id: apache
+    actor: apache2
+    action: a step
+    via:
+    - systemd
+  - id: cron
+    actor: php-cron
+    action: a step
+    via:
+    - cron
+  - id: close
+    actor: lower-dir
+    action: a step
+    via:
+    - SSH
+- id: php-prove
+  title: Prove
+  category: change
+  purpose: a phase of one change
+  trigger:
+    kind: after
+    detail: run
+  runs_on: playbook
+  owner: role
+  dependencies:
+    flows:
+    - php-restart
+  steps:
+  - id: gates
+    actor: role
+    action: a step
+    via:
+    - SSH
+    - HTTP
+  - id: record
+    actor: records
+    action: a step
+    via:
+    - file

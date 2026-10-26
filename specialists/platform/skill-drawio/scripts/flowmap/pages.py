@@ -17,7 +17,7 @@ from drawio.mxfile import BLANK, Page, banner, heading, label, mxfile, wrapped_l
 from .e2e import end_to_end_page
 from .e2e_family import family_pages
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
-from .map_parts import flow_labels
+from .map_parts import flow_labels, paged_flows
 from .model import option_blocks
 from .options import options_page
 from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, label_gaps, plan_runs, reserve, run_ys, step_width
@@ -320,7 +320,7 @@ def render(data: dict, profile: Profile) -> str:
     """
     comps, labels = {c["id"]: c for c in data["components"]}, flow_labels(data, profile)
     pages = ([overview_page(data, profile), end_to_end_page(data, profile)] + family_pages(data, profile)   # family pages only with look.e2e_family_pages
-             + [flow_page(f, comps, labels[f["id"]], profile) for f in data["flows"]])
+             + [flow_page(f, comps, labels[f["id"]], profile) for f in paged_flows(data, profile)])
     for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: decision pages go right after the Overview, in map order
         pages.insert(1 + k, options_page(data, profile, block, pid, name))
     for page in pages:   # the background layer locked on every page: nothing on it moves by accident (operator, 2026-10-26)

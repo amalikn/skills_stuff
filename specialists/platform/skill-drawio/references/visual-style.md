@@ -169,6 +169,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   1 with colours of their own, and their tabs and Overview index rows carry the family's `prefix` ("PHP 1. Plan"; default the family name).
   The full page's shared flows are numbered among themselves, so adding such a family renumbers nothing (`flowmap.map_parts`; operator,
   2026-10-26: "it wont be added to the e2e flow", "it should not be starting from 5.x").
+- `flow_pages: false` on a family drops its flows' own pages and Overview index rows; the family is read on its End-to-end page only
+  (operator, 2026-10-26: "Don't need individual PHP pages").
 - `look.e2e_step_total` adds each flow's step count n to its End-to-end arrow labels and legend rows, so a reader knows how long a flow is
   and that a skipped number is a step done by the same component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means
   `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from the text
@@ -505,4 +507,28 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > # scripts/flowmap/overview.py _thin_routes (skills_stuff, 2026-10-26)
 > if any(abs(pos[ch[-1]][0] + OV_BW * fi - x) < 3 for k, x in exits.items() if k != id(ch)):
 >     fi += 1 / (2 * (len(ins[ch[-1]]) + 1))   # its drop would run down another box's exit line: enter half a slot right
+> ```
+
+> **Learned 2026-10-26** · joint moves in the End-to-end search · VERIFIED_PRIMARY · Source: `scripts/flowmap/crossing_search.py`
+> (`improve`, `port_and_tracks`, `moved_next_to`); `tests/test_crossing_search.py` (fixture `tests/fixtures/crossing_search.yaml`, proved
+> red with the worse run kept); screenshots `references/screenshots/20261026-joint-moves/` · Falsifier: a page whose crossings after
+> `improve` exceed the plain search's, or an out-and-back pair left crossing where a port swap plus one track move clears it
+> The search kept one swap at a time, only when crossings dropped. An arrow from box A to B and the next step back from B to A crossed on
+> the operator's PHP page: clearing it needs their ports on A swapped and one vertical track moved, and either alone adds a crossing, so
+> the search never got there (operator, 2026-10-26: "improve the logic in the skill, not like a manual handwork"). What did not work: swapping
+> the two tracks outright (jumped over three dashed tracks, +13 crossings); running joint moves inside the plain search (the shop example
+> rose 11 -> 13: a greedy path to a worse end); judging every candidate on the whole page (unified-network-controller 4 s -> 81 s). What
+> did: move one track beside the other with the rest in order, count only the links whose track or port moved (their crossings against
+> every link are the page's whole change), check spacing only on the chosen move, try only a pair that crosses itself, and run the plain
+> and the joint search from one start, keeping the one with fewer crossings. Measured: smc_change E2E 72 -> 24, PHP 29 -> 20,
+> unified-network-controller's 31-flow page 4,177 -> 3,689 (render 4 s -> about 18 s), smc-resiliency p5 671 -> 528; shop byte-identical.
+>
+> ```python
+> # scripts/flowmap/crossing_search.py improve (skills_stuff, 2026-10-26)
+> for joint in (False, True):
+>     grid.vslot, grid.gslot, grid.pools = deepcopy(start)
+>     grid._refresh(every)
+>     _search(grid, joint)
+>     results.append((grid._crossings(every), joint, deepcopy((grid.vslot, grid.gslot, grid.pools))))
+> _n, _joint, best = min(results, key=lambda r: (r[0], r[1]))   # the plain run on a tie: a page no joint move helps is unchanged
 > ```

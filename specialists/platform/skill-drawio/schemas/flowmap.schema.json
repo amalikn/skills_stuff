@@ -509,6 +509,10 @@
                 "type": "boolean",
                 "description": "Draw this family's flows only on its own End-to-end page (drawn even with look.e2e_family_pages off), leave them off the full one, and number them from 1 with colours of their own; for example one change's flows (operator, 2026-10-26)."
               },
+              "flow_pages": {
+                "type": "boolean",
+                "description": "false: no page per flow of this family and no Overview index row for them; the family is read on its End-to-end page (operator, 2026-10-26). Default true."
+              },
               "prefix": {
                 "type": "string",
                 "minLength": 1,

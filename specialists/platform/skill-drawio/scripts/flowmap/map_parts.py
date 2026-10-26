@@ -59,6 +59,20 @@ def flow_labels(data: dict, profile: Profile) -> dict[str, str]:
                       else str(nums[f["id"]])) for f in data["flows"]}
 
 
+def paged_flows(data: dict, profile: Profile) -> list[dict]:
+    """The flows that get a page of their own: all but those of a family with `flow_pages: false` (operator, 2026-10-26: "Don't need
+    individual PHP pages"; such a family is read on its End-to-end page).
+
+    Args:
+        data: the validated map.
+        profile: the drawing profile (its no_flow_pages).
+
+    Returns:
+        The flows, in map order.
+    """
+    return [f for f in data["flows"] if not profile.no_flow_pages or flow_family(f, profile) not in profile.no_flow_pages]
+
+
 def shared_part(data: dict, profile: Profile) -> dict:
     """The full End-to-end page's part of the map: every flow but those of an `own_page` family, and every component but those only such
     flows touch (operator, 2026-10-26: one change's flows on their own page, never on the full one).

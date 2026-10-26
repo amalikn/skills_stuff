@@ -9,7 +9,7 @@ from __future__ import annotations
 from drawio.mxfile import Page, label, wrapped_lines
 
 from .isolate import LEGEND_TAG, ov_cell
-from .map_parts import flow_labels, flow_numbers
+from .map_parts import flow_labels, flow_numbers, paged_flows
 from .model import comp_style, flow_family, option_blocks
 from .shapes import component_shape, fit_height, person_badge
 from .overview_layout import THIN_GREY
@@ -102,7 +102,7 @@ def family_entries(page: Page, data: dict, profile: Profile, x: float, y: float)
 
 
 def flow_entries(page: Page, data: dict, profile: Profile, x: float, top: float) -> float:
-    """One clickable index box per flow page, numbered as its tab is (flowmap.map_parts.flow_labels).
+    """One clickable index box per flow page, numbered as its tab is (flowmap.map_parts.flow_labels); a flow with no page has no box.
 
     Args:
         page: the Overview.
@@ -115,7 +115,7 @@ def flow_entries(page: Page, data: dict, profile: Profile, x: float, top: float)
         The offset after the last box.
     """
     labels = flow_labels(data, profile)
-    for f in data["flows"]:
+    for f in paged_flows(data, profile):
         sub = f"{f['trigger']['kind']} · runs on {f['runs_on']} · {f['category']}"
         title, line2 = f"**{labels[f['id']]}. {f['title']}**", (f"*{f['status']['state']} since {f['status']['since']}* · {sub}" if f.get("status") else sub)
         h = index_height(title, line2)

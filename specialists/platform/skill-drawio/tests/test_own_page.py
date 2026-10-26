@@ -149,6 +149,20 @@ class OwnPage(unittest.TestCase):
             self.assertFalse([k for k, v in page_audit(page).items() if v], page.page_id)
 
 
+    def test_flow_pages_false_drops_the_pages_and_index_rows(self) -> None:
+        """`flow_pages: false` leaves the family's E2E page and drops its flow tabs and index rows; other flows keep theirs."""
+        data = _map()
+        for fam in data["drawing"]["families"]:
+            if fam["id"] == OWN:
+                fam["flow_pages"] = False
+        dia = _diagrams(data)
+        overview = ET.tostring(dia["overview"], encoding="unicode")
+        self.assertIn(f"end-to-end-{OWN}", dia)
+        for f in data["flows"]:
+            own = f["id"] in _own_flows(data)
+            self.assertEqual(f"flow-{f['id']}" in dia, not own, f["id"])
+            self.assertEqual(f'id="ov-f-{f["id"]}"' in overview, not own, f["id"])
+
 class ThinSharedRuns(unittest.TestCase):
     """Thin arrows with no end in common may not share a run (audit), and the Overview nudges such an entry aside (2026-10-26)."""
 
