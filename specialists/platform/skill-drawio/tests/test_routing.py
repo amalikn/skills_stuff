@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 audit = importlib.import_module("drawio.audit")
 router, pages, lanes = (importlib.import_module(f"flowmap.{n}") for n in ("routing", "pages", "lanes"))
 TestMap = importlib.import_module("test_layout_rules")
+costs = importlib.import_module("flowmap.route_costs")   # "route_costs"
 
 
 def _crowded() -> dict:
@@ -33,6 +34,27 @@ def _crowded() -> dict:
         {"id": "ref", "actor": "a", "action": "x", "via": ["API"], "next": []},
         {"id": "fetch", "actor": "b", "action": "x", "via": ["API"]}]
     return data
+
+
+class RouteCostTests(unittest.TestCase):
+    """Overshoot into a box on the right, and leaving a source's top or bottom toward it (operator review 2026-10-26)."""
+
+    SRC, DST = (0, 0, 100, 60), (200, 300, 100, 60)
+
+    def test_overshoot(self) -> None:
+        """A flat run past the target's left edge into its top counts; a left entry or a target not wholly right does not."""
+        over = [((100, 30), (250, 30)), ((250, 30), (250, 300))]
+        turn = [((100, 30), (150, 30)), ((150, 30), (150, 330)), ((150, 330), (200, 330))]
+        self.assertTrue(costs.overshoot(over, "top", self.SRC, self.DST))
+        self.assertFalse(costs.overshoot(turn, "left", self.SRC, self.DST))
+        self.assertFalse(costs.overshoot(over, "top", self.SRC, (50, 300, 100, 60)))
+
+    def test_leaves_off_side(self) -> None:
+        """Leaving top or bottom toward a box wholly right counts, unless the source is a multi-branch decision."""
+        rects = {"s": self.SRC, "d": self.DST}
+        self.assertTrue(costs.leaves_off_side("top", ("s", "d"), rects, {"branchy": set()}))
+        self.assertFalse(costs.leaves_off_side("right", ("s", "d"), rects, {"branchy": set()}))
+        self.assertFalse(costs.leaves_off_side("top", ("s", "d"), rects, {"branchy": {"s"}}))
 
 
 class FlowRouterTests(unittest.TestCase):
@@ -91,14 +113,23 @@ class FlowRouterTests(unittest.TestCase):
     def test_uncross_redraws_a_crossing_pair(self) -> None:
         """Three arrows into one box, one coming down from a lane above (smc-resiliency fw-x86, operator review 2026-10-22): with `uncross` the
         page has no crossing; with it switched off the greedy order leaves one, so the test can fail."""
-        data = _firmware()
+        data = dict(_firmware(), drawing={"look": {"branch_order": "first"}})   # the order that left the crossing for uncross to clear
         comps = {c["id"]: c for c in data["components"]}
         fq = importlib.import_module("flow_quality")
         page = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(data))
         self.assertEqual(audit.faults(audit.page_audit(page)), [])
         self.assertEqual(fq.page_quality(page)["crossings"], 0)
-        greedy = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(dict(data, drawing={"look": {"uncross": "off"}})))
+        greedy = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(dict(data, drawing={"look": {"uncross": "off", "branch_order": "first"}})))
         self.assertGreater(fq.page_quality(greedy)["crossings"], 0)
+
+    def test_branches_route_at_their_longest_turn(self) -> None:
+        """With the default branch_order a decision's branches route after the shorter arrows, so the same map has no crossing even without
+        uncross (operator review 2026-10-26: a skipping branch had taken a port a next-step arrow needed)."""
+        data = dict(_firmware(), drawing={"look": {"uncross": "off"}})
+        comps = {c["id"]: c for c in data["components"]}
+        page = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(data))
+        self.assertEqual(importlib.import_module("flow_quality").page_quality(page)["crossings"], 0)
+        self.assertEqual(audit.faults(audit.page_audit(page)), [])
 
 
 def _firmware() -> dict:

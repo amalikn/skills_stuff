@@ -33,6 +33,7 @@ DEFAULT_LOOK = {
     "arrow_corners": "rounded",    # flow-page arrows turn with rounded corners as on the Overview; "square" for sharp corners
     "max_aspect": 0.8,             # a step box taller than this times its width is widened instead (long text: wider, not tall and narrow)
     "uncross": "on",               # redraw two flow arrows that cross in the other order, kept when crossings drop (operator review 2026-10-22); "off"
+    "branch_order": "longest",     # a decision's branches route at their longest branch's turn (2026-10-26); "first": at their shortest's
     "e2e_layers": "family",        # End-to-end colours and layers per "family", or per "flow" (each x of x.y its own; operator, 2026-10-23)
     "connector_width": 1.25,       # End-to-end dashed connector stroke width; 2 matches the step arrows (operator asked for bold, 2026-10-23)
     "e2e_family_pages": False,     # also one End-to-end page per family after the full one, only that family's flows and boxes (operator, 2026-10-23)

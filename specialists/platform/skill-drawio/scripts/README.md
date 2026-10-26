@@ -135,6 +135,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/flow_geometry.py` | Flow page geometry: step widths by shape (wider decisions), column gap and positions, run planning and lane room, back-arrow routes below the lanes | `safe` |
 | `scripts/flowmap/lanes.py` | Flow page lanes: lane heads (structured text; symbols sized to their text inside a plain panel), room kept for arrow runs, run positions | `safe` |
 | `scripts/flowmap/routing.py` | Flow page forward arrows: candidate orthogonal paths scored against what is drawn (boxes, adjacent runs, reused ports, crossings), the cheapest drawn; decision branch labels | `safe` |
+| `scripts/flowmap/route_costs.py` | Flow page route costs: an arrow overshooting into a box on the right's top or bottom, or leaving a source's top or bottom toward it (both should turn in the gap) | `safe` |
 | `scripts/flowmap/uncross.py` | Flow page uncrossing pass: two forward arrows that cross are redrawn in the other order, kept only when the page has fewer crossings (`drawing.look.uncross`) | `safe` |
 | `scripts/flowmap/tips.py` | Hover texts (components, steps, End-to-end arrows and connectors), draw.io tags, End-to-end colour and layer groups (`look.e2e_layers`) | `safe` |
 | `scripts/flowmap/pages.py` | Flow pages, `render`, `evaluate`, `write_drawing`, `flow_list` | `safe` (`write_drawing` writes the drawing) |

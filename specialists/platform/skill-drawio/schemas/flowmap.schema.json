@@ -600,6 +600,14 @@
             "action_bullets": {
               "type": "boolean"
             },
+            "branch_order": {
+              "type": "string",
+              "enum": [
+                "longest",
+                "first"
+              ],
+              "description": "Flow pages: when a decision's branches are routed together, at their longest branch's turn (default, so shorter arrows into a branch's target are drawn first) or at their shortest's (before 2026-10-26)."
+            },
             "uncross": {
               "type": "string",
               "enum": [

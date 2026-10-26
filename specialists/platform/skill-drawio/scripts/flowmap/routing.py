@@ -20,6 +20,8 @@ from itertools import permutations
 from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 from drawio.mxfile import ARROW_HEAD, Page, label
 
+from .route_costs import leaves_off_side, overshoot
+
 #: Two parallel runs closer than this (px) read as one arrow.
 NEAR = 8
 #: Costs: a crossed box (or the arrow's own box) is unusable in practice; a run alongside another or over a label, a reused point, a reused side,
@@ -108,26 +110,8 @@ def cost(page: Page, path: tuple, ends: tuple, used: dict) -> float:
     sides = ((src, out_side) in used["sides"]) + ((dst, in_side) in used["sides"])
     length = sum(abs(p[0] - q[0]) + abs(p[1] - q[1]) for p, q in segs)
     return ((boxes + own) * COST_BOX + (along + labels) * COST_ALONG + points * COST_PORT + sides * COST_SIDE + crosses * COST_CROSS
-            + (len(segs) - 1) * COST_BEND + odd * COST_ODD_EXIT + _overshoot(segs, in_side, page.rects[src], page.rects[dst]) * COST_OVERSHOOT
-            + length / 1000)
-
-
-def _overshoot(segs: list, in_side: str, src: tuple, dst: tuple) -> bool:
-    """Whether a path into a box to the right runs flat over the target's column to enter its top or bottom.
-
-    Args:
-        segs: the path's runs.
-        in_side: the entry side.
-        src: the source box.
-        dst: the target box.
-
-    Returns:
-        True for an entry at the top or bottom after a horizontal run past the target's left edge, when the target lies wholly right of
-        the source (a left entry could turn in the gap between them).
-    """
-    if in_side == "left" or dst[0] < src[0] + src[2]:
-        return False
-    return any(abs(p[1] - q[1]) < .5 and max(p[0], q[0]) > dst[0] + .5 for p, q in segs)
+            + (len(segs) - 1) * COST_BEND + odd * COST_ODD_EXIT + length / 1000
+            + (overshoot(segs, in_side, page.rects[src], page.rects[dst]) + leaves_off_side(out_side, ends, page.rects, used)) * COST_OVERSHOOT)
 
 
 def _ports(rect: tuple, diamond: bool, out: bool) -> list:
@@ -353,11 +337,19 @@ def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> tuple:
     corridors = dict(corridors, rounded=0 if look.get("arrow_corners", "rounded") == "square" else 1)   # rounded corners, as on the Overview
     by_id = {s["id"]: s for s in steps}
     order = {s["id"]: k for k, s in enumerate(steps)}
-    forward = sorted((e for e in edges if "back to" not in e[3]), key=lambda e: order[e[2]] - order[e[1]])
-    used: dict = {"points": set(), "sides": set()}
+    fwd = [e for e in edges if "back to" not in e[3]]
+    span = {e[0]: order[e[2]] - order[e[1]] for e in fwd}
+    # A decision's branches route together, when their longest branch's turn comes: a branch that skips steps then finds the shorter arrows
+    # into its target already drawn and takes a port beside them (operator review 2026-10-26: 8 -> 9 rose into 9's bottom because 7's
+    # "read-only" branch had taken 9's left first).
+    longest = look.get("branch_order", "longest") == "longest"
+    group_span = {e[0]: max(span[g[0]] for g in fwd if g[1] == e[1]) if longest and shapes[e[1]] == "decision" else span[e[0]] for e in fwd}
+    forward = sorted(fwd, key=lambda e: (group_span[e[0]], span[e[0]]))
+    used: dict = {"points": set(), "sides": set(), "branchy": set()}
     for s in steps:   # a decision with branches keeps its top and bottom corners for them: arrows in prefer its left corner
         if shapes[s["id"]] == "decision" and len(s.get("next") or []) > 1:
             used["sides"].update({(f"{fid}-s-{s['id']}", "top"), (f"{fid}-s-{s['id']}", "bottom")})
+            used["branchy"].add(f"{fid}-s-{s['id']}")
     reserved = set(used["sides"])
     done: set = set()
     drawn: dict = {}   # cell id -> (edge, diamonds), for the uncrossing pass

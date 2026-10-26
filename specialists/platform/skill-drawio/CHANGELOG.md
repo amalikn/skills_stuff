@@ -16,7 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
-- 20261026 `e2e_page: false`, flow `tab`; near-lane label gaps; next-step arrows turn in the gap
+- 20261026 `e2e_page: false`, flow `tab`; near-lane gaps; arrows turn in gaps (`route_costs`, `branch_order`)
 - 20261026 E2E in-column links always go right (last column too); far links may run along a free target row (`row_move`); Learned 2026-10-26 in references/layout-and-routing.md
 - 20261026 Release 0.2.0 cut to keep this file within 200 lines and 25 KB (operator, 2026-10-26); 0.1.0 rotated to docs/history
 
