@@ -1,5 +1,6 @@
 """Offline tests for flowmap.crossing_search: the End-to-end local search with joint port-and-track moves (2026-10-26). A page never ends with
-more crossings than the plain search left it, and an out-and-back pair between two boxes stops crossing when an order allows it.
+more crossings than the plain search left it, and an out-and-back pair between two boxes stops crossing when an order allows it. Row
+moves: a far link that crosses another whatever the order runs along its target's row instead when that row is free.
 
 Run: `just test` (unittest, the pack's venv). The scripts folder is put on sys.path, as a consuming project does.
 """
@@ -18,6 +19,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 e2e, moves, profile = (importlib.import_module(f"flowmap.{n}") for n in ("e2e", "crossing_search", "profile"))
 EXAMPLE = ROOT / "examples" / "shop" / "flows.yaml"
 FIXTURE = ROOT / "tests" / "fixtures" / "crossing_search.yaml"
+ROW_FIXTURE = ROOT / "tests" / "fixtures" / "row_move.yaml"
 
 
 def _grid(data: dict, joint: bool) -> object:
@@ -102,6 +104,71 @@ class JointMoves(unittest.TestCase):
                     self.assertEqual(before, [u[:] for u in grid.pools.values()])
                     return
         self.skipTest("every neighbouring pair crosses")
+
+
+class RowMoves(unittest.TestCase):
+    """row_move: the PHP page's user-to-portal link runs along the portal's row and stops crossing the role's link to the portal."""
+
+    def _link(self, grid: object, src: str, dst: str) -> object:
+        """The step arrow from one component to another.
+
+        Args:
+            grid: the laid-out page.
+            src: the source component id.
+            dst: the target component id.
+
+        Returns:
+            The link.
+        """
+        return next(x for x in grid.links if x.klass == "thick" and (x.src, x.dst) == (src, dst))
+
+    def test_user_link_runs_along_the_portal_row(self) -> None:
+        """With row moves the user's link is a row link, crosses the role's link no more, and the page has fewer crossings than without."""
+        data = yaml.safe_load(ROW_FIXTURE.read_text(encoding="utf-8"))
+        grid = _grid(data, False)
+        user, role = self._link(grid, "wifi-user", "portal"), self._link(grid, "role", "portal")
+        self.assertEqual(user.kind, "row")
+        self.assertEqual(moves.count_crossings(grid.segs[user.cid], grid.segs[role.cid]), 0)
+        real = moves.row_free
+        moves.row_free = lambda _grid, _link: False
+        try:
+            without = _grid(yaml.safe_load(ROW_FIXTURE.read_text(encoding="utf-8")), False)
+        finally:
+            moves.row_free = real
+        self.assertLess(_total(grid), _total(without))
+
+    def test_laid_out_again_with_a_row_link(self) -> None:
+        """Sizing again (as loops do) after a row move gives every link its runs back, and the search runs again without error."""
+        grid = _grid(yaml.safe_load(ROW_FIXTURE.read_text(encoding="utf-8")), True)
+        grid._size()
+        grid._improve()
+        self.assertTrue(all(link.cid in grid.pts for link in grid.links))
+
+    def test_row_needs_a_free_row(self) -> None:
+        """A far link whose target row has a box in a column it passes is never made a row link."""
+        grid = _grid(yaml.safe_load(EXAMPLE.read_text(encoding="utf-8")), True)
+        for link in grid.links:
+            if link.kind in ("far", "row"):
+                (cs, _r), (ct, rt) = grid.cell[link.src], grid.cell[link.dst]
+                lo, hi = sorted((cs, ct))
+                if any(lo < col < hi and r == rt for c, (col, r) in grid.cell.items() if c != link.dst):
+                    self.assertFalse(moves.row_free(grid, link))
+                    self.assertEqual(link.kind, "far")
+
+
+class InColumnLinks(unittest.TestCase):
+    """A link between two boxes in one column always uses the channel on that column's right, the last column's too (operator, 2026-10-26)."""
+
+    def test_in_column_links_go_right(self) -> None:
+        """On the example and the row fixture every in-column link leaves and enters by the right side, through its own column's channel."""
+        for path in (EXAMPLE, ROW_FIXTURE):
+            grid = _grid(yaml.safe_load(path.read_text(encoding="utf-8")), True)
+            inside = [x for x in grid.links if grid.cell[x.src][0] == grid.cell[x.dst][0]]
+            for link in inside:
+                col = grid.cell[link.src][0]
+                self.assertEqual((link.exit[0], link.exit[2], link.entry[2]), (col, "R", "R"), link.cid)
+            if any(grid.cell[x.src][0] == grid.ncol - 1 for x in inside):
+                self.assertEqual(grid.nch, grid.ncol)
 
 
 if __name__ == "__main__":

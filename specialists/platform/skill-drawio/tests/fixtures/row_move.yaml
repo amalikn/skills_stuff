@@ -1,0 +1,308 @@
+# Test fixture for tests/test_crossing_search.py (row moves): the flows of ansible-wifi's PHP CVE change, its own End-to-end page
+# (2026-10-26). The Wi-Fi user's far link to the portal crossed the role's link to it whatever the track and port order; run along
+# the portal's row (the controller column is empty there) with the entry ports swapped, it does not.
+schema_version: 1
+title: row move fixture
+updated: '2026-10-26'
+drawing:
+  kinds:
+    person:
+    - '#ffffff'
+    - '#000000'
+    controller:
+    - '#dae8fc'
+    - '#6c8ebf'
+    data:
+    - '#e6e6e6'
+    - '#4d4d4d'
+    access:
+    - '#dfe7f3'
+    - '#3d5a80'
+    smc:
+    - '#ffe6cc'
+    - '#d79b00'
+    service:
+    - '#d5e8d4'
+    - '#82b366'
+    external:
+    - '#fff2cc'
+    - '#d6b656'
+  tiers:
+  - name: Users
+    groups:
+    - Users
+  - name: Operator
+    groups:
+    - Operator
+  - name: Controller
+    groups:
+    - Controller
+  - name: Access
+    groups:
+    - Access
+  - name: SMC
+    groups:
+    - SMC
+  - name: Outside services
+    groups:
+    - Outside services
+  below:
+    groups:
+    - Role data
+  band_title: Role data
+  look:
+    e2e_loops: true
+components:
+- id: role
+  name: smc_change role
+  kind: controller
+  group: Controller
+  host: roles/smc_change (local-only, symlinked)
+  health: '`lint.sh` and the root linters pass'
+- id: spec
+  name: Change spec
+  kind: data
+  group: Role data
+  host: files/changes/<change>/<change>.yml
+  health: load_spec.yml accepts it (actions, reboot policy, restart list)
+- id: records
+  name: Run records
+  kind: data
+  group: Role data
+  host: files/changes/<change>/runs/<host>-<change>-<mode>-<start>.json on the controller
+  health: one record per host per run; done hosts tracked for skip
+- id: live-root
+  name: Live root
+  kind: smc
+  group: SMC
+  host: x86 ext4 root, or the overlayroot merged view on a Pi
+  health: probe gates pass (services active, commands, http)
+- id: lower-dir
+  name: Overlay lower dir
+  kind: smc
+  group: SMC
+  host: /media/root-ro on overlay Pis (rct, wh, nbn_wh)
+  health: '`findmnt -no OPTIONS /media/root-ro` starts with ro'
+- id: backup
+  name: SMC backup
+  kind: smc
+  group: SMC
+  host: /var/backups/smc_change/<change>-<start> (lower dir on overlay SMCs)
+  health: '`tar` and `dpkg-repack` files present'
+- id: apt-mirror
+  name: Ubuntu archive
+  kind: external
+  group: Outside services
+  host: apt sources of the SMC
+  health: '`apt-get update` succeeds'
+- id: wifi-user
+  name: Wi-Fi user
+  kind: person
+  group: Users
+  host: a phone or laptop on the site Wi-Fi, before sign-in
+  health: reaches the captive portal
+- id: php-packages
+  name: PHP 8.1 packages
+  kind: smc
+  group: SMC
+  host: installed php8.1-* and libapache2-mod-php8.1 (live root and, on overlay SMCs, the lower dir)
+  health: '`dpkg-query -W` shows 8.1.2-1ubuntu2.28 for each'
+- id: apache2
+  name: apache2
+  kind: service
+  group: SMC
+  host: systemd unit serving the captive portal; PHP runs inside it as mod_php (libapache2-mod-php8.1)
+  health: active, `apache2ctl configtest` passes, `apache2ctl -M` lists php_module
+- id: portal
+  name: Captive portal
+  kind: service
+  group: SMC
+  host: the PHP portal app (Kohana) served by apache2 at the portal FQDN
+  health: answers with its usual status; no PHP error text in the page
+- id: mqtt-client
+  name: apn-mqtt-client
+  kind: service
+  group: SMC
+  host: '`php Start.php`, started by root cron every 5 minutes (rcp, nbn_accelerate, nbn_wh)'
+  health: a `php Start.php` process running on the current build
+- id: tstik
+  name: rct-tstik
+  kind: service
+  group: SMC
+  host: '`php -S` built-in server on <address>:8080, started by root cron every 5 minutes (rct)'
+  health: a `php -S` process on the current build, serving its page on <address>:8080 without PHP errors
+flows:
+- id: php-portal
+  title: 'Exposure: the portal'
+  category: change
+  purpose: 'Every SMC serves its captive portal through apache2 with mod_php, the setup the PHP advisory rates highest risk (unauthenticated RCE). Assessment 2026-10-22: 353 SMCs on a vulnerable build (.11
+    to .25), 35 unread, none on the fixed .28.'
+  trigger:
+    kind: request
+    detail: a Wi-Fi user opens the portal
+  runs_on: wifi-user
+  owner: role
+  steps:
+  - id: request
+    actor: portal
+    action: A Wi-Fi user's browser is sent to the captive portal before sign-in; no login is needed to reach it.
+    via:
+    - HTTP
+  - id: mod-php
+    actor: apache2
+    action: apache2 runs the portal's PHP inside its own workers through mod_php (`php_module (shared)`).
+    via:
+    - internal
+  - id: build
+    actor: php-packages
+    action: 'The loaded build is the installed php8.1, before 8.1.2-1ubuntu2.28: CVE-2026-109618 (RCE via out-of-memory corruption) and CVE-2026-109619 (RCE via stale state reused by a later request on
+      the same worker).'
+    via:
+    - internal
+- id: php-cron
+  title: 'Exposure: cron PHP'
+  category: change
+  purpose: Two long-running PHP CLI programs, restarted by cron, also run the vulnerable build and keep it in memory until they restart.
+  trigger:
+    kind: timer
+    detail: root cron every 5 minutes starts them if not running
+  runs_on: mqtt-client
+  owner: role
+  steps:
+  - id: mqtt
+    actor: php-packages
+    action: apn-mqtt-client runs `php Start.php` on the installed php8.1 CLI (rcp, nbn_accelerate, nbn_wh).
+    via:
+    - internal
+  - id: tstik
+    actor: tstik
+    action: rct-tstik serves with `php -S` on <address>:8080 (rct), also on the installed build.
+    via:
+    - internal
+- id: php-fix
+  title: Fixed build
+  category: change
+  purpose: Install 8.1.2-1ubuntu2.28 (USN-8948-1, both CVEs) for every installed php8.1 package, keeping the old builds first because the archive no longer has them.
+  trigger:
+    kind: command
+    detail: smc_change.yml -l <host> -e smc_change=php-cve-2026-109618 -e smc_change_mode=apply
+  runs_on: role
+  owner: role
+  dependencies:
+    components:
+    - spec
+    - apt-mirror
+  steps:
+  - id: keep-old
+    actor: backup
+    action: 'Stage 5 BACKUP: `dpkg-repack` the installed PHP builds and `tar` /etc/php and /etc/apache2.'
+    via:
+    - SSH
+  - id: upgrade
+    actor: php-packages
+    action: 'Stage 6 ACTIONS: apt_pin php8.1-* and libapache2-mod-php8.1 to 8.1.2-1ubuntu2.28 from the Ubuntu archive, live.'
+    via:
+    - apt
+  - id: persist
+    actor: lower-dir
+    action: 'Stage 6 ACTIONS on overlay Pis (rct, wh, nbn_wh): the same apt_pin in a chroot of the lower dir; without it a reboot brings the old build back.'
+    via:
+    - apt
+- id: php-effect
+  title: Take effect
+  category: change
+  purpose: 'New files on disk change nothing while processes still map the old libphp: everything running PHP is restarted (a box upgraded by unattended-upgrades alone kept apache2 on the deleted old build).'
+  trigger:
+    kind: after
+    detail: PHP 3 installed the fixed build
+  runs_on: role
+  owner: role
+  dependencies:
+    flows:
+    - php-fix
+  steps:
+  - id: apache
+    actor: apache2
+    action: 'Stage 7 RESTART: restart apache2, so mod_php loads .28; the portal is briefly unavailable.'
+    via:
+    - systemd
+  - id: mqtt
+    actor: mqtt-client
+    action: 'Stage 7 RESTART: `pkill` `php Start.php`; cron starts it again on .28 within 5 minutes.'
+    via:
+    - cron
+  - id: tstik
+    actor: tstik
+    action: 'Stage 7 RESTART: `pkill` `php -S`, then start it at once on .28 from root''s own cron line (`start_now`); cron would only within 5 minutes.'
+    via:
+    - cron
+  - id: close
+    actor: lower-dir
+    action: Stage 8 REBOOT, only as the fallback when the lower dir will not go back read-only.
+    via:
+    - SSH
+- id: php-prove
+  title: Prove
+  category: change
+  purpose: Show the fix is live and the portal still works for users.
+  trigger:
+    kind: after
+    detail: PHP 4 restarted everything running PHP
+  runs_on: role
+  owner: role
+  dependencies:
+    flows:
+    - php-effect
+  steps:
+  - id: portal
+    actor: portal
+    action: 'Stage 9 VERIFY: the portal home and `wifi/terms` pages answer with the same status as before, without PHP error text (`Fatal error`, `<?php`, ...).'
+    via:
+    - HTTP
+  - id: tstik-page
+    actor: tstik
+    action: 'Stage 9 VERIFY (rct): `curl <address>:8080` renders the Hardware Management Functions page without PHP error text; skipped where nothing listens on 8080.'
+    via:
+    - HTTP
+  - id: apache
+    actor: apache2
+    action: 'Stage 9 VERIFY: apache2 active, `apache2ctl configtest` passes, php_module loaded, no PHP fatal in error.log after a 1-minute soak counted from the restart.'
+    via:
+    - SSH
+  - id: no-stale
+    actor: live-root
+    action: 'Stage 9 VERIFY: `php -m` lists the same modules; no process still maps a deleted php file (the old build).'
+    via:
+    - SSH
+- id: php-rollback
+  title: Rollback
+  category: change
+  purpose: Put the old PHP build back if the new one breaks the portal, from the builds kept in PHP 3.
+  trigger:
+    kind: command
+    detail: -e smc_change_mode=rollback
+  runs_on: role
+  owner: role
+  dependencies:
+    flows:
+    - php-fix
+    components:
+    - records
+  steps:
+  - id: locate
+    actor: backup
+    action: 'Stage 5: find the newest backup of this change (controller copy first) with the repacked old builds.'
+    via:
+    - SSH
+    - file
+  - id: reinstall
+    actor: php-packages
+    action: 'Stage 6: `dpkg -i` the repacked old builds (a downgrade), live and in the lower dir; packages already at .28 before the change stay.'
+    via:
+    - apt
+  - id: restart
+    actor: apache2
+    action: 'Stage 7: restart apache2 and the cron PHP programs; stage 9 then judges health plus restored.'
+    via:
+    - systemd
+    - cron

@@ -76,14 +76,41 @@ channel) or y (horizontal channel) [C-D24].
   row gap, run along a column gap, arrive through another row gap). Channels are at least `OV_CHANNEL` (210) wide and grow so tracks stay `OV_SP` (24) apart with `OV_MIN_HEAD` (34) clear at each side.
 - Thin arrows inside a group get one track per arrow in each row gap, `OV_THIN_SP` (16) apart, and the last drop into a box is at least `OV_MIN_THIN` (22).
 - `drawio.route.track()` centres the tracks on the channel's middle: track k of n sits at `centre + (k - (n - 1) / 2) * spacing`.
-- End-to-end page: a link to a column on the right leaves its box's right side and enters the target's left side (mirrored for the left). One channel gives a straight line (same row) or a "z" with one
-  track; two channels give a "far" route along a horizontal **corridor** next to the source row (`_plan`). Channels are at least `E2E_MIN_CH` (100) wide, corridors `E2E_MIN_CORR` (48), and tracks
+- End-to-end page: a link to a column on the right leaves its box's right side and enters the target's left side (mirrored for the left). A link inside one column always uses the channel on that column's right, never the left: the last column gets a right-hand channel when it has such links (operator, 2026-10-26). One channel gives a straight line (same row) or a "z" with one
+  track; two channels give a "far" route along a horizontal **corridor** next to the source row (`_plan`), or a "row" route the crossing search may pick: down
+  its first channel to the entry port, then straight along the target's row when no box or port sits on that row in between (`crossing_search.row_free`). Channels are at least `E2E_MIN_CH` (100) wide, corridors `E2E_MIN_CORR` (48), and tracks
   `E2E_SP` (24) apart.
 
 > **Learned 2026-10-19** · flowmap End-to-end · VERIFIED_PRIMARY · Source: scripts/flowmap/e2e_grid.py `nch`; tests/test_layout_rules.py
 > test_one_column_end_to_end_page_draws_and_passes_every_audit · Falsifier: a one-tier map whose page raises or fails an audit
 > Channels sit between tier columns, so a map with one tier had none and a link inside that column raised IndexError. The grid now keeps at
 > least one channel (on the right of a single column) and the page widens to hold it; maps with two or more tiers render unchanged.
+
+> **Learned 2026-10-26** · End-to-end in-column links on the right · VERIFIED_PRIMARY · Source: `scripts/flowmap/e2e_grid.py` (`__init__`,
+> `_plan`); `tests/test_crossing_search.py` InColumnLinks · Falsifier: an in-column link entering or leaving a box's left side
+> A link inside one column used the channel on its right, except in the last column, which used its left channel, shared with every arrow
+> coming in from the column before, while its right side stayed empty (ansible-wifi etc-hosts-hostname page; operator: "what stops us using
+> the right side?", then: always the right, not a per-link search choice). The last column now gets its own right-hand channel when it has
+> in-column links, as a one-column page already did. Measured (right channel alone): etc-hosts 15 -> 8, shop example 11 -> 8; PHP 22, UNC
+> 3,689 unchanged (no in-column links in their last column).
+
+> **Learned 2026-10-26** · End-to-end row moves · VERIFIED_PRIMARY · Source: `scripts/flowmap/crossing_search.py` (`row_free`, `row_move`,
+> `_set_kinds`), `scripts/flowmap/e2e_grid.py` (`_size`, `_verticals`, `_corridors`), `scripts/flowmap/e2e.py` (`points`, `_runs_ok`);
+> `tests/test_crossing_search.py` RowMoves (fixture `tests/fixtures/row_move.yaml`); screenshot `references/screenshots/20261026-row-moves/`
+> · Falsifier: a far link that crosses a link into the same box although its target row is free and a row route with swapped ports would not
+> On ansible-wifi's PHP page 1.1 (Wi-Fi user -> portal, far) crossed 5.1 (role -> portal, z) whatever the order (operator: "again overlap of
+> 1.1 and 5.1 could have been avoided"): the far corridor runs above the portal's ports, and 5.1's track is shared with another link, so a
+> joint port-and-track move would drag that link too. A far link may now run along its target's row (kind "row"): `row_move` tries the switch
+> alone and with a neighbouring entry-port swap in both searches and keeps it only on a strict drop. Its corridor track stays reserved, and
+> `_size` makes row links far again, so a page laid out again (loops) has both runs. Measured: PHP page 22 -> 21 (1.1 and 5.1 apart),
+> unified-network-controller full page 3,689 -> 3,613 in 16.6 s (16.5 s before), the shop example unchanged.
+>
+> ```python
+> # scripts/flowmap/crossing_search.py _search (skills_stuff, 2026-10-26)
+> for link in grid.links:   # in both searches: a row move only keeps a strict drop
+>     if (link.kind == "row" or (link.kind == "far" and row_free(grid, link))) and row_move(grid, link):
+>         changed = True
+> ```
 
 > **Learned 2026-10-20** · flowmap Overview thin arrows · VERIFIED_PRIMARY · Source: scripts/drawio/route.py `gap_crossings`, `gap_order`,
 > `gap_ranks`; scripts/flowmap/overview.py `_thin_routes`; tests/test_layout_rules.py ThinTrackOrder · Falsifier: a group whose thin arrows

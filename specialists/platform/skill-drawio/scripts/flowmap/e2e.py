@@ -99,8 +99,8 @@ class EndToEnd(E2EGrid):
             y = self._port_y(link.cid, "exit")
             return [(sx, y), (tx, y)]
         ye, yi = self._port_y(link.cid, "exit"), self._port_y(link.cid, "entry")
-        if link.kind == "z":
-            x = self._track_x(link.exit[0], f"{link.cid}|z")
+        if link.kind in ("z", "row"):   # a row link drops in its first channel and runs along the target's row
+            x = self._track_x(link.exit[0], f"{link.cid}|z" if link.kind == "z" else f"{link.cid}|1")
             return [(sx, ye), (x, ye), (x, yi), (tx, yi)]
         yc = self._gap_y(link.cid, link.gap)
         x1, x2 = self._track_x(link.exit[0], f"{link.cid}|1"), self._track_x(link.entry[0], f"{link.cid}|2")
@@ -155,7 +155,7 @@ class EndToEnd(E2EGrid):
         for cid in cids:
             for ch, lo, hi, key in self._verticals(self.by[cid]):
                 for other in self.vruns[(ch, self.vtrack[key])]:
-                    if other != key:
+                    if other != key and other in spans:   # a row link's second run is gone while its track stays
                         _c, olo, ohi = spans[other]
                         if not (hi + E2E_SP <= olo or ohi + E2E_SP <= lo):
                             return False

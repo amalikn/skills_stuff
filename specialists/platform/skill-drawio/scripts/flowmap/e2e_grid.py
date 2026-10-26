@@ -72,7 +72,8 @@ class Link:
         klass: "thick" for a step arrow, "thin" for a connector.
         family: the flow family id.
         text: the flow.step label (empty for a connector).
-        kind: "straight", "z" (one channel) or "far" (two channels and a corridor).
+        kind: "straight", "z" (one channel), "far" (two channels and a corridor) or "row" (a far link run along its target's row instead,
+            through empty cells; flowmap.crossing_search picks it, and its corridor track stays reserved).
         exit: (channel, row, side) of the source port.
         entry: (channel, row, side) of the target port.
         gap: the corridor (the row gap below that row; -1 is above the first row) a far link runs along.
@@ -115,6 +116,10 @@ class E2EGrid:
         self.cell, self.band = self._place()
         self.groups, self.group_of = e2e_groups(data, profile, numbers)
         self.links = self._links()
+        # Links inside one column always use the channel on its right, the last column's too (operator, 2026-10-26): on its left they
+        # shared the channel with every arrow coming in from the column before while its right side stayed empty.
+        if self.ncol > 1 and any(self.cell[x.src][0] == self.cell[x.dst][0] == self.ncol - 1 for x in self.links):
+            self.nch = self.ncol
         for link in self.links:
             self._plan(link)
         self._size()
@@ -228,16 +233,16 @@ class E2EGrid:
         """Choose a link's sides, channels and corridor.
 
         A link to a column on the right leaves its box's right side and enters the target's left side (the mirror for one on the left); a link
-        inside one column uses the channel on its right (on its left for the last column). One channel only: straight when both boxes share a
-        row, else a "z" with one track; two channels: "far", along the corridor next to the source row on the target's side.
+        inside one column always uses the channel on its right, never the left (the last column gets one when it has such links). One
+        channel only: straight when both boxes share a row, else a "z" with one track; two channels: "far", along the corridor next to the
+        source row on the target's side.
 
         Args:
             link: the link; its kind, exit, entry and gap are set.
         """
         (cs, rs), (ct, rt) = self.cell[link.src], self.cell[link.dst]
         if cs == ct:
-            ch = cs if cs < self.nch else cs - 1
-            sd = "R" if ch == cs else "L"
+            ch, sd = cs, "R"   # __init__ gave the last column a right-hand channel when it has in-column links
             link.exit, link.entry = (ch, rs, sd), (ch, rt, sd)
         elif cs < ct:
             link.exit, link.entry = (cs, rs, "R"), (ct - 1, rt, "L")
@@ -289,7 +294,7 @@ class E2EGrid:
         """
         spans: dict[int, list] = {}
         for link in self.links:
-            if link.kind == "far":
+            if link.kind in ("far", "row"):
                 lo, hi = sorted((link.exit[0], link.entry[0]))
                 spans.setdefault(link.gap, []).append((lo, hi, link.cid))
         self.gtrack = {}
@@ -303,6 +308,8 @@ class E2EGrid:
 
     def _size(self) -> None:
         """Ports per channel and row, row heights, corridor tracks and heights, channel tracks and widths, and every coordinate."""
+        for link in self.links:   # sized as far links, so a laid-out-again page (flowmap.loops) still has both runs; the search re-picks rows
+            link.kind = "far" if link.kind == "row" else link.kind
         self._pools()
         gcount = self._corridors()
         gap_h = {}
@@ -365,8 +372,8 @@ class E2EGrid:
         if link.kind == "straight":
             return []
         ye, yi = self._port_y(link.cid, "exit"), self._port_y(link.cid, "entry")
-        if link.kind == "z":
-            return [(link.exit[0], min(ye, yi), max(ye, yi), f"{link.cid}|z")]
+        if link.kind in ("z", "row"):
+            return [(link.exit[0], min(ye, yi), max(ye, yi), f"{link.cid}|z" if link.kind == "z" else f"{link.cid}|1")]
         yc = self._gap_y(link.cid, link.gap)
         return [(link.exit[0], min(ye, yc), max(ye, yc), f"{link.cid}|1"), (link.entry[0], min(yc, yi), max(yc, yi), f"{link.cid}|2")]
 
