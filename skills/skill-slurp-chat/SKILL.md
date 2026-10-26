@@ -127,7 +127,7 @@ one day (2026-10-13: platform work done without invoking skill-nautobot; a skill
    source path and commit, secrets and customer identifiers removed), and for a visual surface (Nautobot, OpenWISP, a device UI, a render) a
    screenshot under the skill's `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md`, redacted or from a lab or sample instance; a
    surface not live yet is marked "screenshot pending" and caught at the next slurp. The skill's own contract states the same.
-4. **Committed.** `git status` in the skills repo for every engaged skill. A write-back that is not committed is not done: commit it (and push
+4. **Committed.** `just writeback-status <skill> ...` (this skill's justfile; exit 1 = a dirty skill) or `git status` in the skills repo for every engaged skill. A write-back that is not committed is not done: commit it (and push
    it when the session commits and pushes) as part of the write-back; the operator's "commit and push is single-repo scoped" limits the request,
    not the skill contracts. Run the skill's own tests first.
 4b. **Tools too** (operator, 2026-10-14). A tool from `tools_stuff` used this session (all-scraper first: the fallback for agent-blocked

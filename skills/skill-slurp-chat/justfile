@@ -1,0 +1,13 @@
+# skill-slurp-chat recipes. `just --list` shows them.
+set dotenv-load := false
+
+default:
+  @just --list
+
+# Slurp 5b/6b: are these skills' write-backs committed? Prints dirty files, newest CHANGELOG entry, version, unpushed commits; exit 1 if dirty.
+writeback-status +SKILLS:
+  python3 -I {{justfile_directory()}}/scripts/writeback_status.py {{SKILLS}}
+
+# Offline tests for the scripts (temporary git repo; no network).
+test:
+  cd {{justfile_directory()}}/scripts && python3 -m unittest test_transcript_passes test_writeback_status
