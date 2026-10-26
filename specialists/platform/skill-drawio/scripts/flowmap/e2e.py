@@ -301,7 +301,7 @@ class EndToEnd(E2EGrid):
         y = self.bottom + 10
         per_flow = self.profile.look.get("e2e_layers", "family") == "flow"
         total = self.step_total
-        count = {f["title"]: f" ({len(f['steps'])} steps)" if total else "" for f in self.data["flows"]}   # legend step counts (2026-10-26)
+        count = {f["title"]: f" ({len(f['steps'])} step{'' if len(f['steps']) == 1 else 's'})" if total else "" for f in self.data["flows"]}   # legend step counts (2026-10-26)
         page.box("e2e-leg-title", label("**Legend: flows** (one colour and layer each)" if per_flow else "**Legend: flow families** (one layer each)"),
                  MARGIN, y, 600, 24, "text;html=1;align=left;fontSize=14;")
         dim, leg = dim_level(self.profile.look), "1"
