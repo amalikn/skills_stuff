@@ -15,7 +15,7 @@ from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BAND_HEAD, E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_SP, E2E_TIER_HEAD, E2EGrid, Link, e2e_box_lines, e2e_text_height
 from .step_labels import label_setup, label_spot, legend_fit, legend_text, step_label, total_words
-from .map_parts import flow_numbers, shared_part
+from .map_parts import flow_numbers, narrowed, shared_part
 from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
@@ -365,7 +365,7 @@ def end_to_end_page(data: dict, profile: Profile) -> Page:
     if part is data:
         return EndToEnd(data, profile).page()
     numbers = flow_numbers(data, profile)
-    e2e = EndToEnd(part, profile, {f["id"]: numbers[f["id"]] for f in part["flows"]})
+    e2e = EndToEnd(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})   # no empty column
     e2e.title = "**End-to-end flow: every component, every shared flow** (a family with its own page is drawn only there)"
     return e2e.page()
 

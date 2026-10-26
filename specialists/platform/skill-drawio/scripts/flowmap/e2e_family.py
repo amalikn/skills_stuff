@@ -17,13 +17,11 @@ Imported, not run: `from flowmap.e2e_family import family_pages` with the skill'
 
 from __future__ import annotations
 
-from dataclasses import replace
-
 from drawio.mxfile import Page
 
 from .e2e import EndToEnd
-from .map_parts import flow_numbers, flows_part
-from .model import e2e_tier, flow_family
+from .map_parts import flow_numbers, flows_part, narrowed
+from .model import flow_family
 from .profile import Profile
 
 
@@ -43,25 +41,6 @@ def family_parts(data: dict, profile: Profile) -> list[tuple[str, str, dict]]:
         if flows:
             parts.append((fam, name, flows_part(data, flows)))
     return parts
-
-
-def narrowed(profile: Profile, comps: list[dict]) -> Profile:
-    """The profile with only the tier columns these components use, kind and default tiers renumbered to match.
-
-    Args:
-        profile: the drawing profile.
-        comps: the components on the page.
-
-    Returns:
-        A copy of the profile; the band below the columns is unchanged.
-    """
-    keep = sorted({t for t in (e2e_tier(c, profile) for c in comps) if t is not None})
-    if not keep:
-        return profile
-    new = {old: i for i, old in enumerate(keep)}
-    return replace(profile, tiers=tuple(profile.tiers[i] for i in keep),
-                   kind_tier={k: new[v] for k, v in profile.kind_tier.items() if v in new},
-                   default_tier=new.get(profile.default_tier, 0))
 
 
 def family_page(data: dict, profile: Profile, fam: str, name: str, part: dict) -> Page:

@@ -167,7 +167,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - A family with `own_page: true` (in `drawing.families`) tells a story of its own, for example one change run through a generic role: its
   flows are drawn only on its own End-to-end page (drawn even with `e2e_family_pages` off) and never on the full one, they are numbered from
   1 with colours of their own, and their tabs and Overview index rows carry the family's `prefix` ("PHP 1. Plan"; default the family name).
-  The full page's shared flows are numbered among themselves, so adding such a family renumbers nothing (`flowmap.map_parts`; operator,
+  The full page's shared flows are numbered among themselves, so adding such a family renumbers nothing, and the full page drops a tier
+  column only such a family uses (`flowmap.map_parts`, `narrowed`; operator,
   2026-10-26: "it wont be added to the e2e flow", "it should not be starting from 5.x").
 - `flow_pages: false` on a family drops its flows' own pages and Overview index rows; the family is read on its End-to-end page only
   (operator, 2026-10-26: "Don't need individual PHP pages").

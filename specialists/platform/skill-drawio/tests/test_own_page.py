@@ -163,6 +163,20 @@ class OwnPage(unittest.TestCase):
             self.assertEqual(f"flow-{f['id']}" in dia, not own, f["id"])
             self.assertEqual(f'id="ov-f-{f["id"]}"' in overview, not own, f["id"])
 
+    def test_full_page_drops_a_column_only_own_flows_use(self) -> None:
+        """A tier holding only components of the own family is no column on the full page, and is one on the own page."""
+        data = _map()
+        own = model.flows_part(data, [f for f in data["flows"] if f["id"] in _own_flows(data)])["components"]
+        shared = {c["id"] for c in model.flows_part(data, model.shared_part(data, _prof(data))["flows"])["components"]}
+        lone = next(c for c in own if c["id"] not in shared)
+        lone["group"] = "Own only"
+        data["drawing"]["tiers"] = [{"name": "Own only", "groups": ["Own only"]}] + data["drawing"]["tiers"]
+        dia = _diagrams(data)
+        heads = lambda pid: re.findall(r'value="&lt;b&gt;([^&]+)&lt;/b&gt;"[^>]*id="e2[ef]-[a-z-]*tier-', ET.tostring(dia[pid], encoding="unicode")) or \
+            re.findall(r'id="e2[ef]-[a-z-]*tier-\d+"[^>]*value="&lt;b&gt;([^&]+)&lt;/b&gt;"', ET.tostring(dia[pid], encoding="unicode"))
+        self.assertNotIn("Own only", heads("end-to-end"))
+        self.assertIn("Own only", heads(f"end-to-end-{OWN}"))
+
 class ThinSharedRuns(unittest.TestCase):
     """Thin arrows with no end in common may not share a run (audit), and the Overview nudges such an entry aside (2026-10-26)."""
 

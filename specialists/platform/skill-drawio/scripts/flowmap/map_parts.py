@@ -6,7 +6,9 @@ Imported, not run: `from flowmap.map_parts import shared_part, flow_numbers` wit
 
 from __future__ import annotations
 
-from .model import flow_extras, flow_family
+from dataclasses import replace
+
+from .model import e2e_tier, flow_extras, flow_family
 from .profile import Profile
 
 def flows_part(data: dict, flows: list[dict]) -> dict:
@@ -93,3 +95,22 @@ def shared_part(data: dict, profile: Profile) -> dict:
     kept = set(c["id"] for c in flows_part(data, shared)["components"])
     only_own = set(c["id"] for c in flows_part(data, own)["components"]) - kept
     return {**data, "flows": shared, "components": [c for c in data["components"] if c["id"] not in only_own]}
+
+
+def narrowed(profile: Profile, comps: list[dict]) -> Profile:
+    """The profile with only the tier columns these components use, kind and default tiers renumbered to match.
+
+    Args:
+        profile: the drawing profile.
+        comps: the components on the page.
+
+    Returns:
+        A copy of the profile; the band below the columns is unchanged.
+    """
+    keep = sorted({t for t in (e2e_tier(c, profile) for c in comps) if t is not None})
+    if not keep:
+        return profile
+    new = {old: i for i, old in enumerate(keep)}
+    return replace(profile, tiers=tuple(profile.tiers[i] for i in keep),
+                   kind_tier={k: new[v] for k, v in profile.kind_tier.items() if v in new},
+                   default_tier=new.get(profile.default_tier, 0))
