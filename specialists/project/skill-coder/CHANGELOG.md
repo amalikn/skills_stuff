@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261026 Learned 2026-10-26 in `references/testing.md`: test through the entry point the user triggers; a host's default can depend on the call path (skill-drawio click actions)
 - 20261023 Learned 2026-10-23 in `languages/yaml-json-toml.md`: a backtick cannot start a plain YAML scalar or flow-sequence item; quote it (unified-network-controller flow map)
 - 20261023 Learned 2026-10-23 (b) in `languages/python.md` (pyright executionEnvironments for joined modules, not inline suppression) and Learned 2026-10-23 (b) in `references/generated-artifacts.md` (no `--` in an XML banner).
 - 20261023 `just test` green again: 2026-10-23 entries labelled `VERIFIED-OBSERVED` relabelled `VERIFIED_PRIMARY` (text unchanged) in `languages/python.md`, `languages/yaml-json-toml.md`, `languages/ansible.md`, `languages/shell.md`; Learned 2026-10-23 (e) in `languages/ansible.md` given its missing Falsifier.

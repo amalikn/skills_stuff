@@ -120,3 +120,20 @@ milestone.
 > moved = "| Path | Role |\n| --- | --- |\n| `docs/a/b-long-name.md` first | second third |\n"
 > self.assertEqual(len(tcd.differences(ONE_LINE, moved)), 2)     # the negative test
 > ```
+
+> **Learned 2026-10-26** · core (test through the entry point the user triggers) · VERIFIED_PRIMARY · Source: skill-drawio
+> `scripts/flowmap/isolate.py` (commit af7bc38) and `scripts/viewer_click.py`; draw.io 32.5.5 `Graph.handleCustomLink` and
+> `executeCustomActions` · Falsifier: a host whose default does not depend on how an action is invoked
+> A host can choose a default by call path. draw.io runs a link's actions as unsaved display changes when called without a cell, and as
+> saved model changes when a real click passes the clicked cell. A test that invoked the link directly passed (toggled, nothing saved)
+> while a real click saved to the file and never toggled back. Drive the host through the same path a user's action takes (here its click
+> handler with the cell), state every default the code depends on explicitly (`"transient": true` on each action), and keep an offline
+> model test of the logic that asserts the explicit setting, so the unit test fails if it is dropped.
+>
+> ```python
+> # skill-drawio scripts/viewer_click.py: a click through draw.io's own path, the clicked cell given
+> LINK_JS = """id => { var c = V.graph.model.getCell(id), l = c && V.graph.getLinkForCell(c); if (!l) return false;
+>     V.graph.customLinkClicked(l, c); return true; }"""
+> # skill-drawio tests/test_e2e_family.py ClickIsolate._run
+> self.assertIs(sel.get("transient"), True)   # never a saved change: a click on a cell defaults to one in draw.io
+> ```
