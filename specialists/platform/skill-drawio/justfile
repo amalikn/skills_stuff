@@ -44,6 +44,8 @@ set dotenv-load := false
 
 wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-drawio"
 py := wc + "/.venv/bin/python"
+# An interpreter with Playwright, for `viewer-click` only (the pack's venv has none): BROWSER_PY, else python3 on PATH.
+browser_py := env("BROWSER_PY", "python3")
 ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 coder := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder"
 
@@ -222,6 +224,12 @@ example-check: _require-venv
 [positional-arguments]
 drawio-export *args: _require-venv
     @{{py}} scripts/drawio_export.py "$@"
+
+# [modifies-files: --out only] Click cells in draw.io's own viewer and print their opacity after each click (tests click actions). Needs an
+# interpreter with Playwright: BROWSER_PY (default python3). e.g. just viewer-click F.drawio --viewer viewer-static.min.js --page 5 --click '!id'
+[positional-arguments]
+viewer-click *args:
+    @{{browser_py}} scripts/viewer_click.py "$@"
 
 # Read-only: what an existing drawing says (boxes and connections; --json, --geometry), e.g. just drawio-read some.drawio
 [positional-arguments]

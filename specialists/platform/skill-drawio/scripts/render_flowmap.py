@@ -9,13 +9,16 @@ Usage (from the project root):
     render_flowmap.py --map docs/flows/flows.yaml --write        # validate and write the drawing (files only)
     render_flowmap.py --map docs/flows/flows.yaml --list         # one line per flow (read only)
     render_flowmap.py --map docs/flows/flows.yaml --audit        # layout audit of the routed pages (read only)
+    render_flowmap.py --map docs/flows/flows.yaml --audit --look e2e_loops=true   # audit as if the map set a look key (read only)
 Exit: 0 valid and current (or written); 1 on a problem, drift or an audit fault; 2 on bad arguments.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 from drawio.audit import faults, page_audit
@@ -69,6 +72,53 @@ def audit(root: Path, profile: Profile) -> list[str]:
                for f in faults(page_audit(pages.flow_page(fl, {c["id"]: c for c in data["components"]}, i + 1, profile)))])
 
 
+def look_overrides(pairs: list[str]) -> dict:
+    """Look keys given on the command line.
+
+    Args:
+        pairs: "key=value" strings; the value is JSON (true, 12, "sub"), or plain text when it is not JSON.
+
+    Returns:
+        {key: value}.
+
+    Raises:
+        ValueError: a pair has no "=" or an empty key.
+    """
+    out = {}
+    for pair in pairs:
+        key, sep, raw = pair.partition("=")
+        if not sep or not key.strip():
+            raise ValueError(f"--look wants KEY=VALUE, got {pair!r}")
+        try:
+            out[key.strip()] = json.loads(raw)
+        except json.JSONDecodeError:
+            out[key.strip()] = raw
+    return out
+
+
+def with_looks(profile: Profile, pairs: list[str], auditing: bool) -> Profile | None:
+    """The profile with `--look` keys laid over the map's, to try a setting without editing the map (2026-10-26).
+
+    Args:
+        profile: the map's profile.
+        pairs: the `--look` values.
+        auditing: whether --audit was given; overrides are refused otherwise, so nothing is written from them.
+
+    Returns:
+        The profile (unchanged without pairs), or None after printing why the overrides were refused.
+    """
+    if not pairs:
+        return profile
+    if not auditing:
+        print("render_flowmap: --look needs --audit", file=sys.stderr)
+        return None
+    try:
+        return replace(profile, look={**profile.look, **look_overrides(pairs)})
+    except ValueError as exc:
+        print(f"render_flowmap: {exc}", file=sys.stderr)
+        return None
+
+
 def main(argv: list[str] | None = None) -> int:
     """Command line.
 
@@ -87,12 +137,17 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--write", action="store_true", help="write the drawing")
     mode.add_argument("--list", action="store_true", help="one line per flow (read only)")
     mode.add_argument("--audit", action="store_true", help="layout audit of the Overview, End-to-end, decision and flow pages (read only)")
+    ap.add_argument("--look", action="append", default=[], metavar="KEY=JSON",
+                    help="with --audit: a drawing.look key as if the map set it, to try a setting first (repeatable; value as JSON)")
     args = ap.parse_args(argv)
     root = args.root.resolve()
     try:
         profile = profile_for(root, args.map, args.schema, args.output)
     except (OSError, ValueError) as exc:
         print(f"render_flowmap: {exc}", file=sys.stderr)
+        return 2
+    profile = with_looks(profile, args.look, args.audit)
+    if profile is None:
         return 2
     if args.list:
         data, problems = model.load(root, profile)
