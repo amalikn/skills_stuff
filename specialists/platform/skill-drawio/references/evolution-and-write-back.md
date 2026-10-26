@@ -47,6 +47,12 @@ At the end of the relevant section of the reference a future reader would open (
 A contradiction uses `> **Disputed YYYY-MM-DD**` with the same fields plus `Conflicts: <claim ID>`. The CHANGELOG line names the file and the same date; `tests/test_package_contract.py` fails an entry
 without one. Read the file back after writing, run `just test` and `just check`, and commit it in `skills_stuff`.
 
+**Keep the CHANGELOG within its budget (operator, 2026-10-26).** CHANGELOG.md is held to 200 lines and 25 KB, and rotation keeps the two newest sections
+(Unreleased and the last release), so it cannot shrink a long Unreleased. Write each line as one short line (about 150 characters: what changed, the file,
+the Learned date); the detail belongs in the Learned entry. When `just check` reports the file near or over budget, cut a release: rename Unreleased to
+`## <next version> — <date>`, start an empty Unreleased, and rotate the older release with `rotate_records.py --min-keep 2 --apply` (0.2.0 was cut this way,
+skills_stuff 11783a1).
+
 ## Projects that use this skill
 
 1. **Engaged means used**: a session that touched a draw.io file or this pack's code, whether or not its project routes to this skill.
