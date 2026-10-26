@@ -99,6 +99,8 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   only inside the same dated entry), baseline rewrapped lines by hand with a reason, after checking their text whitespace-normalised.
   Recurred 2026-10-23 (ansible-wifi-root-governance): after `markdown-rewrap/rewrap.py --update SCRATCHPAD.md` the audit reported 85 lines LOST;
   every HEAD line was present whitespace-normalised in SCRATCHPAD or its archives (checked on the first 60 characters of each line).
+  Recurred 2026-10-26 (same project, `budget_plan.py --apply`, ansible-wifi session): the same 85 SCRATCHPAD lines plus 36 CHANGELOG lines, still unbaselined;
+  e.g. the "Newest thread (2026-10-07, 13:36)" line sits re-wrapped in docs/history/scratchpad-20261023_1739.md:26. Not caused by the lines-only budget change.
 - [ ] **check_code_map covers shell and every code folder** (found 2026-10-20, smc-resiliency): the template globs `*.py` under
   `MODULE_ROOTS` only, so `.sh` scripts escape the map; smc-resiliency's split checker covers `.sh` and `spike/`. Take the roots from `code-map.toml`
   `roots` and include shell.
