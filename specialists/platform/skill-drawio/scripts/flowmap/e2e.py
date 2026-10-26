@@ -10,11 +10,11 @@ Imported, not run: `from flowmap.e2e import end_to_end_page` with the skill's sc
 
 from __future__ import annotations
 
-from drawio.audit import rects_overlap, seg_hits_rect, segments
-from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, Point, header_height, label
+from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, header_height, label
 from drawio.route import count_crossings, oriented
 
-from .e2e_grid import E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_LABEL_H, E2E_LABEL_W, E2E_SP, E2EGrid, Link, e2e_box_lines, e2e_text_height
+from .e2e_grid import E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_SP, E2EGrid, Link, e2e_box_lines, e2e_text_height
+from .step_labels import label_setup, label_spot, step_label, total_words
 from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
@@ -51,6 +51,7 @@ class EndToEnd(E2EGrid):
         """
         super().__init__(data, profile, numbers)
         self.title = "**End-to-end flow: every component, every flow**"
+        self.label_font, self.step_total, self.n_steps, self.label_w, self.label_h = label_setup(self.links, data, self.number, profile)
         self._improve()
 
     def _track_x(self, ch: int, key: str) -> float:
@@ -216,32 +217,6 @@ class EndToEnd(E2EGrid):
             if not changed:
                 break
 
-    def _label_spot(self, cid: str, page: Page) -> Point:
-        """Where a step arrow's flow.step label goes: on one of its own runs (longest first), clear of other edges, labels and boxes.
-
-        Args:
-            cid: the link id.
-            page: the page so far (boxes and placed labels).
-
-        Returns:
-            The label centre (the longest run's middle when nothing is clear; the audit then reports it).
-        """
-        segs = sorted(segments(self.pts[cid]), key=lambda sg: -(abs(sg[0][0] - sg[1][0]) + abs(sg[0][1] - sg[1][1])))
-        w, h = E2E_LABEL_W + 4, E2E_LABEL_H + 4
-        for p1, p2 in segs:
-            if abs(p1[0] - p2[0]) + abs(p1[1] - p2[1]) < 2 * w:
-                continue
-            for fr in (0.5, 0.35, 0.65, 0.2, 0.8, 0.42, 0.58, 0.28, 0.72):
-                cx, cy = p1[0] + (p2[0] - p1[0]) * fr, p1[1] + (p2[1] - p1[1]) * fr
-                rect = (cx - w / 2, cy - h / 2, w, h)
-                if any(seg_hits_rect(u, v, rect, 0) for o, pts in self.pts.items() if o != cid for u, v in segments(pts)):
-                    continue
-                if any(rects_overlap(rect, m.rect) for m in page.marks) or any(rects_overlap(rect, page.rects[b]) for b in page.solid):
-                    continue
-                return (cx, cy)
-        p1, p2 = segs[0]
-        return ((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
-
     def _box_span(self, comp: str) -> tuple[float, float]:
         """A box's top and height: it covers its own ports with E2E_BOX_PAD to spare and fits its text, centred in its row when it has few ports.
 
@@ -270,7 +245,10 @@ class EndToEnd(E2EGrid):
                 f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit.", BLANK,
                 "**Paths:** each flow is a path through the components that act in its steps, coloured by "
                 + ("flow." if self.profile.look.get("e2e_layers", "family") == "flow" else "family."),
-                "**Arrow labels:** x.y = flow x, step y (the step the arrow leads into, numbered as on the flow's page). Hover an arrow for the step.",
+                (f"**Arrow labels:** {total_words(self.step_total)} = flow x, step y of its n steps (the step the arrow leads into, numbered as on the "
+                 "flow's page); a number with no arrow is a step done by the same component as the step before. Hover an arrow for the step."
+                 if self.step_total else
+                 "**Arrow labels:** x.y = flow x, step y (the step the arrow leads into, numbered as on the flow's page). Hover an arrow for the step."),
                 "**Dashed lines:** not steps; a component the flow runs on, is owned by or depends on, joined to the flow's nearest actor.",
                 "**Layers panel:** hide or show each " + ("flow." if self.profile.look.get("e2e_layers", "family") == "flow" else "family."), BLANK, "[back to Overview]"]
         head_h = header_height(head, right - MARGIN, 60)   # grows upward from its old bottom, so the layout below stays put
@@ -313,9 +291,9 @@ class EndToEnd(E2EGrid):
                            f"jumpStyle=arc;jumpSize={E2E_JUMP};", klass="thick", layer=f"e2e-L-{fam}", jump=E2E_JUMP)
         for link in self.links:
             if link.klass == "thick":
-                cx, cy = self._label_spot(link.cid, page)
-                page.mark(f"{link.cid}-l", label(f"**{link.text}**"), cx, cy, E2E_LABEL_W, E2E_LABEL_H,
-                          f"text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor={colour[link.family]};labelBackgroundColor=#ffffff;"
+                cx, cy = label_spot(link.cid, self.pts, page, self.label_w, self.label_h)
+                page.mark(f"{link.cid}-l", step_label(link.text, self.n_steps[link.text.split('.')[0]], self.step_total), cx, cy, self.label_w, self.label_h,
+                          f"text;html=1;align=center;verticalAlign=middle;fontSize={self.label_font:g};fontColor={colour[link.family]};labelBackgroundColor=#ffffff;"
                           "spacing=0;", owner=link.cid, layer=f"e2e-L-{link.family}")
 
     def _legend(self, page: Page, right: float) -> None:
@@ -327,15 +305,19 @@ class EndToEnd(E2EGrid):
         """
         y = self.bottom + 10
         per_flow = self.profile.look.get("e2e_layers", "family") == "flow"
+        total = self.step_total
+        count = {f["title"]: f" ({len(f['steps'])} steps)" if total else "" for f in self.data["flows"]}   # legend step counts (2026-10-26)
         page.box("e2e-leg-title", label("**Legend: flows** (one colour and layer each)" if per_flow else "**Legend: flow families** (one layer each)"),
                  MARGIN, y, 600, 24, "text;html=1;align=left;fontSize=14;")
         for i, (fam, name, col, titles) in enumerate(self.groups):
             ly = y + 34 + i * 28
             page.box(f"e2e-leg-{fam}-s", "", MARGIN, ly + 10, 40, 3, f"rounded=0;html=1;fillColor={col};strokeColor=none;")
-            page.box(f"e2e-leg-{fam}-t", label(f"**{name}**" if per_flow else f"**{name}:** " + "; ".join(titles)), MARGIN + 50, ly, right - MARGIN - 50, 24,
+            text = f"**{name}**{count[titles[0]]}" if per_flow else f"**{name}:** " + "; ".join(t + count[t] for t in titles)
+            page.box(f"e2e-leg-{fam}-t", label(text), MARGIN + 50, ly, right - MARGIN - 50, 24,
                      "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
         ly = y + 34 + len(self.groups) * 28 + 6
-        page.box("e2e-leg-solid", label("**Solid arrow, label x.y:** flow x (its number on the Overview) moves to the component acting in its step y; "
+        page.box("e2e-leg-solid", label(f"**Solid arrow, label {total_words(self.step_total) if total else 'x.y'}:** flow x (its number on the Overview) moves to the "
+                                        f"component acting in its step y{' of n' if total else ''}; "
                                         "x.1 starts at the component the flow runs on, and a step done by the same component as the step before has no "
                                         "arrow. **Dashed line, dot end:** not a step; the flow runs on, is owned by or depends on that component. "
                                         "Hover an arrow for what happens. Arcs mark crossings."),

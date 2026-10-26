@@ -601,6 +601,15 @@
               "type": "boolean",
               "description": "Also draw one End-to-end page per flow family after the full one: that family's flows and the components they touch, numbered as in the whole map; default false."
             },
+            "e2e_step_total": {
+              "enum": [false, true, "sub", "sup", "slash"],
+              "description": "End-to-end arrow labels add the flow's step count n after x.y: sub (a subscript; true means sub), sup (a superscript) or slash (x.y/n); the legend gives each flow's step count; default false (x.y)."
+            },
+            "e2e_label_font": {
+              "type": "number",
+              "minimum": 8,
+              "description": "Font size of the End-to-end arrow labels; the label box grows to fit; default 10."
+            },
             "e2e_family_colours": {
               "enum": ["page", "flow"],
               "description": "Family End-to-end page flow colours (with e2e_layers flow): page restarts the palette on each page so none repeats; flow keeps each flow's full-page colour, repeating past the palette's length; default page."

@@ -36,6 +36,9 @@ DEFAULT_LOOK = {
     "e2e_layers": "family",        # End-to-end colours and layers per "family", or per "flow" (each x of x.y its own; operator, 2026-10-23)
     "connector_width": 1.25,       # End-to-end dashed connector stroke width; 2 matches the step arrows (operator asked for bold, 2026-10-23)
     "e2e_family_pages": False,     # also one End-to-end page per family after the full one, only that family's flows and boxes (operator, 2026-10-23)
+    "e2e_step_total": False,       # End-to-end labels add the flow's step count n: "sub" (x.y, n lowered), "sup" or "slash" (x.y/n), and the
+                                   # legend gives each flow's count; true means "sub" (operator, 2026-10-26: x.y/n, then a subscript instead)
+    "e2e_label_font": 10,          # End-to-end arrow label font size; the label box grows to fit (operator asked for 12, 2026-10-26)
     "e2e_family_colours": "page",  # family-page flow colours: "page" (restart on each page, no repeats) or "flow" (full-page colour; operator, 2026-10-26)
 }
 

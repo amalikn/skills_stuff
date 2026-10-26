@@ -122,6 +122,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/e2e_grid.py` | End-to-end grid: placement, link plans, row heights, ports, channel and corridor tracks | `safe` |
 | `scripts/flowmap/e2e.py` | End-to-end polylines, crossing-cutting local search, and the drawing | `safe` |
 | `scripts/flowmap/e2e_family.py` | One End-to-end page per flow family after the full one (`look.e2e_family_pages`): that family's flows and components, the map's flow numbers, ids renamed `e2f-<family>-` | `safe` |
+| `scripts/flowmap/step_labels.py` | End-to-end step arrow labels: x.y and the flow's step count (`look.e2e_step_total`: sub, sup, slash), label font and size, the spots tried on a run | `safe` |
 | `scripts/flowmap/overview_index.py` | The Overview's right column: flow index (decision pages linked), kind, status and arrow colour legends | `safe` |
 | `scripts/flowmap/options.py` | Decision pages (never called options; optional `options` block or `decision_pages` by subject): decision flow, option step chains, aligned pros and cons | `safe` |
 | `scripts/flowmap/shapes.py` | Flow page shapes (flowchart symbols): derivation per step and lane head, per-page shape legend | `safe` |

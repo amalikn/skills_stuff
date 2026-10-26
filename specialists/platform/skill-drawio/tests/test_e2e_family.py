@@ -18,7 +18,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 (page_audit,) = (importlib.import_module("drawio.audit").page_audit,)
-e2e_family, pages, profile = (importlib.import_module(f"flowmap.{n}") for n in ("e2e_family", "pages", "profile"))
+e2e_family, step_labels, pages, profile = (importlib.import_module(f"flowmap.{n}") for n in ("e2e_family", "step_labels", "pages", "profile"))
 EXAMPLE = ROOT / "examples" / "shop" / "flows.yaml"
 
 
@@ -123,6 +123,62 @@ class FamilyPages(unittest.TestCase):
         overview = _diagrams(_render(_map(e2e_family_pages=True)))[0]
         links = {u.get("link") for u in overview.iter("UserObject") if (u.get("id") or "").startswith("ov-f-end-to-end-")}
         self.assertEqual(links, {f"data:page/id,end-to-end-{f}" for f in ("orders", "catalogue", "operations")})
+
+
+def _text(page: ET.Element, prefix: str) -> list[str]:
+    """The text of every cell or UserObject on a page whose id starts with a prefix.
+
+    Args:
+        page: the `<diagram>` element.
+        prefix: the id prefix.
+
+    Returns:
+        The labels and values, in file order.
+    """
+    return [e.get("label") or e.get("value") or "" for e in page.iter() if e.tag in ("mxCell", "UserObject") and (e.get("id") or "").startswith(prefix)]
+
+
+class StepTotals(unittest.TestCase):
+    """`look.e2e_step_total` and `look.e2e_label_font`: step counts on labels (sub, sup, slash) and in the legend, a bigger label box; off, nothing changes."""
+
+    def test_labels_read_x_y_of_n_with_the_font_asked_for(self) -> None:
+        """Every step arrow label on the End-to-end page is x.y with n (the flow's steps) as a subscript, at the font asked for; audits clean."""
+        data = _map(e2e_layers="flow", e2e_step_total="sub", e2e_label_font=12)
+        steps = {str(i): len(f["steps"]) for i, f in enumerate(data["flows"], 1)}
+        page = next(d for d in _diagrams(_render(data)) if d.get("id") == "end-to-end")
+        labels = [u for u in page.iter("UserObject") if (u.get("id") or "").startswith("e2e-a-") and u.get("id").endswith("-l")]
+        self.assertTrue(labels)
+        for obj in labels:   # a label is a UserObject (hover text) holding its mxCell
+            x, y, n = re.fullmatch(r"<b>(\d+)\.(\d+)<sub>(\d+)</sub></b>", obj.get("label")).groups()
+            self.assertEqual(int(n), steps[x], obj.get("id"))
+            self.assertLessEqual(int(y), int(n))
+            self.assertIn("fontSize=12;", obj.find("mxCell").get("style"))
+            self.assertEqual(float(obj.find("mxCell/mxGeometry").get("height")), 18)   # font 12 + 6
+        legend = " ".join(_text(page, "e2e-leg-"))
+        self.assertIn(f"({steps['1']} steps)", legend)
+        prof = profile.Profile.from_drawing(data, "flows.yaml", "s.json", "g")
+        e2e = importlib.import_module("flowmap.e2e").end_to_end_page(data, prof)
+        self.assertFalse([k for k, v in page_audit(e2e).items() if v])
+
+    def test_sup_and_slash_forms(self) -> None:
+        """`sup` raises n, `slash` writes x.y/n, and `true` means a subscript."""
+        for value, pattern in (("sup", r"<b>\d+\.\d+<sup>\d+</sup></b>"), ("slash", r"<b>\d+\.\d+/\d+</b>"), (True, r"<b>\d+\.\d+<sub>\d+</sub></b>")):
+            page = next(d for d in _diagrams(_render(_map(e2e_layers="flow", e2e_step_total=value))) if d.get("id") == "end-to-end")
+            texts = [u.get("label") for u in page.iter("UserObject") if (u.get("id") or "").startswith("e2e-a-") and u.get("id").endswith("-l")]
+            self.assertTrue(texts and all(re.fullmatch(pattern, t) for t in texts), value)
+
+    def test_label_size_from_advance_widths(self) -> None:
+        """The defaults hold for x.y at font 10; a subscript count is narrower than /n at the same font."""
+        self.assertEqual(step_labels.e2e_label_size([("4.20", "20")], 10, None), (38, 16))
+        sub, slash = (step_labels.e2e_label_size([("10.13", "19")], 12, form)[0] for form in ("sub", "slash"))
+        self.assertLess(sub, slash)
+        self.assertLessEqual(sub + 4, 2 * 24)   # fits between two tracks E2E_SP apart
+
+    def test_off_by_default(self) -> None:
+        """Without the keys the labels stay x.y at font 10 and the legend has no step counts."""
+        page = next(d for d in _diagrams(_render(_map(e2e_layers="flow"))) if d.get("id") == "end-to-end")
+        self.assertNotIn(" steps)", " ".join(_text(page, "e2e-leg-")))
+        self.assertFalse([t for t in _text(page, "e2e-a-") if re.search(r"\d/\d", t)])
 
 
 if __name__ == "__main__":

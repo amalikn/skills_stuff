@@ -164,6 +164,10 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - `look.e2e_family_colours` (with `e2e_layers: flow`) picks the family pages' colours: `page` (default) restarts the palette on each page,
   so none repeats; `flow` keeps each flow's full-page colour on every page, so a flow is the same colour everywhere and two flows 20 apart
   share one when a family holds both (operator, 2026-10-26: "switch to one colour per flow everywhere").
+- `look.e2e_step_total` adds each flow's step count n to its End-to-end arrow labels and legend rows, so a reader knows how long a flow is
+  and that a skipped number is a step done by the same component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means
+  `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from the text
+  (operator, 2026-10-26: "x.y/max_y", then "subscript or superscript instead", and labels at 12).
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).
@@ -346,4 +350,26 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > whole = numbers and profile.look.get("e2e_family_colours", "page") == "flow"   # a part keeps each flow's full-page colour
 > groups = tuple((f["id"], f"{num[f['id']]}. {f['title']}", DISTINCT[((num[f["id"]] if whole else i) - 1) % len(DISTINCT)], (f["title"],))
 >                for i, f in enumerate(flows, 1))
+> ```
+
+> **Learned 2026-10-26** · step totals and label size on the End-to-end page · VERIFIED_PRIMARY · Source: `scripts/flowmap/step_labels.py`
+> `e2e_label_size`, `label_spot`, `label_spots`, `step_label`; `tests/test_e2e_family.py` `StepTotals`;
+> unified-network-controller render; screenshots `references/screenshots/20261026-e2e-step-totals/` · Falsifier: a page with
+> `e2e_step_total: sub` at font 12 whose audit reports a label on another arrow where the same map at x.y and font 10 is clean
+> A label is placed only where it touches no other run, and End-to-end tracks are 24 px apart (E2E_SP), so a label on a vertical run must
+> be under about 48 px wide. `x.y/n` at 12 pt is wider (`10.13/19` about 55 px with padding) and left 16 labels on other arrows in
+> unified-network-controller; a subscript n at 0.75 of the font, with 2 px padding a side, keeps the widest at 46 px and every page clean.
+> Size labels from the font's advance widths (Helvetica bold: digit 0.556 em, `.` and `/` 0.278 em), not a flat factor per character,
+> which overstated `10.13/19` by 20 px. Where the nine fixed spots on a run fail, a scan every 6 px along every run (any run that holds the
+> label with 8 px to spare) finds room; the default drawing is byte-identical because the scan runs only after the fixed spots fail.
+>
+> ```python
+> # scripts/flowmap/step_labels.py (skills_stuff, 2026-10-26)
+> def label_width(xy: str, n: str, font: float, total: str | None) -> float:
+>     if total == "slash":
+>         return em_width(f"{xy}/{n}") * font
+>     return (em_width(xy) + (em_width(n) * SCRIPT_SCALE if total else 0)) * font
+> # step_label
+> if style in ("sub", "sup"):
+>     return f"<b>{xy}<{style}>{n}</{style}></b>"
 > ```
