@@ -15,6 +15,9 @@ Summary: Release history and governance changes of skill-coder; the release head
 
 ## Unreleased
 
+- 20261026 Learned in `references/safety-and-writes.md`: `pgrep -f`/`pkill -f` match their own task when the pattern is in Ansible `environment:` (remote command line) or in the script text; pass it base64-encoded, spell commands through a variable (ansible-wifi smc_change).
+- 20261026 Learned in `references/safety-and-writes.md`: complete only after cleanup; retain the original transaction and manifest across partial retries (controller red/green fixtures).
+
 - 20261026 Learned 2026-10-26 in `references/version-control-and-review.md`: commit your own hunks while another session edits the same files (blob staging, proved in a scratch worktree)
 - 20261026 Learned 2026-10-26 in `references/testing.md`: test through the entry point the user triggers; a host's default can depend on the call path (skill-drawio click actions)
 - 20261023 Learned 2026-10-23 in `languages/yaml-json-toml.md`: a backtick cannot start a plain YAML scalar or flow-sequence item; quote it (unified-network-controller flow map)

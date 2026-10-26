@@ -73,3 +73,25 @@ rolled out across projects.
 Before renaming or retargeting any identifier (a function, flag, tag, variable, config key, file path), search every file type that can reference it, including templates, shell scripts, configuration,
 CI jobs and runbooks; classify each hit (declaration, use, unrelated namesake); check external callers; and verify with a dry run of behaviour, not only a syntax check. Why: some tools ignore an
 unmatched name silently, so the old command still exits 0 and does nothing (operator lesson `feedback_trace_all_references_before_ansible_change`, where a templating file was the missed reference).
+
+> **Learned 2026-10-26** · interrupted transactions · VERIFIED_PRIMARY · Source: local-knowledge-ansible base `aacf57c` plus uncommitted
+> `roles/smc_change/tasks/{record,cleanup,journal}.yml`; controller integration red/green fixtures · Falsifier: a failed cleanup that still
+> produces a completed marker, or a repeated partial cleanup that drops an original backup-manifest entry.
+> Completion includes verification and cleanup. Persist the original baseline, backup manifest and cleanup ownership before mutation;
+> retries preserve those records and get a separate attempt id. Rebuilding a manifest from the files remaining after partial deletion loses rollback material.
+>
+> ```yaml
+> # tasks/record.yml, same source (generic; no customer identifiers)
+> when:
+>   - smc_change_record.result == 'passed'
+>   - smc_change_cleanup_complete | default(false) | bool
+> ```
+
+> **Learned 2026-10-26** · process matching from automation kills or waits on itself · VERIFIED_PRIMARY (ansible-wifi smc_change:
+> akwalirrumanja-smc01 session dropped twice at a `pkill -f`; an AVR check waited 60 s on itself every probe) · Falsifier: a `pgrep -f` in an
+> Ansible shell task that never matches its own shell although the pattern is in `environment:` or in the script text
+> `pgrep -f`/`pkill -f` match whole command lines. Ansible's `environment:` values land on the remote command line, and a shell script's
+> own text is its shell's command line, so a pattern placed in either matches the task itself: pkill then kills the task's session, a wait
+> loop waits for itself. Pass the pattern encoded (`| b64encode`, decode inside) and spell a command the script also runs through a variable
+> (`a=artisan; php "$a" ...`); the `[a]rtisan` bracket trick fails when the plain command appears anywhere else in the same script.
+
