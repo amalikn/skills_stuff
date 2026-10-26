@@ -20,6 +20,7 @@ from .overview_layout import (OV_BH, OV_BW, OV_CHANNEL, OV_GRID_COLS, OV_HGAP, O
                               OV_THIN_JUMP, OV_THIN_SP, OV_TOP, THIN_GREY, box_lines, far_channels, grid_cells, key_width, layout_group, side,
                               text_height)
 from .profile import DISTINCT, Profile
+from .isolate import dim_level, ov_cell
 from .tips import comp_tags, comp_tip, needs_tip
 
 
@@ -211,6 +212,7 @@ class Overview:
         for gi in self.lay:
             for (s, d), pts in self._thin_routes(gi).items():
                 page.tips[f"ov-d-{s}-{d}"] = needs_tip(f"{self.by_id[s]['name']} needs {self.by_id[d]['name']}", [(self.by_id[s], [self.by_id[d]])])
+                self._iso(page, f"ov-d-{s}-{d}", None, "ov-thin")
                 page.route(f"ov-d-{s}-{d}", f"ov-c-{s}", f"ov-c-{d}", pts,
                            f"edgeStyle=none;rounded=1;html=1;strokeColor={THIN_GREY};strokeWidth=1.5;{ARROW_HEAD}endSize=6;jumpStyle=arc;jumpSize={OV_THIN_JUMP};",
                            klass="thin", layer="ov-L-inside", ignore=(f"ov-g-{gi}",), jump=OV_THIN_JUMP)
@@ -279,6 +281,7 @@ class Overview:
             p["full"] = self._thick_points(p, frac, row_bot)
             pairs = [(c, [self.by_id[d] for d in c.get("depends_on", []) if self.gof[d] == b]) for c in map(self.by_id.get, self.groups[self.gnames[a]])]
             page.tips[f"ov-gg-{a}-{b}"] = needs_tip(f"{self.gnames[a]} needs {self.gnames[b]} (×{p['n']})", pairs)
+            self._iso(page, f"ov-gg-{a}-{b}", b, "ov-thick")   # its count, a mark, takes the same tags and link
             page.route(f"ov-gg-{a}-{b}", f"ov-g-{a}", f"ov-g-{b}", p["full"],
                        f"edgeStyle=none;rounded=1;html=1;strokeColor={self.tcol[b]};strokeWidth=4;{ARROW_HEAD}endSize=9;jumpStyle=arc;jumpSize={OV_JUMP};",
                        klass="thick", layer=f"ov-L-into-{b}", jump=OV_JUMP)
@@ -304,7 +307,22 @@ class Overview:
                     needs = [self.by_id[d] for d in self.by_id[cid].get("depends_on", []) if self.gof[d] == tg]
                     page.box(f"ov-dot-{cid}-{tg}", "", bx + OV_BW - 17, by + 5 + n_dot * 15, 12, 12,
                              f"ellipse;html=1;fillColor={self.tcol[tg]};strokeColor=#ffffff;strokeWidth=1;", layer=f"ov-L-into-{tg}",
-                             tooltip=needs_tip(f"Feeds the arrow into {self.gnames[tg]}", [(self.by_id[cid], needs)]))
+                             tooltip=needs_tip(f"Feeds the arrow into {self.gnames[tg]}", [(self.by_id[cid], needs)]),
+                             **ov_cell(str(tg), self.into.index(tg), dim_level(self.profile.look), "ov-thick"))
+
+    def _iso(self, page: Page, cid: str, b: int | None, base: str) -> None:
+        """Give an Overview arrow its colour group's tags and click link when `look.click_isolate` is on (operator, 2026-10-26).
+
+        Args:
+            page: the page.
+            cid: the edge id (set before it is drawn).
+            b: the target group of a thick arrow, None for a thin one (flowmap.isolate.ov_cell).
+            base: the arrow's kind tag.
+        """
+        gid, index = ("inside", len(self.into)) if b is None else (str(b), self.into.index(b))
+        iso = ov_cell(gid, index, dim_level(self.profile.look), base)
+        if iso:
+            page.tags[cid], page.links[cid] = iso["tags"], iso["link"]
 
     def page(self) -> Page:
         """Draw the page: layers, title, groups and boxes, thin arrows, thick arrows and counts, dots, the flow index and the legends.
@@ -314,9 +332,10 @@ class Overview:
         """
         page = Page("overview", "Overview")
         # Layers: one per thick colour and one for the thin arrows, so any colour can be hidden in draw.io's Layers panel.
+        lock = dim_level(self.profile.look) is not None   # a click runs a link in the editor only on a locked layer
         for b in self.into:
-            page.add_layer(f"ov-L-into-{b}", f"Thick: into {self.gnames[b]}")
-        page.add_layer("ov-L-inside", "Thin: inside groups")
+            page.add_layer(f"ov-L-into-{b}", f"Thick: into {self.gnames[b]}", locked=lock)
+        page.add_layer("ov-L-inside", "Thin: inside groups", locked=lock)
         fx = self.grid_right + 80
         head = [f"**{self.data['title']}**", BLANK,
                 f"Generated from {self.profile.map} by `{self.profile.command}`; do not edit. Updated {self.data['updated']}.", BLANK,
@@ -333,7 +352,8 @@ class Overview:
         self._thick(page)
         self._dots(page)
         legend_y = flow_index(page, self.data, self.profile, fx, MARGIN + OV_TOP)
-        bottom = colour_legend(page, fx, legend_y + 24, [(self.tcol[b], f"into {self.gnames[b]}") for b in self.into])
+        bottom = colour_legend(page, fx, legend_y + 24, [(self.tcol[b], f"into {self.gnames[b]}", str(b)) for b in self.into],
+                               dim_level(self.profile.look))
         used = component_shapes_used(list(self.by_id.values()), self.profile)
         if used:   # the symbols the boxes use (operator, 2026-10-21: "where's the section about shapes on this page?")
             shape_legend(page, used, fx, bottom + 20, "ov", cols=1)

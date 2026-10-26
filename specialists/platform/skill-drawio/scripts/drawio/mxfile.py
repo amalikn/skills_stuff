@@ -215,13 +215,13 @@ class Page:
             page_id: the diagram id (page links `data:page/id,<page_id>` point at it).
             name: the tab name shown in draw.io.
         """
-        self.page_id, self.name, self.cells = page_id, name, []
+        self.page_id, self.name, self.cells, self.base_locked = page_id, name, [], False   # base_locked: layer "1" drawn locked
         self.cell_style: dict[str, str] = {}   # each vertex's style, so a route can account for a flipped shape
         self.rects: dict[str, Rect] = {}
         self.solid: list[str] = []
         self.routes: list[Route] = []
         self.marks: list[TextMark] = []
-        self.layers: list[tuple[str, str]] = []
+        self.layers: list[tuple[str, str, bool]] = []
         self.tips: dict[str, str] = {}   # hover text per edge id, set before the edge is drawn; its label mark shows the same text
         self.links: dict[str, str] = {}   # a link per edge id (a click action), set like tips; its label mark takes it too
         self.tags: dict[str, tuple] = {}   # draw.io tags per cell id (edges, and boxes drawn without a `tags` argument); a mark takes its edge's
@@ -265,14 +265,15 @@ class Page:
         self.cells.append(cell_xml(cid, label, f'style={quoteattr(EDGE_BASE + style + FROZEN)} edge="1" parent="1" source="{source}" target="{target}"',
                                    '<mxGeometry relative="1" as="geometry"/>', tooltip=self.tips.get(cid, ""), tags=self.tags.get(cid, ())))
 
-    def add_layer(self, lid: str, name: str) -> None:
+    def add_layer(self, lid: str, name: str, locked: bool = False) -> None:
         """Declare a draw.io layer (shown in the Layers panel, where it can be hidden); serialised right after the root cells.
 
         Args:
             lid: the layer cell id.
             name: the name shown in the panel.
+            locked: draw the layer locked: its cells cannot be selected, and a click on one runs its link in the editor too.
         """
-        self.layers.append((lid, name))
+        self.layers.append((lid, name, locked))
 
     def route(self, cid: str, src: str, dst: str, points: list, style: str, klass: str = "thick", layer: str = "1",
               ignore: tuple = (), jump: float = 0.0) -> None:
@@ -331,14 +332,14 @@ class Page:
         Returns:
             The `<diagram>` element.
         """
-        layers = "".join(f'        <mxCell id="{lid}" value={quoteattr(name)} parent="0"/>\n' for lid, name in self.layers)
+        layers = "".join(f'        <mxCell id="{lid}" value={quoteattr(name)}{' style="locked=1;"' if lk else ''} parent="0"/>\n' for lid, name, lk in self.layers)
         body = "\n".join(f"        {c}" for c in self.cells)
         if self.rename:   # every id reference (id, parent, source, target) that starts with the old prefix
             old, new = self.rename
             layers, body = (re.sub(rf'\b(id|parent|source|target)="{re.escape(old)}', rf'\1="{new}', t) for t in (layers, body))
         return (f'  <diagram id="{self.page_id}" name={quoteattr(self.name)}>\n'
                 '    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" '
-                'math="0" shadow="0">\n      <root>\n        <mxCell id="0"/>\n        <mxCell id="1" parent="0"/>\n'
+                'math="0" shadow="0">\n      <root>\n        <mxCell id="0"/>\n' f'        <mxCell id="1"{self.base_locked * ' style="locked=1;"'} parent="0"/>\n'
                 f"{layers}{body}\n      </root>\n    </mxGraphModel>\n  </diagram>")
 
 
@@ -396,5 +397,4 @@ def header_height(lines: list[str], width: float, least: float, px_per_char: flo
         The height in pixels.
     """
     chars = max(20, int((width - 20) / px_per_char))
-    need = 12 + sum(wrapped_lines(x.replace("*", "").replace("`", ""), chars) for x in lines if x) * line_h
-    return max(least, need)
+    return max(least, 12 + sum(wrapped_lines(x.replace("*", "").replace("`", ""), chars) for x in lines if x) * line_h)

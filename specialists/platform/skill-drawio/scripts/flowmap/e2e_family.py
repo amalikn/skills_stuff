@@ -78,7 +78,7 @@ def family_page(data: dict, profile: Profile, fam: str, name: str, part: dict) -
     e2e = EndToEnd(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})
     nums = ", ".join(str(numbers[f["id"]]) for f in part["flows"])
     e2e.title = f"**End-to-end: {name}** (flows {nums}; the full End-to-end page shows every flow)"
-    page = e2e.page(f"end-to-end-{fam}", f"End-to-end: {name}")
+    page = e2e.page(f"end-to-end-{fam}", f"{profile.look.get('e2e_tab', 'End-to-end')}: {name}")
     page.rename = ("e2e-", f"e2f-{fam}-")
     return page
 

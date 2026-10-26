@@ -209,7 +209,7 @@ class Arrows(unittest.TestCase):
             self.assertIn(part, styles["ov-gg-1-0"])
         self.assertIn("&lt;b&gt;×2&lt;/b&gt;", text)   # c needs a and b in group G: one arrow, count ×2 (a count, never a flow step)
         self.assertIn('id="ov-dot-c-0"', text)
-        self.assertTrue({"ov-L-into-0", "ov-L-inside"} <= set(dict(page.layers)))
+        self.assertTrue({"ov-L-into-0", "ov-L-inside"} <= {lid for lid, *_ in page.layers})
         self.assertIn("&lt;b&gt;Needs&lt;/b&gt;&lt;br&gt;• A&lt;br&gt;• B", text)
 
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from drawio.mxfile import Page, label, wrapped_lines
 
+from .isolate import LEGEND_TAG, ov_cell
 from .model import comp_style, flow_family, option_blocks
 from .shapes import component_shape, fit_height, person_badge
 from .overview_layout import THIN_GREY
@@ -30,14 +31,15 @@ def index_height(*lines: str) -> int:
     return max(INDEX_MIN_H, 10 + round(sum(wrapped_lines(x.replace("*", ""), INDEX_CHARS) for x in lines)) * INDEX_LINE_H)
 
 
-def colour_legend(page: Page, x: float, y: float, thick: list) -> float:
+def colour_legend(page: Page, x: float, y: float, thick: list, dim: float | None = None) -> float:
     """The arrow colour legend, below the component kind legend on the right: one swatch per thick colour, the thin grey, and the dots.
 
     Args:
         page: the page.
         x: left edge.
         y: top edge.
-        thick: (colour, text) per thick arrow colour.
+        thick: (colour, text, group id) per thick arrow colour.
+        dim: with `look.click_isolate`, the opacity the rest takes when a row is clicked; rows then sit on a locked layer.
 
     Returns:
         The y just below the legend.
@@ -50,13 +52,20 @@ def colour_legend(page: Page, x: float, y: float, thick: list) -> float:
                                 "needing a box in the target group, counted per need)"), x, y, w, 76,
              "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=12;")
     y += 82
-    for i, (colour, text) in enumerate(thick):
-        page.box(f"ov-leg-into-{i}-s", "", x, y + i * 26 + 10, 40, 5, f"rounded=0;html=1;fillColor={colour};strokeColor=none;")
-        page.box(f"ov-leg-into-{i}-t", label(text), x + 50, y + i * 26, w - 50, 24, "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
+    leg = "1"
+    if dim is not None:   # click a row to see that colour alone, again to see all (operator, 2026-10-26)
+        leg = "ov-L-legend"
+        page.add_layer(leg, "Legend (click a row)", locked=True)
+    for i, (colour, text, gid) in enumerate(thick):
+        iso = ov_cell(gid, i, dim, LEGEND_TAG)
+        page.box(f"ov-leg-into-{i}-s", "", x, y + i * 26 + 10, 40, 5, f"rounded=0;html=1;fillColor={colour};strokeColor=none;", layer=leg, **iso)
+        page.box(f"ov-leg-into-{i}-t", label(text), x + 50, y + i * 26, w - 50, 24, "text;html=1;align=left;verticalAlign=middle;fontSize=12;",
+                 layer=leg, **iso)
     y += len(thick) * 26 + 10
-    page.box("ov-leg-thin-s", "", x, y + 10, 40, 2, f"rounded=0;html=1;fillColor={THIN_GREY};strokeColor=none;")
+    iso = ov_cell("inside", len(thick), dim, LEGEND_TAG)
+    page.box("ov-leg-thin-s", "", x, y + 10, 40, 2, f"rounded=0;html=1;fillColor={THIN_GREY};strokeColor=none;", layer=leg, **iso)
     page.box("ov-leg-thin-t", label("**Thin grey:** a dependency inside a group (a box sits above what it needs)"), x + 50, y, w - 50, 36,
-             "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=12;")
+             "text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=12;", layer=leg, **iso)
     y += 46
     page.box("ov-leg-dot", "", x + 14, y + 3, 12, 12, f"ellipse;html=1;fillColor={DISTINCT[0]};strokeColor=#ffffff;")
     page.box("ov-leg-dot-t", label("A dot on a box: it feeds the thick arrow of that colour (its Needs list names what)"), x + 50, y, w - 50, 36,

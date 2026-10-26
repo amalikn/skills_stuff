@@ -610,11 +610,19 @@
               "minimum": 8,
               "description": "Font size of the End-to-end arrow labels; the label box grows to fit; default 10."
             },
-            "e2e_click_isolate": {
+            "click_isolate": {
               "type": ["boolean", "number"],
               "minimum": 0,
               "maximum": 1,
-              "description": "Clicking an End-to-end step arrow, its label or a legend row dims every other flow (a draw.io custom link; Show all flows resets); true dims to 0.15, a number sets the opacity; default false."
+              "description": "One click on an End-to-end arrow, dashed line, label or legend row, or an Overview arrow, count, dot or legend row, shows that colour alone (the rest at this opacity, 0.15 for true); a second click shows all; default false."
+            },
+            "lock_base_layer": {
+              "type": "boolean",
+              "description": "Draw every page's background layer locked, so nothing on it can be selected or moved by accident; default false."
+            },
+            "e2e_tab": {
+              "type": "string",
+              "description": "End-to-end tab names: '<e2e_tab> flow' for the full page and '<e2e_tab>: <family>' for family pages; default End-to-end."
             },
             "e2e_family_colours": {
               "enum": ["page", "flow"],

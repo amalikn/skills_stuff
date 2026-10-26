@@ -177,7 +177,7 @@ def page_audit(page: Page, head_room: dict | None = None) -> dict[str, list]:
     Returns:
         The audit report.
     """
-    return layout_audit({cid: page.rects[cid] for cid in page.solid}, page.routes, page.marks, page.cells, [lid for lid, _ in page.layers],
+    return layout_audit({cid: page.rects[cid] for cid in page.solid}, page.routes, page.marks, page.cells, [lid for lid, *_ in page.layers],
                         head_room)
 
 

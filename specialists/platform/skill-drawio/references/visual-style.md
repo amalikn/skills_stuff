@@ -168,10 +168,13 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   and that a skipped number is a step done by the same component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means
   `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from the text
   (operator, 2026-10-26: "x.y/max_y", then "subscript or superscript instead", and labels at 12).
-- `look.e2e_click_isolate` (true, or the opacity of the rest) gives every End-to-end step arrow, its label and each legend row a draw.io
-  custom link: a click dims every step arrow, connector and box (tagged `box`) and brings the clicked flow's cells back to full; "Show all
-  flows" beside the legend title undoes it. Clickable cells are drawn `locked=1` (operator, 2026-10-26: "clicking on one arrow of a flow
-  will dim all the other flows").
+- `look.click_isolate` (true, or the opacity of the rest) makes one click show a colour alone and a second click show everything: on the
+  End-to-end pages a step arrow, its label, a dashed connector or a legend row (other rows dim too); on the Overview a thick arrow, its
+  count, a dot, a thin arrow or a legend row. A click on another colour switches in one click; there is no "Show all" button. Nothing is
+  saved: the file never counts as changed. The clickable layers are locked (the editor runs a link on a click only there).
+  `look.lock_base_layer` locks every page's background layer; `look.e2e_tab` names the End-to-end tabs ("E2E flow", "E2E: <family>")
+  (operator, 2026-10-26: "make it a toggle ... with a single step", "clicking on dashed lines should also do the same", "do the same for
+  the overview legend arrow colors", "make the background layer locked on all the pages", "change End-to-end to E2E ... in the tab names").
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).
@@ -378,6 +381,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 >     return f"<b>{xy}<{style}>{n}</{style}></b>"
 > ```
 
+> **Superseded 2026-10-26** by the Learned entry "click toggle without changing the file" below (two clicks and a reset button, and a
+> lock on the cell rather than its layer, replaced the same day).
 > **Learned 2026-10-26** · click a flow to see it alone · VERIFIED_PRIMARY · Source: draw.io 32.5.5 bundle (`app.asar`
 > `drawio/src/main/webapp/js/app.min.js`: action names `"wait fadeIn fadeOut fadeTo opacity ..."`, `null!=x.opacity&&null!=x.opacity.value&&
 > Graph.setOpacityForNodes(...)`), jgraph/drawio v32.5.5 `js/viewer-static.min.js`; drawio.com/docs/reference/animation-actions-json;
@@ -395,4 +400,27 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > def isolate_link(tag: str, dim: float) -> str:
 >     return _link([{"opacity": {"tags": list(DIMMED_TAGS), "tagsMatch": "or", "value": dim}},
 >                   {"opacity": {"tags": [tag], "value": 1}, "immediate": True}])
+> ```
+
+> **Learned 2026-10-26** · click toggle without changing the file · VERIFIED_PRIMARY · Source: draw.io 32.5.5 `app.asar` app.min.js
+> (`Graph.nextToggleStyleValue`, `toggleCellStylesTransient`, `toggleCellStyleValues`, `executeCustomActions`, the Graph click handler
+> `isCellLocked(this.getLayerForCell(...))`), jgraph/drawio v32.5.5 `js/viewer-static.min.js`; `scripts/flowmap/isolate.py`;
+> `tests/test_e2e_family.py` `ClickIsolate`; screenshots `references/screenshots/20261026-click-toggle/` · Falsifier: a click sequence in
+> draw.io 32.5.5 where a second click on the same colour leaves cells dimmed, or a click that marks the file changed
+> Three findings from the installed code. (1) A link clicked on a cell runs with that cell passed, and then every action without its own
+> `"transient"` is a saved model change (the file counts as modified); mark each action `"transient": true`. A link run without a cell
+> (a page animation) is transient by default, which hid this in a first test. (2) A transient `toggleStyle` decides per cell: a cell
+> holding the value returns to the default, any other takes the value. Giving each colour its own dim value (15.001, 15.002, ..., the same
+> to the eye) makes one stateless link toggle its colour and switch from another colour in one click; no marker cells are needed. A
+> saved `toggleStyle` decides once from the first selected cell instead, which toggles too, but changes the file. (3) In the editor a
+> click runs a link directly only when the cell's layer is locked; `locked=1` on the cell itself only stops selection, and the editor
+> shows the link in a hint to click instead. Measured in the viewer under headless Edge: example and unified-network-controller E2E and
+> Overview pages, click, click again, switch, all as intended; the model kept no opacity.
+>
+> ```python
+> # scripts/flowmap/isolate.py isolate_link (skills_stuff, 2026-10-26)
+> value, keys = f"{dim * 100:.0f}.{index + 1:03d}", ("opacity", "textOpacity")
+> actions = [{"toggleStyle": {"tags": list(dimmed), "tagsMatch": "or", "key": k, "value": value, "defaultValue": "100", "transient": True}}
+>            for k in keys]
+> actions += [{"style": {"tags": [keep], "key": k, "value": "100", "transient": True}} for k in keys]
 > ```

@@ -322,6 +322,8 @@ def render(data: dict, profile: Profile) -> str:
              + [flow_page(f, comps, i + 1, profile) for i, f in enumerate(data["flows"])])
     for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: decision pages go right after the Overview, in map order
         pages.insert(1 + k, options_page(data, profile, block, pid, name))
+    for page in pages:   # the background layer locked on every page: nothing on it moves by accident (operator, 2026-10-26)
+        page.base_locked = bool(profile.look.get("lock_base_layer"))
     return mxfile(pages, profile.host, banner(profile.generator, profile.map, profile.command, profile.check))
 
 

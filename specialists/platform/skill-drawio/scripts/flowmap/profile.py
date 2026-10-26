@@ -39,7 +39,9 @@ DEFAULT_LOOK = {
     "e2e_step_total": False,       # End-to-end labels add the flow's step count n: "sub" (x.y, n lowered), "sup" or "slash" (x.y/n), and the
                                    # legend gives each flow's count; true means "sub" (operator, 2026-10-26: x.y/n, then a subscript instead)
     "e2e_label_font": 10,          # End-to-end arrow label font size; the label box grows to fit (operator asked for 12, 2026-10-26)
-    "e2e_click_isolate": False,    # clicking an End-to-end arrow, its label or a legend row dims every other flow; true or the opacity to dim to (operator, 2026-10-26)
+    "click_isolate": False,        # a click on an End-to-end or Overview arrow or legend row shows its colour alone, a second all; true or the dim opacity (2026-10-26)
+    "lock_base_layer": False,      # every page's background layer ("1") drawn locked (operator, 2026-10-26)
+    "e2e_tab": "End-to-end",       # End-to-end tab names: "<e2e_tab> flow" and "<e2e_tab>: <family>" (operator asked for "E2E", 2026-10-26)
     "e2e_family_colours": "page",  # family-page flow colours: "page" (restart on each page, no repeats) or "flow" (full-page colour; operator, 2026-10-26)
 }
 

@@ -183,51 +183,117 @@ class StepTotals(unittest.TestCase):
 
 
 class ClickIsolate(unittest.TestCase):
-    """`look.e2e_click_isolate`: arrows, labels and legend rows carry a link that dims every other flow; off, no links and no locks."""
+    """`look.click_isolate`: one click shows a colour alone, a second shows all, a click on another colour switches (draw.io 32.5.5 rules)."""
 
-    def _actions(self, link: str) -> list:
-        """The actions of a custom link.
+    @staticmethod
+    def _cells(page: ET.Element) -> dict:
+        """Every cell of a page by id, with its tags and link.
+
+        Args:
+            page: the `<diagram>` element.
+
+        Returns:
+            {id: (tags, link)}.
+        """
+        out = {}
+        for e in page.iter():
+            if e.tag in ("mxCell", "UserObject") and e.get("id") and e.get("id") not in out:
+                out[e.get("id")] = ((e.get("tags") or "").split(), e.get("link") or "")
+        return out
+
+    def _run(self, link: str, cells: dict, style: dict) -> None:
+        """Replay a link as draw.io 32.5.5 does: transient, so a toggleStyle decides per cell (its value unless the cell holds it already).
 
         Args:
             link: the `data:action/json,...` text.
+            cells: {id: (tags, link)} of the page.
+            style: {(id, key): value}, changed in place.
+        """
+        for act in json.loads(link.split(",", 1)[1])["actions"]:
+            kind, sel = next((k, v) for k, v in act.items() if k in ("toggleStyle", "style"))
+            ids = list(sel.get("cells", []))
+            want = sel.get("tags", [])
+            match = any if sel.get("tagsMatch") == "or" else all
+            ids += [c for c, (tags, _l) in cells.items() if want and match(t in tags for t in want) and c not in ids]
+            ids = [c for c in ids if c not in sel.get("excludeCells", [])]
+            key = sel["key"]
+            self.assertIs(sel.get("transient"), True)   # never a saved change: a click on a cell defaults to one in draw.io
+            for c in ids:
+                if kind == "toggleStyle":
+                    held = style.get((c, key), sel["defaultValue"])
+                    style[(c, key)] = sel["defaultValue"] if held == sel["value"] else sel["value"]
+                else:
+                    style[(c, key)] = sel["value"]
+
+    def _page(self, page_id: str, **look: object) -> dict:
+        """One rendered page's cells.
+
+        Args:
+            page_id: the diagram id.
+            **look: look keys.
 
         Returns:
-            The action list.
+            {id: (tags, link)}.
         """
-        self.assertTrue(link.startswith("data:action/json,"))
-        return json.loads(link.split(",", 1)[1])["actions"]
+        return self._cells(next(d for d in _diagrams(_render(_map(**look))) if d.get("id") == page_id))
 
-    def test_arrows_labels_and_legend_isolate_their_flow(self) -> None:
-        """Each step arrow and its label dims everything tagged step-arrow, connector or box, then restores its own flow's tag; locked."""
-        page = next(d for d in _diagrams(_render(_map(e2e_layers="flow", e2e_click_isolate=True))) if d.get("id") == "end-to-end")
-        arrows = [u for u in page.iter("UserObject") if "step-arrow" in (u.get("tags") or "").split()]
-        self.assertTrue(arrows)
-        for obj in arrows:
-            flow = next(t for t in obj.get("tags").split() if t.startswith("flow-"))
-            dim, keep = self._actions(obj.get("link"))
-            self.assertEqual((dim["opacity"]["value"], set(dim["opacity"]["tags"]), dim["opacity"]["tagsMatch"]),
-                             (0.15, {"step-arrow", "connector", "box"}, "or"))
-            self.assertEqual((keep["opacity"]["tags"], keep["opacity"]["value"]), ([flow], 1))
-            self.assertIn("locked=1;", obj.find("mxCell").get("style"))
-        boxes = [u for u in page.iter("UserObject") if "box" in (u.get("tags") or "").split()]
-        self.assertTrue(boxes and all(re.search(r"(^| )flow-", u.get("tags")) for u in boxes))
-        rows = {u.get("id"): u.get("link") for u in page.iter("UserObject") if re.fullmatch(r"e2e-leg-.+-t", u.get("id") or "")}
-        self.assertTrue(rows and all(self._actions(v)[1]["opacity"]["tags"][0].startswith("flow-") for v in rows.values()))
-        reset = next(u for u in page.iter("UserObject") if u.get("id") == "e2e-leg-all")
-        self.assertEqual(self._actions(reset.get("link"))[0]["opacity"]["value"], 1)
+    def test_click_toggles_and_switches_on_the_e2e_page(self) -> None:
+        """Click a flow: only its cells stay at 100; click it again: all at 100; click another straight away: that one alone."""
+        cells = self._page("end-to-end", e2e_layers="flow", click_isolate=True)
+        clickable = {c: link for c, (tags, link) in cells.items() if link.startswith("data:action")}
+        kinds = {k for c in clickable for k in ("step-arrow", "connector", "legend") if k in cells[c][0]}
+        self.assertEqual(kinds, {"step-arrow", "connector", "legend"})
+        dimmable = [c for c, (tags, _l) in cells.items() if set(tags) & {"step-arrow", "connector", "box", "legend"}]
 
-    def test_family_layers_isolate_by_family_and_off_by_default(self) -> None:
-        """With family layers a click keeps the family's tag; without the key nothing carries a link or a lock."""
-        page = next(d for d in _diagrams(_render(_map(e2e_click_isolate=0.3))) if d.get("id") == "end-to-end")
-        obj = next(u for u in page.iter("UserObject") if "step-arrow" in (u.get("tags") or "").split())
-        dim, keep = self._actions(obj.get("link"))
-        self.assertEqual(dim["opacity"]["value"], 0.3)
-        self.assertTrue(keep["opacity"]["tags"][0].startswith("family-"))
-        off = next(d for d in _diagrams(_render(_map(e2e_layers="flow"))) if d.get("id") == "end-to-end")
-        self.assertFalse([u for u in off.iter("UserObject") if (u.get("link") or "").startswith("data:action")])
-        self.assertNotIn("locked=1", ET.tostring(off, encoding="unicode"))
+        def shown(style: dict) -> set:
+            return {c for c in dimmable if style.get((c, "opacity"), "100") == "100"}
+
+        arrow = {f: next(c for c, (t, _l) in cells.items() if "step-arrow" in t and f"flow-{f}" in t) for f in ("checkout", "refund")}
+        style: dict = {}
+        self._run(clickable[arrow["checkout"]], cells, style)
+        self.assertEqual(shown(style), {c for c in dimmable if "flow-checkout" in cells[c][0]})
+        self._run(clickable[arrow["checkout"]], cells, style)
+        self.assertEqual(shown(style), set(dimmable))
+        self._run(clickable[arrow["checkout"]], cells, style)
+        self._run(clickable["e2e-leg-refund-t"], cells, style)   # switch straight to another flow
+        self.assertEqual(shown(style), {c for c in dimmable if "flow-refund" in cells[c][0]})
+        self.assertTrue(style[("e2e-leg-checkout-t", "textOpacity")].startswith("15."))   # the other legend rows dim too
+        self._run(clickable["e2e-leg-refund-t"], cells, style)
+        self.assertEqual(shown(style), set(dimmable))
+        self.assertNotIn("e2e-leg-all", cells)
+
+    def test_overview_colours_toggle_and_layers_lock(self) -> None:
+        """An Overview thick arrow shows its colour alone (arrows, counts, dots, legend row) and toggles back; clickable layers are locked."""
+        rendered = _render(_map(click_isolate=True))
+        page = _diagrams(rendered)[0]
+        cells = self._cells(page)
+        thick = next(c for c, (t, link) in cells.items() if "ov-thick" in t and c.startswith("ov-gg-"))
+        own = next(t for t in cells[thick][0] if t.startswith("into-"))
+        style: dict = {}
+        self._run(cells[thick][1], cells, style)
+        dimmable = [c for c, (t, _l) in cells.items() if set(t) & {"ov-thick", "ov-thin", "legend"}]
+        self.assertEqual({c for c in dimmable if style.get((c, "opacity"), "100") == "100"}, {c for c in dimmable if own in cells[c][0]})
+        self._run(cells[thick][1], cells, style)
+        self.assertTrue(all(style.get((c, "opacity"), "100") == "100" for c in dimmable))
+        layers = {c.get("id"): c.get("style") for c in page.iter("mxCell") if c.get("parent") == "0"}
+        self.assertTrue(all(v == "locked=1;" for k, v in layers.items() if k.startswith("ov-L-")))
+
+    def test_off_by_default_and_tab_names(self) -> None:
+        """Without the key no cell carries an action link and no layer is locked; `e2e_tab` renames the End-to-end tabs."""
+        text = _render(_map(e2e_layers="flow", e2e_family_pages=True))
+        self.assertNotIn("data:action/json", text)
+        self.assertNotIn("locked=1", text)
+        names = [d.get("name") for d in _diagrams(_render(_map(e2e_family_pages=True, e2e_tab="E2E")))]
+        self.assertIn("E2E flow", names)
+        self.assertTrue([n for n in names if n.startswith("E2E: ")])
         self.assertIsNone(isolate.dim_level({}))
 
+    def test_lock_base_layer_on_every_page(self) -> None:
+        """`lock_base_layer` draws layer 1 locked on every page; off, no page has it."""
+        for value, want in ((True, 'style="locked=1;"'), (False, None)):
+            for d in _diagrams(_render(_map(lock_base_layer=value, e2e_family_pages=True))):
+                base = next(c for c in d.iter("mxCell") if c.get("id") == "1")
+                self.assertEqual(base.get("style"), want and "locked=1;", d.get("id"))
 
 if __name__ == "__main__":
     unittest.main()
