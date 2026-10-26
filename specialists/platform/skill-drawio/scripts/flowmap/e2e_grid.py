@@ -27,6 +27,8 @@ from .tips import connector_tip, e2e_groups, step_arrow_tip
 E2E_BW, E2E_MIN_H, E2E_PORT_SP, E2E_EDGE, E2E_SP, E2E_MIN_CH, E2E_MIN_CORR, E2E_JUMP = 210, 60, 24, 34, 24, 100, 48, 6
 #: Height above the first row (tier headings) and least height of the corridor above the band below the columns (its heading).
 E2E_HEAD, E2E_BAND_GAP = 56, 96
+#: The tier headings' and the band heading's (offset below their gap's top, height): text a loop must keep clear of (flowmap.loops).
+E2E_TIER_HEAD, E2E_BAND_HEAD = (4, 40), (6, 30)
 #: How far a box reaches past its outermost port; box text (font 11) characters per line in 198 px (conservative) and line height.
 E2E_BOX_PAD, E2E_CHARS, E2E_LINE_H = 18, 27, 14
 #: A flow.step label's size.

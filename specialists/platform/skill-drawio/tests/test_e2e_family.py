@@ -340,6 +340,29 @@ class Loops(unittest.TestCase):
             up, down = loops._room(plain, comp, {})
             self.assertEqual(edge, "top" if up >= down else "bottom", comp)
 
+    def test_loops_keep_clear_of_headings(self) -> None:
+        """No loop or its label reaches into a tier heading or the band heading in its column, on the full page or a family page."""
+        data = _map(e2e_layers="flow", e2e_loops=True, e2e_family_pages=True)
+        prof = profile.Profile.from_drawing(data, "flows.yaml", "s.json", "g")
+        e2e_mod = importlib.import_module("flowmap.e2e")
+        top_row = {cid for cid, (_c, r) in e2e_mod.EndToEnd(data, prof).cell.items() if r == 0}
+        for f in data["flows"]:   # repeat each step done by a top-row box, so every such box carries a loop
+            f["steps"] = [s for st in f["steps"] for s in ([st, {**st, "id": st["id"] + "-again"}] if st["actor"] in top_row else [st])]
+        numbers = {f["id"]: i for i, f in enumerate(data["flows"], 1)}
+        grids = [e2e_mod.EndToEnd(data, prof)] + [
+            e2e_mod.EndToEnd(part, e2e_family.narrowed(prof, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})
+            for _fam, _name, part in e2e_family.family_parts(data, prof)]
+        tops = 0
+        for grid in grids:
+            for lp in grid.loops:
+                top, h = grid._box_span(lp.comp)
+                reach = loops.LOOP_H + 2 + grid.label_h
+                y0, y1 = (top - reach, top) if lp.edge == "top" else (top + h, top + h + reach)
+                tops += grid.cell[lp.comp][1] == 0
+                for t0, t1 in loops.title_spans(grid, grid.cell[lp.comp][0]):
+                    self.assertFalse(y0 < t1 and t0 < y1, f"{lp.text} on {lp.comp}: {y0:g}-{y1:g} over heading {t0:g}-{t1:g}")
+        self.assertTrue(tops, "no top-row box carries a loop, so this test cannot fail")
+
     @staticmethod
     def _steps(text: str, number: int) -> list[int]:
         """The step numbers a loop label covers.

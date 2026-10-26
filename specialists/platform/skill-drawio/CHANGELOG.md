@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261026 `loops._room` ends a box's room at its tier and band headings (`loops.title_spans`, `E2E_TIER_HEAD`, `E2E_BAND_HEAD`), found on smc-resiliency's x86 family page; test `test_loops_keep_clear_of_headings`; Learned 2026-10-26 in references/visual-style.md
 - 20261026 `look` keys `e2e_family_colours`, `e2e_step_total`, `e2e_label_font`, `e2e_loops` (self-loops, `scripts/flowmap/loops.py`), `click_isolate` (one-click toggle, transient, Overview too), `lock_base_layer`, `e2e_tab`; `add_layer(locked=)` (`scripts/flowmap/isolate.py`, `scripts/flowmap/step_labels.py`); Learned 2026-10-26 in references/visual-style.md (operator)
 - 20261026 `scripts/viewer_click.py`, `render_flowmap.py --audit --look`
 - 20261023 `look.e2e_family_pages`: one End-to-end page per family (`scripts/flowmap/e2e_family.py`); full page unchanged; Learned 2026-10-23 in references/visual-style.md; README flow-quality row repaired (operator)

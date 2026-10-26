@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing and running skill-drawio, both as a pack under development and from a calling project
-Last reviewed: 2026-10-23
+Last reviewed: 2026-10-26
 Summary: >-
   A working setup needs mise, just, Python 3.11 or later with PyYAML for flow maps, and draw.io desktop only for exporting pages to images; the pack's
   own venv lives in the skills working cache.
@@ -34,6 +34,9 @@ Depends on: justfile, .mise.toml, requirements.txt, compatibility.yaml
 |                |                                                 |   (via `requirements.txt`)                       |                                                                                |
 | draw.io        | 32.5.5 verified (32.4.1 earlier)                | `compatibility.yaml`                             | Only `drawio_export.py` (pages to images); reading and rendering need no app   |
 |   desktop      |                                                 |                                                  |                                                                                |
+| Playwright     | any with a headless Chromium or Edge; the       | -                                                | Only `just viewer-click` (`scripts/viewer_click.py`): clicks in draw.io's      |
+|                |   viewer `js/viewer-static.min.js` of the       |                                                  |   viewer to test a click action (`look.click_isolate`); the pack's venv has     |
+|                |   draw.io version tested (jgraph/drawio tag)    |                                                  |   no Playwright                                                                |
 
 ## Bootstrap
 
@@ -51,7 +54,7 @@ front ends with its own interpreter (it needs PyYAML for maps), from the project
 
 ## Environment
 
-No environment variables and no secrets. The draw.io binary is found on `PATH` (`drawio`, `draw.io`), then in the usual install paths (`scripts/drawio/export.py` `CANDIDATES`: the macOS app bundle,
+No secrets. One optional variable: `BROWSER_PY`, an interpreter with Playwright for `just viewer-click` (default `python3` on `PATH`). The draw.io binary is found on `PATH` (`drawio`, `draw.io`), then in the usual install paths (`scripts/drawio/export.py` `CANDIDATES`: the macOS app bundle,
 `/usr/bin/drawio`, `/opt/drawio/drawio`, the Windows default); `--binary` overrides it.
 
 ## First run

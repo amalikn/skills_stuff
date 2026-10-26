@@ -13,7 +13,7 @@ from __future__ import annotations
 from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, header_height, label
 from drawio.route import count_crossings, oriented
 
-from .e2e_grid import E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_SP, E2EGrid, Link, e2e_box_lines, e2e_text_height
+from .e2e_grid import E2E_BAND_HEAD, E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_SP, E2E_TIER_HEAD, E2EGrid, Link, e2e_box_lines, e2e_text_height
 from .step_labels import label_setup, label_spot, step_label, total_words
 from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
@@ -261,13 +261,14 @@ class EndToEnd(E2EGrid):
         for c, (name, _groups) in enumerate(self.profile.tiers):
             page.box(f"e2e-stripe-{c}", "", self.col_x[c] - 8, self.gap_top[-1], E2E_BW + 16, last_tier_bottom + 8 - self.gap_top[-1],
                      "rounded=0;html=1;fillColor=#f4f6f9;strokeColor=none;")
-            page.box(f"e2e-tier-{c}", label(f"**{name}**"), self.col_x[c], self.gap_top[-1] + 4, E2E_BW, 40,
+            page.box(f"e2e-tier-{c}", label(f"**{name}**"), self.col_x[c], self.gap_top[-1] + E2E_TIER_HEAD[0], E2E_BW, E2E_TIER_HEAD[1],
                      "text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;")
         if self.band < self.n_rows:
             band_top = self.gap_top[self.band - 1] + self.gap_h[self.band - 1] - 8
             page.box("e2e-band", "", MARGIN - 8, band_top, right - MARGIN + 16, self.bottom - band_top - self.gap_h[self.n_rows - 1] + 16,
                      "rounded=0;html=1;fillColor=#fbf8ee;strokeColor=none;")
-            page.box("e2e-band-head", label(f"**{self.profile.band_title}**"), self.col_x[0], self.gap_top[self.band - 1] + 6, E2E_BW, 30,
+            page.box("e2e-band-head", label(f"**{self.profile.band_title}**"), self.col_x[0], self.gap_top[self.band - 1] + E2E_BAND_HEAD[0],
+                     E2E_BW, E2E_BAND_HEAD[1],
                      "text;html=1;align=left;verticalAlign=middle;fontSize=14;")
 
     def _arrows(self, page: Page) -> None:

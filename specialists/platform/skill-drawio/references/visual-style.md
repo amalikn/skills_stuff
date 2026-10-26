@@ -447,3 +447,20 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 >     loop.edge = edges[0] if used[edges[0]] + loop.width <= E2E_BW - 2 * LOOP_PAD else edges[1]
 >     used[loop.edge] += loop.width
 > ```
+
+> **Learned 2026-10-26** · loops keep clear of headings · VERIFIED_PRIMARY · Source: `scripts/flowmap/loops.py` `_room`,
+> `title_spans`, `scripts/flowmap/e2e_grid.py` `E2E_TIER_HEAD`, `E2E_BAND_HEAD`; `tests/test_e2e_family.py`
+> `test_loops_keep_clear_of_headings`; smc-resiliency render; screenshots `references/screenshots/20261026-loop-heading-clearance/` ·
+> Falsifier: a loop or its label drawn over a tier heading or the band heading
+> The room above a top-row box was measured to the column's top, but the tier heading text sits inside that room (4 to 44 px below it),
+> so a box with clear lines above put its loop on the heading: smc-resiliency's x86 family page drew 8.8 over "On the SMC", and the page
+> audit passed it (it checks arrows, boxes and labels, not heading text). Headings are now obstacles like boxes; the band heading in the
+> first column too. The test repeats every step a top-row box does, so each carries a loop, and fails without the fix ("4.1 on
+> report-timer: 506-548 over heading 512-542"). UNC's and the example's drawings stayed byte-identical; only the x86 page moved its loop below.
+>
+> ```python
+> # scripts/flowmap/loops.py _room (skills_stuff, 2026-10-26)
+> for y0, y1 in title_spans(grid, c):   # a top-row box's room ends at its tier heading, not the column's top
+>     up = min(up, top - y1) if y1 <= top else up
+>     down = min(down, y0 - top - h) if y0 >= top + h else down
+> ```

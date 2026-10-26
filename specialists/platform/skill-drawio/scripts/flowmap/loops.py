@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from drawio.cell import tag
 from drawio.mxfile import ARROW_HEAD, Page
 
-from .e2e_grid import E2E_BW
+from .e2e_grid import E2E_BAND_HEAD, E2E_BW, E2E_TIER_HEAD
 from .isolate import E2E_DIMMED, group_tag, isolate_link
 from .model import flow_family
 from .step_labels import e2e_label_size, step_label
@@ -93,8 +93,24 @@ def loop_runs(grid: object) -> list[Loop]:
     return loops
 
 
+def title_spans(grid: object, col: int) -> list[tuple[float, float]]:
+    """The vertical spans of the heading text in a column: its tier heading, and the band heading in the first column.
+
+    Args:
+        grid: the laid-out End-to-end page (E2EGrid).
+        col: the column index.
+
+    Returns:
+        [(top, bottom)] in pixels.
+    """
+    spans = [(grid.gap_top[-1] + E2E_TIER_HEAD[0], grid.gap_top[-1] + sum(E2E_TIER_HEAD))]
+    if col == 0 and grid.band < grid.n_rows:
+        spans.append((grid.gap_top[grid.band - 1] + E2E_BAND_HEAD[0], grid.gap_top[grid.band - 1] + sum(E2E_BAND_HEAD)))
+    return spans
+
+
 def _room(grid: object, comp: str, taken: dict) -> tuple[float, float]:
-    """The clear room above and below a box: to the nearest horizontal run over it, the nearest box in its column, or loops already placed.
+    """The clear room above and below a box: to the nearest horizontal run over it, box or heading text in its column, or loops already placed.
 
     Args:
         grid: the laid-out End-to-end page (EndToEnd, with routed points).
@@ -113,6 +129,9 @@ def _room(grid: object, comp: str, taken: dict) -> tuple[float, float]:
             if ay == by and min(ax, bx) < x1 and max(ax, bx) > x0:
                 up = min(up, top - ay) if ay < top else up
                 down = min(down, ay - top - h) if ay > top + h else down
+    for y0, y1 in title_spans(grid, c):   # a top-row box's room ends at its tier heading, not the column's top
+        up = min(up, top - y1) if y1 <= top else up
+        down = min(down, y0 - top - h) if y0 >= top + h else down
     for other, (oc, orow) in grid.cell.items():
         if oc == c and other != comp:
             otop, oh = grid._box_span(other)
