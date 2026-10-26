@@ -25,6 +25,10 @@ NEAR = 8
 #: Costs: a crossed box (or the arrow's own box) is unusable in practice; a run alongside another or over a label, a reused point, a reused side,
 #: a crossing, a bend and an exit off a plain box's right side each make a path worse.
 COST_BOX, COST_ALONG, COST_PORT, COST_SIDE, COST_CROSS, COST_BEND, COST_ODD_EXIT = 1000, 200, 60, 120, 30, 4, 15
+#: A path into a box on the right that runs flat past the gap, over the target's column, to come in at its top or bottom (operator review
+#: 2026-10-26: "why is it extending so much to the right and then going down?"): turning in the gap and entering the left side reads as the
+#: next step. Above COST_SIDE, so a second arrow takes another left port rather than overshoot; well below a crossing of a box or a label.
+COST_OVERSHOOT = 150
 #: Shortest first run (leaving a box) and last run (the arrowhead's room, as drawio.audit.HEAD_ROOM thin).
 STUB, HEAD = 12, 22
 #: Arc size where a flow arrow crosses another: an unavoidable crossing hops, as on the Overview.
@@ -104,7 +108,26 @@ def cost(page: Page, path: tuple, ends: tuple, used: dict) -> float:
     sides = ((src, out_side) in used["sides"]) + ((dst, in_side) in used["sides"])
     length = sum(abs(p[0] - q[0]) + abs(p[1] - q[1]) for p, q in segs)
     return ((boxes + own) * COST_BOX + (along + labels) * COST_ALONG + points * COST_PORT + sides * COST_SIDE + crosses * COST_CROSS
-            + (len(segs) - 1) * COST_BEND + odd * COST_ODD_EXIT + length / 1000)
+            + (len(segs) - 1) * COST_BEND + odd * COST_ODD_EXIT + _overshoot(segs, in_side, page.rects[src], page.rects[dst]) * COST_OVERSHOOT
+            + length / 1000)
+
+
+def _overshoot(segs: list, in_side: str, src: tuple, dst: tuple) -> bool:
+    """Whether a path into a box to the right runs flat over the target's column to enter its top or bottom.
+
+    Args:
+        segs: the path's runs.
+        in_side: the entry side.
+        src: the source box.
+        dst: the target box.
+
+    Returns:
+        True for an entry at the top or bottom after a horizontal run past the target's left edge, when the target lies wholly right of
+        the source (a left entry could turn in the gap between them).
+    """
+    if in_side == "left" or dst[0] < src[0] + src[2]:
+        return False
+    return any(abs(p[1] - q[1]) < .5 and max(p[0], q[0]) > dst[0] + .5 for p, q in segs)
 
 
 def _ports(rect: tuple, diamond: bool, out: bool) -> list:
