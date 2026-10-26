@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261026_1844
+Last rotated: 20261026_2146
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261026_2146 — smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)](#20261026_2146--smc_change-drop-proof-installs-lower-dir-first-runs-table-v080---v081)
 - [20261026_1844 — smc_change: Pi clock wait, remount retry, lower_busy, http timeout/retries, probe survives a dropped session, resume by default (v0.7.9 -> v0.8.0)](#20261026_1844--smc_change-pi-clock-wait-remount-retry-lower_busy-http-timeoutretries-probe-survives-a-dropped-session-resume-by-default-v079---v080)
 - [20261026_1701 — smc_change safe recovery, completion after cleanup and phase timing (v0.7.8 -> v0.7.9)](#20261026_1701--smc_change-safe-recovery-completion-after-cleanup-and-phase-timing-v078---v079)
 - [20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)](#20261026_1617--smc_change-php-verify-soak-from-the-restart-start_now-named-command-checks-tstik-avr-and-8080-checks-tstik-capture-avr-counts-v077---v078)
@@ -32,8 +33,15 @@ Last rotated: 20261026_1844
 - [20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)](#20261022_1506--firmware-access-from-the-os-uefi-and-eeprom-lines-in-the-x86-and-pi-probes-deadlines-v063---v064)
 - [20261022_1426 — What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3)](#20261022_1426--what-wan-side-equipment-tells-an-smc-about-its-site-starlink-position-sky-muster-ntd-nothing-v062---v063)
 - [20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)](#20261022_1226--backdoor_execsh-passes-a-stdin-script-through-v061---v062)
-- [20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)](#20261022_1200--php-cve-fleet-status-extra-php-processes-backdoor-hostname-check-nbn_wh-read-rule-v060---v061)
-- [20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)](#20261020_2028--sky-muster-reads-session-set-up-and-the-concurrency-curve-v059---v060)
+
+## 20261026_2146 — smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)
+
+- `references/19_smc-change-role.md`: new section "Drop-proof installs, leftover chroot, lower dir first (2026-10-26 evening)": the
+  alice-well-smc01 chroot drop, `await_job.yml` (until does not retry unreachable), `own_leftover` resume, lower-dir-first apt_pin with
+  `reboot_holders.py` and a planned reboot, the cron pause, check-mode lower assert, round-trip cost (5-24 s per task), the AVR probe
+  collision; code excerpts from local-knowledge-ansible `76b0f86`.
+- `scripts/smc_change_runs_table.py` (+ test, `just smc_change_runs <change>`): one line per run record with result, phase 6-9 seconds,
+  reboot (boot_id), lower-dir holders or failure.
 
 ## 20261026_1844 — smc_change: Pi clock wait, remount retry, lower_busy, http timeout/retries, probe survives a dropped session, resume by default (v0.7.9 -> v0.8.0)
 
@@ -182,18 +190,3 @@ finding). Researched for smc-resiliency's site fingerprint (decision 20261022_14
 
 `scripts/backdoor_exec.sh`: the `tsh` inside `backdoor-watch.sh` and `kp` read stdin, so a script given with `-` was eaten before it reached the box (rc 0,
 no output). Every helper now runs with `</dev/null`. Retested 2026-10-22: goojarr-goonyool and mount-peachy (rct, Teleport down) probed through the backdoor.
-
-## 20261022_1200 — PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1)
-
-From the ansible-wifi PHP CVE-2026-109618/109619 assessment. `references/10_captive-portal.md`: PHP security status (Ubuntu fixed build
-`8.1.2-1ubuntu2.28`, USN-8948-1; mod_php fleet-wide; builds drift, Pis included) and the other PHP processes to restart (rct-tstik
-`php -S 10.254.0.1:8080` as root from cron; `apn-mqtt-client`). `references/07_hardware-overlay.md`: what "don't touch nbn_wh" means (no
-changes; reads always allowed; operator, 2026-10-22). `references/03_communication-flows.md` Learned 2026-10-22: a backdoor port can answer
-as another box (50501 = nocprov-smc01); nbn_wh Teleport running but no tunnel. `references/13_known-issues.md` Learned (f): dual-inventory
-hosts, CRLF host_vars, no self-patching. New scripts `php_package_probe.sh` and `backdoor_exec.sh` (recipes, catalogue, smoke-tested);
-`backdoor-watch.sh` strips `\r` from a CRLF siteid.
-
-## 20261020_2028 — Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)
-
-`references/13_known-issues.md` Learned (e): a fresh Teleport session to a Sky Muster SMC 7 to 8 s against 0.01 s on a shared connection;
-8.3, 5.8 and 4.3 s per unit at 4, 8 and 12 in flight (unified-network-controller satellite concurrency report).

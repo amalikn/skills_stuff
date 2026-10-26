@@ -397,3 +397,57 @@ Screenshots: `screenshots/20261026-smc-change-recovery/` (generic pages, no cust
 >   from cron jobs started without a running-check (e.g. `*/5 ... nohup php -S 10.254.0.1:8080`). Proposed, not decided: guard those cron
 >   lines with `flock -n` (or a pgrep check) and drop the nightly kill.
 
+
+## Drop-proof installs, leftover chroot, lower dir first (2026-10-26 evening)
+
+`VERIFIED_PRIMARY` (runtime, local-knowledge-ansible `76b0f86`): alice-well-smc01's Teleport session dropped at "Install the .debs inside
+the chroot". dpkg finished in the lower dir (lower dpkg `ii .28`, audit clean) but the block's `always` close never ran: binds on
+`/media/root-ro/{dev,dev/pts,proc,sys}`, `policy-rc.d`, staging dir, lower rw. The next run refused `needs_repair` (correct). After a manual
+unbind/remove the resume passed 11/11, but two `php /usr/local/bin/kohana status:update:usage` processes (not in the spec's restart list)
+held old php8.1 files, the remount stayed EBUSY for 138 s and the SMC rebooted (phase 8 455 s). Fixes:
+
+- Installs run async and wait through `tasks/await_job.yml`. An `until` loop does not retry an unreachable host (ansible-core
+  `task_executor.py`: a connection failure raises out of the retry loop), so the wait copies the probe's pattern:
+
+```yaml
+# roles/smc_change/tasks/await_job.yml (76b0f86)
+- name: Wait for {{ smc_change_job_name }}
+  ansible.builtin.async_status:
+    jid: "{{ smc_change_job.ansible_job_id }}"
+  register: smc_change_job_first
+  until: smc_change_job_first.finished | default(false)
+  retries: "{{ (smc_change_job_minutes | default(30) | int) * 6 }}"
+  delay: 10
+  ignore_unreachable: true
+- name: Wait for the connection after it dropped during {{ smc_change_job_name }}
+  ansible.builtin.wait_for_connection: {timeout: 600, sleep: 10}
+  when: smc_change_job_first.unreachable | default(false)
+# ... then async_status again (a second drop ends the play for the host)
+```
+
+- `files/recovery_safety.py` reports `dpkg_busy` (by `/proc/<pid>/comm`, so no command line self-matches) and `own_leftover` (the journal
+  says policy-rc.d was not there before, nothing installing); `recovery.py` then returns `safe_to_resume` with `close_chroot`, and main.yml
+  closes the chroot and removes the staging dir before anything else. Anyone else's chroot, a running dpkg or a failed audit stays
+  `needs_repair`.
+- `USER_STATED` (operator, 2026-10-26): on overlay SMCs apt_pin installs the lower dir first and live only when no reboot follows; cron is
+  paused for the gap. After the lower-dir install `files/reboot_holders.py` (read-only, 0.3 s on alice-well) lists processes mapping or
+  holding deleted files owned by the changed packages (lower dpkg `-L`), split into ones the spec restarts (systemd unit in the cgroup, or a
+  restart pattern) and others; any other holder after up to 60 s, or spec `always`/`overlay_only`, sets `smc_change_reboot_planned`
+  (journalled): no live install, no stage 7 restarts, lower dir flushed, stage 8 reboots.
+
+```yaml
+# roles/smc_change/tasks/actions/apt_pin.yml (76b0f86) - the cron pause before the chroot dpkg
+systemctl is-active -q cron || { echo "cron not running"; exit 0; }
+systemctl stop smc-change-cron-resume.timer 2>/dev/null || true
+systemd-run --quiet --unit=smc-change-cron-resume --on-active=15min /bin/systemctl start cron
+systemctl stop cron
+```
+
+- Check mode: the lower-dir version read runs with `check_mode: false` and the assert is skipped in check mode (it failed on overlay SMCs
+  against an empty list). Async `shell` under `--check` returns "Command would have run if not in check mode" and runs nothing (tested).
+- `VERIFIED_PRIMARY` measurement: any task that touches an SMC costs 5-24 s over Teleport/satellite; a `--check` apply on alkngarrija-smc01
+  spent 123 s in stage 6 with nothing installed. alligator-hole-smc01 (async code, live-first) passed 11/11 in 441 s, stage 6 240 s.
+- Incident: an agent check run and the operator's apply probed alkngarrija-smc01 at the same second; both `artisan update:stats` hit the AVR
+  serial port, one read failed (`Unable to read the data from AVR`), both runs refused. One controller per SMC, check runs included.
+- Not yet run for real: the lower-dir-first order, the cron pause, a real drop through `await_job.yml`. Test SMC: alkngarrija-smc01
+  (operator: not warehouse-rct01). Runs table: `just smc_change_runs <change>` (`scripts/smc_change_runs_table.py`).

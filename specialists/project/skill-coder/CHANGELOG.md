@@ -139,6 +139,10 @@ Summary: Release history and governance changes of skill-coder; the release head
   reviewing that pattern for `just check`; both now `proposed`, awaiting the operator's promotion approval. `archcore status` passes.
 - Feedback to all-scraper: the ShellCheck wiki page answered with a bot challenge during research; recorded in its `ROADMAP.md` Backlog.
 
+## 20261026_2146 — Ansible: until does not retry unreachable; async drop-proof waits; callbacks_enabled in 2.21
+
+- `languages/ansible.md`: Learned 2026-10-26 (e) - until/retries and unreachable hosts, async + await pattern, async shell in check mode, callback_whitelist ignored in 2.21, callback options are a literal DOCUMENTATION (local-knowledge-ansible `76b0f86`).
+
 ## 20261019_1643 — deterministic navigation-control upgrade
 
 <!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->

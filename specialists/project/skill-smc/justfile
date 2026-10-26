@@ -100,6 +100,11 @@ php_package_probe proxy +nodes:
 smc_change_compare before after:
     @python3 scripts/smc_change_compare_records.py "{{before}}" "{{after}}"
 
+# One line per smc_change run record of a change: result, phase 6-9 seconds, reboot (boot_id changed), lower-dir holders or failure.
+# Example: just smc_change_runs php-cve-2026-109618   (MODE=all lists check/assess/verify runs too; HOST filters by file name)
+smc_change_runs change MODE="apply" HOST="":
+    @python3 scripts/smc_change_runs_table.py "{{smc_change_role}}/files/changes/{{change}}/runs" --mode "{{MODE}}" --host "{{HOST}}"
+
 # What is in the local-only ansible-wifi knowledge folder and what is symlinked into the repo (read-only). Example: just local_knowledge_index 3
 local_knowledge_index days="14":
     @bash scripts/local_knowledge_index.sh --days "{{days}}"

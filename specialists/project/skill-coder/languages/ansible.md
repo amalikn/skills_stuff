@@ -178,3 +178,26 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > ansible-inventory -i <file> --list` fails on a source that does not parse; it reads only, so it can cover every inventory, existing ones
 > included. (5) Per-host state a rerun must honour (done hosts skipped, a force flag to redo them) belongs on the controller (one file per
 > host, written with `delegate_to: localhost`), not on the managed box.
+
+> **Learned 2026-10-26 (e)** · ansible-core 2.21.5, ansible.posix 2.2.2 · VERIFIED_PRIMARY (core source, runs on SMCs over Teleport) ·
+> Source: local-knowledge-ansible `76b0f86` `ansible-wifi/roles/smc_change/tasks/await_job.yml`, `callback_plugins/task_timing.py` ·
+> Falsifier: an `until` loop that retries after "Connection timed out during banner exchange"
+> (1) `until`/`retries` do not retry an unreachable host: a connection failure raises out of the retry loop in `task_executor.py`. For a
+> long job over a link that drops, start it with `async: N` + `poll: 0` (the job keeps running detached, so the drop no longer kills dpkg
+> mid-install), poll with `async_status` + `until` + `ignore_unreachable: true`, then `wait_for_connection` and poll again when the first
+> poll came back unreachable. (2) `async` + `poll: 0` on `shell` under `--check` runs nothing ("Command would have run if not in check
+> mode"), and `async_status` supports check mode. (3) ansible-core 2.21 ignores the old `[defaults] callback_whitelist`
+> (`ansible-config dump` shows `CALLBACKS_ENABLED = []`); use `callbacks_enabled`. A callback with `CALLBACK_NEEDS_ENABLED = False` in a
+> playbook-adjacent `callback_plugins/` loads without any config. (4) A callback's options come from a literal `DOCUMENTATION` string read
+> by the loader (not executed), so a subclass of `profile_tasks` must copy the option definitions, not import them.
+>
+> ```yaml
+> - name: Install the target build live
+>   ansible.builtin.apt: {name: "{{ specs }}", state: present, only_upgrade: true}
+>   async: 1800
+>   poll: 0
+>   register: job
+> - name: Wait for the live install
+>   ansible.builtin.include_tasks: await_job.yml   # async_status until finished, ignore_unreachable, wait_for_connection, poll again
+>   vars: {smc_change_job: "{{ job }}", smc_change_job_name: the live install}
+> ```

@@ -266,3 +266,16 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 > for k in skill["$defs"]["drawing"]["properties"]["look"]["properties"]:
 >     proj["$defs"]["drawing"]["properties"]["look"]["properties"].setdefault(k, skill_look[k])
 > ```
+
+> **Learned 2026-10-26** · decision branch labels are strings · VERIFIED_PRIMARY · Source: local-knowledge-ansible `76b0f86`
+> `ansible-wifi/roles/smc_change/drawio/parts/flows-role.yaml` (step `decide`), `just smc_change_flows` (skill-smc) · Falsifier: a map with
+> `when: {next-step: yes}` that validates
+> YAML 1.1 reads a bare `yes`/`no` as a boolean, and the flow map schema wants a string for each `when` label, so the render stops with
+> "problem: $.flows[1].steps[5].when.flush: expected string, got bool". Quote yes/no branch labels:
+>
+> ```yaml
+>     - id: decide
+>       shape: decision
+>       next: [live, flush]
+>       when: {live: "no (and every plain-root SMC)", flush: "yes"}
+> ```
