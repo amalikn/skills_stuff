@@ -94,6 +94,21 @@ class FamilyPages(unittest.TestCase):
                             if (c.get("style") or "").startswith("rounded=0") and "strokeColor=none" in c.get("style") and "fillColor=#f" not in c.get("style")]
                 self.assertEqual(len(swatches), len(set(swatches)), d.get("id"))
 
+    def test_flow_colours_match_the_full_page(self) -> None:
+        """With `e2e_family_colours: flow` each flow keeps its full-page colour on its family page; the default does not for every flow."""
+        def colours(data: dict) -> dict:
+            prof = profile.Profile.from_drawing(data, "flows.yaml", "s.json", "g")
+            number = {f["id"]: i for i, f in enumerate(data["flows"], 1)}
+            groups = {}
+            for _fam, _name, part in e2e_family.family_parts(data, prof):
+                got, _of = importlib.import_module("flowmap.tips").e2e_groups(part, prof, {f["id"]: number[f["id"]] for f in part["flows"]})
+                groups.update({g[0]: g[2] for g in got})
+            return groups
+        data = _map(e2e_family_pages=True, e2e_layers="flow", e2e_family_colours="flow")
+        full = {f["id"]: profile.DISTINCT[(i - 1) % len(profile.DISTINCT)] for i, f in enumerate(data["flows"], 1)}
+        self.assertEqual(colours(data), full)
+        self.assertNotEqual(colours(_map(e2e_family_pages=True, e2e_layers="flow")), full)
+
     def test_audits_clean_and_unused_tiers_dropped(self) -> None:
         """Every family page passes the layout audits; a family that touches two tiers draws two columns."""
         data = _map(e2e_family_pages=True)

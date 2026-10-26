@@ -6,7 +6,7 @@ page draws only that family's flows and the components they touch (step actors, 
 can be exported and read alone. The full page stays as it is.
 
 Each family page keeps the whole map's flow numbers (x of x.y matches the Overview and the full page), takes colours in its own order (no
-colour repeats on it), drops tier columns it does not use, and renames its cell ids `e2e-` to `e2f-<family>-` so every id stays unique in the file.
+colour repeats on it; `look.e2e_family_colours: flow` keeps each flow's full-page colour instead), drops tier columns it does not use, and renames its cell ids `e2e-` to `e2f-<family>-` so every id stays unique in the file.
 
 Imported, not run: `from flowmap.e2e_family import family_pages` with the skill's scripts/ on sys.path.
 """

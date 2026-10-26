@@ -15,6 +15,7 @@ Summary: Release history and governance changes of skill-drawio; the release hea
 
 ## Unreleased
 
+- 20261026 `look.e2e_family_colours` (`page` default, `flow`): family End-to-end pages keep each flow's full-page colour (`scripts/flowmap/tips.py`, schema, test); Learned 2026-10-26 in references/visual-style.md (operator)
 - 20261023 `look.e2e_family_pages`: one End-to-end page per family (`scripts/flowmap/e2e_family.py`); full page unchanged; Learned 2026-10-23 in references/visual-style.md; README flow-quality row repaired (operator)
 - 20261023 `scripts/palette_check.py`; Learned 2026-10-23 in references/visual-style.md, export-and-self-review.md, reading-drawings.md
 - 20261023 Learned entries from smc-resiliency's re-render: a flag with a value splits its tooltip code span (open; references/visual-style.md), and a project's narrowed schema copy refuses new look keys until copied in (references/data-first-diagrams.md)

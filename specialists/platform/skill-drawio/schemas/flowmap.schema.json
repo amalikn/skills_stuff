@@ -600,6 +600,10 @@
             "e2e_family_pages": {
               "type": "boolean",
               "description": "Also draw one End-to-end page per flow family after the full one: that family's flows and the components they touch, numbered as in the whole map; default false."
+            },
+            "e2e_family_colours": {
+              "enum": ["page", "flow"],
+              "description": "Family End-to-end page flow colours (with e2e_layers flow): page restarts the palette on each page so none repeats; flow keeps each flow's full-page colour, repeating past the palette's length; default page."
             }
           }
         }

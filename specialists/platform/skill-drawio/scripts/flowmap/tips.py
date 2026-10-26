@@ -138,7 +138,8 @@ def e2e_groups(data: dict, profile: Profile, numbers: dict | None = None) -> tup
         data: the validated map, or one family's part of it.
         profile: the project's drawing profile.
         numbers: {flow id: its number in the whole map} when data is a part; a part names each flow by that number, takes colours in its
-            own order (so no colour repeats on its page) and leaves out families with no flow on it.
+            own order (so no colour repeats on its page; with `look.e2e_family_colours` "flow", the colour at that number, as on the full
+            page) and leaves out families with no flow on it.
 
     Returns:
         (groups as (id, legend and layer name, colour, flow titles), {flow id: group id}).
@@ -146,7 +147,9 @@ def e2e_groups(data: dict, profile: Profile, numbers: dict | None = None) -> tup
     flows = data["flows"]
     if profile.look.get("e2e_layers", "family") == "flow":
         num = numbers or {f["id"]: i for i, f in enumerate(flows, 1)}
-        groups = tuple((f["id"], f"{num[f['id']]}. {f['title']}", DISTINCT[(i - 1) % len(DISTINCT)], (f["title"],)) for i, f in enumerate(flows, 1))
+        whole = numbers and profile.look.get("e2e_family_colours", "page") == "flow"   # a part keeps each flow's full-page colour
+        groups = tuple((f["id"], f"{num[f['id']]}. {f['title']}", DISTINCT[((num[f["id"]] if whole else i) - 1) % len(DISTINCT)], (f["title"],))
+                       for i, f in enumerate(flows, 1))
         return groups, {f["id"]: f["id"] for f in flows}
     of = {f["id"]: flow_family(f, profile) for f in flows}
     groups = tuple((fam, name, col, tuple(f["title"] for f in flows if of[f["id"]] == fam)) for fam, name, col, _ids in profile.families)

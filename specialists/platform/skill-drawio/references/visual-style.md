@@ -161,6 +161,9 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   family's flows and the boxes they touch, the whole map's flow numbers on every x.y, colours taken in the page's own order so none repeats,
   unused tier columns dropped, ids renamed `e2f-<family>-`; the Overview index links each one. It is the exportable form of View > Tags
   `family-<id>` (operator, 2026-10-23: "leave the existing end to end as it is and add more end to end pages").
+- `look.e2e_family_colours` (with `e2e_layers: flow`) picks the family pages' colours: `page` (default) restarts the palette on each page,
+  so none repeats; `flow` keeps each flow's full-page colour on every page, so a flow is the same colour everywhere and two flows 20 apart
+  share one when a family holds both (operator, 2026-10-26: "switch to one colour per flow everywhere").
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).
@@ -328,3 +331,19 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > page.rename = ("e2e-", f"e2f-{fam}-")
 > ```
 
+
+> **Learned 2026-10-26** · family page colours by flow · VERIFIED_PRIMARY · Source: `scripts/flowmap/tips.py` `e2e_groups`,
+> `tests/test_e2e_family.py` `test_flow_colours_match_the_full_page`; unified-network-controller render; screenshot
+> `references/screenshots/20261026-e2e-family-colours/` · Falsifier: a family page under `e2e_family_colours: flow` whose flow colour differs
+> from that flow's colour on the full End-to-end page
+> Restarting the palette on each family page avoids repeats but gives one flow a different colour on each page; the operator chose one colour
+> per flow everywhere (2026-10-26). With 20 colours, flows n and n+20 share one, so a family holding both repeats it: in
+> unified-network-controller's 31 flows, Monitoring (7, 27) and Onboarding (8 and 28, 9 and 29); the x.y numbers still tell them apart.
+> Count a forced repeat per family from the numbers (n mod 20) before predicting it: the first prediction named only Onboarding.
+>
+> ```python
+> # scripts/flowmap/tips.py e2e_groups (skills_stuff, 2026-10-26)
+> whole = numbers and profile.look.get("e2e_family_colours", "page") == "flow"   # a part keeps each flow's full-page colour
+> groups = tuple((f["id"], f"{num[f['id']]}. {f['title']}", DISTINCT[((num[f["id"]] if whole else i) - 1) % len(DISTINCT)], (f["title"],))
+>                for i, f in enumerate(flows, 1))
+> ```
