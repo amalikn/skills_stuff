@@ -451,3 +451,12 @@ systemctl stop cron
   serial port, one read failed (`Unable to read the data from AVR`), both runs refused. One controller per SMC, check runs included.
 - Not yet run for real: the lower-dir-first order, the cron pause, a real drop through `await_job.yml`. Test SMC: alkngarrija-smc01
   (operator: not warehouse-rct01). Runs table: `just smc_change_runs <change>` (`scripts/smc_change_runs_table.py`).
+
+`VERIFIED_PRIMARY` (runs 2026-10-26 21:38-22:20, role at local-knowledge-ansible `76b0f86`): the lower-dir-first order passed 11/11 on
+alpara-smc01 and amatjatpalk-smc01 (overlay, live install after the lower dir, no reboot, stage 6 261/244 s, cron-started processes back
+after the pause). alkngarrija-smc01's first real apply lost SSH ~2 min into the async chroot dpkg (banner timeouts) and stayed unreachable
+past `wait_for_connection`'s 600 s; the Teleport tunnel was still listed while SSH closed and the autossh backdoor was down. Second drop
+today at the same step (alice-well-smc01 the first): `UNVERIFIED` hypothesis that dpkg's writes to the SD card starve sshd; to check on the
+SMC's dpkg.log and journal, candidate fix `ionice -c3 nice -n19` on the chroot dpkg. `run_once` for the role's bookkeeping is a patch in
+local-knowledge `plans/smc-change-run-once-20261026_2220.patch` (not applied); the operator wants run-once steps defined by the role and
+declared in the change spec (design open).

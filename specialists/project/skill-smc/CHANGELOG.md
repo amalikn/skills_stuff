@@ -13,6 +13,7 @@ Last rotated: 20261026_2146
 
 ## Contents
 
+- [20261026_2222 — smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)](#20261026_2222--smc_change-new-order-passed-on-two-pis-second-drop-at-chroot-dpkg-v081---v082)
 - [20261026_2146 — smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)](#20261026_2146--smc_change-drop-proof-installs-lower-dir-first-runs-table-v080---v081)
 - [20261026_1844 — smc_change: Pi clock wait, remount retry, lower_busy, http timeout/retries, probe survives a dropped session, resume by default (v0.7.9 -> v0.8.0)](#20261026_1844--smc_change-pi-clock-wait-remount-retry-lower_busy-http-timeoutretries-probe-survives-a-dropped-session-resume-by-default-v079---v080)
 - [20261026_1701 — smc_change safe recovery, completion after cleanup and phase timing (v0.7.8 -> v0.7.9)](#20261026_1701--smc_change-safe-recovery-completion-after-cleanup-and-phase-timing-v078---v079)
@@ -33,6 +34,10 @@ Last rotated: 20261026_2146
 - [20261022_1506 — Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)](#20261022_1506--firmware-access-from-the-os-uefi-and-eeprom-lines-in-the-x86-and-pi-probes-deadlines-v063---v064)
 - [20261022_1426 — What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3)](#20261022_1426--what-wan-side-equipment-tells-an-smc-about-its-site-starlink-position-sky-muster-ntd-nothing-v062---v063)
 - [20261022_1226 — backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)](#20261022_1226--backdoor_execsh-passes-a-stdin-script-through-v061---v062)
+
+## 20261026_2222 — smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)
+
+- `references/19_smc-change-role.md`: alpara and amatjatpalk 11/11 on the lower-dir-first order; alkngarrija-smc01 unreachable during the async chroot dpkg (second drop at that step, I/O-starvation hypothesis unverified); run_once patch and the operator's spec-declared design (open).
 
 ## 20261026_2146 — smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)
 

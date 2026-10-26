@@ -201,3 +201,21 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 >   ansible.builtin.include_tasks: await_job.yml   # async_status until finished, ignore_unreachable, wait_for_connection, poll again
 >   vars: {smc_change_job: "{{ job }}", smc_change_job_name: the live install}
 > ```
+
+> **Learned 2026-10-26 (f)** · ansible-core 2.21.5 · VERIFIED_PRIMARY (local test: three local hosts, `serial: 3`, two `include_tasks`) ·
+> Source: local-knowledge-ansible `plans/smc-change-run-once-20261026_2220.patch` · Falsifier: a `run_once` task whose fact or register is
+> missing on the second host of the batch
+> `run_once: true` runs the task on the first host of the batch and applies its result to every host in the batch: `include_vars`, a
+> looping `set_fact` that accumulates, and a delegated command's `register` all reached h2 and h3. The `when` is judged on the first host
+> only, so use it only where the condition is the same for every host. It is once per serial batch, not once per run: with `serial: 5`
+> and 10 hosts it runs twice; for once per run use a play on `localhost` before the host play and read `hostvars['localhost']`.
+>
+> ```yaml
+> - name: Join the probe parts in name order
+>   ansible.builtin.set_fact:
+>     src: "{{ (src if idx > 0 else '') ~ lookup('ansible.builtin.file', part) }}"
+>   loop: "{{ query('ansible.builtin.fileglob', role_path ~ '/files/probe/*.py') | sort }}"
+>   loop_control: {loop_var: part, index_var: idx}
+>   when: src is not defined or base is none
+>   run_once: true
+> ```
