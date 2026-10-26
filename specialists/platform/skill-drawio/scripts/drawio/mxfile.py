@@ -84,8 +84,7 @@ def _line_html(line: str) -> str:
     """
     head = HEADING_LINE.match(line)
     text = head.group(2) if head else line
-    out = CODE_SPAN.sub(r'<font face="Courier New">\1</font>',
-                        ITALIC_SPAN.sub(r"<i>\1</i>", BOLD_SPAN.sub(r"<b>\1</b>", soft_breaks(html.escape(text)))))
+    out = CODE_SPAN.sub(r'<font face="Courier New">\1</font>', ITALIC_SPAN.sub(r"<i>\1</i>", BOLD_SPAN.sub(r"<b>\1</b>", soft_breaks(html.escape(text)))))
     return f'<span style="font-size:{head.group(1)}%">{out}</span>' if head else out
 
 
@@ -224,6 +223,7 @@ class Page:
         self.marks: list[TextMark] = []
         self.layers: list[tuple[str, str]] = []
         self.tips: dict[str, str] = {}   # hover text per edge id, set before the edge is drawn; its label mark shows the same text
+        self.links: dict[str, str] = {}   # a link per edge id (a click action), set like tips; its label mark takes it too
         self.tags: dict[str, tuple] = {}   # draw.io tags per cell id (edges, and boxes drawn without a `tags` argument); a mark takes its edge's
         self.rename: tuple[str, str] = ()   # (old, new) id prefix applied when serialised, so a second page built by the same code keeps ids unique
 
@@ -304,7 +304,7 @@ class Page:
         geo = "".join(f'<mxPoint x="{px:g}" y="{py:g}"/>' for px, py in pts[1:-1])
         self.cells.append(cell_xml(cid, "", f'style={quoteattr(style + ends + FROZEN)} edge="1" parent="{layer}" source="{src}" target="{dst}"',
                                    f'<mxGeometry relative="1" as="geometry"><Array as="points">{geo}</Array></mxGeometry>',
-                                   tooltip=self.tips.get(cid, ""), tags=self.tags.get(cid, ())))   # hover text and tags set before drawing
+                                   link=self.links.get(cid, ""), tooltip=self.tips.get(cid, ""), tags=self.tags.get(cid, ())))   # set before drawing
         self.routes.append(Route(cid, src, dst, pts, klass, frozenset({src, dst, *ignore}), jump, layer))
 
     def mark(self, cid: str, label: str, cx: float, cy: float, w: float, h: float, style: str, owner: str, layer: str = "1") -> None:
@@ -318,11 +318,11 @@ class Page:
             w: width.
             h: height.
             style: the text style.
-            owner: the edge it labels; its hover text and tags, if any, are the mark's too.
+            owner: the edge it labels; its link, hover text and tags, if any, are the mark's too.
             layer: the layer cell id.
         """
         x, y = round(cx - w / 2, 1), round(cy - h / 2, 1)
-        self.box(cid, label, x, y, w, h, style, tooltip=self.tips.get(owner, ""), layer=layer, tags=self.tags.get(owner, ()))
+        self.box(cid, label, x, y, w, h, style, self.links.get(owner, ""), self.tips.get(owner, ""), layer=layer, tags=self.tags.get(owner, ()))
         self.marks.append(TextMark(cid, (x, y, w, h), owner, layer))
 
     def xml(self) -> str:

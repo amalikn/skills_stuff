@@ -18,6 +18,7 @@ from .step_labels import label_setup, label_spot, step_label, total_words
 from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
+from .isolate import BOX_TAG, LOCKED, dim_level, group_tag, isolate_link, reset_link
 from .tips import comp_tags, comp_tip
 
 
@@ -279,6 +280,11 @@ class EndToEnd(E2EGrid):
             page.add_layer(f"e2e-L-{fam}", f"Flow {name}" if per_flow else f"Family: {name}")
         for link in self.links:   # hover text and tags on every arrow and connector, and on each arrow's x.y label
             page.tips[link.cid], page.tags[link.cid] = link.tip, link.tags
+        dim, lock = dim_level(self.profile.look), ""
+        if dim is not None:   # a click on a step arrow or its label shows that flow alone (operator, 2026-10-26)
+            lock = LOCKED
+            for link in (x for x in self.links if x.klass == "thick"):
+                page.links[link.cid] = isolate_link(group_tag(self.profile.look, link.family), dim)
         width = self.profile.look.get("connector_width", 1.25)
         for fam, _name, _col, _ids in self.groups:
             for link in (x for x in self.links if x.family == fam and x.klass == "thin"):
@@ -288,13 +294,13 @@ class EndToEnd(E2EGrid):
             for link in (x for x in self.links if x.family == fam and x.klass == "thick"):
                 page.route(link.cid, f"e2e-c-{link.src}", f"e2e-c-{link.dst}", self.pts[link.cid],
                            f"edgeStyle=none;rounded=1;html=1;strokeColor={colour[fam]};strokeWidth=2;{ARROW_HEAD}endSize=6;"
-                           f"jumpStyle=arc;jumpSize={E2E_JUMP};", klass="thick", layer=f"e2e-L-{fam}", jump=E2E_JUMP)
+                           f"jumpStyle=arc;jumpSize={E2E_JUMP};{lock}", klass="thick", layer=f"e2e-L-{fam}", jump=E2E_JUMP)
         for link in self.links:
             if link.klass == "thick":
                 cx, cy = label_spot(link.cid, self.pts, page, self.label_w, self.label_h)
                 page.mark(f"{link.cid}-l", step_label(link.text, self.n_steps[link.text.split('.')[0]], self.step_total), cx, cy, self.label_w, self.label_h,
                           f"text;html=1;align=center;verticalAlign=middle;fontSize={self.label_font:g};fontColor={colour[link.family]};labelBackgroundColor=#ffffff;"
-                          "spacing=0;", owner=link.cid, layer=f"e2e-L-{link.family}")
+                          f"spacing=0;{lock}", owner=link.cid, layer=f"e2e-L-{link.family}")
 
     def _legend(self, page: Page, right: float) -> None:
         """The family legend under the grid: a swatch and the family's flows per family, then how to read an arrow.
@@ -309,18 +315,25 @@ class EndToEnd(E2EGrid):
         count = {f["title"]: f" ({len(f['steps'])} steps)" if total else "" for f in self.data["flows"]}   # legend step counts (2026-10-26)
         page.box("e2e-leg-title", label("**Legend: flows** (one colour and layer each)" if per_flow else "**Legend: flow families** (one layer each)"),
                  MARGIN, y, 600, 24, "text;html=1;align=left;fontSize=14;")
+        dim = dim_level(self.profile.look)
+        if dim is not None:   # click a row to show that flow alone; this button shows them all again (operator, 2026-10-26)
+            page.box("e2e-leg-all", label("**Show all flows**"), MARGIN + 610, y, 150, 24,
+                     "rounded=1;html=1;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;" + LOCKED, link=reset_link())
         for i, (fam, name, col, titles) in enumerate(self.groups):
             ly = y + 34 + i * 28
             page.box(f"e2e-leg-{fam}-s", "", MARGIN, ly + 10, 40, 3, f"rounded=0;html=1;fillColor={col};strokeColor=none;")
             text = f"**{name}**{count[titles[0]]}" if per_flow else f"**{name}:** " + "; ".join(t + count[t] for t in titles)
             page.box(f"e2e-leg-{fam}-t", label(text), MARGIN + 50, ly, right - MARGIN - 50, 24,
-                     "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
+                     "text;html=1;align=left;verticalAlign=middle;fontSize=12;" + (LOCKED if dim is not None else ""),
+                     link=isolate_link(group_tag(self.profile.look, fam), dim) if dim is not None else "")
         ly = y + 34 + len(self.groups) * 28 + 6
         page.box("e2e-leg-solid", label(f"**Solid arrow, label {total_words(self.step_total) if total else 'x.y'}:** flow x (its number on the Overview) moves to the "
                                         f"component acting in its step y{' of n' if total else ''}; "
                                         "x.1 starts at the component the flow runs on, and a step done by the same component as the step before has no "
                                         "arrow. **Dashed line, dot end:** not a step; the flow runs on, is owned by or depends on that component. "
-                                        "Hover an arrow for what happens. Arcs mark crossings."),
+                                        "Hover an arrow for what happens. Arcs mark crossings."
+                                        + (" **Click** an arrow, its label or a legend row to see that flow alone; **Show all flows** brings the rest back."
+                                           if dim is not None else "")),
                  MARGIN, ly, right - MARGIN, 24, "text;html=1;align=left;verticalAlign=middle;fontSize=12;")
         used = component_shapes_used(list(self.comps.values()), self.profile)
         if used:   # the symbols the boxes use, as on a flow page
@@ -345,7 +358,8 @@ class EndToEnd(E2EGrid):
             page.box(f"e2e-c-{cid}", label(*e2e_box_lines(comp, self.profile.look['heading_scale'])), self.col_x[c], top, E2E_BW, height,
                      comp_style(comp["kind"], self.profile, "fontSize=11;verticalAlign=middle;spacingLeft=6;spacingRight=6;" + status_style(comp)
                                 + component_shape(comp, self.profile)),
-                     tooltip=comp_tip(comp), solid=True, tags=comp_tags(comp, self.data["flows"]))
+                     tooltip=comp_tip(comp), solid=True,
+                     tags=comp_tags(comp, self.data["flows"]) + ((BOX_TAG,) if dim_level(self.profile.look) is not None else ()))
             person_badge(page, comp, self.profile, f"e2e-c-{cid}", self.col_x[c] + E2E_BW, top + height)
         self._arrows(page)
         self._legend(page, right)

@@ -7,6 +7,7 @@ Run: `just test` (unittest, the pack's venv). The scripts folder is put on sys.p
 from __future__ import annotations
 
 import importlib
+import json
 import re
 import sys
 import unittest
@@ -18,7 +19,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 (page_audit,) = (importlib.import_module("drawio.audit").page_audit,)
-e2e_family, step_labels, pages, profile = (importlib.import_module(f"flowmap.{n}") for n in ("e2e_family", "step_labels", "pages", "profile"))
+e2e_family, isolate, step_labels, pages, profile = (importlib.import_module(f"flowmap.{n}") for n in ("e2e_family", "isolate", "step_labels", "pages", "profile"))
 EXAMPLE = ROOT / "examples" / "shop" / "flows.yaml"
 
 
@@ -179,6 +180,53 @@ class StepTotals(unittest.TestCase):
         page = next(d for d in _diagrams(_render(_map(e2e_layers="flow"))) if d.get("id") == "end-to-end")
         self.assertNotIn(" steps)", " ".join(_text(page, "e2e-leg-")))
         self.assertFalse([t for t in _text(page, "e2e-a-") if re.search(r"\d/\d", t)])
+
+
+class ClickIsolate(unittest.TestCase):
+    """`look.e2e_click_isolate`: arrows, labels and legend rows carry a link that dims every other flow; off, no links and no locks."""
+
+    def _actions(self, link: str) -> list:
+        """The actions of a custom link.
+
+        Args:
+            link: the `data:action/json,...` text.
+
+        Returns:
+            The action list.
+        """
+        self.assertTrue(link.startswith("data:action/json,"))
+        return json.loads(link.split(",", 1)[1])["actions"]
+
+    def test_arrows_labels_and_legend_isolate_their_flow(self) -> None:
+        """Each step arrow and its label dims everything tagged step-arrow, connector or box, then restores its own flow's tag; locked."""
+        page = next(d for d in _diagrams(_render(_map(e2e_layers="flow", e2e_click_isolate=True))) if d.get("id") == "end-to-end")
+        arrows = [u for u in page.iter("UserObject") if "step-arrow" in (u.get("tags") or "").split()]
+        self.assertTrue(arrows)
+        for obj in arrows:
+            flow = next(t for t in obj.get("tags").split() if t.startswith("flow-"))
+            dim, keep = self._actions(obj.get("link"))
+            self.assertEqual((dim["opacity"]["value"], set(dim["opacity"]["tags"]), dim["opacity"]["tagsMatch"]),
+                             (0.15, {"step-arrow", "connector", "box"}, "or"))
+            self.assertEqual((keep["opacity"]["tags"], keep["opacity"]["value"]), ([flow], 1))
+            self.assertIn("locked=1;", obj.find("mxCell").get("style"))
+        boxes = [u for u in page.iter("UserObject") if "box" in (u.get("tags") or "").split()]
+        self.assertTrue(boxes and all(re.search(r"(^| )flow-", u.get("tags")) for u in boxes))
+        rows = {u.get("id"): u.get("link") for u in page.iter("UserObject") if re.fullmatch(r"e2e-leg-.+-t", u.get("id") or "")}
+        self.assertTrue(rows and all(self._actions(v)[1]["opacity"]["tags"][0].startswith("flow-") for v in rows.values()))
+        reset = next(u for u in page.iter("UserObject") if u.get("id") == "e2e-leg-all")
+        self.assertEqual(self._actions(reset.get("link"))[0]["opacity"]["value"], 1)
+
+    def test_family_layers_isolate_by_family_and_off_by_default(self) -> None:
+        """With family layers a click keeps the family's tag; without the key nothing carries a link or a lock."""
+        page = next(d for d in _diagrams(_render(_map(e2e_click_isolate=0.3))) if d.get("id") == "end-to-end")
+        obj = next(u for u in page.iter("UserObject") if "step-arrow" in (u.get("tags") or "").split())
+        dim, keep = self._actions(obj.get("link"))
+        self.assertEqual(dim["opacity"]["value"], 0.3)
+        self.assertTrue(keep["opacity"]["tags"][0].startswith("family-"))
+        off = next(d for d in _diagrams(_render(_map(e2e_layers="flow"))) if d.get("id") == "end-to-end")
+        self.assertFalse([u for u in off.iter("UserObject") if (u.get("link") or "").startswith("data:action")])
+        self.assertNotIn("locked=1", ET.tostring(off, encoding="unicode"))
+        self.assertIsNone(isolate.dim_level({}))
 
 
 if __name__ == "__main__":

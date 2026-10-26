@@ -168,6 +168,10 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   and that a skipped number is a step done by the same component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means
   `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from the text
   (operator, 2026-10-26: "x.y/max_y", then "subscript or superscript instead", and labels at 12).
+- `look.e2e_click_isolate` (true, or the opacity of the rest) gives every End-to-end step arrow, its label and each legend row a draw.io
+  custom link: a click dims every step arrow, connector and box (tagged `box`) and brings the clicked flow's cells back to full; "Show all
+  flows" beside the legend title undoes it. Clickable cells are drawn `locked=1` (operator, 2026-10-26: "clicking on one arrow of a flow
+  will dim all the other flows").
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).
@@ -372,4 +376,23 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > # step_label
 > if style in ("sub", "sup"):
 >     return f"<b>{xy}<{style}>{n}</{style}></b>"
+> ```
+
+> **Learned 2026-10-26** · click a flow to see it alone · VERIFIED_PRIMARY · Source: draw.io 32.5.5 bundle (`app.asar`
+> `drawio/src/main/webapp/js/app.min.js`: action names `"wait fadeIn fadeOut fadeTo opacity ..."`, `null!=x.opacity&&null!=x.opacity.value&&
+> Graph.setOpacityForNodes(...)`), jgraph/drawio v32.5.5 `js/viewer-static.min.js`; drawio.com/docs/reference/animation-actions-json;
+> `scripts/flowmap/isolate.py`; `tests/test_e2e_family.py` `ClickIsolate`; screenshots `references/screenshots/20261026-e2e-click-isolate/`
+> · Falsifier: a click on an arrow in draw.io's viewer that leaves another flow's arrow at opacity 1
+> A `data:action/json` link `{"actions":[{"opacity":{"tags":[...],"tagsMatch":"or","value":0.15}},{"opacity":{"tags":["flow-<id>"],"value":1},
+> "immediate":true}]}` dims by tag and restores one flow; tags reach every cell kind, so the page needs only a `box` tag on components.
+> The docs name the action "Set Opacity" but not its JSON key; the key is `opacity` with `value`, read from the installed bundle. Tested in
+> the viewer of the same version under headless Edge (Playwright): a label click set the clicked flow's arrows and boxes to 1 and others to
+> 0.15, a legend row did the same, "Show all flows" set all back to 1. In the desktop editor a click runs a link directly only on a locked
+> cell (hence `locked=1`); that path is not yet tested by hand. The effect is transient (never saved); exports stay static.
+>
+> ```python
+> # scripts/flowmap/isolate.py (skills_stuff, 2026-10-26)
+> def isolate_link(tag: str, dim: float) -> str:
+>     return _link([{"opacity": {"tags": list(DIMMED_TAGS), "tagsMatch": "or", "value": dim}},
+>                   {"opacity": {"tags": [tag], "value": 1}, "immediate": True}])
 > ```

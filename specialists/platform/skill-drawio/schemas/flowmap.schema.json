@@ -610,6 +610,12 @@
               "minimum": 8,
               "description": "Font size of the End-to-end arrow labels; the label box grows to fit; default 10."
             },
+            "e2e_click_isolate": {
+              "type": ["boolean", "number"],
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Clicking an End-to-end step arrow, its label or a legend row dims every other flow (a draw.io custom link; Show all flows resets); true dims to 0.15, a number sets the opacity; default false."
+            },
             "e2e_family_colours": {
               "enum": ["page", "flow"],
               "description": "Family End-to-end page flow colours (with e2e_layers flow): page restarts the palette on each page so none repeats; flow keeps each flow's full-page colour, repeating past the palette's length; default page."
