@@ -7,6 +7,9 @@ Authority: working state only; durable rules live in references/, decisions in c
 Scope: Current state, open items, next actions and memory pointers for skill-goal-guard
 Last reviewed: 2026-10-27
 Summary: Working state after the 2026-10-27 build session; pilot step 0 done (Vikunja 2.7.1 local), step 1 inventory next.
+Budget: 200 lines, 25 KB
+Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
+Open items tracker: docs/trackers/open-items-20261027_1749.md
 ---
 
 # SCRATCHPAD
@@ -14,7 +17,8 @@ Summary: Working state after the 2026-10-27 build session; pilot step 0 done (Vi
 ## Current state — KEEP
 
 - Skill pack built 2026-10-27: root `SKILL.md` (skill-goal-guard, alias skill-gg), 13 references, sources verbatim in `docs/`.
-- Pilot tools written 2026-10-27 under skill-coder (step 4 plus tools for steps 6-8): seven front ends over `scripts/goal_guard_lib/`, 71 tests, `just check` green; fixtures only, uncommitted.
+- Pilot tools written 2026-10-27 under skill-coder (step 4 plus tools for steps 6-8): seven front ends over `scripts/goal_guard_lib/`, 71 tests at build (79 with the governance-checker tests), `just check` green; fixtures only; committed 4509e1c.
+- skill-ai-it bootstrap done 2026-10-27: AI_NAVIGATION.md, context-map.yaml, `scripts/check_governance.py` (430 checks in `just check`).
 - Vikunja 2.7.1 running at http://localhost:3456 from `/Volumes/Data/_ai/_tool/tools_stuff/vikunja`; no user or token yet.
 - Pilot: step 0 done; D1-D6 answered ([references/pilot-plan.md](references/pilot-plan.md)).
 
@@ -28,6 +32,9 @@ Summary: Working state after the 2026-10-27 build session; pilot step 0 done (Vi
 - SKILL.md Contents: "File '#...' not found" and dead TOC links come from VS Code's chat prompt-file validator, which opens SKILL.md as a skill file, not Markdown (message found in VS Code
   1.135 `nls.metadata.json`). The anchors are correct (10/10). Operator choice, not decided: switch that tab to Markdown, or `"files.associations": {"**/SKILL.md": "markdown"}` (loses VS Code's
   skill checks). The markdown hook rebuilds the linked Contents, so the file stays as it is.
+- Proposed, not decided (review note 2026-10-27): no owner path exists to write the approval line Goal Guard requires in `.gg/decisions.jsonl` (the tools refuse
+  approvals by design; lines are hash-chained). Options put to the operator: A owner-run `goal_guard_approve.py` (interactive terminal, typed revision), B the signed
+  commit of `mvp.yaml` is the approval (`git verify-commit`, D3), C both (recommended). Blocks pilot step 5 with D3.
 - Proposed, not decided (review note 2026-10-27): cover shell writes the hook cannot see before relying on the pilot, e.g. a git pre-commit check of protected `.gg/` records and changed files
   against the last PROCEED, and read-only file modes on the protected records (doctor already reports them writable).
 - `tools_stuff/vikunja` and `tools_stuff/CHANGELOG.md` not committed (commit request was scoped to skills_stuff).

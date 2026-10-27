@@ -1,4 +1,4 @@
-# Proposal fixture: matches the dashboard exclusion -> BLOCK.
+# Proposal fixture, matches the dashboard exclusion -> BLOCK.
 proposal_id: P-003
 task_id: 101
 project_id: demo-spoke

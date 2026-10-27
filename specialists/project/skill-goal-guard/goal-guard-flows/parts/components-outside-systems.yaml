@@ -1,0 +1,23 @@
+#% Part: components, group "Outside systems"
+#% Scope: the components drawn in that group
+#% Lands under: components
+- id: claude-code
+  name: Claude Code
+  kind: external
+  group: Outside systems
+  host: the agent's harness (2.1.310)
+  health: runs the PreToolUse hook before Edit and Write
+  depends_on: [hook]
+- id: vikunja
+  name: Vikunja 2.7.1
+  kind: external
+  group: Outside systems
+  host: localhost:3456 (tools_stuff/vikunja)
+  health: GET /api/v2/info answers
+  depends_on: [token]
+- id: test-instance
+  name: Vikunja test instance
+  kind: external
+  group: Outside systems
+  host: a clean instance for restore tests
+  health: target project is empty

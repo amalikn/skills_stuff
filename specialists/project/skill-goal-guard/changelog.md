@@ -7,11 +7,67 @@ Authority: local-supplement
 Scope: Every change to skill-goal-guard's rules, code, layout and sources
 Last reviewed: 2026-10-27
 Summary: History of skill-goal-guard, newest first; the release heading is the only place the pack version lives.
+Budget: 200 lines, 25 KB
 ---
 
 # Changelog
 
 ## Unreleased
+
+### 2026-10-27 18:23 — AGENTS.md tracked (operator: "it should be committed")
+
+- `AGENTS.md` was never committed: the repo's `.git/info/exclude` line `AGENTS.md` hides every AGENTS.md. Committed files and four Archcore rules link to it, so a fresh
+  clone would break those links and `just check`. Force-added (`git add -f`), as skill-nautobot's and skill-openwisp's were; once tracked, the exclude no longer applies to it.
+  The repo-wide exclude rule is unchanged (it hides other packs' AGENTS.md too; reported to the operator).
+
+### 2026-10-27 18:22 — Archcore content promoted (operator: "/skill-ai-it promote and approve all")
+
+- 19 documents written as `accepted` pointer documents (option A: each states the item and links to the section that stays canonical, so `references/` remains
+  where rules change, as in skill-smc and skill-nautobot): 6 ADRs, 6 rules, 4 specs, 2 guides, 1 plan; plus `.archcore/index.guide.md` with the not-promoted reasons.
+  Excluded as in the report: the inherited skill-coder rule, roadmap phases L1-L5, the readme quick start.
+- `archcore status` clean after quoting titles with colons and folding single-use tags into a nine-tag vocabulary; every link in `.archcore/` resolves.
+- `ARCHCORE_PROMOTION_CANDIDATES.md` deleted (a transient queue, per the skill); AGENTS.md Working rules, `context-map.yaml` (`promoted`, `authority: pointer-documents`)
+  and the catalog updated.
+
+### 2026-10-27 18:10 — Archcore initialized (operator: "/skill-ai-it bootstrap for archcore")
+
+- `archcore init` (archcore v0.3.6) created `.archcore/` with `settings.json` only; `archcore status` clean. No Archcore content written (only `promote` does that).
+- `ARCHCORE_PROMOTION_CANDIDATES.md` lists candidates from SKILL.md, AGENTS.md, the references, scripts/readme.md and the pilot plan: 6 ADR, 7 rules (one excluded as inherited), 4 specs,
+  2 guides, 2 plans (one excluded). It leads with an open question: AGENTS.md makes `references/` canonical while Archcore wins on conflict; options A pointer documents (proposed),
+  B Archcore canonical, C decisions only.
+- `context-map.yaml` `promotion_rules.archcore`: `initialized` and `authority_question: open` added (comments kept); navigation layer already routes to `.archcore/` when present.
+
+### 2026-10-27 18:00 — flow map split into parts (operator: "can the flow be divided into smaller parts and then combined, like for unc")
+
+- Source moved to `goal-guard-flows/parts/`: `master.yaml` (drawing settings and `#@include` lines) plus `components-people-and-agents`, `-outside-systems`, `-goal-guard-tools`,
+  `-records-and-data` and `flows-scope-gate`, `-focus`, `-traceability`, `-resilience`; `goal_guard_flows.yaml` is now assembled from them (skill-drawio `assemble_flowmap.py`).
+- Proof: flows identical; components identical except list order (grouped); the drawing holds the same 721 elements with the same labels and geometry (only two End-to-end boxes
+  change place in the XML); layout audit clean. `just flows` assembles then renders; `just flows-check` adds the assembly drift check.
+
+### 2026-10-27 17:57 — flow diagrams (operator: "also create flows for this skill")
+
+- New `goal-guard-flows/goal_guard_flows.yaml` (skill-drawio flow map: 15 components, 7 flows in four families: scope gate, focus, traceability, resilience) and the drawing
+  `goal_guard_flows.drawio` GENERATED from it: Overview, End-to-end, Handoff, Decision order, Hook gate, What's Next, Milestone trace and workbook, Snapshot export, Clean-instance restore.
+- `just flows` renders it; `just flows-check` (drift plus layout audit, part of `just check`) passes, audit clean on every page; pages exported and reviewed before handing over (one
+  crossing on the Overview between two thick arrows, within the audit's rules).
+- Catalog, readme, SKILL.md tools table and AGENTS.md Layout updated; the drawing is never edited by hand.
+
+### 2026-10-27 17:52 — skill-ai-it bootstrap (operator: "/skill-ai-it bootstrap")
+
+<!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->
+
+- Navigation layer by the deterministic upgrader (version `2026-10-14-compact-v2`): new `AI_NAVIGATION.md` and `context-map.yaml`; managed blocks inserted in `AGENTS.md` and
+  `scripts/readme.md`; `validate_navigation_control_layer.py` 0 failures. No `.archcore/` promotion; Graphify not run (disabled).
+- Governed-files adoption (`adopt_governed_files.py --apply`): justfile recipes (`stale`, `roles`, `govern`, `docs`, `history`, `rotate`, `budget`, `changelog-entry`, `move-sections`,
+  `outline`, `section`), freshness and role checks in `just check`, record keys on changelog, SCRATCHPAD and roadmap, front matter on `readme.md` and `AI_NAVIGATION.md`. All six findings
+  it baselined were fixed instead (proposal YAML headers, readme quick start, roadmap current phase) and both baselines pruned to empty.
+- Governance checker in the package layout: `scripts/check_governance.py` over `scripts/govcheck/` (`core.py` identical to the skill-ai-it template, excluded from ruff because it is
+  four-space); families paths, catalog (SKILL.md routes every reference, docs/catalog.md lists every file, every front end has a row and a recipe), records (front matter keys and the blank
+  line after it), runner (recipes use the pinned venv), structure. `just governance`, part of `just check`: 430 checks. Negative tests in `tests/test_govcheck.py`; one of them found a hole
+  (the root readme counted as indexing every root file), fixed before commit.
+- Code map: `adopt_code_map.py --apply` added 43 module entries; all decided `project_only` with reasons. Re-run of the bootstrap the same evening found one more (`tests/test_govcheck.py`), decided the same way; every other step
+  reported nothing to do.
+- Changes the hand-run checks in AGENTS.md "Before calling work done" into `just check`; AGENTS.md "Governance tooling status" updated (local file, git-excluded).
 
 ### 2026-10-27 17:35 — session findings, incidents and proposals (slurp close)
 

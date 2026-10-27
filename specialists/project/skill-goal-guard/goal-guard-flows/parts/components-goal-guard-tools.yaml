@@ -1,0 +1,31 @@
+#% Part: components, group "Goal Guard tools"
+#% Scope: the components drawn in that group
+#% Lands under: components
+- id: assess
+  name: goal_guard.py
+  kind: tool
+  group: Goal Guard tools
+  host: scripts/goal_guard.py (validate, assess, next)
+  health: just check passes
+  depends_on: [gg-records, vikunja]
+- id: hook
+  name: goal_guard_hook.py
+  kind: tool
+  group: Goal Guard tools
+  host: scripts/goal_guard_hook.py (DRAFT)
+  health: doctor reports the wiring; one block observed before enforcing
+  depends_on: [gg-records, captures]
+- id: trace
+  name: goal_guard_trace.py
+  kind: tool
+  group: Goal Guard tools
+  host: scripts/goal_guard_trace.py and goal_guard_excel.py
+  health: the example trace verifies
+  depends_on: [hub-plan, target-map, gg-records, vikunja]
+- id: snapshot-tool
+  name: goal_guard_snapshot.py
+  kind: tool
+  group: Goal Guard tools
+  host: scripts/goal_guard_snapshot.py (export, verify, restore)
+  health: verify passes on the last snapshot
+  depends_on: [vikunja, snapshots, test-instance]

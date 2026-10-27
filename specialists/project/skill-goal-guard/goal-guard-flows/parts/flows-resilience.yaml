@@ -1,0 +1,76 @@
+#% Part: flows, family "Resilience"
+#% Scope: the flows of that family, in drawing order
+#% Lands under: flows
+- id: snapshot
+  title: Snapshot export
+  category: custom
+  purpose: Keep one verified, provider-neutral copy of a project's tasks for offline reading and restore.
+  trigger: {kind: manual, detail: "goal_guard_snapshot.py export"}
+  runs_on: snapshot-tool
+  owner: owner
+  dependencies: {components: [vikunja, snapshots, token]}
+  steps:
+    - id: read
+      actor: vikunja
+      action: Returns the project's tasks and relations.
+      via: [API]
+    - id: complete
+      actor: snapshot-tool
+      action: Every page read?
+      via: [internal]
+      shape: decision
+      next: [write, refuse]
+      when: {write: "yes", refuse: "no"}
+    - id: refuse
+      actor: snapshot-tool
+      action: Refuses; the last good snapshot is kept (S04).
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: write
+      actor: snapshot-tool
+      action: With --apply, writes tasks.json and both manifests atomically.
+      via: [file]
+      writes: [tasks.json, manifests]
+    - id: verify
+      actor: snapshot-tool
+      action: Verifies checksums, IDs, references and the dependency graph.
+      via: [file]
+      reads: [manifests]
+
+- id: restore
+  title: Clean-instance restore
+  category: custom
+  purpose: Prove a snapshot restores; an export alone is not proof (pilot step 8).
+  trigger: {kind: manual, detail: "goal_guard_snapshot.py restore"}
+  runs_on: snapshot-tool
+  owner: owner
+  dependencies: {components: [snapshots, test-instance]}
+  steps:
+    - id: verify
+      actor: snapshot-tool
+      action: Verifies the snapshot first.
+      via: [file]
+      reads: [manifests, tasks.json]
+    - id: clean
+      actor: test-instance
+      action: Target project holds only tasks Goal Guard restored?
+      via: [API]
+      shape: decision
+      next: [create, stop]
+      when: {create: "yes", stop: "no"}
+    - id: stop
+      actor: snapshot-tool
+      action: "Refuses: not a clean instance."
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: create
+      actor: test-instance
+      action: With --apply, creates the missing tasks (marked) and their relations once.
+      via: [API]
+      writes: [tasks, relations]
+    - id: readback
+      actor: snapshot-tool
+      action: Reads everything back and compares counts, fields and relations.
+      via: [API]

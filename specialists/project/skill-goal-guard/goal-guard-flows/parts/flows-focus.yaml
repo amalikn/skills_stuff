@@ -1,0 +1,35 @@
+#% Part: flows, family "Focus"
+#% Scope: the flows of that family, in drawing order
+#% Lands under: flows
+- id: whats-next
+  title: What's Next
+  category: custom
+  purpose: One portfolio focus, each project's next task and the task-level next action, ranked without a weighted score.
+  trigger: {kind: manual, detail: "the owner asks what to work on now"}
+  runs_on: assess
+  owner: owner
+  dependencies: {components: [vikunja, gg-records, token]}
+  steps:
+    - id: ask
+      actor: owner
+      action: Asks for the next action, optionally naming a focus task.
+      via: [CLI]
+    - id: read
+      actor: vikunja
+      action: Returns every task of the linked projects, page by page.
+      via: [API]
+      reads: [tasks, relations]
+    - id: filter
+      actor: assess
+      action: Keeps open tasks mapped to accepted criteria with prerequisites done.
+      via: [internal]
+      reads: [mappings.yaml, decisions.jsonl]
+    - id: rank
+      actor: assess
+      action: Orders by owner focus, deadline pressure, started work, Vikunja priority, due date, task ID.
+      via: [internal]
+      look: [ranking replay log]
+    - id: answer
+      actor: owner
+      action: Gets Now, Project next, Task next, At risk; forecast stays unknown.
+      via: [CLI]

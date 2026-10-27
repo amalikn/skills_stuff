@@ -1,0 +1,41 @@
+#% Part: flows, family "Traceability"
+#% Scope: the flows of that family, in drawing order
+#% Lands under: flows
+- id: milestone-trace
+  title: Milestone trace and workbook
+  category: custom
+  purpose: Prove a management milestone links to its plan revision, MVP criteria, target-map target and Vikunja tasks, then export the sample workbook.
+  trigger: {kind: manual, detail: "goal_guard_trace.py, pilot step 7"}
+  runs_on: trace
+  owner: owner
+  dependencies: {components: [hub-plan, target-map, gg-records, vikunja]}
+  steps:
+    - id: plan
+      actor: trace
+      action: Checks the hub plan against its pinned revision.
+      via: [file]
+      reads: [hub plan]
+    - id: criteria
+      actor: trace
+      action: Checks the criteria, the target-map target and the Vikunja tasks.
+      via: [file, API]
+      reads: [mvp.yaml, target-map.yaml, Vikunja tasks]
+    - id: verified
+      actor: trace
+      action: Every check passes?
+      via: [internal]
+      shape: decision
+      next: [workbook, review]
+      when: {workbook: "yes", review: "no"}
+    - id: review
+      actor: owner
+      action: "REVIEW: reconciles the record; nothing is overwritten silently."
+      via: [manual]
+      shape: terminator
+      next: []
+    - id: workbook
+      actor: trace
+      action: With --apply, writes the workbook sample (internal targets left out).
+      via: [file]
+      writes: [management workbook sample]
+      shape: document

@@ -1,0 +1,43 @@
+# Goal Guard flow map, master part: drawing settings and the `#@include` lines naming the parts beside it (one per component group and per flow
+# family, as unified-network-controller does). `just flows` assembles ../goal_guard_flows.yaml from them (skill-drawio assemble_flowmap.py) and renders
+# ../goal_guard_flows.drawio; both are generated, never edited by hand. Edit the parts; `just check` fails on drift.
+# Rules drawn here live in references/decision-rules.md, whats-next-and-portfolio.md, enforcement-and-hooks.md, hub-management-and-dates.md and
+# snapshot-and-restore.md; where a drawing and a reference disagree, the reference wins and this map is fixed.
+schema_version: 1
+title: "Goal Guard: components and flows"
+updated: "2026-10-27"
+
+drawing:
+  output: goal_guard_flows.drawio
+  command: just flows
+  kinds:
+    person: ["#ffffff", "#000000"]
+    agent: ["#e1d5e7", "#9673a6"]
+    tool: ["#dae8fc", "#6c8ebf"]
+    store: ["#e6e6e6", "#4d4d4d"]
+    secret: ["#fff8e1", "#bf9000"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People and agents, groups: [People and agents]}
+    - {name: Goal Guard tools, groups: [Goal Guard tools]}
+    - {name: Outside systems, groups: [Outside systems]}
+  below: {groups: [Records and data]}
+  band_title: Records and data
+  families:
+    - {id: scope, name: Scope gate, colour: "#1f4e9c", flows: [handoff, decide, hook-gate]}
+    - {id: focus, name: Focus, colour: "#1b7a3a", flows: [whats-next]}
+    - {id: trace, name: Traceability, colour: "#6a3fa0", flows: [milestone-trace]}
+    - {id: resilience, name: Resilience, colour: "#a0522d", flows: [snapshot, restore]}
+
+
+components:
+  #@include components-people-and-agents.yaml
+  #@include components-outside-systems.yaml
+  #@include components-goal-guard-tools.yaml
+  #@include components-records-and-data.yaml
+
+flows:
+  #@include flows-scope-gate.yaml
+  #@include flows-focus.yaml
+  #@include flows-traceability.yaml
+  #@include flows-resilience.yaml

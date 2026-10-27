@@ -1,0 +1,466 @@
+# GENERATED from goal-guard-flows/parts/master.yaml and the parts it includes, by skill-drawio's assemble_flowmap.py (`just flows`).
+# Edit the parts, never this file: the check fails when it differs from what the parts assemble to.
+
+# Goal Guard flow map, master part: drawing settings and the `#@include` lines naming the parts beside it (one per component group and per flow
+# family, as unified-network-controller does). `just flows` assembles ../goal_guard_flows.yaml from them (skill-drawio assemble_flowmap.py) and renders
+# ../goal_guard_flows.drawio; both are generated, never edited by hand. Edit the parts; `just check` fails on drift.
+# Rules drawn here live in references/decision-rules.md, whats-next-and-portfolio.md, enforcement-and-hooks.md, hub-management-and-dates.md and
+# snapshot-and-restore.md; where a drawing and a reference disagree, the reference wins and this map is fixed.
+schema_version: 1
+title: "Goal Guard: components and flows"
+updated: "2026-10-27"
+
+drawing:
+  output: goal_guard_flows.drawio
+  command: just flows
+  kinds:
+    person: ["#ffffff", "#000000"]
+    agent: ["#e1d5e7", "#9673a6"]
+    tool: ["#dae8fc", "#6c8ebf"]
+    store: ["#e6e6e6", "#4d4d4d"]
+    secret: ["#fff8e1", "#bf9000"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People and agents, groups: [People and agents]}
+    - {name: Goal Guard tools, groups: [Goal Guard tools]}
+    - {name: Outside systems, groups: [Outside systems]}
+  below: {groups: [Records and data]}
+  band_title: Records and data
+  families:
+    - {id: scope, name: Scope gate, colour: "#1f4e9c", flows: [handoff, decide, hook-gate]}
+    - {id: focus, name: Focus, colour: "#1b7a3a", flows: [whats-next]}
+    - {id: trace, name: Traceability, colour: "#6a3fa0", flows: [milestone-trace]}
+    - {id: resilience, name: Resilience, colour: "#a0522d", flows: [snapshot, restore]}
+
+
+components:
+  - id: owner
+    name: Owner
+    kind: person
+    group: People and agents
+    host: the operator
+    health: approves MVP revisions and answers REVIEW items
+    depends_on: [assess]
+  - id: agent
+    name: Coding agent
+    kind: agent
+    group: People and agents
+    host: a Claude Code session
+    health: works only on a PROCEED verdict
+    depends_on: [assess, claude-code]
+  - id: claude-code
+    name: Claude Code
+    kind: external
+    group: Outside systems
+    host: the agent's harness (2.1.310)
+    health: runs the PreToolUse hook before Edit and Write
+    depends_on: [hook]
+  - id: vikunja
+    name: Vikunja 2.7.1
+    kind: external
+    group: Outside systems
+    host: localhost:3456 (tools_stuff/vikunja)
+    health: GET /api/v2/info answers
+    depends_on: [token]
+  - id: test-instance
+    name: Vikunja test instance
+    kind: external
+    group: Outside systems
+    host: a clean instance for restore tests
+    health: target project is empty
+  - id: assess
+    name: goal_guard.py
+    kind: tool
+    group: Goal Guard tools
+    host: scripts/goal_guard.py (validate, assess, next)
+    health: just check passes
+    depends_on: [gg-records, vikunja]
+  - id: hook
+    name: goal_guard_hook.py
+    kind: tool
+    group: Goal Guard tools
+    host: scripts/goal_guard_hook.py (DRAFT)
+    health: doctor reports the wiring; one block observed before enforcing
+    depends_on: [gg-records, captures]
+  - id: trace
+    name: goal_guard_trace.py
+    kind: tool
+    group: Goal Guard tools
+    host: scripts/goal_guard_trace.py and goal_guard_excel.py
+    health: the example trace verifies
+    depends_on: [hub-plan, target-map, gg-records, vikunja]
+  - id: snapshot-tool
+    name: goal_guard_snapshot.py
+    kind: tool
+    group: Goal Guard tools
+    host: scripts/goal_guard_snapshot.py (export, verify, restore)
+    health: verify passes on the last snapshot
+    depends_on: [vikunja, snapshots, test-instance]
+  - id: gg-records
+    name: .gg/ records
+    kind: store
+    group: Records and data
+    host: the project folder
+    health: validate passes; hash chain holds
+  - id: hub-plan
+    name: Hub plan
+    kind: store
+    group: Records and data
+    host: enterprise-strategy (read only)
+    health: revision matches the pinned one
+  - id: target-map
+    name: target-map.yaml
+    kind: store
+    group: Records and data
+    host: the spoke project (read only)
+    health: revision matches the pinned one
+  - id: snapshots
+    name: Snapshots
+    kind: store
+    group: Records and data
+    host: skills-data/skill-goal-guard/snapshots
+    health: manifests and checksums verify
+  - id: captures
+    name: Hook captures
+    kind: store
+    group: Records and data
+    host: skills-runtime/skill-goal-guard/captures
+    health: one capture per gated tool
+  - id: token
+    name: Vikunja API token
+    kind: secret
+    group: Records and data
+    host: KeePassXC (read-only token)
+    health: never on a command line or in a log
+
+flows:
+  - id: handoff
+    title: Handoff to a coding agent
+    category: custom
+    purpose: Before an agent starts a piece of work, Goal Guard decides it against the approved MVP and records the verdict.
+    trigger: {kind: manual, detail: "the agent proposes work, or an agent proposes a design enlargement"}
+    runs_on: assess
+    owner: owner
+    dependencies: {components: [gg-records, vikunja, token]}
+    steps:
+      - id: propose
+        actor: agent
+        action: Writes the proposal (task, criterion or blocker, smallest step, stop condition, files).
+        via: [file]
+        reads: [MVP contract, Vikunja task]
+      - id: assess
+        actor: assess
+        action: Decides it in the order of decision-rules.md (see the Decision order page).
+        via: [CLI]
+        reads: [.gg/mvp.yaml, mappings.yaml, decisions.jsonl, Vikunja tasks]
+      - id: record
+        actor: assess
+        action: With --apply, appends the verdict (or the parked idea) to decisions.jsonl.
+        via: [file]
+        writes: [decisions.jsonl]
+      - id: verdict
+        actor: assess
+        action: Which verdict?
+        via: [internal]
+        shape: decision
+        next: [work, park, review]
+        when: {work: "PROCEED", park: "PARK", review: "REVIEW or BLOCK"}
+      - id: park
+        actor: agent
+        action: Keeps the current task; the idea stays in the log as a parked idea.
+        via: [internal]
+        next: []
+      - id: review
+        actor: owner
+        action: Decides the trade-off, or approves a new MVP revision through change control.
+        via: [manual]
+        gate: an authenticated owner decision naming the revision
+        next: []
+      - id: work
+        actor: agent
+        action: Does only the smallest step, then attaches evidence per criterion.
+        via: [internal]
+        look: [completion record]
+
+  - id: decide
+    title: Decision order
+    category: custom
+    purpose: How one proposal becomes PROCEED, PARK, REVIEW or BLOCK; the first rule that fires wins.
+    trigger: {kind: api, detail: "goal_guard.py assess"}
+    runs_on: assess
+    owner: assess
+    steps:
+      - id: context
+        actor: assess
+        action: Right partition and project, and every proposed path inside it?
+        via: [internal]
+        shape: decision
+        next: [baseline, block-context]
+        when: {baseline: "yes", block-context: "no"}
+      - id: block-context
+        actor: assess
+        action: BLOCK cross-partition (PORT-005), or REVIEW a path that escapes (GG-404).
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: baseline
+        actor: assess
+        action: Approved baseline, its approval by the owner in decisions.jsonl?
+        via: [file]
+        shape: decision
+        next: [task, block-baseline]
+        when: {task: "yes", block-baseline: "no"}
+      - id: block-baseline
+        actor: assess
+        action: BLOCK (MVP-001, MVP-003, MVP-007); read-only inspection still proceeds.
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: task
+        actor: assess
+        action: A task, mapped to an accepted criterion, open, prerequisites done?
+        via: [API]
+        shape: decision
+        next: [guards, review-task]
+        when: {guards: "yes", review-task: "no"}
+      - id: review-task
+        actor: assess
+        action: REVIEW (no task, closed, waiting) or BLOCK (task maps to no criterion, PORT-002).
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: guards
+        actor: assess
+        action: Clear of exclusions, approval fields and protected files?
+        via: [internal]
+        shape: decision
+        next: [link, block-guard]
+        when: {link: "yes", block-guard: "no"}
+      - id: block-guard
+        actor: assess
+        action: BLOCK (MVP-004 excluded, MVP-007 self-approval, MVP-011 protected change).
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: link
+        actor: assess
+        action: Cites an accepted criterion or a registered blocker?
+        via: [internal]
+        shape: decision
+        next: [necessity, park]
+        when: {necessity: "yes", park: "no"}
+      - id: park
+        actor: assess
+        action: "PARK (MVP-005): useful, not needed for this baseline."
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: necessity
+        actor: assess
+        action: The task's own criterion, necessity recorded, no new scope?
+        via: [internal]
+        shape: decision
+        next: [proceed, review-scope]
+        when: {proceed: "yes", review-scope: "no"}
+      - id: review-scope
+        actor: assess
+        action: REVIEW (GG-007 false linkage, GG-412 unrecorded, MVP-006 adds scope).
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: proceed
+        actor: assess
+        action: PROCEED, carrying the proposal's files for the hook.
+        via: [internal]
+        shape: terminator
+
+  - id: hook-gate
+    title: Hook gate before an edit
+    category: custom
+    purpose: Claude Code asks the hook before Edit, Write, MultiEdit or NotebookEdit; advisory mode warns, blocking mode exits 2.
+    trigger: {kind: hook, detail: "PreToolUse on a file tool"}
+    runs_on: claude-code
+    owner: hook
+    budget: under 1 s per call (measured median 58 ms)
+    dependencies: {components: [gg-records, captures]}
+    steps:
+      - id: call
+        actor: claude-code
+        action: Sends the tool call as JSON on stdin.
+        via: [stdin]
+      - id: recognise
+        actor: hook
+        action: A payload it recognises, for a gated file tool?
+        via: [internal]
+        shape: decision
+        next: [protected, deny]
+        when: {protected: "yes", deny: "no: fail closed"}
+      - id: deny
+        actor: hook
+        action: Blocking mode exits 2 with the reason; advisory mode adds it as context.
+        via: [stderr]
+        writes: [hook capture with --capture]
+        shape: terminator
+        next: []
+      - id: protected
+        actor: hook
+        action: Not a protected record, and a current PROCEED covers this file?
+        via: [file]
+        reads: [decisions.jsonl, .gg/mvp.yaml, protected_paths]
+        shape: decision
+        next: [pass, deny-scope]
+        when: {pass: "yes", deny-scope: "no"}
+      - id: deny-scope
+        actor: hook
+        action: Denies; the agent writes a proposal listing the file and runs assess.
+        via: [stderr]
+        shape: terminator
+        next: []
+      - id: pass
+        actor: hook
+        action: Prints nothing, so Claude Code's own permission prompt still applies.
+        via: [stdout]
+        shape: terminator
+  - id: whats-next
+    title: What's Next
+    category: custom
+    purpose: One portfolio focus, each project's next task and the task-level next action, ranked without a weighted score.
+    trigger: {kind: manual, detail: "the owner asks what to work on now"}
+    runs_on: assess
+    owner: owner
+    dependencies: {components: [vikunja, gg-records, token]}
+    steps:
+      - id: ask
+        actor: owner
+        action: Asks for the next action, optionally naming a focus task.
+        via: [CLI]
+      - id: read
+        actor: vikunja
+        action: Returns every task of the linked projects, page by page.
+        via: [API]
+        reads: [tasks, relations]
+      - id: filter
+        actor: assess
+        action: Keeps open tasks mapped to accepted criteria with prerequisites done.
+        via: [internal]
+        reads: [mappings.yaml, decisions.jsonl]
+      - id: rank
+        actor: assess
+        action: Orders by owner focus, deadline pressure, started work, Vikunja priority, due date, task ID.
+        via: [internal]
+        look: [ranking replay log]
+      - id: answer
+        actor: owner
+        action: Gets Now, Project next, Task next, At risk; forecast stays unknown.
+        via: [CLI]
+  - id: milestone-trace
+    title: Milestone trace and workbook
+    category: custom
+    purpose: Prove a management milestone links to its plan revision, MVP criteria, target-map target and Vikunja tasks, then export the sample workbook.
+    trigger: {kind: manual, detail: "goal_guard_trace.py, pilot step 7"}
+    runs_on: trace
+    owner: owner
+    dependencies: {components: [hub-plan, target-map, gg-records, vikunja]}
+    steps:
+      - id: plan
+        actor: trace
+        action: Checks the hub plan against its pinned revision.
+        via: [file]
+        reads: [hub plan]
+      - id: criteria
+        actor: trace
+        action: Checks the criteria, the target-map target and the Vikunja tasks.
+        via: [file, API]
+        reads: [mvp.yaml, target-map.yaml, Vikunja tasks]
+      - id: verified
+        actor: trace
+        action: Every check passes?
+        via: [internal]
+        shape: decision
+        next: [workbook, review]
+        when: {workbook: "yes", review: "no"}
+      - id: review
+        actor: owner
+        action: "REVIEW: reconciles the record; nothing is overwritten silently."
+        via: [manual]
+        shape: terminator
+        next: []
+      - id: workbook
+        actor: trace
+        action: With --apply, writes the workbook sample (internal targets left out).
+        via: [file]
+        writes: [management workbook sample]
+        shape: document
+  - id: snapshot
+    title: Snapshot export
+    category: custom
+    purpose: Keep one verified, provider-neutral copy of a project's tasks for offline reading and restore.
+    trigger: {kind: manual, detail: "goal_guard_snapshot.py export"}
+    runs_on: snapshot-tool
+    owner: owner
+    dependencies: {components: [vikunja, snapshots, token]}
+    steps:
+      - id: read
+        actor: vikunja
+        action: Returns the project's tasks and relations.
+        via: [API]
+      - id: complete
+        actor: snapshot-tool
+        action: Every page read?
+        via: [internal]
+        shape: decision
+        next: [write, refuse]
+        when: {write: "yes", refuse: "no"}
+      - id: refuse
+        actor: snapshot-tool
+        action: Refuses; the last good snapshot is kept (S04).
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: write
+        actor: snapshot-tool
+        action: With --apply, writes tasks.json and both manifests atomically.
+        via: [file]
+        writes: [tasks.json, manifests]
+      - id: verify
+        actor: snapshot-tool
+        action: Verifies checksums, IDs, references and the dependency graph.
+        via: [file]
+        reads: [manifests]
+
+  - id: restore
+    title: Clean-instance restore
+    category: custom
+    purpose: Prove a snapshot restores; an export alone is not proof (pilot step 8).
+    trigger: {kind: manual, detail: "goal_guard_snapshot.py restore"}
+    runs_on: snapshot-tool
+    owner: owner
+    dependencies: {components: [snapshots, test-instance]}
+    steps:
+      - id: verify
+        actor: snapshot-tool
+        action: Verifies the snapshot first.
+        via: [file]
+        reads: [manifests, tasks.json]
+      - id: clean
+        actor: test-instance
+        action: Target project holds only tasks Goal Guard restored?
+        via: [API]
+        shape: decision
+        next: [create, stop]
+        when: {create: "yes", stop: "no"}
+      - id: stop
+        actor: snapshot-tool
+        action: "Refuses: not a clean instance."
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: create
+        actor: test-instance
+        action: With --apply, creates the missing tasks (marked) and their relations once.
+        via: [API]
+        writes: [tasks, relations]
+      - id: readback
+        actor: snapshot-tool
+        action: Reads everything back and compares counts, fields and relations.
+        via: [API]

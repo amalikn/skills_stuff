@@ -61,10 +61,10 @@ Settings (environment): `GG_VIKUNJA_URL`, `GG_VIKUNJA_TOKEN` (a read-only token 
 
 Measured 2026-10-27 on this Mac, Python 3.14.5, against the example fixture:
 
-| What                                                        | Budget                                  | Measured                             |
-| ----------------------------------------------------------- | --------------------------------------- | ------------------------------------ |
-| `goal_guard_hook.py`, one call                              | under 1 s (it runs on every gated edit) | median 58 ms, max 63 ms over 10 runs |
-| `just check` (lint, 71 tests, skill-coder helpers, fixture) | under 30 s                              | 1.3 s wall                           |
+| What                                                                               | Budget                                  | Measured                                         |
+| ---------------------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------ |
+| `goal_guard_hook.py`, one call                                                     | under 1 s (it runs on every gated edit) | median 58 ms, max 63 ms over 10 runs             |
+| `just check` (lint, 79 tests, skill-coder helpers, 430 governance checks, fixture) | under 30 s                              | 2.3 s wall (1.3 s before the governance checker) |
 
 Live Vikunja reads are one request per page (the instance pages at 50); not yet measured on real data.
 
@@ -89,3 +89,48 @@ agent proposing. REVIEW and BLOCK still need the owner.
 | `docs/goal-guard/scripts/goal_guard.py`    | `scripts/goal_guard.py` (v0.1, rewritten the same day) | 2026-10-27 |
 | `docs/goal-guard/tests/test_goal_guard.py` | removed with the rewrite (in git history)              | 2026-10-27 |
 | `examples/portfolio.json`, `proposal.json` | `examples/v0.1/`                                       | 2026-10-27 |
+
+<!-- BEGIN MANAGED: skill-ai-it:scripts -->
+<!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
+
+## Execution Policy
+
+- Prefer the existing canonical task runner for this project.
+- Prefer `just <task>` when a `justfile` is present.
+- Do not run scripts marked `destructive`, `review-required`, or `unknown` without review.
+- Do not assume arbitrary files under `scripts/` are safe.
+- If a script is missing from this inventory, inspect it before use and update or propose an inventory entry.
+- Secrets must not be documented here as values. Document only secret names and where they are expected to come from.
+
+## Preferred Execution Order
+
+1. Existing canonical task runner (whichever is established for this project)
+2. `just --list` / `just <task>`
+3. `scripts/README.md`
+4. Other task runners: `Taskfile.yml`, `Makefile`, `package.json`
+5. Raw scripts under `scripts/` after inspection
+
+## Maintenance Rules
+
+- Keep this file aligned with: `justfile`, `Taskfile.yml`, `Makefile`, `package.json`, actual files under `scripts/`
+- Prefer managed block updates for generated sections.
+- Preserve manually written notes unless explicitly replacing them.
+- When removing a script, remove or mark its inventory entry stale.
+- When adding a script, document purpose, inputs, outputs, safety, idempotency, and when to use it.
+
+<!-- END MANAGED: skill-ai-it:scripts -->
+
+## Governance recipes (skill-ai-it)
+
+- `just govern`: governance up to the current skill-ai-it standard (adoption, record budgets with `just check`, role findings); content fixes are `/skill-ai-it refresh`. `modifies-files`.
+- `just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.
+- `just stale`: stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only; `safe`.
+- `just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.
+- `just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.
+- `just history-show <stamp>`: print one rotated entry. Read-only; `safe`.
+- `just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries and done ROADMAP items to docs/history, verified. Plan by default; `modifies-files`.
+- `just budget [--apply]`: bring governed files within budget (normalise, rotate, move reference sections, audit, check). Plan by default; `modifies-files`.
+- `just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.
+- `just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.
+- `just outline <file.md>`: each heading with its line range, to read one section instead of the file. Read-only; `safe`.
+- `just section <file.md> "<title>"`: print one section (exact title, `Parent > Child`, `#anchor`, `~text`). Read-only; `safe`.

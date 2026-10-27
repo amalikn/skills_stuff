@@ -1,0 +1,17 @@
+#% Part: components, group "People and agents"
+#% Scope: the components drawn in that group
+#% Lands under: components
+- id: owner
+  name: Owner
+  kind: person
+  group: People and agents
+  host: the operator
+  health: approves MVP revisions and answers REVIEW items
+  depends_on: [assess]
+- id: agent
+  name: Coding agent
+  kind: agent
+  group: People and agents
+  host: a Claude Code session
+  health: works only on a PROCEED verdict
+  depends_on: [assess, claude-code]

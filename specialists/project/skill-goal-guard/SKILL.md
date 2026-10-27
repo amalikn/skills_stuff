@@ -85,7 +85,8 @@ Run through `just` (pinned venv in the working-cache peer; `just bootstrap` once
 | `just excel project out`                              | Management workbook sample (`excel-apply` writes the file)                       | plan by default     |
 | `just doctor [project]`                               | Enforced versus advisory paths, hook wiring, captures                            | read-only           |
 | `just hook-test payload [mode]`                       | Feed a payload to the draft PreToolUse hook                                      | read-only           |
-| `just check`                                          | ruff, 71 tests, skill-coder helpers, fixture validate and trace                  | read-only           |
+| `just flows`                                          | Render the flow drawing from `goal-guard-flows/goal_guard_flows.yaml`            | writes the drawing  |
+| `just check`                                          | ruff, 79 tests, skill-coder helpers, governance checks, fixture                  | read-only           |
 
 Where a tool's output and a reference disagree, the reference wins and the tool is fixed.
 

@@ -1,0 +1,190 @@
+#% Part: flows, family "Scope gate"
+#% Scope: the flows of that family, in drawing order
+#% Lands under: flows
+- id: handoff
+  title: Handoff to a coding agent
+  category: custom
+  purpose: Before an agent starts a piece of work, Goal Guard decides it against the approved MVP and records the verdict.
+  trigger: {kind: manual, detail: "the agent proposes work, or an agent proposes a design enlargement"}
+  runs_on: assess
+  owner: owner
+  dependencies: {components: [gg-records, vikunja, token]}
+  steps:
+    - id: propose
+      actor: agent
+      action: Writes the proposal (task, criterion or blocker, smallest step, stop condition, files).
+      via: [file]
+      reads: [MVP contract, Vikunja task]
+    - id: assess
+      actor: assess
+      action: Decides it in the order of decision-rules.md (see the Decision order page).
+      via: [CLI]
+      reads: [.gg/mvp.yaml, mappings.yaml, decisions.jsonl, Vikunja tasks]
+    - id: record
+      actor: assess
+      action: With --apply, appends the verdict (or the parked idea) to decisions.jsonl.
+      via: [file]
+      writes: [decisions.jsonl]
+    - id: verdict
+      actor: assess
+      action: Which verdict?
+      via: [internal]
+      shape: decision
+      next: [work, park, review]
+      when: {work: "PROCEED", park: "PARK", review: "REVIEW or BLOCK"}
+    - id: park
+      actor: agent
+      action: Keeps the current task; the idea stays in the log as a parked idea.
+      via: [internal]
+      next: []
+    - id: review
+      actor: owner
+      action: Decides the trade-off, or approves a new MVP revision through change control.
+      via: [manual]
+      gate: an authenticated owner decision naming the revision
+      next: []
+    - id: work
+      actor: agent
+      action: Does only the smallest step, then attaches evidence per criterion.
+      via: [internal]
+      look: [completion record]
+
+- id: decide
+  title: Decision order
+  category: custom
+  purpose: How one proposal becomes PROCEED, PARK, REVIEW or BLOCK; the first rule that fires wins.
+  trigger: {kind: api, detail: "goal_guard.py assess"}
+  runs_on: assess
+  owner: assess
+  steps:
+    - id: context
+      actor: assess
+      action: Right partition and project, and every proposed path inside it?
+      via: [internal]
+      shape: decision
+      next: [baseline, block-context]
+      when: {baseline: "yes", block-context: "no"}
+    - id: block-context
+      actor: assess
+      action: BLOCK cross-partition (PORT-005), or REVIEW a path that escapes (GG-404).
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: baseline
+      actor: assess
+      action: Approved baseline, its approval by the owner in decisions.jsonl?
+      via: [file]
+      shape: decision
+      next: [task, block-baseline]
+      when: {task: "yes", block-baseline: "no"}
+    - id: block-baseline
+      actor: assess
+      action: BLOCK (MVP-001, MVP-003, MVP-007); read-only inspection still proceeds.
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: task
+      actor: assess
+      action: A task, mapped to an accepted criterion, open, prerequisites done?
+      via: [API]
+      shape: decision
+      next: [guards, review-task]
+      when: {guards: "yes", review-task: "no"}
+    - id: review-task
+      actor: assess
+      action: REVIEW (no task, closed, waiting) or BLOCK (task maps to no criterion, PORT-002).
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: guards
+      actor: assess
+      action: Clear of exclusions, approval fields and protected files?
+      via: [internal]
+      shape: decision
+      next: [link, block-guard]
+      when: {link: "yes", block-guard: "no"}
+    - id: block-guard
+      actor: assess
+      action: BLOCK (MVP-004 excluded, MVP-007 self-approval, MVP-011 protected change).
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: link
+      actor: assess
+      action: Cites an accepted criterion or a registered blocker?
+      via: [internal]
+      shape: decision
+      next: [necessity, park]
+      when: {necessity: "yes", park: "no"}
+    - id: park
+      actor: assess
+      action: "PARK (MVP-005): useful, not needed for this baseline."
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: necessity
+      actor: assess
+      action: The task's own criterion, necessity recorded, no new scope?
+      via: [internal]
+      shape: decision
+      next: [proceed, review-scope]
+      when: {proceed: "yes", review-scope: "no"}
+    - id: review-scope
+      actor: assess
+      action: REVIEW (GG-007 false linkage, GG-412 unrecorded, MVP-006 adds scope).
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: proceed
+      actor: assess
+      action: PROCEED, carrying the proposal's files for the hook.
+      via: [internal]
+      shape: terminator
+
+- id: hook-gate
+  title: Hook gate before an edit
+  category: custom
+  purpose: Claude Code asks the hook before Edit, Write, MultiEdit or NotebookEdit; advisory mode warns, blocking mode exits 2.
+  trigger: {kind: hook, detail: "PreToolUse on a file tool"}
+  runs_on: claude-code
+  owner: hook
+  budget: under 1 s per call (measured median 58 ms)
+  dependencies: {components: [gg-records, captures]}
+  steps:
+    - id: call
+      actor: claude-code
+      action: Sends the tool call as JSON on stdin.
+      via: [stdin]
+    - id: recognise
+      actor: hook
+      action: A payload it recognises, for a gated file tool?
+      via: [internal]
+      shape: decision
+      next: [protected, deny]
+      when: {protected: "yes", deny: "no: fail closed"}
+    - id: deny
+      actor: hook
+      action: Blocking mode exits 2 with the reason; advisory mode adds it as context.
+      via: [stderr]
+      writes: [hook capture with --capture]
+      shape: terminator
+      next: []
+    - id: protected
+      actor: hook
+      action: Not a protected record, and a current PROCEED covers this file?
+      via: [file]
+      reads: [decisions.jsonl, .gg/mvp.yaml, protected_paths]
+      shape: decision
+      next: [pass, deny-scope]
+      when: {pass: "yes", deny-scope: "no"}
+    - id: deny-scope
+      actor: hook
+      action: Denies; the agent writes a proposal listing the file and runs assess.
+      via: [stderr]
+      shape: terminator
+      next: []
+    - id: pass
+      actor: hook
+      action: Prints nothing, so Claude Code's own permission prompt still applies.
+      via: [stdout]
+      shape: terminator

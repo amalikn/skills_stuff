@@ -4,6 +4,10 @@
 indent-width = 2
 line-length = 160
 target-version = "py314"
+# scripts/govcheck/core.py is copied byte for byte from skill-ai-it templates/govcheck/core.py (four-space) and the structure check
+# fails if it differs, so ruff never reformats or lints it here.
+extend-exclude = ["scripts/govcheck/core.py"]
+force-exclude = true
 
 [format]
 indent-style = "space"

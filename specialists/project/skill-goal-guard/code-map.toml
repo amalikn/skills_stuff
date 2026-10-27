@@ -16,3 +16,180 @@ note = "writes are behind --apply in the front ends; hook capture is gated by --
 
 # Layers: a module imports only modules listed above it in goal_guard_lib/__init__.py; the front ends import the library, never each
 # other (checked by `import_layers.py --graph`: no cycles, 2026-10-27). Dependency seams and upgrade tests are named in requirements.txt.
+
+[modules."scripts/check_governance.py"]
+status = "project_only"
+reason = "this pack's governance checker (skill-ai-it package layout); its checks encode this pack's own rules (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_doctor.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_excel.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_hook.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/cli.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/decide.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/decisions_log.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/doctor.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/errors.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/excel.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/hook.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/mvp.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/project.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/rank.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/records.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/restore.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/settings.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/snapshot.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/tasks.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/trace.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/vikunja.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_lib/yaml_io.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_snapshot.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_trace.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/goal_guard_vikunja.py"]
+status = "project_only"
+reason = "Goal Guard pilot code (pilot step 4, tools for steps 6-8); the decision rules and Vikunja seam are specific to this pack (reviewed 2026-10-27)"
+
+[modules."scripts/govcheck/checks/catalog.py"]
+status = "project_only"
+reason = "this pack's governance checker (skill-ai-it package layout); its checks encode this pack's own rules (reviewed 2026-10-27)"
+
+[modules."scripts/govcheck/checks/paths.py"]
+status = "project_only"
+reason = "this pack's governance checker (skill-ai-it package layout); its checks encode this pack's own rules (reviewed 2026-10-27)"
+
+[modules."scripts/govcheck/checks/records.py"]
+status = "project_only"
+reason = "this pack's governance checker (skill-ai-it package layout); its checks encode this pack's own rules (reviewed 2026-10-27)"
+
+[modules."scripts/govcheck/checks/runner.py"]
+status = "project_only"
+reason = "this pack's governance checker (skill-ai-it package layout); its checks encode this pack's own rules (reviewed 2026-10-27)"
+
+[modules."scripts/govcheck/checks/structure.py"]
+status = "project_only"
+reason = "this pack's governance checker (skill-ai-it package layout); its checks encode this pack's own rules (reviewed 2026-10-27)"
+
+[modules."scripts/govcheck/config.py"]
+status = "project_only"
+reason = "this pack's governance checker (skill-ai-it package layout); its checks encode this pack's own rules (reviewed 2026-10-27)"
+
+[modules."scripts/govcheck/core.py"]
+status = "project_only"
+reason = "copy of skill-ai-it templates/govcheck/core.py, canonical there; kept identical by the structure check (reviewed 2026-10-27)"
+
+[modules."scripts/govcheck/helpers.py"]
+status = "project_only"
+reason = "this pack's governance checker (skill-ai-it package layout); its checks encode this pack's own rules (reviewed 2026-10-27)"
+
+[modules."tests/fake_vikunja.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/helpers.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/test_cli.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/test_decide.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/test_decisions_log.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/test_hook_doctor.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/test_rank.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/test_trace_excel_yaml.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/test_vikunja_snapshot.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools; specific to this pack (reviewed 2026-10-27)"
+
+[modules."tests/test_govcheck.py"]
+status = "project_only"
+reason = "tests and fakes for the Goal Guard pilot tools and governance checker; specific to this pack (reviewed 2026-10-27)"
+

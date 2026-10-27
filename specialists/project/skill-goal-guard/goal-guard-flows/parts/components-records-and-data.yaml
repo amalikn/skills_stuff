@@ -1,0 +1,39 @@
+#% Part: components, group "Records and data"
+#% Scope: the components drawn in that group
+#% Lands under: components
+- id: gg-records
+  name: .gg/ records
+  kind: store
+  group: Records and data
+  host: the project folder
+  health: validate passes; hash chain holds
+- id: hub-plan
+  name: Hub plan
+  kind: store
+  group: Records and data
+  host: enterprise-strategy (read only)
+  health: revision matches the pinned one
+- id: target-map
+  name: target-map.yaml
+  kind: store
+  group: Records and data
+  host: the spoke project (read only)
+  health: revision matches the pinned one
+- id: snapshots
+  name: Snapshots
+  kind: store
+  group: Records and data
+  host: skills-data/skill-goal-guard/snapshots
+  health: manifests and checksums verify
+- id: captures
+  name: Hook captures
+  kind: store
+  group: Records and data
+  host: skills-runtime/skill-goal-guard/captures
+  health: one capture per gated tool
+- id: token
+  name: Vikunja API token
+  kind: secret
+  group: Records and data
+  host: KeePassXC (read-only token)
+  health: never on a command line or in a log

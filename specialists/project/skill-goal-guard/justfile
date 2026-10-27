@@ -13,7 +13,10 @@ set dotenv-load := false
 
 wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-goal-guard"
 py := wc + "/.venv/bin/python"
+ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 coder := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder/scripts"
+drawio := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/platform/skill-drawio/scripts"
+drawio_py := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-drawio/.venv/bin/python"
 demo := "examples/project_stuff/apn/demo-spoke"
 demo_tasks := "examples/vikunja-tasks.json"
 
@@ -127,7 +130,99 @@ excel-apply project out: _require-venv
 hook-test payload mode="blocking": _require-venv
     @{{py}} scripts/goal_guard_hook.py --mode {{mode}} < "{{payload}}"
 
-# Closing check: lint, tests, skill-coder's helpers and the example fixture (read-only).
-check: lint test coder-checks
+# Build the flow map from its parts, then render the drawing (writes goal-guard-flows/goal_guard_flows.yaml and .drawio only; skill-drawio engine).
+# Edit goal-guard-flows/parts/*.yaml, never the two generated files.
+flows:
+    @{{drawio_py}} "{{drawio}}/assemble_flowmap.py" --master goal-guard-flows/parts/master.yaml --out goal-guard-flows/goal_guard_flows.yaml --write
+    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root goal-guard-flows --map goal_guard_flows.yaml --write
+
+# The map matches its parts, the drawing matches the map, and the routed pages pass every layout audit (read-only; part of `just check`).
+flows-check:
+    @{{drawio_py}} "{{drawio}}/assemble_flowmap.py" --master goal-guard-flows/parts/master.yaml --out goal-guard-flows/goal_guard_flows.yaml
+    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root goal-guard-flows --map goal_guard_flows.yaml
+    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root goal-guard-flows --map goal_guard_flows.yaml --audit
+
+# Governance coherence checks: the pack's own rules as failing assertions (read-only). Example: just governance --timings
+governance *ARGS: _require-venv
+    @{{py}} scripts/check_governance.py {{ARGS}}
+
+# Closing check: lint, tests, skill-coder's helpers, governance checks and the example fixture (read-only).
+check: lint test coder-checks governance flows-check
     @{{py}} scripts/goal_guard.py validate --project "{{demo}}" > /dev/null && echo "example project valid"
     @{{py}} scripts/goal_guard_trace.py --project "{{demo}}" --tasks "{{demo_tasks}}" > /dev/null && echo "example trace verified"
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root . --check
+
+# Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
+stale: _require-venv
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
+
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/govern_guard.py" --project-root "$root" || exit 1; fi
+    if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
+      nav="$(mktemp)"
+      {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
+      elif grep -q "would" "$nav"; then
+        {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+      fi
+      rm -f "$nav"
+    fi
+    {{py}} "{{ai_it}}/scripts/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    {{py}} "{{ai_it}}/scripts/adopt_code_map.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
+# Triage: one line per file (status, review date, summary) from its header, so a file is judged without being opened
+docs *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/file_headers.py" --project-root . {{ARGS}}
+
+# Rotated history on demand: `just history <term>` searches the CHANGELOG archives (SCRATCHPAD: `just history <term> SCRATCHPAD.md`)
+history TERM RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
+
+# Print one rotated entry by its stamp, when a live entry cites it: `just history-show 20260918_1200`
+history-show STAMP RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
+
+# Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget: plan by default; `just rotate --apply` (slurp runs `just budget`, which trims ROADMAP too)
+rotate *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
+    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}
+
+# Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
+budget *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root . {{ARGS}}
+
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/add_changelog_entry.py" --project-root . "$@"
+
+# Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
+move-sections *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . section "$@"
