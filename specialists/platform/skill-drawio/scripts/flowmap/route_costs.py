@@ -127,6 +127,30 @@ def _clear(rect: tuple, gap: float) -> tuple:
     return rect[0] - gap, rect[1] - gap, rect[2] + 2 * gap, rect[3] + 2 * gap
 
 
+def lane_colour(page: Page, x: float, y: float) -> str:
+    """The colour a lane shows at a point (its fill over the white page at the lane's opacity), for a label background that hides the line
+    behind the text without showing a white box on a tinted lane (operator, 2026-10-27: "remove white background from arrow text").
+
+    Args:
+        page: the page.
+        x: the point's x.
+        y: the point's y.
+
+    Returns:
+        A #rrggbb colour; white outside every lane.
+    """
+    for cid, (lx, ly, lw, lh) in page.rects.items():
+        if "-lane-" not in cid or not (lx <= x <= lx + lw and ly <= y <= ly + lh):
+            continue
+        style = dict(kv.split("=", 1) for kv in page.cell_style.get(cid, "").split(";") if "=" in kv)
+        fill, alpha = style.get("fillColor", "#ffffff"), float(style.get("opacity", 100)) / 100
+        if not fill.startswith("#") or len(fill) != 7:
+            continue
+        rgb = [int(fill[k:k + 2], 16) for k in (1, 3, 5)]
+        return "#" + "".join(f"{round(c * alpha + 255 * (1 - alpha)):02x}" for c in rgb)
+    return "#ffffff"
+
+
 def _straight(a: tuple, b: tuple, c: tuple) -> bool:
     """Whether b lies on the straight run from a to c (all three on one horizontal or one vertical line).
 

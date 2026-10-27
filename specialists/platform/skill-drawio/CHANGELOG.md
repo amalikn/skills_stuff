@@ -16,6 +16,9 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261027 Flow page arrow labels take their lane's colour as background instead of white (`route_costs.lane_colour`; operator:
+  "remove white background from arrow text"); a long decision may widen to `look.decision_max_width` (560) to stay a diamond (operator:
+  "disproportionately elongated vertically"). Placement unchanged; crossings unchanged on all three maps
 - 20261027 Flow pages: a decision is sized to its text (starts at the step width, widens to `look.decision_aspect` 0.6, up to
   `decision_width`), not a fixed 380 px; an arrow label keeps 8 px from every box and is placed on the arrow's straight run, not on half of it
   (operator, smc_change Apply: "box 2 unnecessarily elongated", "text of arrow 2 too close to box 1"). Crossings unchanged on all three maps

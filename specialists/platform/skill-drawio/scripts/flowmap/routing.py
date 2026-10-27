@@ -20,7 +20,7 @@ from itertools import permutations
 from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 from drawio.mxfile import ARROW_HEAD, Page, label
 
-from .route_costs import NEAR, _along, _crosses, _overlaps, label_size, label_spot, leaves_off_side, overshoot
+from .route_costs import NEAR, _along, _crosses, _overlaps, label_size, label_spot, lane_colour, leaves_off_side, overshoot
 
 #: Costs: a crossed box (or the arrow's own box) is unusable in practice; a run alongside another or over a label, a reused point, a reused side,
 #: a crossing, a bend and an exit off a plain box's right side each make a path worse.
@@ -37,7 +37,8 @@ STUB, HEAD = 12, 22
 #: Arc size where a flow arrow crosses another: an unavoidable crossing hops, as on the Overview.
 JUMP = 6
 STYLE = "edgeStyle=none;rounded={rounded};html=1;" + ARROW_HEAD + "jumpStyle=arc;jumpSize=6;strokeColor={colour};"
-LABEL = "text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;labelBackgroundColor=#ffffff;fontColor={colour};"
+# The label's background is its lane's colour, not white (operator, 2026-10-27): it hides the line behind the text, no box shows.
+LABEL = "text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;labelBackgroundColor={background};fontColor={colour};"
 #: A yes/no decision's branch colours (operator, 2026-10-21: show the boolean nature); other arrows are black.
 YES, NO, PLAIN = "#1b7a3a", "#b3261e", "#000000"
 
@@ -269,7 +270,8 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
     used.setdefault("taken", set()).add((src, out_side))
     width, height = label_size(text)
     cx, cy = label_spot(page, cid, pts, width, height)
-    page.mark(f"{cid}-lbl", label(*(f"**{line}**" for line in text.split("\n"))), cx, cy, width, height, LABEL.format(colour=colour), cid)
+    style = LABEL.format(colour=colour, background=lane_colour(page, cx, cy))
+    page.mark(f"{cid}-lbl", label(*(f"**{line}**" for line in text.split("\n"))), cx, cy, width, height, style, cid)
     return spent
 
 

@@ -620,6 +620,11 @@
               "exclusiveMinimum": 0,
               "description": "Flow pages: a decision starts at the step width and widens until its height is at most this times its width, up to decision_width (default 0.6)."
             },
+            "decision_max_width": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Flow pages: the widest a long decision may grow past decision_width to keep its aspect (default 560)."
+            },
             "unshare": {
               "type": "string",
               "enum": [

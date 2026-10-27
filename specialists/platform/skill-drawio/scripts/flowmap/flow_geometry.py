@@ -208,7 +208,7 @@ def back_arrow(page: Page, edge: tuple, band: float, mode: str = "short-first") 
     sx, sy, sw, sh = page.rects[src]
     dx, dy, dw, dh = page.rects[dst]
     route_style = "edgeStyle=none;rounded=1;html=1;" + ARROW_HEAD + "dashed=1;strokeColor=#6a3fa0;"
-    mark_style = "text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#6a3fa0;labelBackgroundColor=#ffffff;"
+    mark_style = "text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#6a3fa0;labelBackgroundColor=none;"
     mid, x2 = sy + sh * 0.2, dx + dw * 0.75   # above the forward arrows, which enter the left side at 1/3 to 2/3 or the middle
     short = [(sx, mid), (x2, mid), (x2, dy if dy > mid else dy + dh)]
     if mode == "short-first" and x2 < sx and not (dy < mid < dy + dh) and _clear(page, short, {src, dst}):

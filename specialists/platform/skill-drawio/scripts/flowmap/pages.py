@@ -143,13 +143,17 @@ def size_steps(steps: list[dict], shapes: dict, profile: Profile) -> tuple[dict,
     box_w = {sid: step_width("process" if sh == "decision" else sh, look) for sid, sh in shapes.items()}
     box_h = {}
     widest = max(int(look.get("decision_width", 380)), max(box_w.values(), default=0))
+    # A long decision may pass decision_width up to decision_max_width, so it stays a diamond and not a tall kite (operator review 2026-10-27,
+    # smc_change Resume: "disproportionately elongated vertically").
+    widest_decision = max(widest, int(look.get("decision_max_width", 560)))
     for sid, lines in texts.items():   # the outline eats into the text area: fewer characters a line, a taller box
         _style, wf, hf = SHAPES[shapes[sid]][:3]
-        aspect = float(look.get("decision_aspect", 0.6) if shapes[sid] == "decision" else look.get("max_aspect", 0.8))
+        decision = shapes[sid] == "decision"
+        aspect = float(look.get("decision_aspect", 0.6) if decision else look.get("max_aspect", 0.8))
         while True:
             chars = int(look["step_chars"] * box_w[sid] / look["step_width"] * wf)
             box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * STEP_LINE_H) * hf)
-            if box_h[sid] <= aspect * box_w[sid] or box_w[sid] >= widest:
+            if box_h[sid] <= aspect * box_w[sid] or box_w[sid] >= (widest_decision if decision else widest):
                 break
             box_w[sid] += 20
     return texts, box_w, box_h
