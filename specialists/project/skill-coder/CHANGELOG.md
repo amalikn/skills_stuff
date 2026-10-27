@@ -139,6 +139,15 @@ Summary: Release history and governance changes of skill-coder; the release head
   reviewing that pattern for `just check`; both now `proposed`, awaiting the operator's promotion approval. `archcore status` passes.
 - Feedback to all-scraper: the ShellCheck wiki page answered with a bot challenge during research; recorded in its `ROADMAP.md` Backlog.
 
+## 20261027_1115 — Design patterns harvested from unified-network-controller and smc-resiliency (P-13 to P-29)
+
+- `references/design-patterns.md`: Learned 2026-10-27 (m)-(z) and three more: P-13 to P-29 harvested from unified-network-controller
+  (capability table, rollback classes and end states, ownership axes, neutral contract by two consumers, stale-lock proof, class rules with
+  deny-wins exceptions, ranked-evidence evals, migration ratchet) and smc-resiliency (fallback chain, destroy-what-changed, scratch build and
+  sandbox validation, signed newer-only config, self-guarding probe, verdict ledger; recovery on immutable parts and clock floor as design
+  only). Dead-man revert timer (P-15) found in both projects; P-02 and P-10 gained a second project. Every key line was checked against its
+  source before writing (17 of 17 found).
+
 ## 20261027_1049 — Design patterns reference: out-of-the-box logic from smc_change, per language
 
 - `references/design-patterns.md` (new, operator 2026-10-27: capture the out-of-the-box logic so projects without SMCs benefit; like

@@ -53,6 +53,23 @@ Evidence:     VERIFIED_PRIMARY | VERIFIED_SECONDARY | CANDIDATE, with what was o
 | P-10 | Fail-open filters, fail-closed gates               | Optional pre-filters must never block work; safety gates must                     |
 | P-11 | Freeze code under in-flight transactions           | Edit an engine while some of its transactions are still open                      |
 | P-12 | Plan, print, then apply                            | A migration or bulk move that must not stop half-way unnoticed                    |
+| P-13 | Capability table: exists is not proven                     | Risky paths enabled because they exist, not because they were proven        |
+| P-14 | Declared rollback class and explicit end states             | "Failed" that hides whether the target changed                             |
+| P-15 | Dead-man revert timer armed before the change               | A change that kills the process or link that would undo it                  |
+| P-16 | Ownership and applicability as two axes                     | Writers overwriting each other; "not applicable" mixed with "not allowed"   |
+| P-17 | Neutral contract proven by two consumers                    | An abstraction shaped by its first consumer                                 |
+| P-18 | Clear a stale lock only after proving the owner dead        | Locks cleared while the owner still runs                                    |
+| P-19 | Rule by class with allow and deny exceptions, deny wins     | N x N compatibility tables                                                  |
+| P-20 | Acceptance evals: ranked evidence, independent oracle       | "It works" judged by the system itself                                     |
+| P-21 | Ratchet a migration: shims, shrinking baseline, redirects   | Gradual moves that stall or regress                                         |
+| P-22 | Fallback chain skipping rejected versions to a safe mode    | Fallback that restores the bad version                                      |
+| P-23 | Destroy what changed so the reconciler recreates it         | Health passing on objects that were not rebuilt                             |
+| P-24 | Build in scratch, validate in a sandbox, rename into place  | Half-written live trees during an update                                    |
+| P-25 | Signed config bound to one target, newer-only, idle slot    | Replay, downgrade or wrong-target config                                    |
+| P-26 | Self-guarding probe for a live system                       | Experiments on the wrong box, or leaving it changed                         |
+| P-27 | Verdict ledger apart from the criteria it judges            | Trackers drifting from the design that defines done                         |
+| P-28 | Recovery on immutable parts; recoveries count as faults     | Recovery that depends on broken state; hidden self-healing                  |
+| P-29 | Clock floor and "expiry unchecked" under untrusted time      | Time checks on clocks known to be wrong                                     |
 
 ## Patterns
 
@@ -140,6 +157,9 @@ register(Check("http", collect=http_collect, healthy=http_healthy, gates=http_ga
 ```
 
 - **Evidence:** VERIFIED_PRIMARY, captive portal pages judged before and after every PHP apply on production; unhealthy baselines refused.
+- **Second project (smc-resiliency, `spike/onbox/smcbox/health.py:169-183`):** external reach counts against the change only if it passed
+  before and fails after; reach already down is stored as "unjudged" and rechecked later; during an outage new changes are held (a return to
+  last-known-good excepted), since a bad change made then could never be judged.
 
 ### P-03 Write-ahead journal with a code fingerprint
 
@@ -259,7 +279,9 @@ smc_change_target: >-
 - **Problem:** an optional pre-filter (is the target listed online?) that errors can silently drop every target, while a safety gate that errors must stop the change.
 - **Solution:** decide per check which way it fails. Filters fail open: a failed lookup filters nothing and says so once. Gates fail closed: missing data is a failed gate.
 - **Reuse:** feature flags, rate limiters, pre-commit hooks versus release gates.
-- **Realised in:** Ansible, `tasks/pending.yml` (tsh filter: a failed `tsh ls` keeps its targets).
+- **Realised in:** Ansible, `tasks/pending.yml` (tsh filter: a failed `tsh ls` keeps its targets). Second project: unified-network-controller's
+  ownership guard fails open when its catalog cannot be read, because a guard that can only refuse would otherwise take the whole system down
+  (P-16).
 
 ### P-11 Freeze code under in-flight transactions
 
@@ -289,6 +311,247 @@ for src, dst, copy in all_moves:
 if all_problems:
   return 1
 ```
+
+### P-13 Capability table: exists is not proven
+
+> **Learned 2026-10-27 (m)** · design pattern, any language · CANDIDATE (built and tested offline against a fake adapter; no kind enabled live yet) · Source: unified-network-controller `wc-local/scripts/safe_write/capability.py:26-56`, `tests/test_safe_write.py` · Falsifier: a write path used while its row says proven: false
+> Pattern P-13, written generically below.
+
+- **Problem:** a risky operation path is switched on because someone wrote it, not because anyone proved it.
+- **Solution:** one plain table per target kind: mechanism, rollback class, `proven`, evidence text. Supported means a mechanism exists **and** proven is true; a kind missing from the table is unsupported, not an error. Checked before any adapter is touched; enabling a kind is one row change citing its evidence; a test keeps the table's keys equal to the adapter registry.
+- **Why it works:** the system can never claim more than its evidence; the table is the audit trail.
+- **Reuse:** payment refunds per provider, migration strategies per database, feature rollout per device class.
+- **Pitfalls:** every row still unproven means the path has never run for real; say so in status.
+- **Realised in:** Python, unified-network-controller safe_write.
+
+```python
+CAPABILITY_TABLE = {"enterprise-wifi": {"write_mechanism": None, "rollback_class": "R0", "proven": False, "evidence": _F1_TODO}, ...}
+
+@property
+def supported(self) -> bool:
+    return self.write_mechanism is not None and self.proven
+```
+
+### P-14 Declared rollback class and explicit end states
+
+> **Learned 2026-10-27 (n)** · design pattern, any language · CANDIDATE (pipeline tested with a fake adapter; not live) · Source: unified-network-controller `wc-local/scripts/safe_write/pipeline.py:1-20`, `rollback.py:3-50` · Falsifier: a run that ends `failed` while the target did change, or a rollback stronger than the one declared
+> Pattern P-14, written generically below.
+
+- **Problem:** "rollback" means different things per target, and "failed" hides whether anything changed.
+- **Solution:** each target declares its rollback class: R0 stop and tell the operator, R1 the target's own transactional revert, R2 restore a redacted backup (secrets re-injected from the vault only at restore), R3 a compensating write of the previous values. Fixed stages: authorise, capability, back up, validate, delta, preview, apply, read back, verify. Every run ends in one named state (`unsupported`, `not_authorised`, `cancelled` already in state, `failed`, `succeeded`, `rolled_back`, `rollback_failed`) with one correlation id and one JSONL audit line.
+- **Why it works:** callers act on a state that says what happened to the target, not on an exception.
+- **Reuse:** cloud resource changes, ERP data fixes, firmware pushes.
+- **Pitfalls:** never try a stronger rollback than declared; an untested R1 is worse than an honest R0.
+- **Realised in:** Python, unified-network-controller safe_write; P-01's smc_change records end in a comparable set (passed, gates_failed, failed, refused, unreachable).
+
+### P-15 Dead-man revert timer armed before the change
+
+> **Learned 2026-10-27 (o)** · design pattern, any language · VERIFIED_PRIMARY (two projects: a bad swap reverted in 100 s on a lab VM; a revert rehearsed on a virtual target) · Source: smc-resiliency `spike/onbox/smcbox/activate.py:185-275`; unified-network-controller `wc-local/scripts/smc/smc_intent.py:696-752` · Falsifier: a target left on a bad change after its controller died mid-change
+> Pattern P-15, written generically below.
+
+- **Problem:** a change can kill the process making it, or the connection you would undo it over, and then nobody reverts it.
+- **Solution:** before the change, arm a timer that lives on the target and outside the process (a transient systemd timer) to restore last-known-good after a deadline; stage the candidate and keep last-known-good on the target. Apply detached; judge health; success writes a confirm file or cancels the timer, a handled failure reverts and cancels it. The revert also restarts what died under the bad config.
+- **Why it works:** the undo does not depend on the thing that may hang, crash or lose its link.
+- **Reuse:** remote firewall and DNS changes, database parameter changes, edge and IoT config, feature-flag flips.
+- **Pitfalls:** reset the timer's failed state before arming; its deadline must exceed the health deadline; restoring files without restarting services is not last-known-good.
+- **Realised in:** Python with systemd, smc-resiliency spike and unified-network-controller smc_intent (two independent projects).
+
+```python
+sh(["systemd-run", f"--unit={TIMER_UNIT}", f"--on-active={seconds}", sys.executable, "-m", "smcbox", *action])
+...
+arm_timer(deadline + 120)
+```
+
+### P-16 Ownership and applicability as two axes
+
+> **Learned 2026-10-27 (p)** · design pattern, any language · VERIFIED_PRIMARY (in production since 2026-09-23; tests) · Source: unified-network-controller `nautobot/apps/unc-ownership/unc_ownership/inventory/ownership.py:28-115`, `nautobot/catalog/nautobot/ownership-models.yaml` · Falsifier: a field written by a writer outside its class, or refused because applicability and permission were mixed
+> Pattern P-16, written generically below.
+
+- **Problem:** several writers (people, collectors, importers) overwrite each other, and "this field does not apply here" is mixed up with "you may not write it".
+- **Solution:** a catalog holds two axes: ownership class (operator, device, inventory, system; mirror or unused in secondary systems) and applicability (capability flags per type). Writers are named accounts; an anonymous writer is a non-writer (fail closed). The guard itself fails open when its catalog cannot be read (see P-10). Applicability enforcement stays behind a flag until run on real data.
+- **Why it works:** each question has one place to answer it; new hardware adds capabilities, not exceptions.
+- **Reuse:** CRM fields owned by sales vs sync jobs, config keys owned by people vs automation, multi-source master data.
+- **Pitfalls:** a per-model `not-applicable` class broke at the first new hardware model; keep applicability as capabilities.
+- **Realised in:** Python (Django app) and YAML, unified-network-controller.
+
+### P-17 Neutral contract proven by two consumers
+
+> **Learned 2026-10-27 (q)** · design pattern, any language · VERIFIED_PRIMARY (`just t6` passed; settled the project's D8 decision) · Source: unified-network-controller `adapters/protocol.py:1-70`, `adapters/t6/measure.py:1-105` · Falsifier: a framework noun in a contract identifier, or a shim over its size limit, passing the check
+> Pattern P-17, written generically below.
+
+- **Problem:** an abstraction quietly takes on the vocabulary of its first consumer.
+- **Solution:** the contract names no framework; it is proven by two thin shims to two different destinations against failure criteria written before the code (either shim over ~300 lines, or any framework-only field needed). Leakage is checked mechanically: an AST scan of class and field identifiers against banned framework nouns; prose is not scanned, so comments may explain.
+- **Why it works:** two consumers expose the bias one hides; criteria fixed first cannot be bent to pass.
+- **Reuse:** storage-agnostic domain models, payment or SMS provider ports, LLM provider layers.
+- **Pitfalls:** scan identifiers, not text, or the check blocks documentation.
+- **Realised in:** Python, unified-network-controller.
+
+```python
+FRAMEWORK_NOUNS = ("netjson", "openwisp", "nautobot", "netbox", "django", ...)
+return [(name, noun) for name in _protocol_identifiers() for noun in FRAMEWORK_NOUNS if noun in name.lower()]
+```
+
+### P-18 Clear a stale lock only after proving the owner dead
+
+> **Learned 2026-10-27 (r)** · design pattern, any language · VERIFIED_PRIMARY (tests; used in operations) · Source: unified-network-controller `src/unc/backends/nautobot/stale_locks.py:74-149`, `tests/test_stale_locks.py` · Falsifier: a lock cleared while its owner job was still running
+> Pattern P-18, written generically below.
+
+- **Problem:** stuck locks get cleared by hand while the owner is in fact still running.
+- **Solution:** dry run by default; one exact key, no wildcards; the owner must be a job in a terminal state; host-idle evidence must be fresh (seconds old) and is re-read just before the delete; every queued or running request is inspected and any unknown state means refuse; the delete is compare-and-swap (watch the lock and queues, `--expected-owner` from the preview).
+- **Why it works:** every way the owner could still be alive is a refusal, not a guess.
+- **Reuse:** distributed cron locks, leases on stuck CI runners, database advisory locks.
+- **Pitfalls:** a preview-then-apply without compare-and-swap races the owner.
+- **Realised in:** Python (Redis), unified-network-controller.
+
+### P-19 Rule by class with allow and deny exceptions, deny wins
+
+> **Learned 2026-10-27 (s)** · design pattern, any language · VERIFIED_PRIMARY (production; tests) · Source: unified-network-controller `nautobot/apps/unc-ownership/unc_ownership/inventory/replacement_rules.py:45-67` · Falsifier: an unclassified type accepted without an explicit allow, or a deny overridden
+> Pattern P-19, written generically below.
+
+- **Problem:** "may X replace Y?" grows into an N x N table that cannot keep up.
+- **Solution:** each type gets two vendor-neutral attributes (placement, function) plus two exception lists (may-replace, never-replaces); fixed order: deny wins; an explicit allow holds even for an unclassified type; unclassified is refused; otherwise both attributes must match. Returns (verdict, reason) and the reason is shown to the approver. The rule imports no framework, so it is tested alone.
+- **Why it works:** O(types) data instead of O(types^2); the order makes every verdict explainable.
+- **Reuse:** substitute products, equivalent drugs, compatible spare parts.
+- **Pitfalls:** keep the rule pure (no framework imports) so its table of cases is tested directly.
+- **Realised in:** Python, unified-network-controller.
+
+### P-20 Acceptance evals: ranked evidence, independent oracle, append-only history
+
+> **Learned 2026-10-27 (t)** · design pattern, any language · VERIFIED_PRIMARY (A6 coverage measured; history kept) · Source: unified-network-controller `tests/evals.yaml:7-80`, `tests/history.jsonl` · Falsifier: an eval passing on an oracle that routes through the system it judges
+> Pattern P-20, written generically below.
+
+- **Problem:** "it works" is claimed on a transport acknowledgement, against a denominator the system itself controls.
+- **Solution:** evidence layers are ranked (transport < stored < rendered < durable); each eval declares its population, an oracle that is independent and does not route through the evaluated path, how long a result stays valid and what invalidates it, and a fixture that can make it fail. Results append to a JSONL history; corrections are new records that supersede, never edits.
+- **Why it works:** the claim names its strength; old results cannot be rewritten into passes.
+- **Reuse:** data-pipeline SLAs, ML deployment acceptance, migration completeness.
+- **Pitfalls:** an oracle sharing the system's code path proves nothing.
+- **Realised in:** YAML and JSONL, unified-network-controller; skill-eval-manager carries the general discipline.
+
+### P-21 Ratchet a migration with shims, a shrinking baseline and a redirect map
+
+> **Learned 2026-10-27 (u)** · design pattern, any language · VERIFIED_PRIMARY (tests; warn mode) · Source: unified-network-controller `scripts/govcheck/checks/location.py:18-82`, `scripts/govcheck/config.py:245-270`, `wc-local/scripts/moved-paths.json` · Falsifier: new non-shim code in the old tree passing the check
+> Pattern P-21, written generically below.
+
+- **Problem:** a gradual move to a new code location stalls, or new code keeps landing in the old place.
+- **Solution:** a shim is detected by AST (docstring starts with "Shim" and it imports the new package); any other module in the old tree must be in a baseline that may only shrink, and a stale entry is reported; warn first, then fail. Retired paths go to a redirect map so dated records still resolve; the map is checked so it cannot excuse a path that is really gone. Size and docstring budgets ratchet the same way.
+- **Why it works:** progress is monotone and visible; history keeps resolving.
+- **Reuse:** monolith to packages, API v1 to v2, renaming config keys across repos.
+- **Pitfalls:** 18 non-shim modules landed in the old tree while no check existed; add the ratchet before the move starts.
+- **Realised in:** Python and JSON, unified-network-controller.
+
+### P-22 Fallback chain that skips rejected versions and ends in a safe mode
+
+> **Learned 2026-10-27 (v)** · design pattern, any language · VERIFIED_PRIMARY (5 tests; run on a lab VM) · Source: smc-resiliency `spike/onbox/smcbox/site.py:221-243`, `spike/tests/test_site.py:62-78` · Falsifier: a fallback that restores a version already rejected
+> Pattern P-22, written generically below.
+
+- **Problem:** falling back to "the other copy" can bring back the bad version just rejected; falling back to "nothing" leaves stale state running.
+- **Solution:** try the committed slot, then the other slot, then a built-in safe mode; rejected version numbers are kept in state and skipped.
+- **Why it works:** every step of the chain is a known-good or known-safe state.
+- **Reuse:** A/B firmware, blue-green deploys, config rollbacks.
+- **Pitfalls:** the idle slot can still hold the rejected set; reverting to nothing leaves old services running.
+- **Realised in:** Python, smc-resiliency spike.
+
+```python
+if doc.get("set") in state.get("rejected", []):
+    continue
+...
+return json.loads(SAFE_VARS.read_text(...)), "safe mode"
+```
+
+### P-23 Destroy what changed so the reconciler recreates it
+
+> **Learned 2026-10-27 (w)** · design pattern, any language · VERIFIED_PRIMARY (finding fixed and tested; a kept rebuild in 2.2 s) · Source: smc-resiliency `spike/onbox/smcbox/activate.py:136-158`, `spike/tests/test_activate.py:35-50` · Falsifier: a health check passing on an object whose definition changed but was not rebuilt
+> Pattern P-23, written generically below.
+
+- **Problem:** an apply step does not change identity fields of live objects, so a check passes on the old state (a false pass).
+- **Solution:** diff the declared definitions before and after (canonical JSON), delete the live objects that changed or vanished, and let the reconciler recreate them; the presence check and command runner are injected so tests need no root.
+- **Why it works:** identity changes become recreates, which the reconciler already handles.
+- **Reuse:** immutable fields in infrastructure tools, immutable specs in orchestrators, cache invalidation.
+- **Pitfalls:** the false pass was found only by changing an identity field (a VLAN id); test that case.
+- **Realised in:** Python, smc-resiliency spike.
+
+```python
+for name in sorted(set(before) | set(after)):
+    if before.get(name) != after.get(name) and exists(name):
+        run(["ip", "link", "delete", name])
+```
+
+### P-24 Build in scratch, validate in a sandbox, rename into place, keep the previous
+
+> **Learned 2026-10-27 (x)** · design pattern, any language · VERIFIED_PRIMARY (run on a lab VM: render 0.03 s, checks 0.26 s) · Source: smc-resiliency `spike/onbox/smcbox/site.py:153-205` · Falsifier: a live directory empty or half-written at any moment of an update
+> Pattern P-24, written generically below.
+
+- **Problem:** a config tree must be replaced atomically and checked by validators that only read fixed paths.
+- **Solution:** render into a fresh directory; run the native validators against it, binding it over the fixed path inside a private mount namespace; rename live to `previous` and the new tree into place; keep `previous` until the next render, since readers may still hold it.
+- **Why it works:** the live path only ever holds a validated tree; rename is atomic.
+- **Reuse:** web server configs, certificate bundles, static site deploys.
+- **Pitfalls:** deleting the old tree before readers refresh left the live path empty for a moment.
+- **Realised in:** Python with unshare, smc-resiliency spike.
+
+### P-25 Signed config bound to one target, newer-only, into the idle slot
+
+> **Learned 2026-10-27 (y)** · design pattern, any language · VERIFIED_PRIMARY (tests; a tampered and a replayed set refused on a VM) · Source: smc-resiliency `spike/onbox/smcbox/site.py:72-116`, `siteops.py:111-138` · Falsifier: a replayed or older set accepted, or a set committed before health passed
+> Pattern P-25, written generically below.
+
+- **Problem:** a config bundle must not be replayed, downgraded or applied to the wrong target.
+- **Solution:** verify the signature; then three fit checks: same hardware id, same compatibility level, set number above the committed one. Write to the idle A/B slot, read back byte for byte, commit only after health passes.
+- **Why it works:** binding plus monotone numbers turn replay and downgrade into refusals.
+- **Reuse:** firmware and licence files, mobile config bundles, edge model pushes.
+- **Pitfalls:** a committed number must be stored where a reset cannot roll it back.
+- **Realised in:** Python, smc-resiliency spike.
+
+### P-26 Self-guarding probe for a live system
+
+> **Learned 2026-10-27 (z)** · design pattern, any language · VERIFIED_PRIMARY (three runs captured) · Source: smc-resiliency `scripts/confext_probe.sh:67-104` · Falsifier: the probe running on a host it was not named for, or leaving a changed system file
+> Pattern P-26, written generically below.
+
+- **Problem:** an experiment on a live box must not run on the wrong box or leave it changed.
+- **Solution:** print the plan unless `--apply`; refuse unless the hostname equals the named lab host and the box is in the expected state; a trap cleans up and checks the restored file matches its backup byte for byte; results as key=value lines; `set -e` off on purpose where probes are expected to fail.
+- **Why it works:** every safety condition is checked by the script, not remembered by the operator.
+- **Reuse:** chaos experiments, DR drills, one-off production diagnostics.
+- **Pitfalls:** a fleet survey built on it still goes one box, then five, then all, with a time limit per call.
+- **Realised in:** Shell, smc-resiliency.
+
+```sh
+[ "$(hostname)" = "$LAB_HOST" ] || { echo "refusing: this box is $(hostname), not the named lab host $LAB_HOST" >&2; exit 2; }
+trap 'cleanup; exit $rc' EXIT
+```
+
+### P-27 Verdict ledger apart from the criteria it judges
+
+> **Learned 2026-10-27** · design pattern, any language · VERIFIED_PRIMARY (gates the project check) · Source: smc-resiliency `target-map.yaml:1-35`, `scripts/govcheck/checks/trackers.py:43-64` · Falsifier: a criterion added to a design without a ledger verdict passing the check
+> Pattern P-27, written generically below.
+
+- **Problem:** status trackers drift from the design documents that define what "done" means.
+- **Solution:** the ledger holds only states, verdicts and evidence; the criteria are parsed from the design documents' checklists. A new checklist item fails the check until the ledger has a verdict; a pass needs `verified` and evidence; tracker pages are rendered from the ledger and drift fails.
+- **Why it works:** criteria have one owner (the design), verdicts another (the ledger); neither can silently diverge.
+- **Reuse:** compliance control matrices, release readiness checklists, acceptance trackers.
+- **Pitfalls:** copying criteria into the ledger recreates the drift.
+- **Realised in:** YAML and Python, smc-resiliency (UNC's target-map works the same way).
+
+### P-28 Recovery path on immutable parts only; recoveries count as faults
+
+> **Learned 2026-10-27** · design pattern, any language · CANDIDATE (design only) · Source: smc-resiliency `docs/recovery/identity-partition-and-data-recovery-20261014_1455.md:110-126`, `docs/recovery/smc-hang-recovery-options-20261006_1214.md:81-82` · Falsifier: a recovery path that waits on a writable area, or a watchdog reset reported as healthy
+> Pattern P-28, written generically below.
+
+- **Problem:** the path that brings a box back reachable must not depend on what may be broken, and silent self-healing hides faults.
+- **Solution:** at boot, bring up the uplink and out-of-band tunnel from the read-only release and identity only; mount the writable area `nofail`; a hardware watchdog resets hangs, and every watchdog reset is recorded as a fault (a persistent history that tells it from a power cut).
+- **Why it works:** reachability survives any writable-state damage; recoveries stay visible.
+- **Reuse:** appliances, kiosks, remote sensors, edge gateways.
+- **Pitfalls:** a recovery counted as uptime hides a failing unit.
+- **Realised in:** Design, smc-resiliency.
+
+### P-29 Clock floor and "expiry unchecked" under untrusted time
+
+> **Learned 2026-10-27** · design pattern, any language · CANDIDATE (design only) · Source: smc-resiliency `docs/pi/pi-immutable-smc-image-design-20261014_0850.md:426-428, 784-788` · Falsifier: an expired package rejected, or a healthy committed one torn down, on a clock known to be wrong
+> Pattern P-29, written generically below.
+
+- **Problem:** devices boot with clocks far behind (months), so time-based checks mean nothing.
+- **Solution:** the clock never runs earlier than the release build stamp; without trusted time a package is accepted on signature and binding and marked expiry unchecked; when trusted time arrives, uncommitted expired packages are refused; a committed healthy package is reported, never torn down, for expiry.
+- **Why it works:** time checks run only when time can be trusted, and never break a working target.
+- **Reuse:** certificate checks on RTC-less devices, licence expiry offline, token validation after long sleep.
+- **Pitfalls:** TLS to the time source itself fails until the clock is right; plan the first sync.
+- **Realised in:** Design, smc-resiliency (see also the Pi clock wait in the smc_change verify stage).
 
 ## Language realisations
 
