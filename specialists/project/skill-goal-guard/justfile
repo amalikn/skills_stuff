@@ -1,0 +1,53 @@
+# just task catalog for skill-goal-guard (alias skill-gg).
+# Purpose: expose the pack's safe, documented tasks to humans and agents; agents run catalogued tasks only.
+# Safety: every recipe here is read-only; inputs, outputs and safety labels per script are in scripts/readme.md.
+#
+# Runtime pinning: recipes call the interpreter by path through {{py}} and depend on _require-venv, never a bare python3 or
+# `mise exec -- python` (skill-coder references/tooling-and-runtime.md). The venv lives in the working-cache peer, never in this repo.
+#
+# List tasks: just --list
+
+set dotenv-load := false
+
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-goal-guard"
+py := wc + "/.venv/bin/python"
+state := "examples/portfolio.json"
+
+# List the tasks.
+default:
+    @just --list
+
+# Build the working-cache venv from the mise-pinned Python. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early and legibly rather than falling back to the host interpreter.
+_require-venv:
+    @test -x "{{py}}" || { echo "missing venv at {{py}}: run 'just bootstrap'" >&2; exit 1; }
+
+# Show the resolved interpreter.
+runtimes: _require-venv
+    @{{py}} -c "import sys; print(sys.version.split()[0], sys.executable)"
+
+# Run the unit tests (read-only).
+test: _require-venv
+    @{{py}} -m unittest discover -s tests
+
+# Validate a portfolio state file (read-only). Example: just validate examples/portfolio.json
+validate path=state: _require-venv
+    @{{py}} scripts/goal_guard.py validate --state "{{path}}"
+
+# Task, project and portfolio What's Next for a date (read-only). Example: just next examples/portfolio.json 2026-10-27
+next path=state date="": _require-venv
+    @{{py}} scripts/goal_guard.py next --state "{{path}}" {{ if date != "" { "--date " + date } else { "" } }}
+
+# Assess a proposal against the state (read-only). Example: just assess examples/proposal.json
+assess proposal="examples/proposal.json" path=state: _require-venv
+    @{{py}} scripts/goal_guard.py assess --state "{{path}}" --proposal "{{proposal}}"
+
+# Closing check: tests plus the example validation (read-only).
+check: test
+    @{{py}} scripts/goal_guard.py validate --state "{{state}}" > /dev/null && echo "example state valid"

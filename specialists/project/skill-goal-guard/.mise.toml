@@ -1,0 +1,3 @@
+# Runtime pin for skill-goal-guard: Python 3.14 (operator default); the venv is built from it in the working-cache peer by `just bootstrap`.
+[tools]
+python = "3.14"

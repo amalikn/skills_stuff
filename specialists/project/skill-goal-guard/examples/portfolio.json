@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "owner": "solo",
+  "max_active_tasks": 1,
+  "projects": [
+    {"id":"unc","title":"Unified Network Controller","goal":"Deliver minimum viable controller for existing Cambium estate","success_criteria":["Essential inventory and device management verified"],"priority":5,"due":"2027-02-01","milestones":[{"id":"unc-mvp","target":"Operational minimum controller","due":"2027-01-15"}],"tasks":[{"id":"UNC-1","title":"Define MVP device capabilities","outcome":"Approved capability shortlist","status":"todo","priority":5,"due":"2026-11-02","milestone":"unc-mvp","criteria_ids":["UNC-C1"],"depends_on":[],"next_action":"List essential device operations and explicitly exclude extras"}]},
+    {"id":"smc","title":"SMC Resiliency","goal":"Verify reliable read-only A/B recovery","success_criteria":["A/B fallback is demonstrated under controlled failure"],"priority":4,"due":"2027-03-01","milestones":[{"id":"smc-recovery","target":"Recover after interrupted update and boot loop","due":"2027-02-01"}],"tasks":[{"id":"SMC-1","title":"Define test matrix","outcome":"Accepted failure/recovery scenarios","status":"todo","priority":4,"due":"2026-11-09","milestone":"smc-recovery","criteria_ids":["SMC-C1"],"depends_on":[],"next_action":"Draft power cut and boot-loop acceptance tests"}]},
+    {"id":"adhoc","title":"Ad-hoc operations","goal":"Resolve interrupts without losing portfolio focus","success_criteria":["Each interrupt resolved or explicitly deferred"],"priority":2,"milestones":[],"tasks":[{"id":"OPS-1","title":"Investigate provisioning issue","outcome":"Find root cause or evidence-based handoff","status":"todo","priority":3,"criteria_ids":["OPS-C1"],"depends_on":[],"next_action":"Collect failure logs and capture impact"}]}
+  ],
+  "project_dependencies":[],
+  "parking_lot":[],
+  "decisions":[]
+}

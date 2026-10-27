@@ -1,0 +1,17 @@
+# Code map for skill-goal-guard: decisions only, read by skill-coder's helpers. Baselines are machine-written.
+
+[meta]
+summary = "skill-goal-guard's code intent: scan scripts and tests; Python 3.14 pinned in .mise.toml."
+
+[scan]
+roots = ["scripts", "tests"]
+python = "3.14"
+
+[write_gates]
+roots = ["scripts"]
+
+[modules."scripts/goal_guard.py"]
+status = "project_only"
+reason = """\
+  v0.1 prototype moved byte-identical from docs/goal-guard on 2026-10-27; has its purpose/usage/safety header (added 2026-10-27) but lacks the per-function docstrings skill-coder \
+  requires, and keeps task state locally against the Vikunja decision. Rewritten in the pilot (references/pilot-plan.md, step 4); not patched in place."""

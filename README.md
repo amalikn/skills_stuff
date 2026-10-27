@@ -26,6 +26,7 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 |                        |   `skill-mx02-migration/`               |                                                                                                                                   |
 | `skill-coder`          | `specialists/project/skill-coder/`      | 0.1.0 — language-agnostic programming practice with per-language overrides and stdlib checkers; installed 2026-10-19, not yet the |
 |                        |                                         |   default (global routing pending)                                                                                                |
+| `skill-goal-guard`     | `specialists/project/skill-goal-guard/` | 0.1.0-pre — GoalGuard (alias skill-gg): MVP scope gate and portfolio focus; rules consolidated, v0.1 prototype CLI, Vikunja 2.7.1 local; not installed (2026-10-27) |
 
 ## Specialist Packs — Platform
 
