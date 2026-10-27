@@ -14,6 +14,19 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+### 2026-10-27 18:38 — slurp close: findings, proposals and open decisions (evening)
+
+- Proposed, not decided: the owner path for writing the MVP approval line (`.gg/decisions.jsonl` refuses agent approvals and is hash-chained): A owner-run
+  `goal_guard_approve.py` (interactive terminal, typed revision), B the signed commit of `mvp.yaml` is the approval (D3), C both (recommended); blocks pilot step 5.
+- Finding: `.git/info/exclude` line `AGENTS.md` hides every pack AGENTS.md in skills_stuff (skill-coder, skill-ai-it, skill-cambium, skill-mikrotik and more); this
+  pack's and skill-drawio's were force-added (commits `8f76730`, `6dcde6e`); whether to drop the line is the operator's call.
+- Comparison (operator asked how skill-smc and skill-nautobot use Archcore): both keep 5-6 pack-level documents in `.archcore/` and domain knowledge in
+  `references/`; this pack's promotion followed that with pointer documents.
+- Flow pages: folding a long page (serpentine or z, per map, off by default, auto past `fold_after`) designed with the operator and recorded in skill-drawio
+  ROADMAP; not built (router and audits need a fresh session).
+- Commits this evening: `8f76730`, `6dcde6e`, `7e53324`, `015ac8f` (not pushed). skill-ai-it's ROADMAP line is held: its own check fails on an overdue tracker
+  (`docs/trackers/open-items-20261010_1830.md`, review due 2026-10-24) that needs a fleet review.
+
 ### 2026-10-27 18:29 — Overview: Records and data under Outside systems (operator review of the drawing)
 
 - `docs/goal-guard-flows/parts/master.yaml` sets `drawing.look.last_row_align: centre` (new skill-drawio look key, fixed in the engine, not by hand): the lone
