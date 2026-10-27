@@ -50,6 +50,11 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   items into a new file named `this`, staged it, and linked it from SCRATCHPAD (undone by hand). Fix: treat a value that is not a path ending
   in `.md` (or that says "this file") as "no separate tracker"; add a regression test with that front matter.
 
+- [ ] **`budget_plan.py --apply` audit reports LOST lines that were never in the file** (2026-10-27, ansible-wifi governance): after rotating
+  SCRATCHPAD it printed `85 line(s) lost, e.g. '**Newest thread (2026-10-07, 13:36) ...'` and exited 1, but that line was not in SCRATCHPAD at
+  HEAD (it is in `docs/history/scratchpad-20261023_1739.md`); a line-by-line check against HEAD found only the lines the session closed on
+  purpose. The audit's baseline looks stale (an older snapshot, not the file before this run). Not diagnosed; the rotation itself was correct.
+
 ## Archcore
 
 - [ ] **`promote` mode implementation** — flesh out the promote mode workflow: read `ARCHCORE_PROMOTION_CANDIDATES.md`, resolve each candidate, write `.archcore/` files with provenance headers and
