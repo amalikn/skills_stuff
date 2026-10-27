@@ -9,7 +9,7 @@ from __future__ import annotations
 from drawio.mxfile import ARROW_HEAD, Page, label
 
 from .model import GAP, MARGIN
-from .routing import branch_label
+from .routing import branch_label, label_size
 
 #: Flow page geometry shared with flowmap.pages: lane heading width, column width and step box width.
 LANE_HEAD_W, COL_W, STEP_W = 190, 270, 220
@@ -95,7 +95,7 @@ def label_widths(steps: list[dict], edges: list, look: dict) -> dict[int, float]
     lane_of: dict[str, int] = {}
     for st in steps:
         lane_of.setdefault(st["actor"], len(lane_of))
-    return {order[a]: 18 + 9 * len(branch_label(by_id[a], b, order[b] + 1, look)[0])
+    return {order[a]: label_size(branch_label(by_id[a], b, order[b] + 1, look)[0])[0]
             for _c, a, b, text, _st in edges
             if "back to" not in text and order[b] == order[a] + 1 and abs(lane_of[by_id[a]["actor"]] - lane_of[by_id[b]["actor"]]) < 2}
 

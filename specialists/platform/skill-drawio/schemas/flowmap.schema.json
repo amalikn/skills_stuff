@@ -615,6 +615,14 @@
                 "off"
               ]
             },
+            "unshare": {
+              "type": "string",
+              "enum": [
+                "on",
+                "off"
+              ],
+              "description": "Flow pages: redraw two arrows that meet at one decision corner in the other order, so each takes its own corner (default on)."
+            },
             "e2e_layers": {
               "type": "string",
               "enum": [

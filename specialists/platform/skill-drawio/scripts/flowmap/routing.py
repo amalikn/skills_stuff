@@ -20,10 +20,8 @@ from itertools import permutations
 from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 from drawio.mxfile import ARROW_HEAD, Page, label
 
-from .route_costs import leaves_off_side, overshoot
+from .route_costs import NEAR, _along, _crosses, _overlaps, label_size, leaves_off_side, overshoot
 
-#: Two parallel runs closer than this (px) read as one arrow.
-NEAR = 8
 #: Costs: a crossed box (or the arrow's own box) is unusable in practice; a run alongside another or over a label, a reused point, a reused side,
 #: a crossing, a bend and an exit off a plain box's right side each make a path worse.
 COST_BOX, COST_ALONG, COST_PORT, COST_SIDE, COST_CROSS, COST_BEND, COST_ODD_EXIT = 1000, 200, 60, 120, 30, 4, 15
@@ -54,7 +52,9 @@ def branch_label(step: dict, target: str, number: int, look: dict) -> tuple[str,
         look: the drawing look (`branch_labels`: "yes-no" by default, "off" for numbers only).
 
     Returns:
-        ("5", black), ("5 · Yes", green), ("5 · No", red), or ("5 · <case>", black) for a step's own `when` case.
+        ("5", black), ("5\nYes", green), ("5\nNo", red), or ("5\n<case>", black) for a step's own `when` case: the step number on its
+        own line and the case below it, so a long case does not stretch the label along the arrow (operator, 2026-10-27: "9\nstill busy
+        ... make this a standard").
     """
     nxt = step.get("next") or []
     # A decision is a gate or an explicit shape: decision; every branch out of it says why it is taken (operator, 2026-10-23).
@@ -63,29 +63,11 @@ def branch_label(step: dict, target: str, number: int, look: dict) -> tuple[str,
         return str(number), PLAIN
     case = (step.get("when") or {}).get(target)
     if case:
-        return f"{number} · {case}", PLAIN
+        return f"{number}\n{case}", PLAIN
     if len(nxt) == 2 and target in nxt:
         yes = nxt.index(target) == 0
-        return f"{number} · {'Yes' if yes else 'No'}", YES if yes else NO
+        return f"{number}\n{'Yes' if yes else 'No'}", YES if yes else NO
     return str(number), PLAIN
-
-
-def _along(seg: tuple, other: tuple) -> bool:
-    """Whether two runs are parallel, within NEAR px of each other and overlap by more than 2 px.
-
-    Args:
-        seg: one run.
-        other: the other run.
-
-    Returns:
-        True when they would read as one arrow.
-    """
-    (p, q), (u, v) = seg, other
-    if abs(p[1] - q[1]) < .5 and abs(u[1] - v[1]) < .5 and abs(p[1] - u[1]) < NEAR:
-        return max(min(p[0], q[0]), min(u[0], v[0])) < min(max(p[0], q[0]), max(u[0], v[0])) - 2
-    if abs(p[0] - q[0]) < .5 and abs(u[0] - v[0]) < .5 and abs(p[0] - u[0]) < NEAR:
-        return max(min(p[1], q[1]), min(u[1], v[1])) < min(max(p[1], q[1]), max(u[1], v[1])) - 2
-    return False
 
 
 def cost(page: Page, path: tuple, ends: tuple, used: dict) -> float:
@@ -110,13 +92,17 @@ def cost(page: Page, path: tuple, ends: tuple, used: dict) -> float:
     crosses = sum(1 for s in segs for o in others if crossing(s, o) is not None)
     labels = sum(1 for p, q in segs for m in page.marks if seg_hits_rect(p, q, m.rect, 0))
     points = sum(1 for pt in (pts[0], pts[-1]) if (round(pt[0]), round(pt[1])) in used["points"])
+    # A decision has one point per corner, so a second arrow there merges into the first for its last run (operator review 2026-10-27,
+    # smc_change PHP step page: 12 -> 13 and 11 -> 13 shared 13's left corner). Weighted as a crossed box, so it takes a free corner,
+    # top or bottom, whichever path is better, and shares only when every corner is taken.
+    shared = sum(1 for cid, pt in ((src, pts[0]), (dst, pts[-1])) if cid in used.get("diamonds", ()) and (round(pt[0]), round(pt[1])) in used["points"])
     # A branchy decision's top and bottom are held for its own branches (route_flow): they block arrows in, not a branch leaving there,
     # unless a sibling branch already took that corner (operator review 2026-10-27: branch 7 left the right and crossed branch 10, which
     # had the bottom, because the bottom counted as taken for both).
     own_corner = src in used.get("branchy", ()) and (src, out_side) not in used.get("taken", ())
     sides = ((src, out_side) in used["sides"] and not own_corner) + ((dst, in_side) in used["sides"])
     length = sum(abs(p[0] - q[0]) + abs(p[1] - q[1]) for p, q in segs)
-    return ((boxes + own) * COST_BOX + (along + labels) * COST_ALONG + points * COST_PORT + sides * COST_SIDE + crosses * COST_CROSS
+    return ((boxes + own + shared) * COST_BOX + (along + labels) * COST_ALONG + points * COST_PORT + sides * COST_SIDE + crosses * COST_CROSS
             + (len(segs) - 1) * COST_BEND + odd * COST_ODD_EXIT + length / 1000
             + (overshoot(segs, in_side, page.rects[src], page.rects[dst]) + leaves_off_side(out_side, ends, page.rects, used)) * COST_OVERSHOOT)
 
@@ -239,7 +225,8 @@ def _candidates(page: Page, ends: tuple, diamonds: tuple, corridors: dict, ways:
     return out
 
 
-def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, used: dict, ways: tuple | None = None, strict: bool = False) -> float:
+def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, used: dict, ways: tuple | None = None, strict: bool = False,
+                  fewest_crossings: bool = False, choice: int = 0) -> float:
     """Draw one forward arrow along its cheapest candidate, in its colour, labelled on a clear spot.
 
     Args:
@@ -250,6 +237,10 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
         used: points and sides already taken; this arrow's are added.
         ways: exit sides allowed; all when None.
         strict: with `ways`, draw nothing and return a very large cost when no path leaves that way (no fallback to another side).
+        fewest_crossings: choose the path crossing the fewest drawn arrows (one through a box or a shared decision corner never wins,
+            and one running along another arrow or over a label loses to any that does not), then the cheapest; flowmap.uncross uses it when reordering and other exit sides cannot remove a crossing.
+        choice: with `fewest_crossings`, take the path at this rank instead of the best (the repair tries a pair's combinations); past
+            the last candidate nothing is drawn and a very large cost is returned.
 
     Returns:
         The drawn path's cost (a very large number when nothing fits).
@@ -260,18 +251,25 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
         return 1e6
     cands = cands or _candidates(page, (src, dst), diamonds, corridors, None)
     if not cands:
-        page.edge(cid, src, dst, label=text, style=f"strokeColor={colour};fontColor={colour};")
+        page.edge(cid, src, dst, label=text.replace("\n", " "), style=f"strokeColor={colour};fontColor={colour};")
         return 1e9
-    best = min(cands, key=lambda c: cost(page, c, (src, dst), used))
+    if fewest_crossings:   # the repair pass's last resort: fewest crossings first, a box or a shared corner still ruled out, then cost
+        ranked = sorted(cands, key=lambda c: (cost(page, c, (src, dst), used) >= COST_BOX, _overlaps(page, c), _crosses(page, c),
+                                              cost(page, c, (src, dst), used)))
+        if choice >= len(ranked):
+            return 1e6
+        best = ranked[choice]
+    else:
+        best = min(cands, key=lambda c: cost(page, c, (src, dst), used))
     spent = cost(page, best, (src, dst), used)
     pts, out_side, in_side, _odd = best
     page.route(cid, src, dst, pts, STYLE.format(colour=colour, rounded=corridors.get("rounded", 1)), klass="thin", jump=JUMP)
     used["points"].update((round(p[0]), round(p[1])) for p in (pts[0], pts[-1]))
     used["sides"].update({(src, out_side), (dst, in_side)})
     used.setdefault("taken", set()).add((src, out_side))
-    width = 18 + 9 * len(text)
-    cx, cy = label_spot(page, cid, pts, width, 22)
-    page.mark(f"{cid}-lbl", label(f"**{text}**"), cx, cy, width, 22, LABEL.format(colour=colour), cid)
+    width, height = label_size(text)
+    cx, cy = label_spot(page, cid, pts, width, height)
+    page.mark(f"{cid}-lbl", label(*(f"**{line}**" for line in text.split("\n"))), cx, cy, width, height, LABEL.format(colour=colour), cid)
     return spent
 
 
@@ -358,6 +356,7 @@ def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> tuple:
     group_span = {e[0]: max(span[g[0]] for g in fwd if g[1] == e[1]) if longest and shapes[e[1]] == "decision" else span[e[0]] for e in fwd}
     forward = sorted(fwd, key=lambda e: (group_span[e[0]], span[e[0]]))
     used: dict = {"points": set(), "sides": set(), "branchy": set(), "taken": set()}
+    used["diamonds"] = {f"{fid}-s-{s['id']}" for s in steps if shapes[s["id"]] == "decision"}
     for s in steps:   # a decision with branches keeps its top and bottom corners for them: arrows in prefer its left corner
         if shapes[s["id"]] == "decision" and len(s.get("next") or []) > 1:
             used["sides"].update({(f"{fid}-s-{s['id']}", "top"), (f"{fid}-s-{s['id']}", "bottom")})

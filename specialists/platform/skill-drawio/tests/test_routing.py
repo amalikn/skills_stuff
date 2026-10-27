@@ -10,6 +10,7 @@ import importlib
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -63,14 +64,39 @@ class FlowRouterTests(unittest.TestCase):
     def test_branch_labels(self) -> None:
         """A two-way gate's branches read Yes (green) then No (red); `when` names other cases; a plain step and `branch_labels: off` keep the number."""
         gate = {"gate": "g", "next": ["a", "b"]}
-        self.assertEqual(router.branch_label(gate, "a", 4, {}), ("4 · Yes", router.YES))   # yes/no branches green and red
-        self.assertEqual(router.branch_label(gate, "b", 5, {}), ("5 · No", router.NO))
-        self.assertEqual(router.branch_label(dict(gate, when={"b": "stale"}), "b", 5, {}), ("5 · stale", router.PLAIN))
+        self.assertEqual(router.branch_label(gate, "a", 4, {}), ("4\nYes", router.YES))   # yes/no branches green and red
+        self.assertEqual(router.branch_label(gate, "b", 5, {}), ("5\nNo", router.NO))
+        self.assertEqual(router.branch_label(dict(gate, when={"b": "stale"}), "b", 5, {}), ("5\nstale", router.PLAIN))
         self.assertEqual(router.branch_label({"next": ["a"]}, "a", 2, {}), ("2", router.PLAIN))
         self.assertEqual(router.branch_label(gate, "a", 4, {"branch_labels": "off"}), ("4", router.PLAIN))
         shaped = {"shape": "decision", "next": ["a", "b"], "when": {"a": "overlay Pi"}}   # a decision by shape, no gate
-        self.assertEqual(router.branch_label(shaped, "a", 3, {}), ("3 · overlay Pi", router.PLAIN))
-        self.assertEqual(router.branch_label(shaped, "b", 4, {}), ("4 · No", router.NO))
+        self.assertEqual(router.branch_label(shaped, "a", 3, {}), ("3\noverlay Pi", router.PLAIN))
+        self.assertEqual(router.branch_label(shaped, "b", 4, {}), ("4\nNo", router.NO))
+
+    def test_two_line_label_size(self) -> None:
+        """A branch label is as wide as its longest line and one line taller per line below the number."""
+        self.assertEqual(router.label_size("9"), (27, 22))
+        self.assertEqual(router.label_size("9\nstill busy"), (18 + 9 * 10, 37))
+
+    def test_unshare_parts_arrows_at_one_decision_corner(self) -> None:
+        """Two arrows ending at one decision corner are found as a pair; arrows at different corners or at a plain box are not."""
+        from types import SimpleNamespace as Route
+        unc = importlib.import_module("flowmap.uncross")
+        drawn = {c: None for c in ("a", "b", "c", "d")}
+        page = SimpleNamespace(routes=[Route(cid="a", src="s1", dst="dia", points=[(0, 0), (100, 50)]),
+                                       Route(cid="b", src="s2", dst="dia", points=[(0, 90), (100, 50)]),
+                                       Route(cid="c", src="s3", dst="dia", points=[(0, 10), (150, 0)]),
+                                       Route(cid="d", src="s4", dst="box", points=[(0, 10), (150, 0)])])
+        self.assertEqual(unc._shared_corners(page, drawn, {"dia"}), [("a", "b")])
+        self.assertEqual(unc._shared_corners(page, drawn, set()), [])
+
+    def test_alongside_counts_shared_runs_not_crossings(self) -> None:
+        """Two arrows sharing a run count as alongside; two that only cross do not."""
+        unc = importlib.import_module("flowmap.uncross")
+        page = SimpleNamespace(routes=[SimpleNamespace(points=[(0, 50), (100, 50)]), SimpleNamespace(points=[(40, 52), (160, 52)]),
+                                       SimpleNamespace(points=[(70, 0), (70, 120)])])
+        self.assertEqual(unc._alongside(page), 1)
+        self.assertEqual(unc._crossings(page), 2)
 
     def test_lane_head_symbol_sized_to_text(self) -> None:
         """lanes: an external (cloud) lane head needs room for its text; a plain head needs none."""
