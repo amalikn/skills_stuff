@@ -45,6 +45,9 @@ Open items tracker: docs/trackers/open-items-20261027_1749.md
 - Write-backs owed from the 15:03 session, done 2026-10-27 evening: skill-coder "Moving code" entry written and committed with this session; OPA gate traps written to
   `tools_stuff/opa/ROADMAP.md` Backlog but NOT committed (that file holds another session's uncommitted M8 work; the commit request was scoped to skills_stuff).
 
+- skill-smc `.ai-context/governance-pack.md` (generated) still holds the flattened exporter excerpt until `just context-pack` runs there; scripts_stuff
+  `CHANGELOG.md` is untracked (the rewrap entry is written, not committed); skill-ai-it and skill-smc fail doc freshness on overdue open-items trackers.
+
 ## Recent decisions — KEEP
 
 Vikunja owns live tasks; full v1.7 pilot; one `apn` repo scoped by path; pilot spoke UNC; signed-commit approvals; `.gg/`; Vikunja on OrbStack with SQLite in `tools_stuff` (all 2026-10-27, details in
