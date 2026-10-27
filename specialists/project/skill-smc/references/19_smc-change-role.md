@@ -508,3 +508,8 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   if drifted and journal.get("phase") not in (7, 8, 9, 10):
     result["reasons"] = ["Host or resolved spec fingerprint changed; do not replay this transaction."]
   ```
+
+**First rcp prod apply (2026-10-27).** jigalong-smc01 (x86_64, plain root): apply `20261027_112044` passed 10/10 gates in 736 s with no reboot
+(BACKUP 89 s, ACTIONS 143 s, VERIFY 311 s, CLEANUP 159 s; the empty rcp pool meant its own repack); it created `runs/rcp/{state,journal,
+records}` on its first run, proving the per-flavor layout for a new flavor. A read-only `verify` at 12:05 passed 10/10 (49 s), captive portal
+home and terms 200 with HTML and no PHP error markers.

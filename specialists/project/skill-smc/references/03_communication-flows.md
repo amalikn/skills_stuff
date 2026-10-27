@@ -63,6 +63,26 @@ run on a period (hostname, `site.txt`, Teleport version, `disk` when `disk_count
 2026-10-14: if `/var/lib/teleport` is lost, deleting it and restarting Teleport re-joins the node from `/etc/teleport.yaml`; smc-resiliency's identity
 partition design relies on this.
 
+**Re-join that never connects (banana-well-smc01, 2026-10-27; cause UNVERIFIED).** After `/var/lib/teleport` was cleared and Teleport restarted,
+the auth server logged `Node "<host>" [<new host id>] has joined the cluster` (method token) at 11:38, 11:41 and 11:43: a new host id, re-joining
+every 2-3 minutes because its reverse tunnel never came up, so it never got a node record. `tsh ls` kept listing the **old** host id until its
+record expired (~10 min after the last heartbeat); SSH to it failed with `no node reverse tunnel for <old id>.<cluster> found`. The token
+(static, never expires), labels (env, flavor, site) and port (everything on 443, `proxy_listener_mode: multiplex`) matched a healthy SMC. The
+node log shows the join running "without validating the identity of the Auth Server" (no CA pin) and succeeding, while every step that checks
+TLS (direct auth, tunnel, `/v1/webapi/host/credentials`) failed: suspect the box clock (a Pi with no RTC) or a link that drops larger TLS
+exchanges (MTU; the backdoor flapped the same morning). Read-only checks used, from the cluster side (no box access needed):
+
+```
+journalctl -u teleport --since '-45 min' | grep -E '<host>|<host id>'      # on the auth/proxy host: joins and "no node reverse tunnel"
+tctl get nodes --format=json | python3 -c '...hostname, metadata.expires'  # old vs new identity and when the old record expires
+tctl tokens ls --format=json -> print roles and expires only                # never print token names: the name is the secret
+```
+
+On the box: `date -u`, `timedatectl`, `journalctl -u teleport -l` for `x509`/`not yet valid`, `openssl s_client -connect <cluster>:443`,
+`ping -M do -s 1372 <cluster>`. On an overlay Pi the cleared `/var/lib/teleport` is gone only from the RAM upper layer: a reboot brings the old
+identity back from the lower dir. The backdoor needs the fleet root password interactively (`BatchMode` cannot log in), and 12 "cannot listen
+to port" events that morning meant stale sessions held the port.
+
 **Command labels as read (2026-10-20, `tsh ls --format=json`, read-only):** each node object carries them under `spec.cmd_labels.<name>.result`
 and the static ones under `metadata.labels`, so one list per cluster gives the whole fleet's labels with no login (0.9 s for teleport.apn.au's 340
 nodes, 0.5 s for teleport.communitywifi.net.au's 34). Seen on a Pi: `hostname`, `id` (site.txt, 20-mile `183`), `kernel`, `os`, `overlay`,
