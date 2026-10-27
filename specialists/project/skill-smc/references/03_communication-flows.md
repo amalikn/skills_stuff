@@ -71,7 +71,7 @@ record expired (~10 min after the last heartbeat); SSH to it failed with `no nod
 node log shows the join running "without validating the identity of the Auth Server" (no CA pin) and succeeding, while every step that checks
 TLS (direct auth, tunnel, `/v1/webapi/host/credentials`) failed: suspect the box clock (a Pi with no RTC) or a link that drops larger TLS
 exchanges (MTU; the backdoor flapped the same morning). Outcome: at 12:42 the box was in `tsh ls` under the new host id, clock synchronized, no reboot (same boot id,
-19 days up), Teleport errors until 12:29:45 and none after: the site's link, not the clock. Wait and watch before touching a re-joining node. Read-only checks used, from the cluster side (no box access needed):
+19 days up), Teleport errors until 12:29:45 and none after: the site's link, not the clock. Wait and watch before touching a re-joining node. Afternoon recurrence (14:06-14:36, during the PHP apply): 1,595 Teleport warn/error lines an hour (`Unable to communicate with the Teleport Auth Service`, `timeout waiting for stream status update`, dial timeouts to `/webapi/find`), the autossh backdoor at restart count 1,705 (`Connection reset by peer`) and its port down on apn-teleport01; clock synchronized, session-upload backlog 1 file; 30-40% packet loss and 550-960 ms RTT already to the first hop (the /30 gateway on eth0), with the WAN idle (3/13 kbit/s): a lossy site link, not Teleport, the clock or load. Errors peaked while the box downloaded and installed packages (likely congestion on a lossy link, UNVERIFIED). Read-only checks used, from the cluster side (no box access needed):
 
 ```
 journalctl -u teleport --since '-45 min' | grep -E '<host>|<host id>'      # on the auth/proxy host: joins and "no node reverse tunnel"
