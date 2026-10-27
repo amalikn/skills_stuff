@@ -3,10 +3,11 @@ Title: Feature inventory
 Category: reference
 Status: current
 Authority: local-supplement; both source documents, operator decisions 2026-10-27, enhancements added in the first build
-Scope: Every feature from the two source documents and the enhancements added beyond them, with disposition (built, deferred, rejected) and invariant coverage
+Scope: Every feature from the three source documents and the enhancements added beyond them, with disposition (built, deferred, rejected) and invariant coverage
 Last reviewed: 2026-10-27
 Summary: >-
-  What exists now, what was added beyond the documents and why, what is deferred and on what trigger, and where each design invariant is enforced.
+  What exists now, what was added beyond the documents and why, what is deferred and on what trigger, the v2 staged roadmap (stages 1-7, nothing
+  built), and where each design invariant is enforced.
 ---
 
 # Feature inventory
@@ -16,6 +17,7 @@ Summary: >-
 - [Built in v1](#built-in-v1)
 - [Added beyond the source documents](#added-beyond-the-source-documents)
 - [Deferred](#deferred)
+- [v2 staged roadmap](#v2-staged-roadmap)
 - [Invariants and where they are enforced](#invariants-and-where-they-are-enforced)
 
 ## Built in v1
@@ -54,7 +56,46 @@ slurp-style intake; validate; report; single-writer lock; path containment; secr
 | Non-Markdown formats beyond inventory (`unsupported` today)  | A pilot project needs one                                         |
 
 Rejected for v1: vector database, daemon or crawler, knowledge graph, autonomous fact approval, edits to governing files, cross-portfolio federation (apn and personal records are never cross-indexed;
-INV-015).
+INV-015). The v2 roadmap below narrows two of these (operator, 2026-10-27): a relationship graph within one portfolio (stage 5), and vector search only as an optional engine on measured need (stage
+7). Cross-portfolio links stay rejected.
+
+## v2 staged roadmap
+
+Source: [v2 spec](../docs/knowledge-curator-foss-implementation-spec-v2.md), build order from its section 12; decisions V1-V9 in [catalog](../docs/catalog.md) (operator,
+2026-10-27). v2 tests are cited `V2-T01` to `V2-T18` so they never collide with the handoff's T01-T14. Nothing below is built.
+
+Rules for every stage:
+
+- **Gate 0:** no stage starts before the real-corpus pilot passes (cases A-F in [evaluation.md](evaluation.md)).
+- One stage at a time; a stage is done when its listed V2 tests pass, `just check` is green and its runtime is measured against a stated budget.
+- Before any new dependency: pin the exact version and check its current licence, platforms and transitive runtime from upstream (v2 section 4); record it in `requirements*.txt` and a seam module.
+- v1 stays the base: two-axis status (C3), jsonschema, the single `ledger.py` writer, `--apply` gating, promotion gates. v2 additions are optional fields, optional installs or new seams.
+- Diagram edges and static-code findings enter as candidates (`INFERRED`, `REVIEW_REQUIRED`), never as verified dependencies or runtime behaviour.
+
+| Stage | Name                     | Builds                                                                                                                                     | Exit tests           |
+| ----- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| 1     | Gap matrix               | Code-level gap matrix of v2 sections 2-11 against `knowledge_curator_lib/` (the doc-level one is catalog V1-V9); no edits                  | Matrix reviewed by   |
+|       |                          |                                                                                                                                            |   the operator       |
+| 2     | Deterministic            | Optional `subject`/`predicate`/`object` claim fields; v2-to-v1 kind and status mapping; run envelope from `kc intake` (claims,             | V2-T03, V2-T04,      |
+|       |   baseline additions     |   relationships, conflicts, `proposed_updates`, `unresolved`, `audit`); `.kc/` config with `offline_only` and `model_allowlist`            |   V2-T12, V2-T13     |
+| 3     | Semantic reasoning       | Embedding seam behind an optional install (as NLI is); optional model adapter in `kc`, default local Ollama, off unless configured,        | V2-T01, V2-T02,      |
+|       |                          |   refused by `offline_only` or a model not on the allowlist; adapter output passes the same schema and evidence checks; semantic gold set  |   V2-T14, V2-T18     |
+|       |                          |   (design 13.2)                                                                                                                            |                      |
+| 4a    | Code and Mermaid         | Tree-sitter seam: definitions, imports, references with spans, `repo`/`commit`/`path`/method recorded; Mermaid nodes, edges, subgraphs;    | V2-T07, V2-T09       |
+|       |                          |   unsupported diagram types `unparsed`                                                                                                     |                      |
+| 4b    | draw.io and ASCII        | `mxfile`/`mxGraphModel` reader with compressed pages, page and layer scope (reuse skill-drawio's reader where it fits); ASCII box/arrow    | V2-T10, V2-T11       |
+|       |                          |   heuristic, original span kept, edges proposed only                                                                                       |                      |
+| 4c    | PDF and Office           | Format router: MarkItDown or Docling (or skill-anydoc's converter), original path and extractor version kept, tables located by page;      | V2-T06               |
+|       |                          |   ast-grep only on demonstrated need                                                                                                       |                      |
+| 5     | Federated linking,       | Shared reference index (IDs, aliases, candidate relations, no copied facts); NetworkX over relation records; alias table with evidence;    | V2-T08, V2-T15       |
+|       |   one portfolio          |   portfolio boundary check (INV-015 narrowed: apn and personal never linked); proposals to the owning project, no cross-repo write         |                      |
+| 6     | slurp Step 4b            | Conditional Step 4b with v2's invoke and skip triggers (skip reported, never silent); curator-status column in the coverage table; Steps   | V2-T05,              |
+|       |                          |   5-7 unchanged; proposals never become `record_decision`                                                                                  |   V2-T16, V2-T17     |
+| 7     | Optional engines         | LightRAG trial against the stage 2-5 baseline on identical fixtures; Qdrant, GLiNER, Joern, DuckDB only on measured need. CodeQL excluded  | Trial report; adopt  |
+|       |                          |   (not FOSS)                                                                                                                               |   only on gain       |
+
+Open before stage 1 (v2 section 13): which Mermaid families and draw.io encodings the operator's projects use (a read-only survey answers it); whether a shared SQLite index already exists and where it
+sits under the data, cache and runtime routing; whether any slurp step already indexes symbols or relations.
 
 ## Invariants and where they are enforced
 
