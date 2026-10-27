@@ -20,7 +20,7 @@ from itertools import permutations
 from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 from drawio.mxfile import ARROW_HEAD, Page, label
 
-from .route_costs import NEAR, _along, _crosses, _overlaps, label_size, leaves_off_side, overshoot
+from .route_costs import NEAR, _along, _crosses, _overlaps, label_size, label_spot, leaves_off_side, overshoot
 
 #: Costs: a crossed box (or the arrow's own box) is unusable in practice; a run alongside another or over a label, a reused point, a reused side,
 #: a crossing, a bend and an exit off a plain box's right side each make a path worse.
@@ -299,35 +299,6 @@ def route_branches(page: Page, branches: list, corridors: dict, used: dict) -> N
             best, best_total = ways, total
     for (edge, diamond), way in zip(branches, best):
         route_forward(page, edge, (True, diamond), corridors, used, (way,))
-
-
-def label_spot(page: Page, cid: str, pts: list, w: float, h: float) -> tuple[float, float]:
-    """Where an arrow's label goes: along its runs, longest first, at the middle then a third and two thirds in, the first spot whose box
-    touches no other arrow, no other label and no box (operator review 2026-10-21: a branch label sat on its sibling arrow).
-
-    Args:
-        page: the page (routes, labels and boxes already drawn).
-        cid: the arrow's cell id (its own route is ignored).
-        pts: the arrow's polyline.
-        w: the label's width.
-        h: the label's height.
-
-    Returns:
-        The label's centre (on the line, else just beside it); the middle of the longest run when no spot is clear.
-    """
-    segs = sorted(segments(pts), key=lambda s: -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1])))
-    others = [s for r in page.routes if r.cid != cid for s in segments(r.points)]
-    for p, q in segs:
-        flat = abs(p[1] - q[1]) < .5
-        beside = [(0, 0)] + ([(0, -h / 2 - 3), (0, h / 2 + 3)] if flat else [(w / 2 + 4, 0), (-w / 2 - 4, 0)])   # on the line, then just beside it
-        for (ox, oy), f in [(o, f) for o in beside for f in (0.5, 0.33, 0.67, 0.2, 0.8)]:
-            cx, cy = p[0] + (q[0] - p[0]) * f + ox, p[1] + (q[1] - p[1]) * f + oy
-            rect = (cx - w / 2, cy - h / 2, w, h)
-            if (not any(seg_hits_rect(a, b, rect, 0) for a, b in others) and not any(rects_overlap(rect, m.rect) for m in page.marks)
-                    and not any(rects_overlap(rect, page.rects[c]) for c in page.solid)):
-                return cx, cy
-    p, q = segs[0]
-    return (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
 
 
 def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> tuple:

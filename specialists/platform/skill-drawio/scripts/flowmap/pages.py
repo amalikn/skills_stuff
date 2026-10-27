@@ -124,8 +124,9 @@ def flow_header_lines(flow: dict, comps: dict[str, dict], number: int | str) -> 
 
 def size_steps(steps: list[dict], shapes: dict, profile: Profile) -> tuple[dict, dict, dict]:
     """Each step's text, width and height. A box is as tall as its text needs; when that would make it taller than `look.max_aspect` times its
-    width, it is widened (in 20 px steps, up to `look.decision_width`) so long text makes a wider box, not a tall narrow one (operator review
-    2026-10-21: a tall terminator squeezed its text against its curved ends).
+    width (`look.decision_aspect` for a decision), it is widened (in 20 px steps, up to `look.decision_width`) so long text makes a wider box,
+    not a tall narrow one (operator review 2026-10-21: a tall terminator squeezed its text against its curved ends), and short text a small
+    diamond (2026-10-27).
 
     Args:
         steps: the flow's steps.
@@ -137,15 +138,18 @@ def size_steps(steps: list[dict], shapes: dict, profile: Profile) -> tuple[dict,
     """
     look = profile.look
     texts = {s["id"]: step_lines(s, k + 1, look["action_bullets"], look["heading_scale"]) for k, s in enumerate(steps)}
-    box_w = {sid: step_width(sh, look) for sid, sh in shapes.items()}
+    # A decision starts at the step width and widens only until its diamond is no taller than `look.decision_aspect` times its width, up to
+    # `look.decision_width`: a fixed 380 px made "Overlay SMC?" a long flat sliver (operator review 2026-10-27, smc_change Apply page).
+    box_w = {sid: step_width("process" if sh == "decision" else sh, look) for sid, sh in shapes.items()}
     box_h = {}
     widest = max(int(look.get("decision_width", 380)), max(box_w.values(), default=0))
     for sid, lines in texts.items():   # the outline eats into the text area: fewer characters a line, a taller box
         _style, wf, hf = SHAPES[shapes[sid]][:3]
+        aspect = float(look.get("decision_aspect", 0.6) if shapes[sid] == "decision" else look.get("max_aspect", 0.8))
         while True:
             chars = int(look["step_chars"] * box_w[sid] / look["step_width"] * wf)
             box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * STEP_LINE_H) * hf)
-            if shapes[sid] == "decision" or box_h[sid] <= float(look.get("max_aspect", 0.8)) * box_w[sid] or box_w[sid] >= widest:
+            if box_h[sid] <= aspect * box_w[sid] or box_w[sid] >= widest:
                 break
             box_w[sid] += 20
     return texts, box_w, box_h

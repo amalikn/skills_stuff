@@ -16,6 +16,9 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261027 Flow pages: a decision is sized to its text (starts at the step width, widens to `look.decision_aspect` 0.6, up to
+  `decision_width`), not a fixed 380 px; an arrow label keeps 8 px from every box and is placed on the arrow's straight run, not on half of it
+  (operator, smc_change Apply: "box 2 unnecessarily elongated", "text of arrow 2 too close to box 1"). Crossings unchanged on all three maps
 - 20261027 E2E pages: a final polish swaps two crossing links' neighbouring vertical tracks and horizontal tracks together
   (`crossing_search.tracks_together`; operator: "2.3 and 2.7 overlap could have been avoided"); run after the searches, as a move
   inside them it steered the joint search to 82 crossings against 56. smc_change E2E 56 -> 50; smc-resiliency, UNC unchanged; time unchanged

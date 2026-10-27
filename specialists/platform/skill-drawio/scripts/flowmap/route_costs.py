@@ -10,7 +10,7 @@ Imported, not run: `from flowmap.route_costs import overshoot, leaves_off_side, 
 
 from __future__ import annotations
 
-from drawio.audit import crossing, seg_hits_rect, segments
+from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 
 #: Two parallel runs closer than this (px) read as one arrow.
 NEAR = 8
@@ -108,3 +108,66 @@ def label_size(text: str) -> tuple[float, float]:
     """
     lines = text.split("\n")
     return 18 + 9 * max(len(line) for line in lines), 22 + 15 * (len(lines) - 1)
+
+
+#: Room a label keeps from every box (operator review 2026-10-27: "text of arrow 2 is too close to box 1").
+LABEL_GAP = 8
+
+
+def _clear(rect: tuple, gap: float) -> tuple:
+    """A rectangle grown by a margin on every side.
+
+    Args:
+        rect: (x, y, width, height).
+        gap: the margin.
+
+    Returns:
+        The grown rectangle.
+    """
+    return rect[0] - gap, rect[1] - gap, rect[2] + 2 * gap, rect[3] + 2 * gap
+
+
+def _straight(a: tuple, b: tuple, c: tuple) -> bool:
+    """Whether b lies on the straight run from a to c (all three on one horizontal or one vertical line).
+
+    Args:
+        a: the point before.
+        b: the point.
+        c: the point after.
+
+    Returns:
+        True when b is no corner.
+    """
+    return (abs(a[1] - b[1]) < .5 and abs(b[1] - c[1]) < .5) or (abs(a[0] - b[0]) < .5 and abs(b[0] - c[0]) < .5)
+
+
+def label_spot(page: Page, cid: str, pts: list, w: float, h: float) -> tuple[float, float]:
+    """Where an arrow's label goes: along its runs, longest first, at the middle then a third and two thirds in, the first spot whose box
+    touches no other arrow, no other label and no box (operator review 2026-10-21: a branch label sat on its sibling arrow).
+
+    Args:
+        page: the page (routes, labels and boxes already drawn).
+        cid: the arrow's cell id (its own route is ignored).
+        pts: the arrow's polyline.
+        w: the label's width.
+        h: the label's height.
+
+    Returns:
+        The label's centre (on the line, else just beside it); the middle of the longest run when no spot is clear.
+    """
+    # Points straight through drop out first: a run drawn as two halves put the label beside one box or the other, never between them
+    # (operator review 2026-10-27, smc_change Apply: "text of arrow 2 is too close to box 1").
+    pts = [pt for k, pt in enumerate(pts) if k in (0, len(pts) - 1) or not _straight(pts[k - 1], pt, pts[k + 1])]
+    segs = sorted(segments(pts), key=lambda s: -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1])))
+    others = [s for r in page.routes if r.cid != cid for s in segments(r.points)]
+    for p, q in segs:
+        flat = abs(p[1] - q[1]) < .5
+        beside = [(0, 0)] + ([(0, -h / 2 - 3), (0, h / 2 + 3)] if flat else [(w / 2 + 4, 0), (-w / 2 - 4, 0)])   # on the line, then just beside it
+        for (ox, oy), f in [(o, f) for o in beside for f in (0.5, 0.33, 0.67, 0.2, 0.8)]:
+            cx, cy = p[0] + (q[0] - p[0]) * f + ox, p[1] + (q[1] - p[1]) * f + oy
+            rect = (cx - w / 2, cy - h / 2, w, h)
+            if (not any(seg_hits_rect(a, b, rect, 0) for a, b in others) and not any(rects_overlap(rect, m.rect) for m in page.marks)
+                    and not any(rects_overlap(_clear(rect, LABEL_GAP), page.rects[c]) for c in page.solid)):
+                return cx, cy
+    p, q = segs[0]
+    return (p[0] + q[0]) / 2, (p[1] + q[1]) / 2

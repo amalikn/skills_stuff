@@ -21,6 +21,7 @@ DEFAULT_LOOK = {
     "shapes": True,                # flowchart symbols on flow pages (flowmap.shapes); False draws every step as a rectangle
     "step_width": 220,             # a step box's width on a flow page
     "decision_width": 380,         # a decision's width, in its wider column, so a diamond grows sideways
+    "decision_aspect": 0.6,        # a decision widens from the step width until no taller than this times its width (short text: small)
     "step_chars": 38,              # characters a line a step box is sized for, at step_width and font 10
     "back_arrows": "short-first",  # return arrows: "short-first" (along the source's lane when clear) or "below-lanes" (always the band)
     "action_bullets": True,        # an action written as clauses joined by "; " is set one clause a line
