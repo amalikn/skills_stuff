@@ -70,6 +70,30 @@ TAG_BLOCK = re.compile(r"^\s*<([a-z_-]+)>.*?</\1>\s*", re.S)
 PASTED = re.compile(r"<pasted_content\b[^>]*>\s*(.*?)\s*</pasted_content\b[^>]*>", re.S)
 
 
+COMMAND = re.compile(r"<command-name>\s*(/?[^<]+?)\s*</command-name>")
+COMMAND_ARGS = re.compile(r"<command-args>(.*?)</command-args>", re.S)
+
+
+def slash_command(text: str) -> str:
+    """The slash command a turn invoked, as the user typed it.
+
+    A `/skill args` turn reaches the transcript as `<command-name>` and `<command-args>` tags, which the "starts with <" filter drops, so pass 1
+    missed every slash command (2026-10-27: four `/skill-ai-it` runs absent from a skill-goal-guard close).
+
+    Args:
+        text: the turn's text.
+
+    Returns:
+        "/name args", or "" when the turn holds no command tag.
+    """
+    m = COMMAND.search(text)
+    if not m:
+        return ""
+    name = m.group(1) if m.group(1).startswith("/") else "/" + m.group(1)
+    args = COMMAND_ARGS.search(text)
+    return f"{name} {args.group(1).strip()}".strip() if args else name
+
+
 def typed_text(content) -> str:
     """The operator's own text of a message, without the IDE and harness blocks the client puts before it.
 
@@ -164,6 +188,11 @@ def events(path: pathlib.Path, since: str = ""):
             yield ts, "compaction", "context summarised here; details before it come from this transcript, not the summary"
             continue
         if d.get("type") == "user":
+            command = slash_command(text_of(content))
+            if command and (ts, command) not in seen:   # a repeated command is a new run: key it by time, not by text
+                seen.add((ts, command))
+                yield ts, "user", command
+                continue
             if isinstance(content, str) or (isinstance(content, list) and any(b.get("type") == "text" for b in content if isinstance(b, dict))):
                 t = typed_text(content)
                 if t and not t.startswith(("<", "Base directory for this skill", "(Re-invocation of")) and t not in seen:

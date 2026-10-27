@@ -34,6 +34,14 @@ def write_transcript(rows: list[dict]) -> pathlib.Path:
 class TypedTextTest(unittest.TestCase):
     """typed_text and the pass-1 events built on it."""
 
+    def test_slash_command_reaches_pass_one(self) -> None:
+        """A /skill invocation, stored as command tags, is listed as the user typed it (missed before 2026-10-27)."""
+        text = "<command-message>skill-ai-it</command-message>\n<command-name>/skill-ai-it</command-name>\n<command-args>promote and approve all</command-args>"
+        self.assertEqual(tp.slash_command(text), "/skill-ai-it promote and approve all")
+        self.assertEqual(tp.slash_command("plain words"), "")
+        path = write_transcript([{"type": "user", "timestamp": "2026-10-27T07:00:00Z", "message": {"role": "user", "content": text}}])
+        self.assertIn(("2026-10-27T07:00:00Z", "user", "/skill-ai-it promote and approve all"), list(tp.events(path)))
+
     def test_ide_block_before_text_is_dropped(self) -> None:
         """A two-block turn (IDE note, then the message) yields the message."""
         content = [{"type": "text", "text": "<ide_opened_file>The user opened x.md</ide_opened_file>"}, {"type": "text", "text": "Ask me questions."}]
