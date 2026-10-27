@@ -7,6 +7,7 @@ Scope: Which Thekedar (MIT) mechanisms GoalGuard adapts and the tests that guard
 Last reviewed: 2026-10-27
 Summary: Maps Thekedar hooks/templates to GoalGuard destinations and CTPS IDs, lists mandatory adaptations and MIT reuse obligations.
 ---
+
 # Thekedar → GoalGuard v0.2: Source Extraction and Regression Contract
 
 **Status:** implementation specification; source inspected, GoalGuard adaptations **not implemented or tested**.  

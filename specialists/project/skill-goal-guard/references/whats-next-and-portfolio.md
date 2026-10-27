@@ -9,6 +9,7 @@ Summary: >-
   Three-level What's Next from live Vikunja data: filter to eligible work, honour owner overrides and incidents, then deadline, Vikunja priority,
   dependency order, due date and stable ID; one operator focus, agents counted separately; the v0.1 weighted score is retired.
 ---
+
 # What's Next and portfolio focus
 
 ## Three levels

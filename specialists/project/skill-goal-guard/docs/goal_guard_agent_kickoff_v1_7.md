@@ -7,6 +7,7 @@ Scope: First end-to-end GoalGuard enforcement pilot in project_stuff/apn
 Last reviewed: 2026-10-27
 Summary: Ordered tasks, stop conditions and completion gate for one hub milestone, one spoke, one Vikunja link, one agent adapter and one snapshot/restore proof.
 ---
+
 # GoalGuard v1.7 — Coding Agent Kickoff
 
 Use [`goal_guard_mvp_delivery_policy_agent_handoff_v1_7.md`](goal_guard_mvp_delivery_policy_agent_handoff_v1_7.md) as the proposed design handoff. Version 1.6 supersedes v1.5 for this assignment.

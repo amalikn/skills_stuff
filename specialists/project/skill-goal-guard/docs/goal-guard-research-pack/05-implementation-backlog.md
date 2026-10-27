@@ -7,6 +7,7 @@ Scope: Sprints A-D for Codex/Claude Code with release gates
 Last reviewed: 2026-10-27
 Summary: Ordered backlog from decision engine to agent observation, visualisation and autonomy, with Thekedar reuse as acceptance subtasks.
 ---
+
 # Prioritized implementation backlog for Codex / Claude Code
 
 Work **strictly in this order** and stop at each release gate. The skill and CLI are the product; the tool should not reinvent project management software.

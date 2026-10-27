@@ -1,0 +1,22 @@
+# ID mappings (fixture): references only, never copies (references/project-layout-and-storage.md, Existing maps).
+tasks:
+  - {vikunja_task_id: 101, acceptance_criterion_id: AC-01, mvp_baseline_id: DEMO-MVP-001}
+  - {vikunja_task_id: 102, acceptance_criterion_id: AC-02, mvp_baseline_id: DEMO-MVP-001}
+  - {vikunja_task_id: 104, acceptance_criterion_id: AC-01, mvp_baseline_id: DEMO-MVP-001}
+milestones:
+  - milestone_id: M1
+    milestone_revision: 1
+    plan_baseline:
+      hub_project: demo-hub
+      document_ref: ../demo-hub/plan.md
+      revision: sha256:3232b47111b1bce1d23c3a9c7d1125e5611d02dd54aa140a61cfd2ee08a57a3f
+      approved_by: operator
+      management_export_ref: null
+    commitment_date: "2026-12-15"
+    vikunja_task_ids: [101, 102]
+    acceptance_criterion_ids: [AC-01, AC-02]
+    acceptance_evidence: {}
+    target_source_ref: target-map.yaml
+    target_id: T-COLLECT
+    target_source_revision: sha256:f8c9a3a7b212f8a820d52d699823f5888d457c6f02db9d09622d332b621568d0
+    mapping_status: proposed

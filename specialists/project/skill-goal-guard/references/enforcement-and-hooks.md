@@ -11,6 +11,7 @@ Summary: >-
   The gate runs at handoff and at supported pre-action hooks; a skill, AGENTS.md or Archcore rule alone enforces nothing. Claude Code's PreToolUse
   is the first adapter; every unintercepted path is declared advisory; protected writes are enforced at GoalGuard's writer, not the hook.
 ---
+
 # Enforcement and agent hooks
 
 ## Enforcement honesty
@@ -68,3 +69,25 @@ Archcore inheritance into nested folders is unproven (handoff §18, P08, F04); t
 
 Not imported: the orchestrator, the 109 specialist agents, the reviewer pipeline, the writable task Markdown as state, the `.thekedar/**` self-edit exemption (pack 06 §1, §6). Copying source requires
 the pinned upstream commit, file SHAs and an MIT notice (GG-425).
+
+## Learned
+
+> **Learned 2026-10-27** · Claude Code 2.1.310 hooks · VERIFIED_PRIMARY for the documentation, UNVERIFIED on this machine · Source: https://code.claude.com/docs/en/hooks (read 2026-10-27);
+> `scripts/goal_guard_lib/hook.py` · Falsifier: a captured PreToolUse payload without `tool_input.file_path` for Write, or an exit-2 hook whose tool call still runs
+> PreToolUse input carries `session_id`, `transcript_path`, `cwd`, `permission_mode`, `hook_event_name`, `tool_name`, `tool_input` (Write: `file_path`, `content`) and `tool_use_id`. Exit 2 blocks
+> the call and stderr becomes the reason; JSON on stdout cannot override an exit 2. On exit 0, `hookSpecificOutput.permissionDecision` (allow, deny, ask, defer) decides, deny > defer > ask > allow
+> across hooks, and `additionalContext` reaches the model. Printing `allow` skips the user's permission prompt, so the GoalGuard hook prints nothing when it passes. Any exit code other than 0 or 2
+> is a non-blocking error, so the hook turns its own crashes into a denial. Timeouts are in seconds (600 by default for PreToolUse command hooks).
+>
+> ```python
+> # scripts/goal_guard_hook.py (2026-10-27, uncommitted)
+> try:
+>   outcome = hook.evaluate(payload, cfg, args.mode, now)
+> except Exception as err:  # a bug here must not let a write through: exit 1 is a non-blocking error in Claude Code
+>   outcome = hook.deny(args.mode, f"internal error {type(err).__name__}: {err}; failing closed")
+> ```
+
+> **Learned 2026-10-27** · GoalGuard hook design · USER_STATED (review note relayed to the operator) · Source: `scripts/goal_guard_lib/hook.py` `_verdict_gap` · Falsifier: a blocking-mode
+> run that lets an edit through to a file the last PROCEED did not list
+> One PROCEED verdict must not unlock the whole project. The verdict carries its proposal's `proposed_files`; the hook passes only those files, only for `GG_VERDICT_MAX_HOURS` (2 by default) and
+> only against the current contract revision. The agent still writes its own proposal, so the gate bounds what it may touch; it does not stop it proposing.

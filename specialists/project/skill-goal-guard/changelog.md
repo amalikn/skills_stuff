@@ -8,9 +8,41 @@ Scope: Every change to skill-goal-guard's rules, code, layout and sources
 Last reviewed: 2026-10-27
 Summary: History of skill-goal-guard, newest first; the release heading is the only place the pack version lives.
 ---
+
 # Changelog
 
 ## Unreleased
+
+### 2026-10-27 17:35 — session findings, incidents and proposals (slurp close)
+
+- Readiness finding: the pack is not installed for any agent (no symlink in `~/.claude/skills`, `~/.codex/skills`, `~/.agents/skills`); install stays deferred (SCRATCHPAD).
+- Finding: SKILL.md TOC warnings and dead links come from VS Code's chat prompt-file validator treating SKILL.md as a skill file; anchors verified correct; fix is an operator setting (not changed).
+- Finding: AGENTS.md is excluded from git in this repo (`.git/info/exclude`), so its table fix is local only.
+- Incidents, all resolved in the session: an inline `noqa` placeholder written into `goal_guard.py` and replaced within minutes by a rewrite (never committed); a response cut off by a network drop
+  while its refactor commands still ran (transcript shows them; state reconciled by `just check`); auto-mode permission checks timed out on three writes (retried); a security hook flagged a test
+  string naming `os.system` (test now uses `builtins.print`); the OPA gate blocked a recursive delete of a scratch folder (used a new folder); the claude-code-guide subagent could not read the hooks
+  page (context-mode hook blocks WebFetch, the subagent has no ctx tool), so the page was read through `ctx_fetch_and_index` in the main session.
+- Proposed, not decided: cover shell writes the hook cannot see (git pre-commit check, read-only modes on protected records).
+- Vikunja API facts used by the code checked against the captured OpenAPI 2.7.1 (Learned entry in `references/vikunja-integration.md`).
+- A blank line added after the front matter in 27 markdown files (operator, 2026-10-27: "there should be a line gap after the frontmatter"); in `docs/` only the added front matter is touched, the verbatim text is unchanged.
+
+### 2026-10-27 17:25 — pilot tools written under skill-coder (step 4, tools for steps 6-8)
+
+- New `scripts/goal_guard_lib/` and seven front ends: `goal_guard.py` rewritten (baseline, BLOCK, decision order, ranking pipeline, Vikunja reads, `decisions.jsonl` behind `--apply`),
+  `goal_guard_vikunja.py`, `goal_guard_trace.py`, `goal_guard_snapshot.py` (export, verify, clean-instance restore), `goal_guard_excel.py`, `goal_guard_doctor.py`, `goal_guard_hook.py` (DRAFT).
+- Hook: advisory by default; fails closed on an unrecognised payload or its own crash; one PROCEED covers only its proposal's files for 2 hours (review note relayed 2026-10-27); a session's
+  project also protects its `protected_paths` outside the project.
+- Tests: v0.1 `tests/test_goal_guard.py` removed with the prototype (git history); 71 new tests; `just check` now runs ruff, the tests, skill-coder's helpers and the fixture.
+- Fixtures: `examples/project_stuff/`, `examples/vikunja-tasks.json`, `examples/proposals/`; v0.1 fixtures moved to `examples/v0.1/`.
+- New `requirements.txt` (PyYAML 6.0.3, openpyxl 3.1.5, ruff 0.17.3) and `ruff.toml`; `justfile` recipes for every script; `code-map.toml` updated.
+- References: pilot-plan step 4 status and what it did not do; enforcement-and-hooks Learned entries (Claude Code 2.1.310 hook contract; file-scoped verdicts); vikunja-integration relation
+  direction marked as an open check; decision-rules schemas note.
+- Open before live use: relation direction on the instance, real hook captures and one observed block, restore read-back, D3 signing.
+
+### 2026-10-27 16:27 — SKILL.md source layout
+
+- Route table realigned (link column padded to its widest cell) and three lines over 200 columns wrapped; no wording changed.
+- AGENTS.md: Layout table realigned the same way and the write-back trigger paragraph (257 columns) wrapped; no wording changed.
 
 ### 2026-10-27 15:03 — write-back audit; two write-backs deferred to the next session
 

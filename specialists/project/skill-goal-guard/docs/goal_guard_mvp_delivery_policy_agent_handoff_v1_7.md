@@ -7,6 +7,7 @@ Scope: MVP scope gate, Vikunja portfolio, Enterprise-Strategy hub, .gg storage a
 Last reviewed: 2026-10-27
 Summary: "Layered v1.0-v1.7 policy: owner-approved MVP gate (PROCEED/PARK/REVIEW/BLOCK), Vikunja as live task authority, hub/spoke checks, dual deadlines, target-map reads and portable snapshots."
 ---
+
 # GoalGuard — MVP Delivery Governance
 
 **Document type:** Agent implementation handoff and formal policy specification  

@@ -1,0 +1,19 @@
+# ruff configuration for skill-goal-guard: the one Python formatter and linter for this pack (skill-coder languages/python.md).
+# Two-space indentation is the operator's rule for every language (2026-10-23). Run through `just lint` / `just fmt`.
+
+indent-width = 2
+line-length = 160
+target-version = "py314"
+
+[format]
+indent-style = "space"
+quote-style = "double"
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "D"]
+# E111/E114: pycodestyle expects four-space indentation; this pack uses two by the operator's rule, so the checks are configured off here.
+# D203/D213: incompatible with D211/D212, which the Google convention keeps.
+ignore = ["E111", "E114", "D203", "D213"]
+
+[lint.pydocstyle]
+convention = "google"

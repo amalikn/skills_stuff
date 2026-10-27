@@ -1,9 +1,11 @@
 # just task catalog for skill-goal-guard (alias skill-gg).
 # Purpose: expose the pack's safe, documented tasks to humans and agents; agents run catalogued tasks only.
-# Safety: every recipe here is read-only; inputs, outputs and safety labels per script are in scripts/readme.md.
+# Safety: recipes are read-only unless they pass --apply (assess-apply, snapshot-export-apply, snapshot-restore-apply, excel-apply);
+# each script's inputs, outputs and safety label are in scripts/readme.md.
 #
 # Runtime pinning: recipes call the interpreter by path through {{py}} and depend on _require-venv, never a bare python3 or
 # `mise exec -- python` (skill-coder references/tooling-and-runtime.md). The venv lives in the working-cache peer, never in this repo.
+# Live Vikunja recipes need GG_VIKUNJA_URL and GG_VIKUNJA_TOKEN in the environment (a read-only token from KeePassXC); never pass the token as an argument.
 #
 # List tasks: just --list
 
@@ -11,17 +13,20 @@ set dotenv-load := false
 
 wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-goal-guard"
 py := wc + "/.venv/bin/python"
-state := "examples/portfolio.json"
+coder := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder/scripts"
+demo := "examples/project_stuff/apn/demo-spoke"
+demo_tasks := "examples/vikunja-tasks.json"
 
 # List the tasks.
 default:
     @just --list
 
-# Build the working-cache venv from the mise-pinned Python. Safe to re-run.
+# Build the working-cache venv from the mise-pinned Python and install the pinned requirements. Safe to re-run.
 bootstrap:
     @mkdir -p "{{wc}}"
     @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
     @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @{{py}} -m pip install --quiet -r requirements.txt
     @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
 
 # Fail early and legibly rather than falling back to the host interpreter.
@@ -32,22 +37,97 @@ _require-venv:
 runtimes: _require-venv
     @{{py}} -c "import sys; print(sys.version.split()[0], sys.executable)"
 
-# Run the unit tests (read-only).
+# Run the unit and end-to-end tests (read-only; temporary copies only).
 test: _require-venv
     @{{py}} -m unittest discover -s tests
 
-# Validate a portfolio state file (read-only). Example: just validate examples/portfolio.json
-validate path=state: _require-venv
-    @{{py}} scripts/goal_guard.py validate --state "{{path}}"
+# Lint and check formatting with ruff (read-only).
+lint: _require-venv
+    @{{wc}}/.venv/bin/ruff check scripts tests
+    @{{wc}}/.venv/bin/ruff format --check scripts tests
 
-# Task, project and portfolio What's Next for a date (read-only). Example: just next examples/portfolio.json 2026-10-27
-next path=state date="": _require-venv
-    @{{py}} scripts/goal_guard.py next --state "{{path}}" {{ if date != "" { "--date " + date } else { "" } }}
+# Format the code with ruff (writes the pack's own Python files).
+fmt: _require-venv
+    @{{wc}}/.venv/bin/ruff format scripts tests
 
-# Assess a proposal against the state (read-only). Example: just assess examples/proposal.json
-assess proposal="examples/proposal.json" path=state: _require-venv
-    @{{py}} scripts/goal_guard.py assess --state "{{path}}" --proposal "{{proposal}}"
+# skill-coder's helpers: timeouts, process-group timeouts, headers, suppressions, size, write gates (read-only).
+coder-checks: _require-venv
+    @{{py}} {{coder}}/call_timeouts.py --project-root . --roots scripts,tests --baseline scripts/timeout-baseline.json
+    @{{py}} {{coder}}/group_timeouts.py --project-root . --roots scripts,tests --baseline scripts/group-timeout-baseline.json
+    @{{py}} {{coder}}/script_headers.py --project-root . --roots scripts,tests --baseline scripts/script-headers-baseline.json
+    @{{py}} {{coder}}/suppressions.py --project-root . --roots scripts,tests --baseline scripts/suppressions-baseline.json
+    @{{py}} {{coder}}/code_size.py --project-root . --roots scripts,tests --baseline scripts/code-size-baseline.json
+    @{{py}} {{coder}}/write_gates.py --project-root .
 
-# Closing check: tests plus the example validation (read-only).
-check: test
-    @{{py}} scripts/goal_guard.py validate --state "{{state}}" > /dev/null && echo "example state valid"
+# Validate a project's .gg/ records and baseline (read-only). Example: just validate examples/project_stuff/apn/demo-spoke
+validate project=demo: _require-venv
+    @{{py}} scripts/goal_guard.py validate --project "{{project}}"
+
+# Assess a proposal against offline tasks (read-only; prints the line --apply would append).
+assess proposal="examples/proposals/proceed.yaml" project=demo tasks=demo_tasks: _require-venv
+    @{{py}} scripts/goal_guard.py assess --project "{{project}}" --proposal "{{proposal}}" --tasks "{{tasks}}"
+
+# Assess a proposal against live Vikunja and append the verdict to the project's .gg/decisions.jsonl (writes one line).
+assess-apply proposal project: _require-venv
+    @{{py}} scripts/goal_guard.py assess --project "{{project}}" --proposal "{{proposal}}" --vikunja --apply
+
+# What's Next from offline tasks (read-only). Example: just next examples/project_stuff/apn/demo-spoke examples/vikunja-tasks.json 2026-10-27
+next project=demo tasks=demo_tasks date="": _require-venv
+    @{{py}} scripts/goal_guard.py next --project "{{project}}" --tasks "{{tasks}}" {{ if date != "" { "--date " + date } else { "" } }}
+
+# What's Next from live Vikunja (read-only).
+next-live project: _require-venv
+    @{{py}} scripts/goal_guard.py next --project "{{project}}" --vikunja
+
+# Vikunja instance version and limits (read-only, live).
+vikunja-info: _require-venv
+    @{{py}} scripts/goal_guard_vikunja.py info
+
+# One Vikunja project's tasks, normalised (read-only, live). Example: just vikunja-tasks 7
+vikunja-tasks project_id: _require-venv
+    @{{py}} scripts/goal_guard_vikunja.py tasks --project-id {{project_id}}
+
+# Trace milestones to plan, criteria, target map and tasks (read-only).
+trace project=demo tasks=demo_tasks: _require-venv
+    @{{py}} scripts/goal_guard_trace.py --project "{{project}}" --tasks "{{tasks}}"
+
+# Report enforced versus advisory paths for a project (read-only; add --vikunja by hand for the instance check).
+doctor project=demo: _require-venv
+    @{{py}} scripts/goal_guard_doctor.py --project "{{project}}"
+
+# Plan a snapshot export from live Vikunja (read-only).
+snapshot-export project: _require-venv
+    @{{py}} scripts/goal_guard_snapshot.py export --project "{{project}}" --vikunja
+
+# Export a snapshot from live Vikunja into the data peer (writes snapshot files).
+snapshot-export-apply project: _require-venv
+    @{{py}} scripts/goal_guard_snapshot.py export --project "{{project}}" --vikunja --apply
+
+# Verify a snapshot folder (read-only).
+snapshot-verify snapshot: _require-venv
+    @{{py}} scripts/goal_guard_snapshot.py verify --snapshot "{{snapshot}}"
+
+# Plan a restore into an empty project of the TEST instance in GG_VIKUNJA_URL (read-only).
+snapshot-restore snapshot target_project_id: _require-venv
+    @{{py}} scripts/goal_guard_snapshot.py restore --snapshot "{{snapshot}}" --target-project-id {{target_project_id}}
+
+# Restore into an empty project of the TEST instance (writes tasks and relations there).
+snapshot-restore-apply snapshot target_project_id: _require-venv
+    @{{py}} scripts/goal_guard_snapshot.py restore --snapshot "{{snapshot}}" --target-project-id {{target_project_id}} --apply
+
+# Print the management workbook rows (read-only).
+excel project out: _require-venv
+    @{{py}} scripts/goal_guard_excel.py --project "{{project}}" --out "{{out}}"
+
+# Write the management workbook sample to a new file (writes one .xlsx).
+excel-apply project out: _require-venv
+    @{{py}} scripts/goal_guard_excel.py --project "{{project}}" --out "{{out}}" --apply
+
+# Feed a saved payload to the hook in blocking mode, as Claude Code would (read-only).
+hook-test payload mode="blocking": _require-venv
+    @{{py}} scripts/goal_guard_hook.py --mode {{mode}} < "{{payload}}"
+
+# Closing check: lint, tests, skill-coder's helpers and the example fixture (read-only).
+check: lint test coder-checks
+    @{{py}} scripts/goal_guard.py validate --project "{{demo}}" > /dev/null && echo "example project valid"
+    @{{py}} scripts/goal_guard_trace.py --project "{{demo}}" --tasks "{{demo_tasks}}" > /dev/null && echo "example trace verified"

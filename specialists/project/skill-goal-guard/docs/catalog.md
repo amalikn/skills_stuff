@@ -9,6 +9,7 @@ Summary: >-
   Index of the skill pack (SKILL.md, references, scripts, tests) and of the verbatim source documents under docs/, with the operator decisions and a
   pointer to where each of the eight source conflicts is settled.
 ---
+
 # skill-goal-guard catalog
 
 GoalGuard (alias skill-gg): owner-approved MVP scope gate and solo portfolio focus for coding agents working in `project_stuff/`. Current status: [../SKILL.md](../SKILL.md) (Orient first, item 1).
@@ -42,9 +43,11 @@ GoalGuard (alias skill-gg): owner-approved MVP scope gate and solo portfolio foc
 | [../references/pilot-plan.md](../references/pilot-plan.md) | plan         | Owner decisions D1-D6, steps 0-9, prototype gaps, stop conditions                      |
 | [../references/test-catalog.md](../references/test-catalog.md) | reference    | Test series, merged duplicates, pilot set, ID collision (conflict 7)                   |
 | [../references/evolution-and-write-back.md](../references/evolution-and-write-back.md) | reference    | Write-back trigger and entry format                                                    |
-| [../scripts/readme.md](../scripts/readme.md)     | catalog      | `goal_guard.py` (v0.1 prototype), known gaps, moved paths                              |
-| [../tests/test_goal_guard.py](../tests/test_goal_guard.py) | tests        | 10 unit tests, pass 2026-10-27                                                         |
-| [../examples/](../examples/)                     | fixtures     | `portfolio.json`, `proposal.json` (illustrative)                                       |
+| [../scripts/readme.md](../scripts/readme.md) | catalog | Seven front ends, the `goal_guard_lib` modules, exit codes, measured runtime, open live checks, moved paths |
+| [../scripts/](../scripts/) | code | `goal_guard.py`, `goal_guard_vikunja.py`, `_trace`, `_snapshot`, `_excel`, `_doctor`, `_hook`; package `goal_guard_lib/` (written 2026-10-27 under skill-coder) |
+| [../tests/](../tests/) | tests | 71 tests: decide, rank, decisions log, Vikunja seam and snapshot/restore (fake instance), hook and doctor, trace and seams, CLI exit codes; `helpers.py`, `fake_vikunja.py` |
+| [../examples/](../examples/) | fixtures | `project_stuff/` (apn demo-spoke with `.gg/` records, demo-hub plan, me demo-personal), `vikunja-tasks.json`, `proposals/`; `v0.1/` prototype fixtures |
+| [../requirements.txt](../requirements.txt), [../ruff.toml](../ruff.toml) | tooling | Pinned PyYAML 6.0.3, openpyxl 3.1.5, ruff 0.17.3 with seams; ruff two-space config |
 | [../justfile](../justfile), [../.mise.toml](../.mise.toml), [../code-map.toml](../code-map.toml) | tooling      | Task catalog, Python 3.14 pin, code intent                                             |
 | [../readme.md](../readme.md) | index | Folder index and run commands |
 | [../SCRATCHPAD.md](../SCRATCHPAD.md) | state | Working state, open items, next actions |

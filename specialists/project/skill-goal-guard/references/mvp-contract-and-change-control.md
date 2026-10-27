@@ -9,6 +9,7 @@ Summary: >-
   An implementation handoff needs an owner-approved MVP contract with testable criteria and exclusions; changes create a new revision through an
   explicit request and owner decision; ideas are parked, and delivery needs evidence for every criterion.
 ---
+
 # MVP contract and change control
 
 ## Intent

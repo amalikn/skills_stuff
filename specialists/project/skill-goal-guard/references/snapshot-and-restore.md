@@ -9,6 +9,7 @@ Summary: >-
   One project snapshot plus a parent manifest, checksummed and atomically replacing only a complete export; offline read-only use with its age shown;
   restore proven by dry run and into a clean test instance; project portability is not full Vikunja disaster recovery.
 ---
+
 # Snapshot and restore
 
 ## Snapshot

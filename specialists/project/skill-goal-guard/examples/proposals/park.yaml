@@ -1,0 +1,7 @@
+# Proposal fixture: useful idea with no criterion -> PARK.
+proposal_id: P-002
+task_id: 101
+project_id: demo-spoke
+description: Add a retry cache for faster rereads
+adds_scope: false
+proposer: claude-code

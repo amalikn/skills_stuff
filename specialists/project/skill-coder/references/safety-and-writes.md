@@ -39,6 +39,11 @@ Summary: >-
 | Credentials come from the secret store at run time, never from code, arguments that appear in process lists, or logs ([security.md](security.md)) | Code and logs are copied widely                    |
 | Back up before a deploy or a bulk write, and gate the next step on the backup's exit code                                                       | The backup is the rollback                         |
 
+> **Learned 2026-10-27** · python, `scripts/write_gates.py` · VERIFIED_PRIMARY (run on skill-goal-guard: "0 writer(s)" although four write paths exist) · Source: skill-goal-guard
+> `code-map.toml` `[write_gates]` note; `scripts/goal_guard_lib/decisions_log.py` `append` · Falsifier: write_gates.py reporting a writer for a front end whose write lives in an imported module
+> `write_gates.py` reads entry points only, so a program whose writes live in a library module (the front end passes `apply` down) reports no writer at all: a clean result is not proof. Keep the
+> gate in the writing function (`append(..., apply)` refuses to write without it), test that a plan writes nothing, and name every library write path in the code map's `[write_gates]` section.
+
 ## The write chain
 
 ```text

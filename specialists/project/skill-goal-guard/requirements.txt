@@ -1,0 +1,9 @@
+# Third-party dependencies of skill-goal-guard, pinned; installed into the working-cache venv by `just bootstrap`.
+# Each names its seam and its upgrade test (skill-coder references/dependencies.md). Everything else is the standard library.
+#
+# PyYAML: seam scripts/goal_guard_lib/yaml_io.py (safe_load / safe_dump only); upgrade test tests/test_trace_excel_yaml.py (Seams).
+pyyaml==6.0.3
+# openpyxl: seam scripts/goal_guard_lib/excel.py (the management workbook sample); upgrade test tests/test_trace_excel_yaml.py (Seams).
+openpyxl==3.1.5
+# ruff: the one Python formatter and linter (configured in ruff.toml); used by `just lint`, not imported.
+ruff==0.17.3

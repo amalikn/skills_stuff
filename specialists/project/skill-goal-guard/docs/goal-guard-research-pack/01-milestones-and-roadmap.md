@@ -7,6 +7,7 @@ Scope: M0-M5 milestone gates, deliverables, acceptance and effort ranges
 Last reviewed: 2026-10-27
 Summary: Six outcome-based gates from contract freeze to hardening, estimated at 70-120 h, with a Thekedar refinement inside M1/M2.
 ---
+
 # Detailed milestones and release gates
 
 **Scheduling assumption:** Weeks are *relative to project start*, not committed calendar dates. Engineering estimates are ranges and must be refined after pilot evidence. This is **one person's** side

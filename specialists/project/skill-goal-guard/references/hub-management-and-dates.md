@@ -9,6 +9,7 @@ Summary: >-
   Enterprise-Strategy stays the APN hub; spokes check its revision at handoff and material changes; management commitments are immutable baselines
   separate from the owner's internal target, the forecast and the evidenced actual; Excel is a dated snapshot; cutover from Markdown is gated.
 ---
+
 # Hub, management baseline and dates
 
 ## Real names

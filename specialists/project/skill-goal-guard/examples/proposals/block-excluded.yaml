@@ -1,0 +1,11 @@
+# Proposal fixture: matches the dashboard exclusion -> BLOCK.
+proposal_id: P-003
+task_id: 101
+project_id: demo-spoke
+criterion_id: AC-01
+description: While we are here, add a Grafana panel to future-proof the collector
+adds_scope: false
+claimed_necessity: helps later
+smallest_step: one panel
+stop_condition: panel renders
+proposer: claude-code

@@ -7,6 +7,7 @@ Scope: Vikunja entity mapping, API v2/MCP access, sync stages, deployment and se
 Last reviewed: 2026-10-27
 Summary: Staged Vikunja integration (export-only, webhook observe, mediated bidirectional) with field mapping and rollout/rollback steps.
 ---
+
 # Vikunja integration design — research-backed and staged
 
 ## Contents

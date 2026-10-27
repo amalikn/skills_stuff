@@ -7,6 +7,7 @@ Scope: Component/task register C01-C20, sequencing, priority rules, data design 
 Last reviewed: 2026-10-27
 Summary: Stable work IDs C01-C20 with dependencies and effort, the minimal execution path and the policy classification model.
 ---
+
 # CTPS — Components, Tasks, Priorities, Sequence
 
 Use this as the execution register. IDs are stable, globally unique. `Blocked by` is an engineering ordering constraint, not a claim of completed implementation.

@@ -11,6 +11,7 @@ Summary: >-
   Vikunja is the live task authority and runs locally (2.7.1, deployed 2026-10-27); first read its version and /api/v2/openapi.json, then read tasks and relations for one
   project, map IDs, and only later write through an attributable, policy-checked path. Webhooks are not retried, so poll to reconcile.
 ---
+
 # Vikunja integration
 
 ## Position
@@ -28,14 +29,16 @@ presets, due-date timezone behaviour (handoff §17.2, pack 04 operational checks
 
 ## Facts to verify on the instance (UNVERIFIED here)
 
-| Claim (research pack 00/04)                                                                | Why it matters                                                              |
-| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| API v2 at `/api/v2` from 2.4: PATCH, conditional requests, `items` envelopes, live OpenAPI | Choose v2, honour 409/412 conflicts                                         |
-| Official MCP at `/api/v2/mcp` from 2.7 with scoped tokens                                  | Agents may get a **read-only** MCP token; MCP writes are not GoalGuard approval |
-| Relations: parent/subtask, blocking/blocked-by, precedes/follows, duplicate                | Dependency eligibility; direction must round-trip (GG-305)                  |
-| Saved filters can span projects; projects nest                                             | Portfolio views                                                             |
-| Webhooks signed (HMAC-SHA256, `X-Vikunja-Signature`), sent once, no retry                  | Poll reconciliation is mandatory (GG-303)                                   |
-| AGPLv3, self-hostable                                                                      | Licence of the platform, not of GoalGuard                                   |
+| Claim (research pack 00/04)                                                     | Why it matters                                                                                                     |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| API v2 at `/api/v2` from 2.4: PATCH, conditional requests, `items` envelopes,   | Choose v2, honour 409/412 conflicts                                                                                |
+|   live OpenAPI                                                                  |                                                                                                                    |
+| Official MCP at `/api/v2/mcp` from 2.7 with scoped tokens                       | Agents may get a **read-only** MCP token; MCP writes are not GoalGuard approval                                    |
+| Relations: parent/subtask, blocking/blocked-by, precedes/follows, duplicate     | Dependency eligibility; direction must round-trip (GG-305). The code reads a task's `blocked` and `follows` lists  |
+|                                                                                 |   as its prerequisites (OpenAPI 2.7.1 wording); check on the instance first: [../scripts/readme.md](../scripts/readme.md), Open checks 1 |
+| Saved filters can span projects; projects nest                                  | Portfolio views                                                                                                    |
+| Webhooks signed (HMAC-SHA256, `X-Vikunja-Signature`), sent once, no retry       | Poll reconciliation is mandatory (GG-303)                                                                          |
+| AGPLv3, self-hostable                                                           | Licence of the platform, not of GoalGuard                                                                          |
 
 ## Mapping
 
@@ -89,4 +92,18 @@ docker exec vikunja /app/vikunja/vikunja dump -p /dumps -f "vikunja-dump-$(date 
 > `registration_enabled` key
 > The registration flag is `auth.local.registration_enabled` in `GET /api/v1/info`, not a top-level key; with `VIKUNJA_SERVICE_ENABLEREGISTRATION=false`, `POST /api/v1/register` returns 404.
 > The image has no shell (`/bin/sh` missing), so inspect its environment with `docker inspect`, not `docker exec ... sh`.
+
+> **Learned 2026-10-27** · Vikunja 2.7.1 API v2 · VERIFIED_PRIMARY (the instance's own OpenAPI document; not yet exercised with a token) · Source:
+> `documents/vikunja-2.7.1-20261027/openapi-v2.json`; `scripts/goal_guard_lib/vikunja.py` · Falsifier: a 2.7.x instance whose `GET /api/v2/projects/{project}/tasks` returns a bare list
+> Tasks of a project: `GET /api/v2/projects/{project}/tasks?page=N` returns `PaginatedTask` (`items`, `page`, `per_page`, `total`, `total_pages`); `per_page` is silently capped at the instance's
+> `max_items_per_page` (50 here). Create: `POST /projects/{project}/tasks`, `POST /tasks/{task}/relations` with `other_task_id` and `relation_kind` (subtask, parenttask, related, duplicateof,
+> duplicates, blocking, blocked, precedes, follows, copiedfrom, copiedto); the inverse relation is created by the server. An unset date comes back as year 1 (`0001-01-01T00:00:00Z`). Auth is a
+> bearer API token (`tk_` prefix, created via `/api/v1/tokens`).
+>
+> ```python
+> # scripts/goal_guard_lib/vikunja.py, Client.project_tasks (2026-10-27)
+> data = self._call("GET", f"/projects/{int(project_id)}/tasks", {"page": page})
+> items = data.get("items") or []
+> total_pages = int(data.get("total_pages") or 1)
+> ```
 

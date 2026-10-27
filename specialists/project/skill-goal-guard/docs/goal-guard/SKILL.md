@@ -2,6 +2,7 @@
 name: goalguard
 description: Goal-oriented MVP scope control and solo portfolio focus for ad-hoc tasks and long projects.
 ---
+
 # GoalGuard skill
 
 ## Activate when

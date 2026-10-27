@@ -1,110 +1,158 @@
 #!/usr/bin/env python3
-"""Dependency-aware solo portfolio planner. Python stdlib only. JSON state is canonical.
+"""GoalGuard scope gate and What's Next: validate a project's records, assess a proposal, rank the next action.
 
-GoalGuard v0.1 prototype: validates a portfolio JSON, ranks task/project/portfolio next actions and gives a scope verdict for a proposal.
-Superseded in behaviour by references/decision-rules.md and references/whats-next-and-portfolio.md; rewritten in the pilot (step 4).
+Pilot step 4 rewrite of the v0.1 prototype (kept in git history, commit 1dff9c8): adds the MVP baseline, the BLOCK verdict, the
+decision order of references/decision-rules.md and the ranking pipeline of references/whats-next-and-portfolio.md, and reads
+tasks from Vikunja (or a saved file) instead of a local portfolio JSON.
 
 Usage:
-  python scripts/goal_guard.py validate --state examples/portfolio.json
-  python scripts/goal_guard.py next --state examples/portfolio.json --date 2026-10-27
-  python scripts/goal_guard.py assess --state examples/portfolio.json --proposal examples/proposal.json
-  (or `just validate`, `just next`, `just assess`)
+  python scripts/goal_guard.py validate --project examples/project_stuff/apn/demo-spoke
+  python scripts/goal_guard.py assess --project <dir> --proposal <file> --tasks <tasks.json> [--apply]
+  python scripts/goal_guard.py next --project <dir> [--project <dir> ...] --vikunja [--date 2026-10-27] [--focus 101] [--task 101]
+  (or `just validate`, `just assess`, `just next`)
 
-Safety: read-only; reads the given JSON files and prints JSON to stdout; writes nothing.
+Inputs:
+  --project DIR              a folder holding .gg/project.yaml (repeat for the portfolio; one partition only)
+  --proposal FILE            proposal record, YAML or JSON (assess)
+  --tasks FILE | --vikunja   offline task file, or a live read with GG_VIKUNJA_URL / GG_VIKUNJA_TOKEN
+  GG_PARTITION               the partition this session may act in (apn or me)
+  Example: GG_PARTITION=apn python scripts/goal_guard.py assess --project examples/project_stuff/apn/demo-spoke \
+             --proposal examples/proposals/proceed.yaml --tasks examples/vikunja-tasks.json
+
+Safety: read-only by default. `assess --apply` appends one line (kind verdict, or park for a PARK) to the project's
+.gg/decisions.jsonl through decisions_log.append, the only writer; without --apply it prints the line it would append. It never
+writes an approval, never edits Vikunja and never changes the MVP contract.
+
+Exit codes: 0 PROCEED / valid / ranked; 3 PARK, REVIEW, BLOCK or invalid records; 2 bad input; 1 Vikunja or write failure.
 """
-import argparse, datetime as dt, json, pathlib, sys
 
-DATE=dt.date.today
-VALID={'todo','in_progress','blocked','review','done','parked'}
-def load(p):
-    with open(p,encoding='utf8') as f: return json.load(f)
-def today(s): return dt.date.fromisoformat(s) if s else None
-def index(data): return {t['id']:t for p in data['projects'] for t in p.get('tasks',[])}
-def validate(data):
-    issues=[]; ids=set(); projects={p['id'] for p in data['projects']}
-    for p in data['projects']:
-        if not p.get('goal'): issues.append(f"{p['id']}: missing goal")
-        if not p.get('success_criteria'): issues.append(f"{p['id']}: missing measurable success_criteria")
-        for m in p.get('milestones',[]):
-            if not m.get('target'): issues.append(f"{p['id']} milestone {m.get('id')}: missing target")
-            if m.get('due'): today(m['due'])
-        for t in p.get('tasks',[]):
-            tid=t['id']
-            if tid in ids: issues.append(f'duplicate task id: {tid}')
-            ids.add(tid)
-            if t.get('status','todo') not in VALID: issues.append(f'{tid}: invalid status')
-            if not t.get('outcome'): issues.append(f'{tid}: missing expected outcome')
-            if t.get('status')=='done' and not t.get('evidence'): issues.append(f'{tid}: done without evidence')
-            if t.get('due'): today(t['due'])
-            if t.get('milestone') and t['milestone'] not in {m['id'] for m in p.get('milestones',[])}: issues.append(f'{tid}: unknown milestone')
-    tasks=index(data)
-    for tid,t in tasks.items():
-        for dep in t.get('depends_on',[]):
-            if dep not in tasks: issues.append(f'{tid}: missing dependency {dep}')
-            if dep==tid: issues.append(f'{tid}: depends on itself')
-    visiting=set(); visited=set()
-    def walk(tid):
-        if tid in visiting: issues.append(f'dependency cycle through {tid}'); return
-        if tid in visited: return
-        visiting.add(tid)
-        for dep in tasks[tid].get('depends_on',[]):
-            if dep in tasks: walk(dep)
-        visiting.remove(tid); visited.add(tid)
-    for tid in tasks: walk(tid)
-    if len([t for t in tasks.values() if t.get('status')=='in_progress'])>data.get('max_active_tasks',1): issues.append('portfolio WIP limit exceeded')
-    for link in data.get('project_dependencies',[]):
-        if link['project'] not in projects or link['depends_on_project'] not in projects: issues.append('unknown project dependency')
-    return issues
+import argparse
+import datetime as dt
+from pathlib import Path
 
-def eligible(t,tasks):
-    return t.get('status','todo') in ('todo','in_progress') and all(tasks.get(dep,{}).get('status')=='done' for dep in t.get('depends_on',[]))
-def rank(t,p,now):
-    due=today(t.get('due')) or today(p.get('due'))
-    days=(due-now).days if due else 9999
-    urgency=50 if days<0 else 35 if days<=2 else 20 if days<=7 else 0
-    # One-man-army: favour finishing started work, urgent deadlines and declared priority.
-    return (40 if t.get('status')=='in_progress' else 0)+urgency+int(t.get('priority',3))*10+int(p.get('priority',3))*5,days
+from goal_guard_lib import cli, decide, decisions_log, project, rank, records, yaml_io
+from goal_guard_lib import settings as settings_mod
 
-def next_actions(data,when=None):
-    now=today(when) if when else DATE(); tasks=index(data); per=[]; pool=[]
-    for p in data['projects']:
-        options=[]
-        for t in p.get('tasks',[]):
-            if eligible(t,tasks):
-                score,days=rank(t,p,now)
-                options.append((score,days,t))
-                pool.append((score,days,p,t))
-        options.sort(key=lambda x:(-x[0],x[1],x[2]['id']))
-        pending=[t for t in p.get('tasks',[]) if t.get('status') not in ('done','parked')]
-        pick=options[0][2] if options else None
-        per.append({'project':p['id'],'next_task':pick['id'] if pick else None,'next_action':pick.get('next_action') if pick else None,'blocked':len([t for t in pending if t.get('status')=='blocked' or (not eligible(t,tasks) and t.get('status')=='todo')]),'open':len(pending)})
-    pool.sort(key=lambda x:(-x[0],x[1],x[2]['id'],x[3]['id']))
-    overall=pool[0] if pool else None
-    return {'as_of':str(now),'portfolio_next':{'project':overall[2]['id'],'task':overall[3]['id'],'action':overall[3].get('next_action'),'reason':'WIP continuity, deadline proximity and explicit priority'} if overall else None,'projects':per,'task_next':{tid:{'next_action':t.get('next_action'),'ready':eligible(t,tasks),'blocked_by':[dep for dep in t.get('depends_on',[]) if tasks.get(dep,{}).get('status')!='done']} for tid,t in tasks.items()}}
 
-def assess(data,proposal):
-    tasks=index(data); tid=proposal.get('task_id'); task=tasks.get(tid)
-    if not task: return {'decision':'review','reason':'No valid registered task ID','required':'link proposal to task'}
-    if task.get('status') in ('done','parked'): return {'decision':'review','reason':'Task is closed or parked'}
-    deps=[d for d in task.get('depends_on',[]) if tasks.get(d,{}).get('status')!='done']
-    if deps: return {'decision':'review','reason':'Unmet dependencies','blocked_by':deps}
-    # Semantic relationship is a model judgment recorded by agent with evidence;
-    # this CLI only enforces an explicit criterion/blocker reference and scope policy.
-    ref=proposal.get('criterion_id'); criteria=set(task.get('criteria_ids',[]))
-    if proposal.get('necessary_blocker_id') in task.get('blocker_ids',[]) and proposal.get('necessary_blocker_id'): return {'decision':'proceed','reason':'Registered necessary blocker'}
-    if ref not in criteria: return {'decision':'park','reason':'No approved acceptance criterion or registered blocker supports work'}
-    if proposal.get('adds_scope'):
-        return {'decision':'review','reason':'Potential scope expansion requires owner approval'}
-    return {'decision':'proceed','reason':'Traceable to approved criterion; semantic necessity still requires review'}
+def validate(root: Path) -> dict:
+  """Validate one project's records.
 
-def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('command',choices=['validate','next','assess']); ap.add_argument('--state',required=True); ap.add_argument('--proposal'); ap.add_argument('--date'); args=ap.parse_args(); data=load(args.state)
-    issues=validate(data)
-    if args.command=='validate': result={'valid':not issues,'issues':issues}
-    elif issues: result={'error':'invalid portfolio','issues':issues}
-    elif args.command=='next': result=next_actions(data,args.date)
-    else:
-        if not args.proposal: ap.error('--proposal required for assess')
-        result=assess(data,load(args.proposal))
-    print(json.dumps(result,indent=2)); sys.exit(1 if ('error' in result or (args.command=='validate' and issues)) else 0)
-if __name__=='__main__': main()
+  Args:
+    root: the project folder.
+
+  Returns:
+    {"project_id", "valid", "baseline", "issues"}; valid is False when the MVP has issues or the decision chain is broken.
+  """
+  proj = project.load(root)
+  entries, chain = decisions_log.read(proj.decisions_path)
+  state = project.baseline_state(proj, decisions_log.approvals(entries))
+  issues = list(chain) + ([proj.mvp_error] if proj.mvp_error else []) + list(proj.mvp.issues if proj.mvp else [])
+  if proj.mvp:
+    unknown = sorted({c for crits in proj.task_map.values() for c in crits} - proj.mvp.criterion_ids())
+    issues += [f"mappings.yaml maps a task to unknown criterion {c}" for c in unknown]
+  return {
+    "project_id": proj.project_id,
+    "partition": proj.partition,
+    "valid": not issues,
+    "baseline": {"approved": state.approved, "code": state.code, "clause": state.clause, "reason": state.reason},
+    "issues": issues,
+  }
+
+
+def cmd_validate(args: argparse.Namespace, cfg: settings_mod.Settings) -> int:
+  """Run validate for each --project.
+
+  Args:
+    args: parsed arguments.
+    cfg: settings (unused; kept for one handler signature).
+
+  Returns:
+    0 when every project is valid, 3 otherwise.
+  """
+  results = [validate(p) for p in args.project]
+  cli.emit(results if len(results) > 1 else results[0])
+  return cli.EXIT_OK if all(r["valid"] for r in results) else cli.EXIT_NEGATIVE
+
+
+def cmd_assess(args: argparse.Namespace, cfg: settings_mod.Settings) -> int:
+  """Assess one proposal and, with --apply, record the verdict.
+
+  Args:
+    args: parsed arguments (one --project, --proposal, a task source, --apply).
+    cfg: settings.
+
+  Returns:
+    0 for PROCEED, 3 for PARK, REVIEW or BLOCK.
+
+  Raises:
+    ConfigError: more than one --project given.
+  """
+  if len(args.project) != 1:
+    raise settings_mod.ConfigError("assess takes exactly one --project")
+  proj = project.load(args.project[0])
+  entries, _ = decisions_log.read(proj.decisions_path)
+  state = project.baseline_state(proj, decisions_log.approvals(entries))
+  proposal = records.parse_proposal(yaml_io.load_file(args.proposal))
+  tasks = cli.load_tasks(args, [proj.vikunja_project_id], cfg)
+  verdict = decide.assess(proposal, proj, state, tasks, cfg.partition, dt.datetime.now().astimezone())
+  kind = "park" if verdict.verdict == "PARK" else "verdict"
+  payload = verdict.to_dict()
+  if kind == "park":
+    payload["idea"] = {"title": proposal.description, "why_not_now": verdict.reason, "source_ref": list(proposal.evidence_refs)}
+  record = decisions_log.append(
+    proj.decisions_path, kind, proposal.proposer or "agent", verdict.contract_revision, verdict.reason, list(proposal.evidence_refs), payload, apply=args.apply
+  )
+  cli.emit({"verdict": verdict.to_dict(), "tasks_source": tasks.source, "record": record})
+  return cli.EXIT_OK if verdict.verdict == "PROCEED" else cli.EXIT_NEGATIVE
+
+
+def cmd_next(args: argparse.Namespace, cfg: settings_mod.Settings) -> int:
+  """Rank task, project and portfolio next actions.
+
+  Args:
+    args: parsed arguments (--project ..., a task source, --date, --focus, --task).
+    cfg: settings.
+
+  Returns:
+    0 always when ranking ran (a BLOCKED portfolio is an answer, reported in the output).
+  """
+  projects = [project.load(p) for p in args.project]
+  baselines = {}
+  for proj in projects:
+    entries, _ = decisions_log.read(proj.decisions_path)
+    baselines[proj.project_id] = project.baseline_state(proj, decisions_log.approvals(entries))
+  tasks = cli.load_tasks(args, [p.vikunja_project_id for p in projects], cfg)
+  today = records.parse_date(args.date, "--date") if args.date else dt.date.today()
+  cli.emit(rank.whats_next(projects, baselines, tasks, today, cfg.deadline_days, args.focus, args.task))
+  return cli.EXIT_OK
+
+
+def main() -> int:
+  """Parse arguments and dispatch.
+
+  Returns:
+    The exit code of the chosen command.
+  """
+  parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+  sub = parser.add_subparsers(dest="command", required=True)
+  p_val = sub.add_parser("validate", help="validate .gg/ records and the baseline")
+  p_val.add_argument("--project", type=Path, action="append", required=True)
+  p_ass = sub.add_parser("assess", help="decide a proposal")
+  p_ass.add_argument("--project", type=Path, action="append", required=True)
+  p_ass.add_argument("--proposal", type=Path, required=True)
+  p_ass.add_argument("--apply", action="store_true", help="append the verdict to .gg/decisions.jsonl")
+  cli.add_task_source(p_ass)
+  p_next = sub.add_parser("next", help="task, project and portfolio next actions")
+  p_next.add_argument("--project", type=Path, action="append", required=True)
+  p_next.add_argument("--date", help="rank for this date (YYYY-MM-DD); default today")
+  p_next.add_argument("--focus", type=int, help="the owner's selected task ID (owner first)")
+  p_next.add_argument("--task", type=int, help="also answer for this task")
+  cli.add_task_source(p_next)
+  args = parser.parse_args()
+  cfg = settings_mod.load()
+  handlers = {"validate": cmd_validate, "assess": cmd_assess, "next": cmd_next}
+  return handlers[args.command](args, cfg)
+
+
+if __name__ == "__main__":
+  cli.run(main)

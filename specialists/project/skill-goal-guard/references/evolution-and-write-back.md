@@ -9,6 +9,7 @@ Summary: >-
   Any session that gated, ranked, traced or changed GoalGuard work writes a dated Learned entry into the reference a future reader would open, plus
   one changelog line, with a code excerpt or screenshot as evidence; entries that cannot be written here are parked in the project.
 ---
+
 # Evolution and write-back
 
 ## Trigger

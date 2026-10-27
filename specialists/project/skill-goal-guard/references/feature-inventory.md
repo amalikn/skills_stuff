@@ -9,6 +9,7 @@ Summary: >-
   One table of 53 features and ideas, each marked Pilot, Later (L1-L5), Parked or Rejected, with its source; the pilot set is the v1.7 kickoff
   scope and nothing outside it is built until its gate passes.
 ---
+
 # Feature and idea inventory
 
 **Dispositions.** `Pilot` = in the v1.7 pilot ([pilot-plan.md](pilot-plan.md)). `L1`..`L5` = later phases, in order, each behind a gate. `Parked` = kept, no plan to build until a need is shown. `Rejected` = decided

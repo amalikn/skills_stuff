@@ -11,20 +11,22 @@ Summary: >-
   One canonical skill package; small reviewable .gg/ records holding references, approvals and decisions; volatile state and caches outside the
   repos; target-map.yaml and code-map.toml read only. The apn projects share one Git repository, which the per-project design must account for.
 ---
+
 # Project layout and storage
 
 ## Workspace facts (read 2026-10-27)
 
-| Fact                                                                                                | Consequence                                                                                    |
-| --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Root is `/Volumes/Data/_ai/_project/project_stuff`; it holds `apn/`, `me/` and other folders        | The two-partition model (`apn`, `me`) does not cover everything; unregistered folders are      |
-|   (`aws/`, `governance/`, ...)                                                                      |   simply not governed                                                                          |
-| `apn/enterprise-strategy`, `apn/unified-network-controller`, `apn/smc-resiliency` are lower case    | Use the real names in every config; the documents' `APN/UNC/...` spellings are illustrative    |
-| **`apn/` is one Git repository** containing all three projects                                      | See "Shared repository" below                                                                  |
-| `target-map.yaml` and `code-map.toml` exist in UNC and SMC; not checked in Enterprise-Strategy      | Read them in place                                                                             |
-| `.archcore/` in Enterprise-Strategy and UNC, not in SMC                                             | The Archcore rule path does not exist for SMC yet                                              |
-| No `.gg/` anywhere                                                                                  | Nothing to migrate; create only what the pilot needs                                           |
-| No `me` project is registered with GoalGuard | `me` portfolio work starts after the pilot (L1, second context); isolation is still tested in the pilot |
+| Fact                                                                                             | Consequence                                                                                       |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Root is `/Volumes/Data/_ai/_project/project_stuff`; it holds `apn/`, `me/` and other folders     | The two-partition model (`apn`, `me`) does not cover everything; unregistered folders are simply  |
+|   (`aws/`, `governance/`, ...)                                                                   |   not governed                                                                                    |
+| `apn/enterprise-strategy`, `apn/unified-network-controller`, `apn/smc-resiliency` are lower case | Use the real names in every config; the documents' `APN/UNC/...` spellings are illustrative       |
+| **`apn/` is one Git repository** containing all three projects                                   | See "Shared repository" below                                                                     |
+| `target-map.yaml` and `code-map.toml` exist in UNC and SMC; not checked in Enterprise-Strategy   | Read them in place                                                                                |
+| `.archcore/` in Enterprise-Strategy and UNC, not in SMC                                          | The Archcore rule path does not exist for SMC yet                                                 |
+| No `.gg/` anywhere                                                                               | Nothing to migrate; create only what the pilot needs                                              |
+| No `me` project is registered with GoalGuard                                                     | `me` portfolio work starts after the pilot (L1, second context); isolation is still tested in     |
+|                                                                                                  |   the pilot                                                                                       |
 
 ## Shared repository (operator, 2026-10-27: keep one repository, scope by path)
 

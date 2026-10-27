@@ -1,7 +1,7 @@
 # Code map for skill-goal-guard: decisions only, read by skill-coder's helpers. Baselines are machine-written.
 
 [meta]
-summary = "skill-goal-guard's code intent: scan scripts and tests; Python 3.14 pinned in .mise.toml."
+summary = "skill-goal-guard's code intent: seven front ends in scripts/ over the goal_guard_lib package; Python 3.14 pinned in .mise.toml."
 
 [scan]
 roots = ["scripts", "tests"]
@@ -9,9 +9,10 @@ python = "3.14"
 
 [write_gates]
 roots = ["scripts"]
+# write_gates.py reads entry points only and finds no writer here (2026-10-27): every write lives in a library module and is reached
+# only through a front end's --apply (decisions_log.append, snapshot.export, restore.restore, excel.write). The one exception is
+# goal_guard_hook.py --capture, which writes a redacted fixture to the runtime peer: the hook runs non-interactively, so the flag is its gate.
+note = "writes are behind --apply in the front ends; hook capture is gated by --capture"
 
-[modules."scripts/goal_guard.py"]
-status = "project_only"
-reason = """\
-  v0.1 prototype moved byte-identical from docs/goal-guard on 2026-10-27; has its purpose/usage/safety header (added 2026-10-27) but lacks the per-function docstrings skill-coder \
-  requires, and keeps task state locally against the Vikunja decision. Rewritten in the pilot (references/pilot-plan.md, step 4); not patched in place."""
+# Layers: a module imports only modules listed above it in goal_guard_lib/__init__.py; the front ends import the library, never each
+# other (checked by `import_layers.py --graph`: no cycles, 2026-10-27). Dependency seams and upgrade tests are named in requirements.txt.

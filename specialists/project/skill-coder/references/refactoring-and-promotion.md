@@ -39,6 +39,17 @@ When a module or script moves:
    test do not see string paths (a governed project's staleness audit, 2026-10-05).
 4. Remove the shim and the entry when no caller remains.
 
+> **Learned 2026-10-27** · any language, moving a script · reusable_candidate · Source: skills_stuff commit 1dff9c8 (skill-goal-guard `scripts/readme.md`, Moved paths) · Falsifier: a move
+> whose per-file hashes and output hash match although a caller still uses the old path
+> Prove a move changed nothing with two hashes taken before and after: the sha256 of every moved file, and a hash of the CLI's stdout for fixed inputs (here `2504fb41c7e48f1f` both times). An
+> untracked prototype with no callers needs no shim (step 1), only the moved-paths table (step 2); a tracked one with callers still gets the shim.
+>
+> ```bash
+> # before and after the move (md5 or Python hashlib where a policy gate reads a pipe into the sha tool as pipe-to-shell)
+> python3 -c "import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],'rb').read()).hexdigest())" scripts/goal_guard.py
+> python scripts/goal_guard.py next --state examples/portfolio.json --date 2026-10-27 | md5
+> ```
+
 ## Promotion
 
 Code grows in the projects that use it and moves to a shared skill when it has earned it. The global policy says every script judged likely to be reused is promoted, in the same session, without being

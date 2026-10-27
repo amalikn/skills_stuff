@@ -1,0 +1,12 @@
+# Proposal fixture: in scope, traceable, necessity recorded -> PROCEED.
+proposal_id: P-001
+task_id: 101
+project_id: demo-spoke
+criterion_id: AC-01
+description: Write read_state() for device X against the fake device
+adds_scope: false
+claimed_necessity: AC-01 cannot pass without reading the device
+smallest_step: read_state() plus one unit test with the fake device
+stop_condition: the unit test passes and one record is written
+proposed_files: [src/collector.py, tests/test_collector.py]
+proposer: claude-code

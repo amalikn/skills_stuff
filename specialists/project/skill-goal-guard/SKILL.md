@@ -4,7 +4,8 @@ description: >-
   GoalGuard (alias skill-gg): owner-approved MVP scope gate and solo portfolio focus for coding agents in project_stuff. Use before handing work to a
   coding agent, when an agent proposes new work or a design enlargement, to decide PROCEED / PARK / REVIEW / BLOCK against the approved MVP, to answer
   "what should I work on next" across apn and me projects from Vikunja, to trace a management milestone to an MVP criterion and a Vikunja task, or to
-  check completion evidence ("is this in scope", "park this idea", "what should I work on now"). Not for brainstorming (left unrestricted), not a project manager (Vikunja owns live tasks), and never an approval source.
+  check completion evidence ("is this in scope", "park this idea", "what should I work on now"). Not for brainstorming (left unrestricted), not a project
+  manager (Vikunja owns live tasks), and never an approval source.
 ---
 
 # GoalGuard
@@ -34,8 +35,9 @@ brainstorming; and a written rule or this file is not enforcement.
 
 ## Orient first
 
-1. **Status.** Rules consolidated; v0.1 prototype CLI only; Vikunja 2.7.1 runs locally (pilot step 0 done); no hook installed, nothing enforcing. Do not tell anyone a project is protected
-   ([references/enforcement-and-hooks.md](references/enforcement-and-hooks.md)). Pilot progress and open owner decisions: [references/pilot-plan.md](references/pilot-plan.md).
+1. **Status.** Rules consolidated; pilot tools written 2026-10-27 (scope gate, What's Next, trace, snapshot/restore, Excel sample, doctor, draft hook), tested on fixtures only; Vikunja 2.7.1 runs
+   locally (pilot step 0 done); no hook installed, nothing enforcing. Do not tell anyone a project is protected ([references/enforcement-and-hooks.md](references/enforcement-and-hooks.md)). Open live checks: [scripts/readme.md](scripts/readme.md) (Open
+   checks). Pilot progress and owner decisions: [references/pilot-plan.md](references/pilot-plan.md).
 2. Read the project's own `AGENTS.md`, Archcore rules and `.gg/` records (if any) first; project rules outrank this skill, but may not loosen an ancestor's scope, approval or privacy boundary.
 3. Resolve the partition (`apn` or `me`) and stay inside it.
 4. Find the approved MVP. None, draft or unreadable: scope-changing work is `BLOCK`; read-only inspection may continue.
@@ -71,14 +73,21 @@ brainstorming; and a written rule or this file is not enforcement.
 
 Run through `just` (pinned venv in the working-cache peer; `just bootstrap` once). Catalogue: [scripts/readme.md](scripts/readme.md).
 
-| Recipe                           | What it does                                                             | Safety    |
-| -------------------------------- | ------------------------------------------------------------------------ | --------- |
-| `just validate [state]`          | Validate a portfolio JSON (v0.1 schema)                                  | read-only |
-| `just next [state] [date]`       | Task, project and portfolio next (v0.1 weighted ranking, to be replaced) | read-only |
-| `just assess [proposal] [state]` | v0.1 verdict for a proposal (no BLOCK yet)                               | read-only |
-| `just check`                     | Unit tests plus example validation                                       | read-only |
+| Recipe                                                | What it does                                                                     | Safety              |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------- |
+| `just validate [project]`                             | Check a project's `.gg/` records, the hash chain and the baseline                | read-only           |
+| `just assess [proposal] [project] [tasks]`            | PROCEED / PARK / REVIEW / BLOCK in the order of decision-rules.md                | read-only           |
+| `just assess-apply proposal project`                  | Same against live Vikunja, and append the verdict to `.gg/decisions.jsonl`       | writes one log line |
+| `just next [project] [tasks] [date]`                  | Task, project and portfolio What's Next (`next-live` reads Vikunja)              | read-only           |
+| `just vikunja-info`, `just vikunja-tasks id`          | Instance version; one project's tasks                                            | read-only           |
+| `just trace [project] [tasks]`                        | Milestone → plan revision → criteria → target map → tasks                        | read-only           |
+| `just snapshot-export project`, `-verify`, `-restore` | Snapshot with manifests, verify, clean-instance restore (`-apply` recipes write) | plan by default     |
+| `just excel project out`                              | Management workbook sample (`excel-apply` writes the file)                       | plan by default     |
+| `just doctor [project]`                               | Enforced versus advisory paths, hook wiring, captures                            | read-only           |
+| `just hook-test payload [mode]`                       | Feed a payload to the draft PreToolUse hook                                      | read-only           |
+| `just check`                                          | ruff, 71 tests, skill-coder helpers, fixture validate and trace                  | read-only           |
 
-The v0.1 CLI predates the consolidated rules; where its verdict differs from [references/decision-rules.md](references/decision-rules.md), the reference wins.
+Where a tool's output and a reference disagree, the reference wins and the tool is fixed.
 
 Vikunja itself is run from `/Volumes/Data/_ai/_tool/tools_stuff/vikunja` (`just up`, `just status`, `just doctor`, `just dump`; README there), not from this pack.
 

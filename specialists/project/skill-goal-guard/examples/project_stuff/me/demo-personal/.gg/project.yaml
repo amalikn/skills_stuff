@@ -1,0 +1,5 @@
+# A me-partition project (fixture) for isolation tests.
+project_id: demo-personal
+partition: me
+role: standalone
+vikunja_project_id: 9

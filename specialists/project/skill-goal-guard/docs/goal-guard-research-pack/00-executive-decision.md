@@ -7,6 +7,7 @@ Scope: GoalGuard v0.x architecture, authorities, product rules and go/no-go gate
 Last reviewed: 2026-10-27
 Summary: Recommends a portable skill plus deterministic policy CLI, an event journal and a later Vikunja projection; adds the Thekedar selective-extraction decision.
 ---
+
 # GoalGuard — Research-backed implementation decision
 
 Date: 2026-10-27 (Australia/Sydney)

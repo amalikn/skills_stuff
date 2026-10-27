@@ -1,0 +1,31 @@
+# MVP contract (fixture), shape from references/mvp-contract-and-change-control.md.
+mvp_id: DEMO-MVP-001
+baseline_version: 1
+status: approved
+owner: operator
+problem: The operator cannot see one device's state without logging in to it.
+outcome: One device's state is reported every five minutes.
+deliverable: A collector that reads one device and writes one state record.
+acceptance_criteria:
+  - id: AC-01
+    test: The collector writes a state record for device X within five minutes of start.
+    evidence_required: test output and the stored record
+  - id: AC-02
+    test: A device that does not answer produces one failed record, not a hang.
+    evidence_required: test output with a timed-out fake device
+exclusions:
+  - id: EX-DASH
+    text: Dashboards
+    keywords: [dashboard, grafana panel]
+  - Multi-tenant support
+necessary_blockers:
+  - id: NB-01
+    unblocks: AC-01
+    description: Read-only credential for device X in the secret store
+constraints: []
+planning_exit: {result: commit, unresolved_blockers: []}
+approval:
+  actor: operator
+  evidence_ref: "decisions.jsonl#gg-approval-0001"
+  approved_at: "2026-10-27T10:00:00+11:00"
+links: {management_milestone_id: M1, target_map_ref: target-map.yaml, vikunja_project_id: 7}

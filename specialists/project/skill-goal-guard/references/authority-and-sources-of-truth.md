@@ -9,6 +9,7 @@ Summary: >-
   Vikunja owns live tasks; GoalGuard owns scope, approvals, decisions, deferred ideas, internal targets and forecasts; Enterprise-Strategy owns
   approved cross-project decisions and management commitments; Archcore owns technical rules. One owner per record, references not copies.
 ---
+
 # Authority and sources of truth
 
 ## Decision that settles the design lines

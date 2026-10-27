@@ -7,6 +7,7 @@ Scope: What comes next for skill-goal-guard, in order, with the gate for each st
 Last reviewed: 2026-10-27
 Summary: Vikunja is deployed and D1-D6 are answered (2026-10-27); next is the operator's Vikunja user and token, then the read-only pilot inventory; later phases L1-L5 open only after the pilot report.
 ---
+
 # Roadmap
 
 ## Now

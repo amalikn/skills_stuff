@@ -1,0 +1,11 @@
+# Proposal fixture: traceable but adds scope -> REVIEW.
+proposal_id: P-004
+task_id: 101
+project_id: demo-spoke
+criterion_id: AC-01
+description: Read a second device model as well
+adds_scope: true
+claimed_necessity: the next model is similar
+smallest_step: extend read_state()
+stop_condition: both models read
+proposer: claude-code

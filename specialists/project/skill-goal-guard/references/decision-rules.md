@@ -9,18 +9,21 @@ Summary: >-
   One ordered rule set for the four verdicts: deterministic contract checks first, then semantic necessity; pre-registered blockers proceed, newly
   discovered dependencies go to REVIEW; missing or unapproved baselines BLOCK scope-changing work while read-only inspection stays open.
 ---
+
 # Decision rules
 
 ## Verdicts
 
-| Verdict   | Meaning                                                                                             | Agent may execute?        | Record                                                 |
-| --------- | --------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------ |
-| `PROCEED` | In approved scope, or a dependency already registered as necessary in the approved baseline         | Yes                       | criterion or blocker ID, rationale, contract revision  |
-| `PARK`    | Useful but not needed for this baseline                                                             | No                        | deferred idea with context and possible                |
-|           |                                                                                                     |                           |   future milestone                                     |
-| `REVIEW`  | Possibly needed but not approved: scope change, ambiguity, stale or conflicting authority           | No, for the affected work | evidence, alternatives, the owner decision requested   |
-| `BLOCK`   | Missing or unapproved baseline, a task mapped to no approved MVP, excluded feature, self-approval, protected change,                  | No                        | failed clause and remedy                               |
-|           |   cross-context access                                                                              |                           |                                                        |
+| Verdict   | Meaning                                                                                                       | Agent may execute?      | Record                                         |
+| --------- | ------------------------------------------------------------------------------------------------------------- | ----------------------- | ---------------------------------------------- |
+| `PROCEED` | In approved scope, or a dependency already registered as necessary in the approved baseline                   | Yes                     | criterion or blocker ID, rationale,            |
+|           |                                                                                                               |                         |   contract revision                            |
+| `PARK`    | Useful but not needed for this baseline                                                                       | No                      | deferred idea with context and possible        |
+|           |                                                                                                               |                         |   future milestone                             |
+| `REVIEW`  | Possibly needed but not approved: scope change, ambiguity, stale or conflicting authority                     | No, for the             | evidence, alternatives, the owner              |
+|           |                                                                                                               |   affected work         |   decision requested                           |
+| `BLOCK`   | Missing or unapproved baseline, a task mapped to no approved MVP, excluded feature, self-approval, protected  | No                      | failed clause and remedy                       |
+|           |   change, cross-context access                                                                                |                         |                                                |
 
 Every verdict carries `reason_code`, `contract_revision`, evidence references and `requires_owner_approval` (pack 06 §4). `UNKNOWN` is a diagnostic state for telemetry and unparseable input, not a
 verdict (pack 02).
@@ -65,13 +68,16 @@ No convincing answer to 1-3 → park (v0.1 readme).
 
 ## Record formats (pilot contract; field names follow pack 06 §4 and handoff §31)
 
-| Record | Fields |
-|---|---|
-| Proposal | `proposal_id`, `task_id` (Vikunja ID), `project_id`, `criterion_id` or `necessary_blocker_id`, `description`, `adds_scope`, `claimed_necessity`, `smallest_step`, `stop_condition`, `evidence_refs`, `proposed_files` (optional), `proposer` (agent/session) |
-| Verdict | `proposal_id`, `verdict` (PROCEED/PARK/REVIEW/BLOCK), `reason_code`, `clause` (MVP-/PORT-/DATE- ID), `contract_revision`, `evidence_refs`, `requires_owner_approval`, `decided_at` (ISO-8601 with offset) |
-| `decisions.jsonl` line | `decision_id`, `kind` (verdict, approval, override, revision, park), `actor`, `contract_revision` before and after, `rationale`, `refs`, `at`, `prev_hash` (hash chain, append-only) |
+| Record                 | Fields                                                                                                                                                                      |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Proposal               | `proposal_id`, `task_id` (Vikunja ID), `project_id`, `criterion_id` or `necessary_blocker_id`, `description`, `adds_scope`, `claimed_necessity`, `smallest_step`,           |
+|                        |   `stop_condition`, `evidence_refs`, `proposed_files` (optional), `proposer` (agent/session)                                                                                |
+| Verdict                | `proposal_id`, `verdict` (PROCEED/PARK/REVIEW/BLOCK), `reason_code`, `clause` (MVP-/PORT-/DATE- ID), `contract_revision`, `evidence_refs`, `requires_owner_approval`,       |
+|                        |   `decided_at` (ISO-8601 with offset)                                                                                                                                       |
+| `decisions.jsonl` line | `decision_id`, `kind` (verdict, approval, override, revision, park), `actor`, `contract_revision` before and after, `rationale`, `refs`, `at`, `prev_hash` (hash            |
+|                        |   chain, append-only)                                                                                                                                                       |
 
-Schemas are written with the step-4 rewrite (`schemas/`); until then this table is the contract.
+Schemas (`schemas/`) are not written yet (2026-10-27); the step-4 code enforces this table in `scripts/goal_guard_lib/records.py` and `mvp.py`, and a PROCEED verdict also carries the proposal's `proposed_files`, which the hook uses as its file allowlist.
 
 ## Policy clause index
 

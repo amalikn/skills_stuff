@@ -1,0 +1,14 @@
+# GoalGuard project record (fixture). Identity, partition and ranking rules only; never task state.
+project_id: demo-spoke
+partition: apn
+role: spoke
+vikunja_project_id: 7
+hub:
+  project_id: demo-hub
+  path: ../demo-hub
+ranking:
+  priority_rank: {5: 0, 4: 1, 3: 2, 2: 3, 1: 4}
+  started_label: in-progress
+  incident_label: incident
+protected_paths:
+  - ../demo-hub/plan.md
