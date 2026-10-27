@@ -58,7 +58,7 @@ new or moved files, stage them (or `git add -N`) and run the check again; the te
 merge adds a rule, the upgrader warns "re-serialised the whole file" and writes it back without comments or quoting, so the line diff is
 hundreds of lines (532 there) while the real change was one version key and one rule. The lost lines included the file's purpose header, which the
 header standard requires. After applying: `just nav-check-context-map`
-(`scripts/yaml_key_diff.py`) compares the old (`git show HEAD:./context-map.yaml`) and new files by key and lists the comments lost; put the
+(`scripts/navigation/yaml_key_diff.py`) compares the old (`git show HEAD:./context-map.yaml`) and new files by key and lists the comments lost; put the
 purpose header and any rationale comments back by script. A lost `# skill-ai-it-version:` comment is expected: the key replaces it.
 
 **A pack bootstrapped by hand tends to write `.archcore/` decisions as `accepted`.** Building skill-coder (2026-10-19), the agent wrote an ADR and a rule
@@ -80,7 +80,7 @@ nothing would change, 2 when it would change files and 3 when a change needs man
 `govern` also stops on any uncommitted governed file, so a refresh after a working session starts with a commit (ask; never `GOVERN_ALLOW_DIRTY` unasked).
 
 ```python
-# skill-ai-it scripts/upgrade_navigation_control_layer.py (end of main)
+# skill-ai-it scripts/navigation/upgrade_navigation_control_layer.py (end of main)
 final_changed = bool(report_data["changed_files"])
 if report_data.get("requires_manual_review"):
     sys.exit(3)

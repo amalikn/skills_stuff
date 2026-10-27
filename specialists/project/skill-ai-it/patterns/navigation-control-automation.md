@@ -40,9 +40,9 @@ than relying only on agents to interpret Markdown instructions, these scripts pr
 
 | Script | When to run |
 |---|---|
-| `scripts/upgrade_navigation_control_layer.py` | First pass against an existing project. Upgrades managed blocks, fixes markers, adds missing context-map.yaml keys. Use `--dry-run` first. |
-| `scripts/validate_navigation_control_layer.py` | After upgrade or whenever governance coherence needs checking. Pass/fail/warn output with actionable messages. |
-| `scripts/check_expected_diff.py` | After upgrade, to verify only expected governance files changed. Detects accidental modifications to source files. |
+| `scripts/navigation/upgrade_navigation_control_layer.py` | First pass against an existing project. Upgrades managed blocks, fixes markers, adds missing context-map.yaml keys. Use `--dry-run` first. |
+| `scripts/navigation/validate_navigation_control_layer.py` | After upgrade or whenever governance coherence needs checking. Pass/fail/warn output with actionable messages. |
+| `scripts/navigation/check_expected_diff.py` | After upgrade, to verify only expected governance files changed. Detects accidental modifications to source files. |
 
 ## How to interpret exit codes
 
@@ -104,7 +104,7 @@ implement a subset of those checks deterministically, while the pattern document
 
 Run order:
 
-1. `scripts/validate_navigation_control_layer.py` (deterministic check)
+1. `scripts/navigation/validate_navigation_control_layer.py` (deterministic check)
 2. `patterns/drift-audit.md` manual checkpoints (if deeper inspection needed)
 
 ## Relationship to patterns/script-task-audit-checklist.md

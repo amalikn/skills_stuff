@@ -16,6 +16,8 @@ Last rotated: 20261027_1213
 
 ## Unreleased
 
+- 20261027 Pattern P-32 "Repoint callers after a move: plan, skip history, guard local namesakes" in `references/design-patterns.md` (skill-ai-it scripts reorganisation; reusable_candidate).
+- 20261027 Learned in `references/safety-and-writes.md`: write_gates' default patterns skip local file writes; a package that rewrites governed files adds `write_patterns` (skill-ai-it: 0 to 23 writers, two ungated).
 - 20261027 Learned in `references/version-control-and-review.md`: simulate a cherry-pick with `git merge-tree --merge-base` (no checkout); read a branch list whole (skill-smc `ansible_change_reach`).
 - 20261027 Pattern P-31 "Append-only event ledger, content-derived IDs and approval bound to a body digest" in `references/design-patterns.md` (skill-knowledge-curator v1; reusable_candidate).
 - 20261027 Pattern P-30 "Solve in a canonical frame, then transform the result" in `references/design-patterns.md` (skill-drawio fold; reusable_candidate).

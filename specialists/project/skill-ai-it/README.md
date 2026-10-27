@@ -78,7 +78,7 @@ skill-ai-it/
 ├── references/          on-need detail moved out of SKILL.md, one topic per file
 ├── templates/           files generated into target projects (incl. govcheck/)
 ├── patterns/            optional guidance modules
-├── scripts/             tooling, catalogued in scripts/README.md
+├── scripts/             tooling in family folders, catalogued in scripts/README.md
 ├── tests/               tests for the scripts
 ├── docs/                plans, reviews, history/, trackers/, archive/
 └── governance/          watchman event log for historical context recovery

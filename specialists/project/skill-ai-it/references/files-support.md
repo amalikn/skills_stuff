@@ -176,7 +176,7 @@ upgrader reports `replaced-managed-block` and that reads like success.
 #### code-map.toml — create when: the project has code
 
 Operator, 2026-10-20: "coder-map to be created.. it should be part of skill-ai-it bootstrap/refresh". The code map is skill-coder's file (format and
-reader: skill-coder `templates/code-map.toml`, `scripts/code_map.py`); this skill only creates and extends it. `scripts/adopt_code_map.py` (run by
+reader: skill-coder `templates/code-map.toml`, `scripts/code_map.py`); this skill only creates and extends it. `scripts/adoption/adopt_code_map.py` (run by
 `govern`, so by bootstrap and refresh) writes it from the template when a project has code under `src/`, `scripts/`, `adapters/`, `tools/` or
 `wc-local/scripts/` and no map, and adds a `[modules]` entry for each Python script outside `src/` that the map does not list. Every entry it
 writes says `reason = "unreviewed: ..."`: a placeholder, not a decision. The checker template's `check_code_map` fails on it, on a script with no

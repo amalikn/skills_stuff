@@ -1,4 +1,4 @@
-"""scripts/anchor_links.py: links to a missing heading are found, duplicates and HTML anchors count, verbatim folders are skipped. Offline."""
+"""scripts/checks/anchor_links.py: links to a missing heading are found, duplicates and HTML anchors count, verbatim folders are skipped. Offline."""
 
 import importlib.util
 import sys
@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[1]
-_spec = importlib.util.spec_from_file_location("anchor_links", _ROOT / "scripts/anchor_links.py")
+_spec = importlib.util.spec_from_file_location("anchor_links", _ROOT / "scripts/checks/anchor_links.py")
 al = importlib.util.module_from_spec(_spec)
 sys.modules["anchor_links"] = al
 _spec.loader.exec_module(al)

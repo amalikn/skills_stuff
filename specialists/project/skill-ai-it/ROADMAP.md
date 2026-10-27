@@ -46,7 +46,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   comment survives. Unblocks the unstamped-projects item above.
 
 - [ ] **`rotate_records.py` reads prose as a tracker path** (2026-10-27, ansible-wifi session): skill-coder's SCRATCHPAD front matter says
-  `Open items tracker: this file, Open items`; `scripts/rotate_records.py:771` takes the first word, so `just rotate --apply` moved its open
+  `Open items tracker: this file, Open items`; `scripts/records/rotate_records.py:771` takes the first word, so `just rotate --apply` moved its open
   items into a new file named `this`, staged it, and linked it from SCRATCHPAD (undone by hand). Fix: treat a value that is not a path ending
   in `.md` (or that says "this file") as "no separate tracker"; add a regression test with that front matter.
 
@@ -68,8 +68,8 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   Gate: the existing 202 tests and a byte-identical render in unified-network-controller and smc-resiliency.
 - [ ] **Adopt `anchor_links.py` in smc-resiliency** (2026-10-22): its session has an uncommitted govcheck copy of the same rule; told directly and
   through the hub (es inbox 20261022_1745). Done when its `just check` calls the skill copy.
-- [ ] **Target map standard: bootstrap and governance standard left (module promoted 2026-10-21).** Done 2026-10-21: `scripts/target_map.py` and
-  `scripts/plan_timeline.py` live here with their tests and [reference](references/target-map-and-timeline.md); unified-network-controller runs them
+- [ ] **Target map standard: bootstrap and governance standard left (module promoted 2026-10-21).** Done 2026-10-21: `scripts/plans/target_map.py` and
+  `scripts/plans/plan_timeline.py` live here with their tests and [reference](references/target-map-and-timeline.md); unified-network-controller runs them
   (renders byte-identical) and smc-resiliency adopted both. Left: `bootstrap` offers a starter map (`--init`), the checker template gains
   `check_target_map`/`check_plan_timeline`, a governance standard whose field table is the `--schema` output, and `target_map.py` (1,702
   lines, over skill-coder's module budget) split into a package: schema, readers, validator, renderer, starter, command line. History of the pilot: A project-root `target-map.yaml`, beside `context-map.yaml`, is the source of truth for
@@ -126,10 +126,18 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Ideas
 
+- **`repoint_paths.py` skips dated sections inside living files (2026-10-27).** It skips history files whole, but rewrote dated session lines in
+  SCRATCHPAD.md (`### YYYYMMDD_hhmm` blocks), caught by `audit_rotations.py`. Skip lines under a dated heading, with a test.
+- **Navigation writers plan by default (2026-10-27, skill-coder write gates).** `upgrade_navigation_control_layer.py` and `migrate_legacy_blocks.py`
+  write on a bare run and plan only with `--dry-run`, the reverse of skill-coder's rule; both are registered as GAP in `scripts/write-gates.json`.
+  Flip them to `--apply` together with every caller (`govern`, `nav-upgrade`, `nav-migrate-legacy` in this justfile and `templates/justfile`), canary first.
+- **Ship `check_declared_dependencies` in the template (2026-10-27, staleness audit).** This package's checker now derives its third-party imports and fails
+  when `requirements.txt` misses one; generated projects state the same rule in `references/finishing.md` as prose only. Port it to
+  `templates/check_governance.py` with a test, after one canary project.
 - **Upgrader changelog placement for `### date` under `## Unreleased` (2026-10-27, skill-goal-guard bootstrap).** `changelog_is_newest_first` reads only dated `##`
   headings, so a CHANGELOG that dates entries as `### YYYY-MM-DD hh:mm — title` under `## Unreleased` reads as "order unknown" and the upgrade entry is appended at the
   bottom in `## YYYYMMDD_hhmm` style; it was moved by hand. Read `###` dates under `## Unreleased` too, and write the entry in the file's own heading level and style.
-- [x] **Plan tracker timeline as data** (2026-10-21, candidate in unified-network-controller `code-map.toml`; promoted 2026-10-21 as `scripts/plan_timeline.py`): `scripts/render/plan_timeline.py`
+- [x] **Plan tracker timeline as data** (2026-10-21, candidate in unified-network-controller `code-map.toml`; promoted 2026-10-21 as `scripts/plans/plan_timeline.py`): `scripts/render/plan_timeline.py`
   renders a plan tracker's Timeline from YAML with the schedule worked out from the dates (late, due today, done), plus its govcheck and
   `commit-gate`. Promote here once a second project (smc-resiliency) keeps its timeline as data.
 - [ ] **ADR template** — a starter `.archcore/adr/` template for common decision types (tool choice, data model, boundary design).

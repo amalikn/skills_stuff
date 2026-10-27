@@ -1,5 +1,5 @@
-"""Offline tests for govern's two safety steps: scripts/govern_guard.py (dirty governed files stop the run) and `--prune-baseline` in
-scripts/doc_freshness.py and scripts/role_check.py (resolved entries leave the baseline; nothing is ever added)."""
+"""Offline tests for govern's two safety steps: scripts/checks/govern_guard.py (dirty governed files stop the run) and `--prune-baseline` in
+scripts/checks/doc_freshness.py and scripts/checks/role_check.py (resolved entries leave the baseline; nothing is ever added)."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
 
 
 def load(name: str):
-    """Import a script from scripts/ by file name.
+    """Import a script from its family folder under scripts/ by file name.
 
     Args:
         name: the module name without `.py`.
@@ -23,7 +23,7 @@ def load(name: str):
     Returns:
         The loaded module.
     """
-    spec = importlib.util.spec_from_file_location(name, SCRIPTS / f"{name}.py")
+    spec = importlib.util.spec_from_file_location(name, next(SCRIPTS.glob(f"*/{name}.py")))
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
     spec.loader.exec_module(mod)

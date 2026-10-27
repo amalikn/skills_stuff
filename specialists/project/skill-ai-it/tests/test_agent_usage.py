@@ -1,4 +1,4 @@
-"""Offline tests for scripts/agent_usage.py --md-reads: outline greps, recipe calls and whole/ranged Markdown Reads are counted per project."""
+"""Offline tests for scripts/survey/agent_usage.py --md-reads: outline greps, recipe calls and whole/ranged Markdown Reads are counted per project."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "agent_usage.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "survey" / "agent_usage.py"
 _spec = importlib.util.spec_from_file_location("agent_usage", SCRIPT)
 au = importlib.util.module_from_spec(_spec)
 sys.modules["agent_usage"] = au

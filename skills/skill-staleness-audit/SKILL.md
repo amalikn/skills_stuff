@@ -342,6 +342,12 @@ Both hit this skill's own runs on 2026-09-27; details in the markdown governance
   `audit_state.py record --phase 4 --key artifacts_reasoned`, not by running the generator again.
 - **The Phase 0 snapshot is a second copy of every changed file inside the project.** A project check that resolves bare file names across the tree
   reports them ambiguous for the whole audit, and the gate's suite run fails; the project's check should skip `.staleness-audit*` (2026-10-27).
+- **The gate's YAML duplicate-key step runs on the interpreter that runs the gate** (2026-10-27, skill-ai-it): host `python3` without PyYAML
+  reports it SKIPPED, not passed. Run `verify_completeness.py` with the project's venv interpreter, or parse every YAML file with a
+  duplicate-key loader by hand and say so in the report.
+- **The Phase 4 gate counts filled rows, not judgements** (2026-10-27, skill-ai-it): 22 test files given one stock line by a script passed it;
+  a side agent caught it. Write each verdict from that file's own evidence (what it loads, whether it reads the clock or the live tree,
+  what it does not cover); for tests, profile each file before writing its row.
 - **An unquoted heredoc (`<<EOF`) runs every backticked word as a command.** Write markdown with `<<'EOF'`, or with the Write tool, and read the result back.
 
 ## Skill package layout

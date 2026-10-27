@@ -1,4 +1,4 @@
-"""scripts/plan_timeline.py: schedule marks follow the dates, a stale page is drift, bad data is refused. Offline."""
+"""scripts/plans/plan_timeline.py: schedule marks follow the dates, a stale page is drift, bad data is refused. Offline."""
 
 import datetime as dt
 import importlib.util
@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[1]
-_spec = importlib.util.spec_from_file_location("plan_timeline", _ROOT / "scripts/plan_timeline.py")
+_spec = importlib.util.spec_from_file_location("plan_timeline", _ROOT / "scripts/plans/plan_timeline.py")
 pt = importlib.util.module_from_spec(_spec)
 sys.modules["plan_timeline"] = pt  # dataclasses resolve annotations through the module
 _spec.loader.exec_module(pt)

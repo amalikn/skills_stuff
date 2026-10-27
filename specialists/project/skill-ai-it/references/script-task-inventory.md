@@ -206,11 +206,11 @@ audit-scripts:
 # Governance coherence checks — must exit 0 before durable work is called complete
 check: _require-venv
     @{{py}} scripts/check_governance.py
-    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
-    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root .
 
 # Run safe local preflight checks
 preflight: runtimes audit-scripts check

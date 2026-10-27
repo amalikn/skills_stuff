@@ -1,4 +1,4 @@
-"""Offline tests for scripts/move_sections.py: sections move verbatim, Contents and pointer are right, nothing is written without --apply."""
+"""Offline tests for scripts/records/move_sections.py: sections move verbatim, Contents and pointer are right, nothing is written without --apply."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "move_sections.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "records" / "move_sections.py"
 _spec = importlib.util.spec_from_file_location("move_sections", SCRIPT)
 ms = importlib.util.module_from_spec(_spec)
 sys.modules["move_sections"] = ms

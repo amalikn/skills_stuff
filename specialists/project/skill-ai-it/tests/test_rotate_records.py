@@ -1,4 +1,4 @@
-"""Offline tests for scripts/rotate_records.py: rotation never loses a content line, keeps prose under Contents, pins open items."""
+"""Offline tests for scripts/records/rotate_records.py: rotation never loses a content line, keeps prose under Contents, pins open items."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "rotate_records.py"
+SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "records" / "rotate_records.py"
 _spec = importlib.util.spec_from_file_location("rotate_records", SCRIPT)
 rr = importlib.util.module_from_spec(_spec)
 sys.modules["rotate_records"] = rr

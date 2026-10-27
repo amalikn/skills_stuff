@@ -1,4 +1,4 @@
-"""Offline tests for scripts/normalise_records.py: headings are added, no original line changes, and rotation then moves dated paragraphs."""
+"""Offline tests for scripts/records/normalise_records.py: headings are added, no original line changes, and rotation then moves dated paragraphs."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "normalise_records.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "records" / "normalise_records.py"
 _spec = importlib.util.spec_from_file_location("normalise_records", SCRIPT)
 nr = importlib.util.module_from_spec(_spec)
 sys.modules["normalise_records"] = nr

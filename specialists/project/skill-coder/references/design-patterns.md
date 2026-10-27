@@ -71,6 +71,8 @@ Evidence:     VERIFIED_PRIMARY | VERIFIED_SECONDARY | CANDIDATE, with what was o
 | P-28 | Recovery on immutable parts; recoveries count as faults     | Recovery that depends on broken state; hidden self-healing                  |
 | P-29 | Clock floor and "expiry unchecked" under untrusted time      | Time checks on clocks known to be wrong                                     |
 | P-30 | Solve in a canonical frame, then transform the result       | A solver written for one orientation needed in a mirrored one               |
+| P-31 | Append-only event ledger, content IDs, digest-bound approval | Judgements on changing inputs that must survive reruns and edits           |
+| P-32 | Repoint callers after a move                                | Moving shared files that many repos call by path                            |
 
 ## Patterns
 
@@ -613,6 +615,39 @@ if prior and prior["version_id"] == version["version_id"]:      # claims.py: rer
 
 def body_digest(text: str) -> str:                              # render.py: banner above the marker may change
   return sha256_text(text.split(BODY_MARK, 1)[1] if BODY_MARK in text else text)
+```
+
+### P-32 Repoint callers after a move: plan, skip history, guard local namesakes
+
+> **Learned 2026-10-27** · design pattern, any language · VERIFIED_PRIMARY (skill-ai-it: 467 references in 43 files across 30 projects repointed when its
+> flat scripts/ became family folders; every caller's check run after, no path errors) (reusable_candidate: proven in one project) Pattern P-32.
+
+- **Problem:** a shared tool's files move, and many other repositories call them by path from task runners, docs and code; a blind search and replace
+  breaks history and hits unrelated files that happen to share a name.
+- **Solution:** (1) the move is data: a map of name to new folder; (2) a plan-by-default rewriter matches only the old qualified form (`scripts/<name>.py`,
+  not a path already moved), prints counts per file and writes with `--apply`; (3) it skips history by file kind (change logs, history and archive folders,
+  dated `<slug>-YYYYMMDD_hhmm` files, generated context, vendored clones); (4) it leaves a reference alone when the caller's own project has a file by that
+  name; (5) then every caller's own check runs and its output is searched for path errors specifically.
+- **Why it works:** the plan shows the blast radius before a write; idempotence comes from matching only the old form; the namesake guard keeps a local
+  copy's references local; running callers' checks proves behaviour, not text.
+- **Reuse:** renaming a shared library module, moving a config file other repos read, retiring a recipe name across a fleet of task runners.
+- **Pitfalls:** (a) code that builds the path (`DIR / f"{name}.py"`) has no old string to match: grep for the folder constant as well and fix those loaders
+  to search the new layout (two projects on 2026-10-27); (b) dated sections inside a living file (a SCRATCHPAD session block) are history too, and were
+  rewritten until a rotation audit reported them lost; (c) a self-check whose scans were flat (`scripts/*.py`) silently dropped 81 assertions after the
+  move: recount a checker's assertions before and after, and make scans recursive.
+- **Realised in:** Python, skill-ai-it `scripts/adoption/repoint_paths.py`:
+
+```python
+pattern = re.compile(r"(?<![\w-])scripts/(" + "|".join(map(re.escape, sorted(mapping))) + r")\.py\b")
+
+def swap(match):
+  name = match.group(1)
+  if has_local(path, name, root):      # the caller's project has its own scripts/<name>.py: leave it
+    return match.group(0)
+  return f"scripts/{mapping[name]}/{name}.py"
+
+if DATED.search(path.name):             # -YYYYMMDD_hhmm.md: a dated report or record is history
+  return True
 ```
 
 ## Language realisations

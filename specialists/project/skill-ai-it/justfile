@@ -45,6 +45,7 @@ set dotenv-load := false
 # Working-cache peer for this package (skills_stuff/specialists/project/<pkg> -> skills-working-cache/specialists/project/<pkg>).
 wc := "/Volumes/Data/_ai/_skills/skills-working-cache/specialists/project/skill-ai-it"
 py := wc + "/.venv/bin/python"
+coder := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder"
 ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 nd := "mise exec -- node"
 
@@ -76,12 +77,12 @@ audit-scripts:
     @just --list || true
     @echo
     @echo "== script files =="
-    @find scripts -maxdepth 2 -type f 2>/dev/null | sort || true
+    @find scripts -maxdepth 2 -type f -not -path '*/__pycache__/*' 2>/dev/null | sort || true
     @echo
     @echo "== uncataloged script candidates =="
     @if [ -d scripts ] && [ -f scripts/README.md ]; then \
-      find scripts -maxdepth 2 -type f | sort | while read -r f; do \
-        grep -Fq "$f" scripts/README.md || echo "$f"; \
+      find scripts -maxdepth 2 -type f -not -path '*/__pycache__/*' | sort | while read -r f; do \
+        grep -Fq "${f#scripts/}" scripts/README.md || echo "$f"; \
       done; \
     fi
 
@@ -89,12 +90,37 @@ audit-scripts:
 # Governance coherence checks — assert this project's governance claims against reality
 check: _require-venv
     @{{py}} scripts/check_governance.py
-    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
-    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
+    @{{py}} "{{skill_dir}}/scripts/navigation/validate_navigation_control_layer.py" --project-root . >/dev/null || just nav-validate
+    @echo "OK — navigation control layer valid"
+    @just self-check
+
+# The package held to skill-coder's rules: sizes (shrink-only baseline scripts/code-size-baseline.json), timeouts, write gates, headers, suppressions, names
+self-check: _require-venv
+    @{{py}} "{{coder}}/scripts/code_size.py" --project-root . --roots scripts
+    @{{py}} "{{coder}}/scripts/call_timeouts.py" --project-root . --roots scripts
+    @{{py}} "{{coder}}/scripts/write_gates.py" --project-root . --config scripts/write-gates.json
+    @{{py}} "{{coder}}/scripts/script_headers.py" --project-root . --roots scripts
+    @{{py}} "{{coder}}/scripts/suppressions.py" --project-root . --roots scripts
+    @{{py}} "{{coder}}/scripts/naming_check.py" --project-root .
+
+# Run `just check` in every project or skill whose justfile calls this package's scripts; flags path errors apart from the project's own findings. Read-only.
+callers-check:
+    #!/usr/bin/env bash
+    for f in $(grep -rlE "skill-ai-it/scripts/|ai_it\}\}/scripts/" --include=justfile /Volumes/Data/_ai/_project/project_stuff /Volumes/Data/_ai/_skills/skills_stuff /Volumes/Data/_ai/_tool/tools_stuff 2>/dev/null | grep -v "/skill-ai-it/" | sort); do
+      d="$(dirname "$f")"; out="$(cd "$d" && timeout 300 just check 2>&1)"; rc=$?
+      err="$(printf '%s\n' "$out" | grep -E "No such file|can't open file|FileNotFoundError|ModuleNotFoundError|cannot be imported" | head -1 | cut -c1-120)"
+      printf "%-3s %-60s %s\n" "$rc" "${d#/Volumes/Data/_ai/}" "${err:+PATH: $err}"
+    done
+
+# Repoint references to moved skill scripts (`scripts/<name>.py` -> `scripts/<family>/<name>.py`) under each root. Plan by default; add --apply
+repoint-paths map +ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/adoption/repoint_paths.py" --map "{{map}}" {{ARGS}}
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
-    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root .
 
 # Run safe local preflight checks
 preflight: runtimes audit-scripts check lint-md
@@ -110,66 +136,66 @@ skill_dir := justfile_directory()
 
 # Upgrade navigation control layer (dry-run preview)
 nav-upgrade-dry-run: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
+	@{{py}} "{{skill_dir}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root . --dry-run
 
 # Upgrade navigation control layer (apply changes) — review the dry-run first
 nav-upgrade: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
+	@{{py}} "{{skill_dir}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root .
 
 # Validate navigation control layer
 nav-validate: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
+	@{{py}} "{{skill_dir}}/scripts/navigation/validate_navigation_control_layer.py" --project-root .
 
 # Docstring standard as a ratchet (global policy, 2026-10-08): report against the target's baseline; exit 1 on a regression
 #   just docstrings                                  # in the target project
 #   just docstrings --write-baseline                 # adopt: record today's counts
 #   just docstrings --roots scripts,src --list       # every shortfall
 docstrings *flags: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/docstring_ratchet.py" --project-root . {{flags}}
+	@{{py}} "{{skill_dir}}/scripts/checks/docstring_ratchet.py" --project-root . {{flags}}
 
 # Check only expected files changed after upgrade (requires a git repo)
 nav-check-diff: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
+	@{{py}} "{{skill_dir}}/scripts/navigation/check_expected_diff.py" --project-root .
 
 # After an upgrade, before commit: text outside the managed blocks must match HEAD (or REF). Read-only
 nav-check-blocks REF="HEAD": _require-venv
-	@{{py}} "{{skill_dir}}/scripts/check_outside_blocks.py" --project-root . --ref "{{REF}}"
+	@{{py}} "{{skill_dir}}/scripts/navigation/check_outside_blocks.py" --project-root . --ref "{{REF}}"
 
 # Context map after an upgrade: key changes by content and comments lost vs a git ref (default HEAD); exit 1 while a comment is lost. Read-only
 nav-check-context-map REF="HEAD": _require-venv
-	@{{py}} "{{skill_dir}}/scripts/yaml_key_diff.py" --project-root . --ref "{{REF}}"
+	@{{py}} "{{skill_dir}}/scripts/navigation/yaml_key_diff.py" --project-root . --ref "{{REF}}"
 
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
 # package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
 nav-selftest: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"
+	@{{py}} "{{skill_dir}}/scripts/navigation/selftest_blocks.py"
 
 # Move a project's pre-2026-09-23 managed blocks to the template-sourced layout, keeping project content. The upgrader
 # refuses those blocks (legacy-layout); this is the refresh step that makes them upgradeable. Review with --dry-run first:
 #   just nav-migrate-legacy /path/to/project --dry-run
 nav-migrate-legacy target *flags: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/migrate_legacy_blocks.py" --project-root "{{target}}" {{flags}}
+	@{{py}} "{{skill_dir}}/scripts/navigation/migrate_legacy_blocks.py" --project-root "{{target}}" {{flags}}
 
 # Role findings across every governed project (AI_NAVIGATION.md with a skill-ai-it stamp), one line each: track the rollout. Read-only
 roles-fleet:
     #!/usr/bin/env bash
     for p in $(grep -rl "skill-ai-it-version" --include=AI_NAVIGATION.md /Volumes/Data/_ai/_project/project_stuff /Volumes/Data/_ai/_skills/skills_stuff/specialists 2>/dev/null | grep -v /templates/ | xargs -n1 dirname | sort); do
-      printf "%-60s %s\n" "${p#/Volumes/Data/_ai/}" "$({{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$p" | tail -1)"
+      printf "%-60s %s\n" "${p#/Volumes/Data/_ai/}" "$({{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$p" | tail -1)"
     done
 
 # Pass --print to see a generated skills.md, --write to create one (it refuses to replace an existing file without --force,
 # which keeps a backup). Example: just skills-registry /Volumes/Data/_ai/_project/project_stuff/apn --also /Volumes/Data/_ansible/ansible-wifi/AGENTS.md
 # Skills list for a project area: check its skills.md against the skills its governance files name (exit 1 on drift)
 skills-registry root *args: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/skills_registry.py" --project-root "{{root}}" {{args}}
+	@{{py}} "{{skill_dir}}/scripts/survey/skills_registry.py" --project-root "{{root}}" {{args}}
 
 # How often agents touch a file, folder or command in recent Claude transcripts (keep or retire a navigation aid on evidence)
 agent-usage *args: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/agent_usage.py" {{args}}
+	@{{py}} "{{skill_dir}}/scripts/survey/agent_usage.py" {{args}}
 
 # Root governance files outside their roles (references/governed-file-roles.md). Read-only.
 roles: _require-venv
-    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root .
 
 # One-step governance of a project (default: this package) to the current standard: adoption, budgets + check, role findings. Modifies files
 govern project=".": _require-venv
@@ -177,71 +203,71 @@ govern project=".": _require-venv
     # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
     root="$(cd "{{project}}" && pwd)" || exit 2
     start=$(date +%s)
-    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/govern_guard.py" --project-root "$root" || exit 1; fi
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/checks/govern_guard.py" --project-root "$root" || exit 1; fi
     if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
       nav="$(mktemp)"
-      {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
       if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
       elif grep -q "would" "$nav"; then
-        {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+        {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
       fi
       rm -f "$nav"
     fi
-    {{py}} "{{ai_it}}/scripts/adopt_governed_files.py" --project-root "$root" --apply || exit 1
-    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
-    {{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root" --prune-baseline
-    {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root"
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root"
     echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
     exit $rc
 
 # Triage: one header line per file in a project (`just docs ../some-project docs/`)
 docs root *scopes: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/file_headers.py" --project-root {{root}} {{scopes}}
+	@{{py}} "{{skill_dir}}/scripts/checks/file_headers.py" --project-root {{root}} {{scopes}}
 
 # Rotated history on demand: `just history <term>` searches the CHANGELOG archives (SCRATCHPAD: `just history <term> SCRATCHPAD.md`)
 history TERM RECORD="CHANGELOG.md": _require-venv
-    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
+    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
 
 # Print one rotated entry by its stamp, when a live entry cites it: `just history-show 20260918_1200`
 history-show STAMP RECORD="CHANGELOG.md": _require-venv
-    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
+    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
 
 # Keep CHANGELOG and SCRATCHPAD within budget: plan by default; `just rotate --apply` (slurp runs `just budget`, which trims ROADMAP too)
 rotate *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
-    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
-    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
+    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
+    @{{py}} "{{ai_it}}/scripts/records/roadmap_trim.py" --project-root . {{ARGS}}
 
 # Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
 budget *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root . {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root . {{ARGS}}
 
 # Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
 [positional-arguments]
 changelog-entry *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/add_changelog_entry.py" --project-root . "$@"
+    @{{py}} "{{ai_it}}/scripts/records/add_changelog_entry.py" --project-root . "$@"
 
 # Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
 [positional-arguments]
 move-sections *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
+    @{{py}} "{{ai_it}}/scripts/records/move_sections.py" --project-root . "$@"
 
 # A project's target map (references/target-map-and-timeline.md): validate and report drift; `--write` renders its tracker and embeds,
 # `--schema` prints the fields, `--init --source PLAN.md` prints a starter map. Plan by default: `just target-map ../some-project --write`
 target-map project *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/target_map.py" --project-root "{{project}}" {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/plans/target_map.py" --project-root "{{project}}" {{ARGS}}
 
 # A project's anchor links: every link to a `#heading` lands on a heading that exists. Read-only: `just anchor-links ../some-project --check`
 anchor-links project *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/anchor_links.py" --project-root "{{project}}" {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/checks/anchor_links.py" --project-root "{{project}}" {{ARGS}}
 
 # A project's plan timeline: validate its docs/trackers/plan-timeline.yaml and report drift for today; `--write` renders the block. Plan by default
 plan-timeline project *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/plan_timeline.py" --project-root "{{project}}" {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/plans/plan_timeline.py" --project-root "{{project}}" {{ARGS}}
 
 # A project's plan tracker: check its shape (`--check` exits 1), or `--init` to print the starter page (`--init --apply` writes it when absent)
 plan-tracker project *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/plan_tracker.py" --project-root "{{project}}" {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/plans/plan_tracker.py" --project-root "{{project}}" {{ARGS}}
 
 # Offline unit tests of this package's scripts (stdlib unittest; PyYAML from the venv). Read-only
 test: _require-venv
@@ -250,9 +276,9 @@ test: _require-venv
 # Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
 [positional-arguments]
 outline *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . outline "$@"
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . outline "$@"
 
 # Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
 [positional-arguments]
 section *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . section "$@"
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"

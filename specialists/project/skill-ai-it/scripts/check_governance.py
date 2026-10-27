@@ -26,10 +26,13 @@ Checks:
   7. Every surface restating a registered constant states it identically, and nothing unregistered restates it.
   8. Every row of an append-only table stamps its pass, and no pass records the same entity twice.
   9. Every dated evidence capture states its URL, retrieval date and HTTP status, or names the capture that corrects it.
+
+Run: python3 scripts/check_governance.py (or `just check`). Read-only: it writes nothing; exit 0 when every check passes, 1 otherwise.
 """
 
 from __future__ import annotations
 
+import ast
 import csv
 import re
 import sys
@@ -70,7 +73,7 @@ SURFACES: tuple[str, ...] = (
 CATALOGS: dict[str, tuple[str, str]] = {
     # Every script must carry a purpose, inputs, outputs, safety label and idempotency note. A script
     # absent from this inventory is one an agent has no basis to run.
-    "scripts/README.md": ("scripts", "*.py"),
+    "scripts/README.md": ("scripts", "**/*.py"),
     # SKILL.md's "Template precedence" section makes patterns/ the optional-guidance layer. A pattern
     # SKILL.md never names is a document nothing routes to — on 2026-09-23 that was true of
     # patterns/navigation-control-automation.md, the pattern describing the upgrade sequence itself.
@@ -158,8 +161,8 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     "managed-block-version": {
         "pattern": r"2026-10-14-compact-v2",
         "surfaces": (
-            "scripts/upgrade_navigation_control_layer.py",
-            "scripts/validate_navigation_control_layer.py",
+            "scripts/navigation/upgrade_navigation_control_layer.py",
+            "scripts/navigation/validate_navigation_control_layer.py",
             "scripts/README.md",
             "templates/AI_NAVIGATION.md",
             "templates/AGENTS-navigation-block.md",
@@ -287,7 +290,9 @@ def check_referenced_paths() -> None:
             # Resolve relative to the file that MAKES the reference first, then relative to ROOT. Resolving only
             # against ROOT false-fails every correct relative link written inside a subfolder README.
             near = (ROOT / surface).parent / tok
-            if not near.exists() and not (ROOT / tok).exists():
+            # A bare script name resolves in its family folder: scripts/<family>/<name> since 2026-10-27.
+            in_family = "/" not in tok and any((ROOT / "scripts").glob(f"*/{tok}"))
+            if not near.exists() and not (ROOT / tok).exists() and not in_family:
                 fail("path", f"{surface} references `{tok}` which does not exist")
 
 
@@ -358,8 +363,10 @@ def check_catalog_coverage() -> None:
             if item.name in CATALOG_EXEMPT or (ROOT / index).resolve() == item.resolve():
                 continue
             counted()
-            if item.name not in body:
-                fail("coverage", f"{folder}/{item.name} exists but is not cataloged in {index}")
+            # Match the path below the catalogued folder, so a script in a family folder is catalogued under that family.
+            rel = item.relative_to(ROOT / folder).as_posix()
+            if rel not in body:
+                fail("coverage", f"{folder}/{rel} exists but is not cataloged in {index}")
 
 
 # --------------------------------------------------------------------------------------------------------------- TIER 2
@@ -428,7 +435,7 @@ def check_function_docs() -> None:
         """Names of the function definitions in tree that have no docstring."""
         return [n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and not ast.get_docstring(n)]
 
-    for path in sorted((ROOT / "scripts").glob("*.py")):
+    for path in sorted((ROOT / "scripts").glob("**/*.py")):
         rel = path.relative_to(ROOT).as_posix()
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
@@ -447,7 +454,7 @@ def check_function_docs() -> None:
                 counted()
                 for name in undocumented(inner):
                     fail("function-docs", f"{rel}: embedded function `{name}` (line {node.lineno}) has no docstring")
-    for path in sorted((ROOT / "scripts").glob("*.sh")):
+    for path in sorted((ROOT / "scripts").glob("**/*.sh")):
         rel = path.relative_to(ROOT).as_posix()
         lines = path.read_text(encoding="utf-8").splitlines()
         for i, line in enumerate(lines):
@@ -586,7 +593,8 @@ def check_constant_sync() -> None:
     """
     for name, entry in CONSTANT_SURFACES.items():
         pattern = re.compile(str(entry["pattern"]))
-        registered = {str(s) for s in entry["surfaces"]}  # type: ignore[union-attr]
+        surfaces = entry["surfaces"]
+        registered = {str(s) for s in surfaces} if isinstance(surfaces, (list, tuple, set)) else set()
         owner = str(entry.get("owner", ""))
 
         for surface in sorted(registered):
@@ -698,6 +706,44 @@ def check_template_catalog() -> None:
             fail("coverage", f"templates/{item.name} is shipped but SKILL.md never names it outside the layout tree")
 
 
+# Import name -> distribution name, for the third-party modules the shipped scripts may import.
+DISTRIBUTIONS = {"yaml": "pyyaml"}
+
+
+def check_declared_dependencies() -> None:
+    """Every third-party module a shipped script imports is declared in requirements.txt.
+
+    requirements.txt said "only ONE shipped script has a third-party dependency" while seven imported PyYAML, two of them
+    unguarded (staleness audit 2026-10-27). The count is no longer written down; this check derives the set from the
+    imports instead, so a new dependency fails here until it is declared.
+    """
+    declared = {
+        re.split(r"[<>=!~\[; ]", line.strip(), maxsplit=1)[0].lower()
+        for line in (read("requirements.txt") or "").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+    local = {p.stem for p in (ROOT / "scripts").glob("**/*.py")}
+    for script in sorted((ROOT / "scripts").glob("**/*.py")):
+        counted()
+        tree = ast.parse(script.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                names = [a.name for a in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                names = [node.module]
+            else:
+                continue
+            for name in names:
+                top = name.split(".")[0]
+                if top in sys.stdlib_module_names or top in local or top == "__future__":
+                    continue
+                dist = DISTRIBUTIONS.get(top)
+                if dist is None:
+                    fail("dependencies", f"scripts/{script.name} imports {top}: add it to DISTRIBUTIONS and requirements.txt")
+                elif dist not in declared:
+                    fail("dependencies", f"scripts/{script.name} imports {top} but requirements.txt does not declare {dist}")
+
+
 # --------------------------------------------------------------------------------------------------------------- MAIN
 
 CHECKS = (
@@ -715,6 +761,7 @@ CHECKS = (
     check_constant_sync,
     check_append_only_grain,
     check_evidence_provenance,
+    check_declared_dependencies,
 )
 
 

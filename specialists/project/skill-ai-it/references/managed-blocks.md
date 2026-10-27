@@ -49,7 +49,7 @@ want it. The validator reports it as a pass, not a missing-block failure. `--for
 3. **Layout (added 2026-10-07).** A block stamped before `2026-09-23` (`LAYOUT_SINCE`) comes from the layout in which projects wrote their own content inside the block: the whole scripts README with
    its task catalogue, project rules in the navigation and agents blocks. A stamp alone did not protect it: the first `nav-upgrade` run after the snake_case bump removed 171 catalogue lines from
    cambium-swap and 113 rules from unified-network-controller before the diff review caught it. The upgrader now refuses these blocks (`refused-legacy-layout`, exit 3) and points at `/skill-ai-it
-   refresh`. There `just nav-migrate-legacy <project> --dry-run` (`scripts/migrate_legacy_blocks.py`) classifies every section of the old
+   refresh`. There `just nav-migrate-legacy <project> --dry-run` (`scripts/navigation/migrate_legacy_blocks.py`) classifies every section of the old
    block against every block the skill emitted in that era and today: skill text is replaced, project sections move outside the block, and a skill section the
    project edited is copied verbatim under `## Moved from the managed block` for trimming by hand. Then `nav-upgrade` as usual.
 

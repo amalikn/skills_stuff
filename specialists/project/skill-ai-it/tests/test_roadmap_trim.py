@@ -1,4 +1,4 @@
-"""Offline tests for scripts/roadmap_trim.py: done items move with their continuation lines, open, pinned, recent and undated ones stay, and a
+"""Offline tests for scripts/records/roadmap_trim.py: done items move with their continuation lines, open, pinned, recent and undated ones stay, and a
 project without a ROADMAP is left alone."""
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "roadmap_trim.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "records" / "roadmap_trim.py"
 _spec = importlib.util.spec_from_file_location("roadmap_trim", SCRIPT)
 rt = importlib.util.module_from_spec(_spec)
 sys.modules["roadmap_trim"] = rt

@@ -1,4 +1,4 @@
-"""scripts/plan_tracker.py: the starter page passes its own shape checks once filled; missing sections, unlinked or split What next rows
+"""scripts/plans/plan_tracker.py: the starter page passes its own shape checks once filled; missing sections, unlinked or split What next rows
 and a missing As of line fail; split rows elsewhere and a stale As of are notes. Offline: works in a temporary folder."""
 
 import importlib.util
@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[1]
-_spec = importlib.util.spec_from_file_location("plan_tracker", _ROOT / "scripts/plan_tracker.py")
+_spec = importlib.util.spec_from_file_location("plan_tracker", _ROOT / "scripts/plans/plan_tracker.py")
 pt = importlib.util.module_from_spec(_spec)
 sys.modules["plan_tracker"] = pt
 _spec.loader.exec_module(pt)

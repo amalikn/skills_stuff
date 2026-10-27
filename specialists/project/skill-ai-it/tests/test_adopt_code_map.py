@@ -1,4 +1,4 @@
-"""Tests for scripts/adopt_code_map.py: a code map is created only for a project with code, extended only with unlisted scripts, never changes a
+"""Tests for scripts/adoption/adopt_code_map.py: a code map is created only for a project with code, extended only with unlisted scripts, never changes a
 decision, and what it writes loads under skill-coder's reader.
 
 Run: `just test` (unittest).
@@ -17,7 +17,7 @@ SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
 
 
 def load(name: str):
-    """Import a script from scripts/ by file name.
+    """Import a script from its family folder under scripts/ by file name.
 
     Args:
         name: the module name without `.py`.
@@ -25,7 +25,7 @@ def load(name: str):
     Returns:
         The loaded module.
     """
-    spec = importlib.util.spec_from_file_location(name, SCRIPTS / f"{name}.py")
+    spec = importlib.util.spec_from_file_location(name, next(SCRIPTS.glob(f"*/{name}.py")))
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
     spec.loader.exec_module(mod)

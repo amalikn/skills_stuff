@@ -1,4 +1,4 @@
-"""Offline tests for scripts/validate_navigation_control_layer.py: the shipped AI_NAVIGATION template must pass the validator's content checks."""
+"""Offline tests for scripts/navigation/validate_navigation_control_layer.py: the shipped AI_NAVIGATION template must pass the validator's content checks."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "scripts" / "validate_navigation_control_layer.py"
+SCRIPT = ROOT / "scripts" / "navigation" / "validate_navigation_control_layer.py"
 _spec = importlib.util.spec_from_file_location("validate_navigation_control_layer", SCRIPT)
 vnav = importlib.util.module_from_spec(_spec)
 sys.modules["validate_navigation_control_layer"] = vnav

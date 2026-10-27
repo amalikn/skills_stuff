@@ -256,9 +256,9 @@ For existing-project refresh, use deterministic Python scripts that perform idem
 
 | Script | Purpose |
 |---|---|
-| `scripts/upgrade_navigation_control_layer.py` | Idempotent managed-block upgrade, marker fix, context-map key addition |
-| `scripts/validate_navigation_control_layer.py` | Coherence validation with pass/warn/fail output |
-| `scripts/check_expected_diff.py` | Git-diff check against expected governance file changes |
+| `scripts/navigation/upgrade_navigation_control_layer.py` | Idempotent managed-block upgrade, marker fix, context-map key addition |
+| `scripts/navigation/validate_navigation_control_layer.py` | Coherence validation with pass/warn/fail output |
+| `scripts/navigation/check_expected_diff.py` | Git-diff check against expected governance file changes |
 
 Also see:
 
@@ -277,9 +277,11 @@ Also see:
 
 Pointers only; the record holds the reasoning.
 
+- **Scripts in family folders, callers repointed** (operator, 2026-10-27; turned down: keep the flat layout, or forwarding shims):
+  `scripts/<family>/<name>.py`; `check_governance.py` and baselines stay at the root. `just callers-check` proves the callers. CHANGELOG `20261027_2048`.
 - **File roles and loading tiers** (operator, 2026-10-14): every root file has one role and a tier (always read, read once, on need, on demand);
   always-read files carry rules and pointers, detail sits one link down. [references/governed-file-roles.md](references/governed-file-roles.md).
-- **Roles enforced as a ratchet, introduced by adoption** (2026-10-14): `scripts/role_check.py` gates `just check` against a per-project
+- **Roles enforced as a ratchet, introduced by adoption** (2026-10-14): `scripts/checks/role_check.py` gates `just check` against a per-project
   baseline that `adopt_governed_files.py` writes at slurp, so no project fails on day one. CHANGELOG `20261014_1002`.
 - **README budget per project, not on the default list** (2026-10-14): adoption adds `Budget: 200 lines, 25 KB` and grandfathers the size.
 - **Records rotate instead of growing** (operator, 2026-10-10): CHANGELOG, SCRATCHPAD and ROADMAP move old entries verbatim to `docs/history/`.

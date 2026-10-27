@@ -91,16 +91,16 @@ check: _require-venv
     @{{py}} scripts/check_governance.py
     @just self-check
     @just example-check
-    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
-    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
-    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root .
 
 # Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
 roles: _require-venv
-    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root .
 
 # One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
 govern: _require-venv
@@ -108,64 +108,64 @@ govern: _require-venv
     # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
     root="$(cd "." && pwd)" || exit 2
     start=$(date +%s)
-    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/govern_guard.py" --project-root "$root" || exit 1; fi
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/checks/govern_guard.py" --project-root "$root" || exit 1; fi
     if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
       nav="$(mktemp)"
-      {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
       if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
       elif grep -q "would" "$nav"; then
-        {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+        {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
       fi
       rm -f "$nav"
     fi
-    {{py}} "{{ai_it}}/scripts/adopt_governed_files.py" --project-root "$root" --apply || exit 1
-    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
-    {{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root" --prune-baseline
-    {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root"
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root"
     echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
     exit $rc
 
 # Triage: one line per file (status, review date, summary) from its header, so a file is judged without being opened
 docs *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/file_headers.py" --project-root . {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/checks/file_headers.py" --project-root . {{ARGS}}
 
 # Rotated history on demand: `just history <term>` searches the CHANGELOG archives (SCRATCHPAD: `just history <term> SCRATCHPAD.md`)
 history TERM RECORD="CHANGELOG.md": _require-venv
-    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
+    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
 
 # Print one rotated entry by its stamp, when a live entry cites it: `just history-show 20260918_1200`
 history-show STAMP RECORD="CHANGELOG.md": _require-venv
-    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
+    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
 
 # Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget: plan by default; `just rotate --apply` (slurp runs `just budget`, which trims ROADMAP too)
 rotate *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
-    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
-    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
+    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
+    @{{py}} "{{ai_it}}/scripts/records/roadmap_trim.py" --project-root . {{ARGS}}
 
 # Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
 budget *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root . {{ARGS}}
+    @{{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root . {{ARGS}}
 
 # Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
 [positional-arguments]
 changelog-entry *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/add_changelog_entry.py" --project-root . "$@"
+    @{{py}} "{{ai_it}}/scripts/records/add_changelog_entry.py" --project-root . "$@"
 
 # Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
 [positional-arguments]
 move-sections *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
+    @{{py}} "{{ai_it}}/scripts/records/move_sections.py" --project-root . "$@"
 
 # Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
 [positional-arguments]
 outline *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . outline "$@"
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . outline "$@"
 
 # Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
 [positional-arguments]
 section *ARGS: _require-venv
-    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . section "$@"
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"
 
 # The pack's own offline contract and engine tests
 test: _require-venv
@@ -272,28 +272,28 @@ skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-a
 
 # Upgrade navigation control layer (dry-run preview)
 nav-upgrade-dry-run: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root . --dry-run
+	@{{py}} "{{skill_dir}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root . --dry-run
 
 # Upgrade navigation control layer (apply changes) — review the dry-run first
 nav-upgrade: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/upgrade_navigation_control_layer.py" --project-root .
+	@{{py}} "{{skill_dir}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root .
 
 # Validate navigation control layer
 nav-validate: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/validate_navigation_control_layer.py" --project-root .
+	@{{py}} "{{skill_dir}}/scripts/navigation/validate_navigation_control_layer.py" --project-root .
 
 # Check only expected files changed after upgrade (requires a git repo)
 nav-check-diff: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
+	@{{py}} "{{skill_dir}}/scripts/navigation/check_expected_diff.py" --project-root .
 
 # Context map after an upgrade: key changes by content and comments lost vs a git ref (default HEAD); exit 1 while a comment is lost. Read-only
 nav-check-context-map REF="HEAD": _require-venv
-	@{{py}} "{{skill_dir}}/scripts/yaml_key_diff.py" --project-root . --ref "{{REF}}"
+	@{{py}} "{{skill_dir}}/scripts/navigation/yaml_key_diff.py" --project-root . --ref "{{REF}}"
 
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
 # package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
 nav-selftest: _require-venv
-	@{{py}} "{{skill_dir}}/scripts/selftest_blocks.py"
+	@{{py}} "{{skill_dir}}/scripts/navigation/selftest_blocks.py"
 
 # Split a long flow map into #@include parts (component groups, flow sections, options), proved to load the same: plan by default, `--apply` to write
 split-flowmap *ARGS: _require-venv

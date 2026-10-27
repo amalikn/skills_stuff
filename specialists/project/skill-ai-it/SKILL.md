@@ -117,25 +117,25 @@ This skill must be safe to run many times on the same project.
 
 ### Governed files: headers, budgets, rotation and the checker's shape (operator, 2026-10-10)
 
-- **Headers.** Every governed file states its purpose in its type's native header (governance `naming-and-file-summary-guide.md`, "File headers"); `scripts/file_headers.py` reads them all, and `just
+- **Headers.** Every governed file states its purpose in its type's native header (governance `naming-and-file-summary-guide.md`, "File headers"); `scripts/checks/file_headers.py` reads them all, and `just
   docs <folder>` is the triage view agents use before opening files.
 - **Budget.** A file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, ROADMAP.md, SKILL.md, MEMORY.md) stays within 200 lines and 25 KB for every agent;
   `doc_freshness.py` holds older ones as a shrink-only ratchet. Area rules go in a file read before that work.
-- **Rotation.** `just rotate --apply` also moves ROADMAP's done items out (`scripts/roadmap_trim.py`; contract in [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md)). `just budget --apply`
-  (`scripts/budget_plan.py`): normalise, rotate to `docs/history/`, move non-working-state sections out, audit, `just check`; it names what still holds a file over (unfinished, never reported done).
+- **Rotation.** `just rotate --apply` also moves ROADMAP's done items out (`scripts/records/roadmap_trim.py`; contract in [references/files-architecture-conventions-roadmap.md](references/files-architecture-conventions-roadmap.md)). `just budget --apply`
+  (`scripts/records/budget_plan.py`): normalise, rotate to `docs/history/`, move non-working-state sections out, audit, `just check`; it names what still holds a file over (unfinished, never reported done).
   Recall `just history <term>`. Pin with `` `PIN` `` or `<!-- PIN -->`.
 - **Checker shape.** A project's checker follows `patterns/governance-checks.md` "Structure and growth": entry point, `govcheck/core.py` (this skill's `templates/govcheck/core.py`, identical
   everywhere), `config.py`, `helpers.py`, `checks/<family>.py`, and the `structure` family (`templates/govcheck/checks/structure.py`) policing it. A single-file checker over 800 lines is split with
-  `scripts/split_checker.py` at its next change; new projects start in the package layout.
+  `scripts/adoption/split_checker.py` at its next change; new projects start in the package layout.
 
 ### Document freshness (operator, 2026-10-10)
 
-Every governed project runs `scripts/doc_freshness.py` from this skill (not a copy): `just check` with `--check`, `just stale` to list. Rules, from the front-matter standard in governance
+Every governed project runs `scripts/checks/doc_freshness.py` from this skill (not a copy): `just check` with `--check`, `just stale` to list. Rules, from the front-matter standard in governance
 `categories/naming-and-file-summary-guide.md` (freshness keys): a living document past `Review by` (default `Last reviewed` + 30 days; reports, reviews, audits and sources never expire), a
 `superseded` file outside `archive/`, a `Depends on` file committed after `Last reviewed`.
 
-- `bootstrap`, `navigation-add`, `refresh`: `scripts/adopt_governed_files.py --project-root . --apply` (recipes incl. `check`, record keys, baseline), then `just stale`; add `just stale` to the
-  `AGENTS.md` preflight (outside the managed block). Then `scripts/adopt_code_map.py --project-root . --apply` (operator, 2026-10-20): a project with code gets skill-coder's `code-map.toml`, and every
+- `bootstrap`, `navigation-add`, `refresh`: `scripts/adoption/adopt_governed_files.py --project-root . --apply` (recipes incl. `check`, record keys, baseline), then `just stale`; add `just stale` to the
+  `AGENTS.md` preflight (outside the managed block). Then `scripts/adoption/adopt_code_map.py --project-root . --apply` (operator, 2026-10-20): a project with code gets skill-coder's `code-map.toml`, and every
   new Python script an `unreviewed:` `[modules]` entry; the project's `check_code_map` fails until each status is decided ([files-support](references/files-support.md#code-maptoml--create-when-the-project-has-code)).
 - `audit`: run `just stale` and report the counts per rule; also report whether the project's LLM wiki page (`/Volumes/Data/_ai/_wiki/wiki_stuff/projects/<folder>.md`) exists and is older than the
   project's newest CHANGELOG entry.
@@ -149,7 +149,7 @@ Every governed project runs `scripts/doc_freshness.py` from this skill (not a co
 
 ### Always-created files
 
-- Roles and loading tiers (always-read files small, detail on need, history on demand): [references/governed-file-roles.md](references/governed-file-roles.md); `just roles` (`scripts/role_check.py`, in `check`, baseline ratchet) enforces
+- Roles and loading tiers (always-read files small, detail on need, history on demand): [references/governed-file-roles.md](references/governed-file-roles.md); `just roles` (`scripts/checks/role_check.py`, in `check`, baseline ratchet) enforces
   the mechanical part.
 - Read [references/files-readme-agents-claude.md](references/files-readme-agents-claude.md) before that work (moved verbatim from here): README.md; AGENTS.md; CLAUDE.md.
 - Read [references/files-records.md](references/files-records.md) before that work (moved verbatim from here): SCRATCHPAD.md; CHANGELOG.md; .markdownlint-cli2.jsonc.

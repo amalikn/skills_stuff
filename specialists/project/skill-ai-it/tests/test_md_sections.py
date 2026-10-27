@@ -1,4 +1,4 @@
-"""Offline tests for scripts/md_sections.py: line ranges, fences, setext, exact-by-default selectors, ambiguity refusal and exit codes."""
+"""Offline tests for scripts/markdown/md_sections.py: line ranges, fences, setext, exact-by-default selectors, ambiguity refusal and exit codes."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "md_sections.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "markdown" / "md_sections.py"
 _spec = importlib.util.spec_from_file_location("md_sections", SCRIPT)
 md = importlib.util.module_from_spec(_spec)
 sys.modules["md_sections"] = md

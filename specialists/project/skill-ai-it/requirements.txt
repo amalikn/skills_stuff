@@ -1,13 +1,14 @@
 # Local development venv for the skill-ai-it package itself.
 #
-# Only ONE shipped script has a third-party dependency: validate_navigation_control_layer.py parses a
-# target's context-map.yaml and needs PyYAML. It was supplied invisibly by the host interpreter until
-# 2026-09-23, when pinning the runtime made the venv the resolver and `just nav_validate` failed on an
-# import nothing had ever declared — relocating a hidden host dependency rather than removing it is
-# exactly the failure the runtime-isolation rule describes.
+# PyYAML is the one third-party dependency. Several shipped scripts import it (some only inside a
+# try block, plan_timeline.py and target_map.py at module level); `check_declared_dependencies` in
+# scripts/check_governance.py derives that set from the imports and fails when a module is not
+# declared here, so no count is written down to go stale (staleness audit 2026-10-27).
 #
-# The other four scripts — upgrade_navigation_control_layer.py, check_expected_diff.py,
-# selftest_blocks.py and check_governance.py — are standard-library only and must stay that way. The
-# governance gate in particular must never fail for environment reasons: a check that cannot run is
-# indistinguishable from a check that passes.
+# It was supplied invisibly by the host interpreter until 2026-09-23, when pinning the runtime made
+# the venv the resolver and `just nav_validate` failed on an import nothing had ever declared.
+#
+# check_governance.py itself is standard-library only and must stay that way: the governance gate
+# must never fail for environment reasons, since a check that cannot run is indistinguishable from
+# a check that passes.
 PyYAML>=6.0.2

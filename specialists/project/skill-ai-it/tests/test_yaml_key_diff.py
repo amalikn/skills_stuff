@@ -1,4 +1,4 @@
-"""Offline tests for scripts/yaml_key_diff.py: key changes are found by content, and lost comments are listed and fail."""
+"""Offline tests for scripts/navigation/yaml_key_diff.py: key changes are found by content, and lost comments are listed and fail."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "yaml_key_diff.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "navigation" / "yaml_key_diff.py"
 _spec = importlib.util.spec_from_file_location("yaml_key_diff", SCRIPT)
 ykd = importlib.util.module_from_spec(_spec)
 sys.modules["yaml_key_diff"] = ykd

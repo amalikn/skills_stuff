@@ -17,6 +17,7 @@
 
 ## Unreleased
 
+- 20261027 Tool hazards (SKILL.md): the gate's YAML duplicate-key step is SKIPPED under a host python3 without PyYAML; the Phase 4 gate counts filled rows, so stock verdicts pass it (skill-ai-it audit 20261027_2023).
 - 2026-10-27 `scripts/inverse_sweep.py` `twin_named`: a `.txt` extraction listed through its source as `manual.pdf (+ .txt)` or `(+ OCR .txt)` counts as named
   (19 false UNLISTED rows in skill-smc's vendor-sources index); two fixture tests. Tool hazards: re-running `artifact_signals.py --out` overwrites a filled
   worksheet; a project check that resolves bare names across the tree sees the Phase 0 snapshot as a second copy (skill-smc fixed its check).

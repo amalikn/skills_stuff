@@ -108,7 +108,7 @@ register or `.archcore/adr/`). An agent reads it whole, so it has a budget like 
 | Budget      | 200 lines and 25 KB; `doc_freshness.py` holds it there (ROADMAP.md is in its default budget list)                             |
 | Current phase | One dated paragraph (`**YYYY-MM-DD.**`), rewritten, not appended, when the phase changes                                    |
 | Items       | `- [ ]` open, `- [x]` done; each names its owner when it waits on someone and links the document that holds its detail        |
-| Done items  | Moved verbatim to `docs/history/roadmap-<stamp>.md` by `scripts/roadmap_trim.py` (run by `just rotate`) once older than 7 days; `` `PIN` `` keeps one |
+| Done items  | Moved verbatim to `docs/history/roadmap-<stamp>.md` by `scripts/records/roadmap_trim.py` (run by `just rotate`) once older than 7 days; `` `PIN` `` keeps one |
 | Closeout    | Update the phase and the items the work changed, at the same time as CHANGELOG and SCRATCHPAD                                 |
 
 `adopt_governed_files.py` adds the header keys and the trim line in `rotate` to any project that has a ROADMAP.md; slurp runs it at every close.

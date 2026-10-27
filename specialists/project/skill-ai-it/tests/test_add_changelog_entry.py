@@ -1,4 +1,4 @@
-"""Offline tests for scripts/add_changelog_entry.py: each project's heading style and order, the Contents line, and plan-only by default."""
+"""Offline tests for scripts/records/add_changelog_entry.py: each project's heading style and order, the Contents line, and plan-only by default."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "add_changelog_entry.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "records" / "add_changelog_entry.py"
 _spec = importlib.util.spec_from_file_location("add_changelog_entry", SCRIPT)
 ace = importlib.util.module_from_spec(_spec)
 sys.modules["add_changelog_entry"] = ace

@@ -241,7 +241,7 @@ audit_checks:
   file_role_compliance:
     description: >-
       Each root governance file holds only what its role allows (references/governed-file-roles.md, Role check); no section restated
-      across root files; front matter present. Mechanical part is scripts/role_check.py (just roles, in just check).
+      across root files; front matter present. Mechanical part is scripts/checks/role_check.py (just roles, in just check).
     action: report_violation
   no_stale_references:
     description: Detect references to removed tools, old task runners, or superseded

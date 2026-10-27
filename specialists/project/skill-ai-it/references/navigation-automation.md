@@ -32,15 +32,15 @@ Run them with the skill's venv python, `/Volumes/Data/_ai/_skills/skills-working
 
 **Recommended order:**
 
-0. `python3 "$SKILL_DIR/scripts/selftest_blocks.py"` — only when a template under `templates/` or a builder has been edited since the last run. It asserts the emitted blocks still carry every required
+0. `python3 "$SKILL_DIR/scripts/navigation/selftest_blocks.py"` — only when a template under `templates/` or a builder has been edited since the last run. It asserts the emitted blocks still carry every required
    section, so a truncated template is caught here rather than in a target project's diff
 
-1. `python3 "$SKILL_DIR/scripts/upgrade_navigation_control_layer.py" --project-root "$TARGET" --dry-run` — preview changes
+1. `python3 "$SKILL_DIR/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$TARGET" --dry-run` — preview changes
 2. Review proposed changes
-3. `python3 "$SKILL_DIR/scripts/upgrade_navigation_control_layer.py" --project-root "$TARGET"` — apply changes
-4. `python3 "$SKILL_DIR/scripts/validate_navigation_control_layer.py" --project-root "$TARGET"` — validate
-5. `python3 "$SKILL_DIR/scripts/check_expected_diff.py" --project-root "$TARGET"` — verify only expected files changed (target must be a git repo)
-   - when the upgrader warns that `context-map.yaml` was re-serialised: `python3 "$SKILL_DIR/scripts/yaml_key_diff.py" --project-root "$TARGET"`
+3. `python3 "$SKILL_DIR/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$TARGET"` — apply changes
+4. `python3 "$SKILL_DIR/scripts/navigation/validate_navigation_control_layer.py" --project-root "$TARGET"` — validate
+5. `python3 "$SKILL_DIR/scripts/navigation/check_expected_diff.py" --project-root "$TARGET"` — verify only expected files changed (target must be a git repo)
+   - when the upgrader warns that `context-map.yaml` was re-serialised: `python3 "$SKILL_DIR/scripts/navigation/yaml_key_diff.py" --project-root "$TARGET"`
      (`just nav-check-context-map`) names the real key changes and the comments lost; restore the purpose header and rationale comments
 6. **Governance checker** — validate reports whether `scripts/check_governance.py` exists and is wired. If absent, create it now from `templates/check_governance.py` per the *Governance coherence
    checker* section; if present, extend its registries. This step is judgement, not mechanics: the universal checks are copied, but the Tier 3 invariants must be read out of the target's own stated
@@ -71,10 +71,10 @@ Available scripts:
 
 | Script                                         | Purpose                                                                    |
 | ---------------------------------------------- | -------------------------------------------------------------------------- |
-| `scripts/upgrade_navigation_control_layer.py`  | Idempotent managed-block upgrade, marker fix, context-map key addition     |
-| `scripts/validate_navigation_control_layer.py` | Coherence validation with pass/warn/fail output                            |
-| `scripts/check_expected_diff.py`               | Git-diff check against expected governance file changes                    |
-| `scripts/selftest_blocks.py`                   | Self-test of the managed-block builders against the required-section floor |
+| `scripts/navigation/upgrade_navigation_control_layer.py`  | Idempotent managed-block upgrade, marker fix, context-map key addition     |
+| `scripts/navigation/validate_navigation_control_layer.py` | Coherence validation with pass/warn/fail output                            |
+| `scripts/navigation/check_expected_diff.py`               | Git-diff check against expected governance file changes                    |
+| `scripts/navigation/selftest_blocks.py`                   | Self-test of the managed-block builders against the required-section floor |
 
 Available just targets (only where the project's `justfile` came from `templates/justfile`, which defines a `skill_dir` variable pointing at the skill package — a project whose justfile predates that
 variable, or was hand-written, will not have these recipes at all; use the absolute-path form above):

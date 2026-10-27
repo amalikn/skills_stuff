@@ -1,4 +1,4 @@
-"""Offline tests for scripts/upgrade_navigation_control_layer.py: the CHANGELOG entry it writes carries the YYYYMMDD_hhmm stamp and lands first in a newest-first log."""
+"""Offline tests for scripts/navigation/upgrade_navigation_control_layer.py: the CHANGELOG entry it writes carries the YYYYMMDD_hhmm stamp and lands first in a newest-first log."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "upgrade_navigation_control_layer.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "navigation" / "upgrade_navigation_control_layer.py"
 _spec = importlib.util.spec_from_file_location("upgrade_navigation_control_layer", SCRIPT)
 unc = importlib.util.module_from_spec(_spec)
 sys.modules["upgrade_navigation_control_layer"] = unc

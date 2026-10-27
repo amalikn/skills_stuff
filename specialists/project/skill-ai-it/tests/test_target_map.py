@@ -1,4 +1,4 @@
-"""Tests for scripts/target_map.py: the schema levels (mandatory, recommended, optional, rejected), every validator rule, both
+"""Tests for scripts/plans/target_map.py: the schema levels (mandatory, recommended, optional, rejected), every validator rule, both
 definition modes (a source document, or inline), the source parser and the renderer's determinism. Offline, in a temporary
 folder per test; nothing in the project tree is read or written.
 """
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import yaml
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "plans"))
 
 tm = importlib.import_module("target_map")
 

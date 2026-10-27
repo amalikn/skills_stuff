@@ -2,8 +2,8 @@
 
 # This file defines the expected companion-file relationships for
 # governance/navigation files in skill-ai-it projects.
-# Used by scripts/upgrade_navigation_control_layer.py and
-# scripts/validate_navigation_control_layer.py.
+# Used by scripts/navigation/upgrade_navigation_control_layer.py and
+# scripts/navigation/validate_navigation_control_layer.py.
 
 update_rules:
   governance_navigation:

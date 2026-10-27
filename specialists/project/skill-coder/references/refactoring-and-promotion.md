@@ -117,7 +117,7 @@ Engines a project imports run in the project's interpreter and the project pins 
 > No visual surface.
 
 > **Learned 2026-10-21** · promoting a project script into a skill and switching the project to it · VERIFIED_PRIMARY · Source: skill-ai-it
-> `scripts/target_map.py`, `scripts/plan_timeline.py` and unified-network-controller `scripts/govcheck/skill_scripts.py` (commit pending) ·
+> `scripts/plans/target_map.py`, `scripts/plans/plan_timeline.py` and unified-network-controller `scripts/govcheck/skill_scripts.py` (commit pending) ·
 > Falsifier: a promoted script whose pilot output changes, or a project check that imports a skill module by bare name and gets its own file
 > Promote in three moves and prove each: (1) replace `ROOT = Path(__file__).parents[N]` with a `--project-root` argument and pass the root into
 > every entry point; (2) move every project-shaped string (headers, an explanatory sentence, a data path) into the project's data with the pilot's

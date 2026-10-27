@@ -1,4 +1,4 @@
-"""Offline tests for scripts/audit_rotations.py: an entry whose first line moved while its wrapped tail stayed live is reported as split."""
+"""Offline tests for scripts/records/audit_rotations.py: an entry whose first line moved while its wrapped tail stayed live is reported as split."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import sys
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "audit_rotations.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "records" / "audit_rotations.py"
 _spec = importlib.util.spec_from_file_location("audit_rotations", SCRIPT)
 ar = importlib.util.module_from_spec(_spec)
 sys.modules["audit_rotations"] = ar

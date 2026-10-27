@@ -157,7 +157,7 @@ Then the project's **companion rules**: list the files this session changed (`gi
 own update rules to each (`context-map.yaml` `update_rules`, AGENTS.md "update X in the same pass" rules, folder indexes, trackers and matrices the
 rules name, rendered views). A changed file whose companion was not updated is a gap, not a detail.
 
-Before that check, run skill-ai-it `scripts/adopt_governed_files.py --project-root <project> --apply` (operator, 2026-10-10): it adds any part
+Before that check, run skill-ai-it `scripts/adoption/adopt_governed_files.py --project-root <project> --apply` (operator, 2026-10-10): it adds any part
 of the governed-file standard the project lacks (recipes, freshness and file roles in `check`, front matter on root files and records, README's
 budget, both baselines) and does nothing when adopted. `just budget --apply` (Step 7) also trims ROADMAP's done items (2026-10-14).
 
@@ -180,11 +180,11 @@ create_checkpoint(projectId, name="slurp-<YYYYMMDD>-<topic>")
 In the project's `SCRATCHPAD.md` (create via `/skill-ai-it` if missing), update only the sections this session changed, marked `KEEP`: Current state, Open items (add undecided proposals), Key anchors,
 Recent decisions, Session history (2–3 bullets), Next actions (replace), Memory pointers (keys, note and checkpoint IDs). No file-change lists, no task detail, no session logs.
 
-Then keep the records within budget (operator, 2026-10-10): `just budget` (plan) and `just budget --apply` (skill-ai-it `scripts/budget_plan.py`:
+Then keep the records within budget (operator, 2026-10-10): `just budget` (plan) and `just budget --apply` (skill-ai-it `scripts/records/budget_plan.py`:
 normalises dated paragraphs, rotates to `docs/history/`, moves non-working-state sections to reference docs, audits for lost or split lines, runs
 `just check`). A project without the recipe: run the script with `--project-root`. A file it reports as still over budget is not done (operator,
 2026-10-10): list it, with the section it names, in the closeout as open work; never report it as within budget. Write CHANGELOG entries short: what changed and where, with `just changelog-entry --title ... --body-file ... --apply` (skill-ai-it
-`scripts/add_changelog_entry.py`: the project's own heading style and order, Contents line included).
+`scripts/records/add_changelog_entry.py`: the project's own heading style and order, Contents line included).
 
 Then the cross-project sync (operator, 2026-10-19; hub and spoke, 2026-10-21): when the project's `justfile` has a `sync-projects` recipe (the apn
 continuity projects: enterprise-strategy the hub, unified-network-controller and smc-resiliency the spokes), run `just sync-projects --apply` after the

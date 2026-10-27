@@ -1,0 +1,311 @@
+---
+Title: Staleness audit 2026-10-27
+Category: review
+Status: current
+Authority: evidence
+Scope: whole skill-ai-it package
+Last reviewed: 2026-10-27
+Summary: Whole-package staleness audit; 4 defects (no band M), one new dependency check proven able to fail, residuals listed.
+---
+
+# Staleness audit — `skill-ai-it` — `2026-10-27`
+
+<!-- claim-scan:examples reason="names filenames as examples of a class, not as references" -->
+
+**Scope:** whole project (focus: 99 files changed since staleness-audit-20261014_1017)
+**Standard:** would a careful reader be misled — not "does the suite pass"
+**Validation:** 458 checks before → 490 after · `just check` green, 210 unit tests OK
+
+---
+
+## Contents
+
+- [What was found that could cost money](#what-was-found-that-could-cost-money)
+- [Why it survived](#why-it-survived)
+- [What was corrected](#what-was-corrected)
+- [Coverage](#coverage)
+- [Claim verification](#claim-verification)
+- [New checks, and proof they can fail](#new-checks-and-proof-they-can-fail)
+- [Errors made during this audit](#errors-made-during-this-audit)
+- [What this run does NOT prove](#what-this-run-does-not-prove)
+- [Residual risks](#residual-risks)
+- [Next actions](#next-actions)
+- [Audit evidence](#audit-evidence)
+- [Gate result](#gate-result)
+
+## What was found that could cost money
+
+Nothing in band M. This package holds no prices, gates or filed figures; its worst finding (D1, band H) was a dependency claim that could mislead a
+reader setting up a runtime: `requirements.txt` said one script needed PyYAML while seven import it, two at module level. The exposure was latent:
+PyYAML is declared, so nothing failed; it bites when someone trims the file to match its own comment.
+
+## Why it survived
+
+The comment held a count ("only ONE", "the other four scripts") written on 2026-09-23 when the package had five scripts; it has 32 now. Nothing derived the
+count, so each new script that imported YAML made the prose a little more wrong without failing anything. The same shape explains D2 and D3: `KEEP` lines
+and next actions state a status no check reads.
+
+## What was corrected
+
+| Area | Change |
+|---|---|
+| requirements.txt | count removed; names the check that now derives the set |
+| scripts/check_governance.py | `check_declared_dependencies`: every third-party import in scripts/ is declared in requirements.txt |
+| SCRATCHPAD.md | D2 superseded in place with a dated banner; D3 next action replaced with the checked state |
+| docs/trackers/open-items-20261010_1830.md | D4 reviewed item by item before this audit (CHANGELOG 20261027_1941) |
+
+## Coverage
+
+```text
+Total files in scope:            180
+  Examined:                      124
+  Exempt (reason stated):         56
+  Out of scope (stated):           0
+                                ----
+                                 180   ✓ reconciles
+```
+
+No binary or tabular files. The six structured-config files (two markdownlint jsonc, two baselines, repomix config, update_rules.yaml) parse; the two
+baselines are read by doc_freshness and role_check on every `just check`. `governance/watchman-events/.gitkeep` is the one unclassified file (placeholder).
+
+## Claim verification
+
+```text
+Checkable claims:               2177
+  VERIFIED against source:      1514
+  MARKED-HISTORICAL:              41
+  RESIDUAL (see register):       622
+                                ----
+                                2177   ✓ reconciles
+```
+
+## New checks, and proof they can fail
+
+| Check | Defect it exists for | Negative-tested |
+|---|---|---|
+| `check_declared_dependencies` | D1 | ✓ red on PyYAML removed from requirements.txt ("requirements.txt does not declare pyyaml"), green on restore |
+
+## Errors made during this audit
+
+The Phase 4 worksheet's 22 test rows were first filled with one stock line ("suite green, no writes to the live tree"). A side agent flagged it; each test
+file was then profiled (test count, temp roots, clock use, real paths) and given its own verdict, which found three weak tests and one gap.
+
+## What this run does NOT prove
+
+Every checkable claim is verified, marked historical, or listed as residual. That does not establish that any claim about a target project is true: the
+150 live unresolved paths name files in other projects and were read for context, not resolved.
+
+## Residual risks
+
+The register is embedded below and summarised in SCRATCHPAD.md (Open items, 20261027). The two that matter most: `nav-validate` is still not in `just check`
+(a YAML error passed it on 2026-10-14), and the upgrader's comment loss and audit_rotations' false LOST still have no failing test.
+
+## Next actions
+
+1. Put `nav-validate` (or a context-map YAML parse) into `just check`.
+2. Write failing tests for the upgrader comment loss and the audit_rotations re-wrap case, then fix both.
+3. Port NAME_ROOTS into templates/check_governance.py.
+
+<!-- BEGIN staleness-audit:evidence sha256=c81973dc8b3c7e0ed9bf675548cc7edf8c97ba24fd800b8bb0a02fd46b2de515 -->
+## Audit evidence
+
+Generated by `audit_report.py` from `.staleness-audit/` before the gate deleted it. Do not edit by hand; re-run the
+script instead.
+
+### Receipts
+
+| Phase | Key | Value |
+|---|---|---|
+| 0 | `snapshot_path` | .staleness-audit-snapshot-20261027_091835 |
+| 0 | `files_snapshotted` | 5 |
+| 1 | `files_total` | 180 |
+| 1 | `files_examined` | 124 |
+| 1 | `files_exempt` | 56 |
+| 1 | `files_out_of_scope` | 0 |
+| 1 | `defects_found` | 4 |
+| 1 | `systems_of_record` | 0 |
+| 2 | `defects_fixed` | 4 |
+| 3 | `banners_added` | 1 |
+| 4 | `artifacts_total` | 58 |
+| 4 | `artifacts_reasoned` | 58 |
+| 4 | `findings` | 6 |
+| 5 | `checks_negative_tested` | 1 |
+| 5 | `checks_added` | 1 |
+| 6 | `residual_items` | 6 |
+| 7 | `claims_total` | 2177 |
+| 7 | `claims_verified` | 1514 |
+| 7 | `claims_historical` | 41 |
+| 7 | `claims_residual` | 622 |
+| 7 | `claims_residual_manual` | 248 |
+| 7 | `claims_residual_broken` | 231 |
+| 7 | `claims_residual_conditional` | 143 |
+| 7 | `claims_residual_on_box` | 0 |
+| 7 | `inverse_orphan_dirs` | 0 |
+| 7 | `inverse_unindexed_dirs` | 0 |
+| 7 | `inverse_displaced_refs` | 0 |
+| 7 | `inverse_empty_indexes` | 0 |
+| 7 | `inverse_unlisted_entries` | 0 |
+| 8 | `changelog_updated` | 202610272024 |
+
+Focus: files changed since `last-audit (staleness-audit-20261014_1017.md)` (`d8c0df68fe86`).
+
+### Negative tests
+
+- **declared-dependencies** red — accepted; exit 1; `python3 scripts/check_governance.py`; expect `requirements.txt does not declare pyyaml`; output sha256 `46297daf5b6779a7`; 2026-10-27T09:22:24+00:00
+
+  ```text
+    ✗ dependencies: scripts/plan_timeline.py imports yaml but requirements.txt does not declare pyyaml
+    ✗ dependencies: scripts/role_check.py imports yaml but requirements.txt does not declare pyyaml
+    ✗ dependencies: scripts/target_map.py imports yaml but requirements.txt does not declare pyyaml
+    ✗ dependencies: scripts/upgrade_navigation_control_layer.py imports yaml but requirements.txt does not declare pyyaml
+    ✗ dependencies: scripts/validate_navigation_control_layer.py imports yaml but requirements.txt does not declare pyyaml
+  …
+    ✗ dependencies: scripts/role_check.py imports yaml but requirements.txt does not declare pyyaml
+    ✗ dependencies: scripts/target_map.py imports yaml but requirements.txt does not declare pyyaml
+    ✗ dependencies: scripts/upgrade_navigation_control_layer.py imports yaml but requirements.txt does not declare pyyaml
+    ✗ dependencies: scripts/validate_navigation_control_layer.py imports yaml but requirements.txt does not declare pyyaml
+    ✗ dependencies: scripts/yaml_key_diff.py imports yaml but requirements.txt does not declare pyyaml
+  ```
+
+- **declared-dependencies** green — accepted; exit 0; `python3 scripts/check_governance.py`; expect `requirements.txt does not declare pyyaml`; output sha256 `10c276063c92bde8`; 2026-10-27T09:22:24+00:00
+
+  ```text
+  …
+  OK — 490 governance checks passed
+  ```
+
+
+### `defect-register.md`
+
+### Defect register — skill-ai-it, 2026-10-27
+
+Ranked by materiality before fixing. No M (nothing here is filed with a third party or carries money).
+
+| # | Materiality | File:line | Defect | Evidence |
+|---|---|---|---|---|
+| D1 | H | requirements.txt:3-9 | "Only ONE shipped script has a third-party dependency" and "the other four scripts"; seven of 32 scripts import PyYAML, plan_timeline.py:44 and target_map.py:48 unguarded. No check could notice | `grep -E "^\s*import yaml" scripts/*.py` |
+| D2 | G | SCRATCHPAD.md:76 | KEEP open item says the pack has no `test` recipe and no working-cache venv; both exist | justfile:52 `bootstrap`, justfile:247 `test`; `.venv` runs 210 tests OK |
+| D3 | G | SCRATCHPAD.md Next actions | "Operator: git push in skills_stuff (commit d8c0df6)" and "apn/cambium-swap uncommitted"; d8c0df6 is on origin/main, cambium-swap clean | `git branch -r --contains d8c0df6`; `git status --short` in apn |
+| D4 | G | docs/trackers/open-items-20261010_1830.md | review due 2026-10-24 (fixed before this audit in the same session, 20261027_1941) | `just check` doc-freshness finding |
+
+Fixes: D1 text rewritten without a count, plus `check_declared_dependencies` (negative-tested red/green); D2 superseded in place with a dated banner;
+D3 replaced (Next actions is a replace-per-session section); D4 reviewed item by item.
+
+
+### `phase4-worksheet.md`
+
+### Phase 4 — per-artifact reasoning worksheet
+
+**One line per artifact. Skipping an artifact is fine; skipping the QUESTION is not.**
+
+Ask all three prompts of each:
+
+1. Does it print or compute anything whose **meaning** changed, though its wording did not?
+2. Does it assume **continuity, completeness, or availability** that is no longer true?
+3. Does it **enumerate a live inventory** (an API list, a database, an inventory file) whose population
+   changed since the last audit? Then its reach changed with no line of code changing. `REACH?` rows also
+   write, install or connect: name what the population is today and whether every member is meant.
+
+`GENERATOR` rows get a third: **would running it now revert something?** Run it and diff —
+a clean diff proves the output is current and proves nothing about the generator's assumptions.
+
+Flags are a PRIORITISATION HINT, not an answer. An unflagged artifact still needs a verdict,
+and "clear" needs a reason — an unfalsifiable verdict is not a verdict.
+
+Artifacts: **58**
+
+Focus: **31** changed since last-audit (staleness-audit-20261014_1017.md) (from audit state), listed first. Every artifact still needs a verdict.
+
+| Artifact | What it is | Flags | Verdict (fill in) |
+|---|---|---|---|
+| `scripts/adopt_code_map.py` | Create or extend a project's code map (`code-map.toml`, skill-coder's format) during bootstrap, | CHANGED back-solve? GENERATOR | clear: writes only code-map.toml in --project-root given; format owned by skill-coder, unchanged since 2026-10-19; tests green (210) |
+| `scripts/adopt_governed_files.py` | Check a project's adoption of the governed-file standard and add what is missing. Idempotent. S | CHANGED back-solve? GENERATOR | clear: idempotent, ran --apply this session with no change ('adopted'); no live inventory, one --project-root |
+| `scripts/anchor_links.py` | Check that every markdown link to a `#heading` in a project's markdown lands on a heading that  | CHANGED back-solve? | clear: checks one project's links; warns (not fails) on cross-project anchors, wording matches behaviour |
+| `scripts/audit_rotations.py` | Audit rotated records: every content line of a record before its first rotation is still live,  | CHANGED back-solve? | open (known): line-by-line compare reads hook re-wraps as LOST (SCRATCHPAD 20261019_1732); meaning unchanged, limitation still live |
+| `scripts/check_governance.py` | Governance coherence checks for <PROJECT NAME>. | CHANGED back-solve? continuity? | clear: ran 458 checks green; continuity flag = CONSTANT_SURFACES list, verified by its own sync check |
+| `scripts/doc_freshness.py` | Find project files that have gone stale, grown past their budget or lack a header, as a ratchet | CHANGED back-solve? GENERATOR | clear: tracker review-due rule fired correctly 2026-10-24 (the finding this session fixed); review period meaning unchanged |
+| `scripts/file_headers.py` | Read every governed file's header in the form native to its type, and list them so a file is as | CHANGED back-solve? | clear: reads one project's headers; governance guide path it cites exists (categories/naming-and-file-summary-guide.md) |
+| `scripts/govern_guard.py` | Refuse `just govern` while a file it may change holds uncommitted work. Stdlib only. | CHANGED back-solve? | clear: guard on govern recipe body; tests green |
+| `scripts/migrate_legacy_blocks.py` | Move a project's managed blocks from the pre-2026-09-23 layout to the template-sourced one with | CHANGED back-solve? GENERATOR | clear: dry-run default; LAYOUT_SINCE 2026-09-23 still the legacy boundary |
+| `scripts/plan_timeline.py` | Render a plan tracker's Timeline from a YAML file of dated rows, with each row's schedule worke | CHANGED back-solve? GENERATOR | finding D1: imports PyYAML unconditionally, contradicting requirements.txt 'only ONE shipped script' claim; over module budget (ROADMAP item) |
+| `scripts/plan_tracker.py` | Start a project's plan tracker page and check that it keeps its shape. | CHANGED back-solve? GENERATOR | clear: renders tracker for --project-root; tests green |
+| `scripts/role_check.py` | Check that a project's root governance files keep to their roles, as a ratchet that only tighte | CHANGED back-solve? continuity? GENERATOR | clear: ratchet baseline unchanged by test run (git clean); roles spec unchanged since 2026-10-14 |
+| `scripts/rotate_records.py` | Rotate a running record (CHANGELOG.md, SCRATCHPAD.md) into dated archive files so the live file | CHANGED back-solve? GENERATOR | clear: ran --apply this session, moved 1 entry verbatim, audit OK |
+| `scripts/table_wrap.py` | Wrap a generated markdown table the way the workspace markdown hook does, so a generated block  | CHANGED back-solve? GENERATOR | clear: formatting only, no inventory |
+| `scripts/target_map.py` | The target map: `target-map.yaml` is a project's source of truth for its goals, its targets and | CHANGED back-solve? continuity? GENERATOR | finding D1: imports PyYAML unconditionally (requirements.txt claim stale); consumers UNC/smc-resiliency unchanged |
+| `scripts/upgrade_navigation_control_layer.py` | Deterministic upgrade script for skill-ai-it navigation control layer. | CHANGED back-solve? continuity? GENERATOR | clear: yaml import guarded; version stamp matches templates (constant-sync check); refuses legacy layout |
+| `scripts/validate_navigation_control_layer.py` | Validate the navigation control layer in a project. | CHANGED back-solve? continuity? GENERATOR | open (known): not in just check (tracker item); yaml dependency declared |
+| `scripts/yaml_key_diff.py` | Compare a YAML file against a git ref by key, and list the comments the working copy lost. | CHANGED back-solve? | clear: yaml import guarded; read-only diff |
+| `templates/check_governance.py` | Governance coherence checks for <PROJECT NAME>. | CHANGED back-solve? | open (known): lacks NAME_ROOTS bare-filename resolution (SCRATCHPAD 20261019_1708); copied per project, so the gap propagates |
+| `templates/govcheck/core.py` | Engine of a project's governance checker: failure collection, assertion counting, the runner an | CHANGED | clear: split-checker core; runner semantics unchanged |
+| `tests/test_adopt_code_map.py` | Tests for scripts/adopt_code_map.py: a code map is created only for a project with code, extend | CHANGED GENERATOR | clear: 4 tests in tmp; code-map.toml format is skill-coder's, unchanged since 2026-10-19; no live inventory |
+| `tests/test_adopt_governed_files.py` | Offline tests for scripts/adopt_governed_files.py: it adds only what is missing and a second ru | CHANGED back-solve? GENERATOR | clear: 17 tests, 11 tmp roots, 5 subprocess runs of the adopter on fixtures; budgets asserted (200 lines/25 KB) match references; never touches the package |
+| `tests/test_anchor_links.py` | scripts/anchor_links.py: links to a missing heading are found, duplicates and HTML anchors coun | CHANGED GENERATOR | clear: 5 tests in tmp; cross-project anchors asserted as warnings, matching current behaviour |
+| `tests/test_govern_guard.py` | Offline tests for govern's two safety steps: scripts/govern_guard.py (dirty governed files stop | CHANGED GENERATOR | clear: 6 tests; one uses date.today() but the finding it needs is a missing header, not a date, so it cannot rot with time |
+| `tests/test_plan_timeline.py` | scripts/plan_timeline.py: schedule marks follow the dates, a stale page is drift, bad data is r | CHANGED back-solve? GENERATOR | clear: 25 tests, every schedule call passes an explicit date (2026-10-21/23, 2027-01-29), none reads the clock; these are the gate for the module split in ROADMAP |
+| `tests/test_plan_tracker.py` | scripts/plan_tracker.py: the starter page passes its own shape checks once filled; missing sect | CHANGED back-solve? GENERATOR | clear: 8 tests in tmp; no clock |
+| `tests/test_role_check.py` | Offline tests for scripts/role_check.py: every rule fails on a breach and passes on a project t | CHANGED back-solve? continuity? GENERATOR | clear: 8 tests, 10 tmp roots; '--write-baseline' writes into the tmp root (git status of the package clean after the run) |
+| `tests/test_rotate_records.py` | Offline tests for scripts/rotate_records.py: rotation never loses a content line, keeps prose u | CHANGED GENERATOR | clear: 11 tests; date 2026-09-21 is fixture data; PIN and cited-stamp protection covered |
+| `tests/test_target_map.py` | Tests for scripts/target_map.py: the schema levels (mandatory, recommended, optional, rejected) | CHANGED back-solve? GENERATOR | clear: 65 tests; --today passed explicitly; fixtures are synthetic, UNC/smc-resiliency consumers not exercised (residual) |
+| `tests/test_validate_navigation.py` | Offline tests for scripts/validate_navigation_control_layer.py: the shipped AI_NAVIGATION templ | CHANGED | clear: 2 tests read the real templates/AI_NAVIGATION.md (no tmp, read-only), which is the point: template and validator stay in step |
+| `tests/test_yaml_key_diff.py` | Offline tests for scripts/yaml_key_diff.py: key changes are found by content, and lost comments | CHANGED GENERATOR | clear: 3 tests with 6 subprocess runs on fixture YAML |
+| `scripts/add_changelog_entry.py` | Add one entry to a project's CHANGELOG.md in that project's own heading style and order, with i | back-solve? GENERATOR | clear: newest-first ordering logic unchanged; used per slurp |
+| `scripts/agent_usage.py` | Measure whether agents actually use a file, folder or command, from recent Claude Code transcri | back-solve? | REACH: reads ~/.claude/projects transcripts in --days window; population grows daily, read-only; re-measure due 2026-11-10 |
+| `scripts/budget_plan.py` | Bring a project's governed files within budget, or say exactly what keeps one over. Stdlib plus | back-solve? continuity? GENERATOR | clear: ran --apply this session, audit OK; budgets 200 lines/25 KB match references |
+| `scripts/check_expected_diff.py` | Check that only expected files changed after a navigation control upgrade. | back-solve? GENERATOR | clear: requires git repo with uncommitted changes, still stated in tracker |
+| `scripts/check_outside_blocks.py` | Confirm that a navigation upgrade changed only the text inside skill-ai-it's managed blocks. | — | clear: ran in test suite, AGENTS.md outside-block identical |
+| `scripts/docstring_ratchet.py` | Measure and hold a project's Python docstrings to the global standard, as a ratchet that only t | GENERATOR | open (known): overlaps skill-coder helper (tracker item); behaviour unchanged |
+| `scripts/md_sections.py` | Read a large Markdown file by section: an outline with each heading's line range, or one sectio | back-solve? | clear: parser helper, no inventory |
+| `scripts/move_doc.py` | Move a project document (typically a superseded one into its folder's `archive/`) without break | back-solve? GENERATOR | clear: moves one doc and repoints links; archive/readme.md is target-project path |
+| `scripts/move_sections.py` | Move named sections of a governed markdown file (AGENTS.md, SCRATCHPAD.md, SKILL.md) verbatim i | back-solve? GENERATOR | clear: MAX_MOVES guard still present; no inventory |
+| `scripts/normalise_records.py` | Give a working-state record (SCRATCHPAD.md) the headings rotation needs, without changing a lin | back-solve? GENERATOR | clear: ran inside budget --apply, no change |
+| `scripts/roadmap_trim.py` | Keep ROADMAP.md to what is open: move every done item into a dated archive under docs/history/, | back-solve? GENERATOR | clear: ran inside budget, 0 done items |
+| `scripts/selftest_blocks.py` | Self-test for the managed-block builders in upgrade_navigation_control_layer.py. | back-solve? continuity? GENERATOR | clear: block self-test against templates; templates stamp unchanged |
+| `scripts/skills_registry.py` | Build or check a project area's skills.md: the list of skills its child projects invoke. | back-solve? GENERATOR | REACH: scans --project-root for skill-<name> mentions; skill population grew (skill-goal-guard, skill-knowledge-curator) - registries are regenerated per area, read-only by default |
+| `scripts/split_checker.py` | Split a project's single-file `scripts/check_governance.py` into the govcheck package (patterns | back-solve? continuity? GENERATOR | clear: requires every check_* assigned, fails otherwise |
+| `templates/context_preflight.sh` | /usr/bin/env bash | — | clear: Graphify calls gated by GRAPHIFY_ENABLED=1 (verified 2026-10-14, unchanged) |
+| `templates/govcheck/checks/structure.py` | The checker's own shape (skill-ai-it patterns/governance-checks.md, "Structure and growth"): sm | continuity? | clear: continuity flag = folder catalog list, enforced by coverage check |
+| `tests/test_add_changelog_entry.py` | Offline tests for scripts/add_changelog_entry.py: each project's heading style and order, the C | back-solve? GENERATOR | clear: 5 tests on tmp CHANGELOGs; ordering rule (newest-first by dated ## headings) unchanged; no live paths |
+| `tests/test_agent_usage.py` | Offline tests for scripts/agent_usage.py --md-reads: outline greps, recipe calls and whole/rang | GENERATOR | weak: 1 test on a fixture transcript dir, not ~/.claude; the 2026-11-10 re-measure depends on real transcript shape, which this test does not pin |
+| `tests/test_audit_rotations.py` | Offline tests for scripts/audit_rotations.py: an entry whose first line moved while its wrapped | GENERATOR | gap: 4 tests, none covers a hook re-wrap of a rotated line, the false LOST case open since 2026-10-19; meaning unchanged |
+| `tests/test_budget_plan.py` | Offline tests for scripts/budget_plan.py: a SCRATCHPAD of dated bold paragraphs and a reference | back-solve? GENERATOR | clear: 6 tests in tmp with 3 subprocess runs; no date coupling |
+| `tests/test_check_outside_blocks.py` | Offline tests for scripts/check_outside_blocks.py: managed blocks are ignored, any change outsi | GENERATOR | clear: 3 tests in tmp; outside-block identity rule unchanged |
+| `tests/test_md_sections.py` | Offline tests for scripts/md_sections.py: line ranges, fences, setext, exact-by-default selecto | GENERATOR | clear: 9 tests, pure parser fixtures (15 run() calls are the parser, not subprocesses) |
+| `tests/test_move_doc.py` | Offline tests for scripts/move_doc.py: repeated --keep-records flags all protect their files. | GENERATOR | weak: 1 test for a script that rewrites links across a project; covers the happy path only |
+| `tests/test_move_sections.py` | Offline tests for scripts/move_sections.py: sections move verbatim, Contents and pointer are ri | back-solve? GENERATOR | clear: 10 tests in tmp incl. MAX_MOVES and pointer lines |
+| `tests/test_normalise_records.py` | Offline tests for scripts/normalise_records.py: headings are added, no original line changes, a | GENERATOR | clear: 3 tests; fixed date 2026-09-01 is input data, not compared with today |
+| `tests/test_roadmap_trim.py` | Offline tests for scripts/roadmap_trim.py: done items move with their continuation lines, open, | back-solve? GENERATOR | clear: 5 tests in tmp; done-item rule unchanged |
+| `tests/test_upgrade_navigation_control_layer.py` | Offline tests for scripts/upgrade_navigation_control_layer.py: the CHANGELOG entry it writes ca | GENERATOR | weak: 3 tests for the upgrader; the comment-loss bug (ROADMAP 'Upgrader keeps context-map.yaml comments') has no failing test yet |
+
+
+### `residual-risk-register.md`
+
+### Residual-risk register — skill-ai-it, 2026-10-27
+
+1. 230 unresolved path claims (150 in live files): checked by hand, every live one names a file in a target project, another skill or a governance
+   category relative to its own root (e.g. `target-map.yaml`, `code-map.toml`, `.archcore/index.guide.md`). Not BROKEN in substance, not verified either.
+2. 247 manual claims: the counts and uniqueness claims in live files were read; dated ones (ROADMAP "202 tests" as at 2026-10-22, now 210) are as-at records.
+   The 48 live date claims were not each re-checked.
+3. Known open gaps carried, not fixed here: `nav-validate` not in `just check`; `templates/check_governance.py` lacks NAME_ROOTS; `audit_rotations.py`
+   reads hook re-wraps as LOST with no test covering it; upgrader drops context-map.yaml comments with no failing test; skill-coder helper overlap.
+4. Weak tests (Phase 4): test_agent_usage (1 test, fixture shape only), test_move_doc (1 happy-path test), test_upgrade_navigation_control_layer (3 tests, comment loss untested).
+5. Fleet reach: `roles-fleet` walks only projects with a stamped AI_NAVIGATION.md under project_stuff and specialists; tools_stuff projects (openbb) and
+   unstamped projects are invisible to it.
+6. Own errors this run: Phase 4 test rows first filled with one stock line for all 22 files (caught by a side agent, rewritten one by one before the report).
+
+<!-- END staleness-audit:evidence -->
+
+<!-- BEGIN staleness-audit:gate -->
+## Gate result
+
+```text
+GATE PASSED 2026-10-27 20:24
+coverage      : 124 examined + 59 exempt = 183
+structured    : 5 files parsed (duplicate keys checked)
+old-value hits: 0 for ['Only ONE shipped script']
+inverse sweep : 0 item(s)
+suite         : exit 0 (just check)
+warning       : PyYAML absent — YAML duplicate-key detection SKIPPED, not passed
+Does NOT establish that any claim about the external world is still true; for those the audit verified provenance label and as-at date only.
+```
+<!-- END staleness-audit:gate -->

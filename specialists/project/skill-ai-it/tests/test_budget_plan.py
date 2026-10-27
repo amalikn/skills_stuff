@@ -1,4 +1,4 @@
-"""Offline tests for scripts/budget_plan.py: a SCRATCHPAD of dated bold paragraphs and a reference section ends within budget, nothing lost."""
+"""Offline tests for scripts/records/budget_plan.py: a SCRATCHPAD of dated bold paragraphs and a reference section ends within budget, nothing lost."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "budget_plan.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "records" / "budget_plan.py"
 _spec = importlib.util.spec_from_file_location("budget_plan", SCRIPT)
 bp = importlib.util.module_from_spec(_spec)
 sys.modules["budget_plan"] = bp

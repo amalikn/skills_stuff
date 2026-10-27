@@ -1,4 +1,4 @@
-"""Offline tests for scripts/role_check.py: every rule fails on a breach and passes on a project that keeps to the roles."""
+"""Offline tests for scripts/checks/role_check.py: every rule fails on a breach and passes on a project that keeps to the roles."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "role_check.py"
+SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "checks" / "role_check.py"
 _spec = importlib.util.spec_from_file_location("role_check", SCRIPT)
 rc = importlib.util.module_from_spec(_spec)
 sys.modules["role_check"] = rc

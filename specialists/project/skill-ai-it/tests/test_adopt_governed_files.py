@@ -1,4 +1,4 @@
-"""Offline tests for scripts/adopt_governed_files.py: it adds only what is missing and a second run changes nothing."""
+"""Offline tests for scripts/adoption/adopt_governed_files.py: it adds only what is missing and a second run changes nothing."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "adopt_governed_files.py"
+SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "adoption" / "adopt_governed_files.py"
 _spec = importlib.util.spec_from_file_location("adopt_governed_files", SCRIPT)
 adopt = importlib.util.module_from_spec(_spec)
 sys.modules["adopt_governed_files"] = adopt
@@ -40,22 +40,22 @@ class AdoptTest(unittest.TestCase):
         # 2026-10-14: ROADMAP had no budget and only UNC trimmed it; a project with ROADMAP.md gets both, once.
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "justfile").write_text('py := "python3"\nai_it := "/x"\n\ncheck:\n    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --check\n\n'
-                                           'rotate *ARGS:\n    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md\n')
+            (root / "justfile").write_text('py := "python3"\nai_it := "/x"\n\ncheck:\n    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --check\n\n'
+                                           'rotate *ARGS:\n    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md\n')
             (root / "AGENTS.md").write_text("# AGENTS\n")
             (root / "ROADMAP.md").write_text("# Roadmap\n\n## Current phase\n\n- [ ] x\n")
             self.assertIn("rotate does not trim ROADMAP", adopt.justfile_gaps((root / "justfile").read_text(), roadmap=True))
             self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
             just, roadmap = (root / "justfile").read_text(), (root / "ROADMAP.md").read_text()
             self.assertEqual(just.count("roadmap_trim.py"), 1)
-            self.assertIn('    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}', just)
+            self.assertIn('    @{{py}} "{{ai_it}}/scripts/records/roadmap_trim.py" --project-root . {{ARGS}}', just)
             for key in ("Kind: roadmap", "Budget: 200 lines, 25 KB", "Archive:", "Last reviewed:"):
                 self.assertIn(key, roadmap)
             self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
             self.assertEqual((just, roadmap), ((root / "justfile").read_text(), (root / "ROADMAP.md").read_text()))
 
     def test_no_roadmap_no_roadmap_gap(self):
-        text = 'rotate *ARGS:\n    @{{py}} "{{ai_it}}/scripts/rotate_records.py" {{ARGS}}\n'
+        text = 'rotate *ARGS:\n    @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" {{ARGS}}\n'
         self.assertNotIn("rotate does not trim ROADMAP", adopt.justfile_gaps(text))
         self.assertNotIn("roadmap_trim", adopt.fix_justfile(text))
 
@@ -66,7 +66,7 @@ class AdoptTest(unittest.TestCase):
             self.assertIn("justfile: check recipe (nothing gates freshness)", [g for g in adopt.justfile_gaps((root / "justfile").read_text()) and
                           ["justfile: " + x for x in adopt.justfile_gaps((root / "justfile").read_text())]])
             text = adopt.fix_justfile((root / "justfile").read_text())
-            self.assertRegex(text, r"(?m)^check:\n    @\{\{py\}\} \"\{\{ai_it\}\}/scripts/doc_freshness.py\" --project-root \. --check$")
+            self.assertRegex(text, r"(?m)^check:\n    @\{\{py\}\} \"\{\{ai_it\}\}/scripts/checks/doc_freshness.py\" --project-root \. --check$")
             self.assertEqual(adopt.justfile_gaps(text), [])
 
     def test_aligned_ai_it_and_missing_require_venv(self):
@@ -76,10 +76,10 @@ class AdoptTest(unittest.TestCase):
         self.assertNotIn("_require-venv", fixed)
 
     def test_new_recipes_reuse_the_projects_interpreter(self):
-        text = ('ai_py := "/v/bin/python"\nai_it := "/x"\n\ncheck:\n    @{{ai_py}} "{{ai_it}}/scripts/doc_freshness.py" --check\n'
-                'rotate *ARGS:\n    @{{ai_py}} "{{ai_it}}/scripts/rotate_records.py" {{ARGS}}\n')
+        text = ('ai_py := "/v/bin/python"\nai_it := "/x"\n\ncheck:\n    @{{ai_py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --check\n'
+                'rotate *ARGS:\n    @{{ai_py}} "{{ai_it}}/scripts/records/rotate_records.py" {{ARGS}}\n')
         fixed = adopt.fix_justfile(text)
-        self.assertIn('@{{ai_py}} "{{ai_it}}/scripts/move_sections.py"', fixed)
+        self.assertIn('@{{ai_py}} "{{ai_it}}/scripts/records/move_sections.py"', fixed)
         self.assertNotIn("{{py}}", fixed)
 
     def test_missing_justfile_is_created_and_symlinks_refused(self):
@@ -106,10 +106,10 @@ class AdoptTest(unittest.TestCase):
 
     def test_free_text_recipes_take_quoted_arguments(self):
         old = ('py := "python3"\nai_it := "/x"\n\ncheck:\n    @echo c doc_freshness.py\n\n'
-               'move-sections *ARGS: _require-venv\n    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . {{ARGS}}\n')
+               'move-sections *ARGS: _require-venv\n    @{{py}} "{{ai_it}}/scripts/records/move_sections.py" --project-root . {{ARGS}}\n')
         self.assertIn("free-text recipes take unquoted {{ARGS}}", adopt.justfile_gaps(old))
         fixed = adopt.fix_justfile(old)
-        self.assertIn('[positional-arguments]\nmove-sections *ARGS: _require-venv\n    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"', fixed)
+        self.assertIn('[positional-arguments]\nmove-sections *ARGS: _require-venv\n    @{{py}} "{{ai_it}}/scripts/records/move_sections.py" --project-root . "$@"', fixed)
         self.assertIn('[positional-arguments]\nchangelog-entry *ARGS:', fixed)
         self.assertEqual(fixed.count("[positional-arguments]"), 4)  # changelog-entry, move-sections, outline, section
         self.assertEqual(adopt.justfile_gaps(fixed), [])
@@ -154,7 +154,7 @@ class AdoptTest(unittest.TestCase):
             (root / "justfile").write_text('py := "python3"\n\ncheck:\n    @echo c\n')
             (root / "AGENTS.md").write_text("@../AGENTS.md\n\nTitle: P\nSummary: Rules.\n\n# AGENTS.md\n\n" + "- rule\n" * 210)
             subprocess.run(["git", "-C", tmp, "add", "-A"], check=True)
-            freshness = [sys.executable, str(SCRIPT.parent / "doc_freshness.py"), "--project-root", tmp]
+            freshness = [sys.executable, str(SCRIPT.parents[1] / "checks" / "doc_freshness.py"), "--project-root", tmp]
             subprocess.run(freshness + ["--write-baseline"], check=True, capture_output=True)
             self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
             self.assertTrue((root / "AGENTS.md").read_text().startswith("---\n"))

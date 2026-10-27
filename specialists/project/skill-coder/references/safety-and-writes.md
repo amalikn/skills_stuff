@@ -44,6 +44,17 @@ Summary: >-
 > `write_gates.py` reads entry points only, so a program whose writes live in a library module (the front end passes `apply` down) reports no writer at all: a clean result is not proof. Keep the
 > gate in the writing function (`append(..., apply)` refuses to write without it), test that a plan writes nothing, and name every library write path in the code map's `[write_gates]` section.
 
+> **Learned 2026-10-27** · python, `scripts/write_gates.py` · VERIFIED_PRIMARY (skill-ai-it: "0 writer(s)" by default, 23 with local-write patterns) ·
+> Source: skill-ai-it `scripts/write-gates.json` · Falsifier: the default patterns reporting a script whose only writes are local `write_text` calls
+> The default patterns count live-system writes only (HTTP, SQL, recursive delete), by design. A tool whose job is rewriting other projects' files
+> needs `write_patterns` for local writes, and then reports what it should: on skill-ai-it 23 writers, of which eight are gated by their own flag
+> (`--write`, `--write-baseline`, `--report-json`) and registered with that reason, and two write on a bare run with only `--dry-run` to stop them.
+>
+> ```json
+> "write_patterns": ["\\.write_text\\(", "open\\([^)]*[\"']w", "\"mv\","],
+> "exceptions": {"scripts/plans/target_map.py": "validates by default; writes the tracker and embeds only with --write"}
+> ```
+
 ## The write chain
 
 ```text

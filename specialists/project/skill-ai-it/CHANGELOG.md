@@ -9,13 +9,17 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_1922
+Last rotated: 20261027_2055
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261027_2055 — Slurp close: callers-check, write-backs, coherence](#20261027_2055--slurp-close-callers-check-write-backs-coherence)
+- [20261027_2048 — Scripts in family folders; callers repointed; skill-coder gates in check](#20261027_2048--scripts-in-family-folders-callers-repointed-skill-coder-gates-in-check)
+- [20261027_2024 — Staleness audit: dependency claim derived, stale KEEP lines superseded](#20261027_2024--staleness-audit-dependency-claim-derived-stale-keep-lines-superseded)
+- [20261027_1941 — Open-items tracker reviewed](#20261027_1941--open-items-tracker-reviewed)
 - [20261027_1922 — Quoted code excerpts restored after a markdown hook bug](#20261027_1922--quoted-code-excerpts-restored-after-a-markdown-hook-bug)
 - [20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea](#20261027_1840--pitfalls-from-the-skill-goal-guard-bootstrap-upgrader-placement-idea)
 - [20261026_1525 — Line-only budgets reverted: the 25 KB limit is back](#20261026_1525--line-only-budgets-reverted-the-25-kb-limit-is-back)
@@ -28,13 +32,53 @@ Last rotated: 20261027_1922
 - [20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables](#20261022_1623--plan_timeline-the-timeline-table-wraps-like-the-pages-other-tables)
 - [20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above](#20261022_1646--target-map-reference-summary-is-one-short-line-a-missed-stage-heading-folds-its-checklist-into-the-stage-above)
 - [20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted](#20261022_1439--audit_rotations-safety-header-and-git-timeouts-rewrap-tolerance-reverted)
-- [20261022_1209 — plan_timeline: after places unplanned rows beside their plan step](#20261022_1209--plan_timeline-after-places-unplanned-rows-beside-their-plan-step)
 - [20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date](#20261022_1209--plan-timeline-extra-rows-before-the-plan-rows-they-feed-on-one-date)
-- [20261021_1817 — target_map.py and plan_timeline.py promoted from unified-network-controller](#20261021_1817--target_mappy-and-plan_timelinepy-promoted-from-unified-network-controller)
-- [20261021_1320 — governance-checks: a supersession banner tied to a tracker](#20261021_1320--governance-checks-a-supersession-banner-tied-to-a-tracker)
-- [20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff](#20261020_1753--template-a-type-check-replaces-the-type-ignore-in-check_governancepy-split_checkers-mirror-diff)
-- [20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate](#20261020_1634--rotate_records-project-sync-outbox-and-inbox-lines-never-rotate)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261027_2055 — Slurp close: callers-check, write-backs, coherence
+
+- Slurp close: `just callers-check` added (runs `just check` in every project or skill whose justfile calls this package; flags path errors apart
+  from the project's own findings; 0 path errors, about 43 s). ARCHITECTURE Key decisions: scripts in family folders, callers repointed (operator).
+- Write-backs: skill-coder pattern P-32 (repoint callers after a move) and a write_gates entry (local writes need `write_patterns`), plus the missing
+  P-31 index row; skill-staleness-audit tool hazards (the gate's YAML step SKIPPED under a host python3; Phase 4 counts rows, not judgements).
+- Coherence pass after the audit: `scripts/README.md` checker row names the dependency check; ROADMAP Ideas: ship `check_declared_dependencies`
+  in the template. Other repos touched by the repoint (apn, me, tools_stuff, governance) are left uncommitted: the commit was asked for skills_stuff.
+
+## 20261027_2048 — Scripts in family folders; callers repointed; skill-coder gates in check
+
+- `scripts/` split into family folders (operator chose "subfolders, update callers"): `records/`, `checks/`, `adoption/`, `navigation/`, `plans/`,
+  `markdown/`, `survey/`; `check_governance.py` and the baselines stay at the root, where every governed project keeps its own. Cross-loads fixed
+  (`role_check` finds a script in any family, `rotate_records` loads `checks/file_headers.py`, plans put `markdown/` and `checks/` on the path);
+  `scripts/README.md` catalogued by family, `references/package-layout.md` tree redrawn.
+- New `scripts/adoption/repoint_paths.py` (`just repoint-paths`, test `tests/test_repoint_paths.py`): 467 references in 43 files across 30 projects and
+  skills repointed (justfiles, skill-slurp-chat SKILL.md, skill-coder refs, governance naming guide); CHANGELOGs, `docs/history/`, archives and dated
+  `*-YYYYMMDD_hhmm.md` files left as written. 107 s over eight roots. smc-resiliency and unified-network-controller built the path in code
+  (`AI_IT_SCRIPTS / f"{name}.py"`); their govcheck loaders now search the family folders. Every consumer's `just check` was run: no path errors.
+- The checker found the move: catalogue paths failed, and its script scans were flat (`scripts/*.py`), so its count fell 492 to 411. Scans are recursive,
+  catalogue coverage matches the path below `scripts/` (red when a script is listed under the wrong family), bare script names resolve in their family.
+- skill-coder brought in: run/safety lines in 8 headers, `timeout=` on 21 subprocess calls, one `type: ignore` removed, a shrink-only size baseline
+  (`scripts/code-size-baseline.json`, 8 modules, 17 functions), and `scripts/write-gates.json` counting local file writes (23 writers; two GAP
+  entries, navigation writers that plan only with `--dry-run`, are a ROADMAP item). `just self-check` runs the helpers; `just check` runs it and
+  `nav-validate` (red on a YAML error). 520 checks, 213 tests.
+- Incident, fixed: the repoint also rewrote three dated session-history lines inside this package's SCRATCHPAD.md (`audit_rotations.py`
+  reported them LOST); restored word for word. The one live KEEP line whose path changed is accepted in `docs/history/rotation-audit-baseline.txt`.
+  `repoint_paths.py` skips history files but not dated sections inside a living file (ROADMAP item).
+
+## 20261027_2024 — Staleness audit: dependency claim derived, stale KEEP lines superseded
+
+- Staleness audit, whole package ([staleness-audit-20261027_2023.md](docs/reviews/staleness-audit-20261027_2023.md)): 4 defects, none band M.
+  `requirements.txt` claimed one script needed PyYAML (seven import it, `plan_timeline.py` and `target_map.py` at module level): count removed and
+  `check_declared_dependencies` added to `scripts/check_governance.py` (red on PyYAML removed, green on restore; 458 to 490 checks). SCRATCHPAD: a done
+  `KEEP` open item (no test recipe) superseded in place, a stale push next-action replaced.
+- Why it survived: a hand-written count from 2026-09-23 (five scripts then, 32 now) that nothing derived. Phase 4 test rows were first filled with one stock
+  line and redone one by one after a side agent flagged it; weak tests and residuals are listed in the report and SCRATCHPAD.
+
+## 20261027_1941 — Open-items tracker reviewed
+
+- `docs/trackers/open-items-20261010_1830.md` reviewed (it failed `just check`, due 2026-10-24); next review 2026-11-10, the date of its reference re-measure item.
+  Closed: the `patterns/archcore-routing.md` review (done in 9d7fda8, `Last reviewed: 2026-10-19`). Still open, checked on disk: no governance checker yet in
+  llm-m2max, vocus-profitability, opticomm-profitability, openbb or invoice-finance-analyst (jdm has one); `nav-validate` still not in `just check`; the
+  context-map schema decision and the skill-coder helper overlap are undecided.
 
 ## 20261027_1922 — Quoted code excerpts restored after a markdown hook bug
 
@@ -135,50 +179,9 @@ calls go through `git()` with a 60 s timeout (`GIT_TIMEOUT_S`, `Raises:` documen
 unified-network-controller and enterprise-strategy is identical before and after; `just test` 190 OK. A rewrap-tolerant match was written and
 reverted the same session (operator: keep the audit strict); ROADMAP "Audit and preflight" holds the open item.
 
-## 20261022_1209 — plan_timeline: after places unplanned rows beside their plan step
-
-Optional `after: <stage>` in plan-timeline data (scripts/plan_timeline.py): an undated row (work not in the plan) is placed right after that
-stage's row instead of last (operator, 2026-10-21, unified-network-controller: "in the logical order, not everything at the bottom"). Validated:
-`after` must name a dated row's stage and only an undated row may carry it. Tests: AfterPlacement (2). Landed in 535d13f, whose message names
-a different change (a same-date rule that is not in it).
-
 ## 20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date
 
 `scripts/plan_timeline.py`: on one date an extra row (work outside the plan) comes before the plan rows it feeds, on top of the `after:` placement for undated rows (operator, smc-resiliency, 2026-10-21: unplanned work "in the logical order, not everything at the bottom"). Test `test_extra_before_plan_row_on_one_date`. Note: commit 535d13f carried only the `after:` change from the unified-network-controller session, under a message naming this rule.
-
-## 20261021_1817 — target_map.py and plan_timeline.py promoted from unified-network-controller
-
-- New `scripts/target_map.py` and `scripts/plan_timeline.py`, promoted from unified-network-controller (operator, 2026-10-21: "the target map is
-  promoted into skill-ai-it first, then adopted in smc-resiliency for the stages"; "we haven't adapted the timeline method of UNC"), with
-  `tests/test_target_map.py` (64 tests) and `tests/test_plan_timeline.py` (14). Both take `--project-root`; nothing names a project.
-- Target map additions: bullet-style sources (`exit_line`, `checklist_line`: a one-line `[x] a · [ ] b` checklist is the criteria, ticks warn when
-  the map disagrees), `criteria: []` for a source target whose plan writes none, `changelog.started_only`, and `embed` (the summary table rendered
-  into another page between target-map markers). Plan timeline additions: `columns`, `note`, `--data`, and `parked` rows.
-- Proof of no change for the pilot: UNC's tracker (70,689 bytes) and Timeline block for four dates render byte for byte as the old scripts did.
-- Recipes `just target-map <project>`, `just plan-timeline <project>` (plan by default) and `just test`; catalogued in `scripts/README.md`;
-  [reference](references/target-map-and-timeline.md) with a Learned entry; SKILL.md routes to it; ROADMAP: timeline idea done, target map left
-  with bootstrap, the checker template, the standard and a package split (1,702 lines).
-- `scripts/file_headers.py`: a tracked file deleted in the working tree is skipped (it reported "no summary in its header" for UNC's moved scripts).
-- Verified: `just test` 185 tests OK; `just check` OK.
-
-## 20261021_1320 — governance-checks: a supersession banner tied to a tracker
-
-Learned 2026-10-21 in `patterns/governance-checks.md`: make a tracker's "not yet folded in" state executable by requiring a banner link
-in each overtaken design; join hook-wrapped table rows before matching. From smc-resiliency's first staleness audit.
-
-## 20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff
-
-`templates/check_governance.py` `check_constant_sync`: `# type: ignore[union-attr]` replaced by an explicit list check (a string `surfaces`
-was read character by character); found by skill-coder's new `suppressions.py` (skills_stuff b6b05fb). `patterns/governance-checks.md`:
-splitting a checker in a project with a code map gives a mirror-pair difference (smc-resiliency 0f5f0f7).
-
-## 20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate
-
-Bug found in smc-resiliency (2026-10-20): `rotate_records.py` treated bullets inside the `<!-- project-sync:outbox|inbox:start/end -->` blocks
-(apn `scripts/project_sync.py`, under `## Open items`) as open items and moved them to the open-items tracker: an unsent outbox line was never sent,
-and an unanswered inbox item left the inbox, so the sync reported "inbox: 0 open". Now `parse` marks units between the markers `sync block` and
-they never move nor take a "newest kept" slot. Test `test_project_sync_blocks_never_move` (red before the fix, green after; 107 tests OK).
-Projects whose tracker holds moved sync lines should move them back into their blocks.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

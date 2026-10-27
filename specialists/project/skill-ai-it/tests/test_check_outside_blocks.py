@@ -1,4 +1,4 @@
-"""Offline tests for scripts/check_outside_blocks.py: managed blocks are ignored, any change outside them is reported."""
+"""Offline tests for scripts/navigation/check_outside_blocks.py: managed blocks are ignored, any change outside them is reported."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "check_outside_blocks.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "navigation" / "check_outside_blocks.py"
 _spec = importlib.util.spec_from_file_location("check_outside_blocks", SCRIPT)
 cob = importlib.util.module_from_spec(_spec)
 sys.modules["check_outside_blocks"] = cob

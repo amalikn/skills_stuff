@@ -31,12 +31,16 @@ skill-ai-it/
 ├── justfile
 ├── .mise.toml
 ├── .markdownlint-cli2.jsonc
-├── scripts/
-│   ├── upgrade_navigation_control_layer.py
-│   ├── validate_navigation_control_layer.py
-│   ├── check_expected_diff.py
-│   ├── check_governance.py
-│   ├── selftest_blocks.py
+├── scripts/                  # family folders since 2026-10-27; catalogue in scripts/README.md
+│   ├── check_governance.py   # this package's own checker (every project keeps one here)
+│   ├── *-baseline.json       # doc_freshness and role_check baselines
+│   ├── records/              # rotate, trim, normalise, audit CHANGELOG / SCRATCHPAD / ROADMAP
+│   ├── checks/               # read-only checks run in every governed project
+│   ├── adoption/             # bring a project or the fleet to the standard (writes, plan first)
+│   ├── navigation/           # managed blocks: upgrade, validate, upgrade safety checks
+│   ├── plans/                # target map, plan tracker, timeline
+│   ├── markdown/             # shared markdown helpers
+│   ├── survey/               # read-only surveys across projects and transcripts
 │   └── README.md
 ├── templates/
 │   ├── AI_NAVIGATION.md

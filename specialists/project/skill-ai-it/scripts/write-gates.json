@@ -1,0 +1,17 @@
+{
+  "_note": "skill-coder write_gates config for this package: local governed-file writes count as writes here; each exception names its own gate (2026-10-27)",
+  "roots": ["scripts"],
+  "write_patterns": ["\\.write_text\\(", "open\\([^)]*[\"']w", "\"mv\","],
+  "exceptions": {
+    "scripts/checks/doc_freshness.py": "writes only scripts/doc-freshness-baseline.json, and only with --write-baseline or --prune-baseline",
+    "scripts/checks/docstring_ratchet.py": "writes only its baseline, and only with --write-baseline",
+    "scripts/navigation/check_expected_diff.py": "read-only on the project; writes only the --report-json file when given",
+    "scripts/navigation/validate_navigation_control_layer.py": "read-only on the project; writes only the --report-json file when given",
+    "scripts/navigation/selftest_blocks.py": "writes only inside a tempfile.TemporaryDirectory",
+    "scripts/plans/plan_timeline.py": "renders to stdout; writes the tracker only with --write",
+    "scripts/plans/target_map.py": "validates by default; writes the tracker and embeds only with --write",
+    "scripts/survey/skills_registry.py": "--check is the default; writes skills.md only with --write",
+    "scripts/navigation/upgrade_navigation_control_layer.py": "GAP: writes on a bare run, --dry-run plans; callers (govern, nav-upgrade in every project) pass --dry-run first. ROADMAP: flip to --apply",
+    "scripts/navigation/migrate_legacy_blocks.py": "GAP: writes on a bare run, --dry-run plans; `just nav-migrate-legacy` documents --dry-run first. ROADMAP: flip to --apply"
+  }
+}

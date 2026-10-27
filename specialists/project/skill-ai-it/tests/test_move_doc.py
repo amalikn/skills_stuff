@@ -1,4 +1,4 @@
-"""Offline tests for scripts/move_doc.py: repeated --keep-records flags all protect their files."""
+"""Offline tests for scripts/markdown/move_doc.py: repeated --keep-records flags all protect their files."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "move_doc.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "markdown" / "move_doc.py"
 _spec = importlib.util.spec_from_file_location("move_doc", SCRIPT)
 md = importlib.util.module_from_spec(_spec)
 sys.modules["move_doc"] = md
