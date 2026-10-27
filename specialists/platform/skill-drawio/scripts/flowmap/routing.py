@@ -20,7 +20,7 @@ from itertools import permutations
 from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 from drawio.mxfile import ARROW_HEAD, Page, label
 
-from .route_costs import NEAR, _along, _crosses, _overlaps, label_size, label_spot, lane_colour, leaves_off_side, overshoot
+from .route_costs import NEAR, SPLIT_GAP, _along, _crosses, _overlaps, label_size, label_spot, lane_colour, leaves_off_side, overshoot
 
 #: Costs: a crossed box (or the arrow's own box) is unusable in practice; a run alongside another or over a label, a reused point, a reused side,
 #: a crossing, a bend and an exit off a plain box's right side each make a path worse.
@@ -239,7 +239,8 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
         ways: exit sides allowed; all when None.
         strict: with `ways`, draw nothing and return a very large cost when no path leaves that way (no fallback to another side).
         fewest_crossings: choose the path crossing the fewest drawn arrows (one through a box or a shared decision corner never wins,
-            and one running along another arrow or over a label loses to any that does not), then the cheapest; flowmap.uncross uses it when reordering and other exit sides cannot remove a crossing.
+            and one running along another arrow or over a label loses to any that does not), then the cheapest; flowmap.uncross uses it
+            when reordering and other exit sides cannot remove a crossing.
         choice: with `fewest_crossings`, take the path at this rank instead of the best (the repair tries a pair's combinations); past
             the last candidate nothing is drawn and a very large cost is returned.
 
@@ -269,9 +270,17 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
     used["sides"].update({(src, out_side), (dst, in_side)})
     used.setdefault("taken", set()).add((src, out_side))
     width, height = label_size(text)
-    cx, cy = label_spot(page, cid, pts, width, height)
+    lines = text.split("\n")
+    split = tuple(9 * len(line) + 8 for line in lines) if len(lines) == 2 else None
+    cx, cy, across = label_spot(page, cid, pts, width, height, split)
+    if across:   # number left of a vertical line, case right of it, no background needed (operator, 2026-10-27)
+        bare = LABEL.format(colour=colour, background="none")
+        page.mark(f"{cid}-lbl", label(f"**{lines[0]}**"), cx - SPLIT_GAP - split[0] / 2, cy, split[0], 22, bare.replace("align=center;", "align=right;"), cid)
+        page.mark(f"{cid}-lbl-case", label(f"**{lines[1]}**"), cx + SPLIT_GAP + split[1] / 2, cy, split[1], 22,
+                  bare.replace("align=center;", "align=left;"), cid)
+        return spent
     style = LABEL.format(colour=colour, background=lane_colour(page, cx, cy))
-    page.mark(f"{cid}-lbl", label(*(f"**{line}**" for line in text.split("\n"))), cx, cy, width, height, style, cid)
+    page.mark(f"{cid}-lbl", label(*(f"**{line}**" for line in lines)), cx, cy, width, height, style, cid)
     return spent
 
 

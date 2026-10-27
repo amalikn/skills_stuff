@@ -95,11 +95,13 @@ def _take_up(page: Page, cid: str) -> str:
     """
     route = next(r for r in page.routes if r.cid == cid)
     out_side = _side(route.points[0], page.rects[route.src])
-    gone = tuple(f'<{tag} id="{c}" ' for tag in ("mxCell", "UserObject") for c in (cid, f"{cid}-lbl"))   # a cell with a tooltip is a UserObject
+    labels = (f"{cid}-lbl", f"{cid}-lbl-case")   # a label split across a vertical line is two cells
+    gone = tuple(f'<{tag} id="{c}" ' for tag in ("mxCell", "UserObject") for c in (cid, *labels))   # a cell with a tooltip is a UserObject
     page.cells[:] = [c for c in page.cells if not c.startswith(gone)]
     page.routes[:] = [r for r in page.routes if r.cid != cid]
-    page.marks[:] = [m for m in page.marks if m.cid != f"{cid}-lbl"]
-    page.rects.pop(f"{cid}-lbl", None), page.cell_style.pop(f"{cid}-lbl", None)
+    page.marks[:] = [m for m in page.marks if m.cid not in labels]
+    for c in labels:
+        page.rects.pop(c, None), page.cell_style.pop(c, None)
     return out_side
 
 
