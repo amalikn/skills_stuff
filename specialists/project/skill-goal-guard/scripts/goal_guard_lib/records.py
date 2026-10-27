@@ -1,4 +1,4 @@
-"""GoalGuard records as frozen dataclasses, with parsing and validation from plain data (YAML, JSON, Vikunja responses).
+"""Goal Guard records as frozen dataclasses, with parsing and validation from plain data (YAML, JSON, Vikunja responses).
 
 Imported, not run. Field names follow references/decision-rules.md (Record formats); the MVP contract is in mvp.py.
 Consumers: mvp, project, tasks, decide, rank, trace, snapshot, excel, hook.
@@ -71,7 +71,7 @@ def parse_date(value: object, where: str) -> dt.date | None:
 
 @dataclass(frozen=True)
 class Task:
-  """A task as GoalGuard sees it, normalised from a Vikunja task.
+  """A task as Goal Guard sees it, normalised from a Vikunja task.
 
   Args:
     id: Vikunja numeric task ID.
@@ -148,7 +148,7 @@ class Proposal:
   Args:
     proposal_id: proposal ID.
     task_id: Vikunja task ID, or None when the proposal names no task.
-    project_id: GoalGuard project ID.
+    project_id: Goal Guard project ID.
     criterion_id: accepted criterion it claims to advance, or "".
     necessary_blocker_id: registered blocker it claims to clear, or "".
     description: what the work is.

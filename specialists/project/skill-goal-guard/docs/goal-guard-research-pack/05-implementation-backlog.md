@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Implementation Backlog
+Title: Goal Guard Implementation Backlog
 Category: backlog
 Status: proposed, not decided
 Authority: research proposal; item IDs GG-01..GG-19 are backlog items, not GG-0xx tests

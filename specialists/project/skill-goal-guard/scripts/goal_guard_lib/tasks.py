@@ -1,4 +1,4 @@
-"""Task sources: live Vikunja, a saved Vikunja response, or a GoalGuard snapshot, all normalised to records.Task.
+"""Task sources: live Vikunja, a saved Vikunja response, or a Goal Guard snapshot, all normalised to records.Task.
 
 Imported, not run. Read-only. Vikunja owns live tasks (PORT-001); a file or snapshot source is labelled so a reader knows the
 answer is not live (references/snapshot-and-restore.md, Offline use).
@@ -55,7 +55,7 @@ def from_vikunja(client: Client, project_ids: list[int], url: str) -> TaskSet:
 
 
 def parse_snapshot_task(data: dict) -> Task:
-  """Normalise one task from a GoalGuard snapshot (snapshot.export format) to a Task.
+  """Normalise one task from a Goal Guard snapshot (snapshot.export format) to a Task.
 
   Args:
     data: the snapshot task object (provider_id, title, relations, ...).
@@ -102,7 +102,7 @@ def from_file(path: Path) -> TaskSet:
     return TaskSet(tasks, f"snapshot:{path}", False, complete, str(data.get("exported_at", "")))
   items = data.get("items") if isinstance(data, dict) else data
   if not isinstance(items, list):
-    raise RecordError(f"{path}: expected a list of Vikunja tasks, a PaginatedTask object or a GoalGuard snapshot")
+    raise RecordError(f"{path}: expected a list of Vikunja tasks, a PaginatedTask object or a Goal Guard snapshot")
   tasks = {t.id: t for t in (parse_vikunja_task(x) for x in items)}
   stamp = dt.datetime.fromtimestamp(path.stat().st_mtime).astimezone().isoformat(timespec="seconds")
   return TaskSet(tasks, f"file:{path}", False, True, stamp)

@@ -59,7 +59,7 @@ def to_record(task: dict, project_id: str) -> dict:
 
   Args:
     task: the raw Task object.
-    project_id: GoalGuard project ID, used in portable IDs.
+    project_id: Goal Guard project ID, used in portable IDs.
 
   Returns:
     The provider-neutral record.
@@ -167,7 +167,7 @@ def export(project: Project, raw_tasks: list[dict], completeness: dict, source: 
 
 
 def _tasks_doc(project: Project, records: list[dict], completeness: dict, source: dict, now: str) -> dict:
-  """Assemble tasks.json; GoalGuard's own records are referenced by hash, never copied (S01).
+  """Assemble tasks.json; Goal Guard's own records are referenced by hash, never copied (S01).
 
   Args:
     project: the project.
@@ -258,7 +258,7 @@ def verify(folder: Path) -> dict:
   if doc is None:
     return {"ok": False, "issues": issues or ["no tasks.json in manifest"], "counts": {}, "cross_project_edges": 0, "manifest": manifest, "tasks": None}
   if doc.get("format") != TASKS_FORMAT:
-    issues.append("tasks.json is not a GoalGuard snapshot")
+    issues.append("tasks.json is not a Goal Guard snapshot")
   if not doc.get("completeness", {}).get("complete"):
     issues.append("snapshot is marked partial")
   tasks = doc.get("tasks") or []

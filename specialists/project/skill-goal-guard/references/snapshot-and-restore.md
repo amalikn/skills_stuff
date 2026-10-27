@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Snapshot and Restore
+Title: Goal Guard Snapshot and Restore
 Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §37.3-37.5 and kickoff (portable recovery proof); research pack 04 rollout and M5 hardening
@@ -16,7 +16,7 @@ Summary: >-
 
 - A project snapshot is the single stored copy of that project's exported task entities: portable IDs, provider IDs, title, description, status, priority, dates, relations, milestones, status
   timestamps, mapping provenance (handoff §37.3.1).
-- Internal targets, baseline links and forecasts come from GoalGuard's own records as **referenced** supplementary data, never presented as Vikunja fields.
+- Internal targets, baseline links and forecasts come from Goal Guard's own records as **referenced** supplementary data, never presented as Vikunja fields.
 - Cross-project edges live in a portfolio relationship index, not as copies of other projects' tasks (§37.3.2).
 - Manifests: project → partition (`apn` / `me`) → root, each with time (UTC), format version, source instance and version, completeness, record counts, checksums and child references. Readers guard
   against cycles, duplicate IDs, broken references, missing files (§37.3.3).

@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Milestones and Release Gates
+Title: Goal Guard Milestones and Release Gates
 Category: roadmap
 Status: proposed, not decided
 Authority: research proposal; Vikunja placement at M3 conflicts with the v1.7 pilot scope

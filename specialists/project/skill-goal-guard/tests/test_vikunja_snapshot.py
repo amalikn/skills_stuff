@@ -109,7 +109,7 @@ class Snapshot(unittest.TestCase):
       self.assertEqual(len(fake.tasks), 4)
 
   def test_restore_refuses_dirty_target(self):
-    """A target with tasks GoalGuard did not restore is not a clean instance."""
+    """A target with tasks Goal Guard did not restore is not a clean instance."""
     with Workspace() as ws, tempfile.TemporaryDirectory() as tmp:
       folder = self.export(ws, Path(tmp))
       fake = FakeVikunja()

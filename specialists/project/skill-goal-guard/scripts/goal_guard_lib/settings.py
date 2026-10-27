@@ -1,4 +1,4 @@
-"""Run-time settings for GoalGuard, read from the environment in one place (skill-coder configuration-and-literals).
+"""Run-time settings for Goal Guard, read from the environment in one place (skill-coder configuration-and-literals).
 
 Imported, not run. No deployment literal lives in code: the Vikunja URL and token come from the environment; the defaults below are
 policy values (timeouts, windows), not addresses.

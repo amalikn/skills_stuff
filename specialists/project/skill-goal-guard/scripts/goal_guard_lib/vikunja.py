@@ -93,7 +93,7 @@ class Client:
     self._send = transport
 
   def _call(self, method: str, path: str, query: dict | None = None, payload: dict | None = None) -> object:
-    """Make one call and translate failures into GoalGuard errors.
+    """Make one call and translate failures into Goal Guard errors.
 
     Args:
       method: HTTP method.

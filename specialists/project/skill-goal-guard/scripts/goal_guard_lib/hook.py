@@ -57,12 +57,12 @@ def deny(mode: str, reason: str) -> Outcome:
 
   Args:
     mode: advisory or blocking.
-    reason: why GoalGuard would block.
+    reason: why Goal Guard would block.
 
   Returns:
     Exit 2 with stderr in blocking mode; exit 0 with additionalContext in advisory mode.
   """
-  text = f"GoalGuard: {reason}"
+  text = f"Goal Guard: {reason}"
   if mode == "blocking":
     return Outcome(2, "", text, "deny", reason)
   context = {"hookSpecificOutput": {"hookEventName": "PreToolUse", "additionalContext": f"{text} (advisory mode: not blocked; stop and run assess)"}}
@@ -114,12 +114,12 @@ def evaluate(payload: object, cfg: Settings, mode: str, now: dt.datetime) -> Out
     try:
       guard = project.load(candidate)
     except GoalGuardError as err:
-      return deny(mode, f"cannot read the GoalGuard records of {candidate.name} ({err}); failing closed")
+      return deny(mode, f"cannot read the Goal Guard records of {candidate.name} ({err}); failing closed")
     if resolved in guard.protected_paths():
       shown = resolved.relative_to(candidate) if resolved.is_relative_to(candidate) else resolved
       return deny(mode, f"{shown} is protected by {guard.project_id}; changes go through the owner's change request (MVP-011)")
   if root is None:
-    return _allow("outside every GoalGuard project")
+    return _allow("outside every Goal Guard project")
   reason = _verdict_gap(project.load(root), resolved, cfg, now)
   return deny(mode, reason) if reason else _allow(f"a current PROCEED covers {resolved.relative_to(root)}")
 

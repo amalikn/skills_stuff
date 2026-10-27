@@ -1,4 +1,4 @@
-"""Load one project's GoalGuard records from its .gg/ folder and judge its baseline (references/project-layout-and-storage.md).
+"""Load one project's Goal Guard records from its .gg/ folder and judge its baseline (references/project-layout-and-storage.md).
 
 Imported, not run. Reads only; the one writer of .gg/ files is decisions_log (append) behind --apply in the front ends.
 
@@ -27,11 +27,11 @@ ROLES = ("hub", "spoke", "standalone")
 
 @dataclass(frozen=True)
 class Project:
-  """One GoalGuard-registered project.
+  """One Goal Guard-registered project.
 
   Args:
     root: resolved project folder.
-    project_id: stable GoalGuard ID.
+    project_id: stable Goal Guard ID.
     partition: apn or me.
     role: hub, spoke or standalone.
     vikunja_project_id: Vikunja project ID, or 0 when not linked.
@@ -65,7 +65,7 @@ class Project:
     return self.root / GG / "decisions.jsonl"
 
   def protected_paths(self) -> list[Path]:
-    """Return every path an agent may not edit: the GoalGuard records plus any listed in project.yaml protected_paths.
+    """Return every path an agent may not edit: the Goal Guard records plus any listed in project.yaml protected_paths.
 
     Returns:
       Resolved paths; a listed path that escapes the project is still returned resolved, so it stays protected.

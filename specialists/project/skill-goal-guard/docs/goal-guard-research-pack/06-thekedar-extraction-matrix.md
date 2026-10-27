@@ -1,11 +1,11 @@
 ---
-Title: Thekedar to GoalGuard Source Extraction Matrix
+Title: Thekedar to Goal Guard Source Extraction Matrix
 Category: source-extraction
 Status: proposed, not decided
 Authority: upstream source inspected on GitHub main 2026-10-27; adaptations not implemented
-Scope: Which Thekedar (MIT) mechanisms GoalGuard adapts and the tests that guard them
+Scope: Which Thekedar (MIT) mechanisms Goal Guard adapts and the tests that guard them
 Last reviewed: 2026-10-27
-Summary: Maps Thekedar hooks/templates to GoalGuard destinations and CTPS IDs, lists mandatory adaptations and MIT reuse obligations.
+Summary: Maps Thekedar hooks/templates to Goal Guard destinations and CTPS IDs, lists mandatory adaptations and MIT reuse obligations.
 ---
 
 # Thekedar → GoalGuard v0.2: Source Extraction and Regression Contract

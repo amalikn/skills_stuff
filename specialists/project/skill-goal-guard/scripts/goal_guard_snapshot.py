@@ -17,7 +17,7 @@ Inputs:
              --raw-tasks examples/vikunja-tasks.json --out /tmp/gg-snapshots
 
 Safety: export and restore print their plan and write only with --apply. export writes atomically and refuses a partial read;
-verify writes nothing. restore checks the snapshot first, refuses a target project holding tasks GoalGuard did not restore, creates
+verify writes nothing. restore checks the snapshot first, refuses a target project holding tasks Goal Guard did not restore, creates
 tasks and relations through the Vikunja seam, and reads everything back. Point GG_VIKUNJA_URL at a TEST instance for restore:
 restoring into the live instance needs conflict handling that is not built (references/snapshot-and-restore.md, Restore step 3).
 

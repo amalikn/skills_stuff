@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard v1.7 Pilot Plan
+Title: Goal Guard v1.7 Pilot Plan
 Category: plan
 Status: current
 Authority: the v1.7 kickoff and handoff §19, §23.6, §29, §35, §37.5, re-expressed with the real workspace paths read 2026-10-27; operator chose the full v1.7 pilot (2026-10-27)
@@ -27,7 +27,7 @@ one snapshot with one restore proof. Nothing beyond this until the pilot report 
 | ------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | D1      | Shared `apn` repository   | Keep one repository; scope hooks, rules and `.gg/` records by project path inside it; decision logs per project folder                                         |
 | D2      | Pilot spoke               | `unified-network-controller`                                                                                                                                   |
-| D3      | How an owner approval     | Signed Git commit (GPG or SSH signing key); GoalGuard verifies the signature; an unsigned approval is a proposal                                               |
+| D3      | How an owner approval     | Signed Git commit (GPG or SSH signing key); Goal Guard verifies the signature; an unsigned approval is a proposal                                               |
 |         |   is authenticated        |                                                                                                                                                                |
 | D3 risk | Signing key may be usable | Raised 2026-10-27: agents run as the operator's user; Git signing is not configured yet and the ssh-agent holds unlocked keys, so a key in the agent could     |
 |         |   by agents               |   sign as the owner. Before step 5, use a signing key kept out of the agent that needs a touch or passphrase per signature (hardware key or per-use prompt),   |
@@ -48,8 +48,8 @@ one snapshot with one restore proof. Nothing beyond this until the pilot report 
 | `communications/emails/enterprise-strategy-plan-martin-20261014_1733.eml`           | Plan sent to management 2026-10-14; shows what was issued                                                      |
 | `workstreams/continuity/weekly-updates/weekly-update-20261023_1100.xlsx`            | Latest weekly update workbook; candidate for the "issued Excel"                                                |
 
-Open point for step 1: the plan says `draft` while `Dated` rows come from "the project's adopted plan", so which revision is the protected management baseline must be confirmed from the
-2026-10-14 email before any baseline is registered (handoff §23.1, H08). Candidate pilot milestones are the UNC `Dated` rows (M2 1 Nov, M4 15 Nov, M7 29 Nov, M9 11-15 Dec).
+Open point for step 1: the plan says `draft` while `Dated` rows come from "the project's adopted plan", so which revision is the protected management baseline must be confirmed from the 2026-10-14
+email before any baseline is registered (handoff §23.1, H08). Candidate pilot milestones are the UNC `Dated` rows (M2 1 Nov, M4 15 Nov, M7 29 Nov, M9 11-15 Dec).
 
 ## Steps
 
@@ -77,13 +77,13 @@ Open point for step 1: the plan says `draft` while `Dated` rows come from "the p
 
 ## Prototype gaps fixed in step 4
 
-Built 2026-10-27 under skill-coder: `goal_guard.py` (baseline, BLOCK, the decision order, the ranking pipeline, Vikunja reads, `decisions.jsonl`) plus the tools for steps 6-8 (draft hook,
-doctor, trace, snapshot/restore, Excel sample); `just check` green (71 tests). Catalogue and live checks still open: [../scripts/readme.md](../scripts/readme.md).
+Built 2026-10-27 under skill-coder: `goal_guard.py` (baseline, BLOCK, the decision order, the ranking pipeline, Vikunja reads, `decisions.jsonl`) plus the tools for steps 6-8 (draft hook, doctor,
+trace, snapshot/restore, Excel sample); `just check` green (71 tests). Catalogue and live checks still open: [../scripts/readme.md](../scripts/readme.md).
 
 What step 4 did not do, stated plainly:
 
-- The prototype's outputs were not characterised before the rewrite; its behaviour was replaced on purpose (the settled conflicts in [decision-rules.md](decision-rules.md)), and its test cases
-  (park unlinked, review scope, proceed, blocked dependency, done without evidence) are re-expressed in `tests/test_decide.py` and `tests/test_rank.py`.
+- The prototype's outputs were not characterised before the rewrite; its behaviour was replaced on purpose (the settled conflicts in [decision-rules.md](decision-rules.md)), and its test cases (park unlinked, review
+  scope, proceed, blocked dependency, done without evidence) are re-expressed in `tests/test_decide.py` and `tests/test_rank.py`.
 - Fixtures cover T01, T02, T04-T07, T11 and T15; the other T and GG tests in [test-catalog.md](test-catalog.md) have no fixture yet.
 - A dependency cycle among Vikunja tasks leaves its tasks ineligible but is not reported by `next` (the prototype's `validate` reported cycles); snapshot `verify` does report it.
 - JSON schemas (`schemas/`) were not written; the record contract is enforced in `records.py` and `mvp.py`.

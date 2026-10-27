@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard What's Next and Portfolio Focus
+Title: Goal Guard What's Next and Portfolio Focus
 Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §17.3-17.4, research pack 00, 02 and the v0.1 readme; conflict 4 (ranking) settled here
@@ -36,7 +36,7 @@ The prototype scored +40 started, +50 overdue, +35/+20 near due, priority ×10/�
 6. **Tie-break.** Due date, then stable task ID.
 
 Prefer finishing started work over a slightly higher-ranked switch unless a threshold is met (GG-101): verified incident, materially closer committed deadline, or a high-impact unblocking step (pack
-02). Log the factors and exclusions so a ranking can be replayed (PORT-006). The human may override with a logged reason; GoalGuard never edits Vikunja priority to justify itself (PORT-007, §17.3).
+02). Log the factors and exclusions so a ranking can be replayed (PORT-006). The human may override with a logged reason; Goal Guard never edits Vikunja priority to justify itself (PORT-007, §17.3).
 
 ## Capacity
 
@@ -54,4 +54,4 @@ dependencies or days is proposed for promotion to a project, with owner approval
 - *What should I work on now?* — context, one task, its Vikunja ID, eligibility, why it beats the rest, the next demonstrable action.
 - *Interrupt* — confirm urgency, checkpoint, record, propose the resume point.
 - *Complete* — attach evidence to the MVP record, then update Vikunja through the authorised path.
-- *Reprioritise* — the owner edits Vikunja; GoalGuard re-reads (P09, F08). (handoff §17.4)
+- *Reprioritise* — the owner edits Vikunja; Goal Guard re-reads (P09, F08). (handoff §17.4)

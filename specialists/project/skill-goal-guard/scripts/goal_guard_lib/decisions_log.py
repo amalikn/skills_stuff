@@ -3,7 +3,7 @@
 Imported, not run. Each line is one JSON object with decision_id, kind, actor, contract_revision_before/after, rationale, refs, at
 and prev_hash (the SHA-256 of the previous line's exact text; "" for the first line). Reading verifies the chain.
 
-Writes: append() writes only when apply=True, and only the kinds GoalGuard itself may record (verdict, park). Approvals, overrides
+Writes: append() writes only when apply=True, and only the kinds Goal Guard itself may record (verdict, park). Approvals, overrides
 and revisions are the owner's lines, written through the owner's change-control path, never by this module (MVP-007).
 """
 
@@ -134,10 +134,10 @@ def append(path: Path, kind: str, actor: str, revision: str, rationale: str, ref
     {"applied": bool, "path": str, "entry": dict}.
 
   Raises:
-    WriteRefused: the kind is not one GoalGuard may write, the chain is already broken, or the .gg/ folder is missing.
+    WriteRefused: the kind is not one Goal Guard may write, the chain is already broken, or the .gg/ folder is missing.
   """
   if kind not in WRITABLE_KINDS:
-    raise WriteRefused(f"GoalGuard never writes {kind!r} entries; only the owner records approvals, overrides and revisions")
+    raise WriteRefused(f"Goal Guard never writes {kind!r} entries; only the owner records approvals, overrides and revisions")
   if not path.parent.is_dir():
     raise WriteRefused(f"{path.parent} does not exist: enrol the project before recording decisions")
   _, issues = read(path)

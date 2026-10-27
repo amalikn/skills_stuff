@@ -1,4 +1,4 @@
-# Demo target map (fixture): the project's own catalogue of targets; GoalGuard reads it, never writes it.
+# Demo target map (fixture): the project's own catalogue of targets; Goal Guard reads it, never writes it.
 targets:
   - id: T-COLLECT
     title: Device state collector

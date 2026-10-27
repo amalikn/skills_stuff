@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Report what GoalGuard really enforces for a project: records, baseline, hook wiring, captures, Vikunja (pilot feature 12).
+"""Report what Goal Guard really enforces for a project: records, baseline, hook wiring, captures, Vikunja (pilot feature 12).
 
 Usage:
   python scripts/goal_guard_doctor.py --project examples/project_stuff/apn/demo-spoke

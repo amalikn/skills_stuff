@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Hub, Management Baseline and Dates
+Title: Goal Guard Hub, Management Baseline and Dates
 Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §22-29 (Enterprise-Strategy hub, management plan traceability, dual deadlines, migration)
@@ -18,7 +18,7 @@ Workspace paths and the shared `apn` repository are recorded once, in [project-l
 
 ## Hub and spokes (handoff §22)
 
-- Enterprise-Strategy owns strategic direction, approved shared interfaces and cross-project decisions; it is not folded into GoalGuard. Spokes own implementation, local specs, MVP evidence and ADRs.
+- Enterprise-Strategy owns strategic direction, approved shared interfaces and cross-project decisions; it is not folded into Goal Guard. Spokes own implementation, local specs, MVP evidence and ADRs.
 - Register hub/spoke relations explicitly (stable project IDs, real roots, document references); never by auto-discovery alone.
 - **At session start, resume and handoff:** read the relevant approved hub decisions, compare revision (commit, ref or checksum) with the spoke's acknowledged one, record a read receipt (project, hub
   ref, revision, time, decision IDs). Do not copy hub content into spokes.
@@ -48,8 +48,8 @@ reconciliation records, never silent overwrites. Status reports are keyed to the
 | Kind                    | Owner                                                    | Mutable?                                              |
 | ----------------------- | -------------------------------------------------------- | ----------------------------------------------------- |
 | Management commitment   | Approved baseline (hub)                                  | Only by a new approved revision (DATE-001)            |
-| Owner's internal target | GoalGuard metadata                                       | Owner-editable; may precede the commitment (DATE-002) |
-| Forecast                | GoalGuard, with assumptions, evidence time and `unknown` | Recalculated on evidence; never invented (DATE-003)   |
+| Owner's internal target | Goal Guard metadata                                       | Owner-editable; may precede the commitment (DATE-002) |
+| Forecast                | Goal Guard, with assumptions, evidence time and `unknown` | Recalculated on evidence; never invented (DATE-003)   |
 | Actual completion       | Vikunja status plus acceptance evidence and timestamp    | Audited corrections only (DATE-007)                   |
 
 Alerts are distinct: internal-target breach, management deadline at risk, missed commitment (DATE-005). Example (illustrative): commitment 2026-12-15, internal target 2026-12-01; a forecast of

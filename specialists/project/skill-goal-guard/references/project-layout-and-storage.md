@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Project Layout and Storage
+Title: Goal Guard Project Layout and Storage
 Category: reference
 Status: current
 Authority: >-
@@ -25,17 +25,18 @@ Summary: >-
 | `target-map.yaml` and `code-map.toml` exist in UNC and SMC; not checked in Enterprise-Strategy   | Read them in place                                                                                |
 | `.archcore/` in Enterprise-Strategy and UNC, not in SMC                                          | The Archcore rule path does not exist for SMC yet                                                 |
 | No `.gg/` anywhere                                                                               | Nothing to migrate; create only what the pilot needs                                              |
-| No `me` project is registered with GoalGuard                                                     | `me` portfolio work starts after the pilot (L1, second context); isolation is still tested in     |
+| No `me` project is registered with Goal Guard                                                     | `me` portfolio work starts after the pilot (L1, second context); isolation is still tested in     |
 |                                                                                                  |   the pilot                                                                                       |
 
 ## Shared repository (operator, 2026-10-27: keep one repository, scope by path)
 
 The handoff assumes each project is its own repository with its own rules, decision log and hook (handoff §18, F04, P08). In the shared `apn` repository: a hook or rule set up for UNC may fire for
-every `apn` project; an agent working in UNC can read the hub's files directly; one commit can mix approval records from several projects. Decision: keep the one repository; scope hooks, rules and `.gg/` records by project path inside it, keep one decision log per project folder, and keep approval commits to one project each ([pilot-plan.md](pilot-plan.md), D1).
+every `apn` project; an agent working in UNC can read the hub's files directly; one commit can mix approval records from several projects. Decision: keep the one repository; scope hooks, rules and
+`.gg/` records by project path inside it, keep one decision log per project folder, and keep approval commits to one project each ([pilot-plan.md](pilot-plan.md), D1).
 
 ## Skill package
 
-This pack is the one canonical GoalGuard implementation (handoff §30.1): `SKILL.md`, `references/`, `scripts/`, `tests/`, `examples/`, later `schemas/` and adapters. Projects never copy its code or
+This pack is the one canonical Goal Guard implementation (handoff §30.1): `SKILL.md`, `references/`, `scripts/`, `tests/`, `examples/`, later `schemas/` and adapters. Projects never copy its code or
 hold a writable database.
 
 ## `.gg/` records (pilot creates only what it needs)

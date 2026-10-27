@@ -1,14 +1,14 @@
 ---
 name: skill-goal-guard
 description: >-
-  GoalGuard (alias skill-gg): owner-approved MVP scope gate and solo portfolio focus for coding agents in project_stuff. Use before handing work to a
+  Goal Guard (alias skill-gg): owner-approved MVP scope gate and solo portfolio focus for coding agents in project_stuff. Use before handing work to a
   coding agent, when an agent proposes new work or a design enlargement, to decide PROCEED / PARK / REVIEW / BLOCK against the approved MVP, to answer
   "what should I work on next" across apn and me projects from Vikunja, to trace a management milestone to an MVP criterion and a Vikunja task, or to
   check completion evidence ("is this in scope", "park this idea", "what should I work on now"). Not for brainstorming (left unrestricted), not a project
   manager (Vikunja owns live tasks), and never an approval source.
 ---
 
-# GoalGuard
+# Goal Guard
 
 ## Contents
 
@@ -27,8 +27,8 @@ description: >-
 
 ## Role and non-goals
 
-GoalGuard keeps a one-person portfolio delivering small, tested MVPs: it checks every proposed piece of agent work against the owner-approved MVP contract, parks ideas without losing them, routes real
-scope changes to the owner, and names one next action for the task, the project and the portfolio.
+Goal Guard keeps a one-person portfolio delivering small, tested MVPs: it checks every proposed piece of agent work against the owner-approved MVP contract, parks ideas without losing them, routes
+real scope changes to the owner, and names one next action for the task, the project and the portfolio.
 
 Non-goals: it does not own live tasks (Vikunja does), strategy (Enterprise-Strategy does) or technical rules (Archcore does); it never approves its own or an agent's scope change; it does not police
 brainstorming; and a written rule or this file is not enforcement.
@@ -56,7 +56,7 @@ brainstorming; and a written rule or this file is not enforcement.
 | Enterprise-Strategy hub, management baseline, the four dates, Excel                       | [references/hub-management-and-dates.md](references/hub-management-and-dates.md) |
 | `.gg/` records, `target-map.yaml`, `code-map.toml`, storage, the shared `apn` repo        | [references/project-layout-and-storage.md](references/project-layout-and-storage.md) |
 | Snapshots, offline read-only use, restore                                                 | [references/snapshot-and-restore.md](references/snapshot-and-restore.md) |
-| Is a feature in scope for GoalGuard itself, and when                                      | [references/feature-inventory.md](references/feature-inventory.md) |
+| Is a feature in scope for Goal Guard itself, and when                                      | [references/feature-inventory.md](references/feature-inventory.md) |
 | The v1.7 pilot: steps, owner decisions, stop conditions                                   | [references/pilot-plan.md](references/pilot-plan.md) |
 | Which tests gate what; duplicate test IDs                                                 | [references/test-catalog.md](references/test-catalog.md) |
 | Closeout: record what this engagement taught                                              | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
@@ -93,9 +93,9 @@ Vikunja itself is run from `/Volumes/Data/_ai/_tool/tools_stuff/vikunja` (`just 
 
 ## Related skills
 
-- **skill-coder** — practice for any code in this pack or a GoalGuard adapter (required).
-- **skill-smc**, **skill-cambium** — domain facts for the SMC and UNC pilot work GoalGuard gates; GoalGuard decides whether work is in scope, never how the device behaves.
-- **skill-walk-before-run** — when a GoalGuard proposal is itself expansion on an unverified assumption.
+- **skill-coder** — practice for any code in this pack or a Goal Guard adapter (required).
+- **skill-smc**, **skill-cambium** — domain facts for the SMC and UNC pilot work Goal Guard gates; Goal Guard decides whether work is in scope, never how the device behaves.
+- **skill-walk-before-run** — when a Goal Guard proposal is itself expansion on an unverified assumption.
 
 ## Output format
 
@@ -110,7 +110,7 @@ Vikunja itself is run from `/Volumes/Data/_ai/_tool/tools_stuff/vikunja` (`just 
 
 - An agent, a model, a Vikunja task or a task file never approves scope; only an authenticated owner decision naming the revision does.
 - Fail open for read-only inspection, closed for scope-changing or protected writes.
-- Never copy Vikunja task state, target-map content or hub documents into GoalGuard records; reference them by ID, path and revision.
+- Never copy Vikunja task state, target-map content or hub documents into Goal Guard records; reference them by ID, path and revision.
 - Never move a management commitment; record variance instead.
 - Keep `apn` and `me` apart.
 - Claim enforcement only for an observed block on a supported hook; everything else is reported as advisory.
@@ -118,8 +118,8 @@ Vikunja itself is run from `/Volumes/Data/_ai/_tool/tools_stuff/vikunja` (`just 
 
 ## Standing write-back contract
 
-A session that gated, ranked, traced or changed GoalGuard work owes, at closeout, a dated Learned entry in the reference a future reader would open plus one line under `## Unreleased` in [changelog.md](changelog.md),
-with a code excerpt or screenshot as evidence; if this pack cannot be written, park the entry in the project under `## skill-goal-guard write-back candidates`. Format:
+A session that gated, ranked, traced or changed Goal Guard work owes, at closeout, a dated Learned entry in the reference a future reader would open plus one line under `## Unreleased` in
+[changelog.md](changelog.md), with a code excerpt or screenshot as evidence; if this pack cannot be written, park the entry in the project under `## skill-goal-guard write-back candidates`. Format:
 [references/evolution-and-write-back.md](references/evolution-and-write-back.md).
 
 ## Evidence and status

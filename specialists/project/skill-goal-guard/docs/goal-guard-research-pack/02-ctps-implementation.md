@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard CTPS Execution Register
+Title: Goal Guard CTPS Execution Register
 Category: plan
 Status: proposed, not decided
 Authority: research proposal; task-ownership sections superseded by the v1.7 handoff (Vikunja owns live tasks; operator, 2026-10-27)

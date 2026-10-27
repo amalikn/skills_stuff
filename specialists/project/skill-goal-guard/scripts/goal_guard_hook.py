@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Claude Code PreToolUse hook for GoalGuard, DRAFT: advisory by default; blocking only after a captured payload and an observed block.
+"""Claude Code PreToolUse hook for Goal Guard, DRAFT: advisory by default; blocking only after a captured payload and an observed block.
 
 Not run by hand: Claude Code runs it with the hook payload on stdin. Register it in the project's .claude/settings.json by merging
 (never overwriting existing hooks); `goal_guard_doctor.py` reports whether it is wired. Example entry (timeout in seconds):

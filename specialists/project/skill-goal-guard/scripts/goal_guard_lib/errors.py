@@ -1,11 +1,11 @@
-"""GoalGuard's own error types; seams translate library and HTTP failures into these (skill-coder errors-and-timeouts).
+"""Goal Guard's own error types; seams translate library and HTTP failures into these (skill-coder errors-and-timeouts).
 
 Imported, not run. Front ends map them to exit codes: RecordError and ConfigError exit 2, everything else exits 1.
 """
 
 
 class GoalGuardError(Exception):
-  """Base class for every error GoalGuard raises on purpose."""
+  """Base class for every error Goal Guard raises on purpose."""
 
 
 class ConfigError(GoalGuardError):

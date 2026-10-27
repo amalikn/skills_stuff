@@ -1,4 +1,4 @@
-"""Restore a verified GoalGuard snapshot into a clean Vikunja test instance (references/snapshot-and-restore.md, Restore; pilot step 8).
+"""Restore a verified Goal Guard snapshot into a clean Vikunja test instance (references/snapshot-and-restore.md, Restore; pilot step 8).
 
 Imported, not run. Writes only with apply=True, through the two Vikunja seam writers (create_task, create_relation). It refuses a
 target project holding tasks it did not create (not a clean instance), marks each created task with [gg:portable_id=...] so a rerun
@@ -54,7 +54,7 @@ def _marker_of(task: dict) -> str | None:
 
 
 def restore(folder: Path, client: Client, target_project_id: int, apply: bool) -> dict:
-  """Restore a verified snapshot into an empty (or GoalGuard-restored) project of a clean test instance.
+  """Restore a verified snapshot into an empty (or Goal Guard-restored) project of a clean test instance.
 
   Args:
     folder: the project snapshot folder.
@@ -66,7 +66,7 @@ def restore(folder: Path, client: Client, target_project_id: int, apply: bool) -
     {"applied", "plan": {"create_tasks", "create_relations", "skip_existing"}, "verify": {...} when applied, "not_restored": [...]}.
 
   Raises:
-    WriteRefused: the snapshot fails verification, or the target holds tasks GoalGuard did not restore.
+    WriteRefused: the snapshot fails verification, or the target holds tasks Goal Guard did not restore.
   """
   check = verify(folder)
   if not check["ok"]:
@@ -75,7 +75,7 @@ def restore(folder: Path, client: Client, target_project_id: int, apply: bool) -
   existing, _ = client.project_tasks(target_project_id)
   foreign = [t["id"] for t in existing if _marker_of(t) is None]
   if foreign:
-    raise WriteRefused(f"target project {target_project_id} holds {len(foreign)} task(s) not restored by GoalGuard; restore only into a clean instance")
+    raise WriteRefused(f"target project {target_project_id} holds {len(foreign)} task(s) not restored by Goal Guard; restore only into a clean instance")
   new_id = {_marker_of(t): t["id"] for t in existing}
   by_provider = {r["provider_id"]: r for r in records}
   to_create = [r for r in records if r["portable_id"] not in new_id]

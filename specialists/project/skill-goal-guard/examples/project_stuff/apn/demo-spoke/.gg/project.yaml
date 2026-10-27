@@ -1,4 +1,4 @@
-# GoalGuard project record (fixture). Identity, partition and ranking rules only; never task state.
+# Goal Guard project record (fixture). Identity, partition and ranking rules only; never task state.
 project_id: demo-spoke
 partition: apn
 role: spoke

@@ -1,4 +1,4 @@
-"""GoalGuard library: the pilot implementation behind the scripts/goal_guard*.py front ends.
+"""Goal Guard library: the pilot implementation behind the scripts/goal_guard*.py front ends.
 
 Imported, not run. Modules, by layer (core first; a module imports only those above it):
 

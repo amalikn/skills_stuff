@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard MVP Delivery Governance Handoff v1.7
+Title: Goal Guard MVP Delivery Governance Handoff v1.7
 Category: handoff-spec
 Status: current
 Authority: working design spec; controlling handoff for the pilot (operator, 2026-10-27); not implemented

@@ -1,6 +1,6 @@
 """Shared front-end plumbing: task-source arguments, JSON output and the error-to-exit-code mapping.
 
-Imported, not run. Exit codes for every GoalGuard script: 0 success; 1 a GoalGuard failure (Vikunja, refused write); 2 bad input
+Imported, not run. Exit codes for every Goal Guard script: 0 success; 1 a Goal Guard failure (Vikunja, refused write); 2 bad input
 (record, config, arguments); 3 a negative answer the caller must act on (BLOCK or REVIEW, invalid records, failed trace or verify).
 """
 
@@ -25,7 +25,7 @@ def add_task_source(parser: argparse.ArgumentParser) -> None:
     parser: the parser to extend.
   """
   group = parser.add_mutually_exclusive_group(required=True)
-  group.add_argument("--tasks", type=Path, help="saved Vikunja tasks JSON or a GoalGuard snapshot tasks.json (offline, never live)")
+  group.add_argument("--tasks", type=Path, help="saved Vikunja tasks JSON or a Goal Guard snapshot tasks.json (offline, never live)")
   group.add_argument("--vikunja", action="store_true", help="read live from GG_VIKUNJA_URL with GG_VIKUNJA_TOKEN")
 
 
@@ -60,7 +60,7 @@ def emit(result: object) -> None:
 
 
 def run(main: Callable[[], int]) -> None:
-  """Run a front end's main, mapping GoalGuard errors to exit codes and one stderr line.
+  """Run a front end's main, mapping Goal Guard errors to exit codes and one stderr line.
 
   Args:
     main: returns the exit code.

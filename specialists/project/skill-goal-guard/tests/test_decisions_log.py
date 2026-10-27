@@ -46,7 +46,7 @@ class DecisionLog(unittest.TestCase):
         log.append(path, "verdict", "agent", "R", "r", [], {}, apply=True)
 
   def test_approval_kind_refused(self):
-    """GoalGuard never writes an approval (MVP-007)."""
+    """Goal Guard never writes an approval (MVP-007)."""
     with Workspace() as ws, self.assertRaises(errors.WriteRefused):
       log.append(ws.spoke / ".gg/decisions.jsonl", "approval", "agent", "R", "r", [], {}, apply=True)
 

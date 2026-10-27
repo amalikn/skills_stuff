@@ -1,4 +1,4 @@
-"""Minimal doctor: report which GoalGuard paths are enforced and which are only advisory (pilot feature 12; GG-421, GG-423).
+"""Minimal doctor: report which Goal Guard paths are enforced and which are only advisory (pilot feature 12; GG-421, GG-423).
 
 Imported, not run. Read-only: it reads .gg/ records, Claude Code settings files, file modes and the captures folder, and with
 check_vikunja calls GET /info. It never writes, never installs a hook and never claims "enforced" without recorded evidence of an
@@ -57,7 +57,7 @@ def settings_files(root: Path, timeout: float, home: Path) -> list[Path]:
 
 
 def hook_entries(path: Path) -> tuple[list[dict], str]:
-  """Find GoalGuard PreToolUse entries in one settings file.
+  """Find Goal Guard PreToolUse entries in one settings file.
 
   Args:
     path: a settings JSON file.
@@ -131,7 +131,7 @@ def report(root: Path, cfg: Settings, check_vikunja: bool, home: Path) -> dict:
 
 
 def wired_hooks(root: Path, timeout: float, home: Path) -> tuple[list[dict], list[str]]:
-  """Collect GoalGuard hook entries from every settings file that applies to the project.
+  """Collect Goal Guard hook entries from every settings file that applies to the project.
 
   Args:
     root: the project folder.
@@ -170,7 +170,7 @@ def path_statuses(proj: project.Project, hooks: list[dict]) -> list[dict]:
 
   Args:
     proj: the project.
-    hooks: GoalGuard hook entries found in settings files.
+    hooks: Goal Guard hook entries found in settings files.
 
   Returns:
     [{"path", "status"}] for each gated tool, shell writes and the protected records.

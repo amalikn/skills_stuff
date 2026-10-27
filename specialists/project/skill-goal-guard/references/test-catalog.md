@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Test Catalog and Crosswalk
+Title: Goal Guard Test Catalog and Crosswalk
 Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff test tables (T, P, H, D, F, M, S series), research pack 03 (GG series) and the v0.1 unit tests; specified tests, none run except the 10 v0.1 unit tests
@@ -64,8 +64,8 @@ Summary: >-
 
 ## Later phases
 
-L1: P10, GG-102, 109, 111, 112, 404, 405 (file scope, feature #9), 413-415, F06, F11, H02, H04, H05. L2: GG-201-210, 301-310, 409-411, 416-418, 420-422, F10, F12, D01, D02, D10, D11. L5: GG-424. Conditional: GG-425 whenever source
-code is copied.
+L1: P10, GG-102, 109, 111, 112, 404, 405 (file scope, feature #9), 413-415, F06, F11, H02, H04, H05. L2: GG-201-210, 301-310, 409-411, 416-418, 420-422, F10, F12, D01, D02, D10, D11. L5: GG-424.
+Conditional: GG-425 whenever source code is copied.
 
 ## Evaluation thresholds (pack 03)
 

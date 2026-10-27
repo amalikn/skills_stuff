@@ -12,17 +12,18 @@ Summary: >-
 
 # skill-goal-guard catalog
 
-GoalGuard (alias skill-gg): owner-approved MVP scope gate and solo portfolio focus for coding agents working in `project_stuff/`. Current status: [../SKILL.md](../SKILL.md) (Orient first, item 1).
+Goal Guard (alias skill-gg): owner-approved MVP scope gate and solo portfolio focus for coding agents working in `project_stuff/`. Current status: [../SKILL.md](../SKILL.md) (Orient first, item 1).
 
 ## Decisions (operator, 2026-10-27)
 
-- Vikunja owns live task state (priority, status, due dates, dependencies). GoalGuard owns scope, approvals, decisions, deferred ideas, internal targets and forecasts.
+- Vikunja owns live task state (priority, status, due dates, dependencies). Goal Guard owns scope, approvals, decisions, deferred ideas, internal targets and forecasts.
 - Vikunja runs locally: 2.7.1 deployed 2026-10-27 from `tools_stuff/vikunja` (status: [../SKILL.md](../SKILL.md), Orient first).
 - The first build is the full v1.7 kickoff pilot ([../references/pilot-plan.md](../references/pilot-plan.md)).
 - Skill at the folder root (`SKILL.md`, `name: skill-goal-guard`); the consolidated rules in `references/`; source documents kept verbatim under `docs/`.
 - Naming: folders `goal-guard`, `goal-guard-research-pack`; documents and Python files `goal_guard`; markdown filenames lower case except tool-mandated `SKILL.md`, `AGENTS.md`, `CLAUDE.md`.
 - All code is written under skill-coder.
-- Pilot decisions D1-D6: one `apn` repository scoped by path; pilot spoke `unified-network-controller`; approvals by signed Git commit; plan and Excel found in `enterprise-strategy` (to confirm); Vikunja on OrbStack with SQLite; folder name `.gg/` ([../references/pilot-plan.md](../references/pilot-plan.md)).
+- Pilot decisions D1-D6: one `apn` repository scoped by path; pilot spoke `unified-network-controller`; approvals by signed Git commit; plan and Excel found in `enterprise-strategy` (to confirm);
+  Vikunja on OrbStack with SQLite; folder name `.gg/` ([../references/pilot-plan.md](../references/pilot-plan.md)).
 
 ## Skill pack
 

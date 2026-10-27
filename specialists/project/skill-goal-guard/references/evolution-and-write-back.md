@@ -1,12 +1,12 @@
 ---
-Title: GoalGuard Evolution and Write-Back
+Title: Goal Guard Evolution and Write-Back
 Category: reference
 Status: current
 Authority: local-supplement; entry format and evidence rule follow skill-coder and skill-drawio (operator, 2026-10-19 and 2026-10-20)
-Scope: What a session that used or touched GoalGuard owes this pack at closeout, and the entry format
+Scope: What a session that used or touched Goal Guard owes this pack at closeout, and the entry format
 Last reviewed: 2026-10-27
 Summary: >-
-  Any session that gated, ranked, traced or changed GoalGuard work writes a dated Learned entry into the reference a future reader would open, plus
+  Any session that gated, ranked, traced or changed Goal Guard work writes a dated Learned entry into the reference a future reader would open, plus
   one changelog line, with a code excerpt or screenshot as evidence; entries that cannot be written here are parked in the project.
 ---
 
@@ -14,7 +14,7 @@ Summary: >-
 
 ## Trigger
 
-Touching this skill's domain, invoked or not, engages its write-back: assessing a proposal, ranking work, tracing a milestone, wiring a hook, reading Vikunja for GoalGuard, or changing this pack.
+Touching this skill's domain, invoked or not, engages its write-back: assessing a proposal, ranking work, tracing a milestone, wiring a hook, reading Vikunja for Goal Guard, or changing this pack.
 
 ## Classify the engagement
 
@@ -28,8 +28,8 @@ Touching this skill's domain, invoked or not, engages its write-back: assessing 
 ```
 
 `EVIDENCE` is `VERIFIED_PRIMARY`, `VERIFIED_SECONDARY`, `UNVERIFIED` or `USER_STATED`. Put the entry in the reference a future reader would open (a hook fact in [enforcement-and-hooks.md](enforcement-and-hooks.md), a Vikunja
-behaviour in [vikunja-integration.md](vikunja-integration.md)), and add one line under `## Unreleased` in [../changelog.md](../changelog.md) naming that file and date. Read the entry back and commit it in `skills_stuff`; an uncommitted entry is not written back. A contradiction is a `Disputed` entry beside the old text with `Conflicts:
-<claim>`; never delete or silently rewrite.
+behaviour in [vikunja-integration.md](vikunja-integration.md)), and add one line under `## Unreleased` in [../changelog.md](../changelog.md) naming that file and date. Read the entry back and commit it in `skills_stuff`; an uncommitted entry is
+not written back. A contradiction is a `Disputed` entry beside the old text with `Conflicts: <claim>`; never delete or silently rewrite.
 
 ## Evidence with every entry
 

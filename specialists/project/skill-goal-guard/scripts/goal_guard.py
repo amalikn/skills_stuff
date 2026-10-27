@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GoalGuard scope gate and What's Next: validate a project's records, assess a proposal, rank the next action.
+"""Goal Guard scope gate and What's Next: validate a project's records, assess a proposal, rank the next action.
 
 Pilot step 4 rewrite of the v0.1 prototype (kept in git history, commit 1dff9c8): adds the MVP baseline, the BLOCK verdict, the
 decision order of references/decision-rules.md and the ranking pipeline of references/whats-next-and-portfolio.md, and reads

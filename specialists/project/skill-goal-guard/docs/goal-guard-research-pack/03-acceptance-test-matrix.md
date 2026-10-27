@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Acceptance Test Matrix
+Title: Goal Guard Acceptance Test Matrix
 Category: test-matrix
 Status: proposed, not decided
 Authority: specified tests, none executed against the v0.1 prototype

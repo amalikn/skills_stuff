@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard MVP Contract and Change Control
+Title: Goal Guard MVP Contract and Change Control
 Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §1-2, §5-6, §8, §10, research pack 01 M0, 05 B-01 and 06 (task template)
@@ -54,7 +54,9 @@ planning-hour limit (handoff §6 Stage B, MVP-010).
 
 An agent asking for a change supplies: baseline ID and criterion affected; why the current deliverable is impossible, unsafe or invalid; evidence and the smallest change; alternatives that keep scope;
 impact on deadline, tests, dependencies, exclusions; an explicit request to the owner (handoff §8). Only an authenticated owner decision naming the exact proposal creates a new revision;
-conversational assent to another subject is not approval. Denied and deferred proposals are recorded too. Verification (decision D3): the approval commit must carry a valid signature from a key listed in an owner-held allowed-signers file (`git verify-commit`, with `gpg.ssh.allowedSignersFile` for SSH keys); exact setup and the agent-usable-key risk are settled before pilot step 5 ([pilot-plan.md](pilot-plan.md), D3 risk). Revisions never overwrite history (MVP-011).
+conversational assent to another subject is not approval. Denied and deferred proposals are recorded too. Verification (decision D3): the approval commit must carry a valid signature from a key listed
+in an owner-held allowed-signers file (`git verify-commit`, with `gpg.ssh.allowedSignersFile` for SSH keys); exact setup and the agent-usable-key risk are settled before pilot step 5 ([pilot-plan.md](pilot-plan.md),
+D3 risk). Revisions never overwrite history (MVP-011).
 
 Hub-affecting changes go to Enterprise-Strategy instead ([hub-management-and-dates.md](hub-management-and-dates.md)).
 

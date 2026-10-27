@@ -1,4 +1,4 @@
-"""The GoalGuard decision rules: PROCEED / PARK / REVIEW / BLOCK for one proposal (references/decision-rules.md, Evaluation order).
+"""The Goal Guard decision rules: PROCEED / PARK / REVIEW / BLOCK for one proposal (references/decision-rules.md, Evaluation order).
 
 Imported, not run. Pure policy: no I/O; the caller loads the project, its baseline state and the tasks. Steps run in the
 reference's order and stop at the first verdict. Step 8 (semantic necessity) cannot be judged by code; it checks that the agent

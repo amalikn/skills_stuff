@@ -18,5 +18,5 @@ milestones:
     acceptance_evidence: {}
     target_source_ref: target-map.yaml
     target_id: T-COLLECT
-    target_source_revision: sha256:f8c9a3a7b212f8a820d52d699823f5888d457c6f02db9d09622d332b621568d0
+    target_source_revision: sha256:e77721b9d225eda7f7e03c268985f98abf6be59b9a9bded5695e126a6c099ecf
     mapping_status: proposed

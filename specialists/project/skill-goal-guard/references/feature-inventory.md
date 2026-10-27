@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Feature and Idea Inventory
+Title: Goal Guard Feature and Idea Inventory
 Category: reference
 Status: current
 Authority: consolidated from every source document; dispositions follow the operator decisions of 2026-10-27 (Vikunja authority, full v1.7 pilot)
@@ -13,7 +13,7 @@ Summary: >-
 # Feature and idea inventory
 
 **Dispositions.** `Pilot` = in the v1.7 pilot ([pilot-plan.md](pilot-plan.md)). `L1`..`L5` = later phases, in order, each behind a gate. `Parked` = kept, no plan to build until a need is shown. `Rejected` = decided
-against. GoalGuard applies its own rule here: a feature enters a phase only when it advances that phase's acceptance tests.
+against. Goal Guard applies its own rule here: a feature enters a phase only when it advances that phase's acceptance tests.
 
 ## Phases after the pilot
 
@@ -71,9 +71,9 @@ against. GoalGuard applies its own rule here: a feature enters a phase only when
 | 38  | `apn` / `me` isolation                                                                               | PORT-005                     | Pilot (tested denial)                       |
 | 39  | Archcore rule in the pilot project                                                                   | handoff §9, §28              | Pilot                                       |
 | 40  | Read-only `target-map.yaml` / `code-map.toml` trace                                                  | handoff §36                  | Pilot                                       |
-| 41  | GoalGuard maintaining target maps                                                                    | handoff §36                  | Parked                                      |
+| 41  | Goal Guard maintaining target maps                                                                    | handoff §36                  | Parked                                      |
 | 42  | One project snapshot, manifest, dry-run and clean restore                                            | handoff §37, kickoff         | Pilot                                       |
-| 43  | Full Vikunja disaster recovery inside GoalGuard                                                      | handoff §37.5                | Rejected (instance backup instead)          |
+| 43  | Full Vikunja disaster recovery inside Goal Guard                                                      | handoff §37.5                | Rejected (instance backup instead)          |
 | 44  | SQLite observation journal, single writer, leases                                                    | pack 02 C09                  | L2                                          |
 | 45  | Task-start Git baseline drift audit                                                                  | pack 06 drift-check          | L2                                          |
 | 46  | Bounded fix-loop budget                                                                              | pack 06, GG-420              | L2                                          |

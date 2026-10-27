@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only Vikunja reads for GoalGuard: instance info, one project's tasks, one task (pilot features 20-21).
+"""Read-only Vikunja reads for Goal Guard: instance info, one project's tasks, one task (pilot features 20-21).
 
 Usage:
   python scripts/goal_guard_vikunja.py info

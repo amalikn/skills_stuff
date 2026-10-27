@@ -1,4 +1,4 @@
-"""An in-memory fake of the Vikunja API v2 endpoints GoalGuard uses, as a transport for vikunja.Client.
+"""An in-memory fake of the Vikunja API v2 endpoints Goal Guard uses, as a transport for vikunja.Client.
 
 Imported by the tests, not run. Shapes follow the captured OpenAPI of v2.7.1 (PaginatedTask, Task, TaskRelation); it creates the
 inverse relation itself, as the real server's relation_kind description says. Safety: memory only.

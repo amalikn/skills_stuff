@@ -1,6 +1,6 @@
 # skill-goal-guard (alias skill-gg)
 
-GoalGuard: owner-approved MVP scope gate and solo portfolio focus for coding agents working in `project_stuff/`. Current status: [SKILL.md](SKILL.md) (Orient first, item 1).
+Goal Guard: owner-approved MVP scope gate and solo portfolio focus for coding agents working in `project_stuff/`. Current status: [SKILL.md](SKILL.md) (Orient first, item 1).
 
 ## Folder index
 

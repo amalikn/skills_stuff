@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Vikunja Integration Design
+Title: Goal Guard Vikunja Integration Design
 Category: integration-design
 Status: proposed, not decided
 Authority: research proposal; projection-only model task-ownership sections superseded by the v1.7 handoff (Vikunja owns live tasks; operator, 2026-10-27)

@@ -1,5 +1,5 @@
 ---
-Title: GoalGuard Decision Rules
+Title: Goal Guard Decision Rules
 Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §4, §6-8, §17.5, §26, research pack 02 and 06, and the v0.1 prototype; conflicts 2 and 3 settled here
@@ -34,11 +34,13 @@ Run in this order and stop at the first verdict:
 
 1. **Context.** Resolve partition (`apn` / `me`) and project; access outside the authorised partition → `BLOCK` (PORT-005).
 2. **Baseline.** No baseline, draft baseline, or unreadable baseline → `BLOCK` for scope-changing work (MVP-001, MVP-003, MVP-012, T01, T02, T11). Read-only inspection may continue (pack 00 rule 4).
-3. **Task.** No task for nontrivial work → `REVIEW` (GG-406). A Vikunja task (the work item itself) that maps to no approved MVP criterion → `BLOCK` (PORT-002, P03). Unmet dependency → `REVIEW` with the blockers named.
+3. **Task.** No task for nontrivial work → `REVIEW` (GG-406). A Vikunja task (the work item itself) that maps to no approved MVP criterion → `BLOCK` (PORT-002, P03). Unmet dependency → `REVIEW` with
+   the blockers named.
 4. **Exclusion.** Work matching an exclusion → `BLOCK`, whatever it is called ("future-proofing", "while we're here") (MVP-004, T05).
 5. **Self-approval.** An approval field written by an agent, in a task file, hook payload or Vikunja → `BLOCK`; record it as a proposal (MVP-007, T07, GG-403, GG-418).
 6. **Protected change.** Edits to goal, MVP, committed date, management baseline or hub decision outside the change-control path → `BLOCK` (MVP-011, DATE-001, DATE-004).
-7. **Criterion link.** On a task that does map to the MVP, a proposed action citing no accepted criterion and no registered blocker → `PARK` (MVP-005, T04). Rule of thumb: an unmapped *task* blocks; an unmapped *idea* parks.
+7. **Criterion link.** On a task that does map to the MVP, a proposed action citing no accepted criterion and no registered blocker → `PARK` (MVP-005, T04). Rule of thumb: an unmapped *task* blocks;
+   an unmapped *idea* parks.
 8. **Necessity (semantic).** Cited criterion but the work does not advance it → `REVIEW`, flag false linkage (GG-007, GG-412). Work inside an allowed file that adds an unrelated feature → `PARK` or
    `REVIEW`; a file allowlist alone never yields `PROCEED` (GG-401).
 9. **Scope growth.** `adds_scope` true, or a newly discovered dependency not in the baseline → `REVIEW` (MVP-006, T06, GG-008).
@@ -77,7 +79,8 @@ No convincing answer to 1-3 → park (v0.1 readme).
 | `decisions.jsonl` line | `decision_id`, `kind` (verdict, approval, override, revision, park), `actor`, `contract_revision` before and after, `rationale`, `refs`, `at`, `prev_hash` (hash            |
 |                        |   chain, append-only)                                                                                                                                                       |
 
-Schemas (`schemas/`) are not written yet (2026-10-27); the step-4 code enforces this table in `scripts/goal_guard_lib/records.py` and `mvp.py`, and a PROCEED verdict also carries the proposal's `proposed_files`, which the hook uses as its file allowlist.
+Schemas (`schemas/`) are not written yet (2026-10-27); the step-4 code enforces this table in `scripts/goal_guard_lib/records.py` and `mvp.py`, and a PROCEED verdict also carries the proposal's
+`proposed_files`, which the hook uses as its file allowlist.
 
 ## Policy clause index
 

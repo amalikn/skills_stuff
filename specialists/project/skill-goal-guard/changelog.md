@@ -24,6 +24,8 @@ Summary: History of skill-goal-guard, newest first; the release heading is the o
   page (context-mode hook blocks WebFetch, the subagent has no ctx tool), so the page was read through `ctx_fetch_and_index` in the main session.
 - Proposed, not decided: cover shell writes the hook cannot see (git pre-commit check, read-only modes on protected records).
 - Vikunja API facts used by the code checked against the captured OpenAPI 2.7.1 (Learned entry in `references/vikunja-integration.md`).
+- Name spelled "Goal Guard" in prose across the pack (operator, 2026-10-27): 137 replacements in 50 files; identifiers, file and format names, and verbatim `docs/` text and `documents/` captures unchanged; changed markdown rewrapped with the canonical rewrap tool. The rename changed a comment in the fixture target map, so `goal_guard_trace.py` reported REVIEW until the
+  fixture hashes in `examples/.../mappings.yaml` were re-pinned (the trace caught the change, as designed).
 - A blank line added after the front matter in 27 markdown files (operator, 2026-10-27: "there should be a line gap after the frontmatter"); in `docs/` only the added front matter is touched, the verbatim text is unchanged.
 
 ### 2026-10-27 17:25 — pilot tools written under skill-coder (step 4, tools for steps 6-8)
