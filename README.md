@@ -27,6 +27,7 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 | `skill-coder`          | `specialists/project/skill-coder/`      | 0.1.0 — language-agnostic programming practice with per-language overrides and stdlib checkers; installed 2026-10-19, not yet the |
 |                        |                                         |   default (global routing pending)                                                                                                |
 | `skill-goal-guard`     | `specialists/project/skill-goal-guard/` | 0.1.0-pre — GoalGuard (alias skill-gg): MVP scope gate and portfolio focus; rules consolidated, v0.1 prototype CLI, Vikunja 2.7.1 local; not installed (2026-10-27) |
+| `skill-knowledge-curator` | `specialists/project/skill-knowledge-curator/` | 0.1.0-pre — Knowledge Curator (alias skill-kc): evidence-linked claims, conflict review, derived/promoted knowledge pages, archive plans; v1 kernel `kc`, 42 tests; installed 2026-10-27 |
 
 ## Specialist Packs — Platform
 

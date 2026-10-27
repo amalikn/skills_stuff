@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kc/section-status-input",
+  "title": "Section coverage status (kc claims input)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "section_id",
+    "status",
+    "reason"
+  ],
+  "properties": {
+    "record": {
+      "const": "section_status"
+    },
+    "section_id": {
+      "type": "string",
+      "pattern": "^sec-[0-9a-f]{12}$"
+    },
+    "status": {
+      "enum": [
+        "context",
+        "unreadable",
+        "pending-review"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 5
+    }
+  }
+}

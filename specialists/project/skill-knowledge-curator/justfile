@@ -1,0 +1,146 @@
+# just task catalog for skill-knowledge-curator (alias skill-kc).
+# Purpose: expose the pack's safe, documented tasks to humans and agents; agents run catalogued tasks only.
+# Safety: kc commands are read-only unless --apply is passed (see scripts/readme.md for what each writes); nothing edits a source document.
+#
+# Runtime pinning: recipes call the interpreter by path through {{py}} and depend on _require-venv, never a bare python3
+# (skill-coder references/tooling-and-runtime.md). The venv lives in the working-cache peer, never in this repo.
+#
+# List tasks: just --list
+
+set dotenv-load := false
+
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-knowledge-curator"
+py := wc + "/.venv/bin/python"
+ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+coder := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder/scripts"
+
+# List the tasks.
+default:
+    @just --list
+
+# Build the working-cache venv from the mise-pinned Python and install the pinned requirements. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @{{py}} -m pip install --quiet -r requirements.txt
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Add the optional NLI ranking signal (large: installs torch; the model downloads on first use).
+bootstrap-nli: _require-venv
+    @{{py}} -m pip install --quiet -r requirements-nli.txt
+
+# Fail early and legibly rather than falling back to the host interpreter.
+_require-venv:
+    @test -x "{{py}}" || { echo "missing venv at {{py}}: run 'just bootstrap'" >&2; exit 1; }
+
+# Run any kc command on a project: just kc inventory /path/to/project [--apply]. Read-only unless --apply.
+[positional-arguments]
+kc command project *ARGS: _require-venv
+    @{{py}} scripts/knowledge_curator.py "$1" --project "$2" "${@:3}"
+
+# Run the unit and end-to-end tests (read-only; temporary copies only).
+test: _require-venv
+    @{{py}} -m unittest discover -s tests
+
+# Lint and check formatting with ruff (read-only).
+lint: _require-venv
+    @{{wc}}/.venv/bin/ruff check scripts tests
+    @{{wc}}/.venv/bin/ruff format --check scripts tests
+
+# Format the code with ruff (writes the pack's own Python files).
+fmt: _require-venv
+    @{{wc}}/.venv/bin/ruff format scripts tests
+
+# skill-coder's helpers: timeouts, process-group timeouts, headers, suppressions, size, write gates (read-only).
+coder-checks: _require-venv
+    @{{py}} {{coder}}/call_timeouts.py --project-root . --roots scripts,tests
+    @{{py}} {{coder}}/group_timeouts.py --project-root . --roots scripts,tests
+    @{{py}} {{coder}}/script_headers.py --project-root . --roots scripts,tests
+    @{{py}} {{coder}}/suppressions.py --project-root . --roots scripts,tests
+    @{{py}} {{coder}}/code_size.py --project-root . --roots scripts,tests
+    @{{py}} {{coder}}/write_gates.py --project-root .
+
+# Read-only inventory of the real pilot corpus (the MCP post-migration audit); writes nothing there.
+pilot-inventory: _require-venv
+    @{{py}} scripts/knowledge_curator.py inventory --project /Volumes/Data/_ai/_project/project_stuff/mcp-post-migration-audit
+
+# Closing check: lint, tests, skill-coder's helpers (read-only).
+check: lint test coder-checks
+    @echo "skill-knowledge-curator check passed"
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root . --check
+
+# Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
+stale: _require-venv
+    @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root .
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
+
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/govern_guard.py" --project-root "$root" || exit 1; fi
+    if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
+      nav="$(mktemp)"
+      {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
+      elif grep -q "would" "$nav"; then
+        {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+      fi
+      rm -f "$nav"
+    fi
+    {{py}} "{{ai_it}}/scripts/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    {{py}} "{{ai_it}}/scripts/adopt_code_map.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
+# Triage: one line per file (status, review date, summary) from its header, so a file is judged without being opened
+docs *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/file_headers.py" --project-root . {{ARGS}}
+
+# Rotated history on demand: `just history <term>` searches the CHANGELOG archives (SCRATCHPAD: `just history <term> SCRATCHPAD.md`)
+history TERM RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --find "{{TERM}}" {{RECORD}}
+
+# Print one rotated entry by its stamp, when a live entry cites it: `just history-show 20260918_1200`
+history-show STAMP RECORD="CHANGELOG.md": _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
+
+# Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget: plan by default; `just rotate --apply` (slurp runs `just budget`, which trims ROADMAP too)
+rotate *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
+    @{{py}} "{{ai_it}}/scripts/rotate_records.py" --project-root . {{ARGS}} SCRATCHPAD.md
+    @{{py}} "{{ai_it}}/scripts/roadmap_trim.py" --project-root . {{ARGS}}
+
+# Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
+budget *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root . {{ARGS}}
+
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/add_changelog_entry.py" --project-root . "$@"
+
+# Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
+move-sections *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . section "$@"

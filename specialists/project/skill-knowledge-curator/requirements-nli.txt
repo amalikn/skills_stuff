@@ -1,0 +1,4 @@
+# Optional NLI ranking signal for `kc candidates` (operator chose the full design stack, 2026-10-27). Large: pulls torch.
+# Seam scripts/knowledge_curator_lib/nli.py; absent package = signal skipped. Install with `just bootstrap-nli`.
+# The model (KC_NLI_MODEL, default cross-encoder/nli-deberta-v3-small) downloads from Hugging Face on first use.
+sentence-transformers==6.2.0

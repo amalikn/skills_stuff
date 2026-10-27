@@ -586,6 +586,35 @@ def _copy_routes(scratch, page, axis):
         page.route(rt.cid, rt.src, rt.dst, pts, style, klass, layer, ignore, jump)
 ```
 
+### P-31 Append-only event ledger, content-derived IDs and approval bound to a body digest
+
+> **Learned 2026-10-27** · design pattern, any language · VERIFIED_PRIMARY (skill-knowledge-curator: 42 tests incl. rerun-appends-nothing, render-twice-identical, wrong-digest-refused, hand-edit-detected) · Source: skill-knowledge-curator `scripts/knowledge_curator_lib/state.py`, `ids.py`, `render.py`, `promote.py` (uncommitted 2026-10-27) · Falsifier: a rerun on unchanged input that appends a record, or an approval that survives an edit to the approved text
+> (reusable_candidate: proven in one project, not yet in a second) Pattern P-31, written generically below.
+
+- **Problem:** a tool records judgements (decisions, dispositions, approvals) about inputs that keep changing, must never lose history, must be safe to rerun, and must not let an approval given to one
+  text cover a later, different text.
+- **Solution:** (1) every write is an appended event in a JSONL ledger; the current state is a fold where the last event per ID wins; (2) IDs are hashes of the content that defines identity (subject,
+  predicate, object and scope; a section's heading path and text), never of a path, line number or counter, so the same input gives the same ID and intake skips what is already recorded; (3) an
+  approval stores the SHA-256 of the approved body (text after a marker line, so a status banner can change without voiding it) and every later check compares it with the file on disk.
+- **Why it works:** idempotence falls out of identity (no "already done" bookkeeping); history is the file itself; a reversal is a new event naming the old one; a silent edit becomes a digest mismatch
+  a validator can fail on.
+- **Reuse:** review queues, approval workflows, data-migration ledgers, config promotion, any generated document that becomes authoritative.
+- **Pitfalls:** an ID that includes a field which legitimately changes (wording) splits one thing into two, and an ID that omits a field that distinguishes things (the object of a claim) merges a
+  conflict into a silent "newer wins"; choose identity fields deliberately and test both. Exclude volatile fields (timestamps) from IDs and from rendered output, or reruns churn.
+- **Realised in:** Python, skill-knowledge-curator:
+
+```python
+def make_id(prefix: str, *parts, length: int = 12) -> str:      # ids.py
+  return f"{prefix}-{sha256_text(canonical(list(parts)))[:length]}"
+
+claim_id = make_id("cl", project_id, norm(subject), norm(predicate), norm(object), scope)   # object in the key: no newest-wins
+if prior and prior["version_id"] == version["version_id"]:      # claims.py: rerun appends nothing
+  res.skipped += 1
+
+def body_digest(text: str) -> str:                              # render.py: banner above the marker may change
+  return sha256_text(text.split(BODY_MARK, 1)[1] if BODY_MARK in text else text)
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet

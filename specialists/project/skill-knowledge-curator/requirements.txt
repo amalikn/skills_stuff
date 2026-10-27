@@ -1,0 +1,13 @@
+# Third-party dependencies of skill-knowledge-curator, pinned; installed into the working-cache venv by `just bootstrap`.
+# Each names its seam and its upgrade test (skill-coder references/dependencies.md). Everything else is the standard library.
+#
+# markdown-it-py: seam scripts/knowledge_curator_lib/mdparse.py (block line maps); upgrade test tests/test_contract_seams.py (SeamTest).
+markdown-it-py==4.2.0
+# jsonschema: seam scripts/knowledge_curator_lib/schema.py (Draft 2020-12 input validation); upgrade test tests/test_contract_seams.py (ContractTest).
+jsonschema==4.26.0
+# RapidFuzz: seam scripts/knowledge_curator_lib/fuzzy.py (candidate similarity only); upgrade test tests/test_contract_seams.py (SeamTest).
+rapidfuzz==3.14.6
+# PyYAML: seam scripts/knowledge_curator_lib/yaml_io.py (safe_load / safe_dump only); upgrade test tests/test_contract_seams.py (SeamTest).
+pyyaml==6.0.3
+# ruff: the one Python formatter and linter (configured in ruff.toml); used by `just lint`, not imported.
+ruff==0.17.3

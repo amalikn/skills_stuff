@@ -1,0 +1,62 @@
+[
+  {
+    "record": "relation",
+    "claims": [
+      "cl-8f667f7c94d3",
+      "cl-383321e0e779"
+    ],
+    "relation": "time-evolution",
+    "reason": "design-2026 states it replaces the MQTT transport of design-2025",
+    "superseded": "cl-8f667f7c94d3",
+    "successor": "cl-383321e0e779",
+    "supersession_evidence": {
+      "source_path": "docs/design-2026.md",
+      "line_start": 8,
+      "line_end": 8,
+      "excerpt": "This replaces the MQTT transport described in design-2025."
+    }
+  },
+  {
+    "record": "relation",
+    "claims": [
+      "cl-dfbcc2075c90",
+      "cl-4ccacce8f07f"
+    ],
+    "relation": "true-conflict",
+    "severity": "P1",
+    "conflict_type": "normative-design-conflict",
+    "reason": "Both apply to the target image; design-2026 does not say it replaces the 2025 recovery requirement.",
+    "hypotheses": [
+      "2026 decision supersedes the 2025 requirement",
+      "the 2025 requirement still binds"
+    ],
+    "recommended_current": "cl-4ccacce8f07f",
+    "question": "Is root A/B recovery rejected for the target image (snapshots instead), as design-2026 says?"
+  },
+  {
+    "record": "relation",
+    "claims": [
+      "cl-590854afd981",
+      "cl-53ca0af47c93"
+    ],
+    "relation": "true-conflict",
+    "severity": "P1",
+    "conflict_type": "requirement-vs-observed",
+    "reason": "The runbook's nightly schedule does not meet the 6-hour requirement for the same backups.",
+    "hypotheses": [
+      "runbook is out of date",
+      "requirement not yet implemented"
+    ],
+    "recommended_current": "cl-53ca0af47c93",
+    "question": "Which backup schedule is current: nightly at 02:00 (runbook) or every 6 hours (requirements)?"
+  },
+  {
+    "record": "relation",
+    "claims": [
+      "cl-8831374bd5d2",
+      "cl-0c2efd4aa22d"
+    ],
+    "relation": "different-scope",
+    "reason": "Current state versus target image; both hold."
+  }
+]

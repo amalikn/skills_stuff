@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kc/claim-input",
+  "title": "Agent-extracted atomic claim (kc claims input)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "subject",
+    "predicate",
+    "object",
+    "claim_text",
+    "kind",
+    "epistemic_status",
+    "primary_category",
+    "topic_key",
+    "disposition",
+    "evidence"
+  ],
+  "properties": {
+    "record": {
+      "const": "claim"
+    },
+    "claim_id": {
+      "type": "string",
+      "pattern": "^cl-[0-9a-f]{12}$",
+      "description": "Give only to revise an existing claim; otherwise derived from subject, predicate, object and scope."
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predicate": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claim_text": {
+      "type": "string",
+      "minLength": 3
+    },
+    "kind": {
+      "enum": [
+        "observed",
+        "target",
+        "requirement",
+        "proposal",
+        "decision",
+        "hypothesis",
+        "test_result",
+        "external_fact",
+        "procedure"
+      ]
+    },
+    "epistemic_status": {
+      "enum": [
+        "OBSERVED",
+        "PROPOSED",
+        "APPROVED",
+        "INFERRED",
+        "DISPUTED"
+      ]
+    },
+    "primary_category": {
+      "enum": [
+        "architecture",
+        "requirements",
+        "technical",
+        "governance",
+        "operations"
+      ]
+    },
+    "subcategories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "topic_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      }
+    },
+    "valid_time": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "recorded_time": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "disposition": {
+      "enum": [
+        "CURRENT",
+        "HISTORICAL",
+        "SUPERSEDED",
+        "DUPLICATE",
+        "REJECTED",
+        "REVIEW_REQUIRED"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "inference": {
+      "type": "boolean"
+    },
+    "decision_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_path",
+          "line_start",
+          "line_end",
+          "excerpt"
+        ],
+        "properties": {
+          "source_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "line_start": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "line_end": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "excerpt": {
+            "type": "string",
+            "minLength": 3,
+            "description": "Exact text from the cited lines; compared whitespace-normalised."
+          }
+        }
+      }
+    }
+  }
+}

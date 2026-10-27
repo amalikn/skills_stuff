@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kc/intake-payload",
+  "title": "Caller payload (direct or skill-slurp-chat Step 4b)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mode",
+    "items",
+    "read_only"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "mode": {
+      "enum": [
+        "audit",
+        "slurp"
+      ]
+    },
+    "project_root": {
+      "type": "string"
+    },
+    "source_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "read_only": {
+      "const": true
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item_id",
+          "type",
+          "text"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

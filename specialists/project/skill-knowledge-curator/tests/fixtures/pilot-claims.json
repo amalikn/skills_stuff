@@ -1,0 +1,272 @@
+[
+  {
+    "record": "claim",
+    "subject": "provisioning transport",
+    "predicate": "is",
+    "object": "MQTT over TLS",
+    "claim_text": "The provisioning transport is MQTT over TLS.",
+    "kind": "decision",
+    "epistemic_status": "APPROVED",
+    "primary_category": "architecture",
+    "topic_key": "provisioning.transport",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/design-2025.md",
+        "line_start": 7,
+        "line_end": 7,
+        "excerpt": "MQTT over TLS"
+      }
+    ],
+    "subcategories": [
+      "integration"
+    ],
+    "labels": [
+      "transport",
+      "provisioning"
+    ]
+  },
+  {
+    "record": "claim",
+    "subject": "provisioning transport",
+    "predicate": "is",
+    "object": "HTTPS polling",
+    "claim_text": "The provisioning transport is HTTPS polling.",
+    "kind": "decision",
+    "epistemic_status": "APPROVED",
+    "primary_category": "architecture",
+    "topic_key": "provisioning.transport",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/design-2026.md",
+        "line_start": 7,
+        "line_end": 7,
+        "excerpt": "HTTPS polling"
+      }
+    ],
+    "subcategories": [
+      "integration"
+    ],
+    "labels": [
+      "transport",
+      "provisioning"
+    ]
+  },
+  {
+    "record": "claim",
+    "subject": "root A/B recovery",
+    "predicate": "status",
+    "object": "required",
+    "claim_text": "Root A/B recovery is required for the target image.",
+    "kind": "requirement",
+    "epistemic_status": "APPROVED",
+    "primary_category": "architecture",
+    "topic_key": "recovery.ab-root",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/design-2025.md",
+        "line_start": 11,
+        "line_end": 11,
+        "excerpt": "Root A/B recovery is required"
+      }
+    ],
+    "scope": {
+      "image": "target"
+    }
+  },
+  {
+    "record": "claim",
+    "subject": "root A/B recovery",
+    "predicate": "status",
+    "object": "rejected",
+    "claim_text": "Root A/B recovery is rejected for the target image.",
+    "kind": "decision",
+    "epistemic_status": "APPROVED",
+    "primary_category": "architecture",
+    "topic_key": "recovery.ab-root",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/design-2026.md",
+        "line_start": 12,
+        "line_end": 12,
+        "excerpt": "Root A/B recovery is rejected"
+      }
+    ],
+    "scope": {
+      "image": "target"
+    }
+  },
+  {
+    "record": "claim",
+    "subject": "backups",
+    "predicate": "frequency",
+    "object": "nightly at 02:00",
+    "claim_text": "Backups run nightly at 02:00.",
+    "kind": "procedure",
+    "epistemic_status": "OBSERVED",
+    "primary_category": "operations",
+    "topic_key": "backups.schedule",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/ops-runbook.md",
+        "line_start": 7,
+        "line_end": 7,
+        "excerpt": "Backups run nightly at 02:00."
+      }
+    ],
+    "subcategories": [
+      "recovery"
+    ]
+  },
+  {
+    "record": "claim",
+    "subject": "backups",
+    "predicate": "frequency",
+    "object": "nightly at 02:00",
+    "claim_text": "Backups run nightly at 02:00.",
+    "kind": "procedure",
+    "epistemic_status": "OBSERVED",
+    "primary_category": "operations",
+    "topic_key": "backups.schedule",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/ops-runbook-copy.md",
+        "line_start": 7,
+        "line_end": 7,
+        "excerpt": "Backups run nightly at 02:00."
+      }
+    ],
+    "subcategories": [
+      "recovery"
+    ]
+  },
+  {
+    "record": "claim",
+    "subject": "backups",
+    "predicate": "frequency",
+    "object": "every 6 hours",
+    "claim_text": "Backups run every 6 hours.",
+    "kind": "requirement",
+    "epistemic_status": "APPROVED",
+    "primary_category": "operations",
+    "topic_key": "backups.schedule",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/requirements.md",
+        "line_start": 6,
+        "line_end": 6,
+        "excerpt": "Backups run every 6 hours."
+      }
+    ],
+    "subcategories": [
+      "recovery"
+    ]
+  },
+  {
+    "record": "claim",
+    "subject": "controller",
+    "predicate": "site capacity",
+    "object": "500 sites",
+    "claim_text": "The controller shall support 500 sites.",
+    "kind": "requirement",
+    "epistemic_status": "APPROVED",
+    "primary_category": "requirements",
+    "topic_key": "controller.capacity",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/requirements.md",
+        "line_start": 5,
+        "line_end": 5,
+        "excerpt": "shall support 500 sites"
+      }
+    ],
+    "subcategories": [
+      "nonfunctional"
+    ],
+    "labels": [
+      "scale"
+    ]
+  },
+  {
+    "record": "claim",
+    "subject": "management tunnel",
+    "predicate": "technology",
+    "object": "WireGuard",
+    "claim_text": "WireGuard is proposed for the management tunnel.",
+    "kind": "proposal",
+    "epistemic_status": "PROPOSED",
+    "primary_category": "technical",
+    "topic_key": "tunnel.management",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/proposal-wireguard.md",
+        "line_start": 5,
+        "line_end": 5,
+        "excerpt": "WireGuard for the management tunnel"
+      }
+    ],
+    "subcategories": [
+      "protocols"
+    ]
+  },
+  {
+    "record": "claim",
+    "subject": "edge OS",
+    "predicate": "version",
+    "object": "Ubuntu 22.04",
+    "claim_text": "The edge currently runs Ubuntu 22.04.",
+    "kind": "observed",
+    "epistemic_status": "OBSERVED",
+    "primary_category": "technical",
+    "topic_key": "edge.os",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/notes.md",
+        "line_start": 8,
+        "line_end": 8,
+        "excerpt": "Ubuntu 22.04"
+      }
+    ],
+    "scope": {
+      "state": "current"
+    },
+    "subcategories": [
+      "configuration"
+    ]
+  },
+  {
+    "record": "claim",
+    "subject": "edge OS",
+    "predicate": "version",
+    "object": "Ubuntu 24.04",
+    "claim_text": "The target image will run Ubuntu 24.04.",
+    "kind": "target",
+    "epistemic_status": "APPROVED",
+    "primary_category": "technical",
+    "topic_key": "edge.os",
+    "disposition": "CURRENT",
+    "evidence": [
+      {
+        "source_path": "docs/requirements.md",
+        "line_start": 7,
+        "line_end": 7,
+        "excerpt": "Ubuntu 24.04"
+      }
+    ],
+    "scope": {
+      "state": "target"
+    },
+    "subcategories": [
+      "configuration"
+    ]
+  }
+]

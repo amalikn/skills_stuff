@@ -16,6 +16,7 @@ Last rotated: 20261027_1213
 
 ## Unreleased
 
+- 20261027 Pattern P-31 "Append-only event ledger, content-derived IDs and approval bound to a body digest" in `references/design-patterns.md` (skill-knowledge-curator v1; reusable_candidate).
 - 20261027 Pattern P-30 "Solve in a canonical frame, then transform the result" in `references/design-patterns.md` (skill-drawio fold; reusable_candidate).
 - 20261027 Learned in `references/refactoring-and-promotion.md` (Moving code): prove a move unchanged with per-file sha256 plus a hash of the CLI output; no shim for an untracked prototype with no callers (skill-goal-guard 1dff9c8; reusable_candidate, owed from the 15:03 session).
 - 20261027 Learned in `references/safety-and-writes.md`: `write_gates.py` sees entry points only; writes in library modules reached through `--apply` report "0 writers"; gate in the writer, test the plan, name the paths in the code map (skill-goal-guard).

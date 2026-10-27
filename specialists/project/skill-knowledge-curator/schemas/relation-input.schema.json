@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kc/relation-input",
+  "title": "Agent classification of a candidate claim pair (kc relate input)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "claims",
+    "relation",
+    "reason"
+  ],
+  "properties": {
+    "record": {
+      "const": "relation"
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^cl-[0-9a-f]{12}$"
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true
+    },
+    "relation": {
+      "enum": [
+        "equivalent",
+        "corroborating",
+        "refinement",
+        "time-evolution",
+        "different-scope",
+        "proposal-vs-observation",
+        "true-conflict",
+        "uncertain"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 5
+    },
+    "severity": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ]
+    },
+    "conflict_type": {
+      "type": "string"
+    },
+    "recommended_current": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "question": {
+      "type": "string"
+    },
+    "superseded": {
+      "type": "string"
+    },
+    "successor": {
+      "type": "string"
+    },
+    "supersession_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_path",
+        "line_start",
+        "line_end",
+        "excerpt"
+      ],
+      "properties": {
+        "source_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "line_start": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "line_end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Exact text from the cited lines; compared whitespace-normalised."
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "relation": {
+            "enum": [
+              "true-conflict",
+              "uncertain"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "severity",
+          "question"
+        ],
+        "properties": {
+          "severity": {
+            "enum": [
+              "P0",
+              "P1",
+              "P2"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "relation": {
+            "const": "time-evolution"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "superseded",
+          "successor",
+          "supersession_evidence"
+        ]
+      }
+    }
+  ]
+}
