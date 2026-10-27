@@ -20,7 +20,7 @@ Goal Guard: owner-approved MVP scope gate and solo portfolio focus for coding ag
 - [AGENTS.md](AGENTS.md) — agent policy for this pack
 - [references/](references/) — the consolidated rules, one topic per file
 - [scripts/](scripts/readme.md), [tests/](tests/), [examples/](examples/) — the pilot tools (seven front ends over `goal_guard_lib`), their tests and fixtures
-- [goal-guard-flows/](goal-guard-flows/) — flow diagrams: source in `parts/`, assembled `goal_guard_flows.yaml` and rendered `goal_guard_flows.drawio` (`just flows`)
+- [docs/goal-guard-flows/](docs/goal-guard-flows/) — flow diagrams: source in `parts/`, assembled `goal_guard_flows.yaml` and rendered `goal_guard_flows.drawio` (`just flows`)
 - [AI_NAVIGATION.md](AI_NAVIGATION.md), [context-map.yaml](context-map.yaml) — agent entry point and routing map (skill-ai-it)
 - [documents/](documents/) — verbatim captures from live systems (Vikunja OpenAPI)
 - [SCRATCHPAD.md](SCRATCHPAD.md) — working state and next actions

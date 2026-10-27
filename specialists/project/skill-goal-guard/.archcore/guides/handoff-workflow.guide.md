@@ -22,4 +22,4 @@ Read the approved MVP and the live task, write the proposal, decide in order, ac
 
 ## Notes
 
-Drawn as flow 1 in `goal-guard-flows/`.
+Drawn as flow 1 in `docs/goal-guard-flows/`.

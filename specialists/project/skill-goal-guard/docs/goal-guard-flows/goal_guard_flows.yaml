@@ -13,6 +13,9 @@ updated: "2026-10-27"
 drawing:
   output: goal_guard_flows.drawio
   command: just flows
+  look:
+    # The lone "Records and data" group on the last Overview row sits under Outside systems, not at the far left (operator, 2026-10-27).
+    last_row_align: centre
   kinds:
     person: ["#ffffff", "#000000"]
     agent: ["#e1d5e7", "#9673a6"]

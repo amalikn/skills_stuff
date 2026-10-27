@@ -130,17 +130,17 @@ excel-apply project out: _require-venv
 hook-test payload mode="blocking": _require-venv
     @{{py}} scripts/goal_guard_hook.py --mode {{mode}} < "{{payload}}"
 
-# Build the flow map from its parts, then render the drawing (writes goal-guard-flows/goal_guard_flows.yaml and .drawio only; skill-drawio engine).
-# Edit goal-guard-flows/parts/*.yaml, never the two generated files.
+# Build the flow map from its parts, then render the drawing (writes docs/goal-guard-flows/goal_guard_flows.yaml and .drawio only; skill-drawio engine).
+# Edit docs/goal-guard-flows/parts/*.yaml, never the two generated files.
 flows:
-    @{{drawio_py}} "{{drawio}}/assemble_flowmap.py" --master goal-guard-flows/parts/master.yaml --out goal-guard-flows/goal_guard_flows.yaml --write
-    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root goal-guard-flows --map goal_guard_flows.yaml --write
+    @{{drawio_py}} "{{drawio}}/assemble_flowmap.py" --master docs/goal-guard-flows/parts/master.yaml --out docs/goal-guard-flows/goal_guard_flows.yaml --write
+    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root docs/goal-guard-flows --map goal_guard_flows.yaml --write
 
 # The map matches its parts, the drawing matches the map, and the routed pages pass every layout audit (read-only; part of `just check`).
 flows-check:
-    @{{drawio_py}} "{{drawio}}/assemble_flowmap.py" --master goal-guard-flows/parts/master.yaml --out goal-guard-flows/goal_guard_flows.yaml
-    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root goal-guard-flows --map goal_guard_flows.yaml
-    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root goal-guard-flows --map goal_guard_flows.yaml --audit
+    @{{drawio_py}} "{{drawio}}/assemble_flowmap.py" --master docs/goal-guard-flows/parts/master.yaml --out docs/goal-guard-flows/goal_guard_flows.yaml
+    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root docs/goal-guard-flows --map goal_guard_flows.yaml
+    @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root docs/goal-guard-flows --map goal_guard_flows.yaml --audit
 
 # Governance coherence checks: the pack's own rules as failing assertions (read-only). Example: just governance --timings
 governance *ARGS: _require-venv

@@ -14,6 +14,17 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+### 2026-10-27 18:29 — Overview: Records and data under Outside systems (operator review of the drawing)
+
+- `docs/goal-guard-flows/parts/master.yaml` sets `drawing.look.last_row_align: centre` (new skill-drawio look key, fixed in the engine, not by hand): the lone
+  "Records and data" group now sits under Outside systems; arrows into it shorter; layout audit clean; page exported and reviewed.
+
+### 2026-10-27 18:27 — flow diagrams moved under docs/ (operator: "goal-guard-flows move under docs")
+
+- `goal-guard-flows/` moved to `docs/goal-guard-flows/` with `git mv` (history kept); `just flows` and `just flows-check` point there; the drawing is unchanged and only the
+  generated map's banner line names the new path. References updated in readme, SKILL.md, AGENTS.md (Layout), docs/catalog.md and the Archcore handoff guide.
+- `context-map.yaml` given its one-line header summary (skill-coder's form), which the freshness check asked for once the file was tracked.
+
 ### 2026-10-27 18:23 — AGENTS.md tracked (operator: "it should be committed")
 
 - `AGENTS.md` was never committed: the repo's `.git/info/exclude` line `AGENTS.md` hides every AGENTS.md. Committed files and four Archcore rules link to it, so a fresh
