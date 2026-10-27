@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261027 ROADMAP: "Fold long flow pages" designed with the operator (serpentine and z, per map; auto past `fold_after`; off by default); build deferred to a fresh session.
 - 20261027 `drawing.look.last_row_align` (`left` default, `centre`): centres a part-filled last Overview grid row under the row above unless a group in it is pinned
   (`flowmap.overview_layout.centre_last_row`, schema, tests in `tests/test_group_layout.py`; documented in references/visual-style.md). Default unchanged, so every
   existing drawing renders byte-identical; skill-goal-guard opts in.

@@ -43,6 +43,20 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 - [ ] **Redaction test decision** — vendor captures under `documents/drawio-sources-20261019/` hold example private addresses from the vendor docs; decide before adding a redaction test like
   skill-nautobot's (verbatim captures are exempt by design).
 
+- [ ] **Fold long flow pages** (operator, 2026-10-27, from skill-goal-guard's 13-step "Decision order" page: "after box six box seven can be just below
+      ... add an option of fold"). Agreed: both styles, chosen per map; folds automatically past a width; off by default (every existing drawing stays
+      byte-identical; skill-goal-guard opts in). Design:
+      - Keys: `drawing.look.fold` = `off` (default) | `serpentine` (row 2 runs right to left; one short turn arrow down) | `z` (every row left to right;
+        the turn arrow runs back under the row); `drawing.look.fold_after` = columns per row (e.g. 7); a flow may override with `layout: {fold, fold_after}`.
+      - At layout time, never after: `Page` stores finished XML per cell, so the fold maps step k to (row k // fold_after, column) before drawing; each row
+        repeats the lane bands (lane heads on the left in both styles); notes sit under their row; header on top, legend under the last row.
+      - Router (`routing.py`, `uncross.py`, `crossing_search.py`, `flow_geometry.py`): a direction per row, so a forward arrow in a reversed row leaves the
+        left side and enters the right; corridors (`xs`, `ys`) per row; an arrow whose ends are in different rows routes through a gutter (serpentine: the
+        side the row turns on; z: the gap between rows); back arrows across rows use that gutter too.
+      - Proof: every consumer's drawing (UNC, smc-resiliency, ansible-wifi, the shop example, skill-goal-guard) byte-identical with `fold: off`; audits
+        clean on folded pages; negative tests (an arrow through a box in a reversed row fails); the Decision order page exported and reviewed both ways.
+      - Size: new logic in its own module (`flowmap/fold.py`), under skill-coder's limits.
+
 ## Completed
 
 - [x] **test-matrix needs PyYAML** (2026-10-20): one venv per interpreter under the working cache (`matrix/py<v>`); 3.12 to 3.14 OK.
