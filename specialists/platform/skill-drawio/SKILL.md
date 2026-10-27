@@ -72,16 +72,20 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 
 ## Using the flow-map engine in a project
 
-- **New project:** write `flows.yaml` against [schemas/flowmap.schema.json](schemas/flowmap.schema.json) (copy and narrow it), add an optional `drawing:` block, then `render_flowmap.py --map <map>
-  --write` and wire `render_flowmap.py --map <map>` (drift check) into `just check`. The worked example is [examples/shop/flows.yaml](examples/shop/flows.yaml) (`just example`).
+- **Every map is written in parts (the standard; operator, 2026-10-27: "make it as a standard for skill-drawio").** The source is `<map folder>/parts/master.yaml` (the
+  `drawing:` block and `#@include` lines) plus one part per component group and per flow family (or flow section); `flows.yaml` is GENERATED from them by
+  `assemble_flowmap.py` and the drawing is rendered from that. Edit only the parts. The project's `flows` recipe assembles then renders, and `just check`
+  runs the assembly drift check, the render drift check and `--audit`. A map that started as one file is converted with `split_flowmap.py --apply`
+  (proved to load the same; flows split by section comments, else by `drawing.families`). Schema: [schemas/flowmap.schema.json](schemas/flowmap.schema.json)
+  (copy and narrow it). Worked example: [examples/shop/parts/master.yaml](examples/shop/parts/master.yaml) (`just example`).
 - **Project with its own constants:** put them in the map's `drawing:` block (kind colours, tiers, the band below, families, output, banner
   commands) and call `render_flowmap.py --map <map> --schema <its schema>` directly; unified-network-controller retired its wrapper this way on
   2026-10-19. Only a project that needs code of its own builds a `flowmap.profile.Profile` and calls `flowmap.pages.render` / `evaluate`,
   loading the pack through its one seam to the skills.
-- Optional map features (2026-10-21): `#@include` parts for a long map, `status` on components, flows and steps, and an `options` block drawn
+- Optional map features (2026-10-21): `status` on components, flows and steps, and an `options` block drawn
   as a decisions page after the Overview, or `decision_pages` drawn as one page per subject (never called options; `option_pages` still read) ([references/data-first-diagrams.md](references/data-first-diagrams.md)); flow pages draw
   steps and lane heads as flowchart symbols derived from the map, and the Overview and End-to-end boxes take the same symbols (`look.component_shapes`) ([references/visual-style.md](references/visual-style.md)); every look choice is a
-  `drawing.look` key; a long map's source lives in `parts/` and `flows.yaml` is assembled from it (`assemble_flowmap.py`).
+  `drawing.look` key.
 - A refactor of the engine must leave every consumer's drawing byte-identical; prove it with the before and after files.
 
 ## Standing rules

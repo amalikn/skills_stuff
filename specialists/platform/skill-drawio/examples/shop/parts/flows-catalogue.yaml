@@ -1,0 +1,28 @@
+#% Part: flows, catalogue
+#% Lands under: flows
+- id: image-upload
+  title: Product image upload
+  category: native
+  purpose: Staff add a product photo; the worker makes thumbnails.
+  trigger: {kind: button, detail: "Upload on the product page"}
+  runs_on: web-app
+  owner: worker
+  dependencies: {components: [images, queue]}
+  steps:
+    - id: upload
+      actor: staff
+      action: Uploads a photo.
+      via: [HTTP]
+    - id: store
+      actor: web-app
+      action: Saves it and queues a thumbnail job.
+      via: [API]
+      writes: [image store, job queue]
+    - id: thumbnails
+      actor: worker
+      action: Makes thumbnails.
+      via: [file]
+    - id: serve
+      actor: cdn
+      action: Serves the new images.
+      via: [HTTP]

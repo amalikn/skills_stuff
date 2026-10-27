@@ -1,0 +1,32 @@
+#% Part: components, application
+#% Lands under: components
+- id: web-app
+  name: Web app
+  kind: service
+  group: Application
+  host: app servers
+  ports: [443]
+  health: /healthz returns 200
+  depends_on: [api, sessions]
+- id: api
+  name: Orders API
+  kind: service
+  group: Application
+  host: app servers
+  ports: [8080]
+  health: /healthz returns 200
+  depends_on: [db, queue, payments, api-keys]
+- id: worker
+  name: Background worker
+  kind: worker
+  group: Application
+  host: worker servers
+  health: queue depth under 100
+  depends_on: [queue, db, mail, images]
+- id: report-timer
+  name: Nightly report timer
+  kind: timer
+  group: Application
+  host: worker servers
+  health: last run under 24 hours ago
+  depends_on: [worker]

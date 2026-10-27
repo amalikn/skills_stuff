@@ -122,4 +122,4 @@ Mirrors `SKILL.md` for agents entering through this router; the project's own ru
 | Read an existing drawing as data; group offsets; port labels to lines                   | [references/reading-drawings.md](references/reading-drawings.md) |
 | Closeout: record what this engagement taught                                            | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
 
-Tools and packages: [scripts/README.md](scripts/README.md). Worked example: [examples/shop/flows.yaml](examples/shop/flows.yaml).
+Tools and packages: [scripts/README.md](scripts/README.md). Worked example: [examples/shop/parts/master.yaml](examples/shop/parts/master.yaml) (parts, the standard; `flows.yaml` assembled).

@@ -1,0 +1,53 @@
+#% Part: flows, operations
+#% Lands under: flows
+- id: nightly-report
+  title: Nightly sales report
+  category: custom
+  purpose: Mail the day's sales to staff.
+  trigger: {kind: timer, detail: "every day at 02:00"}
+  runs_on: report-timer
+  owner: worker
+  dependencies: {components: [db]}
+  budget: under 10 minutes
+  steps:
+    - id: fire
+      actor: report-timer
+      action: Starts the report job.
+      via: [internal]
+    - id: build
+      actor: worker
+      action: Totals the day's orders.
+      via: [DB]
+      reads: [orders table]
+    - id: send
+      actor: mail
+      action: Delivers the report.
+      via: [API]
+- id: deploy
+  title: Deploy
+  category: custom
+  purpose: Ship a new release of the app and worker.
+  trigger: {kind: deploy, detail: "merge to main"}
+  runs_on: pipeline
+  owner: pipeline
+  dependencies: {flows: [checkout]}
+  steps:
+    - id: build
+      actor: pipeline
+      action: Builds and tests the release.
+      via: [internal]
+    - id: roll-app
+      actor: web-app
+      action: Restarts with the new release.
+      via: [HTTP]
+    - id: roll-worker
+      actor: worker
+      action: Restarts with the new release.
+      via: [internal]
+      next: [check]
+    - id: check
+      actor: pipeline
+      action: Checks health; rolls back on failure.
+      via: [HTTP]
+      failures: [health check fails]
+      next: [build]

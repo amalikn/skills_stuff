@@ -22,8 +22,9 @@ unified-network-controller's flow map and promoted here on 2026-10-19; that proj
 ## Quick start
 
 - Using the skill: invoke `skill-drawio`; it routes from [SKILL.md](SKILL.md).
-- Drawing a project's flows: write a map like [examples/shop/flows.yaml](examples/shop/flows.yaml), then
-  `<python> <this pack>/scripts/render_flowmap.py --map <map> --write` from the project root (see [scripts/README.md](scripts/README.md)).
+- Drawing a project's flows: write the map in parts like [examples/shop/parts/master.yaml](examples/shop/parts/master.yaml) (the standard), then
+  `assemble_flowmap.py --master <parts/master.yaml> --out <flows.yaml> --write` and `render_flowmap.py --map <flows.yaml> --write` from the project root
+  (see [scripts/README.md](scripts/README.md)).
 - Working on the pack: `just bootstrap` once, then `just test` and `just check` before calling a change complete. Full setup: [SETUP.md](SETUP.md).
 
 ## Folder index

@@ -16,6 +16,10 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261027 Parts are the standard for every flow map (operator, skill-goal-guard session): SKILL.md "Using the flow-map engine", README, AGENTS, SETUP; the example
+  `examples/shop` is now `examples/shop/parts/master.yaml` plus eight parts, `flows.yaml` assembled (`just example` assembles then renders; drawing byte-identical). `split_flowmap.py`
+  splits flows by `drawing.families` when a map has no section comments (tests in `tests/test_split_flowmap.py`).
+  Learned 2026-10-27 in `references/data-first-diagrams.md` (parts are the standard).
 - 20261027 `count_crossings.py --compare BEFORE`: every page of two versions, crossings and shared runs, exit 3 when a page got worse
   (`just count-crossings AFTER --compare BEFORE`); Learned 2026-10-27 (five entries) in references/layout-and-routing.md with screenshots
   `references/screenshots/20261027-labels-routing/`

@@ -1,0 +1,42 @@
+# Example flow map for skill-drawio: a small online shop (invented; no real system). It shows every part of the map format and the optional
+# `drawing:` block, and its rendered drawing must pass every layout audit. This master and the parts beside it (one per component group and per
+# flow family) are the source, the standard layout for every map (operator, 2026-10-27); `just example` assembles ../flows.yaml from them
+# (assemble_flowmap.py) and renders ../drawio/flows.drawio. Edit the parts, never the two generated files.
+schema_version: 1
+title: "Example shop: components and flows"
+updated: "2026-10-19"
+
+drawing:
+  output: drawio/flows.drawio
+  command: just example
+  kinds:
+    person: ["#ffffff", "#000000"]
+    service: ["#dae8fc", "#6c8ebf"]
+    worker: ["#ffe6cc", "#d79b00"]
+    timer: ["#fff2cc", "#d6b656"]
+    store: ["#e6e6e6", "#4d4d4d"]
+    secret: ["#fff8e1", "#bf9000"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People, groups: [People]}
+    - {name: Edge, groups: [Edge]}
+    - {name: Application, groups: [Application]}
+    - {name: Outside services, groups: [Outside services]}
+  below: {groups: [Data and secrets]}
+  band_title: Data and secrets
+  families:
+    - {id: orders, name: Orders, colour: "#1f4e9c", flows: [checkout, refund]}
+    - {id: catalogue, name: Catalogue, colour: "#1b7a3a", flows: [image-upload]}
+    - {id: operations, name: Operations, colour: "#6a3fa0", flows: [nightly-report, deploy]}
+
+components:
+  #@include components-people.yaml
+  #@include components-edge.yaml
+  #@include components-application.yaml
+  #@include components-data-and-secrets.yaml
+  #@include components-outside-services.yaml
+
+flows:
+  #@include flows-orders.yaml
+  #@include flows-catalogue.yaml
+  #@include flows-operations.yaml

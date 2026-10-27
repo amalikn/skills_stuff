@@ -1,0 +1,70 @@
+#% Part: flows, orders
+#% Lands under: flows
+- id: checkout
+  title: Checkout
+  category: custom
+  purpose: A customer pays for a basket and gets a confirmation e-mail.
+  trigger: {kind: button, detail: "Pay now on the basket page"}
+  runs_on: web-app
+  owner: api
+  budget: under 3 s to the confirmation page
+  dependencies: {components: [sessions, api-keys, db, queue], credentials: [payment API key]}
+  steps:
+    - id: submit
+      actor: customer
+      action: Presses Pay now.
+      via: [HTTP]
+    - id: page
+      actor: web-app
+      action: Checks the session and posts the basket to the API.
+      via: [HTTP]
+      reads: [session cache]
+      failures: [session expired]
+      look: [web app log]
+    - id: charge
+      actor: api
+      action: Creates the order and charges the card.
+      via: [API, DB]
+      writes: [orders table]
+      gate: payment authorised
+      failures: [card declined, provider timeout]
+      look: [API log, provider dashboard]
+    - id: provider
+      actor: payments
+      action: Authorises the payment.
+      via: [API]
+    - id: enqueue
+      actor: api
+      action: Queues the confirmation e-mail.
+      via: [internal]
+      writes: [job queue]
+    - id: confirm
+      actor: worker
+      action: Sends the confirmation e-mail.
+      via: [API]
+      look: [worker log]
+- id: refund
+  title: Refund
+  category: custom
+  purpose: Staff refund an order.
+  trigger: {kind: button, detail: "Refund on the order page"}
+  runs_on: web-app
+  owner: api
+  steps:
+    - id: request
+      actor: staff
+      action: Asks for a refund.
+      via: [HTTP]
+    - id: admin
+      actor: web-app
+      action: Forwards it to the API.
+      via: [HTTP]
+    - id: refund
+      actor: api
+      action: Refunds the payment and marks the order.
+      via: [API, DB]
+      failures: [already refunded]
+    - id: provider
+      actor: payments
+      action: Returns the money.
+      via: [API]

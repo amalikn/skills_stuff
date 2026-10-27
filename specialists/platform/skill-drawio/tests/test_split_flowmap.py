@@ -77,5 +77,57 @@ class SplitTests(unittest.TestCase):
         self.assertIn("components", parts)
 
 
+
+FAMILY_MAP = """title: T
+drawing:
+  families:
+    - {id: a, name: Alpha, flows: [f, g]}
+    - {id: b, name: Beta, flows: [h]}
+components:
+  - id: c
+    group: G
+flows:
+  - id: f
+    title: F
+  - id: g
+    title: G
+  - id: h
+    title: H
+"""
+
+
+class FamilySplitTests(unittest.TestCase):
+    """Flows split by drawing.families when a map has no section comments (operator, 2026-10-27: parts are the standard)."""
+
+    def setUp(self) -> None:
+        """A temporary map with two families."""
+        self.tmp = tempfile.TemporaryDirectory()
+        self.map = Path(self.tmp.name) / "flows.yaml"
+        self.map.write_text(FAMILY_MAP, encoding="utf-8")
+
+    def tearDown(self) -> None:
+        """Remove it."""
+        self.tmp.cleanup()
+
+    def test_families_become_parts_and_load_the_same(self) -> None:
+        """Two families become two flow parts, in map order, and the expansion loads to the same data."""
+        master, parts = split_flowmap.plan(FAMILY_MAP)
+        self.assertEqual([p for p in parts if p.startswith("flows")], ["flows-alpha", "flows-beta"])
+        self.assertTrue(split_flowmap.proved(self.map, master, parts))
+
+    def test_interleaved_family_stays_whole(self) -> None:
+        """A family whose flows are not contiguous keeps every flow in one part (negative: no reorder)."""
+        text = FAMILY_MAP.replace("flows: [f, g]", "flows: [f, h]").replace("flows: [h]", "flows: [g]")
+        _, parts = split_flowmap.plan(text)
+        self.assertIn("flows", parts)
+        self.assertNotIn("flows-alpha", parts)
+
+    def test_section_comments_win(self) -> None:
+        """A map with section comments is cut at them, not by family."""
+        text = FAMILY_MAP.replace("flows:\n  - id: f", "flows:\n  # ==== first\n  - id: f")
+        _, parts = split_flowmap.plan(text)
+        self.assertEqual([p for p in parts if p.startswith("flows")], ["flows-first"])
+
+
 if __name__ == "__main__":
     unittest.main()

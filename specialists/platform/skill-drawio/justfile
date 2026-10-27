@@ -212,12 +212,14 @@ palette-check *args: _require-venv
 flow-quality *args: _require-venv
     @{{py}} scripts/flow_quality.py "$@"
 
-# Render the example map (examples/shop/flows.yaml) into examples/shop/drawio/flows.drawio (modifies that file only)
+# Assemble the example map from examples/shop/parts/ and render examples/shop/drawio/flows.drawio (modifies those two generated files only)
 example: _require-venv
+    @{{py}} scripts/assemble_flowmap.py --master examples/shop/parts/master.yaml --out examples/shop/flows.yaml --command "just example" --write
     @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml --write
 
 # Read-only: the example map is valid, its drawing is current, and its routed pages pass every layout audit (part of `just check`)
 example-check: _require-venv
+    @{{py}} scripts/assemble_flowmap.py --master examples/shop/parts/master.yaml --out examples/shop/flows.yaml --command "just example"
     @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml
     @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml --audit
 

@@ -1,0 +1,9 @@
+#% Part: components, edge
+#% Lands under: components
+- id: cdn
+  name: CDN
+  kind: external
+  group: Edge
+  host: CDN provider
+  health: cache hit ratio over 80 per cent
+  depends_on: [web-app, images]

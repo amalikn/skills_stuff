@@ -1,0 +1,16 @@
+#% Part: components, people
+#% Lands under: components
+- id: customer
+  name: Customer
+  kind: person
+  group: People
+  host: a browser
+  health: can load the home page
+  depends_on: [cdn]
+- id: staff
+  name: Shop staff
+  kind: person
+  group: People
+  host: the admin pages
+  health: can sign in
+  depends_on: [web-app]

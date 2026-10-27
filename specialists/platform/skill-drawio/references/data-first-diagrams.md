@@ -154,6 +154,21 @@ map does, and a byte-for-byte comparison is a valid drift check.
 >     out += [pad + x if x.strip() else x for x in expand_includes(part, used).splitlines()]
 > ```
 
+> **Learned 2026-10-27** · parts are the standard · USER_STATED · Source: skill-goal-guard operator, 2026-10-27 ("can the flow be divided into smaller parts and then combined. like for unc?"; "then make it as a standard for skill-drawio"); `scripts/split_flowmap.py` (`split_families`), `examples/shop/parts/` · Falsifier: a new map rendered from a hand-edited flows.yaml, or a split whose drawing differs from the unsplit one
+> Every flow map is written in parts, not only a long one: `parts/master.yaml` plus one part per component group and per flow family (or
+> section); `flows.yaml` and the drawing are both generated. `split_flowmap.py` now cuts flows by `drawing.families` when a map has no section
+> comments, falling back to one part when a family's flows are not contiguous, so a split never reorders data. Proven on the shop example
+> (drawing byte-identical before and after) and on skill-goal-guard (same 721 elements; its hand split moved one component, so the XML order of two
+> End-to-end boxes changed: use the tool, which refuses a reordering split, rather than splitting by hand).
+>
+> ```python
+> # scripts/split_flowmap.py, plan() (2026-10-27, uncommitted)
+> elif key == "flows":
+>     cut = split_sections(body, "flows")
+>     if len(cut) == 1 and not any(SECTION.match(x) for x in body):
+>         cut = split_families(body, families_of(text)) or cut
+> ```
+
 > **Learned 2026-10-21** · assembled maps and the look block · USER_STATED · Source: smc-resiliency operator, 2026-10-21 ("for catalog.yaml it was being built by the individual files, it was not using pointers"; "have the capability on the YAML file to define these things"); `scripts/assemble_flowmap.py`, `scripts/flowmap/profile.py` (`DEFAULT_LOOK`) · Falsifier: a project reading parts through pointers, or a look choice that cannot be set in the map
 > A split map keeps its source in `parts/` (`master.yaml` with the `drawing:` block and `#@include` lines, one file per component group and
 > flow section; part headers are `#%` lines) and `flows.yaml` is **generated** from them, complete, with a banner and no pointers

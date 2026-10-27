@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Split a long flow map into parts (parts/master.yaml plus one file per section) and assemble flows.yaml from them, without changing what it loads to.
 
-Components split by their `group` (when each group's components are contiguous), flows at section comment lines (`  # ==== <title>`), and an
+Components split by their `group` (when each group's components are contiguous), flows at section comment lines (`  # ==== <title>`) or, in a
+map with none, by `drawing.families` (when each family's flows are contiguous; operator, 2026-10-27: parts are the standard for every map), and an
 `options` block into its own part. parts/master.yaml keeps everything else and an include line per part; flows.yaml is then generated from the
 parts by assemble_flowmap.py, complete and without pointers (operator, 2026-10-21, as unified-network-controller builds its catalog). Before
 writing, the split is proved: the assembled map must load to exactly the data the original map loads to. Promoted 2026-10-21 after smc-resiliency's and unified-network-
@@ -104,6 +105,58 @@ def split_sections(body: list[str], prefix: str) -> list[tuple[str, list[str]]]:
     return [(n, ls) for n, ls in parts if any(x.strip() for x in ls)]
 
 
+def families_of(text: str) -> dict[str, str]:
+    """Flow ID to family name, from the map's `drawing.families`.
+
+    Args:
+        text: the map's text.
+
+    Returns:
+        {flow id: family name}; empty when the map has no families or does not parse.
+    """
+    import yaml
+
+    try:
+        data = yaml.safe_load(text) or {}
+    except yaml.YAMLError:
+        return {}
+    families = ((data.get("drawing") or {}).get("families") or []) if isinstance(data, dict) else []
+    return {str(f): str(fam.get("name") or fam.get("id")) for fam in families if isinstance(fam, dict) for f in fam.get("flows") or []}
+
+
+def split_families(body: list[str], family_of: dict[str, str]) -> list[tuple[str, list[str]]] | None:
+    """Flows cut where the family changes; None when a flow has no family or a family appears in two runs (the split would reorder them).
+
+    Args:
+        body: the lines under `flows:`.
+        family_of: flow ID to family name.
+
+    Returns:
+        (part name, lines) per family, or None.
+    """
+    items, cur = [], []
+    for line in body:   # lines before the first item (a comment) stay with it
+        if line.startswith("  - ") and any(x.startswith("  - ") for x in cur):
+            items.append(cur)
+            cur = []
+        cur.append(line)
+    if cur:
+        items.append(cur)
+    runs: list[tuple[str, list[str]]] = []
+    for item in items:
+        fid = next((m.group(1).strip().strip('"') for x in item if (m := re.match(r"^  - id:\s*(.+)$", x))), None)
+        fam = family_of.get(fid or "")
+        if fam is None:
+            return None
+        if runs and runs[-1][0] == fam:
+            runs[-1][1].extend(item)
+        elif any(r[0] == fam for r in runs):
+            return None
+        else:
+            runs.append((fam, list(item)))
+    return [(f"flows-{slug(f)}", lines) for f, lines in runs]
+
+
 def plan(text: str) -> tuple[list[str], dict[str, list[str]]]:
     """The new master and its parts.
 
@@ -126,6 +179,8 @@ def plan(text: str) -> tuple[list[str], dict[str, list[str]]]:
             cut = split_components(body) or [("components", body)]
         elif key == "flows":
             cut = split_sections(body, "flows")
+            if len(cut) == 1 and not any(SECTION.match(x) for x in body):
+                cut = split_families(body, families_of(text)) or cut
         elif key == "options":
             cut = [("options", body)]
         else:

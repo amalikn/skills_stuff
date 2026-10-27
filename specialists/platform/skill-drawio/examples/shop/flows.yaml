@@ -1,6 +1,10 @@
+# GENERATED from examples/shop/parts/master.yaml and the parts it includes, by skill-drawio's assemble_flowmap.py (`just example`).
+# Edit the parts, never this file: the check fails when it differs from what the parts assemble to.
+
 # Example flow map for skill-drawio: a small online shop (invented; no real system). It shows every part of the map format and the optional
-# `drawing:` block, and its rendered drawing must pass every layout audit (tests/test_example.py). Render it from the skill's root with
-# `just example` (or: scripts/render_flowmap.py --root examples/shop --map flows.yaml --write).
+# `drawing:` block, and its rendered drawing must pass every layout audit. This master and the parts beside it (one per component group and per
+# flow family) are the source, the standard layout for every map (operator, 2026-10-27); `just example` assembles ../flows.yaml from them
+# (assemble_flowmap.py) and renders ../drawio/flows.drawio. Edit the parts, never the two generated files.
 schema_version: 1
 title: "Example shop: components and flows"
 updated: "2026-10-19"

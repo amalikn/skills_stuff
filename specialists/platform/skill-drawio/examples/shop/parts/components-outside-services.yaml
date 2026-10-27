@@ -1,0 +1,21 @@
+#% Part: components, outside services
+#% Lands under: components
+- id: payments
+  name: Payment provider
+  kind: external
+  group: Outside services
+  host: payment provider
+  health: provider status page green
+- id: mail
+  name: Mail provider
+  kind: external
+  group: Outside services
+  host: mail provider
+  health: test message delivered
+- id: pipeline
+  name: Deploy pipeline
+  kind: service
+  group: Outside services
+  host: CI service
+  health: last deploy succeeded
+  depends_on: [web-app, api, worker]
