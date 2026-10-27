@@ -12,6 +12,13 @@ Summary: History of skill-goal-guard, newest first; the release heading is the o
 
 ## Unreleased
 
+### 2026-10-27 15:03 — write-back audit; two write-backs deferred to the next session
+
+- Audit (operator: "were skills written back to?"): skill-goal-guard has two Learned entries in `references/vikunja-integration.md` (commit 1dff9c8); skill-coder was judged `no_new_reusable_learning`
+  at closeout (0 parked entries); the OPA gate traps were only in auto-memory. Two gaps found: the OPA tool's own record, and a skill-coder `reusable_candidate` on proving a move unchanged.
+- Operator decision ("capture them both for the next chat session"): both write-backs deferred, not written; recorded in `SCRATCHPAD.md` Open items with targets and evidence, memory-keeper
+  `skill-goal-guard.writeback-owed` and project-context.
+
 ### 2026-10-27 14:54 — definition pass, independent review, slurp close
 
 - `AGENTS.md` rewritten to house style (operator: "make sure AGENTS.md and SKILL.md are properly defined"): layout incl. `documents/` and `SCRATCHPAD.md`, front-matter and catalog rule, naming rule,

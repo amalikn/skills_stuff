@@ -23,6 +23,13 @@ Summary: Working state after the 2026-10-27 build session; pilot step 0 done (Vi
 - Housekeeping deferred by the operator: install symlinks and `/skill-gg` alias, skill-ai-it bootstrap, empty `docs/goal-guard/{scripts,tests,examples}` folders, odd-named test dump in
   `tools-data/vikunja/dumps`.
 - `tools_stuff/vikunja` and `tools_stuff/CHANGELOG.md` not committed (commit request was scoped to skills_stuff).
+- Write-back owed next session (operator, 2026-10-27: "capture them both for the next chat session"):
+  1. OPA tool (`/Volumes/Data/_ai/_tool/tools_stuff/opa`): record the traps hit 2026-10-27 per its AGENTS.md feedback rule (ROADMAP or troubleshooting): recursive delete of `__pycache__` blocked even
+     without a force flag; a pipe into the SHA-sum tool is read as pipe-to-shell (the next word after the pipe starts with `sh`); the words alone inside heredoc prose or a changelog body also trigger
+     it. Workarounds: `md5` or Python `hashlib`; Edit/Write tools for text naming it. Today only in auto-memory `reference_opa_ledger_gate.md`.
+  2. skill-coder candidate (`reusable_candidate`, references/refactoring-and-promotion.md "Moving code"): prove a move unchanged with per-file sha256 plus a hash of the CLI's stdout for fixed inputs,
+     before and after; an untracked prototype with no callers needs no shim, only a moved-paths table. Evidence: skill-goal-guard commit 1dff9c8, `scripts/readme.md` Moved paths, output hash
+     `2504fb41c7e48f1f` unchanged.
 
 ## Recent decisions — KEEP
 
@@ -41,6 +48,6 @@ Vikunja owns live tasks; full v1.7 pilot; one `apn` repo scoped by path; pilot s
 
 ## Memory pointers — KEEP
 
-- memory-keeper channel `skill-goal-guard`: keys `skill-goal-guard.{review-conflicts,structure,decisions,vikunja-ops,incidents,next}`, `session.closeout.20261027.skill-goal-guard`.
-- project-context project `skill-goal-guard` (ed1a3a1b-0252-4ac9-a368-3b7d8fcdad17): 15 decisions, notes on review, restructure, Vikunja, incidents, next actions.
-- Checkpoints: `slurp-20261027-skill-goal-guard` (both backends).
+- memory-keeper channel `skill-goal-guard`: keys `skill-goal-guard.{review-conflicts,structure,decisions,vikunja-ops,incidents,next,writeback-owed}`, `session.closeout.20261027.skill-goal-guard`.
+- project-context project `skill-goal-guard` (ed1a3a1b-0252-4ac9-a368-3b7d8fcdad17): 16 decisions, notes on review, restructure, Vikunja, incidents, next actions, write-backs owed.
+- Checkpoints: `slurp-20261027-skill-goal-guard`, `slurp-20261027-skill-goal-guard-writeback-defer` (both backends).
