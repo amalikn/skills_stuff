@@ -112,6 +112,63 @@ def port_and_tracks(grid: object, users: list, i: int) -> bool:
     return False
 
 
+def tracks_together(grid: object) -> bool:
+    """Swap two links' neighbouring vertical tracks in a channel together with their horizontal tracks in a gutter both use, keeping the swap
+    only when crossings drop. A link leaving its box above another but on the inner vertical track and the outer horizontal one crosses the
+    other twice, and either swap alone still crosses once, so the one-at-a-time search never takes it (2026-10-27, operator: ansible-wifi
+    smc_change E2E page, "2.3 and 2.7 overlap could have been avoided": role -> lower dir and role -> live root).
+
+    Args:
+        grid: the End-to-end page being improved (flowmap.e2e.EndToEnd); who holds each track is read fresh from it.
+
+    Returns:
+        True when a swap was kept.
+    """
+    kept = False
+    vusers = {ct: {key.split("|")[0] for key in keys} for ct, keys in grid.vruns.items()}   # fresh: earlier moves change who holds a track
+    gusers = {}
+    for (cid, g), t in grid.gtrack.items():
+        gusers.setdefault((g, t), set()).add(cid)
+    for ch, slots in sorted(grid.vslot.items()):
+        order = sorted(range(len(slots)), key=slots.__getitem__)
+        for ta, tb in zip(order, order[1:]):
+            ua, ub = vusers.get((ch, ta), set()), vusers.get((ch, tb), set())
+            if len(ua) != 1 or len(ub) != 1 or ua == ub:
+                continue
+            a, b = next(iter(ua)), next(iter(ub))
+            if not count_crossings(grid.segs[a], grid.segs[b]):
+                continue
+            for g in sorted({g for (cid, g) in grid.gtrack if cid == a} & {g for (cid, g) in grid.gtrack if cid == b}):
+                ga, gb = grid.gtrack[(a, g)], grid.gtrack[(b, g)]
+                if ga == gb or abs(grid.gslot[g][ga] - grid.gslot[g][gb]) != 1 or gusers.get((g, ga)) != {a} or gusers.get((g, gb)) != {b}:
+                    continue
+                cids = {a, b}
+                before = grid._crossings(set(grid.segs))   # the whole page: a moved slot can shift a run another link shares
+                if before == 0:
+                    return kept
+                _swap_both(grid, (ch, ta, tb), (g, ga, gb), cids)
+                if grid._crossings(set(grid.segs)) < before and grid._runs_ok(set(grid.segs)):
+                    kept = True
+                    break
+                _swap_both(grid, (ch, ta, tb), (g, ga, gb), cids)
+    return kept
+
+
+def _swap_both(grid: object, vertical: tuple, horizontal: tuple, cids: set) -> None:
+    """Swap the slots of two vertical tracks and of two horizontal tracks (its own inverse), then redraw the links.
+
+    Args:
+        grid: the End-to-end page being improved.
+        vertical: (channel, track, track).
+        horizontal: (gutter, track, track).
+        cids: the links to redraw.
+    """
+    (ch, ta, tb), (g, ga, gb) = vertical, horizontal
+    grid.vslot[ch][ta], grid.vslot[ch][tb] = grid.vslot[ch][tb], grid.vslot[ch][ta]
+    grid.gslot[g][ga], grid.gslot[g][gb] = grid.gslot[g][gb], grid.gslot[g][ga]
+    grid._refresh(cids)
+
+
 def row_free(grid: object, link: object) -> bool:
     """Whether a far link can run along its target's row: no box in the columns it passes and no port in the channels before the target's.
 
@@ -221,6 +278,11 @@ def improve(grid: object) -> None:
     grid.vslot, grid.gslot, grid.pools, kinds = best
     _set_kinds(grid, kinds)
     grid._refresh(every)
+    # A polish on the better result, not a move inside the searches: taken early it steered the joint search to a worse end (smc_change E2E
+    # 82 crossings against 56, 2026-10-27). Each kept swap lowers the page's crossings, so no page ends worse than the searches left it.
+    for _ in range(3):
+        if not tracks_together(grid):
+            break
 
 
 def _set_kinds(grid: object, rows: dict) -> None:
