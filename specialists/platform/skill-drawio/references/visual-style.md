@@ -183,6 +183,9 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   Turing-machine style: on the box's top or bottom edge, whichever had more clear room once the page was laid out, packed by label width
   and overflowing to the other edge; a gap is widened only by the room an edge lacks (operator, 2026-10-26: "create a 14.3 as a loop on
   the same box", "the top or the bottom, depending where more space is available ... case by case").
+- `look.last_row_align` (`left` by default, or `centre`) places the Overview groups on a part-filled last grid row: centred, a lone band sits under the
+  middle column instead of the far left, and the arrows into it shorten; a row the map pins with `group_cell` stays put (operator, 2026-10-27: "Records and
+  data ... can be just below the outside systems"; first used by skill-goal-guard).
 - `look.click_isolate` (true, or the opacity of the rest) makes one click show a colour alone and a second click show everything: on the
   End-to-end pages a step arrow, its label, a dashed connector or a legend row (other rows dim too); on the Overview a thick arrow, its
   count, a dot, a thin arrow or a legend row. A click on another colour switches in one click; there is no "Show all" button. Nothing is

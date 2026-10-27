@@ -46,6 +46,10 @@ class GroupLayout(unittest.TestCase):
         self.assertEqual(overview_layout.grid_cells(names, {}, 3), {"Lab": (0, 0), "On the SMC": (0, 1), "Outside": (0, 2), "Storage": (1, 0)})
         self.assertEqual(overview_layout.grid_cells(names, {"Storage": (1, 1)}, 3)["Storage"], (1, 1))
         self.assertEqual(overview_layout.grid_cells(names, {"Lab": (0, 1)}, 3), {"Lab": (0, 1), "On the SMC": (0, 0), "Outside": (0, 2), "Storage": (1, 0)})
+        # last_row_align "centre": a lone last group moves under the middle column; a pinned last row and a full row stay put (2026-10-27)
+        self.assertEqual(overview_layout.grid_cells(names, {}, 3, "centre")["Storage"], (1, 1))
+        self.assertEqual(overview_layout.grid_cells(names, {"Storage": (1, 0)}, 3, "centre")["Storage"], (1, 0))
+        self.assertEqual(overview_layout.grid_cells(names[:3], {}, 3, "centre"), overview_layout.grid_cells(names[:3], {}, 3))
         for bad in ({"Nope": (0, 0)}, {"Lab": (0, 3)}, {"Lab": (1, 1), "Storage": (1, 1)}):
             with self.assertRaises(ValueError):
                 overview_layout.grid_cells(names, bad, 3)

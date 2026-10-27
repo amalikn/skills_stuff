@@ -42,6 +42,7 @@ DEFAULT_LOOK = {
     "e2e_step_total": False,       # End-to-end labels add the flow's step count n: "sub" (x.y, n lowered), "sup" or "slash" (x.y/n), and the
                                    # legend gives each flow's count; true means "sub" (operator, 2026-10-26: x.y/n, then a subscript instead)
     "e2e_label_font": 10,          # End-to-end arrow label font size; the label box grows to fit (operator asked for 12, 2026-10-26)
+    "last_row_align": "left",      # Overview groups on a part-filled last grid row: "left", or "centre" under the row above (operator, 2026-10-27)
     "click_isolate": False,        # a click on an End-to-end or Overview arrow or legend row shows its colour alone, a second all; true or the dim opacity (2026-10-26)
     "e2e_loops": False,            # a step done by the same box as the step before is a loop on that box's top or bottom (operator, 2026-10-26)
     "lock_base_layer": False,      # every page's background layer ("1") drawn locked (operator, 2026-10-26)

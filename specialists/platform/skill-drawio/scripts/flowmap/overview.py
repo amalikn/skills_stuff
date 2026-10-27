@@ -64,7 +64,7 @@ class Overview:
             self.gh_of[gi] = (GROUP_HEAD + sum(self.row_bh[gi][:-1]) + sum(self.row_gap[gi][:-1]) + (self.row_bh[gi][-1] if self.row_bh[gi] else 0)
                               + OV_PAD)
         self.ncol = ncol = self.profile.groups_per_row
-        cells = grid_cells(list(self.groups), self.profile.group_cells, ncol)
+        cells = grid_cells(list(self.groups), self.profile.group_cells, ncol, self.profile.look["last_row_align"])
         self.grow = {gi: cells[name][0] for gi, name in enumerate(self.groups)}
         self.gcol = {gi: cells[name][1] for gi, name in enumerate(self.groups)}
         self.nrow = max(self.grow.values(), default=0) + 1

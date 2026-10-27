@@ -1,4 +1,4 @@
-# GENERATED from goal-guard-flows/parts/master.yaml and the parts it includes, by skill-drawio's assemble_flowmap.py (`just flows`).
+# GENERATED from docs/goal-guard-flows/parts/master.yaml and the parts it includes, by skill-drawio's assemble_flowmap.py (`just flows`).
 # Edit the parts, never this file: the check fails when it differs from what the parts assemble to.
 
 # Goal Guard flow map, master part: drawing settings and the `#@include` lines naming the parts beside it (one per component group and per flow

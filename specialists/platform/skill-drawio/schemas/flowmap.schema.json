@@ -590,6 +590,14 @@
               "type": "integer",
               "minimum": 10
             },
+            "last_row_align": {
+              "type": "string",
+              "enum": [
+                "left",
+                "centre"
+              ],
+              "description": "Overview groups on a part-filled last grid row: left (default) or centred under the row above."
+            },
             "back_arrows": {
               "type": "string",
               "enum": [

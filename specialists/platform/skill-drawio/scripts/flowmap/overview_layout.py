@@ -230,13 +230,15 @@ def far_channels(plan: dict, grow: dict, gcol: dict) -> tuple[int, int, int]:
     r2 = (grow[b] - 1) if (down and grow[b] != grow[a]) else grow[b]
     return r1, r2, (gcol[b] if gcol[b] > 0 else 1)
 
-def grid_cells(names: list, placed: dict, ncol: int) -> dict:
+def grid_cells(names: list, placed: dict, ncol: int, align: str = "left") -> dict:
     """Each overview group's (row, column) in the group grid: placed groups where the map puts them, the rest in the free cells in map order.
 
     Args:
         names: the group names, in map order.
         placed: {group name: (row, column)} counted from 0 (the map's `drawing.group_cell`).
         ncol: groups per grid row.
+        align: "left", or "centre" to centre a part-filled last row that holds no placed group under the row above
+            (`drawing.look.last_row_align`; operator, 2026-10-27: a lone band need not sit at the far left).
 
     Returns:
         {group name: (row, column)}.
@@ -261,4 +263,25 @@ def grid_cells(names: list, placed: dict, ncol: int) -> dict:
             i += 1
         cells[name] = (i // ncol, i % ncol)
         used.add(cells[name])
-    return cells
+    return centre_last_row(cells, placed, ncol) if align == "centre" else cells
+
+
+def centre_last_row(cells: dict, placed: dict, ncol: int) -> dict:
+    """Shift a part-filled last grid row to the middle columns, unless the map placed a group in it.
+
+    Args:
+        cells: {group name: (row, column)} from grid_cells.
+        placed: the map's `drawing.group_cell` pins.
+        ncol: groups per grid row.
+
+    Returns:
+        The cells, with the last row's groups moved right by (ncol - their count) // 2; unchanged for a full row or one with a pin.
+    """
+    if not cells:
+        return cells
+    last = max(r for r, _ in cells.values())
+    row = sorted((c, name) for name, (r, c) in cells.items() if r == last)
+    shift = (ncol - len(row)) // 2
+    if last == 0 or shift == 0 or any(name in placed for _, name in row):
+        return cells
+    return {**cells, **{name: (last, c + shift) for c, name in row}}

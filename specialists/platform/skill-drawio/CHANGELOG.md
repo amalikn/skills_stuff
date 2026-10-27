@@ -16,6 +16,9 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261027 `drawing.look.last_row_align` (`left` default, `centre`): centres a part-filled last Overview grid row under the row above unless a group in it is pinned
+  (`flowmap.overview_layout.centre_last_row`, schema, tests in `tests/test_group_layout.py`; documented in references/visual-style.md). Default unchanged, so every
+  existing drawing renders byte-identical; skill-goal-guard opts in.
 - 20261027 Parts are the standard for every flow map (operator, skill-goal-guard session): SKILL.md "Using the flow-map engine", README, AGENTS, SETUP; the example
   `examples/shop` is now `examples/shop/parts/master.yaml` plus eight parts, `flows.yaml` assembled (`just example` assembles then renders; drawing byte-identical). `split_flowmap.py`
   splits flows by `drawing.families` when a map has no section comments (tests in `tests/test_split_flowmap.py`).
