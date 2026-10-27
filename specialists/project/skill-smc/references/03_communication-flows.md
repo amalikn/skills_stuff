@@ -63,14 +63,15 @@ run on a period (hostname, `site.txt`, Teleport version, `disk` when `disk_count
 2026-10-14: if `/var/lib/teleport` is lost, deleting it and restarting Teleport re-joins the node from `/etc/teleport.yaml`; smc-resiliency's identity
 partition design relies on this.
 
-**Re-join that never connects (banana-well-smc01, 2026-10-27; cause UNVERIFIED).** After `/var/lib/teleport` was cleared and Teleport restarted,
+**Re-join that never connects (banana-well-smc01, 2026-10-27; resolved by itself ~12:30, the link, not the clock).** After `/var/lib/teleport` was cleared and Teleport restarted,
 the auth server logged `Node "<host>" [<new host id>] has joined the cluster` (method token) at 11:38, 11:41 and 11:43: a new host id, re-joining
 every 2-3 minutes because its reverse tunnel never came up, so it never got a node record. `tsh ls` kept listing the **old** host id until its
 record expired (~10 min after the last heartbeat); SSH to it failed with `no node reverse tunnel for <old id>.<cluster> found`. The token
 (static, never expires), labels (env, flavor, site) and port (everything on 443, `proxy_listener_mode: multiplex`) matched a healthy SMC. The
 node log shows the join running "without validating the identity of the Auth Server" (no CA pin) and succeeding, while every step that checks
 TLS (direct auth, tunnel, `/v1/webapi/host/credentials`) failed: suspect the box clock (a Pi with no RTC) or a link that drops larger TLS
-exchanges (MTU; the backdoor flapped the same morning). Read-only checks used, from the cluster side (no box access needed):
+exchanges (MTU; the backdoor flapped the same morning). Outcome: at 12:42 the box was in `tsh ls` under the new host id, clock synchronized, no reboot (same boot id,
+19 days up), Teleport errors until 12:29:45 and none after: the site's link, not the clock. Wait and watch before touching a re-joining node. Read-only checks used, from the cluster side (no box access needed):
 
 ```
 journalctl -u teleport --since '-45 min' | grep -E '<host>|<host id>'      # on the auth/proxy host: joins and "no node reverse tunnel"
