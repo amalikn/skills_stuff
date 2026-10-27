@@ -24,6 +24,6 @@ Last reviewed: 2026-10-10
 - [navigation-automation.md](navigation-automation.md) (89 lines) Deterministic navigation-control automation.
 - [package-layout.md](package-layout.md) (68 lines) Skill package layout.
 - [phases-1-3.md](phases-1-3.md) (114 lines) Phases 1 to 3: inventory, understand, infer.
-- [pitfalls.md](pitfalls.md) (91 lines) Pitfalls observed in practice.
+- [pitfalls.md](pitfalls.md) (114 lines) Pitfalls observed in practice.
 - [target-map-and-timeline.md](target-map-and-timeline.md) (194 lines) Target map, plan timeline and the plan tracker page: generated trackers, id links, anchor checks, adoption, wiring.
 - [script-task-inventory.md](script-task-inventory.md) (224 lines) Script and task inventory.

@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261026_1525
+Last rotated: 20261027_1840
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea](#20261027_1840--pitfalls-from-the-skill-goal-guard-bootstrap-upgrader-placement-idea)
 - [20261026_1525 — Line-only budgets reverted: the 25 KB limit is back](#20261026_1525--line-only-budgets-reverted-the-25-kb-limit-is-back)
 - [20261022_2132 — plan_tracker: What next gets a detail block per item](#20261022_2132--plan_tracker-what-next-gets-a-detail-block-per-item)
 - [20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller](#20261022_1819--plan_tracker-plan-tracker-page-setup-and-upkeep-promoted-from-smc-resiliency-and-unified-network-controller)
@@ -33,8 +34,16 @@ Last rotated: 20261026_1525
 - [20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff](#20261020_1753--template-a-type-check-replaces-the-type-ignore-in-check_governancepy-split_checkers-mirror-diff)
 - [20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate](#20261020_1634--rotate_records-project-sync-outbox-and-inbox-lines-never-rotate)
 - [20261020_1632 — Template: govcheck/core.py header states it is read-only](#20261020_1632--template-govcheckcorepy-header-states-it-is-read-only)
-- [20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending](#20261020_1322--pitfalls-navigation-dry-run-exits-2-when-changes-are-pending)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea
+
+- Three pitfalls from the skill-goal-guard bootstrap and promote (references/pitfalls.md): quote promoted titles that hold a colon and keep a small tag
+  vocabulary for `archcore status`; a "folder readme covers its folder" catalog rule must skip the project root (found by a negative test); freshness reads only
+  tracked files, so give created files their header summary before the first commit.
+- ROADMAP Ideas: the upgrader appends its CHANGELOG entry at the bottom when a file dates entries as `###` under `## Unreleased`.
+- Committed while `just check` fails on `docs/trackers/open-items-20261010_1830.md` (review due 2026-10-24), an existing finding that needs a fleet review;
+  these edits do not touch it (operator asked for the write-backs to be committed and pushed).
 
 ## 20261026_1525 — Line-only budgets reverted: the 25 KB limit is back
 
@@ -169,11 +178,6 @@ Projects whose tracker holds moved sync lines should move them back into their b
 
 `templates/govcheck/core.py`'s docstring gains "Read-only: it reads the project and writes nothing.": skill-coder's `script_headers.py` flagged every
 copy for a missing safety statement (found in smc-resiliency, which recopied it). Other governed projects pick it up at their next refresh.
-
-## 20261020_1322 — pitfalls: navigation dry run exits 2 when changes are pending
-
-References: `references/pitfalls.md`, Learned 2026-10-20 (smc-resiliency refresh): `nav_upgrade_dry_run` exits 2 when changes are pending, not on
-an error; `govern` needs a commit after a working session.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

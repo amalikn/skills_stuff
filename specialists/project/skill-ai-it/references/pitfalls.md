@@ -89,3 +89,26 @@ elif final_changed:
 else:
     sys.exit(0)
 ```
+
+**A promoted document's title with a colon breaks `archcore status` (2026-10-27, skill-goal-guard promote).** Titles such as `D1: one apn repository` are invalid
+unquoted YAML, and archcore reports "invalid YAML in frontmatter"; it also flags every tag used only once as a possible typo, a few per run. Quote every `title:`
+and give the documents a small shared tag vocabulary (decision, governance, contract, procedure, plus a few domain tags) before running `archcore status`.
+
+```python
+# skill-goal-guard promote, 2026-10-27: quote titles once, for every promoted document
+t = re.sub(r'^title: (?!")(.+)$', lambda m: 'title: "' + m.group(1).replace('"', '\\"') + '"', t, count=1, flags=re.M)
+```
+
+**A "folder readme indexes its folder" catalog rule must skip the project root (2026-10-27, skill-goal-guard governance checker).** The catalog check treated a
+file as listed when its folder's `readme.md` was linked; the root readme is always linked, so every root file passed. The checker's own negative test (a stray
+root file) caught it, and the fix then found two real gaps (`AI_NAVIGATION.md`, `context-map.yaml`). Write the negative test first for every coverage rule.
+
+```python
+# skill-goal-guard scripts/govcheck/checks/catalog.py (commit 8f76730)
+if not covered and (path.parent == root() or (path.parent / "readme.md").resolve() not in linked):
+    fail("catalog", f"{config.CATALOG} does not list {rel(path)} (link it, its folder, or its folder's readme.md)")
+```
+
+**Freshness reads only tracked files, so the first commit of a bootstrap can raise new findings (2026-10-27, skill-goal-guard).** `doc_freshness.py` scanned
+`context-map.yaml` only after it was committed, then failed it for a header with no summary line. Give every file the bootstrap creates its header summary
+before the first commit (`context-map.yaml`: one `#` line naming what it is), and run `just check` again after that commit.

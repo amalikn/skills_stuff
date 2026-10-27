@@ -126,6 +126,9 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Ideas
 
+- **Upgrader changelog placement for `### date` under `## Unreleased` (2026-10-27, skill-goal-guard bootstrap).** `changelog_is_newest_first` reads only dated `##`
+  headings, so a CHANGELOG that dates entries as `### YYYY-MM-DD hh:mm — title` under `## Unreleased` reads as "order unknown" and the upgrade entry is appended at the
+  bottom in `## YYYYMMDD_hhmm` style; it was moved by hand. Read `###` dates under `## Unreleased` too, and write the entry in the file's own heading level and style.
 - [x] **Plan tracker timeline as data** (2026-10-21, candidate in unified-network-controller `code-map.toml`; promoted 2026-10-21 as `scripts/plan_timeline.py`): `scripts/render/plan_timeline.py`
   renders a plan tracker's Timeline from YAML with the schedule worked out from the dates (late, due today, done), plus its govcheck and
   `commit-gate`. Promote here once a second project (smc-resiliency) keeps its timeline as data.
