@@ -7,8 +7,9 @@ Scope: Release and governance history of the skill-coder pack
 Last reviewed: 2026-10-19
 Kind: log
 Budget: 200 lines, 25 KB
-Archive: docs/history/
+Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
+Last rotated: 20261027_1213
 ---
 
 # Changelog
@@ -112,32 +113,9 @@ Summary: Release history and governance changes of skill-coder; the release head
   captures); the rule is code files and identifiers follow their language, typed commands are kebab-case, a tool's parser wins. `module-and-function-shape.md` points to it; claims C-C72 to C-C79.
   `languages/ansible.md` gains the tag-rename transition step (behaviour evaluation gap). Shared `scripts/pyparse.py`; shell heredoc and `${#` fixes in `code_size.py` (found on a second repository).
 
-## 0.1.0 — 2026-10-19
+## 20261027_1213 — Ansible: to_json in debug output is escaped twice
 
-### 20261019_1635 — Pack created
-
-- Created (operator, 2026-10-19: "create skill-coder and capture all the intelligence for the programming in general ... programming language agnostic ... specific each language type of override that
-  can be tweaked later"). Governance scaffold from skill-ai-it templates; content from the operator's rules (unified-network-controller code architecture design R1-R36, global policy, governance
-  categories, auto-memory feedback) and primary sources (see `sources.yaml` and `documents/`).
-- Helpers promoted from unified-network-controller and made generic, each characterised against the original: `import_layers.py` (from `scripts/checks/import_graph.py`: same 4 cycles on the same
-  roots, same layer verdict), `write_gates.py` (from `check_write_gates`: with the project's patterns and register, 51 writers, every one gated or registered, as the project's own check). New:
-  `code_size.py` (rule R34 with a warn tier: modules 300/400, functions 40/60, shell 100/200), `call_timeouts.py` (R15), `script_headers.py` (header = a script's front matter: summary, run line,
-  safety), `code_map.py` and `templates/code-map.toml` (operator, 2026-10-19: one intent file for code, TOML so it is read with the project's own Python), `ratchet.py` (the shrink-only baseline).
-- Runtime rule decided (operator, 2026-10-19): helpers run in the target project's environment with its interpreter; the pack's own interpreter only as a fallback; nothing installed into a project.
-- Measured on unified-network-controller (read-only, 2026-10-19): 25 modules over 400 lines and 68 functions over 60; 30 runnable scripts with header gaps. Not acted on: recorded there as candidates.
-
-### 20261019_1711 — Installed, not default; recipes kebab-case; behaviour evaluation
-
-- Installed (operator, 2026-10-19: "install it as skill but dont make it default yet"): directory symlinks in `~/.claude/skills`, `~/.codex/skills`, `~/.hermes/skills/domain`, and a row in the
-  skills_stuff `README.md`. The global routing line stays pending (SCRATCHPAD, Activation).
-- Recipes renamed to kebab-case by skill-ai-it's upgrader after its rename map was inverted (`nav-upgrade`, `lint-md`, `audit-scripts` and the rest); the `[naming.exceptions]` kept for them were
-  removed, and `naming_check.py` now reports no name off the mapping.
-- Tests: behaviour evaluation of C-S02, C-S04 and C-S17 with and without the skill (results in SCRATCHPAD); new contract check that every capture a claim cites exists (the sample check done by hand,
-  made permanent). 42 tests.
-- Incident, corrected the same session: `.archcore/` ADR and rule were written directly during bootstrap and marked `accepted`, against
-  `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/archcore-routing.md` (only `promote` writes Archcore content, with the operator's authorization). Found while
-  reviewing that pattern for `just check`; both now `proposed`, awaiting the operator's promotion approval. `archcore status` passes.
-- Feedback to all-scraper: the ShellCheck wiki page answered with a bot challenge during research; recorded in its `ROADMAP.md` Backlog.
+- `languages/ansible.md`: Learned 2026-10-27 (k) - `to_json` inside a `debug` message list is escaped twice; write operator lines as words.
 
 ## 20261027_1115 — Design patterns harvested from unified-network-controller and smc-resiliency (P-13 to P-29)
 

@@ -289,3 +289,15 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 
 > Design patterns realised in Ansible (resumable journal, done ledger, partition before batch, plug-in probe, plan then apply) are in
 > [../references/design-patterns.md](../references/design-patterns.md), table "Language realisations"; entries here record the Ansible behaviour they rely on.
+
+> **Learned 2026-10-27 (k)** · ansible-core 2.21.5 · VERIFIED_PRIMARY (seen in smc_change run output, fixed and re-rendered in a scratch copy) ·
+> Source: local-knowledge-ansible `plans/smc-change-resume-20261027_1038/prepare-once.patch` (`tasks/plan.yml`) · Falsifier: a `to_json` value
+> inside a `debug` message list printed without backslashes
+> `debug` prints its `msg` as JSON, so a list item built with `to_json` is encoded twice and every quote shows as `\"`
+> (`BACKUP   {\"paths\": [\"/etc/php\", ...]}`). For operator-facing lines, write the values as words (`join(', ')`, a phrase per flag), and
+> keep `to_json` for files and machine records.
+>
+> ```yaml
+> - 'BACKUP   ' ~ ((smc_change_spec.backup.paths | default([]) | join(', ')) or 'no paths')
+>   ~ ('; repack the packages about to change' if smc_change_spec.backup.repack | default(false) else '')
+> ```
