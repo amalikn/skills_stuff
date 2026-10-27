@@ -144,6 +144,19 @@ class OwnPage(unittest.TestCase):
                 fam["prefix"] = "Ops"
         self.assertTrue(_diagrams(data)[f"flow-{_own_flows(data)[0]}"].get("name").startswith("Ops 1. "))
 
+    def test_one_flow_family_has_no_number(self) -> None:
+        """A family of one flow is labelled by its prefix alone (operator review 2026-10-27: "PHP fix 1. Step by step")."""
+        data = _map()
+        keep = _own_flows(data)[0]
+        data["flows"] = [f for f in data["flows"] if f["id"] not in _own_flows(data) or f["id"] == keep]
+        for fam in data["drawing"]["families"]:
+            if fam["id"] == OWN:
+                fam["prefix"] = "Ops"
+                fam["flows"] = [keep]
+        labels = model.flow_labels(data, _prof(data))
+        self.assertEqual(labels[keep], "Ops")
+        self.assertTrue(_diagrams(data)[f"flow-{keep}"].get("name").startswith("Ops. "))
+
     def test_components_only_the_own_flows_touch_leave_the_full_page(self) -> None:
         """A component only an own flow touches is off the full page; one a shared flow also touches stays."""
         data = _map()

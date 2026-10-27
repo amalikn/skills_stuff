@@ -47,7 +47,8 @@ def flow_numbers(data: dict, profile: Profile) -> dict[str, int]:
 
 
 def flow_labels(data: dict, profile: Profile) -> dict[str, str]:
-    """Each flow's number as tabs, the Overview index and flow pages show it: an own family's flows carry its prefix ("PHP 2").
+    """Each flow's number as tabs, the Overview index and flow pages show it: an own family's flows carry its prefix ("PHP 2"); a family of
+    one flow, its prefix alone.
 
     Args:
         data: the validated map.
@@ -57,8 +58,12 @@ def flow_labels(data: dict, profile: Profile) -> dict[str, str]:
         {flow id: label}.
     """
     nums = flow_numbers(data, profile)
-    return {f["id"]: (f"{profile.family_prefix[fam]} {nums[f['id']]}" if (fam := flow_family(f, profile)) in profile.own_families
-                      else str(nums[f["id"]])) for f in data["flows"]}
+    sizes: dict = {}
+    for f in data["flows"]:
+        sizes[flow_family(f, profile)] = sizes.get(flow_family(f, profile), 0) + 1
+    # A family of one flow carries its prefix alone: "PHP fix 1. Step by step" numbered a list of one (operator review 2026-10-27).
+    return {f["id"]: ((profile.family_prefix[fam] if sizes[fam] == 1 else f"{profile.family_prefix[fam]} {nums[f['id']]}")
+                      if (fam := flow_family(f, profile)) in profile.own_families else str(nums[f["id"]])) for f in data["flows"]}
 
 
 def paged_flows(data: dict, profile: Profile) -> list[dict]:

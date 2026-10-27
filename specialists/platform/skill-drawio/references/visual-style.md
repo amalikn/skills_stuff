@@ -536,3 +536,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 >     results.append((grid._crossings(every), joint, deepcopy((grid.vslot, grid.gslot, grid.pools))))
 > _n, _joint, best = min(results, key=lambda r: (r[0], r[1]))   # the plain run on a tie: a page no joint move helps is unchanged
 > ```
+
+> **Learned 2026-10-27** · family labels · VERIFIED_PRIMARY · Source: `scripts/flowmap/map_parts.py` (`flow_labels`),
+> `tests/test_own_page.py` (`test_one_flow_family_has_no_number`) · Falsifier: a family with one flow labelled "<prefix> 1"
+> A family of one flow is labelled by its prefix alone: "PHP fix 1. Step by step" numbered a list of one (operator: "why overview page still
+> calls it php fix 1"). Name the prefix after the subject (here the change, `PHP CVE-2026-109618`), not a stale working title.

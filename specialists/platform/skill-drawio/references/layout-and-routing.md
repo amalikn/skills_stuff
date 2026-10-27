@@ -414,3 +414,27 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 >     page.route(f"{dec}-to-{o['id']}", dec, f"opt-{g['id']}-{o['id']}-head", [(MARGIN + DEC_W, ty), (cx, ty), (cx, heads_top)],
 >                style, klass="thick", ignore=(f"opt-{g['id']}",))
 > ```
+
+> **Learned 2026-10-27** · decision branches on flow pages · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`cost`,
+> `route_branches`, `COST_SIBLING_CROSS`), measured on local-knowledge-ansible smc_change flows (Apply page 2 -> 1 crossings, total 88 -> 85
+> with the gap fix) · Falsifier: two branches of one decision crossing each other when another corner assignment draws them apart
+> Two faults made a decision's branches cross (operator review: "overlap of 7 and 10 could have been easily avoided"). (1) `route_flow`
+> reserves a branchy decision's top and bottom by putting them in `used["sides"]`, so `cost` charged COST_SIDE (120) to the very branches
+> they were reserved for; a reserved corner is now free for the decision's own branches until a sibling takes it (`used["taken"]`). (2) A
+> crossing cost 30 against 120 for a shared side, so a crossing assignment could still win; two branches of one decision crossing each
+> other now add COST_SIBLING_CROSS (400) when the assignments are compared.
+>
+> ```python
+> own_corner = src in used.get("branchy", ()) and (src, out_side) not in used.get("taken", ())
+> sides = ((src, out_side) in used["sides"] and not own_corner) + ((dst, in_side) in used["sides"])
+> ...
+> total += COST_SIBLING_CROSS * sum(1 for i, a in enumerate(mine) for b in mine[i + 1:]
+>                                   for s in segments(a.points) for o in segments(b.points) if crossing(s, o) is not None)
+> ```
+
+> **Learned 2026-10-27** · Overview thin-arrow tracks · VERIFIED_PRIMARY · Source: `scripts/drawio/route.py` (`gap_order`,
+> `GAP_EXHAUSTIVE`), `tests/test_layout_rules.py` (six real runs) · Falsifier: a row gap of at most 7 runs left with more crossings than
+> its best order
+> Neighbour swaps that each strictly lower a row gap's crossings stop at local minima: six runs on the smc_change Overview kept 2 crossings
+> where an order with 0 exists (operator: "this overlap would have been avoided as well"). Gaps of up to 7 runs now try every order (the
+> given order kept unless one is strictly better); larger gaps swap any two runs. Render time unchanged (0.5 s).

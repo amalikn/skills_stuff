@@ -16,6 +16,9 @@ Summary: Transient working state for skill-drawio; durable facts move to referen
 
 ## Open items
 
+- KEEP 2026-10-27 router changes (sibling branch crossings, own reserved corners, exhaustive row-gap order, one-flow family label) change
+  the drawings of other consumers: re-render and drift-check unified-network-controller and smc-resiliency in their own sessions; expect fewer
+  crossings, never more per gap.
 - Archcore: 4 ADRs and 7 rules accepted 2026-10-19 (operator: "promote and accept"), indexed in `.archcore/index.guide.md`. Deferred: the
   flow-map spec and the adoption guide, until a second project adopts the engine.
 - Installed 2026-10-19 (operator): directory symlinks `~/.claude/skills/skill-drawio`, `~/.codex/skills/skill-drawio` and

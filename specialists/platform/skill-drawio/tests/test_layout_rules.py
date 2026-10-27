@@ -90,6 +90,16 @@ def _route(cid: str, points: list, klass: str = "thick", jump: float = 0.0, laye
 class TextAndBoxes(unittest.TestCase):
     """Text stays inside its shape, and notes, step boxes and headers read as sections."""
 
+    def test_gap_order_finds_an_order_neighbour_swaps_miss(self) -> None:
+        """Six runs from the smc_change Overview (2026-10-27): neighbour swaps stopped at 2 crossings; the exhaustive search reaches 0."""
+        span = dict(enumerate([(588.0, 745.0), (658.0, 989.0), (867.0, 1180.5), (1111.0, 1233.0), (1355.0, 1285.5), (1599.0, 1477.0)]))
+        self.assertEqual(route.gap_crossings(route.gap_order(list(span), span), span), 0)
+
+    def test_gap_order_keeps_an_order_already_best(self) -> None:
+        """A gap with no crossings keeps its given order."""
+        span = {0: (0.0, 10.0), 1: (20.0, 30.0), 2: (40.0, 50.0)}
+        self.assertEqual(route.gap_order([0, 1, 2], span), [0, 1, 2])
+
     def test_long_tokens_get_break_points_and_bold_spans_anywhere(self) -> None:
         """A long path gains zero-width break points (visible text unchanged); `**` spans render bold wherever they sit, text stays escaped."""
         path = "code: wc-local/nautobot/apps/unc-ownership/unc_ownership/onboarding_execution.py:complete_driver"

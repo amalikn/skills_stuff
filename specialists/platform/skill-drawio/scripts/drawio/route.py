@@ -9,6 +9,8 @@ Imported, not run: `from drawio import route` with the skill's scripts/ on sys.p
 
 from __future__ import annotations
 
+from itertools import permutations
+
 from .audit import rects_overlap, segments
 from .mxfile import Point, Rect
 
@@ -271,8 +273,16 @@ def gap_crossings(seq: list, span: dict) -> int:
     return n
 
 
+#: Row gaps with at most this many runs are ordered by trying every order (7! = 5040); larger ones by swaps.
+GAP_EXHAUSTIVE = 7
+
+
 def gap_order(seq: list, span: dict) -> list:
-    """The runs of one row gap reordered by neighbour swaps that each strictly lower gap_crossings; the given order when none does.
+    """The runs of one row gap in the order with the fewest gap_crossings; the given order unless another is strictly better.
+
+    Up to GAP_EXHAUSTIVE runs every order is tried (the first minimum in permutation order wins); above it, swaps of any two runs that each
+    strictly lower the count. Neighbour swaps alone stopped at a local minimum (operator review 2026-10-27, smc_change Overview: six runs,
+    2 crossings left where an order with 0 exists).
 
     Args:
         seq: the runs' keys in their default order, top track first.
@@ -282,14 +292,24 @@ def gap_order(seq: list, span: dict) -> list:
         The new order, top track first.
     """
     seq, best = list(seq), gap_crossings(seq, span)
+    if best and len(seq) <= GAP_EXHAUSTIVE:
+        for trial in permutations(seq):
+            cost = gap_crossings(list(trial), span)
+            if cost < best:
+                seq, best = list(trial), cost
+                if not best:
+                    break
+        return seq
     better = True
     while better and best:
         better = False
-        for k in range(len(seq) - 1):
-            trial = seq[:k] + [seq[k + 1], seq[k]] + seq[k + 2:]
-            cost = gap_crossings(trial, span)
-            if cost < best:
-                seq, best, better = trial, cost, True
+        for i in range(len(seq) - 1):
+            for k in range(i + 1, len(seq)):
+                trial = list(seq)
+                trial[i], trial[k] = trial[k], trial[i]
+                cost = gap_crossings(trial, span)
+                if cost < best:
+                    seq, best, better = trial, cost, True
     return seq
 
 

@@ -31,6 +31,9 @@ COST_BOX, COST_ALONG, COST_PORT, COST_SIDE, COST_CROSS, COST_BEND, COST_ODD_EXIT
 #: 2026-10-26: "why is it extending so much to the right and then going down?"): turning in the gap and entering the left side reads as the
 #: next step. Above COST_SIDE, so a second arrow takes another left port rather than overshoot; well below a crossing of a box or a label.
 COST_OVERSHOOT = 150
+# Two branches of one decision crossing each other: a swap of their corners nearly always avoids it, so it outweighs a shared side
+# (operator review 2026-10-27, smc_change Apply page: "overlap of 7 and 10 could have been easily avoided").
+COST_SIBLING_CROSS = 400
 #: Shortest first run (leaving a box) and last run (the arrowhead's room, as drawio.audit.HEAD_ROOM thin).
 STUB, HEAD = 12, 22
 #: Arc size where a flow arrow crosses another: an unavoidable crossing hops, as on the Overview.
@@ -107,7 +110,11 @@ def cost(page: Page, path: tuple, ends: tuple, used: dict) -> float:
     crosses = sum(1 for s in segs for o in others if crossing(s, o) is not None)
     labels = sum(1 for p, q in segs for m in page.marks if seg_hits_rect(p, q, m.rect, 0))
     points = sum(1 for pt in (pts[0], pts[-1]) if (round(pt[0]), round(pt[1])) in used["points"])
-    sides = ((src, out_side) in used["sides"]) + ((dst, in_side) in used["sides"])
+    # A branchy decision's top and bottom are held for its own branches (route_flow): they block arrows in, not a branch leaving there,
+    # unless a sibling branch already took that corner (operator review 2026-10-27: branch 7 left the right and crossed branch 10, which
+    # had the bottom, because the bottom counted as taken for both).
+    own_corner = src in used.get("branchy", ()) and (src, out_side) not in used.get("taken", ())
+    sides = ((src, out_side) in used["sides"] and not own_corner) + ((dst, in_side) in used["sides"])
     length = sum(abs(p[0] - q[0]) + abs(p[1] - q[1]) for p, q in segs)
     return ((boxes + own) * COST_BOX + (along + labels) * COST_ALONG + points * COST_PORT + sides * COST_SIDE + crosses * COST_CROSS
             + (len(segs) - 1) * COST_BEND + odd * COST_ODD_EXIT + length / 1000
@@ -261,6 +268,7 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
     page.route(cid, src, dst, pts, STYLE.format(colour=colour, rounded=corridors.get("rounded", 1)), klass="thin", jump=JUMP)
     used["points"].update((round(p[0]), round(p[1])) for p in (pts[0], pts[-1]))
     used["sides"].update({(src, out_side), (dst, in_side)})
+    used.setdefault("taken", set()).add((src, out_side))
     width = 18 + 9 * len(text)
     cx, cy = label_spot(page, cid, pts, width, 22)
     page.mark(f"{cid}-lbl", label(f"**{text}**"), cx, cy, width, 22, LABEL.format(colour=colour), cid)
@@ -269,7 +277,8 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
 
 def route_branches(page: Page, branches: list, corridors: dict, used: dict) -> None:
     """Route a decision's branches together: every assignment of its corners (right, top, bottom) to the branches is tried and the one with
-    the lowest total cost drawn (operator review 2026-10-21: "move arrow eight to the right and seven to the top").
+    the lowest total cost drawn, a crossing between two of the branches costing COST_SIBLING_CROSS (operator review 2026-10-21: "move arrow
+    eight to the right and seven to the top"; 2026-10-27: branches 7 and 10 crossed).
 
     Args:
         page: the page.
@@ -281,6 +290,9 @@ def route_branches(page: Page, branches: list, corridors: dict, used: dict) -> N
     for ways in permutations(("right", "top", "bottom"), len(branches)):
         mark = (len(page.routes), len(page.cells), len(page.marks), dict(page.rects), {k: set(v) for k, v in used.items()})
         total = sum(route_forward(page, edge, (True, diamond), corridors, used, (way,), True) for (edge, diamond), way in zip(branches, ways))
+        mine = page.routes[mark[0]:]
+        total += COST_SIBLING_CROSS * sum(1 for i, a in enumerate(mine) for b in mine[i + 1:]
+                                          for s in segments(a.points) for o in segments(b.points) if crossing(s, o) is not None)
         del page.routes[mark[0]:], page.cells[mark[1]:], page.marks[mark[2]:]
         page.rects.clear(), page.rects.update(mark[3])
         for key in used:
@@ -345,7 +357,7 @@ def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> tuple:
     longest = look.get("branch_order", "longest") == "longest"
     group_span = {e[0]: max(span[g[0]] for g in fwd if g[1] == e[1]) if longest and shapes[e[1]] == "decision" else span[e[0]] for e in fwd}
     forward = sorted(fwd, key=lambda e: (group_span[e[0]], span[e[0]]))
-    used: dict = {"points": set(), "sides": set(), "branchy": set()}
+    used: dict = {"points": set(), "sides": set(), "branchy": set(), "taken": set()}
     for s in steps:   # a decision with branches keeps its top and bottom corners for them: arrows in prefer its left corner
         if shapes[s["id"]] == "decision" and len(s.get("next") or []) > 1:
             used["sides"].update({(f"{fid}-s-{s['id']}", "top"), (f"{fid}-s-{s['id']}", "bottom")})
