@@ -133,6 +133,10 @@ smc_change_flows_check:
 backdoor_exec target cmd="hostname":
     @bash scripts/backdoor_exec.sh "{{target}}" "{{cmd}}"
 
+# An SMC's uplink health over Teleport (read-only): loss to first hop and proxy, Teleport error trend, clock, backdoor restarts, WAN rate. Example: just smc_link_health banana-well-smc01
+smc_link_health host *args:
+    @bash scripts/smc_link_health.sh "{{host}}" {{args}}
+
 # x86 SMC resiliency probe over Teleport (read-only): disks, boot entries, watchdog, state sizes. Example: just x86_resiliency_probe teleport.apn.au horn-island-smc01
 x86_resiliency_probe proxy +nodes:
     @bash scripts/x86_resiliency_probe.sh --proxy "{{proxy}}" {{nodes}}

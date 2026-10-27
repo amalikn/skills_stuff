@@ -301,3 +301,17 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > - 'BACKUP   ' ~ ((smc_change_spec.backup.paths | default([]) | join(', ')) or 'no paths')
 >   ~ ('; repack the packages about to change' if smc_change_spec.backup.repack | default(false) else '')
 > ```
+
+> **Learned 2026-10-27 (l)** · ansible-core 2.21.5, `include_tasks` · VERIFIED_PRIMARY (a running rct apply batch started 12:50 picked up task
+> files edited at 13:00-13:15; traced per file, harmless only because its spec and probe program were already loaded) · Source:
+> local-knowledge-ansible `roles/smc_change/tasks/main.yml` (dynamic includes), commit 0e8a2f0 · Falsifier: an edit to an included task file
+> after a play started that the play does not run
+> `include_tasks` reads its file when the play reaches it, not at start, so editing a role's task files while a playbook runs changes that
+> run mid-flight (`import_tasks` is static). Edit task files only when no playbook using them runs; for long rollouts, freeze or stage edits.
+
+> **Learned 2026-10-27 (m)** · ansible-core 2.21.5, `serial` batches, linear strategy · VERIFIED_PRIMARY (smc_change summaries: five and six
+> hosts with identical per-stage seconds) · Source: local-knowledge-ansible `tasks/stage.yml` (phase timing per stage entry) · Falsifier: per-host
+> stage times that differ within one batch for hosts that ran every stage
+> With the default linear strategy every task finishes on all hosts of a batch before the next starts, so a per-host timer between stage
+> markers measures the batch's wall-clock for that stage: the slowest host (or one reboot) sets every host's line. Measure per-host work
+> with a task-timing callback, not stage markers, and size budgets per batch.

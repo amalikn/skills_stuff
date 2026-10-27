@@ -438,3 +438,57 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 > Neighbour swaps that each strictly lower a row gap's crossings stop at local minima: six runs on the smc_change Overview kept 2 crossings
 > where an order with 0 exists (operator: "this overlap would have been avoided as well"). Gaps of up to 7 runs now try every order (the
 > given order kept unless one is strictly better); larger gaps swap any two runs. Render time unchanged (0.5 s).
+
+> **Learned 2026-10-27** · two arrows into one decision corner · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`cost`, `shared`),
+> `scripts/flowmap/uncross.py` (`unshare`, `_shared_corners`), skills_stuff 93c0205; screenshot `references/screenshots/20261027-labels-routing/
+> unshare-decision-corner.png` · Falsifier: a flow page where two arrows end at the same decision corner while another corner was free
+> A diamond has one point per corner, so a second arrow there merges into the first for its last run (operator: "why is the arrow 13
+> overlapping?"). A shared decision corner costs as a crossed box, but the greedy order still let the first arrow take the only corner a later
+> branch could reach; the `unshare` pass redraws such a pair in the other order and keeps it only when that pair no longer shares and nothing
+> else got worse (`drawing.look.unshare`).
+>
+> ```python
+> shared = sum(1 for cid, pt in ((src, pts[0]), (dst, pts[-1])) if cid in used.get("diamonds", ()) and (round(pt[0]), round(pt[1])) in used["points"])
+> ```
+
+> **Learned 2026-10-27** · uncross tiers and shared runs · VERIFIED_PRIMARY · Source: `scripts/flowmap/uncross.py` (`_redraw_pair`,
+> `_step_aside`, `_alongside`), `scripts/flowmap/route_costs.py` (`_crosses`, `_overlaps`), skills_stuff 7f00335~2..7f00335; screenshot
+> `uncross-third-arrow-steps-aside.png` · Falsifier: a crossing pair the repair leaves crossing when another exit side or a lower-ranked path
+> clears it without a box hit or a shared run
+> A crossing pair is redrawn with the same exit sides, then every other pair of exit sides, then paths ranked by fewest crossings (the cost
+> rates a crossing 30 below a flat run into the target's top 150), letting a third arrow that the pair now runs along step aside; a result is
+> kept only with fewer crossings, no more shared decision corners and no more runs lying along another arrow's. Trading a crossing for a
+> shared run fooled the crossing count twice (Apply 10/12, fw-x86 4 -> 6 and 5 -> 6): `count_crossings.py --compare` now counts shared runs.
+> smc-resiliency fw-x86 back to 0 after two-line labels first made it 1 (operator: "no.. fix the skill").
+
+> **Learned 2026-10-27** · End-to-end joint track swap · VERIFIED_PRIMARY · Source: `scripts/flowmap/crossing_search.py` (`tracks_together`,
+> polish in `improve`), skills_stuff 7f00335; screenshot `e2e-joint-track-swap.png` · Falsifier: an E2E page where swapping two crossing links'
+> neighbouring vertical and horizontal tracks together lowers its crossings after improve()
+> A link leaving its box above another on the inner vertical track and the outer horizontal one crosses it twice, and either swap alone still
+> crosses once (operator: "2.3 and 2.7 overlap could have been avoided"). The joint swap runs as a polish after the searches: taken inside them
+> it steered the joint search to 82 crossings against 56. smc_change E2E 56 -> 50; other maps unchanged.
+
+> **Learned 2026-10-27** · decisions sized to their text · VERIFIED_PRIMARY · Source: `scripts/flowmap/pages.py` (`size_steps`), look keys
+> `decision_aspect` 0.6 and `decision_max_width` 560, skills_stuff 7871fd3, 5d648c6; screenshots `decision-sized-label-centred.png`,
+> `long-decision-max-width.png` · Falsifier: a diamond wider than it needs at decision_aspect, or taller than wide below decision_max_width
+> A fixed 380 px made a short question a flat sliver ("box 2 unnecessarily elongated horizontally") and a long one a tall kite
+> ("disproportionately elongated vertically"). A decision starts at the step width and widens in 20 px steps until its height is at most
+> 0.6 times its width, up to 560 px.
+
+> **Learned 2026-10-27** · flow-page arrow labels · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`branch_label`, `label_size`,
+> `LABEL`, `route_forward`), `scripts/flowmap/route_costs.py` (`label_spot`, `lane_colour`, `SPLIT_GAP`), skills_stuff 93c0205, 7871fd3,
+> 5d648c6, ada3e9f; screenshots `two-line-label-straddles-flat-run.png`, `split-label-vertical-run.png` · Falsifier: a branch label on one
+> line, a white box on a tinted lane, a label beside its line where its line had room, or a two-line label struck through by a vertical line
+> Operator standards: a branch label is two lines, step number then case ("9\nstill busy ... make this a standard"); a label sits on its line,
+> at the middle of the arrow's straight run (points straight through are merged first) and 8 px clear of every box; its background is the
+> colour its lane shows (fill at the lane's opacity over white), not white ("remove white background"); a two-line label on a vertical run
+> is two cells, number right-aligned left of the line and case left-aligned right of it, no background. The background request was first
+> answered by also moving labels off the line and re-aligning them; the operator rejected that ("why other changes have been done to the
+> text?"): a style request changes only that style.
+>
+> ```python
+> cx, cy, across = label_spot(page, cid, pts, width, height, split)
+> if across:   # number left of a vertical line, case right of it, no background needed
+>     ...
+> style = LABEL.format(colour=colour, background=lane_colour(page, cx, cy))
+> ```

@@ -173,3 +173,14 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > style) keeps them out. `shfmt -f <dirs>` then lists exactly the scripts to check, including extensionless ones found by shebang (6 here
 > that a `*.sh` glob missed); pass that list to `shfmt -d` and `shellcheck`. shfmt does not descend into a symlinked folder, and finds
 > `.editorconfig` by walking up from each file, so a physical path outside the checkout needs the file linked into an ancestor.
+
+> **Learned 2026-10-27** · bash 3.2 (macOS `/bin/bash`), `set -u` with an empty array · VERIFIED_PRIMARY (skill-smc `scripts/smc_link_health.sh`
+> written for it) · Source: skills_stuff skill-smc `scripts/smc_link_health.sh` · Falsifier: `set -u; a=(); echo "${a[@]}"` passing on bash 3.2
+> `"${arr[@]}"` on an empty array is an "unbound variable" error under `set -u` in bash before 4.4, which macOS still ships. Expand optional
+> arguments as `${arr[@]+"${arr[@]}"}`, which yields nothing for an empty array and every element quoted otherwise.
+>
+> ```bash
+> args=()
+> [ -n "$proxy" ] && args+=(--proxy="$proxy")
+> exec tsh ${args[@]+"${args[@]}"} ssh "root@$host" "$remote"
+> ```

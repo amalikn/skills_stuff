@@ -489,10 +489,10 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   gave ~4 s). Seen: banana-well-smc01 "Data could not be sent ... Connection closed" while staging .debs in stage 6.
 - **TASK_TIMING**: `true` writes `task_timing/smc_change-<start>.json` (slowest first) and prints one line; `verbose` also prints the per-task
   lines and recap (the old `true`); `TASK_TIMING_DIR` moves it.
-- **Teleport online filter (in the frozen patch)**: `tsh ls --proxy=<proxy> --format=json flavor=<inventory folder>,env=<inventory file>`
+- **Teleport online filter (live since 2026-10-27 13:24)**: `tsh ls --proxy=<proxy> --format=json flavor=<inventory folder>,env=<inventory file>`
   once per run; the `flavor` and `env` labels match the inventory folder and file (rct prod 290, rct stage 1; rcp prod 17 of 21 in
   inventory, the four `generic-*` hosts not in Teleport). Label form and `--query 'labels.flavor == "rct"'` return the same.
-- **Run-once preparation (in the frozen patch)**: `tasks/prepare.yml` does spec load and check, plan banner, fingerprint, probe program and
+- **Run-once preparation (live since 2026-10-27 13:24; 9 probe-join lines per SMC gone)**: `tasks/prepare.yml` does spec load and check, plan banner, fingerprint, probe program and
   folders once per run in the first play; `tasks/probe_cfg.yml` keeps the per-SMC HTTP resolution.
 - **Captive portal render is part of the PHP verification**: the spec's `http` checks `portal` (home) and `portal-terms`
   (`/index.php/wifi/terms`) at the SMC's portal FQDN must redirect, or answer 200 with HTML and none of the bad markers, with the same status
@@ -513,3 +513,49 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
 (BACKUP 89 s, ACTIONS 143 s, VERIFY 311 s, CLEANUP 159 s; the empty rcp pool meant its own repack); it created `runs/rcp/{state,journal,
 records}` on its first run, proving the per-flavor layout for a new flavor. A read-only `verify` at 12:05 passed 10/10 (49 s), captive portal
 home and terms 200 with HTML and no PHP error markers.
+
+## Stranded-run self-repair, kohana cron jobs, lockstep timing, wh and nbn_accelerate (2026-10-27 afternoon)
+
+Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1451; commits 0e8a2f0 (recovery, cron_job, tstik check), 7ff3a30
+(prepare-once live, interim record).
+
+- **A drifted apply cut off at 5-6 that installed nothing repairs itself (`abandoned_clean`)** (operator: "why cant it be built into the
+  php fix change?"). Five rct SMCs were stuck at 6/11 after a role edit; read-only, every php8.1 package was still the old build live and in
+  the lower dir and only the lower dir was left read-write. Now: lower dir remounted read-only, journal moved to
+  `runs/<flavor>/journal/superseded/<host>-<start>.json`, fresh start. Apply mode only: check, verify and assess reach the same decision
+  (the journal's mode stands in for theirs) and must not change the box (found by a side agent before any such run).
+
+  ```python
+  # files/recovery.py (0e8a2f0)
+  return all(b.get("pkgs") == n.get("pkgs") and b.get("pkgs_lower") == n.get("pkgs_lower") for b, n in zip(pins_before, pins_now))
+  ...
+  if (drifted and journal.get("phase") in (5, 6) and journal.get("mode") == "apply" == data.get("mode")
+      and not safety.get("dpkg_busy") and safety.get("chroot_clear") is True and untouched(...)):
+    result.update(classification="abandoned_clean", can_start=True, supersede_journal=True, close_lower=bool(safety.get("lower_rw")))
+  ```
+
+- **Every flavor runs the portal's Kohana jobs from root's cron** (`kohana status:update:usage` every minute, `status:update:status` every
+  5, `status:clean:up` daily; rcp also `status:push:wifi:site:broker`; read on jigalong, barrakiah, areyonga, engawala). One still on the
+  old build held the lower dir past the 90 s close window and forced the fallback reboot (areyonga-smc01, binjari-top-camp-smc01:
+  `lower_busy` holder `php /usr/local/bin/kohana status:update:usage`). Spec restarts them with the new `respawn: cron_job`: stopped
+  whenever one is running at the restart (not only if the before-probe saw one), never waited for, not in the processes gate. Root's own
+  nightly `pkill -9 php` already kills them.
+
+  ```yaml
+  # tasks/restart.yml (0e8a2f0)
+  when:
+    - smc_change_proc.respawn | default('none') != 'none'
+    - smc_change_proc.respawn == 'cron_job' or smc_change_before.processes[smc_change_proc.pattern] | default(0) | int > 0
+  ```
+
+- **rct-tstik exists on rct only; wh serves python3 telemetry on 8080.** A check keyed on "something listens on 8080" refused three wh SMCs
+  as unhealthy; it now skips where `/var/www/html/rct-tstik` is absent. Per flavor, the long-running cron PHP program: rcp, nbn_accelerate,
+  nbn_wh `php Start.php` (apn-mqtt-client); rct `php -S` on 10.254.0.1:8080 (rct-tstik); wh none.
+- **Batches run in lockstep.** With `smc_change_serial` N, Ansible's linear strategy finishes each task on every host before the next, so
+  every host's stage time is the batch's: one fallback reboot (314 s) or a slow satellite host sets every line (wh batch of five 1,151 s, rct
+  batch of six 1,828 s, both over the 900 s budget). A host resumed past a stage shows its wait inside the stage before.
+- **Interim verify record**: verify.yml writes a record before cleanup; it no longer opens stage 11, so the summary reads 9 VERIFY,
+  10 CLEANUP, 11 RECORD (`smc_change_record_interim`).
+- **`include_tasks` files load when reached**: editing `tasks/` while a playbook runs changes the running play, journals or not.
+- **Results:** wh 6/6 passed (engawala canary; areyonga fallback reboot); first nbn_accelerate amata-smc01 passed (x86, no reboot,
+  `php Start.php` 2 before and after); rct batches of five (12:29) and six (12:50) passed.

@@ -113,6 +113,12 @@ Last rotated: 20261027_1213
   captures); the rule is code files and identifiers follow their language, typed commands are kebab-case, a tool's parser wins. `module-and-function-shape.md` points to it; claims C-C72 to C-C79.
   `languages/ansible.md` gains the tag-rename transition step (behaviour evaluation gap). Shared `scripts/pyparse.py`; shell heredoc and `${#` fixes in `code_size.py` (found on a second repository).
 
+## 20261027_1501 — Ansible include_tasks and lockstep batches, bash 3.2 empty arrays
+
+- `languages/ansible.md` Learned 2026-10-27 (l) `include_tasks` loads when reached, so editing task files changes a running play; (m)
+  `serial` batches run in lockstep, so stage-marker timers measure the batch, not the host.
+- `languages/shell.md` Learned 2026-10-27: bash 3.2 `set -u` with an empty array; use `${arr[@]+"${arr[@]}"}` (verified on /bin/bash 3.2.57).
+
 ## 20261027_1213 — Ansible: to_json in debug output is escaped twice
 
 - `languages/ansible.md`: Learned 2026-10-27 (k) - `to_json` inside a `debug` message list is escaped twice; write operator lines as words.

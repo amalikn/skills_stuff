@@ -34,3 +34,20 @@ class CountCrossings(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CompareDrawings(unittest.TestCase):
+    """Compare mode: every page before and after, shared runs counted, exit 3 only when a page got worse."""
+
+    def test_shared_runs_are_counted(self) -> None:
+        """Two arrows lying along each other count once; parallel runs further apart, or only touching, do not."""
+        runs = {"a": [((0, 50), (100, 50))], "b": [((40, 54), (160, 54))], "c": [((0, 80), (100, 80))], "d": [((100, 50), (140, 50))]}
+        self.assertEqual(count_crossings.alongside(runs), 2)   # a-b overlap; b-d overlap (d ends inside b); a-d only touch
+
+    def test_same_drawing_compares_clean(self) -> None:
+        """A drawing compared with itself changes no page and exits 0."""
+        example = ROOT / "examples" / "shop" / "drawio" / "flows.drawio"
+        changed, (before, after) = count_crossings.compare(example.read_text(encoding="utf-8"), example.read_text(encoding="utf-8"))
+        self.assertEqual(changed, [])
+        self.assertEqual(before, after)
+        self.assertEqual(count_crossings.main([str(example), "--compare", str(example)]), 0)

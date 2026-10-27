@@ -16,6 +16,9 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261027 `count_crossings.py --compare BEFORE`: every page of two versions, crossings and shared runs, exit 3 when a page got worse
+  (`just count-crossings AFTER --compare BEFORE`); Learned 2026-10-27 (five entries) in references/layout-and-routing.md with screenshots
+  `references/screenshots/20261027-labels-routing/`
 - 20261027 Flow pages: a two-line arrow label on a vertical run sits across the line, number left of it and case right of it, two cells
   with no background (`route_costs.SPLIT_GAP`, cell `<arrow>-lbl-case`; operator). Flat runs and one-line labels unchanged; crossings unchanged
 - 20261027 Flow page arrow labels take their lane's colour as background instead of white (`route_costs.lane_colour`; operator:

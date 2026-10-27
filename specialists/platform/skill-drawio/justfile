@@ -198,6 +198,7 @@ render-flowmap *args: _require-venv
     @{{py}} scripts/render_flowmap.py "$@"
 
 # [read-only] Count crossing arrows on one page, to compare a consumer's drawing before and after an engine change: just count-crossings FILE --page 1 --prefix ov-d-
+# Or every page of two versions (crossings and shared runs; exit 3 when a page got worse): just count-crossings AFTER --compare BEFORE
 [positional-arguments]
 count-crossings *args: _require-venv
     @{{py}} scripts/count_crossings.py "$@"

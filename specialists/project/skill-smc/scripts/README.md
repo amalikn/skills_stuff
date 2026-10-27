@@ -39,6 +39,7 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 | [local_knowledge_index.sh](local_knowledge_index.sh) | Local files only | **read-only** | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder, uncommitted changes. ~1 s. `just local_knowledge_index` |
 | [smc_change_compare_records.py](smc_change_compare_records.py) | Local files only | **read-only** | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, volatile fields ignored. <0.1 s. `just smc_change_compare` |
 | [smc_change_runs_table.py](smc_change_runs_table.py) | Local files only | **read-only** | One line per run record of a change: result, phase 6-9 seconds, whether the SMC rebooted (boot_id), lower-dir holders or the failure; answers "which runs rebooted and did they fail" across a rollout. <0.1 s. `just smc_change_runs <change>`; test `test_smc_change_runs_table.py` |
+| [smc_link_health.sh](smc_link_health.sh) | Teleport (`tsh ssh`) | **read-only** | An SMC's uplink: loss to first hop and proxy, Teleport error trend, clock, upload backlog, autossh restarts, WAN rate; box, Teleport or link? ~1 min. `just smc_link_health <smc>`; test `test_smc_link_health.py` |
 | [smc_inventory_add.py](smc_inventory_add.py) | ansible-wifi inventory files; tsh read of one box | **modifies-state** (plan by default, `--apply` writes) | Adds a new SMC the way every site is added: `[<site>_smc_bases]`, `smc_bases:children`, `[<site>:children]` and group/host/topology vars rendered from the repo's generator templates. Refuses an existing host, site or file; flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add` |
 | [install_packages.sh](install_packages.sh) | Live SMC appliances | **modifies-state** | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul |
 | [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
@@ -609,6 +610,15 @@ read-write community), and refuses to write if the login or enable password or a
 |                         |   (read-only), live switches                            |   `requires-credentials`        |   redacted configs to the given directory; `--discover` pings bridge_500 only     |
 | `tplink_cli_driver.py`  | Runs on the SMC; SSH to one switch                      | `external-network`,             | Never run directly from the workstation; fed by `tplink-switch.sh`                |
 |                         |                                                         |   `requires-credentials`        |                                                                                   |
+
+### `smc_link_health.sh`
+
+Read-only, over Teleport: is a Teleport-agent, backdoor or slow-run problem the box, Teleport or the site's link? Prints clock and NTP sync,
+loss and RTT to the first hop and to the controller's Teleport proxy, Teleport warn/error lines per 10 minutes over the last hour with the
+most frequent kinds, the session-upload backlog, each autossh unit's restart count and the WAN rate over 10 s. Loss at the first hop with
+an idle WAN is the site link (a gateway may rate-limit pings to itself: trust it when the proxy path loses too). Recipe:
+`just smc_link_health banana-well-smc01 [--proxy teleport.communitywifi.net.au] [--pings 30]`; about 1 minute. Origin: banana-well-smc01,
+2026-10-27 (`../references/03_communication-flows.md`). Smoke-run on banana-well-smc01 the same day.
 
 ### `x86_resiliency_probe.sh`
 
