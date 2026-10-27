@@ -1,3 +1,14 @@
+---
+Title: Architecture — skill-smc
+Category: architecture
+Status: current
+Authority: canonical
+Scope: Root ARCHITECTURE.md of skill-smc
+Last reviewed: 2026-10-07
+Summary: skill-smc is a multi-file specialist pack following the canonical specialists/project/ pattern. It separates an agent-facing activation surface (SKILL.md) from a progressive-disclosure...
+Review by: 2026-11-26
+---
+
 # Architecture — skill-smc
 
 ## Overview
@@ -39,6 +50,11 @@ and no separate adapter document; those, the profile file and the dedicated-agen
 - **Progressive disclosure (ADR v0.1.2):** monolithic RUNBOOK.md split into 13 numbered references to reduce per-task token cost. See
   [.archcore/adr/progressive-disclosure-structure.adr.md](.archcore/adr/progressive-disclosure-structure.adr.md).
 - **RUNBOOK.md as index only:** never holds content; is always a routing table. See [.archcore/rules/progressive-disclosure-loading.rule.md](.archcore/rules/progressive-disclosure-loading.rule.md).
+- **scripts/ by job (operator, 2026-10-27):** scripts sit in job folders (`ansible/`, `access/`, `probes/`, `capture/`, `fleet/`, `metrics/`,
+  `routing/`, `switch/`); the sub-justfiles stay at `scripts/`; callers in other repos were updated, no shims. Layout table in
+  [scripts/README.md](scripts/README.md).
+- **Branch reach (2026-10-27):** "deployed" in a reference describes boxes or the branch it was written from, not `rise`; merging the
+  side-branch fixes is left to the operator's branch-merge work. See `references/13_known-issues.md`.
 - **SKILL.md stays short (2026-10-07):** detail lives in the reference that owns it; SKILL.md keeps only what decides which reference to open.
 
 ## Related workspaces

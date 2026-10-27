@@ -4,7 +4,7 @@ Runnable scripts and task entrypoints for skill-cambium. Prefer `just --list` / 
 (`/Volumes/Data/_ai/_skills/skills-working-cache/skill-cambium/.venv`, built by `just bootstrap` from `.mise.toml` + `requirements.txt`). Raw script inventory below is for reference, not direct
 invocation.
 
-`just tunnel` does not run a script from this directory — it calls [skill-smc's `skill-smc/scripts/teleport-tunnel.sh`](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/scripts/teleport-tunnel.sh) directly, since Teleport
+`just tunnel` does not run a script from this directory — it calls [skill-smc's `skill-smc/scripts/access/teleport-tunnel.sh`](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-smc/scripts/access/teleport-tunnel.sh) directly, since Teleport
 tunneling is that pack's concern, not this one's. Consuming projects call the canonical path directly rather than this pack keeping its own copy — same pattern as `cambium-portal.sh` below, in the
 other direction.
 

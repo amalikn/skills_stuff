@@ -3,15 +3,15 @@
 # password pulled from KeePass and never written into any command line or transcript.
 #
 # Usage:
-#   scripts/tplink-switch.sh <site> <switch_ip> ["show ..." ...]   # run commands (default: show system-info)
-#   scripts/tplink-switch.sh <site> --discover                      # list TP-Link switches the SMC can see
-#   scripts/tplink-switch.sh <site> <switch_ip> --shell             # interactive CLI; password to clipboard
-#   scripts/tplink-switch.sh <site> <switch_ip> --backup <dir>      # redacted running-config to <dir>/<site>/
-#   scripts/tplink-switch.sh --write <site> <switch_ip> "cmd" ...   # allow non-show commands (config!)
+#   scripts/switch/tplink-switch.sh <site> <switch_ip> ["show ..." ...]   # run commands (default: show system-info)
+#   scripts/switch/tplink-switch.sh <site> --discover                      # list TP-Link switches the SMC can see
+#   scripts/switch/tplink-switch.sh <site> <switch_ip> --shell             # interactive CLI; password to clipboard
+#   scripts/switch/tplink-switch.sh <site> <switch_ip> --backup <dir>      # redacted running-config to <dir>/<site>/
+#   scripts/switch/tplink-switch.sh --write <site> <switch_ip> "cmd" ...   # allow non-show commands (config!)
 #
 # Examples:
-#   scripts/tplink-switch.sh kalumburu 10.255.0.2
-#   scripts/tplink-switch.sh kalumburu 10.255.0.3 "show interface status" "show vlan"
+#   scripts/switch/tplink-switch.sh kalumburu 10.255.0.2
+#   scripts/switch/tplink-switch.sh kalumburu 10.255.0.3 "show interface status" "show vlan"
 #
 # Read-only by default: only `show`, `ping` and `tracert` commands are sent unless --write is given.
 # --write is a config change on a production switch; it needs the operator's explicit go-ahead.

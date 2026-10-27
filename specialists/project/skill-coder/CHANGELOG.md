@@ -16,6 +16,7 @@ Last rotated: 20261027_1213
 
 ## Unreleased
 
+- 20261027 Learned in `references/version-control-and-review.md`: simulate a cherry-pick with `git merge-tree --merge-base` (no checkout); read a branch list whole (skill-smc `ansible_change_reach`).
 - 20261027 Pattern P-31 "Append-only event ledger, content-derived IDs and approval bound to a body digest" in `references/design-patterns.md` (skill-knowledge-curator v1; reusable_candidate).
 - 20261027 Pattern P-30 "Solve in a canonical frame, then transform the result" in `references/design-patterns.md` (skill-drawio fold; reusable_candidate).
 - 20261027 Learned in `references/refactoring-and-promotion.md` (Moving code): prove a move unchanged with per-file sha256 plus a hash of the CLI output; no shim for an untracked prototype with no callers (skill-goal-guard 1dff9c8; reusable_candidate, owed from the 15:03 session).

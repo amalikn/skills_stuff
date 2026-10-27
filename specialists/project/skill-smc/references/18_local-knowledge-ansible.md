@@ -25,7 +25,7 @@ Summary: >-
 `/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi` is where ansible-wifi work that must not reach the Bitbucket repo is done and kept: governance, investigations, evidence, plans and
 local-only operator playbooks and roles (operator, 2026-10-23). This pack must stay across it:
 
-- At the start of SMC work, run `just local_knowledge_index` (or `scripts/local_knowledge_index.sh --days 3`) to see what is wired in and what changed lately, and read anything new under `playbooks/`,
+- At the start of SMC work, run `just local_knowledge_index` (or `scripts/ansible/local_knowledge_index.sh --days 3`) to see what is wired in and what changed lately, and read anything new under `playbooks/`,
   `roles/`, `evidence/` and `issues/` that bears on the task.
 - When something new is built there (a playbook, a role, a change spec, a script, an evidence set), add it to [Operator tooling built here](#operator-tooling-built-here) or [Layout](#layout) in the same session, with its path and how to run
   it.
@@ -88,7 +88,7 @@ path is `UNVERIFIED` until a canary on warehouse-rct01 with its overlay enabled.
 
 ## Learned
 
-> **Learned 2026-10-23** · local-knowledge wiring · VERIFIED-OBSERVED (`git check-ignore -v`, `scripts/local_knowledge_index.sh`) · Source: ansible-wifi
+> **Learned 2026-10-23** · local-knowledge wiring · VERIFIED-OBSERVED (`git check-ignore -v`, `scripts/ansible/local_knowledge_index.sh`) · Source: ansible-wifi
 > `.git/info/exclude` lines 77-79; local-knowledge-ansible `ansible-wifi/roles/smc_change/` (uncommitted at writing) · Falsifier: a symlink into this folder that `git status` lists as untracked 31
 > paths in the ansible-wifi checkout are symlinks into this folder, all ignored through `.git/info/exclude`; a new local playbook or role follows the same pattern (the role's runs/ records stay in the
 > knowledge repository). No visual surface.

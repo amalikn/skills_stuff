@@ -24,7 +24,7 @@
 #                         sites — confirmed as the correct split live, not guessed)
 #
 # Scope: ONLY the Cambium-specific "which octet does family X live on at site Y" fact. Does NOT duplicate site -> smc-host -> Teleport cluster — that's resolved
-# live from ansible-wifi by skill-smc's scripts/teleport-tunnel.sh, never hardcoded here or there.
+# live from ansible-wifi by skill-smc's scripts/access/teleport-tunnel.sh, never hardcoded here or there.
 #
 # Only add a site/family entry once it has been checked (live ARP, an adapter session, a cnMaestro export, or a combination) — never add a row you haven't
 # verified, and never guess a pattern for an unchecked site by analogy to a checked one. As of 2026-09-18, every site currently known to exist in either fleet

@@ -91,7 +91,7 @@ CATALOGS: dict[str, tuple[str, str]] = {
     "SKILL.md": ("references", "*.md"),
     "AI_NAVIGATION.md": ("references", "*.md"),
     "context-map.yaml": ("references", "*.md"),
-    "scripts/README.md": ("scripts", "*"),
+    "scripts/README.md": ("scripts", "**/*"),
 }
 
 # Files a catalog may legitimately omit (the index itself, generated output, dotfiles).
@@ -203,7 +203,10 @@ def members(folder: str, glob: str) -> list[Path]:
     base = ROOT / folder
     if not base.is_dir():
         return []
-    return sorted(p for p in base.glob(glob) if p.is_file() and not p.name.startswith("."))
+    # Hidden and cache folders (`.ruff_cache/`, `__pycache__/`) are tool output, not members; scripts/ is walked with `**/*`
+    # since its files moved into job folders (2026-10-27), so those must be skipped by path, not only by file name.
+    return sorted(p for p in base.glob(glob) if p.is_file()
+                  and not any(part.startswith(".") or part == "__pycache__" for part in p.relative_to(base).parts))
 
 
 # --------------------------------------------------------------------------------------------------------------- TIER 1
@@ -264,8 +267,11 @@ def check_referenced_paths() -> None:
             # resolves only on a UNIQUE match, so a rename still fails and an ambiguous name is reported rather
             # than silently accepted.
             if "/" not in tok:
+                # Gitignored scratch copies (a staleness audit's Phase 0 snapshot) are not the package: counting them
+                # made every bare name ambiguous for the length of an audit (found 2026-10-27).
                 hits = [h for h in ROOT.rglob(tok)
-                        if not h.relative_to(ROOT).as_posix().startswith((".git/", ".ai-context/", "graphify-out/"))]
+                        if not h.relative_to(ROOT).as_posix().startswith(
+                            (".git/", ".ai-context/", "graphify-out/", ".staleness-audit/", ".staleness-audit-snapshot-"))]
                 if len(hits) == 1:
                     continue
                 if len(hits) > 1:
@@ -375,6 +381,43 @@ def check_version_format() -> None:
             break
 
 
+def check_recipe_interpreter() -> None:
+    """No recipe runs Python through a bare interpreter; every Python recipe goes through {{py}} (the working-cache venv).
+
+    Rule: skills_stuff AGENTS.md (venv + ephemeral runtime placement) and this justfile's own header. Three recipes called
+    `python3` directly until the staleness audit of 2026-10-27 found them; nothing checked it.
+    """
+    bare = re.compile(r"^\s+@?-?\s*(?:python3?|/usr/bin/python3?)\s")
+    for jf in [ROOT / "justfile", *sorted(ROOT.glob("*.justfile")), *sorted((ROOT / "scripts").glob("*.justfile"))]:
+        if not jf.exists():
+            continue
+        rel = jf.relative_to(ROOT).as_posix()
+        counted()
+        for number, line in enumerate(jf.read_text(encoding="utf-8").splitlines(), 1):
+            if bare.match(line):
+                fail("recipe-interpreter", f"{rel}:{number} runs a bare Python interpreter; use {{{{py}}}} and depend on _require-venv")
+
+
+SCRIPTS_ROOT_FILES = frozenset({"README.md", "check_governance.py", "doc-freshness-baseline.json", "role-check-baseline.json"})
+
+
+def check_scripts_layout() -> None:
+    """Scripts sit in job folders; justfiles sit directly under scripts/, never in a job folder.
+
+    Rule: AGENTS.md working rules (operator, 2026-10-27: "Keep the just files under the scripts folder"). Only the governance
+    files and the sub-justfiles may stay at scripts/ itself.
+    """
+    base = ROOT / "scripts"
+    for path in members("scripts", "**/*"):
+        rel = path.relative_to(base)
+        counted()
+        if len(rel.parts) == 1:
+            if path.name not in SCRIPTS_ROOT_FILES and not path.name.endswith(".justfile"):
+                fail("scripts-layout", f"scripts/{rel} sits at scripts/ itself; move it into its job folder (scripts/README.md, Layout)")
+        elif path.name.endswith(".justfile") or path.name == "justfile":
+            fail("scripts-layout", f"scripts/{rel.as_posix()} is a justfile inside a job folder; justfiles stay directly under scripts/")
+
+
 # --------------------------------------------------------------------------------------------------------------- MAIN
 
 CHECKS = (
@@ -383,6 +426,8 @@ CHECKS = (
     check_catalog_coverage,
     check_version_single_source,
     check_version_format,
+    check_recipe_interpreter,
+    check_scripts_layout,
 )
 
 

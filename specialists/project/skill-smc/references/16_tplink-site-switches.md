@@ -1,7 +1,7 @@
 # TP-Link Site Switches — Access, Quirks and Config Capture
 
 The on-site TP-Link switches that sit on a site's management network behind the SMC box. They carry the SMC's VLAN trunks (management, client Wi-Fi, R195P provisioning and the `internetNN` WAN VLANs),
-so they are the "switching layer" that `01_overview.md` refers to. First reached 2026-09-24 at kalumburu. Tooling: `scripts/tplink-switch.sh` and `scripts/tplink_cli_driver.py` (see
+so they are the "switching layer" that `01_overview.md` refers to. First reached 2026-09-24 at kalumburu. Tooling: `scripts/switch/tplink-switch.sh` and `scripts/switch/tplink_cli_driver.py` (see
 `scripts/README.md`).
 
 ## Contents
@@ -92,7 +92,7 @@ Workstation -> `tsh ssh --proxy=<cluster> root@<site>-smc01` -> `ssh admin@<swit
 | Banner order    | The server sends its version banner only after the client's                                                            | Send `SSH-2.0-...\r\n` first when probing |
 
 Kex and cipher are not an issue: `diffie-hellman-group16-sha512` and `aes128-ctr` negotiate by default. Telnet (tcp/23) is refused; HTTPS (tcp/443) is open for the web UI, reachable with
-`scripts/teleport-tunnel.sh <site> <switch_ip> <port> 443`. Plain HTTP on 80 gave no answer.
+`scripts/access/teleport-tunnel.sh <site> <switch_ip> <port> 443`. Plain HTTP on 80 gave no answer.
 
 ## Privilege: enable with and without a password
 
@@ -117,7 +117,7 @@ flooded the neighbour table with thousands of `INCOMPLETE` entries. Without `fpi
 
 ## Config capture
 
-`scripts/tplink-switch.sh <site> <ip> --backup <dir>` runs `show system-info` and `show running-config`, redacts every `password`/`secret`/`community`/`key`/`passphrase`/`psk` value, refuses to write
+`scripts/switch/tplink-switch.sh <site> <ip> --backup <dir>` runs `show system-info` and `show running-config`, redacts every `password`/`secret`/`community`/`key`/`passphrase`/`psk` value, refuses to write
 if the known login or enable password survives, and writes `<dir>/<site>/<system-name>_<ip>_<YYYYMMDD_hhmm>.cfg` with the system-info as a `!` comment header. The paging prompt (`Press any key to
 continue`) is answered automatically. Unified-network-controller keeps these as durable, git-tracked samples under `captures/tplink-switch-configs/` (operator, 2026-09-24): capture each switch's
 config as each site is visited. The trap host's community name is redacted with the community line (2026-09-30).
@@ -196,7 +196,7 @@ discovery: {ssh_banner: [TPSSH, IPSSH], family: tplink-switch}
 ```
 
 **Update 2026-10-14 (VERIFIED_PRIMARY for one site, read-only login):** wandawuy (nbn_accelerate) has two hosts at 10.255.0.2 and 10.255.0.3, OUI `98:25:4A`, banner `SSH-1.99-IPSSH-6.6.0`.
-`scripts/tplink-switch.sh wandawuy <ip> --backup` logged in to both with the `/Network/tplink switch` entry (`enable-no-password`): TP-Link SG2428P, firmware 5.20.0 Build 20230818 Rel.72032, system
+`scripts/switch/tplink-switch.sh wandawuy <ip> --backup` logged in to both with the `/Network/tplink switch` entry (`enable-no-password`): TP-Link SG2428P, firmware 5.20.0 Build 20230818 Rel.72032, system
 names `Wan-sw01` and `Wan-sw02`. So `IPSSH` is at least this SG2428P firmware's banner; the other OUIs above stay unconfirmed. UNC's onboarding switch stage needs a capture for every switch, which a
 site never surveyed lacks: take one with `--backup` first (arawerr's dated from the 2026-09-30 survey, wandawuy had none).
 

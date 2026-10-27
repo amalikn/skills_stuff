@@ -9,7 +9,7 @@
 # watch mode polls the bastion's listener and prints one line per UP/DOWN change.
 #
 # Usage:
-#   scripts/backdoor-watch.sh <site|smc-host> [check|history|watch]
+#   scripts/access/backdoor-watch.sh <site|smc-host> [check|history|watch]
 #
 #   check    (default) is the port listening on the bastion right now
 #   history  per-day count of "cannot listen to port: <port>" in the bastion's auth logs; these

@@ -35,32 +35,32 @@ check-login:
 # PATH NOTE (fixed 2026-08-03, found via dogfooding after the first real fleet run): `just -f
 # <path>` runs every recipe with its working directory set to the JUSTFILE'S OWN DIRECTORY
 # (scripts/), not the invoker's cwd and not skill-smc root. Since collect-fleet-health.sh writes
-# evidence/ into its parent dir by default (REPO_ROOT resolves from the *script's* location, one
-# level up from scripts/), every recipe below must say `./collect-fleet-health.sh` (sibling file,
-# same dir as this justfile) and `../evidence` (one level up) — NOT `./scripts/...` or bare
+# evidence/ into the pack root by default (REPO_ROOT resolves from the *script's* location, two
+# levels up from scripts/<folder>/), every recipe below must say `./<folder>/<script>` (scripts sit in job
+# folders under this justfile's dir since 2026-10-27) and `../evidence` (one level up) — NOT `./scripts/...` or bare
 # `evidence`, both of which silently resolved to a nonexistent path and failed with a misleading
 # "no captures yet" on the very first real run of this file.
 
 # Capture hardware + service-health evidence from the full NBN Accelerate fleet (28 sites, ~6 ssh round-trips each)
 collect: check-login
-    ./collect-fleet-health.sh {{sites}}
+    ./fleet/collect-fleet-health.sh {{sites}}
 
 # Capture from named sites only, e.g. just -f fleet-health.justfile collect-sites "warakurna indulkana"
 collect-sites sites: check-login
-    ./collect-fleet-health.sh {{sites}}
+    ./fleet/collect-fleet-health.sh {{sites}}
 
-# Pin validity (mangle) + activation-log audit (added 2026-09-11, see ../references/14_pin-activation-diagnosis.md) across the full fleet
+# Pin validity (mangle) + activation-log audit (added 2026-09-11, see ../../references/14_pin-activation-diagnosis.md) across the full fleet
 pin-audit: check-login
-    ./audit-pin-activation.sh {{sites}}
+    ./capture/audit-pin-activation.sh {{sites}}
 
 # Pin audit against named sites only, e.g. just -f fleet-health.justfile pin-audit-sites "hope-vale kowanyama"
 pin-audit-sites sites: check-login
-    ./audit-pin-activation.sh {{sites}}
+    ./capture/audit-pin-activation.sh {{sites}}
 
 # Per-pin activation timeline (IP + MAC + lease window + live status) for one site, e.g.
 # just -f fleet-health.justfile pin-correlate "bungardi"
 pin-correlate sites: check-login
-    ./correlate-pin-activation.sh {{sites}}
+    ./capture/correlate-pin-activation.sh {{sites}}
 
 # List captures held locally
 list-captures:
@@ -118,7 +118,7 @@ chassis-models:
       printf '%-24s %s\n' "$host" "$model"
     done
 
-# Which hosts in the latest capture still have the portal-FQDN regression live (deny_info pointing at the Teleport hostname instead of the real portal domain) — added 2026-09-11, see ../references/13_known-issues.md and ../references/14_pin-activation-diagnosis.md
+# Which hosts in the latest capture still have the portal-FQDN regression live (deny_info pointing at the Teleport hostname instead of the real portal domain) — added 2026-09-11, see ../../references/13_known-issues.md and ../../references/14_pin-activation-diagnosis.md
 portal-fqdn-check:
     #!/usr/bin/env bash
     latest=$(find ../evidence -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
@@ -141,32 +141,32 @@ portal-fqdn-check:
 
 # Per-site reboot / dark-boot / WAN-gap timeline, e.g. just -f fleet-health.justfile stability-timeline 90 'flavor="wh"'
 stability-timeline days="90" selector='flavor="wh"':
-    {{py}} fleet-reboot-timeline.py {{days}} '{{selector}}'
+    {{py}} ./metrics/fleet-reboot-timeline.py {{days}} '{{selector}}'
 
 # Per-site resource / overlay / watchdog CSV
 stability-profile selector='flavor="wh"' window="90d":
-    {{py}} fleet-resource-profile.py '{{selector}}' {{window}}
+    {{py}} ./metrics/fleet-resource-profile.py '{{selector}}' {{window}}
 
 # Metrics in the hours before a site went dark (last_seen from stability-timeline, AEDT)
 predark site last_seen hours="8":
-    {{py}} predark-snapshot.py {{site}} '{{last_seen}}' {{hours}}
+    {{py}} ./metrics/predark-snapshot.py {{site}} '{{last_seen}}' {{hours}}
 
 # [read-only] APN Graylog at every layer: AWS targets, services enabled at boot, ports, Data Node, indexer health, AWS events
 graylog-health:
-    ./graylog-health.sh
+    ./metrics/graylog-health.sh
 
 # Pi undervoltage events from Graylog kern.log (mode: daily|hourly)
 undervoltage site from to mode="daily":
-    {{py}} undervoltage-profile.py {{mode}} {{site}} {{from}} {{to}}
+    {{py}} ./metrics/undervoltage-profile.py {{mode}} {{site}} {{from}} {{to}}
 
 # What fills the overlayroot tmpfs upper layer on the given hosts
 overlay-breakdown +hosts:
-    ./overlay-usage-breakdown.sh {{hosts}}
+    ./probes/overlay-usage-breakdown.sh {{hosts}}
 
 # Per-interface traffic around an outage; pass --gap '<last_seen>' '<back>' for counter deltas across it
 vlan-traffic site +args:
-    {{py}} vlan-traffic-timeline.py {{site}} {{args}}
+    {{py}} ./metrics/vlan-traffic-timeline.py {{site}} {{args}}
 
 # RCT: TSTIK snapshot, power-reset history and eth0 link log (read-only). WAIT_UP=1 to wait for the box to reconnect
 tstik-capture host outdir="":
-    ./tstik-capture.sh {{host}} {{outdir}}
+    ./capture/tstik-capture.sh {{host}} {{outdir}}

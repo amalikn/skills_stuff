@@ -23,7 +23,7 @@ writes, no git changes. Two-directional check:
     is checked against what netplan actually defines for that box.
   * box -> topology: every VLAN netplan defines with a `macaddress:` line (i.e. rendered as
     `role: internet`/`nbn-modem` at template time — the deterministic-render signal documented in
-    `../references/03_communication-flows.md`) is checked for a matching topology_vars entry.
+    `../../references/03_communication-flows.md`) is checked for a matching topology_vars entry.
 
 Usage
     ./analyse-topology-interface-match.py <site>                       # newest capture
@@ -38,7 +38,7 @@ import re
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 ANSIBLE_REPO = Path("/Volumes/Data/_ansible/ansible-wifi")
 
 # Known SMC hardware models in this fleet and the physical NIC naming scheme each uses. Extend

@@ -108,6 +108,22 @@ Why: in `check | tail -1 && git commit`, the pipeline's status is `tail`'s, so a
 a failed backup (operator lesson `feedback_gate_on_check_exit_code`). `set -o pipefail` also works in Bash: it makes a pipeline's status that of the last command to fail (VERIFIED_PRIMARY, Bash
 manual).
 
+> **Learned 2026-10-27** · git 2.40+ · VERIFIED_PRIMARY · Source: skill-smc `scripts/ansible/ansible_change_reach.py` `cherry_pick_state`, offline test
+> `test_ansible_change_reach.py` (clean and conflict cases) · Falsifier: a `merge-tree` exit 0 for a commit whose `git cherry-pick` conflicts
+> "Is this fix on the deploy branch, and would it apply?" is answered without a checkout: `git merge-base --is-ancestor <c> <branch>` for reach, and
+> `git merge-tree --write-tree --merge-base <c>^ <branch> <c>` simulates the cherry-pick in the object store (exit 0 clean, 1 conflict, other =
+> unknown, e.g. git older than 2.40). A list of branches holding a commit is read whole: a `| head -3` on `git branch --contains` once hid the
+> pushed remotes and a report said "not pushed".
+>
+> ```python
+> code, _out, err = run(["git", "merge-tree", "--write-tree", "--merge-base", f"{commit}^", base, commit], repo)
+> if code == 0:
+>   return "clean"
+> if code == 1:
+>   return "conflict"
+> return f"unknown: {err.strip().splitlines()[0] if err.strip() else f'exit {code}'}"
+> ```
+
 ## Change logs and versions
 
 - Every change that alters governance, navigation, behaviour or a repeated job's runtime gets a change-log entry; a repeated job's entry carries its measured runtime. Why: the log is the project's

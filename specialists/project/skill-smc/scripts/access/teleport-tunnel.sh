@@ -11,11 +11,11 @@
 # 01_overview.md's split table), not per-site data ansible-wifi's inventory encodes directly.
 #
 # Usage:
-#   scripts/teleport-tunnel.sh <site> <target_ip> [local_port] [target_port] [duration_seconds]
+#   scripts/access/teleport-tunnel.sh <site> <target_ip> [local_port] [target_port] [duration_seconds]
 #
 # Examples:
-#   scripts/teleport-tunnel.sh hope-vale 10.255.3.1 20001 443 120     # a Cambium XV2's web UI
-#   scripts/teleport-tunnel.sh burringurrah 10.255.11.45              # defaults: port 20000/443/120s
+#   scripts/access/teleport-tunnel.sh hope-vale 10.255.3.1 20001 443 120     # a Cambium XV2's web UI
+#   scripts/access/teleport-tunnel.sh burringurrah 10.255.11.45              # defaults: port 20000/443/120s
 #
 # Defaults: local_port=20000, target_port=443, duration_seconds=120.
 # Prints the localhost URL to use once the tunnel is confirmed listening, then blocks for

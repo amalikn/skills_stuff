@@ -25,9 +25,9 @@
 # Concurrency defaults low: these sites sit on constrained, sometimes satellite, backhaul.
 #
 # Usage:
-#   scripts/install_packages.sh --packages snmp --verify snmpget --dry-run
-#   scripts/install_packages.sh --packages snmp --verify snmpget
-#   scripts/install_packages.sh --packages "tcpdump mtr" --verify tcpdump --flavours rcp
+#   scripts/fleet/install_packages.sh --packages snmp --verify snmpget --dry-run
+#   scripts/fleet/install_packages.sh --packages snmp --verify snmpget
+#   scripts/fleet/install_packages.sh --packages "tcpdump mtr" --verify tcpdump --flavours rcp
 set -uo pipefail
 
 PACKAGES=""

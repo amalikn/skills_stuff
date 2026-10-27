@@ -8,7 +8,10 @@ Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Rec
 Open items tracker: docs/trackers/open-items-20261010_1821.md
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261026_1516
+Last rotated: 20261027_2015
+Authority: working-state
+Scope: Working state between sessions
+Last reviewed: 2026-10-27
 ---
 
 # SCRATCHPAD — skill-smc
@@ -52,6 +55,9 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 
 ## Current state
 
+**2026-10-27 KEEP, v0.9.0:** tracker reviewed; first staleness audit (`docs/audits/`): July apt fixes, url_capture v2 and `smc_ltp` `17583da3` are not on
+`rise` (diverged from `rise-multi` 2025-12-09); `just ansible_change_reach <commit>` checks any fix. `scripts/` arranged by job; checks 544/544.
+
 **2026-10-26 KEEP, v0.7.9, branch rise:** PHP verified; journal/resume/timing implemented; tests passed. Mutating interruption canary pending; optimize after timings. See reference 19.
 
 **2026-10-07 16:43 `KEEP` — v0.1.100 (renumbered 0.2.0 at 16:45 under the new 0–9 patch rule), layout parity with skill-cambium / skill-mikrotik.** Root `justfile` (`just bootstrap` once, then `just check`, `just nav_validate`,
@@ -63,7 +69,7 @@ scripts, sibling-repo paths, unrelated-software version numbers) were traced and
 `references/08_ansible-authoring.md`. Metadata version: 0.1.80. Evidence branch: `unc-virtual-smc-malik-rcp01`, clean production tree at start. No implementation or live changes. Open decisions:
 authoritative `generic-big01` DHCP baseline, integration path and runnable tool comparison. Prior KEEP entries below remain historical; this entry does not resolve unrelated open items.
 
-**2026-09-24 (12:25) `KEEP` — v0.1.54: TP-Link site switches and the SMC neighbour table.** New `references/16_tplink-site-switches.md` and `scripts/tplink-switch.sh` +
+**2026-09-24 (12:25) `KEEP` — v0.1.54: TP-Link site switches and the SMC neighbour table.** New `references/16_tplink-site-switches.md` and `scripts/switch/tplink-switch.sh` +
 `tplink_cli_driver.py` (kalumburu switches reached; read-only default, fping discovery on `bridge_500` only, redacted `--backup`). `13_known-issues.md` records `gc_thresh` 1/512/1024 on the SMCs
 and mornington's 2,230 `table_fulls`, with a 16384/4096/1024 proposal (not applied). Commits `d5566c2`, `8db6d56` not pushed. Two pre-existing governance failures remain (SKILL.md
 `smc_collect.py` path, `08_ansible-authoring.md:526` split path).
@@ -102,17 +108,14 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Open items
 
-- [ ] **Review the overdue open-items tracker** (2026-10-26). `docs/trackers/open-items-20261010_1821.md` (13 open items) was due 2026-10-24;
-  `just check` fails on it alone. Operator chose to commit and review later: close, decide or drop each item, then set Last reviewed.
+- [ ] **2026-10-27 `KEEP`, proposed, not decided:** `updated_at` format — the version rule says `YYYYMMDD_hhmm`, the manifest uses `YYYY-MM-DD`; no check.
+- [ ] **2026-10-27 `KEEP`, proposed, not decided:** drop tracker items 5 (inventory enforcement check) and 10 ("validate 13_known-issues").
+- [ ] **2026-10-27 `KEEP`, operator's branch-merge work:** `0c51cb1`, `4889af8`, `c19a61fa`, `17583da3` not on `rise`; 25 `rise-multi` commits unpushed.
 - Older open items are tracked in [open-items-20261010_1821.md](docs/trackers/open-items-20261010_1821.md).
-- [ ] **2026-10-08 `KEEP`, proposed, not decided:** extend the 0–9 patch scheme (operator rule 2026-10-07, skill-smc only so far) to skill-cambium (0.6.45) and
-  skill-mikrotik (0.1.24), each with `check_version_format`. Asked 2026-10-07, no answer yet.
 - [x] **2026-10-07 `KEEP`:** commit `fbc0aff` is labelled "skill-smc 0.1.98" but committed manifest 0.1.99. Closed 2026-10-08: pushed, so it stays as a known
   mislabel; CHANGELOG 20261007_1625 records the real content.
 - [x] **2026-10-07 `KEEP`:** ~~skill-ai-it's upgrader appends its CHANGELOG entry at the end~~ — fixed upstream in `cc0fa32` (2026-10-07 21:26): it now places the entry by
   the file's order. Closed 2026-10-08.
-
-- [x] ~~Regenerate `.ai-context/governance-pack.md` after today's content + governance changes~~ — done, regenerated 3× today as content landed in stages
 
 ---
 
@@ -155,6 +158,8 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Session history (summaries)
 
+- **2026-10-27 (19:37-20:15) — Tracker review, staleness audit, scripts by job (v0.8.7 -> v0.9.0).** Branch-reach findings in refs 08/09/13;
+  `ansible_change_reach` probe; checker gaps closed; four recipes onto the venv; scripts in job folders, callers in four other repos updated.
 - **2026-10-07 (16:37) — Layout parity with the newer project packs (v0.1.99 -> v0.1.100).** Root `justfile`, `.mise.toml`, lint config, `.gitignore`, Archcore index added;
   `SKILL.md` slimmed to the cambium/mikrotik shape with SKILL-only facts moved into references 03/05/08; profile, system prompt and exports adapter retired.
 - **2026-10-07 (16:25) — skill-ai-it refresh (v0.1.98 -> v0.1.99).** `AGENTS.md` and `scripts/README.md` managed blocks upgraded to `2026-09-23-template-sourced-blocks-v1`;
@@ -164,21 +169,16 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 - On a new machine: `ln -s` the pack to `~/.claude/skills/skill-smc`, then `just bootstrap`; run `just check` and `just nav_validate` before calling any change done.
 - New reference file: update the four index surfaces (`RUNBOOK.md`, `SKILL.md`, `AI_NAVIGATION.md`, `context-map.yaml`); the checker fails until all four name it.
-- Cross-reference the RW-backlog dashboards against `autossh-prometheus-federation` in `02_service-map.md` once reviewed — may reveal federation-pipeline health signals not currently documented
-- Re-check `nbn_wh` overlayroot status after the operator's planned rollout lands
-- `cw` flavor still has no site-level hosts to check (central-infra only); `aurukun-smc03` still unreachable — note if either changes
-- Resolve the smc_ltp/generic-cnmaestro-provisioning naming-collision question flagged in `04_dependency-tree.md`
-- Re-check the two unimplemented design recommendations (bonding, DNS resolved_stub) and the apt-lock-race duplicate-fix question next time this pack or ansible-wifi is touched
-- On next ansible-wifi (or local-knowledge-ansible/ansible-wifi subfolder) session: invoke skill-smc first; both `skill-slurp-chat` and `project-coherence` must now check for unpromoted knowledge
-  before closing out (broadened rule, 2026-07-31)
-- Next time one of the 7 `smc_ltp` sites (`guda-guda`, `pandanus-park`, `old-looma`, `new-looma`, `warburton`, `beagle-bay`, `umoona`) is accessed via `tsh ssh`, live-validate the
-  CNMaestro-provisioning and bind9/RPZ-DNS-switch documentation in `08_ansible-authoring.md` "smc_ltp Sub-Group"
-- Confirm the `inventories/rcp/prod` `smc_ltp` group change gets committed in `ansible-wifi` and actually run against `warburton`/`beagle-bay`/`umoona` — currently a verified-but-uncommitted
-  file-level change
+- Before a `smc_system`, `smc_node_exporter` or `smc_url_capture` run from `rise`, or the `smc_ltp` play for warburton/beagle-bay/umoona:
+  `just ansible_change_reach 0c51cb1 4889af8 c19a61fa 17583da3` (deferred to the branch-merge work, operator 2026-10-27)
 
 ---
 
 ## Memory pointers (navigation only)
+
+- 2026-10-27: memory-keeper `skill-smc.progress.tracker-review-20261027`, `skill-smc.finding.smc-ltp-not-on-rise-20261027`; project-context
+  `0bf38158` note + decision (cherry-pick deferred); 20:15 keys `skill-smc.progress.staleness-audit-20261027`, `skill-smc.decision.scripts-layout-by-job-20261027`,
+  `skill-smc.open.proposals-20261027`; checkpoint `slurp-20261027-skill-smc-audit-scripts-layout` (memory-keeper `cabebace`, project-context `1c938492`). `KEEP`
 
 - 2026-10-08 14:27: memory-keeper `skill-smc.progress.slurp-delta-20261008`; project-context `0bf38158` note; checkpoint `slurp-20261008-skill-smc-version-delta`
   (memory-keeper `84ffcf40`, project-context `f07a8367`). `KEEP`

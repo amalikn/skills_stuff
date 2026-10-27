@@ -296,7 +296,7 @@ sitting in that band with syslog/squid/mosquitto on top is behaving normally, no
 ### NBN Accelerate / NBN WH Hardware Inventory (first live fleet sweep, 2026-08-03)
 
 No live hardware inventory existed for this cluster before this sweep — everything below is from direct `tsh ssh` capture against all 26 reachable `nbn_accelerate` hosts plus both `nbn_wh` hosts (28
-total, `aurukun-smc03` unreachable at capture time), via `scripts/collect-fleet-health.sh`. **`nbn_wh` is the operator-confirmed `wh`-flavor equivalent on this cluster** — compare it against the
+total, `aurukun-smc03` unreachable at capture time), via `scripts/fleet/collect-fleet-health.sh`. **`nbn_wh` is the operator-confirmed `wh`-flavor equivalent on this cluster** — compare it against the
 `rct`/`wh` row in the platform table above, not against `nbn_accelerate`'s x86 baseline.
 
 | Chassis                               | Count | CPU                    | RAM   | Storage                                                         | Flavor           | Kernel                         |
@@ -930,7 +930,7 @@ Full analysis, evidence and tests live in the cambium-swap project; do not dupli
 ## What fills the WH overlay tmpfs, and the fixes (laramba, mimbi, canteen-creek, 2026-10-07)
 
 The upper layer is a 3.9–4.1 GB tmpfs. Daily `rise_watchdog_disk_used_pct` climbs 3–5 points a day (~120–200 MB) until a reboot, or until the watchdog's 70% cleanup holds it at 65–74%.
-`scripts/overlay-usage-breakdown.sh` (read-only) measured:
+`scripts/probes/overlay-usage-breakdown.sh` (read-only) measured:
 
 | Consumer          | laramba | mimbi   | canteen-creek | Cause                                                                                                                                        |
 | ----------------- | ------- | ------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1003,7 +1003,7 @@ lsblk -bdno NAME,SIZE /dev/mmcblk0
 
 Screenshot: not applicable (no visual surface).
 
-**Probe.** [`scripts/pi_identity_probe.sh`](../scripts/pi_identity_probe.sh) (`just pi_identity_probe <proxy> <node>...`) reads all of the above in one read-only pass: device-tree model and serial,
+**Probe.** [`scripts/probes/pi_identity_probe.sh`](../scripts/probes/pi_identity_probe.sh) (`just pi_identity_probe <proxy> <node>...`) reads all of the above in one read-only pass: device-tree model and serial,
 cpuinfo, dmidecode, os-release, NICs with MAC, driver and speed, bridges, VLANs and memory. Name the proxy; it is never guessed.
 
 **SNMP.** No `snmpd` on any of the four (20-mile has only the net-snmp client package, `snmp` 5.9.1). The root is overlayroot, so a plain `apt install snmpd` would vanish at the next reboot (section
@@ -1104,8 +1104,8 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 
 ## Firmware access from the OS: x86 UEFI and Pi EEPROM (read 2026-10-22)
 
-Read-only over Teleport with `scripts/x86_resiliency_probe.sh` (UEFI lines added 2026-10-22) on all 47 x86 SMCs (19 rcp, 28 nbn_accelerate) and
-`scripts/pi_identity_probe.sh` (EEPROM lines added 2026-10-22) on six Pi canaries (rct, wh, nbn_wh, both clusters). `VERIFIED_PRIMARY` for that day;
+Read-only over Teleport with `scripts/probes/x86_resiliency_probe.sh` (UEFI lines added 2026-10-22) on all 47 x86 SMCs (19 rcp, 28 nbn_accelerate) and
+`scripts/probes/pi_identity_probe.sh` (EEPROM lines added 2026-10-22) on six Pi canaries (rct, wh, nbn_wh, both clusters). `VERIFIED_PRIMARY` for that day;
 raw output in smc-resiliency `docs/os-lifecycle/firmware-access-probe-sources-20261022_1506/`.
 
 | Model | BIOS builds in service (boxes) | ESRT capsule entry | ROM |
@@ -1122,7 +1122,7 @@ raw output in smc-resiliency `docs/os-lifecycle/firmware-access-probe-sources-20
   `BOOT_ORDER`, no `BOOT_WATCHDOG_TIMEOUT`), `autoboot.txt` absent, BCM2835 watchdog present. `rpi-eeprom-update` reports the bundled image as
   2022-01-25, older than the running EEPROM, so a box cannot update its EEPROM from its own package: a newer EEPROM has to come with the card.
 
-The probes' remote lines (excerpt; source `scripts/x86_resiliency_probe.sh`, `scripts/pi_identity_probe.sh`, as of commit of 2026-10-22; version in `manifest.json`):
+The probes' remote lines (excerpt; source `scripts/probes/x86_resiliency_probe.sh`, `scripts/probes/pi_identity_probe.sh`, as of commit of 2026-10-22; version in `manifest.json`):
 
 ```bash
 echo uefi_mode=$([ -d /sys/firmware/efi ] && echo uefi || echo legacy) efivars=$(findmnt -n -o OPTIONS /sys/firmware/efi/efivars 2>/dev/null | cut -d, -f1)

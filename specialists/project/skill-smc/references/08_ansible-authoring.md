@@ -49,7 +49,7 @@ For any SMC incident/debug fix in `ansible-wifi` that changes behavior, defaults
 
 ### Adding a new SMC to an inventory (operator, 2026-10-23)
 
-Use `scripts/smc_inventory_add.py` (`just smc_inventory_add ...`), plan first, then `--apply`. Do not hand-copy another site's files.
+Use `scripts/ansible/smc_inventory_add.py` (`just smc_inventory_add ...`), plan first, then `--apply`. Do not hand-copy another site's files.
 Every site, prod or stage, is the same six pieces (VERIFIED_PRIMARY, `inventories/rct/prod` arrkapa and every other site, 2026-10-23):
 
 | Piece                                    | Content                                                                  |
@@ -77,7 +77,7 @@ Every site, prod or stage, is the same six pieces (VERIFIED_PRIMARY, `inventorie
 - Reading inventory vars from a shell trips the ansible-vars guard hook (`ansible-inventory --host`, `cat`/`cp`/`diff` on a vars file). Read single
   keys with `ansible -i <inv> <host> -m ansible.builtin.debug -a "msg={{ site_name }}"`, or compare with `cmp -s`.
 
-Insertion logic (`scripts/smc_inventory_add.py` in this pack):
+Insertion logic (`scripts/ansible/smc_inventory_add.py` in this pack):
 
 ```python
 lines = text.split("\n")
@@ -470,6 +470,12 @@ status.json/graylog-sidecar/journald fixes were rolled out — not the `apt_info
 **Applies to:** All Ubuntu SMC flavors (rcp, rct, wh) via `when: os_distribution == 'Ubuntu'` — same `smc_system` role, shared across flavors via `smc_bases.yml`. Deployed live to all 12/12 rcp nodes
 (2026-07-15, ansible-wifi commit `0c51cb1`); **not yet rolled to rct/wh** — same gap exists there too, but that's outside the smc-file-writing-analysis project's scope. Worth flagging to whoever owns
 that flavor.
+
+**Branch reach, checked 2026-10-27 (`just ansible_change_reach 0c51cb1 4889af8`):** neither commit is on `rise` or `origin/rise` (ansible-wifi
+67a44aa3); both sit on `rise-multi` and other side branches. The 2026-07-15 rollout was live, so the 12 rcp boxes keep the mask and the patched
+`apt_info.py` until a play redeploys them, but `rise` has no mask task and its `roles/smc_node_exporter/files/apt_info.py` still calls
+`cache.update()` on every run. A `smc_system` or `smc_node_exporter` run from `rise` brings the 5-minute `apt update` back; a new box built from
+`rise` never gets the mask. Treat both as unmerged until the pending branch merge lands.
 
 **Validation:**
 ```bash
@@ -1288,13 +1294,13 @@ ansible-inventory -i inventories/<flavor>/prod --playbook-dir . --host <site>
 ansible-playbook -i inventories/<flavor>/prod --syntax-check smc_bases.yml
 
 # Lint baseline refresh (regenerate .git/.ansible-lint-ignore from current violations)
-scripts/lint-baseline-refresh.sh
+scripts/ansible/lint-baseline-refresh.sh
 
 # Lint delta gate (fail only on NEW violations in changed files/lines — used by pre-push hook)
-scripts/ansible-lint-delta-gate.sh <changed-file1> <changed-file2> ...
+scripts/ansible/ansible-lint-delta-gate.sh <changed-file1> <changed-file2> ...
 ```
 
-Both lint scripts above are promoted, generalized copies at `skill-smc/scripts/lint-baseline-refresh.sh` and `skill-smc/scripts/ansible-lint-delta-gate.sh` — see `skill-smc/scripts/README.md` for the
+Both lint scripts above are promoted, generalized copies at `skill-smc/scripts/ansible/lint-baseline-refresh.sh` and `skill-smc/scripts/ansible/ansible-lint-delta-gate.sh` — see `skill-smc/scripts/README.md` for the
 full mechanism (baseline-ignore file format, changed-line detection, why pre-existing violations in untouched lines are not blocking).
 
 ### Pre-push gate: four stages, three different rule sets (established 2026-08-18)

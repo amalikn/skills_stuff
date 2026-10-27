@@ -12,7 +12,7 @@
 # that silently evaporates.
 #
 # Usage:
-#   scripts/survey_snmp_tooling.sh [--workers N]
+#   scripts/fleet/survey_snmp_tooling.sh [--workers N]
 # Output: one TSV line per box — site, node, proxy, snmpget, overlayroot, os
 set -uo pipefail
 

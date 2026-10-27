@@ -26,7 +26,7 @@
 
 set -uo pipefail
 
-REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 STAMP="$(date '+%Y%m%d_%H%M')"
 OUTDIR="${REPO_ROOT}/evidence/${STAMP}"
 SSH_USER="${SMC_SSH_USER:-root}"
@@ -59,7 +59,7 @@ CAPTURES=(
   # Hardware model matters: this fleet mixes at least two SMC chassis (e.g. BOXER-6404,
   # BOXER-6641) with different physical NIC naming schemes. topology_vars can silently assume the
   # wrong one for a given site's actual hardware — see analyse-topology-interface-match.py and the
-  # "Mandatory pre-check" note in ../references/08_ansible-authoring.md, added after a live New
+  # "Mandatory pre-check" note in ../../references/08_ansible-authoring.md, added after a live New
   # Looma bug (2026-07-30 APN routing-issue investigation) where topology_vars named a WAN
   # interface after a NIC that only exists on a different chassis model.
   "dmidecode-model:dmidecode -s system-product-name 2>/dev/null"
@@ -116,7 +116,7 @@ MANIFEST="${OUTDIR}/MANIFEST.txt"
   echo "captured_by: $(whoami)"
   echo "cluster:     $(tsh status 2>/dev/null | awk '/Cluster:/ {print $2}')"
   echo "ssh_user:    ${SSH_USER}"
-  echo "mode:        read-only (see SAFETY CONTRACT in scripts/collect-smc-evidence.sh)"
+  echo "mode:        read-only (see SAFETY CONTRACT in scripts/capture/collect-smc-evidence.sh)"
   echo "hosts:       ${hosts[*]}"
   echo ""
   echo "## captures"

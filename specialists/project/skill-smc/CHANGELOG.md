@@ -6,13 +6,21 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_1923
+Last rotated: 20261027_2015
+Authority: record
+Scope: Dated changes to this project
+Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261027_2015 — Slurp close: governed-file adoption, sibling write-backs (v0.9.0 -> v0.9.1)](#20261027_2015--slurp-close-governed-file-adoption-sibling-write-backs-v090---v091)
+- [20261027_2012 — scripts/ arranged into job folders; layout and catalogue checks (v0.8.9 -> v0.9.0)](#20261027_2012--scripts-arranged-into-job-folders-layout-and-catalogue-checks-v089---v090)
+- [20261027_1953 — Staleness audit: branch reach, two checker gaps, version rule (v0.8.8 -> v0.8.9)](#20261027_1953--staleness-audit-branch-reach-two-checker-gaps-version-rule-v088---v089)
+- [20261027_1947 — ansible_change_reach probe; July apt fixes and smc_ltp fix not on rise (v0.8.7 -> v0.8.8)](#20261027_1947--ansible_change_reach-probe-july-apt-fixes-and-smc_ltp-fix-not-on-rise-v087---v088)
+- [20261027_1937 — Open-items tracker reviewed (v0.8.6 -> v0.8.7)](#20261027_1937--open-items-tracker-reviewed-v086---v087)
 - [20261027_1922 — Quoted code excerpt restored after a markdown hook bug (v0.8.5 -> v0.8.6)](#20261027_1922--quoted-code-excerpt-restored-after-a-markdown-hook-bug-v085---v086)
 - [20261027_1459 — smc_change self-repair, kohana cron_job, lockstep timing; link health probe (v0.8.4 -> v0.8.5)](#20261027_1459--smc_change-self-repair-kohana-cron_job-lockstep-timing-link-health-probe-v084---v085)
 - [20261027_1207 — Teleport re-join without a tunnel; first rcp PHP apply (v0.8.3 -> v0.8.4)](#20261027_1207--teleport-re-join-without-a-tunnel-first-rcp-php-apply-v083---v084)
@@ -26,13 +34,58 @@ Last rotated: 20261027_1923
 - [20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)](#20261026_1506--smc_change-flow-map-in-parts-one-e2e-page-per-change-spec-v075---v076)
 - [20261023_1737 — smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)](#20261023_1737--smc_change-on-an-overlay-pi-close-after-restart-overlay_fallback-proves-soak_minutes-tstik-bench-note-identity-probe-hosts_name-v074---v075)
 - [20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)](#20261023_1625--smc_inventory_addpy-add-a-new-smc-to-an-inventory-without-guessing-v073---v074)
-- [20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)](#20261023_1536--smc_change-rollback-mode-and-done-tracking-root-linters-for-every-language-v072---v073)
-- [20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)](#20261023_1455--smc_change-generic-role-probe-split-per-check-cleanup-skip-unreachablerefused-stages-ruff-root-config-v071---v072)
-- [20261023_1351 — backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1)](#20261023_1351--backdoor-watchsh-resolves-stage-hosts-smc_change-command-guard-v070---v071)
-- [20261023_1339 — Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)](#20261023_1339--local-knowledge-folder-reference-and-index-script-php-verification-by-mapped-files-smc_change-role-recorded-v069---v070)
-- [20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)](#20261022_1718--evidence-capture-timeouts-reported-as-such-full-capture-timing-end-marker-fix-v068---v069)
-- [20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)](#20261022_1703--evidence-scripts-a-deadline-on-every-tsh-call-with-an-offline-test-v067---v068)
-- [20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)](#20261022_1653--asterisk-memory-measured-on-the-rcp-fleet-umoona-still-without-asterisk-evidence-script-lacks-a-tsh-deadline-v066---v067)
+
+## 20261027_2015 — Slurp close: governed-file adoption, sibling write-backs (v0.9.0 -> v0.9.1)
+
+- skill-ai-it `adopt_governed_files.py --apply`: recipes `roles`, `govern`, `budget`, `changelog-entry`, `move-sections`, `outline`, `section`; file roles
+  in `check`; front matter on `README.md`, `AGENTS.md`, `AI_NAVIGATION.md`, `ARCHITECTURE.md`, `CHANGELOG.md`, `SCRATCHPAD.md`; `scripts/role-check-baseline.json`
+  (kept at `scripts/` with the other baselines; `check_scripts_layout` allows it).
+- Write-backs: skill-staleness-audit (`inverse_sweep.py` `(+ .txt)` twins, two tool hazards), skill-coder (Learned: cherry-pick simulation with
+  `git merge-tree`; read branch lists whole), skill-cambium (paths to `scripts/access/teleport-tunnel.sh`).
+- Incident: a `grep` printing ansible-wifi `group_vars` content was blocked by the ansible-vars-guard hook (19:39); rerun with file names only.
+- Open, not decided: `updated_at` format; dropping tracker items 5 and 10 (SCRATCHPAD Open items).
+
+## 20261027_2012 — scripts/ arranged into job folders; layout and catalogue checks (v0.8.9 -> v0.9.0)
+
+- 43 scripts moved (`git mv`) into `scripts/ansible|access|probes|capture|fleet|metrics|routing|switch/`; tests beside their script; the two
+  sub-justfiles and the governance files stay at `scripts/` (operator, 2026-10-27). Pack-root and `.graylog-token` paths now resolve two levels
+  up; `fleet-health.justfile` calls `./<folder>/<script>`. 102 path references in live files updated; CHANGELOG, `docs/history/`, `docs/audits/`
+  and the investigation template `routing-diagnostics.justfile` left as written.
+- Callers in other repos updated, no shims (operator choice): unified-network-controller `site_onboarding/identify_candidates.py`,
+  `site_cables.py`, `docs/flows/parts/flows-native-platform-flows.yaml` (+ re-assembled `flows.yaml`); skill-cambium `scripts/README.md`,
+  `references/site-addressing.yaml`; ansible-wifi root-governance `AGENTS.md` and the fleet-hardware-audit README; smc-resiliency `SCRATCHPAD.md`;
+  enterprise-strategy `asterisk-probe-20261022/run1.sh`. Dated reports keep the old paths.
+- `check_governance.py`: the scripts catalogue walks `**/*` (subfolder files were invisible to it); new `check_scripts_layout`. Both proven red, then
+  green. Layout table in `scripts/README.md`; rules in `AGENTS.md`; decisions in `ARCHITECTURE.md`; branch-reach pointer in `SKILL.md`.
+- Verified: unit tests (ansible, probes), `just test-deadline`, all justfiles parse, every shell script parses, `metrics/` imports, pack root and
+  token resolve, `just ansible_change_reach`, `just local_knowledge_index`. Not run: recipes that need Teleport.
+
+## 20261027_1953 — Staleness audit: branch reach, two checker gaps, version rule (v0.8.8 -> v0.8.9)
+
+- First staleness audit of the pack (report under `docs/audits/`). Three material findings, all one cause: `rise` and `rise-multi` diverged
+  at `e1077c17` (2025-12-09), so July apt fixes and url_capture v2 are not on `rise`. In-place notes in `references/08`, `09`, `13`.
+- `scripts/check_governance.py`: skips the audit's gitignored snapshot when resolving bare names (every audit turned `just check` red);
+  new `check_recipe_interpreter` fails a recipe that runs bare `python3`. Four recipes (`smc_change_compare`, `smc_change_runs`,
+  `smc_inventory_add`, `teleport_sessions`) now use the venv. Both checks proven red, then green.
+- `AGENTS.md` Tier 3: the version is bumped with every CHANGELOG entry, as the checker already required.
+- Tracker item 4: `17583da3` is pushed (`origin/internet-label-rename`, `origin/unc-virtual-smc-malik-rcp01`), not merged; the first branch list
+  had been cut by `head -3`.
+- Open, proposed not decided: `updated_at` format — the version rule says `YYYYMMDD_hhmm`, the manifest has used `YYYY-MM-DD` throughout.
+
+## 20261027_1947 — ansible_change_reach probe; July apt fixes and smc_ltp fix not on rise (v0.8.7 -> v0.8.8)
+
+- New `scripts/ansible_change_reach.py` (`just ansible_change_reach <commit>`, offline test `test_ansible_change_reach.py`, 5 tests): per commit,
+  on `rise`/`origin/rise` or not, the branches holding it, and whether a cherry-pick would be clean (`git merge-tree`, no checkout); optional
+  inventory group hosts. Read-only; 0.65 s for two commits plus the `smc_ltp` graph.
+- Its first run found `0c51cb1` (apt timer mask) and `4889af8` (`apt_info.py` without `cache.update()`) also absent from `rise` (67a44aa3): a
+  `rise` run of `smc_system`/`smc_node_exporter` would revert the 2026-07-15 fix. Notes in `references/08_ansible-authoring.md` and
+  `references/13_known-issues.md`; tracker items 4 and 12 updated. Cherry-pick of `17583da3` deferred to the branch-merge work (operator, 2026-10-27).
+
+## 20261027_1937 — Open-items tracker reviewed (v0.8.6 -> v0.8.7)
+
+- `docs/trackers/open-items-20261010_1821.md`: reviewed all 13 items against ansible-wifi `rise` 67a44aa3; a dated note on each, none closed.
+  Item 4 corrected: the `smc_ltp` inventory change is committed (`17583da3`) but only on feature branches, not `rise`. Items 5 and 10 marked
+  drop candidates for the operator. Last reviewed 2026-10-27, next review 2026-11-10. `just check` doc-freshness failure cleared.
 
 ## 20261027_1922 — Quoted code excerpt restored after a markdown hook bug (v0.8.5 -> v0.8.6)
 
@@ -140,54 +193,3 @@ Last rotated: 20261027_1923
   interfaces, reading vars past the guard hook).
 - `references/03_communication-flows.md`: site ID readable from the box's autossh -R port; generic image ID 181 is shared.
 - `SKILL.md` decision tree: new point 6 for adding a box.
-
-## 20261023_1536 — smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3)
-
-`19_smc-change-role.md`: rollback is a mode (per-type `<type>_rollback.yml`, controller or box backup, health plus restored gates);
-per-host state in `runs/<spec>/state/` skips hosts already done, `smc_change_force` re-runs them. `18_local-knowledge-ansible.md`: one
-root config per language (ruff, djlint, taplo, biome, shfmt/shellcheck via .editorconfig) and `lint_new.sh`. manifest 0.7.2 -> 0.7.3.
-
-## 20261023_1455 — smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> v0.7.2)
-
-`19_smc-change-role.md` rewritten for the role as it now is: 11 announced stages, plan and result summaries worded by the probe, probe split
-into `files/probe/NN_*.py` with a check registry (proven identical on four runs), only configured checks gated, stage 10 CLEANUP (nothing left
-on the box after success, backups copied to the controller), records on the controller only, unreachable and refused hosts recorded and
-skipped, run summary, rollback steps, ruff with two-space indent and `force-exclude` of the 22 existing files. manifest 0.7.1 -> 0.7.2.
-
-## 20261023_1351 — backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1)
-
-`scripts/backdoor-watch.sh` matched only `*-smc0N` hosts in `inventories/*/prod`; it now takes any exact inventory host in prod or stage, then a site
-name in prod then stage (operator, 2026-10-23). Tested: warehouse-rct01 (rct stage) 50484 UP while it is off Teleport; kupungarri and nocprov-smc01
-unchanged. `19_smc-change-role.md`: a `command` action on an overlay box must set `chroot`. manifest 0.7.0 -> 0.7.1.
-
-## 20261023_1339 — Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)
-
-New `references/18_local-knowledge-ansible.md` (operator, 2026-10-23: the pack must stay across what is built in local-knowledge-ansible): layout,
-symlink-plus-`.git/info/exclude` wiring, operator tooling (the new `smc_change` role, its PHP and php.ini specs, `smc_update_php.yml`), standing rule
-to read it at the start of SMC work. New `references/19_smc-change-role.md` (operator: any project should be able to use smc_change): running it, spec format, gates, overlay
-lower-dir persistence, run records, status; SKILL.md decision tree step 5 sends box changes to it. New read-only `scripts/local_knowledge_index.sh` (`just local_knowledge_index`, ~1 s). SKILL.md and RUNBOOK
-point to both. `13_known-issues.md`: installed package version is not running code (warehouse-smc01 apache on a deleted libphp after
-unattended-upgrades); rct has no `topology_interfaces`, read the portal from `apache2ctl -S`; Ansible `environment:` makes `pgrep -f` match the
-probe's own shell. manifest 0.6.9 -> 0.7.0.
-
-## 20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)
-
-Side note (the 300 s default was timed only on a voip run): full captures measured 86 s (bidyadanga, Sky Muster) and 93–97 s (kalumburu); default kept
-with about 3x headroom. `with_deadline` returns 124 when its deadline is reached (tsh traps TERM and exits 1); `collect-smc-evidence-full.sh` prints
-`SESSION TIMED OUT` and counts unreached captures as "not run" (live check with a 5 s limit). That count exposed a defect: output without a trailing
-newline glued the RC marker to its last line, so `network/interfacecheck-script` was never closed or counted; the marker now starts on its own line
-(kalumburu 145 of 145, other captures unchanged). `just test-deadline` gains a TERM-trapping case (12 checks). manifest 0.6.8 -> 0.6.9.
-
-## 20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)
-
-`scripts/collect-smc-evidence-full.sh` and `scripts/collect-smc-evidence.sh` call `tsh ssh` through `with_deadline` (the watcher from
-`overlay-usage-breakdown.sh`, plus `<&0` so piped stdin survives when job control is on): probe 60 s, session 300 s, narrow per command 60 s, all
-overridable. New `scripts/test_with_deadline.sh` (`just test-deadline`, offline): passes, and fails when the kill is disabled. Smoke run on kalumburu-smc01:
-73 s, 11 of 11 voip captures. Known issue 2026-10-22 resolved. manifest 0.6.7 -> 0.6.8.
-
-## 20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)
-
-Operator approved the read-only voip capture on all 17 rcp boxes (enterprise-strategy RouterOS study, 58 s): Asterisk 77–153 MB resident, about 100 MB
-typical (`references/07_hardware-overlay.md`). `references/13_known-issues.md`: umoona-smc01 still has no Asterisk process (as on 2026-08-25), nocprov none;
-`collect-smc-evidence-full.sh` has no per-call `tsh` deadline (run wrapped in a perl alarm). manifest 0.6.6 -> 0.6.7.
-Corrected the same day (operator): umoona has no active SIP clients, so its missing Asterisk is known and not an outage.

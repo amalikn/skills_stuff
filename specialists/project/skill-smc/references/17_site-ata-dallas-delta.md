@@ -45,7 +45,7 @@ All facts VERIFIED-OBSERVED 2026-10-08, read-only from the site's SMC over Telep
   example `09990455`), `sip_proxy` (`125.213.160.7` at four sites, `sip00.mvp.symbionetworks.com` at alice-well), `syslog_ip`, `user_name` (set at alice-well only), and the volume settings. The
   phonebook is identical everywhere (button 1 = Emergency 000).
 - A per-site template therefore needs only those few fields; the rest is a fleet-wide constant.
-- Read and compare units with [`scripts/ata_settings_read.py`](../scripts/ata_settings_read.py) (`just ata_settings_read <proxy> <node>...`): read-only, empty PIN,
+- Read and compare units with [`scripts/probes/ata_settings_read.py`](../scripts/probes/ata_settings_read.py) (`just ata_settings_read <proxy> <node>...`): read-only, empty PIN,
   secret-named fields dropped on the SMC, `Registered` shown per unit. A rerun on 2026-10-08 (adjamarragu, akwalirrumanja, alamirra) counted 92 named settings
   fields, 86 identical across the three, and found the digitmap differs too: entry `m003` is `1800xxxxxx` at akwalirrumanja and `1800xxxxxxxx` at the other two.
 

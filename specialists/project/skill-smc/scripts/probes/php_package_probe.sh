@@ -81,7 +81,7 @@ probe_one() {
     echo "PHPPROBE|$node|${line#PHPPROBE|}"
     return 0
   fi
-  echo "FAIL|$node|no probe output (Teleport unreachable? check scripts/backdoor-watch.sh)"
+  echo "FAIL|$node|no probe output (Teleport unreachable? check scripts/access/backdoor-watch.sh)"
   return 1
 }
 

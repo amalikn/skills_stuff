@@ -2,7 +2,7 @@
 """Read-only Graylog search for SMC logs through the apn-graylog Teleport app (references/03_communication-flows.md
 "Graylog REST API Access").
 
-Needs: `tsh --proxy=teleport.apn.au apps login apn-graylog` (app cert under ~/.tsh) and the API token in ../.graylog-token
+Needs: `tsh --proxy=teleport.apn.au apps login apn-graylog` (app cert under ~/.tsh) and the API token in ../../.graylog-token
 (or GRAYLOG_TOKEN env var).
 
 usage:
@@ -25,7 +25,7 @@ API = "https://apn-graylog.teleport.apn.au/api"
 def _token():
     if os.environ.get("GRAYLOG_TOKEN"):
         return os.environ["GRAYLOG_TOKEN"]
-    return open(os.path.join(HERE, "..", ".graylog-token")).read().strip()
+    return open(os.path.join(HERE, "..", "..", ".graylog-token")).read().strip()
 
 
 def _cert():

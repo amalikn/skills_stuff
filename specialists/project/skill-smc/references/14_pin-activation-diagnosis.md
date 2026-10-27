@@ -137,7 +137,7 @@ have reported a technically-true-later MAC as the one active at activation time 
 instant, not the file's last word on that IP.** If no known lease had started by the activation time at all (the earliest known lease is itself later — also seen live, 4 of 30 sampled IPs on
 `hope-vale-smc01` in the same session), there is no confirmed binding; report that explicitly rather than guessing.
 
-**This is exactly what `scripts/correlate-pin-activation.sh` automates** — do not hand-roll this join for anything beyond a single spot-check; the ordering bug is easy to reintroduce. It also handles
+**This is exactly what `scripts/capture/correlate-pin-activation.sh` automates** — do not hand-roll this join for anything beyond a single spot-check; the ordering bug is easy to reintroduce. It also handles
 the data gaps found live on this fleet: an IP with no lease record at all in the window (`no-lease-found`), and a matched lease block that itself has no `hardware ethernet` line
 (`no-mac-in-lease-record`) — both print an explicit label rather than a blank field or a silent wrong answer. See [14.8](#148-reusable-tooling).
 
@@ -207,10 +207,10 @@ Last Issued" report agrees with both (see the pitfalls bullet above), a third in
 
 ## 14.8 Reusable tooling
 
-- **`scripts/audit-pin-activation.sh <site> [<site> ...]`** — runs both mechanisms per host (mangle marks, NAT tier counters, `wifi/access` log audit across both log files and all rotations) and
+- **`scripts/capture/audit-pin-activation.sh <site> [<site> ...]`** — runs both mechanisms per host (mangle marks, NAT tier counters, `wifi/access` log audit across both log files and all rotations) and
   prints the comparison table above. See `scripts/README.md`.
-- **`scripts/correlate-pin-activation.sh <site> [<site> ...]`** — the per-pin follow-up to the above: for every real activation at a site, joins in its MAC and DHCP lease window (§14.4) and current
+- **`scripts/capture/correlate-pin-activation.sh <site> [<site> ...]`** — the per-pin follow-up to the above: for every real activation at a site, joins in its MAC and DHCP lease window (§14.4) and current
   live status, one row per pin. Written 2026-09-11 in response to an operator request for exactly this timeline; implements the correct time-windowed lease join described in §14.4 rather than the
   naive last-block lookup. See `scripts/README.md`.
-- **`scripts/collect-fleet-health.sh`**'s `05-portal-fqdn-status` capture — the config-side half of this case study (deny_info, squid.conf mtime, Apache vhosts, sslcertcopy cron). Run both together
+- **`scripts/fleet/collect-fleet-health.sh`**'s `05-portal-fqdn-status` capture — the config-side half of this case study (deny_info, squid.conf mtime, Apache vhosts, sslcertcopy cron). Run both together
   when investigating a suspected portal-issuance problem: config state explains *why*, this file's two mechanisms confirm *whether it's actually happening* and *how severely*.

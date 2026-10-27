@@ -112,7 +112,7 @@ routing:
     - references/snmp-oid-registry-tplink.yaml
     - references/tplink-site-switches.yaml
     - references/tplink-snmp-enablement-survey-20260930.csv
-    - scripts/tplink-switch.sh
+    - scripts/switch/tplink-switch.sh
   site_ata:
     description: The rct site ATA (Dallas Delta DDC_VoIP-m at 192.168.5.253) -- web UI
       only, no SNMP or SSH, SIP registration readout, site-unique settings, read quirks.

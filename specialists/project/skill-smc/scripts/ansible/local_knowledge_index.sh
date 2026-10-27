@@ -6,7 +6,7 @@
 #   --repo     the ansible-wifi checkout it is symlinked into (default $LK_REPO or /Volumes/Data/_ansible/ansible-wifi)
 #   --days     window for "recently changed" (default 14)
 #   --per-dir  how many recent entries to list per top-level folder (default 8)
-#   e.g. just local_knowledge_index        or        bash scripts/local_knowledge_index.sh --days 3
+#   e.g. just local_knowledge_index        or        bash scripts/ansible/local_knowledge_index.sh --days 3
 #
 # Prints three parts: (1) every symlink in the repo (depth 2) that points into the knowledge folder, and whether git ignores
 # it, which is how local-only playbooks, roles and governance files appear in ansible-wifi without reaching Bitbucket;

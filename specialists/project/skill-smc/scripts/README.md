@@ -20,12 +20,29 @@ Promoted **2026-07-29** (evidence capture + drift analysis) and **2026-07-30** (
 were built and live-validated across all seven `rcp` sites during that investigation. Kept here so a future WAN-routing investigation — any site, any flavor — doesn't have to re-derive the
 discriminator or re-write the capture set from scratch.
 
+## Layout
+
+Scripts sit in job folders (arranged 2026-10-27; operator). The governance files (`check_governance.py`, `doc-freshness-baseline.json`, `role-check-baseline.json` (skill-ai-it file-roles baseline), this README) and the
+two sub-justfiles (`fleet-health.justfile`, `routing-diagnostics.justfile`) stay at `scripts/`. A script that writes evidence resolves the pack root two levels
+up from its own folder; tests sit beside the script they test.
+
+| Folder | For | Files |
+|---|---|---|
+| `ansible/` | ansible-wifi repo work: change reach, smc_change records, inventory adds, lint gates, local-knowledge index | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_inventory_add.py](ansible/smc_inventory_add.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh) |
+| `access/` | getting onto a box: Teleport tunnel and sessions, the autossh backdoor | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [teleport_sessions.py](access/teleport_sessions.py) |
+| `probes/` | read-only probes of named boxes over Teleport | [ata_settings_read.py](probes/ata_settings_read.py), [php_package_probe.sh](probes/php_package_probe.sh), [pi_identity_probe.sh](probes/pi_identity_probe.sh), [site_device_probe.sh](probes/site_device_probe.sh), [x86_resiliency_probe.sh](probes/x86_resiliency_probe.sh), [smc_link_health.sh](probes/smc_link_health.sh), [test_smc_link_health.py](probes/test_smc_link_health.py), [overlay-usage-breakdown.sh](probes/overlay-usage-breakdown.sh), [dns_capture_top.sh](probes/dns_capture_top.sh) |
+| `capture/` | evidence capture from boxes and pin-activation diagnosis | [collect-smc-evidence.sh](capture/collect-smc-evidence.sh), [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh), [test_with_deadline.sh](capture/test_with_deadline.sh), [tstik-capture.sh](capture/tstik-capture.sh), [audit-pin-activation.sh](capture/audit-pin-activation.sh), [correlate-pin-activation.sh](capture/correlate-pin-activation.sh) |
+| `fleet/` | fleet-wide sweeps and package installs | [collect-fleet-health.sh](fleet/collect-fleet-health.sh), [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh), [install_packages.sh](fleet/install_packages.sh) |
+| `metrics/` | Prometheus and Graylog queries and the analyses built on them (the analyses import `smc_prom`/`smc_graylog` from this folder) | [smc_prom.py](metrics/smc_prom.py), [smc_graylog.py](metrics/smc_graylog.py), [graylog-health.sh](metrics/graylog-health.sh), [fleet-reboot-timeline.py](metrics/fleet-reboot-timeline.py), [fleet-resource-profile.py](metrics/fleet-resource-profile.py), [predark-snapshot.py](metrics/predark-snapshot.py), [undervoltage-profile.py](metrics/undervoltage-profile.py), [vlan-traffic-timeline.py](metrics/vlan-traffic-timeline.py) |
+| `routing/` | WAN-routing drift and topology/interface cross-checks | [analyse-routing-drift.py](routing/analyse-routing-drift.py), [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) |
+| `switch/` | TP-Link site switch access through an SMC | [tplink-switch.sh](switch/tplink-switch.sh), [tplink_cli_driver.py](switch/tplink_cli_driver.py) |
+
 **These are deliberately separate copies from the investigation folder's originals, not symlinks.** Promotion is a review checkpoint, not a relocation — the copies here are genericized (no hardcoded
 site lists, `OUTDIR_ROOT` override, etc.) and are meant to diverge from whatever an investigation folder's working copy does next. When an investigation script changes in a way worth having
 everywhere, diff it against the promoted copy and re-apply deliberately (see e.g. the `dmidecode-model` capture below) rather than assuming the two stay in sync automatically.
 
 **Promotion checklist — every time a script is promoted or an existing promoted script is updated:**
-1. Copy/update the script itself here, genericized (no investigation-specific hardcoding).
+1. Copy/update the script itself into its job folder (see Layout; add a row there), genericized (no investigation-specific hardcoding).
 2. Add or update its row in the safety-classification table and its own `###` section below.
 3. **Update `routing-diagnostics.justfile`** with any new recipe the script needs — a script with no justfile recipe is easy to forget exists. Confirmed missed once (2026-07-30) before being caught
    and fixed in the same pass; treat this as a mandatory step, not an afterthought.
@@ -35,26 +52,27 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 
 | Script                              | Touches                 | Safety    | Notes                                                                                                                    |
 | ----------------------------------- | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
-| [survey_snmp_tooling.sh](survey_snmp_tooling.sh) | Live SMC appliances | **read-only** | Reports per box whether `snmpget` is present and whether overlayroot is mounted, scoped by Teleport flavour label (`FLAVOURS`, default `rcp,nbn_accelerate`). Both facts vary per box and neither can be inferred from the flavour — that mistake is what it exists to prevent |
-| [local_knowledge_index.sh](local_knowledge_index.sh) | Local files only | **read-only** | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder, uncommitted changes. ~1 s. `just local_knowledge_index` |
-| [smc_change_compare_records.py](smc_change_compare_records.py) | Local files only | **read-only** | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, volatile fields ignored. <0.1 s. `just smc_change_compare` |
-| [smc_change_runs_table.py](smc_change_runs_table.py) | Local files only | **read-only** | One line per run record of a change: result, phase 6-9 seconds, whether the SMC rebooted (boot_id), lower-dir holders or the failure; answers "which runs rebooted and did they fail" across a rollout. <0.1 s. `just smc_change_runs <change>`; test `test_smc_change_runs_table.py` |
-| [smc_link_health.sh](smc_link_health.sh) | Teleport (`tsh ssh`) | **read-only** | An SMC's uplink: loss to first hop and proxy, Teleport error trend, clock, upload backlog, autossh restarts, WAN rate; box, Teleport or link? ~1 min. `just smc_link_health <smc>`; test `test_smc_link_health.py` |
-| [smc_inventory_add.py](smc_inventory_add.py) | ansible-wifi inventory files; tsh read of one box | **modifies-state** (plan by default, `--apply` writes) | Adds a new SMC the way every site is added: `[<site>_smc_bases]`, `smc_bases:children`, `[<site>:children]` and group/host/topology vars rendered from the repo's generator templates. Refuses an existing host, site or file; flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add` |
-| [install_packages.sh](install_packages.sh) | Live SMC appliances | **modifies-state** | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul |
-| [collect-smc-evidence.sh](collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
+| [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh) | Live SMC appliances | **read-only** | Reports per box whether `snmpget` is present and whether overlayroot is mounted, scoped by Teleport flavour label (`FLAVOURS`, default `rcp,nbn_accelerate`). Both facts vary per box and neither can be inferred from the flavour — that mistake is what it exists to prevent |
+| [local_knowledge_index.sh](ansible/local_knowledge_index.sh) | Local files only | **read-only** | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder, uncommitted changes. ~1 s. `just local_knowledge_index` |
+| [smc_change_compare_records.py](ansible/smc_change_compare_records.py) | Local files only | **read-only** | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, volatile fields ignored. <0.1 s. `just smc_change_compare` |
+| [ansible_change_reach.py](ansible/ansible_change_reach.py) | Local ansible-wifi git repo | **read-only** | Per commit: on the deploy branch (and origin) or not, the branches holding it, and whether a cherry-pick onto the deploy branch would be clean (`git merge-tree`, no checkout); optionally an inventory group's hosts when HEAD is the deploy branch. Exit 1 when a commit is off the branch. ~1 s plus ansible-inventory. `just ansible_change_reach <commit>`; test `test_ansible_change_reach.py` |
+| [smc_change_runs_table.py](ansible/smc_change_runs_table.py) | Local files only | **read-only** | One line per run record of a change: result, phase 6-9 seconds, whether the SMC rebooted (boot_id), lower-dir holders or the failure; answers "which runs rebooted and did they fail" across a rollout. <0.1 s. `just smc_change_runs <change>`; test `test_smc_change_runs_table.py` |
+| [smc_link_health.sh](probes/smc_link_health.sh) | Teleport (`tsh ssh`) | **read-only** | An SMC's uplink: loss to first hop and proxy, Teleport error trend, clock, upload backlog, autossh restarts, WAN rate; box, Teleport or link? ~1 min. `just smc_link_health <smc>`; test `test_smc_link_health.py` |
+| [smc_inventory_add.py](ansible/smc_inventory_add.py) | ansible-wifi inventory files; tsh read of one box | **modifies-state** (plan by default, `--apply` writes) | Adds a new SMC the way every site is added: `[<site>_smc_bases]`, `smc_bases:children`, `[<site>:children]` and group/host/topology vars rendered from the repo's generator templates. Refuses an existing host, site or file; flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add` |
+| [install_packages.sh](fleet/install_packages.sh) | Live SMC appliances | **modifies-state** | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul |
+| [collect-smc-evidence.sh](capture/collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
 |                                     |   over Teleport         |           |   **arguments — no default site list** (genericized from the original, which defaulted to one investigation's            |
 |                                     |                         |           |   specific sites)                                                                                                        |
-| [test_with_deadline.sh](test_with_deadline.sh) | Local only (no network)  | **read-only** | Offline test of `with_deadline` in both evidence scripts: stdin passes through, exit status kept, killed at the deadline (`just test-deadline`). |
-| [collect-smc-evidence-full.sh](collect-smc-evidence-full.sh) | Live SMC appliances     | **read-only** | The wide companion to `collect-smc-evidence.sh`: 144 captures across 17 subsystem groups, for triage and pre/post-deploy |
+| [test_with_deadline.sh](capture/test_with_deadline.sh) | Local only (no network)  | **read-only** | Offline test of `with_deadline` in both evidence scripts: stdin passes through, exit status kept, killed at the deadline (`just test-deadline`). |
+| [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh) | Live SMC appliances     | **read-only** | The wide companion to `collect-smc-evidence.sh`: 144 captures across 17 subsystem groups, for triage and pre/post-deploy |
 |                                     |   over Teleport         |           |   baselines rather than the routing question. Same hardcoded-command, host-names-only contract. **One SSH session per host** |
 |                                     |                         |           |   (delimited stream split locally) instead of one per capture — 144 captures in ~25s. `--only`/`--skip` select groups;   |
 |                                     |                         |           |   **redacts credentials by default**, `--no-redact` to disable. x86 capture set; detects Raspberry Pi and says so rather |
 |                                     |                         |           |   than running x86-only probes against it                                                                                |
-| [analyse-routing-drift.py](analyse-routing-drift.py) | Local `evidence/` tree, | **read-only** | `git show` only; never checks out, never writes to the ansible repo. `--flavor` selects                                  |
+| [analyse-routing-drift.py](routing/analyse-routing-drift.py) | Local `evidence/` tree, | **read-only** | `git show` only; never checks out, never writes to the ansible repo. `--flavor` selects                                  |
 |                                     |   local `ansible-wifi`  |           |   `inventories/<flavor>/topology_vars`; `--commit` selects the comparison ref — both default to the original             |
 |                                     |   git objects           |           |   investigation's `rcp`/`fb419e6c` and should be overridden per new investigation                                        |
-| [analyse-topology-interface-match.py](analyse-topology-interface-match.py) | Local `evidence/` tree, | **read-only** | Reads `topology_vars/<site>.yml` from the working tree (not a specific commit — pre-deploy sanity check, not historical  |
+| [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) | Local `evidence/` tree, | **read-only** | Reads `topology_vars/<site>.yml` from the working tree (not a specific commit — pre-deploy sanity check, not historical  |
 |                                     |   local `ansible-wifi`  |           |   drift analysis); `--flavor` overridable                                                                                |
 |                                     |   working tree          |           |                                                                                                                          |
 | [routing-diagnostics.justfile](routing-diagnostics.justfile) | Wraps the three         | **read-only** | A **template**, not a ready-to-run file — copy it into a new investigation folder and edit the `sites`/`deployed`/`flavor` |
@@ -67,7 +85,7 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 
 | Script                  | Touches                          | Safety    | Notes                                                                                                                       |
 | ----------------------- | -------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
-| [collect-fleet-health.sh](collect-fleet-health.sh) | Live SMC appliances              | **read-only** | Same hardcoded-command, host-names-only contract as `collect-smc-evidence.sh`. Bundles ~20 read-only commands into 5        |
+| [collect-fleet-health.sh](fleet/collect-fleet-health.sh) | Live SMC appliances              | **read-only** | Same hardcoded-command, host-names-only contract as `collect-smc-evidence.sh`. Bundles ~20 read-only commands into 5        |
 |                         |   over Teleport                  |           |   grouped captures (not one-command-per-round-trip) to stay tractable at fleet scale over satellite links — see the         |
 |                         |                                  |           |   script's own header note. Capture 5 (`05-portal-fqdn-status`, added 2026-09-11) is the config-side half of the            |
 |                         |                                  |           |   pin-activation diagnosis below — run alongside `audit-pin-activation.sh` when investigating a suspected                   |
@@ -83,12 +101,12 @@ args).
 
 | Script                      | Touches         | Safety    | Notes                                                                                                                                    |
 | --------------------------- | --------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| [audit-pin-activation.sh](audit-pin-activation.sh) | Live SMC        | **read-only** | Same hardcoded-command, host-names-only contract as `collect-fleet-health.sh`. Checks TWO independent mechanisms per host —              |
+| [audit-pin-activation.sh](capture/audit-pin-activation.sh) | Live SMC        | **read-only** | Same hardcoded-command, host-names-only contract as `collect-fleet-health.sh`. Checks TWO independent mechanisms per host —              |
 |                             |   appliances    |           |   `iptables -t mangle -L ECLIPSE_MARK` (pin validity now) and the Apache `wifi/access` log across both `access.log` and                  |
 |                             |   over Teleport |           |   `other_vhosts_access.log` with all rotations (pin issuance over time) — and prints a comparison table. Read                            |
 |                             |                 |           |   `../references/14_pin-activation-diagnosis.md` before interpreting results; the two mechanisms answer different questions and reading  |
 |                             |                 |           |   either one alone has misled in practice (see that file's pitfalls section)                                                             |
-| [correlate-pin-activation.sh](correlate-pin-activation.sh) | Live SMC        | **read-only** | Different question from the script above: not "is this site healthy" but "for THIS site, give me every real activation with its IP, MAC, |
+| [correlate-pin-activation.sh](capture/correlate-pin-activation.sh) | Live SMC        | **read-only** | Different question from the script above: not "is this site healthy" but "for THIS site, give me every real activation with its IP, MAC, |
 |                             |   appliances    |           |   DHCP lease window, and current live status." Joins the Apache `wifi/access` log (WHEN/WHICH-IP) against `/var/lib/dhcp/dhcpd.leases`   |
 |                             |   over Teleport |           |   (WHICH-MAC, keyed on IP over a time window) against `iptables -t mangle` (is that MAC live NOW). Picks the lease block whose `starts`  |
 |                             |                 |           |   epoch is the latest one still `<=` the activation time — NOT just "the last block in the file for that IP", which is provably wrong    |
@@ -101,11 +119,11 @@ args).
 
 | Script                     | Touches                                  | Safety               | Notes                                                                                                 |
 | -------------------------- | ---------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------- |
-| [lint-baseline-refresh.sh](lint-baseline-refresh.sh) | Local git repo                           | **read-only w.r.t. the** | Writes only to `.git/.ansible-lint-ignore` (an untracked git-internal file, not repo content).        |
+| [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh) | Local git repo                           | **read-only w.r.t. the** | Writes only to `.git/.ansible-lint-ignore` (an untracked git-internal file, not repo content).        |
 |                            |   only                                   |   **repo's**         |   Genericized: config path defaults to `<repo_root>/.ansible-lint`, override with                     |
 |                            |   (`ansible-lint --generate-ignore`)     |   **tracked content** |   `ANSIBLE_LINT_CONFIG=<path>` — the two scripts this was promoted from disagreed on a hardcoded path |
 |                            |                                          |                      |   (`local-knowledge/` vs `local-knowledge-ansible/`); this removes that class of drift                |
-| [ansible-lint-delta-gate.sh](ansible-lint-delta-gate.sh) | Local git repo only                      | **read-only**        | Never writes anything; exits non-zero only to block a push/commit. Same `ANSIBLE_LINT_CONFIG`         |
+| [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh) | Local git repo only                      | **read-only**        | Never writes anything; exits non-zero only to block a push/commit. Same `ANSIBLE_LINT_CONFIG`         |
 |                            |   (`git diff`/`git cat-file`,            |                      |   override as above. Falls back through `@{upstream}` → `origin/master` → `origin/main` → empty-tree  |
 |                            |   `ansible-lint`)                        |                      |   for the comparison base, so it works on a fresh clone with no upstream configured                   |
 
@@ -116,9 +134,9 @@ current violation set as the new baseline (e.g. after a bulk cleanup, or when fi
 silently re-baseline away violations introduced since the last refresh.
 
 ```bash
-scripts/lint-baseline-refresh.sh
+scripts/ansible/lint-baseline-refresh.sh
 # override config location if not at <repo_root>/.ansible-lint:
-ANSIBLE_LINT_CONFIG=/path/to/.ansible-lint scripts/lint-baseline-refresh.sh
+ANSIBLE_LINT_CONFIG=/path/to/.ansible-lint scripts/ansible/lint-baseline-refresh.sh
 ```
 
 ### `ansible-lint-delta-gate.sh`
@@ -132,7 +150,7 @@ Meant to run from a pre-push hook (or CI) with the set of changed ansible files 
 - **Warnings** → never blocking.
 
 ```bash
-scripts/ansible-lint-delta-gate.sh roles/smc_network/tasks/ubuntu.yml roles/smc_dns/templates/unbound.conf.j2
+scripts/ansible/ansible-lint-delta-gate.sh roles/smc_network/tasks/ubuntu.yml roles/smc_dns/templates/unbound.conf.j2
 ```
 
 Exits 0 (with `clean` or `no new violations`) when safe to proceed, non-zero with the blocking violation list on stderr otherwise. Requires `ansible-lint` on `PATH` (or set `ANSIBLE_LINT_VENV_BIN` to
@@ -355,7 +373,7 @@ header for why):
 |  |  |   the box regenerated it |
 
 ```bash
-./collect-fleet-health.sh warakurna indulkana bungardi        # named sites
+./fleet/collect-fleet-health.sh warakurna indulkana bungardi  # named sites, from scripts/
 # or, with the pre-populated NBN Accelerate site list:
 just -f fleet-health.justfile collect
 just -f fleet-health.justfile portal-fqdn-check                # quick cross-host summary of capture 5
@@ -366,9 +384,9 @@ just -f fleet-health.justfile chassis-models
 **Sites with more than one numbered host (e.g. `aurukun-smc01`/`aurukun-smc02`) must be passed with their full `-smcNN` suffix** — a bare `aurukun` always resolves to `aurukun-smc01`.
 
 **`just -f <path>` runs recipes with cwd = the justfile's own directory, not the invoker's cwd — confirmed the hard way on the first real fleet run.** `fleet-health.justfile` lives in `scripts/`, but
-`collect-fleet-health.sh` writes `evidence/` into its *parent* directory (skill-smc root) by default. A recipe written as `./scripts/collect-fleet-health.sh` or a bare `evidence` path looks correct
+`collect-fleet-health.sh` writes `evidence/` into its *parent* directory (skill-smc root) by default. A recipe written as `./scripts/fleet/collect-fleet-health.sh` or a bare `evidence` path looks correct
 when read, but silently resolves to a nonexistent `scripts/scripts/...` or `scripts/ evidence/` and fails (or worse, reports a misleading "no captures yet" instead of an error).
-`fleet-health.justfile`'s recipes use `./collect-fleet-health.sh` (sibling file) and `../evidence` (one level up) for this reason — if you add a recipe to a justfile that lives in `scripts/`, match
+`fleet-health.justfile`'s recipes use `./<folder>/<script>` (e.g. `./fleet/collect-fleet-health.sh`) and `../evidence` (one level up) for this reason — if you add a recipe to a justfile that lives in `scripts/`, match
 that convention, and **run every new recipe for real before trusting it**, the way this one was dogfooded: three of its four quick-check recipes had real bugs (wrong paths, and the same
 exit-code-of-last-command quirk documented in `collect-fleet-health.sh`'s header) that a syntax check alone would never have caught.
 
@@ -694,10 +712,10 @@ just teleport_sessions teleport.communitywifi.net.au 2026-08-31 2026-09-06 hope-
 ## Usage
 
 ```bash
-# One-off, no justfile:
-./collect-smc-evidence.sh <site1> <site2> ...
-./analyse-routing-drift.py --flavor <flavor> --commit <ref>
-./collect-fleet-health.sh <site1> <site2> ...
+# One-off, no justfile, from scripts/:
+./capture/collect-smc-evidence.sh <site1> <site2> ...
+./routing/analyse-routing-drift.py --flavor <flavor> --commit <ref>
+./fleet/collect-fleet-health.sh <site1> <site2> ...
 
 # Or copy routing-diagnostics.justfile into your investigation folder, edit its top variables, then:
 just collect
@@ -718,7 +736,7 @@ just -f fleet-health.justfile pin-audit
 ## Evidence retention
 
 Captures are the only record of live state at a point in time and **should be kept**, not deleted to save space — they cannot be regenerated for a past date. Write them into your investigation
-folder's own `evidence/` directory (via `OUTDIR_ROOT=<investigation-path> ./collect-smc-evidence.sh ...` or `./collect-fleet-health.sh ...`), not into this skill-smc directory — skill-smc holds
+folder's own `evidence/` directory (via `OUTDIR_ROOT=<investigation-path> ./capture/collect-smc-evidence.sh ...` or `./fleet/collect-fleet-health.sh ...`), not into this skill-smc directory — skill-smc holds
 reusable knowledge and tooling, not case-specific evidence. See the parent repo's canonical-source-of-truth policy on keeping investigation artifacts local to their investigation folder.
 
 **The 2026-08-03 NBN Accelerate fleet sweep was captured without `OUTDIR_ROOT` set** (script default, under `skill-smc/evidence/`) — relocate that capture to a case-specific
@@ -761,3 +779,16 @@ from the skill-ai-it package. A file over its budget may shrink, never grow.
 
 <!-- END MANAGED: skill-ai-it:scripts -->
 
+## Governance recipes (skill-ai-it)
+
+- `just govern`: governance up to the current skill-ai-it standard (adoption, record budgets with `just check`, role findings); content fixes are `/skill-ai-it refresh`. `modifies-files`.
+- `just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.
+- `just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.
+- `just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.
+- `just history-show <stamp>`: print one rotated entry. Read-only; `safe`.
+- `just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries and done ROADMAP items to docs/history, verified. Plan by default; `modifies-files`.
+- `just budget [--apply]`: bring governed files within budget (normalise, rotate, move reference sections, audit, check). Plan by default; `modifies-files`.
+- `just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.
+- `just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.
+- `just outline <file.md>`: each heading with its line range, to read one section instead of the file. Read-only; `safe`.
+- `just section <file.md> "<title>"`: print one section (exact title, `Parent > Child`, `#anchor`, `~text`). Read-only; `safe`.

@@ -17,6 +17,9 @@
 
 ## Unreleased
 
+- 2026-10-27 `scripts/inverse_sweep.py` `twin_named`: a `.txt` extraction listed through its source as `manual.pdf (+ .txt)` or `(+ OCR .txt)` counts as named
+  (19 false UNLISTED rows in skill-smc's vendor-sources index); two fixture tests. Tool hazards: re-running `artifact_signals.py --out` overwrites a filled
+  worksheet; a project check that resolves bare names across the tree sees the Phase 0 snapshot as a second copy (skill-smc fixed its check).
 - 2026-10-21 Run `verify_completeness.py` with the project's interpreter (its venv has PyYAML): under a bare `python3` the gate passed with YAML duplicate-key detection SKIPPED, which the report then has to carry as residual.
 - 2026-10-21 `scripts/claim_scan.py` reads `SIBLING_ROOTS`, `SIBLING_BRANCHES` and `CONDITIONAL_PATHS` from `scripts/govcheck/config.py` too (skill-ai-it's split checker), not only `scripts/check_governance.py`: on smc-resiliency the declared conditional paths came out BROKEN and buried the real findings. One test (`test_split_checker_config_is_read`). Also seen: sibling resolution can falsely verify a generic name present in a sibling (ARCHITECTURE.md); declare such names conditional.
 

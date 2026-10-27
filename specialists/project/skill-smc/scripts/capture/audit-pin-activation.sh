@@ -2,12 +2,12 @@
 # audit-pin-activation.sh — read-only pin validity + issuance audit for SMC captive-portal boxes.
 #
 # ORIGIN: written 2026-09-11 during the nbn_accelerate/nbn_wh portal-FQDN regression investigation
-# (see ../references/14_pin-activation-diagnosis.md and ../references/13_known-issues.md), to
+# (see ../../references/14_pin-activation-diagnosis.md and ../../references/13_known-issues.md), to
 # settle "is anyone actually getting a working pin at this site" with live ground truth instead of
 # a Prometheus traffic proxy. Promoted into skill-smc/scripts/ as reusable — any future captive-
 # portal outage investigation on this fleet needs the same two checks.
 #
-# TWO INDEPENDENT MECHANISMS (full explanation: ../references/14_pin-activation-diagnosis.md):
+# TWO INDEPENDENT MECHANISMS (full explanation: ../../references/14_pin-activation-diagnosis.md):
 #   1. iptables -t mangle -L ECLIPSE_MARK  — is a pin valid RIGHT NOW (a snapshot; a mark can exist
 #      with no local activation ever having happened — Eclipse-side generation + periodic push).
 #   2. Apache access log, `wifi/access` endpoint — was a pin ACTUALLY ISSUED through this box's
@@ -41,7 +41,7 @@
 
 set -uo pipefail
 
-REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 STAMP="$(date '+%Y%m%d_%H%M')"
 OUTDIR="${REPO_ROOT}/evidence/${STAMP}"
 SSH_USER="${SMC_SSH_USER:-root}"
@@ -107,7 +107,7 @@ echo
 echo "Raw captures: ${OUTDIR}/<host>/pin-activation.txt"
 echo "Summary:      ${OUTDIR}/SUMMARY.txt"
 echo
-echo "Read ../references/14_pin-activation-diagnosis.md before interpreting — 'marks' is a"
+echo "Read ../../references/14_pin-activation-diagnosis.md before interpreting — 'marks' is a"
 echo "current-state snapshot, '302' is the activation count over whatever this box's Apache log"
 echo "retention covers (~14 days typical on this fleet), and 3128/3131 pkt totals are cumulative"
 echo "since the NAT rules were last reloaded, not 'now'."

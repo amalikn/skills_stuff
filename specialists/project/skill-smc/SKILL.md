@@ -74,12 +74,12 @@ It does not own the MikroTik or Cambium devices behind the SMC, or the Nautobot/
 
 Everything goes through Teleport: `tsh ssh root@<host>` after the operator has logged in, and Ansible's `ansible_host` is `{{inventory_hostname}}.teleport.<project>.au`, split by
 project (APN, nbn_accelerate), not flavor. Every box also holds a raw `autossh` reverse tunnel to its project bastion on port `50000 + site_eclipse_siteid`, independent of the Teleport
-agent. **Never report a box as unreachable until that backdoor has been checked** (operator, 2026-10-07): `scripts/backdoor-watch.sh <site>`. Details:
+agent. **Never report a box as unreachable until that backdoor has been checked** (operator, 2026-10-07): `scripts/access/backdoor-watch.sh <site>`. Details:
 `references/03_communication-flows.md` §All Inbound Access and §Backdoor SSH Access.
 
 ## Diagnosis Decision Tree
 
-1. **Box unreachable?** Backdoor first (above), then classify the outage with `scripts/fleet-reboot-timeline.py`: reboot, dark-then-boot (power or a power-cycled hang), or WAN-only.
+1. **Box unreachable?** Backdoor first (above), then classify the outage with `scripts/metrics/fleet-reboot-timeline.py`: reboot, dark-then-boot (power or a power-cycled hang), or WAN-only.
    `references/05_troubleshooting.md` Tier 1; solar-site power loss and Pi undervoltage in `references/06_failure-modes.md`.
 2. **Alert firing?** `references/06_failure-modes.md` §Key Prometheus Alerts gives trigger and first check for each. There is no per-device `role="internet"` loss alert
    (`references/13_known-issues.md`).
@@ -92,6 +92,8 @@ agent. **Never report a box as unreachable until that backdoor has been checked*
    never hand-copy another site's files (`references/08_ansible-authoring.md`, Adding a new SMC).
 7. **Changing Ansible?** `references/08_ansible-authoring.md` first: edit `topology_vars/<site>.yml`, never the hidden `.<site>.yml` cache; a `group_vars` or plugin change reaches all
    flavors; one inventory per run (`-i A -i B` loses B's topology vars); validate with yamllint, ansible-lint, ansible-inventory, then `--syntax-check`.
+   A fix this pack calls "deployed" may live only on `rise-multi` or a side branch: `just ansible_change_reach <commit>` before a run from `rise`
+   (`references/13_known-issues.md`, Branch reach).
 
 ## Related Workspaces
 
@@ -141,7 +143,7 @@ coherence Tier 3 pass — check that they reflect any new findings, fixes, or ar
 - `references/15_cambium-asset-registers.md` — pointer only: the ansible-wifi `site_name` join point for a Cambium asset register. Full asset-register naming-convention/extraction knowledge now lives
   in `skill-cambium` — see Related Skills below.
 - `references/16_tplink-site-switches.md` — TP-Link site switches behind the SMC: KeePass entry, SSH quirks, enable scenarios, discovery, redacted config capture, the `SNMP-<location>` read-write
-  community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/tplink-switch.sh`.
+  community, and how unified-network-controller seeds them in Nautobot; driven by `scripts/switch/tplink-switch.sh`.
 - `references/19_smc-change-role.md` — `smc_change`: the spec-driven role for any change to SMCs (packages, templates, ini, commands) with
   before/after probe, gates, overlayroot lower-dir persistence and a JSON record of every run; how to run it, write a spec, read its gates.
 - `references/18_local-knowledge-ansible.md` — the local-only ansible-wifi knowledge folder: layout, how its playbooks/roles/governance are symlinked into the

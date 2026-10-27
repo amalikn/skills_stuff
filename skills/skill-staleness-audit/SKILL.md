@@ -338,6 +338,10 @@ Where such a surface exists, write the check (Phase 5). Where none exists, say s
 Both hit this skill's own runs on 2026-09-27; details in the markdown governance guide.
 
 - **The markdown rewrap tool rebuilds any `## Contents` section as a table of contents.** Never put a folder index or file list under `## Contents`; use `## Index`. A list written there is erased.
+- **Re-running `artifact_signals.py --out <worksheet>` rewrites the worksheet blank** (2026-10-27, skill-smc): fill the verdicts once, then record with
+  `audit_state.py record --phase 4 --key artifacts_reasoned`, not by running the generator again.
+- **The Phase 0 snapshot is a second copy of every changed file inside the project.** A project check that resolves bare file names across the tree
+  reports them ambiguous for the whole audit, and the gate's suite run fails; the project's check should skip `.staleness-audit*` (2026-10-27).
 - **An unquoted heredoc (`<<EOF`) runs every backticked word as a command.** Write markdown with `<<'EOF'`, or with the Write tool, and read the result back.
 
 ## Skill package layout

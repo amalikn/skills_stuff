@@ -2,13 +2,13 @@
 # correlate-pin-activation.sh — read-only per-pin activation timeline for SMC captive-portal boxes.
 #
 # ORIGIN: written 2026-09-11, same investigation as audit-pin-activation.sh (see
-# ../references/14_pin-activation-diagnosis.md). That script answers "is this site's pin pipeline
+# ../../references/14_pin-activation-diagnosis.md). That script answers "is this site's pin pipeline
 # healthy, fleet-wide" with per-site totals. This one answers a different, narrower question an
 # operator asked directly: "for THIS site, give me every real pin activation with WHO (MAC), WHAT
 # IP it had, WHEN it activated, and WHEN that IP's DHCP lease started/ended" — a per-pin timeline,
 # not a per-site count.
 #
-# THREE SOURCES, JOINED ON TWO DIFFERENT KEYS (full explanation: ../references/14_pin-activation-diagnosis.md §14.4):
+# THREE SOURCES, JOINED ON TWO DIFFERENT KEYS (full explanation: ../../references/14_pin-activation-diagnosis.md §14.4):
 #   1. Apache `wifi/access` log   — WHEN (timestamp) + WHICH IP, keyed on client IP.
 #   2. `/var/lib/dhcp/dhcpd.leases` — WHICH MAC held that IP, keyed on IP, valid over a [starts,ends] epoch window.
 #   3. `iptables -t mangle -L ECLIPSE_MARK` — is that MAC's pin valid RIGHT NOW, keyed on MAC.
@@ -48,7 +48,7 @@
 
 set -uo pipefail
 
-REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 STAMP="$(date '+%Y%m%d_%H%M')"
 OUTDIR="${REPO_ROOT}/evidence/${STAMP}"
 SSH_USER="${SMC_SSH_USER:-root}"
@@ -180,7 +180,7 @@ done
 
 echo "Raw captures: ${OUTDIR}/<host>/pin-correlation.raw + pin-correlation.txt"
 echo
-echo "Read ../references/14_pin-activation-diagnosis.md §14.4 before trusting this blindly:"
+echo "Read ../../references/14_pin-activation-diagnosis.md §14.4 before trusting this blindly:"
 echo "'Live?' reflects the mark table at CHECK time, not at activation time — a since-expired pin"
 echo "will correctly show 'no' even though the activation itself was genuine. A WARNING note means"
 echo "the lease match is a best-effort fallback, not a confirmed IP-to-MAC binding at that instant."

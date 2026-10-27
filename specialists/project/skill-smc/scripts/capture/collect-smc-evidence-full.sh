@@ -44,7 +44,7 @@
 
 set -uo pipefail
 
-REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 STAMP="$(date '+%Y%m%d_%H%M')"
 OUTDIR="${REPO_ROOT}/evidence-full/${STAMP}"
 SSH_USER="${SMC_SSH_USER:-root}"
@@ -435,7 +435,7 @@ MANIFEST="${OUTDIR}/MANIFEST.txt"
   echo "captured_by: $(whoami)"
   echo "cluster:     $(tsh status 2>/dev/null | awk '/Cluster:/ {print $2}')"
   echo "ssh_user:    ${SSH_USER}"
-  echo "mode:        read-only (see SAFETY CONTRACT in scripts/collect-smc-evidence-full.sh)"
+  echo "mode:        read-only (see SAFETY CONTRACT in scripts/capture/collect-smc-evidence-full.sh)"
   echo "redaction:   $([[ $REDACT -eq 1 ]] && echo 'on (default)' || echo 'OFF — treat this directory as a credential store')"
   echo "groups:      ${only:-all}${skip:+ (minus ${skip})}"
   echo "captures:    ${#selected[@]} of ${#CAPTURES[@]}"

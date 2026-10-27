@@ -38,6 +38,7 @@ runtimes:
 check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
@@ -78,7 +79,7 @@ fleet *args:
 
 # Offline test of the evidence scripts' tsh deadline helper (no network): stdin passthrough, exit status, kill at the deadline.
 test-deadline:
-    bash scripts/test_with_deadline.sh
+    bash scripts/capture/test_with_deadline.sh
 
 # WAN-routing diagnostics template (read-only). Copy into an investigation folder before real use.
 routing *args:
@@ -86,33 +87,40 @@ routing *args:
 
 # Site device probe from the SMC over Teleport (read-only): ARP, ping, TLS certificate on 443. Example: just site_device_probe teleport.apn.au kakalpurannha-homeland-smc01 10.255.0.20
 site_device_probe proxy node +ips:
-    @bash scripts/site_device_probe.sh --proxy "{{proxy}}" "{{node}}" {{ips}}
+    @bash scripts/probes/site_device_probe.sh --proxy "{{proxy}}" "{{node}}" {{ips}}
 
 # Raspberry Pi SMC identity probe over Teleport (read-only). Example: just pi_identity_probe teleport.apn.au 20-mile-smc01
 pi_identity_probe proxy +nodes:
-    @bash scripts/pi_identity_probe.sh --proxy "{{proxy}}" {{nodes}}
+    @bash scripts/probes/pi_identity_probe.sh --proxy "{{proxy}}" {{nodes}}
 
 # PHP exposure probe over Teleport (read-only): installed php/mod_php versions, PHP processes, overlay. Example: just php_package_probe teleport.apn.au beagle-bay-smc01
 php_package_probe proxy +nodes:
-    @bash scripts/php_package_probe.sh --proxy "{{proxy}}" {{nodes}}
+    @bash scripts/probes/php_package_probe.sh --proxy "{{proxy}}" {{nodes}}
 
 # Compare two sets of smc_change run records, ignoring timestamps and live traffic, to prove a refactor changed nothing. Example: just smc_change_compare /tmp/before /tmp/after
-smc_change_compare before after:
-    @python3 scripts/smc_change_compare_records.py "{{before}}" "{{after}}"
+smc_change_compare before after: _require-venv
+    @{{py}} scripts/ansible/smc_change_compare_records.py "{{before}}" "{{after}}"
 
 # One line per smc_change run record of a change: result, phase 6-9 seconds, reboot (boot_id changed), lower-dir holders or failure.
 # Example: just smc_change_runs php-cve-2026-109618   (MODE=all lists check/assess/verify runs too; HOST filters by file name)
-smc_change_runs change MODE="apply" HOST="":
-    @python3 scripts/smc_change_runs_table.py "{{smc_change_role}}/files/changes/{{change}}/runs" --mode "{{MODE}}" --host "{{HOST}}"
+smc_change_runs change MODE="apply" HOST="": _require-venv
+    @{{py}} scripts/ansible/smc_change_runs_table.py "{{smc_change_role}}/files/changes/{{change}}/runs" --mode "{{MODE}}" --host "{{HOST}}"
+
+ansible_wifi_repo := "/Volumes/Data/_ansible/ansible-wifi"
+
+# Has an ansible-wifi commit reached the deploy branch; would it cherry-pick clean; who is in a group (read-only, no checkout or fetch).
+# Example: just ansible_change_reach 17583da3   |   just ansible_change_reach 17583da3 --inventory inventories/rcp/prod --group smc_ltp
+ansible_change_reach +args: _require-venv
+    @{{py}} scripts/ansible/ansible_change_reach.py --repo "{{ansible_wifi_repo}}" --base rise {{args}}
 
 # What is in the local-only ansible-wifi knowledge folder and what is symlinked into the repo (read-only). Example: just local_knowledge_index 3
 local_knowledge_index days="14":
-    @bash scripts/local_knowledge_index.sh --days "{{days}}"
+    @bash scripts/ansible/local_knowledge_index.sh --days "{{days}}"
 
 # Add a new SMC to an ansible-wifi inventory (3 groups + group/host/topology vars). Plan only unless args include --apply.
 # Example: just smc_inventory_add --flavor rct --env stage --host php-rct-smc01 --siteid-from-box
-smc_inventory_add *args:
-    @python3 scripts/smc_inventory_add.py {{args}}
+smc_inventory_add *args: _require-venv
+    @{{py}} scripts/ansible/smc_inventory_add.py {{args}}
 
 # smc_change flow map: assemble roles/smc_change/drawio/flows.yaml from drawio/parts/master.yaml (role parts, plus the flow parts in each
 # files/changes/<change>/ folder), then
@@ -131,27 +139,27 @@ smc_change_flows_check:
 
 # Run a command on a box through its autossh backdoor when Teleport cannot reach it; checks hostname first. Example: just backdoor_exec darlngunaya "hostname; uptime"
 backdoor_exec target cmd="hostname":
-    @bash scripts/backdoor_exec.sh "{{target}}" "{{cmd}}"
+    @bash scripts/access/backdoor_exec.sh "{{target}}" "{{cmd}}"
 
 # An SMC's uplink health over Teleport (read-only): loss to first hop and proxy, Teleport error trend, clock, backdoor restarts, WAN rate. Example: just smc_link_health banana-well-smc01
 smc_link_health host *args:
-    @bash scripts/smc_link_health.sh "{{host}}" {{args}}
+    @bash scripts/probes/smc_link_health.sh "{{host}}" {{args}}
 
 # x86 SMC resiliency probe over Teleport (read-only): disks, boot entries, watchdog, state sizes. Example: just x86_resiliency_probe teleport.apn.au horn-island-smc01
 x86_resiliency_probe proxy +nodes:
-    @bash scripts/x86_resiliency_probe.sh --proxy "{{proxy}}" {{nodes}}
+    @bash scripts/probes/x86_resiliency_probe.sh --proxy "{{proxy}}" {{nodes}}
 
 # rct site ATA settings through each SMC, compared across units (read-only). Example: just ata_settings_read teleport.apn.au adjamarragu-smc01 alamirra-smc01
 ata_settings_read proxy +nodes: _require-venv
-    @{{py}} scripts/ata_settings_read.py --proxy "{{proxy}}" {{nodes}}
+    @{{py}} scripts/probes/ata_settings_read.py --proxy "{{proxy}}" {{nodes}}
 
 # Top clients and domains from an SMC's DNS capture for a local time window (read-only). Example: just dns_capture_top teleport.communitywifi.net.au 20261009 16:00 23:59 koonibba-smc01
 dns_capture_top proxy date from to node:
-    @bash scripts/dns_capture_top.sh --proxy "{{proxy}}" --date "{{date}}" --from "{{from}}" --to "{{to}}" "{{node}}"
+    @bash scripts/probes/dns_capture_top.sh --proxy "{{proxy}}" --date "{{date}}" --from "{{from}}" --to "{{to}}" "{{node}}"
 
 # Who had Teleport sessions on hosts over UTC days, bot excluded (read-only). Example: just teleport_sessions teleport.communitywifi.net.au 2026-08-31 2026-09-06 hope-vale kowanyama
-teleport_sessions proxy from to +hosts:
-    @python3 scripts/teleport_sessions.py --proxy "{{proxy}}" --from "{{from}}" --to "{{to}}" --exclude-user bot-cw-dashboard $(printf -- '--host %s ' {{hosts}})
+teleport_sessions proxy from to +hosts: _require-venv
+    @{{py}} scripts/access/teleport_sessions.py --proxy "{{proxy}}" --from "{{from}}" --to "{{to}}" --exclude-user bot-cw-dashboard $(printf -- '--host %s ' {{hosts}})
 
 # --- skill-ai-it navigation-control layer -------------------------------------------------------
 
@@ -166,3 +174,55 @@ nav_validate: _require-venv
 
 nav_check_diff: _require-venv
     @{{py}} "{{skill_dir}}/scripts/check_expected_diff.py" --project-root .
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/role_check.py" --project-root .
+
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/govern_guard.py" --project-root "$root" || exit 1; fi
+    if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
+      nav="$(mktemp)"
+      {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
+      elif grep -q "would" "$nav"; then
+        {{py}} "{{ai_it}}/scripts/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+      fi
+      rm -f "$nav"
+    fi
+    {{py}} "{{ai_it}}/scripts/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    {{py}} "{{ai_it}}/scripts/adopt_code_map.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
+# Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
+budget *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/budget_plan.py" --project-root . {{ARGS}}
+
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/add_changelog_entry.py" --project-root . "$@"
+
+# Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
+move-sections *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/md_sections.py" --project-root . section "$@"

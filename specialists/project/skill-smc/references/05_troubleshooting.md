@@ -20,10 +20,10 @@
 
 ### Tier 1: Box Unreachable
 
-**Check the autossh backdoor before calling a box unreachable** (operator, 2026-10-07): `scripts/backdoor-watch.sh <site> [check|history|watch]`, procedure and stale-port check in
+**Check the autossh backdoor before calling a box unreachable** (operator, 2026-10-07): `scripts/access/backdoor-watch.sh <site> [check|history|watch]`, procedure and stale-port check in
 `03_communication-flows.md` §Backdoor SSH Access.
 
-**Classify the outage before calling it a hang** (2026-10-07): `scripts/fleet-reboot-timeline.py 90 'site="<site>"'` separates ordinary reboots, dark-then-boot (power loss, or a
+**Classify the outage before calling it a hang** (2026-10-07): `scripts/metrics/fleet-reboot-timeline.py 90 'site="<site>"'` separates ordinary reboots, dark-then-boot (power loss, or a
 hang that was power-cycled) and WAN-only gaps. Solar sites lose power every winter morning, and a Pi undervoltage storm shows only in Graylog `kern.log`, not in Prometheus
 (`06_failure-modes.md`). The RISE watchdog reboots only on overlay >= 80%, and `auto_reboot: 0` does not stop it.
 

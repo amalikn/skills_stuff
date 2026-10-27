@@ -255,6 +255,26 @@ def named_in(name: str, is_dir: bool, text: str) -> bool:
     return False
 
 
+def twin_named(name: str, text: str) -> bool:
+    """Say whether a `.txt` extraction is named through its source file, as `manual.pdf (+ .txt)`.
+
+    Vendor-source indexes list each PDF once with its text extraction as `(+ .txt)`; reading only literal names
+    counted 19 such twins as unlisted in skill-smc on 2026-10-27.
+
+    Args:
+      name: the entry's file name.
+      text: the folder index's text.
+
+    Returns:
+      True when the entry is a .txt whose same-stem source is named with the `(+ .txt)` suffix.
+    """
+    if not name.endswith(".txt"):
+        return False
+    stem = re.escape(name[: -len(".txt")])
+    # One qualifier word is allowed: `(+ OCR .txt)` marks an extraction made by OCR instead of pdftotext.
+    return re.search(rf"(?<![\w.-]){stem}\.\w+`?\s*\(\+\s*(?:\w+\s+)?\.txt\)", text) is not None
+
+
 def find_index_gaps(root: Path, min_docs: int) -> tuple[list[str], list[str], int]:
     """Compare each folder index with its folder. Returns (EMPTY-INDEX rows, UNLISTED rows, describes-only count)."""
     visible = git_visible(root)
@@ -283,7 +303,7 @@ def find_index_gaps(root: Path, min_docs: int) -> tuple[list[str], list[str], in
         if DESCRIBES_ONLY in text:
             declared += 1
             continue
-        missing = [e for e in entries if not named_in(e.name, e.is_dir(), text)]
+        missing = [e for e in entries if not named_in(e.name, e.is_dir(), text) and not twin_named(e.name, text)]
         idx_rel = idx.relative_to(root).as_posix()
         if len(missing) == len(entries) and len(entries) >= min_docs:
             empty.append(f"{idx_rel}  (names none of the folder's {len(entries)} entries)")

@@ -109,6 +109,15 @@ previously undocumented CNMaestro-provisioning purpose of the group, mislabeled 
 `tmpfiles.d` template, the 44GB journal reclaim, and reordering lock-clearing in `custom_apt_update_cache.yml`/`custom_apt_install.yml`) fixing `rc:100 apt-daily-upgrade` collisions. This pack already
 documents a *different*-sounding apt-daily-upgrade fix (masking `apt-daily.timer`/`apt-daily-upgrade.timer`, commit `0c51cb1`, see `08_ansible-authoring.md`). It is not established whether these are
 the same fix described two ways or a genuine additional hardening layer — confirm against the actual commits before treating both as independently true.
+- **July apt fixes not on `rise` (found 2026-10-27):** `0c51cb1` (timer mask) and `4889af8` (`apt_info.py` without `cache.update()`) are on
+  side branches only (`rise-multi` among them), not on `rise` or `origin/rise` (ansible-wifi 67a44aa3). The boxes deployed on 2026-07-15 keep the
+  fix, but a `smc_system`/`smc_node_exporter` run from `rise` reverts it. Rows below that say "deployed" describe the boxes, not the branch.
+  Same pattern as the `smc_ltp` inventory fix `17583da3`. Check any cited fix with `just ansible_change_reach <commit>`.
+- **Branch reach: much of what this pack documents is not on `rise` (staleness audit 2026-10-27).** `rise` and `rise-multi` have diverged since
+  `e1077c17` (2025-12-09): local `rise-multi` holds 36 commits `rise` lacks (only 11 of them pushed to `origin/rise-multi`), `rise` holds 20 that
+  `rise-multi` lacks; 203 role files differ. Found so far: the July apt fixes above, `smc_ltp` `17583da3`, and url_capture v2 (`c19a61fa`,
+  2026-06-09; `rise` has only the v1 role, see `09_url-capture-pcap.md`). A fact here that says "deployed" or "fixed" describes the boxes or
+  the branch it was written from; check `rise` before relying on a run from it. The 25 unpushed `rise-multi` commits exist on one machine only.
 - **2026-07-09 correction**: the "Kohana PHP tries MySQL (not installed on rcp)" bug row below was diagnosed from smc-file-writing-analysis's 2026-06-02 burringurrah audit, which found no
 `/var/lib/mysql` and concluded the 1min/5min/daily Kohana cron jobs were failing local DB connections. ansible-wifi ADR-002 (`.archcore/adr/adr-002-eclipse-kohana-captive-portal-architecture.md`)
 documents the exact same three cron cadences as Kohana's sync jobs with a **remote Eclipse server** (`wifi.activ8me.net.au:443`), not local MySQL — Kohana is the local half of a two-tier
@@ -190,7 +199,7 @@ assuming `cw`/`apn`/`rct`/`wh` are ungated by design.
 
 ## Jump-Host Tooling — `snmpget` Now Installed Fleet-Wide on rcp/nbn_accelerate (2026-09-20)
 
-**Resolved for the `rcp` and `nbn_accelerate` flavours: all 45 boxes now have `snmpget`.** 19 already had it, 25 were installed by `scripts/install_packages.sh` on 2026-09-20, and one
+**Resolved for the `rcp` and `nbn_accelerate` flavours: all 45 boxes now have `snmpget`.** 19 already had it, 25 were installed by `scripts/fleet/install_packages.sh` on 2026-09-20, and one
 (`mindi-rardi-smc01`) completed on a retry after a dpkg lock cleared. Verified by a full re-run reporting 45/45 `ALREADY`.
 
 **The other flavours were deliberately left alone.** The estate has 362 SMC boxes — `rct` 292, `wh` 20, `nbn_wh` 2 — and only `rcp` (17) and `nbn_accelerate` (28) were in scope. Do not assume
@@ -214,7 +223,7 @@ healthy APs across two sites were recorded as down on 2026-09-20 before the caus
 ### A dropped session can orphan apt and block later attempts
 
 `mindi-rardi-smc01` failed repeatedly with `Unable to acquire the dpkg frontend lock`. The holder was an **earlier `apt-get install` of this same package, orphaned when its `tsh` session dropped** —
-so the install was blocking itself. It completed on its own and the box now has the binary. `scripts/install_packages.sh` now passes `DPkg::Lock::Timeout` so apt waits for the lock instead of
+so the install was blocking itself. It completed on its own and the box now has the binary. `scripts/fleet/install_packages.sh` now passes `DPkg::Lock::Timeout` so apt waits for the lock instead of
 failing the race. Do not kill an apt holding the lock without checking what it is: killing mid-transaction can leave dpkg half-configured.
 
 ## Known Operational Bugs (rcp fleet — confirmed 2026-06-30)
@@ -295,7 +304,7 @@ failing the race. Do not kill an apt holding the lock without checking what it i
 
 **Full-fleet live `tsh ssh` sweep, not a spot-check**: all 26 reachable `nbn_accelerate` sites plus both `nbn_wh` sites (`bungardi-smc01`, `darlngunaya-smc01`) — 28 hosts total, effectively the entire
 NBN Accelerate cluster minus `aurukun-smc03` (in the static inventory but not visible in `tsh ls` at capture time) and the `cw`/central-infra nodes. Superseded the earlier same-day 2-host spot-check
-(`warakurna-smc01`/`indulkana-smc01`). Collected via the new `scripts/collect-fleet-health.sh` + `scripts/fleet-health.justfile`. **`nbn_wh` is the `wh`-flavor equivalent on this cluster** (same RPi
+(`warakurna-smc01`/`indulkana-smc01`). Collected via the new `scripts/fleet/collect-fleet-health.sh` + `scripts/fleet-health.justfile`. **`nbn_wh` is the `wh`-flavor equivalent on this cluster** (same RPi
 hardware class as `rct`/`wh` on the APN cluster, operator-confirmed) — every `wh`-flavor expectation (RPi ARM64, Swissbit SD storage, overlayroot) is the baseline `nbn_wh` should be compared against,
 not `nbn_accelerate`'s x86 baseline.
 
@@ -379,7 +388,7 @@ against live `rct`/`wh` hosts either. Not resolved — flagged in `07_hardware-o
 
 ### Evidence basis
 
-Direct `tsh ssh root@<host>` read-only commands via `scripts/collect-fleet-health.sh`, this session, 28/28 targeted hosts successful (two-batch capture after a mid-run script edit corrupted the first
+Direct `tsh ssh root@<host>` read-only commands via `scripts/fleet/collect-fleet-health.sh`, this session, 28/28 targeted hosts successful (two-batch capture after a mid-run script edit corrupted the first
 batch — see the script's own header note on why editing a running script file is unsafe). Raw evidence retained at
 `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/fleet-hardware-audit-20260803/` (relocated from `skill-smc/evidence/` per this pack's evidence-retention policy — see `scripts/README.md`).
 Not covered: `cw` flavor itself (central-infra only, no site-level hosts to check), `aurukun-smc03` (not reachable via `tsh ls` at capture time).
@@ -897,7 +906,7 @@ ran) inside the bad window keeps serving the broken redirect indefinitely afterw
 
 **Update 2026-10-15 (later) — how a 2025 misconfiguration stayed harmless, and what is still unproven.** A run of `smc_dns` inside the bad window also wrote the wrong name into Unbound: `roles/smc_dns/templates/unbound.conf.j2:118` emits `local-data: "{{ portal_fqdn }}. IN A {{ portal_address }}"`. With that line, a client sent to `https://teleport.communitywifi.net.au` resolved it to `10.254.0.1`, and the leftover `teleport.communitywifi.net.au.conf` vhost serves the real portal there (`DocumentRoot /var/www/html/wifi`, cert copied nightly by `/sslcertcopy.sh teleport.communitywifi.net.au`). So the wrong `deny_info` only bites once Unbound stops answering the box address for that name. On hope-vale and kowanyama, `/etc/unbound/unbound.conf` was rewritten at **2026-09-05 20:47** (an operator Ansible run, Teleport audit: `malik.ahmad`, 78 sessions on all three sites 20:40-20:50 AEST); its earlier content was not captured, so whether it held the teleport line is inferred, not read. Checked and ruled out as the 1 Sep trigger: the central Let's Encrypt cert for `teleport.communitywifi.net.au` (cert13, 2026-07-28 to 2026-10-26, covered the outage) and a Route 53 change to the `teleport.` record (each box's Teleport agent resolves the same name through 8.8.8.8 and stayed connected through Jul-Aug). Route 53 now holds `*.communitywifi.net.au CNAME communitywifi.net.au` (A `10.254.0.1`), `teleport.` A `3.104.50.51`, `*.teleport.` A `3.104.50.51`; CloudTrail history was not readable (`noc-admin` lacks `cloudtrail:LookupEvents`). These three sites ship nothing to Graylog. Teleport audit also shows `trent.sarfisis` interactive sessions on hope-vale (1 Sep 09:32, 2 Sep 08:57-09:09, 3 Sep 09:13) and galiwinku (1 Sep 09:42) AEST, so staff were on two of the boxes from the first morning. Trigger for 1 Sep: still open.
 
-**Update 2026-10-15 (operator's account, sent to the team).** In August 2026 technicians reported that users reaching `communitywifi.net.au` without being on the WiFi were sent to an incorrect page, which looked like the WiFi being down. The Route 53 `A` record for `communitywifi.net.au` was changed to `10.254.0.1` (the SMC's local portal address) to stop that; the operator states this change exposed the latent wrong redirect on the three sites (USER_STATED, operator 2026-10-15). Verified: the record now reads `A 10.254.0.1`, with `*.communitywifi.net.au CNAME communitywifi.net.au`. Not verified: the record's earlier value and change date (CloudTrail not readable with `noc-admin`), and how the apex change reaches on-box clients, whose Unbound already answers the apex with `10.254.0.1` locally. The response sent to nbn's team (both issues) is kept at `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/teleport-fqdn/`. Use `scripts/teleport_sessions.py` for who-was-on-the-box questions and `scripts/dns_capture_top.sh` for per-client attribution after Squid's 3-day logs rotate.
+**Update 2026-10-15 (operator's account, sent to the team).** In August 2026 technicians reported that users reaching `communitywifi.net.au` without being on the WiFi were sent to an incorrect page, which looked like the WiFi being down. The Route 53 `A` record for `communitywifi.net.au` was changed to `10.254.0.1` (the SMC's local portal address) to stop that; the operator states this change exposed the latent wrong redirect on the three sites (USER_STATED, operator 2026-10-15). Verified: the record now reads `A 10.254.0.1`, with `*.communitywifi.net.au CNAME communitywifi.net.au`. Not verified: the record's earlier value and change date (CloudTrail not readable with `noc-admin`), and how the apex change reaches on-box clients, whose Unbound already answers the apex with `10.254.0.1` locally. The response sent to nbn's team (both issues) is kept at `local-knowledge-ansible/ansible-wifi/issues/nbn-accelerate/teleport-fqdn/`. Use `scripts/access/teleport_sessions.py` for who-was-on-the-box questions and `scripts/probes/dns_capture_top.sh` for per-client attribution after Squid's 3-day logs rotate.
 
 **Process lesson:** the `nbn_wh` fix landing inside an unrelated commit (headline: blocklist-feed transport, not portal FQDN) is exactly the kind of change where a targeted write-back audit misses
 things — `git show --stat` on every commit that touches a shared vars file, not just commits whose headline names the file, should be part of any future sweep for this class of regression.
@@ -992,7 +1001,7 @@ drops to zero mean a wipe. Then run `journalctl -u teleport | grep "teleportUser
 
 **Side findings (same session):**
 - The hourly WAN bursts in Grafana are `speedtest_exporter`'s own tests, roughly 1.2 GB/hour of WAN data (5-minute-rate estimate).
-- `scripts/correlate-pin-activation.sh` has two bugs:
+- `scripts/capture/correlate-pin-activation.sh` has two bugs:
   - It exits 0 when every `tsh ssh` fails. It uses the active Teleport profile; pass `TELEPORT_PROXY=teleport.communitywifi.net.au`.
   - It reported "no 302 activations" on Koonibba, where the Apache log has 6-112 a day. Its log parser misses them.
 - **Usage totals from Prometheus need a `> 0` filter.** amata-smc01's node_exporter counters contain spurious samples of exactly `0` between normal values (e.g. bridge_501 tx 639.5 GB -> 0 -> 639.8 GB at 2026-08-20 06:30Z). `rate()`/`increase()` read each 0 as a counter reset and count the whole counter as new traffic, so Amata's raw August total came out at 62,830 GB (true: 598 GB) and a 30-day window at ~3 PB. Use `rate((metric > 0)[5m:1m])` when summing usage. It looked like an L2 loop; it was not.
@@ -1073,7 +1082,7 @@ The ACM cert on the Graylog ALB (`gl.aws.apn.au`) expired 2026-09-12 09:59:59 AE
 
 VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, glen-hill; ATA reads at five more rct sites).
 
-- **kintore-smc01 is not registered in Teleport:** `subsystem request failed`, twice. Check the backdoor (`scripts/backdoor-watch.sh`) before calling it down.
+- **kintore-smc01 is not registered in Teleport:** `subsystem request failed`, twice. Check the backdoor (`scripts/access/backdoor-watch.sh`) before calling it down.
 - **aeroplane-1's ATA drops the HTTP connection;** 20-mile's ATA never answers HTTP. The ATA's web UI is its only management surface (`17_site-ata-dallas-delta.md`).
 - **The ATA web PIN is empty** on every unit read (adjamarragu, alamirra, akwalirrumanja, alice-well, alkngarrija). Open, not changed.
 - **Pi bootloaders are behind upstream and the package hides it:** EEPROM 2023-01-11 on all four, upstream default 2026-09-23; Ubuntu's `rpi-eeprom` reports "up to date" (`07_hardware-overlay.md`).
@@ -1095,7 +1104,7 @@ VERIFIED-OBSERVED 2026-10-08 over Teleport apn (20-mile, adjamarragu, areyonga, 
 
 ## 2026-10-08 — finding which switch port an x86 SMC NIC is cabled to (INFO)
 
-- **TP-Link MAC table, read-only:** `scripts/tplink-switch.sh <site> <ip> "show mac address-table"` lists `MAC VLAN Port` with ports as `Gi1/0/N`
+- **TP-Link MAC table, read-only:** `scripts/switch/tplink-switch.sh <site> <ip> "show mac address-table"` lists `MAC VLAN Port` with ports as `Gi1/0/N`
   (Nautobot `gigabitEthernet 1/0/N`). VERIFIED-OBSERVED old-looma, warburton, umoona 20261008.
 - **The SMC's NIC MAC may never reach the switch:** uplink VLAN interfaces (`vlan521@enp2s0`...) send from their own locally administered MACs
   (`72:77:77:xx`), and the bridges from the fleet-wide `72:77:77:00:00:01`; at warburton no NIC's burned-in MAC was in any switch table. A VLAN
@@ -1190,7 +1199,7 @@ Operator report: Graylog answers Internal Server Error since 2026-10-08. Read-on
 
 ## 2026-10-09 — what Graylog holds of the units behind a low-touch SMC (INFO)
 
-Searched read-only through `scripts/smc_graylog.py` after the 2026-10-09 recovery (unified-network-controller, old-looma): the units' own syslog
+Searched read-only through `scripts/metrics/smc_graylog.py` after the 2026-10-09 recovery (unified-network-controller, old-looma): the units' own syslog
 reaches the SMC as `/var/log/smc-groups/wifi.log` (system messages in `/var/log/smc-groups/system.log`) and Graylog keeps it, tagged by the unit's
 hostname (`sm-48 DEVICE-AGENT[pid] ...`): old-looma 3,092 such lines with "cnmaestro" from 2026-08-19. The Force 300 SMs log there; the R195P
 routers do not (0 lines from home-57 in two months), so a router-side WAN link drop is not recorded anywhere central. The provisioning hook's own
@@ -1422,7 +1431,7 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 
 - umoona-smc01: the 2026-10-22 voip capture found no Asterisk process, as on 2026-08-25 (unit `active (exited)`, see `scripts/README.md`), and the operator confirms
   umoona has no active SIP clients (known, 2026-10-22), so this is not an outage. nocprov-smc01 (provisioning box) has none either. `VERIFIED-OBSERVED` 2026-10-22.
-- `scripts/collect-smc-evidence-full.sh` calls `tsh ssh` without a deadline (lines with `tsh ssh "${SSH_USER}@${host}"`), against this pack's access
+- `scripts/capture/collect-smc-evidence-full.sh` calls `tsh ssh` without a deadline (lines with `tsh ssh "${SSH_USER}@${host}"`), against this pack's access
   rule. The 2026-10-22 run wrapped each host in `perl -e 'alarm 150; exec @ARGV'` (no `timeout` on macOS). Fix: a per-call deadline inside the script.
 - Resolved 2026-10-22: both evidence scripts call `tsh ssh` through `with_deadline` (watcher, TERM then KILL); offline test `just test-deadline`;
   smoke run on kalumburu-smc01 (73 s, 11 of 11 captures).

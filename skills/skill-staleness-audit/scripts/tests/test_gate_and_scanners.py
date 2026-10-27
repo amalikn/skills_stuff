@@ -185,6 +185,24 @@ class IndexContents(Fixture):
         out = run("inverse_sweep.py", cwd=self.root)
         self.assertEqual(out.returncode, 0, out.stdout)
 
+    def test_txt_twin_named_through_source(self) -> None:
+        """A `.txt` extraction listed as `manual.pdf (+ .txt)` is named."""
+        write(self.root, "docs/manual.pdf", "x\n")
+        write(self.root, "docs/manual.txt", "x\n")
+        write(self.root, "docs/scan.pdf", "x\n")
+        write(self.root, "docs/scan.txt", "x\n")
+        write(self.root, "docs/readme.md", "# docs\n\n- [a.md](a.md)\n- manual.pdf (+ .txt)\n- scan.pdf (+ OCR .txt)\n")
+        out = run("inverse_sweep.py", cwd=self.root)
+        self.assertEqual(out.returncode, 0, out.stdout)
+
+    def test_txt_without_twin_convention_is_unlisted(self) -> None:
+        """A `.txt` whose source is named without `(+ .txt)` is still unlisted."""
+        write(self.root, "docs/manual.pdf", "x\n")
+        write(self.root, "docs/manual.txt", "x\n")
+        write(self.root, "docs/readme.md", "# docs\n\n- [a.md](a.md)\n- manual.pdf\n")
+        out = run("inverse_sweep.py", cwd=self.root)
+        self.assertIn("docs/manual.txt", out.stdout)
+
 
 # ── S3 + S8: claim classes ──────────────────────────────────────────────────────────────────────────────────────────
 class ClaimClasses(Fixture):

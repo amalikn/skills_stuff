@@ -5,9 +5,9 @@
 #   1. AWS target groups apn-graylog-{api,web,gelf}-tg: healthy or not (noc-admin profile).
 #   2. apn-graylog01: graylog-server and mongod active AND enabled at boot; listening on 9000 and 12202.
 #   3. apn-datanode01: graylog-datanode active AND enabled at boot; listening on 9200; host boot time.
-#   4. Graylog API through the apn-graylog Teleport app: indexer cluster health (needs ../.graylog-token).
+#   4. Graylog API through the apn-graylog Teleport app: indexer cluster health (needs ../../.graylog-token).
 #   5. AWS scheduled events on both instances (a scheduled reboot restarts only what is enabled).
-# Nothing is changed. Run: scripts/graylog-health.sh   (or: just -f scripts/fleet-health.justfile graylog-health)
+# Nothing is changed. Run: scripts/metrics/graylog-health.sh   (or: just -f scripts/fleet/fleet-health.justfile graylog-health)
 # Needs: `tsh login --proxy=teleport.apn.au`, the AWS `noc-admin` profile, and for step 4 `tsh apps login apn-graylog`.
 # Exit status: 0 when every check passes, 1 when any fails.
 set -u
@@ -47,13 +47,13 @@ host_check apn-datanode01 "graylog-datanode" "9200"
 
 cert=$(tsh --proxy="$PROXY" apps config apn-graylog --format=cert 2>/dev/null)
 key=$(tsh --proxy="$PROXY" apps config apn-graylog --format=key 2>/dev/null)
-token=$(cat "$HERE/../.graylog-token" 2>/dev/null)
+token=$(cat "$HERE/../../.graylog-token" 2>/dev/null)
 if [ -f "$cert" ] && [ -n "$token" ]; then
   h=$(curl -s -m 30 --cert "$cert" --key "$key" -u "$token:token" -H 'Accept: application/json' \
       "https://apn-graylog.$PROXY/api/system/indexer/cluster/health" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("status","?"))' 2>/dev/null)
   [ "$h" = green ] && say ok "Graylog indexer cluster green" || say FAIL "Graylog indexer cluster ${h:-unreadable (API down?)}"
 else
-  printf 'skip  Graylog API: run `tsh --proxy=%s apps login apn-graylog` and keep ../.graylog-token\n' "$PROXY"
+  printf 'skip  Graylog API: run `tsh --proxy=%s apps login apn-graylog` and keep ../../.graylog-token\n' "$PROXY"
 fi
 
 for name in apn-graylog01 apn-datanode01; do

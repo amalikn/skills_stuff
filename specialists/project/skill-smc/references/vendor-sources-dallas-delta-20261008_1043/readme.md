@@ -38,7 +38,7 @@ could be downloaded.
 |  |   `Manual-VoIP-s11 r1.cdr 08-03-2019`, |  |  |   keypad |
 |  |   pcb s11 Apr19; source of the |  |  |  |
 |  |   45255 claim |  |  |  |
-| seadan-DDLSENTRYVOIPCAM1BV_SENTRYVOIP1BVCAM_installation-manual_1.pdf | Sentry VoIP 1-button camera | https://resources.seadan.com.au/resources/products/DDLSENTRYVOIPCAM1BV/attachments/DDLSENTRYVOIPCAM1BV_SENTRYVOIP1BVCAM_installation-manual_1.pdf | 2026-10-08 | VoIP camera |
+| seadan-DDLSENTRYVOIPCAM1BV_SENTRYVOIP1BVCAM_installation-manual_1.pdf (+ .txt) | Sentry VoIP 1-button camera | https://resources.seadan.com.au/resources/products/DDLSENTRYVOIPCAM1BV/attachments/DDLSENTRYVOIPCAM1BV_SENTRYVOIP1BVCAM_installation-manual_1.pdf | 2026-10-08 | VoIP camera |
 |   (+ .txt) |   installation manual, v1.3 02-02-2018 |  |  |   door station |
 | Sentinel-VoIP-Manual.pdf (+ .txt) | Sentinel VoIP manual, | https://dallasdelta.com/api/resources/manuals/Sentinel-VoIP-Manual.pdf | 2026-10-08 | S11 Sentinel |
 |  |   `Manual-VoIP-s11_S r1 28-05-2020` |  |  |  |

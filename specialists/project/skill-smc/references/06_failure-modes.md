@@ -194,7 +194,7 @@ once.
 reset logic is not AVR firmware. It is the `rct-tstik` Laravel app on the SMC itself (`php artisan update:stats`, cron every minute), which pings the phone UI (192.168.5.253), Sky Muster NTD
 (192.168.100.1), MikroTik switch (10.255.0.5), AP (10.255.0.20) and 8.8.8.8/1.1.1.1, and asks the AVR to cut a rail for 10 s: phone after 11 failed UI runs; NTD after 11 failed modem runs or 35 failed
 internet runs; **switch** after 11 failed switch or AP runs, or 71 failed internet runs. The code never power-cycles the SMC, and it stops entirely if the SMC hangs. Whether the AVR firmware has its
-own watchdog for the SMC is not established. History: `storage/logs/laravel.log*` (UTC, size-rotated, about a week); capture with `scripts/tstik-capture.sh`. It masks this failure mode entirely — an
+own watchdog for the SMC is not established. History: `storage/logs/laravel.log*` (UTC, size-rotated, about a week); capture with `scripts/capture/tstik-capture.sh`. It masks this failure mode entirely — an
 `rct` box in the same state self-recovers within minutes and nobody opens a ticket. `wh` has no equivalent, and nothing in software substitutes for it:
 
 Rechecked 2026-10-07 at Bitbucket `activ8me/rct-tstik` head `8e3f5b0` (2026-08-06): `IOManager::ResetPower` switches the phone UI, NTD, LAN switch, Thuraya modem, Aux1, Aux2 and external I2C rails. No
@@ -343,7 +343,7 @@ mount lands at 50% of RAM — consistent with the existing "`overlay.size_ratio`
   Whether only the SD card or the whole unit changed is unknown: no Pi serial was recorded for the old unit (the running one is `100000007bb53770`).
 - **Consequence:** no evidence from the hung boot. Its logs were in the tmpfs upper layer, Graylog had no SMC logs 2026-09-12 to 10-07, and
   the old disk is off site.
-- **Rule:** after any tech "reboot" of a dark box, run `scripts/pi_identity_probe.sh` before trusting the box: `boot_hostname=generic-wh01-*`,
+- **Rule:** after any tech "reboot" of a dark box, run `scripts/probes/pi_identity_probe.sh` before trusting the box: `boot_hostname=generic-wh01-*`,
   a different kernel, or `root_fs` on ext4 where RISE ran means a spare went in and RISE must be re-run. Ask the techs to return the old SD card.
 
 ### Daily Winter Power Loss at Solar Sites — dark before dawn, boots mid-morning (`wh`, 2026-10-07)
@@ -358,7 +358,7 @@ Not a hang and not software. Report: `local-knowledge-ansible/ansible-wifi/issue
 | Logs             | Last Graylog lines routine (health 100%, mem 29%), **no shutdown sequence**; after boot `systemd-resolved: Clock change detected` (no RTC, so a cold start)           |
 | Resources before | Normal (`predark-snapshot.py`): mem 23–36%, load < 1.3, overlay 22–43%                                                                                                |
 | Cause            | Solar battery flat before dawn, load reconnects when PV recovers (operator: canteen-creek has known battery problems). On-box watchdogs cannot help                   |
-| Detect           | `scripts/fleet-reboot-timeline.py`: `DARK->boot` events repeating at the same clock time                                                                              |
+| Detect           | `scripts/metrics/fleet-reboot-timeline.py`: `DARK->boot` events repeating at the same clock time                                                                              |
 
 The 2026-08-28 census filed outages under six hours as "ordinary remote-site connectivity". At these four sites most of them are power losses; classify with `fleet-reboot-timeline.py` before assuming
 connectivity.

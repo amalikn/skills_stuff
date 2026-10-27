@@ -100,7 +100,7 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
   cause:** `teleport.communitywifi.net.au` is its own independently-logged-in root Teleport target (its own separate `tsh status` profile) — it is not subordinate to `teleport.apn.au`. `--cluster=`
   asks tsh to route to a target as a subordinate via a trust relationship from your current root context; that relationship doesn't exist here, so the gRPC handshake fails with EOF — a transport-layer
   error that gives no hint it's a flag-choice problem rather than a server problem. **Rule: always pass `--proxy=teleport.communitywifi.net.au` explicitly on every `tsh` command against this Teleport
-  target** (`tsh ls`, `tsh ssh`, tunnels — not just the tunnel case documented above), never `--cluster=`. For a device tunnel specifically, prefer `scripts/teleport-tunnel.sh` over a hand-written
+  target** (`tsh ls`, `tsh ssh`, tunnels — not just the tunnel case documented above), never `--cluster=`. For a device tunnel specifically, prefer `scripts/access/teleport-tunnel.sh` over a hand-written
   `tsh` invocation — it already hardcodes `--proxy` correctly and resolves the right target from ansible-wifi's inventory automatically (its internal shell variable is still named `CLUSTER`; left
   as-is, a code rename is out of scope here), so this class of mistake can't happen through it. The 2026-09-18 incident happened because both agent sessions wrote raw `tsh ls`/`tsh ssh <cmd>` calls by
   hand instead of going through it — that path still needs `--proxy=` added by hand. Before ever concluding this Teleport target is down or a node is missing/decommissioned, re-run the same command

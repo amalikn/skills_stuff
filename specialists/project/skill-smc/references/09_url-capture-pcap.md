@@ -15,6 +15,10 @@
 
 ## 10. url_capture v2 — Python Streaming Service
 
+> **Branch reach (checked 2026-10-27):** v2 (`c19a61fa`, 2026-06-09 onward) is on `rise-multi` and side branches, not on `rise`, which still
+> carries only the v1 role (`url_capturev1.sh`, no `v2_setup.yml`). A `smc_url_capture` run from `rise` deploys v1. See `13_known-issues.md`
+> (Branch reach).
+
 ### Why the Rewrite
 
 The legacy `screen` + cron architecture had three problems:

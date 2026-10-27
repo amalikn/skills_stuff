@@ -15,7 +15,7 @@
 #   that mutates state; if you need one, run it by hand and record it in the analysis instead.
 #
 # DIFFERENCE FROM collect-smc-evidence.sh: at fleet scale (dozens of hosts), a naive one-ssh-
-# round-trip-per-command design is too slow over satellite links (per ../references/01_overview.md
+# round-trip-per-command design is too slow over satellite links (per ../../references/01_overview.md
 # "Network Link — Satellite": "batch commands into single SSH round-trips wherever possible").
 # Each CAPTURES entry below is therefore a small *bundle* of related read-only commands joined
 # with `;` and separated by echo markers, run as ONE ssh round-trip — not one command per
@@ -43,7 +43,7 @@
 
 set -uo pipefail
 
-REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+REPO_ROOT="${OUTDIR_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 STAMP="$(date '+%Y%m%d_%H%M')"
 OUTDIR="${REPO_ROOT}/evidence/${STAMP}"
 SSH_USER="${SMC_SSH_USER:-root}"
@@ -66,7 +66,7 @@ SSH_USER="${SMC_SSH_USER:-root}"
 # ok/FAILED label, when reviewing captures from before this fix.
 CAPTURES=(
   # Hardware model matters: this fleet mixes multiple SMC chassis models with different physical
-  # NIC naming schemes (see the "Mandatory pre-check" note in ../references/08_ansible-authoring.md).
+  # NIC naming schemes (see the "Mandatory pre-check" note in ../../references/08_ansible-authoring.md).
   # Also the first hardware capture ever taken for the NBN Accelerate cluster (2026-08-03) — no
   # prior chassis-model inventory exists for this flavor the way it does for rcp/rct/wh.
   "01-identity-hardware:echo '--hostname--'; hostname; echo '--uptime--'; uptime; echo '--kernel--'; uname -a; echo '--os-release--'; (lsb_release -d 2>/dev/null || head -3 /etc/os-release); echo '--dmidecode-manufacturer--'; dmidecode -s system-manufacturer 2>/dev/null; echo '--dmidecode-product--'; dmidecode -s system-product-name 2>/dev/null; echo '--dmidecode-serial--'; dmidecode -s system-serial-number 2>/dev/null; echo '--cpu--'; lscpu 2>/dev/null | grep -E 'Model name|^CPU\\(s\\)|Architecture|Thread|Core'; echo '--memory--'; free -h; echo '--disk-lsblk--'; lsblk 2>/dev/null; echo '--disk-usage--'; df -h; echo '--smartmon.prom--'; cat /var/lib/node_exporter/textfile_collector/smartmon.prom 2>/dev/null; echo '--sbdm.prom--'; cat /var/lib/node_exporter/textfile_collector/sbdm.prom 2>/dev/null; echo '--overlayroot-mount--'; mount 2>/dev/null | grep overlay; true"
@@ -89,12 +89,12 @@ CAPTURES=(
   "04-portal-packages:echo '--vhost-config--'; cat /etc/apache2/sites-enabled/*.conf 2>/dev/null; echo '--mobile-app-backend--'; test -d /var/www/html/wifi-community-app-backend && echo present || echo absent; echo '--kohana-portal-dir--'; test -d /var/www/html/wifi && echo present || echo absent; echo '--key-packages--'; dpkg -l 2>/dev/null | grep -E '^ii' | grep -iE 'bind9|unbound|stubby|apache2 |php[0-9]|clamav|lynis|prometheus|node-exporter|fluent-bit|teleport|isc-dhcp-server'; true"
 
   # Added 2026-09-11 during the nbn_accelerate/nbn_wh portal-FQDN regression investigation (see
-  # ../references/13_known-issues.md and ../references/14_pin-activation-diagnosis.md). Both
+  # ../../references/13_known-issues.md and ../../references/14_pin-activation-diagnosis.md). Both
   # inventories independently had periods where smc_bases_portal_fqdn pointed at the Teleport
   # proxy hostname instead of the real portal domain; git being fixed does NOT mean a box is
   # fixed — squid.conf/Apache vhosts/cron only regenerate when the relevant role actually re-runs
   # on that box, so a box can carry the broken config for over a year after the git revert. This
-  # bundle is the config-side half of that diagnosis; ../references/14_pin-activation-diagnosis.md
+  # bundle is the config-side half of that diagnosis; ../../references/14_pin-activation-diagnosis.md
   # + audit-pin-activation.sh is the live-impact half — run both when investigating a suspected
   # portal-issuance problem.
   "05-portal-fqdn-status:echo '--deny-info--'; grep -m1 -i 'deny_info.*captive_portal' /etc/squid/squid.conf 2>/dev/null; echo '--squid-conf-mtime--'; stat -c '%y' /etc/squid/squid.conf 2>/dev/null; echo '--apache-sites-enabled--'; ls /etc/apache2/sites-enabled/ 2>/dev/null; echo '--sslcertcopy-cron--'; grep -h sslcertcopy /var/spool/cron/crontabs/root 2>/dev/null; true"
@@ -127,7 +127,7 @@ MANIFEST="${OUTDIR}/MANIFEST.txt"
   echo "captured_by: $(whoami)"
   echo "cluster:     $(tsh status 2>/dev/null | awk '/Cluster:/ {print $2}' | head -1)"
   echo "ssh_user:    ${SSH_USER}"
-  echo "mode:        read-only (see SAFETY CONTRACT in scripts/collect-fleet-health.sh)"
+  echo "mode:        read-only (see SAFETY CONTRACT in scripts/fleet/collect-fleet-health.sh)"
   echo "hosts:       ${hosts[*]}"
   echo ""
   echo "## captures"

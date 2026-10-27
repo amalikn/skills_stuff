@@ -58,7 +58,7 @@ practical.
 | Verified SNMP OIDs on the SMC box itself (net-snmp agent, canary 2026-09-24), the machine-readable list the controller reads                         | `references/snmp-oid-registry.yaml`          |
 | Pin validity (mangle) vs pin issuance (Apache access log) — two mechanisms, marks-≠-activations pitfalls, fleet case study                          | `references/14_pin-activation-diagnosis.md`    |
 | TP-Link site switches: where they are, KeePass entry, SSH quirks (ssh-rsa host key, MAC, pty, CR), enable with/without password,                    | `references/16_tplink-site-switches.md`        |
-|   discovery (fping, not ARP: gc_thresh1), redacted config capture; `scripts/tplink-switch.sh`                                                       |                                                |
+|   discovery (fping, not ARP: gc_thresh1), redacted config capture; `scripts/switch/tplink-switch.sh`                                                       |                                                |
 | Verified SNMP OIDs on the TP-Link switches, each with the controller's use for it, and the MIBs checked and absent                                   | `references/snmp-oid-registry-tplink.yaml`     |
 | TP-Link switches one record each: identity, management address, VLANs, port descriptions, SNMP state, evidence                                       | `references/tplink-site-switches.yaml`         |
 | TP-Link SNMP enablement per switch (community pattern, answered or not), 2026-09-30                                                                  | `references/tplink-snmp-enablement-survey-20260930.csv` |

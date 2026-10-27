@@ -456,7 +456,7 @@ systemctl stop cron
 - Incident: an agent check run and the operator's apply probed alkngarrija-smc01 at the same second; both `artisan update:stats` hit the AVR
   serial port, one read failed (`Unable to read the data from AVR`), both runs refused. One controller per SMC, check runs included.
 - Not yet run for real: the lower-dir-first order, the cron pause, a real drop through `await_job.yml`. Test SMC: alkngarrija-smc01
-  (operator: not warehouse-rct01). Runs table: `just smc_change_runs <change>` (`scripts/smc_change_runs_table.py`).
+  (operator: not warehouse-rct01). Runs table: `just smc_change_runs <change>` (`scripts/ansible/smc_change_runs_table.py`).
 
 `VERIFIED_PRIMARY` (runs 2026-10-26 21:38-22:20, role at local-knowledge-ansible `76b0f86`): the lower-dir-first order passed 11/11 on
 alpara-smc01 and amatjatpalk-smc01 (overlay, live install after the lower dir, no reboot, stage 6 261/244 s, cron-started processes back

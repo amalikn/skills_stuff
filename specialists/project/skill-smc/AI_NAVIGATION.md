@@ -1,3 +1,14 @@
+---
+Title: AI Navigation — skill-smc
+Category: navigation
+Status: current
+Authority: local-supplement
+Scope: Root AI_NAVIGATION.md of skill-smc
+Last reviewed: 2026-10-23
+Summary: This file is a router, not the knowledge store.
+Review by: 2026-11-26
+---
+
 # AI Navigation — skill-smc
 
 Purpose: context entrypoint for AI agents working on the skill-smc specialist pack. Tells agents where knowledge lives, what to read first, what is authoritative, and what to update after work.
@@ -139,7 +150,7 @@ When changing a source file, update its companions in the same pass:
 | `references/<nn>_*.md` (new or restructured) | `RUNBOOK.md` routing table, `SKILL.md` References section, `AI_NAVIGATION.md` tables, `context-map.yaml` routing                                      |
 | Any `references/*.md` content change         | `manifest.json` `version` + `updated_at`; `CHANGELOG.md` entry                                                                                        |
 | `AI_NAVIGATION.md` or `context-map.yaml`     | keep the other in sync — same routing, same file roles                                                                                                |
-| New script added                             | `scripts/README.md`, `AGENTS.md` if it changes a working rule                                                                                         |
+| New script added                             | Into its job folder under `scripts/` with a Layout row and catalogue row in `scripts/README.md`; `AGENTS.md` if it changes a working rule              |
 
 ## Context compaction recovery
 

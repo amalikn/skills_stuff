@@ -122,7 +122,7 @@ resulting port uniquely identifies one site fleet-wide, regardless of which proj
 > **Learned 2026-10-23** · reading the site ID from the box · VERIFIED-OBSERVED (php-rct-smc01, `ps -eo args`) · Falsifier: a box whose -R port
 > differs from 50000 + its host vars ID after a RISE run
 > The box shows its own ID: `autossh ... -R <50000+id>:127.0.0.1:22 ssh-portfwding@<bastion>`. A box imaged from a generic build can still carry
-> the image's ID (181 = `generic-rct01*`), which is not unique; `scripts/smc_inventory_add.py --siteid-from-box` reads it and flags the clash.
+> the image's ID (181 = `generic-rct01*`), which is not unique; `scripts/ansible/smc_inventory_add.py --siteid-from-box` reads it and flags the clash.
 
 **Which bastion, per project** (`group_vars/smc_bases.yml` per inventory; each project has multiple flavors nested under it — see `01_overview.md` "Remote Access"):
 
@@ -131,7 +131,7 @@ resulting port uniquely identifies one site fleet-wide, regardless of which proj
 | nbn_accelerate | `nbn_accelerate`, `nbn_wh` (+ `cw` central-infra) | `teleport.communitywifi.net.au` | `3.104.50.51` — reverse-DNS/`known_hosts` alias `cw-teleport01` |
 | APN            | `rcp`, `wh`, `rct` (+ `apn` central-infra)        | `teleport.apn.au`               | `13.54.242.59`                                                  |
 
-**Script:** `../scripts/backdoor-watch.sh <site> [check|history|watch]` does steps 1-2 and the listener check without opening a shell; `watch` polls for a box that
+**Script:** `../scripts/access/backdoor-watch.sh <site> [check|history|watch]` does steps 1-2 and the listener check without opening a shell; `watch` polls for a box that
 only holds the tunnel briefly (2026-10-07).
 
 **Never report a box as unreachable until this path has been checked** (operator, 2026-10-07). A box missing from `tsh ls` is not enough. On the project bastion
@@ -691,7 +691,7 @@ VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyon
 > No visual surface.
 
 > **Learned 2026-10-22** · autossh backdoor (`50000 + site_eclipse_siteid` on `apn-teleport01` / `cw-teleport01`) · VERIFIED-OBSERVED
-> (read-only sessions from the operator's Mac, ansible-wifi PHP CVE assessment) · Source: skill-smc `scripts/backdoor_exec.sh` (this commit) ·
+> (read-only sessions from the operator's Mac, ansible-wifi PHP CVE assessment) · Source: skill-smc `scripts/access/backdoor_exec.sh` (this commit) ·
 > Falsifier: a listening backdoor port that always reaches the box its siteid names
 > A listening backdoor port does not prove the box is up: `family-friendly-smc01`'s 50501 answered as `nocprov-smc01`, a box in no inventory,
 > so `backdoor-watch.sh` reported UP for a box that was not reached. Read `hostname` before attributing anything to the site. Separately, both

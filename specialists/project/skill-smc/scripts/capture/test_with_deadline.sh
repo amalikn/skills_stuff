@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # test_with_deadline.sh — offline test of the with_deadline helper in the evidence scripts (no network, no box).
-# Run: `just test-deadline` or `bash scripts/test_with_deadline.sh`. Read-only: extracts the function from each script and runs local commands.
+# Run: `just test-deadline` or `bash scripts/capture/test_with_deadline.sh`. Read-only: extracts the function from each script and runs local commands.
 # Checks, for each script: piped stdin reaches the command, a fast command's exit status is kept, and a slow command is killed at the deadline
 # with status 124 (also when the command traps TERM and exits with its own status, as tsh does).
 
