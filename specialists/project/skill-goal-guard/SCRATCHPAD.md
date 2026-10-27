@@ -33,9 +33,9 @@ Open items tracker: docs/trackers/open-items-20261027_1749.md
   1.135 `nls.metadata.json`). The anchors are correct (10/10). Operator choice, not decided: switch that tab to Markdown, or `"files.associations": {"**/SKILL.md": "markdown"}` (loses VS Code's
   skill checks). The markdown hook rebuilds the linked Contents, so the file stays as it is.
 - Operator decision pending: drop the `.git/info/exclude` line `AGENTS.md` in skills_stuff (it hides most packs' AGENTS.md), or keep force-adding them one by one.
-- Not pushed: skills_stuff `8f76730`, `6dcde6e`, `7e53324`, `015ac8f`; skill-ai-it ROADMAP line uncommitted (its check fails on an overdue tracker needing a fleet review).
-- Flow pages: the 13-step "Decision order" page is very wide; folding (serpentine or z, per map, off by default) is designed in skill-drawio ROADMAP "Fold long flow
-  pages" (operator answers 2026-10-27); when built, set `drawing.look.fold` in `docs/goal-guard-flows/parts/master.yaml`.
+- skill-ai-it ROADMAP line uncommitted (its check fails on an overdue tracker needing a fleet review). The four earlier commits were pushed with `585c2e2`.
+- Flow pages: "Decision order" folds serpentine (rows of 7 and 6, one lane, wider right and top/bottom margins, 2026-10-27). A z sample was rendered
+  for comparison only; the operator did not choose to switch (recommendation given: keep serpentine, the 7 -> 8/9 branch stays short).
 - Proposed, not decided (review note 2026-10-27): no owner path exists to write the approval line Goal Guard requires in `.gg/decisions.jsonl` (the tools refuse
   approvals by design; lines are hash-chained). Options put to the operator: A owner-run `goal_guard_approve.py` (interactive terminal, typed revision), B the signed
   commit of `mvp.yaml` is the approval (`git verify-commit`, D3), C both (recommended). Blocks pilot step 5 with D3.
@@ -56,11 +56,13 @@ Vikunja owns live tasks; full v1.7 pilot; one `apn` repo scoped by path; pilot s
 2. Pilot step 1: read-only inventory of `apn/unified-network-controller` and `apn/enterprise-strategy`; capture Claude Code hook payloads.
 3. Settle the D3 risk before pilot step 5.
 4. Run the open live checks in `scripts/readme.md` once a token exists; write the results back as Learned entries.
-5. Operator: choose the approval path (A, B or C) and the exclude-rule option; say "push" for the four commits.
-6. Fresh session: build skill-drawio "Fold long flow pages" (ROADMAP), then set `drawing.look.fold` in `docs/goal-guard-flows/parts/master.yaml`.
+5. Operator: choose the approval path (A, B or C) and the exclude-rule option.
+6. Review the other flow pages for folding (only Decision order folds; the rest have 7 or fewer steps).
 
 ## Session history — KEEP
 
+- 2026-10-27 (night): skill-drawio fold built and applied to Decision order (serpentine); lane margins widened on operator review; z sample shown;
+  markdown_rewrap fixed after its hook flattened quoted code in skill-drawio visual-style.md.
 - 2026-10-27 (late evening): skill-ai-it bootstrap, Archcore (19 pointer documents), flow diagrams in parts under docs/, skill-drawio parts standard and
   `last_row_align`, AGENTS.md tracked; fold feature designed, not built.
 - 2026-10-27 (evening): pilot tools written and tested; hook scoped to the verdict's files after a review note; SKILL.md and AGENTS.md table alignment fixed.
@@ -68,7 +70,8 @@ Vikunja owns live tasks; full v1.7 pilot; one `apn` repo scoped by path; pilot s
 
 ## Memory pointers — KEEP
 
-- memory-keeper channel `skill-goal-guard`: keys `skill-goal-guard.{review-conflicts,structure,decisions,vikunja-ops,incidents,next,writeback-owed,pilot-tools,findings-20261027-evening,naming,evening-governance-flows}`, `session.closeout.20261027.skill-goal-guard`,
-  `session.closeout.20261027.skill-goal-guard-pilot-tools`, `session.closeout.20261027.skill-goal-guard-governance-flows`.
+- memory-keeper channel `skill-goal-guard`: keys `skill-goal-guard.{review-conflicts,structure,decisions,vikunja-ops,incidents,next,writeback-owed,pilot-tools,findings-20261027-evening,naming,evening-governance-flows,fold-night}`, `session.closeout.20261027.skill-goal-guard`,
+  `session.closeout.20261027.skill-goal-guard-pilot-tools`, `session.closeout.20261027.skill-goal-guard-governance-flows`,
+  `session.closeout.20261027.skill-goal-guard-fold`.
 - project-context project `skill-goal-guard` (ed1a3a1b-0252-4ac9-a368-3b7d8fcdad17): 24 decisions, notes on review, restructure, Vikunja, incidents, next actions, write-backs, pilot tools, findings.
-- Checkpoints: `slurp-20261027-skill-goal-guard`, `slurp-20261027-skill-goal-guard-writeback-defer`, `slurp-20261027-skill-goal-guard-pilot-tools`, `slurp-20261027-skill-goal-guard-governance-flows` (both backends).
+- Checkpoints: `slurp-20261027-skill-goal-guard`, `slurp-20261027-skill-goal-guard-writeback-defer`, `slurp-20261027-skill-goal-guard-pilot-tools`, `slurp-20261027-skill-goal-guard-governance-flows`, `slurp-20261027-skill-goal-guard-fold` (both backends).

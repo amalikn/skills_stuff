@@ -6,13 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_1459
+Last rotated: 20261027_1923
 ---
 
 # skill-smc Changelog
 
 ## Contents
 
+- [20261027_1922 — Quoted code excerpt restored after a markdown hook bug (v0.8.5 -> v0.8.6)](#20261027_1922--quoted-code-excerpt-restored-after-a-markdown-hook-bug-v085---v086)
 - [20261027_1459 — smc_change self-repair, kohana cron_job, lockstep timing; link health probe (v0.8.4 -> v0.8.5)](#20261027_1459--smc_change-self-repair-kohana-cron_job-lockstep-timing-link-health-probe-v084---v085)
 - [20261027_1207 — Teleport re-join without a tunnel; first rcp PHP apply (v0.8.3 -> v0.8.4)](#20261027_1207--teleport-re-join-without-a-tunnel-first-rcp-php-apply-v083---v084)
 - [20261027_1050 — smc_change: done SMCs skipped before connecting, runs per flavor, retries, TASK_TIMING, journal freeze (v0.8.2 -> v0.8.3)](#20261027_1050--smc_change-done-smcs-skipped-before-connecting-runs-per-flavor-retries-task_timing-journal-freeze-v082---v083)
@@ -32,7 +33,12 @@ Last rotated: 20261027_1459
 - [20261022_1718 — Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)](#20261022_1718--evidence-capture-timeouts-reported-as-such-full-capture-timing-end-marker-fix-v068---v069)
 - [20261022_1703 — Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8)](#20261022_1703--evidence-scripts-a-deadline-on-every-tsh-call-with-an-offline-test-v067---v068)
 - [20261022_1653 — Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)](#20261022_1653--asterisk-memory-measured-on-the-rcp-fleet-umoona-still-without-asterisk-evidence-script-lacks-a-tsh-deadline-v066---v067)
-- [20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)](#20261022_1623--collect-smc-evidence-fullsh-voip-group-records-asterisk-resident-memory-v065---v066)
+
+## 20261027_1922 — Quoted code excerpt restored after a markdown hook bug (v0.8.5 -> v0.8.6)
+
+- `references/07_hardware-overlay.md`: the quoted `teleport-tags-exporter.py` excerpt had been joined into one line by the markdown hook (a `rewrap.py` bug
+  with quoted fences, fixed in scripts_stuff 2026-10-27); restored from git history. The generated `.ai-context/governance-pack.md` still holds the
+  flattened copy until `just context-pack` is next run.
 
 ## 20261027_1459 — smc_change self-repair, kohana cron_job, lockstep timing; link health probe (v0.8.4 -> v0.8.5)
 
@@ -185,12 +191,3 @@ Operator approved the read-only voip capture on all 17 rcp boxes (enterprise-str
 typical (`references/07_hardware-overlay.md`). `references/13_known-issues.md`: umoona-smc01 still has no Asterisk process (as on 2026-08-25), nocprov none;
 `collect-smc-evidence-full.sh` has no per-call `tsh` deadline (run wrapped in a perl alarm). manifest 0.6.6 -> 0.6.7.
 Corrected the same day (operator): umoona has no active SIP clients, so its missing Asterisk is known and not an outage.
-
-## 20261022_1623 — collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)
-
-New capture `voip|asterisk-rss` (`ps -C asterisk -o pid=,rss=,vsz=,etime=,args=`): Prometheus has no process metrics, so this is the only per-process
-sizing source; enterprise-strategy's RouterOS study needs it to size a containerised Asterisk. `bash -n` passes; not yet run on a box (the session's
-fleet probe was denied by auto mode). Catalogued in `scripts/README.md`. manifest 0.6.5 -> 0.6.6.
-
-Incident: commit df32f48 was made while `just check` failed (CHANGELOG 201 lines, over budget): the command piped the check into `tail`, so its exit
-code did not gate the commit. Fixed in the next commit by rotating the CHANGELOG; the check passes.

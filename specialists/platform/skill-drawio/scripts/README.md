@@ -133,6 +133,8 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/options.py` | Decision pages (never called options; optional `options` block or `decision_pages` by subject): decision flow, option step chains, aligned pros and cons | `safe` |
 | `scripts/flowmap/shapes.py` | Flow page shapes (flowchart symbols): derivation per step and lane head, per-page shape legend | `safe` |
 | `scripts/flowmap/flow_geometry.py` | Flow page geometry: step widths by shape (wider decisions), column gap and positions, run planning and lane room, back-arrow routes below the lanes | `safe` |
+| `scripts/flowmap/fold.py` | Folded flow pages (`look.fold`, `fold_after`, a flow's `layout`): rows (a short last row stretches the rows above), one swim lane for a one-actor flow, each row routed on a scratch page and copied (mirrored for a right-to-left row), labels placed after every arrow | `safe` |
+| `scripts/flowmap/fold_turns.py` | Arrows between the rows of a folded page: the row's turning gutter, drops from mid-row, tracks between rows, the far gutter for a skipped row, arrows back to an earlier row | `safe` |
 | `scripts/flowmap/lanes.py` | Flow page lanes: lane heads (structured text; symbols sized to their text inside a plain panel), room kept for arrow runs, run positions | `safe` |
 | `scripts/flowmap/routing.py` | Flow page forward arrows: candidate orthogonal paths scored against what is drawn (boxes, adjacent runs, reused ports, crossings), the cheapest drawn; decision branch labels | `safe` |
 | `scripts/flowmap/route_costs.py` | Flow page route costs: an arrow overshooting into a box on the right's top or bottom, or leaving a source's top or bottom toward it (both should turn in the gap) | `safe` |

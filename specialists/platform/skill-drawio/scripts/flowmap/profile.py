@@ -48,6 +48,8 @@ DEFAULT_LOOK = {
     "lock_base_layer": False,      # every page's background layer ("1") drawn locked (operator, 2026-10-26)
     "e2e_tab": "End-to-end",       # End-to-end tab names: "<e2e_tab> flow" and "<e2e_tab>: <family>" (operator asked for "E2E", 2026-10-26)
     "e2e_family_colours": "page",  # family-page flow colours: "page" (restart on each page, no repeats) or "flow" (full-page colour; operator, 2026-10-26)
+    "fold": "off",                 # a long flow page in rows: "off", "serpentine" (every second row right to left) or "z" (operator, 2026-10-27)
+    "fold_after": 7,               # columns per row when `fold` is on; a flow sets its own with `layout: {fold, fold_after}`
 }
 
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,

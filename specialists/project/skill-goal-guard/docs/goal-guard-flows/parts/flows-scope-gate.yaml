@@ -51,6 +51,7 @@
 
 - id: decide
   title: Decision order
+  layout: {fold: serpentine, fold_after: 6}   # 13 steps in two rows of 7 and 6 (operator, 2026-10-27: "after box six box seven can be just below")
   category: custom
   purpose: How one proposal becomes PROCEED, PARK, REVIEW or BLOCK; the first rule that fires wins.
   trigger: {kind: api, detail: "goal_guard.py assess"}

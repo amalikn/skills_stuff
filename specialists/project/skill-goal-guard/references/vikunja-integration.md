@@ -103,6 +103,8 @@ docker exec vikunja /app/vikunja/vikunja dump -p /dumps -f "vikunja-dump-$(date 
 >
 > ```python
 > # scripts/goal_guard_lib/vikunja.py, Client.project_tasks (2026-10-27)
-> data = self._call("GET", f"/projects/{int(project_id)}/tasks", {"page": page}) items = data.get("items") or [] total_pages = int(data.get("total_pages") or 1)
+> data = self._call("GET", f"/projects/{int(project_id)}/tasks", {"page": page})
+> items = data.get("items") or []
+> total_pages = int(data.get("total_pages") or 1)
 > ```
 

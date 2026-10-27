@@ -37,7 +37,7 @@ def head_symbol_h(comp: dict, profile: Profile) -> float:
     return fit_height(comp, profile, 16 + sum(wrapped_lines(x, chars) for x in lines) * 13)
 
 def draw_lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float, box_h: dict, box_w: dict, room: dict | None = None,
-               width: float | None = None) -> tuple[list, list, list]:
+               width: float | None = None, lanes: list | None = None, least: float = 0.0) -> tuple[list, list, list]:
     """Draw one lane per component, in order of first use; each lane as tall as its tallest step.
 
     Args:
@@ -50,18 +50,21 @@ def draw_lanes(page: Page, flow: dict, comps: dict, profile: Profile, top: float
         box_w: each step box's width.
         room: {(lane index, "top" or "bottom"): pixels} reserved for arrow runs along that edge.
         width: the lanes' width (flow_page passes it from the label-widened gaps); None for the base column gaps.
+        lanes: the lane order when it is not the flow's steps' (a folded row draws every lane of its flow; flowmap.fold).
+        least: each lane's least height (one lane holding every row of a folded page).
 
     Returns:
         (lane component ids, lane tops, lane heights).
     """
     fid, steps = flow["id"], flow["steps"]
-    lanes: list[str] = []
-    for s in steps:
-        if s["actor"] not in lanes:
-            lanes.append(s["actor"])
+    if lanes is None:
+        lanes = []
+        for s in steps:
+            if s["actor"] not in lanes:
+                lanes.append(s["actor"])
     width = width or LANE_HEAD_W + sum(box_w.values()) + len(steps) * col_gap(profile.look) + GAP
     room = room or {}
-    lane_h = [max([LANE_H, head_symbol_h(comps[cid], profile) + 16] + [box_h[s["id"]] + 28 for s in steps if s["actor"] == cid])
+    lane_h = [max([LANE_H, least, head_symbol_h(comps[cid], profile) + 16] + [box_h[s["id"]] + 28 for s in steps if s["actor"] == cid])
               + room.get((li, "top"), 0) + room.get((li, "bottom"), 0) for li, cid in enumerate(lanes)]
     lane_y = [top + sum(lane_h[:li]) for li in range(len(lanes))]
     for li, cid in enumerate(lanes):

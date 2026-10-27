@@ -1049,7 +1049,10 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 >
 > ```python
 > # ansible-wifi roles/smc_graylog/files/teleport-tags-exporter/teleport-tags-exporter.py (0979a596)
-> TP_YAML = Path("/etc/teleport.yaml") OUT_ENV = Path("/etc/teleport-tags.env") STATE_DIR = Path("/etc") CACHE_JSON = STATE_DIR / "teleport-cache.json"
+> TP_YAML = Path("/etc/teleport.yaml")
+> OUT_ENV = Path("/etc/teleport-tags.env")
+> STATE_DIR = Path("/etc")
+> CACHE_JSON = STATE_DIR / "teleport-cache.json"
 > ```
 >
 > Screenshot: not applicable (no visual surface).

@@ -189,6 +189,25 @@
           "type": "string",
           "minLength": 1
         },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "This flow page's own fold, over drawing.look.fold and fold_after (operator, 2026-10-27).",
+          "properties": {
+            "fold": {
+              "type": "string",
+              "enum": [
+                "off",
+                "serpentine",
+                "z"
+              ]
+            },
+            "fold_after": {
+              "type": "integer",
+              "minimum": 2
+            }
+          }
+        },
         "tab": {
           "type": "string",
           "minLength": 1,
@@ -589,6 +608,20 @@
             "step_chars": {
               "type": "integer",
               "minimum": 10
+            },
+            "fold": {
+              "type": "string",
+              "enum": [
+                "off",
+                "serpentine",
+                "z"
+              ],
+              "description": "A flow page longer than fold_after steps drawn in rows: off (default), serpentine (every second row right to left, a short turn arrow down) or z (every row left to right, the turn arrow back under the row)."
+            },
+            "fold_after": {
+              "type": "integer",
+              "minimum": 2,
+              "description": "Columns per row on a folded flow page (default 7)."
             },
             "last_row_align": {
               "type": "string",

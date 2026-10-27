@@ -269,6 +269,21 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
     used["points"].update((round(p[0]), round(p[1])) for p in (pts[0], pts[-1]))
     used["sides"].update({(src, out_side), (dst, in_side)})
     used.setdefault("taken", set()).add((src, out_side))
+    draw_label(page, cid, pts, text, colour)
+    return spent
+
+
+def draw_label(page: Page, cid: str, pts: list, text: str, colour: str) -> None:
+    """Label a drawn arrow on a clear spot (route_costs.label_spot): a two-line label may sit across a vertical run, number left and case
+    right of the line with no background (operator, 2026-10-27); else one box on the lane's colour.
+
+    Args:
+        page: the page (the arrow already routed).
+        cid: the arrow's cell id (labels are `<cid>-lbl`, and `<cid>-lbl-case` when split).
+        pts: the arrow's polyline.
+        text: the label (see branch_label).
+        colour: the label's text colour.
+    """
     width, height = label_size(text)
     lines = text.split("\n")
     split = tuple(9 * len(line) + 8 for line in lines) if len(lines) == 2 else None
@@ -278,10 +293,9 @@ def route_forward(page: Page, edge: tuple, diamonds: tuple, corridors: dict, use
         page.mark(f"{cid}-lbl", label(f"**{lines[0]}**"), cx - SPLIT_GAP - split[0] / 2, cy, split[0], 22, bare.replace("align=center;", "align=right;"), cid)
         page.mark(f"{cid}-lbl-case", label(f"**{lines[1]}**"), cx + SPLIT_GAP + split[1] / 2, cy, split[1], 22,
                   bare.replace("align=center;", "align=left;"), cid)
-        return spent
+        return
     style = LABEL.format(colour=colour, background=lane_colour(page, cx, cy))
     page.mark(f"{cid}-lbl", label(*(f"**{line}**" for line in lines)), cx, cy, width, height, style, cid)
-    return spent
 
 
 def route_branches(page: Page, branches: list, corridors: dict, used: dict) -> None:

@@ -14,6 +14,14 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-10-27 Decision order flow page folded: `layout: {fold: serpentine, fold_after: 6}` in `docs/goal-guard-flows/parts/flows-scope-gate.yaml`
+  (skill-drawio's new fold; 13 steps in one swim lane, rows of 7 and 6); drawing regenerated, audit clean.
+- 2026-10-27 Decision order page: the lane widened on the right and padded above and below (operator review, skill-drawio fold margins);
+  a z fold sample was rendered in the session scratchpad for comparison only, the page stays serpentine (no change asked).
+- 2026-10-27 Incident: the markdown hook had joined the quoted code excerpts in `references/enforcement-and-hooks.md` and
+  `references/vikunja-integration.md` into prose (a `markdown_rewrap` bug with quoted fences, fixed in scripts_stuff); both restored from git history,
+  words unchanged.
+
 ### 2026-10-27 18:38 — slurp close: findings, proposals and open decisions (evening)
 
 - Proposed, not decided: the owner path for writing the MVP approval line (`.gg/decisions.jsonl` refuses agent approvals and is hash-chained): A owner-run

@@ -16,11 +16,12 @@ from drawio.mxfile import BLANK, Page, banner, heading, label, mxfile, wrapped_l
 
 from .e2e import end_to_end_page
 from .e2e_family import family_pages
-from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text, step_targets
+from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text
 from .map_parts import flow_labels, paged_flows
 from .model import option_blocks
 from .options import options_page
-from .flow_geometry import LANE_HEAD_W, back_arrow, col_gap, column_lefts, label_gaps, label_widths, plan_runs, reserve, run_ys, step_width
+from .fold import fold_rows, folded_page
+from .flow_geometry import LANE_HEAD_W, back_arrow, step_edges, col_gap, column_lefts, label_gaps, label_widths, plan_runs, reserve, run_ys, step_width
 from .lanes import draw_lanes
 from .routing import route_flow
 from .uncross import uncross, unshare
@@ -199,6 +200,29 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
     return nh
 
 
+def flow_header(page: Page, flow: dict, comps: dict, number: int | str, width: float) -> float:
+    """Draw a flow page's header box at the top left, linked back to the Overview.
+
+    Args:
+        page: the page.
+        flow: the flow from the map.
+        comps: every component by id.
+        number: the flow's number or label.
+        width: the lanes' width (the header is at least 900 px wide).
+
+    Returns:
+        The header's height.
+    """
+    header = flow_header_lines(flow, comps, number)
+    head_w = max(width, 900)
+    head_chars = int((head_w - 16) / 7)   # font 12: about 6.5 px a character, so 7 px is conservative
+    head_h = 14 + sum(wrapped_lines(h.replace("*", ""), head_chars) for h in header) * HEAD_LINE_H
+    page.box(f"{flow['id']}-head", label(*header), MARGIN, MARGIN, head_w, head_h,
+             "rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=12;",
+             link="data:page/id,overview")
+    return head_h
+
+
 def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Profile) -> Page:
     """One flow: a header, a lane per component (in order of first use), the steps left to right with numbered arrows, a note per step, and a
     legend of the shapes the page uses (flowmap.shapes).
@@ -225,17 +249,13 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
         page.tags[cid] = ("back-arrow",) if back else ("step-arrow",)
         page.tips[cid] = flow_arrow_tip(number, (order[a], by_id[a]), (order[b], by_id[b]), comps[by_id[b]["actor"]]["name"], back)
     widths = label_widths(steps, edges, profile.look)
+    rows = fold_rows(flow, profile.look)
+    if len(rows) > 1:   # a long flow drawn in rows (`drawing.look.fold`; operator, 2026-10-27)
+        return folded_page(page, (flow, comps, number, profile), (shapes, texts, box_w, box_h, edges, widths), (rows, _step, flow_header))
     gaps = label_gaps(col_gap(profile.look), widths, len(steps))
     # Lanes and header span the label-widened gaps, so a long branch label never pushes the last step past the lanes (operator, 2026-10-23).
     width = LANE_HEAD_W + sum(box_w.values()) + sum(gaps) + GAP
-    header = flow_header_lines(flow, comps, number)
-    head_w = max(width, 900)
-    head_chars = int((head_w - 16) / 7)   # font 12: about 6.5 px a character, so 7 px is conservative
-    head_h = 14 + sum(wrapped_lines(h.replace("*", ""), head_chars) for h in header) * HEAD_LINE_H
-    page.box(f"{fid}-head", label(*header), MARGIN, MARGIN, head_w, head_h,
-             "rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=12;",
-             link="data:page/id,overview")
-    top = MARGIN + head_h + GAP
+    top = MARGIN + flow_header(page, flow, comps, number, width) + GAP
     plan = plan_runs(steps, [(a, b) for _cid, a, b, text, _st in edges if "back to" not in text])
     tg = float(profile.look.get("track_gap", 12))
     room = {key: reserve(n, tg) for key, n in plan["count"].items()}
@@ -257,62 +277,6 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
     if profile.look.get("unshare", "on") != "off":   # part two arrows merged at one decision corner (operator review 2026-10-27)
         unshare(page, drawn, corridors, reserved)
     return page
-
-
-def _slots(items: list) -> dict:
-    """Spread arrows evenly along one side of a box.
-
-    Args:
-        items: the arrows sharing that side, in order.
-
-    Returns:
-        Each arrow's position on the side, between 0 and 1 exclusive.
-    """
-    return {item: round((i + 1) / (len(items) + 1), 3) for i, item in enumerate(items)}
-
-
-def step_edges(steps: list[dict], fid: str) -> list[tuple[str, str, str, str, str]]:
-    """The flow's arrows with ports that never coincide.
-
-    A forward arrow leaves its step's right side and enters the target's left side; a step with several on one side spreads them over that
-    side. A forward arrow that skips a column into another lane enters the target's bottom (lane above) or top (lane below) instead. An arrow back to an earlier step leaves and enters at the bottom, dashed and purple, labelled "back to N", so it never shares a
-    path with a forward arrow.
-
-    Args:
-        steps: the flow's steps in order.
-        fid: the flow id (edge ids are `<fid>-e-<source>-<target>`).
-
-    Returns:
-        (edge id, source step id, target step id, label, style) per arrow.
-    """
-    index = {s["id"]: k for k, s in enumerate(steps)}
-    actors = list(dict.fromkeys(s.get("actor") for s in steps))   # lane order, as _lanes draws them
-    lane = {s["id"]: actors.index(s.get("actor")) for s in steps}
-    pairs = [(s["id"], tg) for k, s in enumerate(steps) for tg in step_targets(steps, k)]
-    # A forward arrow that skips a column into another lane enters from below (lane above) or above (lane below), so it climbs in the target's
-    # own column instead of crossing the steps in between (operator, 2026-10-21: an arrow 6 to 8 ran over step 7 in 8's lane).
-    climb = [(a, b) for a, b in pairs if index[b] > index[a] + 1 and lane[b] != lane[a]]
-    fwd = [(a, b) for a, b in pairs if index[b] > index[a] and (a, b) not in climb]
-    back = [(a, b) for a, b in pairs if index[b] <= index[a]]
-    out_r = {a: _slots([p for p in fwd if p[0] == a]) for a, _ in fwd}
-    in_l = {b: _slots([p for p in fwd if p[1] == b]) for _, b in fwd}
-    out_b = {a: _slots([p for p in back if p[0] == a]) for a, _ in back}
-    in_b = {b: _slots([p for p in back if p[1] == b]) for _, b in back}
-    out_r.update({a: _slots([p for p in fwd + climb if p[0] == a]) for a, _ in climb})
-    in_v = {b: _slots([p for p in climb if p[1] == b]) for _, b in climb}
-    edges = []
-    for a, b in pairs:
-        if (a, b) in climb:
-            style = f"exitX=1;exitY={out_r[a][(a, b)]};entryX={in_v[b][(a, b)]};entryY={1 if lane[b] < lane[a] else 0};"
-            text = str(index[b] + 1)
-        elif (a, b) in fwd:
-            style = f"exitX=1;exitY={out_r[a][(a, b)]};entryX=0;entryY={in_l[b][(a, b)]};"
-            text = str(index[b] + 1)
-        else:
-            style = f"exitX={out_b[a][(a, b)]};exitY=1;entryX={in_b[b][(a, b)]};entryY=1;dashed=1;strokeColor=#6a3fa0;fontColor=#6a3fa0;"
-            text = f"back to {index[b] + 1}"
-        edges.append((f"{fid}-e-{a}-{b}", a, b, text, style))
-    return edges
 
 
 def render(data: dict, profile: Profile) -> str:

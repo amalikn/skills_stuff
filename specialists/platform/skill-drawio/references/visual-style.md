@@ -29,9 +29,9 @@ Rules from UNC's flow-map renderer and the operator's reviews of it, generalised
 - **Every primary family gets its own colour**, and no two may share one (operator, 2026-10-19: no two target groups may share a colour) [C-D30]. On UNC's overview a thick arrow takes the colour of
   the group it points into; on the End-to-end page an arrow takes its flow family's colour.
 - **Distinct hues, not shades**: blue, green, red, purple, teal, olive, magenta, orange, navy-black, then brown. Brown is kept last because next to orange it reads as the same colour. A second ten
-  follow (operator, 2026-10-23: "extend the color palette"): chocolate, sky, maroon, pine, fuchsia, ultramarine, mustard, bronze, plum, jade, picked farthest-first by CIEDE2000, each at least
-  13.8 from every other colour and the thin grey, above the first ten's closest pair (green and olive, 13.1). Twenty is the ceiling at that bar (the next pick measured 11.9); a drawing that needs more
-  than twenty colours repeats them, so split it or group families rather than adding near-duplicates.
+  follow (operator, 2026-10-23: "extend the color palette"): chocolate, sky, maroon, pine, fuchsia, ultramarine, mustard, bronze, plum, jade, picked farthest-first by CIEDE2000, each at least 13.8
+  from every other colour and the thin grey, above the first ten's closest pair (green and olive, 13.1). Twenty is the ceiling at that bar (the next pick measured 11.9); a drawing that needs more than
+  twenty colours repeats them, so split it or group families rather than adding near-duplicates.
 - **One neutral thin grey for every secondary arrow** (UNC: `#4b5563` for arrows inside a group), so no secondary arrow is mistaken for a primary one [C-D30].
 - A dot on a box in an arrow's colour marks a box that feeds that arrow; stack several dots down the box's right edge and keep a text margin so they never sit on the label.
 
@@ -93,8 +93,8 @@ Weight carries meaning as much as colour does. UNC's choices:
 | Dependency connector (touches, does not act) | `look.connector_width` (1.25), `dashed=1;dashPattern=8 4`, oval end |
 | Loop-back on a flow page                     | dashed purple                                                     |
 
-Every arrowhead is draw.io's classic head (`drawio.mxfile.ARROW_HEAD`, `endArrow=classic;endFill=1;`, the skill's default), never the block triangle (operator, 2026-10-23: "use this arrow type, not the
-default one. Everywhere"); only the dependency connector keeps its oval end, which marks "not a step".
+Every arrowhead is draw.io's classic head (`drawio.mxfile.ARROW_HEAD`, `endArrow=classic;endFill=1;`, the skill's default), never the block triangle (operator, 2026-10-23: "use this arrow type, not
+the default one. Everywhere"); only the dependency connector keeps its oval end, which marks "not a step".
 
 Routed arrows use `edgeStyle=none` with explicit waypoints, so draw.io draws straight runs between the generator's points and adds nothing of its own.
 
@@ -114,12 +114,11 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - A flow index of clickable boxes (page links, see [file-format.md](file-format.md)) helps on a multi-page file.
 
 > **Learned 2026-10-21** · component symbols on the Overview and End-to-end pages · VERIFIED_PRIMARY · Source: `scripts/flowmap/shapes.py` (`component_shape`, `fit_height`, `person_badge`, `component_shapes_used`), `tests/test_shapes.py` (`ComponentShapeTests`) · Falsifier: a store drawn as a rectangle with `component_shapes` on, or a cylinder with it off
-> smc-resiliency's operator asked whether the Overview and End-to-end boxes should take the symbols the flow pages already gave lane heads, and chose
-> "yes, default for all". `drawing.look.component_shapes` (default true) draws each box as its lane head's symbol; services stay rectangles. The first
-> render failed review: cloud labels spilled out and store labels sat on the cylinder's rim, so outline-heavy symbols are sized for their outline
-> (`FIT`: cloud x1.6 + 24 px with centred text, cylinder + 30 px). The person figure went to the bottom right because the Overview's dependency dots
-> hold the top right (UNC's operator box). Both pages gained "Shapes on this page" (one column on the Overview's legend column, three on End-to-end), and
-> the Overview an index-box legend after the operator noticed the green option boxes had none. Screenshots: `references/screenshots/20261021-component-shapes/`.
+> smc-resiliency's operator asked whether the Overview and End-to-end boxes should take the symbols the flow pages already gave lane heads, and chose "yes, default for all".
+> `drawing.look.component_shapes` (default true) draws each box as its lane head's symbol; services stay rectangles. The first render failed review: cloud labels spilled out and store labels sat on
+> the cylinder's rim, so outline-heavy symbols are sized for their outline (`FIT`: cloud x1.6 + 24 px with centred text, cylinder + 30 px). The person figure went to the bottom right because the
+> Overview's dependency dots hold the top right (UNC's operator box). Both pages gained "Shapes on this page" (one column on the Overview's legend column, three on End-to-end), and the Overview an
+> index-box legend after the operator noticed the green option boxes had none. Screenshots: `references/screenshots/20261021-component-shapes/`.
 >
 > ```python
 > # scripts/flowmap/shapes.py, skill-drawio, 2026-10-21
@@ -136,75 +135,69 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 
 ## Labels and text
 
-- Pages of open questions and their choices are **decision pages**, never "options", split by subject where a page would mix unrelated
-  questions (operator, 2026-10-22; data-first-diagrams.md, Learned 2026-10-22).
-- Two arrows never cross where drawing them in the other order would avoid it (operator, 2026-10-22: "unnecessary overlap for the arrows";
-  `look.uncross`, on by default; layout-and-routing.md, Learned 2026-10-22).
+- Pages of open questions and their choices are **decision pages**, never "options", split by subject where a page would mix unrelated questions (operator, 2026-10-22; data-first-diagrams.md, Learned
+  2026-10-22).
+- Two arrows never cross where drawing them in the other order would avoid it (operator, 2026-10-22: "unnecessary overlap for the arrows"; `look.uncross`, on by default; layout-and-routing.md, Learned
+  2026-10-22).
 - Arrows turn with rounded corners on every page (operator, 2026-10-21: "make the arrows with curves like the overview"; `look.arrow_corners`).
-- Every arrow and its label carry a tooltip saying what happens (End-to-end: the step, the steps that stayed in the source, `via`; a dashed
-  connector: why the flow needs the component); step boxes and component boxes carry the whole map entry (`flowmap.tips`). On the Overview
-  every thin arrow, thick arrow (and its ×n count) and dot lists who needs whom, with each needed health check (operator, 2026-10-23). A tooltip only adds:
-  exported PNG and PDF have none, so must-read facts stay in boxes and notes (operator, 2026-10-23).
-- draw.io tags on generated cells, for the Tags dialog (select, hide or show across layers): `flow-<id>`, `family-<id>`, `step-arrow`,
-  `connector`, `back-arrow`, `kind-<kind>`, `group-<group>`, `gate`, `decision`, `fails`, `runs-flow-<id>` (`drawio.cell`; operator, 2026-10-23).
-- Every generated cell is frozen (`drawio.mxfile.FROZEN`: `movable`, `resizable`, `rotatable`, `bendable`, `editable`, `deletable` all 0):
-  nothing is dragged, resized, re-bent, retyped or deleted by mistake, yet every box and arrow stays clickable and hoverable; layers are never
-  locked, which would block clicks (operator, 2026-10-23).
-- Tooltips are HTML (draw.io sanitises and renders them): a bold title, bold field names, bullets for several items, and commands, paths,
-  file names and snake_case names in code font (`flowmap.tips.tip_html`, `code_spans`; operator, 2026-10-23). Paths, file names, flags and
-  snake_case are found automatically; a command such as `tsh ssh` or `apt-get update` is not, so the map marks it with backticks (quote
-  a YAML value that starts with one); boxes and notes honour the same backticks (operator, 2026-10-23: "apt get or tsh ssh" had no format).
-- End-to-end labels read x.y: flow x, step y. x.1 runs from the component the flow `runs_on`; a step done by the same component as the step
-  before draws no arrow and is named in the next arrow's tooltip. `look.e2e_layers: flow` gives each flow its own colour and layer (default
-  `family`); `look.connector_width` sets the dashed connectors' stroke (default 1.25, 2 for bold) (operator, 2026-10-23).
-- `look.e2e_family_pages: true` keeps the full End-to-end page and adds one page per family after it (`flowmap.e2e_family`): only that
-  family's flows and the boxes they touch, the whole map's flow numbers on every x.y, colours taken in the page's own order so none repeats,
-  unused tier columns dropped, ids renamed `e2f-<family>-`; the Overview index links each one. It is the exportable form of View > Tags
-  `family-<id>` (operator, 2026-10-23: "leave the existing end to end as it is and add more end to end pages").
-- `look.e2e_family_colours` (with `e2e_layers: flow`) picks the family pages' colours: `page` (default) restarts the palette on each page,
-  so none repeats; `flow` keeps each flow's full-page colour on every page, so a flow is the same colour everywhere and two flows 20 apart
-  share one when a family holds both (operator, 2026-10-26: "switch to one colour per flow everywhere").
-- A family with `own_page: true` (in `drawing.families`) tells a story of its own, for example one change run through a generic role: its
-  flows are drawn only on its own End-to-end page (drawn even with `e2e_family_pages` off) and never on the full one, they are numbered from
-  1 with colours of their own, and their tabs and Overview index rows carry the family's `prefix` ("PHP 1. Plan"; default the family name).
-  The full page's shared flows are numbered among themselves, so adding such a family renumbers nothing, and the full page drops a tier
-  column only such a family uses (`flowmap.map_parts`, `narrowed`; operator,
-  2026-10-26: "it wont be added to the e2e flow", "it should not be starting from 5.x").
-- `flow_pages: false` on a family drops its flows' own pages and Overview index rows; the family is read on its End-to-end page only
-  (operator, 2026-10-26: "Don't need individual PHP pages").
-- `e2e_page: false` on an `own_page` family draws no End-to-end page and no Overview entry for it, only its flow pages: one
-  step-by-step page of a change told as the change (operator, 2026-10-26; ansible-wifi `php-steps`, tab "PHP fix 1. Step by step").
+- Every arrow and its label carry a tooltip saying what happens (End-to-end: the step, the steps that stayed in the source, `via`; a dashed connector: why the flow needs the component); step boxes and
+  component boxes carry the whole map entry (`flowmap.tips`). On the Overview every thin arrow, thick arrow (and its ×n count) and dot lists who needs whom, with each needed health check (operator,
+  2026-10-23). A tooltip only adds: exported PNG and PDF have none, so must-read facts stay in boxes and notes (operator, 2026-10-23).
+- draw.io tags on generated cells, for the Tags dialog (select, hide or show across layers): `flow-<id>`, `family-<id>`, `step-arrow`, `connector`, `back-arrow`, `kind-<kind>`, `group-<group>`,
+  `gate`, `decision`, `fails`, `runs-flow-<id>` (`drawio.cell`; operator, 2026-10-23).
+- Every generated cell is frozen (`drawio.mxfile.FROZEN`: `movable`, `resizable`, `rotatable`, `bendable`, `editable`, `deletable` all 0): nothing is dragged, resized, re-bent, retyped or deleted by
+  mistake, yet every box and arrow stays clickable and hoverable; layers are never locked, which would block clicks (operator, 2026-10-23).
+- Tooltips are HTML (draw.io sanitises and renders them): a bold title, bold field names, bullets for several items, and commands, paths, file names and snake_case names in code font
+  (`flowmap.tips.tip_html`, `code_spans`; operator, 2026-10-23). Paths, file names, flags and snake_case are found automatically; a command such as `tsh ssh` or `apt-get update` is not, so the map
+  marks it with backticks (quote a YAML value that starts with one); boxes and notes honour the same backticks (operator, 2026-10-23: "apt get or tsh ssh" had no format).
+- End-to-end labels read x.y: flow x, step y. x.1 runs from the component the flow `runs_on`; a step done by the same component as the step before draws no arrow and is named in the next arrow's
+  tooltip. `look.e2e_layers: flow` gives each flow its own colour and layer (default `family`); `look.connector_width` sets the dashed connectors' stroke (default 1.25, 2 for bold) (operator,
+  2026-10-23).
+- `look.e2e_family_pages: true` keeps the full End-to-end page and adds one page per family after it (`flowmap.e2e_family`): only that family's flows and the boxes they touch, the whole map's flow
+  numbers on every x.y, colours taken in the page's own order so none repeats, unused tier columns dropped, ids renamed `e2f-<family>-`; the Overview index links each one. It is the exportable form of
+  View > Tags `family-<id>` (operator, 2026-10-23: "leave the existing end to end as it is and add more end to end pages").
+- `look.e2e_family_colours` (with `e2e_layers: flow`) picks the family pages' colours: `page` (default) restarts the palette on each page, so none repeats; `flow` keeps each flow's full-page colour on
+  every page, so a flow is the same colour everywhere and two flows 20 apart share one when a family holds both (operator, 2026-10-26: "switch to one colour per flow everywhere").
+- A family with `own_page: true` (in `drawing.families`) tells a story of its own, for example one change run through a generic role: its flows are drawn only on its own End-to-end page (drawn even
+  with `e2e_family_pages` off) and never on the full one, they are numbered from 1 with colours of their own, and their tabs and Overview index rows carry the family's `prefix` ("PHP 1. Plan"; default
+  the family name). The full page's shared flows are numbered among themselves, so adding such a family renumbers nothing, and the full page drops a tier column only such a family uses
+  (`flowmap.map_parts`, `narrowed`; operator, 2026-10-26: "it wont be added to the e2e flow", "it should not be starting from 5.x").
+- `flow_pages: false` on a family drops its flows' own pages and Overview index rows; the family is read on its End-to-end page only (operator, 2026-10-26: "Don't need individual PHP pages").
+- `e2e_page: false` on an `own_page` family draws no End-to-end page and no Overview entry for it, only its flow pages: one step-by-step page of a change told as the change (operator, 2026-10-26;
+  ansible-wifi `php-steps`, tab "PHP fix 1. Step by step").
 - A flow's `tab` names its page's tab outright, in place of `<number>. <title>` (same day: the PHP step page's tab is "PHP CVE-2026-109618").
-- `look.e2e_step_total` adds each flow's step count n to its End-to-end arrow labels and legend rows, so a reader knows how long a flow is
-  and that a skipped number is a step done by the same component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means
-  `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from the text
-  (operator, 2026-10-26: "x.y/max_y", then "subscript or superscript instead", and labels at 12).
-- `look.e2e_loops` draws a step done by the same component as the step before as a loop on that box, labelled x.y (x.y–z for a run),
-  Turing-machine style: on the box's top or bottom edge, whichever had more clear room once the page was laid out, packed by label width
-  and overflowing to the other edge; a gap is widened only by the room an edge lacks (operator, 2026-10-26: "create a 14.3 as a loop on
-  the same box", "the top or the bottom, depending where more space is available ... case by case").
-- `look.last_row_align` (`left` by default, or `centre`) places the Overview groups on a part-filled last grid row: centred, a lone band sits under the
-  middle column instead of the far left, and the arrows into it shorten; a row the map pins with `group_cell` stays put (operator, 2026-10-27: "Records and
-  data ... can be just below the outside systems"; first used by skill-goal-guard).
-- `look.click_isolate` (true, or the opacity of the rest) makes one click show a colour alone and a second click show everything: on the
-  End-to-end pages a step arrow, its label, a dashed connector or a legend row (other rows dim too); on the Overview a thick arrow, its
-  count, a dot, a thin arrow or a legend row. A click on another colour switches in one click; there is no "Show all" button. Nothing is
-  saved: the file never counts as changed. The clickable layers are locked (the editor runs a link on a click only there).
-  `look.lock_base_layer` locks every page's background layer; `look.e2e_tab` names the End-to-end tabs ("E2E flow", "E2E: <family>")
-  (operator, 2026-10-26: "make it a toggle ... with a single step", "clicking on dashed lines should also do the same", "do the same for
-  the overview legend arrow colors", "make the background layer locked on all the pages", "change End-to-end to E2E ... in the tab names").
+- `look.e2e_step_total` adds each flow's step count n to its End-to-end arrow labels and legend rows, so a reader knows how long a flow is and that a skipped number is a step done by the same
+  component, not a missing arrow: `sub` (x.y with n as a subscript; `true` means `sub`), `sup` or `slash` (x.y/n). `look.e2e_label_font` sets the label size (default 10); the label box is sized from
+  the text (operator, 2026-10-26: "x.y/max_y", then "subscript or superscript instead", and labels at 12).
+- `look.e2e_loops` draws a step done by the same component as the step before as a loop on that box, labelled x.y (x.y–z for a run), Turing-machine style: on the box's top or bottom edge, whichever
+  had more clear room once the page was laid out, packed by label width and overflowing to the other edge; a gap is widened only by the room an edge lacks (operator, 2026-10-26: "create a 14.3 as a
+  loop on the same box", "the top or the bottom, depending where more space is available ... case by case").
+- `look.last_row_align` (`left` by default, or `centre`) places the Overview groups on a part-filled last grid row: centred, a lone band sits under the middle column instead of the far left, and the
+  arrows into it shorten; a row the map pins with `group_cell` stays put (operator, 2026-10-27: "Records and data ... can be just below the outside systems"; first used by skill-goal-guard).
+- `look.fold` (`off` by default, `serpentine` or `z`) and `look.fold_after` (7) draw a flow page of more steps than `fold_after` in rows; a flow overrides both with `layout: {fold, fold_after}`
+  (operator, 2026-10-27, from skill-goal-guard's 13-step Decision order page: "after box six box seven can be just below ... add an option of fold"). The row count is `fold_after` steps a row, rounded
+  to the nearest, the steps spread evenly, so a short last row is not drawn on its own (13 at 6 make 7 and 6; operator: "stretch it so that it fits in the two rows"). Serpentine runs every second row
+  right to left and its turn is one short drop beside the row's end; z runs every row left to right and the turn runs back under the row, so prefer serpentine for a long chain. A flow with one actor
+  keeps one swim lane holding every row ("keep it under the same swim lane"); several lanes repeat per row. That one lane keeps two `GAP`s above the first row and below the last ("a bit more on the
+  top and as well at the bottom"), and every folded lane ends a column gap plus `GAP` past the right gutter's drops, the room an unfolded lane leaves past its last box (operator, 2026-10-27: "too
+  narrow ... look at the end of the swim lanes and the gap that you have given on the other pages"). A step other than the row's last drops at once towards a later row, never out to the row's end and
+  back; of a decision's branches into later rows the nearest takes the leading corner and the rest drop from the bottom corner (operator review 2026-10-27 of a z fold). Known limit: two gutters of
+  different rows can land a few px apart on a crowded page, and the audit then reports an arc clash; try another `fold_after` with `render_flowmap.py --audit --look fold_after=N`.
+- `look.click_isolate` (true, or the opacity of the rest) makes one click show a colour alone and a second click show everything: on the End-to-end pages a step arrow, its label, a dashed connector or
+  a legend row (other rows dim too); on the Overview a thick arrow, its count, a dot, a thin arrow or a legend row. A click on another colour switches in one click; there is no "Show all" button.
+  Nothing is saved: the file never counts as changed. The clickable layers are locked (the editor runs a link on a click only there). `look.lock_base_layer` locks every page's background layer;
+  `look.e2e_tab` names the End-to-end tabs ("E2E flow", "E2E: <family>") (operator, 2026-10-26: "make it a toggle ... with a single step", "clicking on dashed lines should also do the same", "do the
+  same for the overview legend arrow colors", "make the background layer locked on all the pages", "change End-to-end to E2E ... in the tab names").
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).
 - Arrow labels sit on a white label background (`labelBackgroundColor=#ffffff`) so a crossing line does not run through the digits.
-- Size boxes to their text; a box that is too small for its text is a fault, and so is a group much taller than its content.
-  The Overview's flow index boxes follow it too: each is as tall as its wrapped title and status line (operator, 2026-10-22: "box ten and eleven is
-  getting a bit tight"; `overview_index.index_height`).
-- Keep step boxes wider than tall: long text widens a box (`look.max_aspect`, 0.8) rather than stretching it; rounded shapes use a fixed corner
-  radius so a tall box never becomes a pill (operator, 2026-10-21: "some shapes' dimensions need care").
-- A box's heading line (a component name, a step title, an option head, a decision title) is drawn at `look.heading_scale` (default 125%) of the box's
-  font (operator, 2026-10-21: "text size for the headings in the boxes should be bigger"); mark it with `drawio.mxfile.heading()` so `wrapped_lines()`
-  sizes the box for it.
+- Size boxes to their text; a box that is too small for its text is a fault, and so is a group much taller than its content. The Overview's flow index boxes follow it too: each is as tall as its
+  wrapped title and status line (operator, 2026-10-22: "box ten and eleven is getting a bit tight"; `overview_index.index_height`).
+- Keep step boxes wider than tall: long text widens a box (`look.max_aspect`, 0.8) rather than stretching it; rounded shapes use a fixed corner radius so a tall box never becomes a pill (operator,
+  2026-10-21: "some shapes' dimensions need care").
+- A box's heading line (a component name, a step title, an option head, a decision title) is drawn at `look.heading_scale` (default 125%) of the box's font (operator, 2026-10-21: "text size for the
+  headings in the boxes should be bigger"); mark it with `drawio.mxfile.heading()` so `wrapped_lines()` sizes the box for it.
 
 ## Checklist
 
@@ -215,11 +208,10 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - [ ] Names and arrow labels bold; no literal Markdown markers in the drawing.
 
 > **Learned 2026-10-21** · page headers and legends · USER_STATED · Source: smc-resiliency operator review, 2026-10-21; `scripts/drawio/mxfile.py` (`HEADER_STYLE`, `header_height`) · Falsifier: an exported page whose header text spills out of its box
-> Every page opens with the same boxed header (light grey fill, grey border, font 13, left aligned), never plain floating text: a bold title, a
-> blank line, the generation note, a blank line, then one line per item with its name in bold ("**Thick arrows:** ...", "**Layers panel:** ..."),
-> and the back link last. The box is sized to its wrapped text (`header_height`) and grows upward from its planned bottom so the layout below does
-> not move. Boxing a header exposes overflow plain text hid: export and look after any header change. Every page that colours boxes carries a
-> legend for those colours, placed in free space beside the first block (the Options page puts it right of the Decisions taken box).
+> Every page opens with the same boxed header (light grey fill, grey border, font 13, left aligned), never plain floating text: a bold title, a blank line, the generation note, a blank line, then one
+> line per item with its name in bold ("**Thick arrows:** ...", "**Layers panel:** ..."), and the back link last. The box is sized to its wrapped text (`header_height`) and grows upward from its
+> planned bottom so the layout below does not move. Boxing a header exposes overflow plain text hid: export and look after any header change. Every page that colours boxes carries a legend for those
+> colours, placed in free space beside the first block (the Options page puts it right of the Decisions taken box).
 >
 > ```python
 > # scripts/flowmap/e2e.py, skill-drawio, 2026-10-21
@@ -229,25 +221,22 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-21** · categories and labels · USER_STATED · Source: smc-resiliency operator review, 2026-10-21 ("why custom is written everywhere") · Falsifier: a project where one value in every flow's category helps a reader
-> A field shown on every flow (category in the header and the Overview index) must carry information in that project. A value copied from another
-> project (UNC's native/custom split) that is the same everywhere is noise: give the project its own categories (build, config-swap, measurement).
+> A field shown on every flow (category in the header and the Overview index) must carry information in that project. A value copied from another project (UNC's native/custom split) that is the same
+> everywhere is noise: give the project its own categories (build, config-swap, measurement).
 
-> **Proposed 2026-10-21, adopted the same day (see the next entry)** · shape vocabulary · USER_STATED (asked for a sample) · Source: `references/screenshots/20261021-shape-vocabulary-sample/` · Falsifier: the operator declines it
-> Standard flowchart shapes could carry meaning the map already has: terminator (first step, a step with no next), decision (a step with a gate),
-> manual operation (a person's step), preparation (set-up), predefined process (a step that runs another flow), delay (timer), stored data
-> (store), document (a file written), data in or out (a network transport), external system (cloud), person (actor). Sample drawn by hand-run code;
-> the engine does not draw them until the operator decides.
+> **Proposed 2026-10-21, adopted the same day (see the next entry)** · shape vocabulary · USER_STATED (asked for a sample) · Source: `references/screenshots/20261021-shape-vocabulary-sample/` ·
+> Falsifier: the operator declines it Standard flowchart shapes could carry meaning the map already has: terminator (first step, a step with no next), decision (a step with a gate), manual operation
+> (a person's step), preparation (set-up), predefined process (a step that runs another flow), delay (timer), stored data (store), document (a file written), data in or out (a network transport),
+> external system (cloud), person (actor). Sample drawn by hand-run code; the engine does not draw them until the operator decides.
 
 > **Learned 2026-10-21** · shape vocabulary adopted · USER_STATED · Source: smc-resiliency operator, 2026-10-21 (chose all twelve; "the two green shapes are not easily distinguishable"); `scripts/flowmap/shapes.py`, `tests/test_shapes.py` · Falsifier: a page where two meanings share one outline
-> Flow pages draw each step as a flowchart symbol derived from the map (`flowmap.shapes.step_shape`: explicit `shape`, gate = decision, `flow`
-> = predefined process linked to that page, person actor = manual operation, first or last = terminator, network transport = data in or out,
-> else process) and each lane head by kind (`lane_shape`: store = stored data, timer = delay, external = cloud, person = a figure in the corner;
-> a component's `shape` wins). Every flow page ends with "Shapes on this page". An outline eats text area: shrink characters per line and grow the
-> box (diamond 0.6 and 1.5). On the Options page a decision taken is a **document** (a record), never a rounded box beside rectangles of the same
-> colour, which read as one shape; questions and decisions carry a small diamond; pros and cons are notes. Text centred in a box takes no top
-> padding meant for top-aligned boxes. The Decisions taken box at the head of the chain is a document too (operator, 2026-10-21), and an arrow leaving
-> a document's bottom starts on its wavy edge (`WAVE`, 0.075 of the height above the box bottom at the centre), not at the box's bounding line.
-> Screenshots: `references/screenshots/20261021-shapes-adopted/`.
+> Flow pages draw each step as a flowchart symbol derived from the map (`flowmap.shapes.step_shape`: explicit `shape`, gate = decision, `flow` = predefined process linked to that page, person actor =
+> manual operation, first or last = terminator, network transport = data in or out, else process) and each lane head by kind (`lane_shape`: store = stored data, timer = delay, external = cloud, person
+> = a figure in the corner; a component's `shape` wins). Every flow page ends with "Shapes on this page". An outline eats text area: shrink characters per line and grow the box (diamond 0.6 and 1.5).
+> On the Options page a decision taken is a **document** (a record), never a rounded box beside rectangles of the same colour, which read as one shape; questions and decisions carry a small diamond;
+> pros and cons are notes. Text centred in a box takes no top padding meant for top-aligned boxes. The Decisions taken box at the head of the chain is a document too (operator, 2026-10-21), and an
+> arrow leaving a document's bottom starts on its wavy edge (`WAVE`, 0.075 of the height above the box bottom at the centre), not at the box's bounding line. Screenshots:
+> `references/screenshots/20261021-shapes-adopted/`.
 >
 > ```python
 > # scripts/flowmap/shapes.py (step_shape), skill-drawio, 2026-10-21
@@ -268,24 +257,23 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-21** · opaque dashed boxes · USER_STATED · Source: smc-resiliency operator, 2026-10-21 ("white background so that I don't see the draw.io grid ... as a standard"); `scripts/flowmap/overview.py` group style; `tests/test_shapes.py` (`OpaqueDashedBoxTests`) · Falsifier: a dashed vertex rendered with `fillColor=none`
-> A box drawn with a dashed border (Overview groups, proposed or designed components) always has a fill: white for a container, its kind colour
-> for a component. A see-through box shows the editor's grid and reads as unfinished. The test fails on any dashed vertex without a fill.
+> A box drawn with a dashed border (Overview groups, proposed or designed components) always has a fill: white for a container, its kind colour for a component. A see-through box shows the editor's
+> grid and reads as unfinished. The test fails on any dashed vertex without a fill.
 
 > **Learned 2026-10-21** · flow page proportions and routing · USER_STATED · Source: smc-resiliency operator review of unified-network-controller's pages, 2026-10-21 ("arrows strangely connected", "unusually tall", "crossing over so many shapes", "cluttered", "nothing stopping it to be wider"); `scripts/flowmap/flow_geometry.py`, `scripts/flowmap/pages.py`, `scripts/flowmap/shapes.py` · Falsifier: an export with an arrow end off a slanted side, a step box with more than two empty lines, a back arrow crossing a step, or a diamond whose text touches its edge
 > - **Slanted shapes** (data in or out, manual operation, preparation): pin arrow ends to the box edge (`exitPerimeter=0`, `entryPerimeter=0`);
->   draw.io's projection slides them along the slant to a corner. Diamonds keep the projection.
+> draw.io's projection slides them along the slant to a corner. Diamonds keep the projection.
 > - **Proportion over height:** a decision gets a wider column (`DEC_STEP_W` 380) and generous side padding (72), so its text sits inside the
->   diamond; every step box is sized from 38 characters a line at 220 px and font 10 (33 left boxes half empty).
+> diamond; every step box is sized from 38 characters a line at 220 px and font 10 (33 left boxes half empty).
 > - **Return arrows** are routed by the engine, not draw.io. The short way first: out of the source's left side a fifth of the way down (clear
->   of the forward arrows' entries), along the source's lane, into the target's top right (bottom right when the target's lane is higher).
->   When a step blocks that path, the long way: down in the source's column, along a band below every lane, up into the target. Either way
->   the route crosses no other step (`flow_geometry._clear`); the label is a text mark on the route.
+> of the forward arrows' entries), along the source's lane, into the target's top right (bottom right when the target's lane is higher). When a step blocks that path, the long way: down in the
+> source's column, along a band below every lane, up into the target. Either way the route crosses no other step (`flow_geometry._clear`); the label is a text mark on the route.
 > - **Long actions** written as clauses joined by "; " are set one clause a line as bullets.
 
 > **Learned 2026-10-22** · action bullets keep bracketed asides whole · VERIFIED_PRIMARY · Source: unified-network-controller flow page review, 2026-10-22; `scripts/flowmap/pages.py` (`action_clauses`), `tests/test_shapes.py` (`ActionClauseTests`) · Falsifier: a step box whose bullet starts or ends inside a bracket
-> `look.action_bullets` sets an action of clauses joined by "; " one clause a line. The split ran on every "; ", so "(the operator's click;
-> agents never approve)" became two bullets with a broken bracket. It now splits only outside brackets; an unbalanced closing bracket resets
-> to depth zero. Four unified-network-controller pages changed (each had a bracketed "; "), smc-resiliency's pages audit clean.
+> `look.action_bullets` sets an action of clauses joined by "; " one clause a line. The split ran on every "; ", so "(the operator's click; agents never approve)" became two bullets with a broken
+> bracket. It now splits only outside brackets; an unbalanced closing bracket resets to depth zero. Four unified-network-controller pages changed (each had a bracketed "; "), smc-resiliency's pages
+> audit clean.
 >
 > ```python
 > # scripts/flowmap/pages.py (skills_stuff, 2026-10-22)
@@ -298,9 +286,8 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-23** · decision branch labels · VERIFIED_PRIMARY · Source: ansible-wifi smc_change flow map render; scripts/flowmap/routing.py:branch_label ·
-> Falsifier: a step with `shape: decision` and two `next` targets rendered with bare step numbers on its arrows
-> A step drawn as a decision through `shape: decision` (no `gate`) used to get bare numbers on its branches, its `when` cases dropped. Every branch
-> out of a diamond now says why it is taken (operator, 2026-10-23): its `when` case, else Yes/No for two branches. Screenshot:
+> Falsifier: a step with `shape: decision` and two `next` targets rendered with bare step numbers on its arrows A step drawn as a decision through `shape: decision` (no `gate`) used to get bare
+> numbers on its branches, its `when` cases dropped. Every branch out of a diamond now says why it is taken (operator, 2026-10-23): its `when` case, else Yes/No for two branches. Screenshot:
 > `references/screenshots/20261023-decision-branch-labels/`.
 >
 > ```python
@@ -312,10 +299,10 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-23** · a flag with a value splits its code span · VERIFIED_PRIMARY · Source: smc-resiliency flow map render (commit 602c73c), tooltip of
-> component Activation step; scripts/flowmap/tips.py:CODEISH (skills_stuff bfd150c) · Falsifier: a tooltip that sets `--noexec=false` as one code span
-> `code_spans()` matches a flag as `--?[a-z][\w-]*` and stops at `=`, so `--noexec=false` renders as `--noexec` in code font and `=false` plain (also
-> `--level=24.04-20261020`). Open, not fixed: letting the flag alternative take `(?:=[\w.<>/-]+)?` changes every consumer's drawing, so the fix is
-> released with a re-render of each map. Until then a map can mark the whole flag with backticks. Screenshot: none, tooltips are not exported; the excerpt is the output.
+> component Activation step; scripts/flowmap/tips.py:CODEISH (skills_stuff bfd150c) · Falsifier: a tooltip that sets `--noexec=false` as one code span `code_spans()` matches a flag as `--?[a-z][\w-]*`
+> and stops at `=`, so `--noexec=false` renders as `--noexec` in code font and `=false` plain (also `--level=24.04-20261020`). Open, not fixed: letting the flag alternative take `(?:=[\w.<>/-]+)?`
+> changes every consumer's drawing, so the fix is released with a re-render of each map. Until then a map can mark the whole flag with backticks. Screenshot: none, tooltips are not exported; the
+> excerpt is the output.
 >
 > ```python
 > # scripts/flowmap/tips.py (skills_stuff bfd150c)
@@ -324,12 +311,11 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-23** · palette extended to twenty hues · VERIFIED_PRIMARY · Source: `scripts/flowmap/profile.py` `DISTINCT`, `scripts/palette_check.py`
-> (skills_stuff 9166fcb and this entry's commit); screenshot `references/screenshots/20261023-palette-export/` · Falsifier: two of the twenty read as one
-> colour in a legend review, or `just palette-check` reporting a pair under 13.1
-> The operator asked to extend the palette after unified-network-controller's 31 flows cycled ten colours. Distance is measured (CIEDE2000), not
-> judged: the first ten's closest pair is green and olive at 13.1, so a new hue had to beat that and reach 4.5:1 on white. Farthest-first picks from a
-> grid of dark hues gave ten at 13.8 or more; the eleventh measured 11.9, so twenty is the ceiling. Appending kept every drawing of ten or fewer
-> families byte-identical (the shop example unchanged). `just palette-check` measures a palette and `--suggest N` picks more.
+> (skills_stuff 9166fcb and this entry's commit); screenshot `references/screenshots/20261023-palette-export/` · Falsifier: two of the twenty read as one colour in a legend review, or `just
+> palette-check` reporting a pair under 13.1 The operator asked to extend the palette after unified-network-controller's 31 flows cycled ten colours. Distance is measured (CIEDE2000), not judged: the
+> first ten's closest pair is green and olive at 13.1, so a new hue had to beat that and reach 4.5:1 on white. Farthest-first picks from a grid of dark hues gave ten at 13.8 or more; the eleventh
+> measured 11.9, so twenty is the ceiling. Appending kept every drawing of ten or fewer families byte-identical (the shop example unchanged). `just palette-check` measures a palette and `--suggest N`
+> picks more.
 >
 > ```python
 > # scripts/palette_check.py (skills_stuff, 2026-10-23)
@@ -344,13 +330,11 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-23** · End-to-end family pages · VERIFIED_PRIMARY · Source: `scripts/flowmap/e2e_family.py`, `tests/test_e2e_family.py`;
-> unified-network-controller render; screenshots `references/screenshots/20261023-e2e-family-pages/` · Falsifier: a family page whose x.y
-> numbers differ from the full page's, or a file with a cell id used on two pages
-> unified-network-controller's End-to-end page held 31 flows and 73 boxes (5,534 x 8,622 px). Splitting by boxes does not work there: the best
-> two-page split still put five hub boxes (Nautobot web, the Celery worker, apn-unc01, the SMC, the operator) on both pages and left 23 flows on
-> one. Splitting by family does: five extra pages of 4 to 11 flows and 17 to 37 boxes (2,000 to 3,600 px, whole at export scale 1), the full
-> page byte-identical. One engine draws both: the family page is the same EndToEnd built on a part of the map, given the whole map's numbers,
-> and its ids are renamed when written, since draw.io ids must be unique in the file.
+> unified-network-controller render; screenshots `references/screenshots/20261023-e2e-family-pages/` · Falsifier: a family page whose x.y numbers differ from the full page's, or a file with a cell id
+> used on two pages unified-network-controller's End-to-end page held 31 flows and 73 boxes (5,534 x 8,622 px). Splitting by boxes does not work there: the best two-page split still put five hub boxes
+> (Nautobot web, the Celery worker, apn-unc01, the SMC, the operator) on both pages and left 23 flows on one. Splitting by family does: five extra pages of 4 to 11 flows and 17 to 37 boxes (2,000 to
+> 3,600 px, whole at export scale 1), the full page byte-identical. One engine draws both: the family page is the same EndToEnd built on a part of the map, given the whole map's numbers, and its ids
+> are renamed when written, since draw.io ids must be unique in the file.
 >
 > ```python
 > # scripts/flowmap/e2e_family.py (skills_stuff, 2026-10-23)
@@ -362,13 +346,11 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 
 
 > **Learned 2026-10-26** · family page colours by flow · VERIFIED_PRIMARY · Source: `scripts/flowmap/tips.py` `e2e_groups`,
-> `tests/test_e2e_family.py` `test_flow_colours_match_the_full_page`; unified-network-controller render; screenshot
-> `references/screenshots/20261026-e2e-family-colours/` · Falsifier: a family page under `e2e_family_colours: flow` whose flow colour differs
-> from that flow's colour on the full End-to-end page
-> Restarting the palette on each family page avoids repeats but gives one flow a different colour on each page; the operator chose one colour
-> per flow everywhere (2026-10-26). With 20 colours, flows n and n+20 share one, so a family holding both repeats it: in
-> unified-network-controller's 31 flows, Monitoring (7, 27) and Onboarding (8 and 28, 9 and 29); the x.y numbers still tell them apart.
-> Count a forced repeat per family from the numbers (n mod 20) before predicting it: the first prediction named only Onboarding.
+> `tests/test_e2e_family.py` `test_flow_colours_match_the_full_page`; unified-network-controller render; screenshot `references/screenshots/20261026-e2e-family-colours/` · Falsifier: a family page
+> under `e2e_family_colours: flow` whose flow colour differs from that flow's colour on the full End-to-end page Restarting the palette on each family page avoids repeats but gives one flow a
+> different colour on each page; the operator chose one colour per flow everywhere (2026-10-26). With 20 colours, flows n and n+20 share one, so a family holding both repeats it: in
+> unified-network-controller's 31 flows, Monitoring (7, 27) and Onboarding (8 and 28, 9 and 29); the x.y numbers still tell them apart. Count a forced repeat per family from the numbers (n mod 20)
+> before predicting it: the first prediction named only Onboarding.
 >
 > ```python
 > # scripts/flowmap/tips.py e2e_groups (skills_stuff, 2026-10-26)
@@ -378,15 +360,13 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-26** · step totals and label size on the End-to-end page · VERIFIED_PRIMARY · Source: `scripts/flowmap/step_labels.py`
-> `e2e_label_size`, `label_spot`, `label_spots`, `step_label`; `tests/test_e2e_family.py` `StepTotals`;
-> unified-network-controller render; screenshots `references/screenshots/20261026-e2e-step-totals/` · Falsifier: a page with
-> `e2e_step_total: sub` at font 12 whose audit reports a label on another arrow where the same map at x.y and font 10 is clean
-> A label is placed only where it touches no other run, and End-to-end tracks are 24 px apart (E2E_SP), so a label on a vertical run must
-> be under about 48 px wide. `x.y/n` at 12 pt is wider (`10.13/19` about 55 px with padding) and left 16 labels on other arrows in
-> unified-network-controller; a subscript n at 0.75 of the font, with 2 px padding a side, keeps the widest at 46 px and every page clean.
-> Size labels from the font's advance widths (Helvetica bold: digit 0.556 em, `.` and `/` 0.278 em), not a flat factor per character,
-> which overstated `10.13/19` by 20 px. Where the nine fixed spots on a run fail, a scan every 6 px along every run (any run that holds the
-> label with 8 px to spare) finds room; the default drawing is byte-identical because the scan runs only after the fixed spots fail.
+> `e2e_label_size`, `label_spot`, `label_spots`, `step_label`; `tests/test_e2e_family.py` `StepTotals`; unified-network-controller render; screenshots
+> `references/screenshots/20261026-e2e-step-totals/` · Falsifier: a page with `e2e_step_total: sub` at font 12 whose audit reports a label on another arrow where the same map at x.y and font 10 is
+> clean A label is placed only where it touches no other run, and End-to-end tracks are 24 px apart (E2E_SP), so a label on a vertical run must be under about 48 px wide. `x.y/n` at 12 pt is wider
+> (`10.13/19` about 55 px with padding) and left 16 labels on other arrows in unified-network-controller; a subscript n at 0.75 of the font, with 2 px padding a side, keeps the widest at 46 px and
+> every page clean. Size labels from the font's advance widths (Helvetica bold: digit 0.556 em, `.` and `/` 0.278 em), not a flat factor per character, which overstated `10.13/19` by 20 px. Where the
+> nine fixed spots on a run fail, a scan every 6 px along every run (any run that holds the label with 8 px to spare) finds room; the default drawing is byte-identical because the scan runs only after
+> the fixed spots fail.
 >
 > ```python
 > # scripts/flowmap/step_labels.py (skills_stuff, 2026-10-26)
@@ -399,19 +379,15 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 >     return f"<b>{xy}<{style}>{n}</{style}></b>"
 > ```
 
-> **Superseded 2026-10-26** by the Learned entry "click toggle without changing the file" below (two clicks and a reset button, and a
-> lock on the cell rather than its layer, replaced the same day).
+> **Superseded 2026-10-26** by the Learned entry "click toggle without changing the file" below (two clicks and a reset button, and a lock on the cell rather than its layer, replaced the same day).
 > **Learned 2026-10-26** · click a flow to see it alone · VERIFIED_PRIMARY · Source: draw.io 32.5.5 bundle (`app.asar`
-> `drawio/src/main/webapp/js/app.min.js`: action names `"wait fadeIn fadeOut fadeTo opacity ..."`, `null!=x.opacity&&null!=x.opacity.value&&
-> Graph.setOpacityForNodes(...)`), jgraph/drawio v32.5.5 `js/viewer-static.min.js`; drawio.com/docs/reference/animation-actions-json;
-> `scripts/flowmap/isolate.py`; `tests/test_e2e_family.py` `ClickIsolate`; screenshots `references/screenshots/20261026-e2e-click-isolate/`
-> · Falsifier: a click on an arrow in draw.io's viewer that leaves another flow's arrow at opacity 1
-> A `data:action/json` link `{"actions":[{"opacity":{"tags":[...],"tagsMatch":"or","value":0.15}},{"opacity":{"tags":["flow-<id>"],"value":1},
-> "immediate":true}]}` dims by tag and restores one flow; tags reach every cell kind, so the page needs only a `box` tag on components.
-> The docs name the action "Set Opacity" but not its JSON key; the key is `opacity` with `value`, read from the installed bundle. Tested in
-> the viewer of the same version under headless Edge (Playwright): a label click set the clicked flow's arrows and boxes to 1 and others to
-> 0.15, a legend row did the same, "Show all flows" set all back to 1. In the desktop editor a click runs a link directly only on a locked
-> cell (hence `locked=1`); that path is not yet tested by hand. The effect is transient (never saved); exports stay static.
+> `drawio/src/main/webapp/js/app.min.js`: action names `"wait fadeIn fadeOut fadeTo opacity ..."`, `null!=x.opacity&&null!=x.opacity.value&& Graph.setOpacityForNodes(...)`), jgraph/drawio v32.5.5
+> `js/viewer-static.min.js`; drawio.com/docs/reference/animation-actions-json; `scripts/flowmap/isolate.py`; `tests/test_e2e_family.py` `ClickIsolate`; screenshots
+> `references/screenshots/20261026-e2e-click-isolate/` · Falsifier: a click on an arrow in draw.io's viewer that leaves another flow's arrow at opacity 1 A `data:action/json` link
+> `{"actions":[{"opacity":{"tags":[...],"tagsMatch":"or","value":0.15}},{"opacity":{"tags":["flow-<id>"],"value":1}, "immediate":true}]}` dims by tag and restores one flow; tags reach every cell kind,
+> so the page needs only a `box` tag on components. The docs name the action "Set Opacity" but not its JSON key; the key is `opacity` with `value`, read from the installed bundle. Tested in the viewer
+> of the same version under headless Edge (Playwright): a label click set the clicked flow's arrows and boxes to 1 and others to 0.15, a legend row did the same, "Show all flows" set all back to 1. In
+> the desktop editor a click runs a link directly only on a locked cell (hence `locked=1`); that path is not yet tested by hand. The effect is transient (never saved); exports stay static.
 >
 > ```python
 > # scripts/flowmap/isolate.py (skills_stuff, 2026-10-26)
@@ -421,19 +397,15 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-26** · click toggle without changing the file · VERIFIED_PRIMARY · Source: draw.io 32.5.5 `app.asar` app.min.js
-> (`Graph.nextToggleStyleValue`, `toggleCellStylesTransient`, `toggleCellStyleValues`, `executeCustomActions`, the Graph click handler
-> `isCellLocked(this.getLayerForCell(...))`), jgraph/drawio v32.5.5 `js/viewer-static.min.js`; `scripts/flowmap/isolate.py`;
-> `tests/test_e2e_family.py` `ClickIsolate`; screenshots `references/screenshots/20261026-click-toggle/` · Falsifier: a click sequence in
-> draw.io 32.5.5 where a second click on the same colour leaves cells dimmed, or a click that marks the file changed
-> Three findings from the installed code. (1) A link clicked on a cell runs with that cell passed, and then every action without its own
-> `"transient"` is a saved model change (the file counts as modified); mark each action `"transient": true`. A link run without a cell
-> (a page animation) is transient by default, which hid this in a first test. (2) A transient `toggleStyle` decides per cell: a cell
-> holding the value returns to the default, any other takes the value. Giving each colour its own dim value (15.001, 15.002, ..., the same
-> to the eye) makes one stateless link toggle its colour and switch from another colour in one click; no marker cells are needed. A
-> saved `toggleStyle` decides once from the first selected cell instead, which toggles too, but changes the file. (3) In the editor a
-> click runs a link directly only when the cell's layer is locked; `locked=1` on the cell itself only stops selection, and the editor
-> shows the link in a hint to click instead. Measured in the viewer under headless Edge: example and unified-network-controller E2E and
-> Overview pages, click, click again, switch, all as intended; the model kept no opacity.
+> (`Graph.nextToggleStyleValue`, `toggleCellStylesTransient`, `toggleCellStyleValues`, `executeCustomActions`, the Graph click handler `isCellLocked(this.getLayerForCell(...))`), jgraph/drawio v32.5.5
+> `js/viewer-static.min.js`; `scripts/flowmap/isolate.py`; `tests/test_e2e_family.py` `ClickIsolate`; screenshots `references/screenshots/20261026-click-toggle/` · Falsifier: a click sequence in
+> draw.io 32.5.5 where a second click on the same colour leaves cells dimmed, or a click that marks the file changed Three findings from the installed code. (1) A link clicked on a cell runs with that
+> cell passed, and then every action without its own `"transient"` is a saved model change (the file counts as modified); mark each action `"transient": true`. A link run without a cell (a page
+> animation) is transient by default, which hid this in a first test. (2) A transient `toggleStyle` decides per cell: a cell holding the value returns to the default, any other takes the value. Giving
+> each colour its own dim value (15.001, 15.002, ..., the same to the eye) makes one stateless link toggle its colour and switch from another colour in one click; no marker cells are needed. A saved
+> `toggleStyle` decides once from the first selected cell instead, which toggles too, but changes the file. (3) In the editor a click runs a link directly only when the cell's layer is locked;
+> `locked=1` on the cell itself only stops selection, and the editor shows the link in a hint to click instead. Measured in the viewer under headless Edge: example and unified-network-controller E2E
+> and Overview pages, click, click again, switch, all as intended; the model kept no opacity.
 >
 > ```python
 > # scripts/flowmap/isolate.py isolate_link (skills_stuff, 2026-10-26)
@@ -444,14 +416,12 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-26** · self-loops on the End-to-end page · VERIFIED_PRIMARY · Source: `scripts/flowmap/loops.py`
-> (`loop_runs`, `_room`, `plan_loops`, `draw_loops`), `scripts/flowmap/e2e_grid.py` `loop_reserve`; `tests/test_e2e_family.py` `Loops`;
-> unified-network-controller render; screenshots `references/screenshots/20261026-e2e-loops/` · Falsifier: a page with loops on whose
-> audit reports a fault, or a box whose loops sit on the edge that had less room
-> Arrows meet End-to-end boxes only on their sides, so the sides hold a port every 24 px and are 34 px from the first track, while the top
-> and bottom are free: in unified-network-controller the looped boxes had 34 to 1,686 px clear above or below. Measuring that room after
-> the first layout and widening a gap only by an edge's shortfall placed 21 loops (27 steps) with the full page 22 px taller and four of
-> six pages unchanged in size. A loop is 24 px tall so its last run passes the thick head-room audit, and is drawn before the arrow
-> labels so they keep clear of it. A draw.io edge with the same source and target and explicit waypoints renders as the loop.
+> (`loop_runs`, `_room`, `plan_loops`, `draw_loops`), `scripts/flowmap/e2e_grid.py` `loop_reserve`; `tests/test_e2e_family.py` `Loops`; unified-network-controller render; screenshots
+> `references/screenshots/20261026-e2e-loops/` · Falsifier: a page with loops on whose audit reports a fault, or a box whose loops sit on the edge that had less room Arrows meet End-to-end boxes only
+> on their sides, so the sides hold a port every 24 px and are 34 px from the first track, while the top and bottom are free: in unified-network-controller the looped boxes had 34 to 1,686 px clear
+> above or below. Measuring that room after the first layout and widening a gap only by an edge's shortfall placed 21 loops (27 steps) with the full page 22 px taller and four of six pages unchanged
+> in size. A loop is 24 px tall so its last run passes the thick head-room audit, and is drawn before the arrow labels so they keep clear of it. A draw.io edge with the same source and target and
+> explicit waypoints renders as the loop.
 >
 > ```python
 > # scripts/flowmap/loops.py plan_loops (skills_stuff, 2026-10-26)
@@ -463,14 +433,12 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-26** · loops keep clear of headings · VERIFIED_PRIMARY · Source: `scripts/flowmap/loops.py` `_room`,
-> `title_spans`, `scripts/flowmap/e2e_grid.py` `E2E_TIER_HEAD`, `E2E_BAND_HEAD`; `tests/test_e2e_family.py`
-> `test_loops_keep_clear_of_headings`; smc-resiliency render; screenshots `references/screenshots/20261026-loop-heading-clearance/` ·
-> Falsifier: a loop or its label drawn over a tier heading or the band heading
-> The room above a top-row box was measured to the column's top, but the tier heading text sits inside that room (4 to 44 px below it),
-> so a box with clear lines above put its loop on the heading: smc-resiliency's x86 family page drew 8.8 over "On the SMC", and the page
-> audit passed it (it checks arrows, boxes and labels, not heading text). Headings are now obstacles like boxes; the band heading in the
-> first column too. The test repeats every step a top-row box does, so each carries a loop, and fails without the fix ("4.1 on
-> report-timer: 506-548 over heading 512-542"). UNC's and the example's drawings stayed byte-identical; only the x86 page moved its loop below.
+> `title_spans`, `scripts/flowmap/e2e_grid.py` `E2E_TIER_HEAD`, `E2E_BAND_HEAD`; `tests/test_e2e_family.py` `test_loops_keep_clear_of_headings`; smc-resiliency render; screenshots
+> `references/screenshots/20261026-loop-heading-clearance/` · Falsifier: a loop or its label drawn over a tier heading or the band heading The room above a top-row box was measured to the column's
+> top, but the tier heading text sits inside that room (4 to 44 px below it), so a box with clear lines above put its loop on the heading: smc-resiliency's x86 family page drew 8.8 over "On the SMC",
+> and the page audit passed it (it checks arrows, boxes and labels, not heading text). Headings are now obstacles like boxes; the band heading in the first column too. The test repeats every step a
+> top-row box does, so each carries a loop, and fails without the fix ("4.1 on report-timer: 506-548 over heading 512-542"). UNC's and the example's drawings stayed byte-identical; only the x86 page
+> moved its loop below.
 >
 > ```python
 > # scripts/flowmap/loops.py _room (skills_stuff, 2026-10-26)
@@ -480,13 +448,11 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-26** · a change on a page of its own · VERIFIED_PRIMARY · Source: `scripts/flowmap/map_parts.py` (`shared_part`,
-> `flow_numbers`, `flow_labels`), `scripts/flowmap/e2e_family.py` `family_pages`; `tests/test_own_page.py`; ansible-wifi smc_change render;
-> screenshots `references/screenshots/20261026-own-page/` · Falsifier: a map with an `own_page` family whose full End-to-end page carries a
-> cell tagged with one of its flows, or whose own page numbers a flow other than 1..n
-> A role that runs many changes (ansible-wifi's smc_change) wants one page per change, but a family page reuses the whole map's numbers and
-> the full page draws every flow, so the first PHP page read "5.1" and its flow also crowded the shared page. Leaving the family's flows out of
-> the full page's part, and dropping only the components no shared flow touches, keeps that page whole; numbering per family keeps every
-> page readable alone. The operator then asked for phases of one run as separate flows (1 Plan ... 5 Prove), not one long flow.
+> `flow_numbers`, `flow_labels`), `scripts/flowmap/e2e_family.py` `family_pages`; `tests/test_own_page.py`; ansible-wifi smc_change render; screenshots `references/screenshots/20261026-own-page/` ·
+> Falsifier: a map with an `own_page` family whose full End-to-end page carries a cell tagged with one of its flows, or whose own page numbers a flow other than 1..n A role that runs many changes
+> (ansible-wifi's smc_change) wants one page per change, but a family page reuses the whole map's numbers and the full page draws every flow, so the first PHP page read "5.1" and its flow also crowded
+> the shared page. Leaving the family's flows out of the full page's part, and dropping only the components no shared flow touches, keeps that page whole; numbering per family keeps every page
+> readable alone. The operator then asked for phases of one run as separate flows (1 Plan ... 5 Prove), not one long flow.
 >
 > ```python
 > # scripts/flowmap/map_parts.py (skills_stuff, 2026-10-26)
@@ -501,14 +467,12 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-26** · thin arrows on one line, and legend text that never wrapped · VERIFIED_PRIMARY · Source: `scripts/drawio/audit.py`
-> `shared_runs`, `scripts/flowmap/overview.py` `_thin_routes`, `scripts/flowmap/step_labels.py` `legend_fit`; `tests/test_own_page.py`
-> `ThinSharedRuns` (proved red with the nudge disabled) · Falsifier: an Overview whose thin arrows with no end in common share a run while
-> the audit reports clean, or an End-to-end legend line wider than its box
-> The shared-run audit checked thick arrows only, so an Overview thin arrow that dropped down another box's exit line (a box stacked straight
-> above the other's target, both at the centre fraction) passed as clean; the operator saw it in the export. Thin arrows are now checked
-> unless they share an end (a fan-out may share its first run), and an entry that would land on another exit line moves half a slot. The
-> End-to-end legend's reading line had no `whiteSpace=wrap`: draw.io laid it out on one line about 2,400 px wide whatever its box, which
-> showed only on a narrow family page; it now wraps when the estimate needs more than one line, so wide pages are byte-identical.
+> `shared_runs`, `scripts/flowmap/overview.py` `_thin_routes`, `scripts/flowmap/step_labels.py` `legend_fit`; `tests/test_own_page.py` `ThinSharedRuns` (proved red with the nudge disabled) ·
+> Falsifier: an Overview whose thin arrows with no end in common share a run while the audit reports clean, or an End-to-end legend line wider than its box The shared-run audit checked thick arrows
+> only, so an Overview thin arrow that dropped down another box's exit line (a box stacked straight above the other's target, both at the centre fraction) passed as clean; the operator saw it in the
+> export. Thin arrows are now checked unless they share an end (a fan-out may share its first run), and an entry that would land on another exit line moves half a slot. The End-to-end legend's reading
+> line had no `whiteSpace=wrap`: draw.io laid it out on one line about 2,400 px wide whatever its box, which showed only on a narrow family page; it now wraps when the estimate needs more than one
+> line, so wide pages are byte-identical.
 >
 > ```python
 > # scripts/flowmap/overview.py _thin_routes (skills_stuff, 2026-10-26)
@@ -517,18 +481,15 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-26** · joint moves in the End-to-end search · VERIFIED_PRIMARY · Source: `scripts/flowmap/crossing_search.py`
-> (`improve`, `port_and_tracks`, `moved_next_to`); `tests/test_crossing_search.py` (fixture `tests/fixtures/crossing_search.yaml`, proved
-> red with the worse run kept); screenshots `references/screenshots/20261026-joint-moves/` · Falsifier: a page whose crossings after
-> `improve` exceed the plain search's, or an out-and-back pair left crossing where a port swap plus one track move clears it
-> The search kept one swap at a time, only when crossings dropped. An arrow from box A to B and the next step back from B to A crossed on
-> the operator's PHP page: clearing it needs their ports on A swapped and one vertical track moved, and either alone adds a crossing, so
-> the search never got there (operator, 2026-10-26: "improve the logic in the skill, not like a manual handwork"). What did not work: swapping
-> the two tracks outright (jumped over three dashed tracks, +13 crossings); running joint moves inside the plain search (the shop example
-> rose 11 -> 13: a greedy path to a worse end); judging every candidate on the whole page (unified-network-controller 4 s -> 81 s). What
-> did: move one track beside the other with the rest in order, count only the links whose track or port moved (their crossings against
-> every link are the page's whole change), check spacing only on the chosen move, try only a pair that crosses itself, and run the plain
-> and the joint search from one start, keeping the one with fewer crossings. Measured: smc_change E2E 72 -> 24, PHP 29 -> 20,
-> unified-network-controller's 31-flow page 4,177 -> 3,689 (render 4 s -> about 18 s), smc-resiliency p5 671 -> 528; shop byte-identical.
+> (`improve`, `port_and_tracks`, `moved_next_to`); `tests/test_crossing_search.py` (fixture `tests/fixtures/crossing_search.yaml`, proved red with the worse run kept); screenshots
+> `references/screenshots/20261026-joint-moves/` · Falsifier: a page whose crossings after `improve` exceed the plain search's, or an out-and-back pair left crossing where a port swap plus one track
+> move clears it The search kept one swap at a time, only when crossings dropped. An arrow from box A to B and the next step back from B to A crossed on the operator's PHP page: clearing it needs
+> their ports on A swapped and one vertical track moved, and either alone adds a crossing, so the search never got there (operator, 2026-10-26: "improve the logic in the skill, not like a manual
+> handwork"). What did not work: swapping the two tracks outright (jumped over three dashed tracks, +13 crossings); running joint moves inside the plain search (the shop example rose 11 -> 13: a
+> greedy path to a worse end); judging every candidate on the whole page (unified-network-controller 4 s -> 81 s). What did: move one track beside the other with the rest in order, count only the
+> links whose track or port moved (their crossings against every link are the page's whole change), check spacing only on the chosen move, try only a pair that crosses itself, and run the plain and
+> the joint search from one start, keeping the one with fewer crossings. Measured: smc_change E2E 72 -> 24, PHP 29 -> 20, unified-network-controller's 31-flow page 4,177 -> 3,689 (render 4 s -> about
+> 18 s), smc-resiliency p5 671 -> 528; shop byte-identical.
 >
 > ```python
 > # scripts/flowmap/crossing_search.py improve (skills_stuff, 2026-10-26)
@@ -541,6 +502,5 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > ```
 
 > **Learned 2026-10-27** · family labels · VERIFIED_PRIMARY · Source: `scripts/flowmap/map_parts.py` (`flow_labels`),
-> `tests/test_own_page.py` (`test_one_flow_family_has_no_number`) · Falsifier: a family with one flow labelled "<prefix> 1"
-> A family of one flow is labelled by its prefix alone: "PHP fix 1. Step by step" numbered a list of one (operator: "why overview page still
-> calls it php fix 1"). Name the prefix after the subject (here the change, `PHP CVE-2026-109618`), not a stale working title.
+> `tests/test_own_page.py` (`test_one_flow_family_has_no_number`) · Falsifier: a family with one flow labelled "<prefix> 1" A family of one flow is labelled by its prefix alone: "PHP fix 1. Step by
+> step" numbered a list of one (operator: "why overview page still calls it php fix 1"). Name the prefix after the subject (here the change, `PHP CVE-2026-109618`), not a stale working title.

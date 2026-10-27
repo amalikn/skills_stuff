@@ -70,6 +70,7 @@ Evidence:     VERIFIED_PRIMARY | VERIFIED_SECONDARY | CANDIDATE, with what was o
 | P-27 | Verdict ledger apart from the criteria it judges            | Trackers drifting from the design that defines done                         |
 | P-28 | Recovery on immutable parts; recoveries count as faults     | Recovery that depends on broken state; hidden self-healing                  |
 | P-29 | Clock floor and "expiry unchecked" under untrusted time      | Time checks on clocks known to be wrong                                     |
+| P-30 | Solve in a canonical frame, then transform the result       | A solver written for one orientation needed in a mirrored one               |
 
 ## Patterns
 
@@ -552,6 +553,38 @@ trap 'cleanup; exit $rc' EXIT
 - **Reuse:** certificate checks on RTC-less devices, licence expiry offline, token validation after long sleep.
 - **Pitfalls:** TLS to the time source itself fails until the clock is right; plan the first sync.
 - **Realised in:** Design, smc-resiliency (see also the Pi clock wait in the smc_change verify stage).
+
+### P-30 Solve in a canonical frame, then transform the result
+
+> **Learned 2026-10-27** · design pattern, any language · VERIFIED_PRIMARY (folded flow pages: right-to-left rows routed by the unchanged left-to-right router, every layout audit clean, five consumer drawings byte-identical with the feature off) · Source: skill-drawio `scripts/flowmap/fold.py` (CHANGELOG 20261027, uncommitted at writing) · Falsifier: a mirrored row whose copied arrows fail an audit the unmirrored row passes
+> (reusable_candidate: proven in one project, not yet in a second) Pattern P-30, written generically below.
+
+- **Problem:** a tuned solver (a router, a layout, a parser) assumes one orientation; a feature needs the mirrored or rotated case, and teaching every
+  function a second direction spreads conditionals through code that took many reviews to get right.
+- **Solution:** run the solver unchanged on a scratch copy laid out in its own frame, record what it produced (the call arguments, keyed by
+  what survived its own undo passes), then replay the result into the real output through the transform. Only cases the frame cannot hold
+  (here, arrows between rows) are solved in the real frame.
+- **Why it works:** the transform is an isometry, so every property the solver guarantees (clearances, no overlaps) survives it; the solver
+  stays one tested path.
+- **Reuse:** right-to-left text layout through a left-to-right engine; a mirrored board in a game AI; a reversed time axis through a forward
+  scheduler.
+- **Pitfalls:** results that encode the frame (a label "left of" a line) must be re-anchored after the transform; record by (id, final geometry),
+  not by id, when the solver can retry and roll back; outputs that depend on the surroundings (a background colour sampled under a label) need
+  the scratch copy to hold the same surroundings.
+- **Realised in:** Python, skill-drawio `scripts/flowmap/fold.py` (`_Scratch`, `_copy_routes`, `_copy_marks`):
+
+```python
+class _Scratch(Page):
+    def route(self, cid, src, dst, points, style, klass="thick", layer="1", ignore=(), jump=0.0):
+        super().route(cid, src, dst, points, style, klass, layer, ignore, jump)
+        self.route_args[(cid, tuple(self.routes[-1].points))] = (style, klass, layer, tuple(ignore), jump)
+
+def _copy_routes(scratch, page, axis):
+    for rt in scratch.routes:   # only what survived the uncrossing pass
+        style, klass, layer, ignore, jump = scratch.route_args[(rt.cid, tuple(rt.points))]
+        pts = [(axis - x, y) for x, y in rt.points] if axis is not None else rt.points
+        page.route(rt.cid, rt.src, rt.dst, pts, style, klass, layer, ignore, jump)
+```
 
 ## Language realisations
 

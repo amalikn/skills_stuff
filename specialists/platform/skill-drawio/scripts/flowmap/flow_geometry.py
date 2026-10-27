@@ -8,11 +8,14 @@ from __future__ import annotations
 
 from drawio.mxfile import ARROW_HEAD, Page, label
 
-from .model import GAP, MARGIN
+from .model import GAP, MARGIN, step_targets
 from .routing import branch_label, label_size
 
 #: Flow page geometry shared with flowmap.pages: lane heading width, column width and step box width.
 LANE_HEAD_W, COL_W, STEP_W = 190, 270, 220
+#: An arrow back to an earlier step: dashed purple, its "back to N" label in purple with no background.
+BACK_STYLE = "edgeStyle=none;rounded=1;html=1;" + ARROW_HEAD + "dashed=1;strokeColor=#6a3fa0;"
+BACK_MARK = "text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#6a3fa0;labelBackgroundColor=none;"
 #: A decision's diamond is wider, in a wider column, so it grows sideways rather than tall (operator review, 2026-10-21).
 DEC_STEP_W = 380
 
@@ -207,8 +210,7 @@ def back_arrow(page: Page, edge: tuple, band: float, mode: str = "short-first") 
     cid, src, dst, text, style = edge
     sx, sy, sw, sh = page.rects[src]
     dx, dy, dw, dh = page.rects[dst]
-    route_style = "edgeStyle=none;rounded=1;html=1;" + ARROW_HEAD + "dashed=1;strokeColor=#6a3fa0;"
-    mark_style = "text;html=1;align=center;verticalAlign=middle;fontSize=12;fontColor=#6a3fa0;labelBackgroundColor=none;"
+    route_style, mark_style = BACK_STYLE, BACK_MARK
     mid, x2 = sy + sh * 0.2, dx + dw * 0.75   # above the forward arrows, which enter the left side at 1/3 to 2/3 or the middle
     short = [(sx, mid), (x2, mid), (x2, dy if dy > mid else dy + dh)]
     if mode == "short-first" and x2 < sx and not (dy < mid < dy + dh) and _clear(page, short, {src, dst}):
@@ -221,3 +223,59 @@ def back_arrow(page: Page, edge: tuple, band: float, mode: str = "short-first") 
     page.route(cid, src, dst, [(x1, sy + sh), (x1, band), (x2, band), (x2, dy + dh)], route_style, klass="thin")
     page.mark(f"{cid}-lbl", label(f"**{text}**"), (x1 + x2) / 2, band - 10, 90, 18, mark_style, cid)
     return band - 8
+
+
+def _slots(items: list) -> dict:
+    """Spread arrows evenly along one side of a box.
+
+    Args:
+        items: the arrows sharing that side, in order.
+
+    Returns:
+        Each arrow's position on the side, between 0 and 1 exclusive.
+    """
+    return {item: round((i + 1) / (len(items) + 1), 3) for i, item in enumerate(items)}
+
+
+def step_edges(steps: list[dict], fid: str) -> list[tuple[str, str, str, str, str]]:
+    """The flow's arrows with ports that never coincide.
+
+    A forward arrow leaves its step's right side and enters the target's left side; a step with several on one side spreads them over that
+    side. A forward arrow that skips a column into another lane enters the target's bottom (lane above) or top (lane below) instead. An arrow back to an earlier step leaves and enters at the bottom, dashed and purple, labelled "back to N", so it never shares a
+    path with a forward arrow.
+
+    Args:
+        steps: the flow's steps in order.
+        fid: the flow id (edge ids are `<fid>-e-<source>-<target>`).
+
+    Returns:
+        (edge id, source step id, target step id, label, style) per arrow.
+    """
+    index = {s["id"]: k for k, s in enumerate(steps)}
+    actors = list(dict.fromkeys(s.get("actor") for s in steps))   # lane order, as _lanes draws them
+    lane = {s["id"]: actors.index(s.get("actor")) for s in steps}
+    pairs = [(s["id"], tg) for k, s in enumerate(steps) for tg in step_targets(steps, k)]
+    # A forward arrow that skips a column into another lane enters from below (lane above) or above (lane below), so it climbs in the target's
+    # own column instead of crossing the steps in between (operator, 2026-10-21: an arrow 6 to 8 ran over step 7 in 8's lane).
+    climb = [(a, b) for a, b in pairs if index[b] > index[a] + 1 and lane[b] != lane[a]]
+    fwd = [(a, b) for a, b in pairs if index[b] > index[a] and (a, b) not in climb]
+    back = [(a, b) for a, b in pairs if index[b] <= index[a]]
+    out_r = {a: _slots([p for p in fwd if p[0] == a]) for a, _ in fwd}
+    in_l = {b: _slots([p for p in fwd if p[1] == b]) for _, b in fwd}
+    out_b = {a: _slots([p for p in back if p[0] == a]) for a, _ in back}
+    in_b = {b: _slots([p for p in back if p[1] == b]) for _, b in back}
+    out_r.update({a: _slots([p for p in fwd + climb if p[0] == a]) for a, _ in climb})
+    in_v = {b: _slots([p for p in climb if p[1] == b]) for _, b in climb}
+    edges = []
+    for a, b in pairs:
+        if (a, b) in climb:
+            style = f"exitX=1;exitY={out_r[a][(a, b)]};entryX={in_v[b][(a, b)]};entryY={1 if lane[b] < lane[a] else 0};"
+            text = str(index[b] + 1)
+        elif (a, b) in fwd:
+            style = f"exitX=1;exitY={out_r[a][(a, b)]};entryX=0;entryY={in_l[b][(a, b)]};"
+            text = str(index[b] + 1)
+        else:
+            style = f"exitX={out_b[a][(a, b)]};exitY=1;entryX={in_b[b][(a, b)]};entryY=1;dashed=1;strokeColor=#6a3fa0;fontColor=#6a3fa0;"
+            text = f"back to {index[b] + 1}"
+        edges.append((f"{fid}-e-{a}-{b}", a, b, text, style))
+    return edges

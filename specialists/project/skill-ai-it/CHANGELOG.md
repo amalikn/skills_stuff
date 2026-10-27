@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_1840
+Last rotated: 20261027_1922
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261027_1922 — Quoted code excerpts restored after a markdown hook bug](#20261027_1922--quoted-code-excerpts-restored-after-a-markdown-hook-bug)
 - [20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea](#20261027_1840--pitfalls-from-the-skill-goal-guard-bootstrap-upgrader-placement-idea)
 - [20261026_1525 — Line-only budgets reverted: the 25 KB limit is back](#20261026_1525--line-only-budgets-reverted-the-25-kb-limit-is-back)
 - [20261022_2132 — plan_tracker: What next gets a detail block per item](#20261022_2132--plan_tracker-what-next-gets-a-detail-block-per-item)
@@ -33,8 +34,13 @@ Last rotated: 20261027_1840
 - [20261021_1320 — governance-checks: a supersession banner tied to a tracker](#20261021_1320--governance-checks-a-supersession-banner-tied-to-a-tracker)
 - [20261020_1753 — Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff](#20261020_1753--template-a-type-check-replaces-the-type-ignore-in-check_governancepy-split_checkers-mirror-diff)
 - [20261020_1634 — rotate_records: project-sync outbox and inbox lines never rotate](#20261020_1634--rotate_records-project-sync-outbox-and-inbox-lines-never-rotate)
-- [20261020_1632 — Template: govcheck/core.py header states it is read-only](#20261020_1632--template-govcheckcorepy-header-states-it-is-read-only)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261027_1922 — Quoted code excerpts restored after a markdown hook bug
+
+- `references/target-map-and-timeline.md`: three quoted code excerpts had been joined into run-on prose by the markdown hook (a `rewrap.py` bug with quoted
+  fences, fixed in scripts_stuff 2026-10-27). One restored from git history (`plan_timeline.py` reflow excerpt); two that were committed flattened rebuilt from
+  `scripts/plan_tracker.py` and `scripts/plan_timeline.py`, words unchanged.
 
 ## 20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea
 
@@ -173,11 +179,6 @@ Bug found in smc-resiliency (2026-10-20): `rotate_records.py` treated bullets in
 and an unanswered inbox item left the inbox, so the sync reported "inbox: 0 open". Now `parse` marks units between the markers `sync block` and
 they never move nor take a "newest kept" slot. Test `test_project_sync_blocks_never_move` (red before the fix, green after; 107 tests OK).
 Projects whose tracker holds moved sync lines should move them back into their blocks.
-
-## 20261020_1632 — Template: govcheck/core.py header states it is read-only
-
-`templates/govcheck/core.py`'s docstring gains "Read-only: it reads the project and writes nothing.": skill-coder's `script_headers.py` flagged every
-copy for a missing safety statement (found in smc-resiliency, which recopied it). Other governed projects pick it up at their next refresh.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

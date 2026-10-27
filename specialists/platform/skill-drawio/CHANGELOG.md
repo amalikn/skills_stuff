@@ -16,7 +16,19 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
-- 20261027 ROADMAP: "Fold long flow pages" designed with the operator (serpentine and z, per map; auto past `fold_after`; off by default); build deferred to a fresh session.
+- 20261027 Fold long flow pages (ROADMAP item built): `drawing.look.fold` (`off` default, `serpentine`, `z`) and `fold_after` (7), per flow
+  `layout: {fold, fold_after}` (schema). New `scripts/flowmap/fold.py` (rows; each row routed by the ordinary router on a scratch page left to right, then
+  copied, mirrored for a right-to-left row) and `scripts/flowmap/fold_turns.py` (arrows between rows through gutters). Operator review the same day: a
+  short last row stretches the rows above, a one-lane flow keeps one swim lane for every row, a mid-row branch drops at once instead of a U turn.
+  No-behaviour moves: `step_edges` to `flow_geometry.py`, `routing.draw_label` out of `route_forward`, `pages.flow_header`, `BACK_STYLE`/`BACK_MARK`;
+  `draw_lanes` gains `lanes` and `least`. Fold off: all five consumers' drawings byte-identical (drift check). Tests in `tests/test_fold.py`
+  (both styles audit clean, negative test); documented in references/visual-style.md.
+- 20261027 Fold lane margins (operator review of the folded Decision order page): a folded lane ends a column gap plus `GAP` past the right
+  gutter (was one `GAP`, matching an unfolded lane's room past its last box); a one-lane fold keeps `2 * GAP` above the first row and below the last.
+  `scripts/flowmap/fold.py` `folded_page` only; fold off unchanged; 182 tests pass.
+- 20261027 Incident, fixed before commit: the markdown PostToolUse hook flattened the 17 quoted Python excerpts in `references/visual-style.md`
+  (Learned entries) into prose while the fold paragraph was edited. Rebuilt from HEAD plus the fold paragraph; the hook's tool fixed in scripts_stuff
+  (`markdown_rewrap`, quoted fences kept verbatim) and the file reflowed with it: all 17 blocks and every word unchanged.
 - 20261027 `drawing.look.last_row_align` (`left` default, `centre`): centres a part-filled last Overview grid row under the row above unless a group in it is pinned
   (`flowmap.overview_layout.centre_last_row`, schema, tests in `tests/test_group_layout.py`; documented in references/visual-style.md). Default unchanged, so every
   existing drawing renders byte-identical; skill-goal-guard opts in.

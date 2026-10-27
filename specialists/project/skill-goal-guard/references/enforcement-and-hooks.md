@@ -81,8 +81,10 @@ the pinned upstream commit, file SHAs and an MIT notice (GG-425).
 >
 > ```python
 > # scripts/goal_guard_hook.py (2026-10-27, uncommitted)
-> try: outcome = hook.evaluate(payload, cfg, args.mode, now) except Exception as err: # a bug here must not let a write through: exit 1 is a non-blocking error in Claude Code outcome =
-> hook.deny(args.mode, f"internal error {type(err).__name__}: {err}; failing closed")
+> try:
+>   outcome = hook.evaluate(payload, cfg, args.mode, now)
+> except Exception as err:  # a bug here must not let a write through: exit 1 is a non-blocking error in Claude Code
+>   outcome = hook.deny(args.mode, f"internal error {type(err).__name__}: {err}; failing closed")
 > ```
 
 > **Learned 2026-10-27** · Goal Guard hook design · USER_STATED (review note relayed to the operator) · Source: `scripts/goal_guard_lib/hook.py` `_verdict_gap` · Falsifier: a blocking-mode

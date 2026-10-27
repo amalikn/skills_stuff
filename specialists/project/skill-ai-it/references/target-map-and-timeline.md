@@ -145,8 +145,10 @@ so linked items read evenly in an editor that hides link targets.
 >
 > ```python
 > # scripts/plan_tracker.py (commit pending), check()
-> for head, body in secs.items(): if any(not c[0] and any(c[1:]) for c in table_rows(body) if c): (problems if head.startswith("What next") else notes).append( f"{page}: a row in `{head}` is split
-> over continuation rows (rendered wider than 200 columns); shorten it to one line")
+> for head, body in secs.items():
+>     if any(not c[0] and any(c[1:]) for c in table_rows(body) if c):
+>         (problems if head.startswith("What next") else notes).append(
+>             f"{page}: a row in `{head}` is split over continuation rows (rendered wider than 200 columns); shorten it to one line")
 > ```
 
 > **Learned 2026-10-22** · smc-resiliency target map · VERIFIED_PRIMARY · Source: smc-resiliency CHANGELOG 20261022_1643 (commit 449bceb) ·
@@ -177,8 +179,10 @@ if states.get("parked"):
 >
 > ```python
 > # scripts/plan_timeline.py (skills_stuff, 2026-10-22)
-> done = runner(["node", TABLE_REFLOW, "-", "--width", str(width), "--measure-rendered"], input=table + "\n", capture_output=True, text=True, timeout=REFLOW_TIMEOUT_S, check=False) out =
-> done.stdout.rstrip("\n") return out if done.returncode == 0 and out.startswith("|") else table
+> done = runner(["node", TABLE_REFLOW, "-", "--width", str(width), "--measure-rendered"], input=table + "\n", capture_output=True,
+>               text=True, timeout=REFLOW_TIMEOUT_S, check=False)
+> out = done.stdout.rstrip("\n")
+> return out if done.returncode == 0 and out.startswith("|") else table
 > ```
 
 > **Learned 2026-10-22** · plan trackers, any project · VERIFIED_PRIMARY (unified-network-controller: the page rendered from plain ids with `link_ids`
@@ -189,6 +193,12 @@ if states.get("parked"):
 >
 > ```python
 > # scripts/plan_timeline.py link_ids (skills_stuff fb3d4a0)
-> want = spec["heading"].format(id=tok) for text, anchor in index: if text == want or text.startswith(want + " "): return f"[{tok}]({rel}#{anchor})" return tok ... if value and "[" not in value: # a cell with a
-> hand-written link is left as written row[col["key"]] = "".join(p if i % 2 else one(p) for i, p in enumerate(re.split(r"(,\s*)", value)))
+> want = spec["heading"].format(id=tok)
+> for text, anchor in index:
+>     if text == want or text.startswith(want + " "):
+>         return f"[{tok}]({rel}#{anchor})"
+> return tok
+> ...
+> if value and "[" not in value:  # a cell with a hand-written link is left as written
+>     row[col["key"]] = "".join(p if i % 2 else one(p) for i, p in enumerate(re.split(r"(,\s*)", value)))
 > ```
