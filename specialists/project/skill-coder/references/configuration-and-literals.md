@@ -42,3 +42,19 @@ a governed project found two such tables disagreeing about which units allowed w
 
 Check the official documentation or source for the exact version deployed before writing any directive, template syntax, API call or flag. Nearby examples in the same file are not verification. Why:
 three changes that "validated" and deployed cleanly did nothing because they copied the shape of a nearby line or used another version's docs (operator lesson `feedback_verify_docs_correct_version`).
+
+> **Learned 2026-10-28** · shared justfile recipes and the editor · VERIFIED_PRIMARY (just 1.59, VS Code nefrob.vscode-just-syntax 0.10.2,
+> ansible-wifi `roles/smc_change/files/changes/change.just`) · Falsifier: an imported recipe file defining variables with no editor warning
+> The VS Code just extension does not follow `import` when it resolves names (a variable defined in the imported file is "not found" in the
+> importer, and the reverse) but does when it looks for duplicates, so `set allow-duplicate-variables` with a copy in each file is flagged too.
+> `just` itself resolves both ways. Pattern that is clean in both: the imported file defines no variables and derives what it needs from
+> built-ins: the importing folder `file_name(justfile_directory())` (e.g. the change name), its own folder `source_directory()`, other paths
+> written out; each importing justfile defines only the variables its own recipes use (the extension also flags unused ones).
+
+```just
+# shared.just (imported): no `name := ...` lines
+check inv hosts:
+    ansible-playbook -i "inventories/{{inv}}" site.yml -l "{{hosts}}" -e change={{file_name(justfile_directory())}}
+helper:
+    bash "{{source_directory()}}/tool.sh"
+```
