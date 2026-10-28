@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261028_1516
+Last rotated: 20261028_2205
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261028_2046 — stuck apt_info.py holds the apt lists lock; apt_lock_probe.sh (v0.9.7 -> v0.9.8)](#20261028_2046--stuck-apt_infopy-holds-the-apt-lists-lock-apt_lock_probesh-v097---v098)
 - [20261028_1559 — PIN funnel and fleet check, runtime budget clock (v0.9.6 -> v0.9.7)](#20261028_1559--pin-funnel-and-fleet-check-runtime-budget-clock-v096---v097)
 - [20261028_1516 — rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6)](#20261028_1516--rct_avr_probesh-and-avr-routing-v095---v096)
 - [20261028_1442 — AVR V3.07 vs Thuraya, fleet AVR state (v0.9.4 -> v0.9.5)](#20261028_1442--avr-v307-vs-thuraya-fleet-avr-state-v094---v095)
@@ -33,9 +34,16 @@ Last reviewed: 2026-10-27
 - [20261027_1050 — smc_change: done SMCs skipped before connecting, runs per flavor, retries, TASK_TIMING, journal freeze (v0.8.2 -> v0.8.3)](#20261027_1050--smc_change-done-smcs-skipped-before-connecting-runs-per-flavor-retries-task_timing-journal-freeze-v082---v083)
 - [20261026_2222 — smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)](#20261026_2222--smc_change-new-order-passed-on-two-pis-second-drop-at-chroot-dpkg-v081---v082)
 - [20261026_2146 — smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)](#20261026_2146--smc_change-drop-proof-installs-lower-dir-first-runs-table-v080---v081)
-- [20261026_1844 — smc_change: Pi clock wait, remount retry, lower_busy, http timeout/retries, probe survives a dropped session, resume by default (v0.7.9 -> v0.8.0)](#20261026_1844--smc_change-pi-clock-wait-remount-retry-lower_busy-http-timeoutretries-probe-survives-a-dropped-session-resume-by-default-v079---v080)
-- [20261026_1701 — smc_change safe recovery, completion after cleanup and phase timing (v0.7.8 -> v0.7.9)](#20261026_1701--smc_change-safe-recovery-completion-after-cleanup-and-phase-timing-v078---v079)
-- [20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)](#20261026_1617--smc_change-php-verify-soak-from-the-restart-start_now-named-command-checks-tstik-avr-and-8080-checks-tstik-capture-avr-counts-v077---v078)
+
+## 20261028_2046 — stuck apt_info.py holds the apt lists lock; apt_lock_probe.sh (v0.9.7 -> v0.9.8)
+
+- references/13: 2026-10-28 entry: node_exporter apt_info.py hung 11-120 days holding /var/lib/apt/lists/lock on 3 rct SMCs; smc_change
+  apt_pin workaround (excerpt); root fix `4889af8` on local rise-multi only.
+- scripts/probes/apt_lock_probe.sh (`just apt_lock_probe`), catalogued: lock owner by path (lslocks), dpkg and archives lock holders,
+  apt_info.py ages, newest list. Fleet run: 5 more stuck apt_info.py (references/13).
+- references/13: 2026-10-28 overlay left read-write mid-change: needs_repair repair, hidden first failure, `at` re-arm, tmpfs /var/log,
+  unbound interface-automatic on a REDIRECT box.
+- manifest 0.9.7 -> 0.9.8.
 
 ## 20261028_1559 — PIN funnel and fleet check, runtime budget clock (v0.9.6 -> v0.9.7)
 
@@ -177,31 +185,3 @@ Last reviewed: 2026-10-27
   collision; code excerpts from local-knowledge-ansible `76b0f86`.
 - `scripts/smc_change_runs_table.py` (+ test, `just smc_change_runs <change>`): one line per run record with result, phase 6-9 seconds,
   reboot (boot_id), lower-dir holders or failure.
-
-## 20261026_1844 — smc_change: Pi clock wait, remount retry, lower_busy, http timeout/retries, probe survives a dropped session, resume by default (v0.7.9 -> v0.8.0)
-
-- `references/19_smc-change-role.md`: Learned 2026-10-26 (evening) entry: portal home page calls the WiFi API (2.8-10 s), Pi has no RTC (clock
-  wait after a fallback reboot; timedatectl unreliable under ntpd), lower-dir remount retried 90 s and `lower_busy` recorded, Teleport session
-  drops handled by `wait_for_connection`, resume on by default with drift allowed at phases 9-10; probe.yml excerpt. The earlier entry's
-  `-e smc_change_resume=true` line corrected to the new default.
-- `references/19_smc-change-role.md`, same day: Learned (19:30) run time on satellite SMCs (per-call cost, ControlPersist, pgrep self-match,
-  dpkg-repack copies identical by md5sums so pooled builds are reused by checksum, apt cache copy for the lower dir); records feed recovery
-  (pre-stage-5 failures, `already_done` tied to the spec target hash); `pkill -f` with the pattern in `environment:` killed its own session
-  (base64 fix); resume after a code change refuses only phases 5-6; rollback material judged per file; the nightly `pkill -9 php` is a
-  workaround (operator) with a flock proposal.
-- manifest 0.7.9 -> 0.8.0.
-
-## 20261026_1701 — smc_change safe recovery, completion after cleanup and phase timing (v0.7.8 -> v0.7.9)
-
-## 20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)
-
-- `references/19_smc-change-role.md`: Learned 2026-10-26 entry: soak counted from the restart or reboot, `restart.processes[].start_now` (root's
-  cron line run at once; only for programs that cope with a second start, as rct-tstik's `php -S` does), probe commands' `name`/`timeout`/note,
-  the PHP spec's portal-terms, tstik 8080 and AVR read checks (`php artisan update:stats`, `Total Read Data[126,...]`, no AVR error; no AVR ever
-  logged passes), RCT AVR fact (all but php-rct-smc01, operator), `pgrep -f` self-match in shells, nightly `pkill -9 php`, Run summary gates;
-  with the verify.yml excerpt (local-knowledge-ansible `17a5803`, skill-smc `f13c22f`).
-- `scripts/tstik-capture.sh`: capture 07 counts AVR reads, empty reads, AVR errors and `local.ERROR` per laravel.log file plus the top error kinds
-  (smoke run warehouse-rct01 2026-10-26: 164,169 reads, 0 AVR errors, 308 network errors; ~90 s for the whole capture). Header: the cron
-  frequency was written as every minute (arrkapa, 2026-10-07); root's crontab on warehouse-rct01, alice-well, cave-hill and adjamarragu runs
-  `update:stats` every 5 minutes, so reset limits count runs. Catalogue row updated.
-- manifest 0.7.7 -> 0.7.8.

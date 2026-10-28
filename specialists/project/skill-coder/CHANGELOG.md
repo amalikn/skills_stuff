@@ -9,116 +9,22 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261027_1213
+Last rotated: 20261028_2101
 ---
 
 # Changelog
 
-## Unreleased
+## 20261028_2101 — Learned: freeing a lock another process holds
 
-- 20261027 Pattern P-32 "Repoint callers after a move: plan, skip history, guard local namesakes" in `references/design-patterns.md` (skill-ai-it scripts reorganisation; reusable_candidate).
-- 20261027 Learned in `references/safety-and-writes.md`: write_gates' default patterns skip local file writes; a package that rewrites governed files adds `write_patterns` (skill-ai-it: 0 to 23 writers, two ungated).
-- 20261027 Learned in `references/version-control-and-review.md`: simulate a cherry-pick with `git merge-tree --merge-base` (no checkout); read a branch list whole (skill-smc `ansible_change_reach`).
-- 20261027 Pattern P-31 "Append-only event ledger, content-derived IDs and approval bound to a body digest" in `references/design-patterns.md` (skill-knowledge-curator v1; reusable_candidate).
-- 20261027 Pattern P-30 "Solve in a canonical frame, then transform the result" in `references/design-patterns.md` (skill-drawio fold; reusable_candidate).
-- 20261027 Learned in `references/refactoring-and-promotion.md` (Moving code): prove a move unchanged with per-file sha256 plus a hash of the CLI output; no shim for an untracked prototype with no callers (skill-goal-guard 1dff9c8; reusable_candidate, owed from the 15:03 session).
-- 20261027 Learned in `references/safety-and-writes.md`: `write_gates.py` sees entry points only; writes in library modules reached through `--apply` report "0 writers"; gate in the writer, test the plan, name the paths in the code map (skill-goal-guard).
-- 20261026 Learned in `references/safety-and-writes.md`: `pgrep -f`/`pkill -f` match their own task when the pattern is in Ansible `environment:` (remote command line) or in the script text; pass it base64-encoded, spell commands through a variable (ansible-wifi smc_change).
-- 20261026 Learned in `references/safety-and-writes.md`: complete only after cleanup; retain the original transaction and manifest across partial retries (controller red/green fixtures).
+`references/safety-and-writes.md`: Learned 2026-10-28 "freeing a lock another process holds": decide by the locks the holder has (end a refresh,
+never a writer), never delete lock files, owner by device and inode. From the ansible-wifi apt lock guard (plans/apt-lock-guard-20261028_2055).
 
-- 20261026 Learned 2026-10-26 in `references/version-control-and-review.md`: commit your own hunks while another session edits the same files (blob staging, proved in a scratch worktree)
-- 20261026 Learned 2026-10-26 in `references/testing.md`: test through the entry point the user triggers; a host's default can depend on the call path (skill-drawio click actions)
-- 20261023 Learned 2026-10-23 in `languages/yaml-json-toml.md`: a backtick cannot start a plain YAML scalar or flow-sequence item; quote it (unified-network-controller flow map)
-- 20261023 Learned 2026-10-23 (b) in `languages/python.md` (pyright executionEnvironments for joined modules, not inline suppression) and Learned 2026-10-23 (b) in `references/generated-artifacts.md` (no `--` in an XML banner).
-- 20261023 `just test` green again: 2026-10-23 entries labelled `VERIFIED-OBSERVED` relabelled `VERIFIED_PRIMARY` (text unchanged) in `languages/python.md`, `languages/yaml-json-toml.md`, `languages/ansible.md`, `languages/shell.md`; Learned 2026-10-23 (e) in `languages/ansible.md` given its missing Falsifier.
-- 20261023 Operator rule in `SKILL.md`: one root linter per language for new files only. Learned 2026-10-23 in `languages/yaml-json-toml.md` (taplo, biome, djlint), `languages/shell.md` (shfmt editorconfig ignore, shellcheck from shfmt -f), and 2026-10-23 (f) in `languages/ansible.md` (include_tasks file:, folded-scalar newline, check_mode false for reads, inventory parse lint, controller-side state).
-- 20261023 Learned 2026-10-23 (d, e) in `languages/ansible.md` (`-l` skips localhost plays, `'\n'` in folded scalars, file lookup of a list, unreachable hosts skipped without stopping a run; comment only tasks that need it) and 2026-10-23 in `languages/python.md` (ruff two-space, new files only with force-exclude, git-excluded symlinks, f-string backslash before 3.12).
-- 20261023 Operator rule in `SKILL.md`, `languages/python.md`, `languages/shell.md`: two-space indentation in every language; ruff (`indent-width = 2`) formats and lints Python as yamllint does YAML.
-- 20261023 Learned 2026-10-23 (a, b, c) in `languages/ansible.md`: `environment:` values sit on the remote command line (pgrep -f self-match, ps-visible); a skipped task re-registers its variable; block/rescue run records and `argv: [/bin/sh, -c]` for operator shell strings.
-- 20261023 Learned 2026-10-23 in `references/generated-artifacts.md`: Quick Look previews only the first sheet of an .xlsx and collapses empty rows; review a moved-sheet copy and give spacer rows a height.
-- 20261022 Learned 2026-10-22 (f) in `references/generated-artifacts.md`: size a hook-run formatter change, old against new, before it ships.
-- 20261022 Learned 2026-10-22 (e) in `languages/python.md`: resolve the root as well as the target before `is_relative_to` (macOS /var is /private/var).
-- 20261022 Learned 2026-10-22 (d) in `languages/shell.md`: tsh exits 1 on TERM; a deadline helper returns 124 on its own clock.
-- 20261022 Learned 2026-10-22 (c) in `languages/shell.md`: a background job reads /dev/null only with job control on; `"$@" <&0 &` keeps a piped stdin under a deadline watcher.
-- 20261022 Learned 2026-10-22 (b) in `languages/shell.md`: `dpkg-query -W '<glob>'` lists packages that are not installed; filter on `${db:Status-Abbrev}` = `ii`.
-- 20261022 Learned 2026-10-22 in `languages/shell.md`: a later `</dev/null` replaces a here-string as stdin, so `bash -s` reads nothing; one stdin redirection per command.
-- 20261021 Learned 2026-10-21 (b) in `references/refactoring-and-promotion.md`: find a moved file's readers by path, not only its importers.
-- 20261021 Learned 2026-10-21 in `references/refactoring-and-promotion.md`: promote with `--project-root`, project strings as data (pilot byte-identical), and project checks loading the skill script by path.
-- 20261021 Learned 2026-10-21 in `references/testing.md`: prove a reformatter moved no content by comparing rebuilt structure cell by cell, with a negative test.
-- 20261021 Learned 2026-10-21 in `references/generated-artifacts.md`: a page rendered from the clock is rendered in the commit gate; its check notes, never fails, on date-only drift.
-- 20261021 Learned 2026-10-21 in `languages/python.md`: register a path-loaded module in `sys.modules` before `exec_module` when it defines a dataclass.
-- 20261021 Learned 2026-10-21 in `references/version-control-and-review.md`: per-project commit tool for a shared clone (shared lock, folder `git add -A --`, pathspec commit, rebase only on a clean tree; apn scripts/project_commit.py).
-- 20261021 Learned 2026-10-21 in `languages/shell.md`: macOS has no `timeout`; give a command a deadline with `perl -e 'alarm N; exec @ARGV'`.
-- 20261020 Learned 2026-10-20 (c) in `languages/shell.md`: a command reading stdin inside a script sent as `bash -s` swallows the rest of the script; `ssh -n`, `< /dev/null`. `references/errors-and-timeouts.md`: a stop handler ends its children in their own sessions first (registry, `end_all`; unified-network-controller 3f3bfcb).
-- 20261020 Learned 2026-10-20 (b) in `references/testing.md`: a helper's OK says nothing about folders outside its roots (`--list` it). Learned 2026-10-20 in `languages/shell.md`: perl alarm before exec does not stop tsh; a watcher does. Learned 2026-10-20 in `languages/ansible.md`: render a role template outside the role with the task's options, role vars and role-precedence defaults.
-- 20261020 Learned 2026-10-20 (b) in `languages/python.md`: place an inserted import from the AST, never by matching lines (imports inside remote-agent strings matched; unified-network-controller).
-- 20261020 `group_timeouts.py` also counts a `Popen(...)` stopped with `.kill()`/`.terminate()` in the same function without `start_new_session=`/`process_group=` (a collector's per-site limit; flagged the old code, passes the fix, unified-network-controller 36fa18e).
-- 20261020 `group_timeouts.py`: `tsh` is not a spawner (`tsh ssh` connects in-process; it is what ssh starts as the proxy); seven false positives in its first project run.
-- 20261020 `code_map.py` accepts `[group_timeouts]` and `[suppressions]` (roots, baseline); `templates/code-map.toml` shows both; SETUP.md reviewed (still accurate).
-- 20261020 New read-only helpers (operator, 2026-10-20: more rules as checkers, and a skeleton rather than written code): `scripts/suppressions.py` (inline linter suppressions per language, ratchet), `scripts/group_timeouts.py` (timed ssh/shell subprocess calls whose children outlive the timeout, ratchet), `scripts/scaffold.py` (prints a Python or shell script and its test meeting the pack's rules; writes nothing). Recipes, catalogue, SKILL.md routing, `just self-check` runs the two checkers on the pack; tests in `tests/test_quality_helpers.py`; the contract test now reads every `tests/test_*.py`. First finding: the `# type: ignore` in `scripts/check_governance.py`, fixed in skill-ai-it's template and this copy with an explicit type check.
-- 20261020 Learned 2026-10-20 in `references/errors-and-timeouts.md`: a timed subprocess that starts children (ssh ProxyCommand, a shell) ends its whole process group (unified-network-controller 3efcb27).
-- 20261020 Learned 2026-10-20 in `references/testing.md`: a guard test asserts which guard refused (message or distinct code), not the exit code alone; prove red with only that guard removed (smc-resiliency `_script-guards`).
-- 20261020 `just test` green again: the five 7f4a7fc-era entries labelled `VERIFIED-OBSERVED` relabelled `VERIFIED_PRIMARY` (observed in the project's running code; text otherwise unchanged) in `references/refactoring-and-promotion.md`, `references/tooling-and-runtime.md`, `languages/python.md`, `languages/shell.md`; the private ATA address in `references/testing.md`'s excerpt replaced by the documentation address 192.0.2.53.
-- 20261020 Learned 2026-10-20 in `references/version-control-and-review.md`: `rebase -X theirs` keeps the local side on conflicting hunks only; non-conflicting remote hunks still apply, so diff against a pre-rebase backup branch (vagrant_stuff 62f03f1).
-- 20261020 Learned 2026-10-20 (b) in `references/refactoring-and-promotion.md`: proving a package or folder move unchanged (tests, byte-identical renders from a HEAD worktree, imports in the built runtime, the check); one-pass rewrites; what a text rewrite cannot see; a moved folder mapped by prefix.
-- 20261020 Learned 2026-10-20 in `references/version-control-and-review.md`: in a clone shared by concurrent sessions commit by pathspec (`git commit -- <paths>`, `git add -N` for new files); a plain `git add` then commit let another session's commit take the staged files (apn b64a075).
-- 20261020 Learned 2026-10-20 in `references/security.md`: gpg-agent's socket path limit breaks a throwaway GNUPGHOME under a deep folder; short `$HOME/.k.XXXX`, `--passphrase-file`, keep the creation-time revocation certificate (smc-resiliency `/Volumes/Data/_ai/_project/project_stuff/apn/smc-resiliency/scripts/make_release_key.sh`).
-- 20261020 Made the default for code (operator: "if you are now happy with skill-coder, promote it as well"), after use in smc-resiliency and skill-ai-it (adopt_code_map.py, drift and code-map checks proven red, a release-key script): global policy `~/.agents/AGENTS.md` names it for any code beside `safe-change-validation` (Codex synced); the broad `SKILL.md` trigger restored; `/Volumes/Data/_ai/_skills/skills_stuff/.agents/skill-surfaces.md` row; `/Volumes/Data/_ai/governance/categories/coding-guide.md` links it as its detailed pack (content only, no `/Volumes/Data/_ai/governance/sync-map.yaml` change). The skills_stuff and project_stuff root AGENTS.md and each of the operator's skill packs with scripts name it for script changes.
-- 20261020 Learned 2026-10-20 in `references/testing.md` (b: real captured sample at the production cut), `languages/shell.md` (`pkill -f` kills its own ssh session) and `languages/python.md` (SystemExit escapes `except Exception` in a pool) (unified-network-controller).
-- 20261020 Learned 2026-10-20 in `references/refactoring-and-promotion.md`: adopt `code-map.toml` by moving decisions and keeping the project's checks; assert equality before deleting the old files (unified-network-controller).
-- 20261020 Write-back contract: every entry recording how something is done carries a code excerpt (source path, commit) and, for a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` (operator, 2026-10-20).
-- 20261020 Learned 2026-10-20 in `references/testing.md`: tie a mirror tool's inputs (preview scripts, image build context) to their source by a test that can fail (unified-network-controller).
-- 20261020 Learned 2026-10-20 in `references/tooling-and-runtime.md`: forward recipe arguments with `[positional-arguments]` and `"$@"`, never `{{args}}` (unified-network-controller).
-- Learned 2026-10-19 in `languages/python.md`: `Counter.most_common()` ties from set-built counts change order between runs; sort by `(-count, name)`.
-- Learned 2026-10-19 in `languages/shell.md`: a multi-line command without `set -e` runs on after a failed edit step; guard it and run destructive steps separately.
-- 20261019 `scripts/import_layers.py` graph report reproduces unified-network-controller's `scripts/checks/import_graph.py` field for field, so that
-  script retired: a root ending `:self` keeps its folder as the package name; the report adds entry points, `sys.path` users, never-imported modules
-  and unparsed files (`analyse()`, `render()`, `--json`); cross-package edges count each import statement; fan-in ties are ordered by name (they
-  came from a set, so equal counts swapped between runs). Proof: identical JSON on UNC's four roots (601 lines). Tests in
-  `tests/test_import_graph_report.py` (kept apart so `tests/test_helpers.py` stays within its 400-line limit). UNC's `check_import_layers` now calls
-  `layer_violations()` (same verdict, its baseline file unchanged).
-- 20261019 `ROADMAP.md` and `SETUP.md` added (operator, 2026-10-19: "add ROADMAP.md in both the skills", "and SETUP.md"), to skill-ai-it's templates; ROADMAP from this pack's SCRATCHPAD open items and unified-network-controller's retirement assessment, SETUP from the justfile, `.mise.toml` and requirements. README lists both and links SETUP from Quick start.
-- 20261019 `context-map.yaml` and `repomix.config.json` no longer name the deleted `ARCHCORE_PROMOTION_CANDIDATES.md`; routing points at
-  `.archcore/index.guide.md` (skill-ai-it pitfall, 2026-10-19).
-- 20261019 Learned entry in `languages/python.md` (2026-10-19): after a `sys.path` seam, load modules with `importlib.import_module` instead of
-  imports below code, so no `# noqa` is needed (from building skill-drawio's UNC wrapper and tests). `AI_NAVIGATION.md` pack routing mirrors the
-  `SKILL.md` row for `module_groups.py`.
-- 20261019 Calling projects write back (operator, 2026-10-19: "add the write back mechanism so that whatever learning is there, any project which is calling skill
-  coder should write that learning back"): `references/evolution-and-write-back.md` gains "Projects that call this skill" (engaged means used; the calling session
-  writes, reads back and commits here; the fixed parking heading `## skill-coder write-back candidates`); new read-only helper `scripts/write_back.py`
-  (`just write-back`) lists parked entries in a project, with tests; `templates/project-agents-write-back.md` is the line a project may add to its AGENTS.md;
-  `SKILL.md` and `AGENTS.md` state the obligation; skill-slurp-chat Step 5b lists skill-coder whenever code was written and runs the helper.
-- 20261019 Module families become packages (operator, 2026-10-19: "is it better to create subdirectory under scripts and put all the related modules under that relevant
-  folder with a proper name? ... make it part of the skill coder logic"): `references/module-and-function-shape.md` gains "Grouping modules into packages" (three or more
-  modules sharing a prefix are a package; entry points stay at the top of `scripts/`; package names unique across loaded packs; one level, two at most);
-  `languages/python.md` maps it (regular packages, relative imports, no namespace packages); new warn-only helper `scripts/module_groups.py` (`just module-groups`,
-  `--strict` in `just self-check`), with tests.
-- 20261019 Seven of the nine archcore entries (activation and naming ADRs; write-back, helpers, generic text, precedence and cite-sources rules)
-  were written by a parallel session on the operator's instruction to add the missing entries, then reviewed here.
-- 20261019 Archcore review (operator: "assess the archcore entries ... are they correct logically? any missing?", then "yes apply all"): all nine accepted
-  (runtime ADR and code-map rule promoted); helpers rule allows the explicit `--write-baseline` write and exempts imported modules from recipes;
-  code-map rule names `[scan.exclude]`, `[naming]` and their reason checks; rules-cite-sources limited to load-bearing rules; runtime ADR lists the
-  missing skill pin and untested 3.11 as open; activation ADR records the narrowed description. `SKILL.md` description narrowed to invoke-by-name
-  until activation (operator: "narrow until activation"). References gain the decided size tiers (`module-and-function-shape.md`) and the script
-  header standard (`documentation-and-headers.md`), which had lived only in code and this log.
+## 20261028_1942 — cpuprofile_summary helper
 
-- 20261019 Archcore promotion (operator, 2026-10-19: "assess and add missing archcore entries"): 7 new accepted documents, each naming its source and enforcement. ADRs `naming-mapping-is-data`,
-  `default-activation-waits-for-testing`; rules `rule-precedence`, `rules-cite-sources`, `cross-project-write-back`, `pack-text-stays-generic`, `helpers-are-portable-and-catalogued`.
-  `.archcore/index.guide.md` lists them and records the candidates not promoted, with reasons; tags consolidated to a shared set. The two earlier records stay `proposed`.
-
-- 20261019 skill-ai-it refresh: navigation blocks already at `2026-10-14-compact-v2` (dry run, no changes). `just govern` failed on 3 doc-freshness findings, fixed rather than baselined:
-  `context-map.yaml` gains its header summary comment; the two proposed Archcore records (`.archcore/adr/helpers-run-in-target-environment.adr.md`,
-  `.archcore/rules/code-map-holds-decisions-only.rule.md`) gain `Last reviewed: 2026-10-19` from their own `created` date. `just check`, `just test` (42), `just nav-validate` and `archcore doctor`
-  pass.
-
-- 20261019 Naming as data (operator, 2026-10-19: "is it better to have a json or yaml or toml file for the mapping"): `naming.toml` (TOML, read with the project's own Python) is the source;
-  `scripts/naming_table.py` renders the table in `references/naming-conventions.md` (drift fails `just self-check`); `scripts/naming_check.py` checks file and `just` recipe names, with project
-  overrides and reasoned exceptions in `code-map.toml` `[naming]`. Measured read-only: unified-network-controller 6 template recipes off the rule, no file; ansible-wifi 11 files (hyphenated or
-  camelCase `.py`/`.sh`). Governance `/Volumes/Data/_ai/governance/categories/coding-guide.md` naming clause revised to the same rule.
-
-- 20261019 Naming mapping (operator, 2026-10-19: "define a mapping for language against convention"): new `references/naming-conventions.md`, every row checked against a primary source (26 new
-  captures); the rule is code files and identifiers follow their language, typed commands are kebab-case, a tool's parser wins. `module-and-function-shape.md` points to it; claims C-C72 to C-C79.
-  `languages/ansible.md` gains the tag-rename transition step (behaviour evaluation gap). Shared `scripts/pyparse.py`; shell heredoc and `${#` fixes in `code_size.py` (found on a second repository).
+Added `scripts/cpuprofile_summary.py` (recipe `just cpuprofile-summary`, tests `tests/test_cpuprofile_summary.py`): reads V8 .cpuprofile files and
+prints self time per extension, the hottest functions and the hottest stacks of the busiest (or `--ext`) extension. Read-only, stdlib only. Promoted
+from the ansible-wifi session of 2026-10-28, where VS Code's Git view went stale because Foam pinned the extension host; the summary traced it to
+Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_write_back_entries_logged` fails on a 2026-10-27 entry.
 
 ## 20261028_1311 — process_match.py: unanchored pgrep/pkill -f patterns become a check
 
@@ -170,15 +76,3 @@ Last rotated: 20261027_1213
 ## 20261026_2146 — Ansible: until does not retry unreachable; async drop-proof waits; callbacks_enabled in 2.21
 
 - `languages/ansible.md`: Learned 2026-10-26 (e) - until/retries and unreachable hosts, async + await pattern, async shell in check mode, callback_whitelist ignored in 2.21, callback options are a literal DOCUMENTATION (local-knowledge-ansible `76b0f86`).
-
-## 20261019_1643 — deterministic navigation-control upgrade
-
-<!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->
-
-- Applied `skill-ai-it` deterministic navigation-control upgrade.
-- Upgraded managed navigation/scripts blocks to version `2026-10-14-compact-v2`.
-- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
-- Preserved user-authored content outside managed blocks.
-- Generated outputs remain support-only; no `.archcore/` promotion was performed.
-
-Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md

@@ -202,6 +202,11 @@ call-timeouts *args: _require-venv
 process-match *args: _require-venv
     @{{py}} scripts/process_match.py "$@"
 
+# Read-only: V8 .cpuprofile files (VS Code extension host stalls) reduced to self time per extension, hot functions and stacks, e.g. just cpuprofile-summary $TMPDIR/exthost-*.cpuprofile
+[positional-arguments]
+cpuprofile-summary *args: _require-venv
+    @{{py}} scripts/cpuprofile_summary.py "$@"
+
 # Read-only: inline linter suppressions (noqa, type: ignore, shellcheck disable, eslint-disable, nolint, allow), e.g. just suppressions --project-root /path --list
 [positional-arguments]
 suppressions *args: _require-venv

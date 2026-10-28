@@ -51,7 +51,9 @@ copy_artifact() {
   local src="$1"
   local dest_parent="$2"
   if [[ -e "$src" ]]; then
-    cp -R "$src" "$dest_parent/"
+    # -L: repo artifacts are often symlinks into the knowledge base; plain -R on macOS copies the link,
+    # so the snapshot would hold no data and alias the live tree for file-indexing editors.
+    cp -RL "$src" "$dest_parent/"
   fi
 }
 

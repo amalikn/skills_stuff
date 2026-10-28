@@ -97,6 +97,10 @@ pi_identity_probe proxy +nodes:
 php_package_probe proxy +nodes:
     @bash scripts/probes/php_package_probe.sh --proxy "{{proxy}}" {{nodes}}
 
+# Who holds apt's lists lock over Teleport (read-only): stuck apt_info.py jobs, lock owner, newest apt list, apt/dpkg busy. Example: just apt_lock_probe teleport.apn.au illeparratye-smc01
+apt_lock_probe proxy +nodes:
+    @bash scripts/probes/apt_lock_probe.sh --proxy "{{proxy}}" {{nodes}}
+
 # Compare two sets of smc_change run records, ignoring timestamps and live traffic, to prove a refactor changed nothing. Example: just smc_change_compare /tmp/before /tmp/after
 smc_change_compare before after: _require-venv
     @{{py}} scripts/ansible/smc_change_compare_records.py "{{before}}" "{{after}}"

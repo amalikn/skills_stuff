@@ -129,3 +129,22 @@ for i in $(seq 1 60); do pgrep -f '[a]rtisan update:stats' >/dev/null || break; 
 for i in $(seq 1 60); do pgrep -f '^php [a]rtisan update:stats' >/dev/null || break; sleep 1; done
 ```
 
+
+> **Learned 2026-10-28** · freeing a lock another process holds · VERIFIED_PRIMARY (Ubuntu 22.04 container, real fcntl locks: 16 of 16 cases;
+> fleet: node_exporter `apt_info.py` held apt's lists lock 14 h to 290 days on 8 SMCs) · Source: local-knowledge-ansible
+> `plans/apt-lock-guard-20261028_2055/apt_lock_guard.py` (uncommitted at writing) · Falsifier: a lock freed by deleting its file, or a holder
+> killed by age alone, in a helper that also runs installs
+> Every version of an apt helper on 11 branches freed locks the same two ways, both wrong. Deleting a lock file frees nothing: fcntl/flock
+> locks belong to the open file and die with their holder, and a new file lets a second writer in beside the first. Killing any holder past an
+> age kills a long, legitimate writer mid-write (a kernel install, dpkg configuring). Decide by what the holder is doing, which the set of
+> locks it holds tells you: a reader or a refresh whose output is swapped in atomically (rename) can be ended; a writer of shared state is
+> waited for and then reported by name, never killed. Find the owner by the lock file's device and inode in `/proc/locks`, not the inode
+> alone (it matched an unrelated lock on another device) and not by process name.
+
+```python
+# right: classify by the locks held, end only what is safe to end
+def classify(cmdline, held):
+    if held <= {LISTS}:                      # only the refresh lock: its output is renamed into place
+        return "apt_info" if cmdline.startswith(APT_INFO) else "refresh"
+    return "install"                         # dpkg or archives lock: wait, then report; never kill
+```

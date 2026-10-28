@@ -1438,3 +1438,51 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 - Follow-up 2026-10-22: a cut session now reports `SESSION TIMED OUT` and "not run" captures (tsh exits 1 on TERM, so the helper returns 124 on its
   own clock). Counting not-run captures exposed an older defect: a capture whose output lacks a trailing newline (`interfacecheckv2.sh`) had the
   end marker glued to its last line and was never closed or counted; the marker now starts on its own line (kalumburu: 145 of 145 captures).
+
+## 2026-10-28 — a stuck `apt_info.py` holds apt's lists lock for months; apt updates fail "held by process N (python3)" (OPEN)
+
+- php-cve-2026-109618 rct apply failed at smc_change apt_pin "Refresh apt lists" on hoppys-camp, illeparratye and iltjiltjari-smc01:
+  `Could not get lock /var/lib/apt/lists/lock. It is held by process N (python3)`. The holder is the node_exporter textfile cron
+  `python3 /usr/local/lib/apt_info.py | sponge .../apt_info.prom` (smc_node_exporter, every 5 min), hung with its `apt/methods/https` children
+  for 11, 86 and 120 days; newest apt lists 2026-10-17, 2026-08-02, 2026-06-30. The 8 other SMCs probed were clean. `VERIFIED-OBSERVED` 2026-10-28
+  (`scripts/probes/apt_lock_probe.sh`, lock owner by path through `lslocks`; an inode-only match from /proc/locks blamed fluent-bit on delye).
+- Why: master's script still calls `cache.update()` with no timeout; the cron has no `timeout`/`flock`; a stalled satellite fetch never ends.
+  Later runs ignore `LockFailedException` and still rewrite the .prom, so `HostAptInfoTextfileCollectorNotUpdated` (mtime) never fires.
+  The fix exists on local `rise-multi` only (`4889af8`, see "July apt fixes not on `rise`" above), so boxes built from master or rise regress.
+- Workaround in smc_change (ansible-wifi, uncommitted 2026-10-28): apt_pin ends any apt_info.py process group before refreshing, and the refresh
+  waits `lock_timeout: 300`. dpkg, apt-get and unattended-upgrade are never killed. Excerpt (`roles/smc_change/tasks/actions/apt_pin.yml`):
+
+  ```bash
+  for pid in $(pgrep -f '^python3 /usr/local/lib/apt_info\.py' || true); do
+    age=$(ps -o etimes= -p "$pid" | tr -d ' ')
+    [[ "$age" =~ ^[0-9]+$ ]] && [ "$age" -ge {{ smc_change_apt_stuck_seconds | int }} ] || continue   # default 0: any age
+    pgid=$(ps -o pgid= -p "$pid" | tr -d ' ')
+    case "$pgid" in ''|0|1|"$own") continue ;; esac
+    kill -TERM -- "-$pgid" 2>/dev/null && ended="$ended $pgid(${age}s)"
+  done
+  ```
+
+  Safe at any age: the job only writes metrics, and `sponge` writes the .prom only at EOF. The cron's `sh` leads the process group, so the
+  group is exactly `sh`, `python3`, `sponge` and the apt methods (checked on illeparratye-smc01).
+- Open: bring `4889af8` to master/rise and deploy only apt_info.py; decide on `0c51cb1` (masking apt-daily stops automatic security updates);
+  alert on list age, not .prom mtime. ansible-wifi `plans/apt-helpers-dns-followups-20261028_2010/README.md` §6.
+- Fleet, read-only 2026-10-28 (326 of 334 SMCs): 5 more stuck (munmural-smc01 290 d, urremerne-smc01 186 d, philipson-bore-smc01 183 d,
+  mbalkanaka-smc01 61 d, tjiwuru-smc01 14 h); no dpkg or archives lock held anywhere; 24 fresh apt_info.py (normal cycle). On SMCs
+  unattended-upgrades is disabled and every APT::Periodic is "0", so apt-daily timers do nothing: only apt_info.py, Ansible and people take
+  apt locks. A guard that ends refreshes but never installs: ansible-wifi `plans/apt-lock-guard-20261028_2055/`.
+
+## 2026-10-28 — overlay SMC left read-write mid-change: needs_repair, hidden first failure, re-arm with `at` (INFO)
+
+- A smc_change journal at 5-6 whose packages already changed cannot resume once the role code changes (`needs_repair`, by design); the
+  2026-10-28 php-cve rct run hit it on delye and frasier-downs-station after an apt_pin edit. Repair used: journal to `journal/superseded/`,
+  the failed 6/11 record to `records/superseded/` (else `legacy_failed` refuses a fresh run), re-arm the lower dir, then a fresh apply.
+- The `always:` "Close the lower dir after a failure" overwrote the first failure in the record with "mount point is busy" (iltjiltjari-smc01);
+  the async job status in `/root/.ansible_async/` showed the live install had succeeded. Read it when a record looks like that.
+- Re-arm (ansible-wifi RULE-009): `at now + 5 minutes` job: restart apache2, stop cron-started `php -S` and kohana, unbind a leftover chroot,
+  remove the role's own `policy-rc.d` (`#!/bin/sh` + `exit 101`), remount ro with 9 x 10 s retries, else reboot. iltjiltjari and delye re-armed
+  in 20 s; frasier-downs-station and ipalala fell back to reboot. `at`/`atd` are on every SMC (installed by the Ansible runs, operator).
+- `/var/log` is on the tmpfs upper layer: a log written there before a fallback reboot is lost. Log into `/media/root-ro/var/log/` while
+  the lower dir is writable.
+- unbound on hoppys-camp-smc01: `interface-automatic: yes`, IPv6 disabled (no `::1`), active since 2026-08-11; `bridge_500` has two IPv4
+  addresses and DNS reaches unbound by `REDIRECT 53 -> 5353`, so `yes` (reply from the delivered address) is the safe setting there.
+  No SMC has IPv6 (operator, 2026-10-28), so the `9f621d35` reason for `no` ("stop ::1 bind when IPv6 disabled") does not apply to the fleet.
