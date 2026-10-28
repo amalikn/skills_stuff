@@ -606,3 +606,32 @@ Source: local-knowledge-ansible ansible-wifi (base commit 608697b, change uncomm
   is absent and the tree is master before, so those checks are `proves`.
 - **Check mode can still act** when a probe command does: `artisan self:tests` writes `st_results.blade.php` and `update:stats` reads the AVR.
 - **The probe prints `proves` by command text**, not `name` (cosmetic; noted while the role is frozen).
+
+### Automated AVR flash, probe self-match, resume_safe (2026-10-28, later)
+
+Source: change record `rct-tstik-iridium-update-20261028_1221.md` sections 2.2 and 5.2a (local-knowledge-ansible, uncommitted at writing).
+
+- **The spec now flashes the AVR** (action 3): stop cron, a `systemd-run --on-active=15min` timer that starts cron whatever happens, wait for
+  `update:stats`, flash (exit 5/6 retried 3 times), read the version, run `update:stats` once, start cron and cancel the timer. All of it runs
+  as the transient unit `smc-change-avr-flash` (`systemd-run --wait`), so a dropped satellite session ends only the waiting client.
+  `cron.service` has `KillMode=process`: stopping cron leaves `php -S` serving. warehouse-rct01: AVR 3.06 -> 3.07, 7/7 gates, 269 s.
+- **The probe's own command line holds the spec.** `PROBE_CONFIG` is in the environment, which Ansible puts on the remote command line, so any
+  check's `pgrep -f` matches the probe when its pattern also appears in the spec (here the restart pattern `artisan update:stats`). Each such
+  wait ran its full 60 s (self test 79 s, AVR check 66 s per probe). Anchor at the program, `pgrep -f '^php [a]rtisan update:stats'`:
+  probe 155 s -> 31 s. Guard: `files/tests/test_spec_pgrep.py` (`just test`) fails on an unanchored `pgrep -f` in any spec; the PHP-CVE
+  spec is listed as frozen there until its journals close.
+
+  ```yaml
+  # files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update.yml, action 3 check (excerpt)
+  check: &avr_at_307 >-
+    while systemctl is-active --quiet smc-change-avr-flash; do sleep 5; done;
+    for i in $(seq 1 60); do pgrep -f '^php [a]rtisan update:stats' >/dev/null || break; sleep 1; done;
+    cd /home && printf 'q\n' | timeout 60 python3 py_avrloader_v2.py -d /dev/ttyS0 -m 2>&1 | grep -q 'AVR version=3.07'
+  ```
+
+- **A failed run whose spec was then edited needs two things set aside**, not one: `assess` says `needs_repair` (fingerprint changed in phase
+  6); after the journal moves to `runs/<flavor>/journal/superseded/`, the next apply is still refused at 3/11 because the failed record has no
+  journal (`legacy_failed` in `files/recovery.py`). Move the record to `runs/<flavor>/records/superseded/` too (the `find` is not recursive),
+  and copy the on-box backup to `runs/<flavor>/backups/superseded/` before removing it. Operator-approved repair, warehouse-rct01.
+- **`resume_safe: true` per action, reviewed**: copies (same bytes again), a flash whose check waits out the unit and skips at the target
+  version, a clone whose check covers live and lower HEAD. Without it a plain drop at stage 6 on a prod SMC needs the repair above.

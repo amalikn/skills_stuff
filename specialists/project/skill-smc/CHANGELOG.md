@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261028_1242
+Last rotated: 20261028_1315
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261028_1315 — Automated AVR flash, probe self-match, resume_safe (v0.9.3 -> v0.9.4)](#20261028_1315--automated-avr-flash-probe-self-match-resume_safe-v093---v094)
 - [20261028_1242 — AVR serial collision verified on warehouse-rct01 (v0.9.2 -> v0.9.3)](#20261028_1242--avr-serial-collision-verified-on-warehouse-rct01-v092---v093)
 - [20261028_1224 — rct-tstik iridium change: self-persisting command, symlinked copy sources, AVR flash (v0.9.1 -> v0.9.2)](#20261028_1224--rct-tstik-iridium-change-self-persisting-command-symlinked-copy-sources-avr-flash-v091---v092)
 - [20261027_2015 — Slurp close: governed-file adoption, sibling write-backs (v0.9.0 -> v0.9.1)](#20261027_2015--slurp-close-governed-file-adoption-sibling-write-backs-v090---v091)
@@ -33,7 +34,12 @@ Last reviewed: 2026-10-27
 - [20261026_1701 — smc_change safe recovery, completion after cleanup and phase timing (v0.7.8 -> v0.7.9)](#20261026_1701--smc_change-safe-recovery-completion-after-cleanup-and-phase-timing-v078---v079)
 - [20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)](#20261026_1617--smc_change-php-verify-soak-from-the-restart-start_now-named-command-checks-tstik-avr-and-8080-checks-tstik-capture-avr-counts-v077---v078)
 - [20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)](#20261026_1534--smc_change-backupshared-name-identified-backup-files-kept-once-for-all-smcs-v076---v077)
-- [20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)](#20261026_1506--smc_change-flow-map-in-parts-one-e2e-page-per-change-spec-v075---v076)
+
+## 20261028_1315 — Automated AVR flash, probe self-match, resume_safe (v0.9.3 -> v0.9.4)
+
+- `references/19_smc-change-role.md`: automated AVR flash in a transient systemd unit (warehouse-rct01 3.06 -> 3.07, 269 s), probe self-match
+  through PROBE_CONFIG on the command line (anchor `pgrep -f` at `^php`; probe 155 s -> 31 s), two-part repair of a failed run whose spec
+  changed (journal and record to superseded/), reviewed `resume_safe` per action.
 
 ## 20261028_1242 — AVR serial collision verified on warehouse-rct01 (v0.9.2 -> v0.9.3)
 
@@ -185,11 +191,3 @@ Last reviewed: 2026-10-27
   refused at spec load; dpkg-repack output differs per run so no checksum compare), with the cleanup.yml excerpt (local-knowledge-ansible `2ade781`);
   PHP spec example gains `shared: ['*.deb']`.
 - manifest 0.7.6 -> 0.7.7.
-
-## 20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)
-
-- `references/19_smc-change-role.md`: the smc_change flow map is assembled from `roles/smc_change/drawio/parts/` (role parts) and each change
-  folder's flow parts; each change spec gets its own `E2E: <change>` page explaining the change, its steps naming the stage (operator, 2026-10-26).
-- `justfile`: `smc_change_flows` assembles `drawio/flows.yaml` from `drawio/parts/master.yaml` before rendering; `smc_change_flows_check` checks both.
-- `references/19_smc-change-role.md`: one folder per change, `files/changes/<name>/` with the spec `<name>.yml`, its flow-map parts
-  (`flow-components.yaml`, `flow-flows.yaml`) and `runs/` (records, `backups/`, `state/`; was `runs/<name>/`), `smc_change_runs_dir` (operator, 2026-10-26).
