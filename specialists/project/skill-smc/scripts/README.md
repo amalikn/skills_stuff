@@ -200,6 +200,12 @@ module docstring.
 
 ### `collect-smc-evidence-full.sh`
 
+**ha group, -smcNN hosts and --proxy (2026-10-29):** the `ha` group (14 captures) reads keepalived (version, unit, config under both
+`/etc/keepalived` and a source build's `/usr/local/etc/keepalived`, track scripts, 14-day journal, 90-day MASTER/BACKUP transitions), the
+addresses the VIPs sit on, the neighbour table, conntrackd, dhcpd failover and active lease counts; `auth_pass` is redacted. A host named
+`<site>-smcNN` is kept as given (a multi-SMC site), and `--proxy host:port` (or `SMC_TSH_PROXY`) names the Teleport proxy on every tsh call.
+Measured on aurukun's three boxes over the nbn proxy: `--only ha,network,dhcp,identity` 234 s, `--only ha` 222 s (about 75 s a box).
+
 **Deadlines (2026-10-22):** every `tsh ssh` call runs under `with_deadline` (a watcher: TERM, then KILL 5 s later; macOS has no `timeout`). Platform probe
 `SMC_TSH_PROBE_DEADLINE` (default 60 s), the one capture session per host `SMC_TSH_DEADLINE` (default 300 s); the narrow `collect-smc-evidence.sh` uses
 `SMC_TSH_DEADLINE` per command (default 60 s). Smoke run 2026-10-22 on kalumburu-smc01, `--only voip`: 73 s, 11 of 11 captures. Full captures measured 2026-10-22: bidyadanga-smc01 (Sky Muster)

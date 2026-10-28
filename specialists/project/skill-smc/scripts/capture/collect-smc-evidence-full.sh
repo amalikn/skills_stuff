@@ -24,7 +24,8 @@
 #   default, NOT a guarantee — never attach a capture directory to a ticket without reading it first.
 #
 # Usage
-#   ./collect-smc-evidence-full.sh <site> [<site> ...]              # bare name or full -smc01
+#   ./collect-smc-evidence-full.sh <site> [<site> ...]              # bare name (-> <site>-smc01) or a full <site>-smcNN
+#   ./collect-smc-evidence-full.sh aurukun-smc01 aurukun-smc02 aurukun-smc03 --only ha,network,dhcp --proxy teleport.example.net:443
 #   ./collect-smc-evidence-full.sh yakanarra --only network,rise
 #   ./collect-smc-evidence-full.sh umoona --skip voip,portal
 #   ./collect-smc-evidence-full.sh --list-groups
@@ -35,7 +36,8 @@
 #   <OUTDIR_ROOT>/evidence-full/<YYYYMMDD_hhmm>/<host>/SUMMARY.txt
 #   <OUTDIR_ROOT>/evidence-full/<YYYYMMDD_hhmm>/MANIFEST.txt
 #
-# Requires: tsh, already logged in (`tsh status`).
+# Requires: tsh, already logged in (`tsh status`). --proxy <host:port> (or SMC_TSH_PROXY) names the Teleport proxy on every tsh call: a name can
+# exist on both clusters, so a multi-cluster fleet always names it (added 2026-10-29 with the ha group and -smcNN hosts for a three-SMC VRRP site).
 #
 # PLATFORM
 #   The fleet is x86 (BOXER-6404 / BOXER-6641 chassis) and ARM64 Raspberry Pi 4B, and BOTH capture sets are implemented. Platform is detected per host
@@ -315,6 +317,24 @@ CAPTURES=(
   "rpi|watchdog|cat /sys/class/watchdog/watchdog0/{identity,state,timeout} 2>/dev/null; echo; systemctl list-units '*watchdog*' --all --no-pager --no-legend 2>/dev/null"
 
   # ---- logs: bounded tails only. Never a full journal — it is enormous and mostly noise ------------------------------------------------------------
+  # ---- ha: VRRP (keepalived) and state sync. Only multi-SMC sites run it; elsewhere every capture reads `absent`, which is the answer. ---------------
+  # A source build keeps its config under /usr/local/etc/keepalived (aurukun, 2026-10-29), so both prefixes are read.
+  # Read-only: no SIGUSR1 data dump (it writes /tmp/keepalived.data) and no tcpdump of protocol 112. auth_pass is redacted (redact_file).
+  "ha|keepalived-version|keepalived --version 2>&1 | head -3"
+  "ha|keepalived-status|systemctl status keepalived --no-pager 2>&1 | head -30"
+  "ha|keepalived-unit|systemctl cat keepalived --no-pager 2>/dev/null"
+  "ha|keepalived-files|ls -la /etc/keepalived/ /usr/local/etc/keepalived/ /usr/local/etc/sysconfig/keepalived 2>&1; cat /usr/local/etc/sysconfig/keepalived 2>/dev/null"
+  "ha|keepalived-conf|for f in /etc/keepalived/*.conf /etc/keepalived/conf.d/*.conf /usr/local/etc/keepalived/*.conf /usr/local/etc/keepalived/conf.d/*.conf; do [ -f \"\$f\" ] && { echo \"== \$f\"; cat \"\$f\"; }; done"
+  "ha|keepalived-scripts|for f in /etc/keepalived/*.sh /usr/local/etc/keepalived/*.sh /usr/local/bin/*vrrp* /usr/local/bin/*keepalived* /usr/local/bin/*ping*; do [ -f \"\$f\" ] && { echo \"== \$f\"; cat \"\$f\"; }; done"
+  "ha|keepalived-journal|journalctl -u keepalived --since '14 days ago' --no-pager 2>/dev/null | tail -200"
+  "ha|vrrp-transitions|journalctl -u keepalived --since '90 days ago' --no-pager 2>/dev/null | grep -E 'Entering (MASTER|BACKUP|FAULT)' | tail -60"
+  "ha|vip-addresses|ip -o addr show | grep -vE ' (lo|docker[0-9]*) '"
+  "ha|ip-neigh|ip neigh show"
+  "ha|conntrackd|systemctl status conntrackd --no-pager 2>&1 | head -15; echo; cat /etc/conntrackd/conntrackd.conf 2>/dev/null"
+  "ha|dhcp-failover|grep -nE 'failover|peer|split|mclt|primary|secondary' /etc/dhcp/dhcpd.conf 2>/dev/null; echo; ls -la /var/lib/dhcp/ 2>/dev/null"
+  "ha|dhcp-lease-count|grep -c '^lease' /var/lib/dhcp/dhcpd.leases 2>/dev/null; awk '/^lease/{ip=\$2} /binding state active/{a[ip]=1} END{print length(a), \"active\"}' /var/lib/dhcp/dhcpd.leases 2>/dev/null"
+  "ha|dhcp-units|systemctl list-units 'isc-dhcp*' 'dhcpd*' 'kea*' --all --no-pager --no-legend 2>/dev/null"
+
   "logs|journal-errors|journalctl -p err --since '24 hours ago' --no-pager 2>/dev/null | tail -120"
   "logs|journal-boot|journalctl -b -p warning --no-pager 2>/dev/null | tail -80"
   "logs|reboot-history|last -x reboot 2>/dev/null | head -20"
@@ -323,7 +343,7 @@ CAPTURES=(
 )
 
 # Group order for display/selection. Keep in sync with CAPTURES.
-CAPTURE_GROUPS=(identity os overlay storage services network dhcp dns firewall qos wifi voip portal monitoring rise access rpi logs)
+CAPTURE_GROUPS=(identity os overlay storage services network dhcp dns firewall qos wifi voip portal monitoring rise access rpi ha logs)
 
 # Captures that only make sense on x86. On a Pi, dmidecode is absent entirely and smartctl reports nothing useful about an SD card — running them
 # there would fill the summary with absences that look like findings. The rpi group is the mirror image: it runs ONLY on a Pi.
@@ -367,7 +387,7 @@ build_remote_script() {
 # Detect platform before capturing so we never run x86-only probes against a Pi and report the failures as findings.
 detect_platform() {
   local host="$1" model
-  model="$(with_deadline "$PROBE_DEADLINE" tsh ssh "${SSH_USER}@${host}" \
+  model="$(with_deadline "$PROBE_DEADLINE" tsh ssh ${TSH_PROXY:+"--proxy=${TSH_PROXY}"} "${SSH_USER}@${host}" \
     'if [ -r /proc/device-tree/model ]; then tr -d "\000" < /proc/device-tree/model; echo; else dmidecode -s system-product-name 2>/dev/null || echo unknown; fi' \
     2>/dev/null | grep -v '^$' | tail -1)"
   case "$model" in
@@ -383,6 +403,7 @@ redact_file() {
   local f="$1"
   sed -E -i.bak \
     -e 's/((password|passwd|secret|token|api[_-]?key|apikey|auth[_-]?key|private[_-]?key|client[_-]?secret|master[_-]?key)[[:space:]]*[:=][[:space:]]*)[^[:space:],;]+/\1<REDACTED>/Ig' \
+    -e 's/((auth_pass|auth_key)[[:space:]]+)[^[:space:]]+/\1<REDACTED>/Ig' \
     -e 's/(Authorization:[[:space:]]*(Bearer|Basic)[[:space:]]+)[A-Za-z0-9._~+\/-]+=*/\1<REDACTED>/Ig' \
     "$f" 2>/dev/null && rm -f "${f}.bak"
 }
@@ -391,6 +412,7 @@ redact_file() {
 
 hosts=()
 only=""
+TSH_PROXY="${SMC_TSH_PROXY:-}"
 skip=""
 
 while [[ $# -gt 0 ]]; do
@@ -401,9 +423,11 @@ while [[ $# -gt 0 ]]; do
     --skip)        skip="$2";  shift 2 ;;
     --skip=*)      skip="${1#*=}"; shift ;;
     --no-redact)   REDACT=0;   shift ;;
+    --proxy)       TSH_PROXY="$2"; shift 2 ;;
+    --proxy=*)     TSH_PROXY="${1#*=}"; shift ;;
     -h|--help)     sed -n '2,45p' "${BASH_SOURCE[0]}"; exit 0 ;;
     -*)            die "unknown option: $1" ;;
-    *)             [[ "$1" == *-smc01 ]] && hosts+=("$1") || hosts+=("${1}-smc01"); shift ;;
+    *)             [[ "$1" =~ -smc[0-9][0-9]$ ]] && hosts+=("$1") || hosts+=("${1}-smc01"); shift ;;
   esac
 done
 
@@ -433,6 +457,7 @@ MANIFEST="${OUTDIR}/MANIFEST.txt"
   echo "# SMC full diagnostic capture"
   echo "captured_at: ${STAMP}"
   echo "captured_by: $(whoami)"
+  echo "proxy:       ${TSH_PROXY:-<tsh login default>}"
   echo "cluster:     $(tsh status 2>/dev/null | awk '/Cluster:/ {print $2}')"
   echo "ssh_user:    ${SSH_USER}"
   echo "mode:        read-only (see SAFETY CONTRACT in scripts/capture/collect-smc-evidence-full.sh)"
@@ -490,7 +515,7 @@ for host in "${hosts[@]}"; do
   remote_script="$(build_remote_script "${host_selected[@]}")"
 
   raw="${hostdir}/_raw-stream.txt"
-  printf '%s\n' "$remote_script" | with_deadline "$SESSION_DEADLINE" tsh ssh "${SSH_USER}@${host}" 'bash -s' > "$raw" 2>"${raw}.err"
+  printf '%s\n' "$remote_script" | with_deadline "$SESSION_DEADLINE" tsh ssh ${TSH_PROXY:+"--proxy=${TSH_PROXY}"} "${SSH_USER}@${host}" 'bash -s' > "$raw" 2>"${raw}.err"
   session_rc=$?
   # 124: the deadline was reached. Captures the session never reached are reported as not run, never as absent or failed (2026-10-22).
   timed_out=0; [[ $session_rc -eq 124 ]] && timed_out=1

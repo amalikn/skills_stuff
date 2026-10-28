@@ -255,6 +255,21 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 - **Platforms.** `rct`, `wh` and `nbn_wh` are Raspberry Pi; every other flavour is x86. `rct` and `wh` are read-only (overlayroot); `nbn_wh` is not yet.
 - **Site counts.** `wh` 24 sites; `rcp` 18 production sites; `smc_ltp` 8 sites — `pia` is not low touch, although `big_push` lists it.
 - **VRRP.** Only aurukun (three SMCs, `nbn_accelerate`) runs keepalived; no `rcp`, `wh`, `nbn_wh` or `rct` site does.
+
+> **Learned 2026-10-29** · aurukun-smc01..03 (`nbn_accelerate`, BOXER-6404) · VERIFIED_PRIMARY · Source: `collect-smc-evidence-full.sh --only ha` on all
+> three boxes, 2026-10-29 09:47 and 09:53 (keepalived config, `ip -o addr`, journal) · Falsifier: a config on any of the three that differs from this.
+> The VRRP layout of the only multi-SMC site, read live:
+> - keepalived v2.2.7 is a **source build**: config `/usr/local/etc/keepalived/keepalived.conf`, options `/usr/local/etc/sysconfig/keepalived`,
+>   binary `/usr/local/sbin/keepalived`; `/etc/keepalived/` does not exist.
+> - Management (`bridge_500`, /22): boxes `.254` / `.253` / `.252`, one VIP `10.255.0.1` (`management_internet`, VRID 1; smc01 priority 150,
+>   smc02 140).
+> - Public (`bridge_501`, /20): boxes `.254` / `.253` / `.252`, three VIPs `10.0.0.1` / `.2` / `.3` (`public_internet01..03`, VRIDs 1-3), one
+>   led by each box, so clients are spread over three gateways.
+> - One track script, `google_ping` (`/bin/ping -c 1 -W 2 8.8.8.8`), weight -30 on every instance: a WAN miss on the master hands its VIPs over.
+>   On 2026-10-29 smc01 flipped about hourly from 02:36 (40 transitions that day vs 4-8 a day before): its WAN, not the boxes.
+> - **DHCP is not shared**: no `failover peer`; each box runs its own `dhcpd` (619 / 587 / 149 active leases). A reader that takes leases from one
+>   box sees about a third of the site's clients; read all three.
+> - At a multi-SMC site the capture tools need the box name as given (`aurukun-smc02`) and the proxy named (`--proxy`), both added 2026-10-29.
 - **Central hosting.** Prometheus and Graylog run in AWS Sydney (ap-southeast-2) and are managed by Malik. Eclipse is hosted in SY3, is high availability and is monitored by the NOC. RADIUS and
   802.1X are not used anywhere.
 - **Satellite round trip.** Depends on the link: Sky Muster Plus 600–800 ms; Starlink under 100 ms. Operator figures, not a measurement.

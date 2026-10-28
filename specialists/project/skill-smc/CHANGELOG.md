@@ -35,6 +35,13 @@ Last reviewed: 2026-10-27
 - [20261026_2222 — smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)](#20261026_2222--smc_change-new-order-passed-on-two-pis-second-drop-at-chroot-dpkg-v081---v082)
 - [20261026_2146 — smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)](#20261026_2146--smc_change-drop-proof-installs-lower-dir-first-runs-table-v080---v081)
 
+## 20261029_0958 — ha capture group, multi-SMC hosts and --proxy; aurukun VRRP layout (v0.9.8 -> v0.9.9)
+
+- `scripts/capture/collect-smc-evidence-full.sh`: `ha` group (keepalived, VIPs, track scripts, transitions, dhcpd failover and leases;
+  `auth_pass` redacted), `<site>-smcNN` hosts kept as given, `--proxy` / `SMC_TSH_PROXY` on every tsh call. Catalogue: `scripts/README.md`.
+- Learned 2026-10-29 in `references/01_overview.md` (VRRP): aurukun's keepalived source build, VIPs per VLAN, `google_ping` weight -30, no
+  DHCP failover (each box leases its own clients). Found for unified-network-controller's multi-SMC model.
+
 ## 20261028_2046 — stuck apt_info.py holds the apt lists lock; apt_lock_probe.sh (v0.9.7 -> v0.9.8)
 
 - references/13: 2026-10-28 entry: node_exporter apt_info.py hung 11-120 days holding /var/lib/apt/lists/lock on 3 rct SMCs; smc_change
