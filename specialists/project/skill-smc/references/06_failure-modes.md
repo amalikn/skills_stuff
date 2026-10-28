@@ -634,3 +634,14 @@ public function sendData($data, $length = 0)
 {
     $this->openSerialIO("/dev/ttyS0", 19200, 1, 8, 0);   // stty + serialflush before every message
 ```
+
+> **Learned 2026-10-28 (c)** · AVR V3.07 on a Thuraya control board loses the SIM · USER_STATED (Chris Blair, relayed by the operator, with Stats
+> page screenshots) · Source: change record `rct-tstik-iridium-update-20261028_1221.md` 5.6-5.7 (local-knowledge-ansible) · Falsifier: a
+> Thuraya-equipped board on V3.07 whose Stats page still shows IridiumSIMSerial and passes the self test
+> V3.07 is for Iridium. On a control board that still has the Thuraya module, after V2.14 -> V3.07 the board's SIM is no longer detected
+> (IridiumSIMSerial and IridiumSIMISMI empty, TimePosStatus c -> 0), the self test fails "Thuraya SIM Fail", and a build from the generic
+> image by coordinates no longer works (the new build's site drop-down mitigates it); Stats page and Dashboard telemetry stay fine. The
+> Iridium board has its own SIM holder. Fleet (operator, 2026-10-28): 27 RCT SMCs on V3.07 (the Iridium sites, e.g. frasier-downs-pivot,
+> kusi-block, midgelmaya, naja-naja, shovellers-block, mooloowa), malupirti-smc01 V3.06 (offline), every other RCT SMC V2.14. tstik's Stats
+> page and the vendor loader print 3.07 as "3.7". The smc_change spec flashes only with `-e rct_avr_flash=true`: flash a site after its
+> Iridium equipment is in. Firmware files V2.14Test, V3.04, V3.06, V3.07: change folder `firmwares/`.
