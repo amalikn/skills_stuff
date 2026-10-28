@@ -71,9 +71,26 @@ Source: `/opt/openwisp/openwisp/settings.py:455-480`; https://openwisp.io/docs/2
 https://openwisp.io/docs/26.09/ansible/user/enabling-modules.html; https://openwisp.io/docs/26.09/ansible/user/role-variables.html.
 
 > **Learned 2026-10-16** · docker-openwisp (images 26.09.0) · VERIFIED_PRIMARY · Source: nginx access log (observed on a deployment) (login POST 302 then redirect to login) and live cookie headers on UNC01 · Falsifier: a dashboard opened by IP that keeps its session with domain-scoped cookies.
-> The images scope session and CSRF cookies to the configured domain (`.openwisp.dev` by default), so a dashboard opened by IP address loses its session
-> after every login, and an IP request also falls to nginx's API default virtual host. To serve it by IP: host-only cookies (no cookie domain), a session
-> cookie name distinct from any other app on the host, and the exact HTTPS origin including port in `CSRF_TRUSTED_ORIGINS`; cookie security stays on.
+> The images scope session and CSRF cookies to the configured domain (`.openwisp.dev` by default), so a dashboard opened by IP address loses its session after every login, and an IP request also falls
+> to nginx's API default virtual host. To serve it by IP: host-only cookies (no cookie domain), a session cookie name distinct from any other app on the host, and the exact HTTPS origin including port
+> in `CSRF_TRUSTED_ORIGINS`; cookie security stays on.
+
+> **Learned 2026-10-29** · docker-openwisp (images 26.09.0) beside another Django app on the same host · VERIFIED_SECONDARY · Source: RFC 6265bis §5.7 "leave secure cookies alone" (Chrome strict secure cookies); upstream `openwisp_controller/connection/static/connection/js/commands.js` and `openwisp_firmware_upgrader/static/firmware-upgrader/js/upgrade-progress.js` (GitHub main, read 2026-10-29) · Falsifier: the other app's forms still fail "CSRF cookie not set" after OpenWISP's CSRF cookie is renamed and the browser's old cookie deleted.
+> The 2026-10-16 entry above is incomplete: rename the **CSRF** cookie too, not only the session cookie. Cookies ignore ports, so OpenWISP over HTTPS and another Django app (Nautobot) over plain HTTP
+> on one host both used `csrftoken`. OpenWISP's copy is Secure; Chrome then refuses the HTTP app's write of the same name and never sends the Secure one over HTTP, so the other app fails every form
+> post with "CSRF cookie not set" (incognito works until OpenWISP is opened there). OpenWISP's own JavaScript reads the token from the form's `csrfmiddlewaretoken` field, not the cookie, so renaming
+> is safe. Each browser keeps the old cookie until it expires (about a year): delete the host's site data once after the change.
+>
+> ```python
+> # unified-network-controller wc-local/config/openwisp/configuration/custom_django_settings.py (uncommitted at writing; 2026-10-29)
+> if _os.environ.get("UNC_OPENWISP_PUBLIC_ORIGIN"):
+>     SESSION_COOKIE_DOMAIN = None
+>     CSRF_COOKIE_DOMAIN = None
+>     SESSION_COOKIE_NAME = "unc_openwisp_sessionid"
+>     CSRF_COOKIE_NAME = "unc_openwisp_csrftoken"
+> ```
+>
+> Screenshot pending: the browser's cookie list for the host showing `unc_openwisp_csrftoken` beside the other app's `csrftoken`, after the deploy.
 
 ## 2. Process roles
 
@@ -241,12 +258,14 @@ curl -s -X PUT "$OW/api/v1/controller/device/<pk>/coordinates/?key=<device-key>"
 - `/api/v1/controller/organization/<org-pk>/geo-settings/` holds per-organisation geo settings.
 
 Gotcha: the coordinates endpoint authenticates with the device `key` in the query string and bypasses organisation filtering; a PUT for a device with no location creates a new mobile Location named
-after the device. Restrict who holds device keys accordingly. The body is a GeoJSON Feature: `DeviceCoordinatesSerializer` is a `GeoFeatureModelSerializer` on `geometry`, which
-unpacks `properties` and `geometry` on input (rest_framework_gis `to_internal_value`).
+after the device. Restrict who holds device keys accordingly. The body is a GeoJSON Feature: `DeviceCoordinatesSerializer` is a `GeoFeatureModelSerializer` on `geometry`, which unpacks `properties`
+and `geometry` on input (rest_framework_gis `to_internal_value`).
 
 Source: `$P/openwisp_controller/geo/utils.py` (`get_geo_urls`); `$P/openwisp_controller/geo/api/views.py:45-52` (`DevicePermission`), `:107-152` (`DeviceCoordinatesView`);
 `$P/openwisp_controller/geo/settings.py`; `$P/openwisp_controller/geo/api/serializers.py:135-140`; `$P/rest_framework_gis/serializers.py:196-221`; `$P/django_loci/base/models.py:17-155`;
 `$P/django_loci/storage.py`; `$P/django_loci/settings.py:5-20`.
 
 > **Learned 2026-10-13** · docker-openwisp 26.09 · VERIFIED_SECONDARY · Source: observed on a docker-openwisp stack after its containers were restarted out of order · Falsifier: openwisp-nginx following the API container to its new address without a restart
-> openwisp-nginx resolves the API container's address once, when nginx starts. Restart the API (or the whole set with `docker start`) and it can come back on another address while nginx keeps proxying to the old one: the dashboard answers 502 with the API healthy. Restart `openwisp-nginx` after the API, always, and read "502 with the API up" as this. Separately, after a host stop the OpenWISP Redis may answer MISCONF while it reloads a large snapshot; wait and retry the worker ping before declaring workers dead.
+> openwisp-nginx resolves the API container's address once, when nginx starts. Restart the API (or the whole set with `docker start`) and it can come back on another address while nginx keeps proxying
+> to the old one: the dashboard answers 502 with the API healthy. Restart `openwisp-nginx` after the API, always, and read "502 with the API up" as this. Separately, after a host stop the OpenWISP
+> Redis may answer MISCONF while it reloads a large snapshot; wait and retry the worker ping before declaring workers dead.
