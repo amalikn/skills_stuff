@@ -644,4 +644,4 @@ public function sendData($data, $length = 0)
 > Iridium board has its own SIM holder. Fleet (operator, 2026-10-28): 27 RCT SMCs on V3.07 (the Iridium sites, e.g. frasier-downs-pivot,
 > kusi-block, midgelmaya, naja-naja, shovellers-block, mooloowa), malupirti-smc01 V3.06 (offline), every other RCT SMC V2.14. tstik's Stats
 > page and the vendor loader print 3.07 as "3.7". The smc_change spec flashes only with `-e rct_avr_flash=true`: flash a site after its
-> Iridium equipment is in. Firmware files V2.14Test, V3.04, V3.06, V3.07: change folder `firmwares/`.
+> Iridium equipment is in. Firmware files V2.14Test, V3.04, V3.06, V3.07: change folder `firmwares/`. `FirmwareV2.14Test.enc` is the build the fleet's V2.14 AVRs run (Chris Blair, 2026-10-28), so the spec's AVR rollback restores it.
