@@ -232,7 +232,7 @@ DHCPACK, squid lines, squid 302 redirects, Apache hits, `wifi/access` 302 issued
 Case, galiwinku-smc01, 2026-10-28 (times AEDT): PINs were issued after the upgrade (22:00 3, 23:00 1, 07:00 1, 08:00 1). `TCP_DENIED` stopped at 10:43:29
 and resumed at 15:29:16, one second after the twice-daily squid reconfigure (03:29 and 15:29). Squid config was unchanged since 2026-09-08 and Apache
 `error.log` showed no PHP errors. The portal's sudo calls in that window touched only `iptables -t mangle` and `rmtrack`. Root cause of the
-10:43 fail-open: not found (open); iptables matched `rules.v4` apart from runtime per-PIN rules, every 5-minute cron (three Kohana PHP CLI jobs included) ran each slot, and conntrack stayed under 3.5% full. doomadgee-smc01 issued normally (23 by 15:40). Prometheus `bridge_50[01]` tx over the last 6 h against the same 6 h a day earlier: galiwinku 0.59,
+10:43 stall (found 16:05, see below): iptables matched `rules.v4` apart from runtime per-PIN rules, every 5-minute cron (three Kohana PHP CLI jobs included) ran each slot, and conntrack stayed under 3.5% full. doomadgee-smc01 issued normally (23 by 15:40). Prometheus `bridge_50[01]` tx over the last 6 h against the same 6 h a day earlier: galiwinku 0.59,
 doomadgee 0.55, nbn_accelerate median about 0.85, other sites patched in the same batch 0.73 to 1.31, so the upgrade shows no fleet effect.
 
 ```bash
@@ -244,4 +244,23 @@ To clear a whole change batch at once, `scripts/capture/pin-fleet-check.sh --pro
 PHP version, upgrade time, PINs issued/refused yesterday vs today to the same hour, squid deny-gap hours, PHP errors, portal code and marks. Run on the 11
 nbn_accelerate SMCs of the 2026-10-27 batch it took 24 s at 6 in parallel: all on `ubuntu2.28`, no PHP errors, portal 200, PINs issued at every site, and
 galiwinku-smc01 the only host with deny-gap hours (11 to 14).
+
+**Root cause, 2026-10-28 16:05: Squid's intercept listener stopped accepting.** It was not a fail-open: per minute, denied requests fell from about 65
+to 0 at 10:42 while pinned (3131) requests stayed at about 30, so unpinned port-80 requests no longer reached Squid at all. The one marker is
+`NF getsockopt(ORIGINAL_DST) failed ... local=10.0.0.1:3128` at 10:41:50 (the NAT entry gone before accept). `squid -k reconfigure` closes and
+reopens every port, which is why the 15:29 cron cleared it. Upstream match: squid-users 2022-02, "getsockopt failures, although direct access
+to intercept ports is blocked" (the worker logs `acceptOne: non-recoverable error` and stops polling the intercept port; maintainer points to Squid 6
+changeset 9fd3e68c). Fleet squid 5.9-0ubuntu0.22.04.2, candidate .8; whether .8 has the fix: unverified.
+User experience during a stall: PIN holders browse normally; new or expired phones join the WiFi, get no internet (port 80 hangs on 3128,
+FORWARD rejects the rest) and no login page, so no PIN. The 03:29/15:29 reload is the squidGuard blocklist cron
+(`roles/smc_squid/tasks/main.yml`, "Add squidGuard blocklists update job in cron"), not a health reset.
+
+```text
+# galiwinku-smc01 /var/log/squid/access.log per minute: total denied miss
+28 10:41   100    69    29
+28 10:42    57     7    48
+28 10:44    32     0    26
+28 15:28    30     0    29
+28 15:29    85    50    28
+```
 
