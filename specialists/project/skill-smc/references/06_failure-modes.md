@@ -616,3 +616,21 @@ physical SMC: the count of links that flap under a real reload there.
     print("  No valid answer from the AVR after", AVR_RETRIES, "tries")
     return EXIT_NO_AVR
 ```
+
+> **Learned 2026-10-28 (later)** · rct-tstik and the AVR loader collide on `/dev/ttyS0` · VERIFIED_PRIMARY · Source: warehouse-rct01 (stage, Pi 4,
+> no overlayroot) 01:34:52-01:35:31 UTC, `laravel.log`, `stty`, rct-tstik 1318c7b `app/Services/SerialIIO.php` · Falsifier: an `update:stats`
+> run overlapping loader traffic with all 24 reads good
+> Eleven loader version queries looped across the 01:35 `update:stats` run: all 11 answered (`AVR version=3.06`), but that tstik run logged
+> 0 good reads, 2 empty and 1 "Unable to read the data from AVR" (01:30 and 01:40 runs: 24 good). Nothing locks the port, and tstik
+> re-runs `stty -F /dev/ttyS0 19200 ...` plus an input flush before every send; the loader opens at 19500 and leaves `stty` showing speed 0.
+> Unshared, the port is clean (177,057 good reads, 1 empty, 0 failures since 2026-10-02). So a flash crossing a `*/5` minute shares the port
+> with `update:stats`: pause tstik's cron (or cron) for a flash. ttyS0 is the mini UART (8250, `mmio:0xFE215040`), `enable_uart=1`, core 500 MHz.
+> Frame: `7e`, payload length, command, payload, `0xFF - sum(command..payload) mod 256` (reply `7e 02 11 03 06 e5` = version 3.06).
+> Full record: ansible-wifi local-knowledge `roles/smc_change/files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update-20261028_1221.md` Part 4.
+
+```php
+// app/Services/SerialIIO.php (rct-tstik 1318c7b)
+public function sendData($data, $length = 0)
+{
+    $this->openSerialIO("/dev/ttyS0", 19200, 1, 8, 0);   // stty + serialflush before every message
+```
