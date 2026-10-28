@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261028_2306 — Learned: optimise the real outcome, not a proxy
+
+references/design-patterns.md: proxy ranks candidates, the real computation chooses, current state always a candidate (skill-drawio overview placement, 2026-10-28).
+
 ## 20261028_2237 — Learned: shared justfile recipes and the editor
 
 references/configuration-and-literals.md: an imported recipe file defines no variables (justfile_directory, source_directory); the VS Code just extension does not follow import for names but flags duplicates (ansible-wifi change.just, 2026-10-28).

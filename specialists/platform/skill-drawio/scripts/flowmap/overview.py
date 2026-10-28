@@ -16,6 +16,7 @@ from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, Point, Rect, he
 from .model import GROUP_HEAD, MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .overview_index import colour_legend, flow_index
+from . import placement
 from .overview_layout import (OV_BH, OV_BW, OV_CHANNEL, OV_GRID_COLS, OV_HGAP, OV_JUMP, OV_LEFT, OV_MIN_HEAD, OV_MIN_THIN, OV_PAD, OV_SIDE, OV_SLOT, OV_SP,
                               OV_THIN_JUMP, OV_THIN_SP, OV_TOP, THIN_GREY, box_lines, far_channels, grid_cells, key_width, layout_group, side,
                               text_height)
@@ -45,10 +46,12 @@ class Overview:
         self.same = {cid: [d for d in by_id[cid].get("depends_on", []) if gof[d] == gof[cid] and d != cid] for cid in by_id}
         self.far = {cid: [by_id[d]["name"] for d in by_id[cid].get("depends_on", []) if gof[d] != gof[cid]] for cid in by_id}
         cols = self.profile.group_columns
-        self.lay = {gi: layout_group(ids, self.same, cols.get(name, OV_GRID_COLS)) for gi, (name, ids) in enumerate(self.groups.items())}
+        self.lay = {gi: layout_group(ids, self.same, cols.get(name, OV_GRID_COLS), bool(self.profile.look.get("overview_row_search"))) for gi, (name, ids) in enumerate(self.groups.items())}
         self._measure()
         self._plan()
         self._grid()
+        if self.profile.look.get("overview_group_search"):
+            placement.best_cells(self)
 
     def _measure(self) -> None:
         """Box, row, row-gap and group heights, and the group grid's rows and columns.
@@ -65,6 +68,18 @@ class Overview:
                               + OV_PAD)
         self.ncol = ncol = self.profile.groups_per_row
         cells = grid_cells(list(self.groups), self.profile.group_cells, ncol, self.profile.look["last_row_align"])
+        # overview_group_search (operator, 2026-10-28: "apply the same logic for the intergroup arrows"): move the groups the map does not
+        # pin to the cells where the thick arrows cross least; pinned groups (drawing.group_cell) stay put.
+        self.cells0 = cells
+        self._place_cells(cells)
+
+    def _place_cells(self, cells: dict) -> None:
+        """Put each group in its (row, column) and size the grid's columns and rows.
+
+        Args:
+            cells: {group name: (row, column)}.
+        """
+        ncol = self.ncol
         self.grow = {gi: cells[name][0] for gi, name in enumerate(self.groups)}
         self.gcol = {gi: cells[name][1] for gi, name in enumerate(self.groups)}
         self.nrow = max(self.grow.values(), default=0) + 1

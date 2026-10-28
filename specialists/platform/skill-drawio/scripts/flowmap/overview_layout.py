@@ -11,6 +11,8 @@ Imported, not run: `from flowmap import overview_layout` with the skill's script
 
 from __future__ import annotations
 
+from . import placement
+
 from dataclasses import dataclass
 
 from drawio.mxfile import BLANK, heading, wrapped_lines
@@ -133,19 +135,22 @@ def _barycentre(rows: list, chains: list) -> None:
                 order[k] = i
 
 
-def layout_group(ids: list, same: dict, cols: int = OV_GRID_COLS) -> GroupLayout:
+def layout_group(ids: list, same: dict, cols: int = OV_GRID_COLS, search: bool = False) -> GroupLayout:
     """Lay out one group's interior: layered rows, slots for row-skipping arrows, barycentre ordering, unlinked boxes in a grid below.
 
     Args:
         ids: the group's component ids, in map order.
         same: {component id: the components it needs in its own group}.
         cols: columns in the grid of unlinked boxes (the map's `drawing.group_columns` or `group_layout`, default 3; 0 is one row).
+        search: also run _row_search after the barycentre sweeps (look key overview_row_search).
 
     Returns:
         The group layout.
     """
     rows, chains = _rows_and_chains(ids, same, cols)
     _barycentre(rows, chains)
+    if search:   # overview_row_search (operator, 2026-10-28: the E2E column search, on the overview too)
+        placement.row_search(rows, chains)
     row_w = [sum(key_width(k) for k in row) + OV_HGAP * (len(row) - 1) for row in rows]
     gw = max(row_w, default=OV_BW) + 2 * OV_PAD
     x = {}

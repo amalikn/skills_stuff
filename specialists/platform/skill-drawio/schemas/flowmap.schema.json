@@ -706,6 +706,18 @@
               "maximum": 1,
               "description": "One click on an End-to-end arrow, dashed line, label or legend row, or an Overview arrow, count, dot or legend row, shows that colour alone (the rest at this opacity, 0.15 for true); a second click shows all; default false."
             },
+            "overview_group_search": {
+              "type": "boolean",
+              "description": "Overview page: move the groups the map does not pin (drawing.group_cell) to the grid cells where the thick group-to-group arrows cross least (straight-line crossings weighted by dependency count, plus length and row-skip terms); default false."
+            },
+            "overview_row_search": {
+              "type": "boolean",
+              "description": "Overview page: after the barycentre ordering inside each group, swap boxes within a row while that lowers the crossings between consecutive rows; default false."
+            },
+            "e2e_row_search": {
+              "type": "boolean",
+              "description": "End-to-end pages: after the barycentre ordering, swap boxes inside each column while that lowers the arrow crossings the grid implies (arrows between two columns, arcs inside a column and arrows leaving a column across them); default false."
+            },
             "e2e_loops": {
               "type": "boolean",
               "description": "Draw a step done by the same component as the step before as a loop on that component's box (top or bottom, whichever has more room), labelled x.y or x.y–z; default false (no arrow, named in the next arrow's hover text)."

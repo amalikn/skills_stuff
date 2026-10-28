@@ -69,6 +69,14 @@ Last rotated: 20261026_1533
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261026_2147.md](docs/changelog-reference-1-20261026_2147.md): 0.2.0 — 2026-10-26.
 
+## 20261028_2306 — Placement searches: E2E columns, overview rows and group grid
+
+- `scripts/flowmap/placement.py` (new): placement searches after barycentre, opt-in look keys `e2e_row_search`, `overview_row_search`,
+  `overview_group_search` (schema, profile defaults false). Overview group placement: candidates from a hill climb and 24 seeded restarts,
+  each routed for real, the fewest thick-arrow crossings kept (never worse than the map own placement; pinned groups stay). UNC overview
+  245 -> 130 crossings; smc_change E2E 93 -> 43, PHP E2E 31 -> 13. Tests: `tests/test_placement_search.py`. Research of Graphviz dot,
+  ELK layered, libavoid, ILP crossing minimisation in ROADMAP (not adopted).
+
 ## 20261026_2147 — Flow maps: quote yes/no decision labels
 
 - `references/data-first-diagrams.md`: Learned 2026-10-26 - bare yes/no in a step's `when` parse as booleans and fail the schema; quote them (local-knowledge-ansible `76b0f86`).

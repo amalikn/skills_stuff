@@ -33,7 +33,6 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 
 ## Engine and evidence
 
-- [x] **Second project** — smc-resiliency draws its S2 flows from `docs/flows/flows.yaml` with this engine and the generic schema (2026-10-20).
 - [ ] **Archcore flow-map spec and adoption guide** — unblocked by the second project; write them (see `.archcore/index.guide.md`).
 - [ ] **C-D16 on the current app** — re-check "static export draws orthogonal edges through boxes" on draw.io desktop 32.5.5 (checked only on 32.4.1; `compatibility.yaml`).
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (3.11 is not installed, so the declared floor is untested).
@@ -47,6 +46,24 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 
 - [x] **Fold long flow pages** (built 2026-10-27): `look.fold` serpentine/z, `fold_after`, per-flow `layout`; `scripts/flowmap/fold.py`, `fold_turns.py`;
   consumers byte-identical with fold off; CHANGELOG 20261027.
-- [x] **test-matrix needs PyYAML** (2026-10-20): one venv per interpreter under the working cache (`matrix/py<v>`); 3.12 to 3.14 OK.
 
 Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).
+
+## Box placement research (2026-10-28, operator: "search them, don't incorporate at this stage") `OPEN`
+
+Built (`scripts/flowmap/placement.py`, opt-in look keys): `e2e_row_search` (E2E column order, grid estimate): smc_change E2E 93 -> 43,
+PHP E2E 31 -> 13. `overview_row_search` (group rows): UNC 245 -> 243. `overview_group_search`: candidate placements (map's own,
+hill climb, 24 seeded restarts as Graphviz/ELK do) each routed for real, fewest thick-arrow crossings kept: UNC overview 245 -> 130
+(-47%), never worse than the map's placement; pinned groups (group_cell) stay. Proxies alone misled (straight lines: 131 then 182
+with more restarts; channel paths: 192/171). Next: one engine loop for every page type (candidates, real routing, count, keep best);
+the E2E column search still scores a grid estimate. UNC's own schema copy lacks the new keys. Candidates for a principled next step, not adopted:
+- Graphviz dot ordering (Gansner, Koutsofios, North, Vo 1993, IEEE TSE 19(3)): weighted median plus local transpositions; crossing
+  minimisation on layered graphs is NP-complete, so heuristics.
+- Eclipse Layout Kernel (ELK) layered: cycle breaking, layering, crossing minimisation, node placement, orthogonal routing with port
+  constraints; elkjs is its JavaScript build.
+- Adaptagrams libavoid (Wybrow, Marriott, Stuckey, GD 2009): orthogonal connector routing minimising length and bends; used by Inkscape;
+  libtopology for topology-preserving improvement.
+- Exact one-sided crossing minimisation by ILP (Wilson et al., IEEE VIS 2024); OGDF ships Sugiyama crossing-minimisation heuristics.
+Sources: https://uspto.report/patent/grant/4953106 , https://eclipse.dev/elk/blog/posts/2025/25-08-21-layered.html ,
+https://www.adaptagrams.org/documentation/libavoid.html , https://www.doi.org/10.1007/978-3-642-11805-0_22 ,
+https://vis.khoury.northeastern.edu/pubs/Wilson2024EvaluatingExtendingSpeedup/ , https://google-melange.com/archive/gsoc/2013/orgs/ogdf/projects/pawel_schmidt.html

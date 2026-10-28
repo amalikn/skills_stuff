@@ -663,3 +663,19 @@ built anywhere; move it to built, with its source, when a project does.
 | P-06    | built: `async` + `poll: 0` + await; Learned (e), (i)                 | suggested: detached job id + idempotent status poll             |
 | P-09    | built: joined probe piped on stdin                                   | built: `files/probe/NN_*.py` parts joined into one program      |
 | P-12    | built: `--check` before apply                                        | built: `smc_change_runs_by_flavor.py` `plan()` then `--apply`   |
+
+> **Learned 2026-10-28** · optimise the real outcome, not a proxy · VERIFIED_PRIMARY (skill-drawio overview group placement, UNC overview:
+> 245 crossings) · Source: skill-drawio `scripts/flowmap/placement.py` (`group_candidates`, `best_cells`) · Falsifier: a search on a
+> proxy score that keeps improving the real measure as it searches harder
+> A cheap proxy can rank candidates but must not choose: scoring group placements by straight-line crossings gave 131 real crossings with
+> 12 restarts and 182 with 40 (the proxy improved, the drawing got worse); a channel-path proxy gave 192 and 171. Generate candidates with the
+> proxy (several seeded starts, as Graphviz and ELK do), then evaluate each with the real computation and keep the best; include the current
+> state as a candidate so the result is never worse: 130 real crossings, stable.
+
+```python
+best, best_n = current, real_cost(current)
+for cand in candidates(current)[1:]:          # proxy-ranked, current first
+    n = real_cost(cand)                       # the real thing (here: route and count)
+    if n < best_n:
+        best, best_n = cand, n
+```

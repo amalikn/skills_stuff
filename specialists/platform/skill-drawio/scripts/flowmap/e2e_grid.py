@@ -20,6 +20,7 @@ from drawio.route import interval_tracks
 from .model import MARGIN, e2e_tier, flow_extras, flow_family
 from .profile import Profile
 from .shapes import fit_height
+from . import placement
 from .tips import connector_tip, e2e_groups, step_arrow_tip
 
 #: Box width and least height; port spacing on a box side; distance of the first and last track from a channel's or corridor's border (the
@@ -165,6 +166,8 @@ class E2EGrid:
                 for i, cid in enumerate(col):
                     r = max(prev + 1, min(int(bary[cid] + 0.5), n_rows - (len(col) - i)))
                     row[cid], prev = r, r
+        if self.profile.look.get("e2e_row_search"):
+            placement.column_search(cols, row, colof, placement.e2e_edges(self.data, self.comps))
         cell = {cid: (colof[cid], row[cid]) for cid in colof}
         return self._place_band(cell, tier, nbr, colof, n_rows), n_rows
 

@@ -10,19 +10,18 @@ Budget: 200 lines, 25 KB
 Keep: KEEP-marked items only
 Open items tracker: this file, Open items
 Summary: Transient working state for skill-drawio; durable facts move to references, sources.yaml or CHANGELOG.
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261028_2305
 ---
 
 # Scratchpad
 
 ## Open items
 
+- Older open items are tracked in [this](this).
 - KEEP 2026-10-27 router changes (sibling branch crossings, own reserved corners, exhaustive row-gap order, one-flow family label) change
   the drawings of other consumers: re-render and drift-check unified-network-controller and smc-resiliency in their own sessions; expect fewer
   crossings, never more per gap.
-- Archcore: 4 ADRs and 7 rules accepted 2026-10-19 (operator: "promote and accept"), indexed in `.archcore/index.guide.md`. Deferred: the
-  flow-map spec and the adoption guide, until a second project adopts the engine.
-- Installed 2026-10-19 (operator): directory symlinks `~/.claude/skills/skill-drawio`, `~/.codex/skills/skill-drawio` and
-  `~/.hermes/skills/diagramming/skill-drawio` to this folder; listed in the skills_stuff `README.md`.
 - Done 2026-10-19: unified-network-controller's as-built reader re-exports `drawio.read` (byte-identical on 27 files), its flow renderer
   retired in favour of `render_flowmap.py` and its engine tests moved to `tests/test_layout_rules.py` (ROADMAP items ticked).
 - draw.io desktop on the operator's Mac is now 32.5.5 (32.4.1 when the engine was built); the export flags were re-checked on 32.5.5, the

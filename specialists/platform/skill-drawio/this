@@ -1,0 +1,22 @@
+---
+Title: Open items
+Category: living-tracker
+Status: current
+Last reviewed: 2026-10-28
+Review by: 2026-11-11
+Summary: Open items older than 7 days, moved verbatim from SCRATCHPAD.md so the working state stays small. Review: close, decide or drop;
+  closed items are deleted here (git keeps them).
+---
+
+# Open items
+
+Items still open after a week leave `SCRATCHPAD.md` for this file (skill-ai-it rotate_records.py). Mark one done with `[x]`, or delete it
+once closed and recorded in the CHANGELOG.
+
+## Moved from SCRATCHPAD.md on 20261028_2305
+
+- Archcore: 4 ADRs and 7 rules accepted 2026-10-19 (operator: "promote and accept"), indexed in `.archcore/index.guide.md`. Deferred: the
+  flow-map spec and the adoption guide, until a second project adopts the engine.
+- Installed 2026-10-19 (operator): directory symlinks `~/.claude/skills/skill-drawio`, `~/.codex/skills/skill-drawio` and
+  `~/.hermes/skills/diagramming/skill-drawio` to this folder; listed in the skills_stuff `README.md`.
+

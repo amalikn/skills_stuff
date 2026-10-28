@@ -55,3 +55,4 @@ unified-network-controller's flow map and promoted here on 2026-10-19; that proj
 - AI navigation entrypoint: [AI_NAVIGATION.md](AI_NAVIGATION.md)
 - Machine-readable context map: [context-map.yaml](context-map.yaml)
 - Canonical governance root: [/Volumes/Data/_ai/governance/README.md](/Volumes/Data/_ai/governance/README.md)
+- [this](this) Open items moved out of `SCRATCHPAD.md` (live tracker: review, close, decide or drop).
