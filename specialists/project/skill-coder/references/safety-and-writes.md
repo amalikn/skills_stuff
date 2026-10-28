@@ -148,3 +148,11 @@ def classify(cmdline, held):
         return "apt_info" if cmdline.startswith(APT_INFO) else "refresh"
     return "install"                         # dpkg or archives lock: wait, then report; never kill
 ```
+
+> **Learned 2026-10-28** · a symlinked source ships whatever is checked out · VERIFIED_PRIMARY (ansible-wifi smc_change apt-info-no-update:
+> the copy source linked to `roles/smc_node_exporter/files/apt_info.py`, fixed on master only, old on rise) · Source: local-knowledge-ansible
+> `roles/smc_change/files/changes/apt-info-no-update/` (uncommitted at writing) · Falsifier: a deploy that links into a branch-switched checkout
+> and still ships one fixed version
+> A symlink to a file inside a git checkout resolves at run time to whatever branch, stash or `git restore` left there, so a deployment that
+> needs a specific version must carry a pinned copy (from the commit: `git show <commit>:<path> > file`). A link is right only when the
+> target cannot vary by branch (a repo without branches, or a file the same on every branch), and then it keeps one tested copy for every user.

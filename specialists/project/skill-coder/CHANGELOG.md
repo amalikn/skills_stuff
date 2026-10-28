@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261028_2229 — Learned: a symlinked source ships whatever is checked out
+
+references/safety-and-writes.md: pin a copy from the commit when a deploy needs a specific version; a link only when the target cannot vary by branch (ansible-wifi apt-info-no-update, 2026-10-28).
+
 ## 20261028_2101 — Learned: freeing a lock another process holds
 
 `references/safety-and-writes.md`: Learned 2026-10-28 "freeing a lock another process holds": decide by the locks the holder has (end a refresh,
