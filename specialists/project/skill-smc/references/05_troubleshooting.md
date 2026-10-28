@@ -463,3 +463,11 @@ instantly is almost always something answering, not something missing.
   reset) are completely different diagnoses and the piped one-liner hides which one you got.
 
 ---
+
+> **Learned 2026-10-28** · Ansible `sftp/scp transfer mechanism failed` warnings on one SMC · VERIFIED_PRIMARY (operator's rct PHP run output; ansible.cfg) ·
+> Source: ansible-wifi CHANGELOG 20261028_1511 · Falsifier: the same warnings on every SMC of a run (then the sftp subsystem or config is at fault, not the link)
+> Ansible's ssh plugin copies a file by sftp, then scp, then piped (down the command channel). On dhupuwamirri-smc01 the first two failed and
+> the task still reported `changed`: they open a new channel on the Teleport connection, which a lossy satellite link can refuse or time out,
+> while the open command channel still works (cause UNVERIFIED without `ANSIBLE_DEBUG=1`). Harmless when rare; check the link with
+> `just smc_link_health <host>`. ansible-wifi's `ansible.cfg` still sets the legacy `scp_if_ssh = True`; `ssh_transfer_method = piped` under
+> `[ssh_connection]` would skip the two attempts (proposed, not decided; check the key for the installed Ansible first).
