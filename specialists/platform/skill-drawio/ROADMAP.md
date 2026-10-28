@@ -49,6 +49,11 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 
 Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).
 
+## Engine performance review (2026-10-28) `OPEN`
+
+Read-only review, nothing applied; the operator approves each item: `docs/performance-review-20261028_2317.md`. Measured A+B+C+D+G
+together: UNC render 17.5 -> 5.95 s, byte-identical. Order: B, F, C, A, H, E, D+G, then the shared crossing/search engine.
+
 ## Box placement research (2026-10-28, operator: "search them, don't incorporate at this stage") `OPEN`
 
 Built (`scripts/flowmap/placement.py`, opt-in look keys): `e2e_row_search` (E2E column order, grid estimate): smc_change E2E 93 -> 43,

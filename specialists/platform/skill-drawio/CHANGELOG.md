@@ -69,6 +69,10 @@ Last rotated: 20261026_1533
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261026_2147.md](docs/changelog-reference-1-20261026_2147.md): 0.2.0 — 2026-10-26.
 
+## 20261028_2318 — Engine performance review (read-only)
+
+docs/performance-review-20261028_2317.md: profile of three consumers, hotspots A-I with in-memory proven byte-identical gains (UNC render 17.5 -> 5.95 s with A+B+C+D+G), crossing-count and search duplication, ranked shortlist. Nothing applied; operator approves each item (ROADMAP).
+
 ## 20261028_2306 — Placement searches: E2E columns, overview rows and group grid
 
 - `scripts/flowmap/placement.py` (new): placement searches after barycentre, opt-in look keys `e2e_row_search`, `overview_row_search`,
