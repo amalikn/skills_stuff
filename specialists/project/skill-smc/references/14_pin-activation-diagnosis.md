@@ -10,6 +10,7 @@
 - [14.6 Pitfalls](#146-pitfalls)
 - [14.7 Fleet case study — 2026-09-11 portal-FQDN regression](#147-fleet-case-study--2026-09-11-portal-fqdn-regression)
 - [14.8 Reusable tooling](#148-reusable-tooling)
+- [14.9 Change or upstream? The hourly funnel (2026-10-28)](#149-change-or-upstream-the-hourly-funnel-2026-10-28)
 
 ## 14.1 The core distinction: validity vs issuance
 
@@ -214,3 +215,28 @@ Last Issued" report agrees with both (see the pitfalls bullet above), a third in
   naive last-block lookup. See `scripts/README.md`.
 - **`scripts/fleet/collect-fleet-health.sh`**'s `05-portal-fqdn-status` capture — the config-side half of this case study (deny_info, squid.conf mtime, Apache vhosts, sslcertcopy cron). Run both together
   when investigating a suspected portal-issuance problem: config state explains *why*, this file's two mechanisms confirm *whether it's actually happening* and *how severely*.
+
+## 14.9 Change or upstream? The hourly funnel (2026-10-28)
+
+A PIN is auto-generated when the customer accepts the terms on the portal (operator, 2026-10-28), so "PINs generated" is the `wifi/access` 302 count of
+§14.3. When sites report low PIN use after a change (here the PHP CVE-2026-109618 upgrade, nbn_accelerate batch 2026-10-27 20:32 AEDT), line up each
+funnel stage per hour against the change time with `scripts/capture/pin-funnel-hourly.sh --proxy <proxy> <host>...` (`just pin_funnel`):
+DHCPACK, squid lines, squid 302 redirects, Apache hits, `wifi/access` 302 issued and 200 refused, plus dpkg upgrades in the window.
+
+- A drop that starts at **squid** (redirects and `TCP_DENIED` fall while DHCPACK holds) is upstream of the portal and cannot be its PHP.
+- A drop that starts at **`wifi/access`** (302 falls, 200/5xx rise, PHP errors in `error.log`) is the portal itself.
+- Squid's no-PIN deny is keyed on the arrival port (`acl http_nopin_port myportname 3128`, `http_access deny http_nopin_port`), so zero
+  `TCP_DENIED` with steady clients means unpinned traffic stopped arriving on 3128. Phones' captive checks (`connectivitycheck.gstatic.com` 204,
+  `captive.apple.com` 200) then pass as `TCP_MISS`, no portal pops up, and no PINs are generated.
+
+Case, galiwinku-smc01, 2026-10-28 (times AEDT): PINs were issued after the upgrade (22:00 3, 23:00 1, 07:00 1, 08:00 1). `TCP_DENIED` stopped at 10:43:29
+and resumed at 15:29:16, one second after the twice-daily squid reconfigure (03:29 and 15:29). Squid config was unchanged since 2026-09-08 and Apache
+`error.log` showed no PHP errors. The portal's sudo calls in that window touched only `iptables -t mangle` and `rmtrack`. Root cause of the
+10:43 fail-open: not found (open). doomadgee-smc01 issued normally (23 by 15:40). Prometheus `bridge_50[01]` tx over the last 6 h against the same 6 h a day earlier: galiwinku 0.59,
+doomadgee 0.55, nbn_accelerate median about 0.85, other sites patched in the same batch 0.73 to 1.31, so the upgrade shows no fleet effect.
+
+```bash
+# scripts/capture/pin-funnel-hourly.sh (skill-smc), per-hour squid stage
+zcat -f $Q/access.log $Q/access.log.1 | awk -v d="$d" '{if (strftime("%d/%b/%Y",$1)==d) {h=strftime("%H",$1); print "S", h; if ($4 ~ /\/302$/) print "R", h}}'
+```
+

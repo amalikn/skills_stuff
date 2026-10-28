@@ -230,3 +230,7 @@ outline *ARGS: _require-venv
 [positional-arguments]
 section *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"
+
+# Hourly captive-portal funnel, yesterday vs today, with dpkg upgrades (read-only). Example: just pin_funnel teleport.communitywifi.net.au galiwinku-smc01
+pin_funnel proxy +hosts:
+    @bash scripts/capture/pin-funnel-hourly.sh --proxy "{{proxy}}" {{hosts}}
