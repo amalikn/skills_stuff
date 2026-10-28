@@ -304,6 +304,11 @@ exten => _X!,1,Goto(external-call,${EXTEN},1)
 | Tstik           | PHP / Laravel/Artisan | `/var/www/html/rct-tstik` | RCT-specific management interface |
 | apache2         | Web server            | `apache2`                 | `/etc/apache2/`                   | Serves both apps                  |
 
+Tstik is served by root cron's `php -S 10.254.0.1:8080` from `rct-tstik/public`, not Apache; `artisan update:stats` (cron `*/5`) reads the AVR
+on `/dev/ttyS0`. The `release/iridium` build (2026-10-28) adds `/viewstats2`, `/document`, `/iridium-test`, `/iridium-updates` and `/assign-site`;
+the self test (`/selftest` button) turns the fans on and runs `php artisan self:tests`, whose results page is `/st_results`. `vendor/`, `.env`
+and `storage/config.json` are git-tracked, so a fresh clone resets the site config (Velo's deploy does that).
+
 ### IoT / Other
 
 | Service   | Role        | Unit        | Config            | Notes                |

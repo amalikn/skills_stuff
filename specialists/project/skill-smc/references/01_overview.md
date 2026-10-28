@@ -262,6 +262,10 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
   Security: `roles/smc_mqtt/tasks/main.yml` writes the `APN_IOT` broker password as a literal value (not a variable) into `/etc/mosquitto/mosquitto.passwd` with mode 0644, on
   HEAD, `big_push` and `master` (checked 2026-10-06). Rotate it and move it to the secrets store.
 - **Tstik.** Thuraya is to be replaced by Iridium; whether the same Tstik is used afterwards is unknown (to check with Germain, NOC).
+  Update 2026-10-28: the same `rct-tstik` app is kept; Iridium sites run its `release/iridium` branch (`smc_bases_telemetry_iridium_git`, 1318c7b)
+  with AVR firmware V3.07, rolled out per SMC by the smc_change spec `rct-tstik-iridium-update` plus `smc_bases_iridium: true` per host
+  (canary aeroplane-1-smc01; [19_smc-change-role.md](19_smc-change-role.md)). That flag also switches the portal branch, the latlon role and
+  the Teleport lat/lon labels on the next full smc_bases run.
 - **postfix.** Decision: listen on loopback only (`inet_interfaces = loopback-only`). Not yet implemented.
 - **autossh backdoor and DNS-over-TLS tunnel.** Retirement undecided.
 - **A/B update mechanism.** Undecided; the `ansible-wifi` SCRATCHPAD recommendation (tryboot on RPi, Mender on x86) is not approved.

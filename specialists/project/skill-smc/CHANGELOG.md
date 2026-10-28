@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_2015
+Last rotated: 20261028_1224
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261028_1224 — rct-tstik iridium change: self-persisting command, symlinked copy sources, AVR flash (v0.9.1 -> v0.9.2)](#20261028_1224--rct-tstik-iridium-change-self-persisting-command-symlinked-copy-sources-avr-flash-v091---v092)
 - [20261027_2015 — Slurp close: governed-file adoption, sibling write-backs (v0.9.0 -> v0.9.1)](#20261027_2015--slurp-close-governed-file-adoption-sibling-write-backs-v090---v091)
 - [20261027_2012 — scripts/ arranged into job folders; layout and catalogue checks (v0.8.9 -> v0.9.0)](#20261027_2012--scripts-arranged-into-job-folders-layout-and-catalogue-checks-v089---v090)
 - [20261027_1953 — Staleness audit: branch reach, two checker gaps, version rule (v0.8.8 -> v0.8.9)](#20261027_1953--staleness-audit-branch-reach-two-checker-gaps-version-rule-v088---v089)
@@ -33,7 +34,18 @@ Last reviewed: 2026-10-27
 - [20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)](#20261026_1534--smc_change-backupshared-name-identified-backup-files-kept-once-for-all-smcs-v076---v077)
 - [20261026_1506 — smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)](#20261026_1506--smc_change-flow-map-in-parts-one-e2e-page-per-change-spec-v075---v076)
 - [20261023_1737 — smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)](#20261023_1737--smc_change-on-an-overlay-pi-close-after-restart-overlay_fallback-proves-soak_minutes-tstik-bench-note-identity-probe-hosts_name-v074---v075)
-- [20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)](#20261023_1625--smc_inventory_addpy-add-a-new-smc-to-an-inventory-without-guessing-v073---v074)
+
+## 20261028_1224 — rct-tstik iridium change: self-persisting command, symlinked copy sources, AVR flash (v0.9.1 -> v0.9.2)
+
+- `references/19_smc-change-role.md`: new section for the smc_change spec `rct-tstik-iridium-update` (canary aeroplane-1-smc01 passed 8/8 gates, 592 s): spec values naming inventory vars, a command
+  action that persists itself into the lower dir (no chroot, no reboot) with a `proves` check of both HEADs, copy sources served by a directory symlink that leaves the RULE-007 fingerprint unchanged,
+  copy rollback cannot remove a file that did not exist (patch in ansible-wifi `plans/`), checks false before the change go in `proves`, check mode can still act.
+- `references/06_failure-modes.md`: Learned entry on the AVR firmware flash (one "Protocol Error" at block 13, passed on retry; serial contention with cron's `update:stats` suspected, UNVERIFIED), the
+  vendor loader's exit 0 everywhere, endless retry and 19500 baud, and `py_avrloader_v2.py` exit codes and two-digit minor version; hand copies on an overlay SMC vanish at reboot.
+- `references/01_overview.md`: Tstik open question answered: Iridium keeps `rct-tstik` on `release/iridium` (1318c7b) with AVR firmware V3.07; `smc_bases_iridium: true` also switches portal branch,
+  latlon role and Teleport lat/lon labels.
+- `references/02_service-map.md`: how tstik is served (`php -S` from cron, not Apache), the iridium routes, the self test, tracked `config.json`.
+- Source: local-knowledge-ansible ansible-wifi change record `rct-tstik-iridium-update-20261028_1221.md`.
 
 ## 20261027_2015 — Slurp close: governed-file adoption, sibling write-backs (v0.9.0 -> v0.9.1)
 
@@ -183,13 +195,3 @@ Last reviewed: 2026-10-27
 - `references/06_failure-modes.md`: tstik empty AVR reads mean nothing answers on ttyS0; the bench unit has no AVR; manual check commands.
 - `references/08_ansible-authoring.md`: operator kept site ID 181 for php-rct-smc01. `justfile`: `smc_change_flows`, `smc_change_flows_check`.
 - `scripts/pi_identity_probe.sh`: prints `hosts_name` (the 127.0.1.1 name in /etc/hosts) beside hostname and boot_hostname.
-
-## 20261023_1625 — smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)
-
-- `scripts/smc_inventory_add.py` + `just smc_inventory_add`: the three groups and three vars files for a new SMC, rendered from the repo's
-  generator templates; plan by default, `--apply` writes; refuses an existing host/site/file; flags a shared site ID; `--siteid-from-box`.
-  Proven on php-rct-smc01 (byte-identical to hand-made files, second apply refused, live box read). Operator, 2026-10-23.
-- `references/08_ansible-authoring.md`: new section "Adding a new SMC to an inventory" (six pieces, site naming, generator caveat, standard rct
-  interfaces, reading vars past the guard hook).
-- `references/03_communication-flows.md`: site ID readable from the box's autossh -R port; generic image ID 181 is shared.
-- `SKILL.md` decision tree: new point 6 for adding a box.

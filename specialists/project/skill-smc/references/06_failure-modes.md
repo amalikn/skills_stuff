@@ -593,3 +593,26 @@ physical SMC: the count of links that flap under a real reload there.
 > then `tail storage/logs/laravel.log`; `php artisan self:tests` also rebuilds the self-tests page; never `avr:update` (flashes the AVR).
 > A Pi has no RTC: a box powered on after months off shows one boot spanning the gap until "Clock change detected" in the journal, so a
 > "792-day uptime" there is the saved clock, not a running box.
+
+> **Learned 2026-10-28** · AVR firmware flash with py_avrloader · VERIFIED_PRIMARY (tester output, loader source); cause UNVERIFIED ·
+> Source: tester report 2026-10-28 (aeroplane-1-smc01), `py_avrloader.py` from APN NOC, smc_change record aeroplane-1-smc01 20261028_114544 ·
+> Falsifier: a flash timed clear of cron's `update:stats` that still fails with "Protocol Error"
+> `python3 py_avrloader.py -d /dev/ttyS0 -u -f Firmware_Debug_V3.07_Flash.enc` failed once at block 13 ("Protocol Error, cancelling update request",
+> "Firmware Transfer Failed", AVR stayed 2.11) and passed when run again 10 s later (AVR 3.7). Likely cause: root cron runs `artisan update:stats`
+> every 5 minutes and it talks to the AVR on the same `/dev/ttyS0`. The vendor loader exits 0 on every path, retries the version request forever
+> (hangs without an AVR) and opens the port at `com_baud=19500` (tstik itself uses 19200). `py_avrloader_v2.py` (APN NOC) adds exit codes
+> (3 port, 4 no AVR, 5 mode refused, 6 transfer failed: run again, 7 no return to application, 8 reset) and prints the minor as two digits (3.07).
+> The tester's copies in `/home` had gone by the next check: live-only writes on an overlayroot SMC vanish at reboot; use the smc_change spec.
+
+```python
+# py_avrloader_v2.py (change folder rct-tstik-iridium-update, 2026-10-28)
+            AVR_version_major=(rx[3])
+            AVR_version_minor=(rx[4])
+            print("  AVR version="+str(AVR_version_major)+"."+"{:02d}".format(AVR_version_minor),end="")
+            return EXIT_OK
+        except:
+            print("  Invalid response or no response from AVR, check cable")
+            time.sleep(2)
+    print("  No valid answer from the AVR after", AVR_RETRIES, "tries")
+    return EXIT_NO_AVR
+```

@@ -559,3 +559,50 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1451; commits 0e
 - **`include_tasks` files load when reached**: editing `tasks/` while a playbook runs changes the running play, journals or not.
 - **Results:** wh 6/6 passed (engawala canary; areyonga fallback reboot); first nbn_accelerate amata-smc01 passed (x86, no reboot,
   `php Start.php` 2 before and after); rct batches of five (12:29) and six (12:50) passed.
+
+## rct-tstik-iridium-update: a command that writes the lower dir itself, copy sources under RULE-007 (2026-10-28)
+
+Source: local-knowledge-ansible ansible-wifi (base commit 608697b, change uncommitted at writing), change record
+`roles/smc_change/files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update-20261028_1221.md`.
+
+- **The spec**: rct only. rct-tstik to `release/iridium` at `smc_bases_telemetry_iridium_git.commit` (1318c7b), `py_avrloader_v2.py` and AVR firmware
+  V3.07 to `/home`; `reboot: never`; gates from the tester's checks (stats page as `commands`; iridium routes, `artisan self:tests` + `/st_results`,
+  AVR menu `-m` with exit 0, HEAD at the commit live and lower as `proves`). Canary aeroplane-1-smc01 passed 8/8 gates in 592 s (2026-10-28).
+- **Spec values can name inventory vars.** The spec is templated at load per host, so `'{{ smc_bases_telemetry_iridium_git.commit }}'` in a
+  command keeps the inventory the one place the commit lives (role vars are not available there; `command_rollback.yml` header).
+- **A command that persists itself, no chroot, no reboot.** For a large tree pulled over the satellite, `chroot: true` would download it twice. The
+  command clones live, then `cp -a` into `/media/root-ro` (read-write during stage 6), and its `check` asserts both HEADs:
+
+  ```yaml
+  # files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update.yml (excerpt)
+    - type: command
+      chroot: false
+      check: &tstik_at_commit >-
+        c='{{ smc_bases_telemetry_iridium_git.commit }}'; d='{{ smc_bases_telemetry_iridium_git.dest }}'; l=/media/root-ro;
+        [ "$(git -C "$d" rev-parse HEAD 2>/dev/null)" = "$c" ] || exit 1;
+        findmnt "$l" >/dev/null 2>&1 || exit 0;
+        [ "$(git -C "$l$d" rev-parse HEAD 2>/dev/null)" = "$c" ]
+  ```
+
+  The same anchor is reused as a `proves` entry, so the persistence is gated, not assumed. Cost: the new tree (~54 MiB + .git) sits in the upper
+  tmpfs until the next boot (operator accepted, 2026-10-28).
+- **Copy sources while RULE-007 freezes `files/`.** `copy` reads `files/<spec>/<src>`; adding files there changes the role fingerprint and breaks
+  active journals' resume. A directory symlink `files/<spec> -> changes/<spec>` is invisible to `recovery.py --fingerprint` (`is_file()` false,
+  `rglob` does not follow it): fingerprint `2f6534b46e94...` identical before and after.
+
+  ```python
+  # files/recovery.py fingerprint (608697b)
+  for folder in ("tasks", "templates", "files"):
+    for path in sorted((root / folder).rglob("*")):
+      relative = path.relative_to(root)
+      if not path.is_file() or "__pycache__" in relative.parts or relative.parts[:2] in (("files", "changes"), ("files", "tests")):
+        continue
+  ```
+
+- **copy cannot roll back a file that did not exist.** `copy_rollback.yml` always includes `_files_rollback.yml`, which fails when `paths.tgz`
+  lacks the file; new files (`/home/...`) therefore stop a rollback. Put command actions last so their undo runs first. Fix waiting in
+  `plans/smc-change-copy-rollback-new-file-20261028_1145.patch` (remove a copied file the backup never held).
+- **A check that must fail before the change belongs in `proves`.** `commands` must already hold before an apply or the SMC is refused; the loader
+  is absent and the tree is master before, so those checks are `proves`.
+- **Check mode can still act** when a probe command does: `artisan self:tests` writes `st_results.blade.php` and `update:stats` reads the AVR.
+- **The probe prints `proves` by command text**, not `name` (cosmetic; noted while the role is frozen).
