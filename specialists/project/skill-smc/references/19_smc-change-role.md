@@ -635,3 +635,22 @@ Source: change record `rct-tstik-iridium-update-20261028_1221.md` sections 2.2 a
   and copy the on-box backup to `runs/<flavor>/backups/superseded/` before removing it. Operator-approved repair, warehouse-rct01.
 - **`resume_safe: true` per action, reviewed**: copies (same bytes again), a flash whose check waits out the unit and skips at the target
   version, a clone whose check covers live and lower HEAD. Without it a plain drop at stage 6 on a prod SMC needs the repair above.
+
+## Runtime budget counts the wait for earlier batches (2026-10-28)
+
+The "Attempt runtime budget" line (record.yml) is wall time since the host's stage 1, not the time its own change took. Stage 1 sets the attempt
+clock with `default()` when the run starts, and nothing resets it when the host's serial batch begins (main.yml "Note the start time" sets only
+the string `smc_change_attempt_start`). A later batch's figure therefore includes every earlier batch, all in 1/11 SPEC; and because a batch moves
+in lockstep, every host in it prints the same figure, milliseconds apart.
+
+Case, rct run 20261028_145907, batch 2 (djarrakapi-smc01 to elitjia-smc01, attempt_start 15:35:29): 3449.7 s each, of which SPEC 2177 s is the
+wait for batch 1 (14:59:45 to about 15:35); the batch's own work was about 1272 s (ACTIONS 630, CLEANUP 218, VERIFY 130, BACKUP 122). To read the real
+figure, subtract 1/11 SPEC in the record's `phase_timings`. Proposed fix, not applied (RULE-007): set `smc_change_attempt_started` and
+`smc_change_phase_started` from `now().timestamp()` in "Note the start time".
+
+```yaml
+# roles/smc_change/tasks/stage.yml (local-knowledge-ansible 76b0f86): first value wins for the whole run
+smc_change_attempt_started: "{{ smc_change_attempt_started | default(now().timestamp() | float) }}"
+# roles/smc_change/tasks/record.yml
+'elapsed_seconds': (now().timestamp() | float - smc_change_attempt_started | default(now().timestamp()) | float) | round(3),
+```

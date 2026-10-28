@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261028_1559 — PIN funnel and fleet check, runtime budget clock (v0.9.6 -> v0.9.7)](#20261028_1559--pin-funnel-and-fleet-check-runtime-budget-clock-v096---v097)
 - [20261028_1516 — rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6)](#20261028_1516--rct_avr_probesh-and-avr-routing-v095---v096)
 - [20261028_1442 — AVR V3.07 vs Thuraya, fleet AVR state (v0.9.4 -> v0.9.5)](#20261028_1442--avr-v307-vs-thuraya-fleet-avr-state-v094---v095)
 - [20261028_1315 — Automated AVR flash, probe self-match, resume_safe (v0.9.3 -> v0.9.4)](#20261028_1315--automated-avr-flash-probe-self-match-resume_safe-v093---v094)
@@ -35,6 +36,14 @@ Last reviewed: 2026-10-27
 - [20261026_1844 — smc_change: Pi clock wait, remount retry, lower_busy, http timeout/retries, probe survives a dropped session, resume by default (v0.7.9 -> v0.8.0)](#20261026_1844--smc_change-pi-clock-wait-remount-retry-lower_busy-http-timeoutretries-probe-survives-a-dropped-session-resume-by-default-v079---v080)
 - [20261026_1701 — smc_change safe recovery, completion after cleanup and phase timing (v0.7.8 -> v0.7.9)](#20261026_1701--smc_change-safe-recovery-completion-after-cleanup-and-phase-timing-v078---v079)
 - [20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)](#20261026_1617--smc_change-php-verify-soak-from-the-restart-start_now-named-command-checks-tstik-avr-and-8080-checks-tstik-capture-avr-counts-v077---v078)
+
+## 20261028_1559 — PIN funnel and fleet check, runtime budget clock (v0.9.6 -> v0.9.7)
+
+- references/14 §14.9: change-or-upstream triage for a PIN drop after a change (Galiwinku squid fail-open 2026-10-28, not PHP); PIN =
+  auto-generated on T&C acceptance (operator).
+- scripts/capture/pin-funnel-hourly.sh (`just pin_funnel`) and pin-fleet-check.sh (`just pin_fleet_check`), catalogued (c3e856b, 4b61a2d).
+- references/19: runtime budget counts the wait for earlier batches (stage 1 clock not reset per batch); read real time as elapsed minus SPEC.
+- manifest 0.9.6 -> 0.9.7.
 
 ## 20261028_1516 — rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6)
 
