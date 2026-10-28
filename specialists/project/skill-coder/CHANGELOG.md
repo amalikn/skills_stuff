@@ -120,6 +120,13 @@ Last rotated: 20261027_1213
   captures); the rule is code files and identifiers follow their language, typed commands are kebab-case, a tool's parser wins. `module-and-function-shape.md` points to it; claims C-C72 to C-C79.
   `languages/ansible.md` gains the tag-rename transition step (behaviour evaluation gap). Shared `scripts/pyparse.py`; shell heredoc and `${#` fixes in `code_size.py` (found on a second repository).
 
+## 20261028_1311 — process_match.py: unanchored pgrep/pkill -f patterns become a check
+
+- `scripts/process_match.py` (new): reports `pgrep -f` / `pkill -f` literal patterns not anchored with `^` in shell, YAML, Python and Jinja;
+  comments and run-time patterns skipped. Tests in `tests/test_quality_helpers.py`; recipe `just process-match`; catalogued; `[process_match]` code-map section.
+- `references/safety-and-writes.md` Learned 2026-10-28: anchor process patterns at the program and check them (four self-matches in ansible-wifi smc_change).
+- `SKILL.md`: standing rule for anchored process patterns; tools table row.
+
 ## 20261027_1501 — Ansible include_tasks and lockstep batches, bash 3.2 empty arrays
 
 - `languages/ansible.md` Learned 2026-10-27 (l) `include_tasks` loads when reached, so editing task files changes a running play; (m)

@@ -1,4 +1,4 @@
-"""Offline tests for skill-coder's quality helpers: suppressions, group_timeouts and scaffold, each shown passing on good input and failing on bad.
+"""Offline tests for skill-coder's quality helpers: suppressions, group_timeouts, scaffold and process_match, each shown passing on good input and failing on bad.
 
 Run: `just test` (unittest, the project's pinned interpreter). The helpers are imported from scripts/ by name. Split from test_helpers.py
 (2026-10-20) to keep each test module inside the pack's size budget.
@@ -16,8 +16,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-call_timeouts, group_timeouts, scaffold, script_headers, suppressions = (
-    importlib.import_module(n) for n in ("call_timeouts", "group_timeouts", "scaffold", "script_headers", "suppressions"))
+call_timeouts, group_timeouts, process_match, scaffold, script_headers, suppressions = (
+    importlib.import_module(n) for n in ("call_timeouts", "group_timeouts", "process_match", "scaffold", "script_headers", "suppressions"))
 
 
 def _tree(files: dict[str, str]) -> Path:
@@ -135,6 +135,25 @@ class Scaffold(unittest.TestCase):
     def test_bad_name_refused(self) -> None:
         """A name that is not snake_case exits 2."""
         self.assertEqual(scaffold.main(["--lang", "python", "--name", "Bad-Name", "--summary", "x"]), 2)
+
+
+class ProcessMatch(unittest.TestCase):
+    """Unanchored pgrep/pkill -f patterns are found; anchored ones, comments and run-time patterns are not."""
+
+    def test_detector(self) -> None:
+        """Both quote styles and combined flags are read; ^ passes; a # comment and a variable pattern are skipped."""
+        self.assertEqual([p for _n, _t, p in process_match.unanchored("pgrep -f '[a]rtisan update:stats' >/dev/null\n")], ["[a]rtisan update:stats"])
+        self.assertEqual([t for _n, t, _p in process_match.unanchored('n=$(pkill -9 -f "run.sh")\npgrep -fc "php -S "\n')], ["pkill", "pgrep"])
+        self.assertEqual(process_match.unanchored("pgrep -f '^php artisan update:stats'\n"), [])
+        self.assertEqual(process_match.unanchored("# not pgrep -f 'php -S ' here\n  x  # pgrep -f 'a'\n"), [])
+        self.assertEqual(process_match.unanchored('pgrep -f "$pattern"\n'), [])
+
+    def test_cli(self) -> None:
+        """The command exits 1 on a finding and 0 once it is anchored; markdown is not read."""
+        bad = _tree({"roles/x/tasks/main.yml": "- shell: pgrep -f 'php -S ' || true\n", "docs/a.md": "pgrep -f 'x'\n"})
+        self.assertEqual(process_match.main(["--project-root", str(bad), "--roots", "roles,docs"]), 1)
+        good = _tree({"roles/x/tasks/main.yml": "- shell: pgrep -f '^php -S ' || true\n", "docs/a.md": "pgrep -f 'x'\n"})
+        self.assertEqual(process_match.main(["--project-root", str(good), "--roots", "roles,docs"]), 0)
 
 
 if __name__ == "__main__":

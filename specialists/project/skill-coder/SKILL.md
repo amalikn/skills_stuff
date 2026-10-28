@@ -96,6 +96,7 @@ inputs, outputs and safety labels.
 | `scripts/naming_check.py`   | File and recipe names off the naming mapping (`naming.toml`)                          |
 | `scripts/suppressions.py`  | Inline linter suppressions (`noqa`, `type: ignore`, `shellcheck disable`, `eslint-disable`, ...) |
 | `scripts/group_timeouts.py` | Timed subprocess calls (ssh, a shell) whose children outlive the timeout             |
+| `scripts/process_match.py`  | `pgrep -f` / `pkill -f` patterns not anchored with `^` (they can match their own caller) |
 | `scripts/scaffold.py`       | Prints a new script and its test skeleton that meet these rules (writes nothing)     |
 
 ## How the override layer works
@@ -113,6 +114,8 @@ A language file never removes a safety rule. A loosening without a reason is voi
 
 - Read by default; any write prints a plan and needs `--apply`; canary before batch; report success at the outcome the operator sees.
 - Every network call and subprocess has a timeout; no deployment literals in code; no secrets in code, logs or output.
+- Every `pgrep -f` / `pkill -f` pattern is anchored at the program (`'^php artisan ...'`) and checked with `scripts/process_match.py`;
+  the bracket trick and spelling through a variable kept failing (four self-matches in one project, 2026-10-26 to 2026-10-28).
 - Every file has a purpose header; every function documents Args, Returns and Raises in the language's syntax; never silence a linter inline.
 - A refactor changes no behaviour and proves it with a before-and-after comparison.
 - State and measure the runtime of anything that repeats.

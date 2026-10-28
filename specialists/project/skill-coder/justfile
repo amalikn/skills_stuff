@@ -197,6 +197,11 @@ code-size *args: _require-venv
 call-timeouts *args: _require-venv
     @{{py}} scripts/call_timeouts.py "$@"
 
+# Read-only: pgrep/pkill -f literal patterns not anchored with ^ (they can match the automation's own command line), e.g. just process-match --project-root /path --roots roles,scripts
+[positional-arguments]
+process-match *args: _require-venv
+    @{{py}} scripts/process_match.py "$@"
+
 # Read-only: inline linter suppressions (noqa, type: ignore, shellcheck disable, eslint-disable, nolint, allow), e.g. just suppressions --project-root /path --list
 [positional-arguments]
 suppressions *args: _require-venv

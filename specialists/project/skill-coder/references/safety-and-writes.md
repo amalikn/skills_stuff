@@ -112,3 +112,20 @@ unmatched name silently, so the old command still exits 0 and does nothing (oper
 > loop waits for itself. Pass the pattern encoded (`| b64encode`, decode inside) and spell a command the script also runs through a variable
 > (`a=artisan; php "$a" ...`); the `[a]rtisan` bracket trick fails when the plain command appears anywhere else in the same script.
 
+> **Learned 2026-10-28** · process matching: anchor the pattern, and check it · VERIFIED_PRIMARY (warehouse-rct01: decoy shell carrying the
+> text matched 2 with `pgrep -fc '[a]rtisan update:stats'`, 0 with `'^php [a]rtisan update:stats'`, 1 with a real run) · Source: local-knowledge-ansible
+> `roles/smc_change/files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update.yml` and `files/tests/test_spec_pgrep.py` (uncommitted at writing) ·
+> Falsifier: an unanchored `pgrep -f` wait in an Ansible probe or command action that never runs to its timeout
+> The 2026-10-26 advice (bracket trick, spelling through `$a`) recurred three more times in two days: the pattern text also arrives from
+> places the script author does not see, here the probe's `PROBE_CONFIG` holding the spec's restart pattern on its own shell line (each
+> wait ran its full 60 s: self test 79 s, AVR check 66 s per probe), and a comment inside a command action's script. Anchor every
+> `pgrep -f`/`pkill -f` pattern at the real program's command line with `^`: a shell line starts with `/bin/sh` and cannot match.
+> Then make it a check, not a memory: `scripts/process_match.py` reports unanchored literal patterns in shell, YAML, Python and Jinja.
+
+```bash
+# wrong: matches any command line holding the text (the probe's shell, the task's own sh -c, a cron job's shell)
+for i in $(seq 1 60); do pgrep -f '[a]rtisan update:stats' >/dev/null || break; sleep 1; done
+# right: only the program itself starts with "php artisan"
+for i in $(seq 1 60); do pgrep -f '^php [a]rtisan update:stats' >/dev/null || break; sleep 1; done
+```
+
