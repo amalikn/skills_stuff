@@ -513,3 +513,13 @@ the SMC then cannot open the channel to the unit: the local socket is closed bef
   its R195Ps: 58 at 4 at a time is about 10 minutes.
 - **What the controller does with it** (unified-network-controller `src/unc/tasks/config_backup/daily.py`): a closed connection is tried once
   more at the end of the run, then reported as "no answer through the SMC"; a time-out or a rejected login is never retried.
+
+## 2026-10-29 — cnWave 1.2.1 answers SNMP as plain Linux; E430W reports its marketing name (unified-network-controller, aurukun)
+
+> **Learned 2026-10-29** · cnWave V3000 firmware 1.2.1; cnPilot E430W 3.7-r9 · VERIFIED_PRIMARY · Source: an onboarding sweep (SNMP on the site's
+> read-only community) and identify's REST login of the same units, 2026-10-29 · Falsifier: a 1.2.1 unit whose sysObjectID is under 17713.60.
+> - cnWave **1.2.1** answers SNMP with net-snmp's generic sysObjectID `.1.3.6.1.4.1.8072.3.2.10`, sysDescr `Linux node-<mac> 4.14.140 ... aarch64`
+>   and sysName `node-<its MAC, dashes>` (Cambium OUI `00-04-56`), so an enterprise-arm classifier names no family. Units on 1.4 at the same site
+>   answered under arm 60. A sysName `node-00-04-56-..` is enough to name the family; the model needs a login (REST), which read V3000.
+> - An E430W on 3.7-r9 reports its model as `cnPilot E430W` (marketing name, as E500 and E430H do), so a catalog keyed on the bare code needs
+>   the prefix stripped. E430W and E430H are separate products (different end of support).

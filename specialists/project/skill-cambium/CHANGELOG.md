@@ -42,6 +42,11 @@ Last rotated: 20261027_2014
 
 **20261016_2115 — v0.8.3:** Reference 03 adds observed as-built label variants, unique-match and conflict guards from UNC's conversion audit. No device changes.
 
+## 20261029_1040 — cnWave 1.2.1 SNMP identity and E430W model name (no version change)
+
+Learned 2026-10-29 in `references/05_known-issues.md`: cnWave 1.2.1 answers SNMP as plain net-snmp with sysName `node-<mac>`; an
+E430W reports `cnPilot E430W`. From unified-network-controller's aurukun onboarding.
+
 ## 20261027_2013 — skill-smc script paths moved into job folders (no version change)
 
 `scripts/README.md` and `references/site-addressing.yaml` now name `skill-smc/scripts/access/teleport-tunnel.sh` (skill-smc arranged its scripts by job,

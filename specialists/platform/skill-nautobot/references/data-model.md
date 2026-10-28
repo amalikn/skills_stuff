@@ -268,6 +268,24 @@ bulk-renamed. A LAG may span members of one Virtual Chassis.
 
 Source: `nautobot/dcim/models/devices.py:651-652,712,879-881,1248-1265`; `docs/user-guide/core-data-model/dcim/virtualchassis.html`.
 
+> **Learned 2026-10-29** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: model fields read with `nautobot-server shell` on a 3.2.3 deployment (unified-network-controller, multi-SMC design) · Falsifier: a 3.2.x install whose `InterfaceRedundancyGroup` lacks `protocol_group_id` or `virtual_ip`.
+> First-hop redundancy (keepalived VRRP across separate boxes) is native, no custom field: `DeviceRedundancyGroup` (`failover_strategy`
+> `active-active` / `active-passive`, `secrets_group`; each Device has `device_redundancy_group_priority`) for the set of boxes, and one
+> `InterfaceRedundancyGroup` per VRRP instance (`protocol` hsrp/vrrp/glbp/carp, `protocol_group_id` = the VRID, `virtual_ip` = an IPAddress with
+> role VRRP, `secrets_group` for `auth_pass`) whose association rows carry each member `interface` and its `priority`. Keep the configured
+> priorities there as intent; which box is master now is an observation, not written into the group. One address on several boxes' loopbacks
+> (a shared portal) is one IPAddress with role Anycast assigned to each interface. Built-in IP roles on that install included VRRP, VIP, HSRP,
+> GLBP, CARP, Anycast and Secondary.
+>
+> ```python
+> # field read used as evidence (no write)
+> from nautobot.dcim.models import InterfaceRedundancyGroup, InterfaceRedundancyGroupAssociation
+> from nautobot.dcim.choices import InterfaceRedundancyGroupProtocolChoices as P
+> print([f.name for f in InterfaceRedundancyGroup._meta.get_fields() if f.concrete], list(P.as_dict()))
+> ```
+>
+> Screenshot pending: an Interface Redundancy Group page, after the design's first apply.
+
 ## 10. Modules and module bays
 
 Decision: model removable hardware (line cards, supervisors, transceivers) as Modules in Module Bays; a Module Type's component templates create its interfaces, which may use the bay `position` in
