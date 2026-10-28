@@ -214,7 +214,7 @@ galiwinku 3). OUIs seen include `98:25:4A`, `A8:42:A1` and `5C:E9:31`. Whether t
 > `hmac-sha2-256`. Tell the two apart by the banner (`ssh -vv ... -o PreferredAuthentications=none`, no password sent).
 >
 > ```python
-> # scripts/switch/tplink_cli_driver.py (skill-smc v0.9.10)
+> # scripts/switch/tplink_cli_driver.py (skill-smc v0.10.0)
 > "-o", "ConnectTimeout=8", "-o", "HostKeyAlgorithms=+ssh-rsa,ssh-dss", "-o", "MACs=hmac-sha2-256,hmac-md5",
 > "-o", "KexAlgorithms=+diffie-hellman-group1-sha1", "-o", "Ciphers=+aes128-cbc",
 > ```
