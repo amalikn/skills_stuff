@@ -17,6 +17,8 @@ Why a pty driver and not `ssh host cmd` (all verified on SG2428P 5.30.1, kalumbu
 - The switch (`TPSSH-1.0.0`) runs no exec channel and closes a session that has no real tty.
 - It needs `HostKeyAlgorithms=+ssh-rsa` (without it, it drops the session before offering auth) and
   `MACs=hmac-sha2-256` (Ubuntu 22.04's default MAC list does not negotiate with it).
+- Older switches (`IPSSH-6.6.0`, protocol 1.99; aurukun 10.255.1.2, 2.1, 2.2, 2026-10-29) offer only `ssh-dss` and negotiate
+  `diffie-hellman-group1-sha1`, `aes128-cbc`, `hmac-md5`; those are appended as fallbacks, so a TPSSH switch still negotiates strong ones.
 - Enter is CR, not LF, and the first keystroke after login is swallowed, so a blank CR goes first.
 - `show system-info` and most `show` commands need `enable`, which asked for no password there.
 
@@ -57,7 +59,8 @@ def main():
     argv = [
         "ssh", "-F", "/dev/null", "-tt",
         "-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null", "-o", "LogLevel=ERROR",
-        "-o", "ConnectTimeout=8", "-o", "HostKeyAlgorithms=+ssh-rsa", "-o", "MACs=hmac-sha2-256",
+        "-o", "ConnectTimeout=8", "-o", "HostKeyAlgorithms=+ssh-rsa,ssh-dss", "-o", "MACs=hmac-sha2-256,hmac-md5",
+        "-o", "KexAlgorithms=+diffie-hellman-group1-sha1", "-o", "Ciphers=+aes128-cbc",
         "-o", "PubkeyAuthentication=no", "-o", "PreferredAuthentications=password",
         "-o", "NumberOfPasswordPrompts=1", f"{user}@{ip}",
     ]

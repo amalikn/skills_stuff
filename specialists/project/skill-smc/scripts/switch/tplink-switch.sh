@@ -102,7 +102,8 @@ if [ "${1:-}" = "--shell" ]; then
   kp show -s -a Password "$KP_ENTRY" | tr -d '\n' | pbcopy
   echo "# Password copied to the clipboard. Paste at the prompt; type 'enable' for show commands." >&2
   exec "${TSH[@]}" -t "ssh -F /dev/null -tt -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR \
-    -o HostKeyAlgorithms=+ssh-rsa -o MACs=hmac-sha2-256 -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1 $SW_USER@$TARGET"
+    -o HostKeyAlgorithms=+ssh-rsa,ssh-dss -o MACs=hmac-sha2-256,hmac-md5 -o KexAlgorithms=+diffie-hellman-group1-sha1 -o Ciphers=+aes128-cbc \
+    -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1 $SW_USER@$TARGET"
 fi
 
 BACKUP_DIR=""

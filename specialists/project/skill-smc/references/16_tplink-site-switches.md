@@ -204,3 +204,18 @@ Source: UNC capture corpus: newest discovery sweep per site (43 sites, about 4,0
 answer SSH with the banner `IPSSH`, not `TPSSH`, and none has a Cambium OUI; they include hosts at sites listed above as "TP-Link OUIs but none answered TPSSH" (for example aurukun 4, doomadgee 2,
 galiwinku 3). OUIs seen include `98:25:4A`, `A8:42:A1` and `5C:E9:31`. Whether they are TP-Link switches (another firmware's banner) is **UNVERIFIED**: confirm one with a read-only login before adding
 `IPSSH` to the discovery signature; until then the sweep should keep them in an unmatched-banner bucket rather than drop them.
+
+> **Learned 2026-10-29** · TL-SG2428P hardware 4.0, firmware 4.0.1 Build 20211105 · VERIFIED_PRIMARY · Source: `ssh -vv` handshakes from an SMC with no
+> authentication, then one read with `scripts/switch/tplink-switch.sh` (aurukun, 10.255.1.2, 2.1, 2.2) · Falsifier: such a switch answering with `TPSSH`.
+> Older SG2428P firmware runs a different SSH server, `IPSSH-6.6.0` (protocol 1.99), that offers only an `ssh-dss` host key and negotiates
+> `diffie-hellman-group1-sha1`, `aes128-cbc` and `hmac-md5`. Ubuntu 22.04's OpenSSH 8.9 refuses all four by default, and the driver ran with
+> `-F /dev/null` and a pinned `MACs=hmac-sha2-256`, so the connection died before login (driver exit 4, "connect failed or timed out") while
+> ping and port 22 answered. The driver now appends them as fallbacks; a `TPSSH-1.0.0` switch still negotiates `group16-sha512`, `aes128-ctr`,
+> `hmac-sha2-256`. Tell the two apart by the banner (`ssh -vv ... -o PreferredAuthentications=none`, no password sent).
+>
+> ```python
+> # scripts/switch/tplink_cli_driver.py (skill-smc v0.9.10)
+> "-o", "ConnectTimeout=8", "-o", "HostKeyAlgorithms=+ssh-rsa,ssh-dss", "-o", "MACs=hmac-sha2-256,hmac-md5",
+> "-o", "KexAlgorithms=+diffie-hellman-group1-sha1", "-o", "Ciphers=+aes128-cbc",
+> ```
+
