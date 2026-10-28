@@ -234,3 +234,7 @@ section *ARGS: _require-venv
 # Hourly captive-portal funnel, yesterday vs today, with dpkg upgrades (read-only). Example: just pin_funnel teleport.communitywifi.net.au galiwinku-smc01
 pin_funnel proxy +hosts:
     @bash scripts/capture/pin-funnel-hourly.sh --proxy "{{proxy}}" {{hosts}}
+
+# One line per SMC after a change batch: PHP version, PINs issued yesterday vs today, squid deny gaps, PHP errors (read-only). Example: just pin_fleet_check teleport.communitywifi.net.au amata-smc01 galiwinku-smc01
+pin_fleet_check proxy +hosts:
+    @bash scripts/capture/pin-fleet-check.sh --proxy "{{proxy}}" {{hosts}}

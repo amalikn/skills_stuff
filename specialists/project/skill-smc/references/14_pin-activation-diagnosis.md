@@ -232,11 +232,16 @@ DHCPACK, squid lines, squid 302 redirects, Apache hits, `wifi/access` 302 issued
 Case, galiwinku-smc01, 2026-10-28 (times AEDT): PINs were issued after the upgrade (22:00 3, 23:00 1, 07:00 1, 08:00 1). `TCP_DENIED` stopped at 10:43:29
 and resumed at 15:29:16, one second after the twice-daily squid reconfigure (03:29 and 15:29). Squid config was unchanged since 2026-09-08 and Apache
 `error.log` showed no PHP errors. The portal's sudo calls in that window touched only `iptables -t mangle` and `rmtrack`. Root cause of the
-10:43 fail-open: not found (open). doomadgee-smc01 issued normally (23 by 15:40). Prometheus `bridge_50[01]` tx over the last 6 h against the same 6 h a day earlier: galiwinku 0.59,
+10:43 fail-open: not found (open); iptables matched `rules.v4` apart from runtime per-PIN rules, every 5-minute cron (three Kohana PHP CLI jobs included) ran each slot, and conntrack stayed under 3.5% full. doomadgee-smc01 issued normally (23 by 15:40). Prometheus `bridge_50[01]` tx over the last 6 h against the same 6 h a day earlier: galiwinku 0.59,
 doomadgee 0.55, nbn_accelerate median about 0.85, other sites patched in the same batch 0.73 to 1.31, so the upgrade shows no fleet effect.
 
 ```bash
 # scripts/capture/pin-funnel-hourly.sh (skill-smc), per-hour squid stage
 zcat -f $Q/access.log $Q/access.log.1 | awk -v d="$d" '{if (strftime("%d/%b/%Y",$1)==d) {h=strftime("%H",$1); print "S", h; if ($4 ~ /\/302$/) print "R", h}}'
 ```
+
+To clear a whole change batch at once, `scripts/capture/pin-fleet-check.sh --proxy <proxy> <host>...` (`just pin_fleet_check`) prints one line per SMC:
+PHP version, upgrade time, PINs issued/refused yesterday vs today to the same hour, squid deny-gap hours, PHP errors, portal code and marks. Run on the 11
+nbn_accelerate SMCs of the 2026-10-27 batch it took 24 s at 6 in parallel: all on `ubuntu2.28`, no PHP errors, portal 200, PINs issued at every site, and
+galiwinku-smc01 the only host with deny-gap hours (11 to 14).
 
