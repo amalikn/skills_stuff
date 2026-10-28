@@ -55,6 +55,7 @@ practical.
 | Coverage gaps, live-validation limits, stale assumptions                                                                                            | `references/13_known-issues.md`                |
 | What is in the local-only ansible-wifi knowledge folder, what is symlinked into the repo, local playbooks/roles (smc_change), change specs          | `references/18_local-knowledge-ansible.md`     |
 | Make any change to SMCs with proof: smc_change role, change specs, gates, overlay persistence, run records                                          | `references/19_smc-change-role.md`             |
+| RCT tstik AVR firmware: versions in the fleet, V3.07 vs Thuraya SIM, flashing and rollback, the shared `/dev/ttyS0` (tstik vs loader collision), probe | `references/06_failure-modes.md` (AVR entries), `scripts/probes/rct_avr_probe.sh` |
 | Verified SNMP OIDs on the SMC box itself (net-snmp agent, canary 2026-09-24), the machine-readable list the controller reads                         | `references/snmp-oid-registry.yaml`          |
 | Pin validity (mangle) vs pin issuance (Apache access log) — two mechanisms, marks-≠-activations pitfalls, fleet case study                          | `references/14_pin-activation-diagnosis.md`    |
 | TP-Link site switches: where they are, KeePass entry, SSH quirks (ssh-rsa host key, MAC, pty, CR), enable with/without password,                    | `references/16_tplink-site-switches.md`        |

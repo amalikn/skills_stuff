@@ -145,6 +145,10 @@ backdoor_exec target cmd="hostname":
 smc_link_health host *args:
     @bash scripts/probes/smc_link_health.sh "{{host}}" {{args}}
 
+# RCT AVR firmware over Teleport (read-only): tstik's AVRVersion/TiniVer, stats age, tstik HEAD, loader, overlay; QUERY=1 also asks the AVR. Example: just rct_avr_probe teleport.apn.au mooloowa-smc01 gilroyd-smc01
+rct_avr_probe proxy +nodes:
+    @bash scripts/probes/rct_avr_probe.sh --proxy "{{proxy}}" {{nodes}}
+
 # x86 SMC resiliency probe over Teleport (read-only): disks, boot entries, watchdog, state sizes. Example: just x86_resiliency_probe teleport.apn.au horn-island-smc01
 x86_resiliency_probe proxy +nodes:
     @bash scripts/probes/x86_resiliency_probe.sh --proxy "{{proxy}}" {{nodes}}

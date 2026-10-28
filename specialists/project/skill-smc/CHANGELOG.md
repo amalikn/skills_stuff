@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261028_1315
+Last rotated: 20261028_1516
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261028_1516 — rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6)](#20261028_1516--rct_avr_probesh-and-avr-routing-v095---v096)
 - [20261028_1442 — AVR V3.07 vs Thuraya, fleet AVR state (v0.9.4 -> v0.9.5)](#20261028_1442--avr-v307-vs-thuraya-fleet-avr-state-v094---v095)
 - [20261028_1315 — Automated AVR flash, probe self-match, resume_safe (v0.9.3 -> v0.9.4)](#20261028_1315--automated-avr-flash-probe-self-match-resume_safe-v093---v094)
 - [20261028_1242 — AVR serial collision verified on warehouse-rct01 (v0.9.2 -> v0.9.3)](#20261028_1242--avr-serial-collision-verified-on-warehouse-rct01-v092---v093)
@@ -34,7 +35,13 @@ Last reviewed: 2026-10-27
 - [20261026_1844 — smc_change: Pi clock wait, remount retry, lower_busy, http timeout/retries, probe survives a dropped session, resume by default (v0.7.9 -> v0.8.0)](#20261026_1844--smc_change-pi-clock-wait-remount-retry-lower_busy-http-timeoutretries-probe-survives-a-dropped-session-resume-by-default-v079---v080)
 - [20261026_1701 — smc_change safe recovery, completion after cleanup and phase timing (v0.7.8 -> v0.7.9)](#20261026_1701--smc_change-safe-recovery-completion-after-cleanup-and-phase-timing-v078---v079)
 - [20261026_1617 — smc_change PHP verify: soak from the restart, start_now, named command checks, tstik AVR and 8080 checks; tstik-capture AVR counts (v0.7.7 -> v0.7.8)](#20261026_1617--smc_change-php-verify-soak-from-the-restart-start_now-named-command-checks-tstik-avr-and-8080-checks-tstik-capture-avr-counts-v077---v078)
-- [20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)](#20261026_1534--smc_change-backupshared-name-identified-backup-files-kept-once-for-all-smcs-v076---v077)
+
+## 20261028_1516 — rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6)
+
+- `scripts/probes/rct_avr_probe.sh` (new, read-only): RCT AVR firmware per SMC from tstik stats.json (AVRVersion, TiniVer, age), rct-tstik HEAD,
+  loader, overlay; `QUERY=1` asks the AVR (one version request, after waiting for update:stats). Test `probes/test_rct_avr_probe.py`, recipe
+  `just rct_avr_probe`, catalogue row. Smoke: warehouse-rct01, mooloowa-smc01, gilroyd-smc01 in 12 s.
+- `RUNBOOK.md`: routing row for RCT tstik AVR firmware (06_failure-modes AVR entries, the probe).
 
 ## 20261028_1442 — AVR V3.07 vs Thuraya, fleet AVR state (v0.9.4 -> v0.9.5)
 
@@ -189,11 +196,3 @@ Last reviewed: 2026-10-27
   frequency was written as every minute (arrkapa, 2026-10-07); root's crontab on warehouse-rct01, alice-well, cave-hill and adjamarragu runs
   `update:stats` every 5 minutes, so reset limits count runs. Catalogue row updated.
 - manifest 0.7.7 -> 0.7.8.
-
-## 20261026_1534 — smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)
-
-- `references/19_smc-change-role.md`: Learned 2026-10-26 entry for spec field `backup.shared` (globs; matching backup files kept once per change on the
-  controller under `runs/backups/shared/`, `shared.txt` per host, rollback copies them back; default per-SMC copies; name-only match, `paths.tgz`
-  refused at spec load; dpkg-repack output differs per run so no checksum compare), with the cleanup.yml excerpt (local-knowledge-ansible `2ade781`);
-  PHP spec example gains `shared: ['*.deb']`.
-- manifest 0.7.6 -> 0.7.7.
