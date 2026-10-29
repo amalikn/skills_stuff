@@ -66,17 +66,19 @@ this reference promises no one shape. Read [authority and modeling](authority-an
 > (unified-network-controller `wc-local/scripts/topology/topology_push.py` `cable_links`, a8c58f9; `src/unc/tasks/tower_rename.py`, af389e8)
 > · Falsifier: a 3.2.x release accepting `cabled` or `location_id`.
 > Two NetBox-style filter names answer HTTP 400 `Unknown filter field`: `/dcim/interfaces/?cabled=true` (use `has_cable=true`) and
-> `/dcim/devices/?location_id=<uuid>` (use `location=<uuid>`, which takes a pk or a name). A site's wiring comes back in one paged read: list
-> its cabled interfaces with `depth=1` and pair each with its `connected_endpoint.id` inside the same listing (a far end outside the listing is
-> another site or a front port). One site: 56 cabled interfaces, 38 paired, 19 Cables, matching an ORM count.
+> `/dcim/devices/?location_id=<uuid>` (use `location=<uuid>`, which takes a pk or a name). A site's wiring: read its Devices once by the site
+> (subtree), then their cabled interfaces by `device_id` in batches of 10 with `depth=1`, and pair each with its `connected_endpoint.id`
+> inside the same rows (a far end outside them is another site or a front port). A site-level `interfaces?location=` read is the exact
+> Location only: it silently lost every Cable of the units moved into towers on the second run (one site, 19 Cables before the move).
 
 ```python
-rows = pages(f"/dcim/interfaces/?location={loc['id']}&has_cable=true&depth=1&limit=1000", role="importer")
+ids = [d["id"] for d in pages(f"/dcim/devices/?location={loc['id']}&depth=0&limit=1000", role="importer")]
+for i in range(0, len(ids), 10):   # 40 ids in one query string reset the connection; 10 work
+    rows += pages(f"/dcim/interfaces/?{'&'.join(f'device_id={x}' for x in ids[i:i + 10])}&has_cable=true&depth=1&limit=1000", role="importer")
 owner = {r["id"]: ((r.get("device") or {}).get("name"), r["name"]) for r in rows}
 for r in rows:
     far = (r.get("connected_endpoint") or {}).get("id")
     if far in owner and (far, r["id"]) not in seen:   # one link per Cable
         seen.add((r["id"], far))
-        out.append({"kind": "physical", "a": {"name": owner[r["id"]][0]}, "z": {"name": owner[far][0]}, "evidence": [{"source": "cable"}]})
 ```
 
