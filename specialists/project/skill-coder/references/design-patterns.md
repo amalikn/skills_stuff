@@ -775,6 +775,39 @@ plain = EndToEnd(data, replace(profile, look={**profile.look, "e2e_row_search": 
 return searched if searched._crossings(set(searched.segs)) < plain._crossings(set(plain.segs)) else plain
 ```
 
+### P-39 Carry a placement over proven edges; narrow the rest by the network's direction
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `src/unc/policy/colocation.py`,
+> a8c58f9: one site went from 0 of 110 units placed to 85, 1 conflict held, in 0.03 s, with no site-specific rule) (reusable_candidate) Pattern P-39.
+
+- **Problem:** where each item stands (a tower, a rack, a room) is known for a few items only, sites are built and named differently, and a
+  rule written for one site's habit (a number in a name) misplaces the next site's units.
+- **Solution:** a graph of typed edges. Anchors are the few items placed by strong evidence. Edges that prove "together" (a cable seen by
+  LLDP or recorded, shared power) carry a placement, repeated to a fixed point; edges that prove "apart" (a radio link) never do; edges that
+  only say "somewhere behind X" narrow the candidates to what lies downstream of X in the network's direction (through access radios, never
+  back up through an uplink). A name is a tie-breaker only when a token names exactly one candidate. Two placements reaching one item are held.
+- **Why it works:** every placement carries the chain of evidence that made it, so it can be gated by strength (separate apply flags) and
+  audited; nothing depends on a convention; disagreement surfaces instead of resolving by processing order.
+- **Reuse:** asset placement from discovery, rack/room inference from switch ports, service-to-host mapping from traffic, any "where is it" over
+  partial evidence.
+- **Pitfalls:** a forwarding table is not a cable (a port can front a transparent bridge); a carried hub drags its neighbours unless hub-to-hub
+  needs direct proof; a "one per slot" assumption runs last and only when no rival wants the slot; report the unplaced with their candidates.
+- **Realised in:** Python:
+
+```python
+while changed:                                   # colocation.propagate (a8c58f9)
+    changed = False
+    for a, z, source in together:                # LLDP or a Cable, or shared power; never wireless
+        for src, dst in ((a, z), (z, a)):
+            if src not in at or dst in skip or dst in clash or classes.get(dst) == "root":
+                continue
+            if dst not in at:
+                at[dst], via[dst] = at[src], f"{source} from {src}"
+                changed = True
+            elif at[dst] != at[src] and dst not in placed:
+                clash[dst].update({at[dst]: via.get(dst, "anchor"), at[src]: f"{source} from {src}"})
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet

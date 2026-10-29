@@ -13,6 +13,7 @@ Last rotated: 20261029_1158
 
 ## Contents
 
+- [20261029_1915 — E500 has no CLI LLDP neighbour view (no version change)](#20261029_1915--e500-has-no-cli-lldp-neighbour-view-no-version-change)
 - [20261029_1220 — cnWave SNMP silence is per unit (no version change)](#20261029_1220--cnwave-snmp-silence-is-per-unit-no-version-change)
 - [20261029_1040 — cnWave 1.2.1 SNMP identity and E430W model name (no version change)](#20261029_1040--cnwave-121-snmp-identity-and-e430w-model-name-no-version-change)
 - [20261027_2013 — skill-smc script paths moved into job folders (no version change)](#20261027_2013--skill-smc-script-paths-moved-into-job-folders-no-version-change)
@@ -42,6 +43,11 @@ Last rotated: 20261029_1158
 - [20261009_0330 — Which SM an R195P hangs from: the 3000L bridge table and Option 82, not the units (v0.6.49 -> v0.6.50)](#20261009_0330--which-sm-an-r195p-hangs-from-the-3000l-bridge-table-and-option-82-not-the-units-v0649---v0650)
 
 **20261016_2115 — v0.8.3:** Reference 03 adds observed as-built label variants, unique-match and conflict guards from UNC's conversion audit. No device changes.
+
+## 20261029_1915 — E500 has no CLI LLDP neighbour view (no version change)
+
+Disputed 2026-10-29 in `references/06_device-api-cli-reference.md`: E500 4.2.3-r2 refuses `show lldp-neighbors`; place E-series by
+switch LLDP, boot correlation or controller topology, never by name (unified-network-controller placement engine, a8c58f9).
 
 ## 20261029_1220 — cnWave SNMP silence is per unit (no version change)
 

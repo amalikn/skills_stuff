@@ -61,3 +61,22 @@ this reference promises no one shape. Read [authority and modeling](authority-an
 
 > **Learned 2026-10-15** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: timed read-only reads of three sites on one deployment (old-looma 140 Devices in 62 child Locations) · Falsifier: `/dcim/interfaces/?location=<site>` returning the interfaces of Devices in its child Locations, or depth-1 Cables taking as long as depth 2
 > On Devices `?location=<id>` takes the whole subtree; on interfaces and the app's wireless links it is the exact Location only, and `/dcim/cables/?location=<uuid>` is rejected (400). Reading a site per child Location therefore double-counts Devices. Read Devices once by the site, then interfaces, Cables and links by `device_id` (rear and front ports take `device=`, they have no `device_id` filter) in batches of 25. Cables at depth 1 resolved through the interface, port and circuit-termination ids already read are about three times faster than depth 2: 4 min 26 s became 70 s for seven sites, identical Cables.
+
+> **Learned 2026-10-29** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: live REST reads as a read-only writer token on one deployment
+> (unified-network-controller `wc-local/scripts/topology/topology_push.py` `cable_links`, a8c58f9; `src/unc/tasks/tower_rename.py`, af389e8)
+> · Falsifier: a 3.2.x release accepting `cabled` or `location_id`.
+> Two NetBox-style filter names answer HTTP 400 `Unknown filter field`: `/dcim/interfaces/?cabled=true` (use `has_cable=true`) and
+> `/dcim/devices/?location_id=<uuid>` (use `location=<uuid>`, which takes a pk or a name). A site's wiring comes back in one paged read: list
+> its cabled interfaces with `depth=1` and pair each with its `connected_endpoint.id` inside the same listing (a far end outside the listing is
+> another site or a front port). One site: 56 cabled interfaces, 38 paired, 19 Cables, matching an ORM count.
+
+```python
+rows = pages(f"/dcim/interfaces/?location={loc['id']}&has_cable=true&depth=1&limit=1000", role="importer")
+owner = {r["id"]: ((r.get("device") or {}).get("name"), r["name"]) for r in rows}
+for r in rows:
+    far = (r.get("connected_endpoint") or {}).get("id")
+    if far in owner and (far, r["id"]) not in seen:   # one link per Cable
+        seen.add((r["id"], far))
+        out.append({"kind": "physical", "a": {"name": owner[r["id"]][0]}, "z": {"name": owner[far][0]}, "evidence": [{"source": "cable"}]})
+```
+

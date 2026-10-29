@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261029_1915 — Pattern P-39: carry a placement over proven edges, narrow by direction
+
+Learned 2026-10-29 in `references/design-patterns.md`: placement over a typed evidence graph, no site convention (unified-network-controller a8c58f9).
+
 ## 20261029_1424 — Patterns P-37 and P-38 (skill-drawio speed and quality work)
 
 Learned 2026-10-29 in `references/design-patterns.md`: a cache proved by a differential assert, keyed so an undo hits (skill-drawio 73017a9,

@@ -14,6 +14,8 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261029 Learned 2026-10-29 in `references/api-and-writers.md`: `cabled` and `location_id` answer 400 on 3.2.3 (`has_cable`,
+  `location`); a site's Cables in one paged read paired by `connected_endpoint.id` (unified-network-controller).
 - 20261029 Learned 2026-10-29 in `references/apps-jobs-validation.md`: an app's `CELERY_BEAT_SCHEDULE` entry is refused by
   `NautobotDatabaseScheduler` (`celery_kwargs`) and never runs; a Config Context Schema refuses `null` for a typed field (unified-network-controller).
 - 20261029 Learned 2026-10-29 in `references/data-model.md`: a depth-1 `cable_peer` may be a front port (`object_type`), not an Interface.

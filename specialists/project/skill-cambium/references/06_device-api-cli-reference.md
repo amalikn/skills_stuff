@@ -786,6 +786,14 @@ Three device facts found when the UNC capture corpus was reviewed for lessons; e
   timed out on the nbn community still answered REST, so they were not dead.
 - None of LLDP-MIB is exposed over SNMP on these families (the neighbour view is the switch's, or the unit's CLI `show lldp-neighbors`).
 
+> **Disputed 2026-10-29** · cnPilot E500 4.2.3-r2 · VERIFIED_PRIMARY · Source: one read-only SSH login (entry `enterprise-wifi`, admin) to an
+> E500 behind an SMC, `scripts/device-login-probe.sh` · Conflicts: the line above ("or the unit's CLI `show lldp-neighbors`") · Falsifier: a
+> later E-series release answering it.
+> The E500 4.2.3-r2 CLI refuses `show lldp-neighbors` (`%Error processing cli command - Invalid arguments`). With LLDP-MIB absent over SNMP
+> and the cnWave CN neither forwarding nor reporting LLDP, an E-series AP behind a 60 GHz CN has no neighbour view of its own: place it by
+> the switch's LLDP when it is wired to a switch, otherwise by boot correlation with its CN (they share power) or by the controller's
+> topology. A unit's name is not evidence of its tower (a site may name units after the feeding tower: `T2_AP24_E500` stands on tower 24).
+
 **Learned 2026-10-29 (b) — `device-login-probe.sh` empty-user bug fixed.** An entry with no stored UserName made `ssh` print its usage text,
 which the probe read as ACCEPTED. The script now skips an entry with no user unless `PROBE_USER` is set, and treats `usage: ssh`/`Connection
 closed/refused`/timeout as NOT TRIED. Commit in skills_stuff (pending push). Source: `scripts/device-login-probe.sh`.
