@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261028_2205
+Last rotated: 20261029_1208
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,9 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261029_1215 — ssh_handshake_probe: what SSH a device behind an SMC offers, no login (v0.10.0 -> v0.10.1)](#20261029_1215--ssh_handshake_probe-what-ssh-a-device-behind-an-smc-offers-no-login-v0100---v0101)
+- [20261029_1058 — TP-Link switches on IPSSH firmware: legacy SSH fallbacks (v0.9.9 -> v0.10.0)](#20261029_1058--tp-link-switches-on-ipssh-firmware-legacy-ssh-fallbacks-v099---v0100)
+- [20261029_0958 — ha capture group, multi-SMC hosts and --proxy; aurukun VRRP layout (v0.9.8 -> v0.9.9)](#20261029_0958--ha-capture-group-multi-smc-hosts-and---proxy-aurukun-vrrp-layout-v098---v099)
 - [20261028_2046 — stuck apt_info.py holds the apt lists lock; apt_lock_probe.sh (v0.9.7 -> v0.9.8)](#20261028_2046--stuck-apt_infopy-holds-the-apt-lists-lock-apt_lock_probesh-v097---v098)
 - [20261028_1559 — PIN funnel and fleet check, runtime budget clock (v0.9.6 -> v0.9.7)](#20261028_1559--pin-funnel-and-fleet-check-runtime-budget-clock-v096---v097)
 - [20261028_1516 — rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6)](#20261028_1516--rct_avr_probesh-and-avr-routing-v095---v096)
@@ -33,7 +36,13 @@ Last reviewed: 2026-10-27
 - [20261027_1207 — Teleport re-join without a tunnel; first rcp PHP apply (v0.8.3 -> v0.8.4)](#20261027_1207--teleport-re-join-without-a-tunnel-first-rcp-php-apply-v083---v084)
 - [20261027_1050 — smc_change: done SMCs skipped before connecting, runs per flavor, retries, TASK_TIMING, journal freeze (v0.8.2 -> v0.8.3)](#20261027_1050--smc_change-done-smcs-skipped-before-connecting-runs-per-flavor-retries-task_timing-journal-freeze-v082---v083)
 - [20261026_2222 — smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)](#20261026_2222--smc_change-new-order-passed-on-two-pis-second-drop-at-chroot-dpkg-v081---v082)
-- [20261026_2146 — smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)](#20261026_2146--smc_change-drop-proof-installs-lower-dir-first-runs-table-v080---v081)
+
+## 20261029_1215 — ssh_handshake_probe: what SSH a device behind an SMC offers, no login (v0.10.0 -> v0.10.1)
+
+- `scripts/switch/ssh_handshake_probe.py` (+ `test_ssh_handshake_probe.py`, recipe `just ssh_handshake_probe <proxy> <node> <ip>...`): one tsh
+  session, `ssh -vv` with no authentication per address; prints banner, kex, host key, cipher/MAC and auth methods, so an `IPSSH-6.6.0` switch is
+  told from a `TPSSH` one before a login. Smoke run 2026-10-29 on aurukun-smc01 (10.255.1.2 IPSSH, 10.255.3.1 TPSSH): 19 s. Promoted from a
+  unified-network-controller session's ad hoc probe.
 
 ## 20261029_1058 — TP-Link switches on IPSSH firmware: legacy SSH fallbacks (v0.9.9 -> v0.10.0)
 
@@ -189,12 +198,3 @@ Last reviewed: 2026-10-27
 ## 20261026_2222 — smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)
 
 - `references/19_smc-change-role.md`: alpara and amatjatpalk 11/11 on the lower-dir-first order; alkngarrija-smc01 unreachable during the async chroot dpkg (second drop at that step, I/O-starvation hypothesis unverified); run_once patch and the operator's spec-declared design (open).
-
-## 20261026_2146 — smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)
-
-- `references/19_smc-change-role.md`: new section "Drop-proof installs, leftover chroot, lower dir first (2026-10-26 evening)": the
-  alice-well-smc01 chroot drop, `await_job.yml` (until does not retry unreachable), `own_leftover` resume, lower-dir-first apt_pin with
-  `reboot_holders.py` and a planned reboot, the cron pause, check-mode lower assert, round-trip cost (5-24 s per task), the AVR probe
-  collision; code excerpts from local-knowledge-ansible `76b0f86`.
-- `scripts/smc_change_runs_table.py` (+ test, `just smc_change_runs <change>`): one line per run record with result, phase 6-9 seconds,
-  reboot (boot_id), lower-dir holders or failure.

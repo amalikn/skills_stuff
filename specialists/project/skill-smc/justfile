@@ -85,6 +85,10 @@ test-deadline:
 routing *args:
     @just -f scripts/routing-diagnostics.justfile {{args}}
 
+# SSH a device behind the SMC offers, with no authentication attempted (read-only; nothing counts toward a lockout). Example: just ssh_handshake_probe teleport.communitywifi.net.au:443 aurukun-smc01 10.255.1.2 10.255.3.1
+ssh_handshake_probe proxy node +ips: _require-venv
+    @{{py}} scripts/switch/ssh_handshake_probe.py --proxy "{{proxy}}" "{{node}}" {{ips}}
+
 # Site device probe from the SMC over Teleport (read-only): ARP, ping, TLS certificate on 443. Example: just site_device_probe teleport.apn.au kakalpurannha-homeland-smc01 10.255.0.20
 site_device_probe proxy node +ips:
     @bash scripts/probes/site_device_probe.sh --proxy "{{proxy}}" "{{node}}" {{ips}}
