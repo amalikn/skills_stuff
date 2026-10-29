@@ -91,6 +91,18 @@ milestone.
 > { [ $rc -eq 2 ] && [[ "$out" == *"refusing: this box is"* ]]; } || { echo "guard: did not refuse a box it was not named for (rc $rc)"; fail=1; }
 > ```
 
+> **Learned 2026-10-29** · core (a check whose tool may be missing) · VERIFIED_PRIMARY · Source: unified-network-controller
+> `scripts/githooks/pre-commit` (fixed in 36e88ef) · Falsifier: a hook that reports a missing tool and still passed silently.
+> A check guarded by "skip when the tool is not there" is a pass that cannot fail: when a dependency moved its scripts, the pre-commit hook's
+> target-map check skipped for two days with no output, while its doc-freshness call failed loudly. Report a missing tool as a failure (or at
+> least a warning line); skip silently only for a tool that is optional by design, and say which.
+>
+> ```bash
+> # before: a moved script turns the check off without a word
+> tm=.../skill-ai-it/scripts/target_map.py
+> [ -f "$dir/target-map.yaml" ] && [ -f "$tm" ] || continue
+> ```
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with

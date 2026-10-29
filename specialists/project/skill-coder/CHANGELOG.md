@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261029_1220 — Learned: a check that skips when its tool is missing cannot fail
+
+Learned 2026-10-29 in `references/testing.md`: report a missing tool, never skip silently (unified-network-controller pre-commit hook, 27 to 29 Oct).
+
 ## 20261028_2306 — Learned: optimise the real outcome, not a proxy
 
 references/design-patterns.md: proxy ranks candidates, the real computation chooses, current state always a candidate (skill-drawio overview placement, 2026-10-28).
