@@ -63,6 +63,14 @@ on End-to-end pages. Next: E2E placement searched on real routes rather than onl
 routing (most of UNC's 135 remaining Overview crossings). UNC's schema still lacks the look keys `e2e_row_search`,
 `overview_row_search`, `overview_group_search` (the project's change, not this pack's).
 
+## Overview in-group (thin) arrows (2026-10-29, operator: "Are arrows within a box on the overview page all ready optimized?") `OPEN`
+
+No. UNC Overview after ec08930: thin arrows 24 crossings, 21 inside the OpenWISP group (screenshot
+`references/screenshots/20261029-unc-overview-real-route/overview-after.png`); thick arrows 111. Today only the box order within a row
+(`overview_row_search`) and `route.untwist` act inside a group. Next: order each box's bottom ports by target x (and entry ports by source
+x), order the tracks in each row gap by bend direction, keep an arrow that skips a row clear of the row between; each kept only when
+`layout_quality.py --compare` shows the page no worse (P-38 in skill-coder).
+
 ## Box placement research (2026-10-28, operator: "search them, don't incorporate at this stage") `OPEN`
 
 Built (`scripts/flowmap/placement.py`, opt-in look keys): `e2e_row_search` (E2E column order, grid estimate): smc_change E2E 93 -> 43,

@@ -16,6 +16,16 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261029 Slurp close. `scripts/consumer_check.py` (`just consumer-check`) and `consumers.yaml`: render every consumer (unified-network-controller,
+  smc-resiliency, smc_change, skill-goal-guard, the example) to a scratch folder, timed, compare with a baseline (exit 3 when one differs),
+  `--engine DIR` for an older checkout, `--look K=V` to measure a key before a project adopts it; never a consumer's own drawing. Promoted
+  from the session's scratch harness; proved against a worktree of 245ead0: every consumer byte-identical except UNC, whose map now turns the
+  searches on (unified-network-controller ec08930: 4555 -> 4277 crossings). skill-goal-guard was not in the hand-made proofs; it is identical.
+  Schema descriptions of the three search keys now state the guards (b108050). Learned 2026-10-29 in references/layout-and-routing.md with
+  screenshots; ROADMAP: Overview in-group arrows (21 of 24 thin crossings in UNC's OpenWISP group). Incident: a staging script opened two
+  skill-coder files for writing before reading them and emptied them, with another session's uncommitted P-36 inside; rebuilt from HEAD plus
+  that session's exact text (from its transcript), verified by line counts, and only this session's P-37/P-38 committed (29b39aa).
+
 - 20261029 Speed review applied, one item per commit, each proved by `cmp` of the three consumers' renders (unified-network-controller,
   smc-resiliency, smc_change) against a baseline, plus `just test`: B no crossing count on a search undo; F `count_crossings --compare`
   parses each file once (4.1 -> 0.33 s); C E2E vertical-run spans kept in `_refresh` (stale-cache assert never fired); H one page build

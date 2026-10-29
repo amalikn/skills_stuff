@@ -492,3 +492,24 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 >     ...
 > style = LABEL.format(colour=colour, background=lane_colour(page, cx, cy))
 > ```
+
+> **Learned 2026-10-29** · placement searches guarded by real routes · VERIFIED_PRIMARY · Source: `scripts/flowmap/e2e.py` (`routed_e2e`),
+> `scripts/flowmap/placement.py` (`best_cells`, `routed_crossings`, `shared_runs`), `scripts/layout_quality.py`, skills_stuff 1e6557d;
+> screenshots `20261029-unc-overview-real-route/` · Falsifier: a page that `layout_quality.py AFTER --compare BEFORE` reports worse
+> (more crossings, shared runs, arrows through boxes or overlaps) with a search look key on than off
+> A search scored by an estimate is not a result. On unified-network-controller the End-to-end column search (grid estimate) made Onboarding
+> 427 -> 506 and Operator pages 44 -> 48, and the Overview group search (fewest thick-arrow crossings) merged two pairs of thick arrows
+> (shared runs 1 -> 3). Both are now kept only when the drawn routes are better: the searched E2E order only with fewer real crossings than
+> the barycentre order (tie keeps barycentre); an Overview placement only with fewer crossings and no more shared runs than the map's own.
+> UNC 4555 -> 4277 crossings, Overview 245 -> 135, no page worse. Measure from the drawn file, never from the search's own score; prove an
+> engine change on every consumer with `just consumer-check` (consumers.yaml; skill-goal-guard was missed when done by hand).
+>
+> ```python
+> searched = EndToEnd(data, profile, numbers)
+> if not profile.look.get("e2e_row_search"):
+>     return searched
+> plain = EndToEnd(data, replace(profile, look={**profile.look, "e2e_row_search": False}), numbers)
+> plain.profile = profile
+> return searched if searched._crossings(set(searched.segs)) < plain._crossings(set(plain.segs)) else plain
+> ```
+

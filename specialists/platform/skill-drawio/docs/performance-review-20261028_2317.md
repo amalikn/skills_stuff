@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Read-only review of scripts/drawio and scripts/flowmap against three consumers (smc_change, unified-network-controller, smc-resiliency)
-Last reviewed: 2026-10-28
+Last reviewed: 2026-10-29
 Summary: >-
   Measured profile, hotspots with in-memory proven gains (output byte-identical), duplication across page types and a ranked shortlist.
-  Nothing applied; the operator approves each item first (2026-10-28: "don't lose the functionalities which are already built in").
+  Applied 2026-10-29: B, F, C, H, D (byte-identical, UNC 18.3 -> 10.1 s); E applied then reverted (0.3 s, module size); A and G not
+  applied (operator: "time efficiency is not problem here"). See CHANGELOG 20261029.
 ---
 
 # skill-drawio engine performance and design review (2026-10-28)

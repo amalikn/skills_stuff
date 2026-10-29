@@ -203,6 +203,12 @@ render-flowmap *args: _require-venv
 count-crossings *args: _require-venv
     @{{py}} scripts/count_crossings.py "$@"
 
+# Render every consumer (consumers.yaml) to a scratch folder and compare with a baseline: just consumer-check --out /tmp/after --compare /tmp/before
+# Baseline with an older engine: --engine <worktree>/specialists/platform/skill-drawio/scripts; a look key: --look e2e_row_search=true (scratch only)
+[positional-arguments]
+consumer-check *args: _require-venv
+    @{{py}} scripts/consumer_check.py "$@"
+
 # [read-only] Layout quality of every page of a drawing (crossings, shared runs, bends, length, arrows through boxes, overlaps): just layout-quality FILE [--all] [--where]
 # Or two versions: just layout-quality AFTER --compare BEFORE (exit 3 when a page got worse)
 [positional-arguments]

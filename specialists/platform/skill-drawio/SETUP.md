@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing and running skill-drawio, both as a pack under development and from a calling project
-Last reviewed: 2026-10-27
+Last reviewed: 2026-10-29
 Summary: >-
   A working setup needs mise, just, Python 3.11 or later with PyYAML for flow maps, and draw.io desktop only for exporting pages to images; the pack's
   own venv lives in the skills working cache.
@@ -59,7 +59,7 @@ No secrets. One optional variable: `BROWSER_PY`, an interpreter with Playwright 
 
 ## First run
 
-`just example-check` checks that `examples/shop/flows.yaml` is what `examples/shop/parts/` assemble to and prints that it is valid, its drawing is current and the routed pages pass every layout audit. `just drawio-export
+`just consumer-check` renders the projects listed in `consumers.yaml` (absolute paths on the operator's Mac; a consumer whose folder is missing is reported, not skipped silently) into a scratch folder only. `just example-check` checks that `examples/shop/flows.yaml` is what `examples/shop/parts/` assemble to and prints that it is valid, its drawing is current and the routed pages pass every layout audit. `just drawio-export
 examples/shop/drawio/flows.drawio --out-dir <folder> --pages 1` then proves the desktop export (one PNG in the folder).
 
 ## Troubleshooting
