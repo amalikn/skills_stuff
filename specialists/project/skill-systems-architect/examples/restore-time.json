@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "plans": [
+    {
+      "id": "nautobot-db-full",
+      "data_gib": 1024,
+      "throughput_mbps": 1000,
+      "efficiency": 0.8,
+      "detect_s": 300,
+      "decide_s": 600,
+      "provision_s": 900,
+      "verify_s": 600,
+      "rto_s": 14400
+    },
+    {
+      "id": "nautobot-db-1h-rto",
+      "data_gib": 1024,
+      "throughput_mbps": 1000,
+      "efficiency": 0.8,
+      "detect_s": 300,
+      "decide_s": 600,
+      "provision_s": 900,
+      "verify_s": 600,
+      "rto_s": 3600
+    }
+  ]
+}

@@ -776,7 +776,8 @@
    "url": "https://www.cyber.gov.au/resources-business-and-government/essential-cyber-security/ism",
    "evidence": "VERIFIED_PRIMARY",
    "note": "Pointer",
-   "checked": "2026-10-29"
+   "checked": "2026-10-29",
+   "local": "sources/web/cyber.gov.au/resources-business-and-government-essential-cyber-security-ism-c7048fa7.md.txt"
   },
   {
    "id": "CIS-V81",
@@ -848,6 +849,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-31a8b465",
+   "title": "Candela Technologies, \"Wi-Fi Technology Fundamentals\" module 3, session 3d, aggregation table",
+   "url": "https://candelatech.com/courses-2023/Session3d_slides.pdf",
+   "evidence": "CITED",
+   "note": "cited in references/wireless-and-radio.md",
+   "generated": true,
+   "local": "sources/pdf/candelatech.com/courses-2023-Session3d_slides.pdf-31a8b465.pdf",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-8b157e6b",
    "title": "choosealicense.com",
    "url": "https://choosealicense.com/licenses/",
@@ -905,6 +916,26 @@
    "note": "cited in references/migration-and-operations.md",
    "generated": true,
    "local": "sources/web/csrc.nist.gov/pubs-sp-800-61-r3-final-f53ed62d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-00637d9d",
+   "title": "community-hosted copy",
+   "url": "https://d1okf4ta8xniw3.cloudfront.net/original/2X/a/a04632b940f8e276874b591c67c87bf4cd19f8b3.pdf",
+   "evidence": "CITED",
+   "note": "cited in references/wireless-and-radio.md",
+   "generated": true,
+   "local": "sources/pdf/d1okf4ta8xniw3.cloudfront.net/original-2X-a-a04632b940f8e276874b591c67c87bf4cd19f8b3.pdf-00637d9d.pdf",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-8a68b7b1",
+   "title": "Cambium ePMP \"Optimization Guide\", community-hosted copy",
+   "url": "https://d1okf4ta8xniw3.cloudfront.net/original/2X/b/befb3be044d619c009700b5d8a93b33b497d8f93.pdf",
+   "evidence": "CITED",
+   "note": "cited in references/wireless-and-radio.md",
+   "generated": true,
+   "local": "sources/pdf/d1okf4ta8xniw3.cloudfront.net/original-2X-b-befb3be044d619c009700b5d8a93b33b497d8f93.pdf-8a68b7b1.pdf",
    "checked": "2026-10-29"
   },
   {
@@ -977,7 +1008,7 @@
   },
   {
    "id": "C-09b7a0c5",
-   "title": "docs.kernel.org",
+   "title": "k-bond",
    "url": "https://docs.kernel.org/networking/bonding.html",
    "evidence": "CITED",
    "note": "cited in references/routing-and-switching.md",
@@ -1037,7 +1068,7 @@
   },
   {
    "id": "C-9bbaa0ee",
-   "title": "git.proxmox.com",
+   "title": "l-pve",
    "url": "https://git.proxmox.com/?p=pve-manager.git;a=blob_plain;f=debian/copyright;hb=HEAD",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1047,7 +1078,7 @@
   },
   {
    "id": "C-7e09ed38",
-   "title": "github.com",
+   "title": "s-jeff",
    "url": "https://github.com/Jeffallan/claude-skills",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
@@ -1055,7 +1086,7 @@
   },
   {
    "id": "C-b9387346",
-   "title": "github.com",
+   "title": "s-volt",
    "url": "https://github.com/VoltAgent/awesome-claude-code-subagents",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
@@ -1071,7 +1102,7 @@
   },
   {
    "id": "C-e2b5bb09",
-   "title": "github.com",
+   "title": "l-batfish",
    "url": "https://github.com/batfish/batfish/blob/master/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1079,7 +1110,7 @@
   },
   {
    "id": "C-90192f3d",
-   "title": "github.com",
+   "title": "s-sq",
    "url": "https://github.com/netenglabs/suzieq",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
@@ -1087,7 +1118,7 @@
   },
   {
    "id": "C-4e8ce13e",
-   "title": "github.com",
+   "title": "l-suzieq",
    "url": "https://github.com/netenglabs/suzieq/blob/develop/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1095,7 +1126,7 @@
   },
   {
    "id": "C-11a62375",
-   "title": "github.com",
+   "title": "l-nornir",
    "url": "https://github.com/nornir-automation/nornir/blob/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1111,7 +1142,7 @@
   },
   {
    "id": "C-6cd48193",
-   "title": "github.com",
+   "title": "s-sick",
    "url": "https://github.com/sickn33/antigravity-awesome-skills",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
@@ -1245,7 +1276,7 @@
   },
   {
    "id": "C-7058aba2",
-   "title": "raw.githubusercontent.com",
+   "title": "l-frr",
    "url": "https://raw.githubusercontent.com/FRRouting/frr/master/COPYING",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1265,7 +1296,7 @@
   },
   {
    "id": "C-233cb05c",
-   "title": "raw.githubusercontent.com",
+   "title": "l-ansible",
    "url": "https://raw.githubusercontent.com/ansible/ansible/devel/COPYING",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1275,7 +1306,7 @@
   },
   {
    "id": "C-4dd408f0",
-   "title": "raw.githubusercontent.com",
+   "title": "l-grafana",
    "url": "https://raw.githubusercontent.com/grafana/grafana/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1285,7 +1316,7 @@
   },
   {
    "id": "C-028a202a",
-   "title": "raw.githubusercontent.com",
+   "title": "l-teleport",
    "url": "https://raw.githubusercontent.com/gravitational/teleport/master/build.assets/LICENSE-community",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1295,7 +1326,7 @@
   },
   {
    "id": "C-d035bca1",
-   "title": "raw.githubusercontent.com",
+   "title": "l-tf",
    "url": "https://raw.githubusercontent.com/hashicorp/terraform/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1305,7 +1336,7 @@
   },
   {
    "id": "C-f583435f",
-   "title": "raw.githubusercontent.com",
+   "title": "l-kea",
    "url": "https://raw.githubusercontent.com/isc-projects/kea/master/COPYING",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1315,7 +1346,7 @@
   },
   {
    "id": "C-3d6c767e",
-   "title": "raw.githubusercontent.com",
+   "title": "l-nautobot",
    "url": "https://raw.githubusercontent.com/nautobot/nautobot/develop/LICENSE.txt",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1325,7 +1356,7 @@
   },
   {
    "id": "C-b0f9d406",
-   "title": "raw.githubusercontent.com",
+   "title": "l-netbox",
    "url": "https://raw.githubusercontent.com/netbox-community/netbox/main/LICENSE.txt",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1345,7 +1376,7 @@
   },
   {
    "id": "C-97451ce4",
-   "title": "raw.githubusercontent.com",
+   "title": "l-openwisp",
    "url": "https://raw.githubusercontent.com/openwisp/openwisp-controller/master/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1355,7 +1386,7 @@
   },
   {
    "id": "C-d9d36f6d",
-   "title": "raw.githubusercontent.com",
+   "title": "l-prom",
    "url": "https://raw.githubusercontent.com/prometheus/prometheus/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1375,7 +1406,7 @@
   },
   {
    "id": "C-2015904e",
-   "title": "raw.githubusercontent.com",
+   "title": "l-clab",
    "url": "https://raw.githubusercontent.com/srl-labs/containerlab/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1625,7 +1656,7 @@
   },
   {
    "id": "C-8cd36dd4",
-   "title": "www.acma.gov.au",
+   "title": "acma-reg",
    "url": "https://www.acma.gov.au/register-radiocommunications-licences",
    "evidence": "CITED",
    "note": "cited in references/wireless-and-radio.md",
@@ -1644,6 +1675,46 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-0b560ccd",
+   "title": "Cisco 100GBASE QSFP Modules Data Sheet",
+   "url": "https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736282.html",
+   "evidence": "CITED",
+   "note": "cited in references/physical-and-campus.md",
+   "generated": true,
+   "local": "sources/web/cisco.com/c-en-us-products-collateral-interfaces-modules-transceiver-modules-datasheet-c78-0b560ccd.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-bda25baa",
+   "title": "Cisco 25GBASE SFP28 Modules Data Sheet",
+   "url": "https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.html",
+   "evidence": "CITED",
+   "note": "cited in references/physical-and-campus.md",
+   "generated": true,
+   "local": "sources/web/cisco.com/c-en-us-products-collateral-interfaces-modules-transceiver-modules-datasheet-c78-bda25baa.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a912df8b",
+   "title": "Cisco TAC document 212892",
+   "url": "https://www.cisco.com/c/en/us/support/docs/wireless-mobility/wireless-lan-wlan/212892-802-11ac-wireless-throughput-testing-and.html",
+   "evidence": "CITED",
+   "note": "cited in references/wireless-and-radio.md",
+   "generated": true,
+   "local": "sources/web/cisco.com/c-en-us-support-docs-wireless-mobility-wireless-lan-wlan-212892-802-11ac-wireles-a912df8b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-5c3f2001",
+   "title": "Cisco VoWLAN Troubleshooting Guide, chapter 8",
+   "url": "https://www.cisco.com/c/en/us/td/docs/wireless/technology/vowlan/troubleshooting/vowlan_troubleshoot/8_Site_Survey_RF_Design_Valid.html",
+   "evidence": "CITED",
+   "note": "cited in templates/wifi-survey-acceptance.md",
+   "generated": true,
+   "local": "sources/web/cisco.com/c-en-us-td-docs-wireless-technology-vowlan-troubleshooting-vowlan_troubleshoot-8-5c3f2001.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-690df840",
    "title": "www.cognitect.com",
    "url": "https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
@@ -1651,6 +1722,46 @@
    "note": "cited in templates/decision-record.md",
    "generated": true,
    "local": "sources/web/cognitect.com/blog-2011-11-15-documenting-architecture-decisions-690df840.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2f8ff5b3",
+   "title": "ETSI EN 301 893 V2.2.1 (2024-11)",
+   "url": "https://www.etsi.org/deliver/etsi_en/301800_301899/301893/02.02.01_60/en_301893v020201p.pdf",
+   "evidence": "CITED",
+   "note": "cited in references/wireless-and-radio.md",
+   "generated": true,
+   "local": "sources/pdf/etsi.org/deliver-etsi_en-301800_301899-301893-02.02.01_60-en_301893v020201p.pdf-2f8ff5b3.pdf",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-48a75264",
+   "title": "Fluke, \"Channel, Permanent Link, Patch Cords, MPTL, E2E\"",
+   "url": "https://www.flukenetworks.com/blog/cabling-chronicles/channel-permanent-link-patch-cords-mptl-e2e-oh-my",
+   "evidence": "CITED",
+   "note": "cited in references/physical-and-campus.md",
+   "generated": true,
+   "local": "sources/web/flukenetworks.com/blog-cabling-chronicles-channel-permanent-link-patch-cords-mptl-e2e-oh-my-48a75264.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-5155bc6c",
+   "title": "Fluke, \"Going the Distance\"",
+   "url": "https://www.flukenetworks.com/blog/cabling-chronicles/going-distance",
+   "evidence": "CITED",
+   "note": "cited in references/physical-and-campus.md",
+   "generated": true,
+   "local": "sources/web/flukenetworks.com/blog-cabling-chronicles-going-distance-5155bc6c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-8bc1674e",
+   "title": "Fluke, \"10GBASE-T field testing requirements\"",
+   "url": "https://www.flukenetworks.com/knowledge-base/applicationstandards-articles-copper/10gbase-t-field-testing-requirements",
+   "evidence": "CITED",
+   "note": "cited in references/physical-and-campus.md",
+   "generated": true,
+   "local": "sources/web/flukenetworks.com/knowledge-base-applicationstandards-articles-copper-10gbase-t-field-testing-requ-8bc1674e.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1715,7 +1826,7 @@
   },
   {
    "id": "C-c4b1089f",
-   "title": "www.itu.int",
+   "title": "g657",
    "url": "https://www.itu.int/rec/T-REC-G.657/en",
    "evidence": "CITED",
    "note": "cited in references/physical-and-campus.md",
@@ -1731,6 +1842,16 @@
    "note": "cited in references/capacity-and-resilience.md",
    "generated": true,
    "local": "sources/web/itu.int/rec-T-REC-Y.1564-ec286494.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-76d4355a",
+   "title": "instrument as made, registered 2025-09-05",
+   "url": "https://www.legislation.gov.au/F2025L01047/asmade/2025-09-05/text/original/pdf",
+   "evidence": "CITED",
+   "note": "cited in references/wireless-and-radio.md, templates/ptp-link-record.md",
+   "generated": true,
+   "local": "sources/web/legislation.gov.au/F2025L01047-asmade-2025-09-05-text-original-pdf-76d4355a.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1764,8 +1885,18 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-fd814a9a",
+   "title": "RFC 2385",
+   "url": "https://www.rfc-editor.org/rfc/rfc2385.html",
+   "evidence": "CITED",
+   "note": "cited in templates/bgp-peer-policy.md",
+   "generated": true,
+   "local": "sources/rfc/rfc2385.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-90d6224b",
-   "title": "www.rfc-editor.org",
+   "title": "rfc2516",
    "url": "https://www.rfc-editor.org/rfc/rfc2516.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -1785,7 +1916,7 @@
   },
   {
    "id": "C-9112ac20",
-   "title": "www.rfc-editor.org",
+   "title": "rfc2784",
    "url": "https://www.rfc-editor.org/rfc/rfc2784.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -1805,7 +1936,7 @@
   },
   {
    "id": "C-3497e4f0",
-   "title": "www.rfc-editor.org",
+   "title": "rfc2890",
    "url": "https://www.rfc-editor.org/rfc/rfc2890.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -1825,7 +1956,7 @@
   },
   {
    "id": "C-09d62f33",
-   "title": "www.rfc-editor.org",
+   "title": "rfc3021",
    "url": "https://www.rfc-editor.org/rfc/rfc3021.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -1845,7 +1976,7 @@
   },
   {
    "id": "C-4a19ef8e",
-   "title": "www.rfc-editor.org",
+   "title": "rfc3135",
    "url": "https://www.rfc-editor.org/rfc/rfc3135.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -1855,7 +1986,7 @@
   },
   {
    "id": "C-b3417bfe",
-   "title": "www.rfc-editor.org",
+   "title": "rfc3580",
    "url": "https://www.rfc-editor.org/rfc/rfc3580.html",
    "evidence": "CITED",
    "note": "cited in references/security-and-segmentation.md",
@@ -1885,7 +2016,7 @@
   },
   {
    "id": "C-ae7e02f7",
-   "title": "www.rfc-editor.org",
+   "title": "rfc4106",
    "url": "https://www.rfc-editor.org/rfc/rfc4106.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -1895,7 +2026,7 @@
   },
   {
    "id": "C-82c76ae5",
-   "title": "www.rfc-editor.org",
+   "title": "rfc4193",
    "url": "https://www.rfc-editor.org/rfc/rfc4193.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -1905,7 +2036,7 @@
   },
   {
    "id": "C-56d74ada",
-   "title": "www.rfc-editor.org",
+   "title": "rfc4271",
    "url": "https://www.rfc-editor.org/rfc/rfc4271.html",
    "evidence": "CITED",
    "note": "cited in references/routing-and-switching.md",
@@ -1915,7 +2046,7 @@
   },
   {
    "id": "C-c9e6b470",
-   "title": "www.rfc-editor.org",
+   "title": "rfc4303",
    "url": "https://www.rfc-editor.org/rfc/rfc4303.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -1925,12 +2056,22 @@
   },
   {
    "id": "C-aa034458",
-   "title": "www.rfc-editor.org",
+   "title": "rfc4459",
    "url": "https://www.rfc-editor.org/rfc/rfc4459.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
    "generated": true,
    "local": "sources/rfc/rfc4459.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-695af71d",
+   "title": "RFC 4486",
+   "url": "https://www.rfc-editor.org/rfc/rfc4486.html",
+   "evidence": "CITED",
+   "note": "cited in templates/bgp-peer-policy.md",
+   "generated": true,
+   "local": "sources/rfc/rfc4486.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1945,7 +2086,7 @@
   },
   {
    "id": "C-5d3bc866",
-   "title": "www.rfc-editor.org",
+   "title": "rfc4821",
    "url": "https://www.rfc-editor.org/rfc/rfc4821.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -1955,17 +2096,17 @@
   },
   {
    "id": "C-f564ba06",
-   "title": "www.rfc-editor.org",
+   "title": "rfc5082",
    "url": "https://www.rfc-editor.org/rfc/rfc5082.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md",
    "generated": true,
    "local": "sources/rfc/rfc5082.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-c82d5e6e",
-   "title": "RFC 5176",
+   "title": "rfc5176",
    "url": "https://www.rfc-editor.org/rfc/rfc5176.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md, references/security-and-segmentation.md",
@@ -1998,34 +2139,34 @@
    "title": "RFC 5880 BFD",
    "url": "https://www.rfc-editor.org/rfc/rfc5880.html",
    "evidence": "CITED",
-   "note": "cited in references/capacity-and-resilience.md, references/routing-and-switching.md",
+   "note": "cited in references/capacity-and-resilience.md, references/routing-and-switching.md, templates/bgp-peer-policy.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc5880.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-54ffbdd0",
-   "title": "www.rfc-editor.org",
+   "title": "rfc5881",
    "url": "https://www.rfc-editor.org/rfc/rfc5881.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc5881.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-971f4976",
-   "title": "www.rfc-editor.org",
+   "title": "rfc5883",
    "url": "https://www.rfc-editor.org/rfc/rfc5883.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md",
    "generated": true,
    "local": "sources/rfc/rfc5883.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-1a39d3e2",
-   "title": "www.rfc-editor.org",
+   "title": "rfc5905",
    "url": "https://www.rfc-editor.org/rfc/rfc5905.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2035,17 +2176,17 @@
   },
   {
    "id": "C-7ea111bc",
-   "title": "www.rfc-editor.org",
+   "title": "rfc5925",
    "url": "https://www.rfc-editor.org/rfc/rfc5925.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md",
    "generated": true,
    "local": "sources/rfc/rfc5925.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-fb6bc73f",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6052",
    "url": "https://www.rfc-editor.org/rfc/rfc6052.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2055,7 +2196,7 @@
   },
   {
    "id": "C-60504b65",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6105",
    "url": "https://www.rfc-editor.org/rfc/rfc6105.html",
    "evidence": "CITED",
    "note": "cited in references/security-and-segmentation.md",
@@ -2065,7 +2206,7 @@
   },
   {
    "id": "C-2c800fb8",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6146",
    "url": "https://www.rfc-editor.org/rfc/rfc6146.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2075,7 +2216,7 @@
   },
   {
    "id": "C-47727efb",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6147",
    "url": "https://www.rfc-editor.org/rfc/rfc6147.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2085,7 +2226,7 @@
   },
   {
    "id": "C-c044c359",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6164",
    "url": "https://www.rfc-editor.org/rfc/rfc6164.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2095,7 +2236,7 @@
   },
   {
    "id": "C-a5b7b084",
-   "title": "RFC 6177",
+   "title": "rfc6177",
    "url": "https://www.rfc-editor.org/rfc/rfc6177.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md, templates/ip-addressing-plan.md",
@@ -2125,7 +2266,7 @@
   },
   {
    "id": "C-6f4f0605",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6438",
    "url": "https://www.rfc-editor.org/rfc/rfc6438.html",
    "evidence": "CITED",
    "note": "cited in references/routing-and-switching.md",
@@ -2135,7 +2276,7 @@
   },
   {
    "id": "C-ce9729c8",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6598",
    "url": "https://www.rfc-editor.org/rfc/rfc6598.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md, references/wan-and-remote-access.md",
@@ -2145,7 +2286,7 @@
   },
   {
    "id": "C-1ee4d422",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6614",
    "url": "https://www.rfc-editor.org/rfc/rfc6614.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2155,17 +2296,17 @@
   },
   {
    "id": "C-39ba9974",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6811",
    "url": "https://www.rfc-editor.org/rfc/rfc6811.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md",
    "generated": true,
    "local": "sources/rfc/rfc6811.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-8251ebe5",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6888",
    "url": "https://www.rfc-editor.org/rfc/rfc6888.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -2175,7 +2316,7 @@
   },
   {
    "id": "C-0b1b6a43",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6890",
    "url": "https://www.rfc-editor.org/rfc/rfc6890.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2185,10 +2326,10 @@
   },
   {
    "id": "C-891a6eb9",
-   "title": "www.rfc-editor.org",
+   "title": "rfc6996",
    "url": "https://www.rfc-editor.org/rfc/rfc6996.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc6996.txt",
    "checked": "2026-10-29"
@@ -2205,7 +2346,7 @@
   },
   {
    "id": "C-f4550ca8",
-   "title": "www.rfc-editor.org",
+   "title": "rfc7050",
    "url": "https://www.rfc-editor.org/rfc/rfc7050.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2215,7 +2356,7 @@
   },
   {
    "id": "C-0191e2cd",
-   "title": "www.rfc-editor.org",
+   "title": "rfc7296",
    "url": "https://www.rfc-editor.org/rfc/rfc7296.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -2228,14 +2369,14 @@
    "title": "rfc7348",
    "url": "https://www.rfc-editor.org/rfc/rfc7348.html",
    "evidence": "CITED",
-   "note": "cited in references/datacenter-cloud-containers.md, references/routing-and-switching.md, references/wan-and-remote-access.md",
+   "note": "cited in references/datacenter-cloud-containers.md, references/routing-and-switching.md, references/wan-and-remote-access.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc7348.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-6d3537e1",
-   "title": "www.rfc-editor.org",
+   "title": "rfc7421",
    "url": "https://www.rfc-editor.org/rfc/rfc7421.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2245,27 +2386,27 @@
   },
   {
    "id": "C-ed30f9b4",
-   "title": "www.rfc-editor.org",
+   "title": "rfc7432",
    "url": "https://www.rfc-editor.org/rfc/rfc7432.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc7432.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-2245c8dd",
-   "title": "RFC 7454",
+   "title": "rfc7454",
    "url": "https://www.rfc-editor.org/rfc/rfc7454.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md, templates/routing-policy.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md, templates/routing-policy.md",
    "generated": true,
    "local": "sources/rfc/rfc7454.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-3e4d3554",
-   "title": "www.rfc-editor.org",
+   "title": "rfc7513",
    "url": "https://www.rfc-editor.org/rfc/rfc7513.html",
    "evidence": "CITED",
    "note": "cited in references/security-and-segmentation.md",
@@ -2285,7 +2426,7 @@
   },
   {
    "id": "C-05e62b16",
-   "title": "www.rfc-editor.org",
+   "title": "rfc7858",
    "url": "https://www.rfc-editor.org/rfc/rfc7858.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2295,7 +2436,7 @@
   },
   {
    "id": "C-54946fed",
-   "title": "www.rfc-editor.org",
+   "title": "rfc7934",
    "url": "https://www.rfc-editor.org/rfc/rfc7934.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2305,12 +2446,22 @@
   },
   {
    "id": "C-726292ce",
-   "title": "www.rfc-editor.org",
+   "title": "rfc7938",
    "url": "https://www.rfc-editor.org/rfc/rfc7938.html",
    "evidence": "CITED",
-   "note": "cited in references/datacenter-cloud-containers.md, references/routing-and-switching.md",
+   "note": "cited in references/datacenter-cloud-containers.md, references/routing-and-switching.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc7938.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-6c074ce2",
+   "title": "RFC 7999",
+   "url": "https://www.rfc-editor.org/rfc/rfc7999.html",
+   "evidence": "CITED",
+   "note": "cited in templates/bgp-peer-policy.md",
+   "generated": true,
+   "local": "sources/rfc/rfc7999.txt",
    "checked": "2026-10-29"
   },
   {
@@ -2325,7 +2476,7 @@
   },
   {
    "id": "C-532cdd4e",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8106",
    "url": "https://www.rfc-editor.org/rfc/rfc8106.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2345,7 +2496,7 @@
   },
   {
    "id": "C-96217019",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8200",
    "url": "https://www.rfc-editor.org/rfc/rfc8200.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md, references/wan-and-remote-access.md",
@@ -2355,7 +2506,7 @@
   },
   {
    "id": "C-66b92494",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8201",
    "url": "https://www.rfc-editor.org/rfc/rfc8201.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -2365,17 +2516,17 @@
   },
   {
    "id": "C-4f36bcb5",
-   "title": "RFC 8212",
+   "title": "rfc8212",
    "url": "https://www.rfc-editor.org/rfc/rfc8212.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md, templates/routing-policy.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md, templates/routing-policy.md",
    "generated": true,
    "local": "sources/rfc/rfc8212.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-eb1ffc42",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8215",
    "url": "https://www.rfc-editor.org/rfc/rfc8215.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2385,10 +2536,10 @@
   },
   {
    "id": "C-1445c5f6",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8326",
    "url": "https://www.rfc-editor.org/rfc/rfc8326.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md",
    "generated": true,
    "local": "sources/rfc/rfc8326.txt",
    "checked": "2026-10-29"
@@ -2398,14 +2549,14 @@
    "title": "RFC 8365 EVPN Network Virtualization Overlay",
    "url": "https://www.rfc-editor.org/rfc/rfc8365.html",
    "evidence": "CITED",
-   "note": "cited in references/datacenter-cloud-containers.md, references/routing-and-switching.md",
+   "note": "cited in references/datacenter-cloud-containers.md, references/routing-and-switching.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc8365.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-1a4724ee",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8484",
    "url": "https://www.rfc-editor.org/rfc/rfc8484.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2415,7 +2566,7 @@
   },
   {
    "id": "C-e7444b34",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8767",
    "url": "https://www.rfc-editor.org/rfc/rfc8767.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2425,7 +2576,7 @@
   },
   {
    "id": "C-d114ea96",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8781",
    "url": "https://www.rfc-editor.org/rfc/rfc8781.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2435,7 +2586,7 @@
   },
   {
    "id": "C-d7cb2c30",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8899",
    "url": "https://www.rfc-editor.org/rfc/rfc8899.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -2445,7 +2596,7 @@
   },
   {
    "id": "C-6c35b6f3",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8900",
    "url": "https://www.rfc-editor.org/rfc/rfc8900.html",
    "evidence": "CITED",
    "note": "cited in references/wan-and-remote-access.md",
@@ -2455,7 +2606,7 @@
   },
   {
    "id": "C-2144ce5d",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8915",
    "url": "https://www.rfc-editor.org/rfc/rfc8915.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2465,7 +2616,7 @@
   },
   {
    "id": "C-e76c4888",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8925",
    "url": "https://www.rfc-editor.org/rfc/rfc8925.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2475,7 +2626,7 @@
   },
   {
    "id": "C-eebfe08b",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8926",
    "url": "https://www.rfc-editor.org/rfc/rfc8926.html",
    "evidence": "CITED",
    "note": "cited in references/datacenter-cloud-containers.md",
@@ -2485,7 +2636,7 @@
   },
   {
    "id": "C-e0b2b8f2",
-   "title": "www.rfc-editor.org",
+   "title": "rfc8950",
    "url": "https://www.rfc-editor.org/rfc/rfc8950.html",
    "evidence": "CITED",
    "note": "cited in references/routing-and-switching.md",
@@ -2495,37 +2646,37 @@
   },
   {
    "id": "C-84eef3a0",
-   "title": "www.rfc-editor.org",
+   "title": "rfc9135",
    "url": "https://www.rfc-editor.org/rfc/rfc9135.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc9135.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-4e9b63d9",
-   "title": "www.rfc-editor.org",
+   "title": "rfc9136",
    "url": "https://www.rfc-editor.org/rfc/rfc9136.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/evpn-fabric-build.md",
    "generated": true,
    "local": "sources/rfc/rfc9136.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-e55ed278",
-   "title": "www.rfc-editor.org",
+   "title": "rfc9234",
    "url": "https://www.rfc-editor.org/rfc/rfc9234.html",
    "evidence": "CITED",
-   "note": "cited in references/routing-and-switching.md",
+   "note": "cited in references/routing-and-switching.md, templates/bgp-peer-policy.md",
    "generated": true,
    "local": "sources/rfc/rfc9234.txt",
    "checked": "2026-10-29"
   },
   {
    "id": "C-c304dd52",
-   "title": "www.rfc-editor.org",
+   "title": "rfc9250",
    "url": "https://www.rfc-editor.org/rfc/rfc9250.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2535,7 +2686,7 @@
   },
   {
    "id": "C-b12c3cf1",
-   "title": "www.rfc-editor.org",
+   "title": "rfc9520",
    "url": "https://www.rfc-editor.org/rfc/rfc9520.html",
    "evidence": "CITED",
    "note": "cited in references/network-services.md",
@@ -2545,7 +2696,7 @@
   },
   {
    "id": "C-6da1b15b",
-   "title": "www.rfc-editor.org",
+   "title": "rfc9637",
    "url": "https://www.rfc-editor.org/rfc/rfc9637.html",
    "evidence": "CITED",
    "note": "cited in references/addressing-and-ipv6.md",
@@ -2581,6 +2732,16 @@
    "note": "cited in references/physical-and-campus.md",
    "generated": true,
    "local": "sources/web/tiaonline.org/standards-catalog-816be5b7.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-70f215f5",
+   "title": "Salameh et al., \"HACK: Hierarchical ACKs for Efficient Wireless Medium Utilization\", USENIX ATC 2014",
+   "url": "https://www.usenix.org/system/files/conference/atc14/atc14-paper-salameh.pdf",
+   "evidence": "CITED",
+   "note": "cited in references/wireless-and-radio.md",
+   "generated": true,
+   "local": "sources/pdf/usenix.org/system-files-conference-atc14-atc14-paper-salameh.pdf-70f215f5.pdf",
    "checked": "2026-10-29"
   }
  ]

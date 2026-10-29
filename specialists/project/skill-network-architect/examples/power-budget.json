@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "other_loads_w": 200,
+  "switches": [
+    {
+      "id": "site-switch",
+      "base_w": 30,
+      "poe_budget_w": 120,
+      "ports": [
+        {
+          "device": "ap-1",
+          "draw_w": 25.5,
+          "port_class": "at"
+        },
+        {
+          "device": "camera-1",
+          "draw_w": 13,
+          "port_class": "af"
+        },
+        {
+          "device": "radio-1",
+          "draw_w": 40,
+          "port_class": "bt3"
+        }
+      ]
+    }
+  ],
+  "ups": {
+    "va": 1500,
+    "power_factor": 0.9,
+    "battery_wh": 864,
+    "inverter_efficiency": 0.9,
+    "max_load_fraction": 0.8,
+    "required_runtime_min": 120
+  }
+}

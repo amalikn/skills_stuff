@@ -1,0 +1,526 @@
+Contents of https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736282.html:
+Product overview
+
+The Cisco 100GBASE Quad Small Form-Factor Pluggable (QSFP) portfolio offers customers a wide variety of high-density and low-power 100 Gigabit Ethernet connectivity options for data center, high-performance computing networks, enterprise core and distribution layers, and service provider applications. The QSFP-100G modules are our latest generation of 100G transceiver modules solution based on a QSFP form factor. (See Figure 1)
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736282.docx/_jcr_content/renditions/datasheet-c78-736282_0.png)
+
+Figure 1.
+         
+
+QSFP-100G Optical modules
+
+Features and benefits of Cisco QSFP modules
+
+●     Hot-swappable input/output device that plugs into a 100G Gigabit Ethernet Cisco QSFP port.
+
+●     Interoperable with other IEEE-compliant 100GBASE interfaces where applicable.
+
+●     Certified and tested on Cisco QSFP-100G ports for superior performance, quality, and reliability.
+
+●     High-speed electrical interface compliant to IEEE 802.3bm.
+
+Table 1 describes the Cisco QSFP-100G portfolio.
+
+**Table 1.** Cisco QSFP-100G Portfolio
+
+| Product | Description | Connector Type |
+| --- | --- | --- |
+| **QSFP-100G-SR4-S** | 100GBASE SR4 QSFP Transceiver, MPO, 100m over OM4 MMF | MPO-12 (12 fibers) |
+| **QSFP-100G-SL4** | 100GBASE QSFP Short Link Transceivers, 30M reach over OM4 MMF | MPO-12 (12 fibers) |
+| **QSFP-40/100-SRBD** | 100G and 40GBASE SR-BiDi QSFP Transceiver, LC, 100m OM4 MMF | LC |
+| **QSFP-100G-SR1.2** | 100G SR-BiDi QSFP Transceiver, LC, 100m OM4 MMF | LC |
+| **QSFP-100G-SR-S** | 100GBASE-SR1 QSFP Transceiver, LC, 100m over OM4 MMF | LC |
+| **QSFP-100G-PSM4-S** | 100GBASE PSM4 QSFP Transceiver, MPO, 500m over SMF | MPO-12 (12 fibers) |
+| **QSFP-100G-DR-S** | 100GBASE DR QSFP Transceiver, 500m over SMF | LC |
+| **QSFP-100G-FR-S** | 100GBASE-FR1 QSFP Transceiver, 2km over SMF | LC |
+| **QSFP-100G-CWDM4-S** | 100GBASE CWDM4 QSFP Transceiver, LC, 2km over SMF | LC |
+| **QSFP-100G-SM-SR** | 100GBASE CWDM4 Lite QSFP Transceiver, 2km over SMF, 10-60C | LC |
+| **QSFP-100G-LR-S** | 100GBASE-LR1 QSFP Transceiver, 10km over SMF | LC |
+| **QSFP-100G-LR4-S** | 100GBASE LR4 QSFP Transceiver, LC, 10km over SMF | LC |
+| **QSFP-100G-LR4-I** | 100GBASE LR4 QSFP Transceiver, LC, 10km over SMF, I-Temp | LC |
+| **QSFP-100G-ERL-S** | 100GBASE ER-Lite QSFP Transceiver, 25km over SMF | LC |
+| **QSFP-100G-ER4L-S** | 100GBASE QSFP Transceiver, 25-40KM reach over SMF, Duplex LC | LC |
+| **QSFP-100G-B20U4-I** | 100GBASE QSFP Transceiver BD 20km upstream LC Simplex SMF | LC |
+| **QSFP-100G-B20D4-I** | 100GBASE QSFP Transceiver, BD 20km downstream LC Simplex SMF | LC |
+| **QSFP-100G-4W40-I** | 100GBASE 4W40 Transceiver, 40km SMF, duplex, LC, I-Temp | LC |
+| **QSFP-100G-ZR4-S** | 100GBASE QSFP Transceiver, 80KM# reach over SMF, Duplex LC | LC |
+| **QSFP-100G-CU  (1M, 1.5M, 2M, 2.5M, 3M, 5M)** | 100GBASE-CR4 Passive Copper Cable |  |
+| **QSFP-4SFP25G-CU  (1M, 1.5M, 2M, 2.5M, 3M, 5M)** | 100GBASE QSFP to 4xSFP25G Passive Copper Splitter Cables |  |
+| **QSFP-100G-AOC  (1M, 2M, 3M, 5M, 7M, 10M, 15M, 20M, 25M, 30M)** | 100GBASE QSFP Active Optical Cables |  |
+| **CVR-QSFP28-SFP25G** | 100G to SFP25G Adapter |  |
+
+# depends upon fiber and connector loss
+
+Cisco QSFP-100G-SR4-S
+
+The Cisco 100GBASE-SR4-S QSFP Module supports link lengths of up to 70m over OM3 and 100m over OM4 Multimode Fiber with MPO connectors. It primarily enables high-bandwidth 100G optical links over 12-fiber parallel fiber terminated with MPO multifiber connectors. QSFP-100G-SR4-S supports 100GBase Ethernet rate.
+
+Cisco QSFP-100G-SL4
+
+The Cisco 100GBASE-SL4 Short Link QSFP Module supports link lengths of up to 20m over OM3 and 30m over OM4 Multimode Fiber with MPO connectors. It primarily enables high-bandwidth 100G optical links over 12-fiber parallel fiber terminated with MPO multifiber connectors. QSFP-100G-SL supports 100GBase Ethernet rate.
+
+Cisco QSFP-100G-SR1.2
+
+The Cisco QSFP 100-Gb SR1.2 Bi-Directional (BiDi) transceiver is a pluggable optical transceiver with a duplex LC connector interface for short-reach data communication and interconnect applications using Multi-Mode Fiber (MMF).
+
+The Cisco QSFP 100-Gbps SR1.2 BiDi transceiver supports link lengths of 70, 100 and 150 meters on laser-optimized OM3, OM4 and OM5 multimode fibers. The Cisco QSFP 100-Gbps SR1.2 BiDi offers customers a compelling solution that enables reuse of their existing 10/40 or 100Gb duplex MMF infrastructure for migration to 400 Gigabit Ethernet connectivity.
+
+The Cisco QSFP 100-Gbps SR1.2 BiDi transceiver supports connectivity to 400 Gbps in a 4 x 100G breakout mode.
+
+Each Cisco QSFP 100-Gbps SR1.2 BiDi transceiver consists of two transmit and receive channels in the 832-918 nanometer wavelength range, enabling an aggregated 100-Gbps link over a two-strand multimode fiber connection.
+
+Cisco QSFP-40/100-SRBD
+
+The Cisco QSFP 40/100 Gb dual-rate Bi-Directional (BiDi) transceiver is a pluggable optical transceiver with a duplex LC connector interface for short-reach data communication and interconnect applications using Multi-Mode Fiber (MMF). It offers customers a compelling solution that enables reuse of their existing 10 Gb duplex MMF infrastructure for migration to either 40 or 100 Gigabit Ethernet connectivity.
+
+In 40-Gbps mode, the Cisco QSFP 40/100-Gbps BiDi transceiver supports link lengths of 100 and 150 meters on laser-optimized OM3 and OM4 multimode fibers, respectively. In 100-Gbps mode, it supports 70 and 100 meters on OM3 and OM4, respectively.
+
+Each Cisco QSFP 40/100-Gbps BiDi transceiver consists of two transmit and receive channels in the 832-918 nanometer wavelength range, enabling an aggregated 40 or 100-Gbps link over a two-strand multimode fiber connection.
+
+**Table 2.** Link loss budget for QSFP-40/100-SRBD and QSFP-100G-SR1.2
+
+| Mode | MMF Type | Reach (meters) | Total Loss Budget (dB) | BER |
+| --- | --- | --- | --- | --- |
+| **40G**\*\*\*\* | OM3 | 100 | 1.9\* | 1e-15\*\*\* |
+| OM4 | 150 | 1.5\*\* | 1e-12 |
+| **100G** | OM3 | 70 | 1.9\* | 1e-12 |
+| OM4 | 100 | 1.9\* | 1e-12 |
+| OM5 | 150 | 1.9\* | 1e-12 |
+
+\*Includes 1.5dB connector loss.
+
+\*\*Includes 1.0dB connector loss.
+
+\*\*\*In 40G mode, QSFP-40/100-SRBD has 0.7 decibel incremental margin (in addition to 1.9 decibel total loss budget shown in the table), which can be allocated to connector losses in the link for OM3 fiber for applications when a link BER of 1E-12 is sufficient. Cisco recommends that this margin be allocated to connector losses. Care should be taken to not exceed 120 meters in fiber link distance with the OM3 fiber.
+
+\*\*\*\*Does not include QSFP-100G-SR1.2 which is 100G only.
+
+QSFP-100G-SR-S
+
+The Cisco QSFP-100G-SR-S Module is a pluggable optical transceiver with a duplex LC connector interface supporting link lengths of 70 and 100 meters on laser-optimized OM3 and OM4/OM5 multimode fibers, respectively. The QSFP-100G-SR-S module is compliant to IEEE 802.3 100GBASE-SR1 requirements. The 100 Gigabit Ethernet signal is carried over a single wavelength using onboard PAM4 modulation and FEC. QSFP-100G-SR-S can interoperate with 400G transceivers that comply with IEEE 400GBASE-SR4, via fiber break-out cables.
+
+Cisco QSFP-100G-PSM4-S
+
+The Cisco QSFP-100G-PSM4-S Module supports link lengths of up to 500 meters over SMF with MPO connectors. The 100 Gigabit Ethernet signal is carried over 12-fiber parallel fiber terminated with MPO multifiber connectors.
+
+Cisco QSFP-100G-DR-S
+
+The Cisco QSFP-100G-DR-S Module supports link lengths of up to 500 m over a standard pair of G.652 Single-Mode Fiber (SMF) with duplex LC connectors. The QSFP-100G-DR-S module is compliant to IEEE 802.3 100GBASE-DR requirements. The 100 Gigabit Ethernet signal is carried over a single wavelength using onboard PAM4 modulation and FEC. QSFP-100G-DR-S interoperates with 400G transceivers that comply with IEEE 400GBASE-DR4, such as Cisco's QSFP-400G-DR4-S, via fiber break-out cables.
+
+Cisco QSFP-100G-FR-S
+
+The Cisco QSFP-100G-FR-S Module supports link lengths of up to 2 km over a standard pair of G.652 Single-Mode Fiber (SMF) with duplex LC connectors. The QSFP-100G-FR-S module is compliant to IEEE 802.3 100GBASE-FR1 requirements. The 100 Gigabit Ethernet signal is carried over a single wavelength using onboard PAM4 modulation and FEC. QSFP-100G-FR-S can also be used in applications meant for IEEE 100GBASE-DR, such as interoperability with IEEE 400GBASE-DR4 via fiber break-out cables.
+
+Cisco QSFP-100G-CWDM4-S
+
+The Cisco QSFP-100G-CWDM4-S Module supports link lengths of up to 2 km over a standard pair of G.652 Single-Mode Fiber (SMF) with duplex LC connectors. The 100 Gigabit Ethernet signal is carried over four wavelengths. Multiplexing and demultiplexing of the four wavelengths are managed within the device.
+
+Cisco QSFP-100G-SM-SR
+
+The Cisco QSFP-100G-SM-SR QSFP module supports link lengths of up to 2 kilometers over a standard pair of G.652 Single-Mode Fiber (SMF) with duplex LC connectors. The 100 Gigabit Ethernet signal is carried over four wavelengths. Multiplexing and demultiplexing of the four wavelengths are managed within the device. The operating temperature range is from +10 to +60°C with an optical link budget of 4.2 decibels. This 4.2-decibel link budget offers the ability to support the loss from patch panels in the link in a data center environment. QSFP 100G SM-SR is interoperable with QSFP-100G-CWDM4-S.
+
+Cisco QSFP-100G-LR-S
+
+The Cisco QSFP-100G-LR-S Module supports link lengths of up to 10 km over a standard pair of G.652 Single-Mode Fiber (SMF) with duplex LC connectors. The QSFP-100G-LR-S module is compliant to IEEE 802.3 100GBASE-LR1 requirements. The 100 Gigabit Ethernet signal is carried over a single wavelength using onboard PAM4 modulation and FEC.
+
+Cisco QSFP-100G-LR4-S
+
+The Cisco QSFP100 LR4 Module supports link lengths of up to 10km over a standard pair of G.652 single-mode fiber with duplex LC connectors. It complies with the IEEE 100GBASE-LR4 specification, which does not employ the use of FEC. QSFP-100G-LR4-S supports 100GBase Ethernet rate.
+
+Cisco QSFP-100G-LR4-I
+
+The Cisco QSFP100 LR4 industrial temperature Module supports link lengths of up to 10km over a standard pair of G.652 single-mode fiber with duplex LC connectors. It complies with the IEEE 100GBASE-LR4 specification, which does not employ the use of FEC. QSFP-100G-LR4-I supports 100GBase Ethernet rate within an industrial temperature range.
+
+Cisco QSFP-100G-ERL-S
+
+The Cisco QSFP-100G-ERL-S Module supports link lengths of up to 25 km over a standard pair of G.652 Single-Mode Fiber (SMF) with duplex LC connectors. The 100 Gigabit Ethernet signal is carried over a single wavelength using onboard PAM4 modulation and FEC. It complies with the 100G LR1-20 standard and interoperates with other transceivers meeting that standard up to 20km.
+
+Cisco QSFP-100G-ER4L-S
+
+The Cisco QSFP100 ER4-Lite supports link lengths of up to 40km over a standard pair of G.652 single-mode fiber with duplex LC connectors. The 100 Gigabit Ethernet signal is carried over four wavelengths. Multiplexing and demultiplexing of the four wavelengths are managed within the device. Full 40km reach requires the use of FEC on the host platform. Without FEC, the reach is 30km. The QSFP100 ER4-Lite provides backward compatibility with Cisco’s CPAK ER4-Lite, whose reach is up to 25km, and with IEEE 100GBASE-ER4 standardized transceivers, such as Cisco’s CFP 100G ER4, up to 30km. It also interoperates with Cisco’s QSFP100 and CPAK IEEE 100GBASE-LR4 modules up to 10km.
+
+Cisco QSFP-100G-B20U4-I and QSFP-100G-B20D4-I
+
+The Cisco QSFP100 20km Bidirectional Pluggable Transceivers provide 100Gbps over single dedicated optical fiber on platforms at up to 20km on single SMF (Single Mode Fiber). The QSFP-100G-B20U4-I and QSFP-100G-B20D4-I operate in pairs, with one required at each end of the optical fiber. The QSFP-100G-B20U4-I and QSFP-100G-B20D4-I transceivers operate in the O-band where fiber optic dispersion is minimal and use traditional low-power NRZ (nonreturn to zero) modulation. The “4” in QSFP-100G-B20U4-I and QSFP-100G-B20D4-I refers to the number of transmitters and receivers used by each transceiver. The QSFP-100G-B20U4-I and QSFP-100G-B20D4-I transceivers require host-based RS-FEC (Reed Solomon Forward Error Correction) and provide DOM (digital optical monitoring).
+
+Cisco QSFP-100G-4W40-I
+
+The Cisco QSFP100 4W40-I supports link lengths of up to 40km over a standard pair of G.652 single-mode fiber with duplex LC connectors. The 100 Gigabit Ethernet signal is carried over four wavelengths. Multiplexing and demultiplexing of the four wavelengths are managed within the device. Full 40km reach requires the use of FEC on the host platform. Without FEC, the reach is 30km. The QSFP100 4W40-I provides backward compatibility with Cisco’s CPAK ER4-Lite, whose reach is up to 25km, and with IEEE 100GBASE-ER4 standardized transceivers, such as Cisco’s CFP 100G ER4, up to 30km. It also interoperates with Cisco’s QSFP100 and CPAK IEEE 100GBASE-LR4 modules up to 10km. The Cisco QSFP100 4W40-I supports industrial temperature range.
+
+Cisco QSFP-100G-ZR4-S
+
+The Cisco QSFP100 ZR4 supports link lengths of up to 80km# over a standard pair of G.652 single-mode fiber with duplex LC connectors. The 100 Gigabit Ethernet signal is carried over four wavelengths. Multiplexing and demultiplexing of the four wavelengths are managed within the device. The module requires the use of FEC on the host platform.
+
+# depends upon fiber and connector loss.
+
+Cisco QSFP-100G-CUxM
+
+Cisco QSFP to QSFP copper direct-attach 100GBASE-CR4 cables (Figure 3) are suitable for very short links and offer a cost-effective way to establish a 100-Gigabit link between QSFP-100G ports of Cisco switches within racks and across adjacent racks. Cisco currently offers passive copper cables in lengths of x=1, 1.5, 2, 2.5, 3 and 5 meters.
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736282.docx/_jcr_content/renditions/datasheet-c78-736282_1.png)
+
+Figure 2.
+         
+
+QSFP-100G-CU1M cables
+
+Cisco QSFP-4SFP25G-CUxM
+
+Cisco QSFP-100G to four SFP-25G copper direct-attach breakout cables (Figure 2) are suitable for very short links and offer a cost-effective way to connect within racks and across adjacent racks. These breakout cables connect to a 100G QSFP port of a Cisco switch on one end and to four 25G SFP ports of a Cisco switch/server on the other end. Cisco currently offers passive cables in lengths of x=1, 1.5, 2, 2.5, 3 and 5 meters.
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736282.docx/_jcr_content/renditions/datasheet-c78-736282_2.png)
+
+Figure 3.
+         
+
+QSFP-4SFP25G-CUxM cables
+
+Cisco QSFP-100G-AOCxM
+
+Cisco QSFP-100G to QSFP-100G AOC cables (Figure 4) are suitable for short distances and offer a flexible way to connect within racks and across racks. Active optical cables are much thinner and lighter than copper cables, which makes cable management easier. AOCs enable efficient system airflow, which is critical in high-density racks. Cisco currently offers active optical cables in lengths of x=1, 2, 3, 5, 7, 10, 15, 20, 25, and 30 meters.
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736282.docx/_jcr_content/renditions/datasheet-c78-736282_3.png)
+
+Figure 4.
+         
+
+QSFP-100G-AOC3M cables
+
+Cisco QSFP28 to SFP28 Adapter Module
+
+The Cisco QSFP28 to SFP28 Adapter (QSA) Module offers 25, 10 and 1 Gigabit Ethernet Connectivity for QSFP 100G ports. The adapter gives customers flexibility to upgrade to 100GE platforms while maintaining connectivity to lower speed endpoints. The Cisco QSA Module converts a QSFP28 port to an SFP28, SFP+ or SFP port. This flexibility allows customers a cost-effective transition to high density 100G platforms, while maintaining low speed connectivity on select ports.
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736282.docx/_jcr_content/renditions/datasheet-c78-736282_4.png)
+
+Figure 5.
+         
+
+CVR-QSFP28-SFP25G Adapter
+
+Technical specifications
+
+Platform support
+
+Cisco QSFP modules are supported on Cisco switches and routers. For more details, refer to the [Cisco 100 Gigabit Ethernet Transceiver Modules Compatibility Matrix](https://www.cisco.com/c/en/us/td/docs/interfaces_modules/transceiver_modules/compatibility/matrix/100GE_Tx_Matrix.html).
+
+For details on Cisco QSFP module to module interoperability, refer to the Cisco 100 Gigabit Ethernet Transceiver Modules [Interoperability Matrix](https://tmgmatrix.cisco.com/iop?dr=7).
+
+Connectors and cabling
+
+Refer to Table 3 for connector type information and cabling specifications for each QSFP product.
+
+**Note:** Except for QSFP-100G-PSM4-S, only connections with patch cords with PC or Ultra-Physical Contact (UPC) connectors are supported. QSFP-100G-PSM4-S requires patch cords with Angled Physical Contact (APC) MPO connectors. All cables and cable assemblies used must be compliant with the standards specified in the standards section of this data sheet.
+
+**Table 3.** QSFP Port cabling specifications
+
+| Cisco QSFP | Nominal Wavelength (nm) | Cable Type | Core Size (Microns) | Modal Bandwidth (MHz\*km)\*1 | Cable Distance | Power Consumption (W) | Pull Tab Color |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **QSFP-100G-SR4-S** | 850 | MMF | 50.0  50.0 | 2000 (OM3)  4700 (OM4)  4700 (OM5) | 70m  100m  100m | 3.5 | Beige |
+| **QSFP-100G-SL4** | 850 | MMF | 50.0  50.0 | 2000 (OM3)  4700 (OM4)  4700 (OM5) | 20m  30m  30m | 2.5 | Purple |
+| **QSFP-100G-SR1.2** | 855, 908 | MMF | 50.0  50.0 | 2000 (OM3)  4700 (OM4)  4700 (OM5) | 70m  100m  150m | 3.9 | Gray |
+| **QSFP-40/100-SRBD** | 855, 908 | MMF | 50.0  50.0 | 2000 (OM3)  4700 (OM4)  4700 (OM5) | 70m  100m  150m | 3.5 | Gray |
+| **QSFP-100G-SR-S** | 850 | MMF | 50.0  50.0 | 2000 (OM3)  4700 (OM4)  4700 (OM5) | 70m  100m  100m | 3.5 | Beige |
+| **QSFP-100G-PSM4-S** | 1310 | SMF | G.652 | - | 500m | 3.5 | Orange |
+| **QSFP-100G-DR-S** | 1310 | SMF | G.652 | - | 500m | 4.3 | Orange |
+| **QSFP-100G-FR-S** | 1310 | SMF | G.652 | - | 2km | 4.3 | Green |
+| **QSFP-100G-CWDM4-S** | 1271, 1291, 1311, 1331 | SMF | G.652 | - | 2km | 3.5 | Green |
+| **QSFP-100G-SM-SR** | 1271, 1291, 1311, 1331 | SMF | G.652 | - | 2km | 3.5 | Green |
+| **QSFP-100G-LR-S** | 1310 | SMF | G.652 | - | 10km | 4.0 | Blue |
+| **QSFP-100G-LR4-S** | 1295, 1300, 1304, 1309 | SMF | G.652 | - | 10km | 4.0 | Blue |
+| **QSFP-100G-LR4-I** | 1295, 1300, 1304, 1309 | SMF | G.652 | - | 10km | 4.0 | Blue |
+| **QSFP-100G-ERL-S** | 1310 | SMF | G.652 | - | 25km | 4.0 | Purple |
+| **QSFP-100G-ER4L-S** | 1295, 1300, 1304, 1309 | SMF | G.652 | - | 40km (with host FEC)  30km (without host FEC) | 4.5 | Red |
+| **QSFP-100G-B20U4-I** | 1296, 1300, 1304 and 1309nm  1274, 1278, 1282 and 1287nm | SMF | G.652 | - | 20km | -40 to 85C: 5W  0 to 70C: 4.5W | Slate Blue |
+| **QSFP-100G-B20D4-I** | 1296, 1300, 1304 and 1309nm  1274, 1278, 1282 and 1287nm | SMF | G.652 | - | 20km | -40 to 85C: 5W  0 to 70C: 4.5W | Purple |
+| **QSFP-100G-4W40-I** | 1295, 1300, 1304, 1309 | SMF | G.652 | - | 40km (with host FEC)  30km (without host FEC) | 4.5 | Red |
+| **QSFP-100G-ZR4-S** | 1295, 1300, 1304, 1309 | SMF\*3 | G.652 | - | 80km\*2 | 5.5 | Black |
+| **QSFP-100G-CU1M** | - | Direct-attach copper cable assembly | - | - | 1m | 1.5 per end | Beige |
+| **QSFP-100G-CU1.5M** | - | - | - | 1.5m | Black |
+| **QSFP-100G-CU2M** | - | - | - | 2m | Brown |
+| **QSFP-100G-CU2.5M** | - | - | - | 2.5m | Yellow |
+| **QSFP-100G-CU3M** | - | - | - | 3m | Orange |
+| **QSFP-100G-CU5M** | - | - | - | 5m | Gray |
+| **QSFP-4SFP25G-CU1M** | - | - | - | 1m | Beige |
+| **Q-4SFP25G-CU1.5M** | - | - | - | 1.5m | Beige |
+| **QSFP-4SFP25G-CU2M** | - | - | - | 2m | Brown |
+| **Q-4SFP25G-CU2.5M** | - | - | - | 2.5m | Brown |
+| **QSFP-4SFP25G-CU3M** | - | - | - | 3m | Orange |
+| **QSFP-4SFP25G-CU5M** | - | - | - | 5m | Gray |
+| **QSFP-100G-AOC1M** | - | Active optical cable assembly | - | - | 1m | 3.5 per end | Beige |
+| **QSFP-100G-AOC2M** | - | - | - | 2m | Brown |
+| **QSFP-100G-AOC3M** | - | - | - | 3m | Orange |
+| **QSFP-100G-AOC5M** | - | - | - | 5m | Gray |
+| **QSFP-100G-AOC7M** | - | - | - | 7m | Blue |
+| **QSFP-100G-AOC10M** | - | - | - | 10m | Red |
+| **QSFP-100G-AOC15M** | - | - | - | 15m | Black |
+| **QSFP-100G-AOC20M** | - | - | - | 20m | Green |
+| **QSFP-100G-AOC25M** | - | - | - | 25m | Green |
+| **QSFP-100G-AOC30M** | - | - | - | 30m | Green |
+| **CVR-QSFP28-SFP25G** |  |  |  |  |  | 1.5W without module, total max power with module 4W | Gray |
+
+\*1 Specified at transmission wavelength. For QSFP-40/100-SRBD, Modal Bandwidth is specified at 850nm.
+
+\*2 Maximum reach of 80 km (engineered Link) with 29dB link loss. Fiber attenuation of 0.35dB/km (instead of 0.43dB/km worst case) with 1dB connectors loss (instead of 1.6dB).
+
+\*3 Dispersion tolerance: -225, +75 ps/nm.
+
+Table 4 shows the key optical characteristics for the Cisco QSFP modules.
+
+**Table 4.** Optical characteristics
+
+|  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- |
+| Product | Descriptions | Transmit Power (dBm) per lane\*2 | | Receive Power (dBm) per lane\*2\*3 | | Transmit and Receive Wavelength (nm) |
+| Maximum | Minimum | Maximum | Minimum |
+| **QSFP-100G-SR4-S** | 100GBASE SR4 QSFP Transceiver, MPO, 100m over OM4 MMF | +2.4 | -8.4 | +2.4 | -10.3 | 840 to 860 |
+| **QSFP-100G-SL4** | 100GBASE SL4 QSFP Transceiver, MPO, 30m over OM4 MMF | +2.4 | -8.4 | +2.4 | -10.3 | 840 to 860 |
+| **QSFP-100G-SR1.2** | 100GBase SR-BiDi QSFP Transceiver, LC, 100m OM4 MMF | +4 (100G) | -6 (100G) | 4 (100G) | -7.9 (100G) | 855, 908 |
+| **QSFP-40/100-SRBD** | 100G and 40GBASE SR-BiDi QSFP Transceiver, LC, 100m OM4 MMF | +4 (100G)  +5 (40G) | -6 (100G)  -4 (40G) | 4 (100G)  5 (40G) | -7.9 (100G)  -6 (40G) | 855, 908 |
+| **QSFP-100G-SR-S** | 100GBASE SR1 QSFP Transceiver, LC, 100m over OM4 MMF | +4 | -4.6 | +4 | -6.4 (100G)  -8.4 (50G) | Transmit at 844 to 863  Receive at 842 to 948 |
+| **QSFP-100G-PSM4-S** | 100GBASE PSM4 QSFP Transceiver, MPO, 500m over SMF | +2.0 | -9.4 | +2 | -12.66 | 1295 to 1325 |
+| **QSFP-100G-DR-S** | 100GBASE DR QSFP Transceiver, 500m over SMF | 4 | -2.9 | 4 | -5.9 | 1304.5 to 1317.5 |
+| **QSFP-100G-FR-S** | 100GBASE FR1 QSFP Transceiver, 2km over SMF | 4 | -3.1 | 4 | -7.1 | 1304.5 to 1317.5 |
+| **QSFP-100G-CWDM4-S** | 100GBASE CWDM4 QSFP Transceiver, LC, 2km over SMF | +2.5 | -6.5 | +2.5 | -11.5 | Four lanes: 1271, 1291, 1311, 1331 |
+| **QSFP-100G-SM-SR** | 100GBASE CWDM4 Lite QSFP Transceiver, 2km over SMF, 10-60C | +2.5 | -6.9 | +2.5 | -11.1 | Four lanes: 1271, 1291, 1311, 1331 |
+| **QSFP-100G-LR-S** | 100GBASE LR1 QSFP Transceiver, 10km over SMF | 4.5 | -1.4 | 4.5 | -7.7 | 1304.5 to 1317.5 |
+| **QSFP-100G-ERL-S** | 100GBASE ER-Lite QSFP Transceiver, 25km over SMF | 6.6 | -0.2 | 6.6 | -10.5 | 1304.5 to 1317.5 |
+| **QSFP-100G-LR4-S** | 100GBASE LR4 QSFP Transceiver, LC, 10km over SMF | +4.5 | -4.3 | 4.5 | -10.6 | Four lanes: 1295, 1300, 1304, 1309 |
+| **QSFP-100G-LR4-I** | 100GBASE LR4 QSFP Transceiver, LC, 10km over SMF, I-Temp | +4.5 | -4.3 | 4.5 | -10.6 | Four lanes: 1295, 1300, 1304, 1309 |
+| **QSFP-100G-ER4L-S**\*4 | 100GBASE QSFP Transceiver, 25-40KM reach over SMF, Duplex LC | +6.5\*5 | -2.5\*5 | -3.5\*5 | -20.5\*5 (with FEC)  -17\*5 (without FEC) | Four lanes: 1295, 1300, 1304, 1309 |
+| **QSFP-100G-B20U4-I** | 100GBASE QSFP Transceiver BD 20km upstream LC Simplex SMF | 4.5 | -1.3 | 4.5 | -12.5 | 1296, 1300, 1304 and 1309nm  1274, 1278, 1282 and 1287nm |
+| **QSFP-100G-B20D4-I** | 100GBASE QSFP Transceiver, BD 20km downstream LC Simplex SMF | 4.5 | -1.3 | 4.5 | -12.5 | 1274, 1278, 1282 and 1287nm  1296, 1300, 1304 and 1309nm |
+| **QSFP-100G-4W40-I** | 100GBASE QSFP Transceiver, 25-40KM reach over SMF, Duplex LC, I-Temp | +6.5 | -2.5 | -3.5\*5 | -20.5\*5 (with FEC)  -16 (without FEC) | Four lanes: 1295, 1300, 1304, 1309 |
+| **QSFP-100G-ZR4-S** | 100GBASE QSFP Transceiver, 80 km reach over SMF, Duplex LC | +7 | +2 | -4.5 | -27 | Four lanes: 1295, 1300, 1304, 1309 |
+
+\* 2 Transmitter and receiver power is average optical power, unless specified.
+
+\* 3 Optical power at RX is informative only. A received power within this range is required but does not ensure operation.
+
+\* 4 Minimum channel insertion loss is 6.4dB for QSFP-100G-ER4L-S.
+
+\* 5 V01 of QSFP-100G-ER4L-S allows Tx Power range with +4.5 (Max) to -2.9 (Min) and Rx Power range with -4.9 (Max) to -19.9 (Min).
+
+Table 5 shows the cable breakout location from the 100G side.
+
+**Table 5.** 100G to 25G cable breakout location
+
+| Product ID | Breakout Location (from 100G end) |
+| --- | --- |
+| **QSFP-4SFP25-CU1M** | 0.33m |
+| **QSFP-4SFP25-CU2M** | 0.66m |
+| **QSFP-4SFP25-CU3M** | 1m |
+| **QSFP-4SFP25-CU4M** | 1.5m |
+| **QSFP-4SFP25-CU5M** | 2m |
+
+Table 6 shows the cable specifications for bend radius and diameter.
+
+**Table 6.** 100G cable specifications (diameter, bend radius)
+
+| Cisco P/N | Description | Diameter | BendRadius |
+| --- | --- | --- | --- |
+| **QSFP-100G-AOC1M=** | 100GBASE QSFP ACTIVE OPTICAL CABLE, 1M | 3.5 | 30 |
+| **QSFP-100G-AOC2M=** | 100GBASE QSFP ACTIVE OPTICAL CABLE, 2M | 3.5 | 30 |
+| **QSFP-100G-AOC3M=** | 100GBASE QSFP ACTIVE OPTICAL CABLE, 3M | 3.5 | 30 |
+| **QSFP-100G-AOC5M=** | 100GBASE QSFP ACTIVE OPTICAL CABLE, 5M | 3.5 | 30 |
+| **QSFP-100G-AOC7M=** | 100GBASE QSFP ACTIVE OPTICAL CABLE, 7M | 3.5 | 30 |
+| **QSFP-100G-AOC10M=** | 100GBASE QSFP ACTIVE OPTICAL CABLE, 10M | 3.5 | 30 |
+| **QSFP-100G-AOC15M=** | 100GBASE QSFP ACTIVE OPTICAL CABLE, 15M | 3.5 | 30 |
+| **QSFP-100G-CU1M** | 100GBASE-CR4 Passive Copper Cable, 1m | 7 | 50 |
+| **QSFP-100G-CU2M** | 100GBASE-CR4 Passive Copper Cable, 2m | 7 | 50 |
+| **QSFP-100G-CU3M** | 100GBASE-CR4 Passive Copper Cable, 3m | 7 | 50 |
+| **QSFP-100G-CU5M** | 100GBASE-CR4 Passive Copper Cable, 5m | 9 | 70 |
+
+Dimensions
+
+Maximum outer dimensions for the QSFP connector module are (H x W x D) 13.5 x 18.4 x 72.4 mm.
+
+QSFP-100G-B20U4-I and QSFP-100G-B20D4-I are (H x W x D) 13.5 x 18.4 x 87.4 mm. Using 25.4mm bend radius, 92m front panel clearance required using fiber with short boot LC connector.
+
+Cisco QSFP connector modules typically weigh 100 grams or less.
+
+Environmental conditions
+
+Operating temperature range:
+
+●     Commercial temperature range: 0 to 70°C (32 to 158°F). Exceptions are
+
+◦    QSFP-100G-SM-SR: +10 to 60°C (50 to 140°F)
+
+◦    QSFP-100G-SR1.2: +10 to 60°C (50 to 140°F)
+
+◦    QSFP-40/100-SRBD:
+
+◦    100G: +10C to +60C
+
+◦    40G: +10C to +70C
+
+●     Storage temperature range: -40 to 85°C (-40 to 185°F)
+
+●     Industrial temperature range: -40 to 85°C (-40 to 185°F)
+
+◦    QSFP-100G-B20U4-I and QSFP-100G-B20D4-I: -40°C cold start; -20°C mission mode to +85°C (-40°F cold start; -4°F mission mode to +185°C)
+
+Ordering information
+
+Table 7 provides the ordering information for Cisco QSFP 100G modules and related cables.
+
+**Table 7.** Ordering information
+
+| Description | Product Number |
+| --- | --- |
+| **QSFP Optics Modules** | |
+| **Cisco 100GBASE-SR4 QSFP Transceiver, MPO-12, 100m over OM4 MMF** | QSFP-100G-SR4-S |
+| **Cisco 100GBASE-SL4 QSFP Transceiver, MPO-12, 30m over OM4 MMF** | QSFP-100G-SL4 |
+| **Cisco 100GBASE SR-BIDI QSFP Transceiver, LC, 100m OM4 MMF** | QSFP-100G-SR1.2 |
+| **Cisco 100G and 40G SR-BiDi QSFP Transceiver, LC, 100m OM4 MMF** | QSFP-40/100-SRBD |
+| **Cisco 100GBASE-SR1 QSFP Transceiver, LC, 100m over OM4 MMF** | QSFP-100G-SR-S |
+| **Cisco 100G PSM4 QSFP Transceiver, MPO-12, 500m over SMF** | QSFP-100G-PSM4-S |
+| **Cisco 100GBASE-DR QSFP Transceiver, 500m over SMF** | QSFP-100G-DR-S |
+| **Cisco 100GBASE-FR1 QSFP Transceiver, 2km over SMF** | QSFP-100G-FR-S |
+| **Cisco 100G CWDM4 QSFP Transceiver, LC, 2km over SMF** | QSFP-100G-CWDM4-S |
+| **Cisco 100G CWDM4 Lite QSFP Transceiver, 2km over SMF, 10-60C** | QSFP-100G-SM-SR |
+| **Cisco 100GBASE-LR1 QSFP Transceiver, 10km over SMF** | QSFP-100G-LR-S |
+| **Cisco 100GBASE-LR4 QSFP Transceiver, LC, 10km over SMF** | QSFP-100G-LR4-S |
+| **Cisco 100GBASE-LR4 QSFP I-Temp Transceiver, LC, 10km over SMF** | QSFP-100G-LR4-I |
+| **Cisco 100GBASE-ER-Lite QSFP Transceiver, 25km over SMF** | QSFP-100G-ERL-S |
+| **Cisco 100GBASE BIDI 20KM reach over SMF, Duplex LC** | QSFP-100G-B20U4-I |
+| **Cisco 100GBASE BIDI 20KM reach over SMF, Duplex LC** | QSFP-100G-B20D4-I |
+| **Cisco 100G ER4-Lite QSFP Transceiver, 40KM reach over SMF, Duplex LC** | QSFP-100G-ER4L-S |
+| **Cisco 100G WDM-40 QSFP Transceiver, 40KM reach over SMF, Duplex LC** | QSFP-100G-4W40-I |
+| **Cisco 100GBASE-ZR4 QSFP Transceiver, 80KM reach over SMF, Duplex LC** | QSFP-100G-ZR4-S |
+| **QSFP Direct-Attach Copper Modules** | |
+| **Cisco 100GBASE-CR4 QSFP Passive Copper Cable, 1-meter** | QSFP-100G-CU1M |
+| **Cisco 100GBASE-CR4 QSFP Passive Copper Cable, 1.5-meter** | QSFP-100G-CU1.5M |
+| **Cisco 100GBASE-CR4 QSFP Passive Copper Cable, 2-meter** | QSFP-100G-CU2M |
+| **Cisco 100GBASE-CR4 QSFP Passive Copper Cable, 2.5-meter** | QSFP-100G-CU2.5M |
+| **Cisco 100GBASE-CR4 QSFP Passive Copper Cable, 3-meter** | QSFP-100G-CU3M |
+| **Cisco 100GBASE-CR4 QSFP Passive Copper Cable, 5-meter** | QSFP-100G-CU5M |
+| **Cisco 100G QSFP to 4xSFP25G Passive Copper Splitter Cable, 1-meter** | QSFP-4SFP25G-CU1M |
+| **Cisco 100G QSFP to 4xSFP25G Passive Copper Splitter Cable, 1.5-meter** | Q-4SFP25G-CU1.5M |
+| **Cisco 100G QSFP to 4xSFP25G Passive Copper Splitter Cable, 2-meter** | QSFP-4SFP25G-CU2M |
+| **Cisco 100G QSFP to 4xSFP25G Passive Copper Splitter Cable, 2.5-meter** | Q-4SFP25G-CU2.5M |
+| **Cisco 100G QSFP to 4xSFP25G Passive Copper Splitter Cable, 3-meter** | QSFP-4SFP25G-CU3M |
+| **Cisco 100G QSFP to 4xSFP25G Passive Copper Splitter Cable, 5-meter** | QSFP-4SFP25G-CU5M |
+| **Cisco 100G QSFP Active Optical Cable, 1-meter** | QSFP-100G-AOC1M |
+| **Cisco 100G QSFP Active Optical Cable, 2-meter** | QSFP-100G-AOC2M |
+| **Cisco 100G QSFP Active Optical Cable, 3-meter** | QSFP-100G-AOC3M |
+| **Cisco 100G QSFP Active Optical Cable, 5-meter** | QSFP-100G-AOC5M |
+| **Cisco 100G QSFP Active Optical Cable, 7-meter** | QSFP-100G-AOC7M |
+| **Cisco 100G QSFP Active Optical Cable, 10-meter** | QSFP-100G-AOC10M |
+| **Cisco 100G QSFP Active Optical Cable, 15-meter** | QSFP-100G-AOC15M |
+| **Cisco 100G QSFP Active Optical Cable, 20-meter** | QSFP-100G-AOC20M |
+| **Cisco 100G QSFP Active Optical Cable, 25-meter** | QSFP-100G-AOC25M |
+| **Cisco 100G QSFP Active Optical Cable, 30-meter** | QSFP-100G-AOC30M |
+| **Cisco 100G QSFP to SFP25G Adapter** | CVR-QSFP28-SFP25G |
+
+Warranty
+
+●     Standard warranty: 5 years.
+
+●     Expedited replacement available via a Cisco contract.
+
+●     Expedited replacement available via a Cisco Support contract.
+
+Cisco Services
+
+Get faster results with expert guidance
+
+Cisco Professional Services provide industry-leading expertise to help you plan, design, implement, and optimize your network. So you can drive better outcomes from the start and get more value – faster.
+
+Cisco Support, powered by Cisco IQ, helps you prevent issues before they happen. You get automated recommendations, early risk detection, and an always-current view of every asset, software version, and configuration across your environment. But we know a list isn’t enough. Cisco IQ also instantly analyzes this data and summarizes the most critical observations. So your teams can focus on what matters most.
+
+[Explore Cisco Services](https://www.cisco.com/site/us/en/services/index.html)
+
+Product sustainability
+
+Information about Cisco’s Environmental, Social and Governance (ESG) initiatives and performance is provided in Cisco’s CSR and sustainability [reporting](https://www.cisco.com/c/dam/m/en_us/about/csr/esg-hub/_pdf/purpose-report-2024.pdf).
+
+**Table 8.** Cisco environmental sustainability information
+
+| Sustainability Topic | | Reference |
+| --- | --- | --- |
+| **General** | Information on product-material-content laws and regulations | [Materials](https://www.cisco.com/c/en/us/about/product-innovation-stewardship/materials.html) |
+| Information on electronic waste laws and regulations, including our products, batteries and packaging | [WEEE Compliance](https://www.cisco.com/c/en/us/about/product-innovation-stewardship/product-recycling/weee-compliance.html) |
+| Information on product takeback and reuse program | [Cisco Takeback and Reuse Program](https://www.cisco.com/c/en/us/about/takeback-and-reuse.html) |
+| Sustainability Inquiries | Contact: [csr\_inquiries@cisco.com](mailto:csr_inquiries@cisco.com) |
+| **Power** | SFP Port cabling specifications | [Table 3](#tab3) |
+| **Material** | Product packaging weight and materials | Contact: [environment@cisco.com](mailto:environment@cisco.com) |
+
+Regulatory and Standards compliance
+
+Standards
+
+●     **SFF-8665:** QSFP+ 28 Gb/s 4X Pluggable Transceiver Solution (QSFP28) - Rev 1.8 May 10, 2013.
+
+●     **SFF-8636:** Common Management Interface - DRAFT Rev 1.9 May 12, 2014.
+
+●     802.3-2022 IEEE Standard for Ethernet.
+
+●     IEEE 802.3ba Amendment of IEEE Std 802.3-2012.
+
+●     IEEE 802.3bm Amendment of IEEE Std 802.3-2012 (D3.1, 1st August 2014).
+
+●     **GR-20-CORE:** Generic Requirements for Optical Fiber and Optical Fiber Cable.
+
+●     **GR-326-CORE:** Generic Requirements for Single-Mode Optical Connectors and Jumper Assemblies.
+
+●     **GR-468-CORE:** Generic Requirements for Optoelectronic Devices Used in Telecommunications Equipment.
+
+●     **GR-1435-CORE:** Generic Requirements for Multifiber Optical Connectors.
+
+●     RoHS 6
+
+Safety
+
+●     Cable jacket of QSFP copper modules is UL E116441 Compliant.
+
+●     QSFP copper cables are ELV compliant.
+
+●     Modules are compliant with Laser Class 1 as defined in IEC 60825-1, IEC 60825-2 and Comply with 21 CFR 1040.10 and 1040.11 except for conformance with IEC 60825-1 Ed. 3., as described in Laser Notice No. 56, dated May 8, 2019.
+
+**Table 9.** Laser Class for the QSFP-100G Optical modules
+
+| Product | Laser Class |
+| --- | --- |
+| **Cisco QSFP-100G-SR4-S** | 1 |
+| **Cisco QSFP-100G-SL4** | 1 |
+| **Cisco QSFP-100G-SR1.2** | 1M |
+| **Cisco QSFP-40/100-SRBD** | 1M |
+| **Cisco QSFP-100G-SR-S** | 1M |
+| **Cisco QSFP-100G-PSM4-S** | 1 |
+| **Cisco QSFP-100G-DR-S** | 1 |
+| **Cisco QSFP-100G-FR-S** | 1 |
+| **Cisco QSFP-100G-CWDM4-S** | 1 |
+| **Cisco QSFP-100G-SM-SR** | 1 |
+| **Cisco QSFP-100G-LR-S** | 1 |
+| **Cisco QSFP-100G-LR4-S** | 1 |
+| **Cisco QSFP-100G-LR4-I** | 1 |
+| **Cisco QSFP-100G-ERL-S** | 1 |
+| **Cisco QSFP-100G-ER4L-S** | 1 |
+| **QSFP-100G-B20U4-I** | 1 |
+| **QSFP-100G-B20D4-I** | 1 |
+| **QSFP-100G-4W40-I** | 1 |
+| **Cisco QSFP-100G-ZR4-S** | 1 |
+
+Cisco Capital
+
+Flexible payment solutions to help you achieve your objectives
+
+Cisco Capital makes it easier to get the right technology to achieve your objectives, enable business transformation and help you stay competitive. We can help you reduce the total cost of ownership, conserve capital, and accelerate growth. In more than 100 countries, our flexible payment solutions can help you acquire hardware, software, services and complementary third-party equipment in easy, predictable payments. [Learn more](https://www.cisco.com/go/financing).
+
+Additional information
+
+For more information about Cisco 100GBASE QSFP optics and copper modules, contact your sales representative or visit <https://www.cisco.com/en/US/products/hw/modules/ps5455/prod_module_series_home.html>.
+
+Document history
+
+| New or Revised Topic | Described In | Date |
+| --- | --- | --- |
+| **Updated Standard information for QSFP-100G-LR and QSFP-100G-FR** | [Regulatory and Standards compliance Standards](#reg), [Table 7](#table7), [Table 4](#table4), [Table 1](#Tab1) and [Feature section](#Feauture) | January 29, 2025 |
+| **Updated power consumption for QSFP-100G-B20U4-I and QSFP-100G-B20D4-I** | [Table 3](#table3) | August 21, 2024 |
+| **Added QSFP-100G-4W40-I and QSFP-100G-LR4-I and Corresponding product details.** | [Table 1](#Tab1) | April 27, 2021 |
+| **Fixed Typo on Cisco QSFP-40/100-SRBD** | [Product overview](#product) | September 25, 2023 |
+| **Updated Safety conformance** | [Regulatory and Standards compliance Standards](#reg) | September 25, 2023 |
+| **Fixed Typo on Cisco QSFP-100G-CUxx Pull Tab colors** | [Table 3](#table3) | November 20, 2025 |
+| **QSFP-100G-SR-S added** | Several | December 12, 2025 |

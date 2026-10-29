@@ -10,6 +10,8 @@ Summary: Acceptance tests traced to requirements, with evidence layer, baseline,
 
 # <scope> test and acceptance plan
 
+Worked example: `skill-network-architect/examples/filled/test-and-acceptance-plan.md` (filled for a fictional remote-site operator; lives in the network pack only).
+
 Based on: Google SRE book, chapter 17 "Testing for Reliability" (https://sre.google/sre-book/testing-reliability/). Adapted: evidence layers and per-requirement traceability.
 Failure-injection fields paraphrase the idea of Jeffallan/claude-skills chaos-engineer experiment design (MIT); no text copied.
 

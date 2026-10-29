@@ -210,6 +210,9 @@ Measurement and security
 - [fio documentation](https://fio.readthedocs.io/en/latest/fio_doc.html): read this for building benchmarks with the right block size, queue depth and sync mode.
 - [NIST SP 800-209 storage security](https://csrc.nist.gov/pubs/sp/800/209/final): read this for storage infrastructure security controls including backup isolation.
 
-[pve-zfs]: https://raw.githubusercontent.com/proxmox/pve-docs/master/local-zfs.adoc [pveceph]: https://raw.githubusercontent.com/proxmox/pve-docs/master/pveceph.adoc [mon-config]:
-https://docs.ceph.com/en/latest/rados/configuration/mon-config-ref/ [crush]: https://docs.ceph.com/en/latest/rados/operations/crush-map/ [openzfs-tuning]:
-https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Workload%20Tuning.html [draid]: https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html
+[pve-zfs]: https://raw.githubusercontent.com/proxmox/pve-docs/master/local-zfs.adoc
+[pveceph]: https://raw.githubusercontent.com/proxmox/pve-docs/master/pveceph.adoc
+[mon-config]: https://docs.ceph.com/en/latest/rados/configuration/mon-config-ref/
+[crush]: https://docs.ceph.com/en/latest/rados/operations/crush-map/
+[openzfs-tuning]: https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Workload%20Tuning.html
+[draid]: https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html

@@ -10,6 +10,8 @@ Summary: Blameless post-incident review with impact, detection, timeline, contri
 
 # PIR-<nnn>: <incident title>
 
+Worked example: `skill-systems-architect/examples/filled/post-incident-review.md` (filled for a fictional remote-site operator; lives in the systems pack only).
+
 Based on: Google SRE book, chapter 15 "Postmortem Culture: Learning from Failure" (https://sre.google/sre-book/postmortem-culture/) and its example postmortem
 (https://sre.google/sre-book/example-postmortem/).
 
@@ -68,7 +70,8 @@ CAUSAL CHAIN: read left to right; the latent condition existed before the trigge
 
 ## 3. Contributing factors
 
-*There is rarely a single root cause. List the conditions that together allowed the incident, each with evidence and label.*
+*There is rarely a single root cause. List the conditions that together allowed the incident, each with evidence and label. In a worked or*
+*training example, label invented facts USER_STATED and say so in a footnote.*
 
 | Factor | Type (latent condition, trigger, detection gap, recovery gap, process, design) | Evidence | Label            |
 | ------ | ------------------------------------------------------------------------------ | -------- | ---------------- |

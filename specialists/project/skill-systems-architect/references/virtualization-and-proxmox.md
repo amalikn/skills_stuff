@@ -217,5 +217,7 @@ Consensus and virtualisation fundamentals
 - [etcd FAQ: why an odd number of members](https://etcd.io/docs/v3.5/faq/): read this for majority-quorum arithmetic that applies to any consensus cluster.
 - [QEMU CPU models](https://www.qemu.org/docs/master/system/qemu-cpu-models.html): read this for migration-safe CPU model selection.
 
-[pvecm]: https://raw.githubusercontent.com/proxmox/pve-docs/master/pvecm.adoc [ha-manager]: https://raw.githubusercontent.com/proxmox/pve-docs/master/ha-manager.adoc [pvesr]:
-https://raw.githubusercontent.com/proxmox/pve-docs/master/pvesr.adoc [pveceph]: https://raw.githubusercontent.com/proxmox/pve-docs/master/pveceph.adoc
+[pvecm]: https://raw.githubusercontent.com/proxmox/pve-docs/master/pvecm.adoc
+[ha-manager]: https://raw.githubusercontent.com/proxmox/pve-docs/master/ha-manager.adoc
+[pvesr]: https://raw.githubusercontent.com/proxmox/pve-docs/master/pvesr.adoc
+[pveceph]: https://raw.githubusercontent.com/proxmox/pve-docs/master/pveceph.adoc

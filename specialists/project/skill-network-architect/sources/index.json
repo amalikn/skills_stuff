@@ -93,6 +93,17 @@
   "bytes": 1472,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://arxiv.org/abs/2309.06180": {
+  "path": "web/arxiv.org/abs-2309.06180-ef8b5f9f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "9a501d535ba81ba08924037d27017eef73a6611facd43a3372dae81cc715788f",
+  "bytes": 1837,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://asq.org/quality-resources/fmea": {
   "path": "web/asq.org/quality-resources-fmea-aec0fb05.md.txt",
   "kind": "web",
@@ -138,6 +149,17 @@
   "sha256": "aa192be0850d3aaf81194cf3677fc77f9c4d246a766b7f50d357c2b0ea8b149c",
   "bytes": 900,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://candelatech.com/courses-2023/Session3d_slides.pdf": {
+  "path": "pdf/candelatech.com/courses-2023-Session3d_slides.pdf-31a8b465.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "990ce09e1e71a543b0ebf62d5f399b90b746b571fdae2ef3f6d72e63107de899",
+  "bytes": 2965694,
+  "retrieved": "2026-10-29T08:49Z"
  },
  "https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html": {
   "path": "web/canonical-subiquity.readthedocs-hosted.com/en-latest-reference-autoinstall-reference.html-7c3628f3.md.txt",
@@ -329,7 +351,8 @@
   "method": "all-scraper",
   "cited_in": [
    "skill-systems-architect/references/backup-disaster-recovery.md",
-   "skill-systems-architect/templates/backup-and-restore-test.md"
+   "skill-systems-architect/templates/backup-and-restore-test.md",
+   "skill-systems-architect/templates/dr-runbook.md"
   ],
   "sha256": "19d786c384cd8d49cde29612b8d4e9e2bdf11f7231c418bab03929ac1e4310ce",
   "bytes": 1513,
@@ -391,6 +414,28 @@
   "bytes": 1287,
   "retrieved": "2026-10-29T07:08Z"
  },
+ "https://d1okf4ta8xniw3.cloudfront.net/original/2X/a/a04632b940f8e276874b591c67c87bf4cd19f8b3.pdf": {
+  "path": "pdf/d1okf4ta8xniw3.cloudfront.net/original-2X-a-a04632b940f8e276874b591c67c87bf4cd19f8b3.pdf-00637d9d.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "39188d87da89948102545fbd57520cb36e6f3431f808ff9fc7d7edb7b9349d50",
+  "bytes": 579403,
+  "retrieved": "2026-10-29T08:49Z"
+ },
+ "https://d1okf4ta8xniw3.cloudfront.net/original/2X/b/befb3be044d619c009700b5d8a93b33b497d8f93.pdf": {
+  "path": "pdf/d1okf4ta8xniw3.cloudfront.net/original-2X-b-befb3be044d619c009700b5d8a93b33b497d8f93.pdf-8a68b7b1.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "712aa4e79a2293c06804acce31b21be3c807e8ce8e2637f86c6d152deeff5c10",
+  "bytes": 290389,
+  "retrieved": "2026-10-29T08:49Z"
+ },
  "https://datatracker.ietf.org/": {
   "path": "web/datatracker.ietf.org/index-9a54fa5f.md.txt",
   "kind": "web",
@@ -413,6 +458,28 @@
   "sha256": "9f1e3bb2b142f629f8ff488154f6a0fda1153f366f25858f17251f7db6158f97",
   "bytes": 100185,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate": {
+  "path": "web/developer.apple.com/help-account-certificates-mdm-vendor-csr-signing-certificate-0d268189.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "03a843e1ef4fb32ca9759e860257f60823d595d9eb21b4f80b2fcfeb509d857d",
+  "bytes": 38466,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://developer.apple.com/programs/": {
+  "path": "web/developer.apple.com/programs-977a0a59.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "5d2b11b20e4bea4307657bf4e23b4e0f322dbb9ae1671b6e5e0e00beb0b2ac1f",
+  "bytes": 4435,
+  "retrieved": "2026-10-29T08:50Z"
  },
  "https://developer.hashicorp.com/packer/docs": {
   "path": "web/developer.hashicorp.com/packer-docs-ee0700cc.md.txt",
@@ -846,6 +913,17 @@
   "bytes": 3013,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://docs.ollama.com/faq": {
+  "path": "web/docs.ollama.com/faq-043ee5ba.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "b080a991b19c6b4202ecf3db4d706edda7375a974b73654c4a06779a9fc511a5",
+  "bytes": 15395,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html": {
   "path": "web/docs.podman.io/en-latest-markdown-podman-systemd.unit.5.html-79c0f84c.md.txt",
   "kind": "web",
@@ -868,6 +946,17 @@
   "sha256": "8f7310b90bd6d45def2f45a23707774746131116cff1d8d88d403889ff8354d5",
   "bytes": 1589,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://docs.vllm.ai/en/latest/configuration/optimization.html": {
+  "path": "web/docs.vllm.ai/en-latest-configuration-optimization.html-e56b6e7f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "672a30aa54d22ccec01703a98e0e44062154e251cc4c24f605ca416fafbe714b",
+  "bytes": 29030,
+  "retrieved": "2026-10-29T08:50Z"
  },
  "https://documentation.meraki.com/MR/Encryption_and_Authentication/WPA3_Encryption_and_Configuration_Guide": {
   "path": "web/documentation.meraki.com/MR-Encryption_and_Authentication-WPA3_Encryption_and_Configuration_Guide-e11b1efa.md.txt",
@@ -939,6 +1028,28 @@
   "bytes": 100677,
   "retrieved": "2026-10-29T07:10Z"
  },
+ "https://fleetdm.com/guides/macos-mdm-setup": {
+  "path": "web/fleetdm.com/guides-macos-mdm-setup-fe96979b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "8e569c4faf3200955c1d89fde7c4d61434651a0ed76be8d558a594324d53cb31",
+  "bytes": 23516,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://fleetdm.com/pricing": {
+  "path": "web/fleetdm.com/pricing-8cc1cd52.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "94aa00fb9786983d35187c55adda9b4d506c12e2cfcbbabc0e8f9a10aebfd3b4",
+  "bytes": 9854,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://gateway-api.sigs.k8s.io/": {
   "path": "web/gateway-api.sigs.k8s.io/index-e286fe16.md.txt",
   "kind": "web",
@@ -995,6 +1106,28 @@
   "sha256": "d7c3df339592d9d4dfe9507460519fb4fa3b00cc84b5a7be226d92a41443eed9",
   "bytes": 9662,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://huggingface.co/unsloth/Meta-Llama-3.1-70B-Instruct/blob/main/config.json": {
+  "path": "web/huggingface.co/unsloth-Meta-Llama-3.1-70B-Instruct-blob-main-config.json-15e33c2b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "b0e0d99a8f28446e60a84b5dac97c8203496f281e77e8ae99102a9da0af5c729",
+  "bytes": 6587,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://huggingface.co/unsloth/Meta-Llama-3.1-8B-Instruct/blob/main/config.json": {
+  "path": "web/huggingface.co/unsloth-Meta-Llama-3.1-8B-Instruct-blob-main-config.json-5d54b2e6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "72d82ffc481740bdcba4a58fcc89ce6ca77e1bd60c4fe888d24e232cda05e80e",
+  "bytes": 6555,
+  "retrieved": "2026-10-29T08:50Z"
  },
  "https://kubernetes.io/docs/concepts/architecture/": {
   "path": "web/kubernetes.io/docs-concepts-architecture-10267ad8.md.txt",
@@ -1233,6 +1366,61 @@
   "bytes": 14961,
   "retrieved": "2026-10-29T07:11Z"
  },
+ "https://learn.microsoft.com/lifecycle/products/windows-10-enterprise-and-education": {
+  "path": "web/learn.microsoft.com/lifecycle-products-windows-10-enterprise-and-education-93e4faba.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "40eb0cf2d200dd4b51778de65c131ffefccac5faf991ec9b740e2371421fa8a7",
+  "bytes": 2668,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://learn.microsoft.com/lifecycle/products/windows-10-home-and-pro": {
+  "path": "web/learn.microsoft.com/lifecycle-products-windows-10-home-and-pro-7cedf055.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "d64ad650eab1fccb340c2c09a70ab129b7306b344658baa19647c16182571dd3",
+  "bytes": 2585,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://learn.microsoft.com/lifecycle/products/windows-server-2016": {
+  "path": "web/learn.microsoft.com/lifecycle-products-windows-server-2016-18c5c6be.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "e16ca22570f6dd51a0abdc0e9661a257223c5beaac34e0e9157f6e3201a1e016",
+  "bytes": 1101,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://learn.microsoft.com/lifecycle/products/windows-server-2019": {
+  "path": "web/learn.microsoft.com/lifecycle-products-windows-server-2019-434202ac.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "3b589a714000f7c4932cfacdf986fd683c2ce85e1d043a93ddeedd875318be10",
+  "bytes": 1281,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://learn.microsoft.com/lifecycle/products/windows-server-2022": {
+  "path": "web/learn.microsoft.com/lifecycle-products-windows-server-2022-3cf8ee99.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "63b41f75f85c2bb21f0edaa2314d9d9456860e38c52461a52fbdbe739f840df0",
+  "bytes": 1571,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://learn.microsoft.com/lifecycle/products/windows-server-2025": {
   "path": "web/learn.microsoft.com/lifecycle-products-windows-server-2025-18aeca40.md.txt",
   "kind": "web",
@@ -1289,6 +1477,17 @@
   "bytes": 5489,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://mariadb.com/docs/galera-cluster/galera-architecture/quorum-control-with-weighted-votes": {
+  "path": "web/mariadb.com/docs-galera-cluster-galera-architecture-quorum-control-with-weighted-votes-63eb371a.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "0038d0ecc0670ba7b6471352cb793c4c1d1480d58316c6dd51851766db606f6a",
+  "bytes": 4860,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://martinfowler.com/bliki/ParallelChange.html": {
   "path": "web/martinfowler.com/bliki-ParallelChange.html-eb2df880.md.txt",
   "kind": "web",
@@ -1322,6 +1521,17 @@
   "sha256": "3459145e658fce0e787d987b3823471cd604e6823b79d799462140b0374fca24",
   "bytes": 2386,
   "retrieved": "2026-10-29T08:08Z"
+ },
+ "https://ollama.com/library/llama3.1/tags": {
+  "path": "web/ollama.com/library-llama3.1-tags-492e3178.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "afefc06005284d41d20f5aec6cd364ea60d84adf36e72f6cdaee4c78661c86d5",
+  "bytes": 26758,
+  "retrieved": "2026-10-29T08:50Z"
  },
  "https://openchainproject.org/": {
   "path": "web/openchainproject.org/index-05e4e1db.md.txt",
@@ -1481,6 +1691,50 @@
   "bytes": 100401,
   "retrieved": "2026-10-29T07:11Z"
  },
+ "https://patroni.readthedocs.io/en/latest/dynamic_configuration.html": {
+  "path": "web/patroni.readthedocs.io/en-latest-dynamic_configuration.html-7806d89e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "dbc8cd365c45fa574e9aaf985f69c7b50a269b74b60ef38afeb1ffbe9c16d98e",
+  "bytes": 12514,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://patroni.readthedocs.io/en/latest/replication_modes.html": {
+  "path": "web/patroni.readthedocs.io/en-latest-replication_modes.html-e8739e96.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "c0f921d50b6286a09b2d5fc598659466d70054f3a3425954629b624778f72d49",
+  "bytes": 12380,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://patroni.readthedocs.io/en/latest/rest_api.html": {
+  "path": "web/patroni.readthedocs.io/en-latest-rest_api.html-2900673d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "d332dcbca5013a067af0c7f73520a8b730ae41729364a8690ed01930e5c2eb29",
+  "bytes": 29750,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://patroni.readthedocs.io/en/latest/watchdog.html": {
+  "path": "web/patroni.readthedocs.io/en-latest-watchdog.html-a256246b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "902075dd7159d26959d295a582622e684ffdbed7a3b15f30c589b639dc42ca7c",
+  "bytes": 3999,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://pbs.proxmox.com/docs/maintenance.html": {
   "path": "web/pbs.proxmox.com/docs-maintenance.html-b411e475.md.txt",
   "kind": "web",
@@ -1524,6 +1778,17 @@
   "sha256": "e45d4e685fe68410b5ad75e63eb92f23df3d0c733d3a82c169a13b9c927e8610",
   "bytes": 18979,
   "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://pgbackrest.org/user-guide.html": {
+  "path": "web/pgbackrest.org/user-guide.html-e406439c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "6f382c7cf100de6cc1fe731da1d26704fb6d116a8ceeb6a98307c38f0bf11674",
+  "bytes": 100357,
+  "retrieved": "2026-10-29T08:50Z"
  },
  "https://plantuml.com/": {
   "path": "web/plantuml.com/index-2a241888.md.txt",
@@ -2333,6 +2598,17 @@
   "bytes": 71898,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://support.apple.com/guide/business/manage-the-built-in-device-management-service-axmc7864dd73/web": {
+  "path": "web/support.apple.com/guide-business-manage-the-built-in-device-management-service-axmc7864dd73-web-121f5631.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "4278676122dae18eb253411862b69209dc5a8d286e17814d98781c574bf6d2d8",
+  "bytes": 2628,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://support.apple.com/guide/deployment/activation-lock-on-mac-dep4e1ae6f2c/web": {
   "path": "web/support.apple.com/guide-deployment-activation-lock-on-mac-dep4e1ae6f2c-web-ffa576aa.md.txt",
   "kind": "web",
@@ -2534,6 +2810,28 @@
   "bytes": 53121,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.apple.com/mac-studio/specs/": {
+  "path": "web/apple.com/mac-studio-specs-7bd626ad.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "9eba84830a756db722d61f451b2217dff6b056841aa7b7bbf679aa587fbcbaeb",
+  "bytes": 8350,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.apple.com/newsroom/2026/03/introducing-apple-business-a-new-all-in-one-platform-for-businesses-of-all-sizes/": {
+  "path": "web/apple.com/newsroom-2026-03-introducing-apple-business-a-new-all-in-one-platform-for-busine-2e91fe2c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "10ed5246a150f80bb1c54386608e4259f791f11e7c9ec77b113f974aa3a49c5a",
+  "bytes": 5522,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://www.ashrae.org/technical-resources/bookstore/datacom-series": {
   "path": "web/ashrae.org/technical-resources-bookstore-datacom-series-144f3262.md.txt",
   "kind": "web",
@@ -2615,6 +2913,50 @@
   "bytes": 33558,
   "retrieved": "2026-10-29T07:08Z"
  },
+ "https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736282.html": {
+  "path": "web/cisco.com/c-en-us-products-collateral-interfaces-modules-transceiver-modules-datasheet-c78-0b560ccd.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "01995996088456a42b12df36015687b30c2326775e272858852355f6c2dfc23e",
+  "bytes": 36961,
+  "retrieved": "2026-10-29T08:49Z"
+ },
+ "https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.html": {
+  "path": "web/cisco.com/c-en-us-products-collateral-interfaces-modules-transceiver-modules-datasheet-c78-bda25baa.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "58426c13a79b2763015d370767cb3c4b767479ef9c80f615a61d7c6a7305b93e",
+  "bytes": 21581,
+  "retrieved": "2026-10-29T08:49Z"
+ },
+ "https://www.cisco.com/c/en/us/support/docs/wireless-mobility/wireless-lan-wlan/212892-802-11ac-wireless-throughput-testing-and.html": {
+  "path": "web/cisco.com/c-en-us-support-docs-wireless-mobility-wireless-lan-wlan-212892-802-11ac-wireles-a912df8b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "76875a8f1b09e552e946970a0610f5c7897a6c416e60b7f24e606f80d6fccabc",
+  "bytes": 29643,
+  "retrieved": "2026-10-29T08:49Z"
+ },
+ "https://www.cisco.com/c/en/us/td/docs/wireless/technology/vowlan/troubleshooting/vowlan_troubleshoot/8_Site_Survey_RF_Design_Valid.html": {
+  "path": "web/cisco.com/c-en-us-td-docs-wireless-technology-vowlan-troubleshooting-vowlan_troubleshoot-8-5c3f2001.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/templates/wifi-survey-acceptance.md"
+  ],
+  "sha256": "def998084a2ed43253e44cb572d9f97050da2f872e5ef7faf7888b41d2b6fe46",
+  "bytes": 18333,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://www.cisecurity.org/cis-benchmarks": {
   "path": "web/cisecurity.org/cis-benchmarks-18b22985.md.txt",
   "kind": "web",
@@ -2662,6 +3004,17 @@
   "bytes": 7444,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.cyber.gov.au/resources-business-and-government/essential-cyber-security/ism": {
+  "path": "web/cyber.gov.au/resources-business-and-government-essential-cyber-security-ism-c7048fa7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "2a6d38f19376af8312a7b500da72b620c603641c39528cbd4b542f786008b575",
+  "bytes": 10351,
+  "retrieved": "2026-10-29T08:49Z"
+ },
  "https://www.debian.org/releases/": {
   "path": "web/debian.org/releases-21c2f6a9.md.txt",
   "kind": "web",
@@ -2694,6 +3047,50 @@
   "sha256": "b6c1e764faee38a9fb4fb99b4a34e7c06b61835d2f926b6c468ee6ac338a0876",
   "bytes": 7359,
   "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://www.etsi.org/deliver/etsi_en/301800_301899/301893/02.02.01_60/en_301893v020201p.pdf": {
+  "path": "pdf/etsi.org/deliver-etsi_en-301800_301899-301893-02.02.01_60-en_301893v020201p.pdf-2f8ff5b3.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "7779f8a89d73df05fa93589cf467a16fa37166f70292bfbee1906f0eead3a418",
+  "bytes": 3867602,
+  "retrieved": "2026-10-29T08:49Z"
+ },
+ "https://www.flukenetworks.com/blog/cabling-chronicles/channel-permanent-link-patch-cords-mptl-e2e-oh-my": {
+  "path": "web/flukenetworks.com/blog-cabling-chronicles-channel-permanent-link-patch-cords-mptl-e2e-oh-my-48a75264.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "a1797c625f9c5f644a4220df5834bcb3d9318bd42c14a5ce2977eeb656a59732",
+  "bytes": 7836,
+  "retrieved": "2026-10-29T08:49Z"
+ },
+ "https://www.flukenetworks.com/blog/cabling-chronicles/going-distance": {
+  "path": "web/flukenetworks.com/blog-cabling-chronicles-going-distance-5155bc6c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "36403efc9cce8bd55c7a2d045f51af35743747bc9c185fe21600006666ca2567",
+  "bytes": 4036,
+  "retrieved": "2026-10-29T08:49Z"
+ },
+ "https://www.flukenetworks.com/knowledge-base/applicationstandards-articles-copper/10gbase-t-field-testing-requirements": {
+  "path": "web/flukenetworks.com/knowledge-base-applicationstandards-articles-copper-10gbase-t-field-testing-requ-8bc1674e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "c29a68a23c9c328015ef5c5483adff68e346e4ba177c6310b8f8628f4a2b6124",
+  "bytes": 1557,
+  "retrieved": "2026-10-29T08:49Z"
  },
  "https://www.freedesktop.org/software/systemd/man/latest/journald.conf.html": {
   "path": "web/freedesktop.org/software-systemd-man-latest-journald.conf.html-3447a783.md.txt",
@@ -2804,7 +3201,8 @@
   "kind": "web",
   "method": "all-scraper",
   "cited_in": [
-   "skill-network-architect/references/wireless-and-radio.md"
+   "skill-network-architect/references/wireless-and-radio.md",
+   "skill-network-architect/templates/ptp-link-record.md"
   ],
   "sha256": "47807e6ca904ec3577b1272ac98a310cd137bb35e462f7b8770e6cea78527d8e",
   "bytes": 1178,
@@ -2826,7 +3224,8 @@
   "kind": "web",
   "method": "all-scraper",
   "cited_in": [
-   "skill-network-architect/references/wireless-and-radio.md"
+   "skill-network-architect/references/wireless-and-radio.md",
+   "skill-network-architect/templates/ptp-link-record.md"
   ],
   "sha256": "603d454bcc2b746751a4fbdcd10a0f42769f0900e47cd96e0d8f76d0c31e3259",
   "bytes": 3674,
@@ -2898,6 +3297,18 @@
   "bytes": 12781,
   "retrieved": "2026-10-29T08:01Z"
  },
+ "https://www.legislation.gov.au/F2025L01047/asmade/2025-09-05/text/original/pdf": {
+  "path": "web/legislation.gov.au/F2025L01047-asmade-2025-09-05-text-original-pdf-76d4355a.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md",
+   "skill-network-architect/templates/ptp-link-record.md"
+  ],
+  "sha256": "82637303afe28d4657d269f1c9a51f6c1182b0a98353b03495177aebb5b126bf",
+  "bytes": 187595,
+  "retrieved": "2026-10-29T08:49Z"
+ },
  "https://www.legislation.gov.au/F2025L01047/latest/text": {
   "path": "web/legislation.gov.au/F2025L01047-latest-text-cfbb15ae.md.txt",
   "kind": "web",
@@ -2909,6 +3320,28 @@
   "bytes": 3379,
   "retrieved": "2026-10-29T08:01Z"
  },
+ "https://www.nvidia.com/en-us/data-center/h100/": {
+  "path": "web/nvidia.com/en-us-data-center-h100-4f7aa3d7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "e7694db837f83ba3f6b2a74b96cd6830cff46f27f351aa29050d871ba2c8cfd0",
+  "bytes": 10498,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.nvidia.com/en-us/data-center/l40s/": {
+  "path": "web/nvidia.com/en-us-data-center-l40s-fbc69a18.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "ee9b44c9d45302ce700c483960fdaf055bb33d387228fa21d45a05880efe1b14",
+  "bytes": 9354,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://www.openconfig.net/": {
   "path": "web/openconfig.net/index-c375443c.md.txt",
   "kind": "web",
@@ -2919,6 +3352,105 @@
   "sha256": "1fdb9c6fc069ce53299188e474c33d64146a083fdee8d706874c6f6bd157bb48",
   "bytes": 1417,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.pgbouncer.org/": {
+  "path": "web/pgbouncer.org/index-86a92c4d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "bd862d85917fe93aa31ae2476584e4f59487e61ac7f765ad3ef8111975d127e0",
+  "bytes": 2395,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.postgresql.org/docs/17/release-17.html": {
+  "path": "web/postgresql.org/docs-17-release-17.html-322f5c5f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "78435a61af4f88af5186f51580e7028e74c0722782eb914696a7ffdfe9719267",
+  "bytes": 56917,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.postgresql.org/docs/18/continuous-archiving.html": {
+  "path": "web/postgresql.org/docs-18-continuous-archiving.html-d8137eda.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "909140c5fb6785f702d080677673ab3b710b1b3438837b0e10a10572657092c0",
+  "bytes": 45627,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.postgresql.org/docs/18/logical-replication-restrictions.html": {
+  "path": "web/postgresql.org/docs-18-logical-replication-restrictions.html-4675bdd2.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "585d325caf3c702db5318b7b956abb2a8337c17a2b54eddab3d0d6cdafed6e9e",
+  "bytes": 3784,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.postgresql.org/docs/18/pgupgrade.html": {
+  "path": "web/postgresql.org/docs-18-pgupgrade.html-c67c1276.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "630a6187c18477854ac43f7cec3b117c774e10a12314e28e5762abc9cac9c858",
+  "bytes": 15884,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.postgresql.org/docs/18/release-18.html": {
+  "path": "web/postgresql.org/docs-18-release-18.html-e36ec635.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "b9e16eb812ba52bab6ad54df90e09a0cec111d97408912c6d5592bf23333b1e9",
+  "bytes": 6817,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.postgresql.org/docs/18/runtime-config-replication.html": {
+  "path": "web/postgresql.org/docs-18-runtime-config-replication.html-42046d3b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "f0d50ba6a1964ef7ae0a620526282cd284b14122e542900a1f1a7371e7e94863",
+  "bytes": 13076,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.postgresql.org/docs/18/runtime-config-wal.html": {
+  "path": "web/postgresql.org/docs-18-runtime-config-wal.html-ccc134ff.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "b6dbed533f49fc2efb6907bbd48926c61a83274884138d60f6ec3db98e53e14b",
+  "bytes": 18147,
+  "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://www.postgresql.org/docs/18/warm-standby.html": {
+  "path": "web/postgresql.org/docs-18-warm-standby.html-4beae8d4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "1c82ebe2214547e3c10adec2d17c5c639a9fc7fdaa1cee2eb24ad5816e9111b0",
+  "bytes": 36455,
+  "retrieved": "2026-10-29T08:50Z"
  },
  "https://www.postgresql.org/docs/current/app-pgbasebackup.html": {
   "path": "web/postgresql.org/docs-current-app-pgbasebackup.html-f629e2d0.md.txt",
@@ -2964,6 +3496,17 @@
   "bytes": 2919,
   "retrieved": "2026-10-29T07:10Z"
  },
+ "https://www.postgresql.org/support/versioning/": {
+  "path": "web/postgresql.org/support-versioning-544607d7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "42302aecc7d7ccc76cce0cb55d7589a77016476d2182085892e285a7d2e257c3",
+  "bytes": 4473,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://www.qemu.org/docs/master/system/qemu-cpu-models.html": {
   "path": "web/qemu.org/docs-master-system-qemu-cpu-models.html-bb666cc8.md.txt",
   "kind": "web",
@@ -3003,6 +3546,7 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/examples/filled/ip-addressing-plan.md",
    "skill-network-architect/references/addressing-and-ipv6.md",
    "skill-network-architect/templates/ip-addressing-plan.md"
   ],
@@ -3020,6 +3564,17 @@
   "sha256": "6ed254768c9b56317a148cad33a4056b56666857f905d58dd73b3688589b237f",
   "bytes": 8275,
   "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2385.txt": {
+  "path": "rfc/rfc2385.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/templates/bgp-peer-policy.md"
+  ],
+  "sha256": "e4579d6535bbb20dd15de5a1be8e2300af6b397177fd1b384d877ee02542f190",
+  "bytes": 12315,
+  "retrieved": "2026-10-29T08:49Z"
  },
  "https://www.rfc-editor.org/rfc/rfc2516.txt": {
   "path": "rfc/rfc2516.txt",
@@ -3148,6 +3703,7 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/examples/filled/ip-addressing-plan.md",
    "skill-network-architect/templates/ip-addressing-plan.md"
   ],
   "sha256": "b0741fc609be565b356c62d2f9b9ef30469f3fe7bde386c2690e173751bb1941",
@@ -3220,6 +3776,17 @@
   "bytes": 32051,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc4486.txt": {
+  "path": "rfc/rfc4486.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/templates/bgp-peer-policy.md"
+  ],
+  "sha256": "f144966682140ed2175836b105e50d9ac54dcc9383e5923f47d81c96535ffc2f",
+  "bytes": 10254,
+  "retrieved": "2026-10-29T08:49Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc4594.txt": {
   "path": "rfc/rfc4594.txt",
   "kind": "rfc",
@@ -3247,7 +3814,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md"
   ],
   "sha256": "21869e5983e4103210b98d43ba7b17bfecb699f0b105b0b14b5ab5ff4628a809",
   "bytes": 36579,
@@ -3281,6 +3849,7 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/examples/filled/ip-addressing-plan.md",
    "skill-network-architect/templates/ip-addressing-plan.md"
   ],
   "sha256": "9d16217614a74a9b064eff900e5cd07a525793cf8227dca1267100e880f0c410",
@@ -3293,7 +3862,9 @@
   "method": "direct",
   "cited_in": [
    "skill-network-architect/references/capacity-and-resilience.md",
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "45a7f8fcc04991c22d9efb1419aee4d9870cf1b7aa4b16a930e66a248146c61d",
   "bytes": 110279,
@@ -3304,7 +3875,9 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "30518631501fd4607c39422653aa0eaeae8ed79d7ce7af4a21c2c6a2fc87ca3a",
   "bytes": 14307,
@@ -3315,7 +3888,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md"
   ],
   "sha256": "43170c8c2a9aa84ae98c363afb11ae9a8313580ae9653451471c7c1d987f9a28",
   "bytes": 11765,
@@ -3337,7 +3911,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md"
   ],
   "sha256": "2519e9a740c21ed5a675211104ddd21b9e3888438f7fb7e7887356804ec647e7",
   "bytes": 106174,
@@ -3451,6 +4026,7 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/examples/filled/ip-addressing-plan.md",
    "skill-network-architect/references/addressing-and-ipv6.md",
    "skill-network-architect/references/wan-and-remote-access.md"
   ],
@@ -3474,7 +4050,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md"
   ],
   "sha256": "05d3b68f6750fd1c6090a9132212a31bad711e513765c47ce6f8fe10fd1e68e5",
   "bytes": 20082,
@@ -3507,7 +4084,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "fd4fdb8cec9de61bd4a37099a76d53a2723747ee382f019187d767b251547903",
   "bytes": 8198,
@@ -3553,7 +4131,8 @@
   "cited_in": [
    "skill-network-architect/references/datacenter-cloud-containers.md",
    "skill-network-architect/references/routing-and-switching.md",
-   "skill-network-architect/references/wan-and-remote-access.md"
+   "skill-network-architect/references/wan-and-remote-access.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "731475429b30bf4b29a102a0c9217cb0d3522c34fd546ba7b134fec931e83574",
   "bytes": 49406,
@@ -3576,7 +4155,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "556956e275a856ad727aa45d493725a4e13f002ffd4e3f2744b3091b886569d0",
   "bytes": 134119,
@@ -3588,6 +4168,7 @@
   "method": "direct",
   "cited_in": [
    "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md",
    "skill-network-architect/templates/routing-policy.md"
   ],
   "sha256": "2d7da1e1dfa15b6324be245ca509023c6b9de098f0c431a6994753aff5a8a2e6",
@@ -3644,11 +4225,23 @@
   "method": "direct",
   "cited_in": [
    "skill-network-architect/references/datacenter-cloud-containers.md",
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "d71d4e87fca8229964568357aaa38b2b2e0c8387baac895f7620908f017940ed",
   "bytes": 89682,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7999.txt": {
+  "path": "rfc/rfc7999.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/templates/bgp-peer-policy.md"
+  ],
+  "sha256": "a22a065503e65e83033233136f36d7ff3b59985a34c7a060d1cbe76c770004d0",
+  "bytes": 16794,
+  "retrieved": "2026-10-29T08:50Z"
  },
  "https://www.rfc-editor.org/rfc/rfc8092.txt": {
   "path": "rfc/rfc8092.txt",
@@ -3712,7 +4305,9 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/RUNBOOK.md",
    "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md",
    "skill-network-architect/templates/routing-policy.md"
   ],
   "sha256": "73d16f16d6c4d37edd8cb6cd484e4acc4b53ac9ad53ce4bff6279e873cc646f3",
@@ -3735,7 +4330,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md"
   ],
   "sha256": "090ee540ebb345c182fb02e2d3f39cc772a2f7f87095b342803cf47ec10cfa63",
   "bytes": 21701,
@@ -3747,7 +4343,8 @@
   "method": "direct",
   "cited_in": [
    "skill-network-architect/references/datacenter-cloud-containers.md",
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "610f009d0fd7df5ec1c18c98346569052fbbab095d1add092c50601591eb3145",
   "bytes": 76766,
@@ -3890,7 +4487,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "a4cc1238c864efc39c58672a595c2b1328c5b74c13a0c3f350054ad4ef6f88da",
   "bytes": 87963,
@@ -3901,7 +4499,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/evpn-fabric-build.md"
   ],
   "sha256": "874b6b31c3f5c6bc9cb9bdaec580e01ac34d76a3cecbb9de60066d5072537f00",
   "bytes": 77734,
@@ -3934,7 +4533,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/routing-and-switching.md"
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/bgp-peer-policy.md"
   ],
   "sha256": "3934af354c672133337c5ce731282f97c00587d63ec1267c824c3fb5dcb39775",
   "bytes": 29154,
@@ -4031,6 +4631,17 @@
   "bytes": 25488,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.sqlite.org/wal.html": {
+  "path": "web/sqlite.org/wal.html-d6f43ae0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/databases-and-ha.md"
+  ],
+  "sha256": "bd4c2eb37f078b408b0c13c48c72f70cc9be284955289b9ac1c6cf52bf89f6ff",
+  "bytes": 33485,
+  "retrieved": "2026-10-29T08:50Z"
+ },
  "https://www.tiaonline.org/standards/catalog/": {
   "path": "web/tiaonline.org/standards-catalog-816be5b7.md.txt",
   "kind": "web",
@@ -4041,6 +4652,17 @@
   "sha256": "af6069bd0cf30e253db79db66d7274c5c96325bd53052d2adf4e33a2ec9ff376",
   "bytes": 21127,
   "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://www.usenix.org/system/files/conference/atc14/atc14-paper-salameh.pdf": {
+  "path": "pdf/usenix.org/system-files-conference-atc14-atc14-paper-salameh.pdf-70f215f5.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "34b24b3ecb6eec7a140cd8f5c50a3effb9c1ca2cc7bbc57d4c9ca7d24570659f",
+  "bytes": 513132,
+  "retrieved": "2026-10-29T08:49Z"
  },
  "https://www.wi-fi.org/discover-wi-fi/security": {
   "path": "web/wi-fi.org/discover-wi-fi-security-6f7d45ee.md.txt",

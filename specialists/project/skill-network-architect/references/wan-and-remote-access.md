@@ -204,9 +204,21 @@ Carrier edge and satellite:
 - [RFC 3135 Performance Enhancing Proxies][rfc3135]: TCP splitting on satellite paths and its conflict with IPsec.
 - [MANRS Network Operators actions](https://manrs.org/netops/): edge anti-spoofing and filtering at the internet border.
 
-[rfc1191]: https://www.rfc-editor.org/rfc/rfc1191.html [rfc2516]: https://www.rfc-editor.org/rfc/rfc2516.html [rfc2784]: https://www.rfc-editor.org/rfc/rfc2784.html [rfc2890]:
-https://www.rfc-editor.org/rfc/rfc2890.html [rfc3135]: https://www.rfc-editor.org/rfc/rfc3135.html [rfc4106]: https://www.rfc-editor.org/rfc/rfc4106.html [rfc4303]:
-https://www.rfc-editor.org/rfc/rfc4303.html [rfc4459]: https://www.rfc-editor.org/rfc/rfc4459.html [rfc4821]: https://www.rfc-editor.org/rfc/rfc4821.html [rfc6598]:
-https://www.rfc-editor.org/rfc/rfc6598.html [rfc6888]: https://www.rfc-editor.org/rfc/rfc6888.html [rfc7296]: https://www.rfc-editor.org/rfc/rfc7296.html [rfc7348]:
-https://www.rfc-editor.org/rfc/rfc7348.html [rfc8200]: https://www.rfc-editor.org/rfc/rfc8200.html [rfc8201]: https://www.rfc-editor.org/rfc/rfc8201.html [rfc8899]:
-https://www.rfc-editor.org/rfc/rfc8899.html [rfc8900]: https://www.rfc-editor.org/rfc/rfc8900.html [wg]: https://www.wireguard.com/papers/wireguard.pdf
+[rfc1191]: https://www.rfc-editor.org/rfc/rfc1191.html
+[rfc2516]: https://www.rfc-editor.org/rfc/rfc2516.html
+[rfc2784]: https://www.rfc-editor.org/rfc/rfc2784.html
+[rfc2890]: https://www.rfc-editor.org/rfc/rfc2890.html
+[rfc3135]: https://www.rfc-editor.org/rfc/rfc3135.html
+[rfc4106]: https://www.rfc-editor.org/rfc/rfc4106.html
+[rfc4303]: https://www.rfc-editor.org/rfc/rfc4303.html
+[rfc4459]: https://www.rfc-editor.org/rfc/rfc4459.html
+[rfc4821]: https://www.rfc-editor.org/rfc/rfc4821.html
+[rfc6598]: https://www.rfc-editor.org/rfc/rfc6598.html
+[rfc6888]: https://www.rfc-editor.org/rfc/rfc6888.html
+[rfc7296]: https://www.rfc-editor.org/rfc/rfc7296.html
+[rfc7348]: https://www.rfc-editor.org/rfc/rfc7348.html
+[rfc8200]: https://www.rfc-editor.org/rfc/rfc8200.html
+[rfc8201]: https://www.rfc-editor.org/rfc/rfc8201.html
+[rfc8899]: https://www.rfc-editor.org/rfc/rfc8899.html
+[rfc8900]: https://www.rfc-editor.org/rfc/rfc8900.html
+[wg]: https://www.wireguard.com/papers/wireguard.pdf

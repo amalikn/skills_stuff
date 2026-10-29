@@ -164,10 +164,22 @@ AAA:
 - [RFC 6614][rfc6614] and [RFC 9765][rfc9765]: RADIUS over TLS and the MD5-free RADIUS/1.1.
 - [radext RADIUS/(D)TLS bis draft][radext]: the standards-track replacement.
 
-[rfc3046]: https://www.rfc-editor.org/rfc/rfc3046.html [rfc5176]: https://www.rfc-editor.org/rfc/rfc5176.html [rfc5905]: https://www.rfc-editor.org/rfc/rfc5905.html [rfc6614]:
-https://www.rfc-editor.org/rfc/rfc6614.html [rfc7858]: https://www.rfc-editor.org/rfc/rfc7858.html [rfc8106]: https://www.rfc-editor.org/rfc/rfc8106.html [rfc8415]:
-https://www.rfc-editor.org/rfc/rfc8415.html [rfc8484]: https://www.rfc-editor.org/rfc/rfc8484.html [rfc8633]: https://www.rfc-editor.org/rfc/rfc8633.html [rfc8767]:
-https://www.rfc-editor.org/rfc/rfc8767.html [rfc8915]: https://www.rfc-editor.org/rfc/rfc8915.html [rfc9210]: https://www.rfc-editor.org/rfc/rfc9210.html [rfc9250]:
-https://www.rfc-editor.org/rfc/rfc9250.html [rfc9520]: https://www.rfc-editor.org/rfc/rfc9520.html [rfc9765]: https://www.rfc-editor.org/rfc/rfc9765.html [nvd]:
-https://nvd.nist.gov/vuln/detail/CVE-2024-3596 [radext]: https://datatracker.ietf.org/doc/draft-ietf-radext-radiusdtls-bis/ [ieee1588]: https://standards.ieee.org/ieee/1588/6825/ [g8275]:
-https://www.itu.int/rec/T-REC-G.8275.1/en
+[rfc3046]: https://www.rfc-editor.org/rfc/rfc3046.html
+[rfc5176]: https://www.rfc-editor.org/rfc/rfc5176.html
+[rfc5905]: https://www.rfc-editor.org/rfc/rfc5905.html
+[rfc6614]: https://www.rfc-editor.org/rfc/rfc6614.html
+[rfc7858]: https://www.rfc-editor.org/rfc/rfc7858.html
+[rfc8106]: https://www.rfc-editor.org/rfc/rfc8106.html
+[rfc8415]: https://www.rfc-editor.org/rfc/rfc8415.html
+[rfc8484]: https://www.rfc-editor.org/rfc/rfc8484.html
+[rfc8633]: https://www.rfc-editor.org/rfc/rfc8633.html
+[rfc8767]: https://www.rfc-editor.org/rfc/rfc8767.html
+[rfc8915]: https://www.rfc-editor.org/rfc/rfc8915.html
+[rfc9210]: https://www.rfc-editor.org/rfc/rfc9210.html
+[rfc9250]: https://www.rfc-editor.org/rfc/rfc9250.html
+[rfc9520]: https://www.rfc-editor.org/rfc/rfc9520.html
+[rfc9765]: https://www.rfc-editor.org/rfc/rfc9765.html
+[nvd]: https://nvd.nist.gov/vuln/detail/CVE-2024-3596
+[radext]: https://datatracker.ietf.org/doc/draft-ietf-radext-radiusdtls-bis/
+[ieee1588]: https://standards.ieee.org/ieee/1588/6825/
+[g8275]: https://www.itu.int/rec/T-REC-G.8275.1/en

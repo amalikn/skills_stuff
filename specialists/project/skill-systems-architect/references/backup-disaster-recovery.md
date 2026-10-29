@@ -237,7 +237,11 @@ PostgreSQL
 - [pg_basebackup](https://www.postgresql.org/docs/current/app-pgbasebackup.html): read this for base and incremental backups.
 - [High availability and replication](https://www.postgresql.org/docs/current/high-availability.html): read this for standby options and their failover semantics.
 
-[nist-rpo]: https://csrc.nist.gov/glossary/term/recovery_point_objective [nist-rto]: https://csrc.nist.gov/glossary/term/recovery_time_objective [cisa]:
-https://www.cisa.gov/stopransomware/ransomware-guide [pg-archiving]: https://www.postgresql.org/docs/current/continuous-archiving.html [pg-basebackup]:
-https://www.postgresql.org/docs/current/app-pgbasebackup.html [pbs-overview]: https://pbs.proxmox.com/docs/technical-overview.html [pbs-maint]: https://pbs.proxmox.com/docs/maintenance.html [aws-dr]:
-https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html
+[nist-rpo]: https://csrc.nist.gov/glossary/term/recovery_point_objective
+[nist-rto]: https://csrc.nist.gov/glossary/term/recovery_time_objective
+[cisa]: https://www.cisa.gov/stopransomware/ransomware-guide
+[pg-archiving]: https://www.postgresql.org/docs/current/continuous-archiving.html
+[pg-basebackup]: https://www.postgresql.org/docs/current/app-pgbasebackup.html
+[pbs-overview]: https://pbs.proxmox.com/docs/technical-overview.html
+[pbs-maint]: https://pbs.proxmox.com/docs/maintenance.html
+[aws-dr]: https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html

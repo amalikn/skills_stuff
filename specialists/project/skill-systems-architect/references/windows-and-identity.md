@@ -36,8 +36,8 @@ Summary: >-
 
 | Decision               | Rule and threshold                                                                                   | Evidence                                               |
 | ---------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Windows Server 2016    | Plan replacement now: extended support ends 2027-01-12, under 3 months away                          | VERIFIED_SECONDARY; confirm in [W1]                    |
-| Windows 10             | Support ended 2025-10-14. A device without a recorded ESU entitlement is unsupported                 | VERIFIED_SECONDARY                                     |
+| Windows Server 2016    | Plan replacement now: extended support ends 2027-01-12, under 3 months away                          | VERIFIED_PRIMARY [W1-2016], checked 2026-10-29         |
+| Windows 10             | Ended 2025-10-14 (22H2, all editions). A device without a recorded ESU entitlement is unsupported    | VERIFIED_PRIMARY [W1-10], checked 2026-10-29           |
 | Kerberos clock skew    | Default tolerance 5 minutes; keep 5. Alert on offset well under 5 minutes                            | VERIFIED_PRIMARY [W3]                                  |
 | LAPS backup target     | Entra ID (Entra-joined), AD (domain-joined), either for hybrid, never both                           | VERIFIED_PRIMARY [W2]                                  |
 | Legacy Microsoft LAPS  | Deprecated; installer blocked on Windows 11 23H2+. Legacy emulation mode only as a temporary step    | VERIFIED_SECONDARY; [W2]                               |
@@ -48,15 +48,18 @@ Summary: >-
 
 ## Lifecycle dates
 
-| Product                             | Mainstream end      | Extended end                    | Evidence                                                                          |
-| ----------------------------------- | ------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
-| Windows Server 2016                 | 2022-01-11          | 2027-01-12                      | VERIFIED_SECONDARY                                                                |
-| Windows Server 2019                 | 2024-01-09          | 2029-01-09                      | VERIFIED_SECONDARY                                                                |
-| Windows Server 2022                 | 2026-10-13 (passed) | 2031-10-14                      | VERIFIED_SECONDARY                                                                |
-| Windows Server 2025                 | 2029-11-13          | 2034-11-14                      | VERIFIED_SECONDARY (search extract of the Microsoft page; third parties conflict) |
-| Windows 10 (Home/Pro/Ent/Edu, 22H2) | -                   | ended 2025-10-14; paid ESU only | VERIFIED_SECONDARY                                                                |
+| Product                             | Start      | Mainstream end      | Extended end                    | Evidence                                       |
+| ----------------------------------- | ---------- | ------------------- | ------------------------------- | ---------------------------------------------- |
+| Windows Server 2016                 | 2016-10-15 | 2022-01-11          | 2027-01-12                      | VERIFIED_PRIMARY [W1-2016], checked 2026-10-29 |
+| Windows Server 2019                 | 2018-11-13 | 2024-01-09          | 2029-01-09                      | VERIFIED_PRIMARY [W1-2019], checked 2026-10-29 |
+| Windows Server 2022                 | 2021-08-18 | 2026-10-13 (passed) | 2031-10-14                      | VERIFIED_PRIMARY [W1-2022], checked 2026-10-29 |
+| Windows Server 2025                 | 2024-11-01 | 2029-11-13          | 2034-11-14                      | VERIFIED_PRIMARY [W1], checked 2026-10-29      |
+| Windows 10 (Home/Pro/Ent/Edu, 22H2) | 2022-10-18 | -                   | ended 2025-10-14; paid ESU only | VERIFIED_PRIMARY [W1-10], checked 2026-10-29   |
 
-Microsoft lifecycle pages render client-side and could not be extracted on 2026-10-29. Open [W1] for the exact product before any plan.
+- Windows Server 2019 follows the Fixed Lifecycle Policy; Microsoft shows support dates in Pacific Time [W1-2019]. Check the policy on each product page.
+- Windows Server 2019 was re-released on 2018-11-13 and its support dates were adjusted to that date [W1-2019].
+- Containers released with each Windows Server version follow the same lifecycle dates [W1-2016] [W1-2022].
+- The pages render client-side; they were read with a JavaScript-rendering fetch on 2026-10-29. Re-open [W1] for the exact product before any plan.
 
 ## Identity topology
 
@@ -160,7 +163,7 @@ Fix: a local break-glass login on the hypervisor and one DC in a separate failur
 
 Estate: 40 Windows Server 2016 VMs; 2 change windows a week; each migration needs 2 windows (build and cutover).
 
-1. Runway: 2026-10-29 to extended end 2027-01-12 is 75 days, about 10.7 weeks (VERIFIED_SECONDARY dates).
+1. Runway: 2026-10-29 to extended end 2027-01-12 is 75 days, about 10.7 weeks (VERIFIED_PRIMARY date [W1-2016]).
 2. Demand: 40 servers x 2 windows = 80 windows. Supply: 10.7 weeks x 2 = 21 windows.
 3. Gap: 59 windows. The plan cannot finish in time. Record the gap as a risk with an owner and a dated decision.
 4. Options: add parallel windows, retire servers with no traffic first, or isolate the remainder. Price extended support only from a primary source.
@@ -181,7 +184,13 @@ Estate: 40 Windows Server 2016 VMs; 2 change windows a week; each migration need
 ## Further reading
 
 Lifecycle:
-- [W1] [Microsoft lifecycle: Windows Server 2025](https://learn.microsoft.com/lifecycle/products/windows-server-2025) - read this for authoritative support dates; change the slug for other products.
+- [W1] [Microsoft lifecycle: Windows Server 2025][windows-server-2025-url] - read this for authoritative support dates (VERIFIED_PRIMARY, checked 2026-10-29).
+- [W1-2022] [Windows Server 2022](https://learn.microsoft.com/lifecycle/products/windows-server-2022),
+  [W1-2019] [Windows Server 2019](https://learn.microsoft.com/lifecycle/products/windows-server-2019),
+  [W1-2016] [Windows Server 2016](https://learn.microsoft.com/lifecycle/products/windows-server-2016) - read these for the earlier releases (VERIFIED_PRIMARY, checked 2026-10-29).
+- [W1-10] [Windows 10 Home and Pro](https://learn.microsoft.com/lifecycle/products/windows-10-home-and-pro) and
+  [Windows 10 Enterprise and Education](https://learn.microsoft.com/lifecycle/products/windows-10-enterprise-and-education) - read these for
+  the 22H2 end date (VERIFIED_PRIMARY, checked 2026-10-29).
 
 Identity and time:
 - [W3] [Kerberos clock skew policy][w3url] - read this for the Kerberos skew default (VERIFIED_PRIMARY, checked 2026-10-29).
@@ -212,3 +221,5 @@ Baselines:
 [w5url]: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-guide
 
 [krbtgturl]: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-the-krbtgt-password
+
+[windows-server-2025-url]: https://learn.microsoft.com/lifecycle/products/windows-server-2025

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "paths": [
+    {
+      "id": "site-a-sat-wg-1360",
+      "underlay_mtu": 1500,
+      "layers": [
+        "wireguard-ipv4"
+      ],
+      "required_payload_mtu": 1360
+    },
+    {
+      "id": "site-a-lte-wg-1360",
+      "underlay_mtu": 1428,
+      "layers": [
+        "wireguard-ipv4"
+      ],
+      "required_payload_mtu": 1360
+    }
+  ]
+}

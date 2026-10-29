@@ -8,7 +8,7 @@ description: >-
   (skill-smc, skill-cambium, skill-mikrotik), diagram layout (skill-drawio) or code (skill-coder); collaborates with skill-systems-architect on hosts,
   storage and recovery.
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   reviewed: "2026-10-29"
   scope: "Vendor-neutral domain architecture"
 ---
@@ -77,29 +77,30 @@ Load [automation and safety](references/automation-and-safety.md) when generatin
 
 ## Domain Routing
 
-Load only the modules the task needs. Every module ends with Further reading for depth.
+Load only the modules the task needs; for a narrow question load the named section, not the whole file. Every module opens with Scope and
+Decision rules and ends with Further reading for depth.
 
-| Module | Load when |
-| --- | --- |
-| [architecture-method](references/architecture-method.md) | every task: modes, requirements, evidence labels, options and decisions (shared) |
-| [collaboration-protocol](references/collaboration-protocol.md) + [observability-troubleshooting](references/observability-troubleshooting.md) + [red-flags](references/red-flags.md) | a platform pack, monitoring system or report shows a symptom, or two reports disagree |
-| [physical-and-campus](references/physical-and-campus.md) | cabling, fibre, PoE, power, grounding, campus core/distribution/access |
-| [addressing-and-ipv6](references/addressing-and-ipv6.md) | IP plans, IPAM, IPv6 sizing, NAT/CGNAT, NAT64/DNS64, overlapping prefixes |
-| [routing-and-switching](references/routing-and-switching.md) | BGP/OSPF/IS-IS policy, EVPN/VXLAN, L2 boundaries, BFD, ECMP, multicast, QoS |
-| [wan-and-remote-access](references/wan-and-remote-access.md) | ISP/carrier edge, satellite/LTE, tunnels and VPN, MTU/MSS, failover, remote access |
-| [wireless-and-radio](references/wireless-and-radio.md) | Wi-Fi design, RF and PtP/PtMP links, link budgets, roaming, regulatory limits |
-| [security-and-segmentation](references/security-and-segmentation.md) | trust zones, VRF/firewall segmentation, 802.1X/NAC, first-hop security, management plane |
-| [network-services](references/network-services.md) | DNS, DHCP, NTP/PTP, RADIUS/AAA and their failure behaviour |
-| [datacenter-cloud-containers](references/datacenter-cloud-containers.md) | leaf/spine fabrics, oversubscription, cloud VPC/VNet, Kubernetes/CNI networking |
-| [observability-troubleshooting](references/observability-troubleshooting.md) | telemetry design, flow data, incident diagnosis across layers |
-| [capacity-and-resilience](references/capacity-and-resilience.md) | link and device capacity, availability targets, failure scenarios, cost |
-| [migration-and-operations](references/migration-and-operations.md) | cutovers, waves, rollback, change control and operating ownership |
-| [red-flags](references/red-flags.md) | a symptom or signal needs triage: what it usually means, first question, data to pull |
-| [automation-and-safety](references/automation-and-safety.md) | automation that writes, fleet-wide changes, canary and batch limits (shared) |
-| [collaboration-protocol](references/collaboration-protocol.md) | working with the systems architect or a platform pack (shared) |
-| [diagrams-and-deliverables](references/diagrams-and-deliverables.md) | diagram and deliverable shapes and review (shared) |
-| [foss-and-tool-selection](references/foss-and-tool-selection.md) | a tool choice is actually required (shared) |
-| [research-and-attribution](references/research-and-attribution.md) | researching, comparing or citing external material (shared) |
+| Module | Load when | Topical sections (load one when the task is narrow) |
+| --- | --- | --- |
+| [architecture-method](references/architecture-method.md) | every task: modes, requirements, evidence labels, options and decisions (shared) | [Evidence labels and layers](references/architecture-method.md#evidence-labels-and-layers), [Engagement modes](references/architecture-method.md#engagement-modes), [End-to-end flow](references/architecture-method.md#end-to-end-flow), [Quantitative rules](references/architecture-method.md#quantitative-rules) |
+| [collaboration-protocol](references/collaboration-protocol.md) + [observability-troubleshooting](references/observability-troubleshooting.md) + [red-flags](references/red-flags.md) | a platform pack, monitoring system or report shows a symptom, or two reports disagree | - |
+| [physical-and-campus](references/physical-and-campus.md) | cabling, fibre, PoE, power, grounding, campus core/distribution/access | [Failure domains](references/physical-and-campus.md#failure-domains), [Optical and copper reach](references/physical-and-campus.md#optical-and-copper-reach), [PoE classes](references/physical-and-campus.md#poe-classes) |
+| [addressing-and-ipv6](references/addressing-and-ipv6.md) | IP plans, IPAM, IPv6 sizing, NAT/CGNAT, NAT64/DNS64, overlapping prefixes | [Allocation hierarchy](references/addressing-and-ipv6.md#allocation-hierarchy), [IPv6 operation and translation](references/addressing-and-ipv6.md#ipv6-operation-and-translation), [Overlap and migration](references/addressing-and-ipv6.md#overlap-and-migration) |
+| [routing-and-switching](references/routing-and-switching.md) | BGP/OSPF/IS-IS policy, EVPN/VXLAN, L2 boundaries, BFD, ECMP, multicast, QoS | [Forwarding and control model](references/routing-and-switching.md#forwarding-and-control-model), [EVPN and VXLAN fabrics](references/routing-and-switching.md#evpn-and-vxlan-fabrics), [Sources](references/routing-and-switching.md#sources) |
+| [wan-and-remote-access](references/wan-and-remote-access.md) | ISP/carrier edge, satellite/LTE, tunnels and VPN, MTU/MSS, failover, remote access | [High-latency, satellite and radio links](references/wan-and-remote-access.md#high-latency-satellite-and-radio-links), [MTU budget](references/wan-and-remote-access.md#mtu-budget), [Redundancy and CGNAT](references/wan-and-remote-access.md#redundancy-and-cgnat), [Sources](references/wan-and-remote-access.md#sources) |
+| [wireless-and-radio](references/wireless-and-radio.md) | Wi-Fi design, RF and PtP/PtMP links, link budgets, roaming, regulatory limits | [Regulatory (Australia)](references/wireless-and-radio.md#regulatory-australia), [Radio link budget](references/wireless-and-radio.md#radio-link-budget), [Usable throughput from PHY rate](references/wireless-and-radio.md#usable-throughput-from-phy-rate), [Access and edge constraints](references/wireless-and-radio.md#access-and-edge-constraints) |
+| [security-and-segmentation](references/security-and-segmentation.md) | trust zones, VRF/firewall segmentation, 802.1X/NAC, first-hop security, management plane | [Trust-boundary pass](references/security-and-segmentation.md#trust-boundary-pass), [Zone matrix](references/security-and-segmentation.md#zone-matrix), [Port and wireless access control](references/security-and-segmentation.md#port-and-wireless-access-control) |
+| [network-services](references/network-services.md) | DNS, DHCP, NTP/PTP, RADIUS/AAA and their failure behaviour | [Dependency order](references/network-services.md#dependency-order) |
+| [datacenter-cloud-containers](references/datacenter-cloud-containers.md) | leaf/spine fabrics, oversubscription, cloud VPC/VNet, Kubernetes/CNI networking | [Fabric shape](references/datacenter-cloud-containers.md#fabric-shape), [Cloud provider facts](references/datacenter-cloud-containers.md#cloud-provider-facts), [Containers](references/datacenter-cloud-containers.md#containers) |
+| [observability-troubleshooting](references/observability-troubleshooting.md) | telemetry design, flow data, incident diagnosis across layers | [Incident result shape](references/observability-troubleshooting.md#incident-result-shape) |
+| [capacity-and-resilience](references/capacity-and-resilience.md) | link and device capacity, availability targets, failure scenarios, cost | - |
+| [migration-and-operations](references/migration-and-operations.md) | cutovers, waves, rollback, change control and operating ownership | - |
+| [red-flags](references/red-flags.md) | a symptom or signal needs triage: what it usually means, first question, data to pull | [Redundancy and physical](references/red-flags.md#redundancy-and-physical), [Routing, WAN and MTU](references/red-flags.md#routing-wan-and-mtu), [Addressing and services](references/red-flags.md#addressing-and-services), [Wireless and radio](references/red-flags.md#wireless-and-radio) |
+| [automation-and-safety](references/automation-and-safety.md) | automation that writes, fleet-wide changes, canary and batch limits (shared) | [Validation tiers](references/automation-and-safety.md#validation-tiers) |
+| [collaboration-protocol](references/collaboration-protocol.md) | working with the systems architect or a platform pack (shared) | [Roles and ownership](references/collaboration-protocol.md#roles-and-ownership), [Review states](references/collaboration-protocol.md#review-states) |
+| [diagrams-and-deliverables](references/diagrams-and-deliverables.md) | diagram and deliverable shapes and review (shared) | [ASCII diagram conventions](references/diagrams-and-deliverables.md#ascii-diagram-conventions), [Diagram review checklist](references/diagrams-and-deliverables.md#diagram-review-checklist), [Architecture pack](references/diagrams-and-deliverables.md#architecture-pack), [Drawio handoff](references/diagrams-and-deliverables.md#drawio-handoff) |
+| [foss-and-tool-selection](references/foss-and-tool-selection.md) | a tool choice is actually required (shared) | [Licence observations](references/foss-and-tool-selection.md#licence-observations) |
+| [research-and-attribution](references/research-and-attribution.md) | researching, comparing or citing external material (shared) | [Sources evaluated](references/research-and-attribution.md#sources-evaluated), [Conventions verified](references/research-and-attribution.md#conventions-verified), [Limits and explicit negatives](references/research-and-attribution.md#limits-and-explicit-negatives) |
 
 ## Collaboration in Both Directions
 

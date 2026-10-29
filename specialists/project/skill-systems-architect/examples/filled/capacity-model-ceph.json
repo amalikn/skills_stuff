@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "domains": [
+    {
+      "id": "pve-1",
+      "raw_tb": 7.68
+    },
+    {
+      "id": "pve-2",
+      "raw_tb": 7.68
+    },
+    {
+      "id": "pve-3",
+      "raw_tb": 7.68
+    }
+  ],
+  "pools": [
+    {
+      "id": "vm-rbd-now",
+      "size": 3,
+      "min_size": 2,
+      "tolerate_domain_failures": 1,
+      "demand_tb": 2.4
+    },
+    {
+      "id": "vm-rbd-horizon",
+      "size": 3,
+      "min_size": 2,
+      "tolerate_domain_failures": 1,
+      "demand_tb": 4.6
+    }
+  ]
+}

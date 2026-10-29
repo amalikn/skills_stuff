@@ -10,6 +10,8 @@ Summary: Demand, supply and headroom per resource under normal, maintenance, lar
 
 # <scope> capacity model
 
+Worked example: `skill-systems-architect/examples/filled/capacity-model.md` (filled for a fictional remote-site operator; lives in the systems pack only).
+
 ## How to use
 
 - Model each limiting resource separately (link bandwidth, airtime, PPS/sessions, CPU, memory, storage capacity and IOPS, power, PoE, rack space, licences, staff hours).
@@ -29,7 +31,7 @@ Summary: Demand, supply and headroom per resource under normal, maintenance, lar
 
 ## 2. Supply and failure scenarios
 
-| Resource | Unit | Units | Usable per unit (after reserve) | Normal supply | Maintenance (N-1) | Largest unit lost | Correlated domain lost (which) | Unit   |
+| Resource | Unit | Units | Usable per unit (after reserve; pools: `just ceph` plan) | Normal supply | Maintenance (N-1) | Largest unit lost | Correlated domain lost (which) | Unit   |
 | -------- | ---- | ----- | ------------------------------- | ------------- | ----------------- | ----------------- | ------------------------------ | ------ |
 | WAN      | link | 2     | <n> Mbit/s                      | <n>           | <n>               | <n>               | duct <id>: <n>                 | Mbit/s |
 | Memory   | host | <n>   | <n> GiB                         |               |                   |                   | rack <id>:                     | GiB    |

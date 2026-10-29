@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "warn_days": 365,
+  "entries": [
+    {
+      "id": "edge-boxes",
+      "product": "Debian",
+      "version": "11",
+      "end_of_support": "2026-08-31",
+      "source": "https://www.debian.org/releases/",
+      "owner": "platform team",
+      "count": 40
+    },
+    {
+      "id": "core-hosts",
+      "product": "Debian",
+      "version": "12",
+      "end_of_support": "2028-06-30",
+      "source": "https://wiki.debian.org/LTS",
+      "owner": "platform team",
+      "count": 3
+    },
+    {
+      "id": "legacy-ad",
+      "product": "Windows Server",
+      "version": "2016",
+      "end_of_support": "2027-01-12",
+      "source": "https://learn.microsoft.com/lifecycle/products/windows-server-2016",
+      "owner": "identity team"
+    }
+  ]
+}

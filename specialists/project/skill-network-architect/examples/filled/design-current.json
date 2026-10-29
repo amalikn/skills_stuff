@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "target": 0.995,
+  "model": {
+    "series": [
+      {
+        "name": "site-a power (UPS)",
+        "availability": 0.9995
+      },
+      {
+        "name": "site-a site box",
+        "availability": 0.9995
+      },
+      {
+        "name": "SAT-1 satellite service",
+        "availability": 0.99
+      },
+      {
+        "name": "hub-gw-1 (single)",
+        "availability": 0.999
+      },
+      {
+        "name": "hub-1 power and uplink duct",
+        "availability": 0.9995
+      }
+    ]
+  }
+}

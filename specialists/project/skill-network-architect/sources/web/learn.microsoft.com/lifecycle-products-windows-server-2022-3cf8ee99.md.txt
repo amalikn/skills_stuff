@@ -1,0 +1,37 @@
+Contents of https://learn.microsoft.com/lifecycle/products/windows-server-2022:
+Windows Server 2022 follows the [Fixed](/en-us/lifecycle/policies/fixed) Lifecycle Policy.
+
+This applies to the following editions: Datacenter, Datacenter: Azure Edition, Essentials, Standard
+
+Support dates are shown in the Pacific Time Zone (PT) - Redmond, WA, USA.
+
+## Support Dates
+
+| Listing | Start Date | Mainstream End Date | Extended End Date |
+| --- | --- | --- | --- |
+| Windows Server 2022 | 8/18/2021 8:00:00 AM | 10/14/2026 6:59:59 AM | 10/15/2031 6:59:59 AM |
+
+## Links
+
+* [Lifecycle FAQ - Windows](/en-us/lifecycle/faq/windows)
+* [Product Information](/en-us/windows-server/get-started/whats-new-in-windows-server-2022)
+* [Windows Server end of support and Microsoft 365 Apps](/en-us/deployoffice/endofsupport/windows-server-support)
+
+Note
+
+Containers released with Windows Server 2022 follow the same lifecycle dates.
+
+Note
+
+[Hotpatching](/en-us/windows-server/get-started/hotpatch) is supported on Windows Server 2022 Datacenter: Azure Edition Core through the end of Mainstream Support.
+
+Note
+
+Beginning in September 2023, Windows Server has two primary release channels available: the Long-Term Servicing Channel (LTSC) and the Annual Channel (AC). The Long-Term Servicing Channel provides a longer-term option focusing on stability, whereas the Annual Channel provides more frequent releases. [Click here for more information](/en-us/windows-server/get-started/servicing-channels-comparison).
+
+## Editions
+
+* Datacenter
+* Datacenter: Azure Edition
+* Essentials
+* Standard

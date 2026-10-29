@@ -10,6 +10,8 @@ Summary: Method of Procedure for one change: scope, pre-checks with expected out
 
 # CHG-<nnn>: <change title> method of procedure
 
+Worked example: `skill-network-architect/examples/filled/change-and-validation.md` (filled for a fictional remote-site operator; lives in the network pack only).
+
 Based on: no single public MOP standard exists; this form follows common operator MOP practice. Canary and staged rollout follow the Google SRE Workbook, chapter 16 "Canarying Releases"
 (https://sre.google/workbook/canarying-releases/).
 

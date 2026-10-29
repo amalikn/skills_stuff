@@ -98,3 +98,19 @@ take it). This is a description-only proxy, not live host discovery.
 Limits: one run per case; answerers and grader are the same model family; S01 and S02 reuse the numbers of the pack's own worked examples
 (capacity-plan.json), so those two cases can be answered by copying; replace them with fresh numbers before the next run. Gaps the with-skill
 agents reported are listed in SCRATCHPAD.md next actions.
+
+## Fair rerun, 2026-10-29 (baseline given the specialist registry)
+
+A side review pointed out that the Interfaces criterion rewards naming the operator's specialist skills, which a no-skill baseline cannot know.
+Rerun: the baseline got the names and descriptions of every specialist skill (not the packs under test) and answered all 22 cases again; S01/S02
+used the replaced prompts on both sides. A blind grader scored each rubric criterion separately.
+
+| Comparison | Baseline mean /16 | Skill mean /16 | Skill wins | At or above 12/16 (baseline, skill) |
+| --- | --- | --- | --- | --- |
+| All criteria | 9.75 | 12.71 | 22 of 22 | 3, 17 |
+| Interfaces removed | 10.10 | 13.55 | 22 of 22 | 3, 22 |
+
+Per criterion (baseline, skill, out of 2): evidence 0.77, 1.77; operability 1.27, 1.73; validation 1.27, 1.68; tradeoffs 1.23, 1.54;
+scope 1.05, 1.41; domain 1.91, 2.00; automation 1.50, 1.50; interfaces 0.95, 0.95. With the registry, interfaces no longer separates the two:
+the gain is evidence handling, validation and operability. Baseline critical failures: N02, S01; skill: none. Same limits as above (one run,
+same model family as grader).

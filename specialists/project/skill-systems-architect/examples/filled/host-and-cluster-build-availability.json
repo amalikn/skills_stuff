@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "target": 0.995,
+  "model": {
+    "series": [
+      {
+        "name": "hub-1 room cooling and building",
+        "availability": 0.9995
+      },
+      {
+        "parallel": [
+          {
+            "name": "pve-1 incl. feed A",
+            "availability": 0.995
+          },
+          {
+            "name": "pve-2 incl. feed B",
+            "availability": 0.995
+          },
+          {
+            "name": "pve-3 incl. feed C",
+            "availability": 0.995
+          }
+        ]
+      },
+      {
+        "name": "Ceph pool vm-rbd (one shared software domain)",
+        "availability": 0.9995
+      },
+      {
+        "name": "guest OS + Nautobot application",
+        "availability": 0.999
+      }
+    ]
+  }
+}

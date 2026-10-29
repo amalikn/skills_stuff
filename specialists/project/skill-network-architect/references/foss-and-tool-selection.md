@@ -66,14 +66,22 @@ Upstream licence files read 2026-10-29. These are file observations, not legal a
 | Teleport            | access proxy                         | [source AGPL-3.0; Community binaries modified Apache-2.0][l-teleport] | read the Community licence conditions                         |
 | Graylog Open        | log management                       | [SSPL-1.0][l-graylog]                                   | source-available, not OSI-approved, since v4.0 (2021)         |
 
-[l-tofu]: https://raw.githubusercontent.com/opentofu/opentofu/main/LICENSE [l-tf]: https://raw.githubusercontent.com/hashicorp/terraform/main/LICENSE [l-ansible]:
-https://raw.githubusercontent.com/ansible/ansible/devel/COPYING [l-nornir]: https://github.com/nornir-automation/nornir/blob/main/LICENSE [l-batfish]:
-https://github.com/batfish/batfish/blob/master/LICENSE [l-suzieq]: https://github.com/netenglabs/suzieq/blob/develop/LICENSE [l-clab]:
-https://raw.githubusercontent.com/srl-labs/containerlab/main/LICENSE [l-frr]: https://raw.githubusercontent.com/FRRouting/frr/master/COPYING [l-nautobot]:
-https://raw.githubusercontent.com/nautobot/nautobot/develop/LICENSE.txt [l-netbox]: https://raw.githubusercontent.com/netbox-community/netbox/main/LICENSE.txt [l-prom]:
-https://raw.githubusercontent.com/prometheus/prometheus/main/LICENSE [l-grafana]: https://raw.githubusercontent.com/grafana/grafana/main/LICENSE [l-openwisp]:
-https://raw.githubusercontent.com/openwisp/openwisp-controller/master/LICENSE [l-kea]: https://raw.githubusercontent.com/isc-projects/kea/master/COPYING [l-pve]:
-https://git.proxmox.com/?p=pve-manager.git;a=blob_plain;f=debian/copyright;hb=HEAD [l-teleport]: https://raw.githubusercontent.com/gravitational/teleport/master/build.assets/LICENSE-community
+[l-tofu]: https://raw.githubusercontent.com/opentofu/opentofu/main/LICENSE
+[l-tf]: https://raw.githubusercontent.com/hashicorp/terraform/main/LICENSE
+[l-ansible]: https://raw.githubusercontent.com/ansible/ansible/devel/COPYING
+[l-nornir]: https://github.com/nornir-automation/nornir/blob/main/LICENSE
+[l-batfish]: https://github.com/batfish/batfish/blob/master/LICENSE
+[l-suzieq]: https://github.com/netenglabs/suzieq/blob/develop/LICENSE
+[l-clab]: https://raw.githubusercontent.com/srl-labs/containerlab/main/LICENSE
+[l-frr]: https://raw.githubusercontent.com/FRRouting/frr/master/COPYING
+[l-nautobot]: https://raw.githubusercontent.com/nautobot/nautobot/develop/LICENSE.txt
+[l-netbox]: https://raw.githubusercontent.com/netbox-community/netbox/main/LICENSE.txt
+[l-prom]: https://raw.githubusercontent.com/prometheus/prometheus/main/LICENSE
+[l-grafana]: https://raw.githubusercontent.com/grafana/grafana/main/LICENSE
+[l-openwisp]: https://raw.githubusercontent.com/openwisp/openwisp-controller/master/LICENSE
+[l-kea]: https://raw.githubusercontent.com/isc-projects/kea/master/COPYING
+[l-pve]: https://git.proxmox.com/?p=pve-manager.git;a=blob_plain;f=debian/copyright;hb=HEAD
+[l-teleport]: https://raw.githubusercontent.com/gravitational/teleport/master/build.assets/LICENSE-community
 [l-graylog]: https://raw.githubusercontent.com/Graylog2/graylog2-server/master/LICENSE
 
 - Graylog licence change announcement: <https://graylog.org/post/graylog-v4-0-licensing-sspl/>

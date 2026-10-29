@@ -10,6 +10,8 @@ Summary: Build sheet for a host or virtualisation cluster covering sizing under 
 
 # <cluster-name> host and cluster build
 
+Worked example: [examples/filled/host-and-cluster-build.md](../examples/filled/host-and-cluster-build.md)
+
 ## How to use
 
 - One sheet per cluster or standalone host.
@@ -40,7 +42,7 @@ Summary: Build sheet for a host or virtualisation cluster covering sizing under 
 | -------- | ------------------------------- | ------------------ | ------------ | ---------------------- | ----------- | ---- | ---------------------- |
 | <node-1> | rack A, feed A                  |                    |              |                        |             |      |                        |
 
-| Scenario          | Usable memory (GiB) | Demand (GiB) | vCPU:pCPU | Storage used / usable | Meets? (`just capacity` exit) |
+| Scenario          | Usable memory (GiB) | Demand (GiB) | vCPU:pCPU | Storage used / plan TB (`just ceph`) | Meets? (`just capacity` exit) |
 | ----------------- | ------------------- | ------------ | --------- | --------------------- | ----------------------------- |
 | normal            |                     |              |           |                       |                               |
 | largest host lost |                     |              |           |                       |                               |

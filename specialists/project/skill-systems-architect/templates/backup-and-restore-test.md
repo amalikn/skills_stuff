@@ -12,6 +12,8 @@ Summary: RPO and RTO per dataset, copy placement against the 3-2-1 rule, restore
 
 Based on: NIST SP 800-34 Rev. 1, Contingency Planning Guide for Federal Information Systems (https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final), for RTO, RPO and testing.
 
+Worked example: [examples/filled/backup-and-restore-test.md](../examples/filled/backup-and-restore-test.md)
+
 ## How to use
 
 - A completed backup job is not recovery evidence. Only a measured restore to a usable service is.

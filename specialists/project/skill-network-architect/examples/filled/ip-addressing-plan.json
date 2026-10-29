@@ -1,0 +1,2409 @@
+{
+  "schema_version": 1,
+  "segments": [
+    {
+      "id": "hub-servers-v100",
+      "scope": "corp",
+      "cidr": "10.10.0.0/24",
+      "gateway": "10.10.0.1"
+    },
+    {
+      "id": "hub-pve-mgmt-v101",
+      "scope": "corp",
+      "cidr": "10.10.1.0/24",
+      "gateway": "10.10.1.1"
+    },
+    {
+      "id": "hub-corosync-v102",
+      "scope": "corp",
+      "cidr": "10.10.2.0/24"
+    },
+    {
+      "id": "hub-ceph-backup-v103",
+      "scope": "corp",
+      "cidr": "10.10.3.0/24"
+    },
+    {
+      "id": "hub-tunnel-sat-pool",
+      "scope": "corp",
+      "cidr": "10.10.200.0/24"
+    },
+    {
+      "id": "hub-tunnel-lte-pool",
+      "scope": "corp",
+      "cidr": "10.10.201.0/24"
+    },
+    {
+      "id": "hub-servers-v100-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4000:100::/64",
+      "gateway": "2001:db8:4000:100::1"
+    },
+    {
+      "id": "hub-pve-mgmt-v101-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4000:101::/64",
+      "gateway": "2001:db8:4000:101::1"
+    },
+    {
+      "id": "site-a-infra",
+      "scope": "corp",
+      "cidr": "10.80.0.0/26"
+    },
+    {
+      "id": "site-a-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.0.64/26",
+      "gateway": "10.80.0.65"
+    },
+    {
+      "id": "site-a-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.0.128/26",
+      "gateway": "10.80.0.129"
+    },
+    {
+      "id": "site-a-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.0.192/26",
+      "gateway": "10.80.0.193"
+    },
+    {
+      "id": "site-a-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.1.0/24",
+      "gateway": "10.80.1.1"
+    },
+    {
+      "id": "site-a-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4001:10::/64",
+      "gateway": "2001:db8:4001:10::1"
+    },
+    {
+      "id": "site-a-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4001:20::/64",
+      "gateway": "2001:db8:4001:20::1"
+    },
+    {
+      "id": "site-a-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4001:30::/64",
+      "gateway": "2001:db8:4001:30::1"
+    },
+    {
+      "id": "site-a-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4001:40::/64",
+      "gateway": "2001:db8:4001:40::1"
+    },
+    {
+      "id": "site-a-guest-v50",
+      "scope": "guest-site-a",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-b-infra",
+      "scope": "corp",
+      "cidr": "10.80.4.0/26"
+    },
+    {
+      "id": "site-b-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.4.64/26",
+      "gateway": "10.80.4.65"
+    },
+    {
+      "id": "site-b-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.4.128/26",
+      "gateway": "10.80.4.129"
+    },
+    {
+      "id": "site-b-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.4.192/26",
+      "gateway": "10.80.4.193"
+    },
+    {
+      "id": "site-b-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.5.0/24",
+      "gateway": "10.80.5.1"
+    },
+    {
+      "id": "site-b-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4002:10::/64",
+      "gateway": "2001:db8:4002:10::1"
+    },
+    {
+      "id": "site-b-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4002:20::/64",
+      "gateway": "2001:db8:4002:20::1"
+    },
+    {
+      "id": "site-b-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4002:30::/64",
+      "gateway": "2001:db8:4002:30::1"
+    },
+    {
+      "id": "site-b-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4002:40::/64",
+      "gateway": "2001:db8:4002:40::1"
+    },
+    {
+      "id": "site-b-guest-v50",
+      "scope": "guest-site-b",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-c-infra",
+      "scope": "corp",
+      "cidr": "10.80.8.0/26"
+    },
+    {
+      "id": "site-c-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.8.64/26",
+      "gateway": "10.80.8.65"
+    },
+    {
+      "id": "site-c-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.8.128/26",
+      "gateway": "10.80.8.129"
+    },
+    {
+      "id": "site-c-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.8.192/26",
+      "gateway": "10.80.8.193"
+    },
+    {
+      "id": "site-c-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.9.0/24",
+      "gateway": "10.80.9.1"
+    },
+    {
+      "id": "site-c-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4003:10::/64",
+      "gateway": "2001:db8:4003:10::1"
+    },
+    {
+      "id": "site-c-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4003:20::/64",
+      "gateway": "2001:db8:4003:20::1"
+    },
+    {
+      "id": "site-c-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4003:30::/64",
+      "gateway": "2001:db8:4003:30::1"
+    },
+    {
+      "id": "site-c-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4003:40::/64",
+      "gateway": "2001:db8:4003:40::1"
+    },
+    {
+      "id": "site-c-guest-v50",
+      "scope": "guest-site-c",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-d-infra",
+      "scope": "corp",
+      "cidr": "10.80.12.0/26"
+    },
+    {
+      "id": "site-d-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.12.64/26",
+      "gateway": "10.80.12.65"
+    },
+    {
+      "id": "site-d-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.12.128/26",
+      "gateway": "10.80.12.129"
+    },
+    {
+      "id": "site-d-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.12.192/26",
+      "gateway": "10.80.12.193"
+    },
+    {
+      "id": "site-d-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.13.0/24",
+      "gateway": "10.80.13.1"
+    },
+    {
+      "id": "site-d-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4004:10::/64",
+      "gateway": "2001:db8:4004:10::1"
+    },
+    {
+      "id": "site-d-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4004:20::/64",
+      "gateway": "2001:db8:4004:20::1"
+    },
+    {
+      "id": "site-d-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4004:30::/64",
+      "gateway": "2001:db8:4004:30::1"
+    },
+    {
+      "id": "site-d-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4004:40::/64",
+      "gateway": "2001:db8:4004:40::1"
+    },
+    {
+      "id": "site-d-guest-v50",
+      "scope": "guest-site-d",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-e-infra",
+      "scope": "corp",
+      "cidr": "10.80.16.0/26"
+    },
+    {
+      "id": "site-e-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.16.64/26",
+      "gateway": "10.80.16.65"
+    },
+    {
+      "id": "site-e-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.16.128/26",
+      "gateway": "10.80.16.129"
+    },
+    {
+      "id": "site-e-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.16.192/26",
+      "gateway": "10.80.16.193"
+    },
+    {
+      "id": "site-e-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.17.0/24",
+      "gateway": "10.80.17.1"
+    },
+    {
+      "id": "site-e-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4005:10::/64",
+      "gateway": "2001:db8:4005:10::1"
+    },
+    {
+      "id": "site-e-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4005:20::/64",
+      "gateway": "2001:db8:4005:20::1"
+    },
+    {
+      "id": "site-e-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4005:30::/64",
+      "gateway": "2001:db8:4005:30::1"
+    },
+    {
+      "id": "site-e-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4005:40::/64",
+      "gateway": "2001:db8:4005:40::1"
+    },
+    {
+      "id": "site-e-guest-v50",
+      "scope": "guest-site-e",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-f-infra",
+      "scope": "corp",
+      "cidr": "10.80.20.0/26"
+    },
+    {
+      "id": "site-f-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.20.64/26",
+      "gateway": "10.80.20.65"
+    },
+    {
+      "id": "site-f-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.20.128/26",
+      "gateway": "10.80.20.129"
+    },
+    {
+      "id": "site-f-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.20.192/26",
+      "gateway": "10.80.20.193"
+    },
+    {
+      "id": "site-f-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.21.0/24",
+      "gateway": "10.80.21.1"
+    },
+    {
+      "id": "site-f-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4006:10::/64",
+      "gateway": "2001:db8:4006:10::1"
+    },
+    {
+      "id": "site-f-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4006:20::/64",
+      "gateway": "2001:db8:4006:20::1"
+    },
+    {
+      "id": "site-f-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4006:30::/64",
+      "gateway": "2001:db8:4006:30::1"
+    },
+    {
+      "id": "site-f-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4006:40::/64",
+      "gateway": "2001:db8:4006:40::1"
+    },
+    {
+      "id": "site-f-guest-v50",
+      "scope": "guest-site-f",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-g-infra",
+      "scope": "corp",
+      "cidr": "10.80.24.0/26"
+    },
+    {
+      "id": "site-g-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.24.64/26",
+      "gateway": "10.80.24.65"
+    },
+    {
+      "id": "site-g-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.24.128/26",
+      "gateway": "10.80.24.129"
+    },
+    {
+      "id": "site-g-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.24.192/26",
+      "gateway": "10.80.24.193"
+    },
+    {
+      "id": "site-g-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.25.0/24",
+      "gateway": "10.80.25.1"
+    },
+    {
+      "id": "site-g-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4007:10::/64",
+      "gateway": "2001:db8:4007:10::1"
+    },
+    {
+      "id": "site-g-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4007:20::/64",
+      "gateway": "2001:db8:4007:20::1"
+    },
+    {
+      "id": "site-g-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4007:30::/64",
+      "gateway": "2001:db8:4007:30::1"
+    },
+    {
+      "id": "site-g-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4007:40::/64",
+      "gateway": "2001:db8:4007:40::1"
+    },
+    {
+      "id": "site-g-guest-v50",
+      "scope": "guest-site-g",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-h-infra",
+      "scope": "corp",
+      "cidr": "10.80.28.0/26"
+    },
+    {
+      "id": "site-h-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.28.64/26",
+      "gateway": "10.80.28.65"
+    },
+    {
+      "id": "site-h-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.28.128/26",
+      "gateway": "10.80.28.129"
+    },
+    {
+      "id": "site-h-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.28.192/26",
+      "gateway": "10.80.28.193"
+    },
+    {
+      "id": "site-h-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.29.0/24",
+      "gateway": "10.80.29.1"
+    },
+    {
+      "id": "site-h-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4008:10::/64",
+      "gateway": "2001:db8:4008:10::1"
+    },
+    {
+      "id": "site-h-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4008:20::/64",
+      "gateway": "2001:db8:4008:20::1"
+    },
+    {
+      "id": "site-h-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4008:30::/64",
+      "gateway": "2001:db8:4008:30::1"
+    },
+    {
+      "id": "site-h-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4008:40::/64",
+      "gateway": "2001:db8:4008:40::1"
+    },
+    {
+      "id": "site-h-guest-v50",
+      "scope": "guest-site-h",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-i-infra",
+      "scope": "corp",
+      "cidr": "10.80.32.0/26"
+    },
+    {
+      "id": "site-i-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.32.64/26",
+      "gateway": "10.80.32.65"
+    },
+    {
+      "id": "site-i-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.32.128/26",
+      "gateway": "10.80.32.129"
+    },
+    {
+      "id": "site-i-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.32.192/26",
+      "gateway": "10.80.32.193"
+    },
+    {
+      "id": "site-i-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.33.0/24",
+      "gateway": "10.80.33.1"
+    },
+    {
+      "id": "site-i-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4009:10::/64",
+      "gateway": "2001:db8:4009:10::1"
+    },
+    {
+      "id": "site-i-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4009:20::/64",
+      "gateway": "2001:db8:4009:20::1"
+    },
+    {
+      "id": "site-i-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4009:30::/64",
+      "gateway": "2001:db8:4009:30::1"
+    },
+    {
+      "id": "site-i-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4009:40::/64",
+      "gateway": "2001:db8:4009:40::1"
+    },
+    {
+      "id": "site-i-guest-v50",
+      "scope": "guest-site-i",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-j-infra",
+      "scope": "corp",
+      "cidr": "10.80.36.0/26"
+    },
+    {
+      "id": "site-j-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.36.64/26",
+      "gateway": "10.80.36.65"
+    },
+    {
+      "id": "site-j-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.36.128/26",
+      "gateway": "10.80.36.129"
+    },
+    {
+      "id": "site-j-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.36.192/26",
+      "gateway": "10.80.36.193"
+    },
+    {
+      "id": "site-j-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.37.0/24",
+      "gateway": "10.80.37.1"
+    },
+    {
+      "id": "site-j-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400a:10::/64",
+      "gateway": "2001:db8:400a:10::1"
+    },
+    {
+      "id": "site-j-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400a:20::/64",
+      "gateway": "2001:db8:400a:20::1"
+    },
+    {
+      "id": "site-j-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400a:30::/64",
+      "gateway": "2001:db8:400a:30::1"
+    },
+    {
+      "id": "site-j-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400a:40::/64",
+      "gateway": "2001:db8:400a:40::1"
+    },
+    {
+      "id": "site-j-guest-v50",
+      "scope": "guest-site-j",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-k-infra",
+      "scope": "corp",
+      "cidr": "10.80.40.0/26"
+    },
+    {
+      "id": "site-k-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.40.64/26",
+      "gateway": "10.80.40.65"
+    },
+    {
+      "id": "site-k-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.40.128/26",
+      "gateway": "10.80.40.129"
+    },
+    {
+      "id": "site-k-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.40.192/26",
+      "gateway": "10.80.40.193"
+    },
+    {
+      "id": "site-k-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.41.0/24",
+      "gateway": "10.80.41.1"
+    },
+    {
+      "id": "site-k-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400b:10::/64",
+      "gateway": "2001:db8:400b:10::1"
+    },
+    {
+      "id": "site-k-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400b:20::/64",
+      "gateway": "2001:db8:400b:20::1"
+    },
+    {
+      "id": "site-k-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400b:30::/64",
+      "gateway": "2001:db8:400b:30::1"
+    },
+    {
+      "id": "site-k-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400b:40::/64",
+      "gateway": "2001:db8:400b:40::1"
+    },
+    {
+      "id": "site-k-guest-v50",
+      "scope": "guest-site-k",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-l-infra",
+      "scope": "corp",
+      "cidr": "10.80.44.0/26"
+    },
+    {
+      "id": "site-l-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.44.64/26",
+      "gateway": "10.80.44.65"
+    },
+    {
+      "id": "site-l-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.44.128/26",
+      "gateway": "10.80.44.129"
+    },
+    {
+      "id": "site-l-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.44.192/26",
+      "gateway": "10.80.44.193"
+    },
+    {
+      "id": "site-l-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.45.0/24",
+      "gateway": "10.80.45.1"
+    },
+    {
+      "id": "site-l-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400c:10::/64",
+      "gateway": "2001:db8:400c:10::1"
+    },
+    {
+      "id": "site-l-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400c:20::/64",
+      "gateway": "2001:db8:400c:20::1"
+    },
+    {
+      "id": "site-l-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400c:30::/64",
+      "gateway": "2001:db8:400c:30::1"
+    },
+    {
+      "id": "site-l-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400c:40::/64",
+      "gateway": "2001:db8:400c:40::1"
+    },
+    {
+      "id": "site-l-guest-v50",
+      "scope": "guest-site-l",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-m-infra",
+      "scope": "corp",
+      "cidr": "10.80.48.0/26"
+    },
+    {
+      "id": "site-m-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.48.64/26",
+      "gateway": "10.80.48.65"
+    },
+    {
+      "id": "site-m-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.48.128/26",
+      "gateway": "10.80.48.129"
+    },
+    {
+      "id": "site-m-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.48.192/26",
+      "gateway": "10.80.48.193"
+    },
+    {
+      "id": "site-m-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.49.0/24",
+      "gateway": "10.80.49.1"
+    },
+    {
+      "id": "site-m-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400d:10::/64",
+      "gateway": "2001:db8:400d:10::1"
+    },
+    {
+      "id": "site-m-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400d:20::/64",
+      "gateway": "2001:db8:400d:20::1"
+    },
+    {
+      "id": "site-m-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400d:30::/64",
+      "gateway": "2001:db8:400d:30::1"
+    },
+    {
+      "id": "site-m-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400d:40::/64",
+      "gateway": "2001:db8:400d:40::1"
+    },
+    {
+      "id": "site-m-guest-v50",
+      "scope": "guest-site-m",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-n-infra",
+      "scope": "corp",
+      "cidr": "10.80.52.0/26"
+    },
+    {
+      "id": "site-n-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.52.64/26",
+      "gateway": "10.80.52.65"
+    },
+    {
+      "id": "site-n-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.52.128/26",
+      "gateway": "10.80.52.129"
+    },
+    {
+      "id": "site-n-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.52.192/26",
+      "gateway": "10.80.52.193"
+    },
+    {
+      "id": "site-n-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.53.0/24",
+      "gateway": "10.80.53.1"
+    },
+    {
+      "id": "site-n-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400e:10::/64",
+      "gateway": "2001:db8:400e:10::1"
+    },
+    {
+      "id": "site-n-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400e:20::/64",
+      "gateway": "2001:db8:400e:20::1"
+    },
+    {
+      "id": "site-n-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400e:30::/64",
+      "gateway": "2001:db8:400e:30::1"
+    },
+    {
+      "id": "site-n-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400e:40::/64",
+      "gateway": "2001:db8:400e:40::1"
+    },
+    {
+      "id": "site-n-guest-v50",
+      "scope": "guest-site-n",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-o-infra",
+      "scope": "corp",
+      "cidr": "10.80.56.0/26"
+    },
+    {
+      "id": "site-o-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.56.64/26",
+      "gateway": "10.80.56.65"
+    },
+    {
+      "id": "site-o-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.56.128/26",
+      "gateway": "10.80.56.129"
+    },
+    {
+      "id": "site-o-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.56.192/26",
+      "gateway": "10.80.56.193"
+    },
+    {
+      "id": "site-o-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.57.0/24",
+      "gateway": "10.80.57.1"
+    },
+    {
+      "id": "site-o-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400f:10::/64",
+      "gateway": "2001:db8:400f:10::1"
+    },
+    {
+      "id": "site-o-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400f:20::/64",
+      "gateway": "2001:db8:400f:20::1"
+    },
+    {
+      "id": "site-o-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400f:30::/64",
+      "gateway": "2001:db8:400f:30::1"
+    },
+    {
+      "id": "site-o-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:400f:40::/64",
+      "gateway": "2001:db8:400f:40::1"
+    },
+    {
+      "id": "site-o-guest-v50",
+      "scope": "guest-site-o",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-p-infra",
+      "scope": "corp",
+      "cidr": "10.80.60.0/26"
+    },
+    {
+      "id": "site-p-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.60.64/26",
+      "gateway": "10.80.60.65"
+    },
+    {
+      "id": "site-p-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.60.128/26",
+      "gateway": "10.80.60.129"
+    },
+    {
+      "id": "site-p-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.60.192/26",
+      "gateway": "10.80.60.193"
+    },
+    {
+      "id": "site-p-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.61.0/24",
+      "gateway": "10.80.61.1"
+    },
+    {
+      "id": "site-p-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4010:10::/64",
+      "gateway": "2001:db8:4010:10::1"
+    },
+    {
+      "id": "site-p-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4010:20::/64",
+      "gateway": "2001:db8:4010:20::1"
+    },
+    {
+      "id": "site-p-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4010:30::/64",
+      "gateway": "2001:db8:4010:30::1"
+    },
+    {
+      "id": "site-p-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4010:40::/64",
+      "gateway": "2001:db8:4010:40::1"
+    },
+    {
+      "id": "site-p-guest-v50",
+      "scope": "guest-site-p",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-q-infra",
+      "scope": "corp",
+      "cidr": "10.80.64.0/26"
+    },
+    {
+      "id": "site-q-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.64.64/26",
+      "gateway": "10.80.64.65"
+    },
+    {
+      "id": "site-q-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.64.128/26",
+      "gateway": "10.80.64.129"
+    },
+    {
+      "id": "site-q-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.64.192/26",
+      "gateway": "10.80.64.193"
+    },
+    {
+      "id": "site-q-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.65.0/24",
+      "gateway": "10.80.65.1"
+    },
+    {
+      "id": "site-q-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4011:10::/64",
+      "gateway": "2001:db8:4011:10::1"
+    },
+    {
+      "id": "site-q-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4011:20::/64",
+      "gateway": "2001:db8:4011:20::1"
+    },
+    {
+      "id": "site-q-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4011:30::/64",
+      "gateway": "2001:db8:4011:30::1"
+    },
+    {
+      "id": "site-q-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4011:40::/64",
+      "gateway": "2001:db8:4011:40::1"
+    },
+    {
+      "id": "site-q-guest-v50",
+      "scope": "guest-site-q",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-r-infra",
+      "scope": "corp",
+      "cidr": "10.80.68.0/26"
+    },
+    {
+      "id": "site-r-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.68.64/26",
+      "gateway": "10.80.68.65"
+    },
+    {
+      "id": "site-r-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.68.128/26",
+      "gateway": "10.80.68.129"
+    },
+    {
+      "id": "site-r-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.68.192/26",
+      "gateway": "10.80.68.193"
+    },
+    {
+      "id": "site-r-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.69.0/24",
+      "gateway": "10.80.69.1"
+    },
+    {
+      "id": "site-r-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4012:10::/64",
+      "gateway": "2001:db8:4012:10::1"
+    },
+    {
+      "id": "site-r-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4012:20::/64",
+      "gateway": "2001:db8:4012:20::1"
+    },
+    {
+      "id": "site-r-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4012:30::/64",
+      "gateway": "2001:db8:4012:30::1"
+    },
+    {
+      "id": "site-r-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4012:40::/64",
+      "gateway": "2001:db8:4012:40::1"
+    },
+    {
+      "id": "site-r-guest-v50",
+      "scope": "guest-site-r",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-s-infra",
+      "scope": "corp",
+      "cidr": "10.80.72.0/26"
+    },
+    {
+      "id": "site-s-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.72.64/26",
+      "gateway": "10.80.72.65"
+    },
+    {
+      "id": "site-s-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.72.128/26",
+      "gateway": "10.80.72.129"
+    },
+    {
+      "id": "site-s-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.72.192/26",
+      "gateway": "10.80.72.193"
+    },
+    {
+      "id": "site-s-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.73.0/24",
+      "gateway": "10.80.73.1"
+    },
+    {
+      "id": "site-s-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4013:10::/64",
+      "gateway": "2001:db8:4013:10::1"
+    },
+    {
+      "id": "site-s-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4013:20::/64",
+      "gateway": "2001:db8:4013:20::1"
+    },
+    {
+      "id": "site-s-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4013:30::/64",
+      "gateway": "2001:db8:4013:30::1"
+    },
+    {
+      "id": "site-s-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4013:40::/64",
+      "gateway": "2001:db8:4013:40::1"
+    },
+    {
+      "id": "site-s-guest-v50",
+      "scope": "guest-site-s",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-t-infra",
+      "scope": "corp",
+      "cidr": "10.80.76.0/26"
+    },
+    {
+      "id": "site-t-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.76.64/26",
+      "gateway": "10.80.76.65"
+    },
+    {
+      "id": "site-t-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.76.128/26",
+      "gateway": "10.80.76.129"
+    },
+    {
+      "id": "site-t-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.76.192/26",
+      "gateway": "10.80.76.193"
+    },
+    {
+      "id": "site-t-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.77.0/24",
+      "gateway": "10.80.77.1"
+    },
+    {
+      "id": "site-t-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4014:10::/64",
+      "gateway": "2001:db8:4014:10::1"
+    },
+    {
+      "id": "site-t-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4014:20::/64",
+      "gateway": "2001:db8:4014:20::1"
+    },
+    {
+      "id": "site-t-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4014:30::/64",
+      "gateway": "2001:db8:4014:30::1"
+    },
+    {
+      "id": "site-t-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4014:40::/64",
+      "gateway": "2001:db8:4014:40::1"
+    },
+    {
+      "id": "site-t-guest-v50",
+      "scope": "guest-site-t",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-u-infra",
+      "scope": "corp",
+      "cidr": "10.80.80.0/26"
+    },
+    {
+      "id": "site-u-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.80.64/26",
+      "gateway": "10.80.80.65"
+    },
+    {
+      "id": "site-u-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.80.128/26",
+      "gateway": "10.80.80.129"
+    },
+    {
+      "id": "site-u-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.80.192/26",
+      "gateway": "10.80.80.193"
+    },
+    {
+      "id": "site-u-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.81.0/24",
+      "gateway": "10.80.81.1"
+    },
+    {
+      "id": "site-u-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4015:10::/64",
+      "gateway": "2001:db8:4015:10::1"
+    },
+    {
+      "id": "site-u-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4015:20::/64",
+      "gateway": "2001:db8:4015:20::1"
+    },
+    {
+      "id": "site-u-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4015:30::/64",
+      "gateway": "2001:db8:4015:30::1"
+    },
+    {
+      "id": "site-u-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4015:40::/64",
+      "gateway": "2001:db8:4015:40::1"
+    },
+    {
+      "id": "site-u-guest-v50",
+      "scope": "guest-site-u",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-v-infra",
+      "scope": "corp",
+      "cidr": "10.80.84.0/26"
+    },
+    {
+      "id": "site-v-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.84.64/26",
+      "gateway": "10.80.84.65"
+    },
+    {
+      "id": "site-v-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.84.128/26",
+      "gateway": "10.80.84.129"
+    },
+    {
+      "id": "site-v-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.84.192/26",
+      "gateway": "10.80.84.193"
+    },
+    {
+      "id": "site-v-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.85.0/24",
+      "gateway": "10.80.85.1"
+    },
+    {
+      "id": "site-v-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4016:10::/64",
+      "gateway": "2001:db8:4016:10::1"
+    },
+    {
+      "id": "site-v-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4016:20::/64",
+      "gateway": "2001:db8:4016:20::1"
+    },
+    {
+      "id": "site-v-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4016:30::/64",
+      "gateway": "2001:db8:4016:30::1"
+    },
+    {
+      "id": "site-v-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4016:40::/64",
+      "gateway": "2001:db8:4016:40::1"
+    },
+    {
+      "id": "site-v-guest-v50",
+      "scope": "guest-site-v",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-w-infra",
+      "scope": "corp",
+      "cidr": "10.80.88.0/26"
+    },
+    {
+      "id": "site-w-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.88.64/26",
+      "gateway": "10.80.88.65"
+    },
+    {
+      "id": "site-w-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.88.128/26",
+      "gateway": "10.80.88.129"
+    },
+    {
+      "id": "site-w-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.88.192/26",
+      "gateway": "10.80.88.193"
+    },
+    {
+      "id": "site-w-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.89.0/24",
+      "gateway": "10.80.89.1"
+    },
+    {
+      "id": "site-w-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4017:10::/64",
+      "gateway": "2001:db8:4017:10::1"
+    },
+    {
+      "id": "site-w-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4017:20::/64",
+      "gateway": "2001:db8:4017:20::1"
+    },
+    {
+      "id": "site-w-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4017:30::/64",
+      "gateway": "2001:db8:4017:30::1"
+    },
+    {
+      "id": "site-w-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4017:40::/64",
+      "gateway": "2001:db8:4017:40::1"
+    },
+    {
+      "id": "site-w-guest-v50",
+      "scope": "guest-site-w",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-x-infra",
+      "scope": "corp",
+      "cidr": "10.80.92.0/26"
+    },
+    {
+      "id": "site-x-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.92.64/26",
+      "gateway": "10.80.92.65"
+    },
+    {
+      "id": "site-x-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.92.128/26",
+      "gateway": "10.80.92.129"
+    },
+    {
+      "id": "site-x-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.92.192/26",
+      "gateway": "10.80.92.193"
+    },
+    {
+      "id": "site-x-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.93.0/24",
+      "gateway": "10.80.93.1"
+    },
+    {
+      "id": "site-x-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4018:10::/64",
+      "gateway": "2001:db8:4018:10::1"
+    },
+    {
+      "id": "site-x-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4018:20::/64",
+      "gateway": "2001:db8:4018:20::1"
+    },
+    {
+      "id": "site-x-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4018:30::/64",
+      "gateway": "2001:db8:4018:30::1"
+    },
+    {
+      "id": "site-x-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4018:40::/64",
+      "gateway": "2001:db8:4018:40::1"
+    },
+    {
+      "id": "site-x-guest-v50",
+      "scope": "guest-site-x",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-y-infra",
+      "scope": "corp",
+      "cidr": "10.80.96.0/26"
+    },
+    {
+      "id": "site-y-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.96.64/26",
+      "gateway": "10.80.96.65"
+    },
+    {
+      "id": "site-y-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.96.128/26",
+      "gateway": "10.80.96.129"
+    },
+    {
+      "id": "site-y-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.96.192/26",
+      "gateway": "10.80.96.193"
+    },
+    {
+      "id": "site-y-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.97.0/24",
+      "gateway": "10.80.97.1"
+    },
+    {
+      "id": "site-y-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4019:10::/64",
+      "gateway": "2001:db8:4019:10::1"
+    },
+    {
+      "id": "site-y-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4019:20::/64",
+      "gateway": "2001:db8:4019:20::1"
+    },
+    {
+      "id": "site-y-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4019:30::/64",
+      "gateway": "2001:db8:4019:30::1"
+    },
+    {
+      "id": "site-y-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4019:40::/64",
+      "gateway": "2001:db8:4019:40::1"
+    },
+    {
+      "id": "site-y-guest-v50",
+      "scope": "guest-site-y",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-z-infra",
+      "scope": "corp",
+      "cidr": "10.80.100.0/26"
+    },
+    {
+      "id": "site-z-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.100.64/26",
+      "gateway": "10.80.100.65"
+    },
+    {
+      "id": "site-z-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.100.128/26",
+      "gateway": "10.80.100.129"
+    },
+    {
+      "id": "site-z-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.100.192/26",
+      "gateway": "10.80.100.193"
+    },
+    {
+      "id": "site-z-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.101.0/24",
+      "gateway": "10.80.101.1"
+    },
+    {
+      "id": "site-z-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401a:10::/64",
+      "gateway": "2001:db8:401a:10::1"
+    },
+    {
+      "id": "site-z-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401a:20::/64",
+      "gateway": "2001:db8:401a:20::1"
+    },
+    {
+      "id": "site-z-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401a:30::/64",
+      "gateway": "2001:db8:401a:30::1"
+    },
+    {
+      "id": "site-z-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401a:40::/64",
+      "gateway": "2001:db8:401a:40::1"
+    },
+    {
+      "id": "site-z-guest-v50",
+      "scope": "guest-site-z",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-aa-infra",
+      "scope": "corp",
+      "cidr": "10.80.104.0/26"
+    },
+    {
+      "id": "site-aa-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.104.64/26",
+      "gateway": "10.80.104.65"
+    },
+    {
+      "id": "site-aa-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.104.128/26",
+      "gateway": "10.80.104.129"
+    },
+    {
+      "id": "site-aa-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.104.192/26",
+      "gateway": "10.80.104.193"
+    },
+    {
+      "id": "site-aa-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.105.0/24",
+      "gateway": "10.80.105.1"
+    },
+    {
+      "id": "site-aa-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401b:10::/64",
+      "gateway": "2001:db8:401b:10::1"
+    },
+    {
+      "id": "site-aa-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401b:20::/64",
+      "gateway": "2001:db8:401b:20::1"
+    },
+    {
+      "id": "site-aa-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401b:30::/64",
+      "gateway": "2001:db8:401b:30::1"
+    },
+    {
+      "id": "site-aa-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401b:40::/64",
+      "gateway": "2001:db8:401b:40::1"
+    },
+    {
+      "id": "site-aa-guest-v50",
+      "scope": "guest-site-aa",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-ab-infra",
+      "scope": "corp",
+      "cidr": "10.80.108.0/26"
+    },
+    {
+      "id": "site-ab-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.108.64/26",
+      "gateway": "10.80.108.65"
+    },
+    {
+      "id": "site-ab-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.108.128/26",
+      "gateway": "10.80.108.129"
+    },
+    {
+      "id": "site-ab-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.108.192/26",
+      "gateway": "10.80.108.193"
+    },
+    {
+      "id": "site-ab-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.109.0/24",
+      "gateway": "10.80.109.1"
+    },
+    {
+      "id": "site-ab-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401c:10::/64",
+      "gateway": "2001:db8:401c:10::1"
+    },
+    {
+      "id": "site-ab-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401c:20::/64",
+      "gateway": "2001:db8:401c:20::1"
+    },
+    {
+      "id": "site-ab-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401c:30::/64",
+      "gateway": "2001:db8:401c:30::1"
+    },
+    {
+      "id": "site-ab-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401c:40::/64",
+      "gateway": "2001:db8:401c:40::1"
+    },
+    {
+      "id": "site-ab-guest-v50",
+      "scope": "guest-site-ab",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-ac-infra",
+      "scope": "corp",
+      "cidr": "10.80.112.0/26"
+    },
+    {
+      "id": "site-ac-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.112.64/26",
+      "gateway": "10.80.112.65"
+    },
+    {
+      "id": "site-ac-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.112.128/26",
+      "gateway": "10.80.112.129"
+    },
+    {
+      "id": "site-ac-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.112.192/26",
+      "gateway": "10.80.112.193"
+    },
+    {
+      "id": "site-ac-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.113.0/24",
+      "gateway": "10.80.113.1"
+    },
+    {
+      "id": "site-ac-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401d:10::/64",
+      "gateway": "2001:db8:401d:10::1"
+    },
+    {
+      "id": "site-ac-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401d:20::/64",
+      "gateway": "2001:db8:401d:20::1"
+    },
+    {
+      "id": "site-ac-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401d:30::/64",
+      "gateway": "2001:db8:401d:30::1"
+    },
+    {
+      "id": "site-ac-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401d:40::/64",
+      "gateway": "2001:db8:401d:40::1"
+    },
+    {
+      "id": "site-ac-guest-v50",
+      "scope": "guest-site-ac",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-ad-infra",
+      "scope": "corp",
+      "cidr": "10.80.116.0/26"
+    },
+    {
+      "id": "site-ad-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.116.64/26",
+      "gateway": "10.80.116.65"
+    },
+    {
+      "id": "site-ad-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.116.128/26",
+      "gateway": "10.80.116.129"
+    },
+    {
+      "id": "site-ad-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.116.192/26",
+      "gateway": "10.80.116.193"
+    },
+    {
+      "id": "site-ad-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.117.0/24",
+      "gateway": "10.80.117.1"
+    },
+    {
+      "id": "site-ad-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401e:10::/64",
+      "gateway": "2001:db8:401e:10::1"
+    },
+    {
+      "id": "site-ad-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401e:20::/64",
+      "gateway": "2001:db8:401e:20::1"
+    },
+    {
+      "id": "site-ad-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401e:30::/64",
+      "gateway": "2001:db8:401e:30::1"
+    },
+    {
+      "id": "site-ad-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401e:40::/64",
+      "gateway": "2001:db8:401e:40::1"
+    },
+    {
+      "id": "site-ad-guest-v50",
+      "scope": "guest-site-ad",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-ae-infra",
+      "scope": "corp",
+      "cidr": "10.80.120.0/26"
+    },
+    {
+      "id": "site-ae-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.120.64/26",
+      "gateway": "10.80.120.65"
+    },
+    {
+      "id": "site-ae-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.120.128/26",
+      "gateway": "10.80.120.129"
+    },
+    {
+      "id": "site-ae-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.120.192/26",
+      "gateway": "10.80.120.193"
+    },
+    {
+      "id": "site-ae-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.121.0/24",
+      "gateway": "10.80.121.1"
+    },
+    {
+      "id": "site-ae-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401f:10::/64",
+      "gateway": "2001:db8:401f:10::1"
+    },
+    {
+      "id": "site-ae-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401f:20::/64",
+      "gateway": "2001:db8:401f:20::1"
+    },
+    {
+      "id": "site-ae-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401f:30::/64",
+      "gateway": "2001:db8:401f:30::1"
+    },
+    {
+      "id": "site-ae-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:401f:40::/64",
+      "gateway": "2001:db8:401f:40::1"
+    },
+    {
+      "id": "site-ae-guest-v50",
+      "scope": "guest-site-ae",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-af-infra",
+      "scope": "corp",
+      "cidr": "10.80.124.0/26"
+    },
+    {
+      "id": "site-af-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.124.64/26",
+      "gateway": "10.80.124.65"
+    },
+    {
+      "id": "site-af-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.124.128/26",
+      "gateway": "10.80.124.129"
+    },
+    {
+      "id": "site-af-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.124.192/26",
+      "gateway": "10.80.124.193"
+    },
+    {
+      "id": "site-af-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.125.0/24",
+      "gateway": "10.80.125.1"
+    },
+    {
+      "id": "site-af-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4020:10::/64",
+      "gateway": "2001:db8:4020:10::1"
+    },
+    {
+      "id": "site-af-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4020:20::/64",
+      "gateway": "2001:db8:4020:20::1"
+    },
+    {
+      "id": "site-af-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4020:30::/64",
+      "gateway": "2001:db8:4020:30::1"
+    },
+    {
+      "id": "site-af-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4020:40::/64",
+      "gateway": "2001:db8:4020:40::1"
+    },
+    {
+      "id": "site-af-guest-v50",
+      "scope": "guest-site-af",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-ag-infra",
+      "scope": "corp",
+      "cidr": "10.80.128.0/26"
+    },
+    {
+      "id": "site-ag-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.128.64/26",
+      "gateway": "10.80.128.65"
+    },
+    {
+      "id": "site-ag-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.128.128/26",
+      "gateway": "10.80.128.129"
+    },
+    {
+      "id": "site-ag-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.128.192/26",
+      "gateway": "10.80.128.193"
+    },
+    {
+      "id": "site-ag-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.129.0/24",
+      "gateway": "10.80.129.1"
+    },
+    {
+      "id": "site-ag-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4021:10::/64",
+      "gateway": "2001:db8:4021:10::1"
+    },
+    {
+      "id": "site-ag-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4021:20::/64",
+      "gateway": "2001:db8:4021:20::1"
+    },
+    {
+      "id": "site-ag-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4021:30::/64",
+      "gateway": "2001:db8:4021:30::1"
+    },
+    {
+      "id": "site-ag-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4021:40::/64",
+      "gateway": "2001:db8:4021:40::1"
+    },
+    {
+      "id": "site-ag-guest-v50",
+      "scope": "guest-site-ag",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-ah-infra",
+      "scope": "corp",
+      "cidr": "10.80.132.0/26"
+    },
+    {
+      "id": "site-ah-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.132.64/26",
+      "gateway": "10.80.132.65"
+    },
+    {
+      "id": "site-ah-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.132.128/26",
+      "gateway": "10.80.132.129"
+    },
+    {
+      "id": "site-ah-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.132.192/26",
+      "gateway": "10.80.132.193"
+    },
+    {
+      "id": "site-ah-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.133.0/24",
+      "gateway": "10.80.133.1"
+    },
+    {
+      "id": "site-ah-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4022:10::/64",
+      "gateway": "2001:db8:4022:10::1"
+    },
+    {
+      "id": "site-ah-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4022:20::/64",
+      "gateway": "2001:db8:4022:20::1"
+    },
+    {
+      "id": "site-ah-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4022:30::/64",
+      "gateway": "2001:db8:4022:30::1"
+    },
+    {
+      "id": "site-ah-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4022:40::/64",
+      "gateway": "2001:db8:4022:40::1"
+    },
+    {
+      "id": "site-ah-guest-v50",
+      "scope": "guest-site-ah",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-ai-infra",
+      "scope": "corp",
+      "cidr": "10.80.136.0/26"
+    },
+    {
+      "id": "site-ai-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.136.64/26",
+      "gateway": "10.80.136.65"
+    },
+    {
+      "id": "site-ai-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.136.128/26",
+      "gateway": "10.80.136.129"
+    },
+    {
+      "id": "site-ai-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.136.192/26",
+      "gateway": "10.80.136.193"
+    },
+    {
+      "id": "site-ai-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.137.0/24",
+      "gateway": "10.80.137.1"
+    },
+    {
+      "id": "site-ai-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4023:10::/64",
+      "gateway": "2001:db8:4023:10::1"
+    },
+    {
+      "id": "site-ai-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4023:20::/64",
+      "gateway": "2001:db8:4023:20::1"
+    },
+    {
+      "id": "site-ai-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4023:30::/64",
+      "gateway": "2001:db8:4023:30::1"
+    },
+    {
+      "id": "site-ai-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4023:40::/64",
+      "gateway": "2001:db8:4023:40::1"
+    },
+    {
+      "id": "site-ai-guest-v50",
+      "scope": "guest-site-ai",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-aj-infra",
+      "scope": "corp",
+      "cidr": "10.80.140.0/26"
+    },
+    {
+      "id": "site-aj-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.140.64/26",
+      "gateway": "10.80.140.65"
+    },
+    {
+      "id": "site-aj-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.140.128/26",
+      "gateway": "10.80.140.129"
+    },
+    {
+      "id": "site-aj-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.140.192/26",
+      "gateway": "10.80.140.193"
+    },
+    {
+      "id": "site-aj-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.141.0/24",
+      "gateway": "10.80.141.1"
+    },
+    {
+      "id": "site-aj-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4024:10::/64",
+      "gateway": "2001:db8:4024:10::1"
+    },
+    {
+      "id": "site-aj-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4024:20::/64",
+      "gateway": "2001:db8:4024:20::1"
+    },
+    {
+      "id": "site-aj-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4024:30::/64",
+      "gateway": "2001:db8:4024:30::1"
+    },
+    {
+      "id": "site-aj-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4024:40::/64",
+      "gateway": "2001:db8:4024:40::1"
+    },
+    {
+      "id": "site-aj-guest-v50",
+      "scope": "guest-site-aj",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-ak-infra",
+      "scope": "corp",
+      "cidr": "10.80.144.0/26"
+    },
+    {
+      "id": "site-ak-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.144.64/26",
+      "gateway": "10.80.144.65"
+    },
+    {
+      "id": "site-ak-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.144.128/26",
+      "gateway": "10.80.144.129"
+    },
+    {
+      "id": "site-ak-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.144.192/26",
+      "gateway": "10.80.144.193"
+    },
+    {
+      "id": "site-ak-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.145.0/24",
+      "gateway": "10.80.145.1"
+    },
+    {
+      "id": "site-ak-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4025:10::/64",
+      "gateway": "2001:db8:4025:10::1"
+    },
+    {
+      "id": "site-ak-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4025:20::/64",
+      "gateway": "2001:db8:4025:20::1"
+    },
+    {
+      "id": "site-ak-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4025:30::/64",
+      "gateway": "2001:db8:4025:30::1"
+    },
+    {
+      "id": "site-ak-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4025:40::/64",
+      "gateway": "2001:db8:4025:40::1"
+    },
+    {
+      "id": "site-ak-guest-v50",
+      "scope": "guest-site-ak",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-al-infra",
+      "scope": "corp",
+      "cidr": "10.80.148.0/26"
+    },
+    {
+      "id": "site-al-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.148.64/26",
+      "gateway": "10.80.148.65"
+    },
+    {
+      "id": "site-al-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.148.128/26",
+      "gateway": "10.80.148.129"
+    },
+    {
+      "id": "site-al-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.148.192/26",
+      "gateway": "10.80.148.193"
+    },
+    {
+      "id": "site-al-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.149.0/24",
+      "gateway": "10.80.149.1"
+    },
+    {
+      "id": "site-al-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4026:10::/64",
+      "gateway": "2001:db8:4026:10::1"
+    },
+    {
+      "id": "site-al-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4026:20::/64",
+      "gateway": "2001:db8:4026:20::1"
+    },
+    {
+      "id": "site-al-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4026:30::/64",
+      "gateway": "2001:db8:4026:30::1"
+    },
+    {
+      "id": "site-al-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4026:40::/64",
+      "gateway": "2001:db8:4026:40::1"
+    },
+    {
+      "id": "site-al-guest-v50",
+      "scope": "guest-site-al",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-am-infra",
+      "scope": "corp",
+      "cidr": "10.80.152.0/26"
+    },
+    {
+      "id": "site-am-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.152.64/26",
+      "gateway": "10.80.152.65"
+    },
+    {
+      "id": "site-am-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.152.128/26",
+      "gateway": "10.80.152.129"
+    },
+    {
+      "id": "site-am-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.152.192/26",
+      "gateway": "10.80.152.193"
+    },
+    {
+      "id": "site-am-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.153.0/24",
+      "gateway": "10.80.153.1"
+    },
+    {
+      "id": "site-am-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4027:10::/64",
+      "gateway": "2001:db8:4027:10::1"
+    },
+    {
+      "id": "site-am-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4027:20::/64",
+      "gateway": "2001:db8:4027:20::1"
+    },
+    {
+      "id": "site-am-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4027:30::/64",
+      "gateway": "2001:db8:4027:30::1"
+    },
+    {
+      "id": "site-am-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4027:40::/64",
+      "gateway": "2001:db8:4027:40::1"
+    },
+    {
+      "id": "site-am-guest-v50",
+      "scope": "guest-site-am",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    },
+    {
+      "id": "site-an-infra",
+      "scope": "corp",
+      "cidr": "10.80.156.0/26"
+    },
+    {
+      "id": "site-an-mgmt-v10",
+      "scope": "corp",
+      "cidr": "10.80.156.64/26",
+      "gateway": "10.80.156.65"
+    },
+    {
+      "id": "site-an-voice-v30",
+      "scope": "corp",
+      "cidr": "10.80.156.128/26",
+      "gateway": "10.80.156.129"
+    },
+    {
+      "id": "site-an-iot-v40",
+      "scope": "corp",
+      "cidr": "10.80.156.192/26",
+      "gateway": "10.80.156.193"
+    },
+    {
+      "id": "site-an-users-v20",
+      "scope": "corp",
+      "cidr": "10.80.157.0/24",
+      "gateway": "10.80.157.1"
+    },
+    {
+      "id": "site-an-mgmt-v10-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4028:10::/64",
+      "gateway": "2001:db8:4028:10::1"
+    },
+    {
+      "id": "site-an-users-v20-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4028:20::/64",
+      "gateway": "2001:db8:4028:20::1"
+    },
+    {
+      "id": "site-an-voice-v30-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4028:30::/64",
+      "gateway": "2001:db8:4028:30::1"
+    },
+    {
+      "id": "site-an-iot-v40-v6",
+      "scope": "corp",
+      "cidr": "2001:db8:4028:40::/64",
+      "gateway": "2001:db8:4028:40::1"
+    },
+    {
+      "id": "site-an-guest-v50",
+      "scope": "guest-site-an",
+      "cidr": "172.16.50.0/24",
+      "gateway": "172.16.50.1"
+    }
+  ]
+}

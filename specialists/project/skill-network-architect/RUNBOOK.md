@@ -31,6 +31,10 @@ Ordered by when they are used. Shared forms are canonical in skill-network-archi
 | Design | [ip-addressing-plan](templates/ip-addressing-plan.md) | IPv4/IPv6 hierarchy, per-site block, VLAN/VRF map; validate with `just ip-plan` | this pack |
 | Design | [site-network-design](templates/site-network-design.md) | per-site build sheet: WAN, MTU (`just mtu`), radio (`just link-budget`), VLANs, Wi-Fi, OOB, PoE | this pack |
 | Design | [routing-policy](templates/routing-policy.md) | prefix ownership, per-peer import/export, filters, failover expectations | this pack |
+| Design | [bgp-peer-policy](templates/bgp-peer-policy.md) | one row per BGP peer: role, RFC 8212 default, prefix limits, ROV, GTSM, BFD, tests | this pack |
+| Design | [evpn-fabric-build](templates/evpn-fabric-build.md) | EVPN/VXLAN fabric build sheet: underlay ASNs, VNI/VRF/RT plan, IRB mode, ESI, MTU, failure tests | this pack |
+| Accept | [wifi-survey-acceptance](templates/wifi-survey-acceptance.md) | Wi-Fi survey targets per area vs measured results, client types, sign-off | this pack |
+| Accept | [ptp-link-record](templates/ptp-link-record.md) | point-to-point radio link: predicted (`just link-budget`) vs measured RSL, margin, acceptance | this pack |
 | Decide | [decision-record](templates/decision-record.md) | one decision (MADR 4.0), confirmation and reopen triggers | shared |
 | Decide | [risk-register](templates/risk-register.md) | scored risks with trigger, response, owner and residual | shared |
 | Hand off | [handoff](templates/handoff.md) | request and response envelope between architects and specialists | shared |
@@ -46,6 +50,8 @@ Ordered by when they are used. Shared forms are canonical in skill-network-archi
 | How much payload MTU survives this tunnel stack? | `just mtu <budget.json>` |
 | Does this radio path close with margin and clearance? | `just link-budget <links.json>` |
 | What availability does this series/parallel design give? | `just availability <model.json>` |
+| Does the fibre plant fit the optic's budget with margin? | `just fibre <links.json>` |
+| Does PoE fit each switch, and the site fit the UPS? | `just power <site.json>` |
 | Are the cited links still alive? (network, read-only) | `just links` |
 | Refresh local copies of cited sources (plan, then `--apply`) | `just fetch-sources` |
 | Rebuild the source ledger after adding citations (plan, then `--apply`) | `just ledger` |

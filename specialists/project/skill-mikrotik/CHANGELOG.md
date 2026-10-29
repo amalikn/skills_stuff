@@ -6,10 +6,15 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261022_1620
+Last rotated: 20261029_1927
 ---
 
 # Changelog
+
+## 20261029_1927 — skill-smc script paths in the diagnosis tree (v0.1.31 -> v0.1.32)
+
+SKILL.md step 1 names `metrics/fleet-reboot-timeline.py` and `metrics/vlan-traffic-timeline.py`; skill-smc moved them into
+`scripts/metrics/`, which left `just check` failing on an unresolved path. manifest 0.1.31 -> 0.1.32.
 
 ## 20261029_1750 — Inbound route to the peer architect skills (v0.1.30 -> v0.1.31)
 
@@ -191,11 +196,3 @@ VERIFIED-OBSERVED 2026-10-08 from unified-network-controller work over Teleport 
 - `references/05_known-issues.md`: items 8 and 11 updated; new 14 (SNMP disabled) and 15 (cpu-frequency warning).
 - `scripts/mib_oids.py`, `scripts/confluence_fetch.py`, `scripts/product_text.py` promoted from the research session, with `just mib-oids`, `fetch-doc`,
   `product-text`.
-
-## 20261007_1623 — Mk3 connection diagram: what is on each port, rct vs wh (v0.1.9 -> v0.1.10)
-
-- `references/mk3-connection-diagram-v0.5.pdf` (new): the operator's Mk3 site diagram, moved here from the pack root (was `Mk3 Connection Diagram v0.5 1.pdf`).
-- `references/01_overview.md`: port table names the real devices (ether2 and ether3 are the satellite modem's Uni-D1 and Uni-D2, not a separate second WAN;
-  ether4 the Dallas Delta ATA UI on `rct`; ether5 the PoE AP, Metal on `rct` and Cambium on `wh`); new Site design section (untagged-internet reason for
-  ether1 in `bridge-vlan521`, ATA and Thuraya backup, AP addressing, SMC Wi-Fi SSID).
-- skill-smc 0.1.98: SMC-side addressing from ansible-wifi compared with the diagram (diagram stale on management DNS and a `192.168.100.2` note).

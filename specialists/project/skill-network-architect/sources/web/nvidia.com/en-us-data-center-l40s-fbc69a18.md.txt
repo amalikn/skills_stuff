@@ -1,0 +1,212 @@
+Contents of https://www.nvidia.com/en-us/data-center/l40s/:
+![](/content/dam/en-zz/Solutions/Data-Center/l40s/nvidia-l40s-hero-banner-bb580_440-d.jpg)
+
+Unparalleled AI and graphics performance for the data center.
+
+## Where to Buy
+
+Find an NVIDIA Partner.
+
+* [Introduction](#introduction)
+* [Highlights](#highlights)
+* [Features](#features)
+* [Workloads](#workloads)
+* [Performance](#performance)
+* [Specifications](#specifications)
+* [Get Started](#get-started)
+
+* [Introduction](#introduction)
+* [Highlights](#highlights)
+* [Features](#features)
+* [Workloads](#workloads)
+* [Performance](#performance)
+* [Specifications](#specifications)
+* [Get Started](#get-started)
+
+* [Introduction](#introduction)
+* [Highlights](#highlights)
+* [Features](#features)
+* [Workloads](#workloads)
+* [Performance](#performance)
+* [Specifications](#specifications)
+* [Get Started](#get-started)
+
+## The Most Powerful Universal GPU
+
+Experience breakthrough multi-workload performance with the NVIDIA L40S GPU. Combining powerful AI compute with best-in-class graphics and media acceleration, the L40S GPU is built to power the next generation of data center workloads—from generative AI and large language model (LLM) inference and training to 3D graphics, rendering, and video.
+
+#### NVIDIA, Global Data Center System Manufacturers to Supercharge Generative AI and Industrial Digitalization
+
+NVIDIA OVX™ Servers featuring new NVIDIA GPUs to accelerate training and inference, as well as graphics-intensive workloads, are coming soon from Dell, Hewlett Packard Enterprise, Lenovo, Supermicro, and others.
+
+## Highlights
+
+## Universal Performance
+
+### Tensor Performance
+
+1,466 TFLOPS¹
+
+### RT Core Performance
+
+212 TFLOPS
+
+### Single-Precision Performance
+
+91.6 TFLOPS
+
+1 Peak rates are based on GPU boost clock.
+
+## Features
+
+## Powered by the NVIDIA Ada Lovelace Architecture
+
+### Fourth-Generation Tensor Cores
+
+Hardware support for structural sparsity and optimized TF32 format provides out of-the-box performance gains for faster AI and data science model training. Accelerate AI-enhanced graphics capabilities with [DLSS](https://www.nvidia.com/en-us/geforce/technologies/dlss/) to upscale resolution with better performance in select applications.
+
+### Third-Generation RT Cores
+
+Enhanced throughput and concurrent ray-tracing and shading capabilities improve ray-tracing performance, accelerating renders for product design and architecture, engineering, and construction workflows. See lifelike designs in action with hardware-accelerated motion blur and stunning real-time animations.
+
+### CUDA Cores
+
+Accelerated single-precision floating point (FP32) throughput and improved power efficiency significantly boost performance for workflows like 3D model development and computer-aided engineering (CAE) simulation. Use enhanced 16-bit math capabilities (BF16) for mixed-precision workloads.
+
+### Transformer Engine
+
+Transformer Engine dramatically accelerates AI performance and improves memory utilization for both training and inference. Harnessing the power of the Ada Lovelace fourth-generation Tensor Cores, Transformer Engine intelligently scans the layers of transformer architecture neural networks and automatically recasts between FP8 and FP16 precisions to deliver faster AI performance and accelerate training and inference.
+
+### Efficiency and Security
+
+L40S GPU is optimized for 24/7 enterprise data center operations and designed, built, tested, and supported by NVIDIA to ensure maximum performance, durability, and uptime. The L40S GPU meets the latest data center standards, are Network Equipment-Building System (NEBS) Level 3 ready, and features secure boot with root of trust technology, providing an additional layer of security for data centers.
+
+### DLSS 3
+
+L40S GPU enables ultra-fast rendering and smoother frame rates with NVIDIA DLSS 3. This breakthrough frame-generation technology leverages deep learning and the latest hardware innovations within the Ada Lovelace architecture and the L40S GPU, including fourth-generation Tensor Cores and an Optical Flow Accelerator, to boost rendering performance, deliver higher frames per second (FPS), and significantly improve latency.
+
+## Workloads
+
+## Multi-Workload Acceleration
+
+#### Generative AI
+
+Develop new services, insights, and original content.
+
+With next-generation AI, graphics, and media acceleration capabilities, the L40S delivers up to 5X higher inference performance than the previous-generation [NVIDIA A40](https://www.nvidia.com/en-us/data-center/a40/). ‌With breakthrough performance and 48 gigabytes (GB) of memory capacity, the L40S is the ideal platform for accelerating multimodal generative AI workloads.
+
+![Learn more about NVIDIA Generative AI](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Learn more about NVIDIA Generative AI")
+
+#### LLM Training and Inference
+
+Accelerate AI training and inference workloads.
+
+Fourth-generation Tensor Cores with support for FP8 deliver exceptional AI computing performance to accelerate training and inference of state-of-the-art LLM and generative AI models.
+
+![LLM Training &amp; Inference](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "LLM Training &amp; Inference")
+
+#### Rendering and 3D Graphics
+
+Power high-fidelity creative workflows with NVIDIA RTX™ graphics.
+
+With third-generation RT Cores that deliver up to 2X the real-time ray-tracing performance of the previous generation to power the creation of stunning visual content and high-fidelity creative workflows, from interactive rendering to real-time virtual production.
+
+![Learn more about NVIDIA RTX](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Learn more about NVIDIA RTX")
+
+#### NVIDIA Omniverse
+
+Create and operate metaverse applications.
+
+NVIDIA Omniverse™ makes it possible to connect, develop, and operate the next wave of industrial digitalization applications. With powerful RTX graphics and AI capabilities, L40S delivers exceptional performance for Universal Scene Description (OpenUSD)-based 3D and simulation workflows built on Omniverse.
+
+![Learn more about NVIDIA Omniverse](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Learn more about NVIDIA Omniverse")
+
+#### NVIDIA OVX L40S
+
+Scalable Data Center Infrastructure for High-Performance AI and Graphics.
+
+Combined with [NVIDIA Spectrum-X](https://www.nvidia.com/en-us/networking/spectrumx/) Ethernet technology and [NVIDIA AI Enterprise](https://www.nvidia.com/en-us/data-center/products/ai-enterprise/) software, NVIDIA OVX L40S delivers industry-leading performance to accelerate enterprise transformation with generative AI.
+
+![NVIDIA OVX](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "NVIDIA OVX")
+
+## Performance
+
+## Breakthrough Performance
+
+### Image Generative AI
+
+Stable Diffusion (images per minute)
+
+Measured performance; NVIDIA L40S
+  
+ Stable Diffusion v2.1, TRT 8.6.1, BS:1, FP16 | Stable Diffusion XL 1.0, TRT 8.6.1, BS:1, FP16
+
+### Large Language Model (LLM) Inference
+
+1st Token Latency (ms)
+
+Measured performance; NVIDIA L40S
+  
+ Llama 2-7B/13B/70B, ISL=2048, OSL=128, BS=1;: FP8.
+
+## Specifications
+
+## NVIDIA L40S GPU
+
+|  |  |
+| --- | --- |
+| FP32 | 91.6 teraFLOPS |
+| TF32 Tensor Core | 366 teraFLOPS\* |
+| FP16 | 733 teraFLOPS\* |
+| FP8 | 1,466 teraFLOPS\* |
+| RT Core Performance | 212 teraFLOPS |
+| Max Power Consumption | 350W |
+| \*With Sparsity | |
+
+## Get Started
+
+### Ready to Purchase?
+
+Talk with an NVIDIA Partner.
+
+### Need Help Selecting the Right Product or Partner?
+
+Talk to an NVIDIA product specialist about your professional needs.
+
+### Stay up to Date on the Latest News
+
+Sign up for news from NVIDIA.
+
+## Sign Up To Be Notified On Availability
+
+## NVIDIA L40S GPU Specifications
+
+|  |  |
+| --- | --- |
+| GPU Architecture | NVIDIA Ada Lovelace architecture |
+| GPU Memory | 48GB GDDR6 with ECC |
+| Memory Bandwidth | 864GB/s |
+| Interconnect Interface | PCIe Gen4 x16: 64GB/s bidirectional |
+| NVIDIA Ada Lovelace Architecture-Based CUDA® Cores | 18,176 |
+| NVIDIA Third-Generation RT Cores | 142 |
+| NVIDIA Fourth-Generation Tensor Cores | 568 |
+| RT Core Performance TFLOPS | 212 |
+| FP32 TFLOPS | 91.6 |
+| TF32 Tensor Core TFLOPS | 183 I 366\* |
+| BFLOAT16 Tensor Core TFLOPS | 362.05 I 733\* |
+| FP16 Tensor Core | 362.05 I 733\* |
+| FP8 Tensor Core | 733 I 1,466\* |
+| Peak INT8 Tensor TOPS   Peak INT4 Tensor TOPS | 733 I 1,466\*   733 I 1,466\* |
+| Form Factor | 4.4" (H) x 10.5" (L), dual slot |
+| Display Ports | 4x DisplayPort 1.4a |
+| Max Power Consumption | 350W |
+| Power Connector | 16-pin |
+| Thermal | Passive |
+| Virtual GPU (vGPU) Software Support | Yes |
+| vGPU Profiles Supported | See [virtual GPU licensing guide](/content/dam/en-zz/Solutions/design-visualization/solutions/resources/documents1/Virtual-GPU-Packaging-and-Licensing-Guide.pdf) |
+| NVENC I NVDEC | 3x l 3x (includes AV1 encode and decode) |
+| Secure Boot With Root of Trust | Yes |
+| NEBS Ready | Level 3 |
+| Multi-Instance GPU (MIG) Support | No |
+| NVIDIA® NVLink® Support | No |
+| \*With Sparsity | |

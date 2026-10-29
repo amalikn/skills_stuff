@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "nodes": [
+    {
+      "id": "pve-1",
+      "domain": "rack-a"
+    },
+    {
+      "id": "pve-2",
+      "domain": "rack-a"
+    },
+    {
+      "id": "pve-3",
+      "domain": "rack-b"
+    }
+  ],
+  "qdevice": {
+    "domain": "comms-c"
+  },
+  "must_survive": [
+    "node:pve-1",
+    "node:pve-2",
+    "node:pve-3",
+    "domain:rack-a",
+    "domain:rack-b",
+    "qdevice"
+  ]
+}

@@ -10,6 +10,8 @@ Summary: FMEA-style table per component with detection, effect, blast radius, re
 
 # <scope> failure mode analysis
 
+Worked example: `skill-network-architect/examples/filled/failure-mode-analysis.md` (filled for a fictional remote-site operator; lives in the network pack only).
+
 Based on: Failure Mode and Effects Analysis as described by ASQ (https://asq.org/quality-resources/fmea). Adapted: adds blast radius, shared-risk groups and a test per row.
 
 ## How to use
@@ -71,7 +73,7 @@ Detection = signal, threshold and time to detect. Recovery = action and time. Te
 
 ## 4. Actions
 
-| Action | Rows addressed | Expected change in S/O/D | Owner | Due | Status |
+| Action | Rows addressed | Expected change (S/O/D, or recovery time) | Owner | Due | Status |
 | ------ | -------------- | ------------------------ | ----- | --- | ------ |
 |        | FM-02          | D 8 -> 3 (loss alert)    |       |     |        |
 

@@ -1,0 +1,95 @@
+Contents of https://mariadb.com/docs/galera-cluster/galera-architecture/quorum-control-with-weighted-votes:
+`⌘Ctrl``k`
+
+* [Home](/docs)
+* [MariaDB Platform](/docs/platform)
+* [Server](/docs/server)
+* [MaxScale](/docs/maxscale)
+* [Analytics](/docs/analytics)
+* [Galera Cluster](/docs/galera-cluster)
+* [Connectors](/docs/connectors)
+* [Tools](/docs/tools)
+* [MariaDB Cloud](/docs/mariadb-cloud)
+* [Release Notes](/docs/release-notes)
+* [General Resources](/docs/general-resources)
+
+1. [Galera Cluster](/docs/galera-cluster)
+2. [Galera Architecture](/docs/galera-cluster/galera-architecture)
+
+## Quorum Control with Weighted Votes
+
+Weighted quorum lets each Galera Cluster node carry a vote from 0 to 255, controlling which nodes remain critical for maintaining the Primary Component during failure.
+
+MariaDB Galera Cluster supports a weighted quorum, where each node can be assigned a weight in the range of `0` to `255`, with which it will participate in quorum calculations. This provides fine-grained control over which nodes are most critical for forming a [Primary Component](/docs/galera-cluster/galera-architecture/quorum-control-with-weighted-votes#quorum-calculation-with-weights), especially in complex or [geographically distributed topologies](/docs/galera-cluster/galera-architecture/galera-cluster-deployment-variants#wide-area-network-wan-cluster-multi-data-center).
+
+By default, every [node](/docs/galera-cluster/high-availability/monitoring-mariadb-galera-cluster#understanding-galera-node-states) has a weight of `1`. You can customize a node's weight during runtime by setting the `pc.weight` [provider option](/docs/galera-cluster/galera-management/configuration/configuring-mariadb-galera-cluster#mandatory-options):
+
+```
+SET GLOBAL wsrep_provider_options="pc.weight=3";
+```
+
+## Quorum Calculation with Weights
+
+The quorum is preserved if, and only if, the sum of the weights of the nodes in a new component is strictly more than half the total weight of the preceding Primary Component (minus any nodes that left gracefully).
+
+The formal calculation is:
+
+2∑pi​×wi​−∑li​×wi​​<∑mi​×wi​2∑pi​×wi​−∑li​×wi​​<∑mi​×wi​2∑pi​×wi​−∑li​×wi​​<∑mi​×wi​
+
+Where:
+
+* pip\_ipi​: Members of the last seen Primary Component.
+* lil\_ili​: Members that are known to have left gracefully.
+* mim\_imi​: Members of the current component being evaluated.
+* wiw\_iwi​: The weight of each member (`pc.weight`).
+
+Changing a node's weight is a cluster-wide membership event. If a [network partition](/docs/galera-cluster/high-availability/understanding-quorum-monitoring-and-recovery#understanding-and-recovering-from-a-split-brain) occurs at the exact moment a weight-change message is being delivered, it can lead to a corner case where the entire cluster becomes [non-primary](/docs/galera-cluster/high-availability/understanding-quorum-monitoring-and-recovery).
+
+## Practical Examples of Weighted Quorum
+
+### **Prioritizing a Primary Node**
+
+In a three-node cluster, to make `node1` the most critical for maintaining the [Primary Component](/docs/galera-cluster/high-availability/understanding-quorum-monitoring-and-recovery#the-galera-arbitrator-garbd):
+
+* `node1`: `pc.weight = 2`
+* `node2`: `pc.weight = 1`
+* `node3`: `pc.weight = 0`
+
+If `node2` and `node3` fail, `node1` remains primary. If `node1` fails, the other two nodes become non-primary.
+
+### **Simple Primary/Replica Failover**
+
+In a two-node cluster, to ensure `node1` is always the primary in case of a network split:
+
+* `node1` (Primary): `pc.weight = 1`
+* `node2` (Replica): `pc.weight = 0`
+
+### **Primary and Secondary Site Scenario**
+
+For a [disaster recovery setup](/docs/galera-cluster/high-availability/using-mariadb-replication-with-mariadb-galera-cluster/using-mariadb-replication-with-mariadb-galera-cluster-using-mariadb-replica) with two nodes at a primary site and two at a secondary site:
+
+#### Primary Site:
+
+* `node1`: `pc.weight = 2`
+* `node2`: `pc.weight = 2`
+
+#### Secondary Site:
+
+* `node3`: `pc.weight = 1`
+* `node4`: `pc.weight = 1`
+
+If the secondary site or the [WAN link](/docs/galera-cluster/galera-architecture/galera-cluster-deployment-variants#wide-area-network-wan-cluster-multi-data-center) fails, the primary site maintains quorum. Additionally, one node at the primary site can fail without causing an outage.
+
+*This page is licensed: CC BY-SA / Gnu FDL*
+
+Last updated 2 months ago
+
+Was this helpful?
+
+* [Quorum Calculation with Weights](#quorum-calculation-with-weights)
+* [Practical Examples of Weighted Quorum](#practical-examples-of-weighted-quorum)
+* [Prioritizing a Primary Node](#prioritizing-a-primary-node)
+* [Simple Primary/Replica Failover](#simple-primary-replica-failover)
+* [Primary and Secondary Site Scenario](#primary-and-secondary-site-scenario)
+
+Was this helpful?

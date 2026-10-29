@@ -198,7 +198,12 @@ Containers:
 - [CNI specification](https://www.cni.dev/docs/spec/): what a network plugin must and need not do.
 - [Cilium routing concepts](https://docs.cilium.io/en/stable/network/concepts/routing/): encapsulation versus native routing in one widely used CNI.
 
-[rfc7348]: https://www.rfc-editor.org/rfc/rfc7348.html [rfc7938]: https://www.rfc-editor.org/rfc/rfc7938.html [rfc8926]: https://www.rfc-editor.org/rfc/rfc8926.html [aws-subnet]:
-https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html [aws-mtu]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/network_mtu.html [azure-faq]:
-https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq [azure-tune]: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-tcpip-performance-tuning
-[gcp-subnets]: https://cloud.google.com/vpc/docs/subnets [gcp-mtu]: https://cloud.google.com/vpc/docs/mtu
+[rfc7348]: https://www.rfc-editor.org/rfc/rfc7348.html
+[rfc7938]: https://www.rfc-editor.org/rfc/rfc7938.html
+[rfc8926]: https://www.rfc-editor.org/rfc/rfc8926.html
+[aws-subnet]: https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html
+[aws-mtu]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/network_mtu.html
+[azure-faq]: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq
+[azure-tune]: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-tcpip-performance-tuning
+[gcp-subnets]: https://cloud.google.com/vpc/docs/subnets
+[gcp-mtu]: https://cloud.google.com/vpc/docs/mtu

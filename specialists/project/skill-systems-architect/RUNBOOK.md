@@ -35,6 +35,7 @@ Ordered by when they are used. Shared forms are canonical in skill-network-archi
 | Change | [change-and-validation](templates/change-and-validation.md) | Method of Procedure: pre-checks, steps with rollback, gates, canary, batches | shared |
 | Accept | [test-and-acceptance-plan](templates/test-and-acceptance-plan.md) | tests traced to requirements, oracle, failure injection, sign-off | shared |
 | Accept | [backup-and-restore-test](templates/backup-and-restore-test.md) | RPO/RTO per dataset, 3-2-1 placement, restore drill vs target (`just capacity`) | this pack |
+| Operate | [dr-runbook](templates/dr-runbook.md) | site or service failover: invocation, roles, ordered steps with rollback, point of no return, failback, drill record (`just restore`) | this pack |
 | Operate | [post-incident-review](templates/post-incident-review.md) | blameless review: timeline, contributing factors, owned actions | shared |
 | Operate | [lifecycle-and-patching](templates/lifecycle-and-patching.md) | EOL tracking, patch rings, windows, emergency path | this pack |
 
@@ -44,6 +45,8 @@ Ordered by when they are used. Shared forms are canonical in skill-network-archi
 | --- | --- |
 | Does memory survive each failure scenario; does restore meet RTO? | `just capacity <plan.json>` |
 | What availability does this series/parallel design give? | `just availability <model.json>` |
+| How long does each restore phase take against the RTO? | `just restore <plan.json>` |
+| What is past or near end of support? | `just eol <register.json>` |
 | Are the cited links still alive? (network, read-only) | `just links` |
 | Refresh local copies of cited sources (plan, then `--apply`) | `just fetch-sources` |
 | Rebuild the source ledger after adding citations (plan, then `--apply`) | `just ledger` |

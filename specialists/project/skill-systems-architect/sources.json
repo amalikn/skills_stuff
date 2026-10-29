@@ -683,6 +683,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-ef8b5f9f",
+   "title": "2309-06180-url",
+   "url": "https://arxiv.org/abs/2309.06180",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/arxiv.org/abs-2309.06180-ef8b5f9f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-aec0fb05",
    "title": "asq.org",
    "url": "https://asq.org/quality-resources/fmea",
@@ -833,6 +843,26 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-0d268189",
+   "title": "a7url",
+   "url": "https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/developer.apple.com/help-account-certificates-mdm-vendor-csr-signing-certificate-0d268189.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-977a0a59",
+   "title": "Apple Developer Program",
+   "url": "https://developer.apple.com/programs/",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/developer.apple.com/programs-977a0a59.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-ee0700cc",
    "title": "Packer documentation",
    "url": "https://developer.hashicorp.com/packer/docs",
@@ -914,7 +944,7 @@
   },
   {
    "id": "C-de61aa85",
-   "title": "docs.aws.amazon.com",
+   "title": "aws-dr",
    "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
    "evidence": "CITED",
    "note": "cited in references/backup-disaster-recovery.md",
@@ -1051,6 +1081,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-043ee5ba",
+   "title": "Ollama FAQ: concurrent requests",
+   "url": "https://docs.ollama.com/faq",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/docs.ollama.com/faq-043ee5ba.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-79c0f84c",
    "title": "Podman Quadlet (podman-systemd.unit)",
    "url": "https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html",
@@ -1068,6 +1108,16 @@
    "note": "cited in references/diagrams-and-deliverables.md",
    "generated": true,
    "local": "sources/web/docs.structurizr.com/index-eae2f4d3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e56b6e7f",
+   "title": "optimization-url",
+   "url": "https://docs.vllm.ai/en/latest/configuration/optimization.html",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/docs.vllm.ai/en-latest-configuration-optimization.html-e56b6e7f.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1091,8 +1141,28 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-fe96979b",
+   "title": "Fleet: macOS MDM setup",
+   "url": "https://fleetdm.com/guides/macos-mdm-setup",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/fleetdm.com/guides-macos-mdm-setup-fe96979b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-8cc1cd52",
+   "title": "Fleet pricing",
+   "url": "https://fleetdm.com/pricing",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/fleetdm.com/pricing-8cc1cd52.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-9bbaa0ee",
-   "title": "git.proxmox.com",
+   "title": "l-pve",
    "url": "https://git.proxmox.com/?p=pve-manager.git;a=blob_plain;f=debian/copyright;hb=HEAD",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1101,8 +1171,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-569f0adf",
+   "title": "Barman",
+   "url": "https://github.com/EnterpriseDB/barman",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true
+  },
+  {
    "id": "C-7e09ed38",
-   "title": "github.com",
+   "title": "s-jeff",
    "url": "https://github.com/Jeffallan/claude-skills",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
@@ -1110,7 +1188,7 @@
   },
   {
    "id": "C-b9387346",
-   "title": "github.com",
+   "title": "s-volt",
    "url": "https://github.com/VoltAgent/awesome-claude-code-subagents",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
@@ -1126,15 +1204,63 @@
   },
   {
    "id": "C-e2b5bb09",
-   "title": "github.com",
+   "title": "l-batfish",
    "url": "https://github.com/batfish/batfish/blob/master/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
    "generated": true
   },
   {
+   "id": "C-4c4adcb2",
+   "title": "Litestream",
+   "url": "https://github.com/benbjohnson/litestream",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true
+  },
+  {
+   "id": "C-e8f6f797",
+   "title": "Fleet LICENSE",
+   "url": "https://github.com/fleetdm/fleet/blob/main/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true
+  },
+  {
+   "id": "C-bc5113a3",
+   "title": "llamacpp-url",
+   "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true
+  },
+  {
+   "id": "C-65e4c30c",
+   "title": "MicroMDM v1",
+   "url": "https://github.com/micromdm/micromdm",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true
+  },
+  {
+   "id": "C-af10d8ab",
+   "title": "m2url",
+   "url": "https://github.com/micromdm/micromdm/blob/main/docs/user-guide/quickstart.md",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true
+  },
+  {
+   "id": "C-25a15762",
+   "title": "NanoMDM",
+   "url": "https://github.com/micromdm/nanomdm",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true
+  },
+  {
    "id": "C-90192f3d",
-   "title": "github.com",
+   "title": "s-sq",
    "url": "https://github.com/netenglabs/suzieq",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
@@ -1142,7 +1268,7 @@
   },
   {
    "id": "C-4e8ce13e",
-   "title": "github.com",
+   "title": "l-suzieq",
    "url": "https://github.com/netenglabs/suzieq/blob/develop/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1150,15 +1276,31 @@
   },
   {
    "id": "C-11a62375",
-   "title": "github.com",
+   "title": "l-nornir",
    "url": "https://github.com/nornir-automation/nornir/blob/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
    "generated": true
   },
   {
+   "id": "C-203c4fe1",
+   "title": "osquery LICENSE",
+   "url": "https://github.com/osquery/osquery/blob/master/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true
+  },
+  {
+   "id": "C-5998ce43",
+   "title": "Patroni",
+   "url": "https://github.com/patroni/patroni",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true
+  },
+  {
    "id": "C-6cd48193",
-   "title": "github.com",
+   "title": "s-sick",
    "url": "https://github.com/sickn33/antigravity-awesome-skills",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
@@ -1170,6 +1312,14 @@
    "url": "https://github.com/usnistgov/macos_security",
    "evidence": "CITED",
    "note": "cited in references/macos-and-endpoints.md",
+   "generated": true
+  },
+  {
+   "id": "C-3a2d814d",
+   "title": "WAL-G",
+   "url": "https://github.com/wal-g/wal-g",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
    "generated": true
   },
   {
@@ -1188,6 +1338,26 @@
    "note": "cited in references/foss-and-tool-selection.md",
    "generated": true,
    "local": "sources/web/graylog.org/post-graylog-v4-0-licensing-sspl-729d1278.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-15e33c2b",
+   "title": "l70url",
+   "url": "https://huggingface.co/unsloth/Meta-Llama-3.1-70B-Instruct/blob/main/config.json",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/huggingface.co/unsloth-Meta-Llama-3.1-70B-Instruct-blob-main-config.json-15e33c2b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-5d54b2e6",
+   "title": "l8url",
+   "url": "https://huggingface.co/unsloth/Meta-Llama-3.1-8B-Instruct/blob/main/config.json",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/huggingface.co/unsloth-Meta-Llama-3.1-8B-Instruct-blob-main-config.json-5d54b2e6.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1271,13 +1441,73 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-93e4faba",
+   "title": "Windows 10 Enterprise and Education",
+   "url": "https://learn.microsoft.com/lifecycle/products/windows-10-enterprise-and-education",
+   "evidence": "CITED",
+   "note": "cited in references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/lifecycle-products-windows-10-enterprise-and-education-93e4faba.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7cedf055",
+   "title": "Windows 10 Home and Pro",
+   "url": "https://learn.microsoft.com/lifecycle/products/windows-10-home-and-pro",
+   "evidence": "CITED",
+   "note": "cited in references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/lifecycle-products-windows-10-home-and-pro-7cedf055.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-18c5c6be",
+   "title": "Windows Server 2016",
+   "url": "https://learn.microsoft.com/lifecycle/products/windows-server-2016",
+   "evidence": "CITED",
+   "note": "cited in references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/lifecycle-products-windows-server-2016-18c5c6be.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-434202ac",
+   "title": "Windows Server 2019",
+   "url": "https://learn.microsoft.com/lifecycle/products/windows-server-2019",
+   "evidence": "CITED",
+   "note": "cited in references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/lifecycle-products-windows-server-2019-434202ac.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-3cf8ee99",
+   "title": "Windows Server 2022",
+   "url": "https://learn.microsoft.com/lifecycle/products/windows-server-2022",
+   "evidence": "CITED",
+   "note": "cited in references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/lifecycle-products-windows-server-2022-3cf8ee99.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-18aeca40",
-   "title": "Microsoft lifecycle: Windows Server 2025",
+   "title": "windows-server-2025-url",
    "url": "https://learn.microsoft.com/lifecycle/products/windows-server-2025",
    "evidence": "CITED",
    "note": "cited in references/windows-and-identity.md",
    "generated": true,
    "local": "sources/web/learn.microsoft.com/lifecycle-products-windows-server-2025-18aeca40.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-63eb371a",
+   "title": "galera-url",
+   "url": "https://mariadb.com/docs/galera-cluster/galera-architecture/quorum-control-with-weighted-votes",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/mariadb.com/docs-galera-cluster-galera-architecture-quorum-control-with-weighted-votes-63eb371a.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1298,6 +1528,16 @@
    "note": "cited in references/diagrams-and-deliverables.md",
    "generated": true,
    "local": "sources/web/mermaid.js.org/index-4628814d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-492e3178",
+   "title": "Ollama llama3.1 tags",
+   "url": "https://ollama.com/library/llama3.1/tags",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/ollama.com/library-llama3.1-tags-492e3178.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1372,7 +1612,7 @@
   },
   {
    "id": "C-2f4c6994",
-   "title": "dRAID",
+   "title": "draid",
    "url": "https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html",
    "evidence": "CITED",
    "note": "cited in references/storage-and-data.md",
@@ -1401,6 +1641,46 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-7806d89e",
+   "title": "patroni-dyn-url",
+   "url": "https://patroni.readthedocs.io/en/latest/dynamic_configuration.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/patroni.readthedocs.io/en-latest-dynamic_configuration.html-7806d89e.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e8739e96",
+   "title": "patroni-repl-url",
+   "url": "https://patroni.readthedocs.io/en/latest/replication_modes.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/patroni.readthedocs.io/en-latest-replication_modes.html-e8739e96.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2900673d",
+   "title": "patroni-rest-url",
+   "url": "https://patroni.readthedocs.io/en/latest/rest_api.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/patroni.readthedocs.io/en-latest-rest_api.html-2900673d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a256246b",
+   "title": "patroni-wd-url",
+   "url": "https://patroni.readthedocs.io/en/latest/watchdog.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/patroni.readthedocs.io/en-latest-watchdog.html-a256246b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-f0113272",
    "title": "PBS remotes and sync",
    "url": "https://pbs.proxmox.com/docs/managing-remotes.html",
@@ -1418,6 +1698,16 @@
    "note": "cited in references/backup-disaster-recovery.md",
    "generated": true,
    "local": "sources/web/pbs.proxmox.com/docs-tape-backup.html-b43bc68c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e406439c",
+   "title": "pgBackRest user guide",
+   "url": "https://pgbackrest.org/user-guide.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/pgbackrest.org/user-guide.html-e406439c.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1512,7 +1802,7 @@
   },
   {
    "id": "C-7058aba2",
-   "title": "raw.githubusercontent.com",
+   "title": "l-frr",
    "url": "https://raw.githubusercontent.com/FRRouting/frr/master/COPYING",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1532,7 +1822,7 @@
   },
   {
    "id": "C-233cb05c",
-   "title": "raw.githubusercontent.com",
+   "title": "l-ansible",
    "url": "https://raw.githubusercontent.com/ansible/ansible/devel/COPYING",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1542,7 +1832,7 @@
   },
   {
    "id": "C-4dd408f0",
-   "title": "raw.githubusercontent.com",
+   "title": "l-grafana",
    "url": "https://raw.githubusercontent.com/grafana/grafana/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1552,7 +1842,7 @@
   },
   {
    "id": "C-028a202a",
-   "title": "raw.githubusercontent.com",
+   "title": "l-teleport",
    "url": "https://raw.githubusercontent.com/gravitational/teleport/master/build.assets/LICENSE-community",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1562,7 +1852,7 @@
   },
   {
    "id": "C-d035bca1",
-   "title": "raw.githubusercontent.com",
+   "title": "l-tf",
    "url": "https://raw.githubusercontent.com/hashicorp/terraform/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1572,7 +1862,7 @@
   },
   {
    "id": "C-f583435f",
-   "title": "raw.githubusercontent.com",
+   "title": "l-kea",
    "url": "https://raw.githubusercontent.com/isc-projects/kea/master/COPYING",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1582,7 +1872,7 @@
   },
   {
    "id": "C-3d6c767e",
-   "title": "raw.githubusercontent.com",
+   "title": "l-nautobot",
    "url": "https://raw.githubusercontent.com/nautobot/nautobot/develop/LICENSE.txt",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1592,7 +1882,7 @@
   },
   {
    "id": "C-b0f9d406",
-   "title": "raw.githubusercontent.com",
+   "title": "l-netbox",
    "url": "https://raw.githubusercontent.com/netbox-community/netbox/main/LICENSE.txt",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1612,7 +1902,7 @@
   },
   {
    "id": "C-97451ce4",
-   "title": "raw.githubusercontent.com",
+   "title": "l-openwisp",
    "url": "https://raw.githubusercontent.com/openwisp/openwisp-controller/master/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1622,7 +1912,7 @@
   },
   {
    "id": "C-d9d36f6d",
-   "title": "raw.githubusercontent.com",
+   "title": "l-prom",
    "url": "https://raw.githubusercontent.com/prometheus/prometheus/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1662,7 +1952,7 @@
   },
   {
    "id": "C-fb24176c",
-   "title": "raw.githubusercontent.com",
+   "title": "pvesr",
    "url": "https://raw.githubusercontent.com/proxmox/pve-docs/master/pvesr.adoc",
    "evidence": "CITED",
    "note": "cited in references/virtualization-and-proxmox.md",
@@ -1682,7 +1972,7 @@
   },
   {
    "id": "C-2015904e",
-   "title": "raw.githubusercontent.com",
+   "title": "l-clab",
    "url": "https://raw.githubusercontent.com/srl-labs/containerlab/main/LICENSE",
    "evidence": "CITED",
    "note": "cited in references/foss-and-tool-selection.md",
@@ -1871,6 +2161,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-121f5631",
+   "title": "a6url",
+   "url": "https://support.apple.com/guide/business/manage-the-built-in-device-management-service-axmc7864dd73/web",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/support.apple.com/guide-business-manage-the-built-in-device-management-service-axmc7864dd73-web-121f5631.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-ffa576aa",
    "title": "alurl",
    "url": "https://support.apple.com/guide/deployment/activation-lock-on-mac-dep4e1ae6f2c/web",
@@ -1958,6 +2258,26 @@
    "note": "cited in references/linux-unix.md",
    "generated": true,
    "local": "sources/web/wiki.debian.org/PeriodicUpdates-a9883692.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7bd626ad",
+   "title": "Mac Studio technical specifications",
+   "url": "https://www.apple.com/mac-studio/specs/",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/apple.com/mac-studio-specs-7bd626ad.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2e91fe2c",
+   "title": "a5url",
+   "url": "https://www.apple.com/newsroom/2026/03/introducing-apple-business-a-new-all-in-one-platform-for-businesses-of-all-sizes/",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/apple.com/newsroom-2026-03-introducing-apple-business-a-new-all-in-one-platform-for-busine-2e91fe2c.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -2081,6 +2401,116 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-4f7aa3d7",
+   "title": "h100-url",
+   "url": "https://www.nvidia.com/en-us/data-center/h100/",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/nvidia.com/en-us-data-center-h100-4f7aa3d7.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-fbc69a18",
+   "title": "l40s-url",
+   "url": "https://www.nvidia.com/en-us/data-center/l40s/",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/nvidia.com/en-us-data-center-l40s-fbc69a18.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-86a92c4d",
+   "title": "PgBouncer",
+   "url": "https://www.pgbouncer.org/",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/pgbouncer.org/index-86a92c4d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-322f5c5f",
+   "title": "release-17-url",
+   "url": "https://www.postgresql.org/docs/17/release-17.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-17-release-17.html-322f5c5f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d8137eda",
+   "title": "Continuous archiving and PITR",
+   "url": "https://www.postgresql.org/docs/18/continuous-archiving.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-18-continuous-archiving.html-d8137eda.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-4675bdd2",
+   "title": "Logical replication restrictions",
+   "url": "https://www.postgresql.org/docs/18/logical-replication-restrictions.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-18-logical-replication-restrictions.html-4675bdd2.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-c67c1276",
+   "title": "pg_upgrade",
+   "url": "https://www.postgresql.org/docs/18/pgupgrade.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-18-pgupgrade.html-c67c1276.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e36ec635",
+   "title": "release-18-url",
+   "url": "https://www.postgresql.org/docs/18/release-18.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-18-release-18.html-e36ec635.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-42046d3b",
+   "title": "Replication settings",
+   "url": "https://www.postgresql.org/docs/18/runtime-config-replication.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-18-runtime-config-replication.html-42046d3b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-ccc134ff",
+   "title": "WAL settings",
+   "url": "https://www.postgresql.org/docs/18/runtime-config-wal.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-18-runtime-config-wal.html-ccc134ff.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-4beae8d4",
+   "title": "Log-shipping standby servers",
+   "url": "https://www.postgresql.org/docs/18/warm-standby.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-18-warm-standby.html-4beae8d4.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-7b2a0e59",
    "title": "Backup and restore overview",
    "url": "https://www.postgresql.org/docs/current/backup.html",
@@ -2098,6 +2528,16 @@
    "note": "cited in references/backup-disaster-recovery.md",
    "generated": true,
    "local": "sources/web/postgresql.org/docs-current-high-availability.html-9544a68f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-544607d7",
+   "title": "Versioning policy",
+   "url": "https://www.postgresql.org/support/versioning/",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/support-versioning-544607d7.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -2158,6 +2598,16 @@
    "note": "cited in references/research-and-attribution.md",
    "generated": true,
    "local": "sources/web/softwareheritage.org/index-ede3c414.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d6f43ae0",
+   "title": "SQLite write-ahead logging",
+   "url": "https://www.sqlite.org/wal.html",
+   "evidence": "CITED",
+   "note": "cited in references/databases-and-ha.md",
+   "generated": true,
+   "local": "sources/web/sqlite.org/wal.html-d6f43ae0.md.txt",
    "checked": "2026-10-29"
   }
  ]

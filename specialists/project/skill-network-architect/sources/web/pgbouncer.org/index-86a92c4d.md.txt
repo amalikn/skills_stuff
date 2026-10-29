@@ -1,0 +1,32 @@
+Contents of https://www.pgbouncer.org/:
+## [Oct 14, 2026 - PgBouncer 1.26.1](/2026/10/pgbouncer-1-26-1)
+
+PgBouncer 1.26.1 has been released. This release fixes three CVEs:
+
+1. CVE-2026-107350: Authentication bypass, allowing a client that knows the password of one SCRAM user to log in as any other SCRAM user, including admins and backend superusers. Caused by a second StartupMessage being processed during SCRAM authentication when connecting to a non-existent database.
+2. CVE-2026-107349: DoS due to infinite loop, triggerable by unauthenticated clients. Caused by an empty option name in the startup `options` parameter, when `ignore_startup_parameters` is non-empty but does not contain `options`.
+3. CVE-2026-107348: DoS due to infinite loop, triggerable by unauthenticated clients. Caused by an integer overflow in the packet buffer growth logic, only when `max_packet_size` is set above its default.
+
+It also makes `ignore_startup_parameters` take precedence over tracked parameters, so that `ignore_startup_parameters = search_path` restores the 1.25 behaviour of ignoring `search_path`.
+
+See the full details in the [changelog](/changelog.html#pgbouncer-126x).
+
+Download here:
+[pgbouncer-1.26.1.tar.gz](/downloads/files/1.26.1/pgbouncer-1.26.1.tar.gz)
+([sha256](/downloads/files/1.26.1/pgbouncer-1.26.1.tar.gz.sha256))
+
+## [Sep 23, 2026 - PgBouncer 1.26.0](/2026/09/pgbouncer-1-26-0)
+
+PgBouncer 1.26.0 has been released. This release fixes three CVEs:
+
+1. CVE-2026-19888: DoS due to crash, triggerable by unauthenticated clients. Caused by a SCRAM client-final-message without a nonce.
+2. CVE-2026-6668: DoS due to infinite loop, triggerable by unauthenticated clients. Caused by an integer overflow in the packet buffer growth logic.
+3. CVE-2026-6669: DoS due to unbounded work during login, triggerable by a malicious PostgreSQL server. Caused by an unbounded SCRAM iteration count.
+
+It also tracks `search_path` and `default_transaction_read_only` by default, adds the `pool_idle_timeout` setting, allows `query_wait_timeout` to be set per user and database, adds meson build support, and removes the deprecated online restart (`-R`) functionality.
+
+See the full details in the [changelog](/changelog.html#pgbouncer-126x).
+
+Download here:
+[pgbouncer-1.26.0.tar.gz](/downloads/files/1.26.0/pgbouncer-1.26.0.tar.gz)
+([sha256](/downloads/files/1.26.0/pgbouncer-1.26.0.tar.gz.sha256))

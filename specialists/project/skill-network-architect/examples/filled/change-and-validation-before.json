@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "paths": [
+    {
+      "id": "fleet-sat-wg-1420",
+      "underlay_mtu": 1500,
+      "layers": [
+        "wireguard-ipv4"
+      ],
+      "required_payload_mtu": 1420
+    },
+    {
+      "id": "fleet-lte-wg-1420",
+      "underlay_mtu": 1428,
+      "layers": [
+        "wireguard-ipv4"
+      ],
+      "required_payload_mtu": 1420
+    }
+  ]
+}

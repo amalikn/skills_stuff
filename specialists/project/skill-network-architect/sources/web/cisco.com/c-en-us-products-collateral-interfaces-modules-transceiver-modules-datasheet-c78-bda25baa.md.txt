@@ -1,0 +1,387 @@
+Contents of https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.html:
+Product overview
+
+The Cisco® 25GBASE SFP28 (Small Form-Factor Pluggable) portfolio offers customers a wide variety of high-density and low-power 25 Gigabit Ethernet connectivity options for data center and high-performance computing networks applications. The 25G Modules are based on SFP28 form factor.
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_0.png)
+
+25G Direct Attached Cables (DAC)
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_1.png)
+
+25G Active Optical Cables (AOC)
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_2.png)
+
+25G Short Reach (SR) Module
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_3.png)
+
+10/25G Cisco Short Reach (CSR) Module
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_4.png)
+
+10/25G Long Reach (LR) Module
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_5.png)
+
+10/25G Long Reach (LR) Industrial Temperature Module
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_6.png)
+
+SFP-10/25G-BXD-I
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_7.png)
+
+SFP-10/25G-BXU-I
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_8.png)
+
+SFP-25G-ER-I
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_9.png)
+
+SFP-25G-BX40D-I
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_10.png)
+
+SFP-25G-BXU-I
+
+![Related image, diagram or screenshot](/c/dam/en/us/products/collateral/interfaces-modules/transceiver-modules/datasheet-c78-736950.docx/_jcr_content/renditions/datasheet-c78-736950_11.png)
+
+SFP-25G-ZR-I
+
+Features and benefits of Cisco 25G Modules
+
+●     Interoperable with other IEEE-compliant 25G interfaces where applicable.
+
+●     Certified and tested on Cisco SFP28 ports for superior performance, quality, and reliability.
+
+●     High-speed connectivity compliant to IEEE 802.3by and IEEE 802.3cc.
+
+**Table 1.** Cisco 25G Portfolio
+
+| Product | Descriptions |
+| --- | --- |
+| **SFP-H25G-CU1M** | 25GBASE-CR1 Copper Cable 1-meter |
+| **SFP-H25G-CU1.5M** | 25GBASE-CR1 Copper Cable 1.5-meter |
+| **SFP-H25G-CU2M** | 25GBASE-CR1 Copper Cable 2-meter |
+| **SFP-H25G-CU2.5M** | 25GBASE-CR1 Copper Cable 2.5-meter |
+| **SFP-H25G-CU3M** | 25GBASE-CR1 Copper Cable 3-meter |
+| **SFP-H25G-CU4M** | 25GBASE-CR1 Copper Cable 4-meter |
+| **SFP-H25G-CU5M** | 25GBASE-CR1 Copper Cable 5-meter |
+| **SFP-25G-AOC1M** | 25GBASE-AOC Active Optical Cable 1-meter |
+| **SFP-25G-AOC2M** | 25GBASE-AOC Active Optical Cable 2-meter |
+| **SFP-25G-AOC3M** | 25GBASE-AOC Active Optical Cable 3-meter |
+| **SFP-25G-AOC4M** | 25GBASE-AOC Active Optical Cable 4-meter |
+| **SFP-25G-AOC5M** | 25GBASE-AOC Active Optical Cable 5-meter |
+| **SFP-25G-AOC7M** | 25GBASE-AOC Active Optical Cable 7-meter |
+| **SFP-25G-AOC10M** | 25GBASE-AOC Active Optical Cable 10-meter |
+| **SFP-25G-SR-S** | 25GBASE-SR SFP28 Module for MMF |
+| **SFP-25G-SL** | 25GBASE-SL SFP28 Module for MMF |
+| **SFP-10/25G-CSR-S** | 10/25GBASE-CSR SFP28 Module for MMF |
+| **SFP-10/25G-LR-S** | 10/25GBASE-LR SFP28 Module for SMF |
+| **SFP-10/25G-LR-I** | 10/25GBASE-LR SFP28, Industrial Temperature Module for SMF |
+| **SFP-10/25G-BXD-I** | 10GBASE-LR, 10GBASE-BR10, 25GBASE-BR10 SFP28, Bidirectional, Industrial Temp Module for SMF |
+| **SFP-10/25G-BXU-I** | 10GBASE-LR, 10GBASE-BR10, 25GBASE-BR10 SFP28, Bidirectional, Industrial Temp Module for SMF |
+| **SFP-25G-ER-I** | 25GBASE-ER, SFP28 Industrial Temperature Module for SMF |
+| **SFP-25G-BX40D-I** | 25GBASE-BR40, SFP28, Bidirectional, Industrial Temp Module for SMF |
+| **SFP-25G-BX40U-I** | 25GBASE-BR40, SFP28, Bidirectional, Industrial Temp Module for SMF |
+| **SFP-25G-ZR-I** | 25GBASE-ZR, SFP28 Module for SMF |
+
+Cisco SFP-25G copper cables
+
+Cisco SFP28 to SFP28 copper direct-attach 25GBASE-CR1 cables are suitable for very short links and offer a highly cost-effective way to establish a 25-Gigabit link between SFP28 ports of Cisco switches within racks and across adjacent racks. Cisco offers passive copper cables in lengths of x= 1, 1.5, 2, 2.5, 3, 4 and 5 meters.
+
+1m, 1.5m, and 2m cables do not require FEC on the host ports; 2.5m and 3m cables require BASE-R FEC (also known as FC-FEC) on the host ports; 4m and 5m cables require RS-FEC on the host ports.
+
+Cisco SFP-25G active optical cables
+
+Cisco SFP28 to SFP28 Active Optical Cables are direct-attach fiber assemblies with SFP connectors. They are suitable for very short distances and offer a cost-effective way to connect within racks and across adjacent racks. Cisco offers Active Optical Cables in lengths of 1, 2, 3, 4, 5, 7, and 10 meters.
+
+AOC cable require BASE-R FEC, or RS-FEC on the host ports.
+
+Cisco SFP-25G-SR-S
+
+The Cisco 25GBASE-SR Module supports a link length of 70/100m on OM3/4 MMF.
+
+This module requires RS-FEC on the host ports.
+
+Cisco SFP-25G-SL
+
+The Cisco 25GBASE-SL Module supports a link length of 20/30m on OM3/4 MMF.
+
+The Cisco SFP-25G-SL (Short Link) module requires RS-FEC on the host ports.
+
+Cisco SFP-10/25G-CSR-S
+
+The Cisco 10/25GBASE-CSR Module supports a link length of up to 300/400m over OM3/4 at 10G, and up to 300/400m over OM3/4 at 25G\*. It also supports link lengths of 82m over OM2 at 10G, and up to 70m over OM2 at 25G.
+
+This module requires RS-FEC on the host port for full reach operation at 25G. Using BASE-R FEC the module can support 70/100m over OM3/4 and with-out FEC it can support 30/50m over OM3/4 at 25G\*. For 10G operation FEC is not required.
+
+\*Depends upon fiber quality.
+
+Cisco SFP-10/25G-LR-S
+
+The Cisco 10/25GBASE-LR Module supports a link length of 10 kilometers on standard Single-Mode Fiber (SMF) G.652 at both 10G and 25G.
+
+This module requires RS-FEC on the host ports for operation at 25G.
+
+Cisco SFP-10/25G-LR-I
+
+The Cisco 10/25GBASE-LR Module supports a link length of 10 kilometers on standard Single-Mode Fiber (SMF) G.652 at both 10G and 25G. The module requires RS-FEC on the host ports for full reach operation at 25G. This module has an industrial temperature range. This module also supports CPRI datarates options 7, 8, 9 and 10.
+
+In some applications using BASE-R FEC the module can support 3.5km and without FEC it can support 1.5km, depending on fiber quality.
+
+Cisco SFP-10/25G-BXD-I and SFP-10/25G-BXU-I (single-fiber bidirectional applications)
+
+The Cisco 10GBASE-LR/10GBASE-BR/25GBASE-BR Module supports a link length of 10 kilometers on a single strand of standard Single-Mode Fiber (SMF) G.652 at both 10G and 25G. A SFP-10/25G-BXD-I device is always connected to a SFP-10/25G-BXU-I device with a single strand of standard SMF. The communication over a single strand of fiber is achieved by separating the transmission wavelength of the two devices. SFP-10/25G-BXD-I transmits at 1330nm channel and receives at 1270nm signal. The SFP-10/25G-BXU-I transmits at a 1270nm wavelength and receives a 1330nm signal.
+
+The module requires RS-FEC on the host ports for full reach operation at 25G. This module has an industrial temperature range. This module also supports CPRI datarates options 7, 8, 9 and 10.
+
+In some applications using BASE-R FEC the module can support 3.5km and without FEC it can support 1.5km, depending on fiber quality.
+
+Cisco SFP-25G-ER-I
+
+The Cisco 25GBASE-ER Module supports a link length of 40 kilometers on standard Single-Mode Fiber (SMF) G.652 at 25G.
+
+The module requires RS-FEC on the host ports for full reach operation at 25G. This module has an industrial temperature range.
+
+Cisco SFP-25G-BX40D-I and SFP-25G-BX40U-I (single-fiber bidirectional applications)
+
+The Cisco 25GBASE-BR40 Modules support link lengths of 40km over a single strand of standard Single-Mode Fiber (SMF) G.652 at 25G. An SFP-25G-BX40D-I device is always connected to an SFP-25G-BX40U-I device with a single strand of standard SMF. The communication over a single strand is achieved by separating the transmission wavelength of the two devices. SFP-25G-BX40D-I transmits at 1314nm wavelength and receives at 1289nm wavelength. The SFP-25G-BX40U-I transmits at 1289nm and receives at 1314nm wavelengths.
+
+These modules require RS-FEC on the host at 25G. These modules have an industrial temperature range.
+
+Cisco SFP-25G-ZR-I
+
+The Cisco 25GBASE-ZR Module supports link lengths of 80km over standard Single-Mode Fiber (SMF) G.652 at 25G.
+
+This module requires RS-FEC on the host at 25G. This module has an industrial temperature range.
+
+Technical specifications
+
+Platform support
+
+Cisco 25G transceivers are supported on Cisco switches. For more details, refer to the document “[Transceiver Module Group (TMG) Compatibility Matrix](https://tmgmatrix.cisco.com/home)”.
+
+**Connectors and cabling**
+
+Refer to Table 2 for cabling specifications for each 25G product.
+
+**Table 2.** 25G Port cabling specifications
+
+| SFP-25G | Cable Type | Cable Distance | Max Power Consumption (W) | Pull Tab /Bail Latch Color |
+| --- | --- | --- | --- | --- |
+| **SFP-H25G-CU1M** | Direct-attach copper cable assembly | 1m | 1/10 | Beige |
+| **SFP-H25G-CU1.5M** | 1.5m | Black |
+| **SFP-H25G-CU2M** | 2m | Brown |
+| **SFP-H25G-CU2.5M** | 2.5m | Yellow |
+| **SFP-H25G-CU3M** | 3m | Orange |
+| **SFP-H25G-CU4M** | 4m | Green |
+| **SFP-H25G-CU5M** | 5m | Gray |
+| **SFP-25G-AOC1M** | Active Optical Cable assembly | 1m | 1 | Beige |
+| **SFP-25G-AOC2M** | 2m | Brown |
+| **SFP-25G-AOC3M** | 3m | Orange |
+| **SFP-25G-AOC4M** | 4m | Green |
+| **SFP-25G-AOC5M** | 5m | Gray |
+| **SFP-25G-AOC7M** | 7m | Blue |
+| **SFP-25G-AOC10M** | 10m | Red |
+| **SFP-25G-SR-S** | MMF | 70/100m (OM3/OM4) | 1.2 | Beige |
+| **SFP-25G-SL** | MMF | 20/30m (OM3/OM4) | 1.2 | Purple |
+| **SFP-10/25G-CSR-S** | MMF | 300/400m (OM3/OM4)\* | 1.2 | Peach |
+| **SFP-10/25G-LR-S** | SMF | 10km | 1.3 | Blue |
+| **SFP-10/25G-LR-I** | SMF | 10km\*\* | 1.3 | Blue |
+| **SFP-10/25G-BXD-I** | SMF | 10km\*\*\* | 1.5W | Violet |
+| **SFP-10/25G-BXU-I** | SMF | 10km\*\*\* | 1.5W | Blue |
+| **SFP-25G-ER-I** | SMF | 40km\*\*\*\* | 1.5W | Red |
+| **SFP-25G-BX40D-I** | SMF | 40km\*\*\*\*\* | 1.9W | Red |
+| **SFP-25G-BX40U-I** | SMF | 40km\*\*\*\*\* | 1.9W | Red |
+| **SFP-25G-ZR-I** | SMF | 80km | 3W | Green |
+
+\*Depending upon fiber quality.
+
+\*\*Links up to 15km reach are supported as engineered links as long as channel insertion loss is <9.3dB and RS-FEC is required.
+
+\*\*\*Links up to 15km reach are supported as engineered links as long as channel insertion loss is <8dB and RS-FEC is required.
+
+\*\*\*\*Links greater than 30km reach are considered engineered links.
+
+\*\*\*\*\*Links up to 40km reach are supported as engineered links as long as channel insertion loss is <18dB and RS-FEC is required.
+
+**Table 3.** SFP28 port cabling specifications
+
+| SFP-25G | Wavelength (nm) | Cable Type | Core Size (Microns) | Modal Bandwidth | Cable Distance |
+| --- | --- | --- | --- | --- | --- |
+| **SFP-25G-SR-S** | 850 | MMF | 50.0 | 2000 (OM3) | 70m |
+| 4700 (OM4) | 100m |
+| 4700 (OM5) | 100m |
+| **SFP-25G-SL** | 850 | MMF | 50.0 | 2000 (OM3) | 20m |
+| 4700 (OM4) | 30m |
+| 4700 (OM5) | 30m |
+| **SFP-10/25G-CSR-S** | 850 | MMF | 50.0 | 500 (OM2) | 70m (25G)  82m (10G) |
+| 2000 (OM3) | 300m\* |
+| 4700 (OM4) | 400m\* |
+| 4700 (OM5) | 400m |
+| **SFP-10/25G-LR-S** | 1310 | SMF | G.652 | - | 10km |
+| **SFP-10/25G-LR-I** | 1310 | SMF | G.652 | - | 10km\*\* |
+| **SFP-10/25G-BXD-I** | 1330 | SMF | G.652 | - | 10km\*\*\* |
+| **SFP-10/25G-BXU-I** | 1270 | SMF | G.652 | - | 10km\*\*\* |
+| **SFP-25G-ER-I** | 1310 | SMF | G.652 | - | 40km\*\*\*\* |
+| **SFP-25G-BX40D-I** | 1314 | SMF | G.652 | - | 40km\*\*\*\* |
+| **SFP-25G-BX40U-I** | 1289 | SMF | G.652 | - | 40km\*\*\*\* |
+| **SFP-25G-ZR-I** | 1300 | SMF | G.652 |  | 80km |
+
+\*\*Links up to 15km reach are supported as engineered links as long as channel insertion loss is <9.3dB and RS-FEC is required.
+
+\*\*\*Links up to 15km reach are supported as engineered links as long as channel insertion loss is <8dB and RS-FEC is required.
+
+\*\*\*\*Links greater than 30km reach are considered engineered links.
+
+**Table 4.** Optical transmit and receive specifications
+
+|  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- |
+| Product | Type | Transmit Power (dBm)\* | | Receive Power (dBm)\* | | Transmit and Receive Wavelength (nm) |
+| Maximum | Minimum | Maximum | Minimum |
+| **SFP-25G-SR-S** | 25GBASE-SR 850nm MMF | +2.4 | -8.4 | +2.4 | -10.3 | 840 to 860 |
+| **SFP-25G-SL** | 25GBASE-SL 850nm MMF | +2.4 | -8.4 | +2.4 | -10.3 | 840 to 860 |
+| **SFP-10/25G-CSR-S\*\*\*** | 10G | +2.4 | -7.3 | +2.4 | -9.9 | 840 to 860 |
+| 25G | +2.4 | -6 | +2.4 | -8.7 | 840 to 860 |
+| **SFP-10/25G-LR-S** | 10G | +0.5 | -8.2 | +0.5 | -14.4 | 1260 to 1355 (10G) |
+| 25G | +2.0 | -7.0 | +2.0 | -13.3 | 1295 to 1325 (25G) |
+| **SFP-10/25G-LR-I** | 10G | +0.5 | -6.7 | +0.5 | -15.9 | 1260 to 1355 (10G) |
+| 25G | +2.0 | -5.5 | +2.0 | -14.8 | 1295 to 1325 (25G) |
+| **SFP-10/25G-BXD-I** | 10G | +0.5 | -8.2 | +0.5 | -16.2 | 1320 to 1340 (Tx)  1260 to 1280 (Rx) |
+| 25G | +2.0 | -7.0 | +2.0 | -15.0 | 1320 to 1340 (Tx)  1260 to 1280 (Rx) |
+| **SFP-10/25G-BXU-I** | 10G | +0.5 | -8.2 | +0.5 | -16.2 | 1260 to 1280 (Tx)  1320 to 1340 (Rx) |
+| 25G | +2.0 | -7.0 | +2.0 | -15.0 | 1260 to 1280 (Tx)  1320 to 1340 (Rx) |
+| **SFP-25G-ER-I** | 25G | +6.0 | -3.0 | -4.0 | -21.0 | 1295 to 1310 |
+| **SFP-25G-BX40D-I** | 25G | +6.0 | -3.0 | -4.0 | -21.0 | 1306 to 1322 (Tx)  1281 to 1297 (Rx) |
+| **SFP-25G-BX40U-I** | 25G | +6.0 | -3.0 | -4.0 | -21.0 | 1281 to 1297 (Tx)  1306 to 1322 (Rx) |
+| **SFP-25G-ZR-I** | 25G | +7 | +2 | -6 | -31 | 1300 |
+
+\*Transmitter and receiver power is in average, unless specified.
+
+\*\*The launch power shall be the lesser of the class 1 safety limit or the maximum receive power. Class 1 laser requirements are defined by IEC 60825-1: 2001.
+
+\*\*\*The SFP-10/25G-CSR-S when interoperating with IEEE 10G-SR may overload the receiver, see the Cisco Optics to Optics interoperability matrix for details.
+<https://tmgmatrix.cisco.com/iop>.
+
+Connectors: Dual LC/PC connector (**SFP-25G-SR-S, SFP-10/25G-CSR-S SFP-10/25G-LR-S, SFP-10/25G-LR-I and SFP-25G-ER-I, SFP-25G-ZR-I)**.
+
+**Fiber Channel over Ethernet:** The 25G DAC’s (SFP-H25G-CUxxM), AOC’s (SFP-25G-AOCxxM) and transceivers (SFP-25G-SR-S, SFP-10/25G-CSR-S and SFP-10/25G-LR-S) support FCoE with the appropriate host s/w support.
+
+**Note:** Only connections with patch cords with PC or UPC connectors are supported. Patch cords with APC connectors are not supported. All cables and cable assemblies used must be compliant with the standards specified in the standards section.
+
+Environmental conditions
+
+Operating temperature range:
+
+●     Commercial temperature range: 0 to 70°C (32 to 158°F)
+
+●     Industrial temperature range: -40 to 85°C (-40 to 185°F)
+
+●     Storage temperature range: -40 to 85°C (-40 to 185°F)
+
+Ordering information
+
+Table 5 provides the ordering information for Cisco 25G cables and transceivers.
+
+**Table 5.** Ordering information
+
+| Description | Product Number |
+| --- | --- |
+| **25GBASE-CR1 SFP28 Passive Copper Cable, 1-meter** | SFP-H25G-CU1M |
+| **25GBASE-CR1 SFP28 Passive Copper Cable 1.5-meter** | SFP-H25G-CU1.5M |
+| **25GBASE-CR1 SFP28 Passive Copper Cable, 2-meter** | SFP-H25G-CU2M |
+| **25GBASE-CR1 SFP28 Passive Copper Cable 2.5-meter** | SFP-H25G-CU2.5M |
+| **25GBASE-CR1 SFP28 Passive Copper Cable, 3-meter** | SFP-H25G-CU3M |
+| **25GBASE-CR1 SFP28 Passive Copper Cable 4-meter** | SFP-H25G-CU4M |
+| **25GBASE-CR1 SFP28 Passive Copper Cable, 5-meter** | SFP-H25G-CU5M |
+| **25GBASE-AOC SFP28 Active Optical Cable, 1-meter** | SFP-25G-AOC1M |
+| **25GBASE-AOC SFP28 Active Optical Cable, 2-meter** | SFP-25G-AOC2M |
+| **25GBASE-AOC SFP28 Active Optical Cable, 3-meter** | SFP-25G-AOC3M |
+| **25GBASE-AOC SFP28 Active Optical Cable 4-meter** | SFP-25G-AOC4M |
+| **25GBASE-AOC SFP28 Active Optical Cable, 5-meter** | SFP-25G-AOC5M |
+| **25GBASE-AOC SFP28 Active Optical Cable, 7-meter** | SFP-25G-AOC7M |
+| **25GBASE-AOC SFP28 Active Optical Cable, 10-meter** | SFP-25G-AOC10M |
+| **25GBASE-SR SFP28 Module for MMF** | SFP-25G-SR-S |
+| **25GBASE-SL SFP28 Module for MMF** | SFP-25G-SL |
+| **10/25GBASE-CSR SFP28 Module for MMF** | SFP-10/25G-CSR-S |
+| **10/25GBASE-LR SFP28 Module for SMF** | SFP-10/25G-LR-S |
+| **10/25GBASE-LR SFP28 Module for SMF, Industrial Temp** | SFP-10/25G-LR-I |
+| **10/25GBASE-BR SFP28 Bidi module for SMF, Industrial Temp, Downstream** | SFP-10/25G-BXD-I |
+| **10/25GBASE-BR SFP28 Bidi module for SMF, Industrial Temp, Upstream** | SFP-10/25G-BXU-I |
+| **25GBASE-ER SFP28 Module for SMF, Industrial Temp** | SFP-25G-ER-I |
+| **25GBASE-BR40 SFP28 Bidi module for SMF, Industrial Temp, Downstream** | SFP-25G-BX40D-I |
+| **25GBASE-BR40 SFP28 Bidi module for SMF, Industrial Temp, Upstream** | SFP-25G-BX40U-I |
+| **25GBASE-ZR, SFP28 Module for SMF, Industrial Temp** | SFP-25G-ZR-I |
+
+Regulatory and standards compliance
+
+**Standards:**
+
+●     SFF-8402: SFP+ 28 Gb/s 1x Pluggable Transceiver Solution (SFP28) - Rev 1.0 March 30, 2014.
+
+●     SFF-8472: Diagnostic Monitoring Interface for Optical Transceivers - Rev 12 August 29, 2014.
+
+●     IEEE 802.3™ - 2015 IEEE Standard for Ethernet.
+
+●     IEEE P802.3by™ - 2016 Amendment 2: Media Access Control Parameters, Physical Layers, and Management Parameters for 25 Gb/s Operation.
+
+●     IEEE P802.3cc™ - 2017 Amendment 11: Physical Layer and Management Parameters for Serial 25 Gb/s Ethernet Operation Over Single-Mode Fiber.
+
+●     IEEE P802.3cp - Clause 159 Physical Layer specification for a 25Gb/s bidirectional link over one single-mode fiber with reach up to 40km.
+
+●     RoHS 6
+
+**Safety:**
+
+●     Laser Class 1 21CFR-1040 LN#50 7/2001
+
+●     Laser Class 1 IEC60825-1
+
+●     Cable jacket of SFP copper modules is UL E116441 Compliant
+
+●     SFP copper cables are ELV Compliant
+
+**Warranty**
+
+●     Standard warranty: 5 years
+
+●     Expedited replacement available via a Cisco SMARTnet® Service support contract
+
+Product sustainability
+
+**Table 6.** Product sustainability
+
+|  | Sustainability topic | Reference |
+| --- | --- | --- |
+| **General** | Information on product-material-content laws and regulations | [Materials](https://www.cisco.com/c/en/us/about/product-innovation-stewardship/materials.html) |
+| Information on electronic waste laws and regulations, including our products, batteries and packaging | [WEEE Compliance](https://www.cisco.com/c/en/us/about/product-innovation-stewardship/product-recycling/weee-compliance.html) |
+| Information on product takeback and reuse program | [Cisco Takeback and Reuse Program](https://www.cisco.com/c/en/us/about/takeback-and-reuse.html) |
+| Sustainability Inquiries | Contact: <csr_inquiries@cisco.com> |
+| Countries and Regions Supported | [Regulatory Compliance](#regulatory) |
+| **Power** | Power (Including Pluggable) | [Power Consumption](#power) |
+| **Material** | Product packaging weight and materials | Contact: <environment@cisco.com> |
+
+Cisco Capital
+
+Flexible payment solutions to help you achieve your objectives
+
+Cisco Capital makes it easier to get the right technology to achieve your objectives, enable business transformation and help you stay competitive. We can help you reduce the total cost of ownership, conserve capital, and accelerate growth. In more than 100 countries, our flexible payment solutions can help you acquire hardware, software, services and complementary third-party equipment in easy, predictable payments. [Learn more](https://www.cisco.com/go/financing).
+
+Additional information
+
+For more information about Cisco 25GBASE SFP28 optics and copper modules, contact your sales representative or visit <https://www.cisco.com/c/en/us/products/interfaces-modules/25-gigabit-modules/index.html>.
+
+Document history
+
+**Table 7.** Document history
+
+| New or Revised Topic | Described In | Date |
+| --- | --- | --- |
+| **Updated to include new transceivers, SFP-10/25G-BXD-I,  SFP-10/25G-BXU-I, SFP-25G-ER-I** | [Ordering Information](#ORDER) | July 1, 2021 |
+| **Addition of SFP-25G-SL** | [Table 1](#Table1) |  |
+| **Addition of SFP-25G-ZR-I** | [Table 1](#Table1) |  |

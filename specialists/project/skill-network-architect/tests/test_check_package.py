@@ -90,6 +90,7 @@ class CheckPackageTests(unittest.TestCase):
       "line over 200": lambda root: (root / "references" / "a.md").write_text(HEADER + "word " * 41 + "\n"),
       "bare RFC link": lambda root: (root / "references" / "a.md").write_text(HEADER + "See https://www.rfc-editor.org/rfc/rfc7454 now.\n"),
       "source not in sources.json": lambda root: (root / "references" / "a.md").write_text(HEADER + "See https://example.org/other here.\n"),
+      "link definitions merged": lambda root: (root / "references" / "a.md").write_text(HEADER + "[a]: https://example.org/doc [b]: https://example.org/doc\n"),
       "contraction": lambda root: (root / "references" / "a.md").write_text(HEADER + "Do not say it isn't so.\n"),
       "broken or external local link": lambda root: (root / "SKILL.md").write_text(f"---\nname: {root.name}\ndescription: d\n---\n\n[x](nope.md)\n"),
     }

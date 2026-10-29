@@ -10,6 +10,8 @@ Summary: Working architecture design document from service outcome through requi
 
 # <service> architecture design
 
+Worked example: `skill-network-architect/examples/filled/design.md` (filled for a fictional remote-site operator; lives in the network pack only).
+
 Based on: arc42 section structure (https://arc42.org/overview) and C4 context/container views (https://c4model.com/). Adapted: network and infrastructure views replace code views.
 
 ## Contents

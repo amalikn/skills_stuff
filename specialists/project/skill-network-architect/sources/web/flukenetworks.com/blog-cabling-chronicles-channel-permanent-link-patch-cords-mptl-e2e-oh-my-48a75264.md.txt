@@ -1,0 +1,44 @@
+Contents of https://www.flukenetworks.com/blog/cabling-chronicles/channel-permanent-link-patch-cords-mptl-e2e-oh-my:
+With the addition of the modular plug terminated link (MPTL) configuration to the latest ANSI-TIA 568.2-D standard, and now end-to-end (E2E) configurations getting some attention in ISO/IEC standards (and likely soon TIA as well), you might be overwhelmed with the choices and be wondering what you’re supposed to test and when. Let’s take a look.
+
+## Channel Testing
+
+In a network, the channel is the connection from one active device to another (think switch to server or switch to laptop), and it includes any patch cords and equipment cords. In the data center, the channel would include any cable between two switches or between a switch and server and any patch cords used for cross-connects or interconnects. In the LAN, this would include any cable between the switch in the telecom room and the end device, including any patch cords from the switch to a patch panel and any equipment cords from the outlet to end device.
+
+![Channel Testing](https://fnet-assets.s3.us-west-2.amazonaws.com/images/blog/channel_permanent_link_patch_cords_mptl_e2e_01_1.png)
+
+The overall length of the channel, including the cabling and any cords should not exceed 100 meters per industry standard guidelines. Standards also recommend a specific length: 5 meters. Channel testing is typically recommended for assurance of network performance, but only after installing and testing the permanent link, and it must include the patch and equipment cords which will be used in the final installation.
+
+## Permanent Link Testing
+
+The permanent link is the fixed portion of the channel — in other words, the portion of a channel that doesn’t change. That means it does not include the patch cord or equipment cord at the ends. In the data center, a permanent link is typically patch panel to patch panel. In the LAN, it’s typically from the patch panel in the telecommunications room to the work area outlet or consolidation point. The maximum permitted length of the permanent link is 90 meters.
+
+![Permanent Link Testing](https://fnet-assets.s3.us-west-2.amazonaws.com/images/blog/channel_permanent_link_patch_cords_mptl_e2e_02_1.gif)
+
+Permanent link testing is preferred over channel testing since it is considered to be the true foundation of the network. While this may not seem intuitive, since proper data transmission relies on the performance of the entire channel, industry standards offer more headroom in the channel due to patch cords being the weakest link. This means that when channel testing with quality patch cords, the channel can pass even if the permanent link has failed. This isn’t good; the last thing you want is for the fixed portion to have problems. Besides, patch cords and equipment cords are handled and moved around a lot, and they may be purchased from a different (sometimes lower quality) vendor since they’re often considered commodity. Testing the permanent link is the best way to ensure performance at the time of installation — and the best way to prove your work.
+
+The permanent link adapters that come with the [DSX CableAnalyzer series of testers](/datacom-cabling/Versiv/dsx-cableanalyzer-series) use the highest quality cable and reference plug to ensure that a passing permanent link can be reliably configured into a passing channel just by adding quality compliant patch cords.
+
+## Patch Cord Testing
+
+Since patch cords are typically the weakest link, sometimes it might make sense to test a sampling of them — especially if they came from a different vendor, or if channel testing is failing but permanent links have passed. Fluke Networks [DSX Series Patch Cord Test Adapters](/knowledge-base/dsx-cableanalyzer-series/patch-cord-certification-channel-adapters-dsx-cableanalyzer) can be used to certify Category 5e, 6, and 6A copper patch cords per TIA-568-C.2 and IEC 61935-2 standards. These adapters include the measurement of the performance of the plug-adapter connection on both ends to verify the performance of the RJ45 plug, which is not verified in channel testing.
+
+![Patch Cord Testing](https://fnet-assets.s3.us-west-2.amazonaws.com/images/blog/channel_permanent_link_patch_cords_mptl_e2e_03_1.png)
+
+## MPTL Testing
+
+A Modular Plug Terminated Link, or MPTL, is when a horizontal cable is terminated on one end to a plug and plugged directly into a device. Now recognized in TIA standards as an option for connecting devices where it is deemed impractical or unsafe to deploy an outlet and equipment cord, and for devices that don’t typically need to be moved (think security cameras and LED lights), an MTPL means you no longer have a four-connector channel. But since you’re plugging the MTPL directly into a device, you want to make sure to verify the performance of the plug — the way you would with patch cord testing.
+
+To test an MPTL and include the performance of the field installed end plug, you need to use a Permanent Link Adapter on the main unit and a single Patch Cord adapter at the far end. Fluke Networks now pairs a single patch cord adapter with the DSX Permanent Link adapter to perform MPTL certification. Just make sure to select MPTL under the TIA Test Limits on your DSX.
+
+![MPTL Testing](https://fnet-assets.s3.us-west-2.amazonaws.com/images/blog/channel_permanent_link_patch_cords_mptl_e2e_04_1.jpg)
+
+## E2E Testing
+
+In industrial deployments, it’s common to see cables installed and then terminated in place with M12 round locking screw-type connectors that include the M12-D (two pairs) and M12-X (four pairs). Often these cables are point-to-point connections without cross-connections or interconnects, which essentially makes them just a long patch cord. Since channel testing does not include the performance of the plugs at either ends, there’s no way to know if the field-installed connectors pass and therefore if the point-to-point connection will perform. End-to-end limits are different from patch cord limits because they include measurements of length and Insertion Loss. They will also apply the 3 dB rule to Return Loss measurement.
+
+To address this scenario in industrial environments where connectors are field installed, ISO/IEC has a Technical Report that defines what they are calling end-to-end (E2E) test limits. This is being proposed as an addition to the 11801-3 standard that addresses the performance of M12 style field-installed connectors in point-to-point configurations. Since noise is a common disturbance in industrial environments, E2E testing includes mode conversion parameters Transverse Conversion Loss (TCL) and Equal Level Transverse Conversion Transfer Loss (ELTCTL) that are indicative of noise immunity, since noise is injected into a cable in common mode. If testing E2E links per ISO/IEC, you need to select the MICE environment — E1 for a typical office environment, E2 for light industrial or E3 for heavy industrial — as that will define the level of noise immunity required.
+
+E2E testing can be performed using the [M12D or M12X Adapters](/edoc/datasheet-DSX-M12D-and-M12X-adapters) available with the DSX CableAnalyzer. It’s common to see some of these industrial point-to-point links field terminated to an M12 style connector on one end and an RJ45 style plug on the other. In this instance, you’ll need an M12 Adapter on one end and a Patch Cord Adapter on the other, since that’s what is used to test the performance of the field-terminated RJ45 plug (just like in MTPL and patch cord testing). It’s important to note that TIA has yet to adopt E2E links in their industrial standard, but it may not be long before they do. Learn more about industrial cabling [HERE](/industrialethernet/learn-about).
+
+[Request a Demo »](/request/request-versiv-demo)

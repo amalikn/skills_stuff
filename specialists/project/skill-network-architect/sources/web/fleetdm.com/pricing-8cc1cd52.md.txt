@@ -1,0 +1,143 @@
+Contents of https://fleetdm.com/pricing:
+## Compare plans and pricing
+
+## Free
+
+### Basic features, no support
+
+## $0
+
+**/ host   
+/ month**
+
+Read the docs
+
+## Premium
+
+### Manage and protect endpoints
+
+## $7.00
+
+**/ host   
+/ month**
+
+[Get started](/new-license)
+
+## Custom
+
+### For teams who can move quickly with large deployments.
+
+| Device management | **Free** | **Premium** |
+| --- | --- | --- |
+| Multi-platform MDM support[More info](https://fleetdm.com/announcements/debunk-the-cross-platform-myth) | checkmark | checkmark |
+| MDM migration[More info](https://fleetdm.com/docs/using-fleet/mdm-migration-guide) |  | checkmark |
+| Zero-touch setup[More info](https://fleetdm.com/guides/setup-experience) |  | checkmark |
+| Bring your own device (BYOD) enrollment[More info](https://fleetdm.com/guides/sysadmin-diaries-device-enrollment#byod-enrollment) | checkmark | checkmark |
+| Work profiles for personal (BYOD) Android[More info](https://fleetdm.com/guides/android-mdm-setup) | checkmark | checkmark |
+| Fully-managed for employee-issued Android[More info](https://fleetdm.com/guides/android-mdm-setup) |  | checkmark |
+| Account-based user enrollment for iOS/iPadOS[More info](https://github.com/fleetdm/fleet/issues/27390) |  | checkmark |
+| User account sync[More info](https://fleetdm.com/guides/setup-experience#require-idp-authentication) |  | checkmark |
+| Account creation & password sync[More info](https://fleetdm.com/docs/deploying-apple-account-provisioning-with-fleet) |  | checkmark |
+| Human-endpoint mapping[More info](https://fleetdm.com/docs/rest-api/rest-api#get-hosts-google-chrome-profiles) | checkmark | checkmark |
+| Human-endpoint mapping (IdP groups)[More info](https://fleetdm.com/guides/foreign-vitals-map-idp-users-to-hosts) |  | checkmark |
+| Device inventory[More info](https://fleetdm.com/docs/using-fleet/understanding-host-vitals) | checkmark | checkmark |
+| Search inventory[More info](https://fleetdm.com/docs/using-fleet/learn-how-to-use-fleet#how-to-ask-questions-about-your-device) | checkmark | checkmark |
+| Targeted device scoping[More info](https://fleetdm.com/guides/managing-labels-in-fleet) |  | checkmark |
+| Enforce disk encryption[More info](https://fleetdm.com/docs/using-fleet/mdm-disk-encryption) |  | checkmark |
+| Recovery lock passcodes[More info](https://fleetdm.com/guides/recovery-lock-password) |  | checkmark |
+| Enforce operating system (OS) updates[More info](https://fleetdm.com/docs/using-fleet/mdm-macos-updates) |  | checkmark |
+| Enforce OS settings[More info](https://fleetdm.com/docs/using-fleet/mdm-custom-os-settings) | checkmark | checkmark |
+| Declarative Device Management (DDM) support for configuration profiles[More info](https://fleetdm.com/docs/using-fleet/mdm-os-updates#macos) | checkmark | checkmark |
+| Conditional access[More info](https://fleetdm.com/guides/conditional-access) |  | checkmark |
+| Application deployment[More info](https://fleetdm.com/guides/deploy-software-packages) |  | checkmark |
+| Self-service application installation[More info](https://fleetdm.com/guides/deploy-software-packages) |  | checkmark |
+| Application management\*More info |  | checkmark |
+| Script execution[More info](https://fleetdm.com/docs/using-fleet/scripts) | checkmark | checkmark |
+| Device remediation[More info](https://fleetdm.com/securing/end-user-self-remediation) |  | checkmark |
+| Maintenance windows[More info](https://fleetdm.com/announcements/fleet-in-your-calendar-introducing-maintenance-windows) |  | checkmark |
+| Send lock and wipe commands[More info](https://fleetdm.com/guides/lock-wipe-hosts) |  | checkmark |
+| Dashboard widgetsMore info | checkmark | checkmark |
+| Reports[More info](https://fleetdm.com/docs/using-fleet/fleet-ui) | checkmark | checkmark |
+| Performance impact monitoring[More info](https://fleetdm.com/docs/get-started/faq#will-fleet-slow-down-my-servers-what-about-my-employee-laptops) | checkmark | checkmark |
+| Custom tables[More info](https://fleetdm.com/docs/configuration/agent-configuration#extensions) |  | checkmark |
+| Remote settings[More info](https://fleetdm.com/docs/configuration/agent-configuration) | checkmark | checkmark |
+| Fleets[More info](https://fleetdm.com/docs/using-fleet/segment-hosts) |  | checkmark |
+| Labels[More info](https://fleetdm.com/docs/rest-api/rest-api#add-label) | checkmark | checkmark |
+| Policies[More info](https://fleetdm.com/docs/using-fleet/fleet-ui) | checkmark | checkmark |
+| File integrity monitoring (FIM)[More info](https://fleetdm.com/guides/osquery-evented-tables-overview#file-integrity-monitoring-fim) | checkmark | checkmark |
+| File carving[More info](https://fleetdm.com/docs/configuration/fleet-server-configuration#s-3-file-carving-backend) | checkmark | checkmark |
+| Binary authorization\* | checkmark | checkmark |
+| Report on groups of devices[More info](https://fleetdm.com/docs/rest-api/rest-api#get-query-report) |  | checkmark |
+| Incident response[More info](https://fleetdm.com/securing/how-osquery-can-help-cyber-responders#simplifying-endpoint-visibility-with-osquery-and-fleet) | checkmark | checkmark |
+| Custom logging[More info](https://fleetdm.com/docs/using-fleet/log-destinations#log-destinations) | checkmark | checkmark |
+| Malware detection (YARA/custom IoCs)[More info](https://fleetdm.com/guides/remote-yara-rules) | checkmark | checkmark |
+| Continuous scanning[More info](https://fleetdm.com/vulnerability-management) | checkmark | checkmark |
+| Vulnerability scores[More info](https://fleetdm.com/vulnerability-management) |  | checkmark |
+| CISA KEVs[More info](https://fleetdm.com/vulnerability-management) |  | checkmark |
+| Asset discovery\* |  | checkmark |
+
+| Deployment |  |  |
+| --- | --- | --- |
+| Managed cloudMore info |  | checkmark |
+| Self-hosted[More info](https://fleetdm.com/docs/deploy/introduction) | checkmark | checkmark |
+| Multi-tenancy[More info](https://github.com/fleetdm/fleet/issues/9956) |  | checkmark |
+| Deployment tools[More info](https://fleetdm.com/docs/deploy/introduction) | checkmark | checkmark |
+
+| Configuration |  |  |
+| --- | --- | --- |
+| Private update registry[More info](https://fleetdm.com/docs/using-fleet/update-agents) |  | checkmark |
+| Control agent versions[More info](https://fleetdm.com/docs/configuration/agent-configuration#configure-fleetd-update-channels) |  | checkmark |
+| Command line tool (CLI)[More info](https://fleetdm.com/docs/using-fleet/fleetctl-cli) | checkmark | checkmark |
+| GitOps[More info](https://fleetdm.com/guides/sysadmin-diaries-gitops-a-strategic-advantage) | checkmark | checkmark |
+| Two-factor authentication |  | checkmark |
+| Role-based access control[More info](https://fleetdm.com/guides/role-based-access) |  | checkmark |
+| Audit logging[More info](https://fleetdm.com/docs/rest-api/rest-api#list-activities) |  | checkmark |
+| Scope transparency[More info](https://fleetdm.com/transparency) | checkmark | checkmark |
+
+| Integrations |  |  |
+| --- | --- | --- |
+| REST API[More info](https://fleetdm.com/docs/rest-api/rest-api) | checkmark | checkmark |
+| Webhooks[More info](https://fleetdm.com/docs/using-fleet/automations#automations) | checkmark | checkmark |
+| Grant API-only access[More info](https://fleetdm.com/docs/using-fleet/fleetctl-cli#using-fleetctl-with-an-api-only-user) | checkmark | checkmark |
+| Single sign-on (SSO)[More info](https://fleetdm.com/docs/deploy/single-sign-on-sso#single-sign-on-sso) | checkmark | checkmark |
+| Automatic user creation (JIT, SCIM)[More info](https://fleetdm.com/docs/deploy/single-sign-on-sso#just-in-time-jit-user-provisioning) |  | checkmark |
+| Deploy certificates[More info](https://fleetdm.com/guides/connect-end-user-to-wifi-with-certificate) |  | checkmark |
+| Third-party automation[More info](https://fleetdm.com/integrations) | checkmark | checkmark |
+| Third-party orchestration[More info](https://fleetdm.com/integrations) |  | checkmark |
+| Munki compatibility + visibility |  | checkmark |
+
+| Support |  |  |
+| --- | --- | --- |
+| Open-source issue tracker (GitHub)[More info](https://github.com/fleetdm/fleet/issues) | checkmark | checkmark |
+| Community Slack channel[More info](https://fleetdm.com/support) | checkmark | checkmark |
+| Unlimited email support (confidential)[More info](https://fleetdm.com/support) |  | checkmark |
+| Phone and video call support[More info](https://fleetdm.com/support) |  | checkmark |
+
+\* Coming soon
+
+##### {{category.categoryName}}
+
+**{{feature.name}}{{feature.comingSoon ? '\*' : ''}}**
+![More info](/images/icon-more-info-14x14@2x.png)
+
+Free
+![checkmark](/images/icon-checkmark-green-16x16@2x.png)
+
+Premium
+![checkmark](/images/icon-checkmark-green-16x16@2x.png)
+
+\* Coming soon
+
+## Frequently asked questions
+
+You already know how to manage the operating system. In Fleet, you can focus on managing {{ bowser.windows ? 'Windows, Apple' : 'Apple, Windows'}} and Linux; not "Android MDM", "Apple MDM", "config management", etc.
+
+Fleet has run over 50 workshops globally with a certification program that trains admins to be effective using gitops/infrastructure as code (with zero previous experience) in only a few hours. Check out [upcoming workshops](/gitops-workshop) in a city near you, or [let us know](/contact) where we should go next!
+
+Fleet [started as an osquery management server](https://fleetdm.com/handbook/company#history). After 10 years of production osquery use at scale in huge organizations, Fleet added "write" and "execute" device management capabilities, with all the necessary integrations to be comparable with other device management platforms like Jamf, Omnissa (fka WS1, fka Airwatch), Microsoft Intune, and more. Today, Fleet is used by [customers in 90 countries](/customers) and in homelabs all over the world.
+
+
+
+537c652d-cb1a-440e-ae35-0f0bf5743e75
+
+[![Fleet logo](/images/logo-blue-118x41@2x.png)](/)

@@ -1,0 +1,45 @@
+Contents of https://support.apple.com/guide/business/manage-the-built-in-device-management-service-axmc7864dd73/web:
+![](https://help.apple.com/assets/691F3A40282DE9575F0EA081/691F3B802F52333E6B0A9676/en_US/312766e3df7f57c1f549da2dab216b36.png)
+
+Apple Business has a built-in device management service.
+
+When you use the built-in device management in Apple Business, you have access to Configurations and Blueprints. See the following:
+
+* [Intro to Configurations](https://support.apple.com/guide/business/intro-to-configurations-axmd03047928/1/web/1)
+* [Apply Blueprints](https://support.apple.com/guide/business/apply-blueprints-axm0d43737a4/1/web/1)
+
+## Turn on the built-in device management
+
+1. In Apple Business, sign in with a user whose role has permissions to view and manage devices using built-in device management.
+
+   To view roles and permissions, see [Intro to roles and permissions](https://support.apple.com/guide/business/intro-to-roles-and-permissions-axm97dd59159/1/web/1).
+2. In your [browser](https://support.apple.com/guide/business/aside/axm44a94a33e/1/web/1), choose Devices > [Management Services](https://business.apple.com/main/devices/managementservices).
+3. Select Add new device management service.
+4. Select Turn on included device management, then select Continue.
+5. Optionally, select Create Blueprint to create your first [Blueprint](https://support.apple.com/guide/business/aside/axm6ba0c5f41/1/web/1) or close the window.
+
+## Turn off the built-in device management
+
+1. In Apple Business, sign in with a user whose role has permissions to view and manage devices using built-in device management.
+
+   To view roles and permissions, see [Intro to roles and permissions](https://support.apple.com/guide/business/intro-to-roles-and-permissions-axm97dd59159/1/web/1).
+2. In your [browser](https://support.apple.com/guide/business/aside/axm44a94a33e/1/web/1), choose Devices > [Management Services](https://business.apple.com/main/devices/managementservices).
+3. Select Built-in device management.
+
+   *Note:* If you have an AppleCare+ for Business plan, you need to remove it before you can proceed.
+4. Select Turn Off, then, if necessary, do one of the following:
+
+   * If there are no devices assigned, carefully read the warning, then select Turn Off Device Management.
+   * Select the service you want to reassign the devices to, then select Reassign & Delete.
+   * Select None from the services list, then select Unassign & Delete.
+
+Helpful?
+
+Character limit:
+250
+
+Please don’t include any personal information in your comment.
+
+Maximum character limit is 250.
+
+Thanks for your feedback.

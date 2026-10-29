@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "links": [
+    {
+      "id": "site-a-to-clinic-5745",
+      "distance_km": 3.2,
+      "freq_mhz": 5745,
+      "tx_power_dbm": 18,
+      "tx_gain_dbi": 23,
+      "rx_gain_dbi": 23,
+      "losses_db": 2,
+      "rx_sensitivity_dbm": -71,
+      "required_fade_margin_db": 15,
+      "obstacles": [
+        {
+          "d1_km": 1.1,
+          "clearance_m": 5
+        }
+      ]
+    }
+  ]
+}

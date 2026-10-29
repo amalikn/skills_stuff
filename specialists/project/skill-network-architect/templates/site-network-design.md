@@ -10,6 +10,8 @@ Summary: Per-site build sheet covering WAN and backhaul, MTU budget, radio links
 
 # <site-code> site network design
 
+Worked example: [examples/filled/site-network-design.md](../examples/filled/site-network-design.md).
+
 ## Contents
 
 - [How to use](#how-to-use)

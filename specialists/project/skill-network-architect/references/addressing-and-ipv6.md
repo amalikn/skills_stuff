@@ -194,10 +194,22 @@ Transition:
 - [RFC 8925 IPv6-Only Preferred Option for DHCPv4][rfc8925]: running IPv6-mostly segments.
 - [Linux kernel IP sysctl](https://docs.kernel.org/networking/ip-sysctl.html): host RA, temporary address and ND behaviour.
 
-[rfc1918]: https://www.rfc-editor.org/rfc/rfc1918.html [rfc3021]: https://www.rfc-editor.org/rfc/rfc3021.html [rfc4193]: https://www.rfc-editor.org/rfc/rfc4193.html [rfc6052]:
-https://www.rfc-editor.org/rfc/rfc6052.html [rfc6146]: https://www.rfc-editor.org/rfc/rfc6146.html [rfc6147]: https://www.rfc-editor.org/rfc/rfc6147.html [rfc6164]:
-https://www.rfc-editor.org/rfc/rfc6164.html [rfc6177]: https://www.rfc-editor.org/rfc/rfc6177.html [rfc6598]: https://www.rfc-editor.org/rfc/rfc6598.html [rfc6890]:
-https://www.rfc-editor.org/rfc/rfc6890.html [rfc7050]: https://www.rfc-editor.org/rfc/rfc7050.html [rfc7421]: https://www.rfc-editor.org/rfc/rfc7421.html [rfc7934]:
-https://www.rfc-editor.org/rfc/rfc7934.html [rfc8200]: https://www.rfc-editor.org/rfc/rfc8200.html [rfc8215]: https://www.rfc-editor.org/rfc/rfc8215.html [rfc8781]:
-https://www.rfc-editor.org/rfc/rfc8781.html [rfc8925]: https://www.rfc-editor.org/rfc/rfc8925.html [rfc9637]: https://www.rfc-editor.org/rfc/rfc9637.html [ripe690]:
-https://www.ripe.net/publications/docs/ripe-690/
+[rfc1918]: https://www.rfc-editor.org/rfc/rfc1918.html
+[rfc3021]: https://www.rfc-editor.org/rfc/rfc3021.html
+[rfc4193]: https://www.rfc-editor.org/rfc/rfc4193.html
+[rfc6052]: https://www.rfc-editor.org/rfc/rfc6052.html
+[rfc6146]: https://www.rfc-editor.org/rfc/rfc6146.html
+[rfc6147]: https://www.rfc-editor.org/rfc/rfc6147.html
+[rfc6164]: https://www.rfc-editor.org/rfc/rfc6164.html
+[rfc6177]: https://www.rfc-editor.org/rfc/rfc6177.html
+[rfc6598]: https://www.rfc-editor.org/rfc/rfc6598.html
+[rfc6890]: https://www.rfc-editor.org/rfc/rfc6890.html
+[rfc7050]: https://www.rfc-editor.org/rfc/rfc7050.html
+[rfc7421]: https://www.rfc-editor.org/rfc/rfc7421.html
+[rfc7934]: https://www.rfc-editor.org/rfc/rfc7934.html
+[rfc8200]: https://www.rfc-editor.org/rfc/rfc8200.html
+[rfc8215]: https://www.rfc-editor.org/rfc/rfc8215.html
+[rfc8781]: https://www.rfc-editor.org/rfc/rfc8781.html
+[rfc8925]: https://www.rfc-editor.org/rfc/rfc8925.html
+[rfc9637]: https://www.rfc-editor.org/rfc/rfc9637.html
+[ripe690]: https://www.ripe.net/publications/docs/ripe-690/

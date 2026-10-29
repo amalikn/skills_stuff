@@ -11,6 +11,19 @@ Kind: log
 
 # Changelog
 
+## 20261029_1951 — Gap closure: helpers, verified facts, templates, filled examples (v2.0.0 -> v2.1.0)
+
+- Helpers: restore_time.py (per-phase restore against the RTO, no capacity model needed) and eol_check.py (end-of-support register);
+  quorum_check.py gains combined scenarios (`domain:rack-a+qdevice`). 14 tests.
+- References: databases-and-ha (PostgreSQL replication, Patroni, PITR tools, Galera, SQLite at the edge) and ai-inference-platforms (weights,
+  KV cache, concurrency, tokens/s); FOSS MDM (NanoMDM, MicroMDM status, Fleet licence split, osquery) and Apple Business (replaced ABM 2026-04-14);
+  Windows Server 2016-2025 lifecycle dates now VERIFIED_PRIMARY. Template: dr-runbook. Red flag for stale monitoring; expand/contract pattern.
+- Eval cases S01 and S02 replaced with fresh numbers (they reused worked-example values).
+- Domain Routing gains a topical-sections column (direct links to a module's sections), so a narrow question loads one section, not the file.
+- Filled worked examples in examples/filled/ (every number from a helper run, inputs beside each); each template links its example.
+- Link definitions merged by the old wrap-hook bug split back to one per line (14 blocks); check_package now fails on merged definitions.
+- Source store 410 items; ledgers rebuilt.
+
 ## 20261029_1911 — Research-backed deepening, local sources, enforced quality bar (v1.1.0 -> v2.0.0)
 
 - Helpers added: quorum_check.py (node, domain and QDevice loss against quorum; odd-count QDevice warning) and ceph_capacity.py (plan TB after

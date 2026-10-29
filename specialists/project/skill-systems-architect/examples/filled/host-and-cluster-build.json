@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "nodes": [
+    {
+      "id": "pve-1",
+      "domain": "rack-a",
+      "memory_gib": 128,
+      "reserve_gib": 24
+    },
+    {
+      "id": "pve-2",
+      "domain": "rack-b",
+      "memory_gib": 128,
+      "reserve_gib": 24
+    },
+    {
+      "id": "pve-3",
+      "domain": "comms-c",
+      "memory_gib": 128,
+      "reserve_gib": 24
+    }
+  ],
+  "demand_gib": 112,
+  "headroom_fraction": 0.1,
+  "scenarios": [
+    {
+      "id": "normal",
+      "failed_nodes": [],
+      "failed_domains": []
+    },
+    {
+      "id": "maintenance-drain-pve-1",
+      "failed_nodes": [
+        "pve-1"
+      ],
+      "failed_domains": []
+    },
+    {
+      "id": "lose-pve-2",
+      "failed_nodes": [
+        "pve-2"
+      ],
+      "failed_domains": []
+    },
+    {
+      "id": "lose-rack-a",
+      "failed_nodes": [],
+      "failed_domains": [
+        "rack-a"
+      ]
+    },
+    {
+      "id": "lose-comms-c",
+      "failed_nodes": [],
+      "failed_domains": [
+        "comms-c"
+      ]
+    }
+  ]
+}

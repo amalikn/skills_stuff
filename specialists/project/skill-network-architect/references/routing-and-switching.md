@@ -222,12 +222,31 @@ Linux forwarding plane:
 - [Linux kernel bonding][k-bond]: LACP modes, hash policies and failover behaviour.
 - [Linux kernel VXLAN][k-vxlan]: VTEP, FDB and learning behaviour on Linux.
 
-[rfc2992]: https://www.rfc-editor.org/rfc/rfc2992.html [rfc4271]: https://www.rfc-editor.org/rfc/rfc4271.html [rfc5082]: https://www.rfc-editor.org/rfc/rfc5082.html [rfc5880]:
-https://www.rfc-editor.org/rfc/rfc5880.html [rfc5881]: https://www.rfc-editor.org/rfc/rfc5881.html [rfc5883]: https://www.rfc-editor.org/rfc/rfc5883.html [rfc5925]:
-https://www.rfc-editor.org/rfc/rfc5925.html [rfc6438]: https://www.rfc-editor.org/rfc/rfc6438.html [rfc6811]: https://www.rfc-editor.org/rfc/rfc6811.html [rfc6996]:
-https://www.rfc-editor.org/rfc/rfc6996.html [rfc7348]: https://www.rfc-editor.org/rfc/rfc7348.html [rfc7432]: https://www.rfc-editor.org/rfc/rfc7432.html [rfc7454]:
-https://www.rfc-editor.org/rfc/rfc7454.html [rfc7938]: https://www.rfc-editor.org/rfc/rfc7938.html [rfc8212]: https://www.rfc-editor.org/rfc/rfc8212.html [rfc8326]:
-https://www.rfc-editor.org/rfc/rfc8326.html [rfc8365]: https://www.rfc-editor.org/rfc/rfc8365.html [rfc8950]: https://www.rfc-editor.org/rfc/rfc8950.html [rfc9135]:
-https://www.rfc-editor.org/rfc/rfc9135.html [rfc9136]: https://www.rfc-editor.org/rfc/rfc9136.html [rfc9234]: https://www.rfc-editor.org/rfc/rfc9234.html [manrs]: https://manrs.org/netops/ [rpki]:
-https://rpki.readthedocs.io/en/latest/ [frr-bgp]: https://docs.frrouting.org/en/latest/bgp.html [frr-evpn]: https://docs.frrouting.org/en/latest/evpn.html [k-vrf]:
-https://docs.kernel.org/networking/vrf.html [k-bond]: https://docs.kernel.org/networking/bonding.html [k-vxlan]: https://docs.kernel.org/networking/vxlan.html
+[rfc2992]: https://www.rfc-editor.org/rfc/rfc2992.html
+[rfc4271]: https://www.rfc-editor.org/rfc/rfc4271.html
+[rfc5082]: https://www.rfc-editor.org/rfc/rfc5082.html
+[rfc5880]: https://www.rfc-editor.org/rfc/rfc5880.html
+[rfc5881]: https://www.rfc-editor.org/rfc/rfc5881.html
+[rfc5883]: https://www.rfc-editor.org/rfc/rfc5883.html
+[rfc5925]: https://www.rfc-editor.org/rfc/rfc5925.html
+[rfc6438]: https://www.rfc-editor.org/rfc/rfc6438.html
+[rfc6811]: https://www.rfc-editor.org/rfc/rfc6811.html
+[rfc6996]: https://www.rfc-editor.org/rfc/rfc6996.html
+[rfc7348]: https://www.rfc-editor.org/rfc/rfc7348.html
+[rfc7432]: https://www.rfc-editor.org/rfc/rfc7432.html
+[rfc7454]: https://www.rfc-editor.org/rfc/rfc7454.html
+[rfc7938]: https://www.rfc-editor.org/rfc/rfc7938.html
+[rfc8212]: https://www.rfc-editor.org/rfc/rfc8212.html
+[rfc8326]: https://www.rfc-editor.org/rfc/rfc8326.html
+[rfc8365]: https://www.rfc-editor.org/rfc/rfc8365.html
+[rfc8950]: https://www.rfc-editor.org/rfc/rfc8950.html
+[rfc9135]: https://www.rfc-editor.org/rfc/rfc9135.html
+[rfc9136]: https://www.rfc-editor.org/rfc/rfc9136.html
+[rfc9234]: https://www.rfc-editor.org/rfc/rfc9234.html
+[manrs]: https://manrs.org/netops/
+[rpki]: https://rpki.readthedocs.io/en/latest/
+[frr-bgp]: https://docs.frrouting.org/en/latest/bgp.html
+[frr-evpn]: https://docs.frrouting.org/en/latest/evpn.html
+[k-vrf]: https://docs.kernel.org/networking/vrf.html
+[k-bond]: https://docs.kernel.org/networking/bonding.html
+[k-vxlan]: https://docs.kernel.org/networking/vxlan.html

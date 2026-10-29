@@ -1,0 +1,186 @@
+Contents of https://www.cisco.com/c/en/us/td/docs/wireless/technology/vowlan/troubleshooting/vowlan_troubleshoot/8_Site_Survey_RF_Design_Valid.html:
+## Site Survey and RF Design Validation
+
+---
+
+## Site Survey Introduction
+
+In the realm of wireless networking, careful planning is essential to ensure that your wireless network performs in a manner that is consistent with Cisco's design and deployment best practices. With that in mind, we cannot stress enough how important it is to perform a thorough site survey before and after the Cisco Unified Wireless deployment. A pre-site survey allows the systems engineer to assess requirements and design the network in manner that promotes and encourages scalability while also meeting expectations with regard to the applications the network will support.
+
+Through our experiences, our TAC and Escalation Teams have discovered that many of our customers and even partners perform the site survey incorrectly or skip the site survey altogether. In almost 70% of Cisco wireless deployments, our Wireless Escalation Team and Advanced Services are called in to perform remediation for customers due to deviations from documented design and deployment best practices as they pertain to RF Design. In some cases, it is a matter of experience, and in others it is related to improper planning.
+
+As we explore the possibilities, we have also determined that a majority of the environments were surveyed for data, but not for voice. When executives and IT managers think about purchasing solutions, they often consider buying equipment that will provide a good return on their investment. With that in mind, a wireless network that is going to be deployed throughout the enterprise should be designed and deployed for voice to ensure that it is scalable and that user mobility is enhanced.
+
+![](/c/dam/en/us/td/i/templates/note.gif)
+
+---
+
+**Note** ![](/c/dam/en/us/td/i/templates/blank.gif)While one organization might have a certain set of criteria for their wireless deployment, it is of vital importance to ensure that your company employs a Certified Cisco partner that has their Advanced WLAN specialization and also has a reputable background with regard to performing pre- and post-site surveys.
+
+---
+
+For the purposes of this troubleshooting guide, we will assume that the wireless network has already been deployed. Based on this, we will focus on what tools can be used to isolate RF-related problems, such as excessive retransmissions, RF multipath, and co-channel interference, and we will discuss topics and tools related to performing a post audit along with RF analysis of the existing wireless network. Since the focus of this document will be on troubleshooting, we will discuss the basics of performing a post-site survey as it pertains to the proper deployment of a VoWLAN.
+
+## Performing a Post Site Survey Assessment
+
+The need for a wireless site survey is different in every situation. Performing a post assessment of the environment is very similar to a pre-site survey. There are particular guidelines and criteria that need to be met. Once a systems engineer has determined that VoWLAN users are being subjected to audio problems due to inadequate signal, interference, or other RF-related problems, performing a post survey of the environment becomes crucial from a troubleshooting perspective.
+
+## Environmental Characteristics
+
+When preparing to perform a post analysis of the environment, be certain to consider the environmental characteristics of the building or site where the wireless network was deployed. A large building with several floors may require only a minimal amount of time, especially if each floor has a similar physical blue print, however, it is important to evaluate every floor individually. An environment such as an ocean liner may vary completely from deck to deck and will prevent you from using a cookie cutter approach. The following are elements that you should consider when performing a post assessment of the environment.
+
+**1.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Review requirements:** For VoWLAN deployments, it is crucial to understand what the transmit power of the client device is to ensure that access points and VoWLAN handsets transmit at the same power. This will mitigate problems such as one-way audio.
+
+**2.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Wireless tools:** When performing the post assessment, it is also recommended that you use wireless tools such as Cisco Spectrum Expert, Wireshark, Omnipeek, and AirMagnet to the isolate root cause of RF-related problems.
+
+**3.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Obtain building and floor blue prints:** WCS is a great place to start your evaluation. Remember, while WCS will show you the physical layout of a building, WCS should not be used as a primary tool for performing a post wireless audit.
+
+**4.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Inspect the environment:** As you are troubleshooting a problem-related RF propagation or a lack thereof, it is important to perform a physical walk-through of the environment and take into account where the access points have been placed, what types of antennas are in use, the height of the access points, and the direction of each antenna as it relates to the respective coverage area.
+
+**5.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Evaluate the LAN:** When performing a post audit, evaluation of the wired infrastructure is important for several reasons. First and foremost, you want to ensure that the physical LAN can sustain the appropriate level of throughput without QoS. This will ensure that voice traffic can later be assigned to queues or marked with a level of QoS that facilitates greater priority as voice traffic traverses the infrastructure. Once you have validated the physical topology, you can then trust packets according to DSCP or CoS and ensure that voice packets traverse the wired and wireless LAN with the appropriate level of QoS.
+
+**6.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Identify sources of RF interference:** This is probably the most important aspect of a post audit when deploying 802.11a/b/g/n solutions on the 2.4 and 5 GHz bands. Often there are several different types of interferers. The most common of these are from commercial grade microwave ovens, blue tooth devices, and cordless phones that operate on the 2.4 GHz frequency band. The most common tool used by wireless engineers at Cisco is Cisco Spectrum Expert. Spectrum Expert is an analysis tool that can used to locate and isolate sources of interference and identify above average channel utilization after the initial deployment. Refer to the section ["RF Design Validation"](#wp1053033
+) for channel utilization recommendations.
+
+**7.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Analyze and define the cell edge:** This requires the use of AirMagnet Survey, although there are simple tools like Omnipeek or Wireshark that can be used to measure wireless traffic as a client roams from one AP to another. According to design best practices that revolve around the Cell Edge Design, a wireless handset should roam before the RSSI reaches -67 dBm. You can analyze signal strength and determine the approximate cell edge by measuring the signal strength in a beacon frame as you move from the center of one cell towards the edge of that cell.
+
+**8.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Validate antenna usage and AP placement:** As it pertains to RF design and deployment best practices, we suggest performing advanced wireless in an effort to understand how RF propagates with the existing environment.
+
+**9.** ![](/c/dam/en/us/td/i/templates/blank.gif)**Post-Site Survey Report:** The wireless post audit report should contain detailed facts about the existing deployment and outline deviations in design and deployment best practices. The purpose of this report should be to provide systems engineers with enough information to successfully remediate the existing deployment to ensure proper functionality, high availability, and seamless user mobility with minimal delay and jitter.
+
+## VoWLAN RF Design Validation
+
+### Troubleshooting Radio Frequency Design
+
+The most important aspect of any VoWLAN is user mobility. Systems Engineers need to ensure that the existing WLAN will facilitate user needs, while also ensuring that users have seamless connectivity while moving throughout their enterprise. Voice has stringent requirements with regard to Radio Frequency Design, and understanding RF propagation and VoWLAN design and deployment best practices is essential for successful voice over wireless LAN deployments.
+
+When troubleshooting a VoWLAN specifically, it is important to understand how packet loss and jitter will affect voice quality. Specifically, Cisco references a principle referred to as Cell Edge Design when deploying access points and antennas. Deploying the VoWLAN according to this design principle will ensure that your VoWLAN is highly available so that users can move seamlessly throughout the network.
+
+When troubleshooting issues that pertain to a lack of RF coverage, interference, or issues that might be related to user mobility, it is important to understand the following design fundamentals as they relate to the Cell Edges Design principle, channel utilization, noise, retransmissions, and overall packet loss and delay.
+
+### RF Design Validation
+
+**1.** ![](/c/dam/en/us/td/i/templates/blank.gif)The optimal VoWLAN Cell Edge recommendation is -67 dBm.
+
+**2.** ![](/c/dam/en/us/td/i/templates/blank.gif)An optimal VoWLAN deployment will require at least a 20 percent cell overlap for 2.4 GHz and 15-20 percent for 5 GHz for access points that reside on different channels.
+
+**3.** ![](/c/dam/en/us/td/i/templates/blank.gif)Over all Channel Utilization should be less than 50 percent.
+
+**4.** ![](/c/dam/en/us/td/i/templates/blank.gif)The Noise floor should not exceed -92 dBm, which facilitates a Signal to Noise Ratio of 25 dB.
+
+**5.** ![](/c/dam/en/us/td/i/templates/blank.gif)Retransmissions should be kept under 20 percent.
+
+**6.** ![](/c/dam/en/us/td/i/templates/blank.gif)Packet Loss should remain under 1 percent and jitter should be kept to less than 100 ms.
+
+### Cisco Enterprise Mobility Design Guide 4.1
+
+http://www.cisco.com/en/US/docs/solutions/Enterprise/Mobility/emob41dg/emob41dg-wrapper.html
+
+### Voice over Wireless LAN 4.1 Design Guide
+
+http://www.cisco.com/en/US/docs/solutions/Enterprise/Mobility/vowlan/41dg/vowlan41dg-book.html
+
+![](/c/dam/en/us/td/i/templates/note.gif)
+
+---
+
+**Note** ![](/c/dam/en/us/td/i/templates/blank.gif)If you are troubleshooting and you determine that the VoWLAN does not adhere to the outlined requirements above, we strongly encourage you to perform a post site survey and assess the existing RF Design. The following section should provide you with sufficient information to analyze the RF environment and remediate the wireless deployment until the RF design meets the appropriate criteria.
+
+---
+
+## Site Survey Tools
+
+In most cases, we hope that a pre- and post-site survey have already been performed before deploying the Cisco Unified Wireless Network for Voice. In a situation where it has not been performed, a post audit of the environment is essential to understand the existing RF design and to remediate the network until it is accordance with Cisco's Design and Deployment best practices for VoWLAN deployments.
+
+### AirMagnet Survey and VoFi Analyzer
+
+AirMagnet Survey and AirMagnet VoFi Analyzer are primary solutions used by the Cisco Escalation and Advanced Services Teams for managing, remediating, and optimizing a Cisco Unified VoWLAN. AirMagnet Surveyor itself provides information related to RF propagation within the physical environment. AirMagnet Survey also has preconfigured profiles for the Cisco 792xG Series wireless IP phone that allow Survey to predict RF propagation and to validate and plot the phone call performance, call capacity, RF coverage and roaming behavior at every location on a floor map. This eventually leads to root cause analysis with regard to poor call performance.
+
+In [Figure 8-1](#wp1053075
+), we show a post assessment where a systems engineer walked an area where a VoWLAN issue was being experienced. As you can see in the following figure, [Figure 8-2](#wp1053079
+), the screen shot displays the information for those access points and the signal strength for each area that was assessed using the survey utility.
+
+Figure 8-1 Walk-Through
+
+![](/c/dam/en/us/td/docs/wireless/technology/vowlan/troubleshooting/8_Site_Survey_RF_Design_Valid.fm/_jcr_content/renditions/8_Site_Survey_RF_Design_Valid-1.jpg)
+
+Figure 8-2 Signal Strength for Given Area
+
+![](/c/dam/en/us/td/docs/wireless/technology/vowlan/troubleshooting/8_Site_Survey_RF_Design_Valid.fm/_jcr_content/renditions/8_Site_Survey_RF_Design_Valid-2.jpg)
+
+![](/c/dam/en/us/td/i/templates/note.gif)
+
+---
+
+**Note** ![](/c/dam/en/us/td/i/templates/blank.gif)While WCS can be used for planning, location tracking, and RF visualization, the heat maps in WCS are predictive based on the antenna type, antenna direction and power levels configured on the Wireless LAN Controller. WCS should not be used as a pre- or post-site survey tool by any means.
+
+---
+
+With regard to the VoWLAN and the RTP stream between the AP and 792xG Series wireless IP phone, a poor or unreliable RTP stream can have any number of potential problems. It may be an issue with the 792xG Series firmware specifically, the RF environment, a misconfiguration, a QoS marking over the air, or even problems over an IP-PBX or H.323 gateway. Due to the level of complexity, VoWLAN troubleshooting can become particularly challenging and time-consuming to diagnose.
+
+AirMagnet also has a Wi-Fi Analyzer and VoFi Analyzer which have the ability to display your network in terms of calls and call quality. VoFi Analyzer works in the same manner as a protocol analyzer and has the ability to score every RTP stream in terms of WiR-Value and a WiMOS score based on packet metrics, such as loss rate and jitter.
+
+As you can see in [Figure 8-3](#wp1053091
+), each call is color-coded according to call quality. The VoFi Analyzer displays streams that experience problems.
+
+Figure 8-3 VoFi Pro Analyzer
+
+![](/c/dam/en/us/td/docs/wireless/technology/vowlan/troubleshooting/8_Site_Survey_RF_Design_Valid.fm/_jcr_content/renditions/8_Site_Survey_RF_Design_Valid-3.jpg)
+
+The AirWise analysis engine in VoFi Analyzer also has the ability to detect common problems within the VoWLAN such as choppy audio, one-way audio, and no audio, and provides easy-to-understand data based on configurable alarms.
+
+In addition to troubleshooting call streams from an RF perspective, the VoFi Pro Analyzer can be used to receive syslog data directly from the Cisco 792xG Series wireless IP phone. This is ideal when troubleshooting issues related to excessive roaming due to RSSI differential seen by the handset or RF related problems such as multi-path.
+
+Detailed information about the AirMagnet suite of products can be found at the following location:
+
+http://www.airmagnet.com/
+
+### Cisco Spectrum Expert
+
+Cisco Spectrum Expert Wi-Fi integrates with the Cisco Unified Wireless Network to deliver real-time spectrum intelligence data. Cisco Spectrum Expert has the ability to detect, classify, and locate sources of RF interference in the unlicensed 2.4-GHz and 5-GHz bands.
+
+### WCS and Spectrum Intelligence
+
+While Cisco Spectrum Expert can be used as a separate tool, the Cisco Wireless Control System (WCS) also works in conjunction with Cisco Spectrum Expert to provide visibility into interference sources that may cause wireless performance degradation. With Cisco Spectrum Expert Wi-Fi, the source of the interference can be determined, allowing businesses to remove, move, shield, adjust, or replace the source of interference.
+
+The WCS and Cisco Spectrum Expert Wi-Fi is part of the Cisco's Spectrum Intelligence solution and integrates with the Cisco Unified Wireless Network to monitor the wireless network.
+
+To implement and utilize this for troubleshooting, systems engineers need to adhere to the following criteria.
+
+•![](/c/dam/en/us/td/i/templates/blank.gif)Cisco Spectrum Expert Wi-Fi
+
+•![](/c/dam/en/us/td/i/templates/blank.gif)Cisco Wireless Control System (Software Release 4.2 or later)
+
+•![](/c/dam/en/us/td/i/templates/blank.gif)Cisco WCS Spectrum Intelligence license
+
+### WCS and Cisco Spectrum Intelligence
+
+Figure 8-4 WCS and Cisco Spectrum Intelligence
+
+![](/c/dam/en/us/td/docs/wireless/technology/vowlan/troubleshooting/8_Site_Survey_RF_Design_Valid.fm/_jcr_content/renditions/8_Site_Survey_RF_Design_Valid-4.jpg)
+
+Figure 8-5 Wireless Control System
+
+![](/c/dam/en/us/td/docs/wireless/technology/vowlan/troubleshooting/8_Site_Survey_RF_Design_Valid.fm/_jcr_content/renditions/8_Site_Survey_RF_Design_Valid-5.jpg)
+
+### Wireless Sniffer
+
+### Wireshark or Omnipeek
+
+Once you have isolated and remediated the RF problems, refer to the sections on General Troubleshooting and using Omnipeek for instructions on how to take wireless sniffer traces to analyze a VoWLAN.
+
+![](/c/dam/en/us/td/i/templates/note.gif)
+
+---
+
+**Note** ![](/c/dam/en/us/td/i/templates/blank.gif)With regard to following VoWLAN design and deployment best practices, Cisco does not support a same-channel design as used in some Distributed Antenna System (DAS) deployments. A VoWLAN design must include a minimum of the three non-overlapping channels that are consistent with the 802.11 specifications for 2.4 GHz and 5 GHz.
+
+---
+
+![](/c/dam/en/us/td/i/templates/note.gif)
+
+---
+
+**Note** ![](/c/dam/en/us/td/i/templates/blank.gif)The Coverage Hole Algorithm is a mechanism built into Radio Resource Management (RRM) that will increase the transmit power of an AP to ensure the appropriate amount of coverage once a certain number of clients roam into the coverage hole (three or more clients by default). While this is a feature, it is important to implement bandwidth throttling on the controller for the 2.4 GHz band. Throttling the transmit power of the AP will ensure that asymmetric transmit does not occur, leading to one-way audio. DTPC is another mechanism that can potentially remedy this issue as well.
+
+---

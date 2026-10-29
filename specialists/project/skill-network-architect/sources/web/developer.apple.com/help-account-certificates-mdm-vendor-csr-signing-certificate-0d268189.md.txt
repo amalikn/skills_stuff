@@ -1,0 +1,537 @@
+[View in English](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+
+*   [Apple Developer](https://developer.apple.com/)
+*   
+    *   [Get Started](https://developer.apple.com/get-started/)
+
+## Explore Get Started
+
+    *   [Overview](https://developer.apple.com/get-started/)
+    *   [Learn](https://developer.apple.com/learn/)
+    *   [Apple Developer Program](https://developer.apple.com/programs/)
+
+## Stay Updated
+
+    *   [Latest News](https://developer.apple.com/news/)
+    *   [Hello Developer](https://developer.apple.com/hello/)
+
+    *   [Platforms](https://developer.apple.com/platforms/)
+
+## Explore Platforms
+
+    *   [Apple Platforms](https://developer.apple.com/platforms/)
+    *   [iOS](https://developer.apple.com/ios/)
+    *   [iPadOS](https://developer.apple.com/ipados/)
+    *   [macOS](https://developer.apple.com/macos/)
+    *   [tvOS](https://developer.apple.com/tvos/)
+    *   [visionOS](https://developer.apple.com/visionos/)
+    *   [watchOS](https://developer.apple.com/watchos/)
+    *   [App Store](https://developer.apple.com/app-store/)
+
+## Featured
+
+    *   [Design](https://developer.apple.com/design/)
+    *   [Distribution](https://developer.apple.com/distribute/)
+    *   [Games](https://developer.apple.com/games/)
+    *   [Accessories](https://developer.apple.com/accessories/)
+    *   [Web](https://developer.apple.com/safari/)
+    *   [Home](https://developer.apple.com/apple-home/)
+    *   [CarPlay](https://developer.apple.com/carplay/)
+
+    *   [Technologies](https://developer.apple.com/technologies/)
+
+## Explore Technologies
+
+    *   [Overview](https://developer.apple.com/technologies/)
+    *   [Xcode](https://developer.apple.com/xcode/)
+    *   [Swift](https://developer.apple.com/swift/)
+    *   [SwiftUI](https://developer.apple.com/swiftui/)
+
+## Featured
+
+    *   [Accessibility](https://developer.apple.com/documentation/accessibility)
+    *   [AI & Machine Learning](https://developer.apple.com/machine-learning/)
+    *   [App Intents](https://developer.apple.com/documentation/appintents)
+    *   [Apple Intelligence](https://developer.apple.com/apple-intelligence/)
+    *   [Games](https://developer.apple.com/games/)
+    *   [Security](https://developer.apple.com/security/)
+    *   [Xcode Cloud](https://developer.apple.com/xcode-cloud/)
+
+    *   [Community](https://developer.apple.com/community/)
+
+## Explore Community
+
+    *   [Overview](https://developer.apple.com/community/)
+    *   [Meet with Apple events](https://developer.apple.com/events/)
+    *   [Community events](https://developer.apple.com/community/events/)
+    *   [Developer Forums](https://developer.apple.com/forums/)
+    *   [Open Source](https://opensource.apple.com/)
+
+## Featured
+
+    *   [WWDC](https://developer.apple.com/wwdc/)
+    *   [Swift Student Challenge](https://developer.apple.com/swift-student-challenge/)
+    *   [Developer Stories](https://developer.apple.com/developer-stories/)
+    *   [App Store Awards](https://developer.apple.com/app-store/app-store-awards/)
+    *   [Apple Design Awards](https://developer.apple.com/design/awards/)
+    *   [Apple Developer Centers](https://developer.apple.com/events/developer-centers/)
+
+    *   [Documentation](https://developer.apple.com/documentation/)
+
+## Explore Documentation
+
+    *   [Documentation Library](https://developer.apple.com/documentation/)
+    *   [Technology Overviews](https://developer.apple.com/documentation/TechnologyOverviews)
+    *   [Sample Code](https://developer.apple.com/documentation/SampleCode)
+    *   [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
+    *   [Videos](https://developer.apple.com/videos/)
+
+## Release Notes
+
+    *   [Featured Updates](https://developer.apple.com/documentation/Updates)
+    *   [iOS](https://developer.apple.com/documentation/ios-ipados-release-notes)
+    *   [iPadOS](https://developer.apple.com/documentation/ios-ipados-release-notes)
+    *   [macOS](https://developer.apple.com/documentation/macos-release-notes)
+    *   [watchOS](https://developer.apple.com/documentation/watchos-release-notes)
+    *   [visionOS](https://developer.apple.com/documentation/visionos-release-notes/)
+    *   [tvOS](https://developer.apple.com/documentation/tvos-release-notes)
+    *   [Xcode](https://developer.apple.com/documentation/Updates/xcode)
+
+    *   [Downloads](https://developer.apple.com/download/)
+
+## Explore Downloads
+
+    *   [All Downloads](https://developer.apple.com/download/)
+    *   [Operating Systems](https://developer.apple.com/download/os/)
+    *   [Applications](https://developer.apple.com/download/applications/)
+    *   [Design Resources](https://developer.apple.com/design/resources/)
+
+## Featured
+
+    *   [Xcode](https://developer.apple.com/xcode/)
+    *   [TestFlight](https://developer.apple.com/testflight/)
+    *   [Fonts](https://developer.apple.com/fonts/)
+    *   [SF Symbols](https://developer.apple.com/sf-symbols/)
+    *   [Icon Composer](https://developer.apple.com/icon-composer/)
+
+    *   [Support](https://developer.apple.com/support/)
+
+## Explore Support
+
+    *   [Overview](https://developer.apple.com/support/)
+    *   [Help Guides](https://developer.apple.com/help/)
+    *   [Developer Forums](https://developer.apple.com/forums/)
+    *   [Feedback Assistant](https://developer.apple.com/feedback-assistant/)
+    *   [Contact Us](https://developer.apple.com/contact/)
+
+## Featured
+
+    *   [Account Help](https://developer.apple.com/help/account/)
+    *   [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
+    *   [App Review Help](https://developer.apple.com/help/app-review/)
+    *   [App Store Connect Help](https://developer.apple.com/help/app-store-connect/)
+    *   [Upcoming Requirements](https://developer.apple.com/news/upcoming-requirements/)
+    *   [Agreements and Guidelines](https://developer.apple.com/support/terms/)
+    *   [System Status](https://developer.apple.com/system-status/)
+
+*   [](https://developer.apple.com/search/)
+
+ 
+
+## Quick Links
+
+    *   [Events](https://developer.apple.com/events/)
+    *   [News](https://developer.apple.com/news/)
+    *   [Forums](https://developer.apple.com/forums/)
+    *   [Sample Code](https://developer.apple.com/documentation/samplecode/)
+    *   [Videos](https://developer.apple.com/videos/)
+
+*   [](https://developer.apple.com/account/) 
+
+Search
+
+Search Reset
+
+*   [Release notes Release notes](https://developer.apple.com/help/account/release-notes/)
+*   [Developer account overview Basics](https://developer.apple.com/help/account/basics/about-your-developer-account)
+*   [Account landing page Basics](https://developer.apple.com/help/account/basics/account-landing-page)
+*   [Developer profile Basics](https://developer.apple.com/help/account/basics/profile)
+*   [Programs overview Membership](https://developer.apple.com/help/account/membership/programs-overview)
+*   [Program enrollment Membership](https://developer.apple.com/help/account/membership/program-enrollment)
+*   [Enrolling in the app Membership](https://developer.apple.com/help/account/membership/enrolling-in-the-app)
+*   [Identity verification Membership](https://developer.apple.com/help/account/membership/identity-verification)
+*   [D-U-N-S Membership](https://developer.apple.com/help/account/membership/D-U-N-S)
+*   [Fee waivers Membership](https://developer.apple.com/help/account/membership/fee-waivers)
+*   [Renewal Membership](https://developer.apple.com/help/account/membership/renewal)
+*   [Updating your account information Membership](https://developer.apple.com/help/account/membership/updating-your-account-information)
+*   [Sign in to your developer account Access](https://developer.apple.com/help/account/access/sign-in-to-your-developer-account)
+*   [Invite team members Access](https://developer.apple.com/help/account/access/invite-team-members)
+*   [Automatic Signing Controls Access](https://developer.apple.com/help/account/access/automatic-signing-controls)
+*   [Roles and access Access](https://developer.apple.com/help/account/access/roles)
+*   [Change team member roles Access](https://developer.apple.com/help/account/access/change-team-member-roles)
+*   [Delete team members Access](https://developer.apple.com/help/account/access/delete-team-members)
+*   [Leave a team Access](https://developer.apple.com/help/account/access/leave-a-team)
+*   [Transfer the Account Holder role Access](https://developer.apple.com/help/account/access/transfer-the-account-holder-role)
+*   [Resolving access issues Access](https://developer.apple.com/help/account/access/resolving-access-issues)
+*   [Certificates overview Certificates](https://developer.apple.com/help/account/certificates/certificates-overview)
+*   [Cloud-managed certificates Certificates](https://developer.apple.com/help/account/certificates/cloud-managed-certificates)
+*   [Developer ID certificates Certificates](https://developer.apple.com/help/account/certificates/create-developer-id-certificates)
+*   [Replacing Developer ID certificates issued from the previous Sub-CA Certificates](https://developer.apple.com/help/account/certificates/replace-developer-id-certificates)
+*   [Create enterprise distribution certificates Certificates](https://developer.apple.com/help/account/certificates/create-enterprise-distribution-certificates)
+*   [Create app license delivery certificates Certificates](https://developer.apple.com/help/account/certificates/create-app-license-delivery-certificates)
+*   [Create WatchKit services certificates Certificates](https://developer.apple.com/help/account/certificates/create-watchkit-services-certificates)
+*   [Create VoIP services certificates Certificates](https://developer.apple.com/help/account/certificates/create-voip-services-certificates)
+*   [Create a certificate signing request Certificates](https://developer.apple.com/help/account/certificates/create-a-certificate-signing-request)
+*   [Revoke a certificate Certificates](https://developer.apple.com/help/account/certificates/revoke-a-certificate)
+*   [MDM Vendor CSR Signing Certificate Certificates](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate)
+*   [WWDR intermediate certificates Certificates](https://developer.apple.com/help/account/certificates/wwdr-intermediate-certificates)
+*   [Create a private key to access a service Keys](https://developer.apple.com/help/account/keys/create-a-private-key)
+*   [Get a key identifier Keys](https://developer.apple.com/help/account/keys/get-a-key-identifier)
+*   [Revoke, edit, and download keys Keys](https://developer.apple.com/help/account/keys/revoke-edit-and-download-keys)
+*   [Enterprise Program API Keys](https://developer.apple.com/help/account/keys/enterprise-program-api)
+*   [Register an App ID Identifiers](https://developer.apple.com/help/account/identifiers/register-an-app-id)
+*   [Register an App ID for App Clips Identifiers](https://developer.apple.com/help/account/identifiers/register-an-app-id-for-app-clips)
+*   [Register a Services ID Identifiers](https://developer.apple.com/help/account/identifiers/register-a-services-id)
+*   [Enable app services Identifiers](https://developer.apple.com/help/account/identifiers/enable-app-services)
+*   [Enable app capabilities Identifiers](https://developer.apple.com/help/account/identifiers/enable-app-capabilities)
+*   [Delete an App ID Identifiers](https://developer.apple.com/help/account/identifiers/delete-an-app-id)
+*   [Register an app group Identifiers](https://developer.apple.com/help/account/identifiers/register-an-app-group)
+*   [Create an iCloud container Identifiers](https://developer.apple.com/help/account/identifiers/create-an-icloud-container)
+*   [Capabilities overview Capabilities](https://developer.apple.com/help/account/capabilities/capabilities-overview)
+*   [Capability requests Capabilities](https://developer.apple.com/help/account/capabilities/capability-requests)
+*   [Configure Apple Pay Capabilities](https://developer.apple.com/help/account/capabilities/configure-apple-pay)
+*   [Configure Apple Pay on the web Capabilities](https://developer.apple.com/help/account/capabilities/configure-apple-pay-on-the-web)
+*   [Create a DeviceCheck private key Capabilities](https://developer.apple.com/help/account/capabilities/create-a-devicecheck-private-key)
+*   [Create a ClassKit Catalog key Capabilities](https://developer.apple.com/help/account/capabilities/create-a-classkit-catalog-key)
+*   [Create a Maps identifier and private key Capabilities](https://developer.apple.com/help/account/capabilities/create-a-maps-identifier-and-private-key)
+*   [Create a media identifier and private key Capabilities](https://developer.apple.com/help/account/capabilities/create-a-media-identifier-and-private-key)
+*   [Communicate with APNs using authentication tokens Capabilities](https://developer.apple.com/help/account/capabilities/communicate-with-apns-using-authentication-tokens)
+*   [Communicate with APNs using a TLS certificate Capabilities](https://developer.apple.com/help/account/capabilities/communicate-with-apns-using-a-tls-certificate)
+*   [Send push notifications from your web server Capabilities](https://developer.apple.com/help/account/capabilities/send-push-notifications-from-your-web-server)
+*   [About Sign in with Apple Capabilities](https://developer.apple.com/help/account/capabilities/about-sign-in-with-apple)
+*   [Enabling server-to-server notifications Capabilities](https://developer.apple.com/help/account/capabilities/enabling-server-to-server-notifications)
+*   [Group apps for Sign in with Apple Capabilities](https://developer.apple.com/help/account/capabilities/group-apps-for-sign-in-with-apple)
+*   [Create a Sign in with Apple private key Capabilities](https://developer.apple.com/help/account/capabilities/create-a-sign-in-with-apple-private-key)
+*   [Configure Sign in with Apple for the web Capabilities](https://developer.apple.com/help/account/capabilities/configure-sign-in-with-apple-for-the-web)
+*   [Configure private email relay service Capabilities](https://developer.apple.com/help/account/capabilities/configure-private-email-relay-service)
+*   [Create Wallet identifiers and certificates Capabilities](https://developer.apple.com/help/account/capabilities/create-wallet-identifiers-and-certificates)
+*   [Create a Mac version of an iPad app Capabilities](https://developer.apple.com/help/account/capabilities/create-a-mac-version-of-an-ipad-app)
+*   [Create a services identifier and private key for WeatherKit Capabilities](https://developer.apple.com/help/account/capabilities/create-a-services-identifier-and-private-key-for-weatherkit)
+*   [Create order type identifiers and certificates Capabilities](https://developer.apple.com/help/account/capabilities/create-order-type-identifiers-and-certificates)
+*   [ShazamKit Services](https://developer.apple.com/help/account/services/shazamkit)
+*   [MusicKit Services](https://developer.apple.com/help/account/services/musickit)
+*   [WeatherKit Services](https://developer.apple.com/help/account/services/weatherkit)
+*   [Account and organizational data sharing Service Configurations](https://developer.apple.com/help/account/service-configurations/share-account-and-organizational-data)
+*   [Apple Music Feed Service Configurations](https://developer.apple.com/help/account/service-configurations/apple-music-feed)
+*   [Configure the Apps and Books for Organizations API Service Configurations](https://developer.apple.com/help/account/service-configurations/apps-and-books-for-organizations)
+*   [iWork Document Exporting Service Configurations](https://developer.apple.com/help/account/service-configurations/iwork-document-exporting)
+*   [Maps tokens Service Configurations](https://developer.apple.com/help/account/service-configurations/maps-tokens)
+*   [Devices overview Devices](https://developer.apple.com/help/account/devices/devices-overview)
+*   [Register a single device Devices](https://developer.apple.com/help/account/devices/register-a-single-device)
+*   [Register multiple devices Devices](https://developer.apple.com/help/account/devices/register-multiple-devices)
+*   [Disable or enable a device Devices](https://developer.apple.com/help/account/devices/disable-or-enable-a-device)
+*   [Removing devices for membership expiration Devices](https://developer.apple.com/help/account/devices/removing-devices-for-membership-expiration)
+*   [Provisioning profile updates Provisioning Profiles](https://developer.apple.com/help/account/provisioning-profiles/provisioning-profile-updates)
+*   [Create a development provisioning profile Provisioning Profiles](https://developer.apple.com/help/account/provisioning-profiles/create-a-development-provisioning-profile)
+*   [Create an ad hoc provisioning profile (iOS, tvOS, watchOS) Provisioning Profiles](https://developer.apple.com/help/account/provisioning-profiles/create-an-ad-hoc-provisioning-profile)
+*   [Create an App Store Connect provisioning profile Provisioning Profiles](https://developer.apple.com/help/account/provisioning-profiles/create-an-app-store-provisioning-profile)
+*   [Create a DriverKit development provisioning profile Provisioning Profiles](https://developer.apple.com/help/account/provisioning-profiles/create-a-driverkit-development-provisioning-profile)
+*   [Edit, download, or delete provisioning profiles Provisioning Profiles](https://developer.apple.com/help/account/provisioning-profiles/edit-download-or-delete-profiles)
+*   [Revoking privileges Reference](https://developer.apple.com/help/account/reference/revoking-privileges)
+*   [Supported capabilities (iOS) Reference](https://developer.apple.com/help/account/reference/supported-capabilities-ios)
+*   [Supported capabilities (macOS) Reference](https://developer.apple.com/help/account/reference/supported-capabilities-macos)
+*   [Supported capabilities (tvOS) Reference](https://developer.apple.com/help/account/reference/supported-capabilities-tvos)
+*   [Supported capabilities (visionOS) Reference](https://developer.apple.com/help/account/reference/supported-capabilities-visionos)
+*   [Supported capabilities (watchOS) Reference](https://developer.apple.com/help/account/reference/supported-capabilities-watchos)
+*   [Provisioning with capabilities Reference](https://developer.apple.com/help/account/reference/provisioning-with-managed-capabilities)
+*   [Capability and entitlement updates Reference](https://developer.apple.com/help/account/reference/capability-entitlement-updates)
+*   [Device registration updates Reference](https://developer.apple.com/help/account/reference/device-registration-updates)
+*   [No results If you have any questions about membership, your account, or App Store Connect, please review developer support.](https://developer.apple.com/support/)
+
+### [Account Help](https://developer.apple.com/help/account/)
+
+[Account](https://developer.apple.com/help/account/)/Certificates/Requesting access to an MDM Vendor CSR signing certificate
+
+Filter ⌘K
+
+[* Release notes](https://developer.apple.com/help/account/release-notes/)*   Basics
+
+    [* Developer account overview](https://developer.apple.com/help/account/basics/about-your-developer-account)
+    [* Account landing page](https://developer.apple.com/help/account/basics/account-landing-page)
+    [* Developer profile](https://developer.apple.com/help/account/basics/profile)
+
+*   Membership
+
+    [* Programs overview](https://developer.apple.com/help/account/membership/programs-overview)
+    [* Program enrollment](https://developer.apple.com/help/account/membership/program-enrollment)
+    [* Enrolling in the app](https://developer.apple.com/help/account/membership/enrolling-in-the-app)
+    [* Identity verification](https://developer.apple.com/help/account/membership/identity-verification)
+    [* D-U-N-S](https://developer.apple.com/help/account/membership/D-U-N-S)
+    [* Fee waivers](https://developer.apple.com/help/account/membership/fee-waivers)
+    [* Renewal](https://developer.apple.com/help/account/membership/renewal)
+    [* Updating your account information](https://developer.apple.com/help/account/membership/updating-your-account-information)
+
+*   Access
+
+    [* Sign in to your developer account](https://developer.apple.com/help/account/access/sign-in-to-your-developer-account)
+    [* Invite team members](https://developer.apple.com/help/account/access/invite-team-members)
+    [* Automatic Signing Controls](https://developer.apple.com/help/account/access/automatic-signing-controls)
+    [* Roles and access](https://developer.apple.com/help/account/access/roles)
+    [* Change team member roles](https://developer.apple.com/help/account/access/change-team-member-roles)
+    [* Delete team members](https://developer.apple.com/help/account/access/delete-team-members)
+    [* Leave a team](https://developer.apple.com/help/account/access/leave-a-team)
+    [* Transfer the Account Holder role](https://developer.apple.com/help/account/access/transfer-the-account-holder-role)
+    [* Resolving access issues](https://developer.apple.com/help/account/access/resolving-access-issues)
+
+*   Certificates
+
+    [* Certificates overview](https://developer.apple.com/help/account/certificates/certificates-overview)
+    [* Cloud-managed certificates](https://developer.apple.com/help/account/certificates/cloud-managed-certificates)
+    [* Developer ID certificates](https://developer.apple.com/help/account/certificates/create-developer-id-certificates)
+    [* Replacing Developer ID certificates issued from the previous Sub-CA](https://developer.apple.com/help/account/certificates/replace-developer-id-certificates)
+    [* Create enterprise distribution certificates](https://developer.apple.com/help/account/certificates/create-enterprise-distribution-certificates)
+    [* Create app license delivery certificates](https://developer.apple.com/help/account/certificates/create-app-license-delivery-certificates)
+    [* Create WatchKit services certificates](https://developer.apple.com/help/account/certificates/create-watchkit-services-certificates)
+    [* Create VoIP services certificates](https://developer.apple.com/help/account/certificates/create-voip-services-certificates)
+    [* Create a certificate signing request](https://developer.apple.com/help/account/certificates/create-a-certificate-signing-request)
+    [* Revoke a certificate](https://developer.apple.com/help/account/certificates/revoke-a-certificate)
+    [* MDM Vendor CSR Signing Certificate](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate)
+    [* WWDR intermediate certificates](https://developer.apple.com/help/account/certificates/wwdr-intermediate-certificates)
+
+*   Keys
+
+    [* Create a private key to access a service](https://developer.apple.com/help/account/keys/create-a-private-key)
+    [* Get a key identifier](https://developer.apple.com/help/account/keys/get-a-key-identifier)
+    [* Revoke, edit, and download keys](https://developer.apple.com/help/account/keys/revoke-edit-and-download-keys)
+    [* Enterprise Program API](https://developer.apple.com/help/account/keys/enterprise-program-api)
+
+*   Identifiers
+
+    [* Register an App ID](https://developer.apple.com/help/account/identifiers/register-an-app-id)
+    [* Register an App ID for App Clips](https://developer.apple.com/help/account/identifiers/register-an-app-id-for-app-clips)
+    [* Register a Services ID](https://developer.apple.com/help/account/identifiers/register-a-services-id)
+    [* Enable app services](https://developer.apple.com/help/account/identifiers/enable-app-services)
+    [* Enable app capabilities](https://developer.apple.com/help/account/identifiers/enable-app-capabilities)
+    [* Delete an App ID](https://developer.apple.com/help/account/identifiers/delete-an-app-id)
+    [* Register an app group](https://developer.apple.com/help/account/identifiers/register-an-app-group)
+    [* Create an iCloud container](https://developer.apple.com/help/account/identifiers/create-an-icloud-container)
+
+*   Capabilities
+
+    [* Capabilities overview](https://developer.apple.com/help/account/capabilities/capabilities-overview)
+    [* Capability requests](https://developer.apple.com/help/account/capabilities/capability-requests)
+    [* Configure Apple Pay](https://developer.apple.com/help/account/capabilities/configure-apple-pay)
+    [* Configure Apple Pay on the web](https://developer.apple.com/help/account/capabilities/configure-apple-pay-on-the-web)
+    [* Create a DeviceCheck private key](https://developer.apple.com/help/account/capabilities/create-a-devicecheck-private-key)
+    [* Create a ClassKit Catalog key](https://developer.apple.com/help/account/capabilities/create-a-classkit-catalog-key)
+    [* Create a Maps identifier and private key](https://developer.apple.com/help/account/capabilities/create-a-maps-identifier-and-private-key)
+    [* Create a media identifier and private key](https://developer.apple.com/help/account/capabilities/create-a-media-identifier-and-private-key)
+    [* Communicate with APNs using authentication tokens](https://developer.apple.com/help/account/capabilities/communicate-with-apns-using-authentication-tokens)
+    [* Communicate with APNs using a TLS certificate](https://developer.apple.com/help/account/capabilities/communicate-with-apns-using-a-tls-certificate)
+    [* Send push notifications from your web server](https://developer.apple.com/help/account/capabilities/send-push-notifications-from-your-web-server)
+    [* About Sign in with Apple](https://developer.apple.com/help/account/capabilities/about-sign-in-with-apple)
+    [* Enabling server-to-server notifications](https://developer.apple.com/help/account/capabilities/enabling-server-to-server-notifications)
+    [* Group apps for Sign in with Apple](https://developer.apple.com/help/account/capabilities/group-apps-for-sign-in-with-apple)
+    [* Create a Sign in with Apple private key](https://developer.apple.com/help/account/capabilities/create-a-sign-in-with-apple-private-key)
+    [* Configure Sign in with Apple for the web](https://developer.apple.com/help/account/capabilities/configure-sign-in-with-apple-for-the-web)
+    [* Configure private email relay service](https://developer.apple.com/help/account/capabilities/configure-private-email-relay-service)
+    [* Create Wallet identifiers and certificates](https://developer.apple.com/help/account/capabilities/create-wallet-identifiers-and-certificates)
+    [* Create a Mac version of an iPad app](https://developer.apple.com/help/account/capabilities/create-a-mac-version-of-an-ipad-app)
+    [* Create a services identifier and private key for WeatherKit](https://developer.apple.com/help/account/capabilities/create-a-services-identifier-and-private-key-for-weatherkit)
+    [* Create order type identifiers and certificates](https://developer.apple.com/help/account/capabilities/create-order-type-identifiers-and-certificates)
+
+*   Services
+
+    [* ShazamKit](https://developer.apple.com/help/account/services/shazamkit)
+    [* MusicKit](https://developer.apple.com/help/account/services/musickit)
+    [* WeatherKit](https://developer.apple.com/help/account/services/weatherkit)
+
+*   Service Configurations
+
+    [* Account and organizational data sharing](https://developer.apple.com/help/account/service-configurations/share-account-and-organizational-data)
+    [* Apple Music Feed](https://developer.apple.com/help/account/service-configurations/apple-music-feed)
+    [* Configure the Apps and Books for Organizations API](https://developer.apple.com/help/account/service-configurations/apps-and-books-for-organizations)
+    [* iWork Document Exporting](https://developer.apple.com/help/account/service-configurations/iwork-document-exporting)
+    [* Maps tokens](https://developer.apple.com/help/account/service-configurations/maps-tokens)
+
+*   Devices
+
+    [* Devices overview](https://developer.apple.com/help/account/devices/devices-overview)
+    [* Register a single device](https://developer.apple.com/help/account/devices/register-a-single-device)
+    [* Register multiple devices](https://developer.apple.com/help/account/devices/register-multiple-devices)
+    [* Disable or enable a device](https://developer.apple.com/help/account/devices/disable-or-enable-a-device)
+    [* Removing devices for membership expiration](https://developer.apple.com/help/account/devices/removing-devices-for-membership-expiration)
+
+*   Provisioning Profiles
+
+    [* Provisioning profile updates](https://developer.apple.com/help/account/provisioning-profiles/provisioning-profile-updates)
+    [* Create a development provisioning profile](https://developer.apple.com/help/account/provisioning-profiles/create-a-development-provisioning-profile)
+    [* Create an ad hoc provisioning profile (iOS, tvOS, watchOS)](https://developer.apple.com/help/account/provisioning-profiles/create-an-ad-hoc-provisioning-profile)
+    [* Create an App Store Connect provisioning profile](https://developer.apple.com/help/account/provisioning-profiles/create-an-app-store-provisioning-profile)
+    [* Create a DriverKit development provisioning profile](https://developer.apple.com/help/account/provisioning-profiles/create-a-driverkit-development-provisioning-profile)
+    [* Edit, download, or delete provisioning profiles](https://developer.apple.com/help/account/provisioning-profiles/edit-download-or-delete-profiles)
+
+*   Reference
+
+    [* Revoking privileges](https://developer.apple.com/help/account/reference/revoking-privileges)
+    [* Supported capabilities (iOS)](https://developer.apple.com/help/account/reference/supported-capabilities-ios)
+    [* Supported capabilities (macOS)](https://developer.apple.com/help/account/reference/supported-capabilities-macos)
+    [* Supported capabilities (tvOS)](https://developer.apple.com/help/account/reference/supported-capabilities-tvos)
+    [* Supported capabilities (visionOS)](https://developer.apple.com/help/account/reference/supported-capabilities-visionos)
+    [* Supported capabilities (watchOS)](https://developer.apple.com/help/account/reference/supported-capabilities-watchos)
+    [* Provisioning with capabilities](https://developer.apple.com/help/account/reference/provisioning-with-managed-capabilities)
+    [* Capability and entitlement updates](https://developer.apple.com/help/account/reference/capability-entitlement-updates)
+    [* Device registration updates](https://developer.apple.com/help/account/reference/device-registration-updates)
+
+Filter ⌘K
+
+Certificates 
+# Requesting access to an MDM Vendor CSR Signing Certificate
+
+This certificate lets you sign your own Certificate Signing Requests (CSRs) or the CSRs of MDM solution customers in order to generate an MDM Push Certificate at [identity.apple.com](https://identity.apple.com/). You can then perform many of the MDM payload operations listed in the [Apple Platform Deployment guide](https://support.apple.com/guide/deployment/welcome/web).
+
+If you’re an Account Holder of the Apple Developer Program or the Apple Developer Enterprise Program and want to generate an MDM Vendor CSR Signing Certificate, [contact us](https://developer.apple.com/contact/).
+
+[Submit your feedback](https://developer.apple.com/bug-reporting/)
+
+[Ask questions on the forums](https://developer.apple.com/forums/)
+
+[Contact Apple Developer Support](https://developer.apple.com/contact/)
+
+## Developer Footer
+
+*   [Help](https://developer.apple.com/help/)
+*   [Account](https://developer.apple.com/help/account/)
+*   Certificates
+*   Requesting access to an MDM Vendor CSR signing certificate
+
+- [x] 
+
+### Platforms
+
+ [Open Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#footer-directory-column-section-state-platform)[Close Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+*   [iOS](https://developer.apple.com/ios/)
+*   [iPadOS](https://developer.apple.com/ipados/)
+*   [macOS](https://developer.apple.com/macos/)
+*   [tvOS](https://developer.apple.com/tvos/)
+*   [visionOS](https://developer.apple.com/visionos/)
+*   [watchOS](https://developer.apple.com/watchos/)
+*   [App Store](https://developer.apple.com/app-store/)
+
+- [x] 
+
+### Tools
+
+ [Open Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#footer-directory-column-section-state-tools)[Close Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+*   [Swift](https://developer.apple.com/swift/)
+*   [SwiftUI](https://developer.apple.com/swiftui/)
+*   [Swift Playground](https://developer.apple.com/swift-playground/)
+*   [TestFlight](https://developer.apple.com/testflight/)
+*   [Xcode](https://developer.apple.com/xcode/)
+*   [Xcode Cloud](https://developer.apple.com/xcode-cloud/)
+*   [Icon Composer](https://developer.apple.com/icon-composer/)
+*   [SF Symbols](https://developer.apple.com/sf-symbols/)
+
+- [x] 
+
+### Technologies
+
+ [Open Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#footer-directory-column-section-state-topics)[Close Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+*   [Accessibility](https://developer.apple.com/documentation/accessibility/)
+*   [Accessories](https://developer.apple.com/accessories/)
+*   [AI & Machine Learning](https://developer.apple.com/machine-learning/)
+*   [Apple In-App Purchase](https://developer.apple.com/in-app-purchase/)
+*   [Apple Intelligence](https://developer.apple.com/apple-intelligence/)
+*   [Audio & Video](https://developer.apple.com/audio/)
+*   [Augmented Reality](https://developer.apple.com/augmented-reality/)
+*   [Business](https://developer.apple.com/business/)
+*   [Design](https://developer.apple.com/design/)
+*   [Distribution](https://developer.apple.com/distribute/)
+*   [Education](https://developer.apple.com/education/)
+*   [Games](https://developer.apple.com/games/)
+*   [Health & Fitness](https://developer.apple.com/health-fitness/)
+*   [Localization](https://developer.apple.com/localization/)
+*   [Maps & Location](https://developer.apple.com/maps/)
+*   [Security](https://developer.apple.com/security/)
+*   [Safari & Web](https://developer.apple.com/safari/)
+
+- [x] 
+
+### Resources
+
+ [Open Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#footer-directory-column-section-state-resources)[Close Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+*   [Documentation](https://developer.apple.com/documentation/)
+*   [Downloads](https://developer.apple.com/download/)
+*   [Sample Code](https://developer.apple.com/documentation/samplecode/)
+*   [Videos](https://developer.apple.com/videos/)
+*   [Documentation Archive](https://developer.apple.com/library/archive/navigation/)
+
+- [x] 
+
+### Support
+
+ [Open Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#footer-directory-column-section-state-support)[Close Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+*   [Help Guides & Articles](https://developer.apple.com/help/)
+*   [Contact Us](https://developer.apple.com/contact/)
+*   [Forums](https://developer.apple.com/forums/)
+*   [Feedback & Bug Reporting](https://developer.apple.com/bug-reporting/)
+*   [System Status](https://developer.apple.com/system-status/)
+
+- [x] 
+
+### Account
+
+ [Open Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#footer-directory-column-section-state-account)[Close Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+*   [Apple Developer](https://developer.apple.com/account/)
+*   [App Store Connect](https://appstoreconnect.apple.com/)
+*   [Certificates, IDs, & Profiles](https://developer.apple.com/account/ios/certificate/)
+*   [Feedback Assistant](https://feedbackassistant.apple.com/)
+
+- [x] 
+
+### Programs
+
+ [Open Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#footer-directory-column-section-state-programs)[Close Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+*   [Apple Developer Program](https://developer.apple.com/programs/)
+*   [Apple Developer Enterprise Program](https://developer.apple.com/programs/enterprise/)
+*   [App Store Small Business Program](https://developer.apple.com/app-store/small-business-program/)
+*   [MFi Program](https://mfi.apple.com/)
+*   [Mini Apps Partner Program](https://developer.apple.com/programs/mini-apps-partner/)
+*   [News Partner Program](https://developer.apple.com/programs/news-partner/)
+*   [Video Partner Program](https://developer.apple.com/programs/video-partner/)
+*   [Security Bounty Program](https://developer.apple.com/security-bounty/)
+*   [Security Research Device Program](https://developer.apple.com/programs/security-research-device/)
+
+- [x] 
+
+### Events
+
+ [Open Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#footer-directory-column-section-state-events)[Close Menu](https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate#)
+*   [Meet with Apple](https://developer.apple.com/events/)
+*   [Apple Developer Centers](https://developer.apple.com/events/developer-centers/)
+*   [App Store Awards](https://developer.apple.com/app-store/app-store-awards/)
+*   [Apple Design Awards](https://developer.apple.com/design/awards/)
+*   [Apple Developer Academies](https://developer.apple.com/academies/)
+*   [WWDC](https://developer.apple.com/wwdc/)
+
+Read the [latest news](https://developer.apple.com/news/).
+
+Get the [Apple Developer app](https://apps.apple.com/us/app/apple-developer/id640199958).
+
+ Follow us on [bilibili](https://space.bilibili.com/429911174), [LinkedIn](https://www.linkedin.com/showcase/appledeveloper/), [WeChat](https://mp.weixin.qq.com/s/slhQ1RBYUpJ71gwEUlwSTg), and [YouTube](https://www.youtube.com/@AppleDeveloper). 
+
+Light
+
+ 
+
+Dark
+
+ 
+
+Auto
+
+ 
+
+Copyright © 2026 [Apple Inc.](https://www.apple.com/) All rights reserved.
+
+[Terms of Use](https://www.apple.com/legal/internet-services/terms/site.html)[Privacy Policy](https://www.apple.com/legal/privacy/)[Agreements and Guidelines](https://developer.apple.com/support/terms/)

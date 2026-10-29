@@ -49,10 +49,19 @@ link-budget links: _require-venv
 availability model: _require-venv
     {{py}} -B scripts/availability.py "{{model}}"
 
+# Fibre plant loss and margin against the optic power budget (TIA-568 maximum defaults), e.g. just fibre examples/fibre-budget.json
+fibre links: _require-venv
+    {{py}} -B scripts/fibre_budget.py {{links}}
+
+# PoE per switch and port class, UPS load and linear runtime, e.g. just power examples/power-budget.json
+power site: _require-venv
+    {{py}} -B scripts/power_budget.py {{site}}
+
 # The bundled failing example must return exit 1; anything else is a broken helper
 expected-findings: _require-venv
     @{{py}} -B scripts/ip_plan_check.py examples/ip-plan-invalid-overlap.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "ip plan: expected exit 1, got $rc" >&2; exit 1; }
     @{{py}} -B scripts/mtu_budget.py examples/mtu-budget-short.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "mtu: expected exit 1, got $rc" >&2; exit 1; }
+    @{{py}} -B scripts/fibre_budget.py examples/fibre-budget.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "fibre: expected exit 1, got $rc" >&2; exit 1; }
 
 # Resolve every external URL cited in the pack's Markdown (uses the network; read-only; not part of check)
 links: _require-venv
@@ -77,4 +86,5 @@ check: test expected-findings lint
     {{py}} -B scripts/mtu_budget.py examples/mtu-budget.json > /dev/null
     {{py}} -B scripts/link_budget.py examples/link-budget.json > /dev/null
     {{py}} -B scripts/availability.py examples/availability.json > /dev/null
+    {{py}} -B scripts/power_budget.py examples/power-budget.json > /dev/null
     {{py}} -B scripts/check_package.py .

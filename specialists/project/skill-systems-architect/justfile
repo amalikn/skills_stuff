@@ -49,10 +49,20 @@ quorum cluster: _require-venv
 ceph pools: _require-venv
     {{py}} -B scripts/ceph_capacity.py "{{pools}}"
 
+# Restore time per phase against the RTO, e.g. just restore examples/restore-time.json
+restore plan: _require-venv
+    {{py}} -B scripts/restore_time.py {{plan}}
+
+# End-of-life register: past, inside the warning window, missing plan, e.g. just eol examples/eol-register.json --today 2026-10-29
+eol register *ARGS: _require-venv
+    {{py}} -B scripts/eol_check.py "{{register}}" {{ARGS}}
+
 # The bundled failing example must return exit 1; anything else is a broken helper
 expected-findings: _require-venv
     @{{py}} -B scripts/capacity_check.py examples/capacity-plan.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "capacity: expected exit 1, got $rc" >&2; exit 1; }
     @{{py}} -B scripts/quorum_check.py examples/quorum.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "quorum: expected exit 1, got $rc" >&2; exit 1; }
+    @{{py}} -B scripts/restore_time.py examples/restore-time.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "restore: expected exit 1, got $rc" >&2; exit 1; }
+    @{{py}} -B scripts/eol_check.py examples/eol-register.json --today 2026-10-29 > /dev/null; rc=$?; test $rc -eq 1 || { echo "eol: expected exit 1, got $rc" >&2; exit 1; }
 
 # Resolve every external URL cited in the pack's Markdown (uses the network; read-only; not part of check)
 links: _require-venv

@@ -10,6 +10,8 @@ Summary: Measurable per-service requirements, constraints and quality scenarios 
 
 # <service or programme> requirements and constraints
 
+Worked example: `skill-network-architect/examples/filled/requirements-and-constraints.md` (filled for a fictional remote-site operator; lives in the network pack only).
+
 Based on: arc42 sections 1, 2 and 10 (goals, constraints, quality scenarios; https://arc42.org/overview).
 
 ## How to use

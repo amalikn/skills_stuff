@@ -10,6 +10,8 @@ Summary: IPv4 and IPv6 allocation hierarchy, per-site block, VLAN and VRF map, r
 
 # <organisation or programme> IP addressing plan
 
+Worked example: [examples/filled/ip-addressing-plan.md](../examples/filled/ip-addressing-plan.md).
+
 Based on:
 
 - IPv6 end-site assignment: [RFC 6177](https://www.rfc-editor.org/rfc/rfc6177.html) and [RIPE-690](https://www.ripe.net/publications/docs/ripe-690/).

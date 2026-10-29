@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "links": [
+    {
+      "id": "bldg-a-to-b-om4",
+      "fibre": "mm-850",
+      "length_km": 0.3,
+      "connections": 2,
+      "splices": 0,
+      "tx_min_dbm": -7.3,
+      "rx_sensitivity_dbm": -11.1,
+      "required_margin_db": 1.0
+    },
+    {
+      "id": "site-to-hub-sm",
+      "fibre": "sm-premises",
+      "length_km": 2,
+      "connections": 4,
+      "splices": 2,
+      "tx_min_dbm": -8.2,
+      "rx_sensitivity_dbm": -14.4,
+      "required_margin_db": 1.0
+    }
+  ]
+}

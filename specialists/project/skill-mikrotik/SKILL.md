@@ -66,7 +66,7 @@ locally with `sshpass -e`, so the password never appears in a command that runs 
 
 ## Diagnosis Decision Tree
 
-1. **Is the SMC up but dark?** In skill-smc, `fleet-reboot-timeline.py` (boot time unchanged = box up) and `vlan-traffic-timeline.py --gap` (what crossed each VLAN). Only the WAN VLAN silent =
+1. **Is the SMC up but dark?** In skill-smc, `metrics/fleet-reboot-timeline.py` (boot time unchanged = box up) and `metrics/vlan-traffic-timeline.py --gap` (what crossed each VLAN). Only the WAN VLAN silent =
    WAN/satellite. Every VLAN on the trunk silent = this switch or the SMC-to-switch cable.
 2. **Switch uptime vs SMC uptime** (`scripts/mikrotik_fleet_survey.sh` or `/system resource print`): a much younger switch was power-cycled, on `rct` usually by the TSTIK app after ~11 minutes of failed
    switch/AP pings.

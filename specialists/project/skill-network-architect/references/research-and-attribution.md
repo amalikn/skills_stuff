@@ -62,8 +62,13 @@ Copy rule:
 | [C4 checklist][s-c4] | diagram review questions           | CC BY 4.0                    | paraphrased in diagrams reference         |
 | [Batfish][s-bf], [SuzieQ][s-sq] | config-model and live-state checks | Apache-2.0                   | named validation step; tools only         |
 
-[s-wsh]: https://github.com/wshobson/agents [s-jeff]: https://github.com/Jeffallan/claude-skills [s-volt]: https://github.com/VoltAgent/awesome-claude-code-subagents [s-sick]:
-https://github.com/sickn33/antigravity-awesome-skills [s-c4]: https://c4model.com/diagrams/checklist [s-bf]: https://github.com/batfish/batfish [s-sq]: https://github.com/netenglabs/suzieq
+[s-wsh]: https://github.com/wshobson/agents
+[s-jeff]: https://github.com/Jeffallan/claude-skills
+[s-volt]: https://github.com/VoltAgent/awesome-claude-code-subagents
+[s-sick]: https://github.com/sickn33/antigravity-awesome-skills
+[s-c4]: https://c4model.com/diagrams/checklist
+[s-bf]: https://github.com/batfish/batfish
+[s-sq]: https://github.com/netenglabs/suzieq
 
 Correction to earlier ledgers (survey section 8, 2026-10-29):
 - sickn33's network-engineer skill carries the same description as wshobson's network-engineer agent. It is a duplicate, not a second source.

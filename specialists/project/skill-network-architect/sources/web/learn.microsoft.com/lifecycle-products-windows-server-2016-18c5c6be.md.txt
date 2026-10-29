@@ -1,0 +1,30 @@
+Contents of https://learn.microsoft.com/lifecycle/products/windows-server-2016:
+Windows Server 2016 follows the [Fixed](/en-us/lifecycle/policies/fixed) Lifecycle Policy.
+
+This applies to the following editions: Datacenter, Essentials, MultiPoint Premium, Standard
+
+Support dates are shown in the Pacific Time Zone (PT) - Redmond, WA, USA.
+
+## Support Dates
+
+| Listing | Start Date | Mainstream End Date | Extended End Date |
+| --- | --- | --- | --- |
+| Windows Server 2016 | 10/15/2016 8:00:00 AM | 1/12/2022 6:59:59 AM | 1/13/2027 6:59:59 AM |
+
+## Links
+
+* [Product information](/en-us/windows-server/get-started/server-basics)
+* [Lifecycle FAQ - Windows products](/en-us/lifecycle/faq/windows)
+* [Windows container base image servicing lifecycles](/en-us/virtualization/windowscontainers/deploy-containers/base-image-lifecycle)
+* [Windows Server end of support and Microsoft 365 Apps](/en-us/deployoffice/endofsupport/windows-server-support)
+
+Note
+
+Containers released with Windows Server 2016 follow the same lifecycle dates.
+
+## Editions
+
+* Datacenter
+* Essentials
+* MultiPoint Premium
+* Standard

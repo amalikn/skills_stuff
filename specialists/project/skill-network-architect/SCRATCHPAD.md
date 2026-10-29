@@ -21,7 +21,5 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 1. Done 2026-10-29: committed (ab9b2fb) and symlink-installed.
 2. Act on the gap list in evals/results.md (Proxmox/product-lookup routing gap, templates without filled worked examples, references over 180 lines).
 3. Rerun `just links` and `just fetch-sources --apply` before each release; `just ledger --apply` after any new citation.
-4. Gaps from the 2026-10-29 eval and reviews: routing pulls 3-6 whole modules per case (consider split modules or section anchors in the routing
-   table); no throughput-from-PHY rule for radio links; no BGP edge-policy checklist per peer or EVPN fabric build sheet template; no fibre
-   loss-budget or PoE/UPS budget helper; Wi-Fi survey and PtP link acceptance records; 2025 LIPD upper-6 GHz inclusion still UNVERIFIED.
-5. Six references exceed 180 lines (routing-and-switching 233 the largest); trim only by moving tables into templates, not by cutting facts.
+4. Gaps from the 2026-10-29 eval closed in v2.1.0 (20261029_1951); see CHANGELOG.
+5. References run 180-300 lines by design (verified tables kept); narrow questions load one section via the routing table.

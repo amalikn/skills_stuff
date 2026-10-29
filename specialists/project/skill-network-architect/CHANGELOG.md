@@ -11,6 +11,19 @@ Kind: log
 
 # Changelog
 
+## 20261029_1951 — Gap closure: helpers, verified facts, templates, filled examples (v2.0.0 -> v2.1.0)
+
+- Helpers: fibre_budget.py (TIA-568 maximum defaults, verified via the FOA loss-budget page) and power_budget.py (PoE per class, UPS load
+  and linear runtime); mtu_budget.py gains AES-GCM ESP layers (57, NAT-T 65, IPv6 77). 20 tests.
+- Resolved: LIPD Class Licence 2025 includes 6425-6585 MHz (items 13-14: 250 mW indoor, 25 mW otherwise; VERIFIED_PRIMARY); DFS timings per ETSI
+  EN 301 893 (60 s CAC, 10 min weather band, 30 min non-occupancy); copper and optical reach sourced. Usable-throughput rules for Wi-Fi and TDD radios.
+- Templates: bgp-peer-policy, evpn-fabric-build, wifi-survey-acceptance, ptp-link-record. Collaboration protocol: placement ownership row and
+  the intent-versus-observation rule. Routing row for platform-pack or monitoring symptoms.
+- Domain Routing gains a topical-sections column (direct links to a module's sections), so a narrow question loads one section, not the file.
+- Filled worked examples in examples/filled/ (every number from a helper run, inputs beside each); each template links its example.
+- Link definitions merged by the old wrap-hook bug split back to one per line (14 blocks); check_package now fails on merged definitions.
+- Source store 410 items; ledgers rebuilt.
+
 ## 20261029_1911 — Research-backed deepening, local sources, enforced quality bar (v1.1.0 -> v2.0.0)
 
 - Helpers added: mtu_budget.py (payload MTU and TCP MSS per encapsulation stack), link_budget.py (FSPL, fade margin, Fresnel clearance with

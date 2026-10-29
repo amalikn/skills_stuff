@@ -1,0 +1,28 @@
+Contents of https://www.flukenetworks.com/blog/cabling-chronicles/going-distance:
+A couple of weeks ago, we published a [Cabling Chronicles Blog](/blog/cabling-chronicles/exception-every-rule) about exceptions to the 100-meter (m) channel length rule and the fact that you can’t necessarily go the full distance due to temperature rise, gauge size and subsequent insertion loss and DC resistance.  But did you know that you can also EXCEED the 100 m length? Let’s take a look at that scenario.
+
+## A Common Concern
+
+One of the most common questions we get in our technical support department is why length didn’t fail when the permanent link exceeded the 90 m distance or the channel exceeded the 100 m distance.
+
+If you look at the permanent link test in the example, you see that there are four different length measurements for each of the four pairs. This is expected, as each pair has a different twist rate, and the lengths would be different were you to untwist each pair and stretch them out.  The standard requires a pass/fail on the shortest length, which is why the 90.8 m pair is the one the tester looks at and the others are grayed out.
+
+But considering the shortest length of 90.8 m noted in this test is greater than the 90 m permanent link limit, why didn’t it fail?
+
+![A Common Concern](https://fnet-assets.s3.us-west-2.amazonaws.com/images/blog/1_9_0.png)
+
+## The 10% Rule
+
+In the ANSI/TIA-1152 standard, *Requirements for Field Test Instruments and Measurements for Balanced Twisted-Pair Cabling*, the permanent
+
+length limit is the limit plus the nominal NVP uncertainty of 10 %.  To refresh your memory, NVP stands for nominal velocity of propagation. Expressed as a percentage, it essentially characterizes how fast a signal is traveling down the cable relative to the speed of light in a vacuum, and it is what allows the tester to calculate the length of the cable.
+
+Since the speed of light in a vacuum is the highest speed that can possibly be achieved, the NVP is always below 100%. It should be set using the NVP specification provided by the cable manufacturer, which can range from 56 to 78% range depending on the cable design – each type of cable insulating material has its own NVP. This is a fairly broad range, and there is often uncertainty in setting the NVP, which is why ANSI/TIA-1152 allows for NVP uncertainty of 10%. To give you an indication of the impact NVP has on a tester, consider that an NVP of 60% reports the permanent link length at 80 meters, while an NVP of 78% reports a length of 98.7 meters.
+
+Because the ANSI/TIA-1152 standard states the length limit as the limit plus the 10% nominal uncertainly of NVP, the permanent link length will not fail until the 90 m maximum length plus 10% has been exceeded. In other words, the permanent link length would have to get to 99 m before it would fail, and the channel length would have to get to 110 m before it would fail.
+
+![The 10% Rule](https://fnet-assets.s3.us-west-2.amazonaws.com/images/blog/2_7_0.png)
+
+## Don’t Get Hung Up on Length
+
+Some installers get a bit wound up about this, but the reality is that the NVP setting affects the length measurement only and NO other parameter during testing. The active equipment doesn’t care at all about the length – it only cares about the length-dependent performance parameters like insertion loss and propagation delay. So if those parameters pass, do we really care that the permanent link length is greater than 90 m? In fact, in ISO/IEC standards, there is no pass/fail on length alone. While that is certainly not an excuse to go to 99 meters, it’s technically okay as long as the performance parameters pass as that is ultimately what will decide if the link can support the application. But if you do go all the way to 99 m on your permanent link, there’s a pretty good chance that the length-dependent performance parameters will fail. Your [Fluke Networks’ DSX CableAnalyzer™](/datacom-cabling/Versiv/dsx-cableanalyzer-series) will let you know.

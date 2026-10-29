@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "target": 0.995,
+  "model": {
+    "series": [
+      {
+        "name": "site-a power (UPS)",
+        "availability": 0.9995
+      },
+      {
+        "name": "site-a site box",
+        "availability": 0.9995
+      },
+      {
+        "name": "SAT-1 network and gateway (shared by both terminals)",
+        "availability": 0.992
+      },
+      {
+        "parallel": [
+          {
+            "name": "SAT-1 terminal 1",
+            "availability": 0.998
+          },
+          {
+            "name": "SAT-1 terminal 2",
+            "availability": 0.998
+          }
+        ]
+      },
+      {
+        "parallel": [
+          {
+            "name": "hub-gw-1",
+            "availability": 0.999
+          },
+          {
+            "name": "hub-gw-2",
+            "availability": 0.999
+          }
+        ]
+      },
+      {
+        "name": "hub-1 power and uplink duct",
+        "availability": 0.9995
+      }
+    ]
+  }
+}

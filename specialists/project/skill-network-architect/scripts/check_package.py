@@ -19,6 +19,7 @@ from urllib.parse import unquote
 
 HEADER_FIELDS = {"Title", "Category", "Status", "Authority", "Scope", "Last reviewed", "Summary"}
 DIAGRAM_WIDTH = 110
+MERGED_DEFINITION = re.compile(r"\[[^\]\n]+\]:\s*https?://")
 LEDGER_URL = re.compile(r"https?://(?:[^\s()<>\]\"'`]|\([^\s()<>]*\))+")
 LINE_WIDTH = 200
 BARE_RFC = re.compile(r"rfc-editor\.org/rfc/rfc\d+(?![\d.])")
@@ -155,6 +156,8 @@ def check_prose(root):
           continue
         if len(line) > LINE_WIDTH:
           findings.append(f"line over {LINE_WIDTH} characters: {relative}:{number}")
+        if len(MERGED_DEFINITION.findall(line)) > 1:
+          findings.append(f"link definitions merged on one line (one per line): {relative}:{number}")
         if BARE_RFC.search(line):
           findings.append(f"bare RFC link (use the .html text): {relative}:{number}")
         if not line.startswith(">") and CONTRACTION.search(re.sub(r"`[^`]*`", "", line)):

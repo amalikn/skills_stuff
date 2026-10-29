@@ -1,169 +1,171 @@
 {
-  "schema_version": 1,
-  "domain": "systems",
-  "cases": [
-    {
-      "id": "S01",
-      "prompt": "Three Proxmox nodes: two 96 GiB in rack A, one 64 GiB in rack B; 140 GiB VM demand and 16 GiB reserve per survivor. Require rack-A tolerance.",
-      "expected": [
-        "Compute 48 GiB survivor capacity and 92 GiB deficit",
-        "Separate memory from placement, quorum, fencing and data",
-        "Propose service reduction or capacity/failure-domain redesign",
-        "Do not make witness supply workload capacity"
-      ],
-      "critical_failures": [
-        "Declare three-node HA sufficient",
-        "Force quorum or disable fencing"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S02",
-      "prompt": "Restore 1 TiB across shared 1 Gbit/s within 15 minutes.",
-      "expected": [
-        "Compute 8796.093 seconds theoretical transfer floor",
-        "Include fixed recovery stages and measured contention",
-        "Reject unproven RTO and propose staged/replicated/prepositioned alternatives",
-        "Request RPO and integrity constraints"
-      ],
-      "critical_failures": [
-        "Confuse bits and bytes",
-        "Claim backup completion proves restore"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S03",
-      "prompt": "Manage Linux, Windows and MacBook endpoints with only FOSS add-ons.",
-      "expected": [
-        "Keep OS breadth and existing platform constraints",
-        "Compare open tools without claiming universal equivalence",
-        "Plan enrollment, patching, key custody and replacement restore",
-        "Verify Apple version-specific behavior"
-      ],
-      "critical_failures": [
-        "Exclude Windows/macOS because proprietary"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S04",
-      "prompt": "Use Ceph or ZFS; snapshots already exist so no backup is planned.",
-      "expected": [
-        "Compare workload semantics, placement and degraded rebuild",
-        "Separate snapshots/replicas from independent recovery",
-        "Include key/catalog and tested restore"
-      ],
-      "critical_failures": [
-        "Treat snapshot as universally independent backup"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S05",
-      "prompt": "A small service on one VM is proposed for migration to Kubernetes.",
-      "expected": [
-        "Establish service and operational need",
-        "Compare keeping VM/small container to orchestration",
-        "Document staffing/state/recovery cost"
-      ],
-      "critical_failures": [
-        "Mandate Kubernetes without requirement"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S06",
-      "prompt": "AD, DNS and the hypervisor login depend on VMs inside the cluster being recovered.",
-      "expected": [
-        "Identify bootstrap cycle",
-        "Plan independent recovery identity/name resolution and console access",
-        "Validate directory/application recovery with correct platform guidance"
-      ],
-      "critical_failures": [
-        "Assume normal login available during outage"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S07",
-      "prompt": "skill-coder asks whether to retry a timed-out provisioning API write.",
-      "expected": [
-        "Treat outcome as unknown",
-        "Query operation/resource identity before retry",
-        "Define idempotency/reconciliation and bounded retries",
-        "Return invariant contract to skill-coder"
-      ],
-      "critical_failures": [
-        "Blindly retry a destructive write"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S08",
-      "prompt": "A monitoring server is up but no recent device health samples arrive.",
-      "expected": [
-        "Separate host/container status from workers, storage and freshness",
-        "Use skill-openwisp for controller semantics",
-        "Inspect system capacity and dependencies without claiming data present"
-      ],
-      "critical_failures": [
-        "Treat container Up as monitoring success"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S09",
-      "prompt": "A migration changes database schema while traffic is cut over.",
-      "expected": [
-        "Define authoritative data and compatibility boundary",
-        "Distinguish configuration rollback from data recovery/forward repair",
-        "Rehearse consistency and application checks"
-      ],
-      "critical_failures": [
-        "Promise manifest revert undoes data change"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S10",
-      "prompt": "skill-nautobot asks whether observed offline devices should be retired automatically.",
-      "expected": [
-        "Separate intent lifecycle from observed health",
-        "Identify writer ownership, freshness and reconciliation policy",
-        "Return architectural contract to specialist"
-      ],
-      "critical_failures": [
-        "Let telemetry silently retire inventory"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S11",
-      "prompt": "A local LLM runs on a MacBook and must serve 50 concurrent users.",
-      "expected": [
-        "Ask for model/accuracy/concurrency/latency/workload evidence",
-        "Measure memory, thermals, sleep/power/network and accelerator fit",
-        "Compare dedicated/server options based on actual requirements"
-      ],
-      "critical_failures": [
-        "Promise server SLO from memory size alone"
-      ],
-      "status": "authored; see results.md for executed subset"
-    },
-    {
-      "id": "S12",
-      "prompt": "skill-smc asks for SMC site recovery design and systems review of ansible-wifi report bottlenecks.",
-      "expected": [
-        "Ask for project-specific SMC meaning and report evidence",
-        "Model power, storage, compute, WAN and operating dependencies",
-        "Coordinate network architect and equipment specialists",
-        "Return explicit tests to skill-smc"
-      ],
-      "critical_failures": [
-        "Invent site topology or report semantics"
-      ],
-      "status": "authored; see results.md for executed subset"
-    }
-  ]
+ "schema_version": 1,
+ "domain": "systems",
+ "cases": [
+  {
+   "id": "S01",
+   "prompt": "Four Proxmox nodes: three 128 GiB in rack A, one 192 GiB in rack B; 280 GiB VM demand and 24 GiB reserve per survivor. It must survive losing any one node and losing rack A. A QDevice can go in rack B.",
+   "expected": [
+    "Single-node losses fit (worst case 312 GiB usable after losing the 192 GiB node)",
+    "Rack-A loss leaves 168 GiB usable: a 112 GiB deficit",
+    "Votes: 4 nodes + QDevice = 5, quorum 3; rack-A loss leaves 2 (b1 + QDevice), so the survivor is inquorate anyway",
+    "Propose redistributing nodes across racks or reducing the rack-A requirement, not a witness"
+   ],
+   "critical_failures": [
+    "Declare the QDevice fixes rack-A tolerance",
+    "Force quorum or disable fencing",
+    "Count pooled RAM without per-scenario survivors"
+   ],
+   "status": "authored 2026-10-29 (replaces a case that reused the capacity-plan.json worked example)"
+  },
+  {
+   "id": "S02",
+   "prompt": "Restore a 600 GiB PostgreSQL database over a shared 2.5 Gbit/s link within a 30-minute RTO.",
+   "expected": [
+    "Transfer floor 600 x 2^30 x 8 / 2.5e9 = 2,061.6 s (34.4 min) at 100% efficiency: the RTO is infeasible before any other phase",
+    "Add detect, decide, provision, WAL replay and verify phases and measured link contention",
+    "Propose standby replication or prepositioned restores, or renegotiate the RTO",
+    "Ask for the RPO and integrity checks"
+   ],
+   "critical_failures": [
+    "Confuse bits and bytes",
+    "Claim backup completion proves restore",
+    "Use GB and GiB interchangeably without saying so"
+   ],
+   "status": "authored 2026-10-29 (replaces a case that reused the capacity-plan.json worked example)"
+  },
+  {
+   "id": "S03",
+   "prompt": "Manage Linux, Windows and MacBook endpoints with only FOSS add-ons.",
+   "expected": [
+    "Keep OS breadth and existing platform constraints",
+    "Compare open tools without claiming universal equivalence",
+    "Plan enrollment, patching, key custody and replacement restore",
+    "Verify Apple version-specific behavior"
+   ],
+   "critical_failures": [
+    "Exclude Windows/macOS because proprietary"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S04",
+   "prompt": "Use Ceph or ZFS; snapshots already exist so no backup is planned.",
+   "expected": [
+    "Compare workload semantics, placement and degraded rebuild",
+    "Separate snapshots/replicas from independent recovery",
+    "Include key/catalog and tested restore"
+   ],
+   "critical_failures": [
+    "Treat snapshot as universally independent backup"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S05",
+   "prompt": "A small service on one VM is proposed for migration to Kubernetes.",
+   "expected": [
+    "Establish service and operational need",
+    "Compare keeping VM/small container to orchestration",
+    "Document staffing/state/recovery cost"
+   ],
+   "critical_failures": [
+    "Mandate Kubernetes without requirement"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S06",
+   "prompt": "AD, DNS and the hypervisor login depend on VMs inside the cluster being recovered.",
+   "expected": [
+    "Identify bootstrap cycle",
+    "Plan independent recovery identity/name resolution and console access",
+    "Validate directory/application recovery with correct platform guidance"
+   ],
+   "critical_failures": [
+    "Assume normal login available during outage"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S07",
+   "prompt": "skill-coder asks whether to retry a timed-out provisioning API write.",
+   "expected": [
+    "Treat outcome as unknown",
+    "Query operation/resource identity before retry",
+    "Define idempotency/reconciliation and bounded retries",
+    "Return invariant contract to skill-coder"
+   ],
+   "critical_failures": [
+    "Blindly retry a destructive write"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S08",
+   "prompt": "A monitoring server is up but no recent device health samples arrive.",
+   "expected": [
+    "Separate host/container status from workers, storage and freshness",
+    "Use skill-openwisp for controller semantics",
+    "Inspect system capacity and dependencies without claiming data present"
+   ],
+   "critical_failures": [
+    "Treat container Up as monitoring success"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S09",
+   "prompt": "A migration changes database schema while traffic is cut over.",
+   "expected": [
+    "Define authoritative data and compatibility boundary",
+    "Distinguish configuration rollback from data recovery/forward repair",
+    "Rehearse consistency and application checks"
+   ],
+   "critical_failures": [
+    "Promise manifest revert undoes data change"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S10",
+   "prompt": "skill-nautobot asks whether observed offline devices should be retired automatically.",
+   "expected": [
+    "Separate intent lifecycle from observed health",
+    "Identify writer ownership, freshness and reconciliation policy",
+    "Return architectural contract to specialist"
+   ],
+   "critical_failures": [
+    "Let telemetry silently retire inventory"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S11",
+   "prompt": "A local LLM runs on a MacBook and must serve 50 concurrent users.",
+   "expected": [
+    "Ask for model/accuracy/concurrency/latency/workload evidence",
+    "Measure memory, thermals, sleep/power/network and accelerator fit",
+    "Compare dedicated/server options based on actual requirements"
+   ],
+   "critical_failures": [
+    "Promise server SLO from memory size alone"
+   ],
+   "status": "authored; see results.md for executed subset"
+  },
+  {
+   "id": "S12",
+   "prompt": "skill-smc asks for SMC site recovery design and systems review of ansible-wifi report bottlenecks.",
+   "expected": [
+    "Ask for project-specific SMC meaning and report evidence",
+    "Model power, storage, compute, WAN and operating dependencies",
+    "Coordinate network architect and equipment specialists",
+    "Return explicit tests to skill-smc"
+   ],
+   "critical_failures": [
+    "Invent site topology or report semantics"
+   ],
+   "status": "authored; see results.md for executed subset"
+  }
+ ]
 }

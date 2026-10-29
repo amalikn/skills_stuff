@@ -204,6 +204,8 @@ Security and practice
 - [SLSA v1.0](https://slsa.dev/spec/v1.0/): read this for build provenance levels.
 - [The Twelve-Factor App](https://12factor.net/): read this for config, statelessness and disposability rules that make containers recoverable.
 
-[docker-restart]: https://docs.docker.com/engine/containers/start-containers-automatically/ [compose-order]: https://docs.docker.com/compose/how-tos/startup-order/ [etcd-faq]:
-https://etcd.io/docs/v3.5/faq/ [k8s-etcd]: https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/ [k8s-disruptions]:
-https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+[docker-restart]: https://docs.docker.com/engine/containers/start-containers-automatically/
+[compose-order]: https://docs.docker.com/compose/how-tos/startup-order/
+[etcd-faq]: https://etcd.io/docs/v3.5/faq/
+[k8s-etcd]: https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
+[k8s-disruptions]: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/

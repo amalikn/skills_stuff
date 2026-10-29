@@ -10,6 +10,8 @@ Summary: One architecturally significant decision per record, in MADR 4.0 form w
 
 # ADR-<nnnn>: <short noun phrase naming the problem and chosen solution>
 
+Worked example: `skill-network-architect/examples/filled/decision-record.md` (filled for a fictional remote-site operator; lives in the network pack only).
+
 Based on: Michael Nygard, "Documenting Architecture Decisions" (2011, https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions) and MADR 4.0.0 (https://adr.github.io/madr/).
 Sections follow MADR; status values follow Nygard and MADR; evidence labels and reopen conditions are additions for this pack.
 
