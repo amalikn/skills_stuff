@@ -698,6 +698,53 @@ merged = merge_reads(reads)          # sums and unions by address, then one PATC
 - **Reuse:** topology from LLDP/ARP/FDB, dependency graphs from logs.
 - **Pitfalls:** never fall back to "first observer wins"; show an undecidable item as unplaced.
 
+### P-37 A cache proved by a differential assert, keyed so an undo hits
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (skill-drawio `scripts/flowmap/e2e.py` `_refresh` and `_crossings`,
+> 73017a9 and 811c918: a local search's crossing counts, 18.3 -> 10.1 s on the largest drawing, output byte-identical) (reusable_candidate) Pattern P-37.
+
+- **Problem:** a search recomputes a pure but costly value (crossings of a polyline pair, spans of a link) millions of times, and most trials
+  are undone; a cache invalidated by version numbers misses on every undo, and a cache updated at many mutation sites goes stale at one.
+- **Solution:** key the memo on the content (intern each polyline as a tuple to a small id; cache per pair of ids), or keep the cache at the
+  one choke point every mutation already passes through (`_refresh`). Prove it before trusting it: a temporary switch computes the fresh value
+  beside the cached one and asserts they match on every call over every real input (all consumers and the tests), then is removed; the
+  outputs must still compare byte for byte.
+- **Why it works:** an undo restores the same content and so the same key; a pure function of its key never needs invalidating.
+- **Reuse:** any trial-and-undo search (layout, scheduling, packing), memoised geometry, incremental scores.
+- **Pitfalls:** a cache whose validity depends on all mutation sites (a position index into a list mutated everywhere) needs a
+  check-before-use test instead, and earns its keep only when measured (0.3 s here: reverted); watch memory (211 MB peak here).
+- **Realised in:** Python:
+
+```python
+self.shape[cid] = self.shape_ids.setdefault(tuple(self.pts[cid]), len(self.shape_ids))   # e2e.py _refresh (811c918)
+...
+key = (ka, shape[b])   # an undone trial redraws the same polylines, so most pairs were counted before
+c = memo.get(key)
+if c is None:
+    c = memo[key] = count_crossings(sa, sb)
+```
+
+### P-38 An estimate nominates; the real measure decides, never worse than the start
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (skill-drawio `scripts/flowmap/e2e.py` `routed_e2e` and
+> `placement.best_cells`, 1e6557d: a column-order search scored by a grid estimate made two pages worse, 427 -> 506 and 44 -> 48
+> crossings) (reusable_candidate) Pattern P-38.
+
+- **Problem:** a search scored by a cheap proxy finds the proxy's optimum, which on real output can be worse than doing nothing, or better
+  on the main measure and worse on another (two arrows merged onto one run).
+- **Solution:** keep the start as a candidate; run each candidate through the real pipeline and measure what is shipped; keep a candidate only
+  on a strict improvement of the main measure with no regression of the guarded ones; a tie keeps the start.
+- **Why it works:** the result is never worse than the start by construction, so the search can only help; the proxy only orders the work.
+- **Reuse:** placement, query plans, compiler heuristics, any optimiser with a cheap model and an expensive truth.
+- **Pitfalls:** the guard must measure the same thing a reviewer sees (a drawn-file measure, not the proxy); name the guarded secondary measures.
+- **Realised in:** Python:
+
+```python
+searched = EndToEnd(data, profile, numbers)   # e2e.py routed_e2e (1e6557d)
+plain = EndToEnd(data, replace(profile, look={**profile.look, "e2e_row_search": False}), numbers)
+return searched if searched._crossings(set(searched.segs)) < plain._crossings(set(plain.segs)) else plain
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet
