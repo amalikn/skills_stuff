@@ -21,6 +21,13 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Fleet adoption
 
+- [ ] **Rotation leaves stale Contents lines** (found 2026-10-29, unified-network-controller, four times in one day): `rotate --apply` moves a
+  dated entry to `docs/history/` but keeps its `- [title](#anchor)` line in the CHANGELOG's Contents, so the next `just check` fails on a broken
+  anchor. Fix: drop Contents lines whose anchor no longer exists in the same pass, and test it on a CHANGELOG with a Contents block.
+- [ ] **Moving scripts broke a consumer's git hook silently** (found 2026-10-29): the 2026-10-27 family-folder move left
+  unified-network-controller's `scripts/githooks/pre-commit` calling `scripts/doc_freshness.py` (commit refused) and `scripts/target_map.py`
+  (guarded by `[ -f "$tm" ] || continue`, so the target-map check was skipped without a word from 27 to 29 Oct). The repoint script reached
+  justfiles and live references only. Fix: include git hooks (`scripts/githooks/`, `.git/hooks` targets) in the callers check and the repoint pass.
 - [x] **`just check` fails on the plan tracker template** (fixed 2026-10-22 21:35: real date in the template; `--init` stamps today) (found 2026-10-22 21:24, before and after this slurp's edit): doc freshness reads
   `templates/plan-tracker.md` as a living document whose `Last reviewed: {today}` is no date (from 28dfe0b). Exempt templates with placeholders from
   freshness, or give the template a real date the init step rewrites.
@@ -137,9 +144,6 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 - **Upgrader changelog placement for `### date` under `## Unreleased` (2026-10-27, skill-goal-guard bootstrap).** `changelog_is_newest_first` reads only dated `##`
   headings, so a CHANGELOG that dates entries as `### YYYY-MM-DD hh:mm — title` under `## Unreleased` reads as "order unknown" and the upgrade entry is appended at the
   bottom in `## YYYYMMDD_hhmm` style; it was moved by hand. Read `###` dates under `## Unreleased` too, and write the entry in the file's own heading level and style.
-- [x] **Plan tracker timeline as data** (2026-10-21, candidate in unified-network-controller `code-map.toml`; promoted 2026-10-21 as `scripts/plans/plan_timeline.py`): `scripts/render/plan_timeline.py`
-  renders a plan tracker's Timeline from YAML with the schedule worked out from the dates (late, due today, done), plus its govcheck and
-  `commit-gate`. Promote here once a second project (smc-resiliency) keeps its timeline as data.
 - [ ] **ADR template** — a starter `.archcore/adr/` template for common decision types (tool choice, data model, boundary design).
 - [ ] **Rules template** — a starter `.archcore/rules/` template structured around source-of-truth, update policy, and authorization gates.
 - [ ] **Multi-agent handoff pack** — a `repomix`-compatible config that bundles only the durable-truth layer (`.archcore/` + governance docs) for context-efficient agent handoffs.
