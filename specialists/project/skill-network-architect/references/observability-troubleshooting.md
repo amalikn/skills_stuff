@@ -17,6 +17,7 @@ Summary: >-
 - [Scope](#scope)
 - [Incident result shape](#incident-result-shape)
 - [Decision rules](#decision-rules)
+- [Probes, alert routing and outages that are not connectivity](#probes-alert-routing-and-outages-that-are-not-connectivity)
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
 - [Worked example](#worked-example)
@@ -111,6 +112,39 @@ SLO alerting (SRE workbook, VERIFIED_PRIMARY):
 - Burn rate = error ratio / (1 - SLO). Page at 14.4x over 1 h (2% of a 30-day budget); ticket on slow burn.
 - Alert on collector freshness separately from device health.
 
+## Probes, alert routing and outages that are not connectivity
+
+Probe on the workload's real channel:
+- A probe proves only the channel it exercises. FTP moves data on a separate data connection from the control connection
+  (VERIFIED_PRIMARY [RFC 959](https://www.rfc-editor.org/rfc/rfc959.html)), so a header-only request that uses the control connection can pass while every
+  transfer fails. Probe with a real payload over every connection the workload opens; prefer a single-connection transport (rsync over SSH, HTTPS) for unattended fleet feeds.
+- Monitor the user-facing function, not reachability: portal HTTP status, DNS resolution through the site resolver, internet reachability per uplink.
+  Black-box probers cover HTTP, HTTPS, DNS, TCP, ICMP and gRPC (VERIFIED_PRIMARY [blackbox exporter](https://github.com/prometheus/blackbox_exporter)).
+  Black-box monitoring is symptom-oriented and shows active problems (VERIFIED_PRIMARY [SRE book ch. 6](https://sre.google/sre-book/monitoring-distributed-systems/)).
+- An accepted push is not stored data. Verify that the stored value exists after a write, and call a check done only when the result stays
+  correct through the next check interval (UNVERIFIED, field observation).
+- Names lie: a role called "URL capture" that records DNS queries yields domains, not URLs, and misses clients that use DoH
+  (VERIFIED_PRIMARY [RFC 8484](https://www.rfc-editor.org/rfc/rfc8484.html)). Per-application reporting on a backhaul needs flow export or
+  classification designed in ([RFC 7011](https://www.rfc-editor.org/rfc/rfc7011.html)).
+
+Alert routing must be verified:
+- An alert rule that fires is not an alert delivered. Routing trees and receivers are separate configuration (VERIFIED_PRIMARY
+  [Alertmanager configuration](https://prometheus.io/docs/alerting/latest/configuration/)). A misrouted rule can fire for months with nobody told.
+- Acceptance test: a synthetic alert per route reaches a named person who acknowledges it; repeat after every routing change. Alert on absent
+  targets (a host that stopped reporting), not only on bad values.
+
+Outages that are not connectivity:
+
+| Pattern in the evidence | Likely class | Check |
+| ----------------------- | ------------ | ----- |
+| Boots at nearly the same clock time on many days, more in winter | Power: solar or battery autonomy runs out before dawn | Boot-time series against sunrise and season; battery logs |
+| Most targets fail together with the same error | Shared dependency: access certificate, proxy, collector, DNS | The access path first (certificate validity, proxy login) |
+| Box transmits but nothing returns on its only port | Switch or trunk fault, not the WAN | Link counters both ways on the box and on the switch |
+| Kernel logs undervoltage all day; alarm metric reads 0 | Undersized supply; the gauge is not latched between scrapes | Latched flags and kernel logs, not an instantaneous gauge |
+| A self-heal action every few minutes on a degraded link | The remediation causes the flap | Self-heal with backoff, a cap and an event record |
+
+- Classify every dark period with boot-time and pattern evidence (power, hang, WAN, switch) before filing it as a link outage (UNVERIFIED, field method).
+
 ## Patterns and anti-patterns
 
 | Situation                              | Do                                             | Avoid                              | Why                                        |
@@ -120,6 +154,8 @@ SLO alerting (SRE workbook, VERIFIED_PRIMARY):
 | Busy link with 5-min polling           | 64-bit counters, shorter interval or streaming | 32-bit counters                    | a wrap reads as a dip or a reset           |
 | Top talkers from sampled flow          | widen the window until samples are many        | trusting a 1-minute top list       | sampling error dominates small counts      |
 | Telemetry disagrees with inventory     | raise a finding to the intent owner            | overwrite intent from telemetry    | observation is not ownership               |
+| Service check for a site function      | probe the real channel with a payload          | ping or a control-channel check    | the workload channel fails unseen          |
+| New or changed alert route             | fire a synthetic alert to a person             | trust that the rule fires          | firing is not delivery                     |
 
 ## Failure modes and tests
 
@@ -130,6 +166,8 @@ SLO alerting (SRE workbook, VERIFIED_PRIMARY):
 | UDP export loss                    | IPFIX sequence gaps                           | drop 5% of export packets in lab; gaps must be counted              |
 | Clock skew between sources         | events out of order across devices            | skew one device by 60 s in lab; the time-quality check must flag it |
 | Probe path differs from user path  | probe green while users fail                  | compare probe route with user route under failover                  |
+| Alert misrouted                    | rule firing, nobody acknowledged              | synthetic alert per route; a named person acknowledges it           |
+| Power outage filed as link outage  | boots cluster at one clock time, seasonal     | correlate boot times with time of day and season                    |
 
 ## Worked example
 
@@ -165,6 +203,9 @@ Incident answer for a site reported "down" in monitoring:
 - [ ] Latency reported as percentiles from histograms
 - [ ] Clock source and timezone recorded for every evidence source
 - [ ] SLO, window, budget and burn thresholds written down
+- [ ] Each probe exercises the workload's real channel with a payload
+- [ ] Every alert route proven by a synthetic alert acknowledged by a person
+- [ ] Dark periods classified (power, hang, WAN, switch) before blaming the link
 
 ## Further reading
 
@@ -174,6 +215,7 @@ SLOs and alerting:
 - [SRE book: Monitoring distributed systems](https://sre.google/sre-book/monitoring-distributed-systems/): golden signals; symptom versus cause.
 - [SRE book: Service level objectives](https://sre.google/sre-book/service-level-objectives/): choosing SLIs; percentiles over means.
 - [SRE workbook: Alerting on SLOs](https://sre.google/workbook/alerting-on-slos/): multi-window, multi-burn-rate alerts.
+- [Alertmanager configuration](https://prometheus.io/docs/alerting/latest/configuration/): routing trees, receivers and inhibition.
 - [Prometheus: Histograms and summaries](https://prometheus.io/docs/practices/histograms/): why quantiles cannot be averaged.
 
 Methods:

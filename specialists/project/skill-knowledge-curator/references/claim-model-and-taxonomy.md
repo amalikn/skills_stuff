@@ -68,6 +68,23 @@ Each span is `{source_path, line_start, line_end, excerpt}`. Intake refuses it u
 excerpt occurs inside them. The stored evidence record adds `source_id`, `source_version_id`, `source_sha256`, `excerpt_sha256`, the overlapping `section_ids` and an `evidence_id`. Later checks
 (`validate`, `decide`, the `evidence_verified` gate) re-read the file: `valid`, `relocated` (found elsewhere: warning), `broken` or `missing` (error, exit 5).
 
+> **Learned 2026-10-29** · claim extraction from design documents · VERIFIED_SECONDARY (harvest 2026-10-29 of a cloud-repatriation design programme) ·
+> Source: aws-to-local `.archcore/rules/single-source-and-restraint.rule.md`, `methodology-freeze.rule.md`, `audit-copy-integrity.rule.md`;
+> `docs/platform-approach-revision-plan-rev06-20260728_1723.md:41-42` · Falsifier: a design corpus where present-tense descriptions of
+> unbuilt systems never produced a wrong CURRENT claim
+> Tense is an existence claim: a design written in the present tense about a system not yet built reads as `CURRENT` when it is
+> `PROPOSED`, so extract tense with the claim and treat "will be" as proposed. An uncaveated product name is a decision claim, not a
+> neutral mention. A total copied from a source sheet is a claim to verify, not evidence: re-add the rows before sizing from it (one sheet's
+> stated total omitted two rows, 63 against a true 72). The same programme's rules match this skill's model: one authoritative home per
+> fact (a duplicated table is worse than a missing one), superseded revisions kept as immutable audit copies, and a method that reopens
+> only on new evidence, a scope decision or an uncovered gate failure.
+
+> **Learned 2026-10-29 (b)** · provenance figures · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal corpus project) · Source: project_stuff/me
+> corpus project `ARCHITECTURE.md` (failure modes) · Falsifier: a figure copied from upstream metadata that always matched the files
+> Record counts and sizes measured from the artefact on disk, never copied from an upstream card or catalogue entry: a provenance figure
+> taken from a dataset card was contradicted by the data files themselves. A measured figure carries the command or hash that produced it.
+
+
 ## Section coverage
 
 Inventory splits each Markdown file into top-level blocks (paragraph, list, table, code, blockquote, html, front matter) with their heading path. Every block of a live source ends in one status

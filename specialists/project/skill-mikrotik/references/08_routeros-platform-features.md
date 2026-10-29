@@ -49,6 +49,10 @@ here under its `sources/routeros-smc-replacement-future-study-20261022_1323/` fo
 - Conventional Netinstall needs a host on the target's **same layer-2 segment** and the target in Etherboot; it reformats system storage, with documented retention options. `VERIFIED-DOC`
 - A RouterOS **Netinstall package** (documented from 7.24beta1) lets a second MikroTik act as the install server, still on the same layer-2 segment. `VERIFIED-DOC`
 - Configure scripts become persistent custom defaults used after later resets; Mode scripts run once; scripts are limited to 120 s (7.22). `VERIFIED-DOC`
+- Netinstall's configuration retention does not keep all user files or containers. A controller across the WAN cannot reimage a router through that
+  router's broken data plane: remote recovery at a site needs an independently reachable local executor or recovery router on the same layer 2, cached
+  packages and a proven way to force Etherboot. `VERIFIED-DOC` (Netinstall page); the recovery conclusion is the study's inference. Source:
+  enterprise-strategy `routeros-smc-replacement-future-study-20261022_1323.md`, Provisioning and Netinstall (apn 5cba35f).
 
 ## Remote access
 

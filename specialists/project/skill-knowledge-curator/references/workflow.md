@@ -79,6 +79,20 @@ never asked twice. A changed source reopens checks through `validate` and the ev
 The JSONL ledgers are the record (append-only events; the current state is a fold of them). Pages and `index.json` are views rebuilt from them. Any SQLite FTS index is built in memory per run and
 never stored.
 
+> **Learned 2026-10-29** · staying current with external authorities · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal research project) ·
+> Source: project_stuff/me vehicle-import track `scripts/README.md` (knowledge_refresh row) · Falsifier: a body-hash watch that rewrote
+> unchanged captures or missed a real change
+> A watch loop re-reads each tracked authority and hashes the content that can change, never the header that carries the retrieval date;
+> unchanged writes nothing; changed keeps both captures, logs the supersession and exits non-zero when the source feeds a decision gate. A
+> coverage check flags any authority a regression or page cites that nobody watches.
+
+> **Learned 2026-10-29 (b)** · project structure for exploratory work · VERIFIED_SECONDARY (harvest 2026-10-29 of two personal workspaces) · Source:
+> project_stuff/me portfolio `README.md` files · Falsifier: a shared fact promoted to the parent for one consumer that never gained a second
+> Structure exploratory ventures as independently killable tracks under a portfolio parent, each with its own stated position. Shared facts
+> move up to the parent only when a second track needs them, so one track can be tested or killed without disturbing the others and the
+> parent never holds a single track's assumptions.
+
+
 ## Exit codes
 
 | Code | Meaning                                                                            |

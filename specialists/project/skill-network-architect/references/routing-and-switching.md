@@ -16,6 +16,8 @@ Summary: Routing, switching and control-plane decision rules, patterns, failure 
 - [Decision rules](#decision-rules)
 - [Forwarding and control model](#forwarding-and-control-model)
 - [EVPN and VXLAN fabrics](#evpn-and-vxlan-fabrics)
+- [Transport baseline and re-open triggers](#transport-baseline-and-re-open-triggers)
+- [ECMP hashing pitfalls](#ecmp-hashing-pitfalls)
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
 - [Worked example](#worked-example)
@@ -56,6 +58,8 @@ Evidence: VERIFIED_PRIMARY rows link the RFC (checked 2026-10-29). Platform defa
 | ECMP hashes per flow                          | A few elephant flows polarise load at any path count                  | VERIFIED_PRIMARY [RFC 2992][rfc2992] |
 | Hash inputs                                   | 5-tuple, inner VXLAN headers, IPv6 flow label                         | VERIFIED_PRIMARY [RFC 6438][rfc6438] |
 | Resilient hashing                             | Limits rehash when a member drops                                     | UNVERIFIED (platform feature) |
+| Linux IPv4 multipath hash default             | `fib_multipath_hash_policy` = 0, Layer 3 (addresses only)             | VERIFIED_PRIMARY [ip-sysctl][k-ipsysctl] |
+| Linux multipath ignores neighbour state by default | `fib_multipath_use_neigh` = 0: packets can go to a failed next hop | VERIFIED_PRIMARY [ip-sysctl][k-ipsysctl] |
 | eBGP-only datacenter fabric                   | No IGP; ASN per leaf or rack; handle AS-path loops                    | VERIFIED_PRIMARY [RFC 7938][rfc7938] |
 | 16-bit private ASNs                           | 64512-65534; alone they cap a fabric at 1023 ASNs                     | VERIFIED_PRIMARY [RFC 6996][rfc6996] |
 | 32-bit private ASNs                           | 4200000000-4294967294                                                 | VERIFIED_PRIMARY [RFC 6996][rfc6996] |
@@ -134,6 +138,61 @@ overlay:  L2 VNI per VLAN; L3 VNI per VRF (symmetric IRB)
 multihoming: DF election per ES; aliasing; mass withdraw by route type 1
 ```
 
+## Transport baseline and re-open triggers
+
+Choose the fabric transport from the services sold, not from the type of operator. Write the baseline down with the triggers that would reopen it,
+so a protocol choice is not re-argued from instinct.
+
+- Without L2VPN or L3VPN customer services, a routed underlay with an EVPN control plane and VXLAN data plane where overlays are needed fits a
+  datacenter fabric ([RFC 7348][rfc7348], [RFC 8365][rfc8365]). Compare EVPN over VXLAN with EVPN over MPLS ([RFC 7432][rfc7432]); comparing raw VXLAN
+  with MPLS VPN services compares different things (UNVERIFIED, judgement).
+- Keep L2 local. Reach services in another site by routing (symmetric IRB, [RFC 9135][rfc9135]); a stretched VLAN needs a named workload that proves it.
+- Resilience comes from the attachment model (dual-homed leaf pairs, functions spread over leaves) more than from the encapsulation. Most leaf, spine,
+  interconnect and gateway failures behave the same under either transport; MTU mismatch is the encapsulation-specific risk (UNVERIFIED, failure-matrix judgement).
+- Enforce subscriber policy (shaping, per-subscriber QoS) at the subscriber edge; queue in the core only where congestion is measured.
+- Traffic engineering default: ECMP in the fabric plus BGP policy at egress.
+
+Decision-guardrail format for reopening segment routing or MPLS ([RFC 8402][rfc8402], [RFC 9256][rfc9256]):
+
+| Trigger (any one starts a review)                                  | Not a trigger                         |
+| ------------------------------------------------------------------ | ------------------------------------- |
+| Steering that ECMP plus BGP policy cannot express, measured        | "Operators of this type run MPLS"     |
+| Fast reroute needed beyond measured normal convergence             | Team familiarity                      |
+| Measurable traffic engineering need on a constrained interconnect  | "Might be useful later"               |
+| The inter-site network starts to behave like a provider WAN        | A vendor roadmap                      |
+| Service insertion has become brittle; platform quality changes     |                                       |
+
+Reopen only when all four thresholds hold: the current model was tested, it failed measurably, the new transport fixes that specific failure, and
+its operating cost is justified. A design is locked only after each named failure mode (leaf, spine, interconnect, route reflector, gateway,
+service leaf, partial control-plane flap, MTU) has been tested in a lab on the real network operating system.
+
+## ECMP hashing pitfalls
+
+ECMP picks a next hop per flow by hashing header fields ([RFC 2992][rfc2992]). The hash spreads many flows; it does not check that a next hop works.
+
+```text
+MULTI-WAN HOST WITH DEFAULT L3 HASH: one destination always takes one uplink
+                         +--------------------------+
+                    +--->| uplink A (dead upstream) |--X
++--------------+    |    +--------------------------+
+| host or edge |----+
+| ECMP default |    |    +--------------------------+
+| hash: src,dst|    +--->| uplink B (healthy)       |-----> internet
++--------------+         +--------------------------+
+resolver 1 (fixed IP) -> hash -> A -> fails every time; resolver 2 -> B -> works
+health ping to a fixed IP -> hash -> one uplink -> reports for that uplink only
+signal: names fail intermittently while a raw IP works; failures stick to destinations
+```
+
+- With an addresses-only hash, every flow to one fixed destination (a resolver, a health-check target, a controller) takes the same next hop. If
+  that uplink is dead upstream while its interface stays up, that destination fails every time and others work.
+- Linux defaults: Layer 3 hash and no use of neighbour state, so a failed next hop stays in the group ([ip-sysctl][k-ipsysctl]). Set the hash
+  policy deliberately and add health-based eviction (a routing daemon, nexthop objects with a monitor, or a script with backoff).
+- Health checks must run per uplink with source routing (policy rule per source address or interface), never through the ECMP group, or they
+  measure whichever uplink the hash picked.
+- Accidental ECMP (two default routes with equal metric from two DHCP clients) is a design defect, not a feature. Record every multi-WAN host's
+  intended mode: active/backup, weighted, or managed ECMP.
+
 ## Patterns and anti-patterns
 
 | Pattern                                       | Use when                           | Anti-pattern                        | Why it fails                                       |
@@ -145,6 +204,8 @@ multihoming: DF election per ES; aliasing; mass withdraw by route type 1
 | Symmetric IRB with L3 VNI                     | Many VRFs or VLANs                 | Asymmetric IRB fabric-wide          | Every VLAN on every leaf; table and flood growth   |
 | Routed reachability between sites             | Applications need IP only          | L2 stretched over WAN               | One broadcast domain spans a slow, lossy link      |
 | Resilient hashing                             | Bundles or ECMP groups that change | Plain modulo hash                   | Member loss rehashes every flow                    |
+| Per-uplink health check with source routing   | Multi-WAN hosts                    | Health ping through the ECMP group  | Tests only the uplink the hash picked              |
+| Written re-open triggers for a transport      | Baseline protocol decisions        | Re-argue MPLS or SR at every review | Choice drifts on instinct, not measurement         |
 
 ## Failure modes and tests
 
@@ -160,6 +221,7 @@ multihoming: DF election per ES; aliasing; mass withdraw by route type 1
 | Asymmetric return path               | Stateful device drops replies            | Flows crossing that device         | Trace both directions; fail one exit; repeat                    |
 | Overlay MTU short                    | Small packets work, large hang           | Every tenant flow over the overlay | DF-set probes at full size and one byte above                   |
 | TCAM or next-hop group exhaustion    | New routes fail to program               | New prefixes or ECMP groups        | Load table to design size plus growth in lab                    |
+| Dead next hop kept in an ECMP group  | Fixed destinations fail, others work     | Flows hashed to the dead uplink    | Black-hole one uplink upstream; group evicts it within target   |
 
 Also test route presence and absence, preference, management reachability after policy change, and failback.
 
@@ -189,6 +251,8 @@ Inputs (illustrative): BGP over a fibre uplink; BFD interval 300 ms, multiplier 
 - [ ] Detection time is computed (multiplier x interval) and sized for the medium's measured loss.
 - [ ] Convergence is measured end to end, including FIB programming on real hardware.
 - [ ] ECMP hash inputs and elephant-flow behaviour are stated.
+- [ ] Multi-WAN hosts: hash policy set, dead next hops evicted, health checks per uplink with source routing.
+- [ ] Transport baseline written with re-open triggers and the four thresholds.
 - [ ] Overlay MTU is computed and proven with DF-set probes.
 - [ ] L2 extent, STP root, MLAG or ESI behaviour on peer loss are documented and tested.
 - [ ] Platform defaults are labelled UNVERIFIED until checked for the deployed release.
@@ -218,6 +282,8 @@ Datacenter fabrics and EVPN:
 
 Linux forwarding plane:
 
+- [Linux kernel IP sysctl][k-ipsysctl]: multipath hash policy and neighbour-aware next-hop selection.
+- [RFC 8402 Segment Routing Architecture][rfc8402]: read before a re-open review.
 - [Linux kernel VRF][k-vrf]: l3mdev VRF semantics used by Linux-based NOS and hosts.
 - [Linux kernel bonding][k-bond]: LACP modes, hash policies and failover behaviour.
 - [Linux kernel VXLAN][k-vxlan]: VTEP, FDB and learning behaviour on Linux.
@@ -234,6 +300,7 @@ Linux forwarding plane:
 [rfc6996]: https://www.rfc-editor.org/rfc/rfc6996.html
 [rfc7348]: https://www.rfc-editor.org/rfc/rfc7348.html
 [rfc7432]: https://www.rfc-editor.org/rfc/rfc7432.html
+[rfc8402]: https://www.rfc-editor.org/rfc/rfc8402.html
 [rfc7454]: https://www.rfc-editor.org/rfc/rfc7454.html
 [rfc7938]: https://www.rfc-editor.org/rfc/rfc7938.html
 [rfc8212]: https://www.rfc-editor.org/rfc/rfc8212.html
@@ -243,6 +310,7 @@ Linux forwarding plane:
 [rfc9135]: https://www.rfc-editor.org/rfc/rfc9135.html
 [rfc9136]: https://www.rfc-editor.org/rfc/rfc9136.html
 [rfc9234]: https://www.rfc-editor.org/rfc/rfc9234.html
+[rfc9256]: https://www.rfc-editor.org/rfc/rfc9256.html
 [manrs]: https://manrs.org/netops/
 [rpki]: https://rpki.readthedocs.io/en/latest/
 [frr-bgp]: https://docs.frrouting.org/en/latest/bgp.html
@@ -250,3 +318,4 @@ Linux forwarding plane:
 [k-vrf]: https://docs.kernel.org/networking/vrf.html
 [k-bond]: https://docs.kernel.org/networking/bonding.html
 [k-vxlan]: https://docs.kernel.org/networking/vxlan.html
+[k-ipsysctl]: https://docs.kernel.org/networking/ip-sysctl.html

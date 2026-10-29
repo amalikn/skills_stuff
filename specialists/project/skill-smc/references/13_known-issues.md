@@ -1486,3 +1486,26 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 - unbound on hoppys-camp-smc01: `interface-automatic: yes`, IPv6 disabled (no `::1`), active since 2026-08-11; `bridge_500` has two IPv4
   addresses and DNS reaches unbound by `REDIRECT 53 -> 5353`, so `yes` (reply from the delivered address) is the safe setting there.
   No SMC has IPv6 (operator, 2026-10-28), so the `9f621d35` reason for `no` ("stop ::1 bind when IPv6 disabled") does not apply to the fleet.
+
+## 2026-10-29 — isc-dhcp-server 4.4.1 is end of life; moving to Kea is a port of every `on commit` trigger (OPEN, gated)
+
+- ISC DHCP has been end of life since the end of 2022 (isc.org/dhcp; VERIFIED_PRIMARY in unified-network-controller's options register IC8,
+  2026-09-27). Every SMC-side low-touch trigger is written against dhcpd's `on commit` block: the cnMaestro provisioning script, the controller's
+  device-seen hook and the dispatcher restart hook ([08_ansible-authoring.md](08_ansible-authoring.md) hook contract; skill-cambium
+  `references/01_overview.md`, DHCP Vendor Class, for the Option 43 answer).
+- Ubuntu 22.04 offers Kea 2.0.2 (`apt-cache policy` on the virtual SMC). Whether its run-script and host-commands hook libraries load from a package
+  the fleet can install is UNVERIFIED (IC9).
+- Decision D12.4 (operator, 2026-09-27): Kea replaces ISC DHCP only after the December gate, once a scratch VM shows both hook libraries load; never in
+  P0. Until then ISC DHCP stays. Plan the move as a port of each trigger, not a package swap.
+- Source: `apn/unified-network-controller/docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` lines 945-950 and `ARCHITECTURE.md`
+  lines 109-110 (apn 5cba35f).
+
+## 2026-10-29 — what the rct MikroTik switch takes from the SMC: gateway and NTP, not DHCP (cross-reference skill-mikrotik)
+
+- The apn umbrella `AGENTS.md` rule says the site switch and APs "take DHCP and DNS from the SMC on the management link". The provisioning script
+  says otherwise for the RB450Gx4 switch: static `10.255.0.5/24` on VLAN 500, default route via `10.255.0.1` (the SMC), DNS `8.8.8.8` and `8.8.4.4`,
+  NTP from `10.255.0.1`, its DHCP client removed (skill-mikrotik `references/06_provisioning.md`, What the script sets). `VERIFIED-CODE`; the running
+  time and DNS settings have not been read back from a device (skill-mikrotik known issues 3 and 4). How the Metal AP gets its address is not recorded.
+- So a change to the SMC's LAN side (safe mode, return to generic, rollback) must keep `10.255.0.1` on VLAN 500 as gateway and NTP source and a route
+  out for public DNS; DHCP on VLAN 500 matters for the Cambium units (Option 43), not for the switch. Same entry in skill-mikrotik
+  `references/05_known-issues.md`.

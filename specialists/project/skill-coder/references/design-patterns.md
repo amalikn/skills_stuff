@@ -139,6 +139,13 @@ verify:
 - **Evidence:** VERIFIED_PRIMARY, a package pin (PHP security fix, dozens of production targets) and a hosts-file fix ran on the same engine
   with no engine edit; rollback of both proven on a bench target.
 
+> **Learned 2026-10-29 (f)** · P-01 in an analysis tool · VERIFIED_SECONDARY (harvest 2026-10-29 of the apn workspace) · Source: apn `scripts/speed_tier_engine.py` (`CarrierConfig`, `export()`), `scripts/README.md` · Falsifier: a new supplier added to the engine by
+> editing the engine rather than by a config object
+> A second shape of P-01: one analysis engine, and each supplier supplies a frozen config object (database path, the SQL, rate-card SQL,
+> tier and product-group maps) and calls `export()`. The engine's docstring lists the exact columns a supplier's query must return, so the
+> query contract is written down, and the workbook it writes keeps live formulas rather than pasted values so a reviewer can audit each
+> figure. It refuses to run on an unmapped category rather than dropping its rows.
+
 ### P-02 Before/after probe with baseline gates
 
 > **Learned 2026-10-27 (b)** · design pattern, any language · VERIFIED_PRIMARY (portal render judged before and after each production apply; unhealthy baselines refused) · Source: local-knowledge-ansible ansible-wifi `roles/smc_change` (CHANGELOG 20261027_1042) · Falsifier: an after-probe pass on a target whose before-probe was not taken
@@ -619,8 +626,7 @@ def body_digest(text: str) -> str:                              # render.py: ban
 
 ### P-32 Repoint callers after a move: plan, skip history, guard local namesakes
 
-> **Learned 2026-10-27** · design pattern, any language · VERIFIED_PRIMARY (skill-ai-it: 467 references in 43 files across 30 projects repointed when its
-> flat scripts/ became family folders; every caller's check run after, no path errors) (reusable_candidate: proven in one project) Pattern P-32.
+> **Learned 2026-10-27** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate: proven in one project) · Source: skill-ai-it: 467 references in 43 files across 30 projects repointed when its flat scripts/ became family folders; every caller's check run after, no path errors · Falsifier: a repoint run whose plan rewrote a local file that merely shares the moved script's name, or left a caller still using the old path (Pattern P-32)
 
 - **Problem:** a shared tool's files move, and many other repositories call them by path from task runners, docs and code; a blind search and replace
   breaks history and hits unrelated files that happen to share a name.
@@ -652,8 +658,7 @@ if DATED.search(path.name):             # -YYYYMMDD_hhmm.md: a dated report or r
 
 ### P-33 Read every source, merge, then write once; write nothing when a source is silent
 
-> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `wc-local/scripts/collector/dhcp_leases.py`
-> `check_site`, commit 5505ab5: three DHCP servers at one site, 242 + 211 + 157 leases merged, one write) (reusable_candidate) Pattern P-33.
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `wc-local/scripts/collector/dhcp_leases.py` `check_site`, commit 5505ab5: three DHCP servers at one site, 242 + 211 + 157 leases merged, one write · Falsifier: a merged write that ended a client lease one source still held, or a write made while one source was failing (Pattern P-33)
 
 - **Problem:** several sources each hold part of one record (three redundant boxes each lease part of a site's clients); a loop that writes per
   source lets the last source win and can end what the others hold.
@@ -675,8 +680,7 @@ merged = merge_reads(reads)          # sums and unions by address, then one PATC
 
 ### P-34 Pick a moving leader once per cycle
 
-> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `src/unc/tasks/site_readers/serving_box.py`
-> `CyclePicks`, 5505ab5: the VRRP master moved about hourly; polling picks it once per cycle) (reusable_candidate) Pattern P-34.
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `src/unc/tasks/site_readers/serving_box.py` `CyclePicks`, 5505ab5: the VRRP master moved about hourly; polling picks it once per cycle · Falsifier: two callers in the same cycle acting on different leaders after a mid-cycle failover (Pattern P-34)
 
 - **Problem:** work must go through whichever member currently leads (a VRRP master), and the leader can move mid-run.
 - **Solution:** at the start of a cycle read every member's state in parallel, pick the leader (fallback: configured priority order, said aloud;
@@ -688,8 +692,7 @@ merged = merge_reads(reads)          # sums and unions by address, then one PATC
 
 ### P-35 Place by evidence; keep every sighting in a listed ledger
 
-> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `src/unc/policy/multi_smc_topology.py`, 5505ab5:
-> a layer-2 site where every box sees every device) (reusable_candidate) Pattern P-35.
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `src/unc/policy/multi_smc_topology.py`, 5505ab5: a layer-2 site where every box sees every device · Falsifier: a source link that is neither drawn nor listed in the ledger, or a link drawn from a sighting with no physical evidence (Pattern P-35)
 
 - **Problem:** on a shared network every observer sees everything, so "seen by X" drawn as links becomes all-to-all spaghetti.
 - **Solution:** place only by evidence that names a physical relation (a MAC learned alone on a cable port, a held link); everything else is
@@ -700,8 +703,7 @@ merged = merge_reads(reads)          # sums and unions by address, then one PATC
 
 ### P-36 Widen a name's scope by renaming in place, never by recreating
 
-> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `wc-local/scripts/smc/smc_uplink_circuits.py`
-> `rename_legacy`, e62633c: a site gained two more boxes, so `<site>-internet02` became `<box>-internet02`) (reusable_candidate) Pattern P-36.
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `wc-local/scripts/smc/smc_uplink_circuits.py` `rename_legacy`, e62633c: a site gained two more boxes, so `<site>-internet02` became `<box>-internet02` · Falsifier: an object whose cables or change log were lost because it was recreated under the new name rather than renamed (Pattern P-36)
 
 - **Problem:** an identifier was built from a scope that turned out too wide (one name per site, but now there are several boxes per site);
   the new scheme gives every new object a narrower name, while the objects already made carry history (cables, links, change log) under the old one.
@@ -730,8 +732,7 @@ def rename_legacy(c, path, field, legacy, name, scope, counts, log=print):   # s
 
 ### P-37 A cache proved by a differential assert, keyed so an undo hits
 
-> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (skill-drawio `scripts/flowmap/e2e.py` `_refresh` and `_crossings`,
-> 73017a9 and 811c918: a local search's crossing counts, 18.3 -> 10.1 s on the largest drawing, output byte-identical) (reusable_candidate) Pattern P-37.
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: skill-drawio `scripts/flowmap/e2e.py` `_refresh` and `_crossings`, 73017a9 and 811c918: a local search's crossing counts, 18.3 -> 10.1 s on the largest drawing, output byte-identical · Falsifier: the differential assert passing while cached and recomputed values differ, or an undo that misses the cache (Pattern P-37)
 
 - **Problem:** a search recomputes a pure but costly value (crossings of a polyline pair, spans of a link) millions of times, and most trials
   are undone; a cache invalidated by version numbers misses on every undo, and a cache updated at many mutation sites goes stale at one.
@@ -756,9 +757,7 @@ if c is None:
 
 ### P-38 An estimate nominates; the real measure decides, never worse than the start
 
-> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (skill-drawio `scripts/flowmap/e2e.py` `routed_e2e` and
-> `placement.best_cells`, 1e6557d: a column-order search scored by a grid estimate made two pages worse, 427 -> 506 and 44 -> 48
-> crossings) (reusable_candidate) Pattern P-38.
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: skill-drawio `scripts/flowmap/e2e.py` `routed_e2e` and `placement.best_cells`, 1e6557d: a column-order search scored by a grid estimate made two pages worse, 427 -> 506 and 44 -> 48 crossings · Falsifier: a shipped result whose real measure is worse than the starting layout on any tracked metric (Pattern P-38)
 
 - **Problem:** a search scored by a cheap proxy finds the proxy's optimum, which on real output can be worse than doing nothing, or better
   on the main measure and worse on another (two arrows merged onto one run).
@@ -777,8 +776,7 @@ return searched if searched._crossings(set(searched.segs)) < plain._crossings(se
 
 ### P-39 Carry a placement over proven edges; narrow the rest by the network's direction
 
-> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `src/unc/policy/colocation.py`,
-> a8c58f9: one site went from 0 of 110 units placed to 85, 1 conflict held, in 0.03 s, with no site-specific rule) (reusable_candidate) Pattern P-39.
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `src/unc/policy/colocation.py`, a8c58f9: one site went from 0 of 110 units placed to 85, 1 conflict held, in 0.03 s, with no site-specific rule · Falsifier: a unit placed by carry-over across a wireless or uplink edge, or two conflicting placements resolved silently by processing order (Pattern P-39)
 
 - **Problem:** where each item stands (a tower, a rack, a room) is known for a few items only, sites are built and named differently, and a
   rule written for one site's habit (a number in a name) misplaces the next site's units.
@@ -810,9 +808,7 @@ while changed:                                   # colocation.propagate (a8c58f9
 
 ### P-40 Hold citations by a check: a ledger of every cited URL, a local copy keyed by URL, rules as findings
 
-> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (skill-network-architect `scripts/check_package.py` check_ledger and
-> check_prose, `scripts/fetch_sources.py`, `scripts/sources_ledger.py`; uncommitted at write time: 356 sources stored, 271 ledger entries,
-> every rule failing its own negative test) (reusable_candidate) Pattern P-40.
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: skill-network-architect `scripts/check_package.py` check_ledger and check_prose, `scripts/fetch_sources.py`, `scripts/sources_ledger.py`; uncommitted at write time: 356 sources stored, 271 ledger entries, every rule failing its own negative test · Falsifier: a citation that lands in a reference while just check still passes without its sources.json row (Pattern P-40)
 
 - **Problem:** reference documents decay quietly: links rot, a claim loses its source, a rewrite drops a citation, and writing rules (width,
   diagram form, link form) hold only while someone remembers them. Review catches some of it once; nothing catches it on the next edit.
@@ -840,6 +836,125 @@ def check_ledger(root):                          # check_package.py (skill-netwo
   return findings
 ```
 
+### P-41 Write into files other sessions are editing: a marked region, compare-and-swap, a settle window, idempotent ids
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (source read 2026-10-29; the project records 0.06-0.4 s per run and a self-test of about 3 s proven able to fail by breaking two features) · Source: apn `scripts/project_sync.py` (`write_cas`, `recently_edited`, `SYNC_ID`; commit e69d6d7), `scripts/project_sync_selftest.sh` · Falsifier: a delivery that overwrote a live
+> session's edit, or was delivered twice after a crash (reusable_candidate) Pattern P-41.
+
+- **Problem:** a tool delivers messages or rows into files that live agent sessions are editing at the same time (scratchpads,
+  trackers). A plain read-modify-write loses the session's edit; a crash mid-delivery leaves no way to know what was sent.
+- **Solution:** (1) write only between start and end markers (`<!-- sync:<box>:start -->` ... `end`), never elsewhere in the file;
+  (2) one exclusive lock for the tool; (3) compare-and-swap: re-read just before an atomic replace and write nothing if the file changed
+  since it was read (defer to the next run); (4) a settle window: a target edited in the last N seconds is deferred; (5) every item
+  carries an id, searched in the target and in the places rotation moves lines to before delivery, so a rerun after a crash skips what
+  arrived; (6) an item marked sent but now missing is reported (exit 1), never re-sent, because someone removed it on purpose or by
+  accident and only a person can tell which. Exit 0 clean, 1 needs attention, 2 usage.
+- **Why it works:** the writable region bounds the damage, CAS and the settle window keep the tool out of a live edit, and ids make
+  delivery idempotent without a separate state file that could disagree with the target.
+- **Reuse:** status pages several tools update; inbox files between agents; generated blocks inside hand-edited documents.
+- **Pitfalls:** the id must survive wrapping (no spaces in the comment); search rotated history too or a rotated item is re-sent; a
+  self-test must be shown to fail when a feature is broken, or it proves only that the happy path runs.
+- **Realised in:** Python:
+
+```python
+def write_cas(path, before, after):                     # apn scripts/project_sync.py
+    if path.read_text() != before:
+        return False                                     # changed since read: defer
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    with os.fdopen(fd, "w") as fh:
+        fh.write(after)
+    os.chmod(tmp, path.stat().st_mode & 0o777)
+    if path.read_text() != before:                       # re-check after the slow part
+        os.unlink(tmp)
+        return False
+    os.replace(tmp, path)
+    return True
+
+def recently_edited(path, settle):
+    return settle > 0 and time.time() - path.stat().st_mtime < settle
+```
+
+### P-42 Three outcomes for a lookup: a negative only from a complete walk
+
+> **Learned 2026-10-29 (b)** · design pattern, any language · VERIFIED_PRIMARY (source read 2026-10-29) · Source: project_stuff/me vehicle-import track `scripts/rover_sevs_query.py` (`classify`) · Falsifier: a NOT_FOUND emitted while a page
+> of the register was never read (reusable_candidate) Pattern P-42.
+
+- **Problem:** an earlier helper read only the first page of a paginated register and reported "not found", and the untested negative
+  entered the knowledge base as a fact.
+- **Solution:** every lookup returns FOUND, NOT_FOUND or CHECK_FAILED. NOT_FOUND is emitted only when every page was walked
+  (`pages_seen == pages_total`); any tool error, missing dependency or short walk is CHECK_FAILED with a reason. Match locally on the
+  fetched rows rather than trusting the site's own filter.
+- **Why it works:** "absent" becomes a claim that needs proof of coverage; incomplete coverage has its own name and cannot be read as a
+  negative.
+- **Reuse:** fleet surveys (a device not answering is not a device without the feature), inventory reconciliations, licence and
+  registration checks, log searches over a retention window.
+- **Pitfalls:** a recorded "none" without a completeness flag should be read as "not found by this search", not "does not exist"; a
+  site's search box is a filter you cannot audit.
+- **Realised in:** Python:
+
+```python
+def classify(scan, targets):                    # rover_sevs_query.py: never guesses
+    out = {}
+    for label, terms in targets.items():
+        if not scan["ok"]:
+            out[label] = {"status": "CHECK_FAILED", "reason": scan["error"], "hits": []}
+            continue
+        hits = [r for r in scan["rows"] if any(t in r["_raw"].lower() for t in terms)]
+        if hits:
+            out[label] = {"status": "FOUND", "hits": hits}
+        elif not scan["complete"]:
+            out[label] = {"status": "CHECK_FAILED", "hits": [],
+                          "reason": f"incomplete scan: saw {scan['pages_seen']}/{scan['pages_total']} pages"}
+        else:
+            out[label] = {"status": "NOT_FOUND", "hits": []}
+    return out
+```
+
+### P-43 Fail-closed capture: classify the body before writing evidence
+
+> **Learned 2026-10-29 (c)** · design pattern, any language · VERIFIED_SECONDARY (harvest 2026-10-29 of two personal research projects) · Source: project_stuff/me vehicle-import track `scripts/README.md` (browser_fetch row) · Falsifier: an access-denied, bot-check or
+> consent page stored as evidence by a capture tool with a body classifier (reusable_candidate) Pattern P-43.
+
+- **Problem:** a capture tool stores fetched pages as evidence. Every failure observed (access denied, a bot interstitial, a cookie wall)
+  arrived as HTTP 200 with a full body, so status-code checks stored junk as evidence.
+- **Solution:** stamp each capture with URL, retrieval time, HTTP status, the page's own last-updated line and a body hash; run a
+  classifier that must rule the body to be the expected content before anything is written; refuse to write an unclassified body. Keep
+  404s and refused captures, labelled as negative evidence, rather than deleting them.
+- **Why it works:** the write is gated on what the body is, not on what the transport said.
+- **Reuse:** vendor-document stores, compliance evidence capture, API scrapers whose errors come back as 200 with an error page.
+- **Pitfalls:** classifiers drift as sites change; keep the rejected bodies so a misclassification can be reviewed.
+- **Realised in:** Python (browser capture), personal research project; excerpt not taken.
+
+### P-44 Classify by a declared list and surface the unclassified
+
+> **Learned 2026-10-29 (d)** · design pattern, any language · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal project) · Source: project_stuff/me reporting project `scripts/work-summary-digest.py`, `scripts/work-summary-report.py` · Falsifier: a digest that
+> silently includes or drops a project missing from its config list (reusable_candidate) Pattern P-44.
+
+- **Problem:** a digest groups records (here: projects in a session-memory store) by a config list; a new record outside the list is
+  either silently dropped or silently lumped in, and the report looks complete.
+- **Solution:** read the store read-only; classify from the declared list; warn loudly on every unclassified record; filter known noise by
+  declared patterns; append output as dated, fenced sections with a generated marker instead of merging into earlier text; roll
+  out-of-period sections to archive files idempotently. A second tool imports the first's rules instead of copying them.
+- **Why it works:** the unclassified count is the coverage signal; appending keeps every generated section reproducible and reviewable.
+- **Reuse:** cost allocation by tag, alert routing tables, changelog digests, any report built from a mapping that can lag reality.
+- **Pitfalls:** a rollover that removes sections leaves a contents block stale unless it is rebuilt in the same run.
+- **Realised in:** Python, personal reporting project; excerpt not taken.
+
+### P-45 A document an automation edits is a contract: check its shape, test with a fixture
+
+> **Learned 2026-10-29 (e)** · design pattern, any language · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal project) · Source: project_stuff/me finance-notes project `scripts/moon_list_ops.py` · Falsifier: a hand-renamed column in the edited table that the tool
+> writes through without stopping (reusable_candidate) Pattern P-45.
+
+- **Problem:** a helper updates Markdown tables that people also edit; a renamed column or reordered header makes it write values into
+  the wrong place, and it can only be tested against the live API.
+- **Solution:** before any write, check that each target file still matches its expected header contract (the exact column list); take
+  data from the API or from a deterministic fixture file; render a no-write draft by default and write only on apply. A malformed
+  contract or fixture is a hard stop.
+- **Why it works:** the contract check turns a silent misplacement into a refusal, and the fixture makes the whole path testable offline.
+- **Reuse:** trackers and registers maintained in Markdown or CSV by both people and scripts; generated rows inside hand-kept tables.
+- **Pitfalls:** check the contract on every run, not once at setup; people edit headers.
+- **Realised in:** Python, personal project; excerpt not taken.
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet
@@ -854,8 +969,7 @@ built anywhere; move it to built, with its source, when a project does.
 | P-09    | built: joined probe piped on stdin                                   | built: `files/probe/NN_*.py` parts joined into one program      |
 | P-12    | built: `--check` before apply                                        | built: `smc_change_runs_by_flavor.py` `plan()` then `--apply`   |
 
-> **Learned 2026-10-28** · optimise the real outcome, not a proxy · VERIFIED_PRIMARY (skill-drawio overview group placement, UNC overview:
-> 245 crossings) · Source: skill-drawio `scripts/flowmap/placement.py` (`group_candidates`, `best_cells`) · Falsifier: a search on a
+> **Learned 2026-10-28** · optimise the real outcome, not a proxy · VERIFIED_PRIMARY (skill-drawio overview group placement, UNC overview: 245 crossings) · Source: skill-drawio `scripts/flowmap/placement.py` (`group_candidates`, `best_cells`) · Falsifier: a search on a
 > proxy score that keeps improving the real measure as it searches harder
 > A cheap proxy can rank candidates but must not choose: scoring group placements by straight-line crossings gave 131 real crossings with
 > 12 restarts and 182 with 40 (the proxy improved, the drawing got worse); a channel-path proxy gave 192 and 171. Generate candidates with the

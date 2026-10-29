@@ -12,6 +12,15 @@ Summary: >-
 
 # Errors and timeouts
 
+## Contents
+
+- [Errors](#errors)
+- [Timeouts](#timeouts)
+- [Retries](#retries)
+- [Failure paths cost too](#failure-paths-cost-too)
+- [Unknown third-party errors](#unknown-third-party-errors)
+- [Bounded fetching and absent values](#bounded-fetching-and-absent-values)
+
 ## Errors
 
 | Rule                                                                                                                                       | Why                                                     |
@@ -53,10 +62,7 @@ Language idioms differ (exceptions in Python and TypeScript, error values in Go,
       _signal_group(proc.pid, signal.SIGTERM)   # then SIGKILL after the grace, as end_group does
   ```
 
-> **Learned 2026-10-20** · Python subprocess, ssh through a ProxyCommand (Teleport `tsh proxy ssh`) · VERIFIED_PRIMARY (reproduced with
-> `ProxyCommand=sleep`: after `run(timeout=1)` the sleep was still alive; with the group runner it was gone; run on macOS and on the Linux host)
-> · Source: unified-network-controller `src/unc/drivers/transports/process.py`, `tests/test_transport_process.py` (commit 3efcb27)
-> · Falsifier: an ssh release that ends its ProxyCommand when ssh itself is killed with SIGKILL
+> **Learned 2026-10-20** · Python subprocess, ssh through a ProxyCommand (Teleport `tsh proxy ssh`) · VERIFIED_PRIMARY (reproduced with `ProxyCommand=sleep`: after `run(timeout=1)` the sleep was still alive; with the group runner it was gone; run on macOS and on the Linux host) · Source: unified-network-controller `src/unc/drivers/transports/process.py`, `tests/test_transport_process.py` (commit 3efcb27) · Falsifier: an ssh release that ends its ProxyCommand when ssh itself is killed with SIGKILL
 > `ssh` starts the ProxyCommand as its own child; SIGKILL to ssh cannot pass anything on, so the proxy stays until its own idle exit (ten
 > minutes and more seen, host load rising with each timed-out read). Start the child with `start_new_session=True`, and on timeout signal the
 > group (SIGTERM, then SIGKILL after a short grace); reap the leader before testing the group, and on macOS treat EPERM from `killpg(pgid, 0)`
@@ -94,3 +100,15 @@ A target that does not answer must cost one short timeout, not one per field or 
 
 On an unexpected error from a third-party tool, search its issue tracker and documentation for the exact message before any local workaround. Why: the operator had to research a known upstream bug the
 agent should have found (lesson `feedback_proactive_upstream_research`).
+
+## Bounded fetching and absent values
+
+> **Learned 2026-10-29** · fetchers that can fan out (scrapers, API walkers) · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal research project) · Source: project_stuff/me vehicle-import track `scripts/README.md` (prestige_auction_search row); RFC 6585 section 4 (429) · Falsifier: an uncapped fetcher that has run at scale without throttling or a ban
+> Any fetcher that can fan out needs, from its first version: hard caps on results and detail fetches (here 500 and 250), an explicit
+> confirmation with an ETA above a threshold (here 200), jitter and paced batches (50 per batch, random 30-60 s gaps), and exponential
+> backoff on 429 and 5xx. Parse the site's own vocabulary (status values) live rather than hard-coding it.
+
+> **Learned 2026-10-29 (b)** · output of missing, zero and filtered-empty values · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal research project) · Source: project_stuff/me vehicle-import track `scripts/README.md` (fx_rate, prestige_auction_search rows) · Falsifier: a report where a missing value, a zero and an empty filter result render the same and nobody was misled
+> Absent, zero and filtered-empty must never render the same. A missing rate fails rather than printing nothing or 0; a filtered query
+> that returns nothing says so (and may fall back to the unfiltered set, saying it did), because "empty after the filter" is
+> indistinguishable from "no data" otherwise.

@@ -537,7 +537,7 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 >
 > Screenshot pending: a Location's detail panel and the Locations list, after unc_ownership 0.8.48 is deployed.
 
-> **Learned 2026-10-20 (e)** · Nautobot 3.2.3 apps · VERIFIED-OBSERVED (a throwaway container from the rebuilt image, against a test stack's
+> **Learned 2026-10-20 (e)** · Nautobot 3.2.3 apps · VERIFIED_PRIMARY (observed: a throwaway container from the rebuilt image, against a test stack's
 > database) · Source: unified-network-controller `scripts/checks/app_import_check.py` and the A-21 package layout (commits af71572, 8eaba7c)
 > · Falsifier: a Nautobot release that keys Job records by something other than module and class name
 > Moving an app's modules into sub-packages changes nothing a user sees except where something is keyed by module path. A Job is (module_name,
@@ -560,7 +560,7 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 >
 > No visual surface.
 
-> **Learned 2026-10-20 (f)** · Nautobot 3.2.3 Job records · VERIFIED-OBSERVED (a test stack upgraded across the move; parity against the
+> **Learned 2026-10-20 (f)** · Nautobot 3.2.3 Job records · VERIFIED_PRIMARY (observed: a test stack upgraded across the move; parity against the
 > production stack then clean of them) · Source: unified-network-controller CHANGELOG 20261020_1629 · Falsifier: a Nautobot release that
 > removes Job records whose module no longer exists
 > The old record of a moved Job stays as "not installed" until removed; nothing deletes it. Remove it only when the installed record at the new

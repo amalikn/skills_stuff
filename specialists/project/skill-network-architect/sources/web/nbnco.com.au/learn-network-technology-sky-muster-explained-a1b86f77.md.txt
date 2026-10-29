@@ -1,0 +1,72 @@
+Contents of https://www.nbnco.com.au/learn/network-technology/sky-muster-explained:
+The Sky Muster satellite service delivers the nbn network to homes and businesses in regional and remote Australia, via two state-of-the-art satellites. So, people across mainland Australia and Tasmania, and remote islands such as Norfolk Island, Christmas Island, Lord Howe Island and the Cocos (Keeling) Islands can now enjoy nbn powered plans through Sky Muster satellite providers.
+
+As well as the roof satellite dish installed on the home or business, Sky Muster satellite connections also require an nbn supplied modem to be installed at the point where the cable from the satellite dish enters the premises. This device requires power to operate and can only be installed by an nbn approved installer.
+
+When you contact your phone and internet provider to connect to the nbn network, they should arrange for an nbn approved installer to call you and organise a visit to your premises to connect you.
+
+### What to expect on the day of your nbn Satellite installation
+
+Play the What to expect on the day of your nbn® Satellite installation video (duration 2:30) to find out how to prepare for installation day and make the most of your nbn Satellite connection.
+
+![](/learn/network-technology/sky-muster-explained/_jcr_content/root/container_1179805434/container_444786375/columncontrol_9224731282/col1/container_3234750127/iconbox_9608885166/image.coreimg.png/1741754369304/icon-australia-dark.png)
+
+### Getting connected in regional locations
+
+Discover how we're helping remote communities make the switch.
+
+![](/learn/network-technology/sky-muster-explained/_jcr_content/root/container_1179805434/container_444786375/columncontrol_9224731282/col2/container_1232739299/iconbox_8991323974/image.coreimg.png/1741754373797/icon-satellite-dark.png)
+
+### nbn Sky Muster Plus Premium
+
+nbnSky Muster Plus Premium is our premier satellite service for home and small businesses wanting to connect to the nbnnetwork.
+
+### Download our Guides
+
+**nbn Sky Muster Troubleshooting Guide**
+
+Learn how to optimise your satellite service’s performance.
+
+[Download (PDF 1 MB)](/content/dam/nbn/documents/support/satellite/nbn-sky-muster-troubleshooting-guide.pdf.coredownload.pdf)
+
+**nbn Sky Muster User Guide**
+
+How to keep your nbn supplied satellite equipment in good working order.
+
+[Download (PDF 4 MB)](/content/dam/nbn/documents/support/satellite/nbn-sky-muster-user-guide.pdf.coredownload.pdf)
+
+**nbn Sky Muster Preparation Guide**
+
+Useful information for your upcoming satellite installation.
+
+[Download (PDF 8 MB)](/content/dam/nbn/documents/support/satellite/nbn-sky-muster-preperation-guide.pdf.coredownload.pdf)
+
+**nbn Sky Muster VPN Fact Sheet**
+
+Learn how to optimise your VPN to best use with your Sky Muster Service
+
+[Download (PDF 376 KB)](/content/dam/nbn/documents/support/satellite/nbn-sky-muster-vpn-fact-sheet.pdf.coredownload.pdf)
+
+## Fair Use Policies and how they affect your peak usage
+
+The nbn Sky Muster satellite service Fair Use Policy is in place to help ensure fair access to the service – especially during peak usage times. This Fair Use Policy applies between nbn and the provider.
+
+Your provider will likely have a separate Fair Use Policy which applies to your premises – as satellite capacity is a limited resource. Some providers may have less capacity, which may not be noticed during off-peak times. But during peak hours, when there is more traffic, congestion may occur if your provider does not have enough network capacity- this can lead to slower speeds and the occasional 'buffering'.
+
+## Frequently asked questions (FAQ)
+
+### General questions
+
+## Register for **nbn** updates
+
+Sign up for news, offers and updates from nbnincluding:
+
+* Updates about the nbn® network at your location.
+* New products and features.
+* Tips to help you make more of your internet experience.
+
+The fields marked with an asterisk (\*) are required.
+
+### **Privacy collection notice**
+
+nbnis collecting your personal information to keep you informed about news, offers and updates from nbn**.**You can choose to unsubscribe at any time. nbn may link your personal information to cookies and tracking pixels for improving website performance and user experience. You can access our [cookie notice](/utility/cookie-notice) for more information. If you look up an address in the ‘check your address’ tool on our website, that address will also be linked to your personal information. nbnuses service providers who may be located outside of Australia to carry out our work. nbn’s [Privacy Policy](/utility/privacy-policy) sets out how we handle your personal information, how you can access or correct your personal information, or make a complaint about nbn’s handling of your personal information.

@@ -16,6 +16,7 @@ Summary: >-
 - [Scope](#scope)
 - [Decision rules](#decision-rules)
 - [Strategy selection](#strategy-selection)
+- [Measure before choosing a platform](#measure-before-choosing-a-platform)
 - [Discovery and waves](#discovery-and-waves)
 - [Cutover criteria and data authority](#cutover-criteria-and-data-authority)
 - [Hybrid constraints and handoff](#hybrid-constraints-and-handoff)
@@ -46,6 +47,8 @@ Summary: >-
 | DNS TTL              | Lower TTLs at least one current TTL period before cutover; verify clients honour them                         | Design rule; [RFC 1034][rfc1034] |
 | Source after cutover | Keep it intact and read-only for an agreed hold period                                                        | Design rule                      |
 | Completion           | Not complete while data reconciliation, decommission or operating ownership is open                           | Design rule                      |
+| Platform choice      | No platform, product or purchase approved before inventory, utilisation and cost baselines are signed off     | Design rule                      |
+| Default answer       | Retain unless the workload passes a cull test; "do not migrate" is a valid, recorded result                   | Design rule                      |
 
 ## Strategy selection
 
@@ -60,6 +63,44 @@ AWS Prescriptive Guidance names seven strategies (VERIFIED_PRIMARY [M1], checked
 | Repurchase | Replace with SaaS/product                                   | Commodity function                                | Data export, lock-in, identity integration   |
 | Replatform | Small changes for a managed/containerised runtime           | Gains with limited code change                    | Behaviour drift in storage, time, networking |
 | Refactor   | Re-architect                                                | Scale/resilience needs justify cost               | Longest, riskiest; needs product ownership   |
+
+## Measure before choosing a platform
+
+Investigation may start early; commitment waits for evidence. A platform chosen before the workload is measured usually fits a workload
+that does not exist.
+
+1. Inventory every workload: OS and version, vCPU, RAM, storage, utilisation profile, monthly cost, data volume and owner. Check that each
+   source service in a capability map actually exists in the estate before designing its replacement.
+2. Cull per workload before designing the receiver. Test utilisation, cost, coupling to provider-specific features (IAM conditions, event
+   buses, step workflows, managed identity), data gravity, latency to retained services, compliance, refactor cost and remaining life. A
+   workload due to retire within about 18 months is retained. Low-volume serverless glue (functions, queues, API gateways) is often the
+   cheapest to keep and the riskiest to rebuild.
+3. Build the optimised baseline the new option must beat: eliminate workloads first (often the largest saving), then rightsize, then
+   commit (savings plans, reservations) against the post-elimination estate. Running commitments during dual-running means paying twice,
+   so record their expiry dates.
+4. Decide the platform from measured density. Fix the threshold and scoring weights before the data arrives, to avoid fitting the
+   threshold to a favoured answer. When container density is low, include a non-Kubernetes candidate: a hypervisor cluster plus the
+   existing identity, DNS, load balancing, secrets, monitoring and backup is a complete platform with close to zero new products.
+5. Apply the same evidence rule to "obvious" platform services (IdP, secrets store, DNS, load balancer, backup). Each must show the
+   incumbent cannot serve before it is added; an existing operated capability costs no new skills, patching or on-call.
+6. Record an ADR taken before its evidence as Withdrawn, distinct from Rejected, and re-decide after the baseline.
+
+```text
+MEASURE BEFORE PLATFORM: commitment is gated, investigation is not
+
++-----------+   +------+   +-----------+   +-----------------+   +--------------------+
+| inventory |-->| cull |-->| optimised |-->| density and TCO |-->| platform decision  |
+| + util    |   | per  |   | baseline  |   | vs threshold    |   | (or: do not move)  |
+| + cost    |   | wkld |   | to beat   |   | fixed in advance|   |                    |
++-----------+   +------+   +-----------+   +-----------------+   +--------------------+
+      ^ market tests and non-binding quotes may run in parallel; no purchase before the gate
+```
+
+- Full local TCO adds the lines business cases forget: staff labour and on-call, training, migration effort, spare capacity and
+  spares stock, hardware refresh, colocation and power, connectivity, DR, monitoring and security tooling, compliance evidence the
+  provider used to supply, and expected outage cost. Report 3- and 5-year TCO with sensitivity, not one number.
+- An OS past end of life turns a rehost into a refactor (package manager, init, mandatory access control and libraries change).
+  Marketplace or vendor-managed images often cannot be exported; get the vendor's supported backup, export or re-registration path.
 
 ## Discovery and waves
 
@@ -142,6 +183,8 @@ PNR = point of no return: the target accepted a write the source cannot receive
 | Source kept read-only for a hold period | After cutover        | Decommission source the same night                        | No reference copy for reconciliation or rollback  |
 | Rehost with a dated follow-up           | Deadline-driven exit | Rehost and call it done                                   | Old OS and EOL debt move with the workload        |
 | Expand, migrate, contract (schema)      | Schema change near a cutover | Change schema and cutover in one window          | Rollback needs the old schema the change removed  |
+| Inventory, cull, baseline, then decide  | Platform or repatriation choice | Pick the platform stack first                  | Fits an imagined workload; reuse never considered |
+| Identity as its own dataset             | Any service with logins | Move data, assume credentials follow               | Users locked out; hashes or aliases lost          |
 
 ## Failure modes and tests
 
@@ -154,6 +197,8 @@ PNR = point of no return: the target accepted a write the source cannot receive
 | Circular dependency        | Target cannot start without the source | Whole wave                   | Start the target with the source isolated                |
 | No restore at target       | Backup exists, restore fails           | Every migrated dataset       | Restore test at the target before decommission           |
 | Unowned service after move | Alerts go nowhere                      | Migrated services            | Page test to the named owner                             |
+| Credentials not migrated   | Logins fail after a clean data move     | Every user of the service    | Row-count parity, no empty hashes, sample logins per tenant |
+| Bulk sync hurts the source | Live service slows during sync          | Users of the source          | Throttle tied to a health signal; watch it during the rehearsal |
 
 ## Worked example
 
@@ -166,9 +211,20 @@ Dataset: 2 TB over a 1 Gbit/s link at a measured 70% efficiency. Change rate: 3%
 5. DNS: current TTL 3600 s; lower it to 300 s at least 1 hour before the window.
 6. Efficiency and change rate are illustrative; measure both in the rehearsal.
 
+Platform decision (measure before platform). An estate of 72 vCPU, 224 GB RAM and about 5.5 TB across VMs, managed databases, one
+container service and serverless glue. Containers are 13-14% of compute and 9% of memory.
+
+1. The density threshold for a Kubernetes-centred platform was fixed before the data; 13% is below any reasonable threshold.
+2. The bake-off must include the non-Kubernetes candidate: hypervisor cluster, VMs, a container runtime on VMs for the few containers.
+3. A platform ADR approved before the inventory existed is marked Withdrawn and re-decided on the evidence.
+4. The serverless glue costs little in place; it is retained unless the cull shows otherwise. "Do not migrate" stays a valid result.
+
 ## Review checklist
 
 - [ ] Every workload has a strategy, classification and owner; options share one cost model.
+- [ ] Inventory, utilisation and cost baselines signed off before any platform or purchase; retain and do-not-migrate considered.
+- [ ] Platform density threshold fixed before the data; a non-Kubernetes candidate included when density is low.
+- [ ] Credentials, aliases and routing tables tracked as their own dataset with a parity gate.
 - [ ] Dependencies come from evidence and carry observed, user-stated or assumed labels.
 - [ ] Wave 0 foundations pass their gate before any service moves.
 - [ ] Go, abort and rollback criteria have numbers and a named decision owner.

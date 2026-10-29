@@ -74,6 +74,13 @@ for name in ("UNREG", "REG"):
 
 Now adding a check updates the truth automatically and the build tells you which prose to fix. Applies equally to file counts, row counts, "supports N of X", inventory sizes, and any self-description.
 
+**Derived figures, not only counts (learned 2026-10-29, harvest of a personal project's guard scripts).** A figure computed from inputs (a
+floor, a back-solve, a total) gets the same treatment: a guard recomputes it from its inputs and fails naming the file and the value that
+drifted. Pair it with a deny-list of retired values and known-wrong citations that fails on any live surface still carrying one, and give
+authors a marker for a line that quotes a retired value on purpose, so the deny-list stays strict instead of growing exemptions. This is the
+standing form of the gate's one-off `--old-value` check, and the check-shaped answer to defect 4 (a back-solve against a floor that has
+changed).
+
 ## Scan everything, not a hand-listed few
 
 The count check above was first written scanning **four hand-listed files**. It passed clean. A repo-wide grep immediately found **five more surfaces it had never looked at**, including two rule

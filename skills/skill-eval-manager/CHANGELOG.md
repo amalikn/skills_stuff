@@ -11,6 +11,16 @@ Last rotated: 20261010_1806
 
 # Changelog
 
+## 20261029_2013 — Method write-back from the 2026-10-29 harvest (0.1.9)
+
+- `references/02_defining-evals.md` Common failures: the wrong observable (a neighbouring layer's count), the oracle inside the search
+  space and inputs that differ from production, and one averaged figure where per-phase slices and outcome claims are needed.
+- `references/04_falsifiability.md` What does not count: a zero exit with non-empty output (an unknown subcommand did that).
+- `references/05_reporting.md`: each result carries its as-at date and component versions, golden fixtures change only by decision with an
+  `oracle_change` invalidation; technical and substantive readiness are separate axes with human-declared blockers.
+- Sources: harvest notes of a service-provider lab, a cloud-repatriation plan and a personal research project (method only, no project
+  content); routed in `ledger.jsonl` with `scripts/record_writeback.py`.
+
 ## 20261010_1805 — Governed-file standard: recipes, records rotated
 
 - Workspace standard (operator, 2026-10-10; skill-ai-it "Governed files: headers, budgets, rotation and the checker's shape"): `justfile` gains

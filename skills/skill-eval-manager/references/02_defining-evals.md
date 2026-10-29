@@ -65,6 +65,17 @@ The bank file defines the denominator; a list emitted by the sync path could not
 - “The application API says it is correct” is not an independent oracle when the API path is what is judged.
 - A free-text “tested manually” is not falsifiability evidence without a method, reference, and date.
 - A result value is not a suite definition. Put it in history, not `evals.yaml`.
+- The wrong observable. A lab suite counted subscriber sessions with a host TCP-stack command; the count has to come from the component
+  that owns the claim (the session daemon). Name the observable's owner in the claim, and reject evidence read from a neighbouring layer.
+- The oracle inside the search space. A model-matching probe was scored against a target set that already held the ground-truth phrases,
+  so it matched itself; a second run gave the system bare labels where production gives it full surface forms, and scored 33% instead of
+  48%. Before trusting a score, check that the answer is not among the candidates by construction and that the system under test gets the
+  inputs production will give it. Both were caught by disbelieving the number before it was recorded (2026-10-29 harvest).
+- One averaged figure for a comparison. Storage candidates benchmarked on a single steady-state average hide the failure that matters:
+  latency and error rate during a rebuild after a node loss. Declare a population slice per phase (steady state, node lost before rebuild,
+  during rebuild, redundancy restored, during backup, during snapshot) and compare candidates on outcome claims (losses survived, measured
+  RPO after an induced failure, time to full redundancy), not on matching settings such as replica counts. The bench must exist before the
+  decision it informs (2026-10-29 harvest).
 
 ## Layer design
 

@@ -1,0 +1,361 @@
+Contents of https://www.nvidia.com/en-us/products/workstations/dgx-spark/:
+![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=)
+
+Designed to build and run autonomous agents.
+
+### Where to Buy
+
+Find your best purchase option on the NVIDIA Marketplace.
+
+* [Overview](#overview)
+* [Features](#features)
+* [Workloads](#workload)
+* [Software](#soft)
+* [Partners](#part)
+
+* [Overview](#overview)
+* [Features](#features)
+* [Workloads](#workload)
+* [Software](#soft)
+* [Partners](#part)
+
+* [Overview](#overview)
+* [Features](#features)
+* [Workloads](#workload)
+* [Software](#soft)
+* [Partners](#part)
+
+**A New Beginning for Windows PCs** Powered by NVIDIA RTX Spark.
+
+### Overview
+
+## Your Desktop Agent Computer
+
+Powered by the NVIDIA GB10 Grace Blackwell Superchip, NVIDIA DGX Spark™ is a complete platform for local autonomous agents. Large local memory, powerful AI compute and the NVIDIA AI software stack enable agents and large models to run locally, reducing the need for cloud-based token generation resources. With a compact, power-efficient design, DGX Spark is built to run always-on agent workloads—right from your desktop.
+
+## NVIDIA GB10 Grace Blackwell Superchip
+
+Up to
+
+### 20-core
+
+Grace CPU
+
+Up to
+
+### 1 petaFLOP
+
+FP4 AI Performance
+
+Up to
+
+### 128 GB
+
+Unified Memory
+
+### NVIDIA GB10 Superchip
+
+Experience up to 1 petaFLOP of AI performance at FP4 precision with the NVIDIA Grace Blackwell architecture.
+
+### Coherent Unified System Memory
+
+Run AI development and testing workloads with state-of-the-art AI models at your desktop with a large, unified system memory. Available in 64 GB\* or 128 GB memory configuration options.
+
+### NVIDIA ConnectX Networking
+
+High-performance NVIDIA ConnectX™ networking enables up to four DGX Spark systems to work together on larger AI models, deliver faster inference, and run multi-agent workloads.
+
+### NVIDIA AI Software Stack
+
+Utilize a full-stack solution for generative AI workloads, encompassing NVIDIA tools, frameworks, libraries, and pre-trained models, including NVIDIA NIM™.
+
+### NVIDIA Sync
+
+Connect to your DGX Spark from your laptop or desktop and monitor system status, launch Cursor, VS Code, or AI Workbench remotely, and configure up to four devices into a high-speed multi-node cluster. Install the latest software updates to get the most out of your system.
+
+\*64 GB memory configuration is available exclusively through participating OEM partners.
+
+## Workloads
+
+## Accelerate All Your AI Workloads
+
+Delivering the power of Grace Blackwell in a desktop-friendly size, DGX Spark is ideal for AI developer, researcher, and data scientist workloads.
+
+#### Agentic AI
+
+Build, run, and manage always-on AI agents from your desk.
+
+DGX Spark provides a complete local platform to develop, test, and deploy autonomous AI agents. With the NVIDIA AI software stack preinstalled—including tools for agent orchestration, evaluation, and secure local deployment—developers can build agents that run persistently and privately, without cloud dependency. From single-agent prototypes to multi-agent workflows, DGX Spark supports the full agentic development cycle.
+
+![Person prototyping on a laptop.](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Person prototyping on a laptop.")
+
+#### Prototyping
+
+Develop, test, and validate AI models and applications.
+
+With the NVIDIA AI software stack, DGX Spark provides a platform for developers to create, test, and validate AI models, and build AI agents, AI-augmented applications, and solutions. For final tuning or deployment, conveniently evaluate the work for eventual migration to the NVIDIA DGX™ cloud or other NVIDIA-accelerated data centers or cloud infrastructures.
+
+![Person prototyping on a laptop.](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Person prototyping on a laptop.")
+
+#### Fine-Tuning
+
+Fine-tune AI models up to 70 billion parameters.
+
+Improve pre-trained model performance by fine-tuning on DGX Spark. With up to 128 GB of unified system memory, fine-tune models up to 70 billion parameters to customize AI models and solutions for specific needs and use cases.
+
+![Image of interconnected AI models.](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Image of interconnected AI models.")
+
+#### Inference
+
+Test, validate, and inference with AI models up to 200 billion parameters.
+
+Fifth-generation Tensor Cores with support for FP4 deliver up to 1 petaFLOP of AI computing performance, combined with up to 128 GB of system memory, accelerating inference of state-of-the-art AI models to test, validate, and deploy from your DGX Spark.
+
+![Image of code being validated.](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Image of code being validated.")
+
+#### Data Science
+
+High-performance data science at your desk.
+
+DGX Spark’s combination of up to 128 GB of unified memory and 1 petaFLOP of parallel throughput maximizes performance of large, computationally complex data analytics and machine learning workflows at your desk.
+
+![Image of NYC overlaying trip distance and tip data.](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Image of NYC overlaying trip distance and tip data.")
+
+#### Edge Applications
+
+Develop edge applications with NVIDIA AI frameworks, including NVIDIA Isaac™, Metropolis, and many others.
+
+DGX Spark offers an exceptional platform for developing robotics, smart city, and computer vision solutions. NVIDIA frameworks include [Isaac](https://developer.nvidia.com/isaac), [Metropolis](https://www.nvidia.com/en-us/autonomous-machines/intelligent-video-analytics-platform/), and [Holoscan](https://developer.nvidia.com/holoscan-sdk), enabling developers to leverage the power of DGX Spark to develop edge applications quickly.
+
+![Image of a robot stacking blocks.](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII= "Image of a robot stacking blocks.")
+
+## Scale to Larger Models, Faster Inference, and Agentic Workloads
+
+Run frontier-class models on desktop clusters.
+
+### 1x DGX Spark
+
+64 GB\*
+  
+Up to 100B parameters
+
+### 1x DGX Spark
+
+128 GB
+  
+Up to 200B parameters
+
+### 2x 64 GB DGX Spark
+
+128 GB
+  
+Up to 200B parameters
+
+### 2x 128 GB DGX Spark
+
+256 GB
+  
+Up to 400B parameters
+
+### 4x DGX Spark
+
+512 GB
+  
+Up to 700B parameters
+
+\*64 GB memory configuration is available exclusively through participating OEM partners.
+
+DGX Spark for Developers
+
+## Everything You Need to Build, Run, and Deploy AI Locally
+
+### NVIDIA Open Agent Safety Platform
+
+NVIDIA Open Agent Safety Platform™ is an open software platform and reference system design built with industry, researchers, and public-sector organizations to strengthen AI security from agent testing to deployment so the world can unlock the full potential of agentic AI, safely.
+
+### NVIDIA OpenShell
+
+NVIDIA OpenShell™ is a safe runtime for AI agents. It provides sandboxed execution environments and policy enforcement to govern agent behavior.
+
+### NVIDIA NemoClaw
+
+NVIDIA NemoClaw™ is a collection of open blueprints for building autonomous agents: domain-specialized, always-on AI systems that reason, plan, and act across real-world workflows
+
+### NVIDIA Nemotron
+
+NVIDIA Nemotron™ is a family of highly efficient, multimodal, open AI models built for long-running autonomous agents: high-throughput, openly licensed AI systems that reason, plan, and act across complex, multi-step workflows—deployable anywhere from edge to cloud.
+
+### NVIDIA AI Enterprise
+
+A cloud-native suite of software tools, libraries, and frameworks accelerating production-grade AI development. Combines enterprise-grade security, optimized performance, and enterprise-level support to streamline prototype-to-production for next-gen agentic AI.
+
+### NVIDIA Local AI
+
+NVIDIA Local AI is a full-stack platform for building and running AI privately on DGX Spark and NVIDIA GPUs: optimized models, accelerated inference backends, agentic frameworks, and developer tools—all running locally on your desk, with no data leaving your machine, so you can experiment, build, and deploy AI faster than ever.
+
+## Playbooks for Everyone
+
+From novice to expert, leverage our curated playbooks to get off to a running start on various projects. Playbooks contain step-by-step recipes to demonstrate the art of the possible.
+
+**Resources**
+
+## Explore NVIDIA DGX Spark
+
+1. Blogs
+2. Videos
+3. Livestreams
+
+October 2, 2026
+
+### NVIDIA DGX Spark 64 GB Gives Developers More Ways to Build and Scale Local AI
+
+DGX Spark 64 GB runs capable local agents on device and works with our new NVIDIA Sync Cluster Assistant to seamlessly pair systems for larger workloads.
+
+March 16, 2026
+
+### Scaling Autonomous AI Agents and Workloads with NVIDIA DGX Spark
+
+Learn why NVIDIA DGX Spark is an ideal desktop platform for autonomous AI.
+
+February 12, 2026
+
+### NVIDIA DGX Spark Powers Big Projects in Higher Education
+
+The desktop supercomputer is sparking innovation across research fields, from campus labs to the South Pole.
+
+January 5, 2026
+
+### NVIDIA DGX Spark Gains 2x Performance and Open AI Model Support
+
+The latest DGX Spark software release delivers performance uplift across models and workflows.
+
+February 20, 2026
+
+### Meet the AI Photo Booth: DGX Spark + Reachy Mini at CES
+
+At CES 2026, the NVIDIA DGX Spark powers the Reachy Mini robot in an interactive photo booth with Pollen Robotics (Hugging Face).
+
+January 5, 2026
+
+### Build Your Own AI Assistant With Hugging Face on NVIDIA DGX Spark
+
+NVIDIA and Hugging Face are bringing AI agents to life.
+
+October 15, 2025
+
+### Sparking Something Big: NVIDIA DGX Spark Has Arrived
+
+It’s here! Go behind the scenes and see the delivery of NVIDIA DGX Sparks to top developers, researchers, creative studios, and roboticists.
+
+### DGX Spark Live: Perplexity Portable Computer Goes Local
+
+See how you can run agentic AI fully on-device on NVIDIA DGX Spark — analyzing sensitive documents and diagnosing product funnels locally, with optional cloud escalation only when you choose.
+
+### DGX Spark Live: Autonomous AI Agent Migration
+
+Watch a live demo of an NVIDIA NemoClaw agent running Qwen3-Coder on-device, autonomously migrating a legacy x86 application to Arm via the Arm MCP Server.
+
+### DGX Spark Live: Smart Routing for Hybrid AI
+
+Learn how a lightweight judge model evaluates each incoming request and sends it to the right destination, choosing between local models and the cloud based on what the job actually needs.
+
+## Partners
+
+## NVIDIA DGX Spark
+
+Get DGX Spark through our authorized channel and retail partners.
+
+## NVIDIA DGX Spark Powered Systems
+
+Discover NVIDIA GB10 Grace Blackwell Superchip–powered systems from our preferred OEM partners.
+
+## FAQ
+
+Up to 4 DGX Spark systems can be connected using NVIDIA ConnectX-7 networking. You can cluster two or three systems with a single QSFP cable; clustering 4 systems requires an external network switch. For optimal load balance and parallelism, connect DGX Spark in a power-of-2 number
+
+| Configuration | DGX Spark 64 GB\* | DGX Spark 128 GB | Connection |
+| --- | --- | --- | --- |
+| 1 × DGX Spark | 64 GB | 128 GB | – |
+| 2 × DGX Spark | 128 GB | 256 GB | Direct QSFP cable, no switch required |
+| 4 × DGX Spark | 256 GB | 512 GB | 200 GbE switch (QSFP56-DD, RoCE v2) |
+
+**Details on QSFP Cables and Switches**
+
+Each DGX Spark has two QSFP ports on the back of the device. Each port provides up to 200 Gigabits per second (Gb/s), but the incoming speed also depends on the cable you use. Approved cables are:
+
+**Amphenol:** NJAAKK-N911 (QSFP to QSFP112, 32AWG, 400mm, LSZH), *NJAAKK0006 is the 0.5m version of this cable*
+
+**Luxshare:** LMTQF022-SD-R (QSFP112 400G DAC Cable, 400mm, 30AWG)
+
+Minimum requirements for switch:
+
+* Minimum 4 ports QSFP56-DD
+* Breakout to 25/50/100/200/400 G
+* Recommended max port speed of 200G–400G per port
+* One 1/10GbE management Ethernet port
+* Supports RoCE v2
+* Switching capacity/throughput: minimum 0.8–1.6 Tbps
+
+\*64 GB memory configuration is available exclusively through participating OEM partners.
+
+## NVIDIA DGX Spark Specifications
+
+|  |  |
+| --- | --- |
+| Architecture | NVIDIA Grace Blackwell |
+| GPU | Blackwell Architecture |
+| CPU | 20-core Arm, 10 Cortex-X925 + 10 Cortex-A725 Arm |
+| CUDA Cores | Blackwell Generation |
+| Tensor Cores | 5th Generation |
+| RT Cores | 4th Generation |
+| Tensor Performance1 | Up to 1 PFLOP FP4 |
+| System Memory | 64 GB LPDDR5X\* or 128 GB LPDDR5x, coherent unified system memory |
+| Memory Interface | 256-bit |
+| Memory Bandwidth | 273 GB/s |
+| Storage | Up to 4 TB NVME.M2 with self-encryption |
+| USB | 4x USB TypeC |
+| Ethernet | 1x RJ-45 connector   10 GbE |
+| NIC | ConnectX-7 NIC @ 200 Gbps |
+| Wi-Fi | WiFi 7 |
+| Bluetooth | BT 5.4 |
+| Audio-output | HDMI multichannel audio output |
+| Power Supply | 240 Watts |
+| GB10 TDP2 | 140 W |
+| Display Connectors | 1x HDMI 2.1a, Up to 3x DisplayPort over USB-C (DP Alt Mode) |
+| NVENC | NVDEC | 1x | 1x |
+| OS | NVIDIA DGX™ OS |
+| System Dimensions | 150 mm L x 150 mm W x 50.5 mm H |
+| System Weight | 1.2 kg |
+
+1 Theoretical FP4 TOPS using the sparsity feature.
+
+\*64 GB memory configuration is available exclusively through participating OEM partners.
+
+2 TDP: Thermal Design Power of the GB10 chip, including CPU and GPU
+
+**Declared noise emission values in accordance with ECMA-109, June 2025**
+
+|  |  |  |
+| --- | --- | --- |
+| **Product name** | NVIDIA DGX Spark   940-54242-0000 | |
+| **Product description** | NVIDIA GB10 Grace Blackwell   Superchip   20-core Arm: 10 Cortex-X925 + 10   Cortex-A725 Arm,   128 GB LPDDR5x   Up to 4 TB NVME.M2 | |
+| **Quantities declared** | Operating Modedd) | Idle |
+| **Declared mean A-weighted sound power level a), LWA,m (dB)** | 35 | 19 |
+| **Declared mean A-weighted emission sound pressure level b), LpA,m (dB)** | 29 | 13 |
+| **Statistical adder for verification c), Kv (dB)** | 3 | 3 |
+
+a) The declared mean A-weighted sound power level, Lwa,m is computed as the arithmetic average of the measured A-weighted sound power levels.
+  
+ b) The declared mean A-weighted emission sound pressure level, LpA,m is computed as the arithmetic average of the defined Operator position (C.4b)
+  
+ c) The statistical adder for verification, KV is a factor to be added to the declared mean A-weighted sound power level, LWA,m, such that there will be a 95 % probability of acceptance, when using the verification procedures of ECMA-109, if no more than 6,5 % of the equipment in batch, has A-weighted sound power levels greater than (LWA,m + Kv).
+  
+ d) Operating mode, max GPU stress in 25°C ambient.
+
+Note 1 The quantity, LWA,c (formerly called LWAd) can be computed from the sum of LWA,m and KV.
+  
+ Note 2 All measurements made in conformance with ECMA-74 and declared with ECMA-109
+  
+ Note 3 dB is the abbreviation for decibels
+
+## Sign up To Be Notified on Availability

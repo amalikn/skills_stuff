@@ -14,9 +14,57 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261029_2035 — Write-back log index (backfill)
+
+Learned entries whose CHANGELOG line was rotated away or never named the file, indexed so the write-back contract test can trace each:
+
+- `languages/ansible.md`: Learned 2026-10-23
+- `languages/python.md`: Learned 2026-10-19, 2026-10-20, 2026-10-21, 2026-10-22, 2026-10-23
+- `languages/shell.md`: Learned 2026-10-19, 2026-10-20, 2026-10-21, 2026-10-22, 2026-10-23
+- `languages/yaml-json-toml.md`: Learned 2026-10-23
+- `references/errors-and-timeouts.md`: Learned 2026-10-20
+- `references/evolution-and-write-back.md`: Learned 2026-10-19
+- `references/generated-artifacts.md`: Learned 2026-10-21, 2026-10-22, 2026-10-23
+- `references/refactoring-and-promotion.md`: Learned 2026-10-20, 2026-10-21, 2026-10-27
+- `references/safety-and-writes.md`: Learned 2026-10-27
+- `references/security.md`: Learned 2026-10-20
+- `references/testing.md`: Learned 2026-10-20, 2026-10-21, 2026-10-26
+- `references/tooling-and-runtime.md`: Learned 2026-10-20
+- `references/version-control-and-review.md`: Learned 2026-10-20, 2026-10-21, 2026-10-26, 2026-10-27
+
+## 20261029_2030 — Backfilled log line for an existing write-back
+
+`languages/ansible.md` Learned 2026-10-20 (ansible-core 2.21.5, smc-resiliency render spike) was written without its CHANGELOG line; logged now so the
+write-back contract test passes.
+
+## 20261029_2012 — Harvest write-back: patterns P-41 to P-45 and twelve Learned entries
+
+From the 2026-10-29 knowledge harvest of the apn and personal projects (read-only), every entry generic, sources named per entry:
+
+- `references/design-patterns.md` Learned 2026-10-29 to (f): P-41 writing into files live sessions edit (marked region, CAS, settle
+  window, idempotent ids; apn project_sync.py), P-42 FOUND / NOT_FOUND / CHECK_FAILED with a negative only from a complete walk, P-43
+  classify a captured body before storing it as evidence, P-44 surface the unclassified, P-45 an edited document as a contract with a
+  fixture; P-01 gains a second shape (one analysis engine, a frozen config per supplier, a written column contract).
+- `references/testing.md` Learned 2026-10-29 (b)-(f): prove which mechanism refused; incident regressions assert the refusal; layer
+  invariants by AST scan plus an isolated-interpreter import and a negative control; pinned verifier baselines move with provenance;
+  profile source files before analysis.
+- `references/safety-and-writes.md` Learned 2026-10-29: per-run scratch files, never a fixed path; (b) a fetch cache is not a filter.
+- `references/errors-and-timeouts.md` Learned 2026-10-29: caps, confirmation, pacing and backoff for fan-out fetchers; (b) missing, zero
+  and filtered-empty never render the same. Contents block added (the file passed 100 lines).
+- `languages/sql.md` Learned 2026-10-29: cast text money at ingestion and assert row counts after every filter.
+- `references/configuration-and-literals.md` Learned 2026-10-29: bootstrap applies, rendered files hold persistent state (cloud-init).
+- `references/generated-artifacts.md` Learned 2026-10-29: a copied lab VM definition, without keys, drift-checked against its canonical file.
+- Skipped as already covered: polling speed-up (efficiency rules), capability-gated write pipeline (P-13, write rules), vendor contract
+  and plug-ins (P-17), folder-scoped commits (version-control Learned 2026-10-21), runtime pinning (tooling-and-runtime), fixes go into
+  the generator (generated-artifacts).
+
 ## 20261029_1925 — Pattern P-40: hold citations by a check (ledger, local store, rules as findings)
 
 `references/design-patterns.md` P-40, Learned 2026-10-29 from skill-network-architect (check_ledger, fetch_sources, sources_ledger).
+
+## 20261029_2030 — Learned: know what the commit gate runs
+
+Learned 2026-10-29 in `references/version-control-and-review.md`: a gate without tests passed 14 failing tests (unified-network-controller e6dee23).
 
 ## 20261029_1915 — Pattern P-39: carry a placement over proven edges, narrow by direction
 

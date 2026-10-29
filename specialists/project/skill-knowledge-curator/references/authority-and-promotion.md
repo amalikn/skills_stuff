@@ -39,6 +39,14 @@ Summary: >-
 **Authority invariant.** A claim is an indexed representation of what a source says, not new evidence. Two conflicting sources stay two claims and one open conflict until the operator decides. Recency
 is evidence of time, not of authority (INV-008).
 
+> **Learned 2026-10-29** · source standing · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal corpus project) · Source: project_stuff/me
+> corpus project `ARCHITECTURE.md` (trust boundary, key decisions), `scripts/compare_*.py` · Falsifier: a search-only store promoted to
+> citable on a partial comparison that later disagreed with the live source
+> Name which stores may be cited and which may only be searched. A large local corpus narrows a search to candidates; a citation needs the
+> live source, with the retrieval kept as dated evidence. A store crosses that line only on a complete, reproducible record-by-record
+> comparison against the citable source (one did, with zero real-text differences), and the promotion is recorded as a decision.
+
+
 ## Three stages of a knowledge page
 
 ```text

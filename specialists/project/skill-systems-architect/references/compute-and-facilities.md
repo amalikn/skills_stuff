@@ -61,6 +61,7 @@ Edge and small sites:
 - Budget PoE or DC power with brown-out margin. Under-voltage throttling and SD corruption are common (UNVERIFIED as a fleet rate; measure).
 - Make each box reprovisionable from a golden image plus configuration management. Recovery is replacement, not repair.
 - Judge enclosure heat from throttle and thermal counters, not uptime.
+- Full design of unattended Linux site boxes (image layout, updates, flash wear, watchdog, power): [edge appliances](edge-appliances.md).
 
 ## Memory reserve and N+k arithmetic
 
@@ -93,6 +94,17 @@ Unit identities and planning arithmetic. Vendor runtime charts govern real runti
 - Shutdown must fit runtime: `UPS_runtime >= detection + shutdown_ordering + longest guest/storage shutdown + margin`.
 - Stop storage clients before storage servers. Do not let a quorum cluster lose quorum mid-shutdown.
 
+Colocation power billing and dual-feed draw:
+
+- Colocation power is billed as metered energy (kWh), as committed capacity (contracted kVA or kW per cabinet), or both. Read the product names on the invoice line items before modelling any saving.
+  Under committed-capacity billing, lower actual draw changes nothing on the invoice; the only direct lever is a lower contracted figure, gated by contract
+  terms and notice periods. UNVERIFIED as a universal model: billing varies by provider and contract, so confirm it per contract.
+- Size a committed figure from per-cabinet peaks over at least three months plus a stated margin, and name the most loaded cabinet as the constraint. Daily averages hide short peaks and inrush; prefer
+  interval peak data. Never decommission a cabinet without a service map proving nothing live depends on it.
+- Dual-PSU equipment normally shares load across both supplies, so near-equal A and B feed draw is expected, not waste. Total cabinet load is A + B, and on a feed failure one circuit carries all of
+  it. Rule: A + B <= the usable rating of one feed, so each feed runs at or below about 50% of its usable rating in normal operation. Removing B-feed paths cuts resilience, not cost, under capacity
+  billing. Load sharing is VERIFIED_SECONDARY (PSU vendor behaviour varies; some units run active/standby); measure per-PSU draw with the peer pulled (table above).
+
 ```text
 Dual-feed power: each host draws one PSU from each independent feed
 
@@ -121,14 +133,16 @@ Dual-feed power: each host draws one PSU from each independent feed
 
 ## Failure modes and tests
 
-| Failure                                 | Symptom                                     | Blast radius                | Proving test                                          |
-| --------------------------------------- | ------------------------------------------- | --------------------------- | ----------------------------------------------------- |
-| Both PSUs on one feed                   | host drops on a single breaker trip         | every host on that feed     | pull each PSU under load; record per-PSU W            |
-| Pooled RAM fits, largest guest does not | guest stays down after host loss            | services on the lost host   | drain the largest host; every required guest starts   |
-| UPS runtime shorter than shutdown chain | hard power-off mid-shutdown, fsck, rebuild  | whole rack                  | timed on-battery test to the shutdown trigger         |
-| OOB depends on production services      | no console during an outage                 | recovery of every host      | reach OOB with the production network isolated        |
-| Thermal throttling at summer peak       | latency spikes, throttle counters rise      | hosts in that cooling zone  | load test at worst ambient; read thermal counters     |
-| Firmware drift across hosts             | one host behaves differently under failover | the odd host and its guests | inventory diff of BIOS/NIC firmware before acceptance |
+| Failure                                 | Symptom                                         | Blast radius                | Proving test                                           |
+| --------------------------------------- | ----------------------------------------------- | --------------------------- | ------------------------------------------------------ |
+| Both PSUs on one feed                   | host drops on a single breaker trip             | every host on that feed     | pull each PSU under load; record per-PSU W             |
+| Pooled RAM fits, largest guest does not | guest stays down after host loss                | services on the lost host   | drain the largest host; every required guest starts    |
+| UPS runtime shorter than shutdown chain | hard power-off mid-shutdown, fsck, rebuild      | whole rack                  | timed on-battery test to the shutdown trigger          |
+| OOB depends on production services      | no console during an outage                     | recovery of every host      | reach OOB with the production network isolated         |
+| Thermal throttling at summer peak       | latency spikes, throttle counters rise          | hosts in that cooling zone  | load test at worst ambient; read thermal counters      |
+| Firmware drift across hosts             | one host behaves differently under failover     | the odd host and its guests | inventory diff of BIOS/NIC firmware before acceptance  |
+| A + B draw above one feed's rating      | breaker trips on the survivor after a feed loss | whole cabinet               | sum per-feed peaks; compare with one feed's usable kVA |
+| Saving modelled on the wrong billing    | kWh saving that never appears on the invoice    | the business case           | match each invoice line to energy or capacity billing  |
 
 ## Worked example
 
@@ -155,6 +169,9 @@ $ just capacity examples/compute-3-hosts.json
 - [ ] N+k computed with the largest host removed and the reserve subtracted (`just capacity`).
 - [ ] Largest guest fits one survivor; guest CPU model pinned to the oldest host.
 - [ ] UPS load <= policy ceiling; runtime covers the measured shutdown chain.
+- [ ] Colocation billing model read from invoice lines (energy, capacity or both) before any power saving is modelled.
+- [ ] Cabinet A + B peak draw <= one feed's usable rating; near-equal A/B split treated as normal.
+- [ ] Remote edge boxes follow [edge appliances](edge-appliances.md): A/B image, watchdog, flash write budget, power telemetry.
 - [ ] OOB reachable with production network, DNS and IdP down.
 - [ ] Firmware and driver versions inventoried and consistent; warranty and refresh dates recorded.
 - [ ] Acceptance used representative load and recorded PSI, steal, I/O latency and p99, not averages.

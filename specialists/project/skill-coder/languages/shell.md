@@ -61,8 +61,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > `git rm` on the next line, twice in one day. Guard each edit step (`... || exit 1`) or start the block with `set -euo pipefail`, and put a
 > destructive step (delete, `git rm`, push) in its own call after the edit is confirmed.
 
-> **Learned 2026-10-20** · bash, procps `pkill -f` over ssh · VERIFIED_PRIMARY (one incident: the remote session ended with ssh exit 255) · Source:
-> unified-network-controller session 2026-10-20, a scratch check on apn-unc01 · Falsifier: a `pkill -f <path>` run through `ssh host '<command>'`
+> **Learned 2026-10-20** · bash, procps `pkill -f` over ssh · VERIFIED_PRIMARY (one incident: the remote session ended with ssh exit 255) · Source: unified-network-controller session 2026-10-20, a scratch check on apn-unc01 · Falsifier: a `pkill -f <path>` run through `ssh host '<command>'`
 > that leaves its own session alive
 > `pkill -f <pattern>` matches full command lines, including the remote shell running it: `ssh host 'cd /tmp/x; pkill -f /tmp/x/run.sh; ...'`
 > killed its own `bash -c` (whose command line contains the pattern) and dropped the session. Match on something only the target has, or read
@@ -79,8 +78,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 
 - Test framework choice and a formatter: UNVERIFIED stubs.
 
-> **Learned 2026-10-20** · bash on macOS, tsh 17/18 · VERIFIED_PRIMARY · Source: skill-smc scripts/overlay-usage-breakdown.sh `with_deadline`
-> (skills_stuff 01f5bb3) · Falsifier: `perl -e 'alarm 60; exec @ARGV' tsh ssh ...` ending at 60 s
+> **Learned 2026-10-20** · bash on macOS, tsh 17/18 · VERIFIED_PRIMARY · Source: skill-smc scripts/overlay-usage-breakdown.sh `with_deadline` (skills_stuff 01f5bb3) · Falsifier: `perl -e 'alarm 60; exec @ARGV' tsh ssh ...` ending at 60 s
 > macOS has no `timeout(1)`, and `perl -e 'alarm N; exec @ARGV' cmd` did not stop `tsh ssh` (it ran 2 min 50 s past a 60 s alarm). A watcher does:
 >
 > ```bash
@@ -95,9 +93,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 >
 > Prove it with a short limit (3 s stopped the host in 8 s, the 5 s KILL grace included).
 
-> **Learned 2026-10-22 (c)** · bash 5.3, a stdin-fed command under the watcher above · VERIFIED_PRIMARY (local runs: a script, and a shell with
-> job control) · Source: skill-smc scripts/collect-smc-evidence-full.sh `with_deadline` and scripts/test_with_deadline.sh (skills_stuff 567b342) ·
-> Falsifier: `printf 'x\n' | f cat` printing nothing in a non-interactive script where `f(){ "$@" & wait $!; }`
+> **Learned 2026-10-22 (c)** · bash 5.3, a stdin-fed command under the watcher above · VERIFIED_PRIMARY (local runs: a script, and a shell with job control) · Source: skill-smc scripts/collect-smc-evidence-full.sh `with_deadline` and scripts/test_with_deadline.sh (skills_stuff 567b342) · Falsifier: `printf 'x\n' | f cat` printing nothing in a non-interactive script where `f(){ "$@" & wait $!; }`
 > A background job reads `/dev/null` as stdin only when job control is on (an interactive shell); in a script it inherits the pipe. Write `"$@" <&0 &`
 > so a piped command (`printf '%s' "$script" | with_deadline 300 tsh ssh host 'bash -s'`) keeps its stdin wherever the helper runs, and test the
 > deadline by disabling the kill (the test must go red), not the stdin path, which a script cannot make fail:
@@ -114,16 +110,13 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > }
 > ```
 
-> **Learned 2026-10-22 (d)** · a deadline watcher around tsh ssh · VERIFIED_PRIMARY (live: a 3 s deadline on `tsh ssh ... 'bash -s'` returned 1,
-> stderr "context canceled") · Source: skill-smc scripts/collect-smc-evidence-full.sh `with_deadline` (skills_stuff ab3bb74) · Falsifier: tsh exiting
+> **Learned 2026-10-22 (d)** · a deadline watcher around tsh ssh · VERIFIED_PRIMARY (live: a 3 s deadline on `tsh ssh ... 'bash -s'` returned 1, stderr "context canceled") · Source: skill-smc scripts/collect-smc-evidence-full.sh `with_deadline` (skills_stuff ab3bb74) · Falsifier: tsh exiting
 > 143 after SIGTERM
 > A command that traps TERM exits with its own status, so the caller cannot tell a timeout from a failure by the status. Judge it on the helper's own
 > clock and return 124 (GNU `timeout`'s code): `local started=$SECONDS` before the run, `(( SECONDS - started >= deadline )) && rc=124` after `wait`.
 > Report what a cut run never reached as "not run", never as failed.
 
-> **Learned 2026-10-20 (c)** · bash, a script sent over ssh on stdin (`ssh host bash -s < script`) · VERIFIED_PRIMARY (three trial runs did
-> nothing past their first line; with `ssh -n` they ran) · Source: unified-network-controller `infra/apn-unc01/ops/collector-trial.sh` (its
-> predecessor in a session scratchpad, 2026-10-20) · Falsifier: an ssh release that does not read stdin when given a remote command
+> **Learned 2026-10-20 (c)** · bash, a script sent over ssh on stdin (`ssh host bash -s < script`) · VERIFIED_PRIMARY (three trial runs did nothing past their first line; with `ssh -n` they ran) · Source: unified-network-controller `infra/apn-unc01/ops/collector-trial.sh` (its predecessor in a session scratchpad, 2026-10-20) · Falsifier: an ssh release that does not read stdin when given a remote command
 > A script that reaches a host as `bash -s` reads its own lines from stdin. Any command inside it that reads stdin, `ssh` first of all (also
 > `read`, `docker exec -i`, a Python program without input), swallows the rest of the script, which then ends silently after that line with
 > exit 0. Give every such inner command its own stdin:
@@ -133,9 +126,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > timeout 900 "$PY" batch_push_devices.py ... --dry-run < /dev/null > "$out" 2>&1
 > ```
 
-> **Learned 2026-10-21** · a deadline on a command run from a macOS shell · VERIFIED_PRIMARY (`timeout` and `gtimeout` both "command not found"
-> on the operator's Mac, 2026-10-21; the perl form ran and returned) · Source: smc-resiliency session, a read of unc-collector.service on apn-unc01
-> through `just unc01::run` · Falsifier: a macOS host where `timeout` is on PATH without GNU coreutils installed
+> **Learned 2026-10-21** · a deadline on a command run from a macOS shell · VERIFIED_PRIMARY (`timeout` and `gtimeout` both "command not found" on the operator's Mac, 2026-10-21; the perl form ran and returned) · Source: smc-resiliency session, a read of unc-collector.service on apn-unc01 through `just unc01::run` · Falsifier: a macOS host where `timeout` is on PATH without GNU coreutils installed
 > macOS ships no `timeout`, and `gtimeout` exists only with GNU coreutils. Every remote or long call still needs a deadline: wrap it in perl's
 > alarm, which every macOS has. The process is killed with SIGALRM (exit 142) when the deadline passes.
 >
@@ -145,9 +136,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > ```
 
 
-> **Learned 2026-10-22** · bash, stdin redirections on one command · VERIFIED_PRIMARY (a probe run as `tsh ssh host "bash -s" <<<"$PROBE" </dev/null`
-> printed nothing on every host; without the trailing `</dev/null` it ran) · Source: skill-smc `scripts/php_package_probe.sh` (skills_stuff
-> cecfe50, its draft in a session scratchpad) · Falsifier: a shell where the first of two stdin redirections wins
+> **Learned 2026-10-22** · bash, stdin redirections on one command · VERIFIED_PRIMARY (a probe run as `tsh ssh host "bash -s" <<<"$PROBE" </dev/null` printed nothing on every host; without the trailing `</dev/null` it ran) · Source: skill-smc `scripts/php_package_probe.sh` (skills_stuff cecfe50, its draft in a session scratchpad) · Falsifier: a shell where the first of two stdin redirections wins
 > Redirections apply left to right, so a later `</dev/null` replaces an earlier here-string or `< script` as stdin: `bash -s` then reads
 > nothing and exits 0 with no output. When a command takes its script on stdin, give it exactly one stdin redirection:
 >
@@ -155,8 +144,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > line="$(tsh ssh --proxy="$proxy" "root@$node" "DEEP=${DEEP:-0} bash -s" <<<"$PROBE" 2>&1 | tr -d '\r' | grep '^PHPPROBE|' | head -1)"
 > ```
 
-> **Learned 2026-10-22 (b)** · Debian/Ubuntu, `dpkg-query -W '<glob>'` · VERIFIED_PRIMARY (on every SMC surveyed, `'php8.1-*'` matched about 20
-> packages that were not installed) · Source: skill-smc `scripts/php_package_probe.sh` (skills_stuff cecfe50) · Falsifier: a dpkg release whose
+> **Learned 2026-10-22 (b)** · Debian/Ubuntu, `dpkg-query -W '<glob>'` · VERIFIED_PRIMARY (on every SMC surveyed, `'php8.1-*'` matched about 20 packages that were not installed) · Source: skill-smc `scripts/php_package_probe.sh` (skills_stuff cecfe50) · Falsifier: a dpkg release whose
 > `-W` with a glob lists installed packages only
 > A glob matches every package dpkg knows, including removed ones and ones never installed but listed by a dependency, so feeding the list to
 > `apt-get install` installs packages the box did not have. Filter on the status first:
@@ -165,8 +153,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > pkgs=$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' 'php8.1-*' libapache2-mod-php8.1 2>/dev/null | awk '$1=="ii"{print $2}')
 > ```
 
-> **Learned 2026-10-23** · shfmt 3.14.1 (`uvx --from shfmt-py shfmt`), ShellCheck · VERIFIED_PRIMARY (ansible-wifi checkout) · Source:
-> local-knowledge-ansible `ansible-wifi/ansible-wifi-root-governance/{.editorconfig,.shellcheckrc,lint_new.sh}` · Falsifier: shfmt
+> **Learned 2026-10-23** · shfmt 3.14.1 (`uvx --from shfmt-py shfmt`), ShellCheck · VERIFIED_PRIMARY (ansible-wifi checkout) · Source: local-knowledge-ansible `ansible-wifi/ansible-wifi-root-governance/{.editorconfig,.shellcheckrc,lint_new.sh}` · Falsifier: shfmt
 > listing a file marked `ignore = true`
 > Two-space shell for new scripts only: shfmt reads `.editorconfig` (`[*.{sh,bash}] indent_style = space`, `indent_size = 2`,
 > `shell_variant = bash`), and a section listing the existing scripts with `ignore = true` (plus `indent_size = unset` so editors keep their
@@ -174,8 +161,7 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > that a `*.sh` glob missed); pass that list to `shfmt -d` and `shellcheck`. shfmt does not descend into a symlinked folder, and finds
 > `.editorconfig` by walking up from each file, so a physical path outside the checkout needs the file linked into an ancestor.
 
-> **Learned 2026-10-27** · bash 3.2 (macOS `/bin/bash`), `set -u` with an empty array · VERIFIED_PRIMARY (skill-smc `scripts/smc_link_health.sh`
-> written for it) · Source: skills_stuff skill-smc `scripts/smc_link_health.sh` · Falsifier: `set -u; a=(); echo "${a[@]}"` passing on bash 3.2
+> **Learned 2026-10-27** · bash 3.2 (macOS `/bin/bash`), `set -u` with an empty array · VERIFIED_PRIMARY (skill-smc `scripts/smc_link_health.sh` written for it) · Source: skills_stuff skill-smc `scripts/smc_link_health.sh` · Falsifier: `set -u; a=(); echo "${a[@]}"` passing on bash 3.2
 > `"${arr[@]}"` on an empty array is an "unbound variable" error under `set -u` in bash before 4.4, which macOS still ships. Expand optional
 > arguments as `${arr[@]+"${arr[@]}"}`, which yields nothing for an empty array and every element quoted otherwise.
 >

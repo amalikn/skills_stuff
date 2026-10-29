@@ -6,11 +6,14 @@ its last slurp, the slurp reads the transcript itself. This prints, in order and
 
 - compaction points (where the context was summarised);
 - pass 1, every user message: typed turns, messages sent while the agent worked, and answers to AskUserQuestion;
-- pass 2, every action that may have a side effect: Bash commands (by description and first line), files written or edited, and MCP writes.
+- pass 2, every action that may have a side effect: Bash commands (by description and first line), files written or edited, and MCP writes;
+  a sub-agent's own side effects are listed too, prefixed `sub-`;
+- pass 3, every sub-agent the session spawned (`<session>/subagents/agent-*.jsonl`, operator 2026-10-29: "when you're slurping you need to
+  slurp information from the sub agents as well"): its type and task, and the start of its final report, which the parent only summarised.
 
 Run:
     transcript_passes.py                       # newest transcript of the current directory's project
-    transcript_passes.py --transcript PATH.jsonl [--since 2026-10-09T01:53] [--pass 1|2]
+    transcript_passes.py --transcript PATH.jsonl [--since 2026-10-09T01:53] [--pass 1|2|3]
 
 Times are the transcript's own (UTC). Output is a working list for the slurp, not a record: it is never saved into a project.
 For Codex, pass --transcript explicitly. Pass 2 lists tool-envelope and nested tool names without arguments; inspect relevant source inputs locally
@@ -227,6 +230,37 @@ def events(path: pathlib.Path, since: str = ""):
                     yield ts, "mcp", name
 
 
+def subagent_events(path: pathlib.Path, since: str = ""):
+    """The sub-agents a session spawned: one report line each, then their own side effects.
+
+    Args:
+        path: The session's transcript; its sub-agents are in `<path without .jsonl>/subagents/agent-*.jsonl`.
+        since: ISO time prefix; earlier events are skipped.
+
+    Yields:
+        (timestamp, kind, text): kind `subagent` (type, task and the start of its final report) or `sub-<kind>` for its side effects.
+    """
+    folder = path.with_suffix("") / "subagents"
+    for sub_path in sorted(folder.glob("agent-*.jsonl")) if folder.is_dir() else []:
+        meta_path = sub_path.with_name(sub_path.stem + ".meta.json")
+        meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
+        first, report = "", ""
+        for line in _lines(sub_path):
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            first = first or row.get("timestamp", "")
+            if row.get("type") == "assistant":
+                text = text_of((row.get("message") or {}).get("content"))
+                report = text or report
+        if first and first >= since:
+            yield first, "subagent", f"{meta.get('agentType', '?')}: {meta.get('description', sub_path.stem)} -> {report}"
+        for ts, kind, text in events(sub_path, since):
+            if kind in ("bash", "file", "mcp", "tool"):
+                yield ts, f"sub-{kind}", text
+
+
 def main(argv: list[str] | None = None) -> int:
     """Print the passes.
 
@@ -239,13 +273,15 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--transcript", type=pathlib.Path)
     ap.add_argument("--since", default="", help="ISO time prefix, e.g. 2026-10-09T01:53 (UTC, as the transcript stores it)")
-    ap.add_argument("--pass", dest="which", choices=["1", "2"], help="only pass 1 (user) or pass 2 (side effects)")
+    ap.add_argument("--pass", dest="which", choices=["1", "2", "3"], help="only pass 1 (user), 2 (side effects) or 3 (sub-agents)")
     args = ap.parse_args(argv)
     path = args.transcript or default_transcript(pathlib.Path.cwd())
-    keep = {"1": {"compaction", "user", "mid", "answer"}, "2": {"compaction", "bash", "file", "mcp", "tool"}}.get(args.which)
+    keep = {"1": {"compaction", "user", "mid", "answer"},
+            "2": {"compaction", "bash", "file", "mcp", "tool", "sub-bash", "sub-file", "sub-mcp", "sub-tool"},
+            "3": {"subagent"}}.get(args.which)
     print(f"transcript: {path}")
     counts: dict[str, int] = {}
-    for ts, kind, text in events(path, args.since):
+    for ts, kind, text in sorted([*events(path, args.since), *subagent_events(path, args.since)], key=lambda e: e[0]):
         if keep and kind not in keep:
             continue
         counts[kind] = counts.get(kind, 0) + 1

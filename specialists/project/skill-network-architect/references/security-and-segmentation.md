@@ -19,6 +19,7 @@ Summary: >-
 - [Trust-boundary pass](#trust-boundary-pass)
 - [Zone matrix](#zone-matrix)
 - [Port and wireless access control](#port-and-wireless-access-control)
+- [Zero-trust access to remote fleets](#zero-trust-access-to-remote-fleets)
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
 - [Worked example](#worked-example)
@@ -56,6 +57,10 @@ Summary: >-
 | Access ports                                | BPDU guard, storm control; loop protection on risky ports        | UNVERIFIED (judgement)                      |
 | Management plane                            | Own VRF/VLAN, privileged gateway only, OOB where possible        | UNVERIFIED (judgement)                      |
 | Remote sites dial out to the management hub | Record what breaks when the broker is down                       | UNVERIFIED (judgement)                      |
+| Access-proxy agents dial out over reverse tunnels | Works behind firewalls and CGNAT; the proxy becomes a shared dependency | VERIFIED_PRIMARY [Teleport agents][tp-agents] |
+| Access proxies and SSH forwards carry TCP   | UDP (SNMP, NTP) and ICMP probes run on the site box or need an L3 overlay | VERIFIED_PRIMARY [Teleport TCP apps][tp-tcp], [ssh(1)][ssh1] |
+| Short-lived certificates expire by design   | Expiry of a shared access certificate fails every target at once | VERIFIED_PRIMARY [Teleport authentication][tp-auth] |
+| Do not authorise remote sites by source IP  | Consumer and multi-carrier NAT addresses drift                   | UNVERIFIED (field observation)              |
 
 - Also select among routed ACLs, stateful firewalls, host policy, proxies, identity-aware access, NAC and microsegmentation by control need.
 - Model rule order, implicit defaults, state tables, NAT order, fail-open or fail-closed and HA state sync.
@@ -132,6 +137,45 @@ Access-Accept + attributes --> port or SSID opens with a VLAN, ACL or role
 later changes: CoA or Disconnect (RFC 5176)
 ```
 
+## Zero-trust access to remote fleets
+
+An identity-aware access proxy (Teleport, a similar broker, or SSH through a bastion) suits a fleet of sites behind carrier NAT: the agent on
+each site box dials out, and people reach devices through the proxy with per-person identity and audit. It has limits that shape the design.
+
+```text
+ZERO-TRUST ACCESS TO A SITE BEHIND CGNAT: what crosses the proxy, and what must not depend on it
++--------+  TLS/mTLS  +------------------+  reverse tunnel  +-------------+  TCP only  +----------------+
+| person |----------->| access proxy     |<-----------------| site box    |----------->| site devices   |
+| or tool|            | (identity, audit)|   (site dials)   | agent       |            | (same IPs as   |
++--------+            +------------------+                  +-------------+            |  other sites)  |
+                                                              |  UDP/ICMP run here     +----------------+
+                                                              |  (SNMP, ping, NTP)
+recovery: second hub or independent tunnel ----------------> site box   (never through the same proxy)
+```
+
+Each limit, its consequence, the design response and the evidence:
+
+- **TCP transport.** Application access covers "any TCP-based application"; SSH `-L` and `-R` forward a TCP port or Unix socket, and `-D` is a SOCKS server.
+  Central SNMP (UDP) and ping (ICMP) cannot cross, so a central ping check fails by construction. Run UDP and ICMP probes on the site box over a remote
+  command and return the output, or add an address-translating L3 overlay. VERIFIED_PRIMARY [Teleport TCP apps][tp-tcp], [ssh(1)][ssh1]; no UDP or ICMP
+  transport found in the Teleport application-access docs (explicit negative, 2026-10-29).
+- **Repeated management addresses.** Cookie-cutter sites reuse one plan, so an IP alone names many devices. Key every record, metric and job on
+  (site, IP) or a device ID, with one IPAM namespace or VRF per site. UNVERIFIED (design method).
+- **Overlay to overlapping sites.** Two sites answer for the same address. Map each site range 1:1 onto a unique block (Linux NETMAP, nat table only)
+  or use 4via6, and record the mapping in IPAM. VERIFIED_PRIMARY [iptables-extensions][ipt-ext] (NETMAP).
+- **Shared proxy and certificates.** A proxy outage or certificate expiry looks like every site failing. Keep a recovery channel that does not use
+  the proxy (a second hub, an independent tunnel, out-of-band power) and alarm on the shared dependency first. VERIFIED_PRIMARY
+  [Teleport authentication][tp-auth] (certificates auto-expire); the response is UNVERIFIED (judgement).
+- **Per-session cost over high RTT.** Each new session costs seconds over geostationary satellite. Reuse one connection per site and time-bound every
+  remote call. UNVERIFIED (measured in one estate; see [remote-site fleet](remote-site-fleet.md#polling-over-geo-and-on-box-readers)).
+- **A tunnel key is not a person.** WireGuard peers are keys (cryptokey routing), so tunnel logs cannot attribute actions to people. Attribute through
+  the proxy or AAA on the device. VERIFIED_PRIMARY [WireGuard paper](https://www.wireguard.com/papers/wireguard.pdf).
+
+- An unaudited back door (a reverse tunnel outside the proxy) defeats the audit the proxy exists for. Govern it as the documented recovery
+  channel or remove it.
+- Before declaring a site down, check the access path (certificate validity, proxy login, agent status) and try the second path. A fleet
+  where most targets fail at the same moment with the same error is a shared-dependency failure until proven otherwise.
+
 ## Patterns and anti-patterns
 
 | Pattern                            | Use when                 | Anti-pattern                     | Why it fails                                    |
@@ -143,6 +187,9 @@ later changes: CoA or Disconnect (RFC 5176)
 | Dual-stack first-hop protection    | Any IPv6-enabled segment | IPv4-only snooping and DAI       | Rogue RA hijacks IPv6 traffic                   |
 | Deny tests alongside allow tests   | Every change             | Test only that wanted flows work | Holes ship unnoticed                            |
 | Dial-out management                | Remote sites             | Inbound management exposed       | Exposed attack surface; fails behind CGNAT      |
+| UDP and ICMP probes on the site box | TCP-only access proxy   | Central SNMP or ping through it  | The proxy cannot carry them                     |
+| Recovery path independent of proxy | Proxy-managed fleets    | One proxy for access and recovery | Proxy or certificate fault strands every site  |
+| Authenticated site sessions        | Sites on NAT or multi-carrier WAN | Source-IP allowlists       | Address drifts; site breaks silently           |
 
 ## Failure modes and tests
 
@@ -156,6 +203,8 @@ later changes: CoA or Disconnect (RFC 5176)
 | Management reachable from user zone       | Admin surface exposed           | All devices             | Scan management prefixes from user and guest       |
 | Policy change locks out admins            | Loss of management              | Site or fleet           | Keep OOB and old policy; canary smallest scope     |
 | Firewall HA failover without state sync   | Sessions reset                  | All stateful flows      | Fail the active unit under load                    |
+| Access certificate or proxy expiry        | Most sites fail at once         | Whole fleet (access)    | Let a test certificate expire; one shared alarm fires |
+| Site NAT address drifts                   | Allowlisted service refuses site | One site                | Move a test site to another egress; service still works |
 
 Change rules: precompute the semantic rule diff, keep old policy and OOB access, canary the smallest scope. Test from real sources (wired, each SSID, VPN, each site type), both families, new and
 established sessions, DNS, NAT and return path. Log without capturing credentials or needless payload. Never disable host-key checks or bypass authentication to make automation pass.
@@ -186,6 +235,7 @@ Scale: likelihood and impact 1-5; score = L x I; subtract 1 per verified control
 - [ ] 802.1X method, server-certificate validation and AAA-down behaviour decided and tested.
 - [ ] First-hop protections cover IPv4 and IPv6.
 - [ ] Management reachable only via the privileged gateway or OOB.
+- [ ] Access proxy: TCP-only limit planned for (on-box UDP and ICMP probes); identity keyed on (site, IP); recovery path independent of the proxy; certificate expiry alarmed.
 - [ ] Rule change has a semantic diff, canary scope, rollback and OOB access.
 - [ ] No compliance claim made from this checklist.
 
@@ -203,6 +253,12 @@ Access control:
 - [IEEE 802.1X-2020][dot1x]: port-based access control and MACsec key agreement.
 - [RFC 9190][rfc9190] and [RFC 3580][rfc3580]: EAP-TLS 1.3 and RADIUS attributes for 802.1X.
 - [RFC 5176](https://www.rfc-editor.org/rfc/rfc5176.html): CoA and Disconnect when policy must change mid-session.
+
+Remote fleet access:
+
+- [Teleport agent architecture][tp-agents]: reverse tunnels from agents to the proxy.
+- [Teleport authentication][tp-auth]: short-lived certificates and their expiry.
+- [OpenSSH ssh(1)][ssh1]: what `-L`, `-R`, `-D` and `-w` forward.
 
 Edge and first-hop:
 
@@ -223,3 +279,8 @@ Controls frameworks:
 [rfc9190]: https://www.rfc-editor.org/rfc/rfc9190.html
 [rfc9325]: https://www.rfc-editor.org/rfc/rfc9325.html
 [ism]: https://www.cyber.gov.au/resources-business-and-government/essential-cyber-security/ism
+[tp-agents]: https://goteleport.com/docs/reference/architecture/agents/
+[tp-tcp]: https://goteleport.com/docs/enroll-resources/application-access/protect-apps/tcp/
+[tp-auth]: https://goteleport.com/docs/reference/architecture/authentication/
+[ssh1]: https://man.openbsd.org/ssh.1
+[ipt-ext]: https://ipset.netfilter.org/iptables-extensions.man.html

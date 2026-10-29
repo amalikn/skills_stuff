@@ -70,6 +70,16 @@ Security and recovery:
 - Keep out-of-band access and break-glass identity independent of the service being changed.
 - Configuration rollback, traffic rollback and data recovery are three different things. Data changes may need forward repair.
 
+Test design for automation and acceptance:
+- One operation per test. Each test sets up its own state, performs one write or one change, asserts the result and cleans up. A test that depends on
+  the state another test left behind fails or passes for reasons nobody can read.
+- Isolate tests from each other and from production: separate targets, accounts or namespaces, and no shared mutable fixture between tests.
+- Give every check a negative control: an input or target where the check must fail. A check that has never failed may be vacuous (see
+  [architecture method](architecture-method.md#decision-rules)).
+- Assert which mechanism acted. A refusal from a permission layer and a refusal from a validator look alike; read the audit trail for the acting
+  identity and the component that refused.
+- Turn every real incident into a regression test that asserts the behaviour (what is refused or withheld), not incidental output text.
+
 ## Validation tiers
 
 Name the tier each check belongs to. A pass at one tier says nothing about a higher one.
@@ -130,6 +140,7 @@ RECONCILIATION LOOP: intent and observation meet only in the plan
 | Platform has commit-confirm   | use it with a timer above verify time    | rely on a manual revert          | the management path may be the thing that breaks |
 | Estimating runtime            | measure p95 per phase on real targets    | extrapolate from one lab device  | the slow tail sets the window                    |
 | Config change on a network    | run config-model checks first            | treat "push succeeded" as proof  | a valid push can still drop traffic              |
+| Writing a test suite          | one operation per test, own setup and cleanup | chain tests through shared state | order-dependent passes hide defects              |
 
 ## Failure modes and tests
 
@@ -141,6 +152,7 @@ RECONCILIATION LOOP: intent and observation meet only in the plan
 | Management path lost after a write | target stops answering; service may still pass traffic | lab change that drops the mgmt VLAN; commit-confirm must revert |
 | Credential or secret leaks to logs | secret pattern in logs or argv                         | grep run logs and process list in a test run                    |
 | Rate limit or API quota hit        | 429 or throttling errors rising                        | run at full concurrency against a staging API                   |
+| Vacuous check passes forever       | check has no recorded failing input                    | run it on a negative control; it must fail                      |
 
 ## Worked example
 
@@ -169,6 +181,7 @@ Fleet of 300 sites, 4 router models x 2 firmware versions = 8 strata. Measured p
 - [ ] Journal fields defined; resume works from the journal
 - [ ] No secret in logs, argv or artefacts; break-glass path independent
 - [ ] Evidence claim stated: generated, applied, accepted, or service verified
+- [ ] Tests isolated, one operation each; every check has a negative control on record
 
 ## Further reading
 

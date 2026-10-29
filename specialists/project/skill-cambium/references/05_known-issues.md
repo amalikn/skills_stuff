@@ -529,3 +529,24 @@ the SMC then cannot open the channel to the unit: the local socket is closed bef
 > SNMP silence is per unit, not per firmware: at one site 1.4 units answered ("Cambium cnWave V3000 Distribution Node, Version 1.4") while other
 > 1.4 units gave no response at all, from both boxes, also to the other programme's community; their REST login (identify) named them. Treat a
 > silent cnWave as SNMP disabled or restricted on that unit, read it by login, and do not write its SNMP settings while cnMaestro manages it.
+
+## 2026-10-29 — Measured placement accuracy per evidence source (unified-network-controller, three sites)
+
+> **Learned 2026-10-29** · ePMP 3000L / Force 300 (4.7.0.1), cnPilot R195P, site TP-Link switches · VERIFIED_PRIMARY (measured against the install
+> record, 2026-10-09 and 2026-10-11) · Source: `apn/unified-network-controller/docs/architecture/topology/correlation-rules-explained-20261009_1743.md`
+> §8.1 (apn 5cba35f) · Falsifier: a fleet batch run giving a switch FDB beyond the AP port as right more often than chance.
+> Extends the old-looma figures in the R195P-to-SM entry above. Each figure is one site's sample, not a fleet rate.
+
+| Source                                  | Measured                                           | Use                      |
+| --------------------------------------- | -------------------------------------------------- | ------------------------ |
+| 3000L bridge table (`epmp-ap-bridge`)   | 38 of 38 (old-looma), 43 of 43 (beagle-bay)        | trust                    |
+| switch FDB beyond the AP port           | 0 of 50 (old-looma), 0 of 67 (beagle-bay)          | never for placement      |
+| R195P Wi-Fi clients, 2+ clients         | 6 of 6                                             | trust at medium          |
+| R195P Wi-Fi clients, one client         | 9 of 20 (phones roam)                              | never places alone       |
+| provisioning SSID (install record)      | 358 of 359 SMs, seven archived sites               | trust                    |
+| router to SM, live sources only         | 39 of 52 (old-looma); 10 of 76 (kalumburu)         | -                        |
+| router to SM, with the install record   | 53 of 53 (old-looma)                               | -                        |
+| beagle-bay, live medium-or-better only  | 45 of 86; all sources 80 of 86, 0 wrong            | -                        |
+
+A switch's MAC table behind a wireless bridge points at the bridge, not the unit; rank sources by measured accuracy against ground truth, not by
+protocol. At sites built before low touch (kalumburu) there is no install record and live sources alone place few routers.

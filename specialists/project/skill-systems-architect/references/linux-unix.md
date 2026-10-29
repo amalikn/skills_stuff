@@ -18,6 +18,7 @@ Summary: Linux, Unix and OS architecture decisions, lifecycle tracking, patch ri
 - [Patch rings](#patch-rings)
 - [Boot, trust and recovery chain](#boot-trust-and-recovery-chain)
 - [Time, logging, hardening and performance](#time-logging-hardening-and-performance)
+- [Packet receive path before more CPU](#packet-receive-path-before-more-cpu)
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
 - [Worked example](#worked-example)
@@ -118,6 +119,35 @@ Legend: --> next boot stage   X failure at that stage and its remedy
 - Diagnose down the stack: workload -> process -> scheduler/memory -> filesystem/block -> driver -> hardware. Apply USE per resource; read PSI (`/proc/pressure/*`).
 - Separate CPU saturation, lock contention, memory pressure/reclaim, swap, I/O queueing and external dependency latency.
 
+## Packet receive path before more CPU
+
+A busy UDP service (recursive resolver, syslog or flow collector) can look CPU-bound while the VM is mostly idle: the packet path, not
+the core count, is saturated. Climb this ladder in order and gate "add cores" on evidence from the rungs below it.
+
+1. Socket buffers. Read UDP `RcvbufErrors` and `InErrors` (`nstat`, `/proc/net/snmp`) and watch their growth rate, not the absolute
+   count. `udp_rmem_min` defaults to 4K; `rmem_default` and `rmem_max` set the default and ceiling for socket receive buffers
+   (VERIFIED_PRIMARY [K1] [K2], checked 2026-10-29). Whether the daemon picks up a larger buffer without a restart depends on how it
+   sets `SO_RCVBUF`; check the daemon's own documentation.
+2. Queue count. A single receive queue lands every interrupt and its softirq work on one CPU. Multi-queue NICs with receive-side
+   scaling (RSS) spread flows across CPUs; RPS does the same in software (VERIFIED_PRIMARY [K3], checked 2026-10-29). Read
+   `ethtool -l`, `/proc/interrupts` and `/proc/net/softnet_stat` (the time-squeeze column).
+3. VM topology. In a VM, the virtio-net queue count is a domain-definition property (libvirt `<driver queues='N'/>` on the interface,
+   VERIFIED_PRIMARY [K4]); guest tuning cannot raise it, and a changed persistent definition takes effect at the next domain start (full shut down and start), not at a guest reboot
+   (UNVERIFIED for every libvirt version; confirm on the deployed one). Template packet-heavy VMs with multiqueue from the start.
+4. Only then CPU. If buffer errors stop growing, interrupts spread and `ksoftirqd` is flat but the daemon threads are still saturated,
+   add vCPUs.
+
+- Apply buffer changes as a `sysctl.d` drop-in in two conservative passes, with a baseline, a watch on error growth rate, a one-line
+  rollback, and success criteria: error growth slows, the receive thread is no longer the hot one, no rise in failures or latency.
+
+```text
+UDP RECEIVE PATH: where packets are dropped before the daemon sees them
+
+  NIC --> RX queue(s) --> IRQ on CPU n --> softirq / NAPI --> socket buffer --> daemon thread
+          1 queue => 1 CPU   X /proc/interrupts      X softnet time-squeeze  X RcvbufErrors
+  Legend: --> packet path   X where to read the drop or saturation counter
+```
+
 ## Patterns and anti-patterns
 
 | Pattern                          | Use when                     | Anti-pattern                                | Why it fails                                           |
@@ -129,6 +159,8 @@ Legend: --> next boot stage   X failure at that stage and its remedy
 | Sandboxed, scored systemd units  | Long-running services        | Run services as root with all capabilities  | One compromise owns the host                           |
 | USE plus PSI per resource        | Performance diagnosis        | Read load average or "free" memory alone    | Hides which resource saturates                         |
 | Major upgrade run as a migration | Debian N -> N+1, LTS -> LTS  | In-place upgrade with no snapshot or backup | No rollback when a package or driver breaks            |
+| Receive-path ladder before cores | UDP service looks CPU-bound  | Add vCPUs to a single-queue VM              | New cores never see the packets; drops continue        |
+| Hold kernel and modules in tests | Integration or lab testing   | Unattended upgrades during a test campaign  | A new kernel drops an extra-modules package mid-test   |
 
 ## Failure modes and tests
 
@@ -143,6 +175,8 @@ Legend: --> next boot stage   X failure at that stage and its remedy
 | Configuration drift               | Second converge run reports changes                | Role-wide inconsistency         | Run configuration management twice; the second run changes nothing    |
 | Interrupted package update        | dpkg lock, half-configured packages                | Patching stops on that host     | Kill an upgrade in the lab; recover with `dpkg --configure -a`        |
 | Host lost or disk full            | Service down or crashing                           | Roles on the host               | Fill a lab disk; then replace a host from source of truth and restore |
+| UDP receive drops                 | RcvbufErrors grow; one CPU hot in softirq          | Clients of the service          | Replay load; compare error growth and IRQ spread before and after     |
+| Daemon directory missing on tmpfs | Service fails at first boot after a relocation     | That service, every host        | Reboot a canary after any tmpfs change; directory created by tmpfiles.d |
 
 ## Worked example
 
@@ -163,6 +197,8 @@ Edge fleet: 60 Debian 12 hosts, 16 GiB root filesystem, one maintenance window p
 - [ ] Time uses three or more sources and offset is alerted; journal persistence and caps are verified; logs leave the host in UTC.
 - [ ] Baseline deviations are recorded; units are sandboxed and scored.
 - [ ] Idempotence, interrupted update, disk full, restore and host replacement are tested.
+- [ ] Packet-heavy services: buffer errors, queue count, IRQ spread and softirq squeeze read before any CPU increase.
+- [ ] Remote appliances follow [edge appliances](edge-appliances.md) for image layout, tmpfs, watchdog and write budget.
 
 ## Further reading
 
@@ -188,6 +224,12 @@ Kernel and hardening:
 - [Linux kernel admin guide](https://docs.kernel.org/admin-guide/index.html) - read this for sysctl, cgroups and boot parameters (VERIFIED_PRIMARY, checked 2026-10-29).
 - [Kernel PSI documentation](https://docs.kernel.org/accounting/psi.html) - read this for pressure-stall metrics (pointer).
 - [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks) - read this for a hardening baseline to tailor, not paste (pointer).
+
+Network receive path:
+- [K1] [ip-sysctl (udp_rmem_min)](https://docs.kernel.org/networking/ip-sysctl.html) - read this for UDP buffer floors (VERIFIED_PRIMARY, checked 2026-10-29).
+- [K2] [sysctl net (rmem_default, rmem_max)](https://docs.kernel.org/admin-guide/sysctl/net.html) - read this for socket buffer defaults and softirq budgets (VERIFIED_PRIMARY, checked 2026-10-29).
+- [K3] [Scaling in the Linux networking stack](https://docs.kernel.org/networking/scaling.html) - read this for RSS, RPS, RFS and XPS (VERIFIED_PRIMARY, checked 2026-10-29).
+- [K4] [libvirt domain XML: network interfaces](https://libvirt.org/formatdomain.html) - read this for virtio-net multiqueue (`driver queues`) (VERIFIED_PRIMARY, checked 2026-10-29).
 
 [d3url]: https://github.com/mvo5/unattended-upgrades/blob/master/data/50unattended-upgrades.Debian
 

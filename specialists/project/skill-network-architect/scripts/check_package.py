@@ -85,7 +85,8 @@ def check(root):
         links += 1
         # Normalise without following symlinks: a link in a shared module is judged from the pack it is read in.
         destination = Path(os.path.normpath(path.parent / target))
-        if not destination.is_relative_to(root) or not destination.exists():
+        # A link may land in this pack or in a sibling skill folder (the peer architect pack); nowhere else.
+        if not (destination.is_relative_to(root) or destination.is_relative_to(root.parent)) or not destination.exists():
           findings.append(f"broken or external local link: {relative}: {target}")
     elif path.suffix == ".json":
       try:
@@ -117,7 +118,7 @@ def check_ledger(root):
     return ["missing sources.json"]
   known = {entry.get("url") for entry in json.loads(ledger_path.read_text(encoding="utf-8")).get("sources", [])}
   findings = []
-  for path in sorted([root / "SKILL.md", *(root / "references").glob("*.md"), *(root / "templates").glob("*.md")]):
+  for path in sorted([root / "SKILL.md", *(root / "references").glob("*.md"), *(root / "templates").glob("*.md"), *(root / "operator").rglob("*.md")]):
     if not path.is_file():
       continue
     text = re.sub(r"```.*?```", "", path.read_text(encoding="utf-8"), flags=re.DOTALL)
@@ -136,8 +137,8 @@ def check_prose(root):
     A list of findings, one per offending line or diagram.
   """
   findings = []
-  for folder in ("references", "templates"):
-    for path in sorted((root / folder).glob("*.md")):
+  for folder in ("references", "templates", "operator"):
+    for path in sorted((root / folder).rglob("*.md")):
       relative = path.relative_to(root).as_posix()
       in_text, block, start = False, [], 0
       for number, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):

@@ -346,3 +346,19 @@ tsh ssh root@<host> "ssh -i /var/local/sslurlcapture/sslurlcapture.id_rsa -o Str
 | Validation commands | `iptables -t mangle -S ECLIPSE_MARK` shows populated rules; non-zero connmark distribution for active bridge_501 users; month rollover PIN expiry/new PIN flow verified from app to kernel marks |
 
 ---
+
+## Learned 2026-10-29 — "URL capture" captures DNS queries only
+
+The deployed role's script starts one `tcpdump` per interface with the filter `dst port 53`, so the PCAPs hold DNS queries (domain names), not URLs or
+paths. `VERIFIED-CODE`:
+
+```bash
+# roles/smc_url_capture/files/url_capturev1.sh:121 (ansible-wifi f471c101)
+screen -dmS "tcpdump-$int-screen-since-$spawntime" tcpdump -i $int "dst port 53" -nv -Z root -B 8192 -p -s 1500 -w $TODAYS_PATH/$SMC_HOSTNAME-$int-...
+```
+
+- Clients using DNS over HTTPS or TLS (RFC 8484, RFC 7858) are invisible to it; the counts are of domains queried, not of traffic.
+- Per-application or "top applications per site" reporting is not derivable: the SMC exports interface byte and rate counters on the backhaul, with no
+  flow export or classification. ARP or MAC counts are not a connected-devices metric either. Source: apn `docs/wifi-metrics-coverage.xlsx` rows URL
+  Capture, Backhaul Top Applications and Devices Connected (apn 5cba35f).
+- DNS query logs of end users are personal information: a design that keeps them needs a privacy basis.

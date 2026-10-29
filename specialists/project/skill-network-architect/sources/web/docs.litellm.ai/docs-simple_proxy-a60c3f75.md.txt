@@ -1,0 +1,24 @@
+Contents of https://docs.litellm.ai/docs/simple_proxy:
+The LiteLLM AI Gateway is a self-hosted server. It gives your applications one OpenAI-compatible endpoint for 100+ LLM providers, MCP tools, and A2A agents.
+
+Your applications send requests to the gateway. The gateway sends each request to the provider of the model. Then the gateway sends the response back to your application in the OpenAI format. If a client can use the OpenAI API, the client can also use the gateway. You do not change the client code.
+
+The pages in this section follow the steps of a new deployment. Do the steps in the table that follows:
+
+After you start the gateway, use the OpenAI client with the gateway URL and a virtual key:
+
+```
+import openai  
+  
+client = openai.OpenAI(api_key="sk-your-virtual-key", base_url="http://localhost:4000")  
+  
+response = client.chat.completions.create(  
+    model="gpt-6-luna",  
+    messages=[{"role": "user", "content": "Write a short poem"}],  
+)  
+print(response.choices[0].message.content)
+```
+
+The Admin UI is part of the gateway. Use it to set up and monitor the gateway in a browser:
+
+Use the gateway if more than one application or person sends requests to LLMs. Also use the gateway if virtual keys, spend tracking, logs in one location, or guardrails are necessary. Use the [Python SDK](/docs/python_sdk) if you send requests from one Python application and these controls are not necessary.

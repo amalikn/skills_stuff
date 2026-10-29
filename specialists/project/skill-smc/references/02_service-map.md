@@ -290,6 +290,26 @@ exten => _0011!,1,Goto(call-denied,${EXTEN},1)
 exten => _X!,1,Goto(external-call,${EXTEN},1)
 ```
 
+**Learned 2026-10-29 — options for replacing the site Asterisk, and what call records exist** (enterprise-strategy RouterOS future study, Voice,
+2026-10-22, operator-approved; `apn/enterprise-strategy/workstreams/redefine-baseline/routeros-smc-replacement-future-study-20261022_1323.md`, apn
+5cba35f): ranked, (1) a trimmed Asterisk in a container (Alpine aarch64 22.9 is 26.8 MiB; skill-mikrotik `08_routeros-platform-features.md`) is first
+to test; (2) a Kamailio proxy keeps extension-to-extension calls but moves prompts, the IVR and 8888 to PBX0008 and turns barring into a plain 403;
+(3) phones registering to PBX0008 lose local calls in a WAN outage; (4) a voice-only box outside the internet path, failing open, is the fallback;
+(5) Asterisk in a container on RouterOS x86 fits the existing boxes. Emergency calls need the trunk in every option. Call records: besides
+`cdr_sqlite`, the role also noloads the ODBC, RADIUS and PostgreSQL CDR/CEL back-ends, so the CSV CDR is the only call log and nothing in the role
+reports emergency (000) calls; a call-count or 000-reporting claim needs that CSV read, not the role's config. `VERIFIED-CODE`:
+
+```text
+; roles/smc_asterisk/files/modules.conf lines 62, 72-77 (ansible-wifi 35b32c36)
+noload => cdr_sqlite.so
+; APN - do not load the following
+noload = cdr_odbc.so
+noload = cdr_radius.so
+noload = cel_odbc.so
+noload = cel_pgsql.so
+noload = cel_radius.so
+```
+
 ### HA / Failover (non-RCT flavors)
 
 | Service    | Role                        | Unit         | Config             | Notes                                |

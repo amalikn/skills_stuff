@@ -56,9 +56,7 @@ YAML 1.2.2 specification, yamllint rules documentation, RFC 8259 (JSON), TOML 1.
 
 - Schema tooling choice and JSON5 or JSONC policy: UNVERIFIED stubs.
 
-> **Learned 2026-10-23** · taplo 0.9.3, biome 2.5.15, djlint 1.47.0 · VERIFIED_PRIMARY (ansible-wifi checkout; a negative test with one
-> bad file per language failed each step) · Source: local-knowledge-ansible `ansible-wifi/ansible-wifi-root-governance/{.taplo.toml,
-> biome.jsonc,djlint.toml,lint_new.sh}` (uncommitted at writing); taplo and biome docs via context7 · Falsifier: a tool that lints an
+> **Learned 2026-10-23** · taplo 0.9.3, biome 2.5.15, djlint 1.47.0 · VERIFIED_PRIMARY (ansible-wifi checkout; a negative test with one bad file per language failed each step) · Source: local-knowledge-ansible `ansible-wifi/ansible-wifi-root-governance/{.taplo.toml, biome.jsonc,djlint.toml,lint_new.sh}` (uncommitted at writing); taplo and biome docs via context7 · Falsifier: a tool that lints an
 > excluded file, or misses a bad new one
 > TOML: taplo, `.taplo.toml` at the root with `exclude` globs and `[formatting] indent_string = "  "` (its default), `column_width`; `taplo
 > lint` and `taplo fmt --check`. JSON: biome, `biome.jsonc` with `files.includes` = `["**/*.json", "!folder", "!path/file.json", ...]`
@@ -69,9 +67,7 @@ YAML 1.2.2 specification, yamllint rules documentation, RFC 8259 (JSON), TOML 1.
 > the H (HTML) rules, which misfire there; never `--reformat` them. djlint does not descend into a symlinked folder: pass the physical path
 > with `--configuration`.
 
-> **Learned 2026-10-23** · YAML: a backtick cannot start a plain scalar · VERIFIED_PRIMARY · Source: unified-network-controller
-> `docs/flows/parts/flows-monitoring-custom.yaml` (bedfc16), PyYAML "found character '`' that cannot start any token"; YAML 1.2 lists the backtick as a
-> reserved indicator · Falsifier: a YAML 1.2 parser loading an unquoted value or flow-sequence item that begins with a backtick
+> **Learned 2026-10-23** · YAML: a backtick cannot start a plain scalar · VERIFIED_PRIMARY · Source: unified-network-controller `docs/flows/parts/flows-monitoring-custom.yaml` (bedfc16), PyYAML "found character '`' that cannot start any token"; YAML 1.2 lists the backtick as a reserved indicator · Falsifier: a YAML 1.2 parser loading an unquoted value or flow-sequence item that begins with a backtick
 > Marking commands with backticks in a YAML map (Markdown-style code spans) breaks loading wherever the value or a flow-sequence item now begins with
 > one; quote that value. A value with a backtick in the middle stays plain. A scripted edit that adds backticks checks each changed line for a
 > leading one, as a block value and as a `[...]` item, and the map is loaded again before anything renders from it.

@@ -60,7 +60,7 @@ commands and incidents. Read the raw transcript instead (`~/.claude/projects/<cw
 that the transcript, not the summary, was used and gives its counts.
 
 ## Step 3 — Zone B scan (thorough)
-Walk the conversation **in order, from the boundary to now**, not from what is fresh in mind. Two passes, both written down:
+Walk the conversation **in order, from the boundary to now**, not from what is fresh in mind. Three passes, all written down:
 
 1. **Every user message**, one line each: what it asked, decided, ruled or challenged. A question that changes how work is done ("why custom and not
    native?", "why did I have to remind you?") is an operator rule or preference, not chitchat.
@@ -71,7 +71,14 @@ Walk the conversation **in order, from the boundary to now**, not from what is f
 `scripts/transcript_passes.py` prints both passes from the transcript (typed turns, messages sent mid-turn, AskUserQuestion answers; Bash
 commands, file writes, MCP writes). Use it whenever the session is long or was compacted; never rebuild the passes from memory or a summary.
 
-From the two passes, list every significant item as a numbered **item list**, one line each. Each item has a type:
+3. **Every sub-agent** (operator, 2026-10-29: "when you're slurping you need to slurp information from the sub agents as well"): each agent
+   the session spawned, from its own transcript (`<session>/subagents/agent-*.jsonl`): its task, its final report (the parent saw only a summary
+   of it) and its own side effects (`sub-` lines in pass 2). Its findings, decisions it proposed and files it wrote are items like the parent's.
+   Notes from side agents that arrived mid-turn are pass-1 lines: each is routed (acted on, recorded, or answered with a reason).
+
+`scripts/transcript_passes.py --pass 3` lists the sub-agents; the full run prints all three passes.
+
+From the three passes, list every significant item as a numbered **item list**, one line each. Each item has a type:
 
 | Type                  | Examples                                                                                           |
 | --------------------- | -------------------------------------------------------------------------------------------------- |

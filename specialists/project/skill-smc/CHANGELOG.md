@@ -14,6 +14,15 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261029_2011 — Harvest write-back: tbot repair, onboarding latency, D12, Kea gate, switch needs, voice options, DNS-only capture (v0.10.4 -> v0.10.5)
+
+Learned 2026-10-29 from the architect-pack harvest of apn projects: `references/03_communication-flows.md` (stale tbot state; "did not match any
+allow rules" from an orphaned bot role and expired token), `references/01_overview.md` (about 7 s a unit through Teleport over satellite, ranked
+fixes; D12 P0 software lifecycle under the A/B decision), `references/13_known-issues.md` (ISC DHCP end of life and the gated Kea port; the rct switch
+takes gateway and NTP from the SMC, not DHCP, cross-referenced to skill-mikrotik), `references/02_service-map.md` (Asterisk replacement options; CDR
+and CEL back-ends noloaded), `references/09_url-capture-pcap.md` (the capture filter is `dst port 53`). Skipped as covered: tbot state reset, proxy
+naming, fleet utilisation, Asterisk RSS, tmpfiles.d rule, deadline and random-node access rules. manifest 0.10.4 -> 0.10.5.
+
 ## 20261029_1750 — Inbound route to the peer architect skills (v0.10.3 -> v0.10.4)
 
 SKILL.md Related Skills names skill-network-architect and skill-systems-architect and when to call them (design rather than device facts), with their

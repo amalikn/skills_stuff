@@ -1,0 +1,246 @@
+Contents of https://www.linux-kvm.org/page/Multiqueue:
+From KVM
+
+Jump to:[navigation](#mw-navigation), [search](#p-search)
+
+## Multiqueue virtio-net
+
+## Overview
+
+This page provides information about the design of multi-queue virtio-net, an approach enables packet sending/receiving processing to scale with the number of available vcpus of guest. This page provides an overview of multiqueue virtio-net and discusses the design of various parts involved. The page also contains some basic performance test result. This work is in progress and the design may changes.
+
+## Contact
+
+* Jason Wang <jasowang@redhat.com>
+
+## Rationale
+
+Today's high-end server have more processors, guests running on them tend have an increasing number of vcpus. The scale of the protocol stack in guest in restricted because of the single queue virtio-net:
+
+* The network performance does not scale as the number of vcpus increasing: Guest can not transmit or retrieve packets in parallel as virtio-net have only one TX and RX, virtio-net drivers must be synchronized before sending and receiving packets. Even through there's software technology to spread the loads into different processor such as RFS, such kind of method is only for transmission and is really expensive in guest as they depends on IPI which may brings extra overhead in virtualized environment.
+* Multiqueue nic were more common used and is well supported by linux kernel, but current virtual nic can not utilize the multi queue support: the tap and virtio-net backend must serialize the co-current transmission/receiving request comes from different cpus.
+
+In order the remove those bottlenecks, we must allow the paralleled packet processing by introducing multi queue support for both back-end and guest drivers. Ideally, we may let the packet handing be done by processors in parallel without interleaving and scale the network performance as the number of vcpus increasing.
+
+## Git & Cmdline
+
+* qemu-kvm -netdev tap,id=hn0,queues=M -device virtio-net-pci,netdev=hn0,vectors=2M+2 ...
+
+## Status & Challenges
+
+* Status
+  + merged upstream
+
+## Design Goals
+
+### Parallel send/receive processing
+
+To make sure the whole stack could be worked in parallel, the parallelism of not only the front-end (guest driver) but also the back-end (vhost and tap/macvtap) must be explored. This is done by:
+
+* Allowing multiple sockets to be attached to tap/macvtap
+* Using multiple threaded vhost to serve as the backend of a multiqueue capable virtio-net adapter
+* Use a multi-queue awared virtio-net driver to send and receive packets to/from each queue
+
+### In order delivery
+
+Packets for a specific stream are delivered in order to the TCP/IP stack in guest.
+
+### Low overhead
+
+The multiqueue implementation should be low overhead, cache locality and send-side scaling could be maintained by
+
+* making sure the packets form a single connection are mapped to a specific processor.
+* the send completion (TCP ACK) were sent to the same vcpu who send the data
+* other considerations such as NUMA and HT
+
+### No assumption about the underlying hardware
+
+The implementation should not tagert for specific hardware/environment. For example we should not only optimize the the host nic with RSS or flow director support.
+
+### Compatibility
+
+* Guest ABI: Based on the virtio specification, the multiqueue implementation of virtio-net should keep the compatibility with the single queue. The ability of multiqueue must be enabled through feature negotiation which make sure single queue driver can work under multiqueue backend, and multiqueue driver can work in single queue backend.
+* Userspace ABI: As the changes may touch tun/tap which may have non-virtualized users, the semantics of ioctl must be kept in order to not break the application that use them. New function must be doen through new ioctls.
+
+### Management friendly
+
+The backend (tap/macvtap) should provides an easy to changes the number of queues/sockets. and qemu with multiqueue support should also be management software friendly, qemu should have the ability to accept file descriptors through cmdline and SCM\_RIGHTS.
+
+## High level Design
+
+The main goals of multiqueue is to explore the parallelism of each module who is involved in the packet transmission and reception:
+
+* macvtap/tap: For single queue virtio-net, one socket of macvtap/tap was abstracted as a queue for both tx and rx. We can reuse and extend this abstraction to allow macvtap/tap can dequeue and enqueue packets from multiple sockets. Then each socket can be treated as a tx and rx, and macvtap/tap is fact a multi-queue device in the host. The host network codes can then transmit and receive packets in parallel.
+* vhost: The parallelism could be done through using multiple vhost threads to handle multiple sockets. Currently, there's two choices in design.
+  + 1:1 mapping between vhost threads and sockets. This method does not need vhost changes and just launch the the same number of vhost threads as queues. Each vhost thread is just used to handle one tx ring and rx ring just as they are used for single queue virtio-net.
+  + M:N mapping between vhost threads and sockets. This methods allow a single vhost thread to poll more than one tx/rx rings and sockests and use separated threads to handle tx and rx request.
+* qemu: qemu is in charge of the fllowing things
+  + allow multiple tap file descriptors to be used for a single emulated nic
+  + userspace multiqueue virtio-net implementation which is used to maintaining compatibility, doing management and migration
+  + control the vhost based on the userspace multiqueue virtio-net
+* guest driver
+  + Allocate multiple rx/tx queues
+  + Assign each queue a MSI-X vector in order to parallize the packet processing in guest stack
+
+The big picture looks like:
+
+[![Ver1.jpg](/images/e/e3/Ver1.jpg)](/page/File:Ver1.jpg)
+
+### Choices and considerations
+
+* 1:1 or M:N, 1:1 is much more simpler than M:N for both coding and queue/vhost management in qemu. And in theory, it could provides better parallelism than M:N. Performance test is needed to be done by both of the implementation.
+* Whether use a per-cpu queue: Morden 10gb card ( and M$ RSS) suggest to use the abstract of per-cpu queue that tries to allocate as many tx/rx queues as cpu numbers and does a 1:1 mapping between them. This can provides better parallelism and cache locality. Also this could simplify the other design such as in order delivery and flow director. For virtio-net, at least for guest with small number of vcpus, per-cpu queues is a better choice.
+
+The big picture is shown as.
+
+## Current status
+
+* macvtap/macvlan have basic multiqueue support.
+* bridge does not have queue, but when it use a multiqueue tap as one of it port, some optimization may be needed.
+* 1:1 Implementation
+  + qemu parts: <http://www.spinics.net/lists/kvm/msg52808.html>
+  + tap and guest driver: <http://www.spinics.net/lists/kvm/msg59993.html>
+* M:N Implementation
+  + kk's newest series(qemu/vhost/guest drivers): <http://www.spinics.net/lists/kvm/msg52094.html>
+
+## Detail Design
+
+### Multiqueue Macvtap
+
+#### Basic design:
+
+* Each socket were abstracted as a queue and the basic is allow multiple sockets to be attached to a single macvtap device.
+* Queue attaching is done through open the named inode many times
+* Each time it is opened a new socket were attached to the deivce and a file descriptor were returned and use for a backend of virtio-net backend (qemu or vhost-net).
+
+#### Parallel processing
+
+In order to make the tx path lockless, macvtap use NETIF\_F\_LLTX to avoid the tx lock contention when host transmit packets. So its indeed a multiqueue network device from the point view of host.
+
+#### Queue selector
+
+It has a simple flow director implementation, when it needs to transmit packets to guest, the queue number is determined by:
+
+1. if the skb have rx queue mapping (for example comes from a mq nic), use this to choose the socket/queue
+2. if we can calculate the rxhash of the skb, use it to choose the socket/queue
+3. if the above two steps fail, always find the first available socket/queue
+
+### Multiqueue tun/tap
+
+#### Basic design
+
+* Borrow the idea of macvtap, we just allow multiple sockets to be attached in a single tap device.
+* As there's no named inode for tap device, new ioctls IFF\_ATTACH\_QUEUE/IFF\_DETACH\_QUEUE is introduced to attach or detach a socket from tun/tap which can be used by virtio-net backend to add or delete a queue..
+* All socket related structures were moved to the private\_data of file and initialized during file open.
+* In order to keep semantics of TUNSETIFF and make the changes transparent to the legacy user of tun/tap, the allocating and initializing of network device is still done in TUNSETIFF, and first queue is atomically attached.
+* IFF\_DETACH\_QUEUE is used to attach an unattached file/socket to a tap device. \* IFF\_DETACH\_QUEUE is used to detach a file from a tap device. IFF\_DETACH\_QUEUE is used for temporarily disable a queue that is useful for maintain backward compatibility of guest. ( Running single queue driver on a multiqueue device ).
+
+Example:
+pesudo codes to create a two queue tap device
+
+1. fd1 = open("/dev/net/tun")
+2. ioctl(fd1, TUNSETIFF, "tap")
+3. fd2 = open("/dev/net/tun")
+4. ioctl(fd2, IFF\_ATTACH\_QUEUE, "tap")
+
+then we have two queues tap device with fd1 and fd2 as its queue sockets.
+
+#### Parallel processing
+
+Just like macvtap, NETIF\_F\_LLTX is also used to tun/tap to avoid tx lock contention. And tun/tap is also in fact a multiqueue network device of host.
+
+#### Queue selector (same as macvtap)
+
+It has a simple flow director implementation, when it needs to transmit packets to guest, the queue number is determined by:
+
+1. if the skb have rx queue mapping (for example comes from a mq nic), use this to choose the socket/queue
+2. if we can calculate the rxhash of the skb, use it to choose the socket/queue
+3. if the above two steps fail, always find the first available socket/queue
+
+### = Further Optimization ?
+
+1. rxhash can only used for distributing workloads into different vcpus. The target vcpu may not be the one who is expected to do the recvmsg(). So more optimizations may need as:
+   1. A simple hash to queue table to record the cpu/queue used by the flow. It is updated when guest send packets, and when tun/tap transmit packets to guest, this table could be used to do the queue selection.
+   2. Some co-operation between host and guest driver to pass information such as which vcpu is isssue a recvmsg().
+
+### vhost
+
+* 1:1 without changes
+* M:N [TBD]
+
+### qemu changes
+
+The changes in qemu contains two part:
+
+* Add generic multiqueue support for nic layer: As the receiving function of nic backend is only aware of VLANClientState, we must make it aware of queue index, so
+  + Store queue\_index in VLANClientState
+  + Store multiple VLANClientState in NICState
+  + Let netdev parameters accept multiple netdev ids, and link those tap based VLANClientState to their peers in NICState
+* Userspace multiqueue support in virtio-net
+  + Allocate multiple virtqueues
+  + Expose the queue numbers through config space
+  + Enable the multiple support of backend only when the feature negotiated
+  + Handle packet request based on the queue\_index of virtqueue and VLANClientState
+  + migration hanling
+* Vhost enable/disable
+  + launch multiple vhost threads
+  + setup eventfd and contol the start/stop of vhost\_net backend
+
+The using of this is like:
+qemu -netdev tap,id=hn0,fd=100 -netdev tap,id=hn1,fd=101 -device virtio-net-pci,netdev=hn0#hn1,queue=2 .....
+
+TODO: more user-friendly cmdline such as
+qemu -netdev tap,id=hn0,fd=100,fd=101 -device virtio-net-pci,netdev=hn0,queues=2
+
+### guest driver
+
+The changes in guest driver as mainly:
+
+* Allocate the number of tx and rx queue based on the queue number in config space
+* Assign each queue a MSI-X vector
+* Per-queue handling of TX/RX request
+* Simply use skb\_tx\_hash() to choose the queue
+
+#### Future Optimizations
+
+* Per-vcpu queue: Allocate as many tx/rx queues as the vcpu numbers. And bind tx/rx queue pairs to a specific vcpu by:
+  + Set the MSI-X irq affinity for tx/rx.
+  + Use smp\_processor\_id() to choose the tx queue..
+* Comments: In theory, this should improve the parallelism, [TBD]
+
+* ...
+
+## Enable MQ feature
+
+* create tap device with multiple queues, please reference
+
+```
+ Documentation/networking/tuntap.txt:(3.3 Multiqueue tuntap interface)
+```
+
+* enable mq for tap (suppose N queue pairs) -netdev tap,vhost=on,queues=N
+* enable mq and specify msix vectors in qemu cmdline (2N+2 vectors, N for tx queues, N for rx queues, 1 for config, and one for possible control vq): -device virtio-net-pci,mq=on,vectors=2N+2...
+* enable mq in guest by 'ethtool -L eth0 combined $queue\_num'
+
+## Test
+
+* Test tool: netperf, iperf
+* Test protocol: TCP\_STREAM TCP\_MAERTS TCP\_RR
+  + between localhost and guest
+  + between external host and guest with a 10gb direct link
+  + regression criteria: throughout%cpu
+* Test method:
+  + multiple sessions of netperf: 1 2 4 8 16
+  + compare with the single queue implementation
+* Other
+  + numactl to bind the cpu node and memory node
+  + autotest implemented a performance regression test, used T-test
+  + use netperf demo-mode to get more stable results
+
+## Performance Numbers
+
+[Performance](/page/Multiqueue-performance-Sep-13 "Multiqueue-performance-Sep-13")
+
+## TODO
+
+## Reference

@@ -214,6 +214,16 @@ Operational implications:
 reads from an AWS host to norton-bore, indulkana and areyonga took 7–9 s, so a 6 s deadline failed healthy boxes. Give each attempt 10 s and allow
 two attempts; put outer deadlines on `tsh status` and `tsh ls` too; pick random current `*-smc01` nodes from `tsh ls` rather than one fixed box.
 
+**Learned 2026-10-29 — per-unit reads through Teleport over satellite cost about 7 s a unit; batch per site** (unified-network-controller onboarding-stage
+report, measured 2026-10-15 on its controller host, VERIFIED_PRIMARY): at a 323-unit Sky Muster Plus `rcp` site the OpenWISP registration stage took 48 min,
+37.5 of them in a per-unit read loop at 7.4 s a unit (one `ssh -f -L` Teleport session per unit; 3.2 s a unit at a terrestrial site), and the Topology
+stage 46 min (152 R195P forwards opened one at a time, `open_tunnels(..., parallel=1)`; every SNMP walk run serially on the SMC, `smc_snmp.run`; UNC
+code at af9474d). The stages are latency-bound, not bandwidth- or CPU-bound. Ranked fixes: open forwards in parallel; bounded concurrency for on-box
+SNMP; forwards through the SMC's shared ControlMaster (`ssh -O forward`) instead of a session per unit; one down list per run (most misses were down
+units, 14 failing the SMC's fping); keep the site's collector off the link while a stage runs (its 15 min cycle overran to 18-26 min). The 15-20 min
+expected after the fixes is UNVERIFIED until a canary measures it. Source: `apn/unified-network-controller/docs/reports/smc-and-site-network/onboarding-stage-speed-and-missed-units-20261015_1528.md`
+§1 and §6 (apn 5cba35f).
+
 ### WAN Uplink Topology Pattern — Direct-to-NTD and Switch-Trunked Access-VLANs Can Coexist on One Box
 
 Confirmed at `galiwinku-smc01` (`nbn_accelerate`, multi-WAN NBN business site), 2026-09-08. Do not assume every `role: internet`/`role: starlink` interface on a multi-WAN site shares the same
@@ -296,6 +306,10 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 - **postfix.** Decision: listen on loopback only (`inet_interfaces = loopback-only`). Not yet implemented.
 - **autossh backdoor and DNS-over-TLS tunnel.** Retirement undecided.
 - **A/B update mechanism.** Undecided; the `ansible-wifi` SCRATCHPAD recommendation (tryboot on RPi, Mender on x86) is not approved.
+  Update 2026-10-29 (unified-network-controller `ARCHITECTURE.md` D12, decided 2026-09-27, amended 2026-10-05; register IC1-IC7): SMC-resident P0
+  software is standard-library Python 3.10 on the fleet's Ubuntu 22.04, shipped as an ansible-wifi role and rolled back to the role's previous revision,
+  rehearsed on the virtual SMC first; Podman quadlets are the P1 direction once `podman --version` is read on one SMC (whether 22.04's Podman is new
+  enough is UNVERIFIED); A/B recovery is for reimaged units only (a Pi whose SD card is replaced; no x86 plan yet); no existing SMC is converted remotely.
 - **Hardware watchdog (P17).** Acceptable; test on the spare (`spare-smc01`) first. Constraints: [06_failure-modes.md](06_failure-modes.md).
 - **Low touch after cnMaestro.** Nothing should change for the field or the NOC: the Unified Network Controller takes over the steps cnMaestro performs today (claim, approve, the RPZ names).
   A low-touch install takes more than two days on site.

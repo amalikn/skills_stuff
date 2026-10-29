@@ -20,6 +20,8 @@ Summary: >-
 - [Speed: prefill, decode and batching](#speed-prefill-decode-and-batching)
 - [Serving engines and hardware](#serving-engines-and-hardware)
 - [Queueing for N users](#queueing-for-n-users)
+- [Measured local results and benchmark method](#measured-local-results-and-benchmark-method)
+- [Gateways, routing and rented GPUs](#gateways-routing-and-rented-gpus)
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
 - [Worked example](#worked-example)
@@ -120,11 +122,17 @@ Memory bandwidth decides decode speed (VERIFIED_PRIMARY vendor specification pag
 | Mac Studio M5 Ultra (80-core GPU) | up to 512 GB unified | 1.2 TB/s  | <= 245 tokens/s                | <= 28 tokens/s                 |
 | NVIDIA L40S                       | 48 GB GDDR6          | 864 GB/s  | <= 176 tokens/s                | does not fit one card          |
 | NVIDIA H100 SXM                   | 80 GB HBM3           | 3.35 TB/s | <= 680 tokens/s                | <= 78 tokens/s                 |
+| MacBook Pro M2 Max                | up to 96 GB unified  | 400 GB/s  | <= 82 tokens/s                 | <= 9 tokens/s (64 GB+ only)    |
+| NVIDIA DGX Spark (GB10)           | 128 GB LPDDR5x       | 273 GB/s  | <= 56 tokens/s                 | <= 6 tokens/s                  |
 
 - Ceilings are single-sequence bandwidth bounds (bandwidth / weight bytes); real engines reach a fraction of them. Measure.
 - Apple silicon: unified memory lets one box hold a 70B model, but GPU memory is shared with macOS and apps, and prefill compute is far below data-centre GPUs, so long prompts and many users raise
   TTFT sharply (UNVERIFIED magnitude; Apple publishes no tensor FLOPS figure).
 - CPU-only inference: workable for small models and a few users; bandwidth of server DDR is the ceiling, as above.
+- Check vendor speed claims with the same arithmetic. A box with 273 GB/s (DGX Spark) reading a 4-bit 70B model (about 40-43 GB)
+  decodes at single-digit tokens/s per stream, so a claim that it serves 70B "at production speed" needs a measurement before it
+  becomes decision rationale. The vendor page itself says it fine-tunes models up to 70B and runs inference for testing and
+  validation (VERIFIED_PRIMARY [dgx-spark], checked 2026-10-29); the decode bound is arithmetic, UNVERIFIED as a measurement.
 - A laptop is not a server: sleep, thermals and battery apply ([macos-and-endpoints](macos-and-endpoints.md)).
 
 ## Queueing for N users
@@ -151,6 +159,69 @@ Legend: --> request flow   X failure and its effect
 - Required aggregate decode rate = lambda x average output tokens. Required prefill rate = lambda x average prompt tokens.
 - Size slots c at least L with headroom for bursts (for example 1.5 x L, a design assumption); then confirm KV fits c sequences.
 
+## Measured local results and benchmark method
+
+One measured set, kept as a calibration point (llama.cpp Metal build, all layers offloaded, `llama-bench` pp128/tg256, 3 runs,
+MacBook Pro M2 Max 64 GB, 2026-05-31; measured on the operator's workstation, so VERIFIED_PRIMARY for that machine only):
+
+| Model and quantisation               | File or RSS        | Prefill (tok/s) | Decode (tok/s) | Note                                         |
+| ------------------------------------ | ------------------ | --------------- | -------------- | -------------------------------------------- |
+| Dense 7B instruct, Q4_K_M            | RSS about 6.4 GB   | 521             | 36.9           | baseline dense model                         |
+| Dense 7B coder, Q4_K_M               | -                  | 519             | 33.1           |                                              |
+| Dense 7B coder, Q5_K_M               | -                  | 450             | 24.8           | more bytes per token, slower decode          |
+| MoE 30B total, about 3B active, Q4_K_M | 17.35 GiB file, RSS about 21 GB | 455 | 47.3     | faster decode than the dense 7B              |
+
+- Decode is bandwidth-bound: a sparse mixture-of-experts (MoE) model reads only its active experts per token, so a 30B model with
+  about 3B active parameters decodes faster than a dense 7B. It still needs memory for all 30B of weights.
+- Short outputs understate tokens/s: the same MoE model gave about 45-47 tokens/s on 50-500 token answers and 24.9 tokens/s on
+  10-token answers through the API. Prefill tokens/s also rises with prompt length (53 at 69 tokens, 573 at 1,209 tokens).
+- Report prefill and decode separately, with prompt and output lengths, engine build, quantisation and memory state.
+
+Memory pressure first. On unified memory the GPU shares RAM with every app and container VM:
+
+- Before blaming a model or engine, read swap use, compressed memory and memory pressure (`memory_pressure`, `vm_stat` on macOS;
+  PSI on Linux). In the measured set, about 11 GB of compressed pages and 15 GB of swap sat in use with the 30B model loaded.
+- Container VMs and virtual machines on the same laptop can hold tens of GB. Budget RAM per model including server overhead; two
+  large models at once did not fit in 64 GB.
+
+Fair comparisons. Compare engines only with one harness, the same model, quantisation, prompt and output length, and the same
+memory state. A smaller model that runs slower than a larger one on the same engine means the test is broken (memory pressure,
+short outputs, a different day or a UI timer), not that the engine is slow. A cross-engine "2.7-3.4x faster" claim built from a
+benchmark tool on one side and short UI generations on the other is not evidence.
+
+## Gateways, routing and rented GPUs
+
+- Put an OpenAI-compatible gateway between applications and models (for example LiteLLM, an open-source AI gateway that presents
+  100+ providers in the OpenAI format with virtual keys, spend tracking and load balancing; VERIFIED_PRIMARY [litellm], checked
+  2026-10-29). A GPU arriving, or a provider changing, then becomes a configuration change, not an application change.
+- Route by context size, privacy and frequency: long-context and general conversation to a hosted model; frequent short tasks
+  (compression, delegation, embeddings, vision) to local models; keep a local fallback. Enforce a context gate below the local
+  server window (for example 30K tokens on a 32,768-token window); a client-side context setting that only silences a check does
+  not enlarge the server window.
+- After any routing change, call every route end to end. A route with a missing base URL or key fails only at use; a reasoning
+  model can return reasoning tokens and no visible text, so a health check must accept that shape.
+- Rented GPU node: keep the provider seam thin (a VM with SSH). Provision per provider, then configure with the same automation
+  (overlay network, container stack with an OpenAI-compatible server and UI). Separate code from durable state (models, UI data)
+  so state can be copied off before the host is destroyed. Add multi-provider orchestration only when more than one provider is
+  actually in use. Compare providers on billing granularity, stopped-instance and storage cost and availability, not the headline
+  hourly price. (Design pattern; not yet measured in production.)
+- Never publish an unauthenticated inference API. Docker-published ports are diverted by Docker's own firewall rules before host
+  rules such as ufw apply, so bind container ports to 127.0.0.1 and reach them over an overlay network or SSH forward
+  (VERIFIED_PRIMARY [docker-fw], checked 2026-10-29).
+- Tune `max-model-len` and `gpu-memory-utilization` together on vLLM: raising one without the other fails at load with out of
+  memory ([vllm-optim]).
+
+```text
+GATEWAY SEAM: applications see one API; models move behind it
+
+  apps, agents --> +------------------+ --> hosted model (long context, default)
+                   | OpenAI-compatible| --> local model A (short, frequent tasks)
+                   | gateway: keys,   | --> local model B (fallback; context gate < server window)
+                   | routing, spend   | --> rented GPU node (bound to 127.0.0.1, reached by overlay)
+                   +------------------+
+  Legend: --> request routed by context size, privacy and frequency
+```
+
 ## Patterns and anti-patterns
 
 | Pattern                                        | Use when                     | Anti-pattern                                   | Why it fails                                    |
@@ -160,6 +231,8 @@ Legend: --> request flow   X failure and its effect
 | Smallest model that passes the task evaluation | cost and latency matter      | 70B by default                                 | 8 to 9 times the memory and bandwidth per token |
 | Separate TTFT and tokens/s targets             | chat and agent workloads     | one "tokens per second" number                 | long prompts hide in prefill; users feel TTFT   |
 | Load test with the real prompt-length mix      | before buying hardware       | single-request benchmark                       | batching and queueing behaviour is invisible    |
+| One harness, same model, quant and lengths     | comparing engines            | benchmark tool vs UI timings on another day    | the difference is the method, not the engine    |
+| Gateway with an OpenAI-compatible seam         | more than one model or host  | each app wired to one provider's SDK           | every model move becomes an application change  |
 
 ## Failure modes and tests
 
@@ -171,6 +244,8 @@ Legend: --> request flow   X failure and its effect
 | Unified memory pressure (Mac) | swap, memory pressure red, tokens/s collapses             | run at target concurrency with the normal desktop load present            |
 | Thermal throttling            | tokens/s falls over 10-30 minutes                         | 60-minute soak at target load; compare first and last 5 minutes           |
 | Model reload churn            | periodic multi-second stalls                              | serve two models over the memory limit; watch load and unload events      |
+| Route broken after a config edit | one route returns "no API key" only when used         | call every route end to end after each change; accept reasoning-only output |
+| Inference port published to the world | open unauthenticated API despite ufw rules        | scan the host from outside; container ports bound to 127.0.0.1 only       |
 
 ## Worked example
 
@@ -204,6 +279,10 @@ All step results are derived bounds from the arithmetic above, not measurements.
 - [ ] Engine supports continuous batching at the planned concurrency (vLLM, llama.cpp `-np`, or Ollama `OLLAMA_NUM_PARALLEL` raised).
 - [ ] Queue limit and rejection behaviour are known and alerted; a 60-minute soak shows no thermal or memory-pressure collapse.
 - [ ] Quantisation level justified by a task-quality check, not by memory alone.
+- [ ] Benchmarks report prefill and decode separately, with lengths, engine build and memory state; engines compared on one harness.
+- [ ] Swap, compression and memory pressure checked before a slow result is blamed on the model.
+- [ ] Vendor speed claims checked against bandwidth / bytes per token before they enter an ADR.
+- [ ] Applications reach models through a gateway; every route tested end to end; inference ports never published unauthenticated.
 
 ## Further reading
 
@@ -219,6 +298,13 @@ Model cards and hardware:
   checked 2026-10-29).
 - [Mac Studio technical specifications](https://www.apple.com/mac-studio/specs/) - read this for unified memory and bandwidth (VERIFIED_PRIMARY, checked 2026-10-29).
 - [NVIDIA L40S][l40s-url] and [NVIDIA H100][h100-url] - read these for memory and bandwidth (VERIFIED_PRIMARY, checked 2026-10-29).
+- [dgx-spark] [NVIDIA DGX Spark][dgx-spark-url] - read this for GB10 memory size and the 273 GB/s bandwidth (VERIFIED_PRIMARY, checked 2026-10-29).
+- [MacBook Pro (2023) M2 Max specifications][m2max-url] - read this for the 400 GB/s bandwidth (VERIFIED_PRIMARY, checked 2026-10-29).
+- [llama-bench README][llama-bench-url] - read this for a repeatable prefill and decode benchmark.
+
+Gateways and exposure:
+- [litellm] [LiteLLM proxy (AI gateway)][litellm-url] - read this for keys, routing, fallbacks and spend tracking (VERIFIED_PRIMARY, checked 2026-10-29).
+- [docker-fw] [Docker packet filtering and firewalls][docker-fw-url] - read this for why published ports bypass ufw (VERIFIED_PRIMARY, checked 2026-10-29).
 
 [llamacpp-url]: https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md
 
@@ -235,3 +321,13 @@ Model cards and hardware:
 [l40s-url]: https://www.nvidia.com/en-us/data-center/l40s/
 
 [h100-url]: https://www.nvidia.com/en-us/data-center/h100/
+
+[dgx-spark-url]: https://www.nvidia.com/en-us/products/workstations/dgx-spark/
+
+[m2max-url]: https://support.apple.com/en-us/111340
+
+[llama-bench-url]: https://github.com/ggml-org/llama.cpp/blob/master/tools/llama-bench/README.md
+
+[litellm-url]: https://docs.litellm.ai/docs/simple_proxy
+
+[docker-fw-url]: https://docs.docker.com/engine/network/packet-filtering-firewalls/

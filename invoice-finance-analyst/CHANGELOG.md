@@ -2,13 +2,36 @@
 
 ## Contents
 
-- [20260829 — FOSS tools evaluation and readiness re-verification](#20260829-foss-tools-evaluation-and-readiness-re-verification)
-- [20260526 — Wiki RAG bridge and coherence sweep](#20260526-wiki-rag-bridge-and-coherence-sweep)
-- [20260522_Phase4a — Phase 4a context selection hardening](#20260522_phase4a-phase-4a-context-selection-hardening)
-- [20260523_1040 — Archcore promotion candidate report](#20260523_1040-archcore-promotion-candidate-report)
-- [20260523_1039 — Repeat-safe skill-ai-it bootstrap refresh](#20260523_1039-repeat-safe-skill-ai-it-bootstrap-refresh)
-- [20260522_1754 — AI Navigation + Script Catalog bootstrap](#20260522_1754-ai-navigation-script-catalog-bootstrap)
-- [2026-05-21 — Phase 0–4 implementation](#2026-05-21-phase-04-implementation)
+- [20261029_2006 — Telco wholesale reconciliation patterns (skill v0.5.0)](#20261029_2006--telco-wholesale-reconciliation-patterns-skill-v050)
+- [20260829 — FOSS tools evaluation and readiness re-verification](#20260829--foss-tools-evaluation-and-readiness-re-verification)
+- [20260526 — Wiki RAG bridge and coherence sweep](#20260526--wiki-rag-bridge-and-coherence-sweep)
+- [20260522_Phase4a — Phase 4a context selection hardening](#20260522_phase4a--phase-4a-context-selection-hardening)
+- [20260523_1040 — Archcore promotion candidate report](#20260523_1040--archcore-promotion-candidate-report)
+- [20260523_1039 — Repeat-safe skill-ai-it bootstrap refresh](#20260523_1039--repeat-safe-skill-ai-it-bootstrap-refresh)
+- [20260522_1754 — AI Navigation + Script Catalog bootstrap](#20260522_1754--ai-navigation--script-catalog-bootstrap)
+- [2026-05-21 — Phase 0–4 implementation](#2026-05-21--phase-04-implementation)
+
+---
+
+## 20261029_2006 — Telco wholesale reconciliation patterns (skill v0.5.0)
+
+### Added
+
+- `internal-invoice-analysis/SKILL.md` v0.4.0 -> v0.5.0: new section "Telco Wholesale Reconciliation Patterns" written back from the 2026-10-29 knowledge harvest of the wholesale and voice
+  profitability projects. Procedures only, no customer names, prices, rates, margins or invoice figures (carrier figures are ex-GST and never copied). Covers: record-type parsing and descriptor-based
+  technology classification; charge components named per network; advance vs catch-up vs arrears billing and service-period rules; event-date usage joins; pro-rata divisor derivation per supplier;
+  effective-dated rate cards, price frequency tags and rate-card identity checks; net unit rates, discount bases, contracted vs applied rate (two oracles), rebate pass-through and regulated rebates;
+  ex-GST storage; three-source reconciliation; ghost services; cost without revenue; a scripted validation gate; call-record matching (phone + date + start minute +/-1 + duration tolerance); splitting
+  carrier charges by product line; internal-number register; flat-rate usage risk; ARPU variants; bandwidth-proportional cost allocation; assumptions sheet in every export.
+- Step 5 cross-reference to the new section; `<!-- toc-depth: 3 -->` marker so the markdown hook keeps the step-level Contents.
+
+### Changed
+
+- The markdown hook reflowed the existing SKILL.md prose to the 200-column standard on edit (wording unchanged).
+
+### Not done
+
+- `~/.claude/skills/skill-ifa/SKILL.md` is a copy, not a symlink, and already differed from this source before the change (description line only). The install was not updated.
 
 ---
 

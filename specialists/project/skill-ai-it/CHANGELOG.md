@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_2055
+Last rotated: 20261029_2015
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class](#20261029_2015--pitfalls-one-route-for-cross-project-messages-route-facts-by-class)
 - [20261027_2055 — Slurp close: callers-check, write-backs, coherence](#20261027_2055--slurp-close-callers-check-write-backs-coherence)
 - [20261027_2048 — Scripts in family folders; callers repointed; skill-coder gates in check](#20261027_2048--scripts-in-family-folders-callers-repointed-skill-coder-gates-in-check)
 - [20261027_2024 — Staleness audit: dependency claim derived, stale KEEP lines superseded](#20261027_2024--staleness-audit-dependency-claim-derived-stale-keep-lines-superseded)
@@ -31,9 +32,15 @@ Last rotated: 20261027_2055
 - [20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too](#20261022_1632--table_wrap-shared-hook-compatible-wrapper-target-map-embeds-wrap-too)
 - [20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables](#20261022_1623--plan_timeline-the-timeline-table-wraps-like-the-pages-other-tables)
 - [20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above](#20261022_1646--target-map-reference-summary-is-one-short-line-a-missed-stage-heading-folds-its-checklist-into-the-stage-above)
-- [20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted](#20261022_1439--audit_rotations-safety-header-and-git-timeouts-rewrap-tolerance-reverted)
-- [20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date](#20261022_1209--plan-timeline-extra-rows-before-the-plan-rows-they-feed-on-one-date)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class
+
+- `references/pitfalls.md`: two entries from the 2026-10-29 harvest of a multi-project workspace root (hub-and-spoke messages with a
+  directive register; device facts to domain packs, site and decision facts to projects). `references/readme.md` line count updated.
+- Skipped as already covered: gates that fail on uncovered growth and stay stdlib-only (`patterns/governance-checks.md`, Coverage
+  self-policing and the harness contract); architecture docs drifting from runtime config and README links to missing docs (path
+  resolution, derived-artifact staleness, "text matching does not verify behaviour").
 
 ## 20261027_2055 — Slurp close: callers-check, write-backs, coherence
 
@@ -171,17 +178,6 @@ check reads current. Tests `WrapTable` (193 pass). Learned 2026-10-22 in `refere
 
 `references/target-map-and-timeline.md`: `summary` is one short line of where a target stands (operator, smc-resiliency 2026-10-22); Learned
 2026-10-22: a `target_heading` pattern that misses a stage heading silently gives its checklist to the target above (smc-resiliency SM and S6).
-
-## 20261022_1439 — audit_rotations: safety header and git timeouts; rewrap tolerance reverted
-
-`scripts/audit_rotations.py` (smc-resiliency session, skill-coder helpers on a touched script): the header states it is read-only, and both git
-calls go through `git()` with a 60 s timeout (`GIT_TIMEOUT_S`, `Raises:` documented). No behaviour change: the audit's output on smc-resiliency,
-unified-network-controller and enterprise-strategy is identical before and after; `just test` 190 OK. A rewrap-tolerant match was written and
-reverted the same session (operator: keep the audit strict); ROADMAP "Audit and preflight" holds the open item.
-
-## 20261022_1209 — Plan timeline: extra rows before the plan rows they feed on one date
-
-`scripts/plan_timeline.py`: on one date an extra row (work outside the plan) comes before the plan rows it feeds, on top of the `after:` placement for undated rows (operator, smc-resiliency, 2026-10-21: unplanned work "in the logical order, not everything at the bottom"). Test `test_extra_before_plan_row_on_one_date`. Note: commit 535d13f carried only the `after:` change from the unified-network-controller session, under a message naming this rule.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

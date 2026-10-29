@@ -20,6 +20,8 @@ Summary: Symptom-to-question index for systems reviews and incidents; each signa
 - [Compute and facilities](#compute-and-facilities)
 - [Operating system, identity and lifecycle](#operating-system-identity-and-lifecycle)
 - [Capacity and platforms](#capacity-and-platforms)
+- [Edge appliances](#edge-appliances)
+- [Monitoring and measurement](#monitoring-and-measurement)
 - [Review checklist](#review-checklist)
 - [Further reading](#further-reading)
 
@@ -62,6 +64,8 @@ Owning module: [storage-and-data](storage-and-data.md).
 | Hardware RAID under ZFS             | ZFS cannot see or repair disk errors                     | Is the controller in HBA (IT) mode?               | controller model and mode                     |
 | No scrub in the agreed interval     | latent corruption undetected                             | When did the last scrub finish, with what errors? | scrub history, checksum error counters        |
 | Consumer SSD for SLOG, WAL or DB    | high sync latency; acknowledged writes lost on power cut | Does the device have power-loss protection?       | model, fio sync 4k QD1, `pg_test_fsync`       |
+| Ceph stretched between cities      | every write pays the RTT; beyond ~10 ms guidance         | What is the measured RTT; is RPO > 0 acceptable?  | RTT p99 between sites, OSD media, pool rules  |
+| Two-replica pool (size 2)           | min_size 1 risks loss; min_size 2 stops writes on a loss | Which failure must this pool survive with writes? | pool size/min_size; `just ceph`              |
 
 ## Backup and recovery
 
@@ -86,6 +90,8 @@ Owning module: [compute-and-facilities](compute-and-facilities.md).
 | Single PSU feed (both PSUs on one PDU or UPS)      | one breaker trip drops the "redundant" host | Which feed, UPS and PDU does each PSU use?      | power map per host, per-PSU draw           |
 | OOB reached through production DNS or IdP          | no console in the outage that needs it      | Can OOB be reached with production isolated?    | OOB network path, auth dependency          |
 | UPS load above ~80% (practice) or untested runtime | hard power-off before shutdown completes    | Does measured runtime cover the shutdown chain? | UPS load, discharge test, shutdown timings |
+| Power saving priced per kWh on a capacity contract | saving that never appears on the invoice    | Is power billed on energy, contracted kVA, or both? | invoice line items, contract power schedule |
+| Near-equal A/B feed draw called "waste"          | normal PSU load sharing misread              | Does A + B stay within one feed's usable rating?  | per-feed peak draw, feed rating            |
 
 ## Operating system, identity and lifecycle
 
@@ -110,6 +116,39 @@ Owning modules: [capacity-and-performance](capacity-and-performance.md), [contai
 | Images on `latest` or unpinned tags   | rollback and DR pull a different image               | Which digest is running in production now?        | running image digests vs manifests         |
 | etcd even-sized or 2 of 3 in one zone | one zone loss stops the control plane                | Which zone loss must the control plane survive?   | etcd member placement; `just quorum`       |
 | Dashboards green, newest sample old    | pipeline stalled; absence reads as healthy           | When did the newest sample for this target land?  | scrape age, `up`, ingest lag, push logs    |
+| Platform chosen before the inventory  | design fits a workload that does not exist           | What share of compute is containers, measured?    | inventory, utilisation, cost baseline      |
+| UDP service "needs more CPU" while idle | single-queue receive path or small socket buffers    | Are receive-buffer errors growing, on one CPU?    | `nstat` UDP errors, `/proc/interrupts`, softnet |
+| Local LLM slower than expected        | memory pressure or an unfair benchmark               | Swap and compression in use? Same harness?        | swap, compressed memory, prefill/decode split |
+| Vendor "production speed" for a large model | claim exceeds bandwidth / bytes per token       | What does bandwidth / model bytes give per stream? | memory bandwidth, quantised model size     |
+
+## Edge appliances
+
+Owning module: [edge-appliances](edge-appliances.md).
+
+| Signal                                       | Usually means                            | First question                          | Data to pull                            |
+| -------------------------------------------- | ---------------------------------------- | --------------------------------------- | --------------------------------------- |
+| Flash life falling faster than planned       | write rate, not capacity, consumes it    | Measured GB/day against rated TBW?      | device bytes per day, SMART life trend  |
+| Site visit after a silent hang               | no hardware watchdog or power-cycle path | Is `RuntimeWatchdogSec` set and proven? | watchdog config, forced-hang test       |
+| Box recovers itself, hang rate unknown       | automatic recovery emits no event        | Does each recovery raise an event?      | boot reasons, recovery events, uptime   |
+| Service fails at first reboot after a change | tmpfs directory made once at deploy      | Is it in tmpfiles.d or the unit?        | uptime vs change date, tmpfiles.d       |
+| Uncapped tmpfs or whole root in RAM          | runaway writer exhausts RAM; state lost  | Each mount's cap; sum against RAM?      | `df -h` per tmpfs, RAM, durable state   |
+| Data mount without `nofail`                  | damaged partition: emergency mode        | Does boot reach the network without it? | fstab or mount units, boot test         |
+| Undervoltage gauge always 0                  | gauge not latched between scrapes        | What do kernel log and sticky bits say? | undervoltage count/day, `get_throttled` |
+| Telemetry dated months in the past           | no RTC; readings before time sync        | Are readings gated on time sync?        | boot clock offset, time to sync         |
+| Config pushed over a high-RTT link           | lost sessions leave partial changes      | Does the box hold job state and report? | job records, half-applied changes       |
+
+## Monitoring and measurement
+
+Owning module: [observability-and-incident](observability-and-incident.md).
+
+| Signal                                | Usually means                          | First question                            | Data to pull                            |
+| ------------------------------------- | -------------------------------------- | ----------------------------------------- | --------------------------------------- |
+| Alert firing for weeks with no ticket | routed to a receiver nobody watches    | Which receiver; who acknowledged last?    | route tree, receivers, test-fire record |
+| "Fresh" data consumers call stale     | success emitted by an earlier stage    | Which stage writes the timestamp?         | stage logs, upstream data timestamp     |
+| Write shares sum well under 100%      | sampling misses short-lived writers    | Is the denominator device bytes?          | `/proc/diskstats` vs per-process sums   |
+| Tracer shows no writes to a busy path | path is on tmpfs or a virtual fs       | What filesystem is the path on?           | `findmnt`, `df` on the path             |
+| Log noise proposed for suppression    | may be the only sign of a broken chain | What does the job's success unlock?       | job purpose, dependent state            |
+| Outages filed as "link down"          | power loss misclassified               | Do boots cluster by clock time or season? | boot times, shutdown logs, power data   |
 
 ## Review checklist
 

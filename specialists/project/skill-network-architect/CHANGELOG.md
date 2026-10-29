@@ -11,6 +11,18 @@ Kind: log
 
 # Changelog
 
+## 20261029_2024 — Knowledge harvest from the APN and personal projects; APN operator context (v2.1.0 -> v2.2.0)
+
+- Project harvest (operator, 2026-10-29): seven read-only harvests of the APN and personal projects (368 items) fed both architects and
+  other packs. New references: australian-access-networks (nbn constructs incl. CVC TC-4 not charged from 2026-07-01 on non-satellite
+  networks, 121 POIs, TC classes), service-provider-edge (BNG, CoA, reconnect storms, CGNAT logging), voice-and-sip (trunks, Erlang B,
+  emergency-call obligations under the 2019 Determination), remote-site-fleet (one-box rule, GEO polling limits, discovery ranking).
+  Updates: network-services (resolver receive path), routing-and-switching (transport baseline, ECMP hashing), security-and-segmentation
+  (zero-trust fleet access), observability-troubleshooting, red-flags (Remote-site fleets table); shared method and automation additions.
+- APN operator context contained in operator/apn/ (README index plus four topic files, 137 items, no names, IPs or figures); general
+  references stay operator-neutral. check_package scans operator/ and accepts links into a sibling skill folder.
+- Sources: store 519 items; ledgers rebuilt.
+
 ## 20261029_1951 — Gap closure: helpers, verified facts, templates, filled examples (v2.0.0 -> v2.1.0)
 
 - Helpers: fibre_budget.py (TIA-568 maximum defaults, verified via the FOA loss-budget page) and power_budget.py (PoE per class, UPS load

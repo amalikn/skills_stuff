@@ -11,6 +11,16 @@ Last rotated: 20261029_1751
 
 # Changelog — skill-cambium
 
+## 20261029_2013 — Harvest write-back: Anchor fuse, vendor artefacts, Cloud-held devices, spares, emergency access, source accuracy (v0.8.4 -> v0.8.5)
+
+Learned 2026-10-29 from the architect-pack harvest of apn projects (cambium-swap, unified-network-controller, aws-to-local, aurukun-fni):
+`references/01_overview.md` new subsection Continuity exposure (6.0.0's 90-day Anchor grace then onboarding queue; OVA root CA and AMI end at 5.0.0-r5;
+Cloud-held devices recoverable only through the Cloud UI; pre-onboarded spares untested), `references/02_device-access-and-vault.md` Emergency local
+access per family (static URL wins over Option 43), `references/05_known-issues.md` measured placement accuracy per source (switch FDB 0 of 50 and 0
+of 67). Skipped as covered: login budget and lockout, vendor ownership news (Airspan, Univastu), Option 43 dependency. Not written: the 60 GHz
+alignment note (one hop not established because the mount could not be reached safely; no device fact beyond the 1 Gbps link rate, which is a
+design lesson for skill-network-architect). manifest 0.8.4 -> 0.8.5.
+
 ## 20261029_1915 — E500 has no CLI LLDP neighbour view (no version change)
 
 Disputed 2026-10-29 in `references/06_device-api-cli-reference.md`: E500 4.2.3-r2 refuses `show lldp-neighbors`; place E-series by

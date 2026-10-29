@@ -20,6 +20,7 @@ Summary: >-
 - [Incident roles and timeline](#incident-roles-and-timeline)
 - [Incident result shape](#incident-result-shape)
 - [What each probe does not prove](#what-each-probe-does-not-prove)
+- [Alert routing and honest measurement](#alert-routing-and-honest-measurement)
 - [Investigation and review](#investigation-and-review)
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
@@ -52,6 +53,8 @@ Summary: >-
 |                      | the system                                                                                                           |                                        |
 | Security incidents   | NIST SP 800-61 Rev. 3 (April 2025), aligned to CSF 2.0 functions: preserve evidence, scope before eradication        | VERIFIED_PRIMARY [N1]                  |
 | Incident result      | Exactly one most-likely fault domain with confidence; conflicting evidence means "inconclusive"                      | Design rule (this file)                |
+| Alert routing        | An alert is done only when a test fire reaches a human who acts; routing is audited end to end                       | Design rule; [AM1]                     |
+| Automatic recovery   | Every watchdog reboot, power cycle or self-heal emits an event to monitoring                                         | Design rule                            |
 
 ## Signals and pipeline
 
@@ -139,6 +142,43 @@ Next check:   <one safest read-only or reversible check that splits the remainin
 | Backup job green    | The data is restorable, complete or inside the RPO                                                | A timed restore with checksum comparison                 |
 | Replication healthy | The replica is consistent, current within the RPO, or promotable                                  | Lag measured in time; checksum compare; a failover drill |
 
+## Alert routing and honest measurement
+
+Monitoring is not done when the rule fires; it is done when the right person receives it and acts.
+
+- Alertmanager deduplicates, groups and routes alerts to receivers; the root route must name a receiver so unmatched alerts still go
+  somewhere (VERIFIED_PRIMARY [AM1], checked 2026-10-29). Audit which receiver each critical rule reaches, and test-fire it to a phone.
+  Rules that fire into an unwatched receiver are a silent failure: hosts can stay dark for months with "working" alerts.
+- Meta-monitor the monitoring: alert on absent targets and on the pipeline itself, not only on values ([Prometheus alerting
+  practices][promalert], Metamonitoring).
+- Any automatic recovery (hardware watchdog reboot, external power-cycle board, service restart loop) must emit an event. Without it,
+  frequent hangs are invisible because the box always comes back.
+- Emit "success" and freshness from the stage the consumer reads, and derive age from the data's own upstream timestamp. A timestamp
+  written at download time reports fresh while the later build stage fails.
+- Instantaneous gauges miss intermittent faults between scrapes. Prefer latched or counting sources (kernel log counts, sticky status
+  bits, monotonic error counters) for undervoltage, throttling and receive errors.
+- Prove each new series reaches the central store. Collector filters and relabel rules remove data silently: check the deployed
+  node_exporter `fs-types-exclude` (the upstream default, checked 2026-10-29, excludes `overlay`, `squashfs` and `erofs` but not
+  `tmpfs`; a local override can hide capped RAM mounts) and any `metric_relabel_configs` that discard raw series ([NE1]).
+- For a vendor SMART attribute, confirm per model which column (normalised VALUE or RAW) carries life remaining before alerting on it.
+- Classify every dark period with boot-time and pattern evidence (power, hang, WAN, switch) before accepting "the link was down".
+  Same-clock-time boots and seasonal clustering point to power, not connectivity.
+- Before suppressing "log noise", trace what the failing job's success unlocks downstream; an error silenced untraced can be the only
+  sign of a broken control chain.
+- Sample the actual lines of a new log flood before assigning a known root cause; similar shapes have different causes.
+
+Honest measurement (writes, receive errors, rates):
+
+| Instrument                       | Counts                                  | Misses                                       | Quote against                    |
+| -------------------------------- | --------------------------------------- | -------------------------------------------- | -------------------------------- |
+| Syscall or fanotify tracer       | write calls on device-backed mounts     | bytes, page-cache coalescing, tmpfs          | ranking only                     |
+| Short sampling window (5-10 min) | steady writers                          | daily burst writers moving hundreds of MB    | pair with a 24 h large-file scan |
+| Per-process I/O totals (`/proc`) | bytes by processes alive at sample time | short-lived processes (a floor, not a total) | block-device bytes               |
+| Block-device bytes, SMART        | what reached the media                  | attribution to a process                     | the denominator for any share    |
+
+- A share quoted against the process sum, not the device total, inflates every percentage. A consistent unattributed band across
+  hosts signals instrument loss, not a hidden writer.
+
 ## Investigation and review
 
 - Record impact population, first and last observation, UTC timestamps, clock quality, versions and recent changes.
@@ -171,6 +211,9 @@ Next check:   <one safest read-only or reversible check that splits the remainin
 | Retention too short            | Evidence gone before review          | Post-incident and audit   | Query the oldest required sample                           |
 | Silent incident handoff        | Two people change the system at once | Incident outcome          | Exercise with a forced commander handoff                   |
 | Dashboard green, users failing | Users report what monitoring misses  | Trust in monitoring       | Measure restored user transactions after each intervention |
+| Alert routed to nobody         | Rule fires for months; hosts dark    | Every alert on that route | Test-fire each critical rule; a human acknowledges         |
+| Self-recovery hides faults     | Box returns; hang rate unknown       | Root cause never found    | Force a recovery; the recovery event reaches monitoring    |
+| Freshness from the wrong stage | Fresh timestamp on failed builds     | Consumers of stale data   | Break the last stage; the age alert fires                  |
 
 ## Worked example
 
@@ -193,6 +236,9 @@ SLO: 99.9% of requests succeed over 30 days. Error budget = 0.001 x 30 days = 43
 - [ ] Incident roles, live document and explicit handoff are rehearsed.
 - [ ] Every diagnosis uses the result shape; no probe is treated as proof beyond the table above.
 - [ ] Acceptance: pager path, absence alerts, time alignment, owner response, collector recovery, restored user transactions.
+- [ ] Each critical alert test-fired to its receiver; automatic recoveries emit events; freshness comes from the consumer's stage.
+- [ ] New mounts and series proven present in the central store; collector excludes and relabel rules reviewed.
+- [ ] Rates and shares quoted against the device or system total, with the instrument's blind spots stated.
 
 ## Further reading
 
@@ -207,6 +253,9 @@ Metrics and telemetry:
 - [P1] [Prometheus storage](https://prometheus.io/docs/prometheus/latest/storage/) - read this for retention flags and durability limits (VERIFIED_PRIMARY, checked 2026-10-29).
 - [Prometheus: instrumentation practices][promprac] - read this for label and cardinality discipline.
 - [OpenTelemetry documentation](https://opentelemetry.io/docs/) - read this for collector, signals and semantic conventions.
+- [AM1] [Alertmanager configuration](https://prometheus.io/docs/alerting/latest/configuration/) - read this for routes, receivers and grouping (VERIFIED_PRIMARY, checked 2026-10-29).
+- [Prometheus alerting practices][promalert] - read this for symptom alerting and metamonitoring.
+- [NE1] [node_exporter filesystem collector][ne1url] - read this for the default excluded filesystem types (VERIFIED_PRIMARY, checked 2026-10-29).
 
 Logs:
 - [journald.conf(5)](https://www.freedesktop.org/software/systemd/man/latest/journald.conf.html) - read this for host log persistence and caps.
@@ -214,3 +263,7 @@ Logs:
 [sloimpl]: https://sre.google/workbook/implementing-slos/
 
 [promprac]: https://prometheus.io/docs/practices/instrumentation/
+
+[promalert]: https://prometheus.io/docs/practices/alerting/
+
+[ne1url]: https://github.com/prometheus/node_exporter/blob/master/collector/filesystem_linux.go

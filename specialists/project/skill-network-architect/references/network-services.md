@@ -15,6 +15,7 @@ Summary: DNS, DHCP, time, AAA, PKI and load-balancing decision rules, dependency
 - [Scope](#scope)
 - [Decision rules](#decision-rules)
 - [Dependency order](#dependency-order)
+- [Resolver receive path](#resolver-receive-path)
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
 - [Worked example](#worked-example)
@@ -58,6 +59,8 @@ All VERIFIED_PRIMARY rows checked 2026-10-29.
 | RADIUS/1.1                                                    | Removes MD5 inside TLS; Experimental                                    | VERIFIED_PRIMARY [RFC 9765][rfc9765]       |
 | radiusdtls-bis                                                | Proposed Standard in IESG evaluation; would obsolete 6614 and 7360      | VERIFIED_PRIMARY [datatracker][radext]     |
 | CoA / Disconnect                                              | Change authorisation mid-session                                        | VERIFIED_PRIMARY [RFC 5176][rfc5176]       |
+| Option 43 (vendor-specific)                                   | Opaque, vendor-defined; often points devices at a controller            | VERIFIED_PRIMARY [RFC 2132][rfc2132] s8.4  |
+| A hot resolver: tune the receive path before adding CPU       | Buffers, then NIC queues and IRQ spread, then CPU                       | See [Resolver receive path](#resolver-receive-path) |
 
 - Untrusted ports drop client-supplied option 82 (DHCP snooping). Align scopes, relays and RA/DHCPv6 policy with IPAM ownership.
 - Monitor NTP offset, jitter, reachability and stratum, not "service running". Use NTP unless an app states a PTP need.
@@ -89,6 +92,38 @@ Remote site during WAN loss: what must keep working locally (X = failed WAN)
 +--------------------------------------+                +------------------------+
 ```
 
+## Resolver receive path
+
+A busy recursive resolver that looks CPU-bound is often a single receive path: one NIC queue, one interrupt on one CPU,
+and UDP datagrams dropped at a full socket buffer while the other cores idle. Adding vCPUs does not reach that path.
+
+```text
+RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
++---------------+   +----------------+   +----------------+   +----------------+   +-----------+
+| pool balance  |-->| UDP socket     |-->| NIC queues     |-->| IRQ, softirq   |-->| more CPU  |
+| per member    |   | buffer errors  |   | (RSS)          |   | spread per CPU |   | last rung |
++---------------+   +----------------+   +----------------+   +----------------+   +-----------+
+ one heavy NAT       rmem_default,        1 combined queue     /proc/interrupts,    only when the
+ source on one       rmem_max,            = one CPU takes      softnet_stat         daemon is busy
+ member              udp_rmem_min         every interrupt      squeeze              on many threads
+```
+
+| Step | Check | Lever | Evidence |
+| ---- | ----- | ----- | -------- |
+| 1. Distribution | Per-member query rate behind the balancer | Fix hashing or stickiness first; one CGNAT or satellite source can land on one member | UNVERIFIED (method) |
+| 2. Socket buffer | UDP receive errors growing (`netstat -su`) | Raise `rmem_*`, `udp_rmem_min` in a sysctl drop-in; watch growth | VERIFIED_PRIMARY [net][k-net], [ip-sysctl][k-ipsysctl] |
+| 3. NIC queues | `ethtool -l` shows one combined queue | Enable multiqueue so RSS spreads flows across queues and CPUs | VERIFIED_PRIMARY [kernel scaling][k-scaling] |
+| 4. IRQ spread | `/proc/interrupts` shows the NIC interrupt on one CPU; softirq time squeeze | Queue-to-CPU affinity, or RPS for a single-queue device | VERIFIED_PRIMARY [kernel scaling][k-scaling] |
+| 5. CPU | Daemon busy across many worker threads, not one ingress socket | Add CPU only now | UNVERIFIED (design method) |
+
+- Whether a running resolver picks up a larger socket buffer without a restart depends on how the daemon sets `SO_RCVBUF`. Check that version's documentation before claiming the effect.
+- On a virtual machine the queue count is a hypervisor setting, not a guest setting. In libvirt the `<interface>` `queues` attribute sets
+  virtio-net multiqueue and needs `<model type='virtio'/>` (VERIFIED_PRIMARY [libvirt domain XML][libvirt-fd]). A changed definition takes effect
+  at the next boot of the domain (VERIFIED_PRIMARY [virsh][virsh]). Field experience: a reboot from inside the guest keeps the running process,
+  so plan a full shutdown and start, a maintenance window and a saved copy of the old definition for rollback (UNVERIFIED).
+- The guest may also need `ethtool -L <if> combined N` to use the queues (VERIFIED_SECONDARY [KVM multiqueue page][kvm-mq]).
+- Template packet-heavy VMs (resolvers, gateways, collectors) with explicit multiqueue and a single-socket CPU topology from the start.
+
 ## Patterns and anti-patterns
 
 | Pattern                                 | Use when                     | Anti-pattern                              | Why it fails                               |
@@ -99,6 +134,8 @@ Remote site during WAN loss: what must keep working locally (X = failed WAN)
 | DNS allowed on UDP and TCP 53           | Every firewall               | UDP-only DNS rules                        | Large answers and DNSSEC break             |
 | Readiness-depth health checks           | Load-balanced services       | TCP port check only                       | Traffic sent to broken backends            |
 | Decided DoH policy                      | Managed clients              | Ignore browser DoH                        | Split-horizon names and filtering bypassed |
+| Receive path tuned before CPU           | Hot resolver, idle cores     | Add vCPUs first                           | Single queue keeps every packet on one CPU |
+| Edge recovery image keeps DHCP and DNS  | Site devices lease from the edge box | Rollback image without site services | Rollback takes the site management plane down |
 
 ## Failure modes and tests
 
@@ -112,6 +149,8 @@ Remote site during WAN loss: what must keep working locally (X = failed WAN)
 | AAA unreachable                            | No 802.1X or admin login              | Site                        | Cut AAA path; fallback policy and break-glass work |
 | Certificate expiry or CRL/OCSP unreachable | EAP-TLS and TLS fail                  | All certificate users       | Expire a test certificate; alert fires before      |
 | Rogue DHCP server                          | Clients get a bad gateway or resolver | Segment                     | Start a rogue server in lab; snooping blocks it    |
+| Resolver receive drops                     | Timeouts while CPU looks idle         | Every client of the member  | Load test; receive-buffer errors stay flat         |
+| Controller discovery lost after rollback   | Factory-default devices find nothing  | New and reset devices       | Reset a device in a rollback drill; it registers   |
 
 ## Worked example
 
@@ -139,6 +178,8 @@ Inputs (illustrative): site switch 0.9995; each resolver 0.995; shared hyperviso
 - [ ] RADIUS protected (TLS or protected path); break-glass sealed and audited.
 - [ ] Certificate expiry and revocation reachability monitored.
 - [ ] `just availability` run for the resolver, DHCP and AAA designs, with shared hosts as series blocks.
+- [ ] Resolver VMs: per-member load even, receive-buffer errors flat, multiqueue set in the hypervisor definition, IRQs spread.
+- [ ] Every service site devices take from an edge box (DHCP, DNS, option 43 controller discovery, NTP) survives its rollback image.
 
 ## Further reading
 
@@ -159,11 +200,17 @@ Time:
 - [RFC 8915][rfc8915]: read before enabling NTS.
 - [ITU-T G.8275.1][g8275]: when an application needs PTP phase and time.
 
+Host receive path:
+
+- [Linux kernel: scaling in the networking stack][k-scaling]: RSS, RPS, RFS and XPS, and when each applies.
+- [libvirt domain XML: network interfaces][libvirt-fd]: the `queues` attribute for virtio-net multiqueue.
+
 AAA:
 
 - [RFC 6614][rfc6614] and [RFC 9765][rfc9765]: RADIUS over TLS and the MD5-free RADIUS/1.1.
 - [radext RADIUS/(D)TLS bis draft][radext]: the standards-track replacement.
 
+[rfc2132]: https://www.rfc-editor.org/rfc/rfc2132.html
 [rfc3046]: https://www.rfc-editor.org/rfc/rfc3046.html
 [rfc5176]: https://www.rfc-editor.org/rfc/rfc5176.html
 [rfc5905]: https://www.rfc-editor.org/rfc/rfc5905.html
@@ -183,3 +230,9 @@ AAA:
 [radext]: https://datatracker.ietf.org/doc/draft-ietf-radext-radiusdtls-bis/
 [ieee1588]: https://standards.ieee.org/ieee/1588/6825/
 [g8275]: https://www.itu.int/rec/T-REC-G.8275.1/en
+[k-scaling]: https://docs.kernel.org/networking/scaling.html
+[k-ipsysctl]: https://docs.kernel.org/networking/ip-sysctl.html
+[k-net]: https://docs.kernel.org/admin-guide/sysctl/net.html
+[libvirt-fd]: https://libvirt.org/formatdomain.html
+[virsh]: https://libvirt.org/manpages/virsh.html
+[kvm-mq]: https://www.linux-kvm.org/page/Multiqueue

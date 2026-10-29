@@ -10,6 +10,7 @@
 - [Confirmed Live Network Path to a Site (Hope Vale, 2026-09-17)](#confirmed-live-network-path-to-a-site-hope-vale-2026-09-17)
 - [Direct Device SSH from the Operator Mac via `ProxyJump` (2026-09-21)](#direct-device-ssh-from-the-operator-mac-via-proxyjump-2026-09-21)
 - [cnMaestro REST API v2 Access (2026-09-18)](#cnmaestro-rest-api-v2-access-2026-09-18)
+- [Emergency local access per family, without cnMaestro (written back 2026-10-29)](#emergency-local-access-per-family-without-cnmaestro-written-back-2026-10-29)
 
 ---
 
@@ -196,3 +197,23 @@ Never called a write endpoint (config/reboot/onboard) against this API — only 
 > not a source of device records or positions any more. apn-cnmaestro01 has no API (X edition ended 2026-10-01), so anything held only
 > there (for example a device's map position) is read through its web UI. Connect to the controller by name with TLS verified, never by
 > IP with verification off.
+
+## Emergency local access per family, without cnMaestro (written back 2026-10-29)
+
+> **Learned 2026-10-29** · Enterprise Wi-Fi XV2, ePMP 3000L / Force 300, cnPilot R195P · VERIFIED-DOC (E10, XV2) + VERIFIED-OBSERVED (XV2-2T0,
+> 2026-09-17) + VERIFIED_SECONDARY (ePMP staff how-to) · Source: `cambium-swap/docs/operations/emergency-access.md` (Access by family; Behaviour to
+> know), apn 5cba35f · Falsifier: a factory-reset XV2 that ignores Option 43 with no static URL set.
+
+| Family                 | Local access documented                                                                          | Local firmware upload                     | Tested         |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------- | -------------- |
+| XV2-2T0, XV2-22H       | Web UI and JSON REST (`POST /api/login`), SSH on by default, Telnet off, SNMP v2c; link-local    | Yes, web UI; configuration kept           | XV2-2T0, SSH   |
+|                        |   `169.254.x.y` derived from the MAC                                                             |                                           |   and web API  |
+| ePMP 3000L, Force 300  | Device GUI                                                                                       | Yes, Tools > Software Upgrade (URL, file) | No             |
+| cnPilot R195P          | Web UI, Telnet, TR-069, SNMP v2, syslog; SSH not listed                                          | Web UI (assumed)                          | No             |
+
+- A factory-reset Enterprise Wi-Fi AP heads for `cloud.cambiumnetworks.com` unless a static URL or DHCP Option 43/15 points elsewhere; at SMC sites
+  the SMC's DHCP supplies Option 43 (01_overview.md, DHCP Vendor Class; skill-smc owns the DHCP side).
+- **A static cnMaestro URL wins over Option 43**: a unit carrying one ignores Option 43, so remove it or reset the unit (R-series, E30). Test the
+  discovery path in any SMC rollback drill: a rollback that drops Option 43 strands reset units.
+- With "Lock AP" in use, cnMaestro overwrites local changes at its next sync; with cnMaestro gone, local changes stick.
+- Login names and vault entries: [02_device-access-and-vault.md](02_device-access-and-vault.md) (never values here).

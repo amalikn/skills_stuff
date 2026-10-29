@@ -67,3 +67,9 @@ wraps an item across rows.
 17. **Two script checks would crash under Python 3** (`str` tested against `bytes`), from reading the code (`06_provisioning.md`, *Defects visible in
     the code*). If confirmed, provisioning has been stopping after the configuration is applied but before the serial is logged, so
     `mikrotik/450g.log` on the Pi would lack serials. Close: ask which Python the Pi runs, or read that log.
+18. **What the switch takes from the SMC: gateway and NTP, not DHCP (2026-10-29).** The apn umbrella `AGENTS.md` says the switch and APs "take DHCP
+    and DNS from the SMC on the management link". The script gives the switch a static `10.255.0.5/24`, default route `10.255.0.1` (the SMC), DNS
+    `8.8.8.8`/`8.8.4.4`, NTP `10.255.0.1`, and removes its DHCP client (`06_provisioning.md`, What the script sets; `VERIFIED-CODE`, running state not
+    read back, items 3 and 4). So an SMC LAN-side change (safe mode, return to generic, rollback) must keep `10.255.0.1` on VLAN 500 and a route out for
+    public DNS. How the Metal AP gets its address is not recorded. Close: `/ip address print`, `/ip dns print`, `/system ntp client print` on one switch
+    and the AP in the next read-only survey. Same entry in skill-smc `references/13_known-issues.md`.

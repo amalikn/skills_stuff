@@ -17,6 +17,7 @@ Summary: Storage, filesystems and data architecture decisions, failure modes and
 - [Capacity vocabulary and layouts](#capacity-vocabulary-and-layouts)
 - [ZFS rules](#zfs-rules)
 - [Ceph rules](#ceph-rules)
+- [Two sites: stretch or replicate](#two-sites-stretch-or-replicate)
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
 - [Worked example](#worked-example)
@@ -118,17 +119,55 @@ CRUSH rule: replicated, failure domain = rack, size 3, min_size 2
   Legend: :::: failure domain   X rack A failed   --> consequence
 ```
 
+- Hyperconverged sizing: plan at least four nodes per failure domain set for size 3. Three nodes keep I/O after one loss but leave no re-replication target during a failure or maintenance; a fourth
+  live node is worth more than a cold spare. Size so the surviving N-1 nodes stay below nearfull (0.85 default) after recovery. Derived from the defaults above and `just ceph`; the "four" is a design
+  rule, not a Ceph requirement.
+- A two-replica pool is unsafe either way: min_size 1 accepts writes on one copy, and min_size 2 blocks writes on any single node loss.
+- A rack failure domain with size 3 needs at least three racks, and four to re-replicate after a rack loss (diagram above).
+- Put databases on a tier sized with growth before monitoring and log stores are added; they are the usual tier overrun.
+
+## Two sites: stretch or replicate
+
+Decide between one cluster stretched across sites and two independent clusters with asynchronous replication.
+
+- Stretch mode keeps OSDs in exactly two zones with two replicas each (size 4) and a tiebreaker monitor in a third site; erasure-coded pools are not allowed, and while degraded the pools run at
+  min_size 1, so Ceph recommends SSD OSDs only. VERIFIED_PRIMARY, [ceph-stretch], checked 2026-10-29.
+- Inter-site latency: Red Hat Ceph Storage documents about 10 ms RTT between the two data sites, with the tiebreaker tolerating more; the Ceph project blog states the same 10 ms figure and up to 100
+  ms for the tiebreaker. It is a guideline, not an enforced limit. VERIFIED_PRIMARY (vendor documentation), [rhcs-stretch]; VERIFIED_SECONDARY, [ceph-stretch-blog]; checked 2026-10-29.
+- Every client write waits for the remote replicas, so the inter-site RTT adds directly to write latency on every write, at both sites.
+- Default for sites more than one metro apart (RTT near or above 10 ms): two independent clusters and asynchronous replication (RBD mirroring or platform replication). State RPO > 0 openly and measure
+  it against each service's declared RPO.
+- RBD mirroring is asynchronous: journal-based (crash-consistent, every write recorded twice, so write latency nearly doubles) or snapshot-based (deltas between scheduled mirror-snapshots; a partially
+  applied delta is rolled back at failover). Each `rbd-mirror` daemon must reach every monitor and OSD of both clusters. VERIFIED_PRIMARY, [rbd-mirror], checked 2026-10-29.
+- Two clusters still need an active-active or active-passive decision per service. It changes runbooks and DNS or routing, not storage.
+
+```text
+TWO SITES: measured RTT decides the shape
+
+  RTT <= ~10 ms and SSD OSDs          RTT > ~10 ms, or HDD OSDs, or different cities
+  +-----------+  sync  +-----------+  +-----------+  async   +-----------+
+  | site A    |<======>| site B    |  | cluster A |--------->| cluster B |
+  | 2 copies  |        | 2 copies  |  | size 3    | rbd-     | size 3    |
+  +-----+-----+        +-----+-----+  +-----------+ mirror   +-----------+
+        |    tiebreaker mon  |          RPO > 0, measured; each site self-heals locally
+        +------> site C <----+
+  one cluster, size 4, writes pay RTT     two clusters, writes pay local latency only
+
+  Legend: <====> synchronous replica traffic   ---> asynchronous replication
+```
+
 ## Patterns and anti-patterns
 
-| Pattern                                | Use when                 | Anti-pattern                               | Why it fails                                             |
-| -------------------------------------- | ------------------------ | ------------------------------------------ | -------------------------------------------------------- |
-| ZFS mirrors for VM disks               | random I/O, small blocks | RAID-Z with small volblocksize             | parity and padding inflate space; one-disk IOPS per vdev |
-| HBA in IT mode                         | any ZFS pool             | hardware RAID under ZFS                    | ZFS cannot see or repair disk errors; cache can lie      |
-| size 3 / min_size 2, domain = host+    | Ceph replicated pools    | min_size 1                                 | writes land on one copy; the next failure loses data     |
-| N > replica count failure domains      | self-healing Ceph        | exactly 3 nodes with size 3                | stays degraded until the node returns                    |
-| Plan to nearfull after one domain loss | Ceph capacity            | fill to raw / size                         | recovery hits backfillfull or full and blocks writes     |
-| Database backup API or atomic snapshot | databases                | file copy of a live data directory         | restores a torn, inconsistent database                   |
-| PLP SSD for SLOG and WAL               | sync-heavy workloads     | consumer SSD without power-loss protection | high sync latency; acknowledged writes lost on power cut |
+| Pattern                                | Use when                  | Anti-pattern                               | Why it fails                                             |
+| -------------------------------------- | ------------------------- | ------------------------------------------ | -------------------------------------------------------- |
+| ZFS mirrors for VM disks               | random I/O, small blocks  | RAID-Z with small volblocksize             | parity and padding inflate space; one-disk IOPS per vdev |
+| HBA in IT mode                         | any ZFS pool              | hardware RAID under ZFS                    | ZFS cannot see or repair disk errors; cache can lie      |
+| size 3 / min_size 2, domain = host+    | Ceph replicated pools     | min_size 1                                 | writes land on one copy; the next failure loses data     |
+| N > replica count failure domains      | self-healing Ceph         | exactly 3 nodes with size 3                | stays degraded until the node returns                    |
+| Plan to nearfull after one domain loss | Ceph capacity             | fill to raw / size                         | recovery hits backfillfull or full and blocks writes     |
+| Database backup API or atomic snapshot | databases                 | file copy of a live data directory         | restores a torn, inconsistent database                   |
+| PLP SSD for SLOG and WAL               | sync-heavy workloads      | consumer SSD without power-loss protection | high sync latency; acknowledged writes lost on power cut |
+| Two clusters plus async replication    | sites in different metros | one cluster stretched over ~12-14 ms RTT   | every write pays the RTT; outside the ~10 ms guideline   |
 
 ## Failure modes and tests
 
@@ -140,6 +179,8 @@ CRUSH rule: replicated, failure domain = rack, size 3, min_size 2
 | Consumer SSD without PLP         | high commit latency, lost acknowledged writes | databases on that device     | fio sync 4k QD1 and `pg_test_fsync` on the real device                 |
 | No scrub schedule                | latent corruption found only on restore       | data read rarely             | scrub and deep-scrub history and error counters in monitoring          |
 | Thin pool overcommitted          | guests see I/O errors at 100%                 | all thin volumes on the pool | alert test below each threshold; agreed response rehearsed             |
+| Async replica lag above the RPO  | mirror lag grows during write bursts          | services failed over to B    | measure lag under peak writes; fail over and count lost writes         |
+| Benchmark averaged over phases   | pass in the PoC, slow in the rebuild window   | every service on the cluster | p95/p99 per phase: steady, node down, rebuilding, restored, backup     |
 
 ## Worked example
 
@@ -173,6 +214,8 @@ $ just ceph examples/ceph-3-hosts-bad.json                     (exit 1)
 - [ ] ZFS: HBA in IT mode; ashift fixed deliberately; mirrors for VM pools; ARC cap counted in host reserve.
 - [ ] Ceph: `just ceph` passes; min_size >= 2 (replica) or k+1 (EC); failure domains > placements.
 - [ ] CRUSH map encodes the real host, rack and power topology.
+- [ ] Two sites: RTT measured; stretch only within ~10 ms with SSD OSDs, otherwise two clusters with a measured RPO.
+- [ ] Storage benchmarks report p95/p99 per phase (steady, node down, rebuilding, restored), not one average.
 - [ ] Alerts below nearfull, backfillfull and full; thin-pool response agreed.
 - [ ] Scrub schedule running and its errors alerted.
 - [ ] Database backups use the database API or atomic snapshots; `pg_test_fsync` result recorded.
@@ -204,6 +247,9 @@ Ceph
 - [Erasure code](https://docs.ceph.com/en/latest/rados/operations/erasure-code/): read this for k+m profiles and their trade-offs.
 - [Placement groups](https://docs.ceph.com/en/latest/rados/operations/placement-groups/): read this for PG counts and the autoscaler.
 - [Hardware recommendations](https://docs.ceph.com/en/latest/start/hardware-recommendations/): read this for CPU, RAM, media and network sizing.
+- [ceph-stretch]: stretch mode, its limits and the tiebreaker monitor. [rbd-mirror]: journal and snapshot RBD mirroring between clusters.
+- [rhcs-stretch]: Red Hat Ceph Storage stretch clusters, including the inter-site latency guideline.
+- [ceph-stretch-blog]: Ceph project blog on stretch clusters (10 ms data sites, 100 ms tiebreaker).
 
 Measurement and security
 
@@ -216,3 +262,7 @@ Measurement and security
 [crush]: https://docs.ceph.com/en/latest/rados/operations/crush-map/
 [openzfs-tuning]: https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Workload%20Tuning.html
 [draid]: https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html
+[ceph-stretch]: https://docs.ceph.com/en/latest/rados/operations/stretch-mode/
+[rbd-mirror]: https://docs.ceph.com/en/latest/rbd/rbd-mirroring/
+[rhcs-stretch]: https://docs.redhat.com/en/documentation/red_hat_ceph_storage/9/html/administration_guide/stretch-clusters-for-ceph-storage
+[ceph-stretch-blog]: https://ceph.io/en/news/blog/2025/stretch-cluuuuuuuuusters-part1/

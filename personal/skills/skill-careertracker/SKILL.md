@@ -1,15 +1,36 @@
 ---
 name: skill-careertracker
 description: "Assess a job ad URL, track career fit, or source Melbourne job listings."
+version: "1.1.0"
 ---
 
 # skill-careertracker
+
+## Contents
+
+- [Overview](#overview)
+- [Input](#input)
+- [Three-phase build workflow (authoritative)](#three-phase-build-workflow-authoritative)
+- [Workflow](#workflow)
+- [PHASE 1 — Markdown assessment](#phase-1--markdown-assessment)
+- [PHASE 2 — DOCX generation (requires user approval from Phase 1)](#phase-2--docx-generation-requires-user-approval-from-phase-1)
+- [PHASE 3 — PDF conversion (opt-in, requires explicit user request)](#phase-3--pdf-conversion-opt-in-requires-explicit-user-request)
+- [Content guidelines (apply in Phase 2 authoring)](#content-guidelines-apply-in-phase-2-authoring)
+- [Company SCRATCHPAD template](#company-scratchpad-template)
+- [Interview tactics](#interview-tactics)
+- [Assessment file template](#assessment-file-template)
+- [Formatting rules](#formatting-rules)
+- [Career repo path](#career-repo-path)
+- [Change notes](#change-notes)
+
+---
 
 ## Overview
 
 Two complementary workflows:
 1. **Source candidates** via JobSpy when given a location or profile-based search request (Step 0).
-2. **Assess a specific role** from a job ad URL: fetch the posting, research the company, analyze fit against the user's background, and then drive the **three-phase, approval-gated** build workflow (Phase 1 markdown → Phase 2 docx → Phase 3 PDF).
+2. **Assess a specific role** from a job ad URL: fetch the posting, research the company, analyze fit against the user's background, and then drive the **three-phase, approval-gated** build workflow
+   (Phase 1 markdown → Phase 2 docx → Phase 3 PDF).
 
 ## Input
 
@@ -21,13 +42,17 @@ Two complementary workflows:
 
 ## Three-phase build workflow (authoritative)
 
-Every new-job assessment follows three phases with **explicit user approval gates between each**. Do not collapse phases. Producing docx before the markdown is approved — or PDFs before the docx is approved — wastes iteration budget and is forbidden by the career repo's AGENTS.md. The authoritative contract is [`04-resumes/scripts/CONFIG_CONTRACT.md`](/Volumes/Data/_ai/_project/project_stuff/me/career/04-resumes/scripts/CONFIG_CONTRACT.md).
+Every new-job assessment follows three phases with **explicit user approval gates between each**. Do not collapse phases. Producing docx before the markdown is approved — or PDFs before the docx is
+approved — wastes iteration budget and is forbidden by the career repo's AGENTS.md. The authoritative contract is [`04-resumes/scripts/CONFIG_CONTRACT.md`](/Volumes/Data/_ai/_project/project_stuff/me/career/04-resumes/scripts/CONFIG_CONTRACT.md).
 
-| Phase | Agent produces | Gate |
-|-------|----------------|------|
-| **1 — Markdown assessment** | `<company>-<role>.md` (17 sections) + SCRATCHPAD updates + RADAR row + 04-resumes/index.md placeholder | **Stop; ask user to review the markdown before writing any configs.** |
-| **2 — DOCX generation** | `scripts/resume_config.py` + `scripts/cover_letter_config.py` + `build_role.py <company> <role>` → resume.docx + cover_letter.docx + workday_profile.docx | **Stop; ask user to review docx layout and content before PDF.** |
-| **3 — PDF conversion (opt-in)** | Only on explicit user request: `build_role.py <company> <role> --pdf` (uses Microsoft Word's AppleScript engine) | n/a — terminal phase |
+| Phase                       | Agent produces                                                                                              | Gate                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| **1 — Markdown assessment** | `<company>-<role>.md` (17 sections) + SCRATCHPAD updates + RADAR row + 04-resumes/index.md placeholder      | **Stop; ask user to review the markdown before writing** |
+|                             |                                                                                                             |   **any configs.**                                       |
+| **2 — DOCX generation**     | `scripts/resume_config.py` + `scripts/cover_letter_config.py` + `build_role.py <company> <role>` →          | **Stop; ask user to review docx layout and content**     |
+|                             |   resume.docx + cover_letter.docx + workday_profile.docx                                                    |   **before PDF.**                                        |
+| **3 — PDF conversion (opt-in)** | Only on explicit user request: `build_role.py <company> <role> --pdf` (uses Microsoft Word's                | n/a — terminal phase                                     |
+|                             |   AppleScript engine)                                                                                       |                                                          |
 
 Capability overview is **opt-in only** via `--include-capability` — never auto-copied. PDFs are **opt-in only** — never auto-produced.
 
@@ -66,12 +91,12 @@ bash /Volumes/Data/_ai/_tool/tools_stuff/jobspy/scripts/jobspy-run.sh \
 Run in background (parallel) — each scrape takes 60–90s per site.
 
 **Scoring regex weights** (apply against concatenated title+company+description; `fit = sum(weights)`):
-- POS: carrier/SP/MPLS/BGP/OSPF/IS-IS `+3`; CCIE/CCNP/JNCIE `+3`; Cumulus/SONiC/EVPN/VXLAN/Clos/spine-leaf/fabric/DC `+3`; NVIDIA/Spectrum-X/Mellanox `+3`; AI/LLM/GPU/MLOps/inference `+2`; Ansible/Terraform/Python/Linux/FRR/network-automation `+2`; senior/principal/lead/staff/architect `+2`; Telstra/Optus/NBN/AWS/Azure/GCP `+1`
+- POS: carrier/SP/MPLS/BGP/OSPF/IS-IS `+3`; CCIE/CCNP/JNCIE `+3`; Cumulus/SONiC/EVPN/VXLAN/Clos/spine-leaf/fabric/DC `+3`; NVIDIA/Spectrum-X/Mellanox `+3`; AI/LLM/GPU/MLOps/inference `+2`;
+  Ansible/Terraform/Python/Linux/FRR/network-automation `+2`; senior/principal/lead/staff/architect `+2`; Telstra/Optus/NBN/AWS/Azure/GCP `+1`
 - NEG: junior/graduate/intern `-4`; helpdesk/desktop/field/cabling `-3`; sales/account-mgr `-2`; wireless/wifi/RF-engineer `-1`; windows/SCCM/Intune/AD `-2`
 - Threshold: keep `fit >= 3`
 
-**Outcome archival (mandatory)**:
-Every JobSpy run outcome must be archived under the career repo, not left in the tool's shared output dir:
+**Outcome archival (mandatory)**: Every JobSpy run outcome must be archived under the career repo, not left in the tool's shared output dir:
 ```
 01-jobs/00-jobspy-outcomes/<YYYYMMDD>-<location>/
   mel-network-engineer.csv
@@ -83,7 +108,8 @@ Every JobSpy run outcome must be archived under the career repo, not left in the
 ```
 Subfolders OK when outcomes span multiple locations or angle batches. The tool's `output/` dir is staging only; archival to `00-jobspy-outcomes/` is the source of truth.
 
-**Tracker rebuild**: after archiving a new run, also regenerate `01-jobs/00-jobspy-outcomes/TRACKER.md` so the aggregate cross-run table stays current (see the career repo AGENTS.md for the rebuild contract).
+**Tracker rebuild**: after archiving a new run, also regenerate `01-jobs/00-jobspy-outcomes/TRACKER.md` so the aggregate cross-run table stays current (see the career repo AGENTS.md for the rebuild
+contract).
 
 **Handoff to Phase 1**: present top 10–15 with fit score, company, URL. User picks 2–3 roles → invoke the Phase 1 flow per URL for full 17-section assessments.
 
@@ -97,6 +123,16 @@ Use `mcp__plugin_context-mode_context-mode__ctx_fetch_and_index` with the job UR
 - Seniority level and reporting structure (if stated)
 - Nice-to-haves vs hard requirements
 
+**When the plain fetch is blocked or empty** (bot wall, Cloudflare challenge, JavaScript-only page), use this order before giving up:
+
+1. **The site's own JSON endpoint first.** Many job boards guard their HTML routes but answer their internal search/detail JSON API with the same filter parameters. Prefer it over HTML scraping:
+   structured fields, no rendering, fewer blocks.
+2. **Headless browser with a guest-API fallback** for sites that need rendering; if the browser path is blocked, fall back to the site's public guest API for the posting.
+3. **all-scraper** (`just -f /Volumes/Data/_ai/_tool/tools_stuff/all-scraper/justfile fetch <url> --markdown --js`) as the general fallback.
+
+Keep every fetcher read-only and idempotent (search and read only; no login, apply or save actions). The career repo's fetchers and their usage are catalogued in
+`/Volumes/Data/_ai/_project/project_stuff/me/career/scripts/README.md` (`seek_api_fetch.py`: internal JSON search API; `li-fetch.py`: headless Chromium with guest-API fallback).
+
 ### 2. Research the company
 
 Use web search to establish:
@@ -108,16 +144,16 @@ Use web search to establish:
 
 ### 3. Load user background
 
-Read active resumes from:
-`/Volumes/Data/_ai/_project/project_stuff/me/career/04-resumes/`
+Read active resumes from: `/Volumes/Data/_ai/_project/project_stuff/me/career/04-resumes/`
 
-Also read the live capability source of truth:
-`/Volumes/Data/_ai/_project/project_stuff/me/career/02-capability/core_strengths.md`
+Also read the live capability source of truth: `/Volumes/Data/_ai/_project/project_stuff/me/career/02-capability/core_strengths.md`
 
 Key anchors (always apply unless capability docs say otherwise):
-- Lead credential: CCIE Service Provider. **Always use the full "CCIE Service Provider" phrase — never bare "CCIE"** in resume, cover letter, LinkedIn, or any verbal interview context. The SP qualifier is the lead credential's differentiator.
+- Lead credential: CCIE Service Provider. **Always use the full "CCIE Service Provider" phrase — never bare "CCIE"** in resume, cover letter, LinkedIn, or any verbal interview context. The SP
+  qualifier is the lead credential's differentiator.
 - Narrative anchor: **Australian decade leads** — APN (2020–present), Telstra/Belong (2017), AINS. Ericsson (Kuwait, 2011–2016) = foundational context only, not headline. Never lead with Ericsson.
-- Core strengths: IP/MPLS, service-provider architecture, BGP/OSPF/IS-IS, telecom delivery leadership, customer-facing technical engagement, multivendor environments, Telstra/Belong national-scale ISP, Ericsson telecom vendor delivery foundation, Mada SDH/optical/WiMAX
+- Core strengths: IP/MPLS, service-provider architecture, BGP/OSPF/IS-IS, telecom delivery leadership, customer-facing technical engagement, multivendor environments, Telstra/Belong national-scale
+  ISP, Ericsson telecom vendor delivery foundation, Mada SDH/optical/WiMAX
 - **Cumulus Linux**: 6+ years hands-on production at APN (2020–present). Strong fit, not a gap, for Cumulus, SONiC, NVIDIA Spectrum-X, or Linux NOS roles.
 - **Agentic AI / LLM hands-on stack** (current practice, not aspiration):
   - Cloud: Anthropic (Claude), OpenAI (GPT family)
@@ -153,7 +189,8 @@ Create the role folder (configs and generated/ come later in Phase 2 — do **no
   <company>-<role-slug>.md      ← assessment file (this phase's deliverable)
 ```
 
-Canonical template lives at `01-jobs/_template/job-assessment-template.md`. Copy or use as reference. The embedded template at the bottom of this skill is a backup specification — if the repo template diverges, the repo template wins.
+Canonical template lives at `01-jobs/_template/job-assessment-template.md`. Copy or use as reference. The embedded template at the bottom of this skill is a backup specification — if the repo template
+diverges, the repo template wins.
 
 Generate all 17 sections. Add a TOC after the header block.
 
@@ -163,17 +200,21 @@ After the assessment file is written:
 
 **Root `SCRATCHPAD.md`**: update the phase line and add a row to the portfolio snapshot.
 
-**Company `01-jobs/01-active/<company>/SCRATCHPAD.md`**: append a row to Roles table, update Open items, update Recent activity, refresh Memory pointers. If the file does not exist, create it using the template in the "Company SCRATCHPAD template" section below.
+**Company `01-jobs/01-active/<company>/SCRATCHPAD.md`**: append a row to Roles table, update Open items, update Recent activity, refresh Memory pointers. If the file does not exist, create it using
+the template in the "Company SCRATCHPAD template" section below.
 
-**`01-jobs/RADAR.md`**: add a row with fit score, 250k likelihood, AI relevance, next action, and assessment link. Update "Last updated" date and pipeline counts. Recompute the Priority ranking table (combined decision score).
+**`01-jobs/RADAR.md`**: add a row with fit score, 250k likelihood, AI relevance, next action, and assessment link. Update "Last updated" date and pipeline counts. Recompute the Priority ranking table
+(combined decision score).
 
-**`04-resumes/index.md`**: add a placeholder entry linking to the forthcoming `scripts/` and `generated/` folders for this role. The scripts and generated docs don't exist yet — this is a placeholder that becomes active in Phase 2.
+**`04-resumes/index.md`**: add a placeholder entry linking to the forthcoming `scripts/` and `generated/` folders for this role. The scripts and generated docs don't exist yet — this is a placeholder
+that becomes active in Phase 2.
 
 ### 7. **PHASE 1 GATE — stop and ask for approval**
 
 State clearly to the user:
 
-> Phase 1 complete. The markdown assessment is at `<path>`. SCRATCHPADs and RADAR are updated. **Please review the markdown** before I write the config scripts and generate docx. Reply "looks good" or describe any changes you want.
+> Phase 1 complete. The markdown assessment is at `<path>`. SCRATCHPADs and RADAR are updated. **Please review the markdown** before I write the config scripts and generate docx. Reply "looks good" or
+> describe any changes you want.
 
 **Do not proceed to Phase 2 until the user approves.**
 
@@ -193,10 +234,11 @@ Follow the **authoritative contract at [`04-resumes/scripts/CONFIG_CONTRACT.md`]
 - Resume: total content ≥ 1000 words (exec_profile ~298 across 3 substantial paragraphs, capabilities 10 bullets ~77, toolkit 6–8 categories ~148, six job entries with bullets ~494)
 - Cover letter: total content ≥ 630 words (opening ~95, 4 section bodies ~491, closing ~45)
 
-**Cover letter section anchors (fixed — do not change)**:
-`sections[i].find` values must be exactly `TECHNICAL LEADERSHIP`, `ARCHITECTURE & DELIVERY`, `TECHNICAL DEPTH`, `WHY I ADD VALUE` in that order. Change only the `heading` and `body` values.
+**Cover letter section anchors (fixed — do not change)**: `sections[i].find` values must be exactly `TECHNICAL LEADERSHIP`, `ARCHITECTURE & DELIVERY`, `TECHNICAL DEPTH`, `WHY I ADD VALUE` in that
+order. Change only the `heading` and `body` values.
 
-**Find-phrase collision rule**: no section `body` may contain any other section's `find` string as a case-insensitive substring. Common trap: writing "technical depth" in section 1 or 2 body collides with section 3's find. Rephrase to "stack depth" or "protocol depth". A builder fix makes section lookup heading-only so this no longer blanks output, but honour the rule as defence in depth.
+**Find-phrase collision rule**: no section `body` may contain any other section's `find` string as a case-insensitive substring. Common trap: writing "technical depth" in section 1 or 2 body collides
+with section 3's find. Rephrase to "stack depth" or "protocol depth". A builder fix makes section lookup heading-only so this no longer blanks output, but honour the rule as defence in depth.
 
 **AI-relevance tailoring** (from assessment §9):
 - Score 9–10: AI featured in exec_profile para 3 + expanded in cover-letter TECHNICAL DEPTH + toolkit category
@@ -290,7 +332,8 @@ CONFIG = {
 }
 ```
 
-**Inline bold markup** — use `**CompanyName**` in config strings to bold company names in the output. Builder (`set_text()`) parses `**text**` into bold runs. Apply to employer names (`**Ericsson**`, `**Telstra**`, `**Australian Private Networks**`) and target company name throughout cover letter and exec profile. Bold first mention per section, avoid over-bolding.
+**Inline bold markup** — use `**CompanyName**` in config strings to bold company names in the output. Builder (`set_text()`) parses `**text**` into bold runs. Apply to employer names (`**Ericsson**`,
+`**Telstra**`, `**Australian Private Networks**`) and target company name throughout cover letter and exec profile. Bold first mention per section, avoid over-bolding.
 
 **Filename abbreviation convention**: take initial caps of each word in the role slug, e.g. `senior-network-engineering-manager` → `SNEM`.
 
@@ -319,7 +362,8 @@ The legacy `build_resume.py` and `build_cover_letter.py` scripts remain usable f
 
 State clearly to the user:
 
-> Phase 2 complete. The three docx deliverables are in `<generated/ path>`. **Please review the docx layout and content** (open each in Word/Preview to check). Reply "produce PDFs" to convert to PDF via Microsoft Word, or describe any changes to iterate on the configs.
+> Phase 2 complete. The three docx deliverables are in `<generated/ path>`. **Please review the docx layout and content** (open each in Word/Preview to check). Reply "produce PDFs" to convert to PDF
+> via Microsoft Word, or describe any changes to iterate on the configs.
 
 **Do not proceed to Phase 3 until the user explicitly asks for PDFs.**
 
@@ -335,7 +379,8 @@ Only when the user explicitly asks for PDFs, run:
 python 04-resumes/scripts/build_role.py <company> <role> --pdf
 ```
 
-This rebuilds the three default docx AND converts each to PDF via Microsoft Word's AppleScript engine (macOS fidelity rule — AGENTS.md forbids LibreOffice, docx2pdf, pandoc, docling for this conversion).
+This rebuilds the three default docx AND converts each to PDF via Microsoft Word's AppleScript engine (macOS fidelity rule — AGENTS.md forbids LibreOffice, docx2pdf, pandoc, docling for this
+conversion).
 
 For a single-file PDF conversion (e.g. user approves only the resume), use the shell helper:
 
@@ -351,21 +396,28 @@ Capability overview is **never auto-copied**. If the user explicitly asks for it
 python 04-resumes/scripts/build_role.py <company> <role> --include-capability [--pdf]
 ```
 
-This copies the generic `04-resumes/capability/Malik_Ahmad_Technology_Capability_Overview_v2.docx` into the role's `generated/` folder with a company-tagged filename (and converts to PDF if `--pdf` is also passed).
+This copies the generic `04-resumes/capability/Malik_Ahmad_Technology_Capability_Overview_v2.docx` into the role's `generated/` folder with a company-tagged filename (and converts to PDF if `--pdf` is
+also passed).
 
 ---
 
 ## Content guidelines (apply in Phase 2 authoring)
 
-- **Narrative balance**: Australian decade (APN, Telstra/Belong, AINS) leads everywhere. Ericsson = foundational context, not headline. Pattern: lead with what you've done in Australia, then "This is underpinned by X years at Ericsson..."
+- **Narrative balance**: Australian decade (APN, Telstra/Belong, AINS) leads everywhere. Ericsson = foundational context, not headline. Pattern: lead with what you've done in Australia, then "This is
+  underpinned by X years at Ericsson..."
 - **Telstra (Belong)**: always use "Telstra (Belong)" not "Belong (Powered by Telstra)". Highlight national scale, hundreds of thousands of subscribers.
-- **Certifications**: never list CCIP, CCNP, CCDP, CCDA, JNCIS-ENT, or Ericsson ECA-IPN when CCIE Service Provider is present — diminishes the lead credential. Use "Juniper and Ericsson certifications" in prose.
+- **Certifications**: never list CCIP, CCNP, CCDP, CCDA, JNCIS-ENT, or Ericsson ECA-IPN when CCIE Service Provider is present — diminishes the lead credential. Use "Juniper and Ericsson
+  certifications" in prose.
 - **Technical depth**: speak architecturally, not in protocol/model-number lists. 18 years = decision-making layer, not configuration layer.
-- **No em dashes in prose** — strong AI-writing tell. Replace with colons (for lists), parentheses (for asides), or sentence breaks (for paired dashes). En dashes in date ranges (`Apr 2020 – Present`) are allowed. Em dashes in structural job headers (e.g. `Network & IT Manager — Australian Private Networks`) match the template and are OK.
-- **No tenuous positioning triangles**: do not frame thin employer-client connections (e.g. "I worked at both of Company X's partners") as insider knowledge unless current and substantial. Reads as a stretch; will be probed.
+- **No em dashes in prose** — strong AI-writing tell. Replace with colons (for lists), parentheses (for asides), or sentence breaks (for paired dashes). En dashes in date ranges (`Apr 2020 – Present`)
+  are allowed. Em dashes in structural job headers (e.g. `Network & IT Manager — Australian Private Networks`) match the template and are OK.
+- **No tenuous positioning triangles**: do not frame thin employer-client connections (e.g. "I worked at both of Company X's partners") as insider knowledge unless current and substantial. Reads as a
+  stretch; will be probed.
 - **Grounded WHY COMPANY**: base it on the delivery model match and what the candidate genuinely does today — not on historical employer adjacency. Specific and honest beats impressive and hollow.
-- **Gap handling**: structural gaps (e.g. a must-have tech the candidate hasn't operated) are acknowledged in the assessment file but not surfaced or over-hedged in the resume/cover letter. Let the interview determine the gap's weight.
-- **Optical/transport roles**: SDH = transport foundation; DCN = IP/routing (strong fit for CCIE SP); DWDM/OTN commissioning = hands-on gap. For IP/optical convergence products (e.g. Ciena WaveRouter), the IP/MPLS depth is the primary skill — frame the optical foundation as context, not full coverage.
+- **Gap handling**: structural gaps (e.g. a must-have tech the candidate hasn't operated) are acknowledged in the assessment file but not surfaced or over-hedged in the resume/cover letter. Let the
+  interview determine the gap's weight.
+- **Optical/transport roles**: SDH = transport foundation; DCN = IP/routing (strong fit for CCIE SP); DWDM/OTN commissioning = hands-on gap. For IP/optical convergence products (e.g. Ciena
+  WaveRouter), the IP/MPLS depth is the primary skill — frame the optical foundation as context, not full coverage.
 - **Recruiter pre-call messages**: keep simple — confirm the booking, offer resume. Never surface technical gaps or fit concerns to a recruiter; those questions belong with the hiring manager.
 
 ---
@@ -452,7 +504,8 @@ Do not duplicate content across tiers. When migrating content, move both `[x]` c
 These tactics apply whenever the user is preparing for or debriefing any recruiter call, HR screen, hiring manager round, or technical loop. They supplement the content guidelines above.
 
 ### Salary discussions
-- **Flip first, disclose never first**. Prompt the candidate to ask "What band has [company] set for this role?" before disclosing current compensation. Disclose current only if pressed and only after the range is known.
+- **Flip first, disclose never first**. Prompt the candidate to ask "What band has [company] set for this role?" before disclosing current compensation. Disclose current only if pressed and only after
+  the range is known.
 - **Define personal floor before the call**, not during. No walk-away threshold means no real negotiation position.
 - **Subsequent rounds**: do not re-disclose. Reference prior conversation: "I shared context with [recruiter name]; happy to discuss overall package."
 
@@ -461,7 +514,8 @@ These tactics apply whenever the user is preparing for or debriefing any recruit
 - **Deploy prepared buzzwords deliberately**. If prep includes a company vocabulary cheat sheet, the terms must surface in the call. Unused prep is wasted prep.
 
 ### Self-rating vigilance
-- **Correct recruiter framings that overstate depth**. If a recruiter proposes a self-rating number (e.g. "would you rate yourself 8/10 on X?"), qualify or correct it if the number overstates actual depth. Unchallenged framings get relayed to hiring managers as fact and surface as probe questions in later rounds.
+- **Correct recruiter framings that overstate depth**. If a recruiter proposes a self-rating number (e.g. "would you rate yourself 8/10 on X?"), qualify or correct it if the number overstates actual
+  depth. Unchallenged framings get relayed to hiring managers as fact and surface as probe questions in later rounds.
 - **Ground ratings in concrete experience**: "strong at A, basics at B, gap at C" rather than a single composite number.
 
 ### Delivery compression
@@ -478,8 +532,10 @@ When asked to produce a pre-call cheat sheet for a specific role, organize by ri
 - **Tactical questions**: 2-3 prepared questions that signal research and interest
 
 ### Post-call discipline
-- **Write a retrospective** alongside every interview transcript in `01-jobs/<stage>/<company>/<role>/communications/`. Filename pattern: `<call-type>-retrospective.md` (e.g. `hr-screen-retrospective.md`, `hm-round-retrospective.md`).
-- **Retrospective structure**: overall verdict, strengths (with transcript line refs), leaks (with transcript line refs), critical risks for next round, recommended prep actions, key data points captured in table form.
+- **Write a retrospective** alongside every interview transcript in `01-jobs/<stage>/<company>/<role>/communications/`. Filename pattern: `<call-type>-retrospective.md` (e.g.
+  `hr-screen-retrospective.md`, `hm-round-retrospective.md`).
+- **Retrospective structure**: overall verdict, strengths (with transcript line refs), leaks (with transcript line refs), critical risks for next round, recommended prep actions, key data points
+  captured in table form.
 - **Promote session-specific lessons** to repo-wide rules (in career AGENTS.md or root SCRATCHPAD) when they generalize beyond the originating company.
 
 ---
@@ -788,3 +844,10 @@ My recommendation:
         ├── CONFIG_CONTRACT.md        ← authoring contract (authoritative)
         └── index.md                  ← resume index
 ```
+
+---
+
+## Change notes
+
+- 20261029_2006 — v1.1.0 (first versioned release; earlier edits carried no version): Step 1 gains a blocked-fetch order (site JSON endpoint first, headless browser with guest-API fallback,
+  all-scraper last) with read-only, idempotent fetchers, written back from the 2026-10-29 knowledge harvest. Concept only, no personal information.

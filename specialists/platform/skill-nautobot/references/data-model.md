@@ -324,6 +324,9 @@ Source: `nautobot/dcim/models/cables.py:471`, `nautobot/dcim/api/serializers.py:
 > **Learned 2026-10-08** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's REST API: four interface-to-interface Cables created with the `termination_a_type`/`termination_a_id` shape and status Connected, each interface's `cable` and `connected_endpoint` read back; `GET /api/dcim/interfaces/?cabled=true` answered HTTP 400 "Unknown filter field" · Falsifier: a 3.2.x interface list that accepts `cabled`
 > The legacy two-ended POST shape still creates a Cable on 3.2.3, and the far interface shows as `connected_endpoint` at once. There is no `cabled` filter on interfaces: to count a site's cables, list its interfaces (`?location=<id>`) and collect the distinct `cable` ids. Record a cable only on evidence of the far end, such as the exact MAC of a known physical interface in a switch's MAC table.
 
+> **Learned 2026-10-29** · Nautobot 3.2.3 deployment · VERIFIED_SECONDARY · Source: UNC `ARCHITECTURE.md` lines 135-138 (WAN uplinks, decided 2026-09-27) and `docs/reports/device-families/uplink-provider-identity-20261008_1437.md` (apn 5cba35f) · Falsifier: two uplinks whose ASN and CPE identity agree but whose providers differ
+> A site's internet uplink fits native objects: the Interface keeps one role (`Internet`), and the kind of link is a Circuit (Provider, contracted `commit_rate`, termination port speeds measured by the collector) tied to the Interface by a Relationship, plus one bounded custom field for failover priority. Identify the Provider from evidence on the far side, the public IP's origin ASN, or for LEO satellite the dish's own status call (its id becomes the carrier NTD's serial); never from interface or config names, which did not tell providers apart. Model the carrier's NTD as a pass-through Device. Built in a lab only at the time; retrofitting live sites was open.
+
 ## 12. Contacts, Teams, Statuses, Roles, Tags, software
 
 Decision: attach people with Contact or Team associations rather than free-text fields; keep Statuses for lifecycle and Roles for function; Tags for cross-cutting labels only.
@@ -343,6 +346,9 @@ Gotcha: a Status, Role or Tag must list the model's content type or it is reject
 Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/statuses.py:23-46`, `nautobot/extras/models/roles.py:21`, `nautobot/extras/models/tags.py:32,53`,
 `nautobot/dcim/models/devices.py:1401-1433,1500-1514`; `docs/user-guide/core-data-model/extras/contact.html`, `docs/user-guide/core-data-model/dcim/softwareversion.html`,
 `docs/user-guide/core-data-model/dcim/softwareimagefile.html`.
+
+> **Learned 2026-10-29** · Nautobot 3.2.3 deployment · VERIFIED_SECONDARY · Source: UNC `docs/reports/inventory/firmware-catalog-survey-20260927_2013.md` (Summary; apn 5cba35f) · Falsifier: a vendor-published image name and checksum that the survey could have read without a login
+> Keep running and intended software apart: the Device's `software_version` is device-owned, written by the collector from the device's own report (one deployment: 3,119 of 3,137 devices, 32 versions on 5 platforms), while the approved or intended version is an operator choice in a separate field or ValidatedSoftware entry. Create a SoftwareImageFile only from a primary source: where file names and checksums sit behind a vendor support login, create none rather than invent a name.
 
 > **Learned 2026-10-09** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: one deployment's ORM (`Interface.objects.filter(cable__isnull=False)` raised FieldError listing `cable_termination` among the fields; `Interface._meta.get_field("cable_termination")` is a OneToOneRel to `nautobot.dcim.models.cables.CableToCableTermination`, fields id, cable, cable_end, interface, ..., connector) · Falsifier: a 3.2.x Interface with a `cable` field
 > An Interface no longer has a `cable` field in 3.2: a Cable's ends are `CableToCableTermination` rows. Find the Cables touching a set of devices with
@@ -410,7 +416,7 @@ Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/sta
 > Screenshot pending: a site's Relationships panel without the DNS View row, after link-fixes runs on the deployed host (the operator's
 > before-shot showed the row "DNS View 20-mile").
 
-> **Learned 2026-10-20 (p)** · Nautobot 3.2.3 · VERIFIED-OBSERVED (a refused POST on a production stack; the interface API read live) ·
+> **Learned 2026-10-20 (p)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (observed: a refused POST on a production stack; the interface API read live) ·
 > Source: unified-network-controller `wc-local/scripts/site_onboarding/site_cables.py` `cable_end` (commit 5e1ae68) · Falsifier: a Cable to an
 > `ieee802.11*` interface accepted
 > A Cable cannot end on a wireless interface: `POST /dcim/cables/` with a radio (`type` `ieee802.11n`, `ieee802.11ac`, ...) as a termination

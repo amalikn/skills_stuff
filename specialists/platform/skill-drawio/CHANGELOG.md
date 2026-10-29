@@ -16,6 +16,8 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261029 Learned 2026-10-29 in references/layout-and-routing.md: wireless topology views per site or sector, radial for PtMP, stored positions, node caps.
+
 - 20261029 Slurp close. `scripts/consumer_check.py` (`just consumer-check`) and `consumers.yaml`: render every consumer (unified-network-controller,
   smc-resiliency, smc_change, skill-goal-guard, the example) to a scratch folder, timed, compare with a baseline (exit 3 when one differs),
   `--engine DIR` for an older checkout, `--look K=V` to measure a key before a project adopts it; never a consumer's own drawing. Promoted

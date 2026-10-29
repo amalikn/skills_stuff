@@ -95,6 +95,41 @@ Source: Cambium marketing email "Announcement: Univastu Acquisition of Cambium N
 Consequence for APN's own fleet: ePMP/Force and Enterprise Wi-Fi now have a named owner (Univastu), cnWave has Airspan. The spares-only rule above holds until production and supply are confirmed through
 APN's distributor. Corroborate against a Univastu NSE disclosure before treating this as more than a vendor claim.
 
+### Continuity exposure: licence fuse, vendor artefacts, cloud-held devices, spares (written back 2026-10-29)
+
+Harvested from `cambium-swap` (apn 5cba35f) for the architect packs; `cambium-swap` stays the owner of the continuity analysis.
+
+> **Learned 2026-10-29** · cnMaestro On-Premises 6.0.0 · VERIFIED-DOC (6.0.0 User Guide, E01) · Source: `cambium-swap/docs/architecture/cloud-anchor.md`
+> (Requirements table; "The 90-day grace period") · Falsifier: TEST-F02 (extended Anchor outage) showing devices stay managed past 90 days.
+> **The Cloud Anchor is a time fuse.** When subscription sync with the Anchor fails, the 6.0.0 guide gives a 90-day grace period; at expiry "all the devices
+> will be moved to the onboarding queue, Cloud connectivity will be unmanaged, and a login prompt will be displayed", and onboarding itself needs the
+> Anchor. The 3.2.0 wording that "intermittently connected" operation is supported is gone from 6.0.0. Edition scope, the exact trigger and whether
+> devices keep forwarding traffic in the queue (expected yes, E24) are open (TEST-F02, TEST-F18). On-premises is not independent of Cambium's cloud.
+
+> **Learned 2026-10-29** · cnMaestro distribution and upgrades · VERIFIED-DOC / USER_STATED (cambium-swap findings 4-5) · Source: `cambium-swap/README.md`
+> findings 4-5 and the "Urgent" list · Falsifier: a 6.0.0 AMI or an upgrade that completes with Cambium's services unreachable.
+> **Upgrades already depend on Cambium's online services:** the OVA signing root CA expired on 17 Apr 2026 and its fix script downloads from Cambium's
+> registry. AWS AMIs stopped at 5.0.0-r5; 6.0.0 ships as an OVA only. Cambium left AWS Marketplace at 3.2.0, so whether APN's instances carry a
+> Marketplace product code (which would block exporting the instance) is to be confirmed; aws-to-local's plan assumes it does and rebuilds from the
+> OVA with data restored separately (`apn/aws-to-local` REV6 §6.2.9, risks R-017, R-021, R-022), with re-onboarding every device as the hidden cost
+> if devices cannot be moved. Current official MIBs are login-gated. Keep a local copy of firmware for every deployed model and cnMaestro version, the
+> root-CA fix script and the MIBs while the services answer (operator rule: keep every device's vendor material).
+
+> **Learned 2026-10-29** · cnMaestro Cloud-held devices · VERIFIED-DOC (Cambium migration guidance, E23) · Source:
+> `cambium-swap/docs/migration/exit-strategy.md` "Near-term decision"; `docs/reports/status-reviews/cloud-eol-continuity-decision-analysis-20260920_1100.md`
+> · Falsifier: a device list, profile or per-device mapping recovered after the Cloud stopped serving.
+> Devices on the Cambium-hosted Cloud had no APN-side recovery: the export and the URL move (for R-series a `cns_static_url` override pushed through
+> the AP Group) run through the Cloud UI and work only while it works. On 2026-09-20 the exposure was about 108 Cloud-managed Enterprise devices, not
+> the 3,174-device estate (a floor: switches were never inventoried). Since 6 Oct every device is on `apn-cnmaestro01` (Who to Ask section below), so
+> this is the record of the move, and the lesson for any SaaS controller: export inventory, profiles and per-device controller mappings while the UI
+> works. Moving to on-premises swaps a cloud dependency for a local one; it does not remove the dependency.
+
+> **Learned 2026-10-29** · spares under the Anchor · UNKNOWN until TEST-F13 · Source: `cambium-swap/docs/operations/spare-device-strategy.md` ·
+> Falsifier: TEST-F13 (onboard, store, block the Anchor, power on, move role) passing.
+> Pre-onboarding spares while the Anchor works is a hypothesis: the 90-day fuse may return spares to the onboarding queue too, each device holds an X
+> tier slot, and firmware drifts in storage. Do not buy spares in quantity until TEST-F13 passes. Spares on hand per model: `UNKNOWN`
+> (`spares_on_hand` in `cambium-swap/inventory/device-family-matrix.csv`).
+
 ## Evidence-State Discipline
 
 Borrowed from `cambium-swap`'s own convention — apply it in this pack too. Tag any non-trivial claim:

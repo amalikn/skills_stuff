@@ -11,6 +11,16 @@ Kind: log
 
 # Changelog
 
+## 20261029_2024 — Knowledge harvest from the APN and personal projects; APN operator context (v2.1.0 -> v2.2.0)
+
+- Project harvest (operator, 2026-10-29): new references service-provider-systems (OSS/BSS, AVC keys, three-source reconciliation, money
+  as numeric), fleet-management (per-field ownership, identity, spools, vendor exit by lifecycle event), edge-appliances (A/B images,
+  pull updates, capped tmpfs and tmpfiles.d, Pi watchdog, honest write measurement). Updates: compute-and-facilities (kVA-billed colocation),
+  storage-and-data (stretch vs replicate), migration-and-hybrid (measure before platform), ai-inference-platforms (measured local numbers,
+  bandwidth bound), linux-unix (receive path), observability-and-incident (alert routing), red-flags. APN context read from
+  ../skill-network-architect/operator/apn/.
+- Sources: store 519 items; ledgers rebuilt.
+
 ## 20261029_1951 — Gap closure: helpers, verified facts, templates, filled examples (v2.0.0 -> v2.1.0)
 
 - Helpers: restore_time.py (per-phase restore against the RTO, no capacity model needed) and eol_check.py (end-of-support register);

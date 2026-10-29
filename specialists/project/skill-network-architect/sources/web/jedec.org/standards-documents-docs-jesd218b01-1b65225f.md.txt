@@ -1,0 +1,21 @@
+Contents of https://www.jedec.org/standards-documents/docs/jesd218b01:
+### JESD218C.01
+
+Published: Aug 2026
+
+---
+
+This test method defines the conditions of use and the corresponding endurance verification requirements for solid state drives based on solid-state non-volatile memory (NVM), and NAND Flash memory.
+
+A list of RAND License Assurance/Disclosure Forms is available to JEDEC members on the restricted Members' website. Non-members may obtain individual Assurance/Disclosure forms by requesting them from the JEDEC office.
+
+Committee(s): JC-64.8
+
+Available for purchase: **$90.00**  [Add to Cart](https://jedec.dpdcart.com/cart/add?product_id=251008&method_id=274126)
+
+To help cover the costs of producing standards, JEDEC is now charging for non-member access to selected standards and design files.
+Most of the content on this site remains free to download with registration.
+Paying JEDEC member companies enjoy free access to all content.
+[Learn more and apply today](/join-jedec).
+
+Paying JEDEC Members may [login](/user/login) for free access.

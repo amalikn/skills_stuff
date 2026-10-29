@@ -1,0 +1,66 @@
+Contents of https://www.nbnco.com.au/learn/device-compatibility/medical-alarms:
+Alert
+
+## Important
+
+With the nbn network being fully built and operational\* and the completion of mass disconnection from the legacy copper network, nbn closed the Medical Alarm register on Friday 30 June 2023. nbn will continue to provide migration assistance for services registered prior to this date, until they are migrated or disconnected from the legacy copper network.
+
+If your medical alarm is still relying on the legacy copper network to make emergency alert calls, you will need to organise the migration of the existing equipment to an alternative technology (such as the nbn network or a mobile network).
+
+Please contact your medical alarm provider and phone and internet provider to initiate the migration or for further information.
+
+If you have an urgent query, please [refer to our Contact Us page](/corporate-information/contact-us).
+
+### If you use a medical alarm at home:
+
+List item 1.
+
+#### Check your medical alarm compatibility
+
+Speak to your alarm provider or manufacturer to check if your device is compatible with the nbn network. Your provider may suggest upgrading to a new alarm that has a back-up battery and connects via a mobile network. That way your alarm can still work during a power or nbn network outage.
+
+List item 2.
+
+Connect your phone and internet service
+
+Your phone and internet service will not automatically move across to the nbn network. Therefore, you will need to speak to your phone and internet provider about establishing your new phone and/or internet services on the nbn network. Once your new phone and/or internet service is active on the nbn network, you can connect your medical alarm to the network if your device manufacturer advises you to do so.
+
+List item 3.
+
+Test your medical alarm
+
+You will need to test your alarm after it’s been installed. If you need help, speak with your alarm provider to confirm it is working properly.
+
+### Where else to get help
+
+If you are using a medical alarm on the nbn network, any support requests need to be directed to your alarm supplier or phone and internet provider.
+
+If you have special needs or a serious medical condition, please speak to your phone and internet provider today about any assistance services they may offer. As a wholesaler, nbn does not offer these services.
+
+Telstra is required by the Australian Government to offer **Priority Assistance** services to people with a life-threatening medical condition. Other phone or internet providers may also offer **Priority Assistance** (or similar arrangements) to their customers. More information is available from the Australian Communications and Media Authority (ACMA).
+
+## Frequently asked questions
+
+### A note on privacy
+
+If you would like to access, correct, or update your information on the Register, you can contact nbnby calling 1800 687 626. [Read nbn's Privacy policy.](/utility/privacy-policy)
+
+### Additional contact information
+
+If you require assistance:
+
+#### Services for people with hearing or speech impairment
+
+If you have a hearing or speech impairment, contact us through the National Relay Service:
+
+* TTY phone 1800 555 677 and enter 1800 687 626
+* Speak and Listen users phone 1800 555 727 and enter 1800 687 626
+* Access the [National Relay Service](https://internet-relay.nrscall.gov.au/) and enter 1800 687 626
+
+#### Translating or interpreting services
+
+If you need an interpreter, please call the Translating and Interpreting Service (TIS National) on 131 450 and ask for the NBN Co Contact Centre on 1800 687 626
+
+\*
+
+NBN Co’s build completion commitment was that all standard installation premises in Australia are able to connect to the nbn access network as at 30 June 2020. This excludes premises in future new developments which will be an ongoing activity for the Company beyond the build completion date. It also excludes a small proportion of premises defined as ‘complex connections’ – which includes properties that are difficult to access, culturally significant areas and heritage sites – where connection depends on factors outside NBN Co’s control such as permission from traditional owners, and where network construction to allow such premises to connect will be an ongoing activity of NBN Co beyond 30 June 2020.

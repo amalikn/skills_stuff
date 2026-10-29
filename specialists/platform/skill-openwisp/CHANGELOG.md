@@ -14,6 +14,11 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261013 Learned 2026-10-13 in `references/customisation-and-upgrades.md`: settings set from the environment in a custom Django settings file, and the
+  OpenWISP notification type per alarm class (unified-network-controller); line backfilled 2026-10-29 for the write-back contract test.
+- 20261029 Learned 2026-10-29 in `references/verification-and-troubleshooting.md`: three ways a successful push stores nothing (Celery abort at the first
+  invalid value, no metric-producing field, Data Collected's 60 min window); done means healthy through one check interval (unified-network-controller).
+
 - 20261029 Learned 2026-10-29 in `references/deployment-and-recovery.md`: beside another Django app on the same host, rename OpenWISP's CSRF cookie as well as its session cookie; a Secure `csrftoken`
   over HTTPS blocks the HTTP app's own (unified-network-controller, Nautobot "CSRF cookie not set").
 

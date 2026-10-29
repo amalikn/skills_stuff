@@ -1,0 +1,48 @@
+Contents of https://www.nbnco.com.au/corporate-information/media-centre/media-statements/dawn-of-a-new-era-nbn-welcomes-accc-approval-of-sau-variation:
+NBN Co today welcomed the Australian Competition and Consumer Commission’s approval of the company’s Special Access Undertaking (SAU) Variation.
+
+NBN Co also thanked Retail Service Providers (RSPs), consumer advocacy groups, the government and the ACCC for their positive engagement and collaboration over the last two years to reach this landmark outcome.
+
+The SAU will deliver a new approach to wholesale pricing, supporting faster internet speeds, greater data demand and improved cost certainty for retailers and customers. It will also deliver greater long-term regulatory predictability for NBN Co, retailers and customers and sets out a range of measures aimed at delivering a better customer experience of the **nbn**® network.
+
+NBN Co has conducted a parallel industry consultation process to develop its new Wholesale Broadband Agreement (WBA5) for rapid implementation. It released executable WBA5 contracts to retailers on 9 October 2023, with the aim of implementing the new wholesale prices and products from 1 December 2023.
+
+**Highlights of NBN Co’s SAU Variation:**
+
+* Removal of CVC (capacity) charges and introduction of AVC-only pricing for the **nbn**® Home Fast (100 Mbps) and above1,2 wholesale speed tiers as soon as possible following ACCC acceptance and WBA5 implementation.
+* Establishing a maximum ‘ceiling’ price for the 12, 25, 50 Mbps1,3 fixed line and fixed wireless wholesale speed tiers at no more than $55 in FY24, regardless of the volume of data used.
+* Retaining the $50 bundle price from the November SAU Variation as the ‘floor’ price for the industry’s most popular 50 Mbps service, together with CVC (capacity) inclusions for the 50 Mbps service increasing by 40 per cent (from 2.5 Mbps to a minimum of 3.5 Mbps) for FY24 (from WBA5 implementation).
+* The 25 Mbps wholesale bundle price will be reduced to $26 for FY24 (from WBA5 implementation) and the 12 Mbps wholesale bundle price will be reduced to $24.40 for FY24 (from WBA5 implementation) for fixed line and fixed wireless products.
+* For the 12, 25 and 50 Mbps wholesale speed tiers, the CVC TC-4 overage rate will be reduced from $8/Mbps to $5.50/Mbps in FY24 (from WBA5 implementation) and the rate will be reduced to $4.50/Mbps in FY25 and $3.50/Mbps in FY26. TC-4 CVC overage charges will be removed from all fixed line and fixed wireless products by 1 July 2026.
+* Significant CVC operational improvements and savings for retailers via the introduction of ‘as utilised’ rather than ‘pre-provisioned’ CVC charges across the 12, 25 and 50 Mbps fixed line and fixed wireless wholesale speed tiers.
+* Reducing prices for some Network-to-Network Interface (NNI) services in 2024 and committing to complete a price review of NNI prices by the end of Financial Year 2027.
+* Introduction of a Weighted Average Price Control (WAPC) that will initially cap overall annual wholesale price increases on average at CPI, ensuring overall average wholesale prices do not increase in real terms.
+* Limiting future wholesale price rises by materially limiting NBN Co’s drawdown of the Initial Cost Recovery Account (ICRA) to $12.5 billion (in 2023 dollars) over the term of the SAU, from $44 billion at 30 June 2023. The ICRA is a recognised regulatory concept that reflects NBN Co’s unrecovered costs to date; it is not a write-down in the carrying value of the company or the value of its assets.
+* Setting benchmark service standards for each regulatory cycle, with ACCC oversight, and defining how NBN Co will engage with stakeholders in understanding retailer priorities for service improvement initiatives, and how these may result in improved Benchmark Service Standards and customer experience.
+* NBN Co will ensure the Low-Income Forum allows member organisations and industry groups to provide views and feedback on a range of matters and enhancing NBN Co’s related public reporting commitments.
+* Provisions to allow the ACCC the discretion to reset the regulatory framework from 2032.
+* Separate to the SAU Variation, to assist with some of the costs associated with usage growth and transitioning **nbn**® Ethernet TC-4 services to the new pricing construct, NBN Co has offered to provide a total of $20 million in transitional credits to retailers.
+
+**Benchmark service standards**
+
+NBN Co has embedded benchmark service standards, including rebates paid to retailers if NBN Co fails to meet key service level agreements, under the new SAU.
+
+NBN Co has also committed to introduce new benchmark service standards for each regulatory cycle of three to five years as part of its Replacement Module Application.
+
+The new measures are designed to ensure the company establishes a distinct wholesale price and quality of service link that will be overseen and regulated by the ACCC under the new SAU.
+
+By incorporating well-defined service standard commitments into the SAU, NBN Co is seeking to establish a benchmark for service quality that the industry can build on over time, particularly as the company continues to roll fibre deeper into the **nbn**® Fixed Line network and further upgrade the **nbn**® Fixed Wireless network.
+
+The SAU Variation gives the ACCC the ability in the future to set the benchmark service standards that will apply for a regulatory cycle as part of its replacement module determination, which may be the same or different to the benchmark service standards proposed by NBN Co in its Replacement Module Application.
+
+#### Jane van Beelen, Chief Regulatory Affairs Officer at NBN Co, said:
+
+“The ACCC’s approval of our SAU Variation is great news for customers and marks the start of an important new era for the Australian telecommunications industry. We have worked closely with the industry, the ACCC and government to develop regulatory processes and establish a sustainable future course for wholesale prices and service standards. We acknowledge and appreciate the industry’s positive engagement and collaboration over the last two years to reach this landmark outcome.
+
+“By the end of this year, we will eliminate CVC (capacity) charges from our highest speed tiers, which offer wholesale download speeds from 100 Mbps to close to 1 Gbps. This will deliver greater cost certainty to retailers and significant long-term cost savings for customers than would otherwise be the case under our current wholesale price structure given the trend for data demand to double every three years or so.
+
+“And by reducing CVC charges and committing to adjust data inclusions over the next three years on our entry level and mid-speed tiers (wholesale download speeds from 12 Mbps to 50 Mbps), we are providing high-value products that will smoothly transition to flat rate wholesale pricing by 1 July 2026.
+
+“Our SAU Variation puts the responsibility and investment risk on NBN Co to meet the expected growth in data demand over the next two decades, while giving the company the opportunity, subject to market conditions, to earn the minimum revenues required to invest in the network to deliver faster speeds and greater data capacity to customers.”
+
+NBN Co’s fibre upgrade program is on track to deliver access to **nbn**® Home Ultrafast, offering wholesale download speeds of 500 Mbps up to close to gigabit speeds2 to up to 10 million homes and businesses by the end of 2025. So far, the company is enabling customers living and working in more than 7 million premises to order an upgrade to its highest speed tiers via participating retailers. Customers are invited to check their eligibility to access full fibre upgrades by entering their residential or business address at [nbnco.com.au](http://nbnco.com.au/).

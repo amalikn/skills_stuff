@@ -53,3 +53,27 @@ operator batch rules are **project policy examples**, not Nautobot defaults. Rea
 
 > **Learned 2026-10-05** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: measured over 119 discovery sweeps, 44 identify reads and 36 DNS zones of one deployment, about 4,000 units at 43 sites, 2026-09-23 to 2026-10-01 (UNC capture corpus, aggregated read-only) · Falsifier: a serial disagreement between two independent reads of one unit
 > Serial was the only identity signal that never conflicted (93 of 93 units read two ways agreed); MAC needed a ±1 tolerance for one radio family, and device names differed from SNMP sysName in 56 of 122 cases. Rank serial > exact MAC > offset MAC > name, and record which signal matched. MAC notation also differed by source (colon upper, dash, lower), so normalise at the seam before any comparison.
+
+> **Learned 2026-10-29** · Nautobot 3.2.3 deployment · VERIFIED_PRIMARY · Source: UNC `nautobot/apps/unc-ownership/unc_ownership/custom_validators.py` `SmcLifecycleValidator` (apn e4a92af); `ARCHITECTURE.md` lines 143-156 · Falsifier: a REST create of that role in status Active by a non-writer that saves
+> A lifecycle gate the reviewer can rely on lives in a CustomValidator on `dcim.device`, not in the importer's code: for one gateway role, a create in any status but Staged is refused to everyone, and a change that makes the device Active (status change, or giving an Active device that role) is refused to all but the named promotion writer. Unlike a field-ownership guard on updates, it covers creation, since creating an Active record is the bypass. Units the automation cannot place become Approval Workflow decisions a person approves or denies; the automation may prepare a gated step, never approve it.
+
+```python
+# unc_ownership/custom_validators.py (apn e4a92af), trimmed
+class SmcLifecycleValidator(CustomValidator):
+    model = "dcim.device"
+    def clean(self):
+        obj = self.context["obj"]
+        if (getattr(obj.role, "name", None) if getattr(obj, "role_id", None) else None) != "SMC":
+            return
+        status = getattr(obj.status, "name", None) if getattr(obj, "status_id", None) else None
+        if not obj.present_in_database:
+            if status != "Staged":
+                self._refuse("status", "a new SMC enters Nautobot as Staged ...")
+            return
+        if status != "Active":
+            return
+        stored = obj._meta.model.objects.get(pk=obj.pk)
+        became_active = stored.status_id != obj.status_id or stored.role_id != obj.role_id
+        if became_active and not may_write(self.context["user"]):
+            self._refuse("status", "only the reviewed promotion makes an SMC Active ...")
+```

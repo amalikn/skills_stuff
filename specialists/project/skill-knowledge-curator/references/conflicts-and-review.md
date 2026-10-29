@@ -64,6 +64,15 @@ Before recommending, the agent checks (design 7.2):
 
 A higher step number, a longer text, a more confident tone or more copies decide nothing (INV-008; ten copies of one file are one independent source).
 
+> **Learned 2026-10-29** · amendments and binding records · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal corpus project) · Source:
+> project_stuff/me corpus project `ARCHITECTURE.md` (layers), `scripts/record_index.py` · Falsifier: a query over an amended document
+> alone that returned the corrected answer without resolving its amending records
+> Make amendment links machine-readable (an `Amends:` header on each decision record) and resolve them before citing any document: an
+> accepted decision record outranks the policy text it amends until that text is updated, and a query that reads only the amended document
+> still gets the pre-correction answer. A small index that prints which records bind a given document answers questions 3 and 6 above
+> mechanically.
+
+
 ## Severity
 
 | Severity | Typical issue                                                                              | While open                                                         |

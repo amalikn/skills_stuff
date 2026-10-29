@@ -62,3 +62,9 @@ establish on its own.
 ## What does not count
 
 “It passed once,” unreferenced confidence, a test that only reaches the same path it evaluates, or a fault that an operator cannot safely reproduce do not establish falsifiability.
+
+Nor does "the command exited 0 and printed something". A lab suite passed on non-empty output from a CLI subcommand that did not exist in
+the pinned release: the tool printed its unknown-command text and exited 0. An interface reported up passed while the policy that had to
+survive a restart was never restarted. Assert on specific content the feature alone produces, check the exit code and the owning daemon's
+log (no error lines), and exercise the condition the claim is about; a counterexample that removes the feature must turn the eval red
+(2026-10-29 harvest).

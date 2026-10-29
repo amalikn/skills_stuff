@@ -1,0 +1,257 @@
+Contents of https://goteleport.com/docs/enroll-resources/application-access/protect-apps/tcp/:
+[Report an Issue](https://github.com/gravitational/teleport/issues/new?template=documentation.md&labels=documentation&title=%5Bdocs%5D%20%60%2Fdocs%2Fenroll-resources%2Fapplication-access%2Fprotect-apps%2Ftcp%2F%60%3A%20%3CDESCRIBE%20YOUR%20ISSUE%3E&body=%23%23%20Applies%20To%0A%0A%60%2Fdocs%2Fenroll-resources%2Fapplication-access%2Fprotect-apps%2Ftcp%2F%60%0A%0A%23%23%20Details%0A%0A%3C!--%20Describe%20the%20documentation%20improvements%20you%20wish%20to%20see.%20--%3E%0A%0A%23%23%20How%20will%20we%20know%20this%20is%20resolved%3F%0A%0A%3C!--%20Briefly%20describe%20a%20test%20we%20can%20carry%20out.%20Scope%20this%20as%20narrowly%20as%20possible.%20--%3E%0A%0A%23%23%20Related%20Issues%0A%0A%3C!--%20Please%20make%20an%20effort%20to%20find%20related%20issues%20on%20GitHub%20and%20list%20them%20here.%20This%20makes%20a%20big%20difference%20in%20how%20we%20prioritize%20and%20schedule%20work.%20--%3E%0A)
+
+Is this page helpful?
+
+Teleport can provide access to any TCP-based application. This allows users to
+connect to applications which Teleport doesn't natively support such as SMTP
+servers or databases not yet natively supported by the Teleport Database
+Service.
+
+In this guide, you will enroll a local TCP application with Teleport.
+
+## How it works[​](#how-it-works "Direct link to How it works")
+
+A Teleport administrator configures the Teleport Application Service to proxy a
+TCP application. The end user starts a local proxy that authenticates to the
+Teleport Proxy Service using mutual TLS. The Proxy Service forwards traffic from
+the local proxy to and from the Teleport Application Service, which in turn
+proxies traffic to and from a Teleport-protected TCP application.
+
+As with any Teleport-protected resource, the TCP application needs to be in the
+same network as the agent (the Teleport Application Service), but the agent and
+the Teleport-protected resource can run in a separate network from the Teleport
+Proxy Service.
+
+## Prerequisites[​](#prerequisites "Direct link to Prerequisites")
+
+* A running Teleport cluster accessible at a hostname with a valid TLS
+  certificate. If you want to get started with Teleport,
+  [sign up](https://goteleport.com/signup) for a free trial or
+  [set up a demo environment](/docs/get-started/deploy-community/).
+* The `tctl` and `tsh` clients.
+
+  Installing `tctl` and `tsh` clients
+  1. Determine the version of your Teleport cluster. The `tctl` and `tsh` clients must be
+     at most one major version behind your Teleport cluster version. Send a GET
+     request to the Proxy Service at `/v1/webapi/find` and use a JSON query tool
+     to obtain your cluster version. Replace teleport.example.com:443
+     with the web address of your Teleport Proxy Service:
+
+     + Mac/Linux
+     + Windows - Powershell
+  2. Follow the instructions for your platform to install `tctl` and `tsh` clients:
+
+     + Mac
+     + Windows - Powershell
+     + Linux
+
+     Download the signed macOS .pkg installer for Teleport, which includes the `tctl` and `tsh` clients:
+
+     In Finder double-click the `pkg` file to begin installation.
+
+     danger
+
+     Using Homebrew to install Teleport is not supported. The Teleport package in
+     Homebrew is not maintained by Teleport and we can't guarantee its reliability or
+     security.
+  Connecting with TLS routing disabled
+
+  This guide's commands assume your Teleport cluster uses TLS routing
+  (`proxy_listener_mode: multiplex`), where the `tctl` and `tsh` clients reach every
+  Teleport service through the Proxy Service's web address on port `443`. If
+  you're not sure whether this applies to your cluster, check with whoever
+  manages it.
+
+  If your cluster uses separate listener ports instead, adjust ports as follows:
+
+  + **`tsh` commands** (e.g., `tsh login --proxy=...`): continue using the
+    Proxy Service web address on port `3080` (or `443` if behind a load
+    balancer). Do not change these to port `3025`.
+  + **Direct `tctl` or Auth Service API commands**: use port `3025` for the
+    Auth Service gRPC listener:
+
+* Check that you can connect to your Teleport cluster and verify that you can run
+  `tctl` and `tsh` commands using your current credentials.
+  1. Assign teleport.example.com to the domain name of the Teleport
+     Proxy Service in your cluster and [[email protected]](/cdn-cgi/l/email-protection) to your
+     Teleport username.
+  2. Authenticate to your Teleport cluster. This depends on whether your shell is
+     interactive or not.
+
+     **In an interactive shell:** Run the following command. By default, this
+     triggers a multi-factor authentication prompt:
+
+     **On non-interactive environments:** If you are running `tsh` and `tctl` as
+     an AI agent, in a CI/CD environment, or similar, make sure the
+     `TELEPORT_IDENTITY_FILE` environment variable is assigned to a valid file
+     path with credentials for your cluster. `tsh` and `tctl` read the file path
+     from the environment variable and do not require a separate authentication
+     step. If there is no identity file available, we recommend that you [set up
+     Machine ID](/docs/machine-workload-identity/getting-started/) to provision
+     one automatically.
+
+     When executing `tctl` commands with an identity file, you must pass the
+     `--auth-server` flag to provide the Teleport Auth Service address, which is
+     not included in the identity file. If you provide the Proxy Service
+     address, `tctl` connects to the Proxy Service, which forwards traffic to
+     and from the Teleport Auth Service. Update 443 to `3025` if
+     you are contacting the Auth Service directly with `tctl`:
+
+     For `tsh` commands that read an identity file, you must pass the `--proxy` flag,
+     which points `tsh` to the address of the Teleport Proxy Service:
+
+     Ensure client commands can access your identity file. Replace
+     path/to/identity/file with the path to your identity file:
+
+     Add the `--auth-server` or `--proxy` flags to all subsequent `tctl` and `tsh`
+     commands.If you can connect to the cluster and run the `tctl status` command, you can use your
+  current credentials to run subsequent `tctl` commands from your workstation.
+  If you host your own Teleport cluster, you can also run `tctl` commands on the computer that
+  hosts the Teleport Auth Service for full permissions.
+* TCP application to connect to. In this guide we'll use a PostgreSQL running
+  in Docker as an example. You can also use any TCP-based application you may
+  already have.
+* Host where you will run the Teleport Application Service.
+
+We will assume your Teleport cluster is accessible at `teleport.example.com`.
+You can substitute the address of your Teleport Proxy Service. (For Teleport
+Cloud customers, this will be similar to `example.teleport.sh`.)
+
+## Step 1/4. Start PostgreSQL container[​](#step-14-start-postgresql-container "Direct link to Step 1/4. Start PostgreSQL container")
+
+Skip this step if you already have an application you'd like to connect to.
+
+Start a PostgreSQL server in a Docker container:
+
+## Step 2/4. Start Teleport Application Service[​](#step-24-start-teleport-application-service "Direct link to Step 2/4. Start Teleport Application Service")
+
+Teleport Application Service requires a valid auth token to join the cluster.
+
+* Self-Hosted
+* Teleport Enterprise Cloud
+
+To generate one, run the following command on your Auth Service node:
+
+Next, create a Teleport user with the `access` role that will allow it to
+connect to cluster applications:
+
+Save the generated token in `/tmp/token` on the node where Application Service
+will run.
+
+Now, install Teleport on the Application Service node. It must be able to reach
+both your Teleport Proxy and the TCP application it's going to proxy.
+
+To install Teleport binaries on your Linux server, the recommended installation
+method is the cluster install script. It will select the correct version,
+edition, and installation mode for your cluster.
+
+1. Remove any existing Teleport binaries on your system:
+2. Assign teleport.example.com:443 to your Teleport cluster
+   hostname and port, but not the scheme (https://).
+3. Run your cluster's install script:
+
+Create the Application Service configuration file `/etc/teleport.yaml` with
+the following contents:
+
+```
+version: v3
+teleport:
+  auth_token: "/tmp/token"
+  proxy_server: teleport.example.com:3080
+auth_service:
+  enabled: false
+ssh_service:
+  enabled: false
+proxy_service:
+  enabled: false
+app_service:
+  enabled: true
+  apps:
+  - name: "tcp-app"
+    uri: tcp://localhost:5432
+```
+
+Note that the URI scheme must be `tcp://` in order for Teleport to recognize
+this as a TCP application.
+
+Start your Teleport instance. The instructions depend on how you installed your Teleport instance
+and whether your system supports systemd:
+
+* Package Manager
+* TAR Archive
+* No systemd
+
+Configure your Teleport instance to start automatically when the host boots up by
+creating a systemd service for it. On the host where you will run your Teleport instance,
+enable and start Teleport:
+
+You can check the status of your Teleport instance with `systemctl status teleport`
+and view its logs with `journalctl -fu teleport`.
+
+## Step 3/4. Start app proxy[​](#step-34-start-app-proxy "Direct link to Step 3/4. Start app proxy")
+
+Log into your Teleport cluster and view available applications:
+
+Your TCP application should show up and be denoted with a `TCP` type.
+
+Now log into the application:
+
+Next, start a local proxy for it:
+
+The `tsh proxy app` command will set up a listener that will proxy all connections to
+the target application.
+
+## Step 4/4. Connect[​](#step-44-connect "Direct link to Step 4/4. Connect")
+
+Once the local proxy is running, you can connect to the application using the
+application client you would normally use to connect to it:
+
+## Next steps[​](#next-steps "Direct link to Next steps")
+
+### Configuring access to multiple ports[​](#configuring-access-to-multiple-ports "Direct link to Configuring access to multiple ports")
+
+By default, the Application Service proxies connections to the `uri` field from the application
+specification. However, Teleport can enable access to multiple ports of a TCP application. An
+application specification in this case needs to have no port number in the `uri` field and a new
+field called `tcp_ports` with a list of ports.
+
+For example, let's take tcp-app from the steps above and add access to port 8080 and port range
+31276-32300. The Application Service definition should look like this:
+
+```
+app_service:
+  enabled: true
+  apps:
+  - name: "tcp-app"
+    uri: tcp://localhost # No port in the URI
+    tcp_ports:
+    - port: 5432 # PostgreSQL
+    - port: 8080 # HTTP server
+    - port: 31276
+      end_port: 32300 # Inclusive end of range
+```
+
+To access the app, [start VNet](/docs/connect-your-client/teleport-clients/vnet/) and point an application
+client towards the target port:
+
+Without VNet, use `tsh proxy app` and specify the target port after the listening port. All
+connections made to the proxy will be routed to that target port.
+
+warning
+
+There is no RBAC for TCP ports – a user that has access to an application can connect to any port in
+the specification. We strongly recommend specifying only the necessary ports instead of defining a
+wide port range that happens to include ports that are meant to be available.
+
+Support for multiple ports is available in Teleport v17.1+. Connections from Teleport clients that
+do not support multiple ports are routed to the first port from the application specification. An
+Application Service that does not support multiple ports will not be able to handle traffic to a
+multi-port application if it receives such application through [dynamic
+registration](/docs/enroll-resources/application-access/configuration/dynamic-registration/) from an Auth Service.
+
+### Further reading[​](#further-reading "Direct link to Further reading")
+
+* Learn about [access controls](/docs/enroll-resources/application-access/configuration/controls/) for applications.
+* Learn how to [connect to TCP apps with VNet](/docs/connect-your-client/teleport-clients/vnet/) and
+  [configure VNet for custom `public_addr`](/docs/enroll-resources/application-access/vnet/).

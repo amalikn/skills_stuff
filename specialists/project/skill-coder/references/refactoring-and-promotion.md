@@ -39,8 +39,7 @@ When a module or script moves:
    test do not see string paths (a governed project's staleness audit, 2026-10-05).
 4. Remove the shim and the entry when no caller remains.
 
-> **Learned 2026-10-27** · any language, moving a script · reusable_candidate · Source: skills_stuff commit 1dff9c8 (skill-goal-guard `scripts/readme.md`, Moved paths) · Falsifier: a move
-> whose per-file hashes and output hash match although a caller still uses the old path
+> **Learned 2026-10-27** · any language, moving a script · CANDIDATE (reusable_candidate) · Source: skills_stuff commit 1dff9c8 (skill-goal-guard `scripts/readme.md`, Moved paths) · Falsifier: a move whose per-file hashes and output hash match although a caller still uses the old path
 > Prove a move changed nothing with two hashes taken before and after: the sha256 of every moved file, and a hash of the CLI's stdout for fixed inputs (here `2504fb41c7e48f1f` both times). An
 > untracked prototype with no callers needs no shim (step 1), only the moved-paths table (step 2); a tracked one with callers still gets the shim.
 >
@@ -77,9 +76,7 @@ asked (operator, 2026-10-07).
 
 Engines a project imports run in the project's interpreter and the project pins the skill revision; see [runtime-boundaries.md](runtime-boundaries.md).
 
-> **Learned 2026-10-20** · adopting `code-map.toml` in a project with its own checks · VERIFIED_PRIMARY (unified-network-controller: layers, 13
-> write-gate exceptions, 11 write patterns and 198 module statuses moved; equality asserted against the old files; `just check` 8,699 to 8,701 checks
-> pass; four negative cases each fail) · Source: unified-network-controller `scripts/govcheck/config.py`, `code-map.toml` (2026-10-20) · Falsifier: a
+> **Learned 2026-10-20** · adopting `code-map.toml` in a project with its own checks · VERIFIED_PRIMARY (unified-network-controller: layers, 13 write-gate exceptions, 11 write patterns and 198 module statuses moved; equality asserted against the old files; `just check` 8,699 to 8,701 checks pass; four negative cases each fail) · Source: unified-network-controller `scripts/govcheck/config.py`, `code-map.toml` (2026-10-20) · Falsifier: a
 > project whose old register cannot be expressed in the map's sections without loss
 > Move the decisions, keep the project's checks: the project's checker reads the map instead of its constants, and calls `code_map.load` once so an
 > unknown section fails. Generate the map from the old sources and assert equality before deleting them; write the full write-pattern list
@@ -95,9 +92,7 @@ Engines a project imports run in the project's interpreter and the project pins 
 > WRITE_GATES: dict[str, str] = dict(CODE_MAP["write_gates"].get("exceptions", {}))
 > ```
 
-> **Learned 2026-10-20 (b)** · moving modules into packages and a folder up a level, Python with a framework that imports by name ·
-> VERIFIED_PRIMARY (two moves in one project, each deployed) · Source: unified-network-controller decisions A-21 and A-22 (commits af71572,
-> e4a92af, 03e4a8e) · Falsifier: a move proved by these steps that still breaks a caller
+> **Learned 2026-10-20 (b)** · moving modules into packages and a folder up a level, Python with a framework that imports by name · VERIFIED_PRIMARY (two moves in one project, each deployed) · Source: unified-network-controller decisions A-21 and A-22 (commits af71572, e4a92af, 03e4a8e) · Falsifier: a move proved by these steps that still breaks a caller
 > Prove a move unchanged on four counts, each run before and after: the test count and result; the rendered outputs byte for byte, the
 > "before" rendered from HEAD in a `git worktree` so the comparison needs no stash; the built artefact importing every module in its real
 > runtime; the closing check. Write the rewrite as one script that maps old to new once and runs once: a second pass is not idempotent when
@@ -116,9 +111,7 @@ Engines a project imports run in the project's interpreter and the project pins 
 >
 > No visual surface.
 
-> **Learned 2026-10-21** · promoting a project script into a skill and switching the project to it · VERIFIED_PRIMARY · Source: skill-ai-it
-> `scripts/plans/target_map.py`, `scripts/plans/plan_timeline.py` and unified-network-controller `scripts/govcheck/skill_scripts.py` (commit pending) ·
-> Falsifier: a promoted script whose pilot output changes, or a project check that imports a skill module by bare name and gets its own file
+> **Learned 2026-10-21** · promoting a project script into a skill and switching the project to it · VERIFIED_PRIMARY · Source: skill-ai-it `scripts/plans/target_map.py`, `scripts/plans/plan_timeline.py` and unified-network-controller `scripts/govcheck/skill_scripts.py` (commit pending) · Falsifier: a promoted script whose pilot output changes, or a project check that imports a skill module by bare name and gets its own file
 > Promote in three moves and prove each: (1) replace `ROOT = Path(__file__).parents[N]` with a `--project-root` argument and pass the root into
 > every entry point; (2) move every project-shaped string (headers, an explanatory sentence, a data path) into the project's data with the pilot's
 > value, and render new behaviour only when it is used, so the pilot renders byte for byte (compare old and new scripts on the same inputs, several
@@ -135,10 +128,7 @@ sys.modules[key] = module   # dataclasses resolve annotations through sys.module
 spec.loader.exec_module(module)
 ```
 
-> **Learned 2026-10-21 (b)** · moving definitions out of a file · VERIFIED_PRIMARY (unified-network-controller code architecture stage 2: the T6
-> measure read `adapters/protocol.py` by path and would have gone on passing while checking none of the moved records) · Source:
-> unified-network-controller `adapters/t6/measure.py` and `src/unc/core/records/observation.py` (2026-10-21, uncommitted at writing) ·
-> Falsifier: a move after which every by-path reader was found by the import graph alone
+> **Learned 2026-10-21 (b)** · moving definitions out of a file · VERIFIED_PRIMARY (unified-network-controller code architecture stage 2: the T6 measure read `adapters/protocol.py` by path and would have gone on passing while checking none of the moved records) · Source: unified-network-controller `adapters/t6/measure.py` and `src/unc/core/records/observation.py` (2026-10-21, uncommitted at writing) · Falsifier: a move after which every by-path reader was found by the import graph alone
 > Before moving definitions out of a file, find its readers by path as well as its importers: AST scanners, line counters, docstring
 > baselines and checks that open the file. An import graph shows only importers; a by-path reader keeps passing on the shim and silently
 > checks less. Grep for the file's path and name, point each reader at both files (or the new one), and compare its output before and after.

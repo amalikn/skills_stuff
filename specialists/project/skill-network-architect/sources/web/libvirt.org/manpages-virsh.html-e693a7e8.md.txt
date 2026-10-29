@@ -1,0 +1,2536 @@
+Contents of https://libvirt.org/manpages/virsh.html:
+## [SYNOPSIS](#id1)[¶](#synopsis "Link to this headline")
+
+virsh [*OPTION*]... [*COMMAND\_STRING*]
+
+virsh [*OPTION*]... *COMMAND* [*ARG*]...
+
+## [DESCRIPTION](#id2)[¶](#description "Link to this headline")
+
+The virsh program is the main interface for managing virsh guest
+domains. The program can be used to create, pause, and shutdown
+domains. It can also be used to list current domains. Libvirt is a C
+toolkit to interact with the virtualization capabilities of recent
+versions of Linux (and other OSes). It is free software available
+under the GNU Lesser General Public License. Virtualization of the
+Linux Operating System means the ability to run multiple instances of
+Operating Systems concurrently on a single hardware system where the
+basic resources are driven by a Linux instance. The library aims at
+providing a long term stable C API. It currently supports Xen, QEMU,
+KVM, LXC, OpenVZ, VirtualBox and VMware ESX.
+
+The basic structure of most virsh usage is:
+
+```
+virsh [OPTION]... <command> <domain> [ARG]...
+```
+
+Where *command* is one of the commands listed below; *domain* is the
+numeric domain id, or the domain name, or the domain UUID; and *ARGS*
+are command specific options. There are a few exceptions to this rule
+in the cases where the command in question acts on all domains, the
+entire machine, or directly on the xen hypervisor. Those exceptions
+will be clear for each of those commands. Note: it is permissible to
+give numeric names to domains, however, doing so will result in a
+domain that can only be identified by domain id. In other words, if a
+numeric value is supplied it will be interpreted as a domain id, not
+as a name. Any *command* starting with # is treated as a comment
+and silently ignored, all other unrecognized *commands* are diagnosed.
+
+The virsh program can be used either to run one *COMMAND* by giving the
+command and its arguments on the shell command line, or a *COMMAND\_STRING*
+which is a single shell argument consisting of multiple *COMMAND* actions
+and their arguments joined with whitespace and separated by semicolons or
+newlines between commands, where unquoted backslash-newline pairs are
+elided. Within *COMMAND\_STRING*, virsh understands the
+same single, double, and backslash escapes as the shell, although you must
+add another layer of shell escaping in creating the single shell argument,
+and any word starting with unquoted *#* begins a comment that ends at newline.
+If no command is given in the command line, virsh will then start a minimal
+interpreter waiting for your commands, and the quit command will then exit
+the program.
+
+The virsh program understands the following *OPTIONS*.
+
+-c, --connect *URI*
+
+Connect to the specified *URI*, as if by the connect command,
+instead of the default connection.
+
+-d, --debug *LEVEL*
+
+Enable debug messages at integer *LEVEL* and above. *LEVEL* can
+range from 0 to 4 (default). See the documentation of VIRSH\_DEBUG
+environment variable below for the description of each *LEVEL*.
+
+* -e, --escape *string*
+
+Set alternative escape sequence for *console* command. By default,
+telnet's ^] is used. Allowed characters when using hat notation are:
+alphabetic character, @, [, ], , ^, \_.
+
+* -h, --help
+
+Ignore all other arguments, and behave as if the help command were
+given instead.
+
+* -k, --keepalive-interval *INTERVAL*
+
+Set an *INTERVAL* (in seconds) for sending keepalive messages to
+check whether connection to the server is still alive. Setting the
+interval to 0 disables client keepalive mechanism.
+
+* -K, --keepalive-count *COUNT*
+
+Set a number of times keepalive message can be sent without getting an
+answer from the server without marking the connection dead. There is
+no effect to this setting in case the *INTERVAL* is set to 0.
+
+* -l, --log *FILE*
+
+Output logging details to *FILE*.
+
+* -q, --quiet
+
+Avoid extra informational messages.
+
+* -r, --readonly
+
+Make the initial connection read-only, as if by the *--readonly*
+option of the connect command.
+
+* -t, --timing
+
+Output elapsed time information for each command.
+
+* --no-pkttyagent
+
+Do not register pkttyagent as authentication agent with the
+polkit system daemon, even if virsh has been started from a
+terminal.
+
+* -v, --version[=short]
+
+Ignore all other arguments, and prints the version of the libvirt library
+virsh is coming from
+
+* -V, --version=long
+
+Ignore all other arguments, and prints the version of the libvirt library
+virsh is coming from and which options and driver are compiled in.
+
+## [NOTES](#id3)[¶](#notes "Link to this headline")
+
+Most virsh operations rely upon the libvirt library being able to
+connect to an already running libvirtd service. This can usually be
+done using the command service libvirtd start.
+
+Most virsh commands require root privileges to run due to the
+communications channels used to talk to the hypervisor. Running as
+non root will return an error.
+
+Most virsh commands act synchronously, except maybe shutdown,
+setvcpus and setmem. In those cases the fact that the virsh
+program returned, may not mean the action is complete and you
+must poll periodically to detect that the guest completed the
+operation.
+
+virsh strives for backward compatibility. Although the help
+command only lists the preferred usage of a command, if an older
+version of virsh supported an alternate spelling of a command or
+option (such as *--tunnelled* instead of *--tunneled*), then
+scripts using that older spelling will continue to work.
+
+Several virsh commands take an optionally scaled integer; if no
+scale is provided, then the default is listed in the command (for
+historical reasons, some commands default to bytes, while other
+commands default to kibibytes). The following case-insensitive
+suffixes can be used to select a specific scale:
+
+```
+b, byte  byte      1
+KB       kilobyte  1,000
+k, KiB   kibibyte  1,024
+MB       megabyte  1,000,000
+M, MiB   mebibyte  1,048,576
+GB       gigabyte  1,000,000,000
+G, GiB   gibibyte  1,073,741,824
+TB       terabyte  1,000,000,000,000
+T, TiB   tebibyte  1,099,511,627,776
+PB       petabyte  1,000,000,000,000,000
+P, PiB   pebibyte  1,125,899,906,842,624
+EB       exabyte   1,000,000,000,000,000,000
+E, EiB   exbibyte  1,152,921,504,606,846,976
+```
+
+## [GENERIC COMMANDS](#id4)[¶](#generic-commands "Link to this headline")
+
+The following commands are generic i.e. not specific to a domain.
+
+## [help](#id5)[¶](#help "Link to this headline")
+
+**Syntax:**
+
+```
+help [command-or-group]
+```
+
+This lists each of the virsh commands. When used without options, all
+commands are listed, one per line, grouped into related categories,
+displaying the keyword for each group.
+
+To display only commands for a specific group, give the keyword for that
+group as an option. For example:
+
+**Example 1:**
+
+```
+virsh # help host
+
+Host and Hypervisor (help keyword 'host'):
+    capabilities                   capabilities
+    cpu-models                     show the CPU models for an architecture
+    connect                        (re)connect to hypervisor
+    freecell                       NUMA free memory
+    hostname                       print the hypervisor hostname
+    qemu-attach                    Attach to existing QEMU process
+    qemu-monitor-command           QEMU Monitor Command
+    qemu-agent-command             QEMU Guest Agent Command
+    sysinfo                        print the hypervisor sysinfo
+    uri                            print the hypervisor canonical URI
+```
+
+To display detailed information for a specific command, give its name as the
+option instead. For example:
+
+**Example 2:**
+
+```
+virsh # help list
+  NAME
+    list - list domains
+
+  SYNOPSIS
+    list [--inactive] [--all]
+
+  DESCRIPTION
+    Returns list of domains.
+
+  OPTIONS
+    --inactive       list inactive domains
+    --all            list inactive & active domains
+```
+
+## [quit, exit](#id6)[¶](#quit-exit "Link to this headline")
+
+**Syntax:**
+
+```
+quit
+exit
+```
+
+quit this interactive terminal
+
+## [version](#id7)[¶](#version "Link to this headline")
+
+**Syntax:**
+
+```
+version [--daemon]
+```
+
+Will print out the major version info about what this built from.
+If *--daemon* is specified then the version of the libvirt daemon
+is included in the output.
+
+**Example:**
+
+```
+$ virsh version
+Compiled against library: libvirt 1.2.3
+Using library: libvirt 1.2.3
+Using API: QEMU 1.2.3
+Running hypervisor: QEMU 2.0.50
+
+$ virsh version --daemon
+Compiled against library: libvirt 1.2.3
+Using library: libvirt 1.2.3
+Using API: QEMU 1.2.3
+Running hypervisor: QEMU 2.0.50
+Running against daemon: 1.2.6
+```
+
+## [cd](#id8)[¶](#cd "Link to this headline")
+
+**Syntax:**
+
+```
+cd [directory]
+```
+
+Will change current directory to *directory*. The default directory
+for the cd command is the home directory or, if there is no *HOME*
+variable in the environment, the root directory.
+
+## [pwd](#id9)[¶](#pwd "Link to this headline")
+
+**Syntax:**
+
+```
+pwd
+```
+
+Will print the current directory.
+
+## [connect](#id10)[¶](#connect "Link to this headline")
+
+**Syntax:**
+
+```
+connect [URI] [--readonly]
+```
+
+(Re)-Connect to the hypervisor. When the shell is first started, this
+is automatically run with the *URI* parameter requested by the -c
+option on the command line. The *URI* parameter specifies how to
+connect to the hypervisor. The URI docs
+<https://libvirt.org/uri.html> list the
+values supported, but the most common are:
+
+* xen:///system
+
+  this is used to connect to the local Xen hypervisor
+* qemu:///system
+
+  connect locally as root to the daemon supervising QEMU and KVM domains
+* qemu:///session
+
+  connect locally as a normal user to his own set of QEMU and KVM domains
+* lxc:///system
+
+  connect to a local linux container
+
+To find the currently used URI, check the *uri* command documented below.
+
+For remote access see the URI docs
+<https://libvirt.org/uri.html> on how
+to make URIs. The *--readonly* option allows for read-only connection
+
+## [uri](#id11)[¶](#uri "Link to this headline")
+
+**Syntax:**
+
+```
+uri
+```
+
+Prints the hypervisor canonical URI, can be useful in shell mode.
+
+## [hostname](#id12)[¶](#hostname "Link to this headline")
+
+**Syntax:**
+
+```
+hostname
+```
+
+Print the hypervisor hostname.
+
+## [sysinfo](#id13)[¶](#sysinfo "Link to this headline")
+
+**Syntax:**
+
+```
+sysinfo
+```
+
+Print the XML representation of the hypervisor sysinfo, if available.
+
+## [nodeinfo](#id14)[¶](#nodeinfo "Link to this headline")
+
+**Syntax:**
+
+```
+nodeinfo
+```
+
+Returns basic information about the node, like number and type of CPU,
+and size of the physical memory.
+
+Use of this command is strongly discouraged as the information provided
+is not guaranteed to be accurate on all hardware platforms.
+
+The *CPU frequency* value merely reflects the speed that the first CPU in the
+machine is currently running at. This speed may vary across CPUs and changes
+continually as the host OS throttles.
+
+The data structure used to fetch the data is not extensible thus only supports
+global nodes/sockets/cores/threads (sockets/cores/threads is per NUMA node)
+topology information. If the host CPU has any further groupings (e.g.
+dies, clusters, etc) or the NUMA topology is non-symmetrical the data structure
+can't faithfully represent the system. In such cases a fake topology
+(nodes = 1, sockets = 1, cores = number of host cpus, threads = 1) which
+only correctly represents the total host CPU count is reported.
+
+Recommended replacement is to use the *capabilities* command which reports
+the data (except frequency) under /capabilities/host/topology XPath.
+
+## [nodecpumap](#id15)[¶](#nodecpumap "Link to this headline")
+
+**Syntax:**
+
+```
+nodecpumap [--pretty]
+```
+
+Displays the node's total number of CPUs, the number of online CPUs
+and the list of online CPUs.
+
+With *--pretty* the online CPUs are printed as a range instead of a list.
+
+## [nodecpustats](#id16)[¶](#nodecpustats "Link to this headline")
+
+**Syntax:**
+
+```
+nodecpustats [cpu] [--percent]
+```
+
+Returns cpu stats of the node.
+If *cpu* is specified, this will print the specified cpu statistics only.
+If *--percent* is specified, this will print the percentage of each kind
+of cpu statistics during 1 second.
+
+## [nodememstats](#id17)[¶](#nodememstats "Link to this headline")
+
+**Syntax:**
+
+```
+nodememstats [cell]
+```
+
+Returns memory stats of the node.
+If *cell* is specified, this will print the specified cell statistics only.
+
+## [nodesevinfo](#id18)[¶](#nodesevinfo "Link to this headline")
+
+**Syntax:**
+
+```
+nodesevinfo
+```
+
+Reports information about the AMD SEV launch security features for
+the node, if any. Some of this information is also reported in the
+domain capabilities XML document.
+
+## [nodesuspend](#id19)[¶](#nodesuspend "Link to this headline")
+
+**Syntax:**
+
+```
+nodesuspend [target] [duration]
+```
+
+Puts the node (host machine) into a system-wide sleep state and schedule
+the node's Real-Time-Clock interrupt to resume the node after the time
+duration specified by *duration* is out.
+*target* specifies the state to which the host will be suspended to, it
+can be "mem" (suspend to RAM), "disk" (suspend to disk), or "hybrid"
+(suspend to both RAM and disk). *duration* specifies the time duration
+in seconds for which the host has to be suspended, it should be at least
+60 seconds.
+
+## [node-memory-tune](#id20)[¶](#node-memory-tune "Link to this headline")
+
+**Syntax:**
+
+```
+node-memory-tune [shm-pages-to-scan] [shm-sleep-millisecs] [shm-merge-across-nodes]
+```
+
+Allows you to display or set the node memory parameters.
+*shm-pages-to-scan* can be used to set the number of pages to scan
+before the shared memory service goes to sleep; *shm-sleep-millisecs*
+can be used to set the number of millisecs the shared memory service should
+sleep before next scan; *shm-merge-across-nodes* specifies if pages from
+different numa nodes can be merged. When set to 0, only pages which physically
+reside in the memory area of same NUMA node can be merged. When set to 1,
+pages from all nodes can be merged. Default to 1.
+
+Note: Currently the "shared memory service" only means KSM (Kernel Samepage
+Merging).
+
+## [capabilities](#id21)[¶](#capabilities "Link to this headline")
+
+**Syntax:**
+
+```
+capabilities [--xpath EXPRESSION] [--wrap]
+```
+
+Print an XML document describing the capabilities of the hypervisor
+we are currently connected to. This includes a section on the host
+capabilities in terms of CPU and features, and a set of description
+for each kind of guest which can be virtualized. For a more complete
+description see:
+
+<https://libvirt.org/formatcaps.html>
+
+The XML also show the NUMA topology information if available.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
+
+## [domcapabilities](#id22)[¶](#domcapabilities "Link to this headline")
+
+**Syntax:**
+
+```
+domcapabilities [virttype] [emulatorbin] [arch] [machine]
+                [--xpath EXPRESSION] [--wrap]
+                [--disable-deprecated-features]
+                [--expand-cpu-features] [--supported-cpu-features]
+```
+
+Print an XML document describing the domain capabilities for the
+hypervisor we are connected to using information either sourced from an
+existing domain or taken from the virsh capabilities output. This may
+be useful if you intend to create a new domain and are curious if for
+instance it could make use of VFIO by creating a domain for the
+hypervisor with a specific emulator and architecture.
+
+Each hypervisor will have different requirements regarding which options
+are required and which are optional. A hypervisor can support providing
+a default value for any of the options.
+
+The *virttype* option specifies the virtualization type used. The value
+to be used is either from the 'type' attribute of the <domain/> top
+level element from the domain XML or the 'type' attribute found within
+each <guest/> element from the virsh capabilities output. The
+*emulatorbin* option specifies the path to the emulator. The value to
+be used is either the <emulator> element in the domain XML or the
+virsh capabilities output. The *arch* option specifies the
+architecture to be used for the domain. The value to be used is either
+the "arch" attribute from the domain's XML <os/> element and <type/>
+subelement or the "name" attribute of an <arch/> element from the
+virsh capabililites output. The *machine* specifies the machine type
+for the emulator. The value to be used is either the "machine" attribute
+from the domain's XML <os/> element and <type/> subelement or one from a
+list of machines from the virsh capabilities output for a specific
+architecture and domain type.
+
+For the QEMU hypervisor, a *virttype* of either 'qemu' or 'kvm' must be
+supplied along with either the *emulatorbin* or *arch* in order to
+generate output for the default *machine*. Supplying a *machine*
+value will generate output for the specific machine.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
+
+The **--disable-deprecated-features** argument will modify the contents
+of host-model CPU XML, updating the features list with any features
+flagged as deprecated for the CPU model by the hypervisor. These
+features will be paired with the "disable" policy.
+
+The **--expand-cpu-features** option will cause the host-model CPU definition
+to contain all required CPU features including those implicitly enabled by the
+selected CPU model. Without this flag features that are part of the CPU model
+itself will not be listed.
+
+The **--supported-cpu-features** option will update the host-model CPU
+definition with features that are supported on the host, but will not be
+enabled by default when starting a domain with host-model CPU. Using both
+**--supported-cpu-features** and **--expand-cpu-features** will provide a
+complete list of features that can be enabled on the host.
+
+## [pool-capabilities](#id23)[¶](#pool-capabilities "Link to this headline")
+
+**Syntax:**
+
+```
+pool-capabilities
+```
+
+Print an XML document describing the storage pool capabilities for the
+connected storage driver. This may be useful if you intend to create a
+new storage pool and need to know the available pool types and supported
+storage pool source and target volume formats as well as the required
+source elements to create the pool.
+
+## [inject-nmi](#id24)[¶](#inject-nmi "Link to this headline")
+
+**Syntax:**
+
+```
+inject-nmi domain
+```
+
+Inject NMI to the guest.
+
+## [list](#id25)[¶](#list "Link to this headline")
+
+**Syntax:**
+
+```
+list [--inactive | --all]
+     [--managed-save] [--title]
+     { [--table] | --name | --id } [--uuid]
+     [--persistent] [--transient]
+     [--with-managed-save] [--without-managed-save]
+     [--autostart] [--no-autostart]
+     [--with-snapshot] [--without-snapshot]
+     [--with-checkpoint] [--without-checkpoint]
+     [--state-running] [--state-paused]
+     [--state-shutoff] [--state-other]
+```
+
+Prints information about existing domains. If no options are
+specified it prints out information about running domains.
+
+**Example 1:**
+
+An example format for the list is as follows:
+
+```
+``virsh`` list
+  Id    Name                           State
+----------------------------------------------------
+  0     Domain-0                       running
+  2     fedora                         paused
+```
+
+Name is the name of the domain. ID the domain numeric id.
+State is the run state (see below).
+
+**STATES**
+
+The State field lists what state each domain is currently in. A domain
+can be in one of the following possible states:
+
+* running
+
+  The domain is currently running on a CPU
+* idle
+
+  The domain is idle, and not running or runnable. This can be caused
+  because the domain is waiting on IO (a traditional wait state) or has
+  gone to sleep because there was nothing else for it to do.
+* paused
+
+  The domain has been paused, usually occurring through the administrator
+  running virsh suspend. When in a paused state the domain will still
+  consume allocated resources like memory, but will not be eligible for
+  scheduling by the hypervisor.
+* in shutdown
+
+  The domain is in the process of shutting down, i.e. the guest operating system
+  has been notified and should be in the process of stopping its operations
+  gracefully.
+* shut off
+
+  The domain is not running. Usually this indicates the domain has been
+  shut down completely, or has not been started.
+* crashed
+
+  The domain has crashed, which is always a violent ending. Usually
+  this state can only occur if the domain has been configured not to
+  restart on crash.
+* pmsuspended
+
+  The domain has been suspended by guest power management, e.g. entered
+  into s3 state.
+
+Normally only active domains are listed. To list inactive domains specify
+*--inactive* or *--all* to list both active and inactive domains.
+
+**Filtering**
+
+To further filter the list of domains you may specify one or more of filtering
+flags supported by the list command. These flags are grouped by function.
+Specifying one or more flags from a group enables the filter group. Note that
+some combinations of flags may yield no results. Supported filtering flags and
+groups:
+
+### Persistence[¶](#persistence "Link to this headline")
+
+Flag *--persistent* is used to include persistent guests in the returned
+list. To include transient guests specify *--transient*.
+
+### Existence of managed save image[¶](#existence-of-managed-save-image "Link to this headline")
+
+To list domains having a managed save image specify flag
+*--with-managed-save*. For domains that don't have a managed save image
+specify *--without-managed-save*.
+
+### Domain state[¶](#domain-state "Link to this headline")
+
+The following filter flags select a domain by its state:
+*--state-running* for running domains, *--state-paused* for paused domains,
+*--state-shutoff* for turned off domains and *--state-other* for all
+other states as a fallback.
+
+### Autostarting domains[¶](#autostarting-domains "Link to this headline")
+
+To list autostarting domains use the flag *--autostart*. To list domains with
+this feature disabled use *--no-autostart*.
+
+### Snapshot existence[¶](#snapshot-existence "Link to this headline")
+
+Domains that have snapshot images can be listed using flag *--with-snapshot*,
+domains without a snapshot *--without-snapshot*.
+
+### Checkpoint existence[¶](#checkpoint-existence "Link to this headline")
+
+Domains that have checkpoints can be listed using flag *--with-checkpoint*,
+domains without a checkpoint *--without-checkpoint*.
+
+When talking to older servers, this command is forced to use a series of API
+calls with an inherent race, where a domain might not be listed or might appear
+more than once if it changed state between calls while the list was being
+collected. Newer servers do not have this problem.
+
+If *--managed-save* is specified, then domains that have managed save state
+(only possible if they are in the shut off state, so you need to specify
+*--inactive* or *--all* to actually list them) will instead show as saved
+in the listing. This flag is usable only with the default *--table* output.
+Note that this flag does not filter the list of domains.
+
+If *--name* is specified, domain names are printed instead of the
+table formatted one per line. If *--uuid* is specified domain's UUID's
+are printed instead of names. If *--id* is specified then domain's ID's
+are printed indead of names. However, it is possible to combine
+*--name*, *--uuid* and *--id* to select only desired fields for
+printing. Flag *--table* specifies that the legacy table-formatted
+output should be used, but it is mutually exclusive with *--name*, and *--id*.
+This is the default and will be used if neither of *--name*, *--uuid* or *--id*
+is specified. If neither *--name* nor *--uuid* is specified, but *--id* is,
+then only active domains are listed, even with the *--all* parameter as otherwise
+the output would just contain bunch of lines with just *-1*. If *--table* is
+combined with *--uuid*, then domain uuid is printed as an extra column.
+
+If *--title* is specified, then the short domain description (title) is
+printed in an extra column. This flag is usable only with the default
+*--table* output.
+
+**Example 2:**
+
+```
+$ virsh list --title
+  Id    Name        State      Title
+ -------------------------------------------
+  0     Domain-0    running    Mailserver 1
+  2     fedora      paused
+```
+
+## [freecell](#id26)[¶](#freecell "Link to this headline")
+
+**Syntax:**
+
+```
+freecell [{ [--cellno] cellno | --all }]
+```
+
+Prints the available amount of memory on the machine or within a NUMA
+cell. The freecell command can provide one of three different
+displays of available memory on the machine depending on the options
+specified. With no options, it displays the total free memory on the
+machine. With the --all option, it displays the free memory in each
+cell and the total free memory on the machine. Finally, with a
+numeric argument or with --cellno plus a cell number it will display
+the free memory for the specified cell only.
+
+## [freepages](#id27)[¶](#freepages "Link to this headline")
+
+**Syntax:**
+
+```
+freepages [{ [--cellno] cellno [--pagesize] pagesize |     --all }]
+```
+
+Prints the available amount of pages within a NUMA cell. *cellno* refers
+to the NUMA cell you're interested in. *pagesize* is a scaled integer (see
+NOTES above). Alternatively, if *--all* is used, info on each possible
+combination of NUMA cell and page size is printed out.
+
+## [allocpages](#id28)[¶](#allocpages "Link to this headline")
+
+**Syntax:**
+
+```
+allocpages [--pagesize] pagesize [--pagecount] pagecount [[--cellno] cellno] [--add] [--all]
+```
+
+Change the size of pages pool of *pagesize* on the host. If
+*--add* is specified, then *pagecount* pages are added into the
+pool. However, if *--add* wasn't specified, then the
+*pagecount* is taken as the new absolute size of the pool (this
+may be used to free some pages and size the pool down). The
+*cellno* modifier can be used to narrow the modification down to
+a single host NUMA cell. On the other end of spectrum lies
+*--all* which executes the modification on all NUMA cells.
+
+## [cpu-baseline](#id29)[¶](#cpu-baseline "Link to this headline")
+
+**Syntax:**
+
+```
+cpu-baseline FILE [--features] [--migratable]
+```
+
+Compute baseline CPU which will be supported by all host CPUs given in <file>.
+(See hypervisor-cpu-baseline command to get a CPU which can be provided by a
+specific hypervisor.) The list of host CPUs is built by extracting all <cpu>
+elements from the <file>. Thus, the <file> can contain either a set of <cpu>
+elements separated by new lines or even a set of complete <capabilities>
+elements printed by capabilities command. If *--features* is specified,
+then the resulting XML description will explicitly include all features that
+make up the CPU, without this option features that are part of the CPU model
+will not be listed in the XML description. If *--migratable* is specified,
+features that block migration will not be included in the resulting CPU.
+
+## [cpu-compare](#id30)[¶](#cpu-compare "Link to this headline")
+
+**Syntax:**
+
+```
+cpu-compare FILE [--error] [--validate]
+```
+
+Compare CPU definition from XML <file> with host CPU. (See
+hypervisor-cpu-compare command for comparing the CPU definition with the CPU
+which a specific hypervisor is able to provide on the host.) The XML <file> may
+contain either host or guest CPU definition. The host CPU definition is the
+<cpu> element and its contents as printed by capabilities command. The
+guest CPU definition is the <cpu> element and its contents from domain XML
+definition or the CPU definition created from the host CPU model found in
+domain capabilities XML (printed by domcapabilities command). In
+addition to the <cpu> element itself, this command accepts
+full domain XML, capabilities XML, or domain capabilities XML containing
+the CPU definition. For more information on guest CPU definition see:
+[https://libvirt.org/formatdomain.html#elementsCPU](https://libvirt.org/formatdomain.html#cpu-model-and-topology). If *--error* is
+specified, the command will return an error when the given CPU is
+incompatible with host CPU and a message providing more details about the
+incompatibility will be printed out. If *--validate* is specified, validates
+the format of the XML document against an internal RNG schema.
+
+## [cpu-models](#id31)[¶](#cpu-models "Link to this headline")
+
+**Syntax:**
+
+```
+cpu-models arch
+```
+
+Print the list of CPU models known by libvirt for the specified architecture.
+Whether a specific hypervisor is able to create a domain which uses any of
+the printed CPU models is a separate question which can be answered by
+looking at the domain capabilities XML returned by domcapabilities command.
+Moreover, for some architectures libvirt does not know any CPU models and
+the usable CPU models are only limited by the hypervisor. This command will
+print that all CPU models are accepted for these architectures and the actual
+list of supported CPU models can be checked in the domain capabilities XML.
+
+## [hypervisor-cpu-compare](#id32)[¶](#hypervisor-cpu-compare "Link to this headline")
+
+**Syntax:**
+
+```
+hypervisor-cpu-compare FILE [virttype] [emulator] [arch] [machine] [--error] [--validate]
+```
+
+Compare CPU definition from XML <file> with the CPU the hypervisor is able to
+provide on the host. (This is different from cpu-compare which compares the
+CPU definition with the host CPU without considering any specific hypervisor
+and its abilities.)
+
+The XML *FILE* should contain a guest CPU definition: either the <cpu>
+element and its contents from a domain XML definition or a CPU definition
+created from the host CPU model found in the <mode name="host-model">
+element in the domain capabilities XML (printed by the domcapabilities
+command). The <mode name="host-model"> element itself or even its
+<cpu> parent element found in domain capabilities XML is not accepted.
+The element has to be transformed into an actual CPU definition. For more
+information on guest CPU definition see:
+[https://libvirt.org/formatdomain.html#elementsCPU](https://libvirt.org/formatdomain.html#cpu-model-and-topology).
+
+Alternatively this command will automatically extract the CPU definition when
+provided with a full domain or domain capabilities XML.
+
+For historical reasons the XML *FILE* may also contain a host CPU definition,
+but such usage is strongly discouraged as it will most likely provide incorrect
+results.
+
+The *virttype* option specifies the virtualization type (usable in the 'type'
+attribute of the <domain> top level element from the domain XML). *emulator*
+specifies the path to the emulator, *arch* specifies the CPU architecture, and
+*machine* specifies the machine type. If *--error* is specified, the command
+will return an error when the given CPU is incompatible with the host CPU and a
+message providing more details about the incompatibility will be printed out.
+If *--validate* is specified, validates the format of the XML document against
+an internal RNG schema.
+
+## [hypervisor-cpu-baseline](#id33)[¶](#hypervisor-cpu-baseline "Link to this headline")
+
+**Syntax:**
+
+```
+hypervisor-cpu-baseline [FILE] [virttype] [emulator] [arch] [machine]
+   [--features] [--migratable] [--ignore-host] [model]
+```
+
+Compute a baseline CPU which will be compatible with all CPUs defined in an XML
+*FILE*. This command must be called on one of the hosts described in *FILE*.
+Calling it on another host results in an undefined behavior as the computed CPU
+model is influenced by the hypervisor (the result may use an unexpected CPU
+model or some features may disabled even though they are supported on all input
+CPUs). The undefined behavior can be avoided using *--ignore-host* option (see
+below).
+
+This is different from cpu-baseline which does not consider any hypervisor
+abilities when computing the baseline CPU.
+
+As an alternative for *FILE* in case the XML would only contain a CPU model
+with no additional features the CPU model name itself can be passed as *model*.
+Exactly one of *FILE* and *model* must be used.
+
+The XML *FILE* should contain guest CPU definitions created from the host CPU
+model found in the <mode name="host-model"> element domain capabilities
+XMLs (printed by the domcapabilities command on each host). The
+<mode name="host-model"> elements themselves or even their <cpu>
+parent elements found in domain capabilities XMLs are not accepted. The
+elements have to be transformed into actual CPU definitions.
+
+Alternatively this command will automatically extract the CPU definitions when
+provided with domain capabilities XMLs.
+
+For historical reasons the XML *FILE* may also contain host CPU definitions,
+but such usage is strongly discouraged as it will most likely provide incorrect
+results.
+
+When *FILE* contains only a single CPU definition, the command will print the
+same CPU with restrictions imposed by the capabilities of the hypervisor.
+Specifically, running the virsh hypervisor-cpu-baseline command with no
+additional options on the result of virsh domcapabilities will transform the
+host CPU model from domain capabilities XML to a form directly usable in domain
+XML. Running the command with *model* (or *FILE* containing just a single CPU
+definition with model and no feature elements) which is marked as unusable in
+virsh domcapabilities will provide a list of features that block this CPU
+model from being usable.
+
+The *virttype* option specifies the virtualization type (usable in the 'type'
+attribute of the <domain> top level element from the domain XML). *emulator*
+specifies the path to the emulator, *arch* specifies the CPU architecture, and
+*machine* specifies the machine type. If *--features* is specified, then the
+resulting XML description will explicitly include all features that make up the
+CPU, without this option features that are part of the CPU model will not be
+listed in the XML description. If *--migratable* is specified, features that
+block migration will not be included in the resulting CPU. If *--ignore-host*
+is specified and *FILE* contains more than one CPU, the command will not
+consider hypervisor abilities when computing the baseline. With this option
+baseline can be safely computed on any host (even those not described in
+*FILE*).
+
+## [hypervisor-cpu-models](#id34)[¶](#hypervisor-cpu-models "Link to this headline")
+
+**Syntax:**
+
+```
+hypervisor-cpu-models [--virttype virttype] [--emulator emulator]
+   [--arch arch] [--machine machine] [--all]
+```
+
+Print the list of CPU models known by the hypervisor for the specified architecture.
+It is not guaranteed that a listed CPU will run on the host. To determine CPU
+model compatibility with the host, see virsh hypervisor-cpu-baseline and
+virsh hypervisor-cpu-compare.
+
+The *virttype* option specifies the virtualization type (usable in the 'type'
+attribute of the <domain> top level element from the domain XML). *emulator*
+specifies the path to the emulator, *arch* specifies the CPU architecture, and
+*machine* specifies the machine type.
+
+By default, only the models that are claimed to be "usable" by the hypervisor
+on the host are reported. The option *--all* will report every CPU model known
+to the hypervisor, including ones that are not supported on the hypervisor (e.g.
+newer generation models).
+
+## [DOMAIN COMMANDS](#id35)[¶](#domain-commands "Link to this headline")
+
+The following commands manipulate domains directly, as stated
+previously most commands take domain as the first parameter. The
+*domain* can be specified as a short integer, a name or a full UUID.
+
+## [autostart](#id36)[¶](#autostart "Link to this headline")
+
+**Syntax:**
+
+```
+autostart [--disable] [--once] domain
+```
+
+Configure a domain to be automatically started at each boot of the host. The
+*--once* option configures the domain to be started on the next boot of the host.
+
+The option *--disable* disables the corresponding autostarting.
+
+Note that autostart configured via the *--once* option is independent from the
+autostart configured without it. Enabling either of them will cause the VM to
+be started on the next boot of the host.
+
+## [blkdeviotune](#id37)[¶](#blkdeviotune "Link to this headline")
+
+**Syntax:**
+
+```
+blkdeviotune domain device [[--config] [--live] | [--current]]
+   [[total-bytes-sec] | [read-bytes-sec] [write-bytes-sec]]
+   [[total-iops-sec] | [read-iops-sec] [write-iops-sec]]
+   [[total-bytes-sec-max] | [read-bytes-sec-max] [write-bytes-sec-max]]
+   [[total-iops-sec-max] | [read-iops-sec-max] [write-iops-sec-max]]
+   [[total-bytes-sec-max-length] |
+    [read-bytes-sec-max-length] [write-bytes-sec-max-length]]
+   [[total-iops-sec-max-length] |
+    [read-iops-sec-max-length] [write-iops-sec-max-length]]
+   [size-iops-sec] [group-name]
+```
+
+Set or query the block disk io parameters for a block device of *domain*.
+*device* specifies a unique target name (<target dev='name'/>) or source
+file (<source file='name'/>) for one of the disk devices attached to
+*domain* (see also domblklist for listing these names).
+
+If no limit is specified, it will query current I/O limits setting.
+Otherwise, alter the limits with these flags:
+*--total-bytes-sec* specifies total throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--read-bytes-sec* specifies read throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--write-bytes-sec* specifies write throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--total-iops-sec* specifies total I/O operations limit per second.
+*--read-iops-sec* specifies read I/O operations limit per second.
+*--write-iops-sec* specifies write I/O operations limit per second.
+*--total-bytes-sec-max* specifies maximum total throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified
+*--read-bytes-sec-max* specifies maximum read throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+*--write-bytes-sec-max* specifies maximum write throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+*--total-iops-sec-max* specifies maximum total I/O operations limit per second.
+*--read-iops-sec-max* specifies maximum read I/O operations limit per second.
+*--write-iops-sec-max* specifies maximum write I/O operations limit per second.
+*--total-bytes-sec-max-length* specifies duration in seconds to allow maximum
+total throughput limit.
+*--read-bytes-sec-max-length* specifies duration in seconds to allow maximum
+read throughput limit.
+*--write-bytes-sec-max-length* specifies duration in seconds to allow maximum
+write throughput limit.
+*--total-iops-sec-max-length* specifies duration in seconds to allow maximum
+total I/O operations limit.
+*--read-iops-sec-max-length* specifies duration in seconds to allow maximum
+read I/O operations limit.
+*--write-iops-sec-max-length* specifies duration in seconds to allow maximum
+write I/O operations limit.
+*--size-iops-sec* specifies size I/O operations limit per second.
+*--group-name* specifies group name to share I/O quota between multiple drives.
+For a QEMU domain, if no name is provided, then the default is to have a single
+group for each *device*.
+
+Older versions of virsh only accepted these options with underscore
+instead of dash, as in *--total\_bytes\_sec*.
+
+Bytes and iops values are independent, but setting only one value (such
+as --read-bytes-sec) resets the other two in that category to unlimited.
+An explicit 0 also clears any limit. A non-zero value for a given total
+cannot be mixed with non-zero values for read or write.
+
+It is up to the hypervisor to determine how to handle the length values.
+For the QEMU hypervisor, if an I/O limit value or maximum value is set,
+then the default value of 1 second will be displayed. Supplying a 0 will
+reset the value back to the default.
+
+If *--live* is specified, affect a running guest.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
+When setting the disk io parameters both *--live* and *--config* flags may be
+given, but *--current* is exclusive. For querying only one of *--live*,
+*--config* or *--current* can be specified. If no flag is specified, behavior
+is different depending on hypervisor.
+
+## [domthrottlegroupset](#id38)[¶](#domthrottlegroupset "Link to this headline")
+
+**Syntax:**
+
+```
+domthrottlegroupset domain group-name [[--config] [--live] | [--current]]
+   [[total-bytes-sec] | [read-bytes-sec] [write-bytes-sec]]
+   [[total-iops-sec] | [read-iops-sec] [write-iops-sec]]
+   [[total-bytes-sec-max] | [read-bytes-sec-max] [write-bytes-sec-max]]
+   [[total-iops-sec-max] | [read-iops-sec-max] [write-iops-sec-max]]
+   [[total-bytes-sec-max-length] |
+    [read-bytes-sec-max-length] [write-bytes-sec-max-length]]
+   [[total-iops-sec-max-length] |
+    [read-iops-sec-max-length] [write-iops-sec-max-length]]
+   [size-iops-sec]
+```
+
+Add or update a throttle group against specific *domain*.
+*group-name* specifies a unique throttle group name, which defines limit, and
+will be referenced by drives.
+
+If no limit is specified, default them as all zeros, which will fail,
+Otherwise, set limits with these flags:
+*--total-bytes-sec* specifies total throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--read-bytes-sec* specifies read throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--write-bytes-sec* specifies write throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+*--total-iops-sec* specifies total I/O operations limit per second.
+*--read-iops-sec* specifies read I/O operations limit per second.
+*--write-iops-sec* specifies write I/O operations limit per second.
+*--total-bytes-sec-max* specifies maximum total throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified
+*--read-bytes-sec-max* specifies maximum read throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+*--write-bytes-sec-max* specifies maximum write throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+*--total-iops-sec-max* specifies maximum total I/O operations limit per second.
+*--read-iops-sec-max* specifies maximum read I/O operations limit per second.
+*--write-iops-sec-max* specifies maximum write I/O operations limit per second.
+*--total-bytes-sec-max-length* specifies duration in seconds to allow maximum
+total throughput limit.
+*--read-bytes-sec-max-length* specifies duration in seconds to allow maximum
+read throughput limit.
+*--write-bytes-sec-max-length* specifies duration in seconds to allow maximum
+write throughput limit.
+*--total-iops-sec-max-length* specifies duration in seconds to allow maximum
+total I/O operations limit.
+*--read-iops-sec-max-length* specifies duration in seconds to allow maximum
+read I/O operations limit.
+*--write-iops-sec-max-length* specifies duration in seconds to allow maximum
+write I/O operations limit.
+*--size-iops-sec* specifies size I/O operations limit per second.
+
+Bytes and iops values are independent, but setting only one value (such
+as --read-bytes-sec) resets the other two in that category to unlimited.
+An explicit 0 also clears any limit. A non-zero value for a given total
+cannot be mixed with non-zero values for read or write.
+
+It is up to the hypervisor to determine how to handle the length values.
+For the QEMU hypervisor, if an I/O limit value or maximum value is set,
+then the default value of 1 second will be displayed. Supplying a 0 will
+reset the value back to the default.
+
+If *--live* is specified, affect a running guest.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
+When setting the disk io parameters both *--live* and *--config*
+are specified, both live configuration and config are updated while setting
+the description, but *--current* is exclusive. If no flag is specified, behavior
+is different depending on hypervisor.
+
+## [domthrottlegroupdel](#id39)[¶](#domthrottlegroupdel "Link to this headline")
+
+**Syntax:**
+
+```
+domthrottlegroupdel domain group-name [[--config] [--live] | [--current]]
+```
+
+Delete a Throttlegroup from the domain using the specified *group-name*.
+If an Throttlegroup is currently referenced by a disk resource, then the attempt
+to remove the Throttlegroup will fail.
+If the *group-name* does not exist an error will occur.
+
+If *--live* is specified, affect a running guest. If the guest is not
+running an error is returned.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
+
+## [domthrottlegroupinfo](#id40)[¶](#domthrottlegroupinfo "Link to this headline")
+
+**Syntax:**
+
+```
+domthrottlegroupinfo domain group-name [[--config] [--live] | [--current]]
+```
+
+Display domain Throttlegroup information including I/O limits setting.
+
+If *--live* is specified, get the Throttlegroup data from the running guest. If
+the guest is not running, an error is returned.
+If *--config* is specified, get the Throttlegroup data from the next start of
+a persistent guest.
+If *--current* is specified or *--live* and *--config* are not specified,
+then get the Throttlegroup data based on the current guest state, which can
+either be live or offline.
+If both *--live* and *--config* are specified, the *--config* option takes
+precedence on getting the current description.
+
+## [domthrottlegrouplist](#id41)[¶](#domthrottlegrouplist "Link to this headline")
+
+**Syntax:**
+
+```
+domthrottlegrouplist domain [--inactive]
+```
+
+Print a table showing names of all throttle groups
+associated with *domain*. If *--inactive* is specified, query the
+Throttlegroup data that will be used on the next boot, rather than those
+currently in use by a running domain.
+
+## [blkiotune](#id42)[¶](#blkiotune "Link to this headline")
+
+**Syntax:**
+
+```
+blkiotune domain [--weight weight] [--device-weights device-weights]
+   [--device-read-iops-sec device-read-iops-sec]
+   [--device-write-iops-sec device-write-iops-sec]
+   [--device-read-bytes-sec device-read-bytes-sec]
+   [--device-write-bytes-sec device-write-bytes-sec]
+   [[--config] [--live] | [--current]]
+```
+
+Display or set the blkio parameters. QEMU/KVM supports *--weight*.
+*--weight* is in range [100, 1000]. After kernel 2.6.39, the value
+could be in the range [10, 1000].
+
+device-weights is a single string listing one or more device/weight
+pairs, in the format of /path/to/device,weight,/path/to/device,weight.
+Each weight is in the range [100, 1000], [10, 1000] after kernel 2.6.39,
+or the value 0 to remove that device from per-device listings.
+Only the devices listed in the string are modified;
+any existing per-device weights for other devices remain unchanged.
+
+device-read-iops-sec is a single string listing one or more device/read\_iops\_sec
+pairs, int the format of /path/to/device,read\_iops\_sec,/path/to/device,read\_iops\_sec.
+Each read\_iops\_sec is a number which type is unsigned int, value 0 to remove that
+device from per-device listing.
+Only the devices listed in the string are modified;
+any existing per-device read\_iops\_sec for other devices remain unchanged.
+
+device-write-iops-sec is a single string listing one or more device/write\_iops\_sec
+pairs, int the format of /path/to/device,write\_iops\_sec,/path/to/device,write\_iops\_sec.
+Each write\_iops\_sec is a number which type is unsigned int, value 0 to remove that
+device from per-device listing.
+Only the devices listed in the string are modified;
+any existing per-device write\_iops\_sec for other devices remain unchanged.
+
+device-read-bytes-sec is a single string listing one or more device/read\_bytes\_sec
+pairs, int the format of /path/to/device,read\_bytes\_sec,/path/to/device,read\_bytes\_sec.
+Each read\_bytes\_sec is a number which type is unsigned long long, value 0 to remove
+that device from per-device listing.
+Only the devices listed in the string are modified;
+any existing per-device read\_bytes\_sec for other devices remain unchanged.
+
+device-write-bytes-sec is a single string listing one or more device/write\_bytes\_sec
+pairs, int the format of /path/to/device,write\_bytes\_sec,/path/to/device,write\_bytes\_sec.
+Each write\_bytes\_sec is a number which type is unsigned long long, value 0 to remove
+that device from per-device listing.
+Only the devices listed in the string are modified;
+any existing per-device write\_bytes\_sec for other devices remain unchanged.
+
+If *--live* is specified, affect a running guest.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
+Both *--live* and *--config* flags may be given, but *--current* is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
+## [blockcommit](#id43)[¶](#blockcommit "Link to this headline")
+
+**Syntax:**
+
+```
+blockcommit domain path [bandwidth] [--bytes] [base]
+   [--shallow] [top] [--delete] [--keep-relative]
+   [--wait [--async] [--verbose]] [--timeout seconds]
+   [--active] [{--pivot | --keep-overlay}]
+```
+
+Reduce the length of a backing image chain, by committing changes at the
+top of the chain (snapshot or delta files) into backing images. By
+default, this command attempts to flatten the entire chain. If *base*
+and/or *top* are specified as files within the backing chain, then the
+operation is constrained to committing just that portion of the chain;
+*--shallow* can be used instead of *base* to specify the immediate
+backing file of the resulting top image to be committed. The files
+being committed are rendered invalid, possibly as soon as the operation
+starts; using the *--delete* flag will attempt to remove these invalidated
+files at the successful completion of the commit operation. When the
+*--keep-relative* flag is used, the backing file paths will be kept relative.
+
+When *top* is omitted or specified as the active image, it is also
+possible to specify *--active* to trigger a two-phase active commit. In
+the first phase, *top* is copied into *base* and the job can only be
+canceled, with top still containing data not yet in base. In the second
+phase, *top* and *base* remain identical until a call to blockjob
+with the *--abort* flag (keeping top as the active image that tracks
+changes from that point in time) or the *--pivot* flag (making base
+the new active image and invalidating top).
+
+By default, this command returns as soon as possible, and data for
+the entire disk is committed in the background; the progress of the
+operation can be checked with blockjob. However, if *--wait* is
+specified, then this command will block until the operation completes
+(or for *--active*, enters the second phase), or until the operation
+is canceled because the optional *timeout* in seconds elapses
+or SIGINT is sent (usually with Ctrl-C). Using *--verbose* along
+with *--wait* will produce periodic status updates. If job cancellation
+is triggered, *--async* will return control to the user as fast as
+possible, otherwise the command may continue to block a little while
+longer until the job is done cleaning up. Using *--pivot* is shorthand
+for combining *--active* *--wait* with an automatic blockjob
+*--pivot*; and using *--keep-overlay* is shorthand for combining
+*--active* *--wait* with an automatic blockjob *--abort*.
+
+*path* specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to *domain* (see
+also domblklist for listing these names).
+*bandwidth* specifies copying bandwidth limit in MiB/s, although for
+QEMU, it may be non-zero only for an online domain. For further information
+on the *bandwidth* argument see the corresponding section for the blockjob
+command.
+
+## [blockcopy](#id44)[¶](#blockcopy "Link to this headline")
+
+**Syntax:**
+
+```
+blockcopy domain path { dest [format] [--blockdev] | --xml file }
+   [--shallow] [--reuse-external] [bandwidth]
+   [--wait [--async] [--verbose]] [{--pivot | --finish}]
+   [--timeout seconds] [granularity] [buf-size] [--bytes]
+   [--transient-job] [--synchronous-writes] [--dest-is-zero] [--print-xml]
+```
+
+Copy a disk backing image chain to a destination. Either *dest* as
+the destination file name, or *--xml* with the name of an XML file containing
+a top-level <disk> element describing the destination, must be present.
+Additionally, if *dest* is given, *format* should be specified to declare
+the format of the destination (if *format* is omitted, then libvirt
+will reuse the format of the source, or with *--reuse-external* will
+be forced to probe the destination format, which could be a potential
+security hole). The command supports *--raw* as a boolean flag synonym for
+*--format=raw*. When using *dest*, the destination is treated as a regular
+file unless *--blockdev* is used to signal that it is a block device. By
+default, this command flattens the entire chain; but if *--shallow* is
+specified, the copy shares the backing chain.
+
+If *--reuse-external* is specified, then the destination must exist and have
+sufficient space to hold the copy. If *--shallow* is used in
+conjunction with *--reuse-external* then the pre-created image must have
+guest visible contents identical to guest visible contents of the backing
+file of the original image. This may be used to modify the backing file
+names on the destination.
+
+By default, the copy job runs in the background, and consists of two
+phases. Initially, the job must copy all data from the source, and
+during this phase, the job can only be canceled to revert back to the
+source disk, with no guarantees about the destination. After this phase
+completes, both the source and the destination remain mirrored until a
+call to blockjob with the *--abort* and *--pivot* flags pivots over
+to the copy, or a call without *--pivot* leaves the destination as a
+faithful copy of that point in time. However, if *--wait* is specified,
+then this command will block until the mirroring phase begins, or cancel
+the operation if the optional *timeout* in seconds elapses or SIGINT is
+sent (usually with Ctrl-C). Using *--verbose* along with *--wait*
+will produce periodic status updates. Using *--pivot* (similar to
+blockjob *--pivot*) or *--finish* (similar to blockjob *--abort*)
+implies *--wait*, and will additionally end the job cleanly rather than
+leaving things in the mirroring phase. If job cancellation is triggered
+by timeout or by *--finish*, *--async* will return control to the user
+as fast as possible, otherwise the command may continue to block a little
+while longer until the job has actually cancelled.
+
+*path* specifies fully-qualified path of the disk.
+*bandwidth* specifies copying bandwidth limit in MiB/s. Specifying a negative
+value is interpreted as an unsigned long long value that might be essentially
+unlimited, but more likely would overflow; it is safer to use 0 for that
+purpose. For further information on the *bandwidth* argument see the
+corresponding section for the blockjob command.
+Specifying *granularity* allows fine-tuning of the granularity that will be
+copied when a dirty region is detected; larger values trigger less
+I/O overhead but may end up copying more data overall (the default value is
+usually correct); hypervisors may restrict this to be a power of two or fall
+within a certain range. Specifying *buf-size* will control how much data can
+be simultaneously in-flight during the copy; larger values use more memory but
+may allow faster completion (the default value is usually correct).
+
+*--transient-job* allows specifying that the user does not require the job to
+be recovered if the VM crashes or is turned off before the job completes. This
+flag removes the restriction of copy jobs to transient domains if that
+restriction is applied by the hypervisor.
+
+If *--synchronous-writes* is specified the block job will wait for guest writes
+to be propagated both to the original image and to the destination of the copy
+so that it's guaranteed that the job converges if the destination storage is
+slower. This may impact performance of writes while the blockjob is running.
+
+If *--dest-is-zero* is specified the hypervisor may assume that the target
+image was already cleared (any offset reads 0x00 bytes) and thus may skip
+clearing it.
+
+If *--print-xml* is specified, then the XML used to start the block copy job
+is printed instead of starting the job.
+
+## [blockjob](#id45)[¶](#blockjob "Link to this headline")
+
+**Syntax:**
+
+```
+blockjob domain path { [--abort] [--async] [--pivot] |
+   [--info] [--raw] [--bytes] | [bandwidth] }
+```
+
+Manage active block operations. There are three mutually-exclusive modes:
+*--info*, *bandwidth*, and *--abort*. *--async* and *--pivot* imply
+abort mode; *--raw* implies info mode; and if no mode was given, *--info*
+mode is assumed.
+
+*path* specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to *domain* (see
+also domblklist for listing these names).
+
+In *--abort* mode, the active job on the specified disk will
+be aborted. If *--async* is also specified, this command will return
+immediately, rather than waiting for the cancellation to complete. If
+*--pivot* is specified, this requests that an active copy or active
+commit job be pivoted over to the new image.
+
+In *--info* mode, the active job information on the specified
+disk will be printed. By default, the output is a single human-readable
+summary line; this format may change in future versions. Adding
+*--raw* lists each field of the struct, in a stable format. If the
+*--bytes* flag is set, then the command errors out if the server could
+not supply bytes/s resolution; when omitting the flag, raw output is
+listed in MiB/s and human-readable output automatically selects the
+best resolution supported by the server.
+
+*bandwidth* can be used to set bandwidth limit for the active job in MiB/s.
+If *--bytes* is specified then the bandwidth value is interpreted in
+bytes/s. Specifying a negative value is interpreted as an unsigned long
+value or essentially unlimited. The hypervisor can choose whether to
+reject the value or convert it to the maximum value allowed. Optionally a
+scaled positive number may be used as bandwidth (see NOTES above). Using
+*--bytes* with a scaled value permits a finer granularity to be selected.
+A scaled value used without *--bytes* will be rounded down to MiB/s. Note
+that the *--bytes* may be unsupported by the hypervisor.
+
+Note that the progress reported for blockjobs corresponding to a pull-mode
+backup don't report progress of the backup but rather usage of temporary
+space required for the backup.
+
+## [blockpull](#id46)[¶](#blockpull "Link to this headline")
+
+**Syntax:**
+
+```
+blockpull domain path [bandwidth] [--bytes] [base]
+   [--wait [--verbose] [--timeout seconds] [--async]]
+   [--keep-relative]
+```
+
+Populate a disk from its backing image chain. By default, this command
+flattens the entire chain; but if *base* is specified, containing the
+name of one of the backing files in the chain, then that file becomes
+the new backing file and only the intermediate portion of the chain is
+pulled. Once all requested data from the backing image chain has been
+pulled, the disk no longer depends on that portion of the backing chain.
+
+By default, this command returns as soon as possible, and data for
+the entire disk is pulled in the background; the progress of the
+operation can be checked with blockjob. However, if *--wait* is
+specified, then this command will block until the operation completes,
+or cancel the operation if the optional *timeout* in seconds elapses
+or SIGINT is sent (usually with Ctrl-C). Using *--verbose* along
+with *--wait* will produce periodic status updates. If job cancellation
+is triggered, *--async* will return control to the user as fast as
+possible, otherwise the command may continue to block a little while
+longer until the job is done cleaning up.
+
+Using the *--keep-relative* flag will keep the backing chain names
+relative.
+
+*path* specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to *domain* (see
+also domblklist for listing these names).
+*bandwidth* specifies copying bandwidth limit in MiB/s. For further information
+on the *bandwidth* argument see the corresponding section for the blockjob
+command.
+
+## [blockresize](#id47)[¶](#blockresize "Link to this headline")
+
+**Syntax:**
+
+```
+blockresize domain path ([size] | [--capacity]) [--extend]
+```
+
+Resize a block device of domain while the domain is running, *path*
+specifies the absolute path of the block device; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to *domain* (see
+also domblklist for listing these names).
+
+The *--extend* flag instructs the hypervisor to ensure that the new size isn't
+smaller than the old size, thus prevents (accidental) shrinking of the block
+device which may lead to data loss. Users are encouraged to always use this
+flag unless communicating with an older hypervisor.
+
+For image formats without metadata (raw) stored inside fixed-size storage (e.g.
+block devices) the --capacity flag can be used to resize the device to the
+full size of the backing device.
+
+*size* is a scaled integer (see NOTES above) which defaults to KiB
+(blocks of 1024 bytes) if there is no suffix. You must use a suffix of
+"B" to get bytes (note that for historical reasons, this differs from
+vol-resize which defaults to bytes without a suffix).
+
+## [console](#id48)[¶](#console "Link to this headline")
+
+**Syntax:**
+
+```
+console domain [devname] [--safe] [--force] [--resume]
+```
+
+Connect the virtual serial console for the guest. The optional
+*devname* parameter refers to the device alias of an alternate
+console, serial or parallel device configured for the guest.
+If omitted, the primary console will be opened.
+
+If the flag *--safe* is specified, the connection is only attempted
+if the driver supports safe console handling. This flag specifies that
+the server has to ensure exclusive access to console devices. Optionally
+the *--force* flag may be specified, requesting to disconnect any existing
+sessions, such as in a case of a broken connection.
+
+If the flag *--resume* is specified then the guest is resumed after connecting
+to the console.
+
+## [cpu-stats](#id49)[¶](#cpu-stats "Link to this headline")
+
+**Syntax:**
+
+```
+cpu-stats domain [--total] [start] [count]
+```
+
+Provide cpu statistics information of a domain. The domain should
+be running. Default it shows stats for all CPUs, and a total. Use
+*--total* for only the total stats, *start* for only the per-cpu
+stats of the CPUs from *start*, *count* for only *count* CPUs'
+stats.
+
+## [create](#id50)[¶](#create "Link to this headline")
+
+**Syntax:**
+
+```
+create FILE [--console] [--paused] [--autodestroy]
+   [--pass-fds N,M,...] [--validate] [--reset-nvram]
+```
+
+Create a domain from an XML <file>. Optionally, *--validate* option can be
+passed to validate the format of the input XML file against an internal RNG
+schema (identical to using virt-xml-validate(1) tool). Domains created using
+this command are going to be either transient (temporary ones that will vanish
+once destroyed) or existing persistent guests that will run with one-time use
+configuration, leaving the persistent XML untouched (this can come handy during
+an automated testing of various configurations all based on the original XML).
+See the example below for usage demonstration.
+
+The domain will be paused if the *--paused* option is used
+and supported by the driver; otherwise it will be running. If *--console* is
+requested, attach to the console after creation.
+If *--autodestroy* is requested, then the guest will be automatically
+destroyed when virsh closes its connection to libvirt, or otherwise
+exits.
+
+If *--pass-fds* is specified, the argument is a comma separated list
+of open file descriptors which should be pass on into the guest. The
+file descriptors will be re-numbered in the guest, starting from 3. This
+is only supported with container based virtualization.
+
+If *--reset-nvram* is specified, any existing NVRAM/varstore file will be
+deleted and re-initialized from its pristine template.
+
+**Example:**
+
+1. prepare a template from an existing domain (skip directly to 3a if writing
+   one from scratch)
+
+   ```
+   # virsh dumpxml <domain> > domain.xml
+   ```
+2. edit the template using an editor of your choice and:
+
+   1. DO CHANGE! <name> and <uuid> (<uuid> can also be removed), or
+   2. DON'T CHANGE! either <name> or <uuid>
+
+   ```
+   # $EDITOR domain.xml
+   ```
+3. create a domain from domain.xml, depending on whether following 2a or 2b
+   respectively:
+
+   1. the domain is going to be transient
+   2. an existing persistent guest will run with a modified one-time
+      configuration
+
+   ```
+   # virsh create domain.xml
+   ```
+
+## [define](#id51)[¶](#define "Link to this headline")
+
+**Syntax:**
+
+```
+define FILE [--validate]
+```
+
+Define a domain from an XML <file>. Optionally, the format of the input XML
+file can be validated against an internal RNG schema with *--validate*
+(identical to using virt-xml-validate(1) tool). The domain definition is
+registered but not started. If domain is already running, the changes will take
+effect on the next boot.
+
+## [desc](#id52)[¶](#desc "Link to this headline")
+
+**Syntax:**
+
+```
+desc domain [[--live] [--config] |
+   [--current]] [--title] [--edit] [--new-desc
+   New description or title message]
+```
+
+Show or modify description and title of a domain. These values are user
+fields that allow storing arbitrary textual data to allow easy
+identification of domains. Title should be short, although it's not enforced.
+(See also metadata that works with XML based domain metadata.)
+
+Flags *--live* or *--config* select whether this command works on live
+or persistent definitions of the domain. If both *--live* and *--config*
+are specified, the *--config* option takes precedence on getting the current
+description and both live configuration and config are updated while setting
+the description. *--current* is exclusive and implied if none of these was
+specified.
+
+Flag *--edit* specifies that an editor with the contents of current
+description or title should be opened and the contents saved back afterwards.
+
+Flag *--title* selects operation on the title field instead of description.
+
+If neither of *--edit* and *--new-desc* are specified the note or description
+is displayed instead of being modified.
+
+## [destroy](#id53)[¶](#destroy "Link to this headline")
+
+**Syntax:**
+
+```
+destroy domain [--graceful] [--remove-logs]
+```
+
+Immediately terminate the domain *domain*. This doesn't give the domain
+OS any chance to react, and it's the equivalent of ripping the power
+cord out on a physical machine. In most cases you will want to use
+the shutdown command instead. However, this does not delete any
+storage volumes used by the guest, and if the domain is persistent, it
+can be restarted later.
+
+If *domain* is transient, then the metadata of any snapshots will
+be lost once the guest stops running, but the snapshot contents still
+exist, and a new domain with the same name and UUID can restore the
+snapshot metadata with snapshot-create. Similarly, the metadata of
+any checkpoints will be lost, but can be restored with checkpoint-create.
+
+If *--graceful* is specified, don't resort to extreme measures
+(e.g. SIGKILL) when the guest doesn't stop after a reasonable timeout;
+return an error instead.
+
+If *--remove-logs* is specified, remove per *domain* log files. Not all
+deployment configuration can be supported.
+
+In case of QEMU the flag is only supported if virlogd is used to handle QEMU
+process output. Otherwise the flag is ignored.
+
+## [domblkerror](#id54)[¶](#domblkerror "Link to this headline")
+
+**Syntax:**
+
+```
+domblkerror domain
+```
+
+Show errors on block devices. This command usually comes handy when
+domstate command says that a domain was paused due to I/O error.
+The domblkerror command lists all block devices in error state and
+the error seen on each of them.
+
+## [domblkinfo](#id55)[¶](#domblkinfo "Link to this headline")
+
+**Syntax:**
+
+```
+domblkinfo domain [block-device --all] [--human]
+```
+
+Get block device size info for a domain. A *block-device* corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to *domain* (see
+also domblklist for listing these names). If *--human* is set, the
+output will have a human readable output.
+If *--all* is set, the output will be a table showing all block devices
+size info associated with *domain*.
+The *--all* option takes precedence of the others.
+
+## [domblklist](#id56)[¶](#domblklist "Link to this headline")
+
+**Syntax:**
+
+```
+domblklist domain [--inactive] [--details]
+```
+
+Print a table showing the brief information of all block devices
+associated with *domain*. If *--inactive* is specified, query the
+block devices that will be used on the next boot, rather than those
+currently in use by a running domain. If *--details* is specified,
+disk type and device value will also be printed. Other contexts
+that require a block device name (such as *domblkinfo* or
+*snapshot-create* for disk snapshots) will accept either target
+or unique source names printed by this command.
+
+## [domblkstat](#id57)[¶](#domblkstat "Link to this headline")
+
+**Syntax:**
+
+```
+domblkstat domain [block-device] [--human]
+```
+
+Get device block stats for a running domain. A *block-device* corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to *domain* (see
+also domblklist for listing these names). On a LXC or QEMU domain,
+omitting the *block-device* yields device block stats summarily for the
+entire domain.
+
+Use *--human* for a more human readable output.
+
+Availability of these fields depends on hypervisor. Unsupported fields are
+missing from the output. Other fields may appear if communicating with a newer
+version of libvirtd.
+
+Explanation of fields (fields appear in the following order):
+
+* rd\_req - count of read operations
+* rd\_bytes - count of read bytes
+* wr\_req - count of write operations
+* wr\_bytes - count of written bytes
+* errs - error count
+* flush\_operations - count of flush operations
+* rd\_total\_times - total time read operations took (ns)
+* wr\_total\_times - total time write operations took (ns)
+* flush\_total\_times - total time flush operations took (ns)
+* <-- other fields provided by hypervisor -->
+
+## [domblkthreshold](#id58)[¶](#domblkthreshold "Link to this headline")
+
+**Syntax:**
+
+```
+domblkthreshold domain dev threshold
+```
+
+Set the threshold value for delivering the block-threshold event. *dev*
+specifies the disk device target or backing chain element of given device using
+the 'target[1]' syntax. *threshold* is a scaled value of the offset. If the
+block device should write beyond that offset the event will be delivered.
+
+## [domcontrol](#id59)[¶](#domcontrol "Link to this headline")
+
+**Syntax:**
+
+```
+domcontrol domain
+```
+
+Returns state of an interface to VMM used to control a domain. For
+states other than "ok" or "error" the command also prints number of
+seconds elapsed since the control interface entered its current state.
+
+## [domdirtyrate-calc](#id60)[¶](#domdirtyrate-calc "Link to this headline")
+
+**Syntax:**
+
+```
+domdirtyrate-calc <domain> [--seconds <sec>]
+   --mode=[page-sampling | dirty-bitmap | dirty-ring]
+```
+
+Calculate an active domain's memory dirty rate which may be expected by
+user in order to decide whether it's proper to be migrated out or not.
+The seconds parameter can be used to calculate dirty rate in a
+specific time which allows 60s at most now and would be default to 1s
+if missing. These three *page-sampling, dirty-bitmap, dirty-ring* modes
+are mutually exclusive and alternative when specify calculation mode,
+*page-sampling* is the default mode if missing. The calculated dirty
+rate information is available by calling 'domstats --dirtyrate'.
+
+## [domdisplay](#id61)[¶](#domdisplay "Link to this headline")
+
+**Syntax:**
+
+```
+domdisplay domain [--include-password] [[--type] type] [--all]
+```
+
+Output a URI which can be used to connect to the graphical display of the
+domain via VNC, SPICE or RDP. The particular graphical display type can
+be selected using the type parameter (e.g. "vnc", "spice", "rdp"). If
+*--include-password* is specified, the SPICE channel password will be
+included in the URI. If *--all* is specified, then all show all possible
+graphical displays, for a VM could have more than one graphical displays.
+
+## [domdisplay-reload](#id62)[¶](#domdisplay-reload "Link to this headline")
+
+**Syntax:**
+
+```
+domdisplay-reload <domain> [--type <type>]
+```
+
+Reload the domain's graphical display. This reloads its TLS certificates
+without restarting the domain. type can be any constant from the
+virDomainGraphicsReloadType enum. By default any supported type is reloaded
+(so far only VNC).
+
+## [domfsfreeze](#id63)[¶](#domfsfreeze "Link to this headline")
+
+**Syntax:**
+
+```
+domfsfreeze domain [[--mountpoint] mountpoint...]
+```
+
+Freeze mounted filesystems within a running domain to prepare for consistent
+snapshots.
+
+The *--mountpoint* option takes a parameter mountpoint, which is a
+mount point path of the filesystem to be frozen. This option can occur
+multiple times. If this is not specified, every mounted filesystem is frozen.
+
+Note: snapshot-create command has a *--quiesce* option to freeze
+and thaw the filesystems automatically to keep snapshots consistent.
+domfsfreeze command is only needed when a user wants to utilize the
+native snapshot features of storage devices not supported by libvirt.
+
+## [domfsinfo](#id64)[¶](#domfsinfo "Link to this headline")
+
+**Syntax:**
+
+```
+domfsinfo domain
+```
+
+Show a list of mounted filesystems within the running domain. The list contains
+mountpoints, names of a mounted device in the guest, filesystem types, and
+unique target names used in the domain XML (<target dev='name'/>).
+
+Note that this command requires a guest agent configured and running in the
+domain's guest OS.
+
+## [domfsthaw](#id65)[¶](#domfsthaw "Link to this headline")
+
+**Syntax:**
+
+```
+domfsthaw domain [[--mountpoint] mountpoint...]
+```
+
+Thaw mounted filesystems within a running domain, which have been frozen by
+domfsfreeze command.
+
+The *--mountpoint* option takes a parameter mountpoint, which is a
+mount point path of the filesystem to be thawed. This option can occur
+multiple times. If this is not specified, every mounted filesystem is thawed.
+
+## [domfstrim](#id66)[¶](#domfstrim "Link to this headline")
+
+**Syntax:**
+
+```
+domfstrim domain [--minimum bytes] [--mountpoint mountPoint]
+```
+
+Issue a fstrim command on all mounted filesystems within a running
+domain. It discards blocks which are not in use by the filesystem.
+If *--minimum* bytes is specified, it tells guest kernel length
+of contiguous free range. Smaller than this may be ignored (this is
+a hint and the guest may not respect it). By increasing this value,
+the fstrim operation will complete more quickly for filesystems
+with badly fragmented free space, although not all blocks will
+be discarded. The default value is zero, meaning "discard
+every free block". Moreover, if a user wants to trim only one mount
+point, it can be specified via optional *--mountpoint* parameter.
+
+## [domhostname](#id67)[¶](#domhostname "Link to this headline")
+
+**Syntax:**
+
+```
+domhostname domain [--source lease|agent]
+```
+
+Returns the hostname of a domain, if the hypervisor makes it available.
+
+The *--source* argument specifies what data source to use for the
+hostnames, currently 'lease' to read DHCP leases or 'agent' to query
+the guest OS via an agent. If unspecified, driver returns the default
+method available (some drivers support only one type of source).
+
+## [domid](#id68)[¶](#domid "Link to this headline")
+
+**Syntax:**
+
+```
+domid domain-name-or-uuid
+```
+
+Convert a domain name (or UUID) to a domain id
+
+## [domif-getlink](#id69)[¶](#domif-getlink "Link to this headline")
+
+**Syntax:**
+
+```
+domif-getlink domain interface-device [--config]
+```
+
+Query link state of the domain's virtual interface. If *--config*
+is specified, query the persistent configuration, for compatibility
+purposes, *--persistent* is alias of *--config*.
+
+*interface-device* can be the interface's target name or the MAC address.
+
+## [domif-setlink](#id70)[¶](#domif-setlink "Link to this headline")
+
+**Syntax:**
+
+```
+domif-setlink domain interface-device state [--config] [--print-xml]
+```
+
+Modify link state of the domain's virtual interface. Possible values for
+state are "up" and "down". If *--config* is specified, only the persistent
+configuration of the domain is modified, for compatibility purposes,
+*--persistent* is alias of *--config*.
+*interface-device* can be the interface's target name or the MAC address.
+
+If *--print-xml* is specified, then the XML used to update the interface is
+printed instead.
+
+## [domifaddr](#id71)[¶](#domifaddr "Link to this headline")
+
+**Syntax:**
+
+```
+domifaddr domain [interface] [--full]
+   [--source lease|agent|arp]
+```
+
+Get a list of interfaces of a running domain along with their IP and MAC
+addresses, or limited output just for one interface if *interface* is
+specified. Note that *interface* can be driver dependent, it can be the name
+within guest OS or the name you would see in domain XML. Moreover, the whole
+command may require a guest agent to be configured for the queried domain under
+some hypervisors, notably QEMU.
+
+If *--full* is specified, the interface name and MAC address is always
+displayed when the interface has multiple IP addresses or aliases; otherwise,
+only the interface name and MAC address is displayed for the first name and
+MAC address with "-" for the others using the same name and MAC address.
+
+The *--source* argument specifies what data source to use for the
+addresses, currently 'lease' to read DHCP leases, 'agent' to query
+the guest OS via an agent, or 'arp' to get IP from host's arp tables.
+If unspecified, 'lease' is the default.
+
+## [backup-begin](#id72)[¶](#backup-begin "Link to this headline")
+
+**Syntax:**
+
+```
+backup-begin domain [backupxml] [checkpointxml] [--reuse-external]
+    [--preserve-domain-on-shutdown]
+```
+
+Begin a new backup job. If *backupxml* is omitted, this defaults to a full
+backup using a push model to filenames generated by libvirt; supplying XML
+allows fine-tuning such as requesting an incremental backup relative to an
+earlier checkpoint, controlling which disks participate or which
+filenames are involved, or requesting the use of a pull model backup.
+The *backup-dumpxml* command shows any resulting values assigned by
+libvirt. For more information on backup XML, see:
+<https://libvirt.org/formatbackup.html>
+
+If *--reuse-external* is used it instructs libvirt to reuse temporary
+and output files provided by the user in *backupxml*.
+
+When the *--preserve-domain-on-shutdown* flag is used libvirt will not
+terminate the VM if the guest OS shuts down while the backup is running. The VM
+will be instead kept in VIR\_DOMAIN\_PAUSED state until the backup job finishes.
+The vm can be also resumed in order to boot again.
+
+If *checkpointxml* is specified, a second file with a top-level
+element of *domaincheckpoint* is used to create a simultaneous
+checkpoint, for doing a later incremental backup relative to the time
+the backup was created. See *checkpoint-create* for more details on
+checkpoints.
+
+This command returns as soon as possible, and the backup job runs in
+the background; the progress of a push model backup can be checked
+with *domjobinfo* or by waiting for an event with *event* (the
+progress of a pull model backup is under the control of whatever third
+party connects to the NBD export). The job is ended with *domjobabort*.
+
+## [backup-dumpxml](#id73)[¶](#backup-dumpxml "Link to this headline")
+
+**Syntax:**
+
+```
+backup-dumpxml [--xpath EXPRESSION] [--wrap] domain
+```
+
+Output XML describing the current backup job.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
+
+## [domiflist](#id74)[¶](#domiflist "Link to this headline")
+
+**Syntax:**
+
+```
+domiflist domain [--inactive]
+```
+
+Print a table showing the brief information of all virtual interfaces
+associated with *domain*. If *--inactive* is specified, query the
+virtual interfaces that will be used on the next boot, rather than those
+currently in use by a running domain. Other contexts that require a MAC
+address of virtual interface (such as *detach-interface* or
+*domif-setlink*) will accept the MAC address printed by this command.
+
+## [domifstat](#id75)[¶](#domifstat "Link to this headline")
+
+**Syntax:**
+
+```
+domifstat domain interface-device
+```
+
+Get network interface stats for a running domain. The network
+interface stats are only available for interfaces that have a
+physical source interface. This does not include, for example, a
+'user' interface type since it is a virtual LAN with NAT to the
+outside world. *interface-device* can be the interface target by
+name or MAC address. Please note, for an unmanaged *ethernet*
+type returned stats might have RX/TX swapped.
+
+## [domiftune](#id76)[¶](#domiftune "Link to this headline")
+
+**Syntax:**
+
+```
+domiftune domain interface-device [[--config] [--live] | [--current]]
+   [*--inbound average,peak,burst,floor*]
+   [*--outbound average,peak,burst*]
+```
+
+Set or query the domain's network interface's bandwidth parameters.
+*interface-device* can be the interface's target name (<target dev='name'/>),
+or the MAC address.
+
+If no *--inbound* or *--outbound* is specified, this command will
+query and show the bandwidth settings. Otherwise, it will set the
+inbound or outbound bandwidth. *average,peak,burst,floor* is the same as
+in command *attach-interface*. Values for *average*, *peak* and *floor*
+are expressed in kiB per second, while *burst* is expressed in kiB
+in a single burst at *peak* speed as described in the Network XML
+documentation at
+<https://libvirt.org/formatnetwork.html#quality-of-service>.
+
+To clear inbound or outbound settings, use *--inbound* or *--outbound*
+respectfully with average value of zero.
+
+If *--live* is specified, affect a running guest.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
+Both *--live* and *--config* flags may be given, but *--current* is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
+## [domifannounce](#id77)[¶](#domifannounce "Link to this headline")
+
+**Syntax**
+
+```
+domifannounce domain [interface-device] [parameters]
+```
+
+Request that a domain inject "gratuitous" ARP responses into the
+outbound data stream of a specific network interface of the domain (or
+if no interface-device is given, inject ARP responses on the outbound
+data stream of all interfaces of the domain). This can be helpful to
+re-sync network switches in the broadcast domain of said interfaces
+when the network topology has changed. This is usually done
+automatically when a domain is started, or after it has migrated (for
+example, that is the behavior of QEMU), but a more complicated setup
+where the topology changes around an already active domain (or
+possibly all the plumbing isn't yet connected and passing traffic at
+the time the automatic announcement takes place) might benefit from a
+manually triggered announce.
+
+The optional parameters are:
+
+* *--initial n*
+
+  initial delay before first announcement (milliseconds) default: 50
+* *--max n*
+
+  maximum delay between announcements (milliseconds) default: 550
+* *--rounds n*
+
+  total number of announcements default: 5
+* *--step n*
+
+  increment added to delay (milliseconds) after each announcement default 50
+
+## [dominfo](#id78)[¶](#dominfo "Link to this headline")
+
+**Syntax:**
+
+```
+dominfo domain
+```
+
+Returns basic information about the domain.
+
+## [domjobabort](#id79)[¶](#domjobabort "Link to this headline")
+
+**Syntax:**
+
+```
+domjobabort domain [--postcopy]
+```
+
+Abort the currently running domain job.
+
+When the job to be aborted is a migration which entered post-copy mode, it
+cannot be aborted as none of the hosts involved in migration has a complete
+state of the domain. Optional *--postcopy* can be used to interrupt such
+migration although doing so may effectively suspend the domain until the
+migration is resumed (see also *--postcopy-resume* option of migrate).
+
+## [domjobinfo](#id80)[¶](#domjobinfo "Link to this headline")
+
+**Syntax:**
+
+```
+domjobinfo domain [--completed [--keep-completed]] [--anystats] [--rawstats]
+```
+
+Returns information about jobs running on a domain. *--completed* tells
+virsh to return information about a recently finished job. Statistics of
+a completed job are automatically destroyed once read (unless
+*--keep-completed* is used) or when libvirtd is restarted.
+
+Normally only statistics for running and successful completed jobs are printed.
+*--anystats* can be used to also display statistics for failed jobs.
+
+In case *--rawstats* is used, all fields are printed as received from the
+server without any attempts to interpret the data. The "Job type:" field is
+special, since it's reported by the API and not part of stats.
+
+Note that time information returned for completed
+migrations may be completely irrelevant unless both source and
+destination hosts have synchronized time (i.e., NTP daemon is running
+on both of them).
+
+## [domlaunchsecinfo](#id81)[¶](#domlaunchsecinfo "Link to this headline")
+
+**Syntax:**
+
+```
+domlaunchsecinfo domain
+```
+
+Returns information about the launch security parameters associated
+with a running domain.
+
+The set of parameters reported will vary depending on which type of
+launch security protection is active. If none is active, no parameters
+will be reported.
+
+## [domsetlaunchsecstate](#id82)[¶](#domsetlaunchsecstate "Link to this headline")
+
+**Syntax:**
+
+```
+domsetlaunchsecstate domain --secrethdr hdr-filename
+    --secret secret-filename [--set-address address]
+```
+
+Set a launch security secret in the guest's memory. The guest must have a
+launchSecurity type enabled in its configuration and be in a paused state.
+On success, the guest can be transitioned to a running state. On failure,
+the guest should be destroyed.
+
+*--secrethdr* specifies a filename containing the base64-encoded secret header.
+The header includes artifacts needed by the hypervisor firmware to recover the
+plain text of the launch secret. *--secret* specifies the filename containing
+the base64-encoded encrypted launch secret.
+
+The *--set-address* option can be used to specify a physical address within
+the guest's memory to set the secret. If not specified, the address will be
+determined by the hypervisor.
+
+## [dommemstat](#id83)[¶](#dommemstat "Link to this headline")
+
+**Syntax:**
+
+```
+dommemstat domain [--period seconds] [[--config] [--live] | [--current]]
+```
+
+Get memory stats for a running domain.
+
+Availability of these fields depends on hypervisor. Unsupported fields are
+missing from the output. Other fields may appear if communicating with a newer
+version of libvirtd.
+
+Explanation of fields:
+
+* swap\_in - The amount of data read from swap space (in KiB)
+* swap\_out - The amount of memory written out to swap space (in KiB)
+* major\_fault - The number of page faults where disk IO was required
+* minor\_fault - The number of other page faults
+* unused - The amount of memory left unused by the system (in KiB)
+* available - The amount of usable memory as seen by the domain (in KiB)
+* actual - Current balloon value (in KiB)
+* rss - Resident Set Size of the running domain's process (in KiB)
+* usable - The amount of memory which can be reclaimed by balloon
+  without causing host swapping (in KiB)
+* last-update - Timestamp of the last update of statistics (in seconds)
+* disk\_caches - The amount of memory that can be reclaimed without
+  additional I/O, typically disk caches (in KiB)
+* hugetlb\_pgalloc - The number of successful huge page allocations initiated
+  from within the domain
+* hugetlb\_pgfail - The number of failed huge page allocations initiated from
+  within the domain
+
+For QEMU/KVM with a memory balloon, setting the optional *--period* to a
+value larger than 0 in seconds will allow the balloon driver to return
+additional statistics which will be displayed by subsequent dommemstat
+commands. Setting the *--period* to 0 will stop the balloon driver collection,
+but does not clear the statistics in the balloon driver. Requires at least
+QEMU/KVM 1.5 to be running on the host.
+
+The *--live*, *--config*, and *--current* flags are only valid when using
+the *--period* option in order to set the collection period for the balloon
+driver. If *--live* is specified, only the running guest collection period
+is affected. If *--config* is specified, affect the next start of a persistent
+guest. If *--current* is specified, it is equivalent to either *--live*
+or *--config*, depending on the current state of the guest.
+
+Both *--live* and *--config* flags may be given, but *--current* is
+exclusive. If no flag is specified, behavior is different depending
+on the guest state.
+
+## [domname](#id84)[¶](#domname "Link to this headline")
+
+**Syntax:**
+
+```
+domname domain-id-or-uuid
+```
+
+Convert a domain Id (or UUID) to domain name
+
+## [dompmsuspend](#id85)[¶](#dompmsuspend "Link to this headline")
+
+**Syntax:**
+
+```
+dompmsuspend domain target [--duration]
+```
+
+Suspend a running domain into one of these states (possible *target*
+values):
+
+* mem - equivalent of S3 ACPI state
+* disk - equivalent of S4 ACPI state
+* hybrid - RAM is saved to disk but not powered off
+
+The *--duration* argument specifies number of seconds before the domain is
+woken up after it was suspended (see also dompmwakeup). Default is 0 for
+unlimited suspend time. (This feature isn't currently supported by any
+hypervisor driver and 0 should be used.).
+
+Note that this command requires a guest agent configured and running in the
+domain's guest OS.
+
+Beware that at least for QEMU, the domain's process will be terminated when
+target disk is used and a new process will be launched when libvirt is asked
+to wake up the domain. As a result of this, any runtime changes, such as
+device hotplug or memory settings, are lost unless such changes were made
+with *--config* flag.
+
+## [dompmwakeup](#id86)[¶](#dompmwakeup "Link to this headline")
+
+**Syntax:**
+
+```
+dompmwakeup domain
+```
+
+Wakeup a domain from pmsuspended state (either suspended by dompmsuspend or
+from the guest itself). Injects a wakeup into the guest that is in pmsuspended
+state, rather than waiting for the previously requested duration (if any) to
+elapse. This operation does not necessarily fail if the domain is running.
+
+## [domrename](#id87)[¶](#domrename "Link to this headline")
+
+**Syntax:**
+
+```
+domrename domain new-name
+```
+
+Rename a domain. This command changes current domain name to the new name
+specified in the second argument.
+
+Note: Domain must be inactive.
+
+## [domstate](#id88)[¶](#domstate "Link to this headline")
+
+**Syntax:**
+
+```
+domstate domain [--reason]
+```
+
+Returns state about a domain. *--reason* tells virsh to also print
+reason for the state.
+
+## [domstats](#id89)[¶](#domstats "Link to this headline")
+
+**Syntax:**
+
+```
+domstats [--raw] [--enforce] [--backing] [--nowait] [--state]
+   [--cpu-total] [--balloon] [--vcpu] [--interface]
+   [--block] [--perf] [--iothread] [--memory] [--dirtyrate] [--vm]
+   [[--list-active] [--list-inactive]
+    [--list-persistent] [--list-transient] [--list-running]y
+    [--list-paused] [--list-shutoff] [--list-other]] | [domain ...]
+```
+
+Get statistics for multiple or all domains. Without any argument this
+command prints all available statistics for all domains.
+
+The list of domains to gather stats for can be either limited by listing
+the domains as a space separated list, or by specifying one of the
+filtering flags *--list-NNN*. (The approaches can't be combined.)
+
+By default some of the returned fields may be converted to more
+human friendly values by a set of pretty-printers. To suppress this
+behavior use the *--raw* flag.
+
+The individual statistics groups are selectable via specific flags. By
+default all supported statistics groups are returned. Supported
+statistics groups flags are: *--state*, *--cpu-total*, *--balloon*,
+*--vcpu*, *--interface*, *--block*, *--perf*, *--iothread*, *--memory*,
+*--dirtyrate*, *--vm*.
+
+Note that - depending on the hypervisor type and version or the domain state
+- not all of the following statistics may be returned.
+
+When selecting the *--state* group the following fields are returned:
+
+* state.state - state of the VM, returned as number from
+  virDomainState enum
+* state.reason - reason for entering given state, returned
+  as int from virDomain\*Reason enum corresponding
+  to given state
+
+*--cpu-total* returns:
+
+* cpu.time - total cpu time spent for this domain in nanoseconds
+* cpu.user - user cpu time spent in nanoseconds
+* cpu.system - system cpu time spent in nanoseconds
+* cpu.haltpoll.success.time - cpu halt polling success time spent in
+  nanoseconds
+* cpu.haltpoll.fail.time - cpu halt polling fail time spent in
+  nanoseconds
+* cpu.cache.monitor.count - the number of cache monitors for this
+  domain
+* cpu.cache.monitor.<num>.name - the name of cache monitor <num>
+* cpu.cache.monitor.<num>.vcpus - vcpu list of cache monitor <num>
+* cpu.cache.monitor.<num>.bank.count - the number of cache banks
+  in cache monitor <num>
+* cpu.cache.monitor.<num>.bank.<index>.id - host allocated cache id
+  for bank <index> in cache monitor <num>
+* cpu.cache.monitor.<num>.bank.<index>.bytes - the number of bytes
+  of last level cache that the domain is using on cache bank <index>
+
+*--balloon* returns:
+
+* balloon.current - the memory in KiB currently used
+* balloon.maximum - the maximum memory in KiB allowed
+* balloon.swap\_in - the amount of data read from swap space (in KiB)
+* balloon.swap\_out - the amount of memory written out to swap
+  space (in KiB)
+* balloon.major\_fault - the number of page faults when disk IO
+  was required
+* balloon.minor\_fault - the number of other page faults
+* balloon.unused - the amount of memory left unused by the
+  system (in KiB)
+* balloon.available - the amount of usable memory as seen by
+  the domain (in KiB)
+* balloon.rss - Resident Set Size of running domain's process
+  (in KiB)
+* balloon.usable - the amount of memory which can be reclaimed by
+  balloon without causing host swapping (in KiB)
+* balloon.last-update - timestamp of the last update of statistics
+  (in seconds)
+* balloon.disk\_caches - the amount of memory that can be reclaimed
+  without additional I/O, typically disk (in KiB)
+* balloon.hugetlb\_pgalloc - the number of successful huge page allocations
+  from inside the domain via virtio balloon
+* balloon.hugetlb\_pgfail - the number of failed huge page allocations
+  from inside the domain via virtio balloon
+
+*--vcpu* returns:
+
+* vcpu.current - current number of online virtual CPUs
+* vcpu.maximum - maximum number of online virtual CPUs
+* vcpu.<num>.state - state of the virtual CPU <num>, as
+  number from virVcpuState enum
+* vcpu.<num>.time - virtual cpu time spent by virtual
+  CPU <num> (in nanoseconds)
+* vcpu.<num>.wait - time the vCPU <num> thread was waiting in the runqueue
+  as the scheduler has something else running ahead of it (in nanoseconds),
+  requires CONFIG\_SCHED\_INFO on Linux
+* vcpu.<num>.halted - virtual CPU <num> is halted: yes or
+  no (may indicate the processor is idle or even disabled,
+  depending on the architecture)
+* vcpu.<num>.delay - time the vCPU <num> thread was waiting in the runqueue
+  as the scheduler has something else running ahead of it (in nanoseconds).
+  Exposed to the VM as a steal time.
+
+This group of statistics also reports additional hypervisor-originating per-vCPU
+stats. The hypervisor-specific statistics in this group have the following
+naming scheme:
+
+> vcpu.<num>.$NAME.$TYPE
+>
+> $NAME
+> :   name of the statistics field provided by the hypervisor
+>
+> $TYPE
+> :   Type of the value. The following types are returned:
+>
+>     cur
+>     :   current instant value
+>
+>     sum
+>     :   aggregate value
+>
+>     max
+>     :   peak value
+>
+> The returned value may be either an unsigned long long or a boolean. Meaning
+> is hypervisor specific. Please see the disclaimer for the *--vm* group which
+> also consists of hypervisor-specific stats.
+
+*--interface* returns:
+
+* net.count - number of network interfaces on this domain
+* net.<num>.name - name of the interface <num>
+* net.<num>.rx.bytes - number of bytes received
+* net.<num>.rx.pkts - number of packets received
+* net.<num>.rx.errs - number of receive errors
+* net.<num>.rx.drop - number of receive packets dropped
+* net.<num>.tx.bytes - number of bytes transmitted
+* net.<num>.tx.pkts - number of packets transmitted
+* net.<num>.tx.errs - number of transmission errors
+* net.<num>.tx.drop - number of transmit packets dropped
+
+*--perf* returns the statistics of all enabled perf events:
+
+* perf.cmt - the cache usage in Byte currently used
+* perf.mbmt - total system bandwidth from one level of cache
+* perf.mbml - bandwidth of memory traffic for a memory controller
+* perf.cpu\_cycles - the count of cpu cycles (total/elapsed)
+* perf.instructions - the count of instructions
+* perf.cache\_references - the count of cache hits
+* perf.cache\_misses - the count of caches misses
+* perf.branch\_instructions - the count of branch instructions
+* perf.branch\_misses - the count of branch misses
+* perf.bus\_cycles - the count of bus cycles
+* perf.stalled\_cycles\_frontend - the count of stalled frontend
+  cpu cycles
+* perf.stalled\_cycles\_backend - the count of stalled backend
+  cpu cycles
+* perf.ref\_cpu\_cycles - the count of ref cpu cycles
+* perf.cpu\_clock - the count of cpu clock time
+* perf.task\_clock - the count of task clock time
+* perf.page\_faults - the count of page faults
+* perf.context\_switches - the count of context switches
+* perf.cpu\_migrations - the count of cpu migrations
+* perf.page\_faults\_min - the count of minor page faults
+* perf.page\_faults\_maj - the count of major page faults
+* perf.alignment\_faults - the count of alignment faults
+* perf.emulation\_faults - the count of emulation faults
+
+See the perf command for more details about each event.
+
+*--block* returns information about disks associated with each
+domain. Using the *--backing* flag extends this information to
+cover all resources in the backing chain, rather than the default
+of limiting information to the active layer for each guest disk.
+Inform
+
+<error>Content truncated. Call the fetch tool with a start_index of 100000 to get more content.</error>

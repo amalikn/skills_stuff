@@ -14,6 +14,11 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261029 Learned 2026-10-29 in `references/authority-and-modeling.md`: ownership and applicability are separate axes; per-type capabilities, verified on hardware.
+- 20261029 Learned 2026-10-29 in `references/staged-onboarding.md`: a Staged-to-Active gate as a CustomValidator that also covers creation (code excerpt).
+- 20261029 Learned 2026-10-29 in `references/data-model.md` (section 11): an internet uplink as a native Circuit; the Provider from ASN or CPE identity.
+- 20261029 Learned 2026-10-29 in `references/data-model.md` (section 12): running vs intended software; no SoftwareImageFile without a primary source.
+- 20261029 Learned 2026-10-29 in `references/discovery-and-topology.md`: observed-link promotion thresholds to Cable and Wireless Link (worked rule).
 - 20261029 Learned 2026-10-29 in `references/api-and-writers.md`: `cabled` and `location_id` answer 400 on 3.2.3 (`has_cable`,
   `location`); a site's Cables in one paged read paired by `connected_endpoint.id` (unified-network-controller).
 - 20261029 Learned 2026-10-29 in `references/apps-jobs-validation.md`: an app's `CELERY_BEAT_SCHEDULE` entry is refused by

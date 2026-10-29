@@ -6,10 +6,18 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_1927
+Last rotated: 20261029_2012
 ---
 
 # Changelog
+
+## 20261029_2012 — Harvest write-back: what the switch needs from the SMC; Netinstall recovery limits (v0.1.32 -> v0.1.33)
+
+`references/05_known-issues.md` item 18: the provisioning script gives the switch a static address with the SMC as gateway and NTP source and public
+DNS, which contradicts the apn umbrella rule that it takes DHCP and DNS from the SMC (cross-referenced in skill-smc 13_known-issues).
+`references/08_routeros-platform-features.md` Netinstall: retention keeps neither all user files nor containers; remote recovery needs a local executor
+on the same layer 2. Skipped as covered: containers and device-mode, candidate models, x86 licence, remote access over CGNAT, release versions (all
+already in 08 from the 2026-10-22 write-back). manifest 0.1.32 -> 0.1.33.
 
 ## 20261029_1927 — skill-smc script paths in the diagnosis tree (v0.1.31 -> v0.1.32)
 
@@ -185,14 +193,3 @@ VERIFIED-OBSERVED 2026-10-08 from unified-network-controller work over Teleport 
 - `scripts/mikrotik-snmp-community.py` (new): enable/remove/show a community, value redacted. Not yet run on a device: the session's permission check
   refused remote writes.
 - `references/05_known-issues.md` item 14: default `public` community on both units, no `snmp-set` in RouterOS 7.8, SMC has Python but no net-snmp.
-
-## 20261007_1655 — Equipment, SNMP OID registry, MIBs and vendor sources (v0.1.10 -> v0.1.11)
-
-- `references/vendor-sources-20261007_1640/` (new, operator: research kept in the skill, MIBs too): MIKROTIK-MIB for RouterOS 7.8 and 7.24.5, help.mikrotik.com
-  pages, product pages and PDFs, changelogs 7.8 to 7.24.5, three forum threads (secondary), indexed in its `readme.md`.
-- `references/snmp-oid-registry.yaml` (new): both models with equipment facts, verified `routeros_cli` reads, and candidate OIDs resolved from the 7.8 MIB;
-  `oids` empty because SNMP is disabled on every unit checked.
-- `references/07_equipment-and-snmp.md` (new): specs, SNMP, firmware (no IPQ-40xx kernel fix up to 7.24.5), the cpu-frequency warning, MAC commands.
-- `references/05_known-issues.md`: items 8 and 11 updated; new 14 (SNMP disabled) and 15 (cpu-frequency warning).
-- `scripts/mib_oids.py`, `scripts/confluence_fetch.py`, `scripts/product_text.py` promoted from the research session, with `just mib-oids`, `fetch-doc`,
-  `product-text`.

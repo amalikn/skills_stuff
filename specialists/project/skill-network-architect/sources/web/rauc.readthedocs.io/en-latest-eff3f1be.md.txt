@@ -1,0 +1,157 @@
+Contents of https://rauc.readthedocs.io/en/latest/:
+Contents:
+
+* [Updating your Embedded Device](updating.html)
+* [RAUC Basics](basic.html)
+* [Using RAUC](using.html)
+* [Examples](examples.html)
+* [Scenarios](scenarios.html)
+* [Integration](integration.html)
+* [Advanced Topics](advanced.html)
+* [Design Checklist](checklist.html)
+* [Frequently Asked Questions](faq.html)
+* [Reference](reference.html)
+* [Man Page](man.html)
+* [Terminology](terminology.html)
+* [Contributing](contributing.html)
+* [Changes in RAUC](changes.html)
+
+* [Search Page](search.html)
+* [Index](genindex.html)
+
+## The Need for Updating[](#the-need-for-updating "Link to this heading")
+
+Updating an embedded system is always a critical step during the life cycle of
+an embedded hardware product.
+Updates are important to either fix system bugs, solve security problems or
+simply for adding new features to a platform.
+
+As embedded hardware often is placed in locations that make it difficult or
+costly to gain access to the board itself, an update must be performed unattended;
+for example either by connecting a special USB stick or via some network roll-out
+strategy.
+
+Updating an embedded system is risky; an update might be incompatible, a
+procedure crashes, the underlying storage fails with a write error, or someone
+accidentally switches the power off, etc.
+All this may occur but should not lead to having an unbootable hardware at the
+end.
+
+Another point besides safe upgrades are security considerations.
+You would like to prevent that someone unauthorized is able to load modified
+firmware onto the system.
+
+## What is RAUC?[](#what-is-rauc "Link to this heading")
+
+RAUC is a lightweight update client that runs on your embedded device and
+reliably controls the procedure of updating your device with a new firmware
+revision.
+RAUC is also the tool on your host system that lets you create, inspect and
+modify update files (”*bundles*”) for your device.
+
+The decision to design was made after having worked on custom update solutions
+for different projects again and again while always facing different issues and
+unexpected quirks and pitfalls that were not taken into consideration before.
+
+Thus, the aim of RAUC is to provide a well-tested, solid and generic base for
+the different custom requirements and restrictions an update concept for a
+specific platform must deal with.
+
+When designing the RAUC update tool, all of these requirements were taken into
+consideration.
+In the following, we provide a short overview of basic concepts, principles and
+solutions RAUC provides for updating an embedded system.
+
+## And What Not?[](#and-what-not "Link to this heading")
+
+RAUC is NOT a full-blown updating application or GUI.
+It provides a CLI for testing but is mainly designed to allow seamless
+integration into your individual Applications and Infrastructure by providing a
+D-Bus interface.
+
+RAUC can NOT replace your bootloader who is responsible for selecting the
+appropriate target to boot, but it provides a well-defined interface to
+incorporate with all common bootloaders.
+
+RAUC does NOT intend to be a deployment server.
+On your host side, it only creates the update bundles.
+You may want to have a look at
+[rauc-hawkbit-updater](https://github.com/rauc/rauc-hawkbit-updater) for
+interfacing with the hawkBit deployment server.
+
+RAUC bundles are NOT a general purpose transport container.
+This means that on your target side you should not use `rauc extract`.
+Instead use `rauc install` or the D-Bus API to trigger an installation.
+Any necessary customization should be done using hooks and handlers.
+
+And finally, factory bring up of your device, i.e. initial partitioning etc. is
+also out of scope for an update tool like RAUC.
+While you may use it for initially filling your slot contents during factory
+bring up, the partitioning or volume creation must be made manually or by a
+separate factory bring up tool (such as [systemd-repart](https://www.freedesktop.org/software/systemd/man/systemd-repart.html)).
+
+## Key Features of RAUC[](#key-features-of-rauc "Link to this heading")
+
+* **Fail-Safe & Atomic**:
+
+  + An update may be interrupted at any point without breaking the running
+    system.
+  + Update compatibility check
+  + Mark boots as successful / failed
+* **Cryptographic signing and verification** of updates using OpenSSL (signatures
+  based on x.509 certificates)
+
+  [![_images/rauc_safety_security.png](_images/rauc_safety_security.png)](_images/rauc_safety_security.png)
+  + Keys and certificates on **PKCS#11 tokens** (HSMs) are supported
+* Built-In **HTTP(S) streaming** support for updates
+
+  + No intermediate storage on target required.
+* Optional **encryption** of update bundles
+
+  + Encryption for a single or multiple recipients (public keys) supported
+* **Flexible and customizable** redundancy/storage setup
+
+  [![_images/rauc_update_cases.svg](_images/rauc_update_cases.svg)](_images/rauc_update_cases.svg)
+  + **Symmetric** setup (Root-FS A & B)
+  + **Asymmetric** setup (recovery & normal)
+  + Application partition, data partitions, …
+  + Allows **grouping** of multiple slots (rootfs, appfs) as update targets
+* **Bootloader interface supports common bootloaders**
+
+  [![_images/bootloader_interface.svg](_images/bootloader_interface.svg)](_images/bootloader_interface.svg)
+  + [grub](https://www.gnu.org/software/grub/)
+  + [barebox](http://barebox.org/)
+
+    - Well integrated with [bootchooser](http://barebox.de/doc/latest/user/bootchooser.html?highlight=bootchooser) framework
+  + [u-boot](http://www.denx.de/wiki/U-Boot)
+  + [EFI](https://de.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface)
+* Storage support:
+
+  + ext4 filesystem
+  + eMMC boot partitions (atomic update)
+  + vfat filesystem
+  + UBI volumes
+  + UBIFS
+  + JFFS2
+  + raw NAND flash (using nandwrite)
+  + raw NOR flash (using flashcp)
+  + squashfs
+  + MBR partition table
+  + GPT partition table
+* Independent from update sources
+
+  + **USB Stick**
+  + Software provisioning server (e.g. **Hawkbit**)
+* Controllable via **D-Bus** interface
+* Supports data migration
+* Several layers of update customization
+
+  + Update-specific extensions (hooks)
+  + System-specific extensions (handlers)
+  + Fully custom update script
+* Build-system support
+
+  |  |  |  |
+  | --- | --- | --- |
+  | [yocto_logo](_images/yocto.png) | [ptxdist_logo](_images/ptxdist_logo.png) | [buildroot_logo](_images/buildroot_logo.png) |
+  | Yocto support in [meta-rauc](https://github.com/rauc/meta-rauc) | PTXdist support since 2017.04.0. | [Buildroot](https://www.buildroot.org/) support since 2017.08 |

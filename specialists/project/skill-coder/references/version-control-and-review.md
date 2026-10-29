@@ -29,8 +29,7 @@ Summary: >-
   attribution the project's or user's rules require.
 - Avoid apostrophes in a heredoc commit body passed through a shell tool; write around contractions. Why: they break shell parsing (operator lesson).
 
-> **Learned 2026-10-20** · git, a repo shared by concurrent sessions · VERIFIED_PRIMARY · Source: apn commits b64a075 and 951a7dc
-> (smc-resiliency CHANGELOG 20261020 slurp entry) · Falsifier: two sessions where one's `git add` never ends up in the other's commit
+> **Learned 2026-10-20** · git, a repo shared by concurrent sessions · VERIFIED_PRIMARY · Source: apn commits b64a075 and 951a7dc (smc-resiliency CHANGELOG 20261020 slurp entry) · Falsifier: two sessions where one's `git add` never ends up in the other's commit
 > The index is shared by every session working in one clone. `git add <paths> && git commit` lets another session's commit, made in the same
 > second, take what this session staged: here a unified-network-controller commit carried smc-resiliency's files under its own message, and this
 > session's commit then found nothing to commit. Commit by pathspec, which commits exactly the named paths whatever else is staged, and check
@@ -45,8 +44,7 @@ Summary: >-
 >   && git show --stat --format="%h %s" HEAD
 > ```
 
-> **Learned 2026-10-21** · git, one repo shared by several projects and sessions · VERIFIED_PRIMARY · Source: apn `scripts/project_commit.py` and
-> `scripts/project_sync_selftest.sh` (uncommitted at writing; apn CHANGELOGs 20261021_1338) · Falsifier: a self-test run where the commit carries a
+> **Learned 2026-10-21** · git, one repo shared by several projects and sessions · VERIFIED_PRIMARY · Source: apn `scripts/project_commit.py` and `scripts/project_sync_selftest.sh` (uncommitted at writing; apn CHANGELOGs 20261021_1338) · Falsifier: a self-test run where the commit carries a
 > second project's changed file, or a failed check still moves HEAD
 > Make the pathspec rule a tool when several projects share one clone: one recipe per project that runs the project's check, takes an exclusive
 > lock shared by all of them (flock on a file outside the repo), stages only its folder (`git add -A -- <folder>`, so new and deleted files are
@@ -62,8 +60,7 @@ Summary: >-
 >     ok, note = push(shlex.split(args.push_cmd), project)   # retry after rebase only when `git status --porcelain` is empty
 > ```
 
-> **Learned 2026-10-20** · git rebase onto a diverged remote · VERIFIED_PRIMARY · Source: vagrant_stuff commits 08c81b3 and 62f03f1 (smc-resiliency
-> CHANGELOG 20261020 push entry) · Falsifier: a `rebase -X theirs` whose result equals the local branch file for file when the remote changed other hunks
+> **Learned 2026-10-20** · git rebase onto a diverged remote · VERIFIED_PRIMARY · Source: vagrant_stuff commits 08c81b3 and 62f03f1 (smc-resiliency CHANGELOG 20261020 push entry) · Falsifier: a `rebase -X theirs` whose result equals the local branch file for file when the remote changed other hunks
 > In a rebase, `-X theirs` means the commits being replayed (the local side) win **conflicting** hunks only; a remote hunk the local side never
 > touched still applies without a word. Here a three-year-old remote line pointed a synced folder at a path that does not exist, and it landed
 > in a file the operator had asked to keep local. Before the rebase, branch the local head as a backup; after it, diff every file both sides
@@ -79,8 +76,7 @@ Summary: >-
 > git diff backup/pre-rebase-<stamp> HEAD -- <files both sides changed>
 > ```
 
-> **Learned 2026-10-26** · git, two sessions editing the same files · VERIFIED_PRIMARY · Source: skills_stuff 661075a and cf059eb (smc-resiliency
-> CHANGELOG 20261026_1440) · Falsifier: a blob staged this way whose commit differs from HEAD plus only the intended hunks
+> **Learned 2026-10-26** · git, two sessions editing the same files · VERIFIED_PRIMARY · Source: skills_stuff 661075a and cf059eb (smc-resiliency CHANGELOG 20261026_1440) · Falsifier: a blob staged this way whose commit differs from HEAD plus only the intended hunks
 > When another live session has unrelated hunks in the same files (here e2e.py, visual-style.md, CHANGELOG.md), `git add -p` is interactive and
 > unavailable to an agent, and a stash takes the other session's work with it. Build the content you mean to commit (HEAD plus your own edits) in a
 > scratch file, write it as a blob and point the index at it; the working tree, with both sessions' edits, is left alone. Then apply
@@ -108,8 +104,7 @@ Why: in `check | tail -1 && git commit`, the pipeline's status is `tail`'s, so a
 a failed backup (operator lesson `feedback_gate_on_check_exit_code`). `set -o pipefail` also works in Bash: it makes a pipeline's status that of the last command to fail (VERIFIED_PRIMARY, Bash
 manual).
 
-> **Learned 2026-10-27** · git 2.40+ · VERIFIED_PRIMARY · Source: skill-smc `scripts/ansible/ansible_change_reach.py` `cherry_pick_state`, offline test
-> `test_ansible_change_reach.py` (clean and conflict cases) · Falsifier: a `merge-tree` exit 0 for a commit whose `git cherry-pick` conflicts
+> **Learned 2026-10-27** · git 2.40+ · VERIFIED_PRIMARY · Source: skill-smc `scripts/ansible/ansible_change_reach.py` `cherry_pick_state`, offline test `test_ansible_change_reach.py` (clean and conflict cases) · Falsifier: a `merge-tree` exit 0 for a commit whose `git cherry-pick` conflicts
 > "Is this fix on the deploy branch, and would it apply?" is answered without a checkout: `git merge-base --is-ancestor <c> <branch>` for reach, and
 > `git merge-tree --write-tree --merge-base <c>^ <branch> <c>` simulates the cherry-pick in the object store (exit 0 clean, 1 conflict, other =
 > unknown, e.g. git older than 2.40). A list of branches holding a commit is read whole: a `| head -3` on `git branch --contains` once hid the
@@ -161,3 +156,16 @@ manual).
 - [ ] Reusable learning written back to the owning skill ([evolution-and-write-back.md](evolution-and-write-back.md)).
 
 Adapted from a governed project's definition of done (unified-network-controller, design section 15).
+
+> **Learned 2026-10-29** · commits, any language · VERIFIED_PRIMARY · Source: unified-network-controller e6dee23 (committed with 14 failing
+> tests) and b275c7c (the fix), its `just commit-gate` · Falsifier: a gate that runs the suite.
+> Know what the commit gate runs before trusting it. A gate that runs governance and freshness checks but not the tests passes a commit whose
+> own test modules fail: a reader change (`cable_links` reading the site's devices a second time) broke a "read the devices once" guard in 14
+> tests, and the gate committed and pushed it. Run the test modules covering the changed code (or the whole suite when it fits the budget)
+> before the commit command, gated on their exit code, whatever the gate does.
+
+```bash
+PYTHONPATH=.:wc-local/scripts "$PY" -m unittest -q tests.test_structure_confirmation tests.test_topology tests.test_colocation \
+  && just commit-project -m "..." --apply   # the gate checks governance only
+```
+

@@ -43,8 +43,7 @@ a governed project found two such tables disagreeing about which units allowed w
 Check the official documentation or source for the exact version deployed before writing any directive, template syntax, API call or flag. Nearby examples in the same file are not verification. Why:
 three changes that "validated" and deployed cleanly did nothing because they copied the shape of a nearby line or used another version's docs (operator lesson `feedback_verify_docs_correct_version`).
 
-> **Learned 2026-10-28** · shared justfile recipes and the editor · VERIFIED_PRIMARY (just 1.59, VS Code nefrob.vscode-just-syntax 0.10.2,
-> ansible-wifi `roles/smc_change/files/changes/change.just`) · Falsifier: an imported recipe file defining variables with no editor warning
+> **Learned 2026-10-28** · shared justfile recipes and the editor · VERIFIED_PRIMARY · Source: just 1.59, VS Code nefrob.vscode-just-syntax 0.10.2, ansible-wifi `roles/smc_change/files/changes/change.just` · Falsifier: an imported recipe file defining variables with no editor warning
 > The VS Code just extension does not follow `import` when it resolves names (a variable defined in the imported file is "not found" in the
 > importer, and the reverse) but does when it looks for duplicates, so `set allow-duplicate-variables` with a copy in each file is flagged too.
 > `just` itself resolves both ways. Pattern that is clean in both: the imported file defines no variables and derives what it needs from
@@ -58,3 +57,13 @@ check inv hosts:
 helper:
     bash "{{source_directory()}}/tool.sh"
 ```
+
+## Bootstrap is not configuration management
+
+> **Learned 2026-10-29** · cloud-init and other first-boot templating · VERIFIED_SECONDARY (harvest 2026-10-29 of podbng-lab; cloud-init module frequencies not re-checked here) · Source: podbng-lab `adr/claude-code-orchestrate/0013-*.md` (ADR-13) · Falsifier: a host whose
+> one-shot runtime commands survive a reboot with no file holding their state
+> Persistent state goes in rendered files, and one-shot commands only apply them. Data-plane rules, VRFs, the HA daemon's config and an
+> uplink address applied with `runcmd` (`ip`, the forwarder's CLI) were lost on reboot; the fix rendered every persistent file through
+> `write_files` (network config, the forwarder's startup config, a per-VM HA config with role and priority from the IaC variables) and left
+> `runcmd` to apply them. `write_files` runs on first boot only, so a later edit still needs a direct change or a redeploy. Add a reboot
+> test that checks the config, routes and daemons all come back.

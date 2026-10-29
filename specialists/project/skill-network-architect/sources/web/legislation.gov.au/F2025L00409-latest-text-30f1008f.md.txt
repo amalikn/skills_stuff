@@ -1,0 +1,299 @@
+Contents of https://www.legislation.gov.au/F2025L00409/latest/text:
+[Skip to main](#maincontent)
+
+[![Australian Government Coat of Arms](assets/images/coat-of-arms-black-70px.png)Australian Government](/)
+
+* [Help and resources](/help-and-resources)
+* [Register for My Account](/sign-up)
+
+* [Home](/)
+
+* [Constitution](/constitution)
+* [Acts](/acts)
+* [Legislative instruments](/legislative-instruments)
+* [Notifiable instruments](/notifiable-instruments)
+* [Gazettes](/gazettes)
+* [Administrative Arrangements](/administrative-arrangements)
+* [Prerogative instruments](/prerogative-instruments)
+* [Norfolk Island](/norfolk-island-legislation)
+
+## Scheduled Maintenance - Thursday 29 October 2026 from 8:30pm AEDT
+
+Maintenance is scheduled from 8:30pm to 11pm AEDT on Thursday 29 October 2026. The site may be unavailable or slow during this time.
+
+1. [Home](/)
+2. [Legislative instruments](/legislative-instruments)
+3. In force
+
+* [Text](/F2025L00409/latest/text)
+* [Details](/F2025L00409/latest/details)
+* [Authorises](/F2025L00409/latest/authorises)
+* [Downloads](/F2025L00409/latest/downloads)
+* [All versions](/F2025L00409/latest/versions)
+* [Interactions](/F2025L00409/latest/interactions)
+
+## Telecommunications Numbering Plan 2025
+
+In force
+
+Administered by
+
+* Department of Infrastructure, Transport, Regional Development, Communications, Sport and the Arts
+
+This item is authorised by the following title:
+
+* [Telecommunications Act 1997](/C2004A05145/latest)
+
+Latest version
+
+[Order print copy](/F2025L00409/asmade/order-print-copy)
+
+F2025L00409
+
+24 March 2025
+
+---
+
+## Legislation text
+
+View document
+
+Table of contents
+
+Enter text to search the table of contents
+
+* [Chapter 1—Preliminary](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445753)
+
+  + [Part 1—General](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445754)
+  + [1 Name](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445755)
+  + [2 Commencement](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445756)
+  + [3 Authority](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445757)
+  + [4 Repeal of the Telecommunications Numbering Plan 2015](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445758)
+  + [5 Definitions](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445759)
+  + [6 References to other instruments](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445760)
+  + [7 Regard to be had to objects and other matters](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445761)
+* [Chapter 2—Numbers for use](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445762)
+
+  + [8 Numbers for use—public](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445763)
+  + [9 Numbers for use—non public](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445764)
+* [Chapter 3—Specification of telephone numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445765)
+
+  + [Part 1—Geographic numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445766)
+
+    - [10 Definition of geographic number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445767)
+    - [11 Use of geographic numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445768)
+    - [12 Notice of geographic number that may terminate in different locality](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445769)
+    - [13 Use of local numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445770)
+  + [Part 2—Freephone, local rate and mobile numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445771)
+
+    - [Division 1—Freephone numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445772)
+
+      * [14 Definition of freephone number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445773)
+      * [15 Use of freephone numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445774)
+    - [Division 2—Local rate numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445775)
+    - [16 Definition of local rate number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445776)
+    - [17 Use of local rate numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445777)
+    - [Division 3 – Mobile numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445778)
+    - [18 Definition of mobile number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445779)
+    - [19 Use of mobile numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445780)
+  + [Part 3—Emergency service numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445781)
+  + [20 Emergency service numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445782)
+  + [Part 4—Special services numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445783)
+  + [21 Definition of special services number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445784)
+  + [22 Use of special services numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445785)
+  + [23 Use of 1223 for operator services on carriage service with price control arrangements](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445786)
+  + [24 Approval of operation plan](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445787)
+  + [25 Amendment or replacement of operation plan on application by carriage service provider](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445788)
+  + [26 Amendment or replacement of operation plan at ACMA’s direction](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445789)
+  + [27 Cessation of service under operation plan](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445790)
+  + [Part 5—Access codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445791)
+  + [28 Definition of access code](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445792)
+  + [29 Use of access codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445793)
+  + [30 Charge for call to international freephone numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445794)
+  + [Part 6—Shared numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445795)
+  + [31 Definition of shared number and selectable shared number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445796)
+  + [32 Use of shared numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445797)
+* [Chapter 4—Private numbering schemes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445798)
+
+  + [33 Restrictions on use do not apply to use in private numbering scheme](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445799)
+  + [34 Private numbering scheme with escape code](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445800)
+  + [35 Private numbering scheme without an escape code](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445801)
+* [Chapter 5—International signalling point codes and mobile network codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445802)
+
+  + [Part 1—International signalling point codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445803)
+
+    - [36 Definition of international signalling point code](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445804)
+    - [37 Application for allocation of international signalling point code](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445805)
+    - [38 Decision on application](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445806)
+  + [Part 2—Mobile network codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445807)
+
+    - [39 Definition of mobile network code](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445808)
+    - [40 Application for allocation of mobile network code](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445809)
+    - [41 Decision on application](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445810)
+  + [Part 3—Transfer, surrender and withdrawal of international signalling point codes and mobile network codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445811)
+
+    - [42 Transfer of codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445812)
+    - [43 Withdrawal of codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445813)
+    - [44 Application to surrender codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445814)
+    - [45 Decision on application to surrender codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445815)
+    - [46 Notice of decision](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445816)
+* [Chapter 6—Allocation of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445817)
+
+  + [Part 1—Numbers able to be allocated](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445818)
+
+    - [47 ACMA to list numbers able to be allocated](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445819)
+  + [Part 2—Standard procedure for allocation of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445820)
+
+    - [48 Application for allocation of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445821)
+    - [49 Application for allocation of numbers—additional requirements](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445822)
+    - [50 Decision on application](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445823)
+    - [51 Allocation of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445824)
+    - [52 Particular matters relating to allocation of freephone and local rate numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445825)
+  + [Part 3—Application for allocation of numbers in special circumstances](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445826)
+
+    - [53 Application for allocation of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445827)
+    - [54 Decision on application](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445828)
+    - [55 Matters to take into account](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445829)
+    - [56 ACMA may ask for further information](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445830)
+    - [57 Notice that application has not been approved](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445831)
+    - [58 Allocation of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445832)
+    - [59 Particular matters relating to allocation of freephone and local rate numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445833)
+  + [Part 4—Variation of standard zone units to which geographic numbers are allocated](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445834)
+
+    - [60 Application by carriage service provider for variation of allocation](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445835)
+    - [61 Decision on application](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445836)
+    - [62 Request for further information](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445837)
+* [Chapter 7—Special rules about smartnumbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445838)
+
+  + [Part 1—Special procedure for initial allocation of smartnumbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445839)
+
+    - [63 Application for initial allocation of smartnumbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445840)
+    - [64 Decision on application](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445841)
+    - [65 Initial allocation of smartnumbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445842)
+  + [Part 2—Enhanced rights of use](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445843)
+
+    - [66 Enhanced rights of use](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445844)
+    - [67 Reallocation and issue](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445845)
+    - [68 Register of smartnumbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445846)
+    - [69 Trading the enhanced rights of use and licensing a smartnumber](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445847)
+    - [70 Application to surrender smartnumber](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445848)
+    - [71 Decision on application to surrender smartnumber](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445849)
+    - [72 Notice of decision](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445850)
+    - [73 Waiver of enhanced rights of use](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445851)
+    - [74 Cancellation of enhanced rights of use—false statement](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445852)
+    - [75 Cancellation of enhanced rights of use—no allocation for 3 years](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445853)
+    - [76 Cancellation of enhanced rights of use – scam or fraudulent activity](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445854)
+* [Chapter 8—Transfer, surrender and withdrawal of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445855)
+
+  + [Part 1—Transfer of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445856)
+
+    - [77 Transfer process](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445857)
+    - [78 Transfer not to affect customer’s right to use number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445858)
+  + [Part 2—Surrender of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445859)
+
+    - [79 Application to surrender numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445860)
+    - [80 Decision on application to surrender numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445861)
+    - [81 Notice of decision](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445862)
+  + [Part 3—Withdrawal of numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445863)
+
+    - [82 Inconsistency with numbering plan](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445864)
+    - [83 Inconsistency with conditions](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445865)
+    - [84 Scam or fraudulent activity](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445866)
+    - [85 Non payment of annual numbering charge](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445867)
+    - [86 Withdrawal of numbers not in use](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445868)
+    - [87 Cessation of business](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445869)
+    - [88 End of allocation period](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445870)
+* [Chapter 9—Obligations of carriage service providers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445871)
+
+  + [Part 1—Recall and issue of replacement numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445872)
+
+    - [89 Recall of issued number and issue of replacement number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445873)
+    - [90 Application to recall issued number and issue replacement number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445874)
+    - [91 Recall of issued number without issue of replacement number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445875)
+    - [92 Restriction on reissuing recalled number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445876)
+  + [Part 2—General obligations of carriage service providers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445877)
+
+    - [93 Use of numbers not to be subject to certain conditions](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445878)
+    - [94 Carriage service provider must not issue a number that it has not been allocated](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445879)
+    - [95 Notice of carriage service provider’s obligations](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445880)
+  + [Part 3—Exemptions](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445881)
+
+    - [96 Application for exemption from obligation in this Chapter](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445882)
+    - [97 Replacement of provisions by industry code](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445883)
+* [Chapter 10—Number portability](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445884)
+
+  + [Part 1—Implementation dates](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445885)
+
+    - [98 Determining implementation dates](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445886)
+    - [99 Public notice period for implementation date](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445887)
+    - [100 Application of Chapter to carriage service providers and carriers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445888)
+  + [Part 2—Providing portability](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445889)
+
+    - [101 Technical capability and technology](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445890)
+    - [102 Meaning of equivalent service](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445891)
+    - [103 Obligation to provide number portability to customers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445892)
+    - [104 Obligation to ensure that equivalent service is provided](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445893)
+    - [105 Routing arrangements](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445894)
+    - [106 Cancellation of service to ported number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445895)
+  + [Part 3—Exemptions from obligations](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445896)
+
+    - [107 Application for exemption from obligations in this Chapter](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445897)
+    - [108 Compliance not required while application is considered](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445898)
+    - [109 Consultation with ACCC](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445899)
+    - [110 Deciding application for exemption](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445900)
+    - [111 Request for further information](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445901)
+    - [112 Notice of decision about exemption](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445902)
+* [Chapter 11—General matters relating to administration, review and reporting](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445903)
+
+  + [Part 1—Registration of carriage service providers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445904)
+
+    - [113 Application for registration](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445905)
+    - [114 Registration of carriage service provider](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445906)
+    - [115 Registered carriage service provider must update information](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445907)
+    - [116 Transitional—registration under previous numbering plan](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445908)
+  + [Part 2—Monitoring and reporting](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445909)
+
+    - [117 Report on numbers transferred for purposes of numbering charge](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445910)
+    - [118 ACMA usage of reports](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445911)
+  + [Part 3—Review of decisions](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445912)
+
+    - [119 Reviewable decisions](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445913)
+    - [120 Statement to accompany notice of reviewable decision](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445914)
+    - [121 Reconsideration by ACMA](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445915)
+    - [122 Statements to accompany notice of decision on reconsideration](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445916)
+    - [123 Review by Administrative Review Tribunal](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445917)
+  + [Part 4—General matters](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445918)
+
+    - [124 Use of computer program to make decisions](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445919)
+* [Chapter 12—Transitional provisions](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445920)
+
+  + [125 Previous allocations not affected by repeal](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445921)
+  + [126 Mobile network codes assigned before commencement](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445922)
+  + [127 Applications not dealt with under 2015 numbering plan](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445923)
+  + [128 Use of mobile numbers for IoT services](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445924)
+* [Schedule 1—Geographic numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445925)
+
+  + [1 Central East Region](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445926)
+  + [2 South East Region](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445927)
+  + [3 North East Region](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445928)
+  + [4 Central and West Region](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445929)
+* [Schedule 2—Freephone numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445930)
+
+  + [1 Freephone numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445931)
+* [Schedule 3—Local rate numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445932)
+
+  + [1 Local rate numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445933)
+* [Schedule 4—Mobile numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445934)
+
+  + [1 Mobile numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445935)
+* [Schedule 5—Special services numbers](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445936)
+
+  + [1 Special services numbers that are not shared](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445937)
+  + [2 Special services numbers that are shared](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445938)
+* [Schedule 6—Access codes](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445939)
+
+  + [1 Access codes that are not shared](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445940)
+  + [2 Access codes that are shared](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445941)
+* [Schedule 7—Size of standard unit](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445942)
+
+  + [1 Size of standard unit for different types of number](https://www.legislation.gov.au/F2025L00409/asmade/2025-03-24/text/original/epub/OEBPS/document_1/document_1.html#_Toc193445943)

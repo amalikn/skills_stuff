@@ -31,6 +31,26 @@ def write_transcript(rows: list[dict]) -> pathlib.Path:
     return pathlib.Path(f.name)
 
 
+class SubagentPassTest(unittest.TestCase):
+    """Pass 3: the session's sub-agents, read from their own transcripts (operator, 2026-10-29)."""
+
+    def test_subagent_report_and_side_effects_are_listed(self) -> None:
+        """An agent's task and final report come out as `subagent`; its Bash call as `sub-bash`."""
+        with tempfile.TemporaryDirectory() as tmp:
+            session = pathlib.Path(tmp) / "s1.jsonl"
+            session.write_text("")
+            folder = pathlib.Path(tmp) / "s1" / "subagents"
+            folder.mkdir(parents=True)
+            (folder / "agent-x.meta.json").write_text(json.dumps({"agentType": "general-purpose", "description": "Check a fact"}))
+            rows = [{"type": "assistant", "timestamp": "2026-10-29T01:00:00Z",
+                     "message": {"content": [{"type": "tool_use", "name": "Bash", "input": {"command": "ls", "description": "List files"}}]}},
+                    {"type": "assistant", "timestamp": "2026-10-29T01:01:00Z", "message": {"content": [{"type": "text", "text": "Found: X is true."}]}}]
+            (folder / "agent-x.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+            got = list(tp.subagent_events(session))
+        self.assertIn(("2026-10-29T01:00:00Z", "subagent", "general-purpose: Check a fact -> Found: X is true."), got)
+        self.assertTrue(any(kind == "sub-bash" for _, kind, _ in got), got)
+
+
 class TypedTextTest(unittest.TestCase):
     """typed_text and the pass-1 events built on it."""
 

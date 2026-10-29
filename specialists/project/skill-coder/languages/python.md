@@ -60,8 +60,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > `Counter.most_common()` orders equal counts by first insertion, so counts built by walking sets (an import graph's edge sets) list tied entries in
 > an order that changes between runs with string hash randomisation. A report or a top-N cut that must be stable sorts by `(-count, name)` instead.
 
-> **Learned 2026-10-20** · python 3.12+ · VERIFIED_PRIMARY · Source: unified-network-controller `scripts/checks/ata_chain_check.py` `check_site`
-> (commit 5b3d4e6) · Falsifier: a ThreadPoolExecutor.map that keeps the other results when one task raises SystemExit
+> **Learned 2026-10-20** · python 3.12+ · VERIFIED_PRIMARY · Source: unified-network-controller `scripts/checks/ata_chain_check.py` `check_site` (commit 5b3d4e6) · Falsifier: a ThreadPoolExecutor.map that keeps the other results when one task raises SystemExit
 > `except Exception` does not catch `SystemExit`: a library helper that calls `sys.exit()` on failure (here a sweep on an unreachable host) ended a
 > whole `ThreadPoolExecutor.map` over six sites and the buffered output with it. Per-item isolation catches `(Exception, SystemExit)`, and a long
 > run prints with `-u` or flushes so a killed run still leaves its lines.
@@ -91,9 +90,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 - A docstring checker that enforces `Args:` completeness: ruff's pydocstyle rules check presence and sections; full parameter coverage may need the project's own ratchet check (UNVERIFIED which ruff
   rules cover it).
 
-> **Learned 2026-10-20 (b)** · python, scripted edits of Python source · VERIFIED_PRIMARY (two of nine rewritten files broke: tests failed with
-> NameError and a remote agent's CalledProcessError) · Source: unified-network-controller `wc-local/scripts/collector/dhcp_leases.py` and
-> `wc-local/scripts/collector/reachability.py` (fixed before commit 3efcb27) · Falsifier: a source file whose embedded code strings hold no import lines
+> **Learned 2026-10-20 (b)** · python, scripted edits of Python source · VERIFIED_PRIMARY (two of nine rewritten files broke: tests failed with NameError and a remote agent's CalledProcessError) · Source: unified-network-controller `wc-local/scripts/collector/dhcp_leases.py` and `wc-local/scripts/collector/reachability.py` (fixed before commit 3efcb27) · Falsifier: a source file whose embedded code strings hold no import lines
 > A rewrite that places a new import "after the last import line" by matching lines also matches imports inside string literals: a remote-agent
 > program sent over ssh (`import datetime`) or a Django shell script (`from swapper import load_model`). The import landed in the string, so
 > the module failed to load and the remote program gained a line its host could not run. Find the insertion point from the AST, the last
@@ -105,9 +102,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > lines.insert(last, "from unc.drivers.transports import process")
 > ```
 
-> **Learned 2026-10-21** · python 3.14 (stdlib `dataclasses`, `importlib.util`) · VERIFIED_PRIMARY (the test module failed to import:
-> `AttributeError: 'NoneType' object has no attribute '__dict__'` in `dataclasses._is_type`) · Source: unified-network-controller
-> `tests/test_plan_timeline.py` loading `scripts/render/plan_timeline.py` (2026-10-21) · Falsifier: a module with a `@dataclass` and
+> **Learned 2026-10-21** · python 3.14 (stdlib `dataclasses`, `importlib.util`) · VERIFIED_PRIMARY (the test module failed to import: `AttributeError: 'NoneType' object has no attribute '__dict__'` in `dataclasses._is_type`) · Source: unified-network-controller `tests/test_plan_timeline.py` loading `scripts/render/plan_timeline.py` (2026-10-21) · Falsifier: a module with a `@dataclass` and
 > `from __future__ import annotations` that loads by `spec_from_file_location` without a `sys.modules` entry
 > A test that loads a script by path must register the module in `sys.modules` before `exec_module` when the script defines a dataclass:
 > with postponed annotations, `dataclasses` looks the class's module up in `sys.modules` to resolve `ClassVar` and `InitVar` strings,
@@ -120,8 +115,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > spec.loader.exec_module(mod)
 > ```
 
-> **Learned 2026-10-22 (e)** · python, pathlib containment checks · VERIFIED_PRIMARY (a unit test failed on macOS: a target under a temporary
-> folder read as outside the root) · Source: skill-ai-it `scripts/checks/anchor_links.py` `broken_links`, commit fdf90d0 · Falsifier: `Path.is_relative_to`
+> **Learned 2026-10-22 (e)** · python, pathlib containment checks · VERIFIED_PRIMARY (a unit test failed on macOS: a target under a temporary folder read as outside the root) · Source: skill-ai-it `scripts/checks/anchor_links.py` `broken_links`, commit fdf90d0 · Falsifier: `Path.is_relative_to`
 > returns True for a resolved child of an unresolved root that sits behind a symlink.
 > Resolve both sides before `is_relative_to` (or `relative_to`): a target built with `.resolve()` follows symlinks, so an unresolved root such as
 > macOS's `/var/folders/...` (really `/private/var/...`) never contains it and every file reads as outside.
@@ -133,8 +127,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > if dest.is_relative_to(root):
 > ```
 
-> **Learned 2026-10-23** · ruff 0.17.2 · VERIFIED_PRIMARY (ansible-wifi checkout, 2026-10-23) · Source: `uvx ruff config indent-width`;
-> local-knowledge-ansible `ansible-wifi-root-governance/ruff.toml`, `roles/smc_change/files/probe/check.sh` · Falsifier: ruff formatting an
+> **Learned 2026-10-23** · ruff 0.17.2 · VERIFIED_PRIMARY (ansible-wifi checkout, 2026-10-23) · Source: `uvx ruff config indent-width`; local-knowledge-ansible `ansible-wifi-root-governance/ruff.toml`, `roles/smc_change/files/probe/check.sh` · Falsifier: ruff formatting an
 > excluded file passed by name with `force-exclude = true`
 > Two-space Python with ruff: `indent-width = 2` (the default is 4). To apply a new style to new files only, list the existing files in
 > `extend-exclude` and set `force-exclude = true`, so a hook or editor that passes an excluded file by name is still skipped (measured:
@@ -143,8 +136,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > parts before it runs is linted on the joined program (names cross files) and formatted per part. A backslash inside an f-string
 > expression is a SyntaxError before Python 3.12; compute it outside the f-string when the code may run on 3.10 (Ubuntu 22.04).
 
-> **Learned 2026-10-23 (b)** · pyright/Pylance, modules joined before they run · VERIFIED_PRIMARY · Source: pyright docs "Execution Environment
-> Options" (docs/configuration.md); ansible-wifi local-knowledge `ansible-wifi-root-governance/pyrightconfig.json` · Falsifier: an
+> **Learned 2026-10-23 (b)** · pyright/Pylance, modules joined before they run · VERIFIED_PRIMARY · Source: pyright docs "Execution Environment Options" (docs/configuration.md); ansible-wifi local-knowledge `ansible-wifi-root-governance/pyrightconfig.json` · Falsifier: an
 > `executionEnvironments` entry whose diagnostic override does not change the report for files under its root
 > Parts that a controller joins into one program (each part uses names another part defines) show "X is not defined" in the editor for every part.
 > Keep the linter on the joined program as the real check, and turn the rule off for that folder only with a root `pyrightconfig.json`
@@ -152,8 +144,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > reported as an unrecognized setting: document the config in the project's rules instead. Proven: `npx pyright@1.1.407 <part>` 0 warnings with it,
 > 3 "is not defined" without.
 
-> **Learned 2026-10-27** · git 2.x, Python 3.14 subprocess · VERIFIED_PRIMARY (failed `--apply` run, then fixed and re-run: 198 moves) ·
-> Source: local-knowledge-ansible `scripts/smc_change_runs_by_flavor.py` `move()` · Falsifier: `git -C <dir> mv <name> <relative dst>`
+> **Learned 2026-10-27** · git 2.x, Python 3.14 subprocess · VERIFIED_PRIMARY (failed `--apply` run, then fixed and re-run: 198 moves) · Source: local-knowledge-ansible `scripts/smc_change_runs_by_flavor.py` `move()` · Falsifier: `git -C <dir> mv <name> <relative dst>`
 > landing the file at `<cwd>/<relative dst>`
 > `git -C <dir>` changes directory before reading its arguments, so a relative destination resolves under `<dir>`, not the caller's cwd: the
 > first migration run failed with exit 128 on its first file. Resolve both paths before calling git, and plan every move before the first one

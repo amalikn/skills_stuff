@@ -1,0 +1,720 @@
+<html lang="en-US"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="profile" href="https://gmpg.org/xfn/11"><meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"><style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style><link rel="preconnect" href="//privacy-proxy.usercentrics.eu"><link rel="preload" href="//privacy-proxy.usercentrics.eu/latest/uc-block.bundle.js" as="script"><script type="application/javascript" src="//privacy-proxy.usercentrics.eu/latest/uc-block.bundle.js"></script><script>uc.setCustomTranslations('https://termageddon.ams3.cdn.digitaloceanspaces.com/translations/');</script><script id="usercentrics-cmp" src="//app.usercentrics.eu/browser-ui/latest/loader.js" data-settings-id="F4cOPJKgDrqVG0" async></script><title>Asterisk 21 Module Removal - chan_sip ⋆ Asterisk</title><meta name="description" content="chan_sip will no longer be included with Asterisk as of the release of version 21. Deprecated in version 17, chan_sip has been scheduled for removal for"><link rel="canonical" href="https://www.asterisk.org/asterisk-21-module-removal-chan_sip/"><meta property="og:locale" content="en_US"><meta property="og:type" content="article"><meta property="og:title" content="Asterisk 21 Module Removal - chan_sip ⋆ Asterisk"><meta property="og:description" content="chan_sip will no longer be included with Asterisk as of the release of version 21. Deprecated in version 17, chan_sip has been scheduled for removal for"><meta property="og:url" content="https://www.asterisk.org/asterisk-21-module-removal-chan_sip/"><meta property="og:site_name" content="Asterisk"><meta property="article:published_time" content="2023-01-18T07:00:48+00:00"><meta property="article:modified_time" content="2023-01-18T11:23:57+00:00"><meta name="author" content="Mike Bradeen"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:label1" content="Written by"><meta name="twitter:data1" content="Mike Bradeen"><meta name="twitter:label2" content="Est. reading time"><meta name="twitter:data2" content="2 minutes"><script type="application/ld+json" class="yoast-schema-graph">{"@context":"https:\/\/schema.org","@graph":[{"@type":"Article","@id":"https:\/\/www.asterisk.org\/asterisk-21-module-removal-chan_sip\/#article","isPartOf":{"@id":"https:\/\/www.asterisk.org\/asterisk-21-module-removal-chan_sip\/"},"author":{"name":"Mike Bradeen","@id":"https:\/\/www.asterisk.org\/#\/schema\/person\/e168f9dcf508dcc7211e807d0522075c"},"headline":"Asterisk 21 Module Removal &#8211; chan_sip","datePublished":"2023-01-18T07:00:48+00:00","dateModified":"2023-01-18T11:23:57+00:00","mainEntityOfPage":{"@id":"https:\/\/www.asterisk.org\/asterisk-21-module-removal-chan_sip\/"},"wordCount":351,"publisher":{"@id":"https:\/\/www.asterisk.org\/#organization"},"keywords":["Asterisk","chan_sip","sip"],"articleSection":["Architecture","Asterisk 21","Build","Project","Project General","Releases","SIP"],"inLanguage":"en-US"},{"@type":"WebPage","@id":"https:\/\/www.asterisk.org\/asterisk-21-module-removal-chan_sip\/","url":"https:\/\/www.asterisk.org\/asterisk-21-module-removal-chan_sip\/","name":"Asterisk 21 Module Removal - chan_sip &#8902; Asterisk","isPartOf":{"@id":"https:\/\/www.asterisk.org\/#website"},"datePublished":"2023-01-18T07:00:48+00:00","dateModified":"2023-01-18T11:23:57+00:00","description":"chan_sip will no longer be included with Asterisk as of the release of version 21. Deprecated in version 17, chan_sip has been scheduled for removal for","breadcrumb":{"@id":"https:\/\/www.asterisk.org\/asterisk-21-module-removal-chan_sip\/#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https:\/\/www.asterisk.org\/asterisk-21-module-removal-chan_sip\/"]}]},{"@type":"BreadcrumbList","@id":"https:\/\/www.asterisk.org\/asterisk-21-module-removal-chan_sip\/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https:\/\/www.asterisk.org\/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https:\/\/www.asterisk.org\/blog\/"},{"@type":"ListItem","position":3,"name":"Asterisk 21 Module Removal &#8211; chan_sip"}]},{"@type":"WebSite","@id":"https:\/\/www.asterisk.org\/#website","url":"https:\/\/www.asterisk.org\/","name":"Asterisk","description":"Asterisk is a Toolkit for Telephony Applications","publisher":{"@id":"https:\/\/www.asterisk.org\/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https:\/\/www.asterisk.org\/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"en-US"},{"@type":"Organization","@id":"https:\/\/www.asterisk.org\/#organization","name":"Asterisk","url":"https:\/\/www.asterisk.org\/","logo":{"@type":"ImageObject","inLanguage":"en-US","@id":"https:\/\/www.asterisk.org\/#\/schema\/logo\/image\/","url":"https:\/\/www.asterisk.org\/wp-content\/uploads\/asterisk-logo.png","contentUrl":"https:\/\/www.asterisk.org\/wp-content\/uploads\/asterisk-logo.png","width":174,"height":96,"caption":"Asterisk"},"image":{"@id":"https:\/\/www.asterisk.org\/#\/schema\/logo\/image\/"}},{"@type":"Person","@id":"https:\/\/www.asterisk.org\/#\/schema\/person\/e168f9dcf508dcc7211e807d0522075c","name":"Mike Bradeen","image":{"@type":"ImageObject","inLanguage":"en-US","@id":"https:\/\/secure.gravatar.com\/avatar\/c3a51504e32812091f61616c6cd7b99eb65896721459b2659f3e528cedf5309c?s=96&d=blank&r=g","url":"https:\/\/secure.gravatar.com\/avatar\/c3a51504e32812091f61616c6cd7b99eb65896721459b2659f3e528cedf5309c?s=96&d=blank&r=g","contentUrl":"https:\/\/secure.gravatar.com\/avatar\/c3a51504e32812091f61616c6cd7b99eb65896721459b2659f3e528cedf5309c?s=96&d=blank&r=g","caption":"Mike Bradeen"},"description":"Telephony software guy.","url":"https:\/\/www.asterisk.org\/author\/mbradeen\/"}]}</script><link rel="alternate" type="application/rss+xml" title="Asterisk » Feed" href="https://www.asterisk.org/feed/"><link rel="alternate" type="application/rss+xml" title="Asterisk » Comments Feed" href="https://www.asterisk.org/comments/feed/"><script>
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/16.0.1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/16.0.1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/www.asterisk.org\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.8.12"}};
+/*! This file is auto-generated */
+!function(s,n){var o,i,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),a=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===a[t]})}function u(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);for(var n=e.getImageData(16,16,1,1),a=0;a<n.data.length;a++)if(0!==n.data[a])return!1;return!0}function f(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\udedf")}return!1}function g(e,t,n,a){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):s.createElement("canvas"),o=r.getContext("2d",{willReadFrequently:!0}),i=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(function(e){i[e]=t(o,e,n,a)}),i}function t(e){var t=s.createElement("script");t.src=e,t.defer=!0,s.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",i=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){s.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+g.toString()+"("+[JSON.stringify(i),f.toString(),p.toString(),u.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"}),r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=function(e){c(n=e.data),r.terminate(),t(n)})}catch(e){}c(n=g(i,f,p,u))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+</script><style id="wp-emoji-styles-inline-css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style><link rel="stylesheet" id="wp-block-library-css" href="https://www.asterisk.org/wp-includes/css/dist/block-library/style.min.css?ver=6.8.12" media="all"><link rel="stylesheet" id="mediaelement-css" href="https://www.asterisk.org/wp-includes/js/mediaelement/mediaelementplayer-legacy.min.css?ver=4.2.17" media="all"><link rel="stylesheet" id="wp-mediaelement-css" href="https://www.asterisk.org/wp-includes/js/mediaelement/wp-mediaelement.min.css?ver=6.8.12" media="all"><link rel="stylesheet" id="view_editor_gutenberg_frontend_assets-css" href="https://www.asterisk.org/wp-content/plugins/wp-views/public/css/views-frontend.css?ver=3.6.21" media="all"><style id="view_editor_gutenberg_frontend_assets-inline-css">
+.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default > span.wpv-sort-list,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item {border-color: #cdcdcd;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item a {color: #444;background-color: #fff;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default a:hover,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default a:focus {color: #000;background-color: #eee;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item.wpv-sort-list-current a {color: #000;background-color: #eee;}
+.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default > span.wpv-sort-list,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item {border-color: #cdcdcd;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item a {color: #444;background-color: #fff;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default a:hover,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default a:focus {color: #000;background-color: #eee;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item.wpv-sort-list-current a {color: #000;background-color: #eee;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey > span.wpv-sort-list,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey .wpv-sort-list-item {border-color: #cdcdcd;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey .wpv-sort-list-item a {color: #444;background-color: #eeeeee;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey a:hover,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey a:focus {color: #000;background-color: #e5e5e5;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey .wpv-sort-list-item.wpv-sort-list-current a {color: #000;background-color: #e5e5e5;}
+.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default > span.wpv-sort-list,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item {border-color: #cdcdcd;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item a {color: #444;background-color: #fff;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default a:hover,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default a:focus {color: #000;background-color: #eee;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-default .wpv-sort-list-item.wpv-sort-list-current a {color: #000;background-color: #eee;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey > span.wpv-sort-list,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey .wpv-sort-list-item {border-color: #cdcdcd;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey .wpv-sort-list-item a {color: #444;background-color: #eeeeee;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey a:hover,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey a:focus {color: #000;background-color: #e5e5e5;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-grey .wpv-sort-list-item.wpv-sort-list-current a {color: #000;background-color: #e5e5e5;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-blue > span.wpv-sort-list,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-blue .wpv-sort-list-item {border-color: #0099cc;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-blue .wpv-sort-list-item a {color: #444;background-color: #cbddeb;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-blue a:hover,.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-blue a:focus {color: #000;background-color: #95bedd;}.wpv-sort-list-dropdown.wpv-sort-list-dropdown-style-blue .wpv-sort-list-item.wpv-sort-list-current a {color: #000;background-color: #95bedd;}
+</style><style id="global-styles-inline-css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:root { --wp--style--global--content-size: 800px;--wp--style--global--wide-size: 1200px; }:where(body) { margin: 0; }.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }.wp-site-blocks > .alignright { float: right; margin-left: 2em; }.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }:where(.wp-site-blocks) > * { margin-block-start: 24px; margin-block-end: 0; }:where(.wp-site-blocks) > :first-child { margin-block-start: 0; }:where(.wp-site-blocks) > :last-child { margin-block-end: 0; }:root { --wp--style--block-gap: 24px; }:root :where(.is-layout-flow) > :first-child{margin-block-start: 0;}:root :where(.is-layout-flow) > :last-child{margin-block-end: 0;}:root :where(.is-layout-flow) > *{margin-block-start: 24px;margin-block-end: 0;}:root :where(.is-layout-constrained) > :first-child{margin-block-start: 0;}:root :where(.is-layout-constrained) > :last-child{margin-block-end: 0;}:root :where(.is-layout-constrained) > *{margin-block-start: 24px;margin-block-end: 0;}:root :where(.is-layout-flex){gap: 24px;}:root :where(.is-layout-grid){gap: 24px;}.is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}a:where(:not(.wp-element-button)){text-decoration: underline;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;line-height: inherit;padding: calc(0.667em + 2px) calc(1.333em + 2px);text-decoration: none;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+</style><link rel="stylesheet" id="hello-elementor-css" href="https://www.asterisk.org/wp-content/themes/hello-elementor/assets/css/reset.css?ver=3.4.5" media="all"><link rel="stylesheet" id="hello-elementor-theme-style-css" href="https://www.asterisk.org/wp-content/themes/hello-elementor/assets/css/theme.css?ver=3.4.5" media="all"><link rel="stylesheet" id="hello-elementor-header-footer-css" href="https://www.asterisk.org/wp-content/themes/hello-elementor/assets/css/header-footer.css?ver=3.4.5" media="all"><link rel="stylesheet" id="elementor-frontend-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/css/frontend.min.css?ver=4.1.4" media="all"><style id="elementor-frontend-inline-css">
+.elementor-6479 .elementor-element.elementor-element-421ee882:not(.elementor-motion-effects-element-type-background), .elementor-6479 .elementor-element.elementor-element-421ee882 > .elementor-motion-effects-container > .elementor-motion-effects-layer{background-image:url("https://www.asterisk.org/wp-content/uploads/header-products-landing.jpg");}
+</style><link rel="stylesheet" id="widget-image-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/css/widget-image.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="widget-nav-menu-css" href="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/css/widget-nav-menu.min.css?ver=4.1.2" media="all"><link rel="stylesheet" id="e-animation-grow-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/animations/styles/e-animation-grow.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="widget-social-icons-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/css/widget-social-icons.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="e-apple-webkit-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/css/conditionals/apple-webkit.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="widget-heading-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/css/widget-heading.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="widget-post-info-css" href="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/css/widget-post-info.min.css?ver=4.1.2" media="all"><link rel="stylesheet" id="widget-icon-list-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/css/widget-icon-list.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="elementor-icons-shared-0-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/fontawesome.min.css?ver=5.15.3" media="all"><link rel="stylesheet" id="elementor-icons-fa-regular-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/regular.min.css?ver=5.15.3" media="all"><link rel="stylesheet" id="elementor-icons-fa-solid-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/solid.min.css?ver=5.15.3" media="all"><link rel="stylesheet" id="widget-breadcrumbs-css" href="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/css/widget-breadcrumbs.min.css?ver=4.1.2" media="all"><link rel="stylesheet" id="widget-author-box-css" href="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/css/widget-author-box.min.css?ver=4.1.2" media="all"><link rel="stylesheet" id="swiper-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/swiper/v8/css/swiper.min.css?ver=8.4.5" media="all"><link rel="stylesheet" id="e-swiper-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/css/conditionals/e-swiper.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="elementor-icons-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/eicons/css/elementor-icons.min.css?ver=5.50.0" media="all"><link rel="stylesheet" id="elementor-post-5094-css" href="https://www.asterisk.org/wp-content/uploads/elementor/css/post-5094.css?ver=1793210058" media="all"><link rel="stylesheet" id="uael-frontend-css" href="https://www.asterisk.org/wp-content/plugins/ultimate-elementor/assets/min-css/uael-frontend.min.css?ver=1.44.4" media="all"><link rel="stylesheet" id="uael-teammember-social-icons-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/css/widget-social-icons.min.css?ver=3.24.0" media="all"><link rel="stylesheet" id="uael-social-share-icons-brands-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/brands.css?ver=5.15.3" media="all"><link rel="stylesheet" id="uael-social-share-icons-fontawesome-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/fontawesome.css?ver=5.15.3" media="all"><link rel="stylesheet" id="uael-nav-menu-icons-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/solid.css?ver=5.15.3" media="all"><link rel="stylesheet" id="font-awesome-5-all-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/all.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="font-awesome-4-shim-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/v4-shims.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="elementor-post-6215-css" href="https://www.asterisk.org/wp-content/uploads/elementor/css/post-6215.css?ver=1793210059" media="all"><link rel="stylesheet" id="elementor-post-34-css" href="https://www.asterisk.org/wp-content/uploads/elementor/css/post-34.css?ver=1793210059" media="all"><link rel="stylesheet" id="elementor-post-6479-css" href="https://www.asterisk.org/wp-content/uploads/elementor/css/post-6479.css?ver=1793210073" media="all"><link rel="stylesheet" id="hcb-style-css" href="https://www.asterisk.org/wp-content/plugins/highlighting-code-block/build/css/hcb--light.css?ver=2.2.0" media="all"><style id="hcb-style-inline-css">
+:root{--hcb--fz--base: 14px}:root{--hcb--fz--mobile: 13px}:root{--hcb--ff:Menlo, Consolas, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;}
+</style><link rel="stylesheet" id="elementor-gf-local-karla-css" href="https://www.asterisk.org/wp-content/uploads/elementor/google-fonts/css/karla.css?ver=1744211869" media="all"><link rel="stylesheet" id="elementor-icons-fa-brands-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/css/brands.min.css?ver=5.15.3" media="all"><script src="https://www.asterisk.org/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script><script src="https://www.asterisk.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script><script src="https://www.asterisk.org/wp-content/plugins/wp-views/vendor/toolset/common-es/public/toolset-common-es-frontend.js?ver=175000" id="toolset-common-es-frontend-js"></script><script src="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/font-awesome/js/v4-shims.min.js?ver=4.1.4" id="font-awesome-4-shim-js"></script><link rel="https://api.w.org/" href="https://www.asterisk.org/wp-json/"><link rel="alternate" title="JSON" type="application/json" href="https://www.asterisk.org/wp-json/wp/v2/posts/8849"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.asterisk.org/xmlrpc.php?rsd"><meta name="generator" content="WordPress 6.8.12"><link rel="shortlink" href="https://www.asterisk.org/?p=8849"><link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://www.asterisk.org/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.asterisk.org%2Fasterisk-21-module-removal-chan_sip%2F"><link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://www.asterisk.org/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.asterisk.org%2Fasterisk-21-module-removal-chan_sip%2F&amp;format=xml"><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+
+  // Set denied state BEFORE GTM initializes
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied',
+    'wait_for_update': 500  // ms to wait for Termageddon to update consent
+  });
+</script><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NTF66V7B');</script><meta name="generator" content="Elementor 4.1.4; features: additional_custom_breakpoints; settings: css_print_method-external, google_font-enabled, font_display-auto"><script> window.addEventListener("load",function(){ var c={script:false,link:false}; function ls(s) { if(!['script','link'].includes(s)||c[s]){return;}c[s]=true; var d=document,f=d.getElementsByTagName(s)[0],j=d.createElement(s); if(s==='script'){j.async=true;j.src='https://www.asterisk.org/wp-content/plugins/wp-views/vendor/toolset/blocks/public/js/frontend.js?v=1.6.17';}else{ j.rel='stylesheet';j.href='https://www.asterisk.org/wp-content/plugins/wp-views/vendor/toolset/blocks/public/css/style.css?v=1.6.17';} f.parentNode.insertBefore(j, f); }; function ex(){ls('script');ls('link')} window.addEventListener("scroll", ex, {once: true}); if (('IntersectionObserver' in window) && ('IntersectionObserverEntry' in window) && ('intersectionRatio' in window.IntersectionObserverEntry.prototype)) { var i = 0, fb = document.querySelectorAll("[class^='tb-']"), o = new IntersectionObserver(es => { es.forEach(e => { o.unobserve(e.target); if (e.intersectionRatio > 0) { ex();o.disconnect();}else{ i++;if(fb.length>i){o.observe(fb[i])}} }) }); if (fb.length) { o.observe(fb[i]) } } }) </script><noscript>
+		<link rel="stylesheet" href="https://www.asterisk.org/wp-content/plugins/wp-views/vendor/toolset/blocks/public/css/style.css"></noscript><style>
+				.e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload),
+				.e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload) * {
+					background-image: none !important;
+				}
+				@media screen and (max-height: 1024px) {
+					.e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload),
+					.e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload) * {
+						background-image: none !important;
+					}
+				}
+				@media screen and (max-height: 640px) {
+					.e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload),
+					.e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload) * {
+						background-image: none !important;
+					}
+				}
+			</style><link rel="icon" href="https://www.asterisk.org/wp-content/uploads/favicon.ico" sizes="32x32"><link rel="icon" href="https://www.asterisk.org/wp-content/uploads/favicon.ico" sizes="192x192"><link rel="apple-touch-icon" href="https://www.asterisk.org/wp-content/uploads/favicon.ico"><meta name="msapplication-TileImage" content="https://www.asterisk.org/wp-content/uploads/favicon.ico"></head><body class="wp-singular post-template-default single single-post postid-8849 single-format-standard wp-custom-logo wp-embed-responsive wp-theme-hello-elementor hello-elementor-default elementor-default elementor-kit-5094 elementor-page-6479">
+
+
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NTF66V7B" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+		<header data-elementor-type="header" data-elementor-id="6215" class="elementor elementor-6215 elementor-location-header" data-elementor-post-type="elementor_library"><section class="elementor-section elementor-top-section elementor-element elementor-element-7f8f8603 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="7f8f8603" data-element_type="section" data-e-type="section" data-settings='{"background_background":"classic"}'><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-198dc539" data-id="198dc539" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-7cac8b7f elementor-widget elementor-widget-theme-site-logo elementor-widget-image" data-id="7cac8b7f" data-element_type="widget" data-e-type="widget" data-widget_type="theme-site-logo.default">
+				<div class="elementor-widget-container">
+											<a href="https://www.asterisk.org">
+			<img width="174" height="96" src="https://www.asterisk.org/wp-content/uploads/asterisk-logo.png" class="attachment-full size-full wp-image-87" alt="Asterisk Logo"></a>
+											</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-7ae1de6a" data-id="7ae1de6a" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-79589362 elementor-nav-menu__align-center elementor-nav-menu--stretch elementor-nav-menu--dropdown-mobile elementor-widget__width-auto elementor-nav-menu__text-align-aside elementor-nav-menu--toggle elementor-nav-menu--burger elementor-widget elementor-widget-nav-menu" data-id="79589362" data-element_type="widget" data-e-type="widget" data-settings='{"full_width":"stretch","submenu_icon":{"value":"&lt;i class=\"fas fa-angle-down\" aria-hidden=\"true\"&gt;&lt;\/i&gt;","library":"fa-solid"},"layout":"horizontal","toggle":"burger"}' data-widget_type="nav-menu.default">
+				<div class="elementor-widget-container">
+								<nav aria-label="Menu" class="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-underline e--animation-fade"><ul id="menu-1-79589362" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4828"><a href="https://www.asterisk.org/get-started/" class="elementor-item">Get Started</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4829"><a href="https://www.asterisk.org/downloads/" class="elementor-item">Downloads</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-4830"><a href="https://www.asterisk.org/community/" class="elementor-item">Community</a>
+<ul class="sub-menu elementor-nav-menu--dropdown"><li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6404"><a href="https://www.asterisk.org/blog/" class="elementor-sub-item">Blog</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6405"><a href="https://community.asterisk.org/" class="elementor-sub-item">Forum (External)</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9802"><a href="https://www.asterisk.org/community/developers/" class="elementor-sub-item">Developers</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6403"><a href="https://www.asterisk.org/community/documentation/" class="elementor-sub-item">Documentation</a></li>
+</ul></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-4832"><a href="https://www.asterisk.org/products/" class="elementor-item">Products</a>
+<ul class="sub-menu elementor-nav-menu--dropdown"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8824"><a href="https://www.asterisk.org/support/" class="elementor-sub-item">Support</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6407"><a href="https://www.asterisk.org/products/training/" class="elementor-sub-item">Training</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6409"><a href="https://www.asterisk.org/products/sip-trunk/" class="elementor-sub-item">SIP PSTN Trunking</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-11178"><a href="#" class="elementor-sub-item elementor-item-anchor">Hardware</a>
+	<ul class="sub-menu elementor-nav-menu--dropdown"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6411"><a href="https://www.asterisk.org/products/ip-phones/" class="elementor-sub-item">Phones</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6412"><a href="https://www.asterisk.org/products/ip-pbx/" class="elementor-sub-item">PBX Systems</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6413"><a href="https://www.asterisk.org/products/voip-gateways/" class="elementor-sub-item">VoIP Gateways</a></li>
+	</ul></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6408"><a href="https://www.asterisk.org/products/software/" class="elementor-sub-item">Software</a>
+	<ul class="sub-menu elementor-nav-menu--dropdown"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8745"><a href="https://www.asterisk.org/products/add-ons/" class="elementor-sub-item">Add-Ons</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6410"><a href="https://www.asterisk.org/get-started/applications/ivr/" class="elementor-sub-item">IVR</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-11049"><a href="https://www.asterisk.org/products/software/licensing/" class="elementor-sub-item">Licensing</a></li>
+	</ul></li>
+</ul></li>
+</ul></nav><div class="elementor-menu-toggle" role="button" tabindex="0" aria-label="Menu Toggle" aria-expanded="false">
+			<i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--open eicon-menu-bar"></i><i aria-hidden="true" role="presentation" class="elementor-menu-toggle__icon--close eicon-close"></i>		</div>
+					<nav class="elementor-nav-menu--dropdown elementor-nav-menu__container" aria-hidden="true"><ul id="menu-2-79589362" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4828"><a href="https://www.asterisk.org/get-started/" class="elementor-item" tabindex="-1">Get Started</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4829"><a href="https://www.asterisk.org/downloads/" class="elementor-item" tabindex="-1">Downloads</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-4830"><a href="https://www.asterisk.org/community/" class="elementor-item" tabindex="-1">Community</a>
+<ul class="sub-menu elementor-nav-menu--dropdown"><li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6404"><a href="https://www.asterisk.org/blog/" class="elementor-sub-item" tabindex="-1">Blog</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6405"><a href="https://community.asterisk.org/" class="elementor-sub-item" tabindex="-1">Forum (External)</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-9802"><a href="https://www.asterisk.org/community/developers/" class="elementor-sub-item" tabindex="-1">Developers</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6403"><a href="https://www.asterisk.org/community/documentation/" class="elementor-sub-item" tabindex="-1">Documentation</a></li>
+</ul></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-4832"><a href="https://www.asterisk.org/products/" class="elementor-item" tabindex="-1">Products</a>
+<ul class="sub-menu elementor-nav-menu--dropdown"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8824"><a href="https://www.asterisk.org/support/" class="elementor-sub-item" tabindex="-1">Support</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6407"><a href="https://www.asterisk.org/products/training/" class="elementor-sub-item" tabindex="-1">Training</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6409"><a href="https://www.asterisk.org/products/sip-trunk/" class="elementor-sub-item" tabindex="-1">SIP PSTN Trunking</a></li>
+	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-11178"><a href="#" class="elementor-sub-item elementor-item-anchor" tabindex="-1">Hardware</a>
+	<ul class="sub-menu elementor-nav-menu--dropdown"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6411"><a href="https://www.asterisk.org/products/ip-phones/" class="elementor-sub-item" tabindex="-1">Phones</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6412"><a href="https://www.asterisk.org/products/ip-pbx/" class="elementor-sub-item" tabindex="-1">PBX Systems</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6413"><a href="https://www.asterisk.org/products/voip-gateways/" class="elementor-sub-item" tabindex="-1">VoIP Gateways</a></li>
+	</ul></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6408"><a href="https://www.asterisk.org/products/software/" class="elementor-sub-item" tabindex="-1">Software</a>
+	<ul class="sub-menu elementor-nav-menu--dropdown"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8745"><a href="https://www.asterisk.org/products/add-ons/" class="elementor-sub-item" tabindex="-1">Add-Ons</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6410"><a href="https://www.asterisk.org/get-started/applications/ivr/" class="elementor-sub-item" tabindex="-1">IVR</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-11049"><a href="https://www.asterisk.org/products/software/licensing/" class="elementor-sub-item" tabindex="-1">Licensing</a></li>
+	</ul></li>
+</ul></li>
+</ul></nav></div>
+				</div>
+				<div class="elementor-element elementor-element-fff5c60 elementor-align-center elementor-mobile-align-right elementor-widget__width-auto elementor-widget elementor-widget-button" data-id="fff5c60" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
+				<div class="elementor-widget-container">
+									<div class="elementor-button-wrapper">
+					<a class="elementor-button elementor-button-link elementor-size-sm elementor-animation-grow" href="#elementor-action%3Aaction%3Dpopup%3Aopen%26settings%3DeyJpZCI6IjUzNDAiLCJ0b2dnbGUiOmZhbHNlfQ%3D%3D">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<i aria-hidden="true" class="fas fa-search"></i>			</span>
+								</span>
+					</a>
+				</div>
+								</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section></header><div data-elementor-type="single-post" data-elementor-id="6479" class="elementor elementor-6479 elementor-location-single post-8849 post type-post status-publish format-standard hentry category-architecture category-asterisk-21 category-build category-project category-project-general category-releases category-sip tag-asterisk tag-chan_sip tag-sip" data-elementor-post-type="elementor_library">
+					<section class="elementor-section elementor-top-section elementor-element elementor-element-421ee882 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="421ee882" data-element_type="section" data-e-type="section" data-settings='{"background_background":"classic"}'><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-56b01b70" data-id="56b01b70" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-2185a00e elementor-widget elementor-widget-heading" data-id="2185a00e" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h1 class="elementor-heading-title elementor-size-default">Asterisk 21 Module Removal – chan_sip</h1>				</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-4a251a99 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="4a251a99" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-442bfce8" data-id="442bfce8" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-b8c22f elementor-widget elementor-widget-image" data-id="b8c22f" data-element_type="widget" data-e-type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container">
+															<img src="https://secure.gravatar.com/avatar/c3a51504e32812091f61616c6cd7b99eb65896721459b2659f3e528cedf5309c?s=96&amp;d=blank&amp;r=g" title="" alt="" loading="lazy"></div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-483d1bf5" data-id="483d1bf5" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-319eb4a5 elementor-mobile-align-center elementor-widget elementor-widget-post-info" data-id="319eb4a5" data-element_type="widget" data-e-type="widget" data-widget_type="post-info.default">
+				<div class="elementor-widget-container">
+							<ul class="elementor-inline-items elementor-icon-list-items elementor-post-info"><li class="elementor-icon-list-item elementor-repeater-item-eea95f0 elementor-inline-item" itemprop="author">
+						<a href="https://www.asterisk.org/author/mbradeen/">
+														<span class="elementor-icon-list-text elementor-post-info__item elementor-post-info__item--type-author">
+										Mike Bradeen					</span>
+									</a>
+				</li>
+				</ul></div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section><div class="elementor-element elementor-element-e8948eb elementor-widget elementor-widget-post-info" data-id="e8948eb" data-element_type="widget" data-e-type="widget" data-widget_type="post-info.default">
+				<div class="elementor-widget-container">
+							<ul class="elementor-inline-items elementor-icon-list-items elementor-post-info"><li class="elementor-icon-list-item elementor-repeater-item-abb93d5 elementor-inline-item" itemprop="datePublished">
+						<a href="https://www.asterisk.org/2023/01/18/">
+											<span class="elementor-icon-list-icon">
+								<i aria-hidden="true" class="fas fa-calendar"></i>							</span>
+									<span class="elementor-icon-list-text elementor-post-info__item elementor-post-info__item--type-date">
+										<time>January 18, 2023</time></span>
+									</a>
+				</li>
+				<li class="elementor-icon-list-item elementor-repeater-item-928dbcf elementor-inline-item" itemprop="about">
+										<span class="elementor-icon-list-icon">
+								<i aria-hidden="true" class="fas fa-tags"></i>							</span>
+									<span class="elementor-icon-list-text elementor-post-info__item elementor-post-info__item--type-terms">
+										<span class="elementor-post-info__terms-list">
+				<a href="https://www.asterisk.org/topics/architecture/" class="elementor-post-info__terms-list-item">Architecture</a>, <a href="https://www.asterisk.org/topics/asterisk-21/" class="elementor-post-info__terms-list-item">Asterisk 21</a>, <a href="https://www.asterisk.org/topics/build/" class="elementor-post-info__terms-list-item">Build</a>, <a href="https://www.asterisk.org/topics/project/" class="elementor-post-info__terms-list-item">Project</a>, <a href="https://www.asterisk.org/topics/project-general/" class="elementor-post-info__terms-list-item">Project General</a>, <a href="https://www.asterisk.org/topics/releases/" class="elementor-post-info__terms-list-item">Releases</a>, <a href="https://www.asterisk.org/topics/sip/" class="elementor-post-info__terms-list-item">SIP</a>				</span>
+					</span>
+								</li>
+				<li class="elementor-icon-list-item elementor-repeater-item-e20c74d elementor-inline-item" itemprop="about">
+										<span class="elementor-icon-list-icon">
+								<i aria-hidden="true" class="fas fa-tags"></i>							</span>
+									<span class="elementor-icon-list-text elementor-post-info__item elementor-post-info__item--type-terms">
+										<span class="elementor-post-info__terms-list">
+				<a href="https://www.asterisk.org/keywords/asterisk/" class="elementor-post-info__terms-list-item">Asterisk</a>, <a href="https://www.asterisk.org/keywords/chan_sip/" class="elementor-post-info__terms-list-item">chan_sip</a>, <a href="https://www.asterisk.org/keywords/sip/" class="elementor-post-info__terms-list-item">sip</a>				</span>
+					</span>
+								</li>
+				</ul></div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section><section class="elementor-section elementor-top-section elementor-element elementor-element-35b83438 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="35b83438" data-element_type="section" data-e-type="section" data-settings='{"background_background":"classic"}'><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-514d36d7" data-id="514d36d7" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-33cb09cb elementor-widget elementor-widget-breadcrumbs" data-id="33cb09cb" data-element_type="widget" data-e-type="widget" data-widget_type="breadcrumbs.default">
+				<div class="elementor-widget-container">
+					<p id="breadcrumbs"><span><span><a href="https://www.asterisk.org/">Home</a></span> &gt; <span><a href="https://www.asterisk.org/blog/">Blog</a></span> &gt; <span class="breadcrumb_last" aria-current="page">Asterisk 21 Module Removal – chan_sip</span></span></p>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section><section class="elementor-section elementor-top-section elementor-element elementor-element-17968799 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="17968799" data-element_type="section" data-e-type="section" data-settings='{"background_background":"classic"}'><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-66 elementor-top-column elementor-element elementor-element-44aa4c8b" data-id="44aa4c8b" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-421a0e2a elementor-widget elementor-widget-theme-post-title elementor-page-title elementor-widget-heading" data-id="421a0e2a" data-element_type="widget" data-e-type="widget" data-widget_type="theme-post-title.default">
+				<div class="elementor-widget-container">
+					<h1 class="elementor-heading-title elementor-size-default">Asterisk 21 Module Removal – chan_sip</h1>				</div>
+				</div>
+				<div class="elementor-element elementor-element-7f3781cd elementor-widget elementor-widget-theme-post-content" data-id="7f3781cd" data-element_type="widget" data-e-type="widget" data-widget_type="theme-post-content.default">
+				<div class="elementor-widget-container">
+					<p>chan_sip will no longer be included with Asterisk as of the release of version 21.</p>
+<p>Deprecated in <a href="https://wiki.asterisk.org/wiki/display/AST/Asterisk+Module+Deprecations">version 17</a>, chan_sip has been scheduled for removal <a href="https://www.asterisk.org/deprecating-chan_sip-asterisk-17-0-0-rc2-release/">f</a><a href="https://www.asterisk.org/deprecating-chan_sip-asterisk-17-0-0-rc2-release/">or some time</a>.</p>
+<p>The replacement, <em>chan_pjsip</em> has been in production on countless systems for a number of years.  Sangoma’s own PBXs switched years ago and many providers now require or at least <em>strongly encourage</em> it’s use when connecting to their services.</p>
+<p>If you haven’t become familiar with chan_pjsip yet, the best time was yesterday but today will have to do.  chan_pjsip is named so because it uses <a href="https://www.pjsip.org/about.htm">pjsip</a> to handle the SIP messaging.  <a href="https://www.pjsip.org/about.htm">pjsip</a> itself is not maintained by the Asterisk team.  We do however, work closely with its <a href="http://www.teluu.com/">maintainers</a> to resolve issues that may potentially affect Asterisk.</p>
+<p>This has worked out well so far and ensures that both Asterisk and the SIP stack that it uses are vetted and well maintained.  This helps us be responsive to issues and feature requests while also making sure that the SIP stack used by Asterisk remains efficient and secure.  Testing now only needs to be done against one SIP stack, simplifying our build and test processes.</p>
+<p>Within the Asterisk release is a script to help with this conversion, <a href="https://wiki.asterisk.org/wiki/display/AST/Migrating+from+chan_sip+to+res_pjsip">sip_to_pjsip.py</a> – but please refer to the <a href="https://wiki.asterisk.org/wiki/display/AST/Configuring+res_pjsip">res_pjsip wiki</a> to make sure that the configuration options post conversion are appropriate for your system.  A good starting point can also be found <a href="https://www.asterisk.org/pjsip-configuration-design/">here</a>.  chan_pjsip also includes support for configuration <a href="https://www.asterisk.org/pjsip-configuration-wizard/">wizards</a>, which can simplify endpoint configuration greatly.</p>
+<p>chan_sip is not disappearing from the internet.  We understand that there are those who are not yet willing to part with chan_sip.  The patch(es) for it’s removal will be generated as part of the removal process.  One of the beautiful things about open source software is that you can fork and maintain for yourself whatever you are able.  Other current versions of Asterisk will continue to include chan_sip</p>
+<p>chan_pjsip is the future, and also as of Asterisk 21 – the present.</p>
+<p> </p>
+				</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-4478fa23 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="4478fa23" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-131b9a04" data-id="131b9a04" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-34470b41 elementor-widget elementor-widget-heading" data-id="34470b41" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h3 class="elementor-heading-title elementor-size-default">About the Author</h3>				</div>
+				</div>
+				<div class="elementor-element elementor-element-683e0b58 elementor-author-box--link-yes elementor-author-box--image-valign-top elementor-author-box--avatar-yes elementor-author-box--name-yes elementor-author-box--biography-yes elementor-widget elementor-widget-author-box" data-id="683e0b58" data-element_type="widget" data-e-type="widget" data-widget_type="author-box.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-author-box">
+							<div class="elementor-author-box__avatar">
+					<img src="https://secure.gravatar.com/avatar/c3a51504e32812091f61616c6cd7b99eb65896721459b2659f3e528cedf5309c?s=300&amp;d=blank&amp;r=g" alt="Picture of Mike Bradeen" loading="lazy"></div>
+			
+			<div class="elementor-author-box__text">
+									<div>
+						<h4 class="elementor-author-box__name">
+							Mike Bradeen						</h4>
+					</div>
+				
+									<div class="elementor-author-box__bio">
+						Telephony software guy.					</div>
+				
+									<a class="elementor-author-box__button elementor-button elementor-size-xs" href="https://www.asterisk.org/author/mbradeen/">
+						See All of Author's Posts					</a>
+							</div>
+		</div>
+						</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section></div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-597941db" data-id="597941db" data-element_type="column" data-e-type="column" data-settings='{"background_background":"classic"}'>
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-6fc66739 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="6fc66739" data-element_type="section" data-e-type="section" data-settings='{"background_background":"classic"}'><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-40509a41" data-id="40509a41" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+							</div>
+		</div>
+					</div>
+		</section><div class="elementor-element elementor-element-c89c102 elementor-widget elementor-widget-wp-widget-rss" data-id="c89c102" data-element_type="widget" data-e-type="widget" data-widget_type="wp-widget-rss.default">
+				<div class="elementor-widget-container">
+					<h5><a class="rsswidget rss-widget-feed" href="https://www.sangoma.com/feed/"><img class="rss-widget-icon" style="border:0" width="14" height="14" src="https://www.asterisk.org/wp-includes/images/rss.png" alt="RSS"></a> <a class="rsswidget rss-widget-title" href="https://sangoma.com/">The Sangoma Blog</a></h5><nav aria-label="The Sangoma Blog"><ul><li><a class="rsswidget" href="https://sangoma.com/blog/how-to-set-up-a-hosted-pbx-for-remote-teams/">How to Set Up a Hosted PBX for Remote Teams</a></li><li><a class="rsswidget" href="https://sangoma.com/blog/hosted-pbx-features-benefits-and-the-best-providers/">Hosted PBX: Features, Benefits, and the Best Providers</a></li><li><a class="rsswidget" href="https://sangoma.com/blog/voip-for-healthcare-5-crucial-ways-it-benefits-providers/">VoIP for Healthcare: 5 Crucial Ways It Benefits Providers</a></li><li><a class="rsswidget" href="https://sangoma.com/blog/ai-receptionist-vs-ivr-vs-virtual-agent-for-small-business-calls/">AI Receptionist vs IVR vs Virtual Agent for Small Business Calls</a></li><li><a class="rsswidget" href="https://sangoma.com/blog/why-healthcare-is-a-strong-opportunity-for-ucaas-vendors/">Why Healthcare Is a Strong Opportunity for UCaaS Vendors</a></li></ul></nav></div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section></div>
+				<footer data-elementor-type="footer" data-elementor-id="34" class="elementor elementor-34 elementor-location-footer" data-elementor-post-type="elementor_library"><footer class="elementor-section elementor-top-section elementor-element elementor-element-757948e3 elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="757948e3" data-element_type="section" data-e-type="section" data-settings='{"background_background":"classic"}'><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-58d2f597" data-id="58d2f597" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-514947ef elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="514947ef" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-59bb6e1d" data-id="59bb6e1d" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-1408ceee elementor-nav-menu__align-start elementor-nav-menu--dropdown-none elementor-widget elementor-widget-nav-menu" data-id="1408ceee" data-element_type="widget" data-e-type="widget" data-settings='{"layout":"horizontal","submenu_icon":{"value":"&lt;i class=\"fas fa-caret-down\" aria-hidden=\"true\"&gt;&lt;\/i&gt;","library":"fa-solid"}}' data-widget_type="nav-menu.default">
+				<div class="elementor-widget-container">
+								<nav aria-label="Menu" class="elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-horizontal e--pointer-underline e--animation-fade"><ul id="menu-1-1408ceee" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5029"><a href="https://www.asterisk.org/terms-of-use/" class="elementor-item">Terms of Use</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7203"><a href="https://www.asterisk.org/privacy/" class="elementor-item">Privacy</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7204"><a href="https://www.asterisk.org/patrons-and-donors/" class="elementor-item">Patrons And Donors</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5030"><a href="https://www.asterisk.org/contact/" class="elementor-item">Contact Us</a></li>
+</ul></nav><nav class="elementor-nav-menu--dropdown elementor-nav-menu__container" aria-hidden="true"><ul id="menu-2-1408ceee" class="elementor-nav-menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5029"><a href="https://www.asterisk.org/terms-of-use/" class="elementor-item" tabindex="-1">Terms of Use</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7203"><a href="https://www.asterisk.org/privacy/" class="elementor-item" tabindex="-1">Privacy</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7204"><a href="https://www.asterisk.org/patrons-and-donors/" class="elementor-item" tabindex="-1">Patrons And Donors</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5030"><a href="https://www.asterisk.org/contact/" class="elementor-item" tabindex="-1">Contact Us</a></li>
+</ul></nav></div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section><section class="elementor-section elementor-inner-section elementor-element elementor-element-39d37d53 elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="39d37d53" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-2a2d8aed" data-id="2a2d8aed" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-e458a9b elementor-widget elementor-widget-text-editor" data-id="e458a9b" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+				<div class="elementor-widget-container">
+									<p>©2026 Sangoma Technologies. Asterisk is a Registered Trademark of Sangoma Technologies. All rights reserved.<br><br></p>								</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-7f6a5388" data-id="7f6a5388" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-d9ba4b9 elementor-shape-circle elementor-grid-0 e-grid-align-center elementor-widget elementor-widget-social-icons" data-id="d9ba4b9" data-element_type="widget" data-e-type="widget" data-widget_type="social-icons.default">
+				<div class="elementor-widget-container">
+							<div class="elementor-social-icons-wrapper elementor-grid" role="list">
+							<span class="elementor-grid-item" role="listitem">
+					<a class="elementor-icon elementor-social-icon elementor-social-icon- elementor-animation-grow elementor-repeater-item-3b2c817" href="http://www.x.com/asteriskdev" target="_blank">
+						<span class="elementor-screen-only"></span>
+						<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1227" viewbox="0 0 1200 1227" fill="none"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="white"></path></svg></a>
+				</span>
+							<span class="elementor-grid-item" role="listitem">
+					<a class="elementor-icon elementor-social-icon elementor-social-icon-facebook elementor-animation-grow elementor-repeater-item-5ff2784" href="https://www.facebook.com/sangomaasterisk?ref=s" target="_blank">
+						<span class="elementor-screen-only">Facebook</span>
+						<i aria-hidden="true" class="fab fa-facebook"></i>					</a>
+				</span>
+							<span class="elementor-grid-item" role="listitem">
+					<a class="elementor-icon elementor-social-icon elementor-social-icon-youtube elementor-animation-grow elementor-repeater-item-b8ff7bb" href="https://www.youtube.com/user/asteriskvideos" target="_blank">
+						<span class="elementor-screen-only">Youtube</span>
+						<i aria-hidden="true" class="fab fa-youtube"></i>					</a>
+				</span>
+							<span class="elementor-grid-item" role="listitem">
+					<a class="elementor-icon elementor-social-icon elementor-social-icon-linkedin elementor-animation-grow elementor-repeater-item-c4b438a" href="https://www.linkedin.com/showcase/freepbx/" target="_blank">
+						<span class="elementor-screen-only">Linkedin</span>
+						<i aria-hidden="true" class="fab fa-linkedin"></i>					</a>
+				</span>
+					</div>
+						</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section></div>
+		</div>
+					</div>
+		</footer></footer><script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/*"},{"not":{"href_matches":["\/wp-*.php","\/wp-admin\/*","\/wp-content\/uploads\/*","\/wp-content\/*","\/wp-content\/plugins\/*","\/wp-content\/themes\/hello-elementor\/*","\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script><script type="text/javascript">
+				(function() {
+					// Global page view and session tracking for UAEL Modal Popup feature
+					try {
+						// Session tracking: increment if this is a new session
+						
+						// Check if any popup on this page uses current page tracking
+						var hasCurrentPageTracking = false;
+						var currentPagePopups = [];
+						// Check all modal popups on this page for current page tracking
+						if (typeof jQuery !== 'undefined') {
+							jQuery('.uael-modal-parent-wrapper').each(function() {
+								var scope = jQuery(this).data('page-views-scope');
+								var enabled = jQuery(this).data('page-views-enabled');
+								var popupId = jQuery(this).attr('id').replace('-overlay', '');	
+								if (enabled === 'yes' && scope === 'current') {
+									hasCurrentPageTracking = true;
+									currentPagePopups.push(popupId);
+								}
+							});
+						}
+						// Global tracking: ALWAYS increment if ANY popup on the site uses global tracking
+												// Current page tracking: increment per-page counters
+						if (hasCurrentPageTracking && currentPagePopups.length > 0) {
+							var currentUrl = window.location.href;
+							var urlKey = 'uael_page_views_' + btoa(currentUrl).replace(/[^a-zA-Z0-9]/g, '').substring(0, 50);
+							var currentPageViews = parseInt(localStorage.getItem(urlKey) || '0');
+							currentPageViews++;
+							localStorage.setItem(urlKey, currentPageViews.toString());
+							// Store URL mapping for each popup
+							for (var i = 0; i < currentPagePopups.length; i++) {
+								var popupUrlKey = 'uael_popup_' + currentPagePopups[i] + '_url_key';
+								localStorage.setItem(popupUrlKey, urlKey);
+							}
+						}
+					} catch (e) {
+						// Silently fail if localStorage is not available
+					}
+				})();
+				</script><div data-elementor-type="popup" data-elementor-id="5340" class="elementor elementor-5340 elementor-location-popup" data-elementor-settings='{"entrance_animation":"slideInDown","entrance_animation_duration":{"unit":"px","size":1.2,"sizes":[]},"a11y_navigation":"yes","timing":[]}' data-elementor-post-type="elementor_library">
+					<section class="elementor-section elementor-top-section elementor-element elementor-element-5b491122 elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="5b491122" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-46fb80f8" data-id="46fb80f8" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-8c97ada elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="8c97ada" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-5aa0cd88" data-id="5aa0cd88" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-6f6f4568 elementor-widget elementor-widget-heading" data-id="6f6f4568" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">What can we help you find?</h2>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section><section class="elementor-section elementor-inner-section elementor-element elementor-element-09f7daa elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="09f7daa" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-4e8d1c7" data-id="4e8d1c7" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-c7e8e71 elementor-widget elementor-widget-html" data-id="c7e8e71" data-element_type="widget" data-e-type="widget" data-widget_type="html.default">
+				<div class="elementor-widget-container">
+					<section role="search" data-ss360="true"><input type="search" id="searchBox"><button id="searchButton"></button>
+</section><script src="https://cdn.sitesearch360.com/v13/sitesearch360-v13.min.js" async></script></div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section></div>
+		</div>
+					</div>
+		</section><section class="elementor-section elementor-top-section elementor-element elementor-element-81c8659 elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="81c8659" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-8ac188a" data-id="8ac188a" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-5353eab elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="5353eab" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-067cc5b" data-id="067cc5b" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-0530e6e elementor-widget elementor-widget-heading" data-id="0530e6e" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Download Asterisk</h2>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section><section class="elementor-section elementor-inner-section elementor-element elementor-element-ccc7f31 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="ccc7f31" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-23d8795" data-id="23d8795" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-d196dbd elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="d196dbd" data-element_type="widget" data-e-type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+							<ul class="elementor-icon-list-items"><li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/downloads/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Asterisk</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.freepbx.org/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">FreePBX</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/downloads/source-code/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Asterisk Source Code</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/downloads/news/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Asterisk News</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/downloads/security-advisories/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Security Advisories</span>
+											</a>
+									</li>
+						</ul></div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section></div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-2874641" data-id="2874641" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-f76db04 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="f76db04" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-c516a63" data-id="c516a63" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-2927c7f elementor-widget elementor-widget-heading" data-id="2927c7f" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Get Started</h2>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section><section class="elementor-section elementor-inner-section elementor-element elementor-element-19ce706 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="19ce706" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-964160c" data-id="964160c" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-2d53f39 elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="2d53f39" data-element_type="widget" data-e-type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+							<ul class="elementor-icon-list-items"><li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/get-started/applications/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Asterisk Applications</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/get-started/features/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Features</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/get-started/glossary/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Glossary</span>
+											</a>
+									</li>
+						</ul></div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section></div>
+		</div>
+				<div class="elementor-column elementor-col-33 elementor-top-column elementor-element elementor-element-c21475c" data-id="c21475c" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<section class="elementor-section elementor-inner-section elementor-element elementor-element-37ccd2a elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="37ccd2a" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-efa9a43" data-id="efa9a43" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-dc19dce elementor-widget elementor-widget-heading" data-id="dc19dce" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+				<div class="elementor-widget-container">
+					<h2 class="elementor-heading-title elementor-size-default">Other Resources</h2>				</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section><section class="elementor-section elementor-inner-section elementor-element elementor-element-f6f84e5 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="f6f84e5" data-element_type="section" data-e-type="section"><div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-ad473d6" data-id="ad473d6" data-element_type="column" data-e-type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-96e3459 elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="96e3459" data-element_type="widget" data-e-type="widget" data-widget_type="icon-list.default">
+				<div class="elementor-widget-container">
+							<ul class="elementor-icon-list-items"><li class="elementor-icon-list-item">
+											<a href="https://wiki.asterisk.org/wiki/display/AST/Home">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Docs</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/blog/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Blog</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://community.asterisk.org/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Forums</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/products/training/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Training</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://www.asterisk.org/join/">
+
+												<span class="elementor-icon-list-icon">
+							<i aria-hidden="true" class="fas fa-asterisk"></i>						</span>
+										<span class="elementor-icon-list-text">Join</span>
+											</a>
+									</li>
+						</ul></div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section></div>
+		</div>
+					</div>
+		</section></div>
+					<script>
+				const lazyloadRunObserver = () => {
+					const lazyloadBackgrounds = document.querySelectorAll( `.e-con.e-parent:not(.e-lazyloaded)` );
+					const lazyloadBackgroundObserver = new IntersectionObserver( ( entries ) => {
+						entries.forEach( ( entry ) => {
+							if ( entry.isIntersecting ) {
+								let lazyloadBackground = entry.target;
+								if( lazyloadBackground ) {
+									lazyloadBackground.classList.add( 'e-lazyloaded' );
+								}
+								lazyloadBackgroundObserver.unobserve( entry.target );
+							}
+						});
+					}, { rootMargin: '200px 0px 200px 0px' } );
+					lazyloadBackgrounds.forEach( ( lazyloadBackground ) => {
+						lazyloadBackgroundObserver.observe( lazyloadBackground );
+					} );
+				};
+				const events = [
+					'DOMContentLoaded',
+					'elementor/lazyload/observe',
+				];
+				events.forEach( ( event ) => {
+					document.addEventListener( event, lazyloadRunObserver );
+				} );
+			</script><link rel="stylesheet" id="elementor-post-5340-css" href="https://www.asterisk.org/wp-content/uploads/elementor/css/post-5340.css?ver=1793210059" media="all"><link rel="stylesheet" id="e-animation-slideInDown-css" href="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/animations/styles/slideInDown.min.css?ver=4.1.4" media="all"><link rel="stylesheet" id="e-popup-css" href="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/css/conditionals/popup.min.css?ver=4.1.2" media="all"><script src="https://www.asterisk.org/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=4.1.4" id="elementor-webpack-runtime-js"></script><script src="https://www.asterisk.org/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=4.1.4" id="elementor-frontend-modules-js"></script><script src="https://www.asterisk.org/wp-includes/js/jquery/ui/core.min.js?ver=1.13.3" id="jquery-ui-core-js"></script><script id="elementor-frontend-js-extra">
+var uael_particles_script = {"uael_particles_url":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/min-js\/uael-particles.min.js","particles_url":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/lib\/particles\/particles.min.js","snowflakes_image":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/img\/snowflake.svg","gift":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/img\/gift.png","tree":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/img\/tree.png","skull":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/img\/skull.png","ghost":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/img\/ghost.png","moon":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/img\/moon.png","bat":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/img\/bat.png","pumpkin":"https:\/\/www.asterisk.org\/wp-content\/plugins\/ultimate-elementor\/assets\/img\/pumpkin.png"};
+</script><script id="elementor-frontend-js-before">
+var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false,"isScriptDebug":false},"i18n":{"shareOnFacebook":"Share on Facebook","shareOnTwitter":"Share on Twitter","pinIt":"Pin it","download":"Download","downloadImage":"Download image","fullscreen":"Fullscreen","zoom":"Zoom","share":"Share","playVideo":"Play Video","previous":"Previous","next":"Next","close":"Close","a11yCarouselPrevSlideMessage":"Previous slide","a11yCarouselNextSlideMessage":"Next slide","a11yCarouselFirstSlideMessage":"This is the first slide","a11yCarouselLastSlideMessage":"This is the last slide","a11yCarouselPaginationBulletMessage":"Go to slide"},"is_rtl":false,"breakpoints":{"xs":0,"sm":480,"md":768,"lg":1025,"xl":1440,"xxl":1600},"responsive":{"breakpoints":{"mobile":{"label":"Mobile Portrait","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Mobile Landscape","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablet Portrait","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablet Landscape","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Laptop","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"Widescreen","value":2400,"default_value":2400,"direction":"min","is_enabled":false}},"hasCustomBreakpoints":false},"version":"4.1.4","is_static":false,"experimentalFeatures":{"additional_custom_breakpoints":true,"e_panel_promotions":true,"theme_builder_v2":true,"global_classes_should_enforce_capabilities":true,"e_variables":true,"e_opt_in_v4_page":true,"e_components":true,"e_interactions":true,"e_widget_creation":true,"import-export-customization":true,"e_pro_atomic_form":true,"e_pro_variables":true,"e_pro_interactions":true},"urls":{"assets":"https:\/\/www.asterisk.org\/wp-content\/plugins\/elementor\/assets\/","ajaxurl":"https:\/\/www.asterisk.org\/wp-admin\/admin-ajax.php","uploadUrl":"https:\/\/www.asterisk.org\/wp-content\/uploads"},"nonces":{"floatingButtonsClickTracking":"70cc014793","atomicFormsSendForm":"352068fec8"},"swiperClass":"swiper","settings":{"page":[],"editorPreferences":[]},"kit":{"body_background_background":"classic","active_breakpoints":["viewport_mobile","viewport_tablet"],"global_image_lightbox":"yes","lightbox_enable_counter":"yes","lightbox_enable_fullscreen":"yes","lightbox_enable_zoom":"yes","lightbox_enable_share":"yes","lightbox_title_src":"title","lightbox_description_src":"description"},"post":{"id":8849,"title":"Asterisk%2021%20Module%20Removal%20-%20chan_sip%20%E2%8B%86%20Asterisk","excerpt":"","featuredImage":false}};
+</script><script src="https://www.asterisk.org/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=4.1.4" id="elementor-frontend-js"></script><script id="elementor-frontend-js-after">
+window.scope_array = [];
+								window.backend = 0;
+								jQuery.cachedScript = function( url, options ) {
+									// Allow user to set any option except for dataType, cache, and url.
+									options = jQuery.extend( options || {}, {
+										dataType: "script",
+										cache: true,
+										url: url
+									});
+									// Return the jqXHR object so we can chain callbacks.
+									return jQuery.ajax( options );
+								};
+							    jQuery( window ).on( "elementor/frontend/init", function() {
+									elementorFrontend.hooks.addAction( "frontend/element_ready/global", function( $scope, $ ){
+										if ( "undefined" == typeof $scope ) {
+												return;
+										}
+										if ( $scope.hasClass( "uael-particle-yes" ) ) {
+											window.scope_array.push( $scope );
+											$scope.find(".uael-particle-wrapper").addClass("js-is-enabled");
+										}else{
+											return;
+										}
+										if(elementorFrontend.isEditMode() && $scope.find(".uael-particle-wrapper").hasClass("js-is-enabled") && window.backend == 0 ){
+											var uael_url = uael_particles_script.uael_particles_url;
+
+											jQuery.cachedScript( uael_url );
+											window.backend = 1;
+										}else if(elementorFrontend.isEditMode()){
+											var uael_url = uael_particles_script.uael_particles_url;
+											jQuery.cachedScript( uael_url ).done(function(){
+												var flag = true;
+											});
+										}
+									});
+								});
+
+								// Added both `document` and `window` event listeners to address issues where some users faced problems with the `document` event not triggering as expected.
+								// Define cachedScript globally to avoid redefining it.
+
+								jQuery.cachedScript = function(url, options) {
+									options = jQuery.extend(options || {}, {
+										dataType: "script",
+										cache: true,
+										url: url
+									});
+									return jQuery.ajax(options); // Return the jqXHR object so we can chain callbacks
+								};
+
+								let uael_particle_loaded = false; //flag to prevent multiple script loads.
+
+								jQuery( document ).on( "ready elementor/popup/show", () => {
+										loadParticleScript();
+								});
+
+								jQuery( window ).one( "elementor/frontend/init", () => {
+								 	if (!uael_particle_loaded) {
+										loadParticleScript();
+									}
+								});
+								
+								function loadParticleScript(){
+								 	// Use jQuery to check for the presence of the element
+									if (jQuery(".uael-particle-yes").length < 1) {
+										return;
+									}
+									
+									uael_particle_loaded = true;
+									var uael_url = uael_particles_script.uael_particles_url;
+									// Call the cachedScript function
+									jQuery.cachedScript(uael_url);
+								}
+</script><script src="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/lib/smartmenus/jquery.smartmenus.min.js?ver=1.2.1" id="smartmenus-js"></script><script src="https://www.asterisk.org/wp-content/plugins/elementor/assets/lib/swiper/v8/swiper.min.js?ver=8.4.5" id="swiper-js"></script><script src="https://www.asterisk.org/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.4.1" id="page-links-to-js"></script><script src="https://www.asterisk.org/wp-content/plugins/highlighting-code-block/assets/js/prism.js?ver=2.2.0" id="hcb-prism-js"></script><script src="https://www.asterisk.org/wp-includes/js/clipboard.min.js?ver=2.0.11" id="clipboard-js"></script><script id="hcb-script-js-extra">
+var hcbVars = {"showCopyBtn":"1","copyBtnLabel":"Copy code to clipboard"};
+</script><script src="https://www.asterisk.org/wp-content/plugins/highlighting-code-block/build/js/hcb_script.js?ver=2.2.0" id="hcb-script-js"></script><script src="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/js/webpack-pro.runtime.min.js?ver=4.1.2" id="elementor-pro-webpack-runtime-js"></script><script src="https://www.asterisk.org/wp-includes/js/dist/hooks.min.js?ver=4d63a3d491d11ffd8ac6" id="wp-hooks-js"></script><script src="https://www.asterisk.org/wp-includes/js/dist/i18n.min.js?ver=5e580eb46a90c2b997e6" id="wp-i18n-js"></script><script id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+</script><script id="elementor-pro-frontend-js-before">
+var ElementorProFrontendConfig = {"ajaxurl":"https:\/\/www.asterisk.org\/wp-admin\/admin-ajax.php","nonce":"6a5fddf792","urls":{"assets":"https:\/\/www.asterisk.org\/wp-content\/plugins\/elementor-pro\/assets\/","rest":"https:\/\/www.asterisk.org\/wp-json\/"},"settings":{"lazy_load_background_images":true},"popup":{"hasPopUps":true},"shareButtonsNetworks":{"facebook":{"title":"Facebook","has_counter":true},"twitter":{"title":"Twitter"},"linkedin":{"title":"LinkedIn","has_counter":true},"pinterest":{"title":"Pinterest","has_counter":true},"reddit":{"title":"Reddit","has_counter":true},"vk":{"title":"VK","has_counter":true},"odnoklassniki":{"title":"OK","has_counter":true},"tumblr":{"title":"Tumblr"},"digg":{"title":"Digg"},"skype":{"title":"Skype"},"stumbleupon":{"title":"StumbleUpon","has_counter":true},"mix":{"title":"Mix"},"telegram":{"title":"Telegram"},"pocket":{"title":"Pocket","has_counter":true},"xing":{"title":"XING","has_counter":true},"whatsapp":{"title":"WhatsApp"},"email":{"title":"Email"},"print":{"title":"Print"},"x-twitter":{"title":"X"},"threads":{"title":"Threads"}},"facebook_sdk":{"lang":"en_US","app_id":""},"lottie":{"defaultAnimationUrl":"https:\/\/www.asterisk.org\/wp-content\/plugins\/elementor-pro\/modules\/lottie\/assets\/animations\/default.json"}};
+</script><script src="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/js/frontend.min.js?ver=4.1.2" id="elementor-pro-frontend-js"></script><script src="https://www.asterisk.org/wp-content/plugins/elementor-pro/assets/js/elements-handlers.min.js?ver=4.1.2" id="pro-elements-handlers-js"></script><script type="text/javascript">
+   /* Create a configuration object */
+   var ss360Config = {
+      /* Your site id */
+      siteId: 'www.sangoma.com',
+      /* A CSS selector that points to your search  box */
+      searchBox: {selector: '#searchBox'}
+   };
+</script></body></html>

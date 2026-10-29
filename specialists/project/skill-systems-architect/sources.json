@@ -733,6 +733,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-602d7de3",
+   "title": "ceph-stretch-blog",
+   "url": "https://ceph.io/en/news/blog/2025/stretch-cluuuuuuuuusters-part1/",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/ceph.io/en-news-blog-2025-stretch-cluuuuuuuuusters-part1-602d7de3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-8b157e6b",
    "title": "choosealicense.com",
    "url": "https://choosealicense.com/licenses/",
@@ -933,6 +943,26 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-d236cd20",
+   "title": "asterisk-versions",
+   "url": "https://docs.asterisk.org/About-the-Project/Asterisk-Versions/",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/web/docs.asterisk.org/About-the-Project-Asterisk-Versions-d236cd20.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-b762b4fa",
+   "title": "ebs-snapshots",
+   "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html",
+   "evidence": "CITED",
+   "note": "cited in references/fleet-management.md",
+   "generated": true,
+   "local": "sources/web/docs.aws.amazon.com/ebs-latest-userguide-ebs-snapshots.html-b762b4fa.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-30e64391",
    "title": "AWS Well-Architected: Reliability pillar",
    "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html",
@@ -993,6 +1023,26 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-7f3db9b5",
+   "title": "ceph-stretch",
+   "url": "https://docs.ceph.com/en/latest/rados/operations/stretch-mode/",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/docs.ceph.com/en-latest-rados-operations-stretch-mode-7f3db9b5.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-834617df",
+   "title": "rbd-mirror",
+   "url": "https://docs.ceph.com/en/latest/rbd/rbd-mirroring/",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/docs.ceph.com/en-latest-rbd-rbd-mirroring-834617df.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-da9ba416",
    "title": "Ceph hardware recommendations",
    "url": "https://docs.ceph.com/en/latest/start/hardware-recommendations/",
@@ -1020,6 +1070,16 @@
    "note": "cited in references/containers-and-platforms.md",
    "generated": true,
    "local": "sources/web/docs.docker.com/engine-logging-configure-4d2f0f38.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-351180c6",
+   "title": "docker-fw-url",
+   "url": "https://docs.docker.com/engine/network/packet-filtering-firewalls/",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/docs.docker.com/engine-network-packet-filtering-firewalls-351180c6.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1081,6 +1141,86 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-c74e5694",
+   "title": "Ramoops oops/panic logger",
+   "url": "https://docs.kernel.org/admin-guide/ramoops.html",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/docs.kernel.org/admin-guide-ramoops.html-c74e5694.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-906e6df7",
+   "title": "sysctl net (rmem_default, rmem_max)",
+   "url": "https://docs.kernel.org/admin-guide/sysctl/net.html",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/docs.kernel.org/admin-guide-sysctl-net.html-906e6df7.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-dd7cb807",
+   "title": "Linux tmpfs",
+   "url": "https://docs.kernel.org/filesystems/tmpfs.html",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/docs.kernel.org/filesystems-tmpfs.html-dd7cb807.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-0fd8d8f3",
+   "title": "ip-sysctl (udp_rmem_min)",
+   "url": "https://docs.kernel.org/networking/ip-sysctl.html",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/docs.kernel.org/networking-ip-sysctl.html-0fd8d8f3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-1f7b4aa3",
+   "title": "Scaling in the Linux networking stack",
+   "url": "https://docs.kernel.org/networking/scaling.html",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/docs.kernel.org/networking-scaling.html-1f7b4aa3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a60c3f75",
+   "title": "litellm-url",
+   "url": "https://docs.litellm.ai/docs/simple_proxy",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/docs.litellm.ai/docs-simple_proxy-a60c3f75.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-f0704225",
+   "title": "Mender introduction",
+   "url": "https://docs.mender.io/overview/introduction",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/docs.mender.io/overview-introduction-f0704225.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e4476534",
+   "title": "nautobot-perms",
+   "url": "https://docs.nautobot.com/projects/core/en/stable/user-guide/administration/guides/permissions/",
+   "evidence": "CITED",
+   "note": "cited in references/fleet-management.md",
+   "generated": true,
+   "local": "sources/web/docs.nautobot.com/projects-core-en-stable-user-guide-administration-guides-permissions-e4476534.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-043ee5ba",
    "title": "Ollama FAQ: concurrent requests",
    "url": "https://docs.ollama.com/faq",
@@ -1101,6 +1241,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-ac6d2a3c",
+   "title": "rhcs-stretch",
+   "url": "https://docs.redhat.com/en/documentation/red_hat_ceph_storage/9/html/administration_guide/stretch-clusters-for-ceph-storage",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/docs.redhat.com/en-documentation-red_hat_ceph_storage-9-html-administration_guide-stretch-cluste-ac6d2a3c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-eae2f4d3",
    "title": "Structurizr documentation",
    "url": "https://docs.structurizr.com/",
@@ -1111,6 +1261,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-07b08302",
+   "title": "vmagent",
+   "url": "https://docs.victoriametrics.com/victoriametrics/vmagent/",
+   "evidence": "CITED",
+   "note": "cited in references/fleet-management.md",
+   "generated": true,
+   "local": "sources/web/docs.victoriametrics.com/victoriametrics-vmagent-07b08302.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-e56b6e7f",
    "title": "optimization-url",
    "url": "https://docs.vllm.ai/en/latest/configuration/optimization.html",
@@ -1118,6 +1278,16 @@
    "note": "cited in references/ai-inference-platforms.md",
    "generated": true,
    "local": "sources/web/docs.vllm.ai/en-latest-configuration-optimization.html-e56b6e7f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9ab34caa",
+   "title": "Eclipse hawkBit",
+   "url": "https://eclipse.dev/hawkbit/",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/eclipse.dev/hawkbit-9ab34caa.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1227,11 +1397,27 @@
    "generated": true
   },
   {
+   "id": "C-893312b4",
+   "title": "llama-bench-url",
+   "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/llama-bench/README.md",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true
+  },
+  {
    "id": "C-bc5113a3",
    "title": "llamacpp-url",
    "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
    "evidence": "CITED",
    "note": "cited in references/ai-inference-platforms.md",
+   "generated": true
+  },
+  {
+   "id": "C-f6eb5dde",
+   "title": "fatrace source",
+   "url": "https://github.com/martinpitt/fatrace/blob/master/fatrace.c",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
    "generated": true
   },
   {
@@ -1275,6 +1461,14 @@
    "generated": true
   },
   {
+   "id": "C-da4ef988",
+   "title": "DiffSync",
+   "url": "https://github.com/networktocode/diffsync",
+   "evidence": "CITED",
+   "note": "cited in references/fleet-management.md",
+   "generated": true
+  },
+  {
    "id": "C-11a62375",
    "title": "l-nornir",
    "url": "https://github.com/nornir-automation/nornir/blob/main/LICENSE",
@@ -1299,11 +1493,27 @@
    "generated": true
   },
   {
+   "id": "C-f464b537",
+   "title": "ne1url",
+   "url": "https://github.com/prometheus/node_exporter/blob/master/collector/filesystem_linux.go",
+   "evidence": "CITED",
+   "note": "cited in references/observability-and-incident.md",
+   "generated": true
+  },
+  {
    "id": "C-6cd48193",
    "title": "s-sick",
    "url": "https://github.com/sickn33/antigravity-awesome-skills",
    "evidence": "CITED",
    "note": "cited in references/research-and-attribution.md",
+   "generated": true
+  },
+  {
+   "id": "C-d0690186",
+   "title": "bcm2835_wdt.c",
+   "url": "https://github.com/torvalds/linux/blob/master/drivers/watchdog/bcm2835_wdt.c",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
    "generated": true
   },
   {
@@ -1501,6 +1711,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-a2794e10",
+   "title": "libvirt domain XML: network interfaces",
+   "url": "https://libvirt.org/formatdomain.html",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/libvirt.org/formatdomain.html-a2794e10.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-63eb371a",
    "title": "galera-url",
    "url": "https://mariadb.com/docs/galera-cluster/galera-architecture/quorum-control-with-weighted-votes",
@@ -1521,6 +1741,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-3e6fca8b",
+   "title": "strangler-fig",
+   "url": "https://martinfowler.com/bliki/StranglerFigApplication.html",
+   "evidence": "CITED",
+   "note": "cited in references/fleet-management.md",
+   "generated": true,
+   "local": "sources/web/martinfowler.com/bliki-StranglerFigApplication.html-3e6fca8b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-4628814d",
    "title": "Mermaid",
    "url": "https://mermaid.js.org/",
@@ -1528,6 +1758,16 @@
    "note": "cited in references/diagrams-and-deliverables.md",
    "generated": true,
    "local": "sources/web/mermaid.js.org/index-4628814d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-71312bd8",
+   "title": "nbn-ops",
+   "url": "https://mobile.nbnco.com.au/content/dam/nbnco/presentations/wba-operations-manual-final-16-aug-11.pdf",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/pdf/mobile.nbnco.com.au/content-dam-nbnco-presentations-wba-operations-manual-final-16-aug-11.pdf-71312bd8.pdf",
    "checked": "2026-10-29"
   },
   {
@@ -1641,6 +1881,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-a0031bbc",
+   "title": "Parquet file metadata",
+   "url": "https://parquet.apache.org/docs/file-format/metadata/",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/web/parquet.apache.org/docs-file-format-metadata-a0031bbc.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-7806d89e",
    "title": "patroni-dyn-url",
    "url": "https://patroni.readthedocs.io/en/latest/dynamic_configuration.html",
@@ -1731,6 +1981,26 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-4f002c66",
+   "title": "Alertmanager configuration",
+   "url": "https://prometheus.io/docs/alerting/latest/configuration/",
+   "evidence": "CITED",
+   "note": "cited in references/observability-and-incident.md",
+   "generated": true,
+   "local": "sources/web/prometheus.io/docs-alerting-latest-configuration-4f002c66.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-5cd1aaa1",
+   "title": "promalert",
+   "url": "https://prometheus.io/docs/practices/alerting/",
+   "evidence": "CITED",
+   "note": "cited in references/observability-and-incident.md",
+   "generated": true,
+   "local": "sources/web/prometheus.io/docs-practices-alerting-5cd1aaa1.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-a9c9428e",
    "title": "promprac",
    "url": "https://prometheus.io/docs/practices/instrumentation/",
@@ -1798,6 +2068,16 @@
    "note": "cited in references/virtualization-and-proxmox.md",
    "generated": true,
    "local": "sources/web/pve.proxmox.com/pve-docs-pve-admin-guide.html-c06835ca.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-eff3f1be",
+   "title": "RAUC documentation",
+   "url": "https://rauc.readthedocs.io/en/latest/",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/rauc.readthedocs.io/en-latest-eff3f1be.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -1991,6 +2271,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-d5d8dd0c",
+   "title": "SWUpdate documentation",
+   "url": "https://sbabic.github.io/swupdate/overview.html",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/sbabic.github.io/swupdate-overview.html-d5d8dd0c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-253812f1",
    "title": "OpenSSF Scorecard",
    "url": "https://scorecard.dev/",
@@ -2082,10 +2372,10 @@
   },
   {
    "id": "C-71b82c30",
-   "title": "Google SRE book: Monitoring distributed systems",
+   "title": "sre-monitoring",
    "url": "https://sre.google/sre-book/monitoring-distributed-systems/",
    "evidence": "CITED",
-   "note": "cited in references/red-flags.md",
+   "note": "cited in references/fleet-management.md, references/red-flags.md",
    "generated": true,
    "local": "sources/web/sre.google/sre-book-monitoring-distributed-systems-71b82c30.md.txt",
    "checked": "2026-10-29"
@@ -2161,6 +2451,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-ca59cfa3",
+   "title": "m2max-url",
+   "url": "https://support.apple.com/en-us/111340",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/support.apple.com/en-us-111340-ca59cfa3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-121f5631",
    "title": "a6url",
    "url": "https://support.apple.com/guide/business/manage-the-built-in-device-management-service-axmc7864dd73/web",
@@ -2231,6 +2531,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-a6ad30b3",
+   "title": "The Update Framework specification",
+   "url": "https://theupdateframework.github.io/specification/latest/",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/theupdateframework.github.io/specification-latest-a6ad30b3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-51279487",
    "title": "Uptime Institute tier standard",
    "url": "https://uptimeinstitute.com/tiers",
@@ -2261,6 +2571,26 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-524e533d",
+   "title": "acma-emergency",
+   "url": "https://www.acma.gov.au/emergency-calls",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/web/acma.gov.au/emergency-calls-524e533d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2494c8f5",
+   "title": "acma-avc",
+   "url": "https://www.acma.gov.au/test-nbn-service-working",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/web/acma.gov.au/test-nbn-service-working-2494c8f5.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-7bd626ad",
    "title": "Mac Studio technical specifications",
    "url": "https://www.apple.com/mac-studio/specs/",
@@ -2288,6 +2618,16 @@
    "note": "cited in references/compute-and-facilities.md",
    "generated": true,
    "local": "sources/web/ashrae.org/technical-resources-bookstore-datacom-series-144f3262.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-584c808c",
+   "title": "asterisk-chan-sip",
+   "url": "https://www.asterisk.org/asterisk-21-module-removal-chan_sip/",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/web/asterisk.org/asterisk-21-module-removal-chan_sip-584c808c.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -2341,6 +2681,16 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-0be94f23",
+   "title": "Communications Alliance AVC ID fact sheet",
+   "url": "https://www.commsalliance.com.au/wp-content/uploads/2025/06/AVC-ID-Fact-Sheet_2025.pdf",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/pdf/commsalliance.com.au/wp-content-uploads-2025-06-AVC-ID-Fact-Sheet_2025.pdf-0be94f23.pdf",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-54bc4149",
    "title": "Debian installation guide: preseeding",
    "url": "https://www.debian.org/releases/stable/amd64/apb.en.html",
@@ -2371,13 +2721,43 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-7717e905",
+   "title": "systemd-system.conf manual",
+   "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd-system.conf.html",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/freedesktop.org/software-systemd-man-latest-systemd-system.conf.html-7717e905.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-e8427e30",
-   "title": "systemd.exec(5)",
+   "title": "systemd.exec manual",
    "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html",
    "evidence": "CITED",
-   "note": "cited in references/linux-unix.md",
+   "note": "cited in references/edge-appliances.md, references/linux-unix.md",
    "generated": true,
    "local": "sources/web/freedesktop.org/software-systemd-man-latest-systemd.exec.html-e8427e30.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-3a7a0837",
+   "title": "systemd.mount manual",
+   "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.mount.html",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/freedesktop.org/software-systemd-man-latest-systemd.mount.html-3a7a0837.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9ee1e017",
+   "title": "tmpfiles.d manual",
+   "url": "https://www.freedesktop.org/software/systemd/man/latest/tmpfiles.d.html",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/freedesktop.org/software-systemd-man-latest-tmpfiles.d.html-9ee1e017.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -2401,6 +2781,26 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-7f4f7c57",
+   "title": "Uniti acquisition of OptiComm",
+   "url": "https://www.itnews.com.au/news/opticomm-snapped-up-by-uniti-for-532m-549274",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/web/itnews.com.au/news-opticomm-snapped-up-by-uniti-for-532m-549274-7f4f7c57.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-1b65225f",
+   "title": "JEDEC JESD218 SSD endurance",
+   "url": "https://www.jedec.org/standards-documents/docs/jesd218b01",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/jedec.org/standards-documents-docs-jesd218b01-1b65225f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-4f7aa3d7",
    "title": "h100-url",
    "url": "https://www.nvidia.com/en-us/data-center/h100/",
@@ -2418,6 +2818,16 @@
    "note": "cited in references/ai-inference-platforms.md",
    "generated": true,
    "local": "sources/web/nvidia.com/en-us-data-center-l40s-fbc69a18.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-c8343217",
+   "title": "dgx-spark-url",
+   "url": "https://www.nvidia.com/en-us/products/workstations/dgx-spark/",
+   "evidence": "CITED",
+   "note": "cited in references/ai-inference-platforms.md",
+   "generated": true,
+   "local": "sources/web/nvidia.com/en-us-products-workstations-dgx-spark-c8343217.md.txt",
    "checked": "2026-10-29"
   },
   {
@@ -2521,6 +2931,26 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-b3d9b36c",
+   "title": "pg-money",
+   "url": "https://www.postgresql.org/docs/current/datatype-money.html",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-current-datatype-money.html-b3d9b36c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-1ce3b8ea",
+   "title": "pg-numeric",
+   "url": "https://www.postgresql.org/docs/current/datatype-numeric.html",
+   "evidence": "CITED",
+   "note": "cited in references/service-provider-systems.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-current-datatype-numeric.html-1ce3b8ea.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-9544a68f",
    "title": "High availability and replication",
    "url": "https://www.postgresql.org/docs/current/high-availability.html",
@@ -2551,6 +2981,26 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-cd53bff3",
+   "title": "Raspberry Pi config.txt: autoboot.txt and tryboot",
+   "url": "https://www.raspberrypi.com/documentation/computers/config_txt.html",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/raspberrypi.com/documentation-computers-config_txt.html-cd53bff3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-71651e4c",
+   "title": "Raspberry Pi OS: vcgencmd get_throttled",
+   "url": "https://www.raspberrypi.com/documentation/computers/os.html",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/raspberrypi.com/documentation-computers-os.html-71651e4c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
    "id": "C-c368a0db",
    "title": "rfc1034",
    "url": "https://www.rfc-editor.org/rfc/rfc1034.html",
@@ -2558,6 +3008,26 @@
    "note": "cited in references/migration-and-hybrid.md",
    "generated": true,
    "local": "sources/rfc/rfc1034.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-65a11773",
+   "title": "rfc2132",
+   "url": "https://www.rfc-editor.org/rfc/rfc2132.html",
+   "evidence": "CITED",
+   "note": "cited in references/fleet-management.md",
+   "generated": true,
+   "local": "sources/rfc/rfc2132.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-1a39d3e2",
+   "title": "rfc5905",
+   "url": "https://www.rfc-editor.org/rfc/rfc5905.html",
+   "evidence": "CITED",
+   "note": "cited in references/fleet-management.md",
+   "generated": true,
+   "local": "sources/rfc/rfc5905.txt",
    "checked": "2026-10-29"
   },
   {
@@ -2588,6 +3058,16 @@
    "note": "cited in references/architecture-method.md",
    "generated": true,
    "local": "sources/web/sei.cmu.edu/library-architecture-tradeoff-analysis-method-collection-71fb1b27.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-82c6ede5",
+   "title": "smartmontools",
+   "url": "https://www.smartmontools.org/",
+   "evidence": "CITED",
+   "note": "cited in references/edge-appliances.md",
+   "generated": true,
+   "local": "sources/web/smartmontools.org/index-82c6ede5.md.txt",
    "checked": "2026-10-29"
   },
   {

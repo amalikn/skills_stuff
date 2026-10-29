@@ -112,3 +112,16 @@ if not covered and (path.parent == root() or (path.parent / "readme.md").resolve
 **Freshness reads only tracked files, so the first commit of a bootstrap can raise new findings (2026-10-27, skill-goal-guard).** `doc_freshness.py` scanned
 `context-map.yaml` only after it was committed, then failed it for a header with no summary line. Give every file the bootstrap creates its header summary
 before the first commit (`context-map.yaml`: one `#` line naming what it is), and run `just check` again after that commit.
+
+**Several projects under one umbrella need a single route for cross-project messages (learned 2026-10-29, harvest of a multi-project
+workspace root).** Projects that write into each other's SCRATCHPADs drift and collide with live sessions. The arrangement that held: spokes
+address only the hub, never each other; one tool delivers, writing only between per-project markers with compare-and-swap writes and a
+settle window, and gives each item an id it looks for (including in rotated history) before delivering; the hub keeps a register of
+directives, and a directive closes only when every recipient has ticked it. An item marked sent but now missing is reported, never re-sent.
+The mechanics are skill-coder design pattern P-41; the governance point is one route and a register that knows who has acted.
+
+**Route facts by class, or two projects describe one fleet two ways (learned 2026-10-29, same workspace root).** Device, firmware, access
+and fleet facts belong to the domain skill pack; site facts and decisions belong to the project. The rule that keeps them apart: invoke the
+domain pack before answering, write a confirmed device fact back to the pack's references in the same session, and have projects cite the
+pack rather than restate it. The pack's write-back contract binds once its domain is touched, invoked or not; the hook above enforces the
+invocation half.

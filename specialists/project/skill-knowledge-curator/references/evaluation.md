@@ -54,6 +54,16 @@ Structural gates do not prove the agent extracted every important fact (INV-014)
 changes, 5 duplicates) and 100 labelled claims, with targets of 100% recall on P0/P1 conflicts and zero auto-promoted winners, at least 95% recall on high-value claims with no dropped numeric
 threshold, at least 90% precision for conflict prompts, and 100% evidence validity (the last is enforced by code). Reruns across models and prompt variants; one good run is not enough.
 
+> **Learned 2026-10-29** · curated lookup data and model-proposed entries · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal decision-support
+> project) · Source: project_stuff/me decision-support project `decisions/vocabulary-layer-20260913_1621.md` · Falsifier: a harvested or
+> model-proposed vocabulary that matched a curated one without review, negation included
+> Harvesting is not curation. Three routes to a synonym layer were measured: a general lexical resource failed on register; an automated
+> harvest kept 513 of 542 phrases after filtering, with misspellings and topic drift surviving; a domain embedding model scored 48% top-1
+> and 69% top-3 against the curated table and inverted polarity on negated phrases. Keep curated entries primary, let harvested or
+> model-proposed entries in only as reviewable candidates, measure any model against the curated set before trusting it, and test
+> negation explicitly. This is the same rule as agent-extracted claims needing verified excerpts, applied to lookup data.
+
+
 ## Pilot on the MCP post-migration audit
 
 Corpus: `/Volumes/Data/_ai/_project/project_stuff/mcp-post-migration-audit` (24 Markdown files). A read-only inventory on 2026-10-27 found 213 sections and five byte-identical pairs between

@@ -172,6 +172,17 @@
   "bytes": 45003,
   "retrieved": "2026-10-29T07:11Z"
  },
+ "https://ceph.io/en/news/blog/2025/stretch-cluuuuuuuuusters-part1/": {
+  "path": "web/ceph.io/en-news-blog-2025-stretch-cluuuuuuuuusters-part1-602d7de3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "51209f8576442a7aad62a68aecff116bc35dd0150927ca265074c41970140ece",
+  "bytes": 12128,
+  "retrieved": "2026-10-29T09:24Z"
+ },
  "https://choosealicense.com/licenses/": {
   "path": "web/choosealicense.com/licenses-8b157e6b.md.txt",
   "kind": "web",
@@ -253,6 +264,17 @@
   "sha256": "ff4d8ca5afd80cad0ebe506e3834e426f34591715f3b93531156c4e622a0fde9",
   "bytes": 7440,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://community.jisc.ac.uk/node/48998": {
+  "path": "web/community.jisc.ac.uk/node-48998-fab4b40d.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "b44b3010c4d3d7ef472b2e3a249f1df91a0f2c5e7135ae01e824f1dec995e607",
+  "bytes": 651409,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://csrc.nist.gov/glossary/term/recovery_point_objective": {
   "path": "web/csrc.nist.gov/glossary-term-recovery_point_objective-69ab24f1.md.txt",
@@ -575,6 +597,17 @@
   "bytes": 7120,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://docs.asterisk.org/About-the-Project/Asterisk-Versions/": {
+  "path": "web/docs.asterisk.org/About-the-Project-Asterisk-Versions-d236cd20.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "2e12554a577791d4c577eca30d66f48e9cb89579bc9efb589d459ba702651877",
+  "bytes": 6024,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/network_mtu.html": {
   "path": "web/docs.aws.amazon.com/AWSEC2-latest-UserGuide-network_mtu.html-b7483d99.md.txt",
   "kind": "web",
@@ -585,6 +618,17 @@
   "sha256": "cc9cc0cc9b379cc95eafc483a7925c043754636633362533705e6a4a790ba397",
   "bytes": 7336,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html": {
+  "path": "web/docs.aws.amazon.com/ebs-latest-userguide-ebs-snapshots.html-b762b4fa.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/fleet-management.md"
+  ],
+  "sha256": "539184629b75b9a4f5d694b8c5cf12f5ae4a3125d642972d06febed9dcaab252",
+  "bytes": 2997,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html": {
   "path": "web/docs.aws.amazon.com/prescriptive-guidance-latest-large-migration-guide-migration-strategies.html-dc3d075f.md.txt",
@@ -710,6 +754,28 @@
   "bytes": 30987,
   "retrieved": "2026-10-29T07:11Z"
  },
+ "https://docs.ceph.com/en/latest/rados/operations/stretch-mode/": {
+  "path": "web/docs.ceph.com/en-latest-rados-operations-stretch-mode-7f3db9b5.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "4056e6bff11851dd41dc1a116c5cd2b11dba2058a008ba49a2e2c699fbd1cb58",
+  "bytes": 21781,
+  "retrieved": "2026-10-29T09:24Z"
+ },
+ "https://docs.ceph.com/en/latest/rbd/rbd-mirroring/": {
+  "path": "web/docs.ceph.com/en-latest-rbd-rbd-mirroring-834617df.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "1f1331d6b55fad75ceddb1322bab73095f942d4fed13e734b9eeef5404504e58",
+  "bytes": 28467,
+  "retrieved": "2026-10-29T09:24Z"
+ },
  "https://docs.ceph.com/en/latest/start/hardware-recommendations/": {
   "path": "web/docs.ceph.com/en-latest-start-hardware-recommendations-da9ba416.md.txt",
   "kind": "web",
@@ -776,6 +842,17 @@
   "sha256": "86fef750e73922256c8191681f5db1626a6d3cf333f41242547c127c9647b75e",
   "bytes": 8653,
   "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.docker.com/engine/network/packet-filtering-firewalls/": {
+  "path": "web/docs.docker.com/engine-network-packet-filtering-firewalls-351180c6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "b291ee66ca25712ed5d24eb3de4748d6f84340989754d193bb35de536e10fe92",
+  "bytes": 4098,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://docs.docker.com/engine/security/rootless/": {
   "path": "web/docs.docker.com/engine-security-rootless-7e61efb4.md.txt",
@@ -868,6 +945,40 @@
   "bytes": 25797,
   "retrieved": "2026-10-29T07:10Z"
  },
+ "https://docs.kernel.org/admin-guide/ramoops.html": {
+  "path": "web/docs.kernel.org/admin-guide-ramoops.html-c74e5694.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "7941e44c7edb7925e55d2d7598ccb16e5add17ad68b02ba5f7997cd64049bc37",
+  "bytes": 7509,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://docs.kernel.org/admin-guide/sysctl/net.html": {
+  "path": "web/docs.kernel.org/admin-guide-sysctl-net.html-906e6df7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md",
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "80b7d98e2a012a8b54a310a955709cf3dea50f51803018a4af6d0c6be0c805a3",
+  "bytes": 19727,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://docs.kernel.org/filesystems/tmpfs.html": {
+  "path": "web/docs.kernel.org/filesystems-tmpfs.html-dd7cb807.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "e225c7ec1ec9eb6a6199ce89117583ce76491dc5f4473c3aab499a3834af10f9",
+  "bytes": 12132,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://docs.kernel.org/networking/bonding.html": {
   "path": "web/docs.kernel.org/networking-bonding.html-09b7a0c5.md.txt",
   "kind": "web",
@@ -884,11 +995,27 @@
   "kind": "web",
   "method": "all-scraper",
   "cited_in": [
-   "skill-network-architect/references/addressing-and-ipv6.md"
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/references/network-services.md",
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-systems-architect/references/linux-unix.md"
   ],
   "sha256": "34f8633d119195d6dbc6579b40b6a43b714cebaf28a208b0f5d42bfd536e5ff0",
   "bytes": 100378,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.kernel.org/networking/scaling.html": {
+  "path": "web/docs.kernel.org/networking-scaling.html-1f7b4aa3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md",
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "d15a0ba98398faf532954202b4510085c5e13d026c2ff633e8e378af6039aee1",
+  "bytes": 21056,
+  "retrieved": "2026-10-29T09:22Z"
  },
  "https://docs.kernel.org/networking/vrf.html": {
   "path": "web/docs.kernel.org/networking-vrf.html-d19672ea.md.txt",
@@ -913,6 +1040,39 @@
   "bytes": 3013,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://docs.litellm.ai/docs/simple_proxy": {
+  "path": "web/docs.litellm.ai/docs-simple_proxy-a60c3f75.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "d843a6fe94ad4f6db9a87f1f126fffc91f36eb2408afd9bd8054deceb4d57877",
+  "bytes": 1420,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://docs.mender.io/overview/introduction": {
+  "path": "web/docs.mender.io/overview-introduction-f0704225.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "cbc6165a37d701578f03c9998726aac8dcd5ca671d51347afb9784df5c7597ec",
+  "bytes": 8990,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://docs.nautobot.com/projects/core/en/stable/user-guide/administration/guides/permissions/": {
+  "path": "web/docs.nautobot.com/projects-core-en-stable-user-guide-administration-guides-permissions-e4476534.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/fleet-management.md"
+  ],
+  "sha256": "212b08b3daecd7712bc7138eb6eaf86e7b6e67ac98c9e9f1a48421e8919730dc",
+  "bytes": 41986,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://docs.ollama.com/faq": {
   "path": "web/docs.ollama.com/faq-043ee5ba.md.txt",
   "kind": "web",
@@ -935,6 +1095,17 @@
   "bytes": 100597,
   "retrieved": "2026-10-29T07:10Z"
  },
+ "https://docs.redhat.com/en/documentation/red_hat_ceph_storage/9/html/administration_guide/stretch-clusters-for-ceph-storage": {
+  "path": "web/docs.redhat.com/en-documentation-red_hat_ceph_storage-9-html-administration_guide-stretch-cluste-ac6d2a3c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "a3732a61e7db26dcbd19201d9fd2e6a973555e220e1252e309d7668b491c07ce",
+  "bytes": 72210,
+  "retrieved": "2026-10-29T09:24Z"
+ },
  "https://docs.structurizr.com/": {
   "path": "web/docs.structurizr.com/index-eae2f4d3.md.txt",
   "kind": "web",
@@ -946,6 +1117,18 @@
   "sha256": "8f7310b90bd6d45def2f45a23707774746131116cff1d8d88d403889ff8354d5",
   "bytes": 1589,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://docs.victoriametrics.com/victoriametrics/vmagent/": {
+  "path": "web/docs.victoriametrics.com/victoriametrics-vmagent-07b08302.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-systems-architect/references/fleet-management.md"
+  ],
+  "sha256": "d528513dbdbcd8c0bc5a456cedcdc4edc4cc93cc3b04bb50107473152e8c83f6",
+  "bytes": 100274,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://docs.vllm.ai/en/latest/configuration/optimization.html": {
   "path": "web/docs.vllm.ai/en-latest-configuration-optimization.html-e56b6e7f.md.txt",
@@ -969,12 +1152,24 @@
   "bytes": 22674,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://eclipse.dev/hawkbit/": {
+  "path": "web/eclipse.dev/hawkbit-9ab34caa.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "315359aed79e6146a23c0072f724d59ac47dc29dc3499e0520741c3b8fc432c8",
+  "bytes": 11505,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://en.wikipedia.org/wiki/Erlang_(unit)": {
   "path": "web/en.wikipedia.org/wiki-Erlang_-unit-ac429a62.md.txt",
   "kind": "web",
   "method": "all-scraper",
   "cited_in": [
-   "skill-network-architect/references/capacity-and-resilience.md"
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-network-architect/references/voice-and-sip.md"
   ],
   "sha256": "93d1c26bdf987033dfd4cf3064ee3f88fb540e0ab02783582a9f08aad4a3e459",
   "bytes": 29706,
@@ -1015,6 +1210,17 @@
   "sha256": "1d4539655329e8f99d47412f910efcec9c19e74ca3e4ab0a6cb77ec3df90a453",
   "bytes": 805979,
   "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://files.opticomm.com.au/www/legal/Opticomm-Wholesale-Price-List-July-2026.pdf": {
+  "path": "pdf/files.opticomm.com.au/www-legal-Opticomm-Wholesale-Price-List-July-2026.pdf-570f7680.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "a2247628a049c3b7d73c047ea464c7932866b26e69817016451ee76a5b713e68",
+  "bytes": 863309,
+  "retrieved": "2026-10-29T09:22Z"
  },
  "https://fio.readthedocs.io/en/latest/fio_doc.html": {
   "path": "web/fio.readthedocs.io/en-latest-fio_doc.html-9e0e2e59.md.txt",
@@ -1073,11 +1279,37 @@
   "bytes": 1043,
   "retrieved": "2026-10-29T07:08Z"
  },
+ "https://goteleport.com/docs/enroll-resources/application-access/protect-apps/tcp/": {
+  "path": "web/goteleport.com/docs-enroll-resources-application-access-protect-apps-tcp-da481b07.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "ee3caf2efa83c8babb71e16c5fb3483b8b7a3064ee390c38629a20e10b557f6b",
+  "bytes": 12310,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://goteleport.com/docs/reference/architecture/agents/": {
+  "path": "web/goteleport.com/docs-reference-architecture-agents-fc6c864d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "d05decacbe6503f31d1ef6c0bdfedef8e0a0a6e0f41dd5ca87e9d579513f4206",
+  "bytes": 16796,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://goteleport.com/docs/reference/architecture/authentication/": {
   "path": "web/goteleport.com/docs-reference-architecture-authentication-57a5d87d.md.txt",
   "kind": "web",
   "method": "all-scraper",
   "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/security-and-segmentation.md",
    "skill-systems-architect/references/security-and-service-identity.md"
   ],
   "sha256": "7ee31fd3c90528c97048082cfb85ad169c96a547c81298444e10868658a2bd93",
@@ -1128,6 +1360,18 @@
   "sha256": "72d82ffc481740bdcba4a58fcc89ce6ca77e1bd60c4fe888d24e232cda05e80e",
   "bytes": 6555,
   "retrieved": "2026-10-29T08:50Z"
+ },
+ "https://ipset.netfilter.org/iptables-extensions.man.html": {
+  "path": "web/ipset.netfilter.org/iptables-extensions.man.html-42110220.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "8277212da4f3b7850dca57cef7da8907bde7d61cec66b5569b05069a4e8dd62e",
+  "bytes": 100315,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://kubernetes.io/docs/concepts/architecture/": {
   "path": "web/kubernetes.io/docs-concepts-architecture-10267ad8.md.txt",
@@ -1443,6 +1687,29 @@
   "bytes": 4572,
   "retrieved": "2026-10-29T07:12Z"
  },
+ "https://libvirt.org/formatdomain.html": {
+  "path": "web/libvirt.org/formatdomain.html-a2794e10.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md",
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "6dda90d1009c2ff328efc42c69602244564c86ca756fbcbac6eb75f91f6b79cf",
+  "bytes": 100181,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://libvirt.org/manpages/virsh.html": {
+  "path": "web/libvirt.org/manpages-virsh.html-e693a7e8.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "4b836cac33a10350ac32e67544ddcc95c677d6921c9dfb90936d24c7e4f0a684",
+  "bytes": 100253,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://man.openbsd.org/ssh-keygen.1": {
   "path": "web/man.openbsd.org/ssh-keygen.1-628431b6.md.txt",
   "kind": "web",
@@ -1454,6 +1721,18 @@
   "bytes": 44148,
   "retrieved": "2026-10-29T07:11Z"
  },
+ "https://man.openbsd.org/ssh.1": {
+  "path": "web/man.openbsd.org/ssh.1-4bb49725.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "2dd009322fad7187b5cd8cc968e05fa18a75bdb84938ee804d6bca6d2de47719",
+  "bytes": 45938,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://man.openbsd.org/sshd_config.5": {
   "path": "web/man.openbsd.org/sshd_config.5-b08c9299.md.txt",
   "kind": "web",
@@ -1464,6 +1743,28 @@
   "sha256": "edb87dc69dffb119da24de321a8e37fe58cfb0a58b83012e4c07f8f3b347eb92",
   "bytes": 72447,
   "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://man7.org/linux/man-pages/man2/fsync.2.html": {
+  "path": "web/man7.org/linux-man-pages-man2-fsync.2.html-908cff5f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md"
+  ],
+  "sha256": "ca9652675780393d8f8b8228601a889af7cbdbe7abdff5dc616706f6f7813d38",
+  "bytes": 7647,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://man7.org/linux/man-pages/man2/rename.2.html": {
+  "path": "web/man7.org/linux-man-pages-man2-rename.2.html-b779f1d6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md"
+  ],
+  "sha256": "79c842a30e78f98422e6f3d73dee09f0fb065d214034d52b59dc370833943c0c",
+  "bytes": 15343,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://manrs.org/netops/": {
   "path": "web/manrs.org/netops-6d3b956c.md.txt",
@@ -1499,6 +1800,17 @@
   "bytes": 8949,
   "retrieved": "2026-10-29T08:14Z"
  },
+ "https://martinfowler.com/bliki/StranglerFigApplication.html": {
+  "path": "web/martinfowler.com/bliki-StranglerFigApplication.html-3e6fca8b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/fleet-management.md"
+  ],
+  "sha256": "21a8c8995069e9fa7707f2dfdd0b82162ccc1f35a198cca9076549c707ebc766",
+  "bytes": 6154,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://mermaid.js.org/": {
   "path": "web/mermaid.js.org/index-4628814d.md.txt",
   "kind": "web",
@@ -1510,6 +1822,17 @@
   "sha256": "dcdcd9efda9c2be66d87398d273b780cd8f7aeea7b4b2c4a0e6da8b4406a5ae2",
   "bytes": 46795,
   "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://mobile.nbnco.com.au/content/dam/nbnco/presentations/wba-operations-manual-final-16-aug-11.pdf": {
+  "path": "pdf/mobile.nbnco.com.au/content-dam-nbnco-presentations-wba-operations-manual-final-16-aug-11.pdf-71312bd8.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "82a1c804c5fc740fcdd038f08621bea15d95b08328c78720428890c9531902c5",
+  "bytes": 1142265,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://nvd.nist.gov/vuln/detail/CVE-2024-3596": {
   "path": "web/nvd.nist.gov/vuln-detail-CVE-2024-3596-9ce9e3df.md.txt",
@@ -1691,6 +2014,17 @@
   "bytes": 100401,
   "retrieved": "2026-10-29T07:11Z"
  },
+ "https://parquet.apache.org/docs/file-format/metadata/": {
+  "path": "web/parquet.apache.org/docs-file-format-metadata-a0031bbc.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "498742554c53cdc4819add5d1700e3e8ed4cc814cabbb9bb2cf0a941e2c28452",
+  "bytes": 816,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://patroni.readthedocs.io/en/latest/dynamic_configuration.html": {
   "path": "web/patroni.readthedocs.io/en-latest-dynamic_configuration.html-7806d89e.md.txt",
   "kind": "web",
@@ -1817,12 +2151,24 @@
   "bytes": 29818,
   "retrieved": "2026-10-29T07:06Z"
  },
+ "https://prometheus.io/docs/alerting/latest/configuration/": {
+  "path": "web/prometheus.io/docs-alerting-latest-configuration-4f002c66.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md",
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "90ef356389cc9c0dc67b9f8c3d1c88ca682070371b86539d3e8d4c00128189b6",
+  "bytes": 91306,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://prometheus.io/docs/practices/alerting/": {
   "path": "web/prometheus.io/docs-practices-alerting-5cd1aaa1.md.txt",
   "kind": "web",
   "method": "all-scraper",
   "cited_in": [
-   "skill-network-architect/references/observability-troubleshooting.md"
+   "skill-systems-architect/references/observability-and-incident.md"
   ],
   "sha256": "d473a9533b27db6b004b3fe2f6ba333fc1af7a893a9ea032ed88541ed3217a34",
   "bytes": 3440,
@@ -1972,6 +2318,17 @@
   "sha256": "a913da0735784fdd453b0bb4d1068d1d048b03a7099ed12b72c401a2e7765e73",
   "bytes": 100280,
   "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://rauc.readthedocs.io/en/latest/": {
+  "path": "web/rauc.readthedocs.io/en-latest-eff3f1be.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "9a04f7cfce2360babdaff424ac149c2ac6c2afb917063d4146c5004e1ea80a55",
+  "bytes": 6600,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://raw.githubusercontent.com/FRRouting/frr/master/COPYING": {
   "path": "web/raw.githubusercontent.com/FRRouting-frr-master-COPYING-7058aba2.md.txt",
@@ -2224,6 +2581,17 @@
   "bytes": 4867,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://sbabic.github.io/swupdate/overview.html": {
+  "path": "web/sbabic.github.io/swupdate-overview.html-d5d8dd0c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "3e4ff1501d55d883cd397e1b1f2fffce9a7aa58b4d6743f1ddf73b831cf20e04",
+  "bytes": 15129,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://scorecard.dev/": {
   "path": "web/scorecard.dev/index-253812f1.md.txt",
   "kind": "web",
@@ -2413,6 +2781,7 @@
   "method": "all-scraper",
   "cited_in": [
    "skill-network-architect/references/observability-troubleshooting.md",
+   "skill-systems-architect/references/fleet-management.md",
    "skill-systems-architect/references/red-flags.md"
   ],
   "sha256": "3a46e021bade4ea321dce334cda3a8b07873dba5aafa366cff4bdb97cbe02882",
@@ -2598,6 +2967,17 @@
   "bytes": 71898,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://support.apple.com/en-us/111340": {
+  "path": "web/support.apple.com/en-us-111340-ca59cfa3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "17285cf60b1d5fb10e5204175230ca18b9eb00288fd1acfaa7c86d51ee847d42",
+  "bytes": 13402,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://support.apple.com/guide/business/manage-the-built-in-device-management-service-axmc7864dd73/web": {
   "path": "web/support.apple.com/guide-business-manage-the-built-in-device-management-service-axmc7864dd73-web-121f5631.md.txt",
   "kind": "web",
@@ -2721,6 +3101,17 @@
   "bytes": 12411,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://theupdateframework.github.io/specification/latest/": {
+  "path": "web/theupdateframework.github.io/specification-latest-a6ad30b3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "4885ddabf2240d2dbc033ade3c3cf571ed8be23eef7d70df62ff675e8959c6aa",
+  "bytes": 72872,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://ubuntu.com/about/release-cycle": {
   "path": "web/ubuntu.com/about-release-cycle-1a3dfb3a.md.txt",
   "kind": "web",
@@ -2777,6 +3168,39 @@
   "bytes": 7249,
   "retrieved": "2026-10-29T07:10Z"
  },
+ "https://www.accc.gov.au/by-industry/telecommunications-and-internet/national-broadband-network-nbn-access-regulation/nbn-co-sau-variation-august-2023": {
+  "path": "web/accc.gov.au/by-industry-telecommunications-and-internet-national-broadband-network-nbn-acces-715bc0d0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "d7dfe5c07f934f4578771e7120a561b6de616032f5856e20f29b0a5fe91afeaa",
+  "bytes": 100868,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.accc.gov.au/media-release/accc-extends-wholesale-price-controls-to-superfast-fixed-line-broadband-networks": {
+  "path": "web/accc.gov.au/media-release-accc-extends-wholesale-price-controls-to-superfast-fixed-line-broa-3f9a41ef.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "5437cf6d2e78f1838037021c51637f7aa9efd2008e2b425a8d0430c1f6415df5",
+  "bytes": 100468,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.accc.gov.au/media-release/the-accc-publishes-the-list-of-points-of-interconnection-to-the-national-broadband-network": {
+  "path": "web/accc.gov.au/media-release-the-accc-publishes-the-list-of-points-of-interconnection-to-the-na-4f9d27cb.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "457aa7fd405127c1c71c58dfd4ff340367c6780b734a5da4929df7a85077c54c",
+  "bytes": 97095,
+  "retrieved": "2026-10-29T09:22Z"
+ },
  "https://www.acma.gov.au/cabling-provider-rules": {
   "path": "web/acma.gov.au/cabling-provider-rules-fd1b629f.md.txt",
   "kind": "web",
@@ -2787,6 +3211,28 @@
   "sha256": "bec42802921f3c94819a3dfc3c10edeecee28a7217ec494240af2aa4cca62df9",
   "bytes": 50994,
   "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.acma.gov.au/calling-line-identification-and-spoofing": {
+  "path": "web/acma.gov.au/calling-line-identification-and-spoofing-0c1a313d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "9ff04046659305d602ae00e180714f772a8299e5213e2f1c3b11b7f6147db641",
+  "bytes": 56353,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.acma.gov.au/emergency-calls": {
+  "path": "web/acma.gov.au/emergency-calls-524e533d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "7a3f7e54fd2b20cd4a671c361dfd9996675d49f4a2d96d00a47473f08faf0cf2",
+  "bytes": 66029,
+  "retrieved": "2026-10-29T09:24Z"
  },
  "https://www.acma.gov.au/licences/low-interference-potential-devices-lipd-class-licence": {
   "path": "web/acma.gov.au/licences-low-interference-potential-devices-lipd-class-licence-f7cba93e.md.txt",
@@ -2809,6 +3255,17 @@
   "sha256": "6f0c85bc49547481cf30d12de55c52d98b75cef0751b83ff644cd923455a618d",
   "bytes": 53121,
   "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.acma.gov.au/test-nbn-service-working": {
+  "path": "web/acma.gov.au/test-nbn-service-working-2494c8f5.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "6703f4edb1b2eee859d66037113ae2ee427485b345af4012bdf3fe10b96940f9",
+  "bytes": 48628,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.apple.com/mac-studio/specs/": {
   "path": "web/apple.com/mac-studio-specs-7bd626ad.md.txt",
@@ -2842,6 +3299,28 @@
   "sha256": "0fa57f03584d135c307f43290fa045490d0d0868bdc021b62f938a097f51037b",
   "bytes": 3669,
   "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.asterisk.org/?p=8849": {
+  "path": "web/asterisk.org/p-8849-b5a12a0f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "4866b289be1d49e744944818cee7219032e398e0c8a4914b2cdbd3b24c22aa42",
+  "bytes": 101975,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.asterisk.org/asterisk-21-module-removal-chan_sip/": {
+  "path": "web/asterisk.org/asterisk-21-module-removal-chan_sip-584c808c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "4866b289be1d49e744944818cee7219032e398e0c8a4914b2cdbd3b24c22aa42",
+  "bytes": 101975,
+  "retrieved": "2026-10-29T09:24Z"
  },
  "https://www.brendangregg.com/linuxperf.html": {
   "path": "web/brendangregg.com/linuxperf.html-7c7516a2.md.txt",
@@ -3004,6 +3483,17 @@
   "bytes": 7444,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.commsalliance.com.au/wp-content/uploads/2025/06/AVC-ID-Fact-Sheet_2025.pdf": {
+  "path": "pdf/commsalliance.com.au/wp-content-uploads-2025-06-AVC-ID-Fact-Sheet_2025.pdf-0be94f23.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "76fb7e9c6a9c61e533ba70a6b93f31d097c57ef025874c4cc1fcfe8057197f5c",
+  "bytes": 97949,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.cyber.gov.au/resources-business-and-government/essential-cyber-security/ism": {
   "path": "web/cyber.gov.au/resources-business-and-government-essential-cyber-security-ism-c7048fa7.md.txt",
   "kind": "web",
@@ -3097,6 +3587,7 @@
   "kind": "web",
   "method": "all-scraper",
   "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md",
    "skill-systems-architect/references/linux-unix.md",
    "skill-systems-architect/references/observability-and-incident.md"
   ],
@@ -3115,6 +3606,17 @@
   "bytes": 7413,
   "retrieved": "2026-10-29T07:11Z"
  },
+ "https://www.freedesktop.org/software/systemd/man/latest/systemd-system.conf.html": {
+  "path": "web/freedesktop.org/software-systemd-man-latest-systemd-system.conf.html-7717e905.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "38549a5ae0bcaf5fa0eefdebc9571f313b6aa9b95d4eeb941c5cc5debf76fb6c",
+  "bytes": 38736,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.freedesktop.org/software/systemd/man/latest/systemd-timesyncd.service.html": {
   "path": "web/freedesktop.org/software-systemd-man-latest-systemd-timesyncd.service.html-94553e99.md.txt",
   "kind": "web",
@@ -3131,11 +3633,45 @@
   "kind": "web",
   "method": "all-scraper",
   "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md",
    "skill-systems-architect/references/linux-unix.md"
   ],
   "sha256": "40392b30694010879e4b1b342a9d41437173a2647f9fb06be6c08dba5409dc70",
   "bytes": 81148,
   "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.freedesktop.org/software/systemd/man/latest/systemd.mount.html": {
+  "path": "web/freedesktop.org/software-systemd-man-latest-systemd.mount.html-3a7a0837.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "3d7f71c2a3f16b7da3fd65b5d30b38f1119b8d9e991b301054114f4ec9f86664",
+  "bytes": 24785,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.freedesktop.org/software/systemd/man/latest/tmpfiles.d.html": {
+  "path": "web/freedesktop.org/software-systemd-man-latest-tmpfiles.d.html-9ee1e017.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "823246ba153527c78c6e14c5d59a9b5ab0dbb711429a5c061f898f8000bf2506",
+  "bytes": 38421,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.homeaffairs.gov.au/criminal-justice/files/guidelines-telecommunications-interception-and-access-act-1979/guideline-data-retention-guideline.pdf": {
+  "path": "pdf/homeaffairs.gov.au/criminal-justice-files-guidelines-telecommunications-interception-and-access-act-c091f241.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "b73eb540a311517faa23a3ed6b0324f1de07b1432ba5788e283b30e871abef0b",
+  "bytes": 1998274,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.iana.org/assignments/iana-ipv4-special-registry/": {
   "path": "web/iana.org/assignments-iana-ipv4-special-registry-2e89955d.md.txt",
@@ -3195,6 +3731,17 @@
   "sha256": "37daeadb478e75288988987ad7f11f9ee45ea69f86b53f662f50444030caacd7",
   "bytes": 2363,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.itnews.com.au/news/opticomm-snapped-up-by-uniti-for-532m-549274": {
+  "path": "web/itnews.com.au/news-opticomm-snapped-up-by-uniti-for-532m-549274-7f4f7c57.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "8c0bb1acd33f94506df05ba8acaf716e6be817e4173456677d463961a8f383a4",
+  "bytes": 1702,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.itu.int/rec/R-REC-P.525/en": {
   "path": "web/itu.int/rec-R-REC-P.525-en-bddfb1f7.md.txt",
@@ -3297,6 +3844,39 @@
   "bytes": 12781,
   "retrieved": "2026-10-29T08:01Z"
  },
+ "https://www.jedec.org/standards-documents/docs/jesd218b01": {
+  "path": "web/jedec.org/standards-documents-docs-jesd218b01-1b65225f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "e4bf81abdebe2f0823b7c59944e319e0406affd015aa5824a15fc7cf973e77ac",
+  "bytes": 1058,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.legislation.gov.au/F2019L01509/latest/text": {
+  "path": "web/legislation.gov.au/F2019L01509-latest-text-aef24c8a.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "afe97f7b9dc4f49bcc26545d5a2aea7d0d5548fa4bdf2af4be9d4ff00c5c4f87",
+  "bytes": 4967,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.legislation.gov.au/F2025L00409/latest/text": {
+  "path": "web/legislation.gov.au/F2025L00409-latest-text-30f1008f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "7ce9202c88319fb283b58b2dfc32d1d2b15ddf921842ad81794d3c8c59cddd51",
+  "bytes": 35471,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.legislation.gov.au/F2025L01047/asmade/2025-09-05/text/original/pdf": {
   "path": "web/legislation.gov.au/F2025L01047-asmade-2025-09-05-text-original-pdf-76d4355a.md.txt",
   "kind": "web",
@@ -3320,6 +3900,96 @@
   "bytes": 3379,
   "retrieved": "2026-10-29T08:01Z"
  },
+ "https://www.linux-kvm.org/page/Multiqueue": {
+  "path": "web/linux-kvm.org/page-Multiqueue-01c4199e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "ba5561a43542bb84a99133e6a2e0840bb7782f4bbdb2e3b9f47315782ffbb536",
+  "bytes": 13431,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.nbnco.com.au/content/dam/nbn/documents/sell/sau/FY27-FY29-Pricing-Roadmap-v1.0%E2%80%93010526.pdf.coredownload.pdf": {
+  "path": "pdf/nbnco.com.au/content-dam-nbn-documents-sell-sau-FY27-FY29-Pricing-Roadmap-v1.0-E2-80-93010526-87e3d093.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "1f0d8be99058433375887417f8e733b1e9241aa497546c6c0a82d09ddf64de49",
+  "bytes": 603638,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.nbnco.com.au/content/dam/nbn/documents/sell/wba/2026/sfaa-wba-nbn-ethernet-product-description-20260901.pdf.coredownload.pdf": {
+  "path": "pdf/nbnco.com.au/content-dam-nbn-documents-sell-wba-2026-sfaa-wba-nbn-ethernet-product-descriptio-47147541.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "d2a61c86069ec41ce57c94c445552716710f42ad44032c16e31f163fdf6818a8",
+  "bytes": 598131,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.nbnco.com.au/content/dam/nbn/documents/sell/wba/2026/sfaa-wba-nbn-ethernet-product-technical-specification-20260901.pdf.coredownload.pdf": {
+  "path": "pdf/nbnco.com.au/content-dam-nbn-documents-sell-wba-2026-sfaa-wba-nbn-ethernet-product-technical--1826233e.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md",
+   "skill-network-architect/references/service-provider-edge.md",
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "52d0935638e1c40bff3eae0497a52d28e9b07fb8c91b612219a3b3b01012c854",
+  "bytes": 1407231,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.nbnco.com.au/corporate-information/media-centre/media-statements/dawn-of-a-new-era-nbn-welcomes-accc-approval-of-sau-variation": {
+  "path": "web/nbnco.com.au/corporate-information-media-centre-media-statements-dawn-of-a-new-era-nbn-welcom-ccd0d372.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "a04f62a2af2c1dd3d3e2f5800644f19c71e2133f51ae621837ebfe6de65d0f86",
+  "bytes": 7845,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.nbnco.com.au/learn/device-compatibility/medical-alarms": {
+  "path": "web/nbnco.com.au/learn-device-compatibility-medical-alarms-450c094a.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "5c670835c99744ab1ec52abedf7359b5aac222f7bb2c0f50ee49a845b17c0f35",
+  "bytes": 4330,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.nbnco.com.au/learn/network-technology/sky-muster-explained": {
+  "path": "web/nbnco.com.au/learn-network-technology-sky-muster-explained-a1b86f77.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "ec6f46f1eec38c06994b36223368f3506780c0caf9cafd85005dd627eb9680a7",
+  "bytes": 4838,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.nbnco.com.au/rsps/supply-agreements/wba": {
+  "path": "web/nbnco.com.au/rsps-supply-agreements-wba-1c4f9a12.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "5df4316ea7b7f85418976b9fa951723a0a0b70fdc06af019da3a3d6df3a7c0a5",
+  "bytes": 1009,
+  "retrieved": "2026-10-29T09:22Z"
+ },
  "https://www.nvidia.com/en-us/data-center/h100/": {
   "path": "web/nvidia.com/en-us-data-center-h100-4f7aa3d7.md.txt",
   "kind": "web",
@@ -3342,6 +4012,17 @@
   "bytes": 9354,
   "retrieved": "2026-10-29T08:50Z"
  },
+ "https://www.nvidia.com/en-us/products/workstations/dgx-spark/": {
+  "path": "web/nvidia.com/en-us-products-workstations-dgx-spark-c8343217.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/ai-inference-platforms.md"
+  ],
+  "sha256": "59231fd44c2ec9c3c6cfb9fb9d9c6962f9f1d1930c6703bb6511d93fe67960d8",
+  "bytes": 15260,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.openconfig.net/": {
   "path": "web/openconfig.net/index-c375443c.md.txt",
   "kind": "web",
@@ -3352,6 +4033,39 @@
   "sha256": "1fdb9c6fc069ce53299188e474c33d64146a083fdee8d706874c6f6bd157bb48",
   "bytes": 1417,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.opticomm.com.au/become-a-service-provider/": {
+  "path": "web/opticomm.com.au/become-a-service-provider-021bf70e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "19bb4d6a667f71dc032b255274596ac4f31d269887fb130c3da23843f555efb8",
+  "bytes": 1855,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.opticomm.com.au/legal/": {
+  "path": "web/opticomm.com.au/legal-95599928.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "59265eeb2132d208f823d700dc6059b83da4f461dd0986d3fc2adeebb0f27b14",
+  "bytes": 12715,
+  "retrieved": "2026-10-29T09:22Z"
+ },
+ "https://www.opticomm.com.au/legal/sip-declarations/": {
+  "path": "web/opticomm.com.au/legal-sip-declarations-904f56fe.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/australian-access-networks.md"
+  ],
+  "sha256": "5efb068c7bed166eca8c870e65292bd91af2718efa35658590c9ccf2131f736f",
+  "bytes": 7175,
+  "retrieved": "2026-10-29T09:22Z"
  },
  "https://www.pgbouncer.org/": {
   "path": "web/pgbouncer.org/index-86a92c4d.md.txt",
@@ -3485,6 +4199,28 @@
   "bytes": 45632,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.postgresql.org/docs/current/datatype-money.html": {
+  "path": "web/postgresql.org/docs-current-datatype-money.html-b3d9b36c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "7e6497fd914b0fa0439d49619cad3d3d1ff24eb04d09f3c87c9ca6444a95495b",
+  "bytes": 2267,
+  "retrieved": "2026-10-29T09:24Z"
+ },
+ "https://www.postgresql.org/docs/current/datatype-numeric.html": {
+  "path": "web/postgresql.org/docs-current-datatype-numeric.html-1ce3b8ea.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/service-provider-systems.md"
+  ],
+  "sha256": "e28cb1f611157ffc692bb0a965dd20cb68a126854add3650a8a044e4bab5815e",
+  "bytes": 16388,
+  "retrieved": "2026-10-29T09:24Z"
+ },
  "https://www.postgresql.org/docs/current/high-availability.html": {
   "path": "web/postgresql.org/docs-current-high-availability.html-9544a68f.md.txt",
   "kind": "web",
@@ -3518,6 +4254,28 @@
   "sha256": "12be502936f41ad69fe0c2a64fbc7c7d27297608f65fc8209f13b8e62bd6abb2",
   "bytes": 23667,
   "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.raspberrypi.com/documentation/computers/config_txt.html": {
+  "path": "web/raspberrypi.com/documentation-computers-config_txt.html-cd53bff3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "0fdf42d283747ea355cdadd21aed82136de51d175c69a24a428a57fd17f07e46",
+  "bytes": 648101,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.raspberrypi.com/documentation/computers/os.html": {
+  "path": "web/raspberrypi.com/documentation-computers-os.html-71651e4c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "ab104d417a61f99229ff412dcb05547ca002324dd5cb23655e4d50ff9900428c",
+  "bytes": 595820,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc1034.txt": {
   "path": "rfc/rfc1034.txt",
@@ -3565,6 +4323,19 @@
   "bytes": 8275,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc2132.txt": {
+  "path": "rfc/rfc2132.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md",
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-systems-architect/references/fleet-management.md"
+  ],
+  "sha256": "0cfbedab7cfe859624ae78c07a722bc51bf8ea123a7b43b099fc546ddcf00b90",
+  "bytes": 63670,
+  "retrieved": "2026-10-29T09:22Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc2385.txt": {
   "path": "rfc/rfc2385.txt",
   "kind": "rfc",
@@ -3581,6 +4352,7 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md",
    "skill-network-architect/references/wan-and-remote-access.md"
   ],
   "sha256": "e20efb2fd445e50a076e3873daa7fb1b698bc1fc387902bd690c7a38afe77b95",
@@ -3598,6 +4370,28 @@
   "bytes": 66688,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc2697.txt": {
+  "path": "rfc/rfc2697.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "a5f862a1997cf6fe230242ce04a726e75af798f07af7bbc012f20fa8540b6541",
+  "bytes": 10309,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2698.txt": {
+  "path": "rfc/rfc2698.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "5ed1953c5d027b87b97316312e117ff747fdb8a73503e4af62fe7977361520bd",
+  "bytes": 9368,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc2784.txt": {
   "path": "rfc/rfc2784.txt",
   "kind": "rfc",
@@ -3609,6 +4403,28 @@
   "bytes": 16627,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc2827.txt": {
+  "path": "rfc/rfc2827.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "6eaa66f058ad3b7b6ddb7010e1a71939e2085b0604d0e1950d43609642135c44",
+  "bytes": 21258,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2833.txt": {
+  "path": "rfc/rfc2833.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/operator/apn/access-and-voice.md"
+  ],
+  "sha256": "1c507ef8fab638922ada460d934ba7bbeb09ae2ca4424160b970abb6f9753d1b",
+  "bytes": 68786,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc2863.txt": {
   "path": "rfc/rfc2863.txt",
   "kind": "rfc",
@@ -3619,6 +4435,39 @@
   "sha256": "3611f3f0accb11f7aacadc37576cce280bfaf0f4d32df38d4efe86a63bac7d64",
   "bytes": 155014,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2865.txt": {
+  "path": "rfc/rfc2865.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "f0e29bff65ae4be6bf1511e31b02a8ab4d60d7f852c2d171ecdd8d664d0562d4",
+  "bytes": 146456,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2866.txt": {
+  "path": "rfc/rfc2866.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "b8d0fbab82c0397de674274822343765ff92a441278a4ac9308d0b087a42b08c",
+  "bytes": 51135,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2869.txt": {
+  "path": "rfc/rfc2869.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "99052a8d3ff02fba3ec913a8856366618f1964c4300605e3054022a80f29deb4",
+  "bytes": 96854,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc2890.txt": {
   "path": "rfc/rfc2890.txt",
@@ -3659,7 +4508,9 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/network-services.md"
+   "skill-network-architect/references/network-services.md",
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/service-provider-edge.md"
   ],
   "sha256": "6b343c02d5c495cd1f780a43ab2c4e3b9bca968b82024b9d2fdb90d75b98a5cf",
   "bytes": 30633,
@@ -3676,6 +4527,28 @@
   "bytes": 114825,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc3261.txt": {
+  "path": "rfc/rfc3261.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "d513777f77fea01a4de9c0a2d9d6713cb53b8231f1b7a2ab56705f8d51b066dc",
+  "bytes": 647976,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3263.txt": {
+  "path": "rfc/rfc3263.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "b917d62e9421299bed19de42f8260531232006b3b4f792ba7ee2b5035e5d2a65",
+  "bytes": 42310,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc3315.txt": {
   "path": "rfc/rfc3315.txt",
   "kind": "rfc",
@@ -3687,6 +4560,39 @@
   "bytes": 231402,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc3325.txt": {
+  "path": "rfc/rfc3325.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "a69dedf5135c95524e5db84ad39957e6a78ac3c861a018f4f0ec3b07504374a9",
+  "bytes": 36170,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3550.txt": {
+  "path": "rfc/rfc3550.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "4c210e9434b5b4c029e8536ad8991f3709bc3cbfa0999e951bcb4c2143c539e8",
+  "bytes": 259985,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3551.txt": {
+  "path": "rfc/rfc3551.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "0b1a7fb6582f0e7ab6493f16d897009f0898600e7a9bcc1ee0d155a1c8157e56",
+  "bytes": 106621,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc3580.txt": {
   "path": "rfc/rfc3580.txt",
   "kind": "rfc",
@@ -3697,6 +4603,28 @@
   "sha256": "51ea2e7296c23459aaf27c2e67207ba66e42007a5da98f8ee517267b7b30ce03",
   "bytes": 66136,
   "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3704.txt": {
+  "path": "rfc/rfc3704.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "79aadfe01455bcb96b1663b0bd299c93649f12e623e20105ee0810839a128f89",
+  "bytes": 35942,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3711.txt": {
+  "path": "rfc/rfc3711.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "dc58e15fd6f450cd64eb38105362e52e78701ed995b05bf80ca12bb0c3a9c324",
+  "bytes": 134270,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc3849.txt": {
   "path": "rfc/rfc3849.txt",
@@ -3792,11 +4720,58 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/capacity-and-resilience.md"
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-network-architect/references/voice-and-sip.md"
   ],
   "sha256": "73654e93f208f645efc2c3b43c5dafec3dd6685f90a9d88821bb4e250e1fbbf6",
   "bytes": 144044,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4638.txt": {
+  "path": "rfc/rfc4638.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/operator/apn/access-and-voice.md",
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "5ca9276c2ed513d821fb2b650894ce8a24e39b4c2e00bfd0d1d52037bf369141",
+  "bytes": 18984,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4649.txt": {
+  "path": "rfc/rfc4649.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "2c1bf1a662d9553a9167c6a6e2daf21679ae2221bd73dab6dbe8c6c2c993e12d",
+  "bytes": 10940,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4733.txt": {
+  "path": "rfc/rfc4733.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/operator/apn/access-and-voice.md",
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "60eebc200b29f0e35e2092e4a28dd0c32e6a8a5bc6e543e915026ee67c72844e",
+  "bytes": 115614,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4787.txt": {
+  "path": "rfc/rfc4787.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md"
+  ],
+  "sha256": "5db82ec5f0d6b9b0fc0a37ce7d5b40592e4e6f41562ba8fbc55f1daa52648405",
+  "bytes": 68693,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc4821.txt": {
   "path": "rfc/rfc4821.txt",
@@ -3827,7 +4802,8 @@
   "method": "direct",
   "cited_in": [
    "skill-network-architect/references/network-services.md",
-   "skill-network-architect/references/security-and-segmentation.md"
+   "skill-network-architect/references/security-and-segmentation.md",
+   "skill-network-architect/references/service-provider-edge.md"
   ],
   "sha256": "084ee4d8a99866ad6a121847861cb3eed1dd5623ef00515d0a7985fce791e958",
   "bytes": 79541,
@@ -3844,6 +4820,17 @@
   "bytes": 85162,
   "retrieved": "2026-10-29T07:08Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc5626.txt": {
+  "path": "rfc/rfc5626.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "43ed8a697b3291da4822ab3f7bb4b58d26e6c49dd7b25fe44bee02aa72050e49",
+  "bytes": 116344,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc5737.txt": {
   "path": "rfc/rfc5737.txt",
   "kind": "rfc",
@@ -3856,6 +4843,18 @@
   "bytes": 7036,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc5798.txt": {
+  "path": "rfc/rfc5798.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "8c82b43dc73bb3f0bffb3c79d9c6107b2a4549008988e2d5c1f63f2dfc1571e1",
+  "bytes": 90322,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc5880.txt": {
   "path": "rfc/rfc5880.txt",
   "kind": "rfc",
@@ -3863,6 +4862,7 @@
   "cited_in": [
    "skill-network-architect/references/capacity-and-resilience.md",
    "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/references/service-provider-edge.md",
    "skill-network-architect/templates/bgp-peer-policy.md",
    "skill-network-architect/templates/evpn-fabric-build.md"
   ],
@@ -3900,7 +4900,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/network-services.md"
+   "skill-network-architect/references/network-services.md",
+   "skill-systems-architect/references/fleet-management.md"
   ],
   "sha256": "8b7abd903c60202e2953ee012fefa6916666c3b0c71825c748cdd262024fb268",
   "bytes": 241096,
@@ -3945,7 +4946,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/addressing-and-ipv6.md"
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/references/service-provider-edge.md"
   ],
   "sha256": "deaaf6be3e889742e760b136a2d1f85b197ef769871d89765e509d606eee7c64",
   "bytes": 107954,
@@ -3956,7 +4958,8 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/addressing-and-ipv6.md"
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/references/service-provider-edge.md"
   ],
   "sha256": "1f84a1d1d05831f92e6e521eae76bb8d1d3e794c17f421dc606711c72a35deed",
   "bytes": 75103,
@@ -3986,6 +4989,17 @@
   "bytes": 21231,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc6221.txt": {
+  "path": "rfc/rfc6221.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "cd103ed065a08996294c85857bfa91246f64dde2bf55fa7f2f9c16e4351242bf",
+  "bytes": 28471,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc6241.txt": {
   "path": "rfc/rfc6241.txt",
   "kind": "rfc",
@@ -3998,6 +5012,39 @@
   "sha256": "989b44560e4663267618b4b6bfc4cf0c7772fa2b59b5980936d9b073cbbd5314",
   "bytes": 209465,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6269.txt": {
+  "path": "rfc/rfc6269.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "fbe3250fb199363c66d64e39f9cf3368837750bfa0c5fa6f360166ada566f624",
+  "bytes": 71660,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6302.txt": {
+  "path": "rfc/rfc6302.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "1d00a4b33c6aa272668596729327eb67efa32249e96996ef3271880c921daf37",
+  "bytes": 10039,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6333.txt": {
+  "path": "rfc/rfc6333.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "be5a873b828be8b26264bf8b895ee2c849a7869707ca763ad08e14f2b94b95b4",
+  "bytes": 65622,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc6349.txt": {
   "path": "rfc/rfc6349.txt",
@@ -4028,6 +5075,7 @@
   "cited_in": [
    "skill-network-architect/examples/filled/ip-addressing-plan.md",
    "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/references/service-provider-edge.md",
    "skill-network-architect/references/wan-and-remote-access.md"
   ],
   "sha256": "b04d16c5c98b89324d35dc6dc783eface0bedf94c14c9e289b646d39ea55c4c0",
@@ -4057,11 +5105,24 @@
   "bytes": 20082,
   "retrieved": "2026-10-29T07:09Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc6877.txt": {
+  "path": "rfc/rfc6877.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "8cf48d86948176ddc36a9ec7496b5e133381a2d091531eac429428efa5660336",
+  "bytes": 31382,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc6888.txt": {
   "path": "rfc/rfc6888.txt",
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md",
+   "skill-network-architect/references/service-provider-edge.md",
    "skill-network-architect/references/wan-and-remote-access.md"
   ],
   "sha256": "d457f77ec6d4bd0b1921f1a14c5d27dfbb620a7166d1d02864a4dcd13a6b1b91",
@@ -4102,6 +5163,17 @@
   "bytes": 170852,
   "retrieved": "2026-10-29T07:08Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc7021.txt": {
+  "path": "rfc/rfc7021.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "470d42b1c069f2a93e52e9d88d0922596c8d56ac10b226f42c20fa0c2d63e16e",
+  "bytes": 66150,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc7050.txt": {
   "path": "rfc/rfc7050.txt",
   "kind": "rfc",
@@ -4113,6 +5185,28 @@
   "bytes": 50097,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc7084.txt": {
+  "path": "rfc/rfc7084.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "3027c196b80729778dd4eccd62f0cffa8181f9bf73d1355bfd710d6def4d8dab",
+  "bytes": 46569,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7092.txt": {
+  "path": "rfc/rfc7092.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "b3c57a6a440dd659e8c0bc9f1c3a307c3e03d2aae83230fe054a58e9a4f7036e",
+  "bytes": 22085,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc7296.txt": {
   "path": "rfc/rfc7296.txt",
   "kind": "rfc",
@@ -4123,6 +5217,17 @@
   "sha256": "b6c1bf3921e85dd3674f427ffcaded0209e1f9718e8d601e2f918371f46329a1",
   "bytes": 354358,
   "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7339.txt": {
+  "path": "rfc/rfc7339.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "dea361f17350d45eb19dd2cda6d06ac6071d08a755d07b92618c3e3f67d1bb29",
+  "bytes": 89898,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc7348.txt": {
   "path": "rfc/rfc7348.txt",
@@ -4149,6 +5254,17 @@
   "sha256": "abf1848f7b7606e838a76c5e08db3b4f3fcfead6a3d1356065b48c4293aefa7b",
   "bytes": 60469,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7422.txt": {
+  "path": "rfc/rfc7422.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "26f21a39ba3bafe406215aee1715888c18f6d0c90f0e591de67fec9a4697cac5",
+  "bytes": 33575,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc7432.txt": {
   "path": "rfc/rfc7432.txt",
@@ -4185,6 +5301,17 @@
   "sha256": "10aa8c1c39c5793aa0710acb86d320270361ccd6070f8128d20ef64c8931879d",
   "bytes": 123735,
   "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7597.txt": {
+  "path": "rfc/rfc7597.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "e0081fd0b78bfc423ef03d1b7d981ce55ccda09f34853f27b37baf8ddf278cd1",
+  "bytes": 70507,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc7799.txt": {
   "path": "rfc/rfc7799.txt",
@@ -4294,6 +5421,7 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md",
    "skill-network-architect/references/wan-and-remote-access.md"
   ],
   "sha256": "96c2ea7ac1bf5810f6b817d4ac372a35f68231d2bd0e2675740f1268eb9ac752",
@@ -4325,6 +5453,17 @@
   "bytes": 14846,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc8224.txt": {
+  "path": "rfc/rfc8224.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "c6f0972ec7400b02dac78aa24724206600be57316c8ea1af20e40ca66305fc85",
+  "bytes": 118924,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc8326.txt": {
   "path": "rfc/rfc8326.txt",
   "kind": "rfc",
@@ -4350,12 +5489,24 @@
   "bytes": 76766,
   "retrieved": "2026-10-29T07:07Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc8402.txt": {
+  "path": "rfc/rfc8402.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "8ab6c918926f64a9fcd26eed8b9ede655dab72434847c4d20daef81bfc6ba3bb",
+  "bytes": 70094,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc8415.txt": {
   "path": "rfc/rfc8415.txt",
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/network-services.md"
+   "skill-network-architect/references/network-services.md",
+   "skill-network-architect/references/service-provider-edge.md"
   ],
   "sha256": "3a3540c90ef2da48caa5cba627455025ef8cff6d1f988c6d0a83305485e4aa0a",
   "bytes": 370298,
@@ -4366,11 +5517,23 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/network-services.md"
+   "skill-network-architect/references/network-services.md",
+   "skill-network-architect/references/observability-troubleshooting.md"
   ],
   "sha256": "c2cb41fb72bf45935ba7372fef9d83478ed2ecc7f3749ea9a16b52b06ef0f343",
   "bytes": 46879,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8585.txt": {
+  "path": "rfc/rfc8585.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "5234ae99076cd84dfb25645f78a520e2e1fae2de0b9383f599b0389a26c1e307",
+  "bytes": 49405,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc8633.txt": {
   "path": "rfc/rfc8633.txt",
@@ -4388,11 +5551,23 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
-   "skill-network-architect/references/security-and-segmentation.md"
+   "skill-network-architect/references/security-and-segmentation.md",
+   "skill-network-architect/references/service-provider-edge.md"
   ],
   "sha256": "b2f9d3bf437af1d15b2dba81ddb39a936065dfba91b7f136169d894f55e75ded",
   "bytes": 43485,
   "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8760.txt": {
+  "path": "rfc/rfc8760.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/voice-and-sip.md"
+  ],
+  "sha256": "8dbebfec80595f1717b2efc329419fc45bba4c18ade460e53a42ae4e37dfd43b",
+  "bytes": 18103,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.rfc-editor.org/rfc/rfc8767.txt": {
   "path": "rfc/rfc8767.txt",
@@ -4432,6 +5607,7 @@
   "kind": "rfc",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md",
    "skill-network-architect/references/wan-and-remote-access.md"
   ],
   "sha256": "92bb51d4cb7532468b6ae203df0f74d3f1ebb1fa5a416d3963c050c5a0b67856",
@@ -4551,6 +5727,17 @@
   "bytes": 65667,
   "retrieved": "2026-10-29T07:08Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc9256.txt": {
+  "path": "rfc/rfc9256.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "c020cd64b76df95b8bfee45941ade1b191de8a92a1b1652a8389f46968e1ec6f",
+  "bytes": 87048,
+  "retrieved": "2026-10-29T09:23Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc9325.txt": {
   "path": "rfc/rfc9325.txt",
   "kind": "rfc",
@@ -4573,6 +5760,28 @@
   "bytes": 33948,
   "retrieved": "2026-10-29T07:08Z"
  },
+ "https://www.rfc-editor.org/rfc/rfc9568.txt": {
+  "path": "rfc/rfc9568.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "c67e38b76eb5993be562b200facbf7ef23eebc9c8c785829d5db65e8b6785830",
+  "bytes": 87381,
+  "retrieved": "2026-10-29T09:23Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc959.txt": {
+  "path": "rfc/rfc959.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "e2eb01566e64c12ed75a0c4bd02231e62f91eebb86f596abc40999d5e8bc5a91",
+  "bytes": 147316,
+  "retrieved": "2026-10-29T09:22Z"
+ },
  "https://www.rfc-editor.org/rfc/rfc9637.txt": {
   "path": "rfc/rfc9637.txt",
   "kind": "rfc",
@@ -4594,6 +5803,17 @@
   "sha256": "b59e8b413ba4c10af88c950a76b22d649663edec7999722b4d3f61df1ef9f3b4",
   "bytes": 84936,
   "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9915.txt": {
+  "path": "rfc/rfc9915.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/service-provider-edge.md"
+  ],
+  "sha256": "66eea827cd89f41663c2d33738f154b0067781675b3072c3393d8c9c43f5412f",
+  "bytes": 304187,
+  "retrieved": "2026-10-29T09:23Z"
  },
  "https://www.ripe.net/publications/docs/ripe-690/": {
   "path": "web/ripe.net/publications-docs-ripe-690-1d550577.md.txt",
@@ -4618,6 +5838,17 @@
   "sha256": "d07bbf910617177081f0d690584427b2b2125b96d691f5c23d87e111c3a72f2f",
   "bytes": 6050,
   "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.smartmontools.org/": {
+  "path": "web/smartmontools.org/index-82c6ede5.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/edge-appliances.md"
+  ],
+  "sha256": "5a2cb4bbd82099902bac26e9a18faeb83cbe258639e22c924954353d5ee1bb4c",
+  "bytes": 11969,
+  "retrieved": "2026-10-29T09:24Z"
  },
  "https://www.softwareheritage.org/": {
   "path": "web/softwareheritage.org/index-ede3c414.md.txt",
@@ -4691,6 +5922,7 @@
   "kind": "pdf",
   "method": "direct",
   "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md",
    "skill-network-architect/references/wan-and-remote-access.md"
   ],
   "sha256": "b4cf398c21d054e8774af568395b0f7cd0e2b01322809c5dbd66c4135021ca57",
@@ -4707,5 +5939,16 @@
   "sha256": "06ef398c9daf0e5a7ba3a05d332d23855809fb894f016105896f48316826a688",
   "bytes": 16773,
   "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.wireguard.com/quickstart/": {
+  "path": "web/wireguard.com/quickstart-d41c4b48.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/remote-site-fleet.md"
+  ],
+  "sha256": "9f0aec968d45d601ff3348f19f94fe98f2a7c665825bbc45be849e3d2369b64e",
+  "bytes": 5658,
+  "retrieved": "2026-10-29T09:23Z"
  }
 }

@@ -54,6 +54,26 @@ behaviours cost time the first time (source: unified-network-controller `infra/a
   second host given the same profile could join as another service's bot (the `apn-dashboard-iam` token allows `teleport-ec2-bot-role-apn/*`). Give each
   host its own role and token.
 
+> **Learned 2026-10-29** · Machine ID bots on EC2 (apn `teleport/tbot` notes, 2026-03-24 and 2026-04-28) · VERIFIED_PRIMARY (incident notes with the
+> commands run) · Source: `apn/teleport/tbot/docs/ec2/stale-tbot-state-and-ecs-handling-20260324_1515.md` lines 40-118 and
+> `apn/teleport/tbot/docs/ec2/centos7-noc-iam-role-fix-20260428_1038.md` (apn 5cba35f)
+>
+> - **Stale client state beats new config.** After a bot is renamed or recreated on the server, tbot logs `onboarding config ignored as identity was
+>   loaded from persistent storage` and keeps renewing the old identity (TLS to a stale cluster hostname) while IAM and `aws sts get-caller-identity`
+>   look right. Stop `tbot.service`, move `/var/lib/teleport/bot` aside, start it: it then joins fresh. On ECS this bites only when the bot directory is
+>   persistent (EFS); ephemeral task storage joins fresh on every start.
+> - **`instance did not match any allow rules` can be the server side.** With a correct IAM role the join still failed because the bot did not exist,
+>   its `bot-<name>` role was orphaned by an earlier partial delete, and its IAM token had expired. Check all three before touching the client:
+
+```bash
+# centos7-noc-iam-role-fix-20260428_1038.md (names made generic)
+tctl bots ls                          # is the bot there?
+tctl tokens ls                        # does its IAM token exist, without a short expiry?
+tctl rm user/bot-<name>               # remove the user and role a partial delete left behind
+tctl rm role/bot-<name>
+tctl bots add <name> --roles=access   # recreate, then apply its IAM token (far-future expiry, above)
+```
+
 ### SMC Teleport node join: static token, default data dir (read at source 2026-10-14)
 
 `roles/smc_teleport/templates/teleport.yaml.j2` joins the node with `auth_token: {{ teleport_token }}`, a static alphanumeric token the cluster defines under

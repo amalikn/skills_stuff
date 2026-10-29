@@ -85,16 +85,16 @@ END-TO-END FLOW: every stage has a form; any stage may loop back to DISCOVER
       +------------------ incident, drift or reopen trigger <-------------------------+
 ```
 
-| Stage    | Question it answers                      | Template                              | Helpers (network / systems)                                 |
-| -------- | ---------------------------------------- | ------------------------------------- | ----------------------------------------------------------- |
-| Discover | what exists, and how sure are we?        | [current-state-discovery] | `just ip-plan` on the found plan / host inventory reads     |
-| Require  | what must be true, measured how?         | [requirements-and-constraints] | none; targets come from owners                              |
-| Design   | which structure meets the targets?       | [design], [interface-contract] | `just mtu`, `just link-budget` / `just quorum`, `just ceph` |
+| Stage    | Question it answers                      | Template                                  | Helpers (network / systems)                                 |
+| -------- | ---------------------------------------- | ----------------------------------------- | ----------------------------------------------------------- |
+| Discover | what exists, and how sure are we?        | [current-state-discovery]                 | `just ip-plan` on the found plan / host inventory reads     |
+| Require  | what must be true, measured how?         | [requirements-and-constraints]            | none; targets come from owners                              |
+| Design   | which structure meets the targets?       | [design], [interface-contract]            | `just mtu`, `just link-budget` / `just quorum`, `just ceph` |
 | Design   | how much, and what fails together?       | [capacity-model], [failure-mode-analysis] | `just availability` (both) / `just capacity`                |
-| Decide   | which option, and what would reopen it?  | [decision-record], [risk-register] | none                                                        |
-| Change   | how do we apply it safely?               | [change-and-validation] | canary arithmetic in [automation and safety] |
-| Accept   | did the user outcome change as required? | [test-and-acceptance-plan] | probes at the user outcome                                  |
-| Operate  | who runs it, and what did we learn?      | [post-incident-review] | telemetry per the observability reference                   |
+| Decide   | which option, and what would reopen it?  | [decision-record], [risk-register]        | none                                                        |
+| Change   | how do we apply it safely?               | [change-and-validation]                   | canary arithmetic in [automation and safety]                |
+| Accept   | did the user outcome change as required? | [test-and-acceptance-plan]                | probes at the user outcome                                  |
+| Operate  | who runs it, and what did we learn?      | [post-incident-review]                    | telemetry per the observability reference                   |
 
 [current-state-discovery]: ../templates/current-state-discovery.md
 [requirements-and-constraints]: ../templates/requirements-and-constraints.md
@@ -125,6 +125,60 @@ END-TO-END FLOW: every stage has a form; any stage may loop back to DISCOVER
 - Document accepted single points of failure. Not every service needs a distributed system.
 - Record each decision in an ADR with assumptions, rejected options, consequences and a reopen trigger.
 - Do not invent fleet facts, prices, support matrices, entitlements or deadlines. Read version-matched primary sources.
+
+Evidence before commitment:
+
+- Screen feasibility on paper first. List each required function, classify it per candidate and exact version (native, add-on, moved central, not possible) from that version's documentation, and apply
+  the rule before buying or benching anything. One required function that is not possible and cannot move elsewhere vetoes the candidate.
+- Measure before choosing a platform. Separate investigation (allowed early: inventory, market tests, quotes) from commitment (gated on measured inventory, utilisation and cost). A decision made
+  before the evidence is withdrawn, not rejected.
+- Compare against the best achievable version of the current state, not today's state. "Do not migrate" or "do not buy" is a valid, successful outcome.
+- Fix scoring weights and thresholds before the data arrives. A threshold set after seeing the data is tuned to the answer.
+- When a requirement has two readings of different cost, state both and the cost gap, size the expensive reading, label it pending confirmation, and ask what drives it (regulation and contract are
+  fixed; preference and convention are negotiable). Oversizing is recoverable; undersizing found after purchase is not.
+- Apply the evidence rule to assumed components too. Each one shows why the incumbent capability cannot serve before it enters the design.
+
+Rule outcomes and confirmation:
+
+- Evaluate each rule or acceptance criterion to one of three states: met (confirmed evidence reaches the threshold), unmet, or unclear (the threshold is reachable only with unconfirmed items). A
+  boolean result hides missing data.
+- Carry the evidence IDs present and the IDs still uncertain with every result. An overall verdict may be "insufficient information".
+- Keep proposed and confirmed state apart. Automation and models write proposals; confirmation is an append-only step by a named person or reviewed process; downstream evaluators read only the
+  confirmed side.
+
+```text
+THREE-STATE RULE OUTCOME: unconfirmed items can make a result unclear, never met
+
++-----------------+   +------------------------+   yes   +------+
+| confirmed items |-->| confirmed >= threshold |-------->| met  |
++-----------------+   +-----------+------------+         +------+
+                                  | no
+                                  v
++-----------------+   +------------------------+   yes   +---------+
+| proposed items  |-->| confirmed + proposed   |-------->| unclear |
+| (not confirmed) |   | >= threshold           |         +---------+
++-----------------+   +-----------+------------+
+                                  | no
+                                  v
+                              +-------+
+                              | unmet |
+                              +-------+
+```
+
+AI-assisted pipelines:
+
+- Deterministic core, model at the edge, human at the top. Every step that decides what is true is code that never calls a model; a model may map free text to candidates, draft narrative or critique;
+  a person adjudicates.
+- Tools a model calls return verifiable facts with a versioned schema, not judgements. The model provider can then change without an engine change.
+- Enforce "no model in the core" with a test, and give that test a negative control that proves it can fail.
+- A safety backstop must not depend on the component whose failure it guards against, and must not be configurable off.
+
+Checks that cannot fail:
+
+- A vacuous test passes whatever the system does: a data set compared with itself, an assertion on a value the test just wrote, a filter that matched nothing, a check with no failing input on record.
+  Treat a check with no demonstrated failure as untested.
+- For every new check, run it once on an input that must fail (a negative control) and record the result.
+- A test must also tell mechanisms apart. If two mechanisms could produce the same pass or refusal, assert which one acted (audit trail, acting identity).
 
 ```text
 DEPENDENCY CONTEXT: draw this before choosing products; every arrow means "depends on"
@@ -176,6 +230,8 @@ Copy the checklist for the chosen mode into the answer. Tick each item or write 
 - [ ] Constraints and USER_STATED facts labelled
 - [ ] Current and target views drawn separately
 - [ ] At least two options compared, including the simplest viable
+- [ ] Paper feasibility screen done per candidate and version before any purchase or bench
+- [ ] Requirements with two cost readings sized on the expensive one and the driver asked
 - [ ] Failure domains and the limiting resource quantified
 - [ ] ADR written with a reopen trigger
 - [ ] Acceptance tests traced to each requirement
@@ -209,12 +265,14 @@ Copy the checklist for the chosen mode into the answer. Tick each item or write 
 - [ ] Runtime budget, concurrency, timeouts and retry classes set
 - [ ] Timed-out writes treated as unknown until queried
 - [ ] Model or lab validation before canary; journal per target
+- [ ] Every new check run once against a negative control that must fail
 
 **Capacity**
 - [ ] Demand measured at busy hour with units and source
 - [ ] Four scenarios modelled (normal, maintenance, unit loss, correlated loss)
 - [ ] Limiting resource named now and at the horizon
 - [ ] Growth assumption labelled; trigger and lead time set
+- [ ] Compared against the best achievable current state; "no change" kept as an option
 
 ## Domain reference structure
 

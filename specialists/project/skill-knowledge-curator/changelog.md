@@ -14,6 +14,12 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-10-29 20:14 (learned, harvest write-back): `references/claim-model-and-taxonomy.md` Learned 2026-10-29 (tense is an existence claim, re-add
+  source totals) and (b) (measure provenance figures from the artefact); `references/authority-and-promotion.md` Learned 2026-10-29 (search-only
+  versus citable stores); `references/conflicts-and-review.md` Learned 2026-10-29 (resolve machine-readable amendments before citing);
+  `references/evaluation.md` Learned 2026-10-29 (harvested and model-proposed lookup entries are candidates, test negation);
+  `references/workflow.md` Learned 2026-10-29 (hash the body, not the header) and (b) (killable tracks, promote shared facts at the second
+  consumer). From the 2026-10-29 harvest of a cloud-repatriation design programme and personal research projects; no project content.
 - 2026-10-27 20:39 (operational): the skill-ai-it session repointed this `justfile` to `scripts/checks/doc_freshness.py` and `role_check.py`; `just check`
   passes again. Left uncommitted with this slurp's lines (no commit asked).
 - 2026-10-27 20:38 (incident): the commit of the two lines below was not made: `just check` exited 2 because skill-ai-it `scripts/doc_freshness.py` was moved to
