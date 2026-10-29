@@ -1,0 +1,169 @@
+Contents of https://en.wikipedia.org/wiki/Erlang_(unit):
+| erlang | |
+| --- | --- |
+| [Unit system](https://en.wikipedia.org/wiki/System_of_units_of_measurement "System of units of measurement") | [ITU Telecommunication Standardization Sector](https://en.wikipedia.org/wiki/ITU_Telecommunication_Standardization_Sector "ITU Telecommunication Standardization Sector") standards |
+| Unit of | [offered load](https://en.wikipedia.org/wiki/Offered_load "Offered load"), carried load |
+| Symbol | E |
+| Named after | [Agner Krarup Erlang](https://en.wikipedia.org/wiki/Agner_Krarup_Erlang "Agner Krarup Erlang") |
+
+
+
+The **erlang** (symbol **E**[[1]](#cite_note-1)) is a [dimensionless unit](https://en.wikipedia.org/wiki/Dimensionless_unit "Dimensionless unit") that is used in [telephony](https://en.wikipedia.org/wiki/Telephony "Telephony") as a measure of [offered load](https://en.wikipedia.org/wiki/Offered_load "Offered load") or carried load on service-providing elements such as telephone circuits or telephone switching equipment. A single [cord circuit](https://en.wikipedia.org/wiki/Cord_circuit "Cord circuit") has the capacity to be used for 60 minutes in one hour. Full utilization of that capacity, 60 minutes of traffic, constitutes 1 erlang.[[2]](#cite_note-2)
+
+Carried traffic in erlangs is the average number of concurrent calls measured over a given period (often one hour), while offered traffic is the traffic that would be carried if all call-attempts succeeded. How much offered traffic is carried in practice will depend on what happens to unanswered calls when all servers are busy.
+
+The [CCITT](https://en.wikipedia.org/wiki/CCITT "CCITT") named the international unit of telephone traffic the erlang in 1946 in honor of [Agner Krarup Erlang](https://en.wikipedia.org/wiki/Agner_Krarup_Erlang "Agner Krarup Erlang").[[3]](#cite_note-ccitt1946-3)[[4]](#cite_note-brockmeyer1948-4) In Erlang's analysis of efficient telephone line usage, he derived the formulae for two important cases, Erlang-B and Erlang-C, which became foundational results in [teletraffic engineering](https://en.wikipedia.org/wiki/Teletraffic_engineering "Teletraffic engineering") and [queueing theory](https://en.wikipedia.org/wiki/Queueing_theory "Queueing theory"). His results, which are still used today, relate quality of service to the number of available servers. Both formulae take offered load as one of their main inputs (in erlangs), which is often expressed as call arrival rate times average call length.
+
+A distinguishing assumption behind the Erlang B formula is that there is no queue, so that if all service elements are already in use then a newly arriving call will be blocked and subsequently lost. The formula gives the probability of this occurring. In contrast, the Erlang C formula provides for the possibility of an unlimited queue and it gives the probability that a new call will need to wait in the queue due to all servers being in use. Erlang's formulae apply quite widely, but they may fail when congestion is especially high causing unsuccessful traffic to repeatedly retry. One way of accounting for retries when no queue is available is the Extended Erlang B method.
+
+## Traffic measurements of a telephone circuit
+
+[[edit](/w/index.php?title=Erlang_(unit)&action=edit&section=1 "Edit section: Traffic measurements of a telephone circuit")]
+
+When used to represent *carried traffic*, a value (which can be a non-integer such as 43.5) followed by "erlangs" represents the average number of concurrent calls carried by the circuits (or other service-providing elements), where that average is calculated over some reasonable period of time. The period over which the average is calculated is often one hour, but shorter periods (e.g., 15 minutes) may be used where it is known that there are short spurts of demand and a traffic measurement is desired that does not mask these spurts.
+One erlang of carried traffic refers to a single resource being in continuous use, or two channels each being in use fifty percent of the time, and so on. For example, if an office has two telephone operators who are both busy all the time, that would represent two erlangs (2 E) of traffic; or a radio channel that is occupied continuously during the period of interest (e.g. one hour) is said to have a load of 1 erlang.
+
+When used to describe *offered traffic*, a value followed by "erlangs" represents the average number of concurrent calls that would have been carried if there were an unlimited number of circuits (that is, if the call-attempts that were made when all circuits were in use had not been rejected). The relationship between offered traffic and carried traffic depends on the design of the system and user behavior. Three common models are (a) callers whose call-attempts are rejected go away and never come back, (b) callers whose call-attempts are rejected try again within a fairly short space of time, and (c) the system allows users to wait in queue until a circuit becomes available.
+
+A third measurement of traffic is *instantaneous traffic*, expressed as a certain number of erlangs, meaning the exact number of calls taking place at a point in time. In this case, the number is a non-negative [integer](https://en.wikipedia.org/wiki/Integer "Integer"). Traffic-level-recording devices, such as moving-pen recorders, plot instantaneous traffic.
+
+The concepts and mathematics introduced by [Agner Krarup Erlang](https://en.wikipedia.org/wiki/Agner_Krarup_Erlang "Agner Krarup Erlang") have broad applicability beyond telephony. They apply wherever users arrive more or less at random to receive exclusive service from any one of a group of service-providing elements without prior reservation, for example, where the service-providing elements are ticket-sales windows, toilets on an airplane, or motel rooms. (Erlang's models do not apply where the service-providing elements are shared between several concurrent users or different amounts of service are consumed by different users, for instance, on circuits carrying data traffic.)
+
+The goal of Erlang's traffic theory is to determine exactly how many service-providing elements should be provided in order to satisfy users, without wasteful over-provisioning. To do this, a target is set for the [grade of service](https://en.wikipedia.org/wiki/Grade_of_service "Grade of service") (GoS) or [quality of service](https://en.wikipedia.org/wiki/Quality_of_service "Quality of service") (QoS). For example, in a system where there is no queuing, the GoS may be that no more than 1 call in 100 is blocked (i.e., rejected) due to all circuits being in use (a GoS of 0.01), which becomes the target probability of call blocking, *P*b, when using the Erlang B formula.
+
+There are several resulting formulae, including [Erlang B](#Erlang_B_formula), [Erlang C](#Erlang_C_formula) and the related [Engset formula](https://en.wikipedia.org/wiki/Engset_formula "Engset formula"), based on different models of user behavior and system operation. These may each be derived by means of a special case of [continuous-time Markov processes](https://en.wikipedia.org/wiki/Continuous-time_Markov_process "Continuous-time Markov process") known as a [birth–death process](https://en.wikipedia.org/wiki/Birth%E2%80%93death_process "Birth–death process"). The more recent [Extended Erlang B](#Extended_Erlang_B) method provides a further traffic solution that draws on Erlang's results.
+
+## Calculating offered traffic
+
+[[edit](/w/index.php?title=Erlang_(unit)&action=edit&section=3 "Edit section: Calculating offered traffic")]
+
+Offered traffic (in erlangs) is related to the *call arrival rate*, *λ*, and the *average call-holding time* (the average time of a phone call), *h*, by:
+
+:   ![{\displaystyle E=\lambda h}](https://wikimedia.org/api/rest_v1/media/math/render/svg/d6fd0ef591bec70d046dcc0e80650eb1af6f7ca7)
+
+provided that *h* and *λ* are expressed using the same units of time (seconds and calls per second, or minutes and calls per minute).
+
+The practical measurement of traffic is typically based on continuous observations over several days or weeks, during which the instantaneous traffic is recorded at regular, short intervals (such as every few seconds). These measurements are then used to calculate a single result, most commonly the busy-hour traffic (in erlangs). This is the average number of concurrent calls during a given one-hour period of the day, where that period is selected to give the highest result. (This result is called the time-consistent busy-hour traffic). An alternative is to calculate a busy-hour traffic value separately for each day (which may correspond to slightly different times each day) and take the average of these values. This generally gives a slightly higher value than the time-consistent busy-hour value.
+
+Where the existing busy-hour carried traffic, *E*c, is measured on an already overloaded system, with a significant level of blocking, it is necessary to take account of the blocked calls in estimating the busy-hour offered traffic *E*o (which is the traffic value to be used in the Erlang formulae). The offered traffic can be estimated by *E*o = *E*c/(1 − *P*b). For this purpose, where the system includes a means of counting blocked calls and successful calls, *P*b can be estimated directly from the proportion of calls that are blocked. Failing that, *P*b can be estimated by using *E*c in place of *E*o in the Erlang formula and the resulting estimate of *P*b can then be used in *E*o = *E*c/(1 − *P*b) to provide a first estimate of *E*o.
+
+Another method of estimating *E*o in an overloaded system is to measure the busy-hour call arrival rate, *λ* (counting successful calls and blocked calls), and the average call-holding time (for successful calls), *h*, and then estimate *E*o using the formula *E* = *λh*.
+
+For a situation where the traffic to be handled is completely new traffic, the only choice is to try to model expected user behavior. For example, one could estimate active user population, *N*, expected level of use, *U* (number of calls/transactions per user per day), busy-hour concentration factor, *C* (proportion of daily activity that will fall in the busy hour), and average holding time/service time, *h* (expressed in minutes). A projection of busy-hour offered traffic would then be *E*o = ⁠*NUC*/60⁠*h* erlangs. (The division by 60 translates the busy-hour call/transaction arrival rate into a per-minute value, to match the units in which *h* is expressed.)
+
+The *Erlang B formula* (or *Erlang-B* with a hyphen), also known as the *Erlang loss formula*, is a formula for the *blocking probability* that describes the probability of call losses for a group of identical parallel resources (telephone lines, circuits, traffic channels, or equivalent), sometimes referred to as an [M/M/c/c queue](https://en.wikipedia.org/wiki/M/M/c_queue#Finite_capacity "M/M/c queue").[[5]](#cite_note-5) It is, for example, used to dimension a telephone network's links. The formula was derived by [Agner Krarup Erlang](https://en.wikipedia.org/wiki/Agner_Krarup_Erlang "Agner Krarup Erlang") and is not limited to telephone networks, since it describes a probability in a queuing system (albeit a special case with a number of servers but no queueing space for incoming calls to wait for a free server). Hence, the formula is also used in certain inventory systems with lost sales.
+
+The formula applies under the condition that an unsuccessful call, because the line is busy, is not queued or retried, but instead really vanishes forever. It is assumed that call attempts arrive following a [Poisson process](https://en.wikipedia.org/wiki/Poisson_process "Poisson process"), so call arrival instants are independent. Further, it is assumed that the message lengths (holding times) are exponentially distributed (Markovian system), although the formula turns out to apply under general holding time distributions.
+
+The Erlang B formula assumes an infinite population of sources (such as telephone subscribers), which jointly offer traffic to *N* servers (such as telephone lines). The rate expressing the frequency at which new calls arrive, λ, (birth rate, [traffic intensity](https://en.wikipedia.org/wiki/Traffic_intensity "Traffic intensity"), etc.) is constant, and does *not* depend on the number of active sources. The total number of sources is assumed to be infinite.
+The Erlang B formula calculates the blocking probability of a buffer-less loss system, where a request that is not served immediately is aborted, causing that no requests become queued. Blocking occurs when a new request arrives at a time where all available servers are currently busy. The formula also assumes that blocked traffic is cleared and does not return.
+
+The formula provides the GoS ([grade of service](https://en.wikipedia.org/wiki/Grade_of_service "Grade of service")) which is the probability *P*b that a new call arriving to the resources group is rejected because all resources (servers, lines, circuits) are busy: *B*(*E*, *m*) where *E* is the total offered traffic in erlang, offered to *m* identical parallel resources (servers, communication channels, traffic lanes).
+
+:   ![{\displaystyle P_{\text{b}}=B(E,m)={\frac {\frac {E^{m}}{m!}}{\sum _{i=0}^{m}{\frac {E^{i}}{i!}}}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/9774cd066c7ef8743083fda1b1bc376b32d12a06)
+
+where:
+
+* *P*b is the probability of blocking
+* *m* is the number of identical parallel resources such as servers, telephone lines, etc.
+* *E* = *λh* is the normalised ingress load (offered traffic stated in erlang).
+
+The *erlang* is a dimensionless load unit calculated as the mean arrival rate, *λ*, multiplied by the mean call holding time, *h*. The unit has to be dimensionless for [Little's Law](https://en.wikipedia.org/wiki/Little's_Law "Little's Law") to be dimensionally sane.
+
+This may be expressed recursively[[6]](#cite_note-6) as follows, in a form that is used to simplify the calculation of tables of the Erlang B formula:
+
+:   ![{\displaystyle B(E,0)=1.\,}](https://wikimedia.org/api/rest_v1/media/math/render/svg/7d796c1c6cbf795763bba8003e6367acba018ff9)
+:   ![{\displaystyle B(E,j)={\frac {EB(E,j-1)}{EB(E,j-1)+j}}\ \forall {j}=1,2,\ldots ,m.}](https://wikimedia.org/api/rest_v1/media/math/render/svg/6d6ff793108689019ccfe5070b27064a0704022b)
+
+Typically, instead of *B*(*E*, *m*) the inverse 1/*B*(*E*, *m*) is calculated in numerical computation in order to ensure [numerical stability](https://en.wikipedia.org/wiki/Numerical_stability "Numerical stability"):
+
+:   ![{\displaystyle {\frac {1}{B(E,0)}}=1}](https://wikimedia.org/api/rest_v1/media/math/render/svg/106243e8936020999d457f6b22d9086a8e739639)
+:   ![{\displaystyle {\frac {1}{B(E,j)}}=1+{\frac {j}{E}}{\frac {1}{B(E,j-1)}}\ \forall {j}=1,2,\ldots ,m.}](https://wikimedia.org/api/rest_v1/media/math/render/svg/eaeec4332d01c35af75282eebccc48ad6e6d11af)
+
+The recursive form is derivable from the non-recursive form by repeated substitution.[[7]](#cite_note-7)
+
+```
+Function ErlangB (E As Double, m As Integer) As Double
+    Dim InvB As Double
+    Dim j As Integer
+
+    InvB = 1.0
+    For j = 1 To m
+        InvB = 1.0 + InvB * j / E
+    Next j
+    ErlangB = 1.0 / InvB
+End Function
+```
+
+or a Python version:
+
+```
+def erlang_b(E: float, m: int) -> float:
+    """Calculate the probability of call losses."""
+    inv_b = 1.0
+    for j in range(1, m + 1):
+        inv_b = 1.0 + inv_b * j / E
+    return 1.0 / inv_b
+```
+
+The Erlang B formula is decreasing and [convex](https://en.wikipedia.org/wiki/Convex_function "Convex function") in *m*.[[8]](#cite_note-8)
+It requires that call arrivals can be modeled by a [Poisson process](https://en.wikipedia.org/wiki/Poisson_process "Poisson process"), which is not always a good match, but is valid for any statistical distribution of call holding times with a finite mean.
+It applies to traffic transmission systems that do not buffer traffic.
+More modern examples compared to [POTS](https://en.wikipedia.org/wiki/Plain_old_telephone_service "Plain old telephone service") where Erlang B is still applicable, are [optical burst switching](https://en.wikipedia.org/wiki/Optical_burst_switching "Optical burst switching") (OBS) and several current approaches to [optical packet switching](https://en.wikipedia.org/wiki/Optical_packet_switching?action=edit&redlink=1 "Optical packet switching (page does not exist)") (OPS).
+Erlang B was developed as a trunk sizing tool for telephone networks with holding times in the minutes range, but being a mathematical equation it applies on any time-scale.
+
+*Extended Erlang B* differs from the classic Erlang-B assumptions by allowing for a proportion of blocked callers to try again, causing an increase in offered traffic from the initial baseline level. It is an [iterative calculation](https://en.wikipedia.org/wiki/Iteration "Iteration") rather than a formula and adds an extra parameter, the recall factor ![{\displaystyle R_{\text{f}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/121ca3e3b7cb7e12fed2f9997ce8b39ba3c032c9), which defines the recall attempts.[[9]](#cite_note-9)
+
+The steps in the process are as follows.[[10]](#cite_note-10) It starts at iteration ![{\displaystyle k=0}](https://wikimedia.org/api/rest_v1/media/math/render/svg/6307c8a99dad7d0bcb712352ae0a748bd99a038b) with a known initial baseline level of traffic ![{\displaystyle E_{0}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/411d268de7b1cf300d7481e3fe59f3b20887e0d0), which is successively adjusted to calculate a sequence of new offered traffic values ![{\displaystyle E_{k+1}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/443ae89e7b8825545fd58cd5bf11d30519282d11), each of which accounts for the recalls arising from the previously calculated offered traffic ![{\displaystyle E_{k}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/7587849b44d775263271e89499f4327eeac5dc81).
+
+1. Calculate the probability of a caller being blocked on their first attempt ![{\displaystyle P_{\text{b}}=B(E_{k},m)}](https://wikimedia.org/api/rest_v1/media/math/render/svg/e6a5439d4a161dc5f2eed5d9a39cecba8f951dc8) as above for Erlang B.
+2. Calculate the probable number of blocked calls ![{\displaystyle B_{\text{e}}=E_{k}P_{\text{b}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/85ea95138c01a76b69141960f0d16d3c5c2f018d)
+3. Calculate the number of recalls, ![{\displaystyle R}](https://wikimedia.org/api/rest_v1/media/math/render/svg/4b0bfb3769bf24d80e15374dc37b0441e2616e33), assuming a fixed recall factor, ![{\displaystyle R_{\text{f}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/121ca3e3b7cb7e12fed2f9997ce8b39ba3c032c9), ![{\displaystyle R=B_{\text{e}}R_{\text{f}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/ed0db1c5cc7c44511817e8773054cd5804e9eacb)
+4. Calculate the new offered traffic ![{\displaystyle E_{k+1}=E_{0}+R}](https://wikimedia.org/api/rest_v1/media/math/render/svg/81f9ab4d04b5cba537b0313781492dcf7c7682cf) where ![{\displaystyle E_{0}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/411d268de7b1cf300d7481e3fe59f3b20887e0d0) is the initial (baseline) level of traffic.
+5. Return to step 1, substituting ![{\displaystyle E_{k+1}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/443ae89e7b8825545fd58cd5bf11d30519282d11) for ![{\displaystyle E_{k}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/7587849b44d775263271e89499f4327eeac5dc81), and iterate until a stable value of ![{\displaystyle E}](https://wikimedia.org/api/rest_v1/media/math/render/svg/4232c9de2ee3eec0a9c0a19b15ab92daa6223f9b) is obtained.
+
+Once a satisfactory value of ![{\displaystyle E}](https://wikimedia.org/api/rest_v1/media/math/render/svg/4232c9de2ee3eec0a9c0a19b15ab92daa6223f9b) has been found, the blocking probability ![{\displaystyle P_{\text{b}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/80861cece5e965986ef908ac5db4a9a85035d805) and the recall factor can be used to calculate the probability that all of a caller's attempts are lost, not just their first call but also any subsequent retries.
+
+The *Erlang C formula* expresses the probability that an arriving customer will need to queue (as opposed to immediately being served).[[11]](#cite_note-kleinrock-11) Just as the Erlang B formula, Erlang C assumes an infinite population of sources, which jointly offer traffic of ![{\displaystyle E}](https://wikimedia.org/api/rest_v1/media/math/render/svg/4232c9de2ee3eec0a9c0a19b15ab92daa6223f9b) erlangs to ![{\displaystyle m}](https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc) servers. However, if all the servers are busy when a request arrives from a source, the request is queued. An unlimited number of requests may be held in the queue in this way simultaneously. This formula calculates the probability of queuing offered traffic, assuming that blocked calls stay in the system until they can be handled. This formula is used to determine the number of agents or customer service representatives needed to staff a [call centre](https://en.wikipedia.org/wiki/Call_centre "Call centre"), for a specified desired probability of queuing. However, the Erlang C formula assumes that callers never hang up while in queue, which makes the formula predict that more agents should be used than are really needed to maintain a desired service level.
+
+:   ![{\displaystyle P_{\text{w}}={{{\frac {E^{m}}{m!}}{\frac {m}{m-E}}} \over \left(\sum \limits _{i=0}^{m-1}{\frac {E^{i}}{i!}}\right)+{\frac {E^{m}}{m!}}{\frac {m}{m-E}}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/0a8717e1561912ad57e50f8a2efa7e42ab2c115b)
+
+where:
+
+* ![{\displaystyle E}](https://wikimedia.org/api/rest_v1/media/math/render/svg/4232c9de2ee3eec0a9c0a19b15ab92daa6223f9b) is the total traffic offered in units of erlangs
+* ![{\displaystyle m}](https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc) is the number of servers
+* ![{\displaystyle P_{\text{w}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/ab4d4241a4dafded003b70bc5b63094dce5b2f9c) is the probability that a customer has to wait for service.
+
+It is assumed that the call arrivals can be modeled by a [Poisson process](https://en.wikipedia.org/wiki/Poisson_process "Poisson process") and that call holding times are described by an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution "Exponential distribution"), therefore the Erlang C formula follows from the assumptions of the [M/M/c queue](https://en.wikipedia.org/wiki/M/M/c_queue "M/M/c queue") model.
+
+## Limitations of the Erlang formula
+
+[[edit](/w/index.php?title=Erlang_(unit)&action=edit&section=7 "Edit section: Limitations of the Erlang formula ")]
+
+When Erlang developed the Erlang-B and Erlang-C traffic equations, they were developed on a set of assumptions. These assumptions are accurate under most conditions; however in the event of extremely high traffic congestion, Erlang's equations fail to accurately predict the correct number of circuits required because of re-entrant traffic. This is termed a *high-loss system*, where congestion breeds further congestion at peak times. In such cases, it is first necessary for many additional circuits to be made available so that the high loss can be alleviated. Once this action has been taken, congestion will return to reasonable levels and Erlang's equations can then be used to determine how exactly many circuits are really required.[[12]](#cite_note-Kennedy-12)
+
+An example of an instance which would cause such a High Loss System to develop would be if a TV-based advertisement were to announce a particular telephone number to call at a specific time. In this case, a large number of people would simultaneously phone the number provided. If the service provider had not catered for this sudden [peak demand](https://en.wikipedia.org/wiki/Peak_demand "Peak demand"), extreme traffic congestion will develop and Erlang's equations cannot be used.[[12]](#cite_note-Kennedy-12)
+
+* [Call centre](https://en.wikipedia.org/wiki/Call_centre "Call centre") – Office dealing with a large volume of enquiries by telephone
+* [Discrete-event simulation](https://en.wikipedia.org/wiki/Discrete-event_simulation "Discrete-event simulation") – Type of simulation
+* [Engset formula](https://en.wikipedia.org/wiki/Engset_formula "Engset formula")
+* [Erlang distribution](https://en.wikipedia.org/wiki/Erlang_distribution "Erlang distribution") – Family of continuous probability distributions
+* [Erlang programming language](https://en.wikipedia.org/wiki/Erlang_programming_language "Erlang programming language") – Programming language
+* [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution "Poisson distribution") – Discrete probability distribution
+* [Spectral efficiency](https://en.wikipedia.org/wiki/Spectral_efficiency "Spectral efficiency") – Information rate that can be transmitted over a given bandwidth
+* [Traffic mix](https://en.wikipedia.org/wiki/Traffic_mix "Traffic mix") – Model in telecommunications
+
+1. [↑](#cite_ref-1) ["How Many? A Dictionary of Units of Measurement"](https://web.archive.org/web/20170618144237/http://www.unc.edu/~rowlett/units/dictE.html). Archived from [the original](http://www.unc.edu/~rowlett/units/dictE.html) on 2017-06-18. Retrieved 2008-04-20.
+2. [↑](#cite_ref-2) Freeman, Roger L. (2005). *Fundamentals of Telecommunications*. John Wiley. p. 57. [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [978-0471710455](https://en.wikipedia.org/wiki/Special:BookSources/978-0471710455 "Special:BookSources/978-0471710455").
+3. [↑](#cite_ref-ccitt1946_3-0) "Traffic handled on a circuit or group of circuits", *CCIF - XIVth Plenary Assembly*, Montreux, 26–31 October: International Telephone Consultative Committee, 1946, pp. 60–62, [hdl](https://en.wikipedia.org/wiki/Hdl_(identifier) "Hdl (identifier)"):[11.1004/020.1000/4.237.43.en.1001](https://hdl.handle.net/11.1004%2F020.1000%2F4.237.43.en.1001)`{{citation}}`: CS1 maint: location ([link](https://en.wikipedia.org/wiki/Category:CS1_maint:_location "Category:CS1 maint: location"))
+4. [↑](#cite_ref-brockmeyer1948_4-0) Brockmeyer, E.; Halstrøm, H. L.; Jensen, Arne (1948), [*The life and works of A.K. Erlang*](https://web.archive.org/web/20110719122546/http://oldwww.com.dtu.dk/teletraffic/erlangbook/pp001-278.pdf) (PDF), Transactions of the Danish Academy of Technical Sciences, vol. 2, Akademiet for de Tekniske Videnskaber, archived from [the original](http://oldwww.com.dtu.dk/teletraffic/erlangbook/pp001-278.pdf) (PDF) on July 19, 2011: 19–22
+5. [↑](#cite_ref-5) Allen, Arnold (1978). *Probability, statistics, and queueing theory : with computer science applications*. New York: Academic Press. p. 184. [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [978-0120510504](https://en.wikipedia.org/wiki/Special:BookSources/978-0120510504 "Special:BookSources/978-0120510504").
+6. [↑](#cite_ref-6) Guoping Zeng (June 2003), "Two common properties of the erlang-B function, erlang-C function, and Engset blocking function", *Mathematical and Computer Modelling*, **37** (12–13), Elsevier Science: 1287–1296, [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1016/S0895-7177(03)90040-9](https://doi.org/10.1016%2FS0895-7177%2803%2990040-9)
+7. [↑](#cite_ref-7) Martínez, Elieser Ernesto Gallego; Martínez, Jany Alpuin (September 8, 2021). ["Recursion applied to the Erlang B formula for determining the telephone exchange Grade of Service"](https://www.techrxiv.org/doi/full/10.36227/techrxiv.16556592.v1). *TechRxiv*: 5. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.36227/techrxiv.16556592.v1](https://doi.org/10.36227%2Ftechrxiv.16556592.v1).
+8. [↑](#cite_ref-8) Messerli, E.J., 1972. 'Proof of a convexity property of the Erlang B formula'. Bell System Technical Journal 51, 951–953.
+9. [↑](#cite_ref-9) 'Designing optimal voice networks for businesses, government, and telephone companies' by J. Jewett, J. Shrago, B. Yomtov, TelCo Research, Chicago, 1980.
+10. [↑](#cite_ref-10) Inayatullah, M., Ullah, F.K., Khan., A.N., 'An Automated Grade Of Service Measuring System', IEEE—ICET 2006, 2nd International Conference on Emerging Technologies, Peshawar, Pakistan 13–14 November 2006, pp. 230–237
+11. [↑](#cite_ref-kleinrock_11-0) [Kleinrock, Leonard](https://en.wikipedia.org/wiki/Leonard_Kleinrock "Leonard Kleinrock") (1975). *Queueing Systems Volume 1: Theory*. p. 103. [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [978-0471491101](https://en.wikipedia.org/wiki/Special:BookSources/978-0471491101 "Special:BookSources/978-0471491101").
+12. [1](#cite_ref-Kennedy_12-0) [2](#cite_ref-Kennedy_12-1) ["Kennedy I., School of Electrical and Information Engineering, University of the Witwatersrand, Personal Communication"](https://web.archive.org/web/20030501023410/http://dept.ee.wits.ac.za/~kennedy/). Archived from [the original](http://dept.ee.wits.ac.za/~kennedy) on 2003-05-01. Retrieved 2017-10-01.
+
+* ["Solution of some Problems in the Theory of Probabilities of Significance in Automatic Telephone Exchanges"](https://web.archive.org/web/20110719122546/http://oldwww.com.dtu.dk/teletraffic/erlangbook/pps138-155.pdf) (PDF). *Elektrotkeknikeren*. **13**: 5. 1917. Archived from [the original](http://oldwww.com.dtu.dk/teletraffic/erlangbook/pps138-155.pdf) (PDF) on July 19, 2011.

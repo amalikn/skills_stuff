@@ -1,0 +1,1 @@
+../../skill-network-architect/scripts/check_links.py

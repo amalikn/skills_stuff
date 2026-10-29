@@ -1,0 +1,1 @@
+../../skill-network-architect/references/automation-and-safety.md

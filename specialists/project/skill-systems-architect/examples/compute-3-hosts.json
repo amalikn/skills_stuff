@@ -1,0 +1,39 @@
+{
+    "schema_version": 1,
+    "nodes": [
+        {
+            "id": "h1",
+            "domain": "rack-a",
+            "memory_gib": 128,
+            "reserve_gib": 24
+        },
+        {
+            "id": "h2",
+            "domain": "rack-a",
+            "memory_gib": 128,
+            "reserve_gib": 24
+        },
+        {
+            "id": "h3",
+            "domain": "rack-b",
+            "memory_gib": 128,
+            "reserve_gib": 24
+        }
+    ],
+    "demand_gib": 200,
+    "headroom_fraction": 0.1,
+    "scenarios": [
+        {
+            "id": "normal",
+            "failed_nodes": [],
+            "failed_domains": []
+        },
+        {
+            "id": "lose-h1",
+            "failed_nodes": [
+                "h1"
+            ],
+            "failed_domains": []
+        }
+    ]
+}

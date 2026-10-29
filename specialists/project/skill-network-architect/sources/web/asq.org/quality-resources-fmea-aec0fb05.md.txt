@@ -1,0 +1,1651 @@
+<html class="no-js" lang="en"><head><title>What is FMEA? Failure Mode &amp; Effects Analysis | ASQ</title><meta name="description" content="Learn when to use the failure modes and effects analysis (FMEA) and the general procedure an organization should follow through an FMEA example at ASQ.org."><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"><meta name="msvalidate.01" content="6351C9307AE33E06A0B78015FF3C3D87"><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><meta http-equiv="X-UA-TextLayoutMetrics" content="gdi"><link rel="canonical" href="https://asq.org/quality-resources/fmea"><link href="/bundles/global-css?v=I-cjwhLGF_JivGcKRrG0jRmLWF02gUtvAt0nBFEPgJM1" rel="stylesheet"><link href="/bundles/global-less?v=tjYcJ14rP572N5sp59MvJqUp2ZEzYOJAX81ahWi2LEg1" rel="stylesheet"><link href="/bundles/updates-css?v=FbyyRR05gVmFj1G-Me-z8aEU82YQQv_Z5NU_LjGOafs1" rel="stylesheet"><link rel="stylesheet" href="https://files.bettybot.ai/ui-widget/betty-bot-ui.css"><script>
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        'event': 'memberType'
+        
+    });
+    window.dataLayer.push({
+        'event': 'memberOrg'
+        
+    });
+    (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-5WHHGF');
+</script><script>
+    //Hero height fix
+    (function () {
+        document.addEventListener("DOMContentLoaded", function () {
+            var slide = document.querySelector('.js-home-slide');
+            if (slide) {
+                var windowHeight = window.innerHeight,
+                    currentAttr = slide.getAttribute("style"),
+                    newAttr = currentAttr + "; height:" + windowHeight + "px;";
+                slide.setAttribute("style", newAttr);
+            }
+        });
+    })(window, document);
+</script><script>
+    (function (h, o, t, j, a, r) {
+        h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
+        h._hjSettings = { hjid: 713560, hjsv: 6 };
+        a = o.getElementsByTagName('head')[0];
+        r = o.createElement('script'); r.async = 1;
+        r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+</script><script src="/Scripts/vendor/modernizr-custom.js" async></script><script src="/Scripts/vendor/picturefill.min.js" async></script><script>
+    !function (f, b, e, v, n, t, s) {
+        if (f.fbq) return; n = f.fbq = function () {
+            n.callMethod ?
+                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+        }; if (!f._fbq) f._fbq = n;
+        n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0;
+        t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s)
+    }(window,
+        document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '372198456487649'); // Insert your pixel ID here.
+    fbq('track', 'PageView');
+</script><noscript>
+    <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=372198456487649&amp;ev=PageView&amp;noscript=1"></noscript><script src="/Scripts/vendor/font-awesome.js" async></script><script type="application/javascript" src="https://ced.sascdn.com/tag/1541/smart.js" async></script><script type="application/javascript">
+    var sas = sas || {};
+    sas.cmd = sas.cmd || [];
+    sas.cmd.push(function() {
+        sas.setup({ networkid: 1541, domain: "https://www5.smartadserver.com", async: true });
+    });
+</script><script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" type="text/javascript" charset="UTF-8" data-domain-script="01936ab0-c632-79be-94b6-f152c9763061"></script><script type="text/javascript">
+    function OptanonWrapper() { }
+</script><script src="https://files.bettybot.ai/ui-widget/betty-bot-ui.js"></script><script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5b2cea2f6e74690011af3f4f&amp;product=sop" async="async"></script></head><body class="">
+    
+
+
+<noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-5WHHGF" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>
+
+    <main>
+        
+<header id="header-container" class="global-header">
+
+    <a href="#asq-main-content" class="skip-link">Skip to main content</a>
+    <a id="asq-logo" href="/">
+        <img src="/-/media/ASQ/Images/Logos/logo.png?h=448&amp;w=320&amp;la=en&amp;hash=AD3D419C89B3B334119636D4C22B187C" alt="ASQ logo"></a>
+    <nav id="asq-top-nav" class="desktop utility-nav"><div class="col-xs-12 full-width" id="header-link-container">
+            <ul class="utility-nav__block"><li class="utility-nav__item utility-nav__item--user">
+                        <img class="user-icon" src="/Content/images/user-icon.png"><span>
+Hello, Guest                        </span>
+                </li>
+                                    <li class="utility-nav__item">
+                        <a href="/user/signin" data-logouturl="https://myportal.asq.org/secur/logout.jsp" id="header-login-link">Login</a>
+                    </li>
+                        <li class="utility-nav__item">
+                            <a href="/user/register" data-logouturl="https://myportal.asq.org/secur/logout.jsp" id="header-login-link">Register</a>
+                        </li>
+                <li class="js-cart-link utility-nav__item">
+                </li>
+            </ul><ul class="utility-nav__block"><li>
+                    <div class="btn transparent"><a href="/customer-services/contact-asq" title="Contact Us">Contact Us</a></div>
+                </li>
+                                    <li>
+                        <div class="btn green"><a href="/membership">Become a Member</a></div>
+                    </li>
+                <li>
+                    <div class="utility-nav__coveo-searchbox">
+                        <link rel="stylesheet" href="https://static.cloud.coveo.com/searchui/v2.10123/css/CoveoFullSearch.css"><link rel="stylesheet" href="/Coveo/custom/css/CoveoFullSearchCustom.css"><link rel="stylesheet" href="https://static.cloud.coveo.com/coveoforsitecore/ui/v0.65.57/css/CoveoForSitecore.css"><script type="text/javascript" class="coveo-script" src="https://static.cloud.coveo.com/searchui/v2.10123/js/CoveoJsSearch.Lazy.min.js"></script><script class="coveo-for-sitecore-script" type="text/javascript" src="https://static.cloud.coveo.com/coveoforsitecore/ui/v0.65.57/js/CoveoForSitecore.Lazy.min.js"></script><script type="text/javascript" src="https://static.cloud.coveo.com/searchui/v2.10123/js/cultures/en.js"></script>
+
+
+<div class="script-container">
+    <script type="text/javascript" src="/Scripts/vendor/jquery-3.7.1.min.js"></script><script type="text/javascript" src="/Scripts/vendor/bootstrap.bundle.min.js"></script></div>
+
+<script>
+    // Remove .script-container after scripts are loaded
+    function areScriptsLoaded() {
+        return typeof jQuery !== "undefined" && typeof bootstrap !== "undefined";
+    }
+    function removeScriptsContainer() {
+        if (areScriptsLoaded()) {
+            $('.script-container').remove();
+        } else {
+            console.warn("Scripts are not fully loaded yet.");
+        }
+    }
+    removeScriptsContainer();
+
+    // Remove .script-container if it appears again
+    var targetNode = document.body;
+    var observer = new MutationObserver(function (mutationsList) {
+        mutationsList.forEach(function (mutation) {
+            if (mutation.type === "childList") {
+                $(".script-container").remove();
+            }
+        });
+    });
+    var config = { childList: true, subtree: true };
+    observer.observe(targetNode, config);
+</script>
+
+<div>
+
+
+    
+    
+        
+        <div id="SearchResourcesProperties_44791ab97f1c4b60b4bcfe2f3a52e83f" class="CoveoForSitecoreContext" data-sc-should-have-analytics-component="true" data-sc-analytics-enabled="true" data-sc-current-language="en" data-prebind-sc-language-field-name="fieldTranslator" data-sc-language-field-name="_language" data-sc-labels='{"Uniform resource identifier" : "URI" , "Updated By" : "Updated by" , "Created" : "Created" , "Created By" : "Created by" , "Creation Time" : "Creation time." , "Language" : "Language" , "Last Time Modified" : "Last time modified." , "Template" : "Template" , "If the problem persists contact the administrator." : "If the problem persists contact the administrator." , "Search is currently unavailable" : "Oops! Something went wrong on the server." , "Ascending" : "Ascending" , "Descending" : "Descending"}' data-sc-maximum-age="900000" data-sc-page-name="fmea" data-sc-page-name-full-path="/sitecore/content/global/repositories/laq/8/1/4/fmea" data-sc-index-source-name="Coveo_web_index - sc102.asq.org" data-sc-is-in-experience-editor="false" data-sc-is-user-anonymous="true" data-sc-item-uri="sitecore://web/{8149A515-1332-4A66-AA94-2C152F042AFF}?lang=en&amp;ver=5" data-sc-item-id="8149a515-1332-4a66-aa94-2c152f042aff" data-prebind-sc-latest-version-field-name="fieldTranslator" data-sc-latest-version-field-name="_latestversion" data-sc-rest-endpoint-uri="/coveo/rest" data-sc-analytics-endpoint-uri="/coveo/rest/ua" data-sc-site-name="website" data-sc-field-prefix="f" data-sc-field-suffix="87527" data-sc-prefer-source-specific-fields="false" data-sc-external-fields='[{"fieldName":"permanentid","shouldEscape":false},{"fieldName":"h1","shouldEscape":false},{"fieldName":"syssource","shouldEscape":false}]' data-sc-source-specific-fields='[{"fieldName":"attachmentparentid"},{"fieldName":"author"},{"fieldName":"clickableuri"},{"fieldName":"collection"},{"fieldName":"concepts"},{"fieldName":"date"},{"fieldName":"filetype"},{"fieldName":"indexeddate"},{"fieldName":"isattachment"},{"fieldName":"language"},{"fieldName":"printableuri"},{"fieldName":"rowid"},{"fieldName":"size"},{"fieldName":"source"},{"fieldName":"title"},{"fieldName":"topparent"},{"fieldName":"topparentid"},{"fieldName":"transactionid"},{"fieldName":"uri"},{"fieldName":"urihash"}]'>
+        </div>
+        <script type="text/javascript">
+        var endpointConfiguration = {
+            itemUri: "sitecore://web/{8149A515-1332-4A66-AA94-2C152F042AFF}?lang=en&amp;ver=5",
+            siteName: "website",
+            restEndpointUri: "/coveo/rest"
+        };
+        if (typeof (CoveoForSitecore) !== "undefined") {
+            CoveoForSitecore.SearchEndpoint.configureSitecoreEndpoint(endpointConfiguration);
+            CoveoForSitecore.version = "5.0.1460.0";
+            var context = document.getElementById("SearchResourcesProperties_44791ab97f1c4b60b4bcfe2f3a52e83f");
+            if (!!context) {
+                CoveoForSitecore.Context.configureContext(context);
+            }
+        }
+        </script></div>
+                        
+
+
+
+<script>
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+        var searchboxElement = document.getElementById("_185F67BF-1D73-4AEE-9564-FDE5B0EB24B9");
+        searchboxElement.addEventListener("CoveoComponentInitialized", function() {
+            CoveoForSitecore.initSearchboxIfStandalone(searchboxElement, "/search");
+        });
+    })
+</script><div id="_185F67BF-1D73-4AEE-9564-FDE5B0EB24B9_container" class="coveo-for-sitecore-search-box-container" data-prebind-maximum-age="currentMaximumAge">
+        <div id="_185F67BF-1D73-4AEE-9564-FDE5B0EB24B9" class="CoveoSearchbox" data-enable-omnibox="true" data-enable-query-suggest-addon="true" data-enable-simple-field-addon="true" data-prebind-maximum-age="currentMaximumAge" data-placeholder="Search ASQ..." data-clear-filters-on-new-query="false">
+            
+            
+<script type="text/javascript">
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+        var componentId = "_185F67BF-1D73-4AEE-9564-FDE5B0EB24B9";
+        var componentElement = document.getElementById(componentId);
+
+        function showError(error) {
+                console.error(error);
+        }
+
+        function areCoveoResourcesIncluded() {
+            return typeof (Coveo) !== "undefined";
+        }
+
+        if (areCoveoResourcesIncluded()) {
+            var event = document.createEvent("CustomEvent");
+            event.initEvent("CoveoComponentInitialized", false, true);
+            
+            setTimeout(function() {
+                componentElement.dispatchEvent(event);
+            }, 0);
+        } else {
+            componentElement.classList.add("invalid");
+            showError("The Coveo Resources component must be included in this page.");
+        }
+    });
+</script><div class="CoveoForSitecoreBindWithUserContext"></div>
+            <div class="CoveoForSitecoreExpressions"></div>
+            <div class="CoveoForSitecoreConfigureSearchHub" data-sc-search-hub="Global Search"></div>
+        </div>
+
+
+    <div class="CoveoForSitecoreAnalytics" data-sc-analytics-custom-metadata='{"ListingPage" : "GlobalSearch"}'>
+    </div>
+<div>
+    
+
+        <div class="CoveoAnalytics" data-prebind-endpoint="coveoForSitecoreAnalyticsEndpoint" data-prebind-anonymous="isAnonymous" data-prebind-search-hub="currentPageName" data-search-hub="Global Search" data-prebind-send-to-cloud="analyticsEnabled">
+        </div>
+</div>       
+    </div>
+
+                    </div>
+                </li>
+                    <li>
+                        <a href="/quincy-ai" style="vertical-align: middle;">
+                            <img src="/-/media/ASQ/Images/Icons/Quincy_nav-24x24.png" alt="Quincy-ai">
+                            Quincy AI
+                        </a>
+                    </li>
+                                    <li class="utility-nav__myasq">
+                        <a href="https://my.asq.org/home" style="vertical-align: middle;">
+                                <img src="/-/media/ASQ/Images/Logos/myASQ-rev-62x20.png" alt="myASQ">
+
+                        </a>
+                    </li>
+            </ul></div>
+
+    </nav>
+
+    <nav id="asq-top-nav" class="mobile utility-nav"><div class="top-bar">
+            <ul class="left"><li>
+                            <a href="/user/signin" id="header-login-link" data-logouturl="https://myportal.asq.org/secur/logout.jsp">Login</a>
+                    </li>
+                        <li class="utility-nav__item">
+                            <a href="/user/register" id="header-login-link">Register</a>
+                        </li>
+                                                    <li><a href="/customer-services/contact-asq"> Contact Us</a></li>
+            </ul><ul class="right"><li>
+                    <div class="utility-nav__coveo-searchbox">
+                        <link rel="stylesheet" href="https://static.cloud.coveo.com/searchui/v2.10123/css/CoveoFullSearch.css"><link rel="stylesheet" href="/Coveo/custom/css/CoveoFullSearchCustom.css"><link rel="stylesheet" href="https://static.cloud.coveo.com/coveoforsitecore/ui/v0.65.57/css/CoveoForSitecore.css"><script type="text/javascript" class="coveo-script" src="https://static.cloud.coveo.com/searchui/v2.10123/js/CoveoJsSearch.Lazy.min.js"></script><script class="coveo-for-sitecore-script" type="text/javascript" src="https://static.cloud.coveo.com/coveoforsitecore/ui/v0.65.57/js/CoveoForSitecore.Lazy.min.js"></script><script type="text/javascript" src="https://static.cloud.coveo.com/searchui/v2.10123/js/cultures/en.js"></script>
+
+
+<div class="script-container">
+    <script type="text/javascript" src="/Scripts/vendor/jquery-3.7.1.min.js"></script><script type="text/javascript" src="/Scripts/vendor/bootstrap.bundle.min.js"></script></div>
+
+<script>
+    // Remove .script-container after scripts are loaded
+    function areScriptsLoaded() {
+        return typeof jQuery !== "undefined" && typeof bootstrap !== "undefined";
+    }
+    function removeScriptsContainer() {
+        if (areScriptsLoaded()) {
+            $('.script-container').remove();
+        } else {
+            console.warn("Scripts are not fully loaded yet.");
+        }
+    }
+    removeScriptsContainer();
+
+    // Remove .script-container if it appears again
+    var targetNode = document.body;
+    var observer = new MutationObserver(function (mutationsList) {
+        mutationsList.forEach(function (mutation) {
+            if (mutation.type === "childList") {
+                $(".script-container").remove();
+            }
+        });
+    });
+    var config = { childList: true, subtree: true };
+    observer.observe(targetNode, config);
+</script>
+
+<div>
+
+
+    
+    
+        
+        <div id="SearchResourcesProperties_0242b53b1cd7425c9b4dc7c99487f92b" class="CoveoForSitecoreContext" data-sc-should-have-analytics-component="true" data-sc-analytics-enabled="true" data-sc-current-language="en" data-prebind-sc-language-field-name="fieldTranslator" data-sc-language-field-name="_language" data-sc-labels='{"Uniform resource identifier" : "URI" , "Updated By" : "Updated by" , "Created" : "Created" , "Created By" : "Created by" , "Creation Time" : "Creation time." , "Language" : "Language" , "Last Time Modified" : "Last time modified." , "Template" : "Template" , "If the problem persists contact the administrator." : "If the problem persists contact the administrator." , "Search is currently unavailable" : "Oops! Something went wrong on the server." , "Ascending" : "Ascending" , "Descending" : "Descending"}' data-sc-maximum-age="900000" data-sc-page-name="fmea" data-sc-page-name-full-path="/sitecore/content/global/repositories/laq/8/1/4/fmea" data-sc-index-source-name="Coveo_web_index - sc102.asq.org" data-sc-is-in-experience-editor="false" data-sc-is-user-anonymous="true" data-sc-item-uri="sitecore://web/{8149A515-1332-4A66-AA94-2C152F042AFF}?lang=en&amp;ver=5" data-sc-item-id="8149a515-1332-4a66-aa94-2c152f042aff" data-prebind-sc-latest-version-field-name="fieldTranslator" data-sc-latest-version-field-name="_latestversion" data-sc-rest-endpoint-uri="/coveo/rest" data-sc-analytics-endpoint-uri="/coveo/rest/ua" data-sc-site-name="website" data-sc-field-prefix="f" data-sc-field-suffix="87527" data-sc-prefer-source-specific-fields="false" data-sc-external-fields='[{"fieldName":"permanentid","shouldEscape":false},{"fieldName":"h1","shouldEscape":false},{"fieldName":"syssource","shouldEscape":false}]' data-sc-source-specific-fields='[{"fieldName":"attachmentparentid"},{"fieldName":"author"},{"fieldName":"clickableuri"},{"fieldName":"collection"},{"fieldName":"concepts"},{"fieldName":"date"},{"fieldName":"filetype"},{"fieldName":"indexeddate"},{"fieldName":"isattachment"},{"fieldName":"language"},{"fieldName":"printableuri"},{"fieldName":"rowid"},{"fieldName":"size"},{"fieldName":"source"},{"fieldName":"title"},{"fieldName":"topparent"},{"fieldName":"topparentid"},{"fieldName":"transactionid"},{"fieldName":"uri"},{"fieldName":"urihash"}]'>
+        </div>
+        <script type="text/javascript">
+        var endpointConfiguration = {
+            itemUri: "sitecore://web/{8149A515-1332-4A66-AA94-2C152F042AFF}?lang=en&amp;ver=5",
+            siteName: "website",
+            restEndpointUri: "/coveo/rest"
+        };
+        if (typeof (CoveoForSitecore) !== "undefined") {
+            CoveoForSitecore.SearchEndpoint.configureSitecoreEndpoint(endpointConfiguration);
+            CoveoForSitecore.version = "5.0.1460.0";
+            var context = document.getElementById("SearchResourcesProperties_0242b53b1cd7425c9b4dc7c99487f92b");
+            if (!!context) {
+                CoveoForSitecore.Context.configureContext(context);
+            }
+        }
+        </script></div>
+                        
+
+
+
+<script>
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+        var searchboxElement = document.getElementById("_185F67BF-1D73-4AEE-9564-FDE5B0EB24E9");
+        searchboxElement.addEventListener("CoveoComponentInitialized", function() {
+            CoveoForSitecore.initSearchboxIfStandalone(searchboxElement, "/search");
+        });
+    })
+</script><div id="_185F67BF-1D73-4AEE-9564-FDE5B0EB24E9_container" class="coveo-for-sitecore-search-box-container" data-prebind-maximum-age="currentMaximumAge">
+        <div id="_185F67BF-1D73-4AEE-9564-FDE5B0EB24E9" class="CoveoSearchbox" data-enable-omnibox="true" data-enable-query-suggest-addon="true" data-enable-simple-field-addon="true" data-prebind-maximum-age="currentMaximumAge" data-placeholder="Search ASQ..." data-clear-filters-on-new-query="false">
+            
+            
+<script type="text/javascript">
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+        var componentId = "_185F67BF-1D73-4AEE-9564-FDE5B0EB24E9";
+        var componentElement = document.getElementById(componentId);
+
+        function showError(error) {
+                console.error(error);
+        }
+
+        function areCoveoResourcesIncluded() {
+            return typeof (Coveo) !== "undefined";
+        }
+
+        if (areCoveoResourcesIncluded()) {
+            var event = document.createEvent("CustomEvent");
+            event.initEvent("CoveoComponentInitialized", false, true);
+            
+            setTimeout(function() {
+                componentElement.dispatchEvent(event);
+            }, 0);
+        } else {
+            componentElement.classList.add("invalid");
+            showError("The Coveo Resources component must be included in this page.");
+        }
+    });
+</script><div class="CoveoForSitecoreBindWithUserContext"></div>
+            <div class="CoveoForSitecoreExpressions"></div>
+            <div class="CoveoForSitecoreConfigureSearchHub" data-sc-search-hub="Global Search"></div>
+        </div>
+
+
+    <div class="CoveoForSitecoreAnalytics" data-sc-analytics-custom-metadata='{"ListingPage" : "GlobalSearch"}'>
+    </div>
+<div>
+    
+
+        <div class="CoveoAnalytics" data-prebind-endpoint="coveoForSitecoreAnalyticsEndpoint" data-prebind-anonymous="isAnonymous" data-prebind-search-hub="currentPageName" data-search-hub="Global Search" data-prebind-send-to-cloud="analyticsEnabled">
+        </div>
+</div>       
+    </div>
+
+                    </div>
+                </li>
+                    <li>
+                        <a href="/quincy-ai" style="vertical-align: middle;">
+                            <img src="/-/media/ASQ/Images/Icons/Quincy_nav-24x24.png" alt="Quincy-ai"></a>
+                    </li>
+                                    <li class="utility-nav__myasq">
+                        <a href="https://my.asq.org/home" style="vertical-align: middle;">
+                                <img src="/-/media/ASQ/Images/Logos/myASQ-rev-62x20.png" alt="myASQ"></a>
+                    </li>
+            </ul></div>
+        <div class="secondary-nav">
+            <ul><li class="secondary-nav__lg-btn">
+                                            <div class="btn btn large-lg-btn"><a href="/membership">Become a Member</a></div>
+                                    </li>
+            </ul></div>
+    </nav>
+
+    <div id="search-window" class="info-box">
+        <div class="gray-form js-login-form">
+            <div class="gray-form__input">
+                <span class="field-validation-valid"></span>
+                <input id="search-window-term" class="gray-form__input-field js-has-label" placeholder="Search ASQ" type="text"><label class="gray-form__input-label">
+                    <span>Search Term</span>
+                </label>
+            </div>
+            <div class="btn green alt-hover">
+                <a id="search-window-button" href="#" data-search-url="/search#q=">Search</a>
+            </div>
+        </div>
+
+    </div>
+</header><div class="alert-banner js-alert-banner -hidden">
+    <div class="alert-banner__content clearfix">
+        <div class="alert-banner__left-col js-left-container">
+
+        </div>
+        <div class="alert-banner__right-col js-right-container">
+            <div class="alert-banner__action">
+                <span class="alert-banner__message">
+                    <strong class="js-alert-banner__message"></strong> | Cart Total: <span class="alert-banner__count js-alert-banner__count"></span>
+                </span>
+                <div class="btn green alert-banner__btn"><a href="/store/cart">Checkout</a></div>
+            </div>
+            <div class="btn alert-banner__close btn--close-icon-white"><a class="js-dismiss" href="/"><span class="sr-only">Dismiss</span></a></div>
+        </div>
+    </div>
+</div>
+
+
+
+        
+
+    <a id="asq-menu-trigger" href="#0" role="button" aria-expanded="false"><span class="asq-menu-icon"></span><span class="asq-menu-text">Menu</span></a>
+    <nav id="asq-lateral-nav"><a href="#" class="close-menu"><span class="visually-hidden">close menu</span></a>
+        <p class="page-title js-shrink-text">ASQ - Excellence Through Quality</p>
+        <ul class="asq-navigation"><li class="parent">
+                <a href="/">Home</a>
+            </li>
+            <li class="parent has-children">
+                <a href="/membership">Membership</a>
+                <button type="button" aria-label="toggle Membership menu" aria-expanded="false" class="open-children"></button>
+                <ul class="children"><li class="child">
+                <a href="/membership">Individual</a>
+            </li>
+            <li class="child">
+                <a href="/membership/organization">Organizations</a>
+            </li>
+            <li class="child">
+                <a href="/career/plan-your-career">Plan Your Career - In Beta</a>
+            </li>
+                </ul></li>
+            <li class="parent has-children">
+                <a href="/training" title="Why ASQ Training?">Learning</a>
+                <button type="button" aria-label="toggle Learning menu" aria-expanded="false" class="open-children"></button>
+                <ul class="children"><li class="child">
+                <a href="/training/group-training" title="Corporate Training">Corporate Training</a>
+            </li>
+            <li class="child">
+                <a href="/specialized-credentials">Specialized Credentials</a>
+            </li>
+            <li class="child">
+                <a href="/training/catalog">Learning Catalog</a>
+            </li>
+                </ul></li>
+            <li class="parent has-children">
+                <a href="/asqconnex">ASQConnEx</a>
+                <button type="button" aria-label="toggle ASQConnEx menu" aria-expanded="false" class="open-children"></button>
+                <ul class="children"><li class="child">
+                <a href="https://asq.org/asqconnex/find-an-expert#srt=ez120xpertlastname%20ascending">Find an Expert</a>
+            </li>
+                </ul></li>
+            <li class="parent has-children">
+                <a href="https://www.asq.org/cert">Certification</a>
+                <button type="button" aria-label="toggle Certification menu" aria-expanded="false" class="open-children"></button>
+                <ul class="children"><li class="child">
+                <a href="https://www.asq.org/cert/prepare">Certification Preparation</a>
+            </li>
+            <li class="child">
+                <a href="https://www.asq.org/cert/recertification" title="Recertification">Recertification</a>
+            </li>
+                </ul></li>
+            <li class="parent">
+                <a href="/quality-resources">Quality Resources</a>
+            </li>
+            <li class="parent">
+                <a href="/events">Conferences &amp; Events</a>
+            </li>
+            <li class="parent">
+                <a href="/quality-press">Books &amp; Standards</a>
+            </li>
+            <li class="parent">
+                <a href="/communities-networking">Communities</a>
+            </li>
+            <li class="parent">
+                <a href="/quality-progress"><em>Quality Progress</em> Magazine</a>
+            </li>
+            <li class="parent">
+                <a href="https://videos.asq.org/home">ASQ TV</a>
+            </li>
+            <li class="parent">
+                <a href="https://careers.asq.org/jobs">Find Quality Jobs</a>
+            </li>
+            <li class="parent has-children">
+                <a href="/about-asq">About ASQ</a>
+                <button type="button" aria-label="toggle About ASQ menu" aria-expanded="false" class="open-children"></button>
+                <ul class="children"><li class="child">
+                <a href="/about-asq/about-asqe">About ASQE</a>
+            </li>
+                </ul></li>
+        </ul></nav>
+
+
+
+
+        <main class="asq-main-content" id="asq-main-content">
+            
+
+<section class="hero-section js-img-swap" data-hero_img_crop_point="topright" data-hero_img="/-/media/Images/Learn-About-Quality/2000x600_ASQHomepage.jpg" data-img_sml="?w=800&amp;h=800&amp;quality=55" data-img_med="?w=1000&amp;h=500&amp;quality=55" data-img_lrg="?w=1400&amp;h=467&amp;quality=55" data-img_xlg="?w=2000&amp;h=600&amp;quality=55" style="background-position: center; background-image: url(/-/media/Images/Learn-About-Quality/2000x600_ASQHomepage.jpg?w=400&amp;quality=55)"><div class="hero-section__hero-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-8 col-md-6 align-left dark-theme">
+                    <div class="txt-h1 hero-content__headline">Learn About Quality</div>
+                </div>  
+            </div>
+        </div>
+    </div>
+</section>
+
+
+            <div class="breadcrumb-wrapper container-fluid">
+                    <nav class="breadcrumb" aria-label="breadcrumb"><ol class="breadcrumb__list">
+
+                    <li class="breadcrumb__list-item">
+                        <a href="/"><span class="list-item__title">Home</span></a>
+                            <span class="breadcrumb__list-separator"> / </span>
+                        </li>
+                    <li class="breadcrumb__list-item">
+                        <a href="/quality-resources"><span class="list-item__title">Quality Resources</span></a>
+                            <span class="breadcrumb__list-separator"> / </span>
+                        </li>
+                            <li class="breadcrumb__list-current" aria-current="page">FMEA</li>
+        </ol>
+
+    </nav>
+
+                <div class="breadcrumb-callouts">
+                    <div id="share-this-container-8149a515-1332-4a66-aa94-2c152f042aff" class="basic-link-list js-share-list">
+
+    <a class="basic-link-list__link js-list-toggle" href="#">
+        <img src="/Content/images/icons/share-green.png"><span class="basic-link-list__link-text">Share this page</span>
+    </a>
+
+    <div class="js-social-links basic-link-list__list-container">
+        <ul class="basic-link-list__list js-toggle-active"><li>
+                <a class="basic-link-list__list-item" href="#">
+                    <span class="st_email_custom -custom-icon social-icon-bg -gray">
+                        <span class="list-item__link-text">Email</span>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="basic-link-list__list-item" href="#">
+                    <span class="st_facebook_custom -custom-icon social-icon-bg -gray">
+                        <span class="list-item__link-text">Facebook</span>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="basic-link-list__list-item" href="#">
+                    <span class="st_twitter_custom -custom-icon social-icon-bg -gray">
+                        <span class="list-item__link-text">Twitter</span>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="basic-link-list__list-item" href="#">
+                    <span class="st_linkedin_custom -custom-icon social-icon-bg -gray">
+                        <span class="list-item__link-text">LinkedIn</span>
+                    </span>
+                </a>
+            </li>
+        </ul></div>
+</div>
+
+<script>var switchTo5x = true;</script><script src="https://ws.sharethis.com/button/buttons.js"></script>
+
+
+                </div>
+            </div>
+            
+<div id="library-item-container" data-item-number="" class="container-fluid">
+<script>
+    $(function () {
+        $('.js-tab-block').accordionTabs({
+            tabFunctionality: false,
+            tabTextdestroy: "Separate Accordion",
+            tabTextbuild: "Show Accordion",
+        });
+    });
+    $(function () {
+        $('.tab-only-block').accordionTabs({
+            tabFunctionality: true,
+        });
+    });
+</script>
+
+
+
+<div class="content-section case-study">
+    <div class="row">
+        <div class="col-sm-12 col-md-8">
+            <div class="case-study-header">
+
+                <h1> FMEA</h1>
+
+            </div>
+
+                <div class="case-study-summary">
+                    <div class="case-study-summary__img">
+                            <a href="https://asq.org/quality-progress/articles/fmea-minus-the-pain?id=d942e78095e845bba538ece95781fdaa" target="_blank">
+                                <img src="/-/media/Images/LAQ/FMEA-ASQ-Featured.png" alt="Partial FMEA Table"></a>
+                    </div>
+
+
+                        <h3 class="case-study__subtitle">Overview</h3>
+                        <p></p><p>Also called: potential failure mode and effects analysis; failure modes, effects and criticality analysis (FMECA)</p>
+<p>Failure mode and effects analysis (FMEA), developed by the U.S. military in the 1940s, is a systematic, step-by-step approach to identify and prioritize possible failures in a design, manufacturing or assembly process, product, or service. It is a common <a href="https://asq.org/quality-resources/process-analysis-tools" target="_blank">risk analysis tool</a>. The goal of this proactive tool is to mitigate or eliminate potential failures.</p>
+<ul class="rte-unordered-list"><li><strong>"Failure mode"</strong> means the way, or mode, in which something might fail. Failures are any errors or defects, especially those that affect the customer, and can be potential or actual.</li>
+    <li><strong>"Effects analysis"</strong> refers to studying the consequences of those failures.</li>
+</ul><p>Failures are prioritized according to how serious their consequences are, how frequently they occur, and how easily they can be detected. The purpose of FMEA is to take actions to eliminate, reduce, and/or mitigate failures, starting with those deemed highest priority.</p>
+<p>FMEA also documents current knowledge and actions about the risks of failures to use for continuous improvement efforts. FMEA can be used during design (design FMEA, or DFMEA) to prevent failures. Later, it can be used for process control (process FMEA, or PFMEA), as well as before and during ongoing operations. Ideally, FMEA begins during the earliest conceptual stages of design and continues throughout the life of the product or service. FMEA has bigger leverage and impact in the early stages of development when changes are less costly to implement.</p>
+<div class="btn orange"><a rel="noopener noreferrer" href="https://asq.org/quality-resources/quality-glossary/f" target="_blank">Quality Glossary Definition</a></div>
+                </div>
+
+
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3 col-lg-offset-1">
+                <a href="https://asq.org/training/fmea-for-beginners-fmea01jpr" target="_blank">
+                    <img src="/-/media/Images/LAQ/CTA-TopRight/400x533_ASQ-LAQ-ELearning-FMEA.jpg" class="member-gift-image" alt="Image promoting the ASQ course for learning FMEA for beginners."></a>
+        </div>
+    </div>
+</div>
+<div class="content-section">
+    
+    <div id="laq-accordion-container">
+
+        <div id="laq-information" style="">
+            <div class="tab-block js-tab-block tab-block-accordion">
+                    <section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_1">WHEN TO USE FMEA</a>
+                        </header><div id="tab_1" class="tab-block__pane-content">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-8">
+                                    <h3>WHEN TO USE FMEA</h3>
+                                        <p></p><p>FMEA is used when a process, product, or service is being designed, redesigned, or evaluated. It also is used:</p>
+<ul class="rte-unordered-list"><li>After <a href="https://asq.org/quality-resources/qfd-quality-function-deployment" target="_blank">quality function deployment (QFD)</a></li>
+    <li>When an existing process, product, or service is being applied in a new way</li>
+    <li>Before developing control plans for a new or modified process</li>
+    <li>When improvement goals are planned for an existing process, product, or service</li>
+    <li>When analyzing failures of an existing process, product, or service</li>
+</ul></div>
+                                <div class="col-md-4">
+                                        <a href="https://asq.org/quality-progress/articles/a-fundamental-fmea-flaw?id=59147386ea0b44c28207888c7e804e6d" target="_blank"><img class="member-gift-image" src="/-/media/Images/LAQ/FMEA-ASQ-1.png" alt="Sample FMEA Form"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </section><section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_2">FMEA: STEP BY STEP</a>
+                        </header><div id="tab_2" class="tab-block__pane-content">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-8">
+                                    <h3>FMEA: STEP BY STEP</h3>
+                                        <p></p><p>There are several steps in the FMEA process.</p>
+<ol><li><strong>Build a team:</strong> Assemble a multidisciplinary, cross-functional <a rel="noopener noreferrer" href="https://asq.org/quality-resources/teams" target="_blank">team</a> of people with diverse knowledge about the process, product, or service, as well as customer needs. The team usually consists of representatives from design, manufacturing, quality, testing, reliability, maintenance, purchasing (and suppliers), sales, marketing (and customers), and customer service.</li>
+    <li><strong>Set the scope:</strong> Define the FMEA’s scope. Is it for concept, system, design, process, or service? What are the boundaries? How detailed should the scope be? Use <a rel="noopener noreferrer" href="https://asq.org/quality-resources/flowchart" target="_blank">flowcharts</a> to identify the scope and make sure every team member understands it in detail.</li>
+    <li><strong>Identify information:</strong> Fill in the identifying information at the top of your <a rel="noopener noreferrer" href="https://asq.org/-/media/public/learn-about-quality/data-collection-analysis-tools/asq-fmea-template.xls" target="_blank">FMEA form</a>. The remaining steps look to uncover information that will go into the columns of the form.</li>
+    <li><strong>Set scope functions:</strong> Identify the functions of your scope: "What is the purpose of this system, design, process, or service? What do our customers expect it to do?" Name it with a verb followed by a noun. Usually, you can break the scope into separate subsystems, items, parts, assemblies, or process steps and identify the function of each.</li>
+    <li><strong>Identify failure potential:</strong> For each function, identify the ways failure could happen. Brainstorm. These are potential failure modes. This is the most important activity in FMEA. If necessary, rewrite the function with more detail to ensure the failure modes show a loss of that function.</li>
+    <li><strong>Identify consequences:</strong> For each failure mode, identify the consequences on the system, related systems, process, related processes, product, service, customer, or regulations. These are potential failure effects. Ask, "What does the customer experience because of this failure? What happens when this failure occurs?"</li>
+    <li><strong>Rate severity:</strong> Determine how serious each effect is. This is the severity (S) rating. Severity usually is rated on a scale from one to 10: One is insignificant and 10 is catastrophic. If a failure mode has more than one effect, write on the FMEA form only the highest severity rating for that failure mode.</li>
+    <li><strong>Determine root causes: </strong>For each failure mode, determine all the potential root causes. Use tools classified as <a rel="noopener noreferrer" href="https://asq.org/quality-resources/root-cause-analysis" target="_blank&gt;cause analysis tools&lt;/a&gt;, as well as the best knowledge and experience of the team. List all possible causes for each failure mode on the FMEA form.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;Assign occurrence:&lt;/strong&gt; For each cause, determine the occurrence (O) rating. This rating estimates the probability of failure occurring for that reason during the lifetime of your scope. Usually, occurrence is rated on a scale from one to 10: One is extremely unlikely and 10 is inevitable. On the FMEA form, list the occurrence rating for each cause.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;Identify process controls:&lt;/strong&gt; For each cause, identify current process controls. These are tests, procedures, or mechanisms that you now have in place to keep failures from reaching the customer. These controls might prevent the cause from happening, reduce the likelihood it will happen, or detect failure &lt;em&gt;after &lt;/em&gt;the cause already has happened but &lt;em&gt;before &lt;/em&gt;the customer is affected.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;Determine detection:&lt;/strong&gt; For each control, determine the detection (D) rating. This rating estimates how well the controls can detect either the cause or its failure mode after they have happened but before the customer is affected. Usually, detection is usually rated on a scale from one to 10: One means the control absolutely is certain to detect the problem and 10 means the control is certain not to detect the problem (or no control exists). On the FMEA form, list the detection rating for each cause.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;Calculate the risk priority number (RPN):&lt;/strong&gt; Calculate the RPN, which equals S × O × D. These numbers provide guidance for ranking potential failures in the sequence in which they should be addressed. Usually, an organization will establish a threshold (for example, 100 or 125). When the RPN exceeds the threshold, actions are required. Some practices also require actions when severity is high at nine or 10.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;Recommend action:&lt;/strong&gt; Identify recommended actions for the RPN exceeding the threshold. These actions may be design or process changes to lower severity or occurrence. They may be additional controls to improve detection. Also note who is responsible for the actions and target completion dates.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;Keep notes:&lt;/strong&gt; As actions are completed, note results and the date on the FMEA form. Also, note new S, O, or D ratings as well as new RPNs. The post-action RPN must be below the threshold, otherwise additional actions are required until the RPN is below the threshold.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;Re-evaluate:&lt;/strong&gt; Re-evaluate the FMEA periodically to ensure the implemented actions are effective, and to identify any new potential failure modes that may have arisen.&lt;/li&gt;
+    &lt;/ol&gt;
+    &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; This is a general procedure. Specific details may vary with standards of your organization or industry. Before undertaking an FMEA process, learn more about standards and specific methods in your organization and industry through other references and training. ASQ members may make use of an &lt;a href=" failure-modes-and-effects-analysis-template?id="95ce876954b64b60892cbcca2d4525d1">FMEA Template</a> and <a rel="noopener noreferrer" href="https://asq.org/quality-resources/benchmarking/how-to-use-the-failure-modes-and-effects-analysis-template?id=e82d06690dfd4c6f9ab661f27bd8e3d8" target="_blank">How-To-Use documentation</a> to aid in these efforts.
+    <p> </p>
+    </li>
+</ol></div>
+                                <div class="col-md-4">
+
+
+                                        <a href="https://asq.org/quality-progress/articles/fmea-minus-the-pain?id=d942e78095e845bba538ece95781fdaa" target="_blank"><img class="member-gift-image" src="/-/media/Images/LAQ/FMEA-ASQ-2.png" alt="New FMEA approach flowchart"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </section><section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_3">FMEA EXAMPLE</a>
+                        </header><div id="tab_3" class="tab-block__pane-content">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-8">
+                                    <h3>FMEA EXAMPLE</h3>
+                                        <p></p><p>A manufacturer performed a process FMEA on its tablet packaging process. The included figure shows part of it. As shown, two of the process steps have four potential failure modes that all incurred high RPNs (&gt; 125). Sufficient actions were identified and taken that lowered all RPNs to an acceptable level (&lt; 125). Essentially, this is what FMEA is trying to accomplish.</p>
+
+                                </div>
+                                <div class="col-md-4">
+
+
+                                        <a href="https://asq.org/quality-progress/articles/fail-safe-fmea?id=3ca9539da9a94d1fb89c28c6465a5a1f" target="_blank"><img class="member-gift-image" src="/-/media/Images/LAQ/FMEA-ASQ-3.png" alt="FMEA analysis for tablet packaging"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </section><section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_4">FMEA LIMITATIONS</a>
+                        </header><div id="tab_4" class="tab-block__pane-content">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-8">
+                                    <h3>FMEA LIMITATIONS</h3>
+                                        <p></p><p>The FMEA method does have some shortfalls. The one-size-fits-all format can be inefficient, for example, which leads to ineffectiveness. Lack of return on investment (ROI) assessment over actions can amplify the deficiency. In many cases, a lack of data also amplify the deficiency, making the three-dimensioned risk assessment difficult and unreliable, which erodes ROI. </p>
+<p>Even with these challenges, FMEA still is a powerful method for identifying and mitigating potential risks in systems, processes, and designs, ultimately leading to improved reliability, safety, and quality.</p>
+<p>One approach to counteract these issues is to follow a simpler risk analysis and assessment, as pictured.</p>
+                                </div>
+                                <div class="col-md-4">
+
+
+                                        <a href="https://asq.org/quality-progress/articles/six-sigma-solutions-fmea-lite?id=ef2d8667c02f4b94b5ea9bf5c0146813" target="_blank"><img class="member-gift-image" src="/-/media/Images/LAQ/FMEA-ASQ-4.png" alt="FMEA - Sample risk assesment"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </section></div>
+        </div>
+    </div>
+
+    
+    
+    <div id="training-detail-container">
+
+        <div id="laq-information2" style="">
+            <div class="tab-block tab-only-block tab-block-accordion">
+                    <section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_video">Related Video</a>
+                        </header><div id="tab_video" class="tab-block__pane-content">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-8">
+                                    <h3>Related Video</h3>
+                                        <p></p><h3>The Inner Workings of FMEA</h3>
+<br><p>Eugene Bukowski, Senior Engineering Manager GE Healthcare, describes some common failure modes and discusses risk priority number (RPN).</p>
+
+                                </div>
+                                <div class="col-md-4 tab-block__video">
+
+                                        <p> <script type="text/javascript" src="https://videos.asq.org/wp-content/plugins/wb-embed-codes/assets/js/wb-ec-iframe-wrapper.js" id="wb-ec-iframe-wrapper-js"></script></p><div id="wb-ec-iframe-wrapper-442" class="wb-ec-iframe-wrapper wb-ec-style-plain" style="position:relative;"><iframe id="wb-ec-442-iframe" src="https://videos.asq.org/get-embed-code/?id=442&amp;type=single" style="width:100%;height:100%;" title="Inner Workings of FMEA" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div> 
+
+                                </div>
+                            </div>
+                        </div>
+                    </section><section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_myasq">Community</a>
+                        </header><div id="tab_myasq" class="tab-block__pane-content">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-8">
+                                    <h3>Community</h3>
+                                        <p></p><p>myASQ’s online communities provide expanded networking and learning opportunities, including blog posts, discussion threads, and library entries on topics like the fishbone diagram. Members can create new communities to generate new discussions and connections, and anyone can join online communities to reach a broader audience of quality professionals and practitioners – anytime, anywhere.</p>
+                                </div>
+                                <div class="col-md-4">
+
+                                        <a href="https://my.asq.org/" target="_blank">
+                                            <img class="member-gift-image" src="/-/media/Images/LAQ/LAQ-myASQ-image.png" alt="myASQ image"></a>
+</div>
+                            </div>
+                        </div>
+                    </section><section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_cert">Certifications</a>
+                        </header><div id="tab_cert" class="tab-block__pane-content">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-8">
+                                    <h3>Certifications</h3>
+                                        <p></p><p>ASQ offers 19 different certifications ranging from foundational quality to advanced quality management, including five ANSI ANAB ISO 17024 accredited programs. Earning an ASQ Certification provides you an opportunity to learn quality tools &amp; concepts and gain a credential that can increase your earning potential and help grow your career.</p>
+<p><a rel="noopener noreferrer" href="https://www.asq.org/cert/catalog" target="_blank">Learn more about ASQ Certification</a><br><a rel="noopener noreferrer" href="https://www.asq.org/cert/prepare" target="_blank">View Certification Preparation Resources</a> (Virtual Courses, E-Learning, Question Banks, &amp; Handbooks)</p>
+                                </div>
+                                <div class="col-md-4">
+
+                                        <a href="https://www.asq.org/cert/catalog" target="_blank">
+                                            <img src="/-/media/Images/LAQ/LAQ-Cert-Tab_Image.png" class="member-gift-image" alt="Certification Tab image"></a>
+</div>
+                            </div>
+                        </div>
+                    </section></div>
+        </div>
+    </div>
+    
+    
+    <div id="training-detail-container">
+        <div>
+            
+<div class="coveo-recommendation-column">
+    <div class="">
+
+    
+    
+
+    <script>
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+            var recommendationElement = document.getElementById("coveo1acd70e8");
+            recommendationElement.addEventListener("CoveoComponentInitialized", function() {
+                         CoveoForSitecore.initContextOnElement(recommendationElement);
+                         Coveo.initRecommendation(recommendationElement);
+                });
+        });
+</script>
+
+
+<script type="text/javascript">
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+        var componentId = "coveo1acd70e8";
+        var componentElement = document.getElementById(componentId);
+
+        function showError(error) {
+                console.error(error);
+        }
+
+        function areCoveoResourcesIncluded() {
+            return typeof (Coveo) !== "undefined";
+        }
+
+        if (areCoveoResourcesIncluded()) {
+            var event = document.createEvent("CustomEvent");
+            event.initEvent("CoveoComponentInitialized", false, true);
+            
+            setTimeout(function() {
+                componentElement.dispatchEvent(event);
+            }, 0);
+        } else {
+            componentElement.classList.add("invalid");
+            showError("The Coveo Resources component must be included in this page.");
+        }
+    });
+</script><div id="coveo1acd70e8" class="CoveoRecommendation " data-results-per-page="5" data-prebind-maximum-age="currentMaximumAge" data-pipeline="LAQ Article Content Recommendations" data-title="Recommended Articles:">
+            
+            <div class="CoveoForSitecoreBindWithUserContext"></div>
+            <div class="CoveoForSitecoreExpressions"></div>
+            <div>
+    
+    
+
+    <div class="CoveoForSitecoreLocalExpression" data-sc-filter-on-sitecore-context-database="true" data-sc-filter-on-current-language="true" data-sc-filter-on-latest-version="true">
+    </div>
+</div>
+
+            <div class="coveo-recommendations-components">
+                
+
+    <div class="CoveoForSitecoreAnalytics">
+    </div>
+<div>
+    
+
+        <div class="CoveoAnalytics" data-prebind-endpoint="coveoForSitecoreAnalyticsEndpoint" data-prebind-anonymous="isAnonymous" data-prebind-search-hub="currentPageName" data-search-hub="LAQ Article CR" data-prebind-send-to-cloud="analyticsEnabled">
+        </div>
+</div>
+            </div>
+                <div class="coveo-recommendation-header">
+                    <div class="coveo-recommendation-title">Recommended Articles:</div>
+                </div>
+            <div class="coveo-recommendation-body">
+                
+
+<div>
+        <div id="coveo77e9491d" class="CoveoResultList" data-layout="card" data-wait-animation="fade" data-auto-select-fields-to-include="false">
+            
+
+    <div>
+        <script id="coveoe8d1e2a8" class="result-template" type="text/x-underscore-template" data-prebind-sc-all-conditions="unfoldDictionaryToAttributesPrebind" data-sc-all-conditions='{"_template" : "3719C3997D064B4682661472F292F120"}'>
+            <!-- If you get an "Unexpected Token <" issue on this line with SXA, refer to: https://docs.coveo.com/en/2098/ -->
+            <div>&nbsp;</div>
+
+<div class="CoveoArticle">
+    <div class="coveo-result-row col-6" style="padding:10px">
+        <div class="coveo-quick-view-container">
+            <% if (coveoFieldValue('refsource') == 'Journal for Quality and Participation') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/jqp-cover.jpg"></a>
+            <% } else if (coveoFieldValue('refsource') == 'Journal of Quality Technology') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/jqt-cover.jpg"></a>
+            <% } else if (coveoFieldValue('refsource') == 'Lean & Six Sigma Review') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/lssr-cover.jpg"></a>
+            <% } else if (coveoFieldValue('refsource') == 'Quality Engineering') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/qe-cover.jpg"></a>
+            <% } else if (coveoFieldValue('refsource') == 'Quality Management Journal') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/qmj-cover.jpg"></a>
+            <% } else if (coveoFieldValue('refsource') == 'Quality Progress') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/qp-cover.jpg"></a>
+            <% } else if (coveoFieldValue('refsource') == 'Software Quality Professional') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/sqp-cover.jpg"></a>
+            <% } else if (coveoFieldValue('refsource') == 'Technometrics') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/technometrics-cover.jpg"></a>
+            <% } else { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/default-cover.jpg"></a>
+            <% } %>
+        </div>
+    </div>
+    <div class="coveo-title">
+        <% if (coveoFieldValue('HasLayout') === '1' || raw.source !== currentSourceName()) { %>
+        <a class="CoveoResultLink coveo-detail-event" href="<%= coveoFieldValue('urllink') %>"><%= title ? highlight(title, titleHighlights) : coveoFieldValue('urllink') %></a>
+        <% } else { %>
+        <span class="CoveoResultTitle"><%= title ? highlight(title, titleHighlights) : '' %></span>
+        <% } %>
+    </div>
+    <div class="CoveoArticle__Details">
+        <% if (coveoFieldValue('refsource')) { %>
+        <strong><%= coveoFieldValue('refsource') %>, </strong>
+        <% } %>
+        <% if (coveoFieldValue('refdate')) { %>
+        <strong>Published:</strong> <%= date(coveoFieldValue('refdate')) %>
+        <% } %>
+        <% if (coveoFieldValue('authors')) { %>
+        <strong>Author(s):</strong> <%= coveoFieldValue('authors') %>
+        <% } %>
+        <% if (coveoFieldValue('volume')) { %>
+        <strong>Volume:</strong> <%= coveoFieldValue('volume') %>
+        <% } %>
+        <% if (coveoFieldValue('issue')) { %>
+        <strong>Issue:</strong> <%= coveoFieldValue('issue') %>
+        <% } %>
+    </div>
+    <% if (coveoFieldValue('abstract')) { %>
+    <div class="coveo-3-lines"><%= coveoFieldValue('Abstract') %></div>
+    <% } %>
+</div>        </script></div>
+
+
+    <div>
+        <script id="coveo41c656ed" class="result-template" type="text/x-underscore-template" data-prebind-sc-all-conditions="unfoldDictionaryToAttributesPrebind" data-sc-all-conditions='{"_template" : "CDC5BCEE86384F07B4B193E6D021474A"}'>
+            <!-- If you get an "Unexpected Token <" issue on this line with SXA, refer to: https://docs.coveo.com/en/2098/ -->
+            <div>&nbsp;</div>
+
+<div class="CoveoArticle">
+    <div class="coveo-result-row col-6" style="padding:10px">
+        <div class="coveo-quick-view-container">
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/default-cover.jpg"></a>
+        </div>
+    </div>
+    <div class="coveo-title">
+        <% if (coveoFieldValue('HasLayout') === '1' || raw.source !== currentSourceName()) { %>
+        <a class="CoveoResultLink coveo-detail-event" href="<%= coveoFieldValue('urllink') %>"><%= title ? highlight(title, titleHighlights) : coveoFieldValue('urllink') %></a>
+        <% } else { %>
+        <span class="CoveoResultTitle"><%= title ? highlight(title, titleHighlights) : '' %></span>
+        <% } %>
+    </div>
+    <div class="CoveoArticle__Details">
+        <% if (coveoFieldValue('refdate')) { %>
+        <strong>Published:</strong> <%= date(coveoFieldValue('refdate')) %>
+        <% } %>
+        <% if (coveoFieldValue('authors')) { %>
+        <strong>Author(s):</strong> <%= coveoFieldValue('authors') %>
+        <% } %>
+        <% if (coveoFieldValue('volume')) { %>
+        <strong>Volume:</strong> <%= coveoFieldValue('volume') %>
+        <% } %>
+        <% if (coveoFieldValue('issue')) { %>
+        <strong>Issue:</strong> <%= coveoFieldValue('issue') %>
+        <% } %>
+    </div>
+    <% if (coveoFieldValue('abstract')) { %>
+    <div class="coveo-3-lines"><%= coveoFieldValue('Abstract') %></div>
+    <% } %>
+    <span class="CoveoArticle__OpenAccess">Benchmarking Study</span>
+</div>        </script></div>
+
+
+    <div>
+        <script id="coveo9f4ce431" class="result-template" type="text/x-underscore-template" data-prebind-sc-all-conditions="unfoldDictionaryToAttributesPrebind" data-sc-all-conditions='{"_template" : "C464DBA2BA9A441A8ADD745A577638BC"}'>
+            <!-- If you get an "Unexpected Token <" issue on this line with SXA, refer to: https://docs.coveo.com/en/2098/ -->
+            <div>&nbsp;</div>
+
+<div class="CoveoArticle">
+    <div class="coveo-result-row col-6" style="padding:10px">
+        <div class="coveo-quick-view-container">
+            <% if (coveoFieldValue('publicationname') == 'Journal for Quality and Participation') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/jqp-cover.jpg"></a>
+            <% } else if (coveoFieldValue('publicationname') == 'Journal of Quality Technology') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/jqt-cover.jpg"></a>
+            <% } else if (coveoFieldValue('publicationname') == 'Lean & Six Sigma Review') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/lssr-cover.jpg"></a>
+            <% } else if (coveoFieldValue('publicationname') == 'Quality Engineering') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/qe-cover.jpg"></a>
+            <% } else if (coveoFieldValue('publicationname') == 'Quality Management Journal') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/qmj-cover.jpg"></a>
+            <% } else if (coveoFieldValue('publicationname') == 'Quality Progress') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/qp-cover.jpg"></a>
+            <% } else if (coveoFieldValue('publicationname') == 'Software Quality Professional') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/sqp-cover.jpg"></a>
+            <% } else if (coveoFieldValue('publicationname') == 'Technometrics') { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/technometrics-cover.jpg"></a>
+            <% } else { %>
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/default-cover.jpg"></a>
+            <% } %>
+        </div>
+    </div>
+    <div class="coveo-title">
+        <% if (coveoFieldValue('HasLayout') === '1' || raw.source !== currentSourceName()) { %>
+        <a class="CoveoResultLink coveo-detail-event" href="<%= coveoFieldValue('urllink') %>"><%= title ? highlight(title, titleHighlights) : coveoFieldValue('urllink') %></a>
+        <% } else { %>
+        <span class="CoveoResultTitle"><%= title ? highlight(title, titleHighlights) : '' %></span>
+        <% } %>
+    </div>
+    <div class="CoveoArticle__Details">
+        <% if (coveoFieldValue('publicationname')) { %>
+        <strong><%= coveoFieldValue('publicationname') %>, </strong>
+        <% } %>
+        <% if (coveoFieldValue('refdate')) { %>
+        <strong>Published:</strong> <%= date(coveoFieldValue('refdate')) %>
+        <% } %>
+        <% if (coveoFieldValue('authors')) { %>
+        <strong>Author(s):</strong> <%= coveoFieldValue('authors') %>
+        <% } %>
+        <% if (coveoFieldValue('volume')) { %>
+        <strong>Volume:</strong> <%= coveoFieldValue('volume') %>
+        <% } %>
+        <% if (coveoFieldValue('issue')) { %>
+        <strong>Issue:</strong> <%= coveoFieldValue('issue') %>
+        <% } %>
+    </div>
+    <% if (coveoFieldValue('abstract')) { %>
+    <div class="coveo-3-lines"><%= coveoFieldValue('Abstract') %></div>
+    <% } %>
+    <span class="CoveoArticle__OpenAccess">Case Study</span>
+</div>        </script></div>
+
+
+    <div>
+        <script id="coveo13287e7f" class="result-template" type="text/x-underscore-template" data-prebind-sc-all-conditions="unfoldDictionaryToAttributesPrebind" data-sc-all-conditions='{"_template" : "EAD3AD037C7145D988D266950F6A7BFD"}'>
+            <!-- If you get an "Unexpected Token <" issue on this line with SXA, refer to: https://docs.coveo.com/en/2098/ -->
+            <div>&nbsp;</div>
+
+<div class="CoveoArticle">
+    <div class="coveo-result-row col-6" style="padding:10px">
+        <div class="coveo-quick-view-container">
+            <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/default-cover.jpg"></a>
+        </div>
+    </div>
+    <div class="coveo-title">
+        <% if (coveoFieldValue('HasLayout') === '1' || raw.source !== currentSourceName()) { %>
+        <a class="CoveoResultLink coveo-detail-event" href="<%= coveoFieldValue('urllink') %>"><%= title ? highlight(title, titleHighlights) : coveoFieldValue('urllink') %></a>
+        <% } else { %>
+        <span class="CoveoResultTitle"><%= title ? highlight(title, titleHighlights) : '' %></span>
+        <% } %>
+    </div>
+    <div class="CoveoArticle__Details">
+        <% if (coveoFieldValue('refsource')) { %>
+        <strong><%= coveoFieldValue('refsource') %>, </strong>
+        <% } %>
+        <% if (coveoFieldValue('refdate')) { %>
+        <strong>Published:</strong> <%= date(coveoFieldValue('refdate')) %>
+        <% } %>
+        <% if (coveoFieldValue('authors')) { %>
+        <strong>Author(s):</strong> <%= coveoFieldValue('authors') %>
+        <% } %>
+        <% if (coveoFieldValue('formatname')) { %>
+        <strong>Format:</strong> <%= coveoFieldValue('formatname') %>
+        <% } %>
+        <% if (coveoFieldValue('presentationz32xlength')) { %>
+        <strong>Length:</strong> <%= coveoFieldValue('presentationz32xlength') %>
+        <% } %>
+    </div>
+    <% if (coveoFieldValue('abstract')) { %>
+    <div class="coveo-3-lines"><%= coveoFieldValue('Abstract') %></div>
+    <% } %>
+    <span class="CoveoArticle__OpenAccess">Webcasts</span>
+</div>        </script></div>
+
+        </div>
+</div>
+            </div>
+        </div>
+</div><div class="">
+
+    
+    
+
+    <script>
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+            var recommendationElement = document.getElementById("coveo98d32a99");
+            recommendationElement.addEventListener("CoveoComponentInitialized", function() {
+                         CoveoForSitecore.initContextOnElement(recommendationElement);
+                         Coveo.initRecommendation(recommendationElement);
+                });
+        });
+</script>
+
+
+<script type="text/javascript">
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+        var componentId = "coveo98d32a99";
+        var componentElement = document.getElementById(componentId);
+
+        function showError(error) {
+                console.error(error);
+        }
+
+        function areCoveoResourcesIncluded() {
+            return typeof (Coveo) !== "undefined";
+        }
+
+        if (areCoveoResourcesIncluded()) {
+            var event = document.createEvent("CustomEvent");
+            event.initEvent("CoveoComponentInitialized", false, true);
+            
+            setTimeout(function() {
+                componentElement.dispatchEvent(event);
+            }, 0);
+        } else {
+            componentElement.classList.add("invalid");
+            showError("The Coveo Resources component must be included in this page.");
+        }
+    });
+</script><div id="coveo98d32a99" class="CoveoRecommendation " data-results-per-page="5" data-prebind-maximum-age="currentMaximumAge" data-pipeline="LAQ Book Content Recommendations" data-title="Recommended Books:">
+            
+            <div class="CoveoForSitecoreBindWithUserContext"></div>
+            <div class="CoveoForSitecoreExpressions"></div>
+            <div>
+    
+    
+
+    <div class="CoveoForSitecoreLocalExpression" data-sc-filter-on-sitecore-context-database="true" data-sc-filter-on-current-language="true" data-sc-filter-on-latest-version="true">
+    </div>
+</div>
+
+            <div class="coveo-recommendations-components">
+                
+
+    <div class="CoveoForSitecoreAnalytics">
+    </div>
+<div>
+    
+
+        <div class="CoveoAnalytics" data-prebind-endpoint="coveoForSitecoreAnalyticsEndpoint" data-prebind-anonymous="isAnonymous" data-prebind-search-hub="currentPageName" data-search-hub="LAQ Book CR" data-prebind-send-to-cloud="analyticsEnabled">
+        </div>
+</div>
+            </div>
+                <div class="coveo-recommendation-header">
+                    <div class="coveo-recommendation-title">Recommended Books:</div>
+                </div>
+            <div class="coveo-recommendation-body">
+                
+
+<div>
+        <div id="coveof857789e" class="CoveoResultList" data-layout="card" data-wait-animation="fade" data-auto-select-fields-to-include="false">
+            
+
+    <div>
+        <script id="coveo3e39c0c4" class="result-template" type="text/x-underscore-template">
+            <!-- If you get an "Unexpected Token <" issue on this line with SXA, refer to: https://docs.coveo.com/en/2098/ -->
+            <div class="CoveoArticle">
+    <div class="row">
+    </div>
+    <div class="row" style="margin-top: 10px;">
+        <div class="coveo-result-row col-6">
+                <div class="coveo-quick-view-container">
+                    <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="<%= coveoFieldValue('locationimage') %>"></a>
+                </div>
+            </div>
+        <div class="col-12">
+            <div class="CoveoArticle__Details">
+                <span class="item-format"><%= coveoFieldValue('formatname') %> <%= coveoFieldValue('item number') %></span>
+                <div class="coveo-title">
+                    <% if (coveoFieldValue('HasLayout') === '1' || raw.source !== currentSourceName()) { %>
+                    <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><%= title ? (title.length > 50 ? highlight(title.substring(0, 50) + "...", titleHighlights) : highlight(title, titleHighlights)) : coveoFieldValue('urllink') %></a>
+                    <% } else { %>
+                    <span class="CoveoResultTitle"><%= title ? (title.length > 50 ? highlight(title.substring(0, 50) + "...", titleHighlights) : highlight(title, titleHighlights)) : '' %></span>
+                    <% } %>
+                </div>
+                <div>
+                    <div>
+                        <div><strong>Member Price: $<%= coveoFieldValue('member price') %></strong></div>
+                        <div>List Price: $<%= coveoFieldValue('list price') %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>        </script></div>
+
+        </div>
+</div>
+            </div>
+        </div>
+</div><div class="">
+
+    
+    
+
+    <script>
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+            var recommendationElement = document.getElementById("coveo3b129547");
+            recommendationElement.addEventListener("CoveoComponentInitialized", function() {
+                         CoveoForSitecore.initContextOnElement(recommendationElement);
+                         Coveo.initRecommendation(recommendationElement);
+                });
+        });
+</script>
+
+
+<script type="text/javascript">
+    document.addEventListener("CoveoSearchEndpointInitialized", function() {
+        var componentId = "coveo3b129547";
+        var componentElement = document.getElementById(componentId);
+
+        function showError(error) {
+                console.error(error);
+        }
+
+        function areCoveoResourcesIncluded() {
+            return typeof (Coveo) !== "undefined";
+        }
+
+        if (areCoveoResourcesIncluded()) {
+            var event = document.createEvent("CustomEvent");
+            event.initEvent("CoveoComponentInitialized", false, true);
+            
+            setTimeout(function() {
+                componentElement.dispatchEvent(event);
+            }, 0);
+        } else {
+            componentElement.classList.add("invalid");
+            showError("The Coveo Resources component must be included in this page.");
+        }
+    });
+</script><div id="coveo3b129547" class="CoveoRecommendation " data-results-per-page="5" data-prebind-maximum-age="currentMaximumAge" data-pipeline="LAQ Training Content Recommendations" data-title="Recommended Learning:">
+            
+            <div class="CoveoForSitecoreBindWithUserContext"></div>
+            <div class="CoveoForSitecoreExpressions"></div>
+            <div>
+    
+    
+
+    <div class="CoveoForSitecoreLocalExpression" data-sc-filter-on-sitecore-context-database="true" data-sc-filter-on-current-language="true" data-sc-filter-on-latest-version="true">
+    </div>
+</div>
+
+            <div class="coveo-recommendations-components">
+                
+
+    <div class="CoveoForSitecoreAnalytics">
+    </div>
+<div>
+    
+
+        <div class="CoveoAnalytics" data-prebind-endpoint="coveoForSitecoreAnalyticsEndpoint" data-prebind-anonymous="isAnonymous" data-prebind-search-hub="currentPageName" data-search-hub="LAQ Training CR" data-prebind-send-to-cloud="analyticsEnabled">
+        </div>
+</div>
+            </div>
+                <div class="coveo-recommendation-header">
+                    <div class="coveo-recommendation-title">Recommended Learning:</div>
+                </div>
+            <div class="coveo-recommendation-body">
+                
+
+<div>
+        <div id="coveo2a61bcb1" class="CoveoResultList" data-layout="card" data-wait-animation="fade" data-auto-select-fields-to-include="false">
+            
+
+    <div>
+        <script id="coveof52f88c3" class="result-template" type="text/x-underscore-template" data-prebind-sc-all-conditions="unfoldDictionaryToAttributesPrebind" data-sc-all-conditions='{"_template" : "1DB2524B62C348719162F5D813178B39"}'>
+            <!-- If you get an "Unexpected Token <" issue on this line with SXA, refer to: https://docs.coveo.com/en/2098/ -->
+            <div class="CoveoArticle">
+    <div class="row">
+    </div>
+    <div class="row" style="margin-top: 10px;">
+        <div class="coveo-result-row col-6">
+            <div class="coveo-quick-view-container">
+                <% if (coveoFieldValue('refcourseformat') === 'Live Virtual') { %>
+                <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/virtuallearning.png"></a>
+                <% } else if (coveoFieldValue('refcourseformat') === 'Face-to-Face') { %>
+                <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/classroom.png"></a>
+                <% } else if (coveoFieldValue('refcourseformat') === 'AI Digital Product') { %>
+                <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/aidigitalproduct.png"></a>
+                <% } else if (coveoFieldValue('refcourseformat') === 'E-Learning') { %>
+                <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><img style="padding-right: 16px" src="/-/media/ASQ/Images/Icons/elearning.png"></a>
+                <% } %>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="CoveoArticle__Details">
+                <span class="item-format"><%= coveoFieldValue('refcourseformat') %></span>
+                <div class="coveo-title">
+                    <% if (coveoFieldValue('HasLayout') === '1' || raw.source !== currentSourceName()) { %>
+                    <a class="CoveoResultLink" href="<%= coveoFieldValue('urllink') %>"><%= title ? (title.length > 50 ? highlight(title.substring(0, 50) + "...", titleHighlights) : highlight(title, titleHighlights)) : coveoFieldValue('urllink') %></a>
+                    <% } else { %>
+                    <span class="CoveoResultTitle"><%= title ? (title.length > 50 ? highlight(title.substring(0, 50) + "...", titleHighlights) : highlight(title, titleHighlights)) : '' %></span>
+                    <% } %>
+                </div>
+                <div>
+                    <div>
+                        <div><strong>Member Price: $<%= coveoFieldValue('member price') %></strong></div>
+                        <div>List Price: $<%= coveoFieldValue('list price') %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </script></div>
+
+        </div>
+</div>
+            </div>
+        </div>
+</div>
+</div><link rel="stylesheet" href="https://static.cloud.coveo.com/searchui/v2.10123/css/CoveoFullSearch.css"><link rel="stylesheet" href="/Coveo/custom/css/CoveoFullSearchCustom.css"><link rel="stylesheet" href="https://static.cloud.coveo.com/coveoforsitecore/ui/v0.65.57/css/CoveoForSitecore.css"><script type="text/javascript" class="coveo-script" src="https://static.cloud.coveo.com/searchui/v2.10123/js/CoveoJsSearch.Lazy.min.js"></script><script class="coveo-for-sitecore-script" type="text/javascript" src="https://static.cloud.coveo.com/coveoforsitecore/ui/v0.65.57/js/CoveoForSitecore.Lazy.min.js"></script><script type="text/javascript" src="https://static.cloud.coveo.com/searchui/v2.10123/js/cultures/en.js"></script>
+
+
+<div class="script-container">
+    <script type="text/javascript" src="/Scripts/vendor/jquery-3.7.1.min.js"></script><script type="text/javascript" src="/Scripts/vendor/bootstrap.bundle.min.js"></script></div>
+
+<script>
+    // Remove .script-container after scripts are loaded
+    function areScriptsLoaded() {
+        return typeof jQuery !== "undefined" && typeof bootstrap !== "undefined";
+    }
+    function removeScriptsContainer() {
+        if (areScriptsLoaded()) {
+            $('.script-container').remove();
+        } else {
+            console.warn("Scripts are not fully loaded yet.");
+        }
+    }
+    removeScriptsContainer();
+
+    // Remove .script-container if it appears again
+    var targetNode = document.body;
+    var observer = new MutationObserver(function (mutationsList) {
+        mutationsList.forEach(function (mutation) {
+            if (mutation.type === "childList") {
+                $(".script-container").remove();
+            }
+        });
+    });
+    var config = { childList: true, subtree: true };
+    observer.observe(targetNode, config);
+</script>
+
+<div>
+
+
+    
+    
+        
+        <div id="SearchResourcesProperties_9ac7d0d17f4d4750a8ba2c16ae7371f8" class="CoveoForSitecoreContext" data-sc-should-have-analytics-component="true" data-sc-analytics-enabled="true" data-sc-current-language="en" data-prebind-sc-language-field-name="fieldTranslator" data-sc-language-field-name="_language" data-sc-labels='{"Uniform resource identifier" : "URI" , "Updated By" : "Updated by" , "Created" : "Created" , "Created By" : "Created by" , "Creation Time" : "Creation time." , "Language" : "Language" , "Last Time Modified" : "Last time modified." , "Template" : "Template" , "If the problem persists contact the administrator." : "If the problem persists contact the administrator." , "Search is currently unavailable" : "Oops! Something went wrong on the server." , "Ascending" : "Ascending" , "Descending" : "Descending"}' data-sc-maximum-age="900000" data-sc-page-name="fmea" data-sc-page-name-full-path="/sitecore/content/global/repositories/laq/8/1/4/fmea" data-sc-index-source-name="Coveo_web_index - sc102.asq.org" data-sc-is-in-experience-editor="false" data-sc-is-user-anonymous="true" data-sc-item-uri="sitecore://web/{8149A515-1332-4A66-AA94-2C152F042AFF}?lang=en&amp;ver=5" data-sc-item-id="8149a515-1332-4a66-aa94-2c152f042aff" data-prebind-sc-latest-version-field-name="fieldTranslator" data-sc-latest-version-field-name="_latestversion" data-sc-rest-endpoint-uri="/coveo/rest" data-sc-analytics-endpoint-uri="/coveo/rest/ua" data-sc-site-name="website" data-sc-field-prefix="f" data-sc-field-suffix="87527" data-sc-prefer-source-specific-fields="false" data-sc-external-fields='[{"fieldName":"permanentid","shouldEscape":false},{"fieldName":"h1","shouldEscape":false},{"fieldName":"syssource","shouldEscape":false}]' data-sc-source-specific-fields='[{"fieldName":"attachmentparentid"},{"fieldName":"author"},{"fieldName":"clickableuri"},{"fieldName":"collection"},{"fieldName":"concepts"},{"fieldName":"date"},{"fieldName":"filetype"},{"fieldName":"indexeddate"},{"fieldName":"isattachment"},{"fieldName":"language"},{"fieldName":"printableuri"},{"fieldName":"rowid"},{"fieldName":"size"},{"fieldName":"source"},{"fieldName":"title"},{"fieldName":"topparent"},{"fieldName":"topparentid"},{"fieldName":"transactionid"},{"fieldName":"uri"},{"fieldName":"urihash"}]'>
+        </div>
+        <script type="text/javascript">
+        var endpointConfiguration = {
+            itemUri: "sitecore://web/{8149A515-1332-4A66-AA94-2C152F042AFF}?lang=en&amp;ver=5",
+            siteName: "website",
+            restEndpointUri: "/coveo/rest"
+        };
+        if (typeof (CoveoForSitecore) !== "undefined") {
+            CoveoForSitecore.SearchEndpoint.configureSitecoreEndpoint(endpointConfiguration);
+            CoveoForSitecore.version = "5.0.1460.0";
+            var context = document.getElementById("SearchResourcesProperties_9ac7d0d17f4d4750a8ba2c16ae7371f8");
+            if (!!context) {
+                CoveoForSitecore.Context.configureContext(context);
+            }
+        }
+        </script></div>
+        </div>
+    </div>
+    <br><div id="training-detail-container">
+
+        <div id="laq-information3" style="">
+            <div class="tab-block tab-only-block tab-block-accordion">
+                    <section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_reviewers">Reviewers</a>
+                        </header><div id="tab_reviewers" class="tab-block__pane-content">
+                            <div>
+                                <h3>Reviewers</h3>
+                                    <p></p><p><strong><a rel="noopener noreferrer" href="https://asq.org/search#q=gary%20jing&amp;t=articles&amp;numberOfResults=40&amp;srt=relevancy" target="_blank">Gary G. Jing</a></strong> is a Master Black Belt and lean Six Sigma deployment leader, and currently senior quality manager at Onto Innovation. He has worked as a continuous improvement director at CommScope in Shakopee, MN, and was on the U.S. delegation to International Organization for Standardization Technical Committee 176 and participated in the development of ISO 9000:2015 as the secretary of subcommittee 1/working group 1, which is responsible for the ISO 9000 standard. He earned a doctorate in industrial engineering from the University of Cincinnati. An ASQ fellow, Jing also is an ASQ-certified quality manager and engineer.</p>
+<p>Reviewed November 2024.</p>
+<br></div>
+                        </div>
+                    </section><section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_references">References</a>
+                        </header><div id="tab_references" class="tab-block__pane-content">
+
+                            <h3>References</h3>
+                                <p></p><p>Don Arp Jr., Garg G. Jing, Katie Labedz, Stephanie Parker, W. Pruitt, “<a href="https://asq.org/quality-progress/articles/tool-talk?id=5a4f8e1917e44f2ab401752eb86d9a7d"><span>Tool Talk</span></a>,” <em>Quality Progress</em>, August 2024, pp. 12-25. </p>
+<p>Gary G. Jing, “<a href="https://asq.org/quality-progress/articles/a-fundamental-fmea-flaw?id=59147386ea0b44c28207888c7e804e6d">A Fundamental FMEA Flaw</a>,” <em>Quality Progress</em>, May 2019, pp. 26-33.</p>
+<p>Gary G. Jing, "<a href="https://asq.org/quality-progress/articles/six-sigma-solutions-fmea-lite?id=ef2d8667c02f4b94b5ea9bf5c0146813">Six Sigma Solutions: FMEA-Lite</a>," <em>Quality Progress</em>, May 2024, pp. 49-51.</p>
+<p>José Rodríguez-Pérez, Manuel E. Peña-Rodríguez, “<a href="https://asq.org/quality-progress/articles/fail-safe-fmea?id=3ca9539da9a94d1fb89c28c6465a5a1f"><span>Fail-Safe FMEA</span></a>,” <em>Quality Progress</em>, January 2012, pp. 30-36.</p>
+<p>Govind Ramu, “<a href="https://asq.org/quality-progress/articles/fmea-minus-the-pain?id=d942e78095e845bba538ece95781fdaa">FMEA Minus the Pain</a>,” <em>Quality Progress</em>, March 2009, pp. 36-42.</p>
+<p>Nancy R. Tague, <a href="https://asq.org/quality-press/display-item?item=H1592"><em>The Quality Toolbox</em></a><em>, 3rd ed., </em>Quality Press, 2024, pp. 236-242.</p>
+<br></div>
+                    </section><section class="tab-block__pane"><header class="tab-block__pane-title clearfix"><a class="tab-block__pane-link js-match-height js-content-toggle" href="#tab_reprint-permissions">Reprints &amp; Permissions</a>
+                        </header><div id="tab_reprint-permissions" class="tab-block__pane-content">
+                            <h3>Reprints &amp; Permissions</h3>
+                                <p></p><p>ASQ gladly considers requests to use its intellectual property, please see the <a href="/copyright/reprint-permission" target="_blank">ASQ reprint permission page</a> for more information. For use of ASQE content or graphics, please contact us at <a href="/cdn-cgi/l/email-protection#a7c8d5c0cac2cac5c2d5d4cfced7e7c6d4d689c8d5c098d4d2c5cdc2c4d39af7c2d5caced4d4cec8c9829597d3c8829597d2d4c2829597e6f4f6e2829597d0c2c5829597c4c8c9d3c2c9d3" target="_blank"><span class="__cf_email__" data-cfemail="c5aab7a2a8a0a8a7a0b7b6adacb585a4b6b4ebaab7a2">[email protected]</span></a> to request permission. </p>
+                        </div>
+                    </section></div>
+        </div>
+    </div>
+    
+    <div>
+
+            <p></p><h3>Join Us on Social</h3>
+<p><strong>Network with the world’s largest community of quality professionals.</strong></p>
+<a rel="noopener noreferrer" href="https://www.linkedin.com/company/12680" target="_blank"><img height="75" alt="linkedin icon" width="75" src="/-/media/Images/Membership/linkedin.png?h=75&amp;w=75"></a>   <a rel="noopener noreferrer" href="https://www.facebook.com/ASQ" target="_blank"><img height="75" alt="facebook icon" width="75" src="/-/media/Images/Membership/FB.png?h=75&amp;w=75"></a><br><p> </p>
+    </div>
+    
+</div>
+</div>
+
+
+        
+<div class="container-fluid content-section single-column container-fluid--override">
+    <div class="row">
+        <div class="col-sm-12">
+            
+<div class="quad-callouts__divider">
+    <h3 class="quad-callouts__divider-title">Featured Advertisers</h3>
+    <hr class="quad-callouts__divider-line"></div>
+<section><div class="row rich-text-callout-container smithbucklin-quad-callouts-container">
+        <div class="quad-callouts__blk col-sm-6 col-md-3">
+            <div class="flex-iframe" id="sas_89909"></div>
+            <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="application/javascript">
+                sas.cmd.push(function() {
+                    sas.call("std", {
+                        siteId: 348089,
+                        pageId: 1218666,
+                        formatId: 89909,
+                        target: '' // Targeting
+                    });
+                });
+            </script><noscript>
+                <a href="https://www5.smartadserver.com/ac?jump=1&amp;nwid=1541&amp;siteid=348089&amp;pgname=quality-resources&amp;fmtid=89909&amp;visit=m&amp;tmstp=[timestamp]&amp;out=nonrich" target="_blank">
+                    <img src="https://www5.smartadserver.com/ac?out=nonrich&amp;nwid=1541&amp;siteid=348089&amp;pgname=quality-resources&amp;fmtid=89909&amp;visit=m&amp;tmstp=[timestamp]" border="0" alt=""></a>
+            </noscript>
+        </div>
+        <div class="quad-callouts__blk col-sm-6 col-md-3">
+            <div class="flex-iframe" id="sas_89910"></div>
+            <script type="application/javascript">
+                sas.cmd.push(function() {
+                    sas.call("std", {
+                        siteId: 348089,
+                        pageId: 1218666,
+                        formatId: 89910,
+                        target: '' // Targeting
+                    });
+                });
+            </script><noscript>
+                <a href="https://www5.smartadserver.com/ac?jump=1&amp;nwid=1541&amp;siteid=348089&amp;pgname=quality-resources&amp;fmtid=89910&amp;visit=m&amp;tmstp=[timestamp]&amp;out=nonrich" target="_blank">
+                    <img src="https://www5.smartadserver.com/ac?out=nonrich&amp;nwid=1541&amp;siteid=348089&amp;pgname=quality-resources&amp;fmtid=89910&amp;visit=m&amp;tmstp=[timestamp]" border="0" alt=""></a>
+            </noscript>
+        </div>
+        <div class="quad-callouts__blk col-sm-6 col-md-3">
+            <div class="flex-iframe" id="sas_89911"></div>
+            <script type="application/javascript">
+                sas.cmd.push(function() {
+                    sas.call("std", {
+                        siteId: 348089,
+                        pageId: 1218666,
+                        formatId: 89911,
+                        target: '' // Targeting
+                    });
+                });
+            </script><noscript>
+                <a href="https://www5.smartadserver.com/ac?jump=1&amp;nwid=1541&amp;siteid=348089&amp;pgname=quality-resources&amp;fmtid=89911&amp;visit=m&amp;tmstp=[timestamp]&amp;out=nonrich" target="_blank">
+                    <img src="https://www5.smartadserver.com/ac?out=nonrich&amp;nwid=1541&amp;siteid=348089&amp;pgname=quality-resources&amp;fmtid=89911&amp;visit=m&amp;tmstp=[timestamp]" border="0" alt=""></a>
+            </noscript>
+        </div>
+        <div class="quad-callouts__blk col-sm-6 col-md-3">
+            <div class="flex-iframe" id="sas_89912"></div>
+            <script type="application/javascript">
+                sas.cmd.push(function() {
+                    sas.call("std", {
+                        siteId: 348089,
+                        pageId: 1218666,
+                        formatId: 89912,
+                        target: '' // Targeting
+                    });
+                });
+            </script><noscript>
+                <a href="https://www5.smartadserver.com/ac?jump=1&amp;nwid=1541&amp;siteid=348089&amp;pgname=quality-resources&amp;fmtid=89912&amp;visit=m&amp;tmstp=[timestamp]&amp;out=nonrich" target="_blank">
+                    <img src="https://www5.smartadserver.com/ac?out=nonrich&amp;nwid=1541&amp;siteid=348089&amp;pgname=quality-resources&amp;fmtid=89912&amp;visit=m&amp;tmstp=[timestamp]" border="0" alt=""></a>
+            </noscript>
+        </div>
+    </div>
+</section></div>
+    </div>
+</div>
+
+        <script>
+            // Code snippet to load and log page view analytics.
+            // Imported from https://github.com/coveo/coveo.analytics.js
+            (function (c, o, v, e, O, u, a) {
+                a = 'coveoua'; c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+                c[a].t = Date.now(); u = o.createElement(v); u.async = 1; u.src = e;
+                O = o.getElementsByTagName(v)[0]; O.parentNode.insertBefore(u, O)
+            })(window, document, 'script', 'https://static.cloud.coveo.com/coveo.analytics.js/2/coveoua.js');
+
+            document.addEventListener("CoveoSearchEndpointInitialized", function () {
+                var accessToken = Coveo && Coveo.SearchEndpoint && Coveo.SearchEndpoint.defaultEndpoint && Coveo.SearchEndpoint.defaultEndpoint.accessToken
+                    ? Coveo.SearchEndpoint.defaultEndpoint.accessToken.token
+                    : "";
+
+                var customMetadata = {"contentIdKey" : "permanentid" , "contentType" : "Article" , "contentLanguage" : "en" , "contentIdValue" : "8149A51513324A66AA942C152F042AFF" , "anonymous" : true};
+
+                if (typeof (CoveoForSitecoreUserContext) !== "undefined") {
+                    customMetadata["customData"] = {};
+                    var currentContext = CoveoForSitecoreUserContext.handler.getContext();
+                    Object.keys(currentContext).forEach(function(key) {
+                        customMetadata["customData"]["context_" + key] = currentContext[key];
+                    });
+                }
+
+                coveoua('onLoad', function() {
+                    Object.defineProperty(coveoanalytics.CoveoAnalyticsClient.prototype, 'baseUrl', { get() { return "/coveo/rest/ua" + "/v15" }});
+                    coveoua('init', accessToken);
+                    coveoua('send', 'view', customMetadata);
+                });
+            });
+
+        </script><div>
+    
+    
+
+    
+        <div id="coveo9b94be63" class="CoveoDistanceResources" data-prebind-latitude-field="fieldTranslator" data-latitude-field="@43.0380" data-prebind-longitude-field="fieldTranslator" data-longitude-field="@-87.9110" data-unit-display-name="miles" data-unit-conversion-factor="1610">
+        </div>
+</div>
+
+<script type="text/javascript" src="/Coveo/Hive/js/CoveoForSitecoreUserContext.js"></script>
+
+
+
+
+<script>
+    if (!!window.CoveoForSitecoreUserContext) {
+        CoveoForSitecoreUserContext.handler.initializeContext({"device":"Default","isAnonymous":"true"});
+    }
+</script>
+            
+
+            <footer class="global-footer"><div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-6 col-sm-3">
+                <a class="global-footer__logo-link" href="/">
+                    <img src="/-/media/ASQ/Images/Logos/footer-logo.png?h=508&amp;w=540&amp;la=en&amp;hash=D38B8BAA9D0FFAFBC72AC7AF8FBB7B46" alt="ASQ logo"></a>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <nav class="nav-links"><ul class="nav-links__list"><li class="nav-links__list-item"><a href="/about-asq">About ASQ</a></li>
+                                    <li class="nav-links__list-item"><a href="/career">Career Center</a></li>
+                                    <li class="nav-links__list-item"><a href="https://my.asq.org/communityguidelines">Community Guidelines</a></li>
+                                    <li class="nav-links__list-item"><a href="/customer-services/contact-asq" title="Contact Us">Contact Us</a></li>
+                                    <li class="nav-links__list-item"><a href="/ads">Advertisers &amp; Sponsors</a></li>
+                                    <li class="nav-links__list-item"><a href="/newsroom">Newsroom</a></li>
+                                    <li class="nav-links__list-item"><a href="/privacy-policy">Privacy &amp; Legal</a></li>
+                                    <li class="nav-links__list-item"><a href="/quality-resources/why-publish-with-asq">Publish with ASQ</a></li>
+                                    <li class="nav-links__list-item"><a href="/quality-press/ordering-information">Book/Publications Returns</a></li>
+                                    <li class="nav-links__list-item"><a href="/training/faq#cancel">Course Cancellations/Refunds</a></li>
+                                    <li class="nav-links__list-item"><a href="/site-map">Site Map</a></li>
+                                
+
+
+                                <li class="nav-links__list-item">
+                                    <button id="ot-sdk-btn" class="ot-sdk-show-settings">Cookie Settings</button>
+                                </li>
+
+
+                                
+                            </ul></nav></div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                    <div class="col-sm-10 col-sm-offset-2">
+                        <p>With members and customers in over 130 countries, ASQ brings together the people, ideas and tools that make our world work better.
+<br><br>
+ASQ celebrates the unique perspectives of our community of members, staff and those served by our society. Collectively, we are the voice of quality, and we increase the use and impact of quality in response to the diverse needs in the world.</p>
+
+                                <ul class="social-links"><li><a href="https://www.linkedin.com/company/asq" target="_blank" aria-label="LinkedIn logo opens in new window"><i class="fa fa-2x fab fa-linkedin"></i></a></li>
+                                        <li><a href="https://www.facebook.com/ASQ" target="_blank" aria-label="Facebook logo opens in new window"><i class="fa fa-2x fab fa-facebook"></i></a></li>
+
+                                </ul>
+
+                        <p>
+© 2026 American Society for Quality. All rights reserved.                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer></main></main>
+    
+    
+    <script src="/bundles/global-js?v=F-S8v3scT6-7jcmsB51U_REPMn5m6j5pAfX-NT_336c1"></script>
+
+
+            <script type="text/javascript" src="/Scripts/asq/components/header.js"></script>
+
+    
+    <script>
+        var sticky = new Waypoint.Sticky({
+            element: $('.global-header')[0],
+            offset: 0
+        })
+    </script>
+
+        
+        <script>
+            $(".close-menu").on("click", function (e) {
+                e.preventDefault();
+                $("body").removeClass("menu-open");
+                $("#asq-lateral-nav").removeClass("lateral-menu-is-open");
+                $(".asq-main-content").removeClass("lateral-menu-is-open");
+                $(".global-header").removeClass("lateral-menu-is-open");
+                var $trigger = $("#asq-menu-trigger");
+                if ($trigger.length) {
+                    $trigger.removeClass("is-clicked");
+                    $trigger.attr("aria-expanded", "false");
+                    if (document.activeElement && document.activeElement !== document.body) {
+                        $(document.activeElement).blur();
+                    }
+                    var el = $trigger.get(0);
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () {
+                            try {
+                                el.focus({ preventScroll: true });
+                            } catch (err) {
+                                el.focus();
+                            }
+                        });
+                    });
+                }
+            });
+        </script>
+
+    <script>
+            $(function () {
+                $('.js-img-swap').responsiveImgDisplay({
+                    singleImg : true
+                });
+            });
+    </script>
+
+    <script>
+        if (!typeof stLight === 'undefined') {
+            stLight.options({ publisher: "0cb96fc1-2c7b-48f8-9840-0ec83a5575cb", publisherGA: "UA-411753-17", doNotHash: false, doNotCopy: false, hashAddressBar: false });
+        }
+
+        $(function () {
+            var shareId = '#share-this-container-8149a515-1332-4a66-aa94-2c152f042aff';
+
+            $(shareId + '.js-share-list > .js-list-toggle').on('click', function (e) {
+                e.preventDefault();
+                if ($(shareId + ' .js-calendar-list .active')) {
+                    $(shareId + ' .js-calendar-list').find('.js-toggle-active').removeClass('active');
+                } else {
+
+                }
+                $(shareId + ' .js-social-links').find('.js-toggle-active').toggleClass('active');
+
+            });
+            $(shareId + ' .js-social-links .basic-link-list__list-item').on('click', function (e) {
+                e.preventDefault();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        ASQ.Utilities.toggleDrawer($('.js-toggle-drawer'));
+    </script>
+
+        <script type="text/javascript" src="/Scripts/asq/components/library-item-page.js"></script>
+
+<script type="text/javascript">
+    _linkedin_data_partner_id = "53713";
+    (function(){var s = document.getElementsByTagName("script")[0];
+        var b = document.createElement("script");
+        b.type = "text/javascript";b.async = true;
+        b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+        s.parentNode.insertBefore(b, s);
+    })();
+</script><noscript>
+    <img height="1" width="1" style="display:none;" alt="" src="https://dc.ads.linkedin.com/collect/?pid=53713&amp;fmt=gif"></noscript>
+    
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5205b5c78f47e36',t:'MTc5MzI1Nzc4OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>

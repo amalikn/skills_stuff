@@ -1,0 +1,25 @@
+Contents of https://csrc.nist.gov/glossary/term/recovery_time_objective:
+[Glossary](/glossary)
+
+### Recovery Time Objective
+
+**Abbreviations / Acronyms / Synonyms:**
+
+**Definitions:**
+
+  The overall length of time an information system’s components can be in the recovery phase before negatively impacting the organization’s mission or mission/business processes.  
+**Sources:**
+
+  
+
+[NIST SP 800-34 Rev. 1](https://doi.org/10.6028/NIST.SP.800-34r1)
+
+#### About
+
+**See the identified Source document to understand each term-definition pair in its proper context.**
+
+Send inquiries about terminology to the Source's authors; NIST publications will usually include a contact email for that Source.
+
+For other inquiries, such as comments about the Glossary's presentation and functionality, use [this link](/cdn-cgi/l/email-protection#a5d6c0c6c2c9cad6d6c4d7dce5cbccd6d18bc2cad3).
+
+See the [Glossary homepage](/glossary) for more guidance.

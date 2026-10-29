@@ -1,0 +1,21 @@
+Contents of https://support.apple.com/guide/deployment/welcome/web:
+![](https://help.apple.com/assets/6A7205CCBE02946C700729A7/6A7205D7A147F236440CA052/en_US/32afce241615e736cac72081678b102a.png)
+
+## Deploy and manage Apple hardware, software, apps, and services in your organization
+
+Apple devices integrate hardware, software, apps, and services to let you manage your deployment projects easily. Get the control and flexibility you want by using Apple School Manager or Apple Business and your chosen device management service.
+
+[What’s new in Apple platform deployment](https://support.apple.com/guide/deployment/whats-new-dep950aed53e/1/web/1.0)
+
+To explore Apple Platform Deployment, select Table of Contents at the top of the page, or enter a word or phrase in the search field.
+
+Helpful?
+
+Character limit:
+250
+
+Please don’t include any personal information in your comment.
+
+Maximum character limit is 250.
+
+Thanks for your feedback.

@@ -1,0 +1,79 @@
+# skill-systems-architect task runner. Every recipe is offline and read-only; nothing touches a device, controller or network.
+
+set shell := ["bash", "-uc"]
+set dotenv-load := false
+
+# Recipes go through {{py}}, never a bare interpreter (skills_stuff runtime isolation; same layout as skill-mikrotik).
+# The venv lives in the working-cache peer, never in this repo.
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-systems-architect"
+py := wc + "/.venv/bin/python"
+scraper := "/Volumes/Data/_ai/_tool/tools_stuff/all-scraper/justfile"
+
+# Show available recipes
+default:
+    @just --list
+
+# Build the working-cache venv from the mise-pinned runtime. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @{{py}} -m pip install --quiet --upgrade pip -r requirements.txt
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtime the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+
+# Unit and CLI tests, including negative inputs
+test: _require-venv
+    {{py}} -B -m unittest discover -s tests -v
+
+# Check one capacity plan JSON, e.g. just capacity examples/capacity-plan-pass.json (exit 0 pass, 1 findings, 2 invalid input)
+capacity plan: _require-venv
+    {{py}} -B scripts/capacity_check.py "{{plan}}"
+
+# Series/parallel availability against a target (shared helper from skill-network-architect), e.g. just availability <model.json>
+availability model: _require-venv
+    {{py}} -B scripts/availability.py "{{model}}"
+
+# Which node, domain and QDevice losses keep quorum, e.g. just quorum examples/quorum-qdevice.json
+quorum cluster: _require-venv
+    {{py}} -B scripts/quorum_check.py "{{cluster}}"
+
+# Ceph plan capacity, self-healing and min_size per pool, e.g. just ceph examples/ceph-capacity.json
+ceph pools: _require-venv
+    {{py}} -B scripts/ceph_capacity.py "{{pools}}"
+
+# The bundled failing example must return exit 1; anything else is a broken helper
+expected-findings: _require-venv
+    @{{py}} -B scripts/capacity_check.py examples/capacity-plan.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "capacity: expected exit 1, got $rc" >&2; exit 1; }
+    @{{py}} -B scripts/quorum_check.py examples/quorum.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "quorum: expected exit 1, got $rc" >&2; exit 1; }
+
+# Resolve every external URL cited in the pack's Markdown (uses the network; read-only; not part of check)
+links: _require-venv
+    {{py}} -B scripts/check_links.py .
+
+# Local copies of every cited source (RFC text, PDFs, page snapshots via all-scraper) into the shared store; plan by default, add --apply to write
+fetch-sources *ARGS: _require-venv
+    {{py}} -B scripts/fetch_sources.py . ../skill-network-architect --store ../skill-network-architect/sources --scraper "{{scraper}}" {{ARGS}}
+
+# Rebuild sources.json: keep curated entries, catalogue every cited URL, attach local copies; plan by default, --apply writes, --add <file> merges curated lists
+ledger *ARGS: _require-venv
+    {{py}} -B scripts/sources_ledger.py . --store ../skill-network-architect/sources {{ARGS}}
+
+# Ruff lint and format check (ruff.toml: two-space indent, 160 columns)
+lint: _require-venv
+    {{py}} -m ruff check .
+    {{py}} -m ruff format --check .
+
+# Closing check: run before claiming a change to this pack is complete
+check: test expected-findings lint
+    {{py}} -B scripts/capacity_check.py examples/capacity-plan-pass.json > /dev/null
+    {{py}} -B scripts/quorum_check.py examples/quorum-qdevice.json > /dev/null
+    {{py}} -B scripts/ceph_capacity.py examples/ceph-capacity.json > /dev/null
+    {{py}} -B scripts/check_package.py .

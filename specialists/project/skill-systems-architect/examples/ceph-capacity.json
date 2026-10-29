@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "domains": [
+    {
+      "id": "host1",
+      "raw_tb": 15.36
+    },
+    {
+      "id": "host2",
+      "raw_tb": 15.36
+    },
+    {
+      "id": "host3",
+      "raw_tb": 15.36
+    },
+    {
+      "id": "host4",
+      "raw_tb": 15.36
+    }
+  ],
+  "pools": [
+    {
+      "id": "vm-rbd",
+      "size": 3,
+      "min_size": 2,
+      "tolerate_domain_failures": 1,
+      "demand_tb": 10
+    }
+  ]
+}

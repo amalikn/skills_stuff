@@ -1,0 +1,71 @@
+Contents of https://manrs.org/netops/:
+Network operators have a collective responsibility to ensure a globally robust and secure routing infrastructure. Your network’s safety depends on a routing infrastructure that weeds out bad actors and accidental misconfigurations that wreak havoc on the Internet. The more network operators work together, the fewer incidents there will be, and the less damage they can do.
+
+The MANRS Network Operators Program defines the minimum steps network operators like Internet Service Providers should take to ensure the security and resilience of the Internet’s global routing system.
+
+## Actions
+
+1. **Filtering**. Ensure the correctness of your own announcements and those from your customers to adjacent networks
+2. **Anti-spoofing**. Enable source address validation for at least single-homed stub customer networks, their own end-users, and infrastructure
+3. **Coordination**. Maintain globally accessible, up-to-date contact information in common routing databases.
+4. **Global information**. Publish your data so others can validate
+
+[Read the full Network Operators Actions Document](/netops/actions/)
+
+#### Implementation Guide
+
+An Implementation Guide documents deployment of MANRS Actions and is targeted at stub networks and small providers. The document also assists in checking if the network setup is compliant with MANRS.
+
+[Read the Implementation Guide](https://manrs.org/netops/guide/)
+
+### Testimonials
+
+We at Brphonia understand and contribute to the dissemination of good practices, which makes the internet safer for us and our customers. Given this importance, we join the MANRS partners.
+
+Network Analyst
+
+GOLINE firmly believes in initiatives to protect networks, improve security and resilience of the global routing system. Therefore we decided to support the MANRS project and join as participants.
+
+PAOLO CAPARRELLI
+
+Managing Director
+
+Since its beginnings, Fiber@Home has endeavored to keep up a safe and strong system, sending the most refreshed prescribed procedures and, as a Transit provider, dispersing them to its clients with the end goal to get from them a dedication of conveying these accepted procedures in their systems also. Clinging to MANRS activity fortifies this position.
+
+iWayAfrica Kenya believes that the MANRS project is critical in today's global Internet ecosystem, and want to play our part in making the Internet routing security landscape better for all.
+
+As my organization running the ccTLD (.sd and .سودان) which considered as critical services, we decided to join MANRS to guarantee the security of the internet and reduce the possibility to hijack our network resources. by joining this initiative it can be as an example to advocate and promote MANRS between the local ISPs, network operators.
+
+Adherence to MANRS is an important commitment that operators make back to the Internet community. Together we aim to remove the havens from which miscreants maintain the freedom and anonymity to attack our network and our customers.
+
+David Freedman
+
+Claranet Group
+
+We stand behind the MANRS initiative, especially taking into account our primary goal of adhering and refining of industry best-practices, as far as security and data protection are concerned. Initiatives of the nature of MANRS are always welcome, in the spirit of improving both our internal quality assurance and security efforts in the medium-term.
+
+MANRS represents the future of Internet routing security. Network operators in the MANRS community are pioneers, making global routing infrastructure as robust and secure as possible, through innovation and investment. As a leading global communications and network service provider, China Telecom (Americas) has been collaborating with the MANRS team since early 2019 to implement the best routing security standards on all of our major Internet networks. Today, we are excited to be count ourselves as a MANRS participant, and hopefully inspire more large-scale network operators to join our ranks.
+
+Yu, Yi
+
+Vice President, China Telecom Americas Corporation
+
+URAN Association community is participating in MANRS because routing security is a growing area of concern for network operators around the globe. Whether from accidental misconfiguration or malicious hijack, the results are often more than just inconvenient. Joining MANRS and the Internet2 community’s efforts connect us with a community of security-minded professionals and organizations committed to making the global routing infrastructure more robust and secure.
+
+SUNET is committed to robust global routing polices and MANRS is one of the best initiatives so far to help out operators with this. We hope with our participation that more of the R&E sector will sign up and live up to the norms. We hope that in the future MANRS will be the standard, not the exception.
+
+Fredrik Korsb?ck
+
+Network Architect, SUNET
+
+Comcast is committed to helping drive improvements to the reliability of the Internet ecosystem. We are thrilled to be engaged with other infrastructure participants across the spectrum and around the globe in pursuit of these goals.
+
+Jason Livingood
+
+Vice President, Internet Services, Comcast
+
+We believe the security, stability, and resiliency of the Internet operation can be improved via distributed and shared responsibilities as documented in MANRS. As one of the largest academic networks in the world, CERNET is committed to the MANRS actions.
+
+Xing Li
+
+Deputy Director, CERNET

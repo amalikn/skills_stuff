@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "links": [
+    {
+      "id": "ptp-5800-10km",
+      "distance_km": 10,
+      "freq_mhz": 5800,
+      "tx_power_dbm": 20,
+      "tx_gain_dbi": 23,
+      "rx_gain_dbi": 23,
+      "losses_db": 2,
+      "rx_sensitivity_dbm": -80,
+      "required_fade_margin_db": 15,
+      "obstacles": [
+        {
+          "d1_km": 5,
+          "clearance_m": 10
+        }
+      ]
+    }
+  ]
+}

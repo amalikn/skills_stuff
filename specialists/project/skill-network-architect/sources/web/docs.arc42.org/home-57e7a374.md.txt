@@ -1,0 +1,109 @@
+Contents of https://docs.arc42.org/home/:
+## Practical tips and examples for the arc42 template
+
+Everything on this site is organized by the twelve arc42 template sections.
+Open a section to see what belongs in it, how much detail it deserves, and
+how other teams have written it.
+
+## The template sections
+
+1. [Section 01
+
+   Introduction and Goals
+   Requirements, stakeholder, (top) quality goals
+   25 tips](/section-1/)
+2. [Section 02
+
+   Constraints
+   Technical and organizational constraints, conventions
+   5 tips](/section-2/)
+3. [Section 03
+
+   Context and Scope
+   Business and technical context, external interfaces
+   19 tips](/section-3/)
+4. [Section 04
+
+   Solution Strategy
+   Fundamental solution decisions and ideas
+   6 tips](/section-4/)
+5. [Section 05
+
+   Building Block View
+   Abstractions of source code, black-/whiteboxes
+   28 tips](/section-5/)
+6. [Section 06
+
+   Runtime View
+   Runtime scenarios: how do building blocks interact
+   11 tips](/section-6/)
+7. [Section 07
+
+   Deployment View
+   Hardware and technical infrastructure, deployment
+   10 tips](/section-7/)
+8. [Section 08
+
+   Crosscutting Concepts
+   Recurring solution approaches and patterns
+   11 tips](/section-8/)
+9. [Section 09
+
+   Architecture Decisions
+   Important, expensive, risky or contentious decisions
+   10 tips](/section-9/)
+10. [Section 10
+
+    Quality Requirements
+    Quality requirements overview and detailed quality scenarios
+    8 tips](/section-10/)
+11. [Section 11
+
+    Risks and Technical Debt
+    Known problems, risks and technical debt
+    6 tips](/section-11/)
+12. [Section 12
+
+    Glossary
+    Definitions of important business and technical terms
+    6 tips](/section-12/)
+
+## Navigate by keyword
+
+Our tips are tagged by 60 keywords that will help you navigate.
+Three of these stand out:
+
+[lean](/keywords/#lean)
+You are looking for opportunities to shorten or streamline your
+documentation pragmatically. You want to reduce efforts without losing content or
+value. You are working in an agile environment and want to have lightweight
+documentation – based on the motto: *travel light*.
+
+[thorough](/keywords/#thorough)
+You are working in a more formal environment, e.g. developing very
+large or critical systems with hard quality requirements. Your stakeholders require
+thoroughness, accuracy and attention to detail. Maybe your systems and their
+documentation have to be audited.
+
+[essential](/keywords/#essential)
+Despite lean and agile, there is some information about your system
+that you should always document; i.e. quality goals of your architecture.
+
+[Browse all 60 keywords ›](/keywords/)
+
+## More from arc42
+
+* **Want to see it all put together?** Read
+  [complete architecture
+  documentation](https://examples.arc42.org/) of real systems, written with arc42 from context to glossary.
+* ![](/assets/images/brand/faq-icon.png)
+
+  **Still have questions?** Try our
+  [extensive FAQ](https://faq.arc42.org/),
+  answering more than 120 frequently asked questions.
+* ![](/assets/images/brand/contact-icon.png)
+
+  **Need further assistance?** Let us
+  [know here](/contact/), we're listening.
+* **This is open source.** This site is completely open-source, maintained on a
+  [public GitHub repository](https://github.com/arc42/docs.arc42.org-site/).

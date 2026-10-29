@@ -1,0 +1,4089 @@
+{
+ "https://12factor.net/": {
+  "path": "web/12factor.net/index-93566134.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "6a64909ee93f2fef32ef833678d09e00e80da6cfb0cb8e36a1bba7e429402516",
+  "bytes": 3608,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://acma.gov.au/sites/default/files/2024-12/Outcomes%20paper%20-%20Future%20use%20of%20the%20upper%206%20GHz%20band_0.pdf": {
+  "path": "pdf/acma.gov.au/sites-default-files-2024-12-Outcomes-20paper-20--20Future-20use-20of-20the-20upp-b5eea5ac.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "a2d19611d507385f374199791c6d643ba367c51fe35aad826b54ff3e9fbf3dbd",
+  "bytes": 877642,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://adr.github.io/": {
+  "path": "web/adr.github.io/index-d5366499.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/collaboration-protocol.md",
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/references/architecture-method.md",
+   "skill-systems-architect/references/collaboration-protocol.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md"
+  ],
+  "sha256": "2651118787364e5982658ef9c4783e551724c25ca375f7cd303ec6cb581c0aa1",
+  "bytes": 5297,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://adr.github.io/madr/": {
+  "path": "web/adr.github.io/madr-e55ea0fa.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-network-architect/templates/decision-record.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/templates/decision-record.md"
+  ],
+  "sha256": "db32bd00a46bf1aecbcf88da9f02087ccadb3aaafe2ba254ab4d83fd2c960deb",
+  "bytes": 15665,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://agentskills.io/specification": {
+  "path": "web/agentskills.io/specification-f36ae400.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "8dbcf1dab24f593e8930f55736eaf2a2cd435601d6b471b3f9f3ffbbbf2321a1",
+  "bytes": 5064,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://arc42.org/license": {
+  "path": "web/arc42.org/license-61b49b60.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md"
+  ],
+  "sha256": "77c450ff87c9400c9ff9dbb8c7cd83d544b21559fea498312f1d86b5efdfa8ee",
+  "bytes": 2597,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://arc42.org/overview": {
+  "path": "web/arc42.org/overview-49116f92.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-network-architect/templates/design.md",
+   "skill-network-architect/templates/requirements-and-constraints.md",
+   "skill-systems-architect/references/architecture-method.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/templates/design.md",
+   "skill-systems-architect/templates/requirements-and-constraints.md"
+  ],
+  "sha256": "249833cbd0c003cf2308d3e554c6bff4b512e7e392e981607d9bfd6d24aaa3c7",
+  "bytes": 1472,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://asq.org/quality-resources/fmea": {
+  "path": "web/asq.org/quality-resources-fmea-aec0fb05.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/templates/failure-mode-analysis.md",
+   "skill-systems-architect/templates/failure-mode-analysis.md"
+  ],
+  "sha256": "583a9571eeb204d538781c5490c6e4f2ac0b7d22637ae002ab2c94fe3ff1d763",
+  "bytes": 104089,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://c4model.com/": {
+  "path": "web/c4model.com/index-f5342a5e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/collaboration-protocol.md",
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-network-architect/templates/design.md",
+   "skill-systems-architect/references/architecture-method.md",
+   "skill-systems-architect/references/collaboration-protocol.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/templates/design.md"
+  ],
+  "sha256": "27b5f8c7f76629d2d1e21cdd2748d9b863ee9a4854b9553841e04e356197f7c9",
+  "bytes": 1196,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://c4model.com/diagrams/checklist": {
+  "path": "web/c4model.com/diagrams-checklist-319c7068.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "aa192be0850d3aaf81194cf3677fc77f9c4d246a766b7f50d357c2b0ea8b149c",
+  "bytes": 900,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html": {
+  "path": "web/canonical-subiquity.readthedocs-hosted.com/en-latest-reference-autoinstall-reference.html-7c3628f3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "45ad6dec094bd14dbe65000b779d0267bc379f55c8807475b02bf49341c1b283",
+  "bytes": 45003,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://choosealicense.com/licenses/": {
+  "path": "web/choosealicense.com/licenses-8b157e6b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "335022f842bd4ddee1c2c524bfb3cc9e6381495659ba77582f5ae718c15ee5f8",
+  "bytes": 6921,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://chrony-project.org/faq.html": {
+  "path": "web/chrony-project.org/faq.html-d854d699.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "380cdcddb5299f57f09b448155abcfd54367967b2af8bcc3d66f04cc8ed92408",
+  "bytes": 31389,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://cloud.google.com/architecture/migration-to-gcp-getting-started": {
+  "path": "web/cloud.google.com/architecture-migration-to-gcp-getting-started-e2b49df1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/migration-and-hybrid.md"
+  ],
+  "sha256": "c3d915052a40d365de4eb34b8ec790816230a58fca47075d0da4afe99e0aa0e7",
+  "bytes": 24859,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://cloud.google.com/vpc/docs/mtu": {
+  "path": "web/cloud.google.com/vpc-docs-mtu-8cc147d7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "195d71d8cf9b6a86c9601d9af211bf03d05913b9c7a308ae9e8cd03040622d43",
+  "bytes": 18187,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://cloud.google.com/vpc/docs/subnets": {
+  "path": "web/cloud.google.com/vpc-docs-subnets-8db4ce1f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "0e3d34ccaf4257a5519c32c8ab51826890c24b0b759618006bfb9bc967939e4f",
+  "bytes": 34178,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://code.claude.com/docs/en/skills": {
+  "path": "web/code.claude.com/docs-en-skills-542f21c1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/README.md",
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/README.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "856ccd005df17b2f43a5ab93842f5aa8a4aa3aae9164fc339817d7edc5fa7b16",
+  "bytes": 99167,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions": {
+  "path": "web/cognitect.com/blog-2011-11-15-documenting-architecture-decisions-692ba2f1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-systems-architect/references/architecture-method.md"
+  ],
+  "sha256": "ff4d8ca5afd80cad0ebe506e3834e426f34591715f3b93531156c4e622a0fde9",
+  "bytes": 7440,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://csrc.nist.gov/glossary/term/recovery_point_objective": {
+  "path": "web/csrc.nist.gov/glossary-term-recovery_point_objective-69ab24f1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "573ae432f63fe4bbad547da9c67c8d85ee14485b487a0cf07fadbb9b1358db66",
+  "bytes": 829,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://csrc.nist.gov/glossary/term/recovery_time_objective": {
+  "path": "web/csrc.nist.gov/glossary-term-recovery_time_objective-63b5ee42.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "f3b6ce32605e8eb5929bc8a2eacec3819ae5ec5f917a9865de63ca7fd19fed8d",
+  "bytes": 941,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/128/upd1/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-128-upd1-final-1d251639.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/migration-and-operations.md"
+  ],
+  "sha256": "d5fb05e499fd96d3952a73fea95043d35b1bca12da73da205700bf146d12604f",
+  "bytes": 1950,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/160/v2/r1/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-160-v2-r1-final-f7da0426.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-network-architect/references/capacity-and-resilience.md"
+  ],
+  "sha256": "54c2ca6f01eb7a3ba0b75693831615c8d1ac236c854c63ad4fc4c4132ba7599d",
+  "bytes": 2399,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/190/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-190-final-7b0ca573.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "3fe58d38f76a9a4e79c9dcafb481ebdc677c85c6e60ba3d7edfe99d20e90b3c3",
+  "bytes": 1691,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/207/a/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-207-a-final-e5812843.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "045893d89c15e3fa9cda2796d720aee164a2c05b137c48dc3f15e4d38bf10113",
+  "bytes": 1823,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/207/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-207-final-ecea8146.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md",
+   "skill-systems-architect/references/security-and-service-identity.md"
+  ],
+  "sha256": "d1fddc50e0376bdec7b4c4aeb8247cdd014f692e302c7f16fa3b96f9185e7f4f",
+  "bytes": 2710,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/209/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-209-final-5238aa1f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md",
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "358cf10196fea0e1e16ac9e85fe83808e7d4f8f68c337df47e79d119f4aec8ed",
+  "bytes": 1818,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-34-r1-upd1-final-f561a629.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md",
+   "skill-systems-architect/templates/backup-and-restore-test.md"
+  ],
+  "sha256": "19d786c384cd8d49cde29612b8d4e9e2bdf11f7231c418bab03929ac1e4310ce",
+  "bytes": 1513,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/40/r4/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-40-r4-final-6aadbcc9.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/templates/lifecycle-and-patching.md"
+  ],
+  "sha256": "36ade001c83bcd3d8beff2ac4c27c540dae4aa10ed67f052093285611ff6e8bc",
+  "bytes": 1427,
+  "retrieved": "2026-10-29T07:12Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/41/r1/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-41-r1-final-3c90f39f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "b9399fb1ac7fd0f2791fa51f4b37b772f83b542a7eeadd65d708dfbcb1e84767",
+  "bytes": 1029,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-53-r5-upd1-final-27c5095f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/security-and-service-identity.md"
+  ],
+  "sha256": "fe4120e86809a036b5113ba59783836497aa11a4401ed4efb668a8a29c2aca27",
+  "bytes": 2347,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/61/r3/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-61-r3-final-f53ed62d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/migration-and-operations.md",
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "df2895043a8eee3488a8ac977473958f7dedb5e44dfcb220f7b4bbf0606e5f93",
+  "bytes": 1252,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://csrc.nist.gov/pubs/sp/800/81/r3/final": {
+  "path": "web/csrc.nist.gov/pubs-sp-800-81-r3-final-2edffde1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "a2755d8057d50e123a6069b392c558cdf2bcc51953ed2c4b2319b0731313d562",
+  "bytes": 1287,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://datatracker.ietf.org/": {
+  "path": "web/datatracker.ietf.org/index-9a54fa5f.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "9be5bf4b455b4416a3716effbc1ed788f0867b8ed1c6ad1b2767099397b8728d",
+  "bytes": 7040,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://datatracker.ietf.org/doc/draft-ietf-radext-radiusdtls-bis/": {
+  "path": "web/datatracker.ietf.org/doc-draft-ietf-radext-radiusdtls-bis-52fd90c0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "9f1e3bb2b142f629f8ff488154f6a0fda1153f366f25858f17251f7db6158f97",
+  "bytes": 100185,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://developer.hashicorp.com/packer/docs": {
+  "path": "web/developer.hashicorp.com/packer-docs-ee0700cc.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "942ee9b52cd84db7dc040255cfdae2aec530eb54cbb4fc07fe5b1a8b8015b24d",
+  "bytes": 1622,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html": {
+  "path": "web/docs.ansible.com/ansible-latest-playbook_guide-playbooks_checkmode.html-2710461d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "d444e29c5706b958f4ff0ca4c4d63c86a584a21fb712b293ddee55df221f2a4d",
+  "bytes": 5233,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_strategies.html": {
+  "path": "web/docs.ansible.com/ansible-latest-playbook_guide-playbooks_strategies.html-42b02ff2.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "1bbc99cd89174771a302c5304143e480e43210485a20c497f915b7f577db720e",
+  "bytes": 11012,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ansible.com/projects/ansible/latest/network/user_guide/network_best_practices_2.5.html": {
+  "path": "web/docs.ansible.com/projects-ansible-latest-network-user_guide-network_best_practices_2.5.html-d8ab5171.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/automation-and-safety.md",
+   "skill-systems-architect/references/automation-and-safety.md"
+  ],
+  "sha256": "1ae88858c4faed870253bc2bc86a26505b475c69dbcf5fbf2562f9ac43ec3941",
+  "bytes": 21631,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_checkmode.html": {
+  "path": "web/docs.ansible.com/projects-ansible-latest-playbook_guide-playbooks_checkmode.html-577f2439.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/automation-and-safety.md",
+   "skill-network-architect/references/migration-and-operations.md",
+   "skill-systems-architect/references/automation-and-safety.md"
+  ],
+  "sha256": "ecbc20a8876cc473a0f45bc0a19a69ae96afea66cfd0f5bc5944d1f96f1b2f7d",
+  "bytes": 5242,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://docs.arc42.org/home/": {
+  "path": "web/docs.arc42.org/home-57e7a374.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md"
+  ],
+  "sha256": "33817d577b4b72f57053db193a967621321b3f94daea4bd26befa0f0a634947d",
+  "bytes": 3282,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.arc42.org/section-11/": {
+  "path": "web/docs.arc42.org/section-11-c161c536.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/templates/risk-register.md",
+   "skill-systems-architect/templates/risk-register.md"
+  ],
+  "sha256": "8c24a6c67e735618fa3ed600807da6fc5e68c474c83b993348072db235164b78",
+  "bytes": 874,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://docs.arc42.org/section-3/": {
+  "path": "web/docs.arc42.org/section-3-b05832dc.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/collaboration-protocol.md",
+   "skill-systems-architect/references/collaboration-protocol.md"
+  ],
+  "sha256": "1a6cb8b835a2abd26d996b35465aa22f513fe6f9fc09de78b1f9005b9f233eeb",
+  "bytes": 7120,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/network_mtu.html": {
+  "path": "web/docs.aws.amazon.com/AWSEC2-latest-UserGuide-network_mtu.html-b7483d99.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "cc9cc0cc9b379cc95eafc483a7925c043754636633362533705e6a4a790ba397",
+  "bytes": 7336,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html": {
+  "path": "web/docs.aws.amazon.com/prescriptive-guidance-latest-large-migration-guide-migration-strategies.html-dc3d075f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/migration-and-hybrid.md"
+  ],
+  "sha256": "74130c6e44e1a89c0d7f5e2dc94435d79bdc9cea222d8da1f7b5d0f9979e02a2",
+  "bytes": 13224,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html": {
+  "path": "web/docs.aws.amazon.com/vpc-latest-userguide-subnet-sizing.html-b99b6e3d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "7442fffd8496a272f0a5e6cb71a57870c88cac7562c40773906e279489428c3d",
+  "bytes": 4448,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/design-principles.html": {
+  "path": "web/docs.aws.amazon.com/wellarchitected-latest-reliability-pillar-design-principles.html-5ecd677b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md"
+  ],
+  "sha256": "773cf1bbe4120b382d26af7c8abb0d878445a32550238ded285775d0af1ab97c",
+  "bytes": 2654,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html": {
+  "path": "web/docs.aws.amazon.com/wellarchitected-latest-reliability-pillar-welcome.html-30e64391.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-systems-architect/references/architecture-method.md"
+  ],
+  "sha256": "41012131ea9751558132dc11893023c0a21cce67f8dc62fe12dbc1ae87067b55",
+  "bytes": 2109,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html": {
+  "path": "web/docs.aws.amazon.com/whitepapers-latest-disaster-recovery-workloads-on-aws-disaster-recovery-options--de61aa85.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "d0a5018d6de68ccac3f83019a7c9aee33e7ce4c706708801276c91383c992ea3",
+  "bytes": 33856,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.ceph.com/en/latest/architecture/": {
+  "path": "web/docs.ceph.com/en-latest-architecture-9232f7af.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "e63c5879d6516c5db2da58036156c65b480334e9766524c5240b494dc73da16d",
+  "bytes": 2226,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ceph.com/en/latest/rados/configuration/mon-config-ref/": {
+  "path": "web/docs.ceph.com/en-latest-rados-configuration-mon-config-ref-24fdf778.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "c9a7ace96167f19075116312aee6b427e786759f7214d61a45437484cac032ad",
+  "bytes": 64702,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ceph.com/en/latest/rados/operations/crush-map/": {
+  "path": "web/docs.ceph.com/en-latest-rados-operations-crush-map-3483988f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "53cd257a9d9145fb48705b9626d0e8dbeb95a8171a83f4e64ca3d69a13520a38",
+  "bytes": 46350,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ceph.com/en/latest/rados/operations/erasure-code/": {
+  "path": "web/docs.ceph.com/en-latest-rados-operations-erasure-code-e2217246.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "83211ef39b96b700bc60f7c9fd179f1270d723f5931dff093f67715aedf3a84c",
+  "bytes": 17334,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ceph.com/en/latest/rados/operations/placement-groups/": {
+  "path": "web/docs.ceph.com/en-latest-rados-operations-placement-groups-3f1aed58.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "e6927be5e7a521e4b7bda3088f071755116dd9d47bd4d7fc0ecc5a2f0c293253",
+  "bytes": 42461,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ceph.com/en/latest/rados/operations/pools/": {
+  "path": "web/docs.ceph.com/en-latest-rados-operations-pools-a5b48ac0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "0fbd53189969f9f463ffd82ac0dc4d11dbf10b1ce88b813e56ca3970f2a5d893",
+  "bytes": 30987,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.ceph.com/en/latest/start/hardware-recommendations/": {
+  "path": "web/docs.ceph.com/en-latest-start-hardware-recommendations-da9ba416.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md",
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "d73ced6150b6389f40b11a4dd0ecfa5b2314781697dfd776847aeb034f872bbd",
+  "bytes": 4770,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.cilium.io/en/stable/network/concepts/routing/": {
+  "path": "web/docs.cilium.io/en-stable-network-concepts-routing-6f9b08cf.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "5737f0294a3bd6a24139cb72671e87a3896464fff5067bf8d2202b94f738356c",
+  "bytes": 12629,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.cloud-init.io/en/latest/": {
+  "path": "web/docs.cloud-init.io/en-latest-74f07a90.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "f55b3d2d095b3c3a34ff1fe8eea0ec4e161159d7be2683adbfacebccd07919a9",
+  "bytes": 2773,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://docs.docker.com/compose/how-tos/startup-order/": {
+  "path": "web/docs.docker.com/compose-how-tos-startup-order-6f5d2814.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "2a52db6b411889ca32fc2b329440c266250dd9ddc135ae31c89afea85b9e0f79",
+  "bytes": 2397,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.docker.com/engine/containers/start-containers-automatically/": {
+  "path": "web/docs.docker.com/engine-containers-start-containers-automatically-31cd7f66.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "8ee806c2b147d5932da81bfbcd740d4a3d133688d083523e8dd614908d92aef6",
+  "bytes": 4876,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.docker.com/engine/logging/configure/": {
+  "path": "web/docs.docker.com/engine-logging-configure-4d2f0f38.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "86fef750e73922256c8191681f5db1626a6d3cf333f41242547c127c9647b75e",
+  "bytes": 8653,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.docker.com/engine/security/rootless/": {
+  "path": "web/docs.docker.com/engine-security-rootless-7e61efb4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "d05a703dec1df56293c535833fe33958163ad28429d820c4165dc14fd490e177",
+  "bytes": 2321,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.docker.com/engine/storage/volumes/": {
+  "path": "web/docs.docker.com/engine-storage-volumes-ea5bbea4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "3990fd1c845f35b1284179d50a9985f9eb0416cbd55e9d92a337d72936772cf3",
+  "bytes": 20605,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.frrouting.org/en/latest/bgp.html": {
+  "path": "web/docs.frrouting.org/en-latest-bgp.html-67b25ff8.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "43c76609871e1f093629b439de7ee949ee0daaac7bd69bd3ee13167d4e8e28a7",
+  "bytes": 100674,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://docs.frrouting.org/en/latest/evpn.html": {
+  "path": "web/docs.frrouting.org/en-latest-evpn.html-16237d6e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md",
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "5f0bb3b82fc502612ebcacd6f3e98afeb4bb720254e5f8ad3fc0d7a3aa90f921",
+  "bytes": 43845,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.kernel.org/accounting/psi.html": {
+  "path": "web/docs.kernel.org/accounting-psi.html-0da7ccb0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md",
+   "skill-systems-architect/references/compute-and-facilities.md",
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "9563b6ec0c6f247d8c208fbbbed892a7b285427d3cc7178cf20f223341bfc648",
+  "bytes": 7321,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.kernel.org/admin-guide/index.html": {
+  "path": "web/docs.kernel.org/admin-guide-index.html-bdbdff36.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "372a7307c1a814af89a159bd2ed37469a9fb7df716b5958b0c1aaeb06243d568",
+  "bytes": 6599,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.kernel.org/admin-guide/mm/ksm.html": {
+  "path": "web/docs.kernel.org/admin-guide-mm-ksm.html-e9e939b8.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/compute-and-facilities.md"
+  ],
+  "sha256": "c6b32cc2df20f5835626f37d81cee0592e621380c66a6de8cb59abb4bd4cd56d",
+  "bytes": 14739,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.kernel.org/admin-guide/mm/numa_memory_policy.html": {
+  "path": "web/docs.kernel.org/admin-guide-mm-numa_memory_policy.html-d2695308.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/compute-and-facilities.md"
+  ],
+  "sha256": "055e3cf9d298dd63a8a6efdb3301d4a0a53fb41a770d99a6251bdb00d98b2f2c",
+  "bytes": 25797,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.kernel.org/networking/bonding.html": {
+  "path": "web/docs.kernel.org/networking-bonding.html-09b7a0c5.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "45d931928e9b99d0ea8007515eb23bf7fac5a5187f1da3f9bcacd7a89ed5414d",
+  "bytes": 100620,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://docs.kernel.org/networking/ip-sysctl.html": {
+  "path": "web/docs.kernel.org/networking-ip-sysctl.html-0fd8d8f3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "34f8633d119195d6dbc6579b40b6a43b714cebaf28a208b0f5d42bfd536e5ff0",
+  "bytes": 100378,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.kernel.org/networking/vrf.html": {
+  "path": "web/docs.kernel.org/networking-vrf.html-d19672ea.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "446a88aa915d36bc7ebe0fa2230f3adf50d12bda20194b5c46182d46fd66c5eb",
+  "bytes": 16578,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://docs.kernel.org/networking/vxlan.html": {
+  "path": "web/docs.kernel.org/networking-vxlan.html-1f2e71e7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md",
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "8b52f3c9f516d52c12d89b5a1ee4f8d6e1437a55a9467dcffd00afc696843154",
+  "bytes": 3013,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html": {
+  "path": "web/docs.podman.io/en-latest-markdown-podman-systemd.unit.5.html-79c0f84c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "08a8a61558157b53c4d2de72a9a1d4c0db5c432d1cf2aa1009868eea0095e355",
+  "bytes": 100597,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://docs.structurizr.com/": {
+  "path": "web/docs.structurizr.com/index-eae2f4d3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md"
+  ],
+  "sha256": "8f7310b90bd6d45def2f45a23707774746131116cff1d8d88d403889ff8354d5",
+  "bytes": 1589,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://documentation.meraki.com/MR/Encryption_and_Authentication/WPA3_Encryption_and_Configuration_Guide": {
+  "path": "web/documentation.meraki.com/MR-Encryption_and_Authentication-WPA3_Encryption_and_Configuration_Guide-e11b1efa.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "99cc5bc38d328a73054776223195b4a8c43c2999c38cd2dc8f0e566e8adf276f",
+  "bytes": 22674,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://en.wikipedia.org/wiki/Erlang_(unit)": {
+  "path": "web/en.wikipedia.org/wiki-Erlang_-unit-ac429a62.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/capacity-and-resilience.md"
+  ],
+  "sha256": "93d1c26bdf987033dfd4cf3064ee3f88fb540e0ab02783582a9f08aad4a3e459",
+  "bytes": 29706,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://en.wikipedia.org/wiki/M/M/1_queue": {
+  "path": "web/en.wikipedia.org/wiki-M-M-1_queue-f8b94801.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-systems-architect/references/architecture-method.md"
+  ],
+  "sha256": "75162eee685b86bfe3a9b32c2992117d39bfaaa88656f834f5344131c30f9ce4",
+  "bytes": 21854,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://etcd.io/docs/v3.5/faq/": {
+  "path": "web/etcd.io/docs-v3.5-faq-ead1d3bd.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md",
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "59123bc6a8769eeeda8b0ac64b7bbb2727e4671466d519be75b99c5d99c33aa3",
+  "bytes": 17811,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://ethernetalliance.org/wp-content/uploads/2019/12/WP_EA_Overview8023bt_V2p1_FINAL.pdf": {
+  "path": "pdf/ethernetalliance.org/wp-content-uploads-2019-12-WP_EA_Overview8023bt_V2p1_FINAL.pdf-5ee3188f.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "1d4539655329e8f99d47412f910efcec9c19e74ca3e4ab0a6cb77ec3df90a453",
+  "bytes": 805979,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://fio.readthedocs.io/en/latest/fio_doc.html": {
+  "path": "web/fio.readthedocs.io/en-latest-fio_doc.html-9e0e2e59.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md",
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "ca35f8ce6674ae4e726182040ad5a88b220656fc92463541c0454d919354c928",
+  "bytes": 100677,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://gateway-api.sigs.k8s.io/": {
+  "path": "web/gateway-api.sigs.k8s.io/index-e286fe16.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "aa6fee407a8a122bc27334d81e4c6a3f82410b9298f85568157f0393fe705826",
+  "bytes": 17931,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://git.proxmox.com/?p=pve-manager.git;a=blob_plain;f=debian/copyright;hb=HEAD": {
+  "path": "web/git.proxmox.com/p-pve-manager.git-a-blob_plain-f-debian-copyright-hb-HEAD-9bbaa0ee.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "2e990c029b55113e77840f161487cebc470e92fbdb9c60916d22b850fa49a368",
+  "bytes": 1043,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://goteleport.com/docs/reference/architecture/authentication/": {
+  "path": "web/goteleport.com/docs-reference-architecture-authentication-57a5d87d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/security-and-service-identity.md"
+  ],
+  "sha256": "7ee31fd3c90528c97048082cfb85ad169c96a547c81298444e10868658a2bd93",
+  "bytes": 7629,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://grafana.com/blog/2018/08/02/the-red-method-how-to-instrument-your-services/": {
+  "path": "web/grafana.com/blog-2018-08-02-the-red-method-how-to-instrument-your-services-414d087f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "192ade42daf33cae93934aae8b346182535cff7cf92c48099e3b08ab99e5c97d",
+  "bytes": 4742,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://graylog.org/post/graylog-v4-0-licensing-sspl/": {
+  "path": "web/graylog.org/post-graylog-v4-0-licensing-sspl-729d1278.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "d7c3df339592d9d4dfe9507460519fb4fa3b00cc84b5a7be226d92a41443eed9",
+  "bytes": 9662,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://kubernetes.io/docs/concepts/architecture/": {
+  "path": "web/kubernetes.io/docs-concepts-architecture-10267ad8.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md",
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "886cd145980a56c2b35d76f7e4e7d10e06402b5e4b0a0f0aa5c92d404fa37b3e",
+  "bytes": 14596,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/": {
+  "path": "web/kubernetes.io/docs-concepts-configuration-manage-resources-containers-d3611dbe.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md"
+  ],
+  "sha256": "6610e60339edaf448d42825fcd9442e0c22342f09717c7d05f90030afc8911d7",
+  "bytes": 35053,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/": {
+  "path": "web/kubernetes.io/docs-concepts-scheduling-eviction-topology-spread-constraints-4f7e995f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "4863bc859259448caf1286e4b6f7c9add9cac83b0ebe840ab5a3e65139844906",
+  "bytes": 29441,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://kubernetes.io/docs/concepts/services-networking/": {
+  "path": "web/kubernetes.io/docs-concepts-services-networking-412b025f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "55df824ab76b34f59aaf2f4b197c1691be1bd67d93082992fde948d516d249f4",
+  "bytes": 6063,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://kubernetes.io/docs/concepts/services-networking/network-policies/": {
+  "path": "web/kubernetes.io/docs-concepts-services-networking-network-policies-953450b4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "aeeb2ef174bc6fb1b5149ff6a4b0e7c9f8b49ed606b8633cdda72420ab02daa4",
+  "bytes": 24355,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://kubernetes.io/docs/concepts/workloads/pods/disruptions/": {
+  "path": "web/kubernetes.io/docs-concepts-workloads-pods-disruptions-b2cb58aa.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "8c81d5e2942214b25f607837efc88f945f999f9554a155fa6ec0a1c299e66731",
+  "bytes": 16484,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/": {
+  "path": "web/kubernetes.io/docs-tasks-administer-cluster-configure-upgrade-etcd-01f081fe.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "1c46986cdfe89077e83d0ca712316cf14a5392a507f5073c5013c4a55a8afed8",
+  "bytes": 20491,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/": {
+  "path": "web/kubernetes.io/docs-tasks-configure-pod-container-configure-liveness-readiness-startup-probes-e1c0be00.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "beec997f0c7839125e3c802700527824fdd58b52bf521bd782c6c480c6cccf94",
+  "bytes": 17690,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://learn.chatgpt.com/docs/build-skills": {
+  "path": "web/learn.chatgpt.com/docs-build-skills-a07c3ce0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/README.md",
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/README.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "0541c222f7e0d692e1a086181ad45784656c1c3c775a1fac73853a1629cd3df8",
+  "bytes": 8805,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/": {
+  "path": "web/learn.microsoft.com/en-us-azure-cloud-adoption-framework-migrate-1260f6c6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/migration-and-hybrid.md"
+  ],
+  "sha256": "32ef97ca1691915c0aa62d141a78e3b385b68a1c6ecfb3af18efc74d513771ca",
+  "bytes": 16719,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-tcpip-performance-tuning": {
+  "path": "web/learn.microsoft.com/en-us-azure-virtual-network-virtual-network-tcpip-performance-tuning-3fa34da1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "4f42438ae53e3bd83c8f082f666be14ab4c9848a59f1e8087ef7b3665aecd5a7",
+  "bytes": 28244,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq": {
+  "path": "web/learn.microsoft.com/en-us-azure-virtual-network-virtual-networks-faq-5922a709.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "b3f77a80d491ffe04689febd5eada3f56bd8cc2960b6e003c87be5a56a22ed92",
+  "bytes": 50294,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://learn.microsoft.com/en-us/azure/well-architected/reliability/checklist": {
+  "path": "web/learn.microsoft.com/en-us-azure-well-architected-reliability-checklist-7bd347a9.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-network-architect/references/architecture-method.md",
+   "skill-systems-architect/references/architecture-method.md"
+  ],
+  "sha256": "b6f5a1da6bfba4b5ef325db5619d66c02053c458288241217bcdf0039925f730",
+  "bytes": 3642,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://learn.microsoft.com/en-us/azure/well-architected/reliability/failure-mode-analysis": {
+  "path": "web/learn.microsoft.com/en-us-azure-well-architected-reliability-failure-mode-analysis-4b005f3c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md"
+  ],
+  "sha256": "ea97b1eacbd4771f2b92d78cba99373b17970b9745d20f28575cf0f12342d6fa",
+  "bytes": 15357,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://learn.microsoft.com/en-us/entra/identity/hybrid/": {
+  "path": "web/learn.microsoft.com/en-us-entra-identity-hybrid-cd04de29.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-systems-architect/references/migration-and-hybrid.md"
+  ],
+  "sha256": "72b295c47ac8e4bfcb620cb8265d0ca4ca73b1bbaf5ad8ef134df65b70ed7601",
+  "bytes": 14290,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/security-emergency-access": {
+  "path": "web/learn.microsoft.com/en-us-entra-identity-role-based-access-control-security-emergency-access-dd736221.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "f59119bef0a4c2ecfdeedca56b791ab93bd2bab279297c502661d83e84a474bd",
+  "bytes": 21476,
+  "retrieved": "2026-10-29T07:12Z"
+ },
+ "https://learn.microsoft.com/en-us/security/privileged-access-workstations/privileged-access-access-model": {
+  "path": "web/learn.microsoft.com/en-us-security-privileged-access-workstations-privileged-access-access-model-f22bc801.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "ab840dc0c490b4b115085e238d7fc8b7221629436c17438a37792f58940eb528",
+  "bytes": 5925,
+  "retrieved": "2026-10-29T07:12Z"
+ },
+ "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview": {
+  "path": "web/learn.microsoft.com/en-us-windows-server-identity-ad-ds-get-started-virtual-dc-active-directory-doma-7b49ab95.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "d57309536288c6ed5131db157eaa3cb4329229b55f086b3f9f2a038bafce4dce",
+  "bytes": 4464,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-guide": {
+  "path": "web/learn.microsoft.com/en-us-windows-server-identity-ad-ds-manage-forest-recovery-guide-ad-forest-recov-0ce925af.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "ff0a800fa63b4bbf5b94bb26cf6c03f67adcaebe2680506a0a2bf4c2e6ea4ee1",
+  "bytes": 1789,
+  "retrieved": "2026-10-29T07:12Z"
+ },
+ "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-the-krbtgt-password": {
+  "path": "web/learn.microsoft.com/en-us-windows-server-identity-ad-ds-manage-forest-recovery-guide-ad-forest-recov-25bdf635.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "fb5500569f620847e38857978d763318f63107d27fdc227f893ab5e1c0dc75f5",
+  "bytes": 3224,
+  "retrieved": "2026-10-29T07:12Z"
+ },
+ "https://learn.microsoft.com/en-us/windows-server/identity/laps/laps-overview": {
+  "path": "web/learn.microsoft.com/en-us-windows-server-identity-laps-laps-overview-f84a0960.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "168c7efef79cafd980d59a1ef6595ecf4aa2c743a03fea75af5769eb17c5e646",
+  "bytes": 14961,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://learn.microsoft.com/lifecycle/products/windows-server-2025": {
+  "path": "web/learn.microsoft.com/lifecycle-products-windows-server-2025-18aeca40.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "1bede81300daa66d2f4122f474532bb7f22b2f3ac3c03c7d9ce8a872ac88bf92",
+  "bytes": 8190,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://learn.microsoft.com/previous-versions/windows/it-pro/windows-10/security/threat-protection/security-policy-settings/maximum-tolerance-for-computer-clock-synchronization": {
+  "path": "web/learn.microsoft.com/previous-versions-windows-it-pro-windows-10-security-threat-protection-security--9320332d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "63780dd590e4911e8f0abbba2eea7d826fc172183a1b4e4f22e09486108583b3",
+  "bytes": 4572,
+  "retrieved": "2026-10-29T07:12Z"
+ },
+ "https://man.openbsd.org/ssh-keygen.1": {
+  "path": "web/man.openbsd.org/ssh-keygen.1-628431b6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/security-and-service-identity.md"
+  ],
+  "sha256": "34a126719a3dacb9f5eba835985db81bdf4dee6f38f6cad804aeaad88c15d842",
+  "bytes": 44148,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://man.openbsd.org/sshd_config.5": {
+  "path": "web/man.openbsd.org/sshd_config.5-b08c9299.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/security-and-service-identity.md"
+  ],
+  "sha256": "edb87dc69dffb119da24de321a8e37fe58cfb0a58b83012e4c07f8f3b347eb92",
+  "bytes": 72447,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://manrs.org/netops/": {
+  "path": "web/manrs.org/netops-6d3b956c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "212404999426c73fc5281ff3ad4fd9094669753568c33d23a8f532aedee3981c",
+  "bytes": 5489,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://martinfowler.com/bliki/ParallelChange.html": {
+  "path": "web/martinfowler.com/bliki-ParallelChange.html-eb2df880.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/migration-and-hybrid.md"
+  ],
+  "sha256": "560b010b1f6baef0fe383027113decf89b5db44096db0064a31ede8d34af4b5c",
+  "bytes": 8949,
+  "retrieved": "2026-10-29T08:14Z"
+ },
+ "https://mermaid.js.org/": {
+  "path": "web/mermaid.js.org/index-4628814d.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md"
+  ],
+  "sha256": "dcdcd9efda9c2be66d87398d273b780cd8f7aeea7b4b2c4a0e6da8b4406a5ae2",
+  "bytes": 46795,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://nvd.nist.gov/vuln/detail/CVE-2024-3596": {
+  "path": "web/nvd.nist.gov/vuln-detail-CVE-2024-3596-9ce9e3df.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "3459145e658fce0e787d987b3823471cd604e6823b79d799462140b0374fca24",
+  "bytes": 2386,
+  "retrieved": "2026-10-29T08:08Z"
+ },
+ "https://openchainproject.org/": {
+  "path": "web/openchainproject.org/index-05e4e1db.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "f0f068e63bf591318014967a91a938bee56b2b72f975c16d8b06eda0e317256f",
+  "bytes": 1256,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://opensource.org/licenses": {
+  "path": "web/opensource.org/licenses-2629574b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "ba9f5d5ad9d3f7d3a3e89f9f38fe0c27c2445c75e5d7e283a1e20e455157e66e",
+  "bytes": 22066,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://opensource.org/osd": {
+  "path": "web/opensource.org/osd-6c93c2c7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "ec6cc95b334f617d04c4679ceab8bec52657064ce0ff96880d48d96f9bedf21c",
+  "bytes": 3532,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://opentelemetry.io/docs/": {
+  "path": "web/opentelemetry.io/docs-8de8f872.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "9b67c6ea03e136cda15ab0fa2a4cf96c5a233acd901e2dc354f31a49310e2edb",
+  "bytes": 1008,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://opentelemetry.io/docs/concepts/signals/": {
+  "path": "web/opentelemetry.io/docs-concepts-signals-d2e6da6b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "3510da167b8b66fd64917bdf7c6dd5f19f190fda8a9c06c54c005c75dfb96f34",
+  "bytes": 1842,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://opentofu.org/docs/": {
+  "path": "web/opentofu.org/docs-9c581670.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/automation-and-safety.md",
+   "skill-systems-architect/references/automation-and-safety.md"
+  ],
+  "sha256": "58acb2bf2d47b5785d9d291524c2876ca0d72ef87a0b24858690e10d1fe947fc",
+  "bytes": 982,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://opentofu.org/docs/intro/": {
+  "path": "web/opentofu.org/docs-intro-fa188619.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "a5cab648b4d21d507504d344b17a4efec4d99b0d711b912e8426cc69621cf478",
+  "bytes": 4714,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://opentofu.org/docs/language/state/": {
+  "path": "web/opentofu.org/docs-language-state-e5537d5b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "bfe9bc591f281a31b1c7344c31cc512913cd78dd250bbf6f9717250a188d6ccc",
+  "bytes": 3912,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html": {
+  "path": "web/openzfs.github.io/openzfs-docs-Basic-20Concepts-RAIDZ.html-0c73733b.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "e3d261773fe557cb8abaa31c046c4351ab659d41c1e5439329361eceedd199ee",
+  "bytes": 9624,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html": {
+  "path": "web/openzfs.github.io/openzfs-docs-Basic-20Concepts-dRAID-20Howto.html-2f4c6994.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "c91ae615911dd2f0c03d4d14d83d84b1897c052e055d9a1331cd166c122d4d55",
+  "bytes": 14909,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Module%20Parameters.html": {
+  "path": "web/openzfs.github.io/openzfs-docs-Performance-20and-20Tuning-Module-20Parameters.html-a63078e6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "147f6fd4671dad0ca021cdee8069df1aaee946960e60a68dd2387d602e18dccc",
+  "bytes": 100603,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Workload%20Tuning.html": {
+  "path": "web/openzfs.github.io/openzfs-docs-Performance-20and-20Tuning-Workload-20Tuning.html-774eb121.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "a0be811ffbd76a81ae6d7d5b25bbdc7e0b60596da8c87171f80f96d936f4af65",
+  "bytes": 36262,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://openzfs.github.io/openzfs-docs/man/master/7/zpoolconcepts.7.html": {
+  "path": "web/openzfs.github.io/openzfs-docs-man-master-7-zpoolconcepts.7.html-8e631246.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "93f85ba9a62b064ee55a40e23aab0a55b81a0ff2a226861a35ab76ac4e32929d",
+  "bytes": 22058,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pages.nist.gov/800-63-4/sp800-63b.html": {
+  "path": "web/pages.nist.gov/800-63-4-sp800-63b.html-ada92c9a.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/security-and-service-identity.md"
+  ],
+  "sha256": "b5f2042aa7f5872341667d94c6f954dbe96193fb3c4228dc304cfa622fc7fc0d",
+  "bytes": 100401,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pbs.proxmox.com/docs/maintenance.html": {
+  "path": "web/pbs.proxmox.com/docs-maintenance.html-b411e475.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "80df0400a23ba07694dbca144a75f34855b18702b4778b846212b38899f6d3f1",
+  "bytes": 15211,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://pbs.proxmox.com/docs/managing-remotes.html": {
+  "path": "web/pbs.proxmox.com/docs-managing-remotes.html-f0113272.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "c9275900c4953adfbfe1166f6354a7a90af405c6e6f4965094097f1ecb70bdf4",
+  "bytes": 17827,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://pbs.proxmox.com/docs/tape-backup.html": {
+  "path": "web/pbs.proxmox.com/docs-tape-backup.html-b43bc68c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "a35754e8653b5cb83616732440e6494645fda9aeae09c74415d703def5c4ecaa",
+  "bytes": 55495,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://pbs.proxmox.com/docs/technical-overview.html": {
+  "path": "web/pbs.proxmox.com/docs-technical-overview.html-6b474e77.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "e45d4e685fe68410b5ad75e63eb92f23df3d0c733d3a82c169a13b9c927e8610",
+  "bytes": 18979,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://plantuml.com/": {
+  "path": "web/plantuml.com/index-2a241888.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/diagrams-and-deliverables.md",
+   "skill-systems-architect/references/diagrams-and-deliverables.md"
+  ],
+  "sha256": "75b5ef6aa0f5efdec9e41fdf7a440d00d8c8ecffe295b59c8fe2fa10e441c2bb",
+  "bytes": 6197,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices": {
+  "path": "web/platform.claude.com/docs-en-agents-and-tools-agent-skills-best-practices-ee885bfc.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/architecture-method.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "501ffc1ecb8166041a0c7b3b1f9bc2c44d34628e6e60215b1fd4602af05f6747",
+  "bytes": 29818,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://prometheus.io/docs/practices/alerting/": {
+  "path": "web/prometheus.io/docs-practices-alerting-5cd1aaa1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "d473a9533b27db6b004b3fe2f6ba333fc1af7a893a9ea032ed88541ed3217a34",
+  "bytes": 3440,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://prometheus.io/docs/practices/histograms/": {
+  "path": "web/prometheus.io/docs-practices-histograms-a04effa4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "1251c371fca342b3068635a950af22668f4cf444376cd376b50ff9446124edd7",
+  "bytes": 32188,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://prometheus.io/docs/practices/instrumentation/": {
+  "path": "web/prometheus.io/docs-practices-instrumentation-a9c9428e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "87baf7dcf153c70f3ee0870ca8607412c0b06f3578b203cce0b20655ae04ed1f",
+  "bytes": 12049,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://prometheus.io/docs/prometheus/latest/storage/": {
+  "path": "web/prometheus.io/docs-prometheus-latest-storage-c60b69a3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "7b1ccc48b9bcec5d051db511e85344e7936d7390e9760db0366dcb3b08f68779",
+  "bytes": 15228,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-ha-manager.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-ha-manager.html-f2eed5e3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "f237c33b07a8737a5d3f3bbe5e149d6bf726c402885460862df7f9a31442d637",
+  "bytes": 65704,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-pct.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-pct.html-514a217f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "8da577f2728f5f181f8ea48fd8600247ff351ff61a0128085ef5d1048fa7433f",
+  "bytes": 57511,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-pveceph.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-pveceph.html-8ec673a4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/compute-and-facilities.md",
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "32714ba679e898bd4f62e88ee9fd63a839298265757eba7732e4a811800f97a6",
+  "bytes": 74020,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-pvecm.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-pvecm.html-29e19a0c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "5a651f71fb5ef348342310b4c3aa95e55642b884ffc95c0aa31ecbb46bdc1e04",
+  "bytes": 56301,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-pvesdn.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-pvesdn.html-2c21e9e5.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "9643cca6f30e5738e4cb864e0b0d5a3a4cbbd50ad7a3af31a6e8724496e242b8",
+  "bytes": 72864,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-pvesr.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-pvesr.html-a3341df1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "b06bc910efafebd6972266c8d1211554378ca92ad1da175ec65b404e49479d24",
+  "bytes": 6512,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-qm.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-qm.html-35ee7213.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "4d6f5d589268672517c3bad606b5240c3965b3b11e2f68eb00e7a21644031a1e",
+  "bytes": 100275,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-sysadmin.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-sysadmin.html-1d5e2973.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/compute-and-facilities.md",
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "e66ce863e0556c6e7e0b1f7beda89e075a2f6d655ead54627d7f6b768b287109",
+  "bytes": 100331,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://pve.proxmox.com/pve-docs/chapter-vzdump.html": {
+  "path": "web/pve.proxmox.com/pve-docs-chapter-vzdump.html-f0c38f50.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "20d0a7d87680070d0d5358a1393f1bed64c0c2d5951675f2f22f4f54803cfe8e",
+  "bytes": 32398,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://pve.proxmox.com/pve-docs/pve-admin-guide.html": {
+  "path": "web/pve.proxmox.com/pve-docs-pve-admin-guide.html-c06835ca.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "a913da0735784fdd453b0bb4d1068d1d048b03a7099ed12b72c401a2e7765e73",
+  "bytes": 100280,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://raw.githubusercontent.com/FRRouting/frr/master/COPYING": {
+  "path": "web/raw.githubusercontent.com/FRRouting-frr-master-COPYING-7058aba2.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "4a78b4fbd4d518f9c88d3bf146a87be461c45b4d215703d2b970d77a077cb5a9",
+  "bytes": 922,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/Graylog2/graylog2-server/master/LICENSE": {
+  "path": "web/raw.githubusercontent.com/Graylog2-graylog2-server-master-LICENSE-cb9388b3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "2dcf8b4ba028b974b85885e373c51d8d85140f9efcd00ac34783cc05185442c8",
+  "bytes": 30613,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/ansible/ansible/devel/COPYING": {
+  "path": "web/raw.githubusercontent.com/ansible-ansible-devel-COPYING-233cb05c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "657577a43eb770d62f998b41edfc3e5613412dcf2e978cc7a3da80a7742c53b3",
+  "bytes": 35224,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/grafana/grafana/main/LICENSE": {
+  "path": "web/raw.githubusercontent.com/grafana-grafana-main-LICENSE-4dd408f0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "6b17899cd228fcb28e09d1f7d0a0c4cb13ed7a189f16e830b8314f36f4ef7327",
+  "bytes": 34568,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/gravitational/teleport/master/build.assets/LICENSE-community": {
+  "path": "web/raw.githubusercontent.com/gravitational-teleport-master-build.assets-LICENSE-community-028a202a.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "f2b02f7e452c0d856fb01a1b8d58b00c7f0a7d7c0bfabf63efc94a9659cd3f03",
+  "bytes": 13142,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/hashicorp/terraform/main/LICENSE": {
+  "path": "web/raw.githubusercontent.com/hashicorp-terraform-main-LICENSE-d035bca1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "2af1be6caf72d402d86cf69f2c0426b301df1270293502ead4d724892bc0a8b4",
+  "bytes": 4976,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/isc-projects/kea/master/COPYING": {
+  "path": "web/raw.githubusercontent.com/isc-projects-kea-master-COPYING-f583435f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "e53974a2ece33248bbe11395f6e95261ed42a2177f3aa2b6d5e147d33130f21b",
+  "bytes": 17515,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/nautobot/nautobot/develop/LICENSE.txt": {
+  "path": "web/raw.githubusercontent.com/nautobot-nautobot-develop-LICENSE.txt-3d6c767e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "335bdccf6e4fb7257eab5eee44c25a46c9ac8d17f542d1addeb3f631f66c1991",
+  "bytes": 10166,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/netbox-community/netbox/main/LICENSE.txt": {
+  "path": "web/raw.githubusercontent.com/netbox-community-netbox-main-LICENSE.txt-b0f9d406.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "335bdccf6e4fb7257eab5eee44c25a46c9ac8d17f542d1addeb3f631f66c1991",
+  "bytes": 10166,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/opentofu/opentofu/main/LICENSE": {
+  "path": "web/raw.githubusercontent.com/opentofu-opentofu-main-LICENSE-4a6a5a63.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "6ffb3b83e550221d25734b2496c0d9d79eda70802545aa5b55f61650986549d5",
+  "bytes": 16074,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/openwisp/openwisp-controller/master/LICENSE": {
+  "path": "web/raw.githubusercontent.com/openwisp-openwisp-controller-master-LICENSE-97451ce4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "c8a4d34a8f1fb228f4bd728b8cf7405e166aba045bdab927c5e2d4bc9c952eeb",
+  "bytes": 34717,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/prometheus/prometheus/main/LICENSE": {
+  "path": "web/raw.githubusercontent.com/prometheus-prometheus-main-LICENSE-d9d36f6d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "c767718859e2a2ff7fac92a21bed97f4acfa359d235b40720ef82496a783cd3f",
+  "bytes": 11350,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/proxmox/pve-docs/master/ha-manager.adoc": {
+  "path": "web/raw.githubusercontent.com/proxmox-pve-docs-master-ha-manager.adoc-24dbc8d9.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md",
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "2f6f033944f1cc5a85b4c7b792f51f2435bcc0a0705a48e5b21dcf073d9b41ee",
+  "bytes": 55185,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://raw.githubusercontent.com/proxmox/pve-docs/master/local-zfs.adoc": {
+  "path": "web/raw.githubusercontent.com/proxmox-pve-docs-master-local-zfs.adoc-a9d56231.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/storage-and-data.md"
+  ],
+  "sha256": "11a144d64917ae872b228a94e4b0b1f1beb31e71fe0f131c1a45dcf4b65424d6",
+  "bytes": 30511,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://raw.githubusercontent.com/proxmox/pve-docs/master/pveceph.adoc": {
+  "path": "web/raw.githubusercontent.com/proxmox-pve-docs-master-pveceph.adoc-00e89313.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/compute-and-facilities.md",
+   "skill-systems-architect/references/storage-and-data.md",
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "0d3a712cf4ac4bf17321d8bf754009f03ab1ef95148965363be3f56b128f9ce6",
+  "bytes": 79492,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://raw.githubusercontent.com/proxmox/pve-docs/master/pvecm.adoc": {
+  "path": "web/raw.githubusercontent.com/proxmox-pve-docs-master-pvecm.adoc-f7baf3d0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "c96c32fe0bab97705c552a4e1683636c3252f566fdb489786ece29b2b91170d9",
+  "bytes": 58479,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://raw.githubusercontent.com/proxmox/pve-docs/master/pvesr.adoc": {
+  "path": "web/raw.githubusercontent.com/proxmox-pve-docs-master-pvesr.adoc-fb24176c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "7654c346d56b52a124cd286e61c1abbe9c1278b36d4b55e412c1cf9afae402e2",
+  "bytes": 6990,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://raw.githubusercontent.com/redis/redis/unstable/LICENSE.txt": {
+  "path": "web/raw.githubusercontent.com/redis-redis-unstable-LICENSE.txt-c0e4b3c6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "492b7741baca9afaf1908e17ec3e945c5bc04498cfcd4cdc248b2f0f82b729d8",
+  "bytes": 72331,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://raw.githubusercontent.com/srl-labs/containerlab/main/LICENSE": {
+  "path": "web/raw.githubusercontent.com/srl-labs-containerlab-main-LICENSE-2015904e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "4e4f86f7242fece7b0eb5135b719a1873a9e85c9f69f28944cff86646362aaa3",
+  "bytes": 1518,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://reuse.software/": {
+  "path": "web/reuse.software/index-80f768d9.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "a459ef0e753252aca80978f3024744e204929198e60113018f3005d90fc5ba7a",
+  "bytes": 2086,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://rpki.readthedocs.io/en/latest/": {
+  "path": "web/rpki.readthedocs.io/en-latest-ee0057b5.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "55494cb8fc1a3c5dd6b515149457351331c975623d6e93420e1268bae89d29d8",
+  "bytes": 4867,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://scorecard.dev/": {
+  "path": "web/scorecard.dev/index-253812f1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "767d4f7132e70150818e20acf63eb84f50cb8d54f1789d8b1cacd55da636be27",
+  "bytes": 13079,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://sflow.org/packetSamplingBasics/index.htm": {
+  "path": "web/sflow.org/packetSamplingBasics-index.htm-fa370dfc.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "3f8a3dcf07be6c7ceb1f7f6a854a6e21ea0d3f0dbd4ce1423fb702758ee9ab89",
+  "bytes": 8641,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://sflow.org/sflow_version_5.txt": {
+  "path": "web/sflow.org/sflow_version_5.txt-4933b186.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "a4f73a2e4685e55064298e08a4b97e5eee1f3c48b4b0f561d054eba41d06df90",
+  "bytes": 100243,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://slsa.dev/": {
+  "path": "web/slsa.dev/index-525c0973.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md"
+  ],
+  "sha256": "64344470b2c15f3475202ec96642512cc36ab4a897b7f94baf66270346f894f9",
+  "bytes": 4564,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://slsa.dev/spec/v1.0/": {
+  "path": "web/slsa.dev/spec-v1.0-71a8d760.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-systems-architect/references/containers-and-platforms.md"
+  ],
+  "sha256": "a716676b4196cf3073f110d2cf5771e40eef64460ea09740a544b1ab47476a8d",
+  "bytes": 3446,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://spdx.org/licenses/": {
+  "path": "web/spdx.org/licenses-db9f8d9b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/foss-and-tool-selection.md",
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/foss-and-tool-selection.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "2a7ccca30845cffa176d5e0d5c6d45e2b27b48dc8a53df7734edbae9aac47d2a",
+  "bytes": 65155,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://spiffe.io/docs/latest/spiffe-about/spiffe-concepts/": {
+  "path": "web/spiffe.io/docs-latest-spiffe-about-spiffe-concepts-67a100a8.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/security-and-service-identity.md"
+  ],
+  "sha256": "5ea14c27b2c659659b9224d8812b8f3888bc4b0e9d528d059d81d51f452d6c2c",
+  "bytes": 7484,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://sre.google/sre-book/addressing-cascading-failures/": {
+  "path": "web/sre.google/sre-book-addressing-cascading-failures-5d487fe4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/capacity-and-resilience.md"
+  ],
+  "sha256": "d56cf5ca2dc2f88497c831d82bfaaab5dadb7c251d2b4c6f2f5b25fd7235228a",
+  "bytes": 57999,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/sre-book/communication-and-collaboration/": {
+  "path": "web/sre.google/sre-book-communication-and-collaboration-79e57d8f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/collaboration-protocol.md",
+   "skill-systems-architect/references/collaboration-protocol.md"
+  ],
+  "sha256": "c253a9ec30113520ba50ee61be4e13b52beb26fe75443af818f7c31d0d5608ea",
+  "bytes": 40332,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/sre-book/eliminating-toil/": {
+  "path": "web/sre.google/sre-book-eliminating-toil-eb6fa891.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/automation-and-safety.md",
+   "skill-network-architect/references/migration-and-operations.md",
+   "skill-systems-architect/references/automation-and-safety.md"
+  ],
+  "sha256": "63a866f51cf5dd24e6ee7b0090d940cb979b104fa7312e2be5bd118de4c5e30e",
+  "bytes": 12140,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://sre.google/sre-book/embracing-risk/": {
+  "path": "web/sre.google/sre-book-embracing-risk-d8f5395a.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-systems-architect/references/architecture-method.md"
+  ],
+  "sha256": "ebae51c93e89e3e8dbf588bfb43abdeb86d7e4ba61e87df91f9a61b2202a2fe7",
+  "bytes": 27512,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/sre-book/evolving-sre-engagement-model/": {
+  "path": "web/sre.google/sre-book-evolving-sre-engagement-model-fc6c08f9.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md"
+  ],
+  "sha256": "91c5887917983056d19ab9d2165161a3fd69d52b2c5ebe0c779ceaeeb4dcb37e",
+  "bytes": 32962,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/sre-book/example-postmortem/": {
+  "path": "web/sre.google/sre-book-example-postmortem-2a765c98.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/templates/post-incident-review.md",
+   "skill-systems-architect/templates/post-incident-review.md"
+  ],
+  "sha256": "28233b5b06960ad0023a42b4e333ed43cc6154a534039dbd558e82802e88abaa",
+  "bytes": 7752,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://sre.google/sre-book/handling-overload/": {
+  "path": "web/sre.google/sre-book-handling-overload-237b1f08.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-systems-architect/references/capacity-and-performance.md"
+  ],
+  "sha256": "c9387d9fb53a27d62464b8659c2bc6311fa5d9324d2d1e8926b03300664456d7",
+  "bytes": 29747,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/sre-book/managing-incidents/": {
+  "path": "web/sre.google/sre-book-managing-incidents-7409e2ac.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/collaboration-protocol.md",
+   "skill-network-architect/references/migration-and-operations.md",
+   "skill-systems-architect/references/collaboration-protocol.md",
+   "skill-systems-architect/references/migration-and-hybrid.md",
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "5fdc2847303608b0881bbfcc2c014a45f58850f1cbd5a0fd71a5a2bd0710af63",
+  "bytes": 14068,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/sre-book/monitoring-distributed-systems/": {
+  "path": "web/sre.google/sre-book-monitoring-distributed-systems-71b82c30.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md",
+   "skill-systems-architect/references/red-flags.md"
+  ],
+  "sha256": "3a46e021bade4ea321dce334cda3a8b07873dba5aafa366cff4bdb97cbe02882",
+  "bytes": 29287,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://sre.google/sre-book/postmortem-culture/": {
+  "path": "web/sre.google/sre-book-postmortem-culture-571b75f6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/migration-and-operations.md",
+   "skill-network-architect/templates/post-incident-review.md",
+   "skill-systems-architect/references/observability-and-incident.md",
+   "skill-systems-architect/templates/post-incident-review.md"
+  ],
+  "sha256": "4d441927a49cf243f355428c829ed755080fee7268fcd2b068e676e07dad1500",
+  "bytes": 14508,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://sre.google/sre-book/release-engineering/": {
+  "path": "web/sre.google/sre-book-release-engineering-83c012da.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/migration-and-operations.md"
+  ],
+  "sha256": "912be35f4511a0d4665d48728b1b09bc56f3983e3985a3b4b9b840864792d75d",
+  "bytes": 20674,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://sre.google/sre-book/service-level-objectives/": {
+  "path": "web/sre.google/sre-book-service-level-objectives-7b9a3e66.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "b209fa99c804d4054f0c222d047fa0fb2bf3c42c05854e38d73d545777ba5699",
+  "bytes": 22129,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://sre.google/sre-book/table-of-contents/": {
+  "path": "web/sre.google/sre-book-table-of-contents-2c477f1b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md"
+  ],
+  "sha256": "693f2ff799105938070739f8d5d84a3842ef032fb652a80717fd733df08edf17",
+  "bytes": 3527,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://sre.google/sre-book/testing-reliability/": {
+  "path": "web/sre.google/sre-book-testing-reliability-4beceb7d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/templates/test-and-acceptance-plan.md",
+   "skill-systems-architect/templates/test-and-acceptance-plan.md"
+  ],
+  "sha256": "aa76b49ce5b6cd67d3debe4b07a1bda10a56bdb84a39d3d64c5d9afc72da03a9",
+  "bytes": 55470,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://sre.google/workbook/alerting-on-slos/": {
+  "path": "web/sre.google/workbook-alerting-on-slos-01fa5281.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/observability-troubleshooting.md",
+   "skill-systems-architect/references/architecture-method.md",
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "39d6ef4faec22427d7e27e4fb2c359f7c36c30a1d304736ab9f68803f86525f2",
+  "bytes": 30611,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/workbook/canarying-releases/": {
+  "path": "web/sre.google/workbook-canarying-releases-a29627dd.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/automation-and-safety.md",
+   "skill-network-architect/references/migration-and-operations.md",
+   "skill-network-architect/templates/change-and-validation.md",
+   "skill-systems-architect/references/automation-and-safety.md",
+   "skill-systems-architect/templates/change-and-validation.md"
+  ],
+  "sha256": "d9ffb33aa8c0cf89a12136f9b5ab1aac6537e231c6606d8ce0f9197f9677bd59",
+  "bytes": 38557,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://sre.google/workbook/error-budget-policy/": {
+  "path": "web/sre.google/workbook-error-budget-policy-0744228b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md"
+  ],
+  "sha256": "fb8811abd5e7ceb636a034215c059cf11b1af9b5eb31a7bb61f4e56880d08188",
+  "bytes": 3659,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/workbook/implementing-slos/": {
+  "path": "web/sre.google/workbook-implementing-slos-06c934af.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-network-architect/references/architecture-method.md",
+   "skill-systems-architect/references/architecture-method.md",
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "a6b8c9f24a22af63d8b9903c4a6612c9aaaa0293d76ff2f1b04ef6a6ab792b9c",
+  "bytes": 56284,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://sre.google/workbook/table-of-contents/": {
+  "path": "web/sre.google/workbook-table-of-contents-6c547d0b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md"
+  ],
+  "sha256": "ba7775d5e341462263ef5f42e848c8b180c4b3e0c03c4719b99039823c1c0683",
+  "bytes": 2140,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://standards.ieee.org/ieee/1588/6825/": {
+  "path": "web/standards.ieee.org/ieee-1588-6825-00951369.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "77eabff84511ba1563e9d427db7202c69aee16d9221774d7af7f0bb32e66665c",
+  "bytes": 13924,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://standards.ieee.org/ieee/802.11/10548/": {
+  "path": "web/standards.ieee.org/ieee-802.11-10548-fbcdb06e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "57a8261a758bcf6611cb338a2b1aa2fc9cafa79a35c09a8dd5f185b57066ee95",
+  "bytes": 50829,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://standards.ieee.org/ieee/802.11be/7516/": {
+  "path": "web/standards.ieee.org/ieee-802.11be-7516-e80ea5b6.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "f775ed58247a3e903a36dc9b0afb4ccce19bd9eac18554e5713c7366ee526db3",
+  "bytes": 50299,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://standards.ieee.org/ieee/802.1X/7345/": {
+  "path": "web/standards.ieee.org/ieee-802.1X-7345-298eab51.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "59e164edda7118ecc7f1990f51b5797890c994f2d8ba41e5791333d9b2269ffe",
+  "bytes": 100284,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://standards.ieee.org/ieee/802.3/10422/": {
+  "path": "web/standards.ieee.org/ieee-802.3-10422-cb3dadb3.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "4a8ea75f0a0cb56f76c182a2d4bbc79ef13f0af933a8317e53b62c67055f155b",
+  "bytes": 71898,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://support.apple.com/guide/deployment/activation-lock-on-mac-dep4e1ae6f2c/web": {
+  "path": "web/support.apple.com/guide-deployment-activation-lock-on-mac-dep4e1ae6f2c-web-ffa576aa.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "0e9cc4f92670263aa541e0254f39fec34b09a78e01eb0f5b4b45d27d3b13bf9e",
+  "bytes": 973,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://support.apple.com/guide/deployment/install-and-enforce-software-updates-depd30715cbb/web": {
+  "path": "web/support.apple.com/guide-deployment-install-and-enforce-software-updates-depd30715cbb-web-d57f0f9d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "bde00428417ca72cd6a07e19d55bafb9dde3ec50af29ced7f278e5cc75e465c6",
+  "bytes": 12131,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://support.apple.com/guide/deployment/intro-to-declarative-device-management-depb1bab77f8/web": {
+  "path": "web/support.apple.com/guide-deployment-intro-to-declarative-device-management-depb1bab77f8-web-aa93fcde.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "c9395096963691ed59aaae7d5dc58cf708a33afff9f44b4cff19cb361a5ded57",
+  "bytes": 4272,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://support.apple.com/guide/deployment/manage-filevault-with-device-management-dep0a2cb7686/web": {
+  "path": "web/support.apple.com/guide-deployment-manage-filevault-with-device-management-dep0a2cb7686-web-b51d24d2.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "b3799e6801f4214e6687d8a94616f15bc4265edb28c67029ab1449a3fe1416fb",
+  "bytes": 4807,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://support.apple.com/guide/deployment/platform-sso-for-macos-dep7bbb05313/web": {
+  "path": "web/support.apple.com/guide-deployment-platform-sso-for-macos-dep7bbb05313-web-e35de308.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "42e82c5fd5936702c1ff17615f7a242978e5cecb7848359a80607eb7f60ef53b",
+  "bytes": 26871,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://support.apple.com/guide/deployment/use-secure-and-bootstrap-tokens-dep24dbdcf9e/web": {
+  "path": "web/support.apple.com/guide-deployment-use-secure-and-bootstrap-tokens-dep24dbdcf9e-web-ebb5201d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "a955eef893995c31943f00cf19e1725c7eeb56b022a1e75dcbe6ca0099de9eb6",
+  "bytes": 6909,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://support.apple.com/guide/deployment/welcome/web": {
+  "path": "web/support.apple.com/guide-deployment-welcome-web-15d1345f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "b0e6174708ad4d4d91552dedd6e27d47d4c7dc8226d06e8348bdccb885d60dc4",
+  "bytes": 945,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://support.apple.com/guide/security/welcome/web": {
+  "path": "web/support.apple.com/guide-security-welcome-web-3b783cb7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/macos-and-endpoints.md"
+  ],
+  "sha256": "079e7d2fcbf3e142aa1392676b4d6137e6988f19a76e1a2cbe1d86290ecbfe6b",
+  "bytes": 2611,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://suzieq.readthedocs.io/en/latest/": {
+  "path": "web/suzieq.readthedocs.io/en-latest-32b758ef.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/automation-and-safety.md",
+   "skill-systems-architect/references/automation-and-safety.md"
+  ],
+  "sha256": "c80abc91b150a8c040dc21a84c9ad6f0b1598009413f5a51126dacfd59624090",
+  "bytes": 2469,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://teamtopologies.com/key-concepts": {
+  "path": "web/teamtopologies.com/key-concepts-bbbfc6aa.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/collaboration-protocol.md",
+   "skill-systems-architect/references/collaboration-protocol.md"
+  ],
+  "sha256": "9c4c456aadcd78ea7a204eed698fb076c4df64e5b0f63b04bcd9bf41ccfe84a8",
+  "bytes": 12411,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://ubuntu.com/about/release-cycle": {
+  "path": "web/ubuntu.com/about-release-cycle-1a3dfb3a.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "b4a5a769e16ce98d5ee41c424fc05e049548bdd623610ba7e8373636a2abde87",
+  "bytes": 13075,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://uptimeinstitute.com/tiers": {
+  "path": "web/uptimeinstitute.com/tiers-51279487.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-systems-architect/references/compute-and-facilities.md"
+  ],
+  "sha256": "c1b28f5700575f492dfa7c74cc8178281a3935bbbe684123f79bf0b6afd18f79",
+  "bytes": 116407,
+  "retrieved": "2026-10-29T08:08Z"
+ },
+ "https://web.archive.org/": {
+  "path": "web/web.archive.org/index-bf133dc9.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "47a303a1ca68f8957f22d1bd70837e1f75e798f5eab6a304ae763f5fdc63532d",
+  "bytes": 13073,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://wiki.debian.org/LTS": {
+  "path": "web/wiki.debian.org/LTS-c45fc072.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "ffaae5717cc7f077a7217c95f2ec4c9d95362467572c27e4987e3ca336aec41f",
+  "bytes": 3993,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://wiki.debian.org/PeriodicUpdates": {
+  "path": "web/wiki.debian.org/PeriodicUpdates-a9883692.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "93dfb88f49e63abe9069913eff158e735ed429ff4662544d57a8ae76f9c9d19f",
+  "bytes": 7249,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.acma.gov.au/cabling-provider-rules": {
+  "path": "web/acma.gov.au/cabling-provider-rules-fd1b629f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "bec42802921f3c94819a3dfc3c10edeecee28a7217ec494240af2aa4cca62df9",
+  "bytes": 50994,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.acma.gov.au/licences/low-interference-potential-devices-lipd-class-licence": {
+  "path": "web/acma.gov.au/licences-low-interference-potential-devices-lipd-class-licence-f7cba93e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "4ee00d07966ecd27c5d4be3a848991cce23388e0a67570371c06137f0faba80d",
+  "bytes": 52038,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.acma.gov.au/register-radiocommunications-licences": {
+  "path": "web/acma.gov.au/register-radiocommunications-licences-8cd36dd4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "6f0c85bc49547481cf30d12de55c52d98b75cef0751b83ff644cd923455a618d",
+  "bytes": 53121,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.ashrae.org/technical-resources/bookstore/datacom-series": {
+  "path": "web/ashrae.org/technical-resources-bookstore-datacom-series-144f3262.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/compute-and-facilities.md"
+  ],
+  "sha256": "0fa57f03584d135c307f43290fa045490d0d0868bdc021b62f938a097f51037b",
+  "bytes": 3669,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.brendangregg.com/linuxperf.html": {
+  "path": "web/brendangregg.com/linuxperf.html-7c7516a2.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md"
+  ],
+  "sha256": "9e7e5910210eca1574aaaf15155c948cd6b19e5527bffd6de21abcdf4c5933cb",
+  "bytes": 18658,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.brendangregg.com/systems-performance-2nd-edition-book.html": {
+  "path": "web/brendangregg.com/systems-performance-2nd-edition-book.html-03804b34.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/capacity-and-performance.md",
+   "skill-systems-architect/references/compute-and-facilities.md"
+  ],
+  "sha256": "e4052bbe164ca008ccb832e4200cde5ef36de7e327f944bd28725b65eb3fc1a6",
+  "bytes": 5848,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.brendangregg.com/usemethod.html": {
+  "path": "web/brendangregg.com/usemethod.html-2fc0708e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md",
+   "skill-systems-architect/references/capacity-and-performance.md",
+   "skill-systems-architect/references/compute-and-facilities.md",
+   "skill-systems-architect/references/red-flags.md"
+  ],
+  "sha256": "1f9ec902032c7e32359e637ea73fde4f7dfd880fe2fd0fabf10653ee87b0453c",
+  "bytes": 24864,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.cisa.gov/stopransomware/ransomware-guide": {
+  "path": "web/cisa.gov/stopransomware-ransomware-guide-90186679.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "26257e2132e784175bfc1fd4e4b4f86d6502ecd96668de4de372ddf3d25a8ee2",
+  "bytes": 71166,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.cisa.gov/zero-trust-maturity-model": {
+  "path": "web/cisa.gov/zero-trust-maturity-model-37a9ed0c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "69169ef8ff22e0c9849e6356610a3ea9bd450d543c14d12ebc199454bd57fbb9",
+  "bytes": 2556,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/data_sheet_c78-455693.html": {
+  "path": "web/cisco.com/c-en-us-products-collateral-interfaces-modules-transceiver-modules-data_sheet_c7-bc2c925d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "ee99d907c00862de5e58afba04cd18bf70902f1877d04ef5653d8b2e6d99631c",
+  "bytes": 33558,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.cisecurity.org/cis-benchmarks": {
+  "path": "web/cisecurity.org/cis-benchmarks-18b22985.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md",
+   "skill-systems-architect/references/security-and-service-identity.md",
+   "skill-systems-architect/references/windows-and-identity.md"
+  ],
+  "sha256": "b4e7de8f2081f3a363ceb289c2aeac79b321fe47d6f7951ef774919a3926fe28",
+  "bytes": 32840,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.cisecurity.org/controls/v8-1": {
+  "path": "web/cisecurity.org/controls-v8-1-52963ab5.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "ad709c01492773428992b50d85012da6792e637f5e26af45313fdd6e9a3c0e08",
+  "bytes": 2296,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.cni.dev/docs/spec/": {
+  "path": "web/cni.dev/docs-spec-9e1d4e72.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "321f46297c75330df64b188c4c6b83f3d0bee86df30f0c031b41fee95c5ddc12",
+  "bytes": 54813,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions": {
+  "path": "web/cognitect.com/blog-2011-11-15-documenting-architecture-decisions-690df840.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/templates/decision-record.md",
+   "skill-systems-architect/templates/decision-record.md"
+  ],
+  "sha256": "b44ec078e521ee90432ebb805c902f363acdf77d42dd3f8ac15330d0fe076156",
+  "bytes": 7444,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.debian.org/releases/": {
+  "path": "web/debian.org/releases-21c2f6a9.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "677b68c472da48580d0e34336c16c3d279cf800c4b0d8b06b4f777945aa7f763",
+  "bytes": 5106,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.debian.org/releases/stable/amd64/apb.en.html": {
+  "path": "web/debian.org/releases-stable-amd64-apb.en.html-54bc4149.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "bfd57c79823895f721f550114622741105f0344b2b821762b139f1d635f4e889",
+  "bytes": 2428,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://www.debian.org/releases/trixie/releasenotes": {
+  "path": "web/debian.org/releases-trixie-releasenotes-6cc0e1f2.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "b6c1e764faee38a9fb4fb99b4a34e7c06b61835d2f926b6c468ee6ac338a0876",
+  "bytes": 7359,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://www.freedesktop.org/software/systemd/man/latest/journald.conf.html": {
+  "path": "web/freedesktop.org/software-systemd-man-latest-journald.conf.html-3447a783.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md",
+   "skill-systems-architect/references/observability-and-incident.md"
+  ],
+  "sha256": "da430b02dc65db703ed671f9f9ad8d5df62efaa61805cb4231208ab1a35dc613",
+  "bytes": 19351,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.freedesktop.org/software/systemd/man/latest/machine-id.html": {
+  "path": "web/freedesktop.org/software-systemd-man-latest-machine-id.html-88e580bf.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/provisioning-and-lifecycle.md"
+  ],
+  "sha256": "9e0c974c44a7f7f8a453d2b6ee20ee9aedf7777edfb48e2aea09d0e1594d7b03",
+  "bytes": 7413,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://www.freedesktop.org/software/systemd/man/latest/systemd-timesyncd.service.html": {
+  "path": "web/freedesktop.org/software-systemd-man-latest-systemd-timesyncd.service.html-94553e99.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "d2b75808a33d0a08bf172182c517aef2f8b4ffd0cc3ba69a2466591d5b5e4e30",
+  "bytes": 3705,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html": {
+  "path": "web/freedesktop.org/software-systemd-man-latest-systemd.exec.html-e8427e30.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/linux-unix.md"
+  ],
+  "sha256": "40392b30694010879e4b1b342a9d41437173a2647f9fb06be6c08dba5409dc70",
+  "bytes": 81148,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.iana.org/assignments/iana-ipv4-special-registry/": {
+  "path": "web/iana.org/assignments-iana-ipv4-special-registry-2e89955d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "8e46b0cb32d696a1b30406fa7ac726cc87efc8262790df2d240c6fab2956ad8e",
+  "bytes": 7699,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.iana.org/assignments/iana-ipv6-special-registry/": {
+  "path": "web/iana.org/assignments-iana-ipv6-special-registry-fc48cc5e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "cb563e368e5ed814e19baaead996d8eb5ac36ac801c218e9da597ec6e9bce98c",
+  "bytes": 7519,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.ieee802.org/11/Reports/802.11_Timelines.htm": {
+  "path": "web/ieee802.org/11-Reports-802.11_Timelines.htm-b48d6041.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "f6face5206555bdd2f4eed5782a67186939abbf11c7ffdbb40d9d6e45404f17d",
+  "bytes": 79949,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.itl.nist.gov/div898/handbook/apr/section1/apr181.htm": {
+  "path": "web/itl.nist.gov/div898-handbook-apr-section1-apr181.htm-d59b1270.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-systems-architect/references/architecture-method.md"
+  ],
+  "sha256": "e41006a5c481549d4ed9022b7025d681c334f421ff1feca3fbdf7c18bb7429fd",
+  "bytes": 2586,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.itl.nist.gov/div898/handbook/apr/section1/apr182.htm": {
+  "path": "web/itl.nist.gov/div898-handbook-apr-section1-apr182.htm-fff95ee1.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-systems-architect/references/architecture-method.md"
+  ],
+  "sha256": "37daeadb478e75288988987ad7f11f9ee45ea69f86b53f662f50444030caacd7",
+  "bytes": 2363,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.itu.int/rec/R-REC-P.525/en": {
+  "path": "web/itu.int/rec-R-REC-P.525-en-bddfb1f7.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "47807e6ca904ec3577b1272ac98a310cd137bb35e462f7b8770e6cea78527d8e",
+  "bytes": 1178,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.itu.int/rec/R-REC-P.526/en": {
+  "path": "web/itu.int/rec-R-REC-P.526-en-b8d3af9d.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "c70f0dbe2e2e7ab50fd76522f45aa7d11b766b096380b9b5f4fcefb0ebbe3f30",
+  "bytes": 2300,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.itu.int/rec/R-REC-P.530/en": {
+  "path": "web/itu.int/rec-R-REC-P.530-en-29a51b91.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "603d454bcc2b746751a4fbdcd10a0f42769f0900e47cd96e0d8f76d0c31e3259",
+  "bytes": 3674,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.itu.int/rec/R-REC-P.837/en": {
+  "path": "web/itu.int/rec-R-REC-P.837-en-0931bf53.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "165c59aa446bb6a3bdfb58c8d1ff966f7acc456f350edd51ba16135584537a95",
+  "bytes": 1805,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.itu.int/rec/R-REC-P.838/en": {
+  "path": "web/itu.int/rec-R-REC-P.838-en-a54c89db.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "53e6926d872cbdba6401509eb5a22df540fe3350c8d06699f1d3ee2348da890c",
+  "bytes": 1290,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.itu.int/rec/T-REC-G.652/en": {
+  "path": "web/itu.int/rec-T-REC-G.652-en-ff8fb5c4.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "74c5576fcef09c365423e79cfc7acea5ef5289272e510aeb8bba1cc00c7756f6",
+  "bytes": 1791,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.itu.int/rec/T-REC-G.657/en": {
+  "path": "web/itu.int/rec-T-REC-G.657-en-c4b1089f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "db9f943eac6810bd6dcb7d6066dc9003b7524990438e90b6281927b7ad65d32e",
+  "bytes": 1747,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.itu.int/rec/T-REC-G.8275.1/en": {
+  "path": "web/itu.int/rec-T-REC-G.8275.1-en-1b9ead45.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "dfa7d4afd8422ec6a20c7305736204698d63e0f9400daa51245719f18ee66851",
+  "bytes": 2888,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.itu.int/rec/T-REC-Y.1564": {
+  "path": "web/itu.int/rec-T-REC-Y.1564-ec286494.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/capacity-and-resilience.md"
+  ],
+  "sha256": "8f970bd077aae36c0917cab575df0c2cfff7aca12807acc0e531f9b3ef7e8894",
+  "bytes": 12781,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://www.legislation.gov.au/F2025L01047/latest/text": {
+  "path": "web/legislation.gov.au/F2025L01047-latest-text-cfbb15ae.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "a7408f79b663cc906ed8f2208098f0e3bd80a6f519c7ed51b5df859537250646",
+  "bytes": 3379,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://www.openconfig.net/": {
+  "path": "web/openconfig.net/index-c375443c.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "1fdb9c6fc069ce53299188e474c33d64146a083fdee8d706874c6f6bd157bb48",
+  "bytes": 1417,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.postgresql.org/docs/current/app-pgbasebackup.html": {
+  "path": "web/postgresql.org/docs-current-app-pgbasebackup.html-f629e2d0.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "ddd5d2b24722bd9b2cb6f118289098f7cbbfd51062f5648f48330eaadb75865f",
+  "bytes": 28318,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.postgresql.org/docs/current/backup.html": {
+  "path": "web/postgresql.org/docs-current-backup.html-7b2a0e59.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "9f439a7f7a316a63ccf78c6ed0bd5f744235a65c1b2a8d1f10108c1afd28ec6e",
+  "bytes": 1187,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.postgresql.org/docs/current/continuous-archiving.html": {
+  "path": "web/postgresql.org/docs-current-continuous-archiving.html-76a6f21e.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "32c317e4507f507f66785b15b93ace3f215d8c736b7fbbb89f6ebda95f2ea0a7",
+  "bytes": 45632,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.postgresql.org/docs/current/high-availability.html": {
+  "path": "web/postgresql.org/docs-current-high-availability.html-9544a68f.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/backup-disaster-recovery.md"
+  ],
+  "sha256": "d6e29e991b80ef3866685f388c9a588dd377cce3112db49c9288d1d47d87ac8c",
+  "bytes": 2919,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.qemu.org/docs/master/system/qemu-cpu-models.html": {
+  "path": "web/qemu.org/docs-master-system-qemu-cpu-models.html-bb666cc8.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-systems-architect/references/compute-and-facilities.md",
+   "skill-systems-architect/references/virtualization-and-proxmox.md"
+  ],
+  "sha256": "12be502936f41ad69fe0c2a64fbc7c7d27297608f65fc8209f13b8e62bd6abb2",
+  "bytes": 23667,
+  "retrieved": "2026-10-29T07:10Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc1034.txt": {
+  "path": "rfc/rfc1034.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-systems-architect/references/migration-and-hybrid.md"
+  ],
+  "sha256": "d6b10a71441df879cc2817d23f2dad120c8a5f87e74eba1e4ed4b743a76a891a",
+  "bytes": 126103,
+  "retrieved": "2026-10-29T07:11Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc1191.txt": {
+  "path": "rfc/rfc1191.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "3de7c2cb99832c6d1929f9f918172865831848f77e8ab585488125581afa6b68",
+  "bytes": 46853,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc1918.txt": {
+  "path": "rfc/rfc1918.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/templates/ip-addressing-plan.md"
+  ],
+  "sha256": "56c43465298772bc4d899923f1785b7b7bf8dd2c9f2f9a53422800ddc5cf9337",
+  "bytes": 22271,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc1997.txt": {
+  "path": "rfc/rfc1997.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/templates/routing-policy.md"
+  ],
+  "sha256": "6ed254768c9b56317a148cad33a4056b56666857f905d58dd73b3688589b237f",
+  "bytes": 8275,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2516.txt": {
+  "path": "rfc/rfc2516.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "e20efb2fd445e50a076e3873daa7fb1b698bc1fc387902bd690c7a38afe77b95",
+  "bytes": 32537,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2544.txt": {
+  "path": "rfc/rfc2544.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/capacity-and-resilience.md"
+  ],
+  "sha256": "7627f4f29f6de93e2f9d7095e5c39105ac2910fcd9b528687cbd0060018bf9e0",
+  "bytes": 66688,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2784.txt": {
+  "path": "rfc/rfc2784.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "dad757f9b5eb51478e768295eb39df4b54c1f299eeb6e5c7bea080eb45556d58",
+  "bytes": 16627,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2863.txt": {
+  "path": "rfc/rfc2863.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "3611f3f0accb11f7aacadc37576cce280bfaf0f4d32df38d4efe86a63bac7d64",
+  "bytes": 155014,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2890.txt": {
+  "path": "rfc/rfc2890.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "96bdafc03219df215342d9b9d127ba87d7aaf2f2130797035ac3c17f07115455",
+  "bytes": 14503,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc2992.txt": {
+  "path": "rfc/rfc2992.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "f83257fe427dc29e498c5d1c03b285d757c2ce0750aaa5c62892b0babfa68010",
+  "bytes": 17524,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3021.txt": {
+  "path": "rfc/rfc3021.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/docs/research/similar-skills-survey-20261029_1758.md",
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "e19bf6ce80f4d5c9f82c2b7c08802bf8a1b8f8f00fea348dffac1142646861e7",
+  "bytes": 19771,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3046.txt": {
+  "path": "rfc/rfc3046.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "6b343c02d5c495cd1f780a43ab2c4e3b9bca968b82024b9d2fdb90d75b98a5cf",
+  "bytes": 30633,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3135.txt": {
+  "path": "rfc/rfc3135.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "ae404ea1b4183eb605674d2a47cb61fc9f719a919b9edb0c339737f82692be79",
+  "bytes": 114825,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3315.txt": {
+  "path": "rfc/rfc3315.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "380b2d6367df695afcf6aae0ab10d0947509047406da664fd9b95a3afac4fb92",
+  "bytes": 231402,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3580.txt": {
+  "path": "rfc/rfc3580.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "51ea2e7296c23459aaf27c2e67207ba66e42007a5da98f8ee517267b7b30ce03",
+  "bytes": 66136,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3849.txt": {
+  "path": "rfc/rfc3849.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/templates/ip-addressing-plan.md"
+  ],
+  "sha256": "b0741fc609be565b356c62d2f9b9ef30469f3fe7bde386c2690e173751bb1941",
+  "bytes": 7872,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc3954.txt": {
+  "path": "rfc/rfc3954.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "dfb55ec88ce0a5f53139d3e1b06f039e5237a25c21122bcc3d4d40903505ee3f",
+  "bytes": 76360,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4106.txt": {
+  "path": "rfc/rfc4106.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "2a0d8b0274cf307156e18708a13e6f9bfd0ed5124dca234b0a1ed1590a5a886a",
+  "bytes": 23399,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4193.txt": {
+  "path": "rfc/rfc4193.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "cf5e0f8aba837828ef3e71807d901cee71efd97fd6d2e0c985603c074cdd631a",
+  "bytes": 35908,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4271.txt": {
+  "path": "rfc/rfc4271.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "98b851146abcd56ecbb398dd1a818bcde2dcac6fde3d901c423d988f86eaab76",
+  "bytes": 222702,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4303.txt": {
+  "path": "rfc/rfc4303.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "d22f9d4120e5645525b63ac7bbf8ef78c334fe003a2c48bf1e25ac25f6e7dc58",
+  "bytes": 114315,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4459.txt": {
+  "path": "rfc/rfc4459.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "7e56697808c2cb1d366e7a936322798c822315f200eb92f425e6433b33d4747a",
+  "bytes": 32051,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4594.txt": {
+  "path": "rfc/rfc4594.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/capacity-and-resilience.md"
+  ],
+  "sha256": "73654e93f208f645efc2c3b43c5dafec3dd6685f90a9d88821bb4e250e1fbbf6",
+  "bytes": 144044,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc4821.txt": {
+  "path": "rfc/rfc4821.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "30e01d01c750f53b8ba7c6502b5eb50db2429881bf8169fae5caa24947d20348",
+  "bytes": 75665,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5082.txt": {
+  "path": "rfc/rfc5082.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "21869e5983e4103210b98d43ba7b17bfecb699f0b105b0b14b5ab5ff4628a809",
+  "bytes": 36579,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5176.txt": {
+  "path": "rfc/rfc5176.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md",
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "084ee4d8a99866ad6a121847861cb3eed1dd5623ef00515d0a7985fce791e958",
+  "bytes": 79541,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5424.txt": {
+  "path": "rfc/rfc5424.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "24d91f90a05d2536730ada929c296f45ae9cd72226e22b6775ad8c04cae37a53",
+  "bytes": 85162,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5737.txt": {
+  "path": "rfc/rfc5737.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/templates/ip-addressing-plan.md"
+  ],
+  "sha256": "9d16217614a74a9b064eff900e5cd07a525793cf8227dca1267100e880f0c410",
+  "bytes": 7036,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5880.txt": {
+  "path": "rfc/rfc5880.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/capacity-and-resilience.md",
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "45a7f8fcc04991c22d9efb1419aee4d9870cf1b7aa4b16a930e66a248146c61d",
+  "bytes": 110279,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5881.txt": {
+  "path": "rfc/rfc5881.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "30518631501fd4607c39422653aa0eaeae8ed79d7ce7af4a21c2c6a2fc87ca3a",
+  "bytes": 14307,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5883.txt": {
+  "path": "rfc/rfc5883.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "43170c8c2a9aa84ae98c363afb11ae9a8313580ae9653451471c7c1d987f9a28",
+  "bytes": 11765,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5905.txt": {
+  "path": "rfc/rfc5905.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "8b7abd903c60202e2953ee012fefa6916666c3b0c71825c748cdd262024fb268",
+  "bytes": 241096,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc5925.txt": {
+  "path": "rfc/rfc5925.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "2519e9a740c21ed5a675211104ddd21b9e3888438f7fb7e7887356804ec647e7",
+  "bytes": 106174,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6052.txt": {
+  "path": "rfc/rfc6052.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "f64b4695a351fe5f26698d12e8baefc609c30a8c36d259ace79d0f6e087e4bac",
+  "bytes": 41849,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6105.txt": {
+  "path": "rfc/rfc6105.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "1f640f5c5b63e33bc7e1318bbb1cdbf1e6497458e189a064b1526effbb41f779",
+  "bytes": 20817,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6146.txt": {
+  "path": "rfc/rfc6146.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "deaaf6be3e889742e760b136a2d1f85b197ef769871d89765e509d606eee7c64",
+  "bytes": 107954,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6147.txt": {
+  "path": "rfc/rfc6147.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "1f84a1d1d05831f92e6e521eae76bb8d1d3e794c17f421dc606711c72a35deed",
+  "bytes": 75103,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6164.txt": {
+  "path": "rfc/rfc6164.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/scripts/README.md"
+  ],
+  "sha256": "029c07e519d8c24c8a2d7a623a66f30b137c36cc3685808396560e2450ffe182",
+  "bytes": 16057,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6177.txt": {
+  "path": "rfc/rfc6177.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/templates/ip-addressing-plan.md"
+  ],
+  "sha256": "6964b32276721dfa8b52ac6091e21dd38ce3601856be5fb4a0fa4d5f0305f4ca",
+  "bytes": 21231,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6241.txt": {
+  "path": "rfc/rfc6241.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/automation-and-safety.md",
+   "skill-network-architect/references/migration-and-operations.md",
+   "skill-systems-architect/references/automation-and-safety.md"
+  ],
+  "sha256": "989b44560e4663267618b4b6bfc4cf0c7772fa2b59b5980936d9b073cbbd5314",
+  "bytes": 209465,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6349.txt": {
+  "path": "rfc/rfc6349.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/capacity-and-resilience.md"
+  ],
+  "sha256": "2877fcf785a87d6952f8b9781cbadada5e8d7d53a15d63ccaed229655e9e9725",
+  "bytes": 62494,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6438.txt": {
+  "path": "rfc/rfc6438.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "06660fc7055211f1eec8e36a245e78d3c260cff8702ba1c520d312eed14e3961",
+  "bytes": 20999,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6598.txt": {
+  "path": "rfc/rfc6598.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "b04d16c5c98b89324d35dc6dc783eface0bedf94c14c9e289b646d39ea55c4c0",
+  "bytes": 22055,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6614.txt": {
+  "path": "rfc/rfc6614.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "ca8de65cc14a6b37779ad99218d8cf0bd304dc289377a5068613c72427c0e8f5",
+  "bytes": 48004,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6811.txt": {
+  "path": "rfc/rfc6811.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "05d3b68f6750fd1c6090a9132212a31bad711e513765c47ce6f8fe10fd1e68e5",
+  "bytes": 20082,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6888.txt": {
+  "path": "rfc/rfc6888.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "d457f77ec6d4bd0b1921f1a14c5d27dfbb620a7166d1d02864a4dcd13a6b1b91",
+  "bytes": 32484,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6890.txt": {
+  "path": "rfc/rfc6890.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "ce738958287c710cb52016741114cbd4ba9c0b01a8db43adac7e0b7daa28dd3c",
+  "bytes": 48317,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc6996.txt": {
+  "path": "rfc/rfc6996.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "fd4fdb8cec9de61bd4a37099a76d53a2723747ee382f019187d767b251547903",
+  "bytes": 8198,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7011.txt": {
+  "path": "rfc/rfc7011.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "59b7ddb1c0350ae711ba41d771d93f4d440ee04755403446f580bb777b928f73",
+  "bytes": 170852,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7050.txt": {
+  "path": "rfc/rfc7050.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "88c32f09ea8d72f3b2c724fd0c3aa29845dd146a3e334d401efab9741daa68d1",
+  "bytes": 50097,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7296.txt": {
+  "path": "rfc/rfc7296.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "b6c1bf3921e85dd3674f427ffcaded0209e1f9718e8d601e2f918371f46329a1",
+  "bytes": 354358,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7348.txt": {
+  "path": "rfc/rfc7348.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md",
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "731475429b30bf4b29a102a0c9217cb0d3522c34fd546ba7b134fec931e83574",
+  "bytes": 49406,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7421.txt": {
+  "path": "rfc/rfc7421.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/scripts/README.md"
+  ],
+  "sha256": "abf1848f7b7606e838a76c5e08db3b4f3fcfead6a3d1356065b48c4293aefa7b",
+  "bytes": 60469,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7432.txt": {
+  "path": "rfc/rfc7432.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "556956e275a856ad727aa45d493725a4e13f002ffd4e3f2744b3091b886569d0",
+  "bytes": 134119,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7454.txt": {
+  "path": "rfc/rfc7454.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/routing-policy.md"
+  ],
+  "sha256": "2d7da1e1dfa15b6324be245ca509023c6b9de098f0c431a6994753aff5a8a2e6",
+  "bytes": 56946,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7513.txt": {
+  "path": "rfc/rfc7513.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "10aa8c1c39c5793aa0710acb86d320270361ccd6070f8128d20ef64c8931879d",
+  "bytes": 123735,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7799.txt": {
+  "path": "rfc/rfc7799.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/observability-troubleshooting.md"
+  ],
+  "sha256": "d78239d92dfc746d65f2cf7eab47d98992f344e797a7528c49cb38a71ae4bb6d",
+  "bytes": 33717,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7858.txt": {
+  "path": "rfc/rfc7858.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "872e634c8d5ca4219a90147d356570e7d10046ad12d560e7d8b24f3aa340fdf0",
+  "bytes": 42138,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7934.txt": {
+  "path": "rfc/rfc7934.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "00e68bf58a3cbb1bddc956ba24319068cdf43a05460b624b398f57ff3d80e6be",
+  "bytes": 37124,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc7938.txt": {
+  "path": "rfc/rfc7938.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md",
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "d71d4e87fca8229964568357aaa38b2b2e0c8387baac895f7620908f017940ed",
+  "bytes": 89682,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8092.txt": {
+  "path": "rfc/rfc8092.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/templates/routing-policy.md"
+  ],
+  "sha256": "343fde70df329cf36e7b7671536e466a9f2adf92ca445fe498f148e8c66a25b4",
+  "bytes": 15979,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8106.txt": {
+  "path": "rfc/rfc8106.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "9a44a5e06d36506da358fa0d62d02f484dd76b4e6ca75920ebda2cfed315ef2f",
+  "bytes": 43092,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8174.txt": {
+  "path": "rfc/rfc8174.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "5ca0e2f90be0bc5928ee465f76518fee316dfa775aed885658a29a419cc293b7",
+  "bytes": 6071,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8200.txt": {
+  "path": "rfc/rfc8200.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "371ae3f133d562db5d6385e6def4ca9914c4f831be228ea7779fd28799c2f490",
+  "bytes": 93162,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8201.txt": {
+  "path": "rfc/rfc8201.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "96c2ea7ac1bf5810f6b817d4ac372a35f68231d2bd0e2675740f1268eb9ac752",
+  "bytes": 42751,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8212.txt": {
+  "path": "rfc/rfc8212.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md",
+   "skill-network-architect/templates/routing-policy.md"
+  ],
+  "sha256": "73d16f16d6c4d37edd8cb6cd484e4acc4b53ac9ad53ce4bff6279e873cc646f3",
+  "bytes": 12552,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8215.txt": {
+  "path": "rfc/rfc8215.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "119b8f1bc92b600052bb4393f4ea7ff0ee966b473c205f7e8658b4fd54524e1f",
+  "bytes": 14846,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8326.txt": {
+  "path": "rfc/rfc8326.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "090ee540ebb345c182fb02e2d3f39cc772a2f7f87095b342803cf47ec10cfa63",
+  "bytes": 21701,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8365.txt": {
+  "path": "rfc/rfc8365.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md",
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "610f009d0fd7df5ec1c18c98346569052fbbab095d1add092c50601591eb3145",
+  "bytes": 76766,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8415.txt": {
+  "path": "rfc/rfc8415.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "3a3540c90ef2da48caa5cba627455025ef8cff6d1f988c6d0a83305485e4aa0a",
+  "bytes": 370298,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8484.txt": {
+  "path": "rfc/rfc8484.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "c2cb41fb72bf45935ba7372fef9d83478ed2ecc7f3749ea9a16b52b06ef0f343",
+  "bytes": 46879,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8633.txt": {
+  "path": "rfc/rfc8633.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "fb275c82378be983511db4fcd533a92a54028c7762be2d9bc0d6fa5c06dc5a84",
+  "bytes": 60651,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8704.txt": {
+  "path": "rfc/rfc8704.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "b2f9d3bf437af1d15b2dba81ddb39a936065dfba91b7f136169d894f55e75ded",
+  "bytes": 43485,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8767.txt": {
+  "path": "rfc/rfc8767.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "60841115fa4edc1918ef5cd423ca73c99f9e4e192466729941e55e0537bb6bc4",
+  "bytes": 29099,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8781.txt": {
+  "path": "rfc/rfc8781.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "2d0d233091acc20c9f6f0d2431d87d33479ec1c0c2243f377dd94c24fea8880d",
+  "bytes": 21306,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8899.txt": {
+  "path": "rfc/rfc8899.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "174304cb9fc263675a59666cd91d8e3564c25aac858509bbda5d099dcc05f889",
+  "bytes": 92357,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8900.txt": {
+  "path": "rfc/rfc8900.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "92bb51d4cb7532468b6ae203df0f74d3f1ebb1fa5a416d3963c050c5a0b67856",
+  "bytes": 56614,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8915.txt": {
+  "path": "rfc/rfc8915.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "c92a3ce4d1984b4c13f1cdf74d6f76c42b0fd34b2c1b71f5dd4f7d1cc641f57d",
+  "bytes": 88437,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8925.txt": {
+  "path": "rfc/rfc8925.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "e6cc53be6cf6226c667e186e89cd0c3f275f0e402b55674bf6b8233bad88f93c",
+  "bytes": 31424,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8926.txt": {
+  "path": "rfc/rfc8926.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/datacenter-cloud-containers.md"
+  ],
+  "sha256": "23a9fcd3c23b93a103c0228128b2dce808323a7a9d15ea9cbb395fdb9f67e37d",
+  "bytes": 84312,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc8950.txt": {
+  "path": "rfc/rfc8950.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "62390ef91f63d09d167f02adfe76a9bfa5b78c6e3ae47436ff4aaa9d50a93f16",
+  "bytes": 28102,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9135.txt": {
+  "path": "rfc/rfc9135.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "a4cc1238c864efc39c58672a595c2b1328c5b74c13a0c3f350054ad4ef6f88da",
+  "bytes": 87963,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9136.txt": {
+  "path": "rfc/rfc9136.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "874b6b31c3f5c6bc9cb9bdaec580e01ac34d76a3cecbb9de60066d5072537f00",
+  "bytes": 77734,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9190.txt": {
+  "path": "rfc/rfc9190.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "009cbd6aa418567ddb9f87fbe32092d17bfc4fbe39457521c5e0129c0a2e464e",
+  "bytes": 83835,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9210.txt": {
+  "path": "rfc/rfc9210.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "ecf026b7271222128e20cbbde99a899c4a901874c2696212a443937908dca978",
+  "bytes": 76176,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9234.txt": {
+  "path": "rfc/rfc9234.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/routing-and-switching.md"
+  ],
+  "sha256": "3934af354c672133337c5ce731282f97c00587d63ec1267c824c3fb5dcb39775",
+  "bytes": 29154,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9250.txt": {
+  "path": "rfc/rfc9250.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "1d153f1188ef5f9c78754896a46e07515d0d49279887744e6a141bf4ec37e0b1",
+  "bytes": 65667,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9325.txt": {
+  "path": "rfc/rfc9325.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/security-and-segmentation.md"
+  ],
+  "sha256": "e3475381d056bde1eed65252954cce68250168454387f6799b38660806f215bc",
+  "bytes": 96608,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9520.txt": {
+  "path": "rfc/rfc9520.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "424b5e297db737b7cc7f21d37d30dca211f3f237264c3c6ef3d17653a4e1c531",
+  "bytes": 33948,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9637.txt": {
+  "path": "rfc/rfc9637.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md"
+  ],
+  "sha256": "002023530d04b66e32a06b80e35ae426cad4a18b0bde153228a29ecd8b21c7b2",
+  "bytes": 7941,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.rfc-editor.org/rfc/rfc9765.txt": {
+  "path": "rfc/rfc9765.txt",
+  "kind": "rfc",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/network-services.md"
+  ],
+  "sha256": "b59e8b413ba4c10af88c950a76b22d649663edec7999722b4d3f61df1ef9f3b4",
+  "bytes": 84936,
+  "retrieved": "2026-10-29T07:08Z"
+ },
+ "https://www.ripe.net/publications/docs/ripe-690/": {
+  "path": "web/ripe.net/publications-docs-ripe-690-1d550577.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/addressing-and-ipv6.md",
+   "skill-network-architect/templates/ip-addressing-plan.md"
+  ],
+  "sha256": "6d48059c0b51b8509b035c4248aab64f271b752128494a164d0a16aa8542b70b",
+  "bytes": 32953,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/": {
+  "path": "web/sei.cmu.edu/library-architecture-tradeoff-analysis-method-collection-71fb1b27.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/architecture-method.md",
+   "skill-systems-architect/references/architecture-method.md"
+  ],
+  "sha256": "d07bbf910617177081f0d690584427b2b2125b96d691f5c23d87e111c3a72f2f",
+  "bytes": 6050,
+  "retrieved": "2026-10-29T07:07Z"
+ },
+ "https://www.softwareheritage.org/": {
+  "path": "web/softwareheritage.org/index-ede3c414.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/research-and-attribution.md",
+   "skill-systems-architect/references/research-and-attribution.md"
+  ],
+  "sha256": "4088a4f317cb83dbae38c38a1a01683cc0922c0702ef285b086b2692417db31b",
+  "bytes": 25488,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.tiaonline.org/standards/catalog/": {
+  "path": "web/tiaonline.org/standards-catalog-816be5b7.md.txt",
+  "kind": "web",
+  "method": "all-scraper --js",
+  "cited_in": [
+   "skill-network-architect/references/physical-and-campus.md"
+  ],
+  "sha256": "af6069bd0cf30e253db79db66d7274c5c96325bd53052d2adf4e33a2ec9ff376",
+  "bytes": 21127,
+  "retrieved": "2026-10-29T08:01Z"
+ },
+ "https://www.wi-fi.org/discover-wi-fi/security": {
+  "path": "web/wi-fi.org/discover-wi-fi-security-6f7d45ee.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "bcccb8f712ab1f5bb33c976bc9d21ff44bd404d4b53c4cbb48f8ca1637c17706",
+  "bytes": 2110,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.wi-fi.org/discover-wi-fi/wi-fi-certified-7": {
+  "path": "web/wi-fi.org/discover-wi-fi-wi-fi-certified-7-38d1077b.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wireless-and-radio.md"
+  ],
+  "sha256": "ddb22ece75d2bc893d134c2524f8165cc631d2b3008b5740aa9c9e7ab9ce9fb5",
+  "bytes": 7109,
+  "retrieved": "2026-10-29T07:09Z"
+ },
+ "https://www.wireguard.com/papers/wireguard.pdf": {
+  "path": "pdf/wireguard.com/papers-wireguard.pdf-d3bc5960.pdf",
+  "kind": "pdf",
+  "method": "direct",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "b4cf398c21d054e8774af568395b0f7cd0e2b01322809c5dbd66c4135021ca57",
+  "bytes": 550175,
+  "retrieved": "2026-10-29T07:06Z"
+ },
+ "https://www.wireguard.com/protocol/": {
+  "path": "web/wireguard.com/protocol-421e4065.md.txt",
+  "kind": "web",
+  "method": "all-scraper",
+  "cited_in": [
+   "skill-network-architect/references/wan-and-remote-access.md"
+  ],
+  "sha256": "06ef398c9daf0e5a7ba3a05d332d23855809fb894f016105896f48316826a688",
+  "bytes": 16773,
+  "retrieved": "2026-10-29T07:09Z"
+ }
+}

@@ -1,0 +1,226 @@
+Contents of https://ubuntu.com/about/release-cycle:
+## Know what's supported
+
+Find out which versions of Ubuntu and Canonical products are supported, for how long, and what's best for your deployment – from LTS versions to available security coverage options.
+
+---
+
+## Find out your current coverage
+
+Not sure if your product version is still supported? Let's walk through a few simple questions to help you find out.
+
+| Version | Standard | Ubuntu Pro  Subscribe to Ubuntu Pro to stay secure and supported. [Start a 30-day Ubuntu Pro free trial ›](/pro/free-trial) | | | Compliance |
+| --- | --- | --- | --- | --- | --- |
+| Version | Standard security   maintenance | Expanded security   maintenance | Break/bug support | Legacy add on  for security maintenance and support | Compliance   Standards status |
+| 26.10  Ubuntu 26.10  Released: Oct 2026 | Jul 2027 | Not applicable | Not applicable | Not applicable | * None |
+| 26.04 LTS  Ubuntu 26.04 LTS  Released: Apr 2026 | May 2031 | May 2036 | May 2036 | May 2041 | * FIPS 140-3: Planned * DISA-STIG: Planned * CIS: Planned |
+| 24.04 LTS  Ubuntu 24.04 LTS  Released: Apr 2024 | May 2029 | May 2034 | May 2034 | May 2039 | * FIPS 140-3: Pending * DISA-STIG: Achieved * CIS: Achieved |
+| 22.04 LTS  Ubuntu 22.04 LTS  Released: Apr 2022 | May 2027 | May 2032 | May 2032 | May 2037 | * FIPS 140-3: Achieved * DISA-STIG: Achieved * CIS: Achieved |
+| 20.04 LTS  Ubuntu 20.04 LTS  Released: Apr 2020 | May 2025    With Ubuntu Pro | May 2030 | May 2030 | May 2035 | * FIPS 140-2: Expired * DISA-STIG: Achieved * CIS: Achieved |
+| 18.04 LTS  Ubuntu 18.04 LTS  Released: Apr 2018 | May 2023    With Ubuntu Pro | May 2028 | May 2028 | May 2033 | * FIPS 140-2: Expired * DISA-STIG: Achieved * CIS: Achieved |
+| 16.04 LTS  Ubuntu 16.04 LTS  Released: Apr 2016 | Apr 2021    With Ubuntu Pro | May 2026    With legacy add-on | May 2026    With legacy add-on | May 2031 | * FIPS 140-2: Expired * DISA-STIG: Achieved * CIS: Achieved |
+| 14.04 LTS  Ubuntu 14.04 LTS  Released: Apr 2014 | Apr 2019    With Ubuntu Pro | May 2024    With legacy add-on | May 2024    With legacy add-on | May 2029 | * None |
+
+| Version | Standard | Ubuntu Pro Subscribe to Ubuntu Pro to stay secure and supported. [Start a 30-day Ubuntu Pro free trial ›](/pro/free-trial) |
+| --- | --- | --- |
+| 26.10 Ubuntu 26.10 Released: Oct 2026 | Standard security maintenance Jul 2027 | Expanded security maintenance  Not applicable  Break/bug support  Not applicable  Legacy add-on Not applicable  Compliance standards status   * None |
+| 26.04 LTS Ubuntu 26.04 LTS Released: Apr 2026 | Standard security maintenance May 2031 | Expanded security maintenance  May 2036  Break/bug support  May 2036  Legacy add-on  May 2041  Compliance standards status   * FIPS 140-3: Planned * DISA-STIG: Planned * CIS: Planned |
+| 24.04 LTS Ubuntu 24.04 LTS Released: Apr 2024 | Standard security maintenance May 2029 | Expanded security maintenance  May 2034  Break/bug support  May 2034  Legacy add-on  May 2039  Compliance standards status   * FIPS 140-3: Pending * DISA-STIG: Achieved * CIS: Achieved |
+| 22.04 LTS Ubuntu 22.04 LTS Released: Apr 2022 | Standard security maintenance May 2027 | Expanded security maintenance  May 2032  Break/bug support  May 2032  Legacy add-on  May 2037  Compliance standards status   * FIPS 140-3: Achieved * DISA-STIG: Achieved * CIS: Achieved |
+| 20.04 LTS Ubuntu 20.04 LTS Released: Apr 2020 | Standard security maintenance May 2025    With Ubuntu Pro | Expanded security maintenance  May 2030  Break/bug support  May 2030  Legacy add-on  May 2035  Compliance standards status   * FIPS 140-2: Expired * DISA-STIG: Achieved * CIS: Achieved |
+| 18.04 LTS Ubuntu 18.04 LTS Released: Apr 2018 | Standard security maintenance May 2023    With Ubuntu Pro | Expanded security maintenance  May 2028  Break/bug support  May 2028  Legacy add-on  May 2033  Compliance standards status   * FIPS 140-2: Expired * DISA-STIG: Achieved * CIS: Achieved |
+| 16.04 LTS Ubuntu 16.04 LTS Released: Apr 2016 | Standard security maintenance Apr 2021    With Ubuntu Pro | Expanded security maintenance  May 2026  With legacy add-on  Break/bug support  May 2026  With legacy add-on  Legacy add-on  May 2031  Compliance standards status   * FIPS 140-2: Expired * DISA-STIG: Achieved * CIS: Achieved |
+| 14.04 LTS Ubuntu 14.04 LTS Released: Apr 2014 | Standard security maintenance Apr 2019    With Ubuntu Pro | Expanded security maintenance  May 2024  With legacy add-on  Break/bug support  May 2024  With legacy add-on  Legacy add-on  May 2029  Compliance standards status   * None |
+
+---
+
+## Canonical Ubuntu lifecycle and release cadence key concepts
+
+Canonical publishes new releases of Ubuntu and other products in our portfolio on a regular cadence, enabling the community, businesses and developers to plan their roadmaps with the certainty of access to newer open source upstream capabilities.
+
+* [Ubuntu releases](#ubuntu-releases)
+* [Repository coverage](#repository-coverage)
+* [Packaging formats](#packaging-formats)
+* [Editions and flavors](#editions-and-flavors)
+
+### Ubuntu release cycle
+
+---
+
+### Interim releases
+
+Ubuntu's interim releases are designed for users and teams who move fast and need access to the latest kernels, languages, and toolchains. They provide cutting-edge features and hardware support every six months, but with only 9 months of updates. For long-term stability, production environments should use the LTS version, while interim releases suit those prioritizing speed and rapid feature testing.
+
+---
+
+### LTS releases
+
+LTS are released every two years and receive 5 years of standard security maintenance.
+
+LTS releases are the go-to choice for users who value stability and extended support. These versions are security maintained for 5 years with CVE patches for packages in the Main repository. They are recommended for production environments, enterprises, and long-term projects.
+
+---
+
+### Ubuntu Pro
+
+Ubuntu Pro is Canonical's enhanced security and support subscription for Ubuntu systems. It includes up to 15 years of security coverage (ESM and Legacy add-on), Kernel Livepatch, Landscape, FIPS 140-3 certified packages, and CIS hardening, and optional enterprise-grade support.
+
+Ubuntu Pro subscriptions are free for personal use on up to five machines.
+
+### Ubuntu package categories
+
+Ubuntu packages are grouped into four main categories: 'Main' and 'Restricted' (the base system), and 'Universe' and 'Multiverse' (community and extra packages). 'Main' and 'Universe' are open source, while 'Restricted' and 'Multiverse' contain some non-open source software.
+
+---
+
+### Expanded Security Maintenance (ESM)
+
+ESM extends the life of LTS releases by providing 10 years of security updates for the 'Main' repository and also adds 10 years of security coverage for the 'Universe' repository.
+
+Available through Ubuntu Pro, it provides continued critical and high security patches after standard security maintenance ends for packages in Main, and for thousands of open-source packages in the Universe repository.
+
+---
+
+### Support
+
+Full phone and ticketing break and bug fix support is available for Ubuntu Main and Universe repositories and the full open source stack, from infrastructure to applications, with Ubuntu Pro + Support.
+
+---
+
+### Legacy add-on
+
+At the end of the 10 year ESM period, the Legacy add-on can be purchased to cover additional 5 years of the lifetime of Ubuntu LTS, giving a total of 15 years security maintenance and support for LTS releases.
+
+---
+
+### Security and support coverage for LTS releases
+
+![Schematic representation of the maintenance and support window for Ubuntu LTS releases: five years of standard security maintenance, five years of Expanded Security Maintenance (ESM) through Ubuntu Pro, and five years of additional coverage with the Legacy add-on to Ubuntu Pro, with optional break/bug fix support throughout the 15 years.](https://res.cloudinary.com/canonical/image/fetch/f_auto,q_auto,fl_sanitize,w_2748/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2Ffb862411-chart.png)
+
+* Standard Security Maintenance for packages in Main
+
+  Expanded Security Maintenance for packages in Universe
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+* Expanded Security Maintenance for packages in Main and Universe
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+* Break and bug fix support
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+* Legacy add-on for security coverage and support
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+
+#### 1-5 years
+
+Security:
+
+* Standard Security Maintenance for packages in Main
+* Expanded Security Maintenance for packages in Universe
+
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+
+---
+
+Support:
+
+* Break fix and bug support
+
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+
+#### 6-10 years
+
+Security:
+
+* Expanded Security Maintenance for packages in Universe
+
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+
+---
+
+Support:
+
+* Break fix and bug support
+
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+
+#### 11-15 years
+
+Security:
+
+* Legacy add-on for security coverage and support
+
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+
+---
+
+Support:
+
+* Legacy coverage for break fix and bug support
+
+
+  ![](https://res.cloudinary.com/canonical/image/fetch/f_svg,q_auto,fl_sanitize,w_15/https%3A%2F%2Fassets.ubuntu.com%2Fv1%2F1b64bc23-cof_svg.svg)
+  Ubuntu Pro
+
+### Deb packages
+
+At the core of every Ubuntu release is a collection of 'deb' packages. Carefully tested for compatibility, debs use structured dependency management so all necessary software is installed and works together seamlessly.
+
+---
+
+### Snap packages
+
+Ubuntu supports 'snap' packages, ideal for apps and tools that update frequently and independently from the main system. Snaps offer access to the latest versions of popular software, with strong security and easy version control.
+
+Snaps can run in a secure, confined environment with limited system access, or as 'classic' snaps with broader access – similar to debs. Choose snaps from trusted publishers, especially when using classic confinement.
+
+---
+
+### Charms
+
+Charms are software operators – business logic encapsulated in reusable software packages that automate every aspect of an application's life.
+
+---
+
+### Rocks
+
+Rocks are minimal, optimized container images built from Debian packages, designed for secure, stable, and efficient containerized deployments. They are compatible with popular container tools like Docker and Kubernetes, helping administrators manage infrastructure with lightweight, focused images that reduce vulnerabilities and overhead.
+
+Chiseled Rocks take this approach further by removing shells, package managers, and other non-essential components, offering ultra-minimal images with an even smaller attack surface for high-security, production-grade environments.
+
+### Ubuntu Classic
+
+Ubuntu comes in various editions and minimal installs. “Classic” Ubuntu uses deb packages and supports snaps for specific apps, available across different desktop flavors and server/cloud images.
+
+---
+
+### Ubuntu Core
+
+Ubuntu Core is an all-snap edition designed for appliances and IoT. With a lightweight, strictly confined architecture, it's highly secure and reliable – perfect for large-scale, embedded deployments.
+
+---
+
+### Ubuntu Minimal
+
+Ubuntu Minimal is a lightweight image that includes only the essential packages, making it ideal for building custom environments or optimizing deployments for performance and footprint. It provides an efficient foundation for containers, virtual machines, and specialized workloads requiring fine-grained control. Ubuntu Minimal images are available for all major public clouds, including AWS, Google Cloud and Azure.
+
+---
+
+### Ubuntu Flavors
+
+Ubuntu flavors are community-maintained variants that offer different desktop environments and user experiences. The release cycle for flavours may differ from those described here. For release details and support policies specific to a flavor, please consult its official website or documentation.

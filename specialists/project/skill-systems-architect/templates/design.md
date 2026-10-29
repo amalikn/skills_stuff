@@ -1,0 +1,1 @@
+../../skill-network-architect/templates/design.md

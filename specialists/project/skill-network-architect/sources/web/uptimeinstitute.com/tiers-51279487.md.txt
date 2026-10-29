@@ -1,0 +1,603 @@
+<html lang="en-gb" dir="ltr" class=" webkit chrome mac js"><head><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="google-site-verification" content="HR39VFAN398ihTRrUuFNn-DWKc8Eq6mxTgUuRkv9KXQ"><meta name="yandex-verification" content="4fefc76a3ecf6ca7"><meta name="yandex-verification" content="5f0a8aea42808ee6"><meta name="msvalidate.01" content="B86E1A63489D402F464C455CEDAF7340"><script type="text/javascript" async="" src="//munchkin.marketo.net/165/munchkin.js"></script><base href="https://uptimeinstitute.com/tiers"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="description" content="Uptime Institute's Tier Classification System is the international standard for data center performance. Learn about our Tiers and different levels here."><title>Uptime Institute Tier Classification System - Uptime Institute</title><link href="/images/favicon-16x16.png" rel="shortcut icon" type="image/vnd.microsoft.icon"><link href="/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"><link href="https://uptimeinstitute.com/component/search/?Itemid=243&amp;format=opensearch" rel="search" title="Search Uptime Institute" type="application/opensearchdescription+xml"><link href="/media/plg_system_jcepro/site/css/content.min.css?86aa0286b6232c4a5b58f892ce080277" rel="stylesheet" type="text/css"><link href="/media/plg_system_jcemediabox/css/jcemediabox.min.css?f646e5445d3791b94e8b9282903afc4f" rel="stylesheet" type="text/css"><link href="//fonts.googleapis.com/css?family=Open+Sans:300,regular,500,600,700,800,300italic,italic,500italic,600italic,700italic,800italic&amp;subset=latin" rel="stylesheet" type="text/css"><link href="/templates/flex/css/bootstrap.min.css" rel="stylesheet" type="text/css"><link href="/templates/flex/css/joomla-fontawesome.min.css" rel="stylesheet" type="text/css"><link href="/templates/flex/css/font-awesome-v4-shims.min.css" rel="stylesheet" type="text/css"><link href="/templates/flex/css/template.css" rel="stylesheet" type="text/css"><link href="/templates/flex/css/presets/preset4.css" rel="stylesheet" class="preset" type="text/css"><link href="/templates/flex/css/custom.css" rel="stylesheet" type="text/css"><link href="/templates/flex/css/frontend-edit.css" rel="stylesheet" type="text/css"><link href="/components/com_sppagebuilder/assets/css/font-awesome-5.min.css" rel="stylesheet" type="text/css"><link href="/components/com_sppagebuilder/assets/css/font-awesome-v4-shims.css" rel="stylesheet" type="text/css"><link href="/components/com_sppagebuilder/assets/css/animate.min.css" rel="stylesheet" type="text/css"><link href="/components/com_sppagebuilder/assets/css/sppagebuilder.css" rel="stylesheet" type="text/css"><link href="/media/com_widgetkit/css/site.css" rel="stylesheet" type="text/css" id="widgetkit-site-css"><style type="text/css">
+body.site {background-color:#ffffff;}
+/* To resolve issue with logo display on Safari browsers */
+body #sp-logo .sp-default-logo,
+body #sp-logo .sp-retina-logo {
+    width: 135px;
+}
+
+/* Manually hides main nav empty submenus */
+.hide-submenu .sp-dropdown-sub, .sp-has-child.hide-submenu >a:after {display:none !important;}
+
+/* Sets the max height for department logos on mastheads */
+body .masthead.department-logo img {
+    max-height: 56px;
+    width: 100%;
+    padding: 0;
+}
+
+.border-ccc {border: 1px solid #ccc;}
+.border-999 {border: 1px solid #999;}
+.border-666 {border: 1px solid #999;}
+
+/* Careers page - job listings */
+.uk-scope .uk-accordion-title {background-color: #f2f2f2; padding: 4px 8px;}
+
+/* Resources page - Assets list */
+.uptime_asset_container h2 {margin-top: 15px;}
+
+/* Resource - Asset Manager auto-generated asset pages */
+/* Add header bar with text above embedded Marketo Form in frontend Asset Manager pages */
+.com-uptimeassetmanager .mktoForm {
+  position: relative;          /* Creates the coordinate anchor for the header */
+  margin-top: 40px;            /* Leaves blank space above for the header bar */
+  border: 1px solid #ddd; 
+  padding: 20px 0px 15px 10px;
+}
+.com-uptimeassetmanager .mktoForm::before {
+  content: "Download the Document";  /* Injects the text string directly via CSS */
+  position: absolute;          /* Allows placement outside normal document flow */
+
+/* Placement rules */
+  top: -40px;                  /* Pulls the header bar directly above the container */
+  left: -1px;                  /* Aligns perfectly with the container's left border */
+  right: -1px;                 /* Aligns perfectly with the container's right border */
+  height: 40px;                /* Explicitly sizes the header bar height */
+
+/* Styling rules */  
+  background-color: #0057b8;   /* Dark header bar styling background */
+  color: #fff;                 /* White header text color */
+  font-size: 17px;
+  font-weight: bold;
+  font-family: "DIN Next LT W05", sans-serif !important;
+
+/* Text alignment rules */
+  display: flex;               /* Uses flexbox to easily align text strings */
+  align-items: center;         /* Vertically centers text inside the bar */
+  justify-content: center;     /* Horizontally centers the text */
+  padding-left: 0;             /* Adds breathing room to the left of the text */
+  box-sizing: border-box;
+}
+
+/* Asset thumbnail sizing limit */
+.com-uptimeassetmanager .item-content .asset-thumbnail-image {max-width: 160px;}
+
+/* Education Framework */
+.pathway-main-card, .advancement-opportunities-main-card {border: 1px solid #999 !important;}
+
+/* Course Cards */
+.course-card {background-color: #fff;}
+.course-card:hover {border: 1px solid #666 !important;}
+.course-card h2.sppb-addon-title, .course-card h3.sppb-addon-title {box-shadow: none; margin-bottom: 0 !important;}
+.course-card h2.sppb-addon-title:after, .course-card h3.sppb-addon-title:after {display: none;}
+.course-card ul {list-style: square; list-style-type: square; padding-left: 12px;}
+.course-card li {display: list-item !important; border-bottom: none !important; margin-bottom: 5px; line-height: 1.25;}
+.course-card .sppb-addon-divider-wrap {padding-right: 10px; padding-left: 10px; /*margin-bottom: 16px !important;*/}
+
+@media only screen and (min-width: 768px) {
+/*Custom CSS for course cards to match heights*/
+.course-card .course-title .sppb-column {min-height: 42px;}
+.course-card ul {min-height: 122px;}
+}
+
+/*Advancement Opportunities Section*/
+.track .course-selected .course-card {border: 2px solid #009CDE !important;}
+.track .course-selected .sppb-addon-title {font-weight: 800 !important;}
+@media only screen and (min-width: 768px) {
+#track-section {background-size: 16px 100% !important;} /*for vertical ribbon gradient*/
+.col-related-courses {border-left: 1px solid #ccc;}
+}
+
+body{font-family:Open Sans, sans-serif; font-size:17px; font-weight:normal; }
+h1{font-family:Open Sans, sans-serif; font-size:36px; font-weight:normal; }
+h2{font-family:Open Sans, sans-serif; font-size:24px; font-weight:normal; }
+h3{font-family:Open Sans, sans-serif; font-size:21px; font-weight:normal; }
+h4{font-family:Open Sans, sans-serif; font-size:19px; font-weight:normal; }
+h5{font-family:Open Sans, sans-serif; font-size:18px; font-weight:600; }
+h6{font-family:Open Sans, sans-serif; font-size:17px; font-weight:600; }
+@media (min-width: 1400px) {
+.container {
+max-width: 1140px;
+}
+}
+#sp-top-bar{ background-color:#3d3d3d;color:#d4d4d4;padding:0 50px 0 25px; }
+#sp-top-bar a{color:#b3b3b3;}
+#sp-top-bar a:hover{color:#d1d1d1;}
+#sp-header{ background-color:#303030;color:#f0f0f0;padding:0 20px 0 20px; }
+#sp-header a{color:#ededed;}
+#sp-header a:hover{color:#ffffff;}
+#sp-footer{ background-color:#363839;color:#b0b0b0;padding:20px 40px 0 40px; }
+#sp-footer a{color:#d6d6d6;}
+#sp-footer a:hover{color:#f0f0f0;}
+.offcanvas-menu{}.offcanvas-menu ul li a{color: }.offcanvas-menu .offcanvas-inner .search input.inputbox{border-color: }
+#sp-header .top-search-wrapper .icon-top-wrapper,#sp-header .top-search-wrapper .icon-top-wrapper >i:before,.sp-megamenu-wrapper > .sp-megamenu-parent >li >a,.sp-megamenu-wrapper #offcanvas-toggler,#sp-header .modal-login-wrapper span,#sp-header .ap-my-account i.pe-7s-user,#sp-header .ap-my-account .info-text,#sp-header .mod-languages,#sp-header .logo,#cart-menu,#cd-menu-trigger,.cd-cart,.cd-cart > i{height:40px;line-height:40px;}.total_products{top:calc(40px / 2 - 22px);}#sp-header,.transparent-wrapper{height:40px;}.transparent,.sticky-top{}#sp-header #sp-menu .sp-megamenu-parent >li >a,#sp-header #sp-menu .sp-megamenu-parent li .sp-dropdown >li >a,#sp-header .top-search-wrapper .icon-top-wrapper i,#sp-header #cd-menu-trigger i,#sp-header .cd-cart i,#sp-header .top-search-wrapper{}#sp-header #sp-menu .sp-dropdown .sp-dropdown-inner{}#sp-header #sp-menu .sp-dropdown .sp-dropdown-inner li.sp-menu-item >a,#sp-header #sp-menu .sp-dropdown .sp-dropdown-inner li.sp-menu-item.separator >a,#sp-header #sp-menu .sp-dropdown .sp-dropdown-inner li.sp-menu-item.separator >a:hover,#sp-header .sp-module-content ul li a,#sp-header .vm-menu .vm-title{}.sticky .logo,.sticky #cart-menu,.sticky #cd-menu-trigger,.sticky .cd-cart,.sticky .cd-cart >i,.sticky .menu-is-open >i,#sp-header.sticky .modal-login-wrapper span,#sp-header.sticky .ap-my-account i.pe-7s-user,#sp-header.sticky .ap-my-account .info-text,#sp-header.sticky .mod-languages,#sp-header.sticky .top-search-wrapper .icon-top-wrapper,#sp-header.sticky .top-search-wrapper .icon-top-wrapper >i:before,.sticky .sp-megamenu-wrapper > .sp-megamenu-parent >li >a,.sticky .sp-megamenu-wrapper #offcanvas-toggler,.sticky #sp-logo a.logo{height:70px;line-height:70px; } .sticky .total_products{top: calc(70px / 2 - 22px);} .sticky .sticky__wrapper{background:#ffffff; height:70px; -webkit-animation-name:fade-in-down;animation-name:fade-in-down;}.sticky .sticky__wrapper .sp-sticky-logo {height:70px;}.sticky.onepage .sticky__wrapper,.sticky.white .sticky__wrapper,.sticky.transparent .sticky__wrapper{background:#ffffff;}#sp-header.sticky #sp-menu .sp-megamenu-wrapper .sp-megamenu-parent >li >a,#sp-header.sticky .top-search-wrapper,#sp-header.sticky .top-search-wrapper .icon-top-wrapper i,#sp-header.sticky #cd-menu-trigger i,#sp-header.sticky .cd-cart i{;}#sp-header.sticky #sp-menu .sp-megamenu-wrapper .sp-megamenu-parent >li.active>a,#sp-header.sticky #sp-menu .sp-megamenu-wrapper .sp-megamenu-parent >li.current-item>a,#sp-header.sticky #sp-menu .sp-megamenu-wrapper .sp-megamenu-parent >li.sp-has-child.active>a,.sticky #offcanvas-toggler >i,.sticky #offcanvas-toggler >i:hover{color:;} 
+	</style><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-747ZPW7Q6D&amp;cx=c&amp;gtm=4e6ar1"></script><script async="" src="https://static.oktopost.com/oktrk.js"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-WPMZ556"></script><script src="/templates/flex/js/jui/jquery.min.js?b5a2dce7a56e614fe045f3cc512625c6" type="text/javascript"></script><script src="/media/jui/js/jquery-noconflict.js?b5a2dce7a56e614fe045f3cc512625c6" type="text/javascript"></script><script src="/media/jui/js/jquery-migrate.min.js?b5a2dce7a56e614fe045f3cc512625c6" type="text/javascript"></script><script src="/media/plg_system_jcemediabox/js/jcemediabox.min.js?f646e5445d3791b94e8b9282903afc4f" type="text/javascript"></script><script src="/plugins/system/helix3/assets/js/bootstrap.legacy.js" type="text/javascript"></script><script src="/templates/flex/js/bootstrap.min.js" type="text/javascript"></script><script src="/templates/flex/js/jquery.easing.min.js" type="text/javascript"></script><script src="/templates/flex/js/main.js" type="text/javascript"></script><script src="/templates/flex/js/frontend-edit.js" type="text/javascript"></script><script src="/components/com_sppagebuilder/assets/js/jquery.parallax.js?efcb014a6f41a6d880968ea58653b58d" type="text/javascript"></script><script src="/components/com_sppagebuilder/assets/js/sppagebuilder.js?efcb014a6f41a6d880968ea58653b58d" defer type="text/javascript"></script><script src="/media/com_widgetkit/js/maps.js" defer type="text/javascript"></script><script src="/media/com_widgetkit/lib/uikit/dist/js/uikit.min.js" type="text/javascript"></script><script src="/media/com_widgetkit/lib/uikit/dist/js/uikit-icons.min.js" type="text/javascript"></script><script type="text/javascript">
+jQuery(document).ready(function(){WfMediabox.init({"base":"\/","theme":"standard","width":"","height":"","lightbox":0,"shadowbox":0,"icons":1,"overlay":1,"overlay_opacity":0.8,"overlay_color":"#000000","transition_speed":500,"close":2,"labels":{"close":"Close","next":"Next","previous":"Previous","cancel":"Cancel","numbers":"{{numbers}}","numbers_count":"{{current}} of {{total}}","download":"Download"},"swipe":true,"expand_on_click":true,"display_mode":"fit"});});
+var sp_preloader = "0";var sp_offanimation = "default";var stickyHeaderVar = "1";var stickyHeaderAppearPoint = 250;
+	</script><meta property="og:url" content="https://uptimeinstitute.com/tiers"><meta property="og:site_name" content="Uptime Institute"><meta property="og:type" content="article"><meta property="og:title" content="Tier Classification System"><meta property="og:description" content="Data Center Classifications
+Uptime Institute created the data center Tier classification levels over 30 years ago, and today, they remain the..."><meta name="twitter:card" content="summary"><meta name="twitter:site" content="Uptime Institute"><meta name="twitter:title" content="Tier Classification System"><meta name="twitter:description" content="Data Center Classifications
+Uptime Institute created the data center Tier classification levels over 30 years ago, and today, they remain the..."><script type="text/javascript">
+    var MTUserId='1779c17d-e8bb-45aa-8f44-7b425c44a334';
+    var MTFontIds = new Array();
+
+    MTFontIds.push("5563043"); // DIN® Next W05 Regular 
+    MTFontIds.push("5563049"); // DIN® Next W05 Italic 
+    MTFontIds.push("5563055"); // DIN® Next W05 Medium 
+    MTFontIds.push("5563061"); // DIN® Next W05 Medium Italic 
+    MTFontIds.push("5563067"); // DIN® Next W05 Bold 
+    MTFontIds.push("5563073"); // DIN® Next W05 Bold Italic 
+    MTFontIds.push("5563079"); // DIN® Next W05 Heavy 
+    MTFontIds.push("5563085"); // DIN® Next W05 Heavy Italic 
+    MTFontIds.push("5563091"); // DIN® Next W05 Black 
+    MTFontIds.push("5563097"); // DIN® Next W05 Black Italic 
+    MTFontIds.push("5563260"); // DIN® Next W05 Ultra Light 
+    MTFontIds.push("5563266"); // DIN® Next W05 Ultra Light Italic 
+    MTFontIds.push("5563272"); // DIN® Next W05 Light 
+    MTFontIds.push("5563280"); // DIN® Next W05 Light Italic 
+    (function() {
+        var mtTracking = document.createElement('script');
+        mtTracking.type='text/javascript';
+        mtTracking.async='true';
+        mtTracking.src='/mtiFontTrackingCode.js';
+
+        (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(mtTracking);
+    })();
+</script><script type="text/javascript" async="" src="/mtiFontTrackingCode.js"></script><style type="text/css">
+    @font-face{
+        font-family:"DIN Next LT W05 Regular";
+        src:url("/fonts/MTI-WebFonts/5563043/f427aeaf-ea01-444e-9eb5-6b2b09e3bf32.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563043/8251f7ab-e651-4555-a26a-525bc230845f.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Italic";
+        src:url("/fonts/MTI-WebFonts/5563049/3831ec15-562f-4457-897e-678aa70aad57.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563049/c8fd8fb8-9bb3-4760-855b-7a6a59905520.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Medium";
+        src:url("/fonts/MTI-WebFonts/5563055/a077222b-f869-4748-8eda-79372b7c40a1.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563055/0297a959-5296-4f45-9729-78daf65d9e43.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Medium Italic";
+        src:url("/fonts/MTI-WebFonts/5563061/cf8d0938-56f2-46ef-8168-19041b6d44dc.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563061/75512791-046e-49e6-856f-726a3ea78b24.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Bold";
+        src:url("/fonts/MTI-WebFonts/5563067/f855f545-9ff1-433c-912f-c58bd2d71d28.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563067/8a078fb7-2865-4534-a436-3c2a87c69d57.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Bold Italic";
+        src:url("/fonts/MTI-WebFonts/5563073/aa058ab3-7d74-403c-bd5e-7c33fdb24960.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563073/4d037d46-4598-48d1-a94a-fd022c87a984.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Heavy";
+        src:url("/fonts/MTI-WebFonts/5563079/2856836e-757a-4a96-a6ac-88ab0c41f266.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563079/a08b6864-d503-403e-a87b-058ecff605b1.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Heavy Italic";
+        src:url("/fonts/MTI-WebFonts/5563085/49c28de1-39a5-4a9a-875b-22ba65fe4584.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563085/5dfe7e90-4546-4430-9e3a-cd0643abec58.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Black";
+        src:url("/fonts/MTI-WebFonts/5563091/0c6a2715-1c4b-454b-8e48-65e63431ce35.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563091/1e24182f-9670-4c28-a8bc-21ce8a30b6fb.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Black Italic";
+        src:url("/fonts/MTI-WebFonts/5563097/1e05a01e-3322-4250-afe5-e8137d3d261a.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563097/d5e5d85a-ebd0-4efc-9d80-d4b6dbe5287e.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Ultra Light";
+        src:url("/fonts/MTI-WebFonts/5563260/9c206517-f5b2-4651-87c0-7b2b0267c4ab.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563260/11b3f254-a02f-461f-9d3e-387f6dc4a4b4.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Ultra Light It";
+        src:url("/fonts/MTI-WebFonts/5563266/9aab013b-a020-489f-a08c-6ab5f6f67f8a.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563266/b6eb3eb7-c188-4677-ac88-68e8b26904ca.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Light";
+        src:url("/fonts/MTI-WebFonts/5563272/53b78548-0604-4403-905a-977b7b0a1032.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563272/d46b7081-3725-4e21-bd15-49d310949b17.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05 Light Italic";
+        src:url("/fonts/MTI-WebFonts/5563280/808ea863-4a9f-4e5c-9275-7db1a5425f18.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563280/83e28306-ae4f-465b-9837-1830f2df107b.woff") format("woff");
+    }
+    @font-face{
+        font-family:"DIN Next LT W05";  /* "DIN Next LT W05 Ultra Light */
+        src:url("/fonts/MTI-WebFonts/5563260/9c206517-f5b2-4651-87c0-7b2b0267c4ab.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563260/11b3f254-a02f-461f-9d3e-387f6dc4a4b4.woff") format("woff");
+        font-weight: 100;
+        font-style: normal;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05";  /* "DIN Next LT W05 Ultra Light Italic */
+        src:url("/fonts/MTI-WebFonts/5563266/9aab013b-a020-489f-a08c-6ab5f6f67f8a.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563266/b6eb3eb7-c188-4677-ac88-68e8b26904ca.woff") format("woff");
+        font-weight: 100;
+        font-style: italic;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05";  /* "DIN Next LT W05 Light */
+        src:url("/fonts/MTI-WebFonts/5563272/53b78548-0604-4403-905a-977b7b0a1032.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563272/d46b7081-3725-4e21-bd15-49d310949b17.woff") format("woff");
+        font-weight: 300;
+        font-style: normal;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05";  /* "DIN Next LT W05 Light Italic */
+        src:url("/fonts/MTI-WebFonts/5563280/808ea863-4a9f-4e5c-9275-7db1a5425f18.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563280/83e28306-ae4f-465b-9837-1830f2df107b.woff") format("woff");
+        font-weight: 300;
+        font-style: italic;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05";  /* "DIN Next LT W05 Regular */
+        src:url("/fonts/MTI-WebFonts/5563043/f427aeaf-ea01-444e-9eb5-6b2b09e3bf32.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563043/8251f7ab-e651-4555-a26a-525bc230845f.woff") format("woff");
+        font-weight: 400;
+        font-style: normal;
+    }
+     @font-face{
+        font-family:"DIN Next LT W05";  /* "DIN Next LT W05 Italic */
+        src:url("/fonts/MTI-WebFonts/5563049/3831ec15-562f-4457-897e-678aa70aad57.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563049/c8fd8fb8-9bb3-4760-855b-7a6a59905520.woff") format("woff");
+        font-weight: 400;
+        font-style: italic;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Medium */
+        src:url("/fonts/MTI-WebFonts/5563055/a077222b-f869-4748-8eda-79372b7c40a1.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563055/0297a959-5296-4f45-9729-78daf65d9e43.woff") format("woff");
+        font-weight: 500;
+        font-style: normal;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Medium Italic */
+        src:url("/fonts/MTI-WebFonts/5563061/cf8d0938-56f2-46ef-8168-19041b6d44dc.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563061/75512791-046e-49e6-856f-726a3ea78b24.woff") format("woff");
+        font-weight: 500;
+        font-style: italic;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Medium */
+        src:url("/fonts/MTI-WebFonts/5563055/a077222b-f869-4748-8eda-79372b7c40a1.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563055/0297a959-5296-4f45-9729-78daf65d9e43.woff") format("woff");
+        font-weight: 600;
+        font-style: normal;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Medium Italic */
+        src:url("/fonts/MTI-WebFonts/5563061/cf8d0938-56f2-46ef-8168-19041b6d44dc.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563061/75512791-046e-49e6-856f-726a3ea78b24.woff") format("woff");
+        font-weight: 600;
+        font-style: italic;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Medium */
+        src:url("/fonts/MTI-WebFonts/5563055/a077222b-f869-4748-8eda-79372b7c40a1.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563055/0297a959-5296-4f45-9729-78daf65d9e43.woff") format("woff");
+        font-weight: 700;
+        font-style: normal;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Medium Italic */
+        src:url("/fonts/MTI-WebFonts/5563061/cf8d0938-56f2-46ef-8168-19041b6d44dc.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563061/75512791-046e-49e6-856f-726a3ea78b24.woff") format("woff");
+        font-weight: 700;
+        font-style: italic;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Bold */
+        src:url("/fonts/MTI-WebFonts/5563067/f855f545-9ff1-433c-912f-c58bd2d71d28.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563067/8a078fb7-2865-4534-a436-3c2a87c69d57.woff") format("woff");
+        font-weight: 800;
+        font-style: normal;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Bold Italic */
+        src:url("/fonts/MTI-WebFonts/5563073/aa058ab3-7d74-403c-bd5e-7c33fdb24960.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563073/4d037d46-4598-48d1-a94a-fd022c87a984.woff") format("woff");
+        font-weight: 800;
+        font-style: italic;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Heavy */
+        src:url("/fonts/MTI-WebFonts/5563079/2856836e-757a-4a96-a6ac-88ab0c41f266.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563079/a08b6864-d503-403e-a87b-058ecff605b1.woff") format("woff");
+        font-weight: 900;
+        font-style: normal;
+    }
+    @font-face{
+        font-family:"DIN Next LT W05"; /* "DIN Next LT W05 Heavy Italic */
+        src:url("/fonts/MTI-WebFonts/5563085/49c28de1-39a5-4a9a-875b-22ba65fe4584.woff2") format("woff2"),url("/fonts/MTI-WebFonts/5563085/5dfe7e90-4546-4430-9e3a-cd0643abec58.woff") format("woff");
+        font-weight: 900;
+        font-style: italic;
+    }
+</style><link rel="alternate" href="https://uptimeinstitute.com/tiers" hreflang="x-default"><link rel="alternate" href="https://uptimeinstitute.com/tiers" hreflang="en"><link rel="alternate" href="https://es.uptimeinstitute.com/tiers" hreflang="es"><link rel="alternate" href="https://ru.uptimeinstitute.com/tiers" hreflang="ru"><link rel="alternate" href="https://pt.uptimeinstitute.com/tiers" hreflang="pt"><link rel="alternate" href="https://zh.uptimeinstitute.com/tiers" hreflang="zh"><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WPMZ556');</script><link type="text/css" rel="stylesheet" href="https://fast.fonts.net/lt/1.css?apiType=css&amp;c=1779c17d-e8bb-45aa-8f44-7b425c44a334&amp;fontids=5563043,5563049,5563055,5563061,5563067,5563073,5563079,5563085,5563091,5563097,5563260,5563266,5563272,5563280"><script type="text/javascript" async="" src="//munchkin.marketo.net/munchkin.js"></script><script src="/cdn-cgi/challenge-platform/scripts/precursor/main.js"></script><link id="mktoForms2BaseStyle" rel="stylesheet" type="text/css" href="https://datacenter.uptimeinstitute.com/js/forms2/css/forms2.css" nonce=""><link id="mktoForms2ThemeStyle" rel="stylesheet" type="text/css" href="https://datacenter.uptimeinstitute.com/js/forms2/css/forms2-theme-simple.css" nonce=""><style>/* Add your custom CSS below */
+.mktoForm .mktoButtonWrap.mktoSimple .mktoButton {
+  background:none !important;
+  border:none !important;
+  width:150px !important;
+  background-color:#0057b8 !important;
+}
+  					</style><script type="text/javascript" async="" src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/860106082/?random=1793261324886&amp;cv=11&amp;fst=1793261324886&amp;bg=ffffff&amp;guid=ON&amp;async=1&amp;en=gtag.config&amp;gtm=45je6ar1v868819744za20ozb830928988zd830928988xecxf1&amp;gcd=13l3l3l3l1l1&amp;dma=0&amp;tag_exp=115616986~115938465~115938468~118897920~118897930~120213116~120385422~120469145~120469153~121191153~121246026~121246034&amp;u_w=1920&amp;u_h=1080&amp;url=https%3A%2F%2Fuptimeinstitute.com%2Ftiers&amp;ref=https%3A%2F%2Fwww.google.com%2F&amp;rcb=10&amp;frm=0&amp;tiba=Uptime%20Institute%20Tier%20Classification%20System%20-%20Uptime%20Institute&amp;hn=www.googleadservices.com&amp;npa=0&amp;pscdl=noapi&amp;auid=1969569506.1793261325&amp;uaa=x86&amp;uab=64&amp;uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&amp;uamb=0&amp;uam=&amp;uap=macOS&amp;uapv=10_15_7&amp;uaw=0&amp;data=event%3Dgtag.config&amp;ept=9&amp;rfmt=3&amp;fmt=4"></script><style></style></head><body class="site com-content view-article no-layout no-task itemid-243 en-gb ltr  sticky-header layout-fluid off-canvas-menu-init"><div role="dialog" aria-live="polite" aria-label="cookieconsent" aria-describedby="cookieconsent:desc" class="cc-window cc-banner cc-type-info cc-theme-block cc-bottom cc-color-override-1189367669 " style=""><span id="cookieconsent:desc" class="cc-message">We use cookies to improve our site performance, analyze usage and enhance your experience by providing custom content. By continuing to visit this site you agree to our use of cookies. <a aria-label="learn more about cookies" role="button" tabindex="0" class="cc-link" href="https://uptimeinstitute.com/privacy-policy" target="_blank">To learn more please review our privacy policy.</a></span><div class="cc-compliance"><a aria-label="dismiss cookie message" role="button" tabindex="0" class="cc-btn cc-dismiss">Got it!</a></div></div>
+	
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WPMZ556" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+		        <div class="body-wrapper off-canvas-menu-wrap">
+            <div class="body-innerwrapper body_innerwrapper_overflow">
+				<section id="sp-top-bar"><div class="row"><div id="sp-top1" class="col-12 col-md-4 col-lg-5 d-none d-md-block"><div class="sp-column"><ul class="social-icons"><li><a target="_blank" href="https://twitter.com/uptimeinstitute" aria-label="twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a></li><li><a target="_blank" href="https://www.linkedin.com/company/uptime-institute/" aria-label="LinkedIn"><i class="fab fa-linkedin" aria-hidden="true"></i></a></li></ul></div></div><div id="sp-top2" class="col-12 col-md-8 col-lg-7 "><div class="sp-column pull-right navbar-nav ui-top-menu"><div class="sp-module "><div class="sp-module-content"><ul id="top-drop" class="mod-menu mod-list nav "><li class="nav-item item-155 deeper parent"><a href="/about-ui"> About UI</a><ul class="mod-menu__sub list-unstyled small"><li class="nav-item item-1335"><a href="/business-partners"> Business Partners</a></li><li class="nav-item item-894"><a href="/about-ui/careers"> Careers</a></li><li class="nav-item item-1093"><a href="/contact"> Contact Us</a></li><li class="nav-item item-377"><a href="/about-ui/news-media"> News &amp; Media</a></li><li class="nav-item item-375"><a href="/about-ui/our-team"> Our Team</a></li><li class="nav-item item-974"><a href="/about-ui/press-releases"> Press Releases</a></li><li class="nav-item item-1139"><a href="/about-ui/logo-brand-guidelines"> Branding Guidelines</a></li></ul></li><li class="nav-item item-156"><a href="https://journal.uptimeinstitute.com"> Blog</a></li></ul></div></div><div class="sp-module "><div class="sp-module-content"><ul class="nav navbar-nav navbar-right ui-nav-languages"><li class="dropdown js-activated">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true">
+        SELECT YOUR LANGUAGE <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu OneLinkKeepLinks OneLinkNoTx"><li><a href="//www.uptimeinstitute.com/">English</a></li>
+        <li><a href="//es.uptimeinstitute.com/">Español</a></li>
+        <li><a href="//fr.uptimeinstitute.com/">French</a></li>
+        <li><a href="//pt.uptimeinstitute.com/">Português</a></li>
+
+        <li><a href="//zh.uptimeinstitute.com/">中文</a></li>
+    </ul></li></ul></div></div><div class="sp-module "><div class="sp-module-content"><div class="nav navbar-nav navbar-right ui-nav-search">
+	<form action="/tiers" method="post" class="navbar-form">
+        <div class="input-group ui-search-wrapper">
+            <input id="ui_search" type="text" class="form-control" name="searchword" placeholder="Enter Search Term" value=""><button id="ui_search_button" type="button" class="btn btn-default btn-md">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+		<input type="hidden" name="task" value="search"><input type="hidden" name="option" value="com_search"><input type="hidden" name="Itemid" value="243"></form>
+</div></div></div></div></div></div></section><header id="sp-header" class=" flex"><div class="sticky__wrapper"><div class="row" style="position: relative;"><div id="sp-logo" class="col-9 col-md-10 col-lg-2 "><div class="sp-column"><a class="logo p-0" href="/"><img class="sp-default-logo d-none d-md-block" src="/images/uptime-institute-logo_135x50_v2023.png" srcset="/images/uptime-institute-logo_135x50_v2023.png 2x" alt="Uptime Institute"><img class="sp-default-logo d-block d-sm-block d-md-none" src="/images/uptime-institute-logo_135x50_v2023.png" alt="Uptime Institute"></a></div></div><div id="sp-menu" class="col-1 col-md-1 col-lg-10 " style="position: static;"><div class="sp-column">			<div class="sp-megamenu-wrapper">
+				<a id="offcanvas-toggler" class="d-block d-lg-none" href="#" aria-label="Menu"><i class="fas fa-bars" aria-hidden="true" title="Menu"></i></a>
+				<ul class="sp-megamenu-parent menu-fade-down-fade-up d-none d-lg-flex"><li class="sp-menu-item"><a href="/">Home</a></li><li class="sp-menu-item sp-has-child"><a href="/ai-services/ai-infrastructure-advisory">AI Services</a><div class="sp-dropdown sp-dropdown-main sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/ai-services/ai-infrastructure-advisory">AI Infrastructure Advisory</a></li></ul></div></div></li><li class="sp-menu-item sp-has-child"><a href="/tier-certification">Tier Certification</a><div class="sp-dropdown sp-dropdown-main sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/tier-certification">Overview</a></li><li class="sp-menu-item"><a href="/tier-certification/design">Design</a></li><li class="sp-menu-item"><a href="/tier-certification/construction">Construction</a></li><li class="sp-menu-item"><a href="/tier-certification/operations">Operations</a></li><li class="sp-menu-item"><a href="https://uptimeinstitute.com/tga">Tier Gap Analysis</a></li><li class="sp-menu-item"><a href="/tier-certification/tier-ready">Prefabricated/Modular</a></li><li class="sp-menu-item"><a href="/tier-certification/tier-certification-list" rel="noopener noreferrer" target="_blank">Tier Certification List</a></li></ul></div></div></li><li class="sp-menu-item sp-has-child"><a href="/professional-services">Professional Services</a><div class="sp-dropdown sp-dropdown-main sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/professional-services">Overview</a></li><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item sp-has-child"><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/professional-services/efficient-it/server-decommissioning">Server Decommissioning</a></li><li class="sp-menu-item"><a href="/uptime-institute-awards">Efficient IT Awards</a></li><li class="sp-menu-item"><a href="/professional-services/efficient-it/efficient-it-assessment">Efficient IT Assessment</a></li></ul></div></div></li><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item sp-has-child"><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/professional-services/management-operations/mando-criteria">M&amp;O Criteria</a></li></ul></div></div></li><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item sp-has-child"><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item"><a href="/professional-services/infrastructure-services">Infrastructure Services</a></li><li class="sp-menu-item"><a href="/professional-services/management-and-operations-services">Management and Operations Services</a></li><li class="sp-menu-item"><a href="/professional-services/energy-and-sustainability-services">Energy and Sustainability Services</a></li><li class="sp-menu-item"><a href="/professional-services/data-center-cybersecurity-assessment">Data Center Cybersecurity Assessment</a></li><li class="sp-menu-item sp-has-child"><a href="/professional-services/consulting-services">Consulting Services</a><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item sp-has-child hide-submenu"><a href="/professional-services/consulting-services/it-advisory-services">IT Advisory Services</a><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"></ul></div></div></li></ul></div></div></li><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item"><li class="sp-menu-item sp-has-child"><a href="/education">Education</a><div class="sp-dropdown sp-dropdown-main sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item sp-has-child"><a href="/education">Education Framework</a><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/education/design">Design</a></li><li class="sp-menu-item"><a href="/education/executive">Executive</a></li><li class="sp-menu-item"><a href="/education/management-operations">Management &amp; Operations</a></li><li class="sp-menu-item"><a href="/education/network-infrastructure">Network Infrastructure</a></li><li class="sp-menu-item"><a href="/education/project-management">Project Management</a></li><li class="sp-menu-item"><a href="/education/energy-sustainability">Energy &amp; Sustainability</a></li><li class="sp-menu-item"><a href="/education/custom-corporate-l-and-d-programs">Custom Corporate L&amp;D Programs</a></li></ul></div></div></li><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><a href="/education/course-calendar">Course Calendar</a></li><li class="sp-menu-item"><a href="/education/competency-confidence-assessment-modelling-ccam">Competency &amp; Confidence Assessments</a></li><li class="sp-menu-item"><a href="/education/private-education">Private Education</a></li><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item sp-has-child"><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item sp-has-child"><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item sp-has-child"><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item sp-has-child"><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><li class="sp-menu-item"></ul></div></div></li></ul></div></div></li></ul></div></div></li><li class="sp-menu-item"><a href="/education/graduate-roster">Graduate Roster</a></li></ul></div></div></li><li class="sp-menu-item sp-has-child"><a href="/events">Events</a><div class="sp-dropdown sp-dropdown-main sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><li class="sp-menu-item"><a href="/events">Industry Events</a></li><li class="sp-menu-item sp-has-child hide-submenu"><a href="/events/leadership-events">Leadership Events</a><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><a href="/events/leadership-events/2024-july-perth-leadership-conference">Uptime Institute Leadership Conference - Perth</a></li><li class="sp-menu-item"><a href="/events/leadership-events/2025-january-new-delhi-leadership-conference">Leadership Conference for Government Data Center Infrastructure 2025</a></li><li class="sp-menu-item"><a href="/events/leadership-events/2026-march-milan-leadership-forum">Uptime Institute Leadership Forum - March 2026 - Milan</a></li><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item sp-has-child"><a href="/ui-network/network-calendar">Network Events</a><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><a href="/events/network-events/2026-fall-americas-conference">Uptime Network Americas Fall Conference 2026</a></li><li class="sp-menu-item"><li class="sp-menu-item"><a href="/events/network-events/2026-fall-emea-conference">Uptime Network EMEA Fall Conference 2026</a></li><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><a href="/events/network-events/open-house">Open House</a></li><li class="sp-menu-item"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item sp-has-child"><a href="/ui-network">Network</a><div class="sp-dropdown sp-dropdown-main sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/ui-network">Overview</a></li><li class="sp-menu-item"><a href="/ui-network/network-calendar">Network Calendar</a></li><li class="sp-menu-item"><li class="sp-menu-item"><a href="/ui-network/roster">Network Roster</a></li><li class="sp-menu-item"><a href="/ui-network/request-corporate-access">Request Corporate Access</a></li><li class="sp-menu-item"><a href="/ui-network/request-guest-access">Request Guest Access</a></li><li class="sp-menu-item"><a href="https://network.uptimeinstitute.com">Uptime Network Portal</a></li></ul></div></div></li><li class="sp-menu-item sp-has-child"><a href="/ui-intelligence">Intelligence</a><div class="sp-dropdown sp-dropdown-main sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/ui-intelligence">Overview</a></li></ul></div></div></li><li class="sp-menu-item sp-has-child"><a href="/clients">Clients</a><div class="sp-dropdown sp-dropdown-main sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="/clients">Client Stories</a></li><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item sp-has-child"><a href="/resources">Resources</a><div class="sp-dropdown sp-dropdown-main sp-menu-left" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><a href="https://uptimeinstitute.com/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=3&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.title&amp;filter_order_Dir=desc">Data Center Industry Surveys</a></li><li class="sp-menu-item sp-has-child hide-submenu"><a href="/resources/ebooks">Ebooks</a><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item"><a href="https://journal.uptimeinstitute.com">Journal Blog</a></li><li class="sp-menu-item"><a href="/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=6&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.published_on">Product Datasheets</a></li><li class="sp-menu-item sp-has-child hide-submenu"><a href="/resources/research-and-reports">Research &amp; Reports</a><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item"><a href="/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=1&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.published_on">Tier Specification Documents</a></li><li class="sp-menu-item sp-has-child hide-submenu"><a href="/resources/tools">Tools</a><div class="sp-dropdown sp-dropdown-sub sp-menu-right" style="width: 190px;"><div class="sp-dropdown-inner"><ul class="sp-dropdown-items"><li class="sp-menu-item"><li class="sp-menu-item"></ul></div></div></li><li class="sp-menu-item"><a href="/webinars">Webinars</a></li></ul></div></div></li><li class="sp-menu-item"></ul></div>
+		</div></div></div></div></header><section id="sp-page-title"><div class="row"><div id="sp-title" class="col-lg-12 "><div class="sp-column"><div class="sp-module "><div class="sp-module-content"><div class="mod-sppagebuilder  sp-page-builder" data-module_id="330">
+	<div class="page-content">
+		<div id="section-id-1502129486764" class="sppb-section"><div class="sppb-row-overlay"></div><div class="sppb-container-inner"><div class="sppb-row"><div class="sppb-col-md-12" id="column-wrap-id-1502129486765"><div id="column-id-1502129486765" class="sppb-column"><div class="sppb-column-addons"><div id="sppb-addon-wrapper-1502134518769" class="sppb-addon-wrapper"><div id="sppb-addon-1502134518769" class="clearfix "><div class="sppb-addon sppb-addon-text-block sppb-text-left masthead"><div class="sppb-addon-content"><h2>Tier Certification</h2></div></div><style type="text/css">#sppb-addon-1502134518769 {
+	color: rgba(255, 255, 255, 1);
+}
+#sppb-addon-1502134518769 {
+}
+#sppb-addon-1502134518769.sppb-element-loaded {
+}
+@media (min-width: 768px) and (max-width: 991px) {#sppb-addon-1502134518769 {}}@media (max-width: 767px) {#sppb-addon-1502134518769 {}}</style><style type="text/css">@media (min-width: 768px) and (max-width: 991px) {}@media (max-width: 767px) {}</style></div></div></div></div></div></div></div></div><style type="text/css">.sp-page-builder .page-content #section-id-1502129486764{padding:20px 0px 20px 0px;margin:0px 0px 0px 0px;background-image:url(/images/banners/banner-tier-certification-new.jpg);background-repeat:no-repeat;background-size:cover;background-attachment:scroll;background-position:50% 50%;}</style></div>
+</div>
+</div></div><div class="sp-module  container"><div class="sp-module-content"><nav class="mod-breadcrumbs__wrapper" aria-label="Breadcrumbs (flex)"><ol itemscope="" itemtype="https://schema.org/BreadcrumbList" class="mod-breadcrumbs breadcrumb"><li><i class="fas fa-home"></i></li><li class="mod-breadcrumbs__item breadcrumb-item" itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem"><a href="/" class="pathway"><span itemprop="name">Home</span></a><span class="breadcrumb_divider"> / <span><meta itemprop="position" content="1"></span></span></li><li class="mod-breadcrumbs__item breadcrumb-item active" itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem"><span itemprop="name">Tier Classification System</span><meta itemprop="position" content="2"></li>	</ol></nav></div></div></div></div></div></section><section id="sp-main-body"><div class="container"><div class="row"><div id="sp-component" class="col-lg-9 "><div class="sp-column ">	<div id="system-message-container">
+			</div>
+<article class="item item-page" itemscope="" itemtype="https://schema.org/Article"><meta itemprop="inLanguage" content="en-GB"><div class="entry-header">
+    		                            		             
+        	                <h1 itemprop="headline">Tier Classification System</h1>             
+        	<dl class="article-info"></dl></div>
+    
+	    <div class="clearfix sppb_article_edit"></div><hr><div itemprop="articleBody" class="com-content-article__body">
+		<span class="ui-content-header-mer"></span>
+<h2>Data Center Classifications</h2>
+<p>Uptime Institute created the data center Tier classification levels over 30 years ago, and today, they remain the international standard for data center performance. Our data center Tier definitions explain the infrastructure required for data center operations. There are different Tiers according to the system availability needed. These classifications are objective and reliable methods for comparing the performance of one site infrastructure against another and aligning infrastructure investments to business goals.</p>
+<p>Because Uptime Institute is the founder and trusted source for data center Tier Certification, you can trust our Tier Certification ratings to measure your capability and meet your performance requirements. We are the only licensed firm that can provide these certifications, making us the sole source for this valuable ranking.</p>
+<h3>Data Center Tier Classification</h3>
+<p>Our data center classifications are divided into four Tiers that match a particular business function and define criteria for maintenance, power, cooling and fault capabilities. The Tiers are progressive, so each Tier incorporates the requirements of the lower Tiers. This progression does not mean that a Tier IV data center is better than a Tier II — it means that these levels fit differing business operations. The definitions and benefits of the Tiers are set in our <a href="/resources/asset/tier-standard-topology">topology standard</a> and focus on the data center infrastructure.</p>
+<p>Operational sustainability is the second essential component of our data Tier classification. It refers to the behaviors and risks apart from infrastructure design that determine the ability of the data center to meet long-term business goals. Data center owners can align their management style to a Tier to achieve these goals, as management behavior is essential to operational sustainability.</p>
+<p>Together, topology and operational sustainability establish the performance criteria for data centers to follow. Data center owners may also want to consider other factors, such as building codes, regional weather, security and property usage. Our topology and operational sustainability standards do not cover these factors because they vary in every case. It is ultimately up to the owner to determine which Tier is best for their business needs.</p>
+<h3>What a Tier Classification Means for a Data Center and Its Infrastructure</h3>
+<p>The data center Tier definitions define criteria, but not specific technology options or design choices to meet the Tier. Tiers are flexible enough to allow for many solutions that meet performance goals and compliance regulations. Many solutions lead to engineering innovation and uniqueness across data centers. Each data center can decide the best way to meet the Tier criteria and business goals.</p>
+<p>Data center owners may want to reach a particular Tier level to meet their business demands. Uptime Institute can rate and certify your design and facility using the standards from our Tier classification requirements to give a Tier Certification. This certification means that the infrastructure has no weak areas, and the data center has worldwide accountability for excellence.</p>
+<p>Our Tier Certification process is an unbiased assessment that ensures all parties involved meet the given requirements and expectations. We will examine the infrastructure of your data center for our evaluation to consider your individual needs.</p>
+<h2>Data Center Tier Levels</h2>
+<p>The data center Tier levels are:</p>
+<h3>Tier I</h3>
+<p>A Tier I data center is the basic capacity level with infrastructure to support information technology for an office setting and beyond. The requirements for a Tier I facility include:</p>
+<ul><li>An uninterruptible power supply (UPS) for power sags, outages, and spikes.</li>
+<li>An area for IT systems.</li>
+<li>Dedicated cooling equipment that runs outside office hours.</li>
+<li>An engine generator for power outages.</li>
+</ul><p>Tier I protects against disruptions from human error, but not unexpected failure or outage. Redundant equipment includes chillers, pumps, UPS modules, and engine generators. The facility will have to shut down completely for preventive maintenance and repairs, and failure to do so increases the risk of unplanned disruptions and severe consequences from system failure.</p>
+<h3>Tier II</h3>
+<p>Tier II facilities cover redundant capacity components for power and cooling that provide better maintenance opportunities and safety against disruptions. These components include:</p>
+<ul><li>Engine generators.</li>
+<li>Energy storage.</li>
+<li>Chillers.</li>
+<li>Cooling units.</li>
+<li>UPS modules.</li>
+<li>Pumps.</li>
+<li>Heat rejection equipment.</li>
+<li>Fuel tanks.</li>
+<li>Fuel cells.</li>
+</ul><p>The distribution path of Tier II serves a critical environment, and the components can be removed without shutting it down. Like a Tier I facility, unexpected shutdown of a Tier II data center will affect the system.</p>
+<h3>Tier III</h3>
+<p>A Tier III data center is concurrently maintainable with redundant components as a key differentiator, with redundant distribution paths to serve the critical environment. Unlike Tier I and Tier II, these facilities require no shutdowns when equipment needs maintenance or replacement. The components of Tier III are added to Tier II components so that any part can be shut down without impacting IT operation.</p>
+<h3>Tier IV</h3>
+<p>A Tier IV data center has several independent and physically isolated systems that act as redundant capacity components and distribution paths. The separation is necessary to prevent an event from compromising both systems. The environment will not be affected by a disruption from planned and unplanned events. However, if the redundant components or distribution paths are shut down for maintenance, the environment may experience a higher risk of disruption if a failure occurs.</p>
+<p>Tier IV facilities add fault tolerance to the Tier III topology. When a piece of equipment fails, or there is an interruption in the distribution path, IT operations will not be affected. All of the IT equipment must have a fault-tolerant power design to be compatible. Tier IV data centers also require continuous cooling to make the environment stable.</p>
+<h2>Contact Uptime Institute to Learn More About Our Data Center Tier Classification</h2>
+<p>The data center Tier classifications created by Uptime Institute are recognizable in the industry as the standards to follow for data center performance. <br><br>Investing in <a href="/tier-certification">Tier Certification</a> puts your data center infrastructure under review and proves compliance, reassuring your clients that your facility will meet their expectations. <br><br><span style="font-weight: 400;">With <a href="/tier-certification/tier-certification-list">over 4300 Tier Certifications issued</a> in 120+ countries around the globe, Tier Certification is the data center industry standard for design, construction, and on-going operations.</span></p>
+<p><a href="/contact">Contact our team today</a> to learn more about our data center Tier classification and how it can improve your business's performance.</p>	</div>
+
+	    
+        	<div style="margin:0 auto 35px;" class="clearfix"></div><hr></article></div></div><div id="sp-main-side-feature-1" class="col-lg-3 "><div class="sp-column main-content-side"><div class="sp-module "><h3 class="sp-module-title">UI Marketo Contact Us Form (with Oktopost) for Menu Assignments<div class="divider"></div></h3><div class="divider"></div><div class="sp-module-content">
+
+<div class="custom">
+	<div style="border: 1px solid #ddd; padding-bottom: 20px; width: 390px">
+	<div id="marketo_form">
+		<h4 style="background-color: #0057b8; color: white; padding: 10px; text-align: center; margin-top: 0px;">Contact Us</h4>
+		<div style="color: #333; padding: 0px 10px 10px 10px; text-align: center; font-style: italic; font-size: 0.9em;">Have questions or need help? Fill out the form and we will follow up with you right away.</div>
+		
+		<script src="//datacenter.uptimeinstitute.com/js/forms2/js/forms2.min.js"></script><form id="mktoForm_363" novalidate="novalidate" class="mktoForm mktoHasWidth mktoLayoutLeft" style="font-family: Helvetica, Arial, sans-serif; font-size: 13px; color: rgb(51, 51, 51); width: 391px;"><style type="text/css" nonce="">.mktoForm .mktoButtonWrap.mktoSimple .mktoButton {
+color:#fff;
+border:1px solid #75ae4c;
+padding:0.4em 1em;
+font-size:1em;
+background-color:#99c47c;
+background-image: -webkit-gradient(linear, left top, left bottom, from(#99c47c), to(#75ae4c));
+background-image: -webkit-linear-gradient(top, #99c47c, #75ae4c);
+background-image: -moz-linear-gradient(top, #99c47c, #75ae4c);
+background-image: linear-gradient(to bottom, #99c47c, #75ae4c);
+}
+.mktoForm .mktoButtonWrap.mktoSimple .mktoButton:hover {
+border:1px solid #447f19;
+}
+.mktoForm .mktoButtonWrap.mktoSimple .mktoButton:focus {
+outline:none;
+border:1px solid #447f19;
+}
+.mktoForm .mktoButtonWrap.mktoSimple .mktoButton:active{
+background-color:#75ae4c;
+background-image: -webkit-gradient(linear, left top, left bottom, from(#75ae4c), to(#99c47c));
+background-image: -webkit-linear-gradient(top, #75ae4c, #99c47c);
+background-image: -moz-linear-gradient(top, #75ae4c, #99c47c);
+background-image: linear-gradient(to bottom, #75ae4c, #99c47c);
+}
+</style><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="FirstName" id="LblFirstName" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>First Name:</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><input id="FirstName" name="FirstName" maxlength="255" aria-labelledby="LblFirstName InstructFirstName" type="text" class="mktoField mktoTextField mktoHasWidth mktoRequired" aria-required="true" style="width: 200px;"><span id="InstructFirstName" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="LastName" id="LblLastName" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>Last Name:</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><input id="LastName" name="LastName" maxlength="255" aria-labelledby="LblLastName InstructLastName" type="text" class="mktoField mktoTextField mktoHasWidth mktoRequired" aria-required="true" style="width: 200px;"><span id="InstructLastName" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="Email" id="LblEmail" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>Email:</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><input id="Email" name="Email" maxlength="255" aria-labelledby="LblEmail InstructEmail" type="email" class="mktoField mktoEmailField mktoHasWidth mktoRequired" aria-required="true" style="width: 200px;"><span id="InstructEmail" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="Company" id="LblCompany" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>Company:</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><input id="Company" name="Company" maxlength="255" aria-labelledby="LblCompany InstructCompany" type="text" class="mktoField mktoTextField mktoHasWidth mktoRequired" aria-required="true" style="width: 200px;"><span id="InstructCompany" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="Country__c" id="LblCountry__c" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>Country:</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><select id="Country__c" name="Country__c" aria-labelledby="LblCountry__c InstructCountry__c" class="mktoField mktoHasWidth mktoRequired" aria-required="true" style="width: 200px;"><option value="">Select...</option><option value="Afghanistan">Afghanistan</option><option value="Aland Islands">Aland Islands</option><option value="Albania">Albania</option><option value="Algeria">Algeria</option><option value="American Samoa">American Samoa</option><option value="Andorra">Andorra</option><option value="Angola">Angola</option><option value="Anguilla">Anguilla</option><option value="Antarctica">Antarctica</option><option value="Antigua and Barbuda">Antigua and Barbuda</option><option value="Argentina">Argentina</option><option value="Armenia">Armenia</option><option value="Aruba">Aruba</option><option value="Australia">Australia</option><option value="Austria">Austria</option><option value="Azerbaijan">Azerbaijan</option><option value="Bahamas">Bahamas</option><option value="Bahrain">Bahrain</option><option value="Bangladesh">Bangladesh</option><option value="Barbados">Barbados</option><option value="Belarus">Belarus</option><option value="Belgium">Belgium</option><option value="Belize">Belize</option><option value="Benin">Benin</option><option value="Bermuda">Bermuda</option><option value="Bhutan">Bhutan</option><option value="Bolivia">Bolivia</option><option value="Bonaire">Bonaire</option><option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option><option value="Botswana">Botswana</option><option value="Bouvet Island">Bouvet Island</option><option value="Brazil">Brazil</option><option value="British Indian Ocean Territory">British Indian Ocean Territory</option><option value="Brunei Darussalam">Brunei Darussalam</option><option value="Bulgaria">Bulgaria</option><option value="Burkina Faso">Burkina Faso</option><option value="Burundi">Burundi</option><option value="Cambodia">Cambodia</option><option value="Cameroon">Cameroon</option><option value="Canada">Canada</option><option value="Cape Verde">Cape Verde</option><option value="Cayman Islands">Cayman Islands</option><option value="Central African Republic">Central African Republic</option><option value="Chad">Chad</option><option value="Chile">Chile</option><option value="China PRC">China PRC</option><option value="Christmas Island">Christmas Island</option><option value="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option><option value="Colombia">Colombia</option><option value="Comoros">Comoros</option><option value="Congo">Congo</option><option value="Congo DRC">Congo DRC</option><option value="Cook Islands">Cook Islands</option><option value="Costa Rica">Costa Rica</option><option value="Cote D'ivoire">Cote D'ivoire</option><option value="Croatia">Croatia</option><option value="Cuba">Cuba</option><option value="Curacao">Curacao</option><option value="Cyprus">Cyprus</option><option value="Czech Republic">Czech Republic</option><option value="Denmark">Denmark</option><option value="Djibouti">Djibouti</option><option value="Dominica">Dominica</option><option value="Dominican Republic">Dominican Republic</option><option value="Ecuador">Ecuador</option><option value="Egypt">Egypt</option><option value="El Salvador">El Salvador</option><option value="Equatorial Guinea">Equatorial Guinea</option><option value="Eritrea">Eritrea</option><option value="Estonia">Estonia</option><option value="Ethiopia">Ethiopia</option><option value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option><option value="Faroe Islands">Faroe Islands</option><option value="Fiji">Fiji</option><option value="Finland">Finland</option><option value="France">France</option><option value="French Guiana">French Guiana</option><option value="French Polynesia">French Polynesia</option><option value="French Southern Territories">French Southern Territories</option><option value="Gabon">Gabon</option><option value="Gambia">Gambia</option><option value="Georgia">Georgia</option><option value="Germany">Germany</option><option value="Ghana">Ghana</option><option value="Gibraltar">Gibraltar</option><option value="Greece">Greece</option><option value="Greenland">Greenland</option><option value="Grenada">Grenada</option><option value="Guadeloupe">Guadeloupe</option><option value="Guam">Guam</option><option value="Guatemala">Guatemala</option><option value="Guernsey">Guernsey</option><option value="Guinea">Guinea</option><option value="Guinea-Bissau">Guinea-Bissau</option><option value="Guyana">Guyana</option><option value="Haiti">Haiti</option><option value="Heard and Mcdonald Islands">Heard and Mcdonald Islands</option><option value="Holy See (Vatican City State)">Holy See (Vatican City State)</option><option value="Honduras">Honduras</option><option value="Hong Kong">Hong Kong</option><option value="Hungary">Hungary</option><option value="Iceland">Iceland</option><option value="India">India</option><option value="Indonesia">Indonesia</option><option value="Iran">Iran</option><option value="Iraq">Iraq</option><option value="Ireland">Ireland</option><option value="Isle of Man">Isle of Man</option><option value="Israel">Israel</option><option value="Italy">Italy</option><option value="Jamaica">Jamaica</option><option value="Japan">Japan</option><option value="Jersey">Jersey</option><option value="Jordan">Jordan</option><option value="Kazakhstan">Kazakhstan</option><option value="Kenya">Kenya</option><option value="Kiribati">Kiribati</option><option value="North Korea DPRK">North Korea DPRK</option><option value="South Korea ROK">South Korea ROK</option><option value="Kuwait">Kuwait</option><option value="Kyrgyzstan">Kyrgyzstan</option><option value="Laos">Laos</option><option value="Latvia">Latvia</option><option value="Lebanon">Lebanon</option><option value="Lesotho">Lesotho</option><option value="Liberia">Liberia</option><option value="Libya">Libya</option><option value="Liechtenstein">Liechtenstein</option><option value="Lithuania">Lithuania</option><option value="Luxembourg">Luxembourg</option><option value="Macao">Macao</option><option value="Macedonia">Macedonia</option><option value="Madagascar">Madagascar</option><option value="Malawi">Malawi</option><option value="Malaysia">Malaysia</option><option value="Maldives">Maldives</option><option value="Mali">Mali</option><option value="Malta">Malta</option><option value="Marshall Islands">Marshall Islands</option><option value="Martinique">Martinique</option><option value="Mauritania">Mauritania</option><option value="Mauritius">Mauritius</option><option value="Mayotte">Mayotte</option><option value="Mexico">Mexico</option><option value="Micronesia">Micronesia</option><option value="Moldova">Moldova</option><option value="Monaco">Monaco</option><option value="Mongolia">Mongolia</option><option value="Montenegro">Montenegro</option><option value="Montserrat">Montserrat</option><option value="Morocco">Morocco</option><option value="Mozambique">Mozambique</option><option value="Myanmar">Myanmar</option><option value="Namibia">Namibia</option><option value="Nauru">Nauru</option><option value="Nepal">Nepal</option><option value="Netherlands">Netherlands</option><option value="New Caledonia">New Caledonia</option><option value="New Zealand">New Zealand</option><option value="Nicaragua">Nicaragua</option><option value="Niger">Niger</option><option value="Nigeria">Nigeria</option><option value="Niue">Niue</option><option value="Norfolk Island">Norfolk Island</option><option value="Northern Mariana Islands">Northern Mariana Islands</option><option value="Norway">Norway</option><option value="Oman">Oman</option><option value="Pakistan">Pakistan</option><option value="Palau">Palau</option><option value="Palestinian Territories">Palestinian Territories</option><option value="Panama">Panama</option><option value="Papua New Guinea">Papua New Guinea</option><option value="Paraguay">Paraguay</option><option value="Peru">Peru</option><option value="Philippines">Philippines</option><option value="Pitcairn">Pitcairn</option><option value="Poland">Poland</option><option value="Portugal">Portugal</option><option value="Puerto Rico">Puerto Rico</option><option value="Qatar">Qatar</option><option value="Reunion">Reunion</option><option value="Romania">Romania</option><option value="Russia">Russia</option><option value="Rwanda">Rwanda</option><option value="Saint Barthelemy">Saint Barthelemy</option><option value="Saint Helena">Saint Helena</option><option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option><option value="Saint Lucia">Saint Lucia</option><option value="Saint Martin (French Part)">Saint Martin (French Part)</option><option value="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option><option value="Saint Vincent and The Grenadines">Saint Vincent and The Grenadines</option><option value="Samoa">Samoa</option><option value="San Marino">San Marino</option><option value="Sao Tome and Principe">Sao Tome and Principe</option><option value="Saudi Arabia">Saudi Arabia</option><option value="Senegal">Senegal</option><option value="Serbia">Serbia</option><option value="Seychelles">Seychelles</option><option value="Sierra Leone">Sierra Leone</option><option value="Singapore">Singapore</option><option value="Sint Maarten (Dutch)">Sint Maarten (Dutch)</option><option value="Slovakia">Slovakia</option><option value="Slovenia">Slovenia</option><option value="Solomon Islands">Solomon Islands</option><option value="Somalia">Somalia</option><option value="South Africa">South Africa</option><option value="South Georgia and The South Sandwich Islands">South Georgia and The South Sandwich Islands</option><option value="South Sudan">South Sudan</option><option value="Spain">Spain</option><option value="Sri Lanka">Sri Lanka</option><option value="Sudan">Sudan</option><option value="Suriname">Suriname</option><option value="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option><option value="Swaziland">Swaziland</option><option value="Sweden">Sweden</option><option value="Switzerland">Switzerland</option><option value="Syrian Arab Republic">Syrian Arab Republic</option><option value="Taiwan ROC">Taiwan ROC</option><option value="Tajikistan">Tajikistan</option><option value="Tanzania">Tanzania</option><option value="Thailand">Thailand</option><option value="Timor-Leste">Timor-Leste</option><option value="Togo">Togo</option><option value="Tokelau">Tokelau</option><option value="Tonga">Tonga</option><option value="Trinidad and Tobago">Trinidad and Tobago</option><option value="Tunisia">Tunisia</option><option value="Turkey">Turkey</option><option value="Turkmenistan">Turkmenistan</option><option value="Turks and Caicos Islands">Turks and Caicos Islands</option><option value="Tuvalu">Tuvalu</option><option value="Uganda">Uganda</option><option value="Ukraine">Ukraine</option><option value="United Arab Emirates">United Arab Emirates</option><option value="United Kingdom">United Kingdom</option><option value="United States">United States</option><option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option><option value="Uruguay">Uruguay</option><option value="Uzbekistan">Uzbekistan</option><option value="Vanuatu">Vanuatu</option><option value="Venezuela">Venezuela</option><option value="Viet Nam">Viet Nam</option><option value="Virgin Islands, British">Virgin Islands, British</option><option value="Virgin Islands, U.S.">Virgin Islands, U.S.</option><option value="Wallis and Futuna">Wallis and Futuna</option><option value="Western Sahara">Western Sahara</option><option value="Yemen">Yemen</option><option value="Zambia">Zambia</option><option value="Zimbabwe">Zimbabwe</option><option value="Military Post Office">Military Post Office</option><option value="Netherlands Antilles">Netherlands Antilles</option></select><span id="InstructCountry__c" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoPlaceholder mktoPlaceholderState__c"></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap"><label for="Phone" id="LblPhone" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>Phone:</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><input id="Phone" name="Phone" maxlength="255" aria-labelledby="LblPhone InstructPhone" type="tel" class="mktoField mktoTelField mktoHasWidth" style="width: 200px;"><span id="InstructPhone" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="Title" id="LblTitle" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>Job Title:</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><input id="Title" name="Title" maxlength="255" aria-labelledby="LblTitle InstructTitle" type="text" class="mktoField mktoTextField mktoHasWidth mktoRequired" aria-required="true" style="width: 200px;"><span id="InstructTitle" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="Topics_of_Business_Interest__c" id="LblTopics_of_Business_Interest__c" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>Topics of Interest:</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><div class="mktoLogicalField mktoCheckboxList mktoHasWidth mktoRequired" style="width: 270px;"><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_0" type="checkbox" value="Artificial Intelligence" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_0 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_0" id="LblmktoCheckbox_11991_0">Artificial Intelligence</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_1" type="checkbox" value="Cyber Security" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_1 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_1" id="LblmktoCheckbox_11991_1">Cyber Security</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_2" type="checkbox" value="Data Center Management &amp; Operations" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_2 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_2" id="LblmktoCheckbox_11991_2">Data Center Management &amp; Operations</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_3" type="checkbox" value="Data Center Design &amp; Construction" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_3 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_3" id="LblmktoCheckbox_11991_3">Data Center Design &amp; Construction</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_4" type="checkbox" value="Digital Infrastructure Consulting Services" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_4 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_4" id="LblmktoCheckbox_11991_4">Digital Infrastructure Consulting Services</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_5" type="checkbox" value="Education &amp; Training" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_5 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_5" id="LblmktoCheckbox_11991_5">Education &amp; Training</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_6" type="checkbox" value="IT Advisory" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_6 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_6" id="LblmktoCheckbox_11991_6">IT Advisory</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_7" type="checkbox" value="Third Party Risk Management (TPRM)" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_7 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_7" id="LblmktoCheckbox_11991_7">Third Party Risk Management (TPRM)</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_8" type="checkbox" value="Sustainability" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_8 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_8" id="LblmktoCheckbox_11991_8">Energy &amp; Sustainability</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_9" type="checkbox" value="Tier Standard and Certification" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_9 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_9" id="LblmktoCheckbox_11991_9">Tier Standard and Certification</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_10" type="checkbox" value="Uptime Intelligence" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_10 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_10" id="LblmktoCheckbox_11991_10">Uptime Intelligence</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_11" type="checkbox" value="Uptime Network" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_11 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_11" id="LblmktoCheckbox_11991_11">Uptime Network</label><input name="Topics_of_Business_Interest__c" id="mktoCheckbox_11991_12" type="checkbox" value="Other" aria-required="true" aria-labelledby="LblTopics_of_Business_Interest__c LblmktoCheckbox_11991_12 InstructTopics_of_Business_Interest__c" class="mktoField"><label for="mktoCheckbox_11991_12" id="LblmktoCheckbox_11991_12">Other</label></div><span id="InstructTopics_of_Business_Interest__c" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="Would_Like_to_Know__c" id="LblWould_Like_to_Know__c" class="mktoLabel mktoHasWidth" style="width: 100px;"><div class="mktoAsterix">*</div>What would you like more information on?</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><textarea id="Would_Like_to_Know__c" name="Would_Like_to_Know__c" rows="5" aria-labelledby="LblWould_Like_to_Know__c InstructWould_Like_to_Know__c" class="mktoField mktoHasWidth mktoRequired" maxlength="255" aria-required="true" style="width: 200px;"></textarea><span id="InstructWould_Like_to_Know__c" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><div class="mktoFieldDescriptor mktoFormCol" style="margin-bottom: 10px;"><div class="mktoOffset" style="width: 10px;"></div><div class="mktoFieldWrap mktoRequiredField"><label for="Marketing_Consent_Given__c" id="LblMarketing_Consent_Given__c" class="mktoLabel mktoHasWidth" style="width: 206px;"><div class="mktoAsterix">*</div>I consent to communications from Uptime Institute</label><div class="mktoGutter mktoHasWidth" style="width: 10px;"></div><div class="mktoLogicalField mktoCheckboxList mktoHasWidth mktoRequired" style="width: 150px;"><input name="Marketing_Consent_Given__c" id="Marketing_Consent_Given__c" type="checkbox" value="yes" aria-required="true" aria-labelledby="LblMarketing_Consent_Given__c InstructMarketing_Consent_Given__c" class="mktoField"><label for="Marketing_Consent_Given__c" id="LblMarketing_Consent_Given__c"></label></div><span id="InstructMarketing_Consent_Given__c" tabindex="-1" class="mktoInstruction"></span><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoClear"></div></div><div class="mktoFormRow"><input type="hidden" name="utm_campaign_latest__c" class="mktoField mktoFieldDescriptor mktoFormCol" value="" style="margin-bottom: 10px;"><div class="mktoClear"></div></div><div class="mktoFormRow"><input type="hidden" name="utm_content_latest__c" class="mktoField mktoFieldDescriptor mktoFormCol" value="" style="margin-bottom: 10px;"><div class="mktoClear"></div></div><div class="mktoFormRow"><input type="hidden" name="utm_medium_latest__c" class="mktoField mktoFieldDescriptor mktoFormCol" value="" style="margin-bottom: 10px;"><div class="mktoClear"></div></div><div class="mktoFormRow"><input type="hidden" name="utm_source_latest__c" class="mktoField mktoFieldDescriptor mktoFormCol" value="" style="margin-bottom: 10px;"><div class="mktoClear"></div></div><div class="mktoFormRow"><input type="hidden" name="utm_term_latest__c" class="mktoField mktoFieldDescriptor mktoFormCol" value="" style="margin-bottom: 10px;"><div class="mktoClear"></div></div><div class="mktoButtonRow"><span class="mktoButtonWrap mktoSimple" style="margin-left: 120px;"><button type="submit" class="mktoButton">Submit</button></span></div><input type="hidden" name="formid" class="mktoField mktoFieldDescriptor" value="363"><input type="hidden" name="munchkinId" class="mktoField mktoFieldDescriptor" value="711-RIA-145"></form>
+		<script>
+			MktoForms2.loadForm("//datacenter.uptimeinstitute.com", "711-RIA-145", 363);
+		</script></div>
+	<script type="text/javascript">
+		MktoForms2.whenReady(function(form) {
+			//Add an onSuccess handler
+			form.onSuccess(function(values, followUpUrl) {
+				//get the form's jQuery element and hide it
+				jQuery("div#marketo_form").hide();
+				jQuery("div#confirmform").show();
+
+				//send the conversion to Oktopost
+
+				_oktrk('send', {
+					tag: 'Mkto Contact Form'
+				});
+
+				//return false to prevent the submission handler from taking the lead to the follow up url.
+				return false;
+			});
+		});
+		// ]]>
+	</script><div id="confirmform" style="display: none; padding: 20px; text-align: center;">
+		<p style="font-size: 1.4em;">Thank You</p>
+		<p>We will contact you soon regarding your inquiry.</p>
+	</div>
+</div></div>
+</div></div><div class="sp-module "><h3 class="sp-module-title">MS - Light - Tier Certification<div class="divider"></div></h3><div class="divider"></div><div class="sp-module-content">
+
+<div class="custom">
+	<div class="side-box side-box-light">
+<p class="side-box-title">Tier Resources</p>
+<p><a href="/tier-certification">Tier Certification Overview</a></p>
+<p><a href="/tiers">Tier Classification System</a></p>
+<p><a href="/TierCertification/index.php">Tier Certified Site List</a></p>
+<p><a href="/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=1&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.published_on">Tier Specification Documents</a></p>
+<p><a href="http://journal.uptimeinstitute.com/explaining-uptime-institutes-tier-classification-system/">Explaining Tiers Article</a></p>
+</div></div>
+</div></div></div></div></div></div></section><footer id="sp-footer"><div class="row"><div id="sp-footer1" class="col-lg-12 "><div class="sp-column"><div class="sp-module "><div class="sp-module-content">
+<div id="ui-nav-group">
+    <ul class="nav " id="footer-nav"><li style="display:none">                        <a href="/">Home</a>
+                        </li><li><a href="/ai-services/ai-infrastructure-advisory"> AI Services</a><ul class="dropdown-menu"><li>                        <a href="/ai-services/ai-infrastructure-advisory">AI Infrastructure Advisory</a>
+                        </li></ul></li><li>                        <a href="/tier-certification">Tier Certification</a>
+                        <ul class="dropdown-menu"><li><a href="/tier-certification"> Overview</a></li><li>                        <a href="/tier-certification/design">Design</a>
+                        </li><li>                        <a href="/tier-certification/construction">Construction</a>
+                        </li><li>                        <a href="/tier-certification/operations">Operations</a>
+                        </li><li><a href="https://uptimeinstitute.com/tga"> Tier Gap Analysis</a></li><li>                        <a href="/tier-certification/tier-ready">Prefabricated/Modular</a>
+                        </li><li>        <a href="/tier-certification/tier-certification-list" target="_blank">Tier Certification List</a>
+        </li></ul></li><li>                        <a href="/professional-services">Professional Services</a>
+                        <ul class="dropdown-menu"><li><a href="/professional-services"> Overview</a></li><li>                        <a href="/professional-services/infrastructure-services">Infrastructure Services</a>
+                        </li><li>                        <a href="/professional-services/management-and-operations-services">Management and Operations Services</a>
+                        </li><li>                        <a href="/professional-services/energy-and-sustainability-services">Energy and Sustainability Services</a>
+                        </li><li>                        <a href="/professional-services/data-center-cybersecurity-assessment">Data Center Cybersecurity Assessment</a>
+                        </li><li>                        <a href="/professional-services/consulting-services">Consulting Services</a>
+                        </li></ul></li><li>                        <a href="/education">Education</a>
+                        <ul class="dropdown-menu"><li><a href="/education"> Education Framework</a></li><li>                        <a href="/education/course-calendar">Course Calendar</a>
+                        </li><li><a href="/education/competency-confidence-assessment-modelling-ccam"> Competency &amp; Confidence Assessments</a></li><li>                        <a href="/education/private-education">Private Education</a>
+                        </li><li>                        <a href="/education/graduate-roster">Graduate Roster</a>
+                        </li></ul></li><li>                        <a href="/events">Events</a>
+                        <ul class="dropdown-menu"><li><a href="/events"> Industry Events</a></li><li>                        <a href="/events/leadership-events">Leadership Events</a>
+                        </li><li><a href="/ui-network/network-calendar"> Network Events</a></li></ul></li><li>                        <a href="/ui-network">Network</a>
+                        <ul class="dropdown-menu"><li><a href="/ui-network"> Overview</a></li><li>                        <a href="/ui-network/network-calendar">Network Calendar</a>
+                        </li><li>                        <a href="/ui-network/roster">Network Roster</a>
+                        </li><li>                        <a href="/ui-network/request-corporate-access">Request Corporate Access</a>
+                        </li><li>                        <a href="/ui-network/request-guest-access">Request Guest Access</a>
+                        </li><li><a href="https://network.uptimeinstitute.com"> Uptime Network Portal</a></li></ul></li><li>                        <a href="/ui-intelligence">Intelligence</a>
+                        <ul class="dropdown-menu"><li><a href="/ui-intelligence"> Overview</a></li></ul></li><li>                        <a href="/clients">Clients</a>
+                        <ul class="dropdown-menu"><li><a href="/clients"> Client Stories</a></li></ul></li><li>                        <a href="/resources">Resources</a>
+                        <ul class="dropdown-menu"><li><a href="https://uptimeinstitute.com/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=3&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.title&amp;filter_order_Dir=desc"> Data Center Industry Surveys</a></li><li>                        <a href="/resources/ebooks">Ebooks</a>
+                        </li><li><a href="https://journal.uptimeinstitute.com"> Journal Blog</a></li><li><a href="/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=6&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.published_on"> Product Datasheets</a></li><li>                        <a href="/resources/research-and-reports">Research &amp; Reports</a>
+                        </li><li><a href="/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=1&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.published_on"> Tier Specification Documents</a></li><li>                        <a href="/resources/tools">Tools</a>
+                        </li><li><a href="/webinars"> Webinars</a></li></ul></li>    </ul></div> 
+
+    <div id="ui-panel-group">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/ai-services/ai-infrastructure-advisory">AI Infrastructure Advisory</a></h4></div></div><a href="/tier-certification">Tier Certification</a><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/tier-certification/design">Design</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/tier-certification/construction">Construction</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/tier-certification/operations">Operations</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/tier-certification/tier-ready">Prefabricated/Modular</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><a href="/professional-services">Professional Services</a><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/professional-services/infrastructure-services">Infrastructure Services</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/professional-services/management-and-operations-services">Management and Operations Services</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/professional-services/energy-and-sustainability-services">Energy and Sustainability Services</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/professional-services/data-center-cybersecurity-assessment">Data Center Cybersecurity Assessment</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/professional-services/consulting-services">Consulting Services</a></h4></div></div><a href="/education">Education</a><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/education/course-calendar">Course Calendar</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/education/private-education">Private Education</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/education/graduate-roster">Graduate Roster</a></h4></div></div><a href="/events">Events</a><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/events/leadership-events">Leadership Events</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><a href="/ui-network">Network</a><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/ui-network/network-calendar">Network Calendar</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/ui-network/roster">Network Roster</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/ui-network/request-corporate-access">Request Corporate Access</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/ui-network/request-guest-access">Request Guest Access</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><a href="/ui-intelligence">Intelligence</a><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><a href="/clients">Clients</a><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><a href="/resources">Resources</a><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/resources/ebooks">Ebooks</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/resources/research-and-reports">Research &amp; Reports</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a href="/resources/tools">Tools</a></h4></div></div><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"></h4></div></div>        </div>
+    </div>
+</div></div><nav class="sp-module "><div class="sp-module-content"><ul class="mod-menu mod-list nav  menufooter"><li class="nav-item item-143"><a href="/"> Home</a></li><li class="nav-item item-138"><a href="/contact"> Contact</a></li><li class="nav-item item-139"><a href="/privacy-policy"> Privacy Policy</a></li><li class="nav-item item-140"><a href="/terms-of-use"> Terms of Use</a></li><li class="nav-item item-141"><a href="/site-map"> Site Map</a></li></ul></div></nav><div class="moduletablefooter">
+
+		
+			
+
+<div class="customfooter">
+	<div class="ui-footer-social">
+	<div class="custom">
+		<ul class="ui-footer-line"><li class="sn-image"><a href="https://twitter.com/uptimeinstitute" target="new"><span id="sn_twitter"></span></a></li>
+			<li class="sn-image"><a href="https://www.linkedin.com/company/uptime-institute/" target="new"><span id="sn_linkedin"></span></a></li>
+		</ul></div>
+</div></div>
+
+		</div>
+
+	<span class="sp-copyright">© 2013-2026 Uptime Institute, LLC. All Rights Reserved.</span></div></div></div></footer></div>
+		</div>
+
+		
+		<div class="offcanvas-overlay"></div><div class="offcanvas-menu">
+			<a href="#" class="close-offcanvas" aria-label="Close"><i class="fas fa-times" aria-hidden="true" title="HELIX_CLOSE_MENU"></i></a>
+			<div class="offcanvas-inner">
+									<div class="sp-module "><div class="sp-module-content"><ul class="accordion-menu "><li class="nav-item item-155 deeper parent"><a href="/about-ui"> About UI</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-155-318" role="button" aria-expanded="false" aria-controls="collapse-menu-155-318"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-155-318"><li class="nav-item item-1335"><a href="/business-partners"> Business Partners</a></li><li class="nav-item item-894"><a href="/about-ui/careers"> Careers</a></li><li class="nav-item item-1093"><a href="/contact"> Contact Us</a></li><li class="nav-item item-377"><a href="/about-ui/news-media"> News &amp; Media</a></li><li class="nav-item item-375"><a href="/about-ui/our-team"> Our Team</a></li><li class="nav-item item-974"><a href="/about-ui/press-releases"> Press Releases</a></li><li class="nav-item item-1139"><a href="/about-ui/logo-brand-guidelines"> Branding Guidelines</a></li></ul></li><li class="nav-item item-156"><a href="https://journal.uptimeinstitute.com"> Blog</a></li></ul></div></div><div class="sp-module "><div class="sp-module-content"><ul class="accordion-menu "><li class="nav-item item-101 default"><a href="/"> Home</a></li><li class="nav-item item-1822 deeper parent"><a href="/ai-services/ai-infrastructure-advisory"> AI Services</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-1822-319" role="button" aria-expanded="false" aria-controls="collapse-menu-1822-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-1822-319"><li class="nav-item item-1823"><a href="/ai-services/ai-infrastructure-advisory"> AI Infrastructure Advisory</a></li></ul></li><li class="nav-item item-944 deeper parent"><a href="/tier-certification"> Tier Certification</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-944-319" role="button" aria-expanded="false" aria-controls="collapse-menu-944-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-944-319"><li class="nav-item item-945"><a href="/tier-certification"> Overview</a></li><li class="nav-item item-192"><a href="/tier-certification/design"> Design</a></li><li class="nav-item item-360"><a href="/tier-certification/construction"> Construction</a></li><li class="nav-item item-361"><a href="/tier-certification/operations"> Operations</a></li><li class="nav-item item-1448"><a href="https://uptimeinstitute.com/tga"> Tier Gap Analysis</a></li><li class="nav-item item-965"><a href="/tier-certification/tier-ready"> Prefabricated/Modular</a></li><li class="nav-item item-1165"><a href="/tier-certification/tier-certification-list" target="_blank"> Tier Certification List</a></li></ul></li><li class="nav-item item-947 deeper parent"><a href="/professional-services"> Professional Services</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-947-319" role="button" aria-expanded="false" aria-controls="collapse-menu-947-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-947-319"><li class="nav-item item-166"><a href="/professional-services"> Overview</a></li><li class="nav-item item-1501"><a href="/professional-services/infrastructure-services"> Infrastructure Services</a></li><li class="nav-item item-1500"><a href="/professional-services/management-and-operations-services"> Management and Operations Services</a></li><li class="nav-item item-1499"><a href="/professional-services/energy-and-sustainability-services"> Energy and Sustainability Services</a></li><li class="nav-item item-1917"><a href="/professional-services/data-center-cybersecurity-assessment"> Data Center Cybersecurity Assessment</a></li><li class="nav-item item-1658 parent"><a href="/professional-services/consulting-services"> Consulting Services</a></li></ul></li><li class="nav-item item-149 deeper parent"><a href="/education"> Education</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-149-319" role="button" aria-expanded="false" aria-controls="collapse-menu-149-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-149-319"><li class="nav-item item-1877 parent"><a href="/education"> Education Framework</a></li><li class="nav-item item-1440"><a href="/education/course-calendar"> Course Calendar</a></li><li class="nav-item item-1699"><a href="/education/competency-confidence-assessment-modelling-ccam"> Competency &amp; Confidence Assessments</a></li><li class="nav-item item-1667"><a href="/education/private-education"> Private Education</a></li><li class="nav-item item-1806"><a href="/education/graduate-roster"> Graduate Roster</a></li></ul></li><li class="nav-item item-933 deeper parent"><a href="/events"> Events</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-933-319" role="button" aria-expanded="false" aria-controls="collapse-menu-933-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-933-319"><li class="nav-item item-718"><a href="/events"> Industry Events</a></li><li class="nav-item item-1536 parent"><a href="/events/leadership-events"> Leadership Events</a></li><li class="nav-item item-1328 parent"><a href="/ui-network/network-calendar"> Network Events</a></li></ul></li><li class="nav-item item-150 deeper parent"><a href="/ui-network"> Network</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-150-319" role="button" aria-expanded="false" aria-controls="collapse-menu-150-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-150-319"><li class="nav-item item-168"><a href="/ui-network"> Overview</a></li><li class="nav-item item-170"><a href="/ui-network/network-calendar"> Network Calendar</a></li><li class="nav-item item-1208"><a href="/ui-network/roster"> Network Roster</a></li><li class="nav-item item-1595"><a href="/ui-network/request-corporate-access"> Request Corporate Access</a></li><li class="nav-item item-1109"><a href="/ui-network/request-guest-access"> Request Guest Access</a></li><li class="nav-item item-1095"><a href="https://network.uptimeinstitute.com"> Uptime Network Portal</a></li></ul></li><li class="nav-item item-1131 deeper parent"><a href="/ui-intelligence"> Intelligence</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-1131-319" role="button" aria-expanded="false" aria-controls="collapse-menu-1131-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-1131-319"><li class="nav-item item-1091"><a href="/ui-intelligence"> Overview</a></li></ul></li><li class="nav-item item-874 deeper parent"><a href="/clients"> Clients</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-874-319" role="button" aria-expanded="false" aria-controls="collapse-menu-874-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-874-319"><li class="nav-item item-952"><a href="/clients"> Client Stories</a></li></ul></li><li class="nav-item item-934 deeper parent"><a href="/resources"> Resources</a><span class="accordion-menu-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-menu-934-319" role="button" aria-expanded="false" aria-controls="collapse-menu-934-319"><i class="open-icon fas fa-chevron-down"></i></span><ul class="collapse" id="collapse-menu-934-319"><li class="nav-item item-1138"><a href="https://uptimeinstitute.com/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=3&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.title&amp;filter_order_Dir=desc"> Data Center Industry Surveys</a></li><li class="nav-item item-1799"><a href="/resources/ebooks"> Ebooks</a></li><li class="nav-item item-935"><a href="https://journal.uptimeinstitute.com"> Journal Blog</a></li><li class="nav-item item-937"><a href="/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=6&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.published_on"> Product Datasheets</a></li><li class="nav-item item-1125"><a href="/resources/research-and-reports"> Research &amp; Reports</a></li><li class="nav-item item-936"><a href="/resources/assets?filter%5Blanguage_id%5D=0&amp;filter%5Bcategory_id%5D=1&amp;filter%5Bpublished_on%5D=0&amp;task=search&amp;filter_order=a.published_on"> Tier Specification Documents</a></li><li class="nav-item item-1565"><a href="/resources/tools"> Tools</a></li><li class="nav-item item-164"><a href="/webinars"> Webinars</a></li></ul></li></ul></div></div>
+							</div>
+		</div>
+		
+		
+		
+
+		
+		
+
+
+<script type="text/javascript">
+(function(a, b, c, d, e, m) {
+	a['OktopostTrackerObject'] = d;
+	a[d] = a[d] || function() {
+		(a[d].q = a[d].q || []).push(arguments);
+	};
+	e = b.createElement('script');
+	m = b.getElementsByTagName('script')[0];
+	e.async = 1;
+	e.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + c;
+	m.parentNode.insertBefore(e, m);
+})(window, document, 'static.oktopost.com/oktrk.js', '_oktrk');
+
+_oktrk('create', '0014xyaan1xs9w6');
+</script><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css"><script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script><script>
+        window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+        "palette": {
+            "popup": {
+                "background": "#0057B8"
+            },
+            "button": {
+                "background": "#14a7d0",
+                "text": "#ffffff"
+            }
+        },
+        "content": {
+            "message": "We use cookies to improve our site performance, analyze usage and enhance your experience by providing custom content. By continuing to visit this site you agree to our use of cookies.",
+            "dismiss": "Got it!",
+            "link": "To learn more please review our privacy policy.",
+            "href": "https://uptimeinstitute.com/privacy-policy"
+        }
+    })
+});
+</script><script type="text/javascript">
+(function() {
+  var didInit = false;
+  function initMunchkin() {
+    if(didInit === false) {
+      didInit = true;
+      Munchkin.init('711-RIA-145');
+    }
+  }
+  var s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.async = true;
+  s.src = '//munchkin.marketo.net/munchkin.js';
+  s.onreadystatechange = function() {
+    if (this.readyState == 'complete' || this.readyState == 'loaded') {
+      initMunchkin();
+    }
+  };
+  s.onload = initMunchkin;
+  document.getElementsByTagName('head')[0].appendChild(s);
+})();
+</script><script>window.__CF$cv$params={r:'a520b1a31c40faf9',t:'MTc5MzI2MTMyMg==',u:'01a186b443ac70f9a00fc9b6c11058e8',ut:'.6ap3kxnezjEYbYwnvwMId7sCP_8jAAP2CgElNwliQs-1793261323-1.2.1.1-wSLozKdNhUYTSiHGHNAtYBMwBt9rNW1MGl0WomnU2Z_FOKDmtSPZdMTe8RlIvunGCMYw0jlNX_.8CdQChVNKKR7ZHW8tBE.NhhqVtdX5Tf4',i:60};(function(){if(!document.body)return;var s=document.createElement('script');s.src='/cdn-cgi/challenge-platform/scripts/precursor/main.js';document.head.appendChild(s);})();</script><a href="#top" id="scroll-top"><i class="pe-7s-angle-up"></i></a><div id="mktoStyleLoaded" style="display: none; border-top-color: rgb(18, 52, 86);"></div><script type="text/javascript" id="" charset="">/*
+ MIT
+*/
+(function(){function c(a){if(isNaN(a))throw Error("Expected delay ("+a+") to be a number.");window.MktoForms2?(window.dataLayer=window.dataLayer||[],window.dataLayer.push({event:"mkto.form.js","mkto.form.start":(new Date).getTime()}),d(window.MktoForms2)):setTimeout(c.bind(null,2*a),a)}function e(){var a;if(a=document.querySelector(".mktoErrorMsg")){var b=a.textContent||a.innerText;a=document.querySelector("input.mktoInvalid, .mktoInvalid input");window.dataLayer.push({event:"mkto.form.error","mkto.form.error.message":b,
+"gtm.element":a,"gtm.elementClasses":a&&a.className||"","gtm.elementId":a&&a.id||"","gtm.elementName":a&&a.name||"","gtm.elementTarget":a&&a.target||""})}}function d(a){a.whenReady(function(a){window.dataLayer.push({event:"mkto.form.ready","mkto.form.id":a.getId(),"mkto.form.submittable":a.submittable(),"mkto.form.allFieldsFilled":a.allFieldsFilled(),"mkto.form.values":a.getValues()});a.onValidate(function(a){window.dataLayer.push({event:"mkto.form.validate","mkto.form.valid":a});setTimeout(e,0)});
+a.onSubmit(function(a){var b=a.getFormElem().find('button[type\x3d"submit"]');window.dataLayer.push({event:"mkto.form.submit","mkto.form.id":a.getId(),"mkto.form.submittable":a.submittable(),"mkto.form.allFieldsFilled":a.allFieldsFilled(),"mkto.form.values":a.getValues(),"mkto.form.button":{classes:b.attr("class"),text:b.text(),type:"submit"}})});a.onSuccess(function(a,b){window.dataLayer.push({event:"mkto.form.success","mkto.form.values":a,"mkto.form.followUpUrl":b})})});a.whenRendered(function(a){window.dataLayer.push({event:"mkto.form.rendered",
+"mkto.form.id":a.getId(),"mkto.form.submittable":a.submittable(),"mkto.form.allFieldsFilled":a.allFieldsFilled(),"mkto.form.values":a.getValues()})})}c(125)})();</script><script type="text/javascript" id="" charset="">(function(){window.addEventListener("message",function(){var a=JSON.parse(event.data);if(a&&a.header){var b=a.header.version,c=a.header.originator.domain;2===b&&"www.brighttalk.com"===c&&dataLayer.push({event:"brighttalk-activity",bteventtype:a.body.eventType,bteventaction:a.body.eventAction})}})})();</script><script id="" text="" charset="" type="text/javascript" src="https://assets.adoberesources.net/loader.js?orgId=F7E5415A6286D9490A495E08%40AdobeOrg&amp;instanceId=uptimeinstitutellc&amp;env=prod&amp;geo=va7"></script><script async="" src="https://assets.adoberesources.net/builds/5362521b6ad86e0c3ba4f91fbca40639746f245f/dist/core-ui/src/index.js"></script><script async="" src="https://assets.adoberesources.net/builds/5362521b6ad86e0c3ba4f91fbca40639746f245f/dist/core/src/index.js"></script><form novalidate="novalidate" class="mktoForm mktoHasWidth mktoLayoutLeft" style="font-family: Helvetica, Arial, sans-serif; font-size: 13px; color: rgb(51, 51, 51); visibility: hidden; position: absolute; top: -500px; left: -1000px; width: 1920px;"></form><iframe name="mktoFormsXDIframe0.7240177836782211" id="MktoForms2XDIframe" src="https://datacenter.uptimeinstitute.com/index.php/form/XDFrame" style="display: none;"></iframe></body></html>

@@ -1,0 +1,67 @@
+[![Image 1: SLSA logo](https://slsa.dev/images/logo.svg)](https://slsa.dev/)[](https://github.com/slsa-framework/slsa)
+
+*   [Home](https://slsa.dev/)
+*   [Current activities](https://slsa.dev/current-activities)
+*   [SLSA Specification 1.0](https://slsa.dev/spec/v1.0/)
+*   Understanding SLSA
+    *   [What's new in v1.0](https://slsa.dev/spec/v1.0/whats-new)
+    *   [About SLSA](https://slsa.dev/spec/v1.0/about)
+    *   [Supply chain threats](https://slsa.dev/spec/v1.0/threats-overview)
+    *   [Use cases](https://slsa.dev/spec/v1.0/use-cases)
+    *   [Guiding principles](https://slsa.dev/spec/v1.0/principles)
+    *   [FAQ](https://slsa.dev/spec/v1.0/faq)
+    *   [Future directions](https://slsa.dev/spec/v1.0/future-directions)
+
+*   Core specification
+    *   [Terminology](https://slsa.dev/spec/v1.0/terminology)
+    *   [Security levels](https://slsa.dev/spec/v1.0/levels)
+    *   [Producing artifacts](https://slsa.dev/spec/v1.0/requirements)
+    *   [Distributing provenance](https://slsa.dev/spec/v1.0/distributing-provenance)
+    *   [Verifying artifacts](https://slsa.dev/spec/v1.0/verifying-artifacts)
+    *   [Verifying build platforms](https://slsa.dev/spec/v1.0/verifying-systems)
+    *   [Threats & mitigations](https://slsa.dev/spec/v1.0/threats)
+
+*   Attestation formats
+    *   [General model](https://slsa.dev/spec/v1.0/attestation-model)
+    *   [Provenance](https://slsa.dev/spec/v1.0/provenance)
+    *   [Verification Summary](https://slsa.dev/spec/v1.0/verification_summary)
+
+*   How to SLSA
+    *   [For developers](https://slsa.dev/get-started)
+    *   [For organizations](https://slsa.dev/how-to-orgs)
+    *   [For infrastructure providers](https://slsa.dev/how-to-infra)
+
+*   [Specification stages](https://slsa.dev/spec-stages)
+*   [Community](https://slsa.dev/community)
+*   [Blog](https://slsa.dev/blog)
+*   [Single-page view](https://slsa.dev/spec/v1.0/zonepage)
+
+[![Image 2: SLSA logo](https://slsa.dev/images/logo.svg)](https://slsa.dev/)[](https://github.com/slsa-framework/slsa)
+
+- [x] 
+
+✕ 
+Version 1.2 is the current version. See [the Version 1.2 documentation](https://slsa.dev/spec/v1.2/).
+
+# SLSA specification
+
+ Status: [Retired](https://slsa.dev/spec-stages)
+
+On this page
+
+SLSA is a specification for describing and incrementally improving supply chain security, established by industry consensus. It is organized into a series of levels that describe increasing security guarantees.
+
+This is **version 1.0** of the SLSA specification, which defines the SLSA levels and recommended attestation formats, including provenance.
+
+[‹ Current activities](https://slsa.dev/current-activities)[What's new in v1.0 ›](https://slsa.dev/spec/v1.0/whats-new)
+
+**SLSA is a cross-industry collaboration.**  
+ © 2026 The Linux Foundation, under the terms of the [Community Specification License 1.0](https://github.com/slsa-framework/governance)
+
+**Privacy statement**  
+ We use [GoatCounter](https://goatcounter.com/) to help us improve our website by collecting and reporting information on how it's used. We do not store advertising or tracking cookies. The information we collect does not identify anyone and does not track an individual's use of the site.
+
+[View source on GitHub](https://github.com/slsa-framework/slsa/blob/releases/v1.0/spec/index.md?plain=1)  
+ This site is powered by [Netlify](https://www.netlify.com/)
+
+[![Image 3: SLSA logo](https://slsa.dev/images/logo.svg)](https://slsa.dev/)

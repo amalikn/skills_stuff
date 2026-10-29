@@ -1,0 +1,1 @@
+../../skill-network-architect/templates/current-state-discovery.md

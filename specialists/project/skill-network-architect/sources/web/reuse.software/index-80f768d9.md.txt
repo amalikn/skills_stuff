@@ -1,0 +1,36 @@
+Contents of https://reuse.software/:
+An initiative by [![FSFE logo](/img/fsfe-logo-cut.png)](https://fsfe.org/)
+
+## **REUSE** SOFTWARE
+
+We make licensing easy for humans and machines alike. We solve a fundamental issue that Free Software licensing has at the very source: what license is a file licensed under, and who owns the copyright? **Adopting our recommendations is as easy as one-two-three**!
+
+![Logo of REUSE](/img/reuse.png)
+
+1.
+
+Choose and provide licenses
+
+2.
+
+Add copyright and licensing information to each file
+
+3.
+
+Confirm REUSE compliance
+
+---
+
+Copyright and licensing is difficult, especially when reusing software from different projects that are released under various different licenses. REUSE was started by the [Free Software Foundation Europe](https://fsfe.org/) (FSFE) to provide a set of recommendations to make licensing your Free Software projects **easy, comprehensive, unambiguous, and machine-readable**.
+
+### For developers
+
+The license of your project sets the terms under which others can reuse your software. That is why you should make sure that it is clear for everyone which parts of your software are under which license. REUSE safeguards your intentions and assists you in this process. Have a look at our [tools section](/dev/) to learn about the tool, inclusion in CI/CD processes, and more.
+
+### Reusing made simple
+
+Free Software enables you to build on top of the work of others and therefore innovate quickly. But the more external components you use, the harder it is to keep an overview of copyright holders and their licensing choices. With REUSE, each file holds the necessary information, and your repo transparently contains all used licenses.
+
+### License compliance
+
+There are many tools that aid you in license compliance for software, many using databases and fuzzy heuristics. A REUSE-compliant project makes the jobs of legal experts and compliance officers much easier. Creating a bill of materials can be achieved with just one simple command. REUSE [does not replace other tools](/comparison/), it is a long-awaited addition.

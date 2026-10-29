@@ -1,0 +1,24 @@
+Contents of https://csrc.nist.gov/pubs/sp/800/41/r1/final:
+[Publications](/publications)
+
+[Documentation](#pubs-documentation)
+   
+[Topics](#pubs-topics)
+
+**Date Published:** September 2009
+
+**Supersedes:**
+
+[SP 800-41 (01/01/2002)](/pubs/sp/800/41/final)
+
+#### Author(s)
+
+Firewalls are devices or programs that control the flow of network traffic between networks or hosts employing differing security postures. This publication provides an overview of several types of firewall technologies and discusses their security capabilities and their relative advantages and disadvantages in detail. It also makes recommendations for establishing firewall policies and for selecting, configuring, testing, deploying, and managing firewall solutions.
+
+#### Keywords
+
+Firewall policy; firewalls; host-based firewalls; network firewalls; network security; packet filtering; perimeter security; personal firewalls; proxies
+
+##### Control Families
+
+Access Control; Audit and Accountability; Planning; System and Communications Protection

@@ -1,0 +1,44 @@
+Contents of https://docs.docker.com/engine/security/rootless/:
+Rootless mode lets you run the Docker daemon and containers as a non-root
+user to mitigate potential vulnerabilities in the daemon and
+the container runtime.
+
+Rootless mode does not require root privileges even during the installation of
+the Docker daemon, as long as the [prerequisites](#prerequisites) are met.
+
+Rootless mode executes the Docker daemon and containers inside a user namespace.
+This is similar to [`userns-remap` mode](https://docs.docker.com/engine/security/userns-remap/), except that
+with `userns-remap` mode, the daemon itself is running with root privileges,
+whereas in rootless mode, both the daemon and the container are running without
+root privileges.
+
+The two modes also differ in how they map container UIDs and GIDs to the
+host: see [UID/GID mapping](https://docs.docker.com/engine/security/rootless/uid-gid-mapping/) for details.
+
+Rootless mode does not use binaries with `SETUID` bits or file capabilities,
+except `newuidmap` and `newgidmap`, which are needed to allow multiple
+UIDs/GIDs to be used in the user namespace.
+
+The `dockerd-rootless-setuptool.sh install` script (see following) automatically shows help
+when the prerequisites are not satisfied.
+
+If the system-wide Docker daemon is already running, consider disabling it:
+
+Should you choose not to shut down the `docker` service and socket, you will need to use the `--force`
+parameter in the next section. There are no known issues, but until you shutdown and disable you're
+still running rootful Docker.
+
+If you installed Docker 20.10 or later with
+[RPM/DEB packages](/engine/install), you should have `dockerd-rootless-setuptool.sh` in `/usr/bin`.
+
+Run `dockerd-rootless-setuptool.sh install` as a non-root user to set up the daemon:
+
+If `dockerd-rootless-setuptool.sh` is not present, you may need to install the `docker-ce-rootless-extras` package manually, e.g.,
+
+If you do not have permission to run package managers like `apt-get` and `dnf`,
+consider using the installation script available at <https://get.docker.com/rootless>.
+Since static packages are not available for `s390x`, hence it is not supported for `s390x`.
+
+The binaries will be installed at `~/bin`.
+
+Run `docker info` to confirm that the `docker` client is connecting to the Rootless daemon:

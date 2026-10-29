@@ -1,0 +1,103 @@
+Contents of https://www.brendangregg.com/systems-performance-2nd-edition-book.html:
+## Systems Performance: Enterprise and the Cloud, 2nd Edition (2020)
+
+[![](Images/sysperf2nd_bookcover_842.png "Systems Performance: Enterprise and the Cloud, 2nd Edition")](https://amzn.to/37K3D5M)
+
+This is the official site for the book Systems Performance: Enterprise and the Cloud, 2nd Edition, published by Addison-Wesley (2020). Here I'll describe the book, link to related content, and list errata.
+
+You can find it on [Amazon](https://amzn.to/37K3D5M) as paperback and Kindle, and on [InformIT](https://click.linksynergy.com/link?id=qpLIU75OR0g&offerid=163217.3001330&type=2&murl=https%3A%2F%2Fwww.informit.com%2Fstore%2Fsystems-performance-9780136820154) as paperback, EPUB, MOBI, and PDF. *(If you purchase through the Amazon or InformIT links, the book's technical editor earns a commission.)*
+
+The [first edition](sysperfbook.html) has been very successful, becoming recommended or required reading at many companies, and has sold editions translated to [Chinese](Images/sysperf_bookcover_chinese_1080.jpg), [Japanese](Images/sysperf_bookcover_japanese_391.jpg), [Polish](Images/sysperf_bookcover_polish_350.jpg), and [Korean](Images/sysperf_bookcover_korean_458.jpg). I've had many emails from people studying the book for the Facebook engineering interview. I'm glad it's helpful.
+
+There is also a companion book, [BPF Performance Tools](/bpf-performance-tools-book.html), that provides advanced coverage of BPF performance analysis tools.
+
+On this page:
+[What's New](#new),
+[Why](#why),
+[Operating Systems](#OSes),
+[Audience](#audience),
+[Differences](#different),
+[TOC](#TOC),
+[Related Content](#related),
+[Errata](#errata).
+
+## Sample Figures
+
+[![](SysPerf/figure_method_useflownew-500.png)](SysPerf/figure_method_useflownew.png)
+[![](SysPerf/figure_method_models1-500.png)](SysPerf/figure_method_models1.png)
+[![](SysPerf/figure_net_linuxstack-500.png)](SysPerf/figure_net_linuxstack.png)
+
+[![](SysPerf/figure_mem_allocators-500.png)](SysPerf/figure_mem_allocators.png)
+
+## What is New in Second Edition?
+
+The second edition adds content on BPF, BCC, bpftrace, perf, and Ftrace, mostly removes Solaris, makes numerous updates to Linux and cloud computing, and includes general improvements and additions. Since writing the first edition I now have over six years experience as a senior performance engineer at Netflix, working on new technologies with other engineering experts. This experience has helped me to improve this book.
+
+My [blog post](/blog/2020-07-15/systems-performance-2nd-edition.html) about the book includes a visualization of [every page](http://www.brendangregg.com/blog/images/2020/SystemsPerformance2ndEdition-draft15jul20-entirebook.jpg), with text colored to show what has changed.
+
+Chapters are structured to first cover durable skills (models, architecture, and methodologies) and then implementation with tools and tuning.
+This will be evident to those who read the first edition: most chapters begin with only light changes since the first edition, but the changes increase as each chapter progresses.
+
+Systems performance is an important skill for all computer users, whether you're trying to understand why your laptop is slow or optimizing the performance of a large-scale compute environment (for example, Facebook's datacenters or the Netflix cloud). Systems performance is the study of application, operating system, kernel, and hardware performance.
+
+There are two general goals:
+
+* Improving price/performance
+* Reducing latency outliers
+
+Other activities of systems performance include benchmarking to evaluate systems, capacity planning, bottleneck elimination, and scalability analysis – so that you discover scalability limiters early, in time to fix them.
+
+## Operating Systems
+
+Topics are introduced in an OS-agnostic way, then Linux is covered as the primary example.
+
+## Audience
+
+This book is primarily for system administrators, system reliability engineers, performance engineers, support staff, and other operators in enterprise and cloud environments. It is also a useful reference for developers, database administrators, and web server administrators who would like to understand operating system and application performance.
+
+## Why This Book is Different
+
+While it covers performance tools and the background for understanding them, what makes this book different is the inclusion of many performance methodologies, including those covered briefly in my [USENIX 2012 talk](https://www.youtube.com/watch?v=abLan0aXJkw). I've been teaching and developing systems performance classes on and off for over ten years, and have found methodologies to be crucial for giving students a starting point and then guiding them through performance activities. [The USE Method](usemethod.html) is a methodology I developed for this purpose.
+
+## Table of Contents
+
+Preface  
+Acknowledgements  
+1. Intro  
+2. Methodology  
+3. Operating Systems  
+4. Observability Tools  
+5. Applications  
+6. CPUs  
+7. Memory  
+8. File Systems  
+9. Disks  
+10. Network  
+11. Cloud Computing  
+12. Benchmarking  
+13. perf  
+14. Ftrace  
+15. BPF  
+16. Case Study  
+Appendices  
+Bibliography  
+Glossary  
+
+The draft is roughly 800 pages.
+
+## PDF Download eBook ePUB
+
+An eBook will be available at some point. It will not be a Safari "rough cut" after my experience with the [BPF book](/bpf-performance-tools-book.html#ebook).
+
+## Related Content
+
+* The website for the [1st Edition](sysperfbook.html).
+* My USENIX LISA 2019 talk on [Linux Systems Performance](http://www.brendangregg.com/blog/2020-03-08/lisa2019-linux-systems-performance.html).
+
+## Errata
+
+1st Printing:
+
+  
+
+Thanks to all the reviewers, and to [Deirdré Straughan](http://www.beginningwithi.com/2013/04/27/perf-book-done/) for editing another one of my books!

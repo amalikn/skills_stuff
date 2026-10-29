@@ -1,0 +1,4833 @@
+Contents of https://www.ieee802.org/11/Reports/802.11_Timelines.htm:
+��<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]> <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+<title>IEEE 802.11, The Working Group Setting the Standards for Wireless LANs</title>
+<style type="text/css">
+/\* site.css \*/
+#header {
+font-size: 1.5em;
+font-family: Verdana, Arial, sans-serif;
+vertical-align: middle;
+text-align: center;
+color: #ffffff;
+height: 2em;
+width: 100%;
+border: 1px solid;
+line-height: 2em;
+padding: 0.1em 0.25em;
+background-color: #008080;
+}
+#header > a {
+color: yellow;
+text-decoration: none;
+}
+#footer {
+text-align: center;
+}
+#footer > table {
+border: 0;
+padding: 0;
+margin: 0.65em;
+}
+#footer > table td {
+height: 2.7em;
+width: 6.4em;
+vertical-align: bottom;
+}
+#footer > table img {
+border: 0;
+}
+div.centered {
+text-align: center;
+}
+p.center {
+text-align: center;
+}
+div.centered table, #footer table {
+margin: 0 auto;
+text-align: left;
+}
+</style>
+<style type="text/css">
+</style>
+<style type="text/css">
+/\* timeline.css \*/
+table.timeline caption {
+font-size: 16pt;
+font-family: Arial;
+vertical-align: middle;
+text-align: center;
+color: black;
+height: 40px;
+border: 1px solid;
+padding-top: 5px;
+background: rgb(230, 170, 120);
+}
+table.timeline caption.caption1 {
+background: rgb(0, 255, 0);
+}
+table.timeline caption.caption2 {
+background: rgb(0, 0, 200);
+color: white;
+}
+table.timeline caption a:link, table.timeline caption a:visited {
+text-decoration: none;
+color: black;
+}
+table.timeline caption.caption2 a:link, table.timeline caption.caption2 a:visited {
+color: white;
+}
+table.timeline {
+border-color: #333;
+font-family: Arial;
+font-size: 7pt;
+text-align: center;
+padding: 1px;
+margin: 2px;
+border-collapse: collapse;
+table-layout: fixed;
+}
+table.timeline td {
+border: 1px solid black;
+padding: 1px 2px;
+height: 30px;
+}
+table.timeline tr.row1 td.first, table.timeline tr.row1 td.est {
+background: rgb(255, 255, 153);
+}
+table.timeline tr.row2 td.first, table.timeline tr.row2 td.est {
+background: rgb(255, 204, 153);
+}
+table.timeline th.result {
+font-size: 6pt;
+padding: 1px 1px;
+}
+td.conf {
+background: lime;
+}
+table.timeline th.date div {
+width: 55px;
+}
+table.timeline th.pardate div {
+width: 64px;
+}
+table.timeline tr.row1 {
+background: rgb(192, 192, 192);
+}
+table.timeline tr.row2 {
+background: white;
+}
+table.timeline th {
+background: black;
+border: 1px solid white;
+color: white;
+vertical-align: bottom;
+text-align: center;
+padding: 2px 4px;
+font-size: 7pt;
+}
+table.timeline th.first {
+border-left: 1px solid black;
+}
+table.timeline th.last {
+border-right: 1px solid black;
+}
+table.timeline th.doctype {
+padding: 2px 1px;
+}
+table.timeline th a:link, table.timeline th a:visited {
+color: #f0f000;
+text-decoration: none;
+}
+table.timeline td a:link, table.timeline td a:visited {
+text-decoration: none;
+}
+#trademarks {
+margin: 0 0 0;
+text-align: center;
+font-size: 7.5pt;
+font-family: Arial;
+}
+#maintained {
+text-align: center;
+}
+#notes {
+font-size: 7pt;
+font-family: Arial;
+width: 120em;
+margin: 0.5em auto;
+}
+#notes td.key {
+text-align: right;
+}
+#notes td.value {
+text-align: left;
+}
+.disabled {
+color: #808080;
+}
+</style>
+</head>
+<body>
+<div id="header">
+<a id="logo" href="/">OFFICIAL IEEE 802.11 WORKING GROUP PROJECT TIMELINES - 2026-10-27</a>
+</div>
+<div id="menu">
+</div>
+<div class="columns">
+<div id="content" class="column">
+<table class="timeline">
+<caption class="caption0">IN PROCESS - Standards, Amendments, and Recommended Practices</caption>
+<thead>
+<tr>
+<th rowspan="3" class="first">IEEE Project and Final Document</th>
+<th rowspan="3" class="doctype">Final Doc Type</th>
+<th rowspan="3">Project Authorization Request (PAR)</th>
+<th rowspan="3">Task Group and Activity</th>
+<th colspan="2">Documentation</th>
+<th rowspan="3">Current Status</th>
+<th rowspan="3" class="pardate"><div>PAR Approved, Modified, or Extended [Expires]</div></th>
+<th colspan="4"><a href="http://grouper.ieee.org/groups/802/11/LetterBallots.shtml">WG Letter Ballots</a></th>
+<th rowspan="3" class="date"><div>Form Standards Association (SA) Ballot Pool / Reform</div></th>
+<th rowspan="3" class="date"><div>MEC<br />/ MDR<br />Done</div></th>
+<th colspan="4"><a href="http://grouper.ieee.org/groups/802/11/SponsorBallots.html">IEEE SA Ballots</a></th>
+<th rowspan="3" class="date"><div>Final 802.11 WG Approval</div></th>
+<th rowspan="3" class="date"><div>Final or Conditional 802 LMSC Approval</div></th>
+<th rowspan="3" class="date"><div>RevCom &amp; Standards Board Final or Continuous Process Approval</div></th>
+<th rowspan="3" class="date"><div>ANSI Approved</div></th>
+<th rowspan="3" class="date last"><div>Superseded or Withdrawn by Standards Board</div></th>
+</tr>
+<tr>
+<th colspan="2">Session End Snapshot</th>
+<th class="draft">Draft</th><th colspan="2" class="date"><div>Date</div></th><th class="result">Result</th>
+<th class="draft">Draft</th><th colspan="2" class="date"><div>Date</div></th><th class="result">Result</th>
+</tr>
+<tr>
+<th class="result">Format &amp; Version</th>
+<th>Incorporated Baselines</th>
+<th colspan="2" class="predicted">Predicted<br />Initial</th><th colspan="2" class="predicted">Predicted<br />Recirc</th>
+<th colspan="2" class="predicted">Predicted<br />Initial</th><th colspan="2" class="predicted">Predicted<br />Recirc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row1">
+<td rowspan="2" class="first"><a name="tgbt"></a>
+IEEE Std P802.11bt</td>
+<td rowspan="2">A</td>
+<td rowspan="2"><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11bt\_PAR.pdf">Post Quantum Cryptography</a></td>
+<td rowspan="2"><a href="https://www.ieee802.org/11/Reports/tgbt\_update.htm">TGbt</a></td>
+<td rowspan="2">PDF<br />D1.10</td>
+<td rowspan="2">
+<a href="#tgmf">802.11mf</a><br />
+<a href="#tgbn">802.11bn</a><br />
+<a href="#tgbp">802.11bp</a><br />
+<a href="#tgbq">802.11bq</a><br />
+<a href="#tgbr">802.11br</a></td>
+<td>Actual</td>
+<td class="date">2025-09-10<br /><span>[2029-12-31]</span></td>
+<td class="draft">
+D1.0
+</td>
+<td class="date" colspan="2">
+2026-09-03
+</td>
+<td class="result">
+89%
+</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row1">
+<td class="est">Predicted</td>
+<td class="conf">C</td>
+<td colspan="2" class="conf">C</td>
+<td colspan="2" class="est">Jan 2027</td>
+<td class="est">Jul 2027</td>
+<td class="est">Mar 2028</td>
+<td colspan="2" class="est">Sep 2027</td>
+<td colspan="2" class="est">Mar 2028</td>
+<td class="est">Jun 2028</td>
+<td class="est">May 2028</td>
+<td class="est">Sep 2028</td>
+<td class="est">
+N/A
+</td>
+<td class="est">
+</td>
+</tr>
+<tr class="row2">
+<td rowspan="2" class="first"><a name="tgbr"></a>
+IEEE Std P802.11br</td>
+<td rowspan="2">A</td>
+<td rowspan="2"><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11br\_PAR.pdf">Enhanced Light Communication</a></td>
+<td rowspan="2"><a href="https://www.ieee802.org/11/Reports/tgbr\_update.htm">TGbr</a></td>
+<td rowspan="2">PDF<br />D0.10</td>
+<td rowspan="2">
+<a href="#tgmf">802.11mf</a><br />
+<a href="#tgbn">802.11bn</a><br />
+<a href="#tgbp">802.11bp</a><br />
+<a href="#tgbq">802.11bq</a></td>
+<td>Actual</td>
+<td class="date">2025-03-27<br /><span>[2029-12-31]</span></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row2">
+<td class="est">Predicted</td>
+<td class="conf">C</td>
+<td colspan="2" class="est">Nov 2027</td>
+<td colspan="2" class="est">Jan 2028</td>
+<td class="est">Feb 2028</td>
+<td class="est">Feb 2028</td>
+<td colspan="2" class="est">May 2028</td>
+<td colspan="2" class="est">Sep 2028</td>
+<td class="est">Nov 2028</td>
+<td class="est">Nov 2028</td>
+<td class="est">Nov 2028</td>
+<td class="est">
+N/A
+</td>
+<td class="est">
+</td>
+</tr>
+<tr class="row1">
+<td rowspan="2" class="first"><a name="tgbq"></a>
+IEEE Std P802.11bq</td>
+<td rowspan="2">A</td>
+<td rowspan="2"><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11bq\_PAR.pdf">Integrated Millimeter Wave</a></td>
+<td rowspan="2"><a href="https://www.ieee802.org/11/Reports/tgbq\_update.htm">TGbq</a></td>
+<td rowspan="2">PDF<br />D0.10</td>
+<td rowspan="2">
+<a href="#tgmf">802.11mf</a><br />
+<a href="#tgbn">802.11bn</a><br />
+<a href="#tgbp">802.11bp</a></td>
+<td>Actual</td>
+<td class="date">2024-12-11<br /><span>[2028-12-31]</span></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row1">
+<td class="est">Predicted</td>
+<td class="conf">C</td>
+<td colspan="2" class="est">Mar 2027</td>
+<td colspan="2" class="est">Sep 2027</td>
+<td class="est">May 2028</td>
+<td class="est">May 2028</td>
+<td colspan="2" class="est">Sep 2028</td>
+<td colspan="2" class="est">Jan 2029</td>
+<td class="est">May 2029</td>
+<td class="est">Jul 2029</td>
+<td class="est">Jul 2029</td>
+<td class="est">
+N/A
+</td>
+<td class="est">
+</td>
+</tr>
+<tr class="row2">
+<td rowspan="2" class="first"><a name="tgmf"></a>
+IEEE Std P802.11mf</td>
+<td rowspan="2">STD</td>
+<td rowspan="2"><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11REVmf.pdf">802.11 Accumulated Maintenance Changes</a></td>
+<td rowspan="2"><a href="https://www.ieee802.org/11/Reports/tgm\_update.htm">TGmf</a></td>
+<td rowspan="2">PDF<br />D3.10</td>
+<td rowspan="2">
+<a href="#tgme">802.11-2024</a><br />
+<a href="#tgbh">802.11bh-2024</a><br />
+<a href="#tgbe">802.11be-2024</a><br />
+<a href="#tgbk">802.11bk-2025</a><br />
+<a href="#tgbf">802.11bf-2025</a><br />
+<a href="#tgbi">802.11bi-2026</a></td>
+<td>Actual</td>
+<td class="date">2024-11-12<br /><span>[2028-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+</td>
+<td class="date" colspan="2">
+2025-09-11
+<br />
+2026-03-04
+<br />
+2026-08-31
+</td>
+<td class="result">
+92%
+<br />
+94%
+<br />
+95%
+</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row2">
+<td class="est">Predicted</td>
+<td class="conf">C</td>
+<td colspan="2" class="conf">C</td>
+<td colspan="2" class="conf">C</td>
+<td class="est">Oct 2026</td>
+<td class="est">Oct 2026</td>
+<td colspan="2" class="est">Dec 2026</td>
+<td colspan="2" class="est">Jul 2027</td>
+<td class="est">Nov 2027</td>
+<td class="est">Nov 2027</td>
+<td class="est">Feb 2028</td>
+<td class="est">
+N/A
+</td>
+<td class="est">
+</td>
+</tr>
+<tr class="row1">
+<td rowspan="2" class="first"><a name="tgbp"></a>
+IEEE Std P802.11bp</td>
+<td rowspan="2">A</td>
+<td rowspan="2"><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11bp\_PAR.pdf">Ambient Power Communication</a></td>
+<td rowspan="2"><a href="https://www.ieee802.org/11/Reports/tgbp\_update.htm">TGbp</a></td>
+<td rowspan="2">PDF<br />D1.00</td>
+<td rowspan="2">
+<a href="#tgmf">802.11mf</a><br />
+<a href="#tgbn">802.11bn</a></td>
+<td>Actual</td>
+<td class="date">2024-03-19<br /><span>[2028-12-31]</span></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row1">
+<td class="est">Predicted</td>
+<td class="conf">C</td>
+<td colspan="2" class="est">Sep 2026</td>
+<td colspan="2" class="est">Mar 2027</td>
+<td class="est">Mar 2027</td>
+<td class="est">Oct 2027</td>
+<td colspan="2" class="est">Aug 2027</td>
+<td colspan="2" class="est">Oct 2027</td>
+<td class="est">Jan 2028</td>
+<td class="est">Mar 2028</td>
+<td class="est">May 2028</td>
+<td class="est">
+N/A
+</td>
+<td class="est">
+</td>
+</tr>
+<tr class="row2">
+<td rowspan="2" class="first"><a name="tgbn"></a>
+IEEE Std P802.11bn</td>
+<td rowspan="2">A</td>
+<td rowspan="2"><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11bn\_PAR.pdf">Ultra High Reliability</a></td>
+<td rowspan="2"><a href="https://www.ieee802.org/11/Reports/tgbn\_update.htm">TGbn</a></td>
+<td rowspan="2">PDF<br />D2.10</td>
+<td rowspan="2">
+<a href="#tgmf">802.11mf</a></td>
+<td>Actual</td>
+<td class="date">2023-09-21<br /><span>[2027-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+</td>
+<td class="date" colspan="2">
+2025-10-06
+<br />
+2026-09-02
+</td>
+<td class="result">
+61%
+<br />
+77%
+</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row2">
+<td class="est">Predicted</td>
+<td class="conf">C</td>
+<td colspan="2" class="conf">C</td>
+<td colspan="2" class="est">Jan 2027</td>
+<td class="est">Mar 2027</td>
+<td class="est">May 2027</td>
+<td colspan="2" class="est">May 2027</td>
+<td colspan="2" class="est">Jul 2027</td>
+<td class="est">Mar 2028</td>
+<td class="est">Mar 2028</td>
+<td class="est">May 2028</td>
+<td class="est">
+N/A
+</td>
+<td class="est">
+</td>
+</tr>
+</tbody>
+</table>
+<table class="timeline">
+<caption class="caption1">PUBLISHED - Standards, Amendments, and Recommended Practices</caption>
+<thead>
+<tr>
+<th rowspan="3" class="first">IEEE Project and Final Document</th>
+<th rowspan="3" class="doctype">Final Doc Type</th>
+<th rowspan="3">Project Authorization Request (PAR)</th>
+<th rowspan="3">Task Group and Activity</th>
+<th colspan="2">Documentation</th>
+<th rowspan="3">Current Status</th>
+<th rowspan="3" class="pardate"><div>PAR Approved, Modified, or Extended [Expires]</div></th>
+<th colspan="4"><a href="http://grouper.ieee.org/groups/802/11/LetterBallots.shtml">WG Letter Ballots</a></th>
+<th rowspan="3" class="date"><div>Form SA Ballot Pool / Reform</div></th>
+<th rowspan="3" class="date"><div>MEC<br />/ MDR<br />Done</div></th>
+<th colspan="4"><a href="http://grouper.ieee.org/groups/802/11/SponsorBallots.html">IEEE SA Ballots</a></th>
+<th rowspan="3" class="date"><div>Final 802.11 WG Approval</div></th>
+<th rowspan="3" class="date"><div>Final or Conditional 802 LMSC Approval</div></th>
+<th rowspan="3" class="date"><div>RevCom &amp; Standards Board Final or Continuous Process Approval</div></th>
+<th rowspan="3" class="date"><div>ANSI Approved</div></th>
+<th rowspan="3" class="date last"><div>Published</div></th>
+</tr>
+<tr>
+<th colspan="2">Session End Snapshot</th>
+<th class="draft">Draft</th><th colspan="2" class="date"><div>Date</div></th><th class="result">Result</th>
+<th class="draft">Draft</th><th colspan="2" class="date"><div>Date</div></th><th class="result">Result</th>
+</tr>
+<tr>
+<th class="result">Format &amp; Version</th>
+<th>Incorporated Baselines</th>
+<th colspan="2" class="predicted">Predicted<br />Initial</th><th colspan="2" class="predicted">Predicted<br />Recirc</th>
+<th colspan="2" class="predicted">Predicted<br />Initial</th><th colspan="2" class="predicted">Predicted<br />Recirc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row1">
+<td class="first"><a name="tgbi"></a>
+IEEE Std P802.11bi-2026</td>
+<td >A</td>
+<td ><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11bi.pdf">Enhanced Privacy Protection</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgbi\_update.htm">TGbi</a></td>
+<td >PDF<br />D6.00</td>
+<td >
+<a href="#tgme">802.11-2024</a><br />
+<a href="#tgbh">802.11bh-2024</a><br />
+<a href="#tgbe">802.11be-2024</a><br />
+<a href="#tgbk">802.11bk-2025</a><br />
+<a href="#tgbf">802.11bf-2025</a></td>
+<td>Actual</td>
+<td class="date">2025-12-31<br /><span>[2027-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2025-02-27
+<br />
+2025-09-02
+<br />
+2025-12-12
+<br />
+2026-02-05
+</td>
+<td class="result">
+89%
+<br />
+94%
+<br />
+96%
+<br />
+98%
+</td>
+<td>2025-11-01</td>
+<td>2025-11-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2026-03-13
+<br />
+2026-06-10
+<br />
+2026-08-04
+<br />
+2026-08-22
+</td>
+<td class="result">
+92%
+<br />
+92%
+<br />
+94%
+<br />
+94%
+</td>
+<td>2026-07-01</td>
+<td>2026-07-01</td>
+<td>2026-09-01</td>
+<td></td>
+<td>2026-10-26</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgbf"></a>
+IEEE Std P802.11bf-2025</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802.11bf\_PAR.pdf">WLAN Sensing</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgbf\_update.htm">TGbf</a></td>
+<td >PDF<br />D8.00</td>
+<td >
+<a href="#tgme">802.11-2024</a><br />
+<a href="#tgbh">802.11bh-2024</a><br />
+<a href="#tgbe">802.11be-2024</a><br />
+<a href="#tgbk">802.11bk-2025</a></td>
+<td>Actual</td>
+<td class="date">2020-09-25<br /><span>[2026-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2023-03-02
+<br />
+2023-08-20
+<br />
+2024-01-04
+<br />
+2024-04-26
+</td>
+<td class="result">
+78%
+<br />
+86%
+<br />
+93%
+<br />
+96%
+</td>
+<td>2024-04-01</td>
+<td>2024-03-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+</td>
+<td class="date" colspan="2">
+2024-06-12
+<br />
+2024-10-23
+<br />
+2024-12-11
+<br />
+2025-01-16
+<br />
+2025-04-04
+</td>
+<td class="result">
+90%
+<br />
+96%
+<br />
+97%
+<br />
+98%
+<br />
+98%
+</td>
+<td>2025-03-12</td>
+<td>2025-03-14</td>
+<td>2025-05-28</td>
+<td></td>
+<td>2025-09-26</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgbk"></a>
+IEEE Std P802.11bk-2025</td>
+<td >A</td>
+<td ><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11bk.pdf">320 MHz Positioning</a></td>
+<td ><a href="https://www.ieee802.org/11/Reports/tgbk\_update.htm">TGbk</a></td>
+<td >PDF<br />D5.00</td>
+<td >
+<a href="#tgme">802.11-2024</a><br />
+<a href="#tgbh">802.11bh-2024</a><br />
+<a href="#tgbe">802.11be-2024</a></td>
+<td>Actual</td>
+<td class="date">2022-12-03<br /><span>[2026-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+</td>
+<td class="date" colspan="2">
+2023-12-28
+<br />
+2024-04-26
+<br />
+2024-08-15
+</td>
+<td class="result">
+95%
+<br />
+97%
+<br />
+98%
+</td>
+<td>2024-05-01</td>
+<td>2024-06-01</td>
+<td class="draft">
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2024-11-10
+<br />
+2025-02-07
+<br />
+2025-03-30
+</td>
+<td class="result">
+94%
+<br />
+97%
+<br />
+98%
+</td>
+<td>2025-03-12</td>
+<td>2025-03-14</td>
+<td>2025-05-28</td>
+<td></td>
+<td>2025-09-05</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgbe"></a>
+IEEE Std P802.11be-2024</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802\_11be\_PAR\_Detail.pdf">Extremely High Throughput</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgbe\_update.htm">TGbe</a></td>
+<td >PDF<br />D7.00</td>
+<td >
+<a href="#tgme">802.11-2024</a><br />
+<a href="#tgbh">802.11bh-2024</a></td>
+<td>Actual</td>
+<td class="date">2019-03-21<br /><span>[2025-12-31]</span></td>
+<td class="draft">
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2022-07-04
+<br />
+2023-03-02
+<br />
+2023-08-13
+<br />
+2023-12-16
+</td>
+<td class="result">
+64%
+<br />
+80%
+<br />
+90%
+<br />
+95%
+</td>
+<td>2023-10-01</td>
+<td>2023-09-01</td>
+<td class="draft">
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2024-02-02
+<br />
+2024-05-31
+<br />
+2024-08-10
+</td>
+<td class="result">
+82%
+<br />
+93%
+<br />
+97%
+</td>
+<td>2024-07-01</td>
+<td>2024-07-01</td>
+<td>2024-09-26</td>
+<td></td>
+<td>2025-07-22</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgbh"></a>
+IEEE Std P802.11bh-2024</td>
+<td >A</td>
+<td ><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11bh.pdf">Randomized and Changing MAC Addresses</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgbh\_update.htm">TGbh</a></td>
+<td >PDF<br />D6.00</td>
+<td >
+<a href="#tgme">802.11-2024</a></td>
+<td>Actual</td>
+<td class="date">2021-02-10<br /><span>[2025-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2023-07-01
+<br />
+2024-01-05
+<br />
+2024-02-24
+<br />
+2024-04-06
+</td>
+<td class="result">
+92%
+<br />
+94%
+<br />
+98%
+<br />
+99%
+</td>
+<td>2024-02-01</td>
+<td>2024-03-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2024-05-09
+<br />
+2024-07-13
+<br />
+2024-08-15
+</td>
+<td class="result">
+91%
+<br />
+92%
+<br />
+98%
+</td>
+<td>2024-07-01</td>
+<td>2024-07-01</td>
+<td>2024-09-26</td>
+<td></td>
+<td>2025-06-04</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgme"></a>
+IEEE Std P802.11-2024</td>
+<td >STD</td>
+<td ><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11REVme.pdf">802.11 Accumulated Maintenance Changes</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgm\_update.htm">TGme</a></td>
+<td >PDF<br />D7.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a><br />
+<a href="#tgay">802.11ay-2021</a><br />
+<a href="#tgba">802.11ba-2021</a><br />
+<a href="#wg-tech-ed">802.11-2020/Cor1-2022</a><br />
+<a href="#tgaz">802.11az-2022</a><br />
+<a href="#tgbd">802.11bd-2022</a><br />
+<a href="#tgbb">802.11bb-2023</a><br />
+<a href="#tgbc">802.11bc-2023</a><br />
+<a href="#wg-te-24">802.11-2020/Cor2-2024</a></td>
+<td>Actual</td>
+<td class="date">2021-02-10<br /><span>[2025-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2022-01-10
+<br />
+2022-11-11
+<br />
+2023-05-07
+<br />
+2023-08-30
+</td>
+<td class="result">
+84%
+<br />
+87%
+<br />
+93%
+<br />
+96%
+</td>
+<td>2023-05-01</td>
+<td>2023-07-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2023-10-10
+<br />
+2024-03-05
+<br />
+2024-07-02
+<br />
+2024-08-08
+</td>
+<td class="result">
+85%
+<br />
+84%
+<br />
+93%
+<br />
+98%
+</td>
+<td>2024-07-01</td>
+<td>2024-07-01</td>
+<td>2024-09-26</td>
+<td></td>
+<td>2025-04-28</td>
+</tr>
+</tbody>
+</table>
+<table class="timeline">
+<caption class="caption2">SUPERSEDED OR WITHDRAWN - Standards, Amendments, and Recommended Practices</caption>
+<thead>
+<tr>
+<th rowspan="3" class="first">IEEE Project and Final Document</th>
+<th rowspan="3" class="doctype">Final Doc Type</th>
+<th rowspan="3">Project Authorization Request (PAR)</th>
+<th rowspan="3">Task Group and Activity</th>
+<th colspan="2">Documentation</th>
+<th rowspan="3">Current Status</th>
+<th rowspan="3" class="pardate"><div>PAR Approved, Modified, or Extended [Expires]</div></th>
+<th colspan="4"><a href="http://grouper.ieee.org/groups/802/11/LetterBallots.shtml">WG Letter Ballots</a></th>
+<th rowspan="3" class="date"><div>Form SA Ballot Pool / Reform</div></th>
+<th rowspan="3" class="date"><div>MEC<br />/ MDR<br />Done</div></th>
+<th colspan="4"><a href="http://grouper.ieee.org/groups/802/11/SponsorBallots.html">IEEE SA Ballots</a></th>
+<th rowspan="3" class="date"><div>Final 802.11 WG Approval</div></th>
+<th rowspan="3" class="date"><div>Final or Conditional 802 LMSC Approval</div></th>
+<th rowspan="3" class="date"><div>RevCom &amp; Standards Board Final or Continuous Process Approval</div></th>
+<th rowspan="3" class="date"><div>ANSI Approved</div></th>
+<th rowspan="3" class="date last"><div>Superseded or Withdrawn by Standards Board</div></th>
+</tr>
+<tr>
+<th colspan="2">Session End Snapshot</th>
+<th class="draft">Draft</th><th colspan="2" class="date"><div>Date</div></th><th class="result">Result</th>
+<th class="draft">Draft</th><th colspan="2" class="date"><div>Date</div></th><th class="result">Result</th>
+</tr>
+<tr>
+<th class="result">Format &amp; Version</th>
+<th>Incorporated Baselines</th>
+<th colspan="2" class="predicted">Predicted<br />Initial</th><th colspan="2" class="predicted">Predicted<br />Recirc</th>
+<th colspan="2" class="predicted">Predicted<br />Initial</th><th colspan="2" class="predicted">Predicted<br />Recirc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row1">
+<td class="first"><a name="tgmd"></a>
+IEEE Std P802.11-2020</td>
+<td >STD</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802.11REVmd.pdf">802.11 Accumulated Maintenance Changes</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgm\_update.htm">TGmd</a></td>
+<td >PDF<br />D5.00</td>
+<td >
+<a href="#tgmc">802.11-2016</a><br />
+<a href="#tgai">802.11ai-2016</a><br />
+<a href="#tgah">802.11ah-2016</a><br />
+<a href="#tgaj">802.11aj-2018</a><br />
+<a href="#tgak">802.11ak-2018</a><br />
+<a href="#tgaq">802.11aq-2018</a></td>
+<td>Actual</td>
+<td class="date">2017-03-23<br /><span>[2021-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+</td>
+<td class="date" colspan="2">
+2018-03-17
+<br />
+2019-01-10
+<br />
+2019-10-30
+</td>
+<td class="result">
+85%
+<br />
+93%
+<br />
+96%
+</td>
+<td>2019-09-01</td>
+<td>2019-05-01</td>
+<td class="draft">
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2019-12-15
+<br />
+2020-09-04
+<br />
+2020-10-04
+<br />
+2024-08-08
+</td>
+<td class="result">
+83%
+<br />
+91%
+<br />
+97%
+<br />
+98%
+</td>
+<td>2020-09-01</td>
+<td>2020-10-01</td>
+<td>2020-12-01</td>
+<td></td>
+<td>2024-04-28</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="wg-te-24"></a>
+IEEE Std P802.11-2020/Cor2-2024</td>
+<td >COR</td>
+<td ><a href="https://development.standards.ieee.org/myproject-web/app#viewpar/14793/10892">Correct 802.11bc identifer of EBCS ANQP element</a></td>
+<td >WG Tech Ed</td>
+<td >PDF<br />D1.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a><br />
+<a href="#tgay">802.11ay-2021</a><br />
+<a href="#tgba">802.11ba-2021</a><br />
+<a href="#wg-tech-ed">802.11-2020/Cor1-2022</a><br />
+<a href="#tgaz">802.11az-2022</a><br />
+<a href="#tgbd">802.11bd-2022</a><br />
+<a href="#tgbb">802.11bb-2023</a><br />
+<a href="#tgbc">802.11bc-2023</a></td>
+<td>Actual</td>
+<td class="date">2023-07-20<br /><span>[2024-07-20]</span></td>
+<td class="draft">
+D1.0
+</td>
+<td class="date" colspan="2">
+2023-10-25
+</td>
+<td class="result">
+100%
+</td>
+<td>2023-10-01</td>
+<td>2023-11-01</td>
+<td class="draft">
+D1.0
+</td>
+<td class="date" colspan="2">
+2023-12-28
+</td>
+<td class="result">
+100%
+</td>
+<td>2023-11-17</td>
+<td>2024-01-09</td>
+<td>2024-01-01</td>
+<td></td>
+<td>2024-02-01</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgbc"></a>
+IEEE Std P802.11bc-2023</td>
+<td >A</td>
+<td ><a href="https://grouper.ieee.org/groups/802/11/PARs/P802\_11bc\_PAR\_Detail.pdf">Enhanced Broadcast Service</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgbc\_update.htm">TGbc</a></td>
+<td >PDF<br />D7.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a><br />
+<a href="#tgay">802.11ay-2021</a><br />
+<a href="#tgba">802.11ba-2021</a><br />
+<a href="#wg-tech-ed">802.11-2020/Cor1-2022</a><br />
+<a href="#tgaz">802.11az-2022</a><br />
+<a href="#tgbd">802.11bd-2022</a><br />
+<a href="#tgbb">802.11bb-2023</a></td>
+<td>Actual</td>
+<td class="date">2018-12-05<br /><span>[2022-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2020-12-20
+<br />
+2021-10-28
+<br />
+2022-04-28
+<br />
+2022-08-25
+</td>
+<td class="result">
+83%
+<br />
+90%
+<br />
+92%
+<br />
+95%
+</td>
+<td>2022-09-01</td>
+<td>2022-07-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2022-11-04
+<br />
+2023-01-13
+<br />
+2023-02-21
+<br />
+2023-03-13
+</td>
+<td class="result">
+92%
+<br />
+97%
+<br />
+100%
+<br />
+100%
+</td>
+<td>2023-03-01</td>
+<td>2023-03-01</td>
+<td>2023-06-01</td>
+<td></td>
+<td>2024-02-01</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgbb"></a>
+IEEE Std P802.11bb-2023</td>
+<td >A</td>
+<td ><a href="https://grouper.ieee.org/groups/802/11/PARs/P802\_11bb\_PAR\_Detail.pdf">Light Communications</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgbb\_update.htm">TGbb</a></td>
+<td >PDF<br />D7.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a><br />
+<a href="#tgay">802.11ay-2021</a><br />
+<a href="#tgba">802.11ba-2021</a><br />
+<a href="#wg-tech-ed">802.11-2020/Cor1-2022</a><br />
+<a href="#tgaz">802.11az-2022</a><br />
+<a href="#tgbd">802.11bd-2022</a></td>
+<td>Actual</td>
+<td class="date">2018-03-09<br /><span>[2022-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2022-01-12
+<br />
+2022-04-22
+<br />
+2022-08-31
+<br />
+2022-10-01
+</td>
+<td class="result">
+87%
+<br />
+94%
+<br />
+95%
+<br />
+99%
+</td>
+<td>2022-03-01</td>
+<td>2022-03-01</td>
+<td class="draft">
+D4.1
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2022-11-07
+<br />
+2023-01-14
+<br />
+2023-02-21
+<br />
+2023-03-14
+</td>
+<td class="result">
+91%
+<br />
+92%
+<br />
+96%
+<br />
+100%
+</td>
+<td>2023-03-01</td>
+<td>2023-03-01</td>
+<td>2023-06-01</td>
+<td></td>
+<td>2023-11-11</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgbd"></a>
+IEEE Std P802.11bd-2022</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802\_11bd\_PAR\_Detail.pdf">Enhancements for Next Generation V2X</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgbd\_update.htm">TGbd</a></td>
+<td >PDF<br />D8.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a><br />
+<a href="#tgay">802.11ay-2021</a><br />
+<a href="#tgba">802.11ba-2021</a><br />
+<a href="#wg-tech-ed">802.11-2020/Cor1-2022</a><br />
+<a href="#tgaz">802.11az-2022</a></td>
+<td>Actual</td>
+<td class="date">2018-12-05<br /><span>[2022-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2020-11-18
+<br />
+2021-08-01
+<br />
+2021-12-16
+<br />
+2022-03-30
+</td>
+<td class="result">
+82%
+<br />
+88%
+<br />
+94%
+<br />
+99%
+</td>
+<td>2021-12-02</td>
+<td>2022-03-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+</td>
+<td class="date" colspan="2">
+2022-05-09
+<br />
+2022-07-05
+<br />
+2022-08-30
+<br />
+2022-09-30
+<br />
+2022-10-14
+</td>
+<td class="result">
+92%
+<br />
+93%
+<br />
+95%
+<br />
+97%
+<br />
+97%
+</td>
+<td>2022-09-16</td>
+<td>2022-10-04</td>
+<td>2022-12-01</td>
+<td></td>
+<td>2023-03-10</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgaz"></a>
+IEEE Std P802.11az-2022</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802.11az.pdf">Next Generation Positioning</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgaz\_update.htm">TGaz</a></td>
+<td >PDF<br />D7.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a><br />
+<a href="#tgay">802.11ay-2021</a><br />
+<a href="#tgba">802.11ba-2021</a><br />
+<a href="#wg-tech-ed">802.11-2020/Cor1-2022</a></td>
+<td>Actual</td>
+<td class="date">2015-09-03<br /><span>[2023-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2019-03-09
+<br />
+2020-01-03
+<br />
+2021-02-10
+<br />
+2021-09-07
+<br />
+2021-10-01
+</td>
+<td class="result">
+79%
+<br />
+87%
+<br />
+88%
+<br />
+95%
+<br />
+98%
+</td>
+<td>2021-08-01</td>
+<td>2021-07-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2021-11-05
+<br />
+2022-06-09
+<br />
+2022-09-07
+<br />
+2022-09-29
+</td>
+<td class="result">
+93%
+<br />
+94%
+<br />
+99%
+<br />
+100%
+</td>
+<td>2022-09-16</td>
+<td>2022-10-04</td>
+<td>2022-12-01</td>
+<td></td>
+<td>2023-03-03</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="wg-tech-ed"></a>
+IEEE Std P802.11-2020/Cor1-2022</td>
+<td >COR</td>
+<td ><a href="https://development.standards.ieee.org/myproject-web/app#viewpar/13252/9629">Correct 802.11ay Assignment of Protected Announce Support Bit</a></td>
+<td >WG Tech Ed</td>
+<td >PDF<br />D2.10</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a><br />
+<a href="#tgay">802.11ay-2021</a><br />
+<a href="#tgba">802.11ba-2021</a></td>
+<td>Actual</td>
+<td class="date">2022-02-23<br /><span>[2026-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.1
+</td>
+<td class="date" colspan="2">
+2022-04-14
+<br />
+2022-06-01
+</td>
+<td class="result">
+99%
+<br />
+100%
+</td>
+<td>2022-05-01</td>
+<td>2022-06-01</td>
+<td class="draft">
+D2.1
+</td>
+<td class="date" colspan="2">
+2022-07-08
+</td>
+<td class="result">
+100%
+</td>
+<td>2022-07-01</td>
+<td>2022-07-01</td>
+<td>2022-09-21</td>
+<td></td>
+<td>2022-12-27</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgba"></a>
+IEEE Std P802.11ba-2021</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802.11ba.pdf">Wake Up Radio</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgba\_update.htm">TGba</a></td>
+<td >PDF<br />D8.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a><br />
+<a href="#tgay">802.11ay-2021</a></td>
+<td>Actual</td>
+<td class="date">2016-12-07<br /><span>[2020-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2018-10-24
+<br />
+2019-03-03
+<br />
+2019-06-18
+<br />
+2019-10-15
+<br />
+2019-12-17
+<br />
+2020-02-01
+</td>
+<td class="result">
+72%
+<br />
+82%
+<br />
+84%
+<br />
+90%
+<br />
+96%
+<br />
+99%
+</td>
+<td>2019-08-01</td>
+<td>2019-11-01</td>
+<td class="draft">
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+</td>
+<td class="date" colspan="2">
+2020-03-18
+<br />
+2020-10-01
+<br />
+2020-12-21
+</td>
+<td class="result">
+91%
+<br />
+95%
+<br />
+98%
+</td>
+<td>2020-11-01</td>
+<td>2020-11-01</td>
+<td>2021-03-01</td>
+<td></td>
+<td>2021-10-08</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgay"></a>
+IEEE Std P802.11ay-2021</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802.11ay.pdf">Next Generation 60GHz</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgay\_update.htm">TGay</a></td>
+<td >PDF<br />D7.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a><br />
+<a href="#tgax">802.11ax-2021</a></td>
+<td>Actual</td>
+<td class="date">2015-03-26<br /><span>[2021-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2018-01-07
+<br />
+2018-08-31
+<br />
+2019-02-28
+<br />
+2019-07-08
+<br />
+2019-11-08
+</td>
+<td class="result">
+74%
+<br />
+93%
+<br />
+93%
+<br />
+98%
+<br />
+99%
+</td>
+<td>2019-06-01</td>
+<td>2019-07-16</td>
+<td class="draft">
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2020-01-09
+<br />
+2020-09-29
+<br />
+2020-12-20
+</td>
+<td class="result">
+89%
+<br />
+92%
+<br />
+98%
+</td>
+<td>2020-11-01</td>
+<td>2020-11-01</td>
+<td>2021-03-01</td>
+<td></td>
+<td>2021-07-28</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgax"></a>
+IEEE Std P802.11ax-2021</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802.11ax.pdf">High Efficiency WLAN</a></td>
+<td ><a href="http://www.ieee802.org/11/Reports/tgax\_update.htm">TGax</a></td>
+<td >PDF<br />D8.00</td>
+<td >
+<a href="#tgmd">802.11-2020</a></td>
+<td>Actual</td>
+<td class="date">2014-03-27<br /><span>[2020-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2017-01-08
+<br />
+2017-11-04
+<br />
+2018-07-01
+<br />
+2019-02-25
+<br />
+2019-10-24
+<br />
+2019-12-11
+</td>
+<td class="result">
+58%
+<br />
+63%
+<br />
+87%
+<br />
+92%
+<br />
+94%
+<br />
+97%
+</td>
+<td>2019-09-01</td>
+<td>2019-05-01</td>
+<td class="draft">
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+</td>
+<td class="date" colspan="2">
+2020-01-24
+<br />
+2020-09-17
+<br />
+2020-11-27
+</td>
+<td class="result">
+82%
+<br />
+88%
+<br />
+95%
+</td>
+<td>2020-09-01</td>
+<td>2020-11-01</td>
+<td>2021-02-01</td>
+<td></td>
+<td>2021-05-19</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgaq"></a>
+IEEE Std P802.11aq-2018</td>
+<td >A</td>
+<td ><a href="https://grouper.ieee.org/groups/802/11/PARs/P802.11aq.pdf">Pre-Association Discovery</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgaq\_update.htm">TGaq</a></td>
+<td >PDF<br />D14.00</td>
+<td >
+<a href="#tgmc">802.11-2016</a><br />
+<a href="#tgai">802.11ai-2016</a><br />
+<a href="#tgah">802.11ah-2016</a><br />
+<a href="#tgaj">802.11aj-2018</a><br />
+<a href="#tgak">802.11ak-2018</a></td>
+<td>Actual</td>
+<td class="date">2012-12-05<br /><span>[2018-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2015-03-04
+<br />
+2015-11-07
+<br />
+2016-04-21
+<br />
+2016-07-19
+<br />
+2016-08-19
+<br />
+2016-09-25
+</td>
+<td class="result">
+73%
+<br />
+93%
+<br />
+93%
+<br />
+93%
+<br />
+96%
+<br />
+97%
+</td>
+<td>2016-08-01</td>
+<td>2016-06-01</td>
+<td class="draft">
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D12.0
+<br />
+D13.0
+<br />
+D14.0
+<br />
+D14.0
+</td>
+<td class="date" colspan="2">
+2016-11-04
+<br />
+2017-03-18
+<br />
+2017-06-23
+<br />
+2017-07-29
+<br />
+2017-10-01
+<br />
+2017-10-30
+<br />
+2018-01-04
+<br />
+2018-01-31
+</td>
+<td class="result">
+88%
+<br />
+91%
+<br />
+94%
+<br />
+98%
+<br />
+97%
+<br />
+97%
+<br />
+98%
+<br />
+99%
+</td>
+<td>2018-03-07</td>
+<td>2018-03-09</td>
+<td>2018-06-14</td>
+<td></td>
+<td>2018-08-31</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgak"></a>
+IEEE Std P802.11ak-2018</td>
+<td >A</td>
+<td ><a href="https://development.standards.ieee.org/P807400033/par">General Link</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgak\_update.htm">TGak</a></td>
+<td >PDF<br />D6.00</td>
+<td >
+<a href="#tgmc">802.11-2016</a><br />
+<a href="#tgai">802.11ai-2016</a><br />
+<a href="#tgah">802.11ah-2016</a><br />
+<a href="#tgaj">802.11aj-2018</a></td>
+<td>Actual</td>
+<td class="date">2012-12-05<br /><span>[2018-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2015-05-06
+<br />
+2016-03-10
+<br />
+2017-01-10
+<br />
+2017-03-30
+</td>
+<td class="result">
+85%
+<br />
+91%
+<br />
+94%
+<br />
+95%
+</td>
+<td>2016-11-01</td>
+<td>2016-11-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2017-05-11
+<br />
+2017-11-09
+<br />
+2018-01-01
+</td>
+<td class="result">
+90%
+<br />
+93%
+<br />
+97%
+</td>
+<td>2018-01-19</td>
+<td>2018-01-31</td>
+<td>2018-03-08</td>
+<td></td>
+<td>2018-06-14</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgaj"></a>
+IEEE Std P802.11aj-2018</td>
+<td >A</td>
+<td ><a href="https://development.standards.ieee.org/P795600033/par">China Millimeter Wave</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgaj\_update.htm">TGaj</a></td>
+<td >PDF<br />D9.00</td>
+<td >
+<a href="#tgmc">802.11-2016</a><br />
+<a href="#tgai">802.11ai-2016</a><br />
+<a href="#tgah">802.11ah-2016</a></td>
+<td>Actual</td>
+<td class="date">2012-08-01<br /><span>[2018-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2016-01-20
+<br />
+2016-06-30
+<br />
+2016-08-30
+<br />
+2016-12-21
+<br />
+2017-03-04
+</td>
+<td class="result">
+88%
+<br />
+89%
+<br />
+89%
+<br />
+92%
+<br />
+95%
+</td>
+<td>2017-01-01</td>
+<td>2016-11-01</td>
+<td class="draft">
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D14.0
+</td>
+<td class="date" colspan="2">
+2017-06-25
+<br />
+2017-08-04
+<br />
+2017-08-24
+<br />
+2017-12-17
+<br />
+2018-01-04
+</td>
+<td class="result">
+98%
+<br />
+100%
+<br />
+100%
+<br />
+100%
+<br />
+98%
+</td>
+<td>2017-11-10</td>
+<td>2017-11-10</td>
+<td>2018-01-24</td>
+<td></td>
+<td>2018-04-18</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgmc"></a>
+IEEE Std P802.11-2016</td>
+<td >STD</td>
+<td ><a href="https://development.standards.ieee.org/get-file/P802.11.pdf?t=76676800003">802.11 Accumulated Maintenance Changes</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgm\_update.htm">TGmc</a></td>
+<td >PDF<br />D8.00</td>
+<td >
+<a href="#tgmb">802.11-2012</a><br />
+<a href="#tgae">802.11ae-2012</a><br />
+<a href="#tgaa">802.11aa-2012</a><br />
+<a href="#tgad">802.11ad-2012</a><br />
+<a href="#tgac">802.11ac-2013</a><br />
+<a href="#tgaf">802.11af-2013</a></td>
+<td>Actual</td>
+<td class="date">2012-08-30<br /><span>[2016-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2013-03-02
+<br />
+2013-10-23
+<br />
+2014-06-23
+<br />
+2015-02-17
+<br />
+2015-03-26
+</td>
+<td class="result">
+88%
+<br />
+90%
+<br />
+90%
+<br />
+94%
+<br />
+96%
+</td>
+<td>2014-09-01</td>
+<td>2014-07-01</td>
+<td class="draft">
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+</td>
+<td class="date" colspan="2">
+2015-04-26
+<br />
+2016-01-26
+<br />
+2016-06-30
+<br />
+2016-08-20
+<br />
+2016-09-08
+</td>
+<td class="result">
+88%
+<br />
+90%
+<br />
+93%
+<br />
+97%
+<br />
+99%
+</td>
+<td>2016-09-01</td>
+<td>2016-10-01</td>
+<td>2016-12-07</td>
+<td></td>
+<td>2017-12-31</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgah"></a>
+IEEE Std P802.11ah-2016</td>
+<td >A</td>
+<td ><a href="https://development.standards.ieee.org/P717700033/par">Sub 1 GHz</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgah\_update.htm">TGah</a></td>
+<td >PDF<br />D10.00</td>
+<td >
+<a href="#tgmc">802.11-2016</a><br />
+<a href="#tgai">802.11ai-2016</a></td>
+<td>Actual</td>
+<td class="date">2010-10-04<br /><span>[2016-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2013-11-04
+<br />
+2014-07-05
+<br />
+2014-10-25
+<br />
+2015-02-14
+<br />
+2015-04-16
+<br />
+2015-10-03
+</td>
+<td class="result">
+73%
+<br />
+83%
+<br />
+90%
+<br />
+93%
+<br />
+93%
+<br />
+98%
+</td>
+<td>2015-04-01</td>
+<td>2016-02-01</td>
+<td class="draft">
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+</td>
+<td class="date" colspan="2">
+2015-11-05
+<br />
+2016-03-02
+<br />
+2016-04-14
+<br />
+2016-05-17
+<br />
+2016-09-09
+<br />
+2016-09-30
+</td>
+<td class="result">
+91%
+<br />
+91%
+<br />
+92%
+<br />
+95%
+<br />
+95%
+<br />
+96%
+</td>
+<td>2016-09-01</td>
+<td>2016-10-01</td>
+<td>2016-12-07</td>
+<td></td>
+<td>2017-05-10</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgai"></a>
+IEEE Std P802.11ai-2016</td>
+<td >A</td>
+<td ><a href="https://development.standards.ieee.org/P722100033/par">Fast Initial Link Setup</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgai\_update.htm">TGai</a></td>
+<td >PDF<br />D11.00</td>
+<td >
+<a href="#tgmc">802.11-2016</a></td>
+<td>Actual</td>
+<td class="date">2010-12-08<br /><span>[2016-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2013-09-12
+<br />
+2014-05-07
+<br />
+2014-10-14
+<br />
+2015-02-24
+<br />
+2015-06-26
+<br />
+2015-07-31
+</td>
+<td class="result">
+74%
+<br />
+85%
+<br />
+88%
+<br />
+90%
+<br />
+92%
+<br />
+97%
+</td>
+<td>2015-03-01</td>
+<td>2014-11-01</td>
+<td class="draft">
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D9.0
+<br />
+D11.0
+</td>
+<td class="date" colspan="2">
+2015-09-15
+<br />
+2016-03-30
+<br />
+2016-07-13
+<br />
+2016-08-06
+<br />
+2016-09-09
+<br />
+2016-09-30
+</td>
+<td class="result">
+90%
+<br />
+89%
+<br />
+93%
+<br />
+95%
+<br />
+97%
+<br />
+95%
+</td>
+<td>2016-09-01</td>
+<td>2016-10-01</td>
+<td>2016-12-07</td>
+<td></td>
+<td>2016-12-31</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgaf"></a>
+IEEE Std P802.11af-2013</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802.11af.pdf">TV White Spaces</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgaf\_update.htm">TGaf</a></td>
+<td >PDF<br />D6.00</td>
+<td >
+<a href="#tgmb">802.11-2012</a><br />
+<a href="#tgae">802.11ae-2012</a><br />
+<a href="#tgaa">802.11aa-2012</a><br />
+<a href="#tgad">802.11ad-2012</a><br />
+<a href="#tgac">802.11ac-2013</a></td>
+<td>Actual</td>
+<td class="date">2009-12-09<br /><span>[2013-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2011-02-24
+<br />
+2012-08-19
+<br />
+2013-02-08
+<br />
+2013-04-17
+<br />
+2013-06-14
+<br />
+2013-08-01
+</td>
+<td class="result">
+62%
+<br />
+79%
+<br />
+87%
+<br />
+92%
+<br />
+94%
+<br />
+99%
+</td>
+<td>2013-06-01</td>
+<td>2013-11-01</td>
+<td class="draft">
+D5.0
+<br />
+D6.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2013-09-11
+<br />
+2013-10-19
+<br />
+2013-10-30
+</td>
+<td class="result">
+97%
+<br />
+99%
+<br />
+99%
+</td>
+<td>2013-11-01</td>
+<td>2013-11-01</td>
+<td>2013-12-11</td>
+<td></td>
+<td>2014-02-21</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgac"></a>
+IEEE Std P802.11ac-2013</td>
+<td >A</td>
+<td ><a href="https://www.ieee802.org/11/PARs/P802.11ac.pdf">Very High Throughput &lt; 6 GHz</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgac\_update.htm">TGac</a></td>
+<td >PDF<br />D7.00</td>
+<td >
+<a href="#tgmb">802.11-2012</a><br />
+<a href="#tgae">802.11ae-2012</a><br />
+<a href="#tgaa">802.11aa-2012</a><br />
+<a href="#tgad">802.11ad-2012</a></td>
+<td>Actual</td>
+<td class="date">2008-09-26<br /><span>[2012-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2011-06-25
+<br />
+2012-02-18
+<br />
+2012-06-25
+<br />
+2012-11-01
+<br />
+2013-02-01
+<br />
+2013-04-04
+</td>
+<td class="result">
+74%
+<br />
+89%
+<br />
+91%
+<br />
+94%
+<br />
+95%
+<br />
+96%
+</td>
+<td>2013-01-01</td>
+<td>2013-01-01</td>
+<td class="draft">
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2013-05-05
+<br />
+2013-08-03
+<br />
+2013-10-23
+</td>
+<td class="result">
+93%
+<br />
+97%
+<br />
+99%
+</td>
+<td>2013-11-01</td>
+<td>2013-11-01</td>
+<td>2013-12-09</td>
+<td></td>
+<td>2013-12-18</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgad"></a>
+IEEE Std P802.11ad-2012</td>
+<td >A</td>
+<td ><a href="https://development.standards.ieee.org/P653500033/par">Very High Throughput 60GHz</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgad\_update.htm">TGad</a></td>
+<td >PDF<br />D9.00</td>
+<td >
+<a href="#tgmb">802.11-2012</a><br />
+<a href="#tgae">802.11ae-2012</a><br />
+<a href="#tgaa">802.11aa-2012</a></td>
+<td>Actual</td>
+<td class="date">2008-12-10<br /><span>[2012-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2010-10-24
+<br />
+2011-04-05
+<br />
+2011-06-01
+<br />
+2011-08-09
+<br />
+2011-10-06
+<br />
+2011-11-24
+</td>
+<td class="result">
+87%
+<br />
+88%
+<br />
+92%
+<br />
+95%
+<br />
+94%
+<br />
+95%
+</td>
+<td>2011-09-01</td>
+<td>2011-07-01</td>
+<td class="draft">
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D9.0
+</td>
+<td class="date" colspan="2">
+2012-01-05
+<br />
+2012-03-30
+<br />
+2012-05-11
+<br />
+2012-06-16
+<br />
+2012-07-28
+<br />
+2012-08-12
+</td>
+<td class="result">
+86%
+<br />
+90%
+<br />
+95%
+<br />
+97%
+<br />
+98%
+<br />
+98%
+</td>
+<td>2012-07-01</td>
+<td>2012-07-01</td>
+<td>2012-10-23</td>
+<td></td>
+<td>2012-12-28</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgaa"></a>
+IEEE Std P802.11aa-2012</td>
+<td >A</td>
+<td ><a href="https://development.standards.ieee.org/P635900033/par">Video Transport Streams</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgaa\_update.htm">TGaa</a></td>
+<td >Word / PDF<br />D9.00</td>
+<td >
+<a href="#tgmb">802.11-2012</a><br />
+<a href="#tgae">802.11ae-2012</a></td>
+<td>Actual</td>
+<td class="date">2008-03-27<br /><span>[2012-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2010-07-10
+<br />
+2010-12-08
+<br />
+2011-02-24
+<br />
+2011-04-09
+<br />
+2011-06-17
+<br />
+2011-08-09
+<br />
+2011-08-31
+</td>
+<td class="result">
+78%
+<br />
+79%
+<br />
+81%
+<br />
+85%
+<br />
+90%
+<br />
+94%
+<br />
+95%
+</td>
+<td>2011-06-30</td>
+<td>2011-06-16</td>
+<td class="draft">
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+</td>
+<td class="date" colspan="2">
+2011-10-12
+<br />
+2011-11-26
+<br />
+2012-01-02
+<br />
+2012-01-27
+</td>
+<td class="result">
+93%
+<br />
+96%
+<br />
+99%
+<br />
+100%
+</td>
+<td>2012-01-28</td>
+<td>2012-02-17</td>
+<td>2012-06-01</td>
+<td></td>
+<td>2012-05-29</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgae"></a>
+IEEE Std P802.11ae-2012</td>
+<td >A</td>
+<td ><a href="https://development.standards.ieee.org/P684600033/par">Prioritization of Management Frames</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgae\_update.htm">TGae</a></td>
+<td >PDF<br />D8.00</td>
+<td >
+<a href="#tgmb">802.11-2012</a></td>
+<td>Actual</td>
+<td class="date">2009-12-09<br /><span>[2010-10-15]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2010-10-27
+<br />
+2011-02-18
+<br />
+2011-04-26
+<br />
+2011-06-18
+<br />
+2011-08-04
+</td>
+<td class="result">
+81%
+<br />
+86%
+<br />
+89%
+<br />
+96%
+<br />
+96%
+</td>
+<td>2011-07-01</td>
+<td>2011-05-01</td>
+<td class="draft">
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+</td>
+<td class="date" colspan="2">
+2011-09-09
+<br />
+2011-10-29
+<br />
+2011-12-13
+<br />
+2012-01-04
+</td>
+<td class="result">
+95%
+<br />
+96%
+<br />
+100%
+<br />
+100%
+</td>
+<td>2012-01-20</td>
+<td>2012-02-17</td>
+<td>2012-03-01</td>
+<td></td>
+<td>2012-04-06</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgmb"></a>
+IEEE Std P802.11-2012</td>
+<td >STD</td>
+<td ><a href="https://development.standards.ieee.org/P652100033/par">802.11 Accumulated Maintenance Changes</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgm\_update.htm">TGmb</a></td>
+<td >Frame / PDF<br />D9.01</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a><br />
+<a href="#tgy">802.11y-2008</a><br />
+<a href="#tgw-115">802.11w-2009</a><br />
+<a href="#tgn-74">802.11n-2009</a><br />
+<a href="#tgp-117">802.11p-2010</a><br />
+<a href="#tgz-113">802.11z-2010</a><br />
+<a href="#tgv-71">802.11v-2011</a><br />
+<a href="#tgu-64">802.11u-2011</a><br />
+<a href="#tgs">802.11s-2011</a></td>
+<td>Actual</td>
+<td class="date">2007-03-22<br /><span>[2011-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+</td>
+<td class="date" colspan="2">
+2009-06-27
+<br />
+2010-01-08
+<br />
+2010-04-25
+<br />
+2010-06-25
+<br />
+2010-08-19
+</td>
+<td class="result">
+87%
+<br />
+89%
+<br />
+89%
+<br />
+89%
+<br />
+92%
+</td>
+<td>2010-09-14</td>
+<td>2010-09-01</td>
+<td class="draft">
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+<br />
+D12.0
+</td>
+<td class="date" colspan="2">
+2010-11-05
+<br />
+2011-02-18
+<br />
+2011-04-14
+<br />
+2011-06-22
+<br />
+2011-09-07
+<br />
+2011-10-22
+<br />
+2011-11-13
+</td>
+<td class="result">
+87%
+<br />
+90%
+<br />
+92%
+<br />
+93%
+<br />
+92%
+<br />
+94%
+<br />
+97%
+</td>
+<td>2011-11-11</td>
+<td>2011-11-11</td>
+<td>2012-03-01</td>
+<td></td>
+<td>2012-03-29</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgs"></a>
+IEEE Std P802.11s-2011</td>
+<td >A</td>
+<td ><a href="http://standards.ieee.org/board/nes/projects/802-11s.pdf">Mesh Networking</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgs\_update.htm">TGs</a></td>
+<td >PDF</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a><br />
+<a href="#tgy">802.11y-2008</a><br />
+<a href="#tgw-115">802.11w-2009</a><br />
+<a href="#tgn-74">802.11n-2009</a><br />
+<a href="#tgp-117">802.11p-2010</a><br />
+<a href="#tgz-113">802.11z-2010</a><br />
+<a href="#tgv-71">802.11v-2011</a><br />
+<a href="#tgu-64">802.11u-2011</a></td>
+<td>Actual</td>
+<td class="date">2004-05-13<br /><span>[2010-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2007-01-06
+<br />
+2008-05-03
+<br />
+2009-05-04
+<br />
+2010-01-08
+<br />
+2010-04-15
+<br />
+2010-06-28
+<br />
+2010-08-13
+</td>
+<td class="result">
+48%
+<br />
+61%
+<br />
+79%
+<br />
+85%
+<br />
+89%
+<br />
+89%
+<br />
+95%
+</td>
+<td>2010-09-12</td>
+<td>2010-09-29</td>
+<td class="draft">
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+</td>
+<td class="date" colspan="2">
+2010-11-01
+<br />
+2011-01-10
+<br />
+2011-03-05
+<br />
+2011-04-09
+<br />
+2011-05-07
+</td>
+<td class="result">
+95%
+<br />
+96%
+<br />
+95%
+<br />
+97%
+<br />
+97%
+</td>
+<td>2011-07-01</td>
+<td>2011-07-01</td>
+<td>2011-08-01</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgu-64"></a>
+IEEE Std P802.11u-2011</td>
+<td >A</td>
+<td ><a href="http://standards.ieee.org/board/nes/projects/802-11u.pdf">InterWorking with External Networks</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgu\_update.htm">TGu</a></td>
+<td >Frame / PDF<br />D13.00</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a><br />
+<a href="#tgy">802.11y-2008</a><br />
+<a href="#tgw-115">802.11w-2009</a><br />
+<a href="#tgn-74">802.11n-2009</a><br />
+<a href="#tgp-117">802.11p-2010</a><br />
+<a href="#tgz-113">802.11z-2010</a><br />
+<a href="#tgv-71">802.11v-2011</a></td>
+<td>Actual</td>
+<td class="date">2004-12-08<br /><span>(02/05/2008)</span><br /><span>[2010-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+</td>
+<td class="date" colspan="2">
+2007-07-08
+<br />
+2008-03-15
+<br />
+2008-07-12
+<br />
+2008-10-08
+<br />
+2009-02-20
+<br />
+2009-04-24
+<br />
+2009-06-19
+<br />
+2009-08-18
+</td>
+<td class="result">
+64%
+<br />
+70%
+<br />
+77%
+<br />
+78%
+<br />
+82%
+<br />
+90%
+<br />
+88%
+<br />
+93%
+</td>
+<td>2009-06-01</td>
+<td>2009-07-12</td>
+<td class="draft">
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+<br />
+D12.0
+<br />
+D13.0
+</td>
+<td class="date" colspan="2">
+2009-11-07
+<br />
+2010-04-23
+<br />
+2010-07-08
+<br />
+2010-08-13
+<br />
+2010-09-12
+<br />
+2010-11-21
+</td>
+<td class="result">
+90%
+<br />
+92%
+<br />
+94%
+<br />
+96%
+<br />
+98%
+<br />
+99%
+</td>
+<td>2010-11-01</td>
+<td>2010-11-01</td>
+<td>2011-02-25</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgv-71"></a>
+IEEE Std P802.11v-2011</td>
+<td >A</td>
+<td ><a href="http://standards.ieee.org/board/nes/projects/802-11v.pdf">Wireless Network Management</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgv\_update.htm">TGv</a></td>
+<td >Frame / PDF<br />D16.00</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a><br />
+<a href="#tgy">802.11y-2008</a><br />
+<a href="#tgw-115">802.11w-2009</a><br />
+<a href="#tgn-74">802.11n-2009</a><br />
+<a href="#tgp-117">802.11p-2010</a><br />
+<a href="#tgz-113">802.11z-2010</a></td>
+<td>Actual</td>
+<td class="date">2004-12-08<br /><span>[2010-12-31]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2007-08-30
+<br />
+2008-03-15
+<br />
+2008-07-13
+<br />
+2008-12-19
+<br />
+2009-04-04
+<br />
+2009-06-12
+<br />
+2009-08-07
+</td>
+<td class="result">
+63%
+<br />
+67%
+<br />
+69%
+<br />
+81%
+<br />
+83%
+<br />
+90%
+<br />
+92%
+</td>
+<td>2009-06-01</td>
+<td>2009-07-12</td>
+<td class="draft">
+D7.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+<br />
+D12.0
+<br />
+D13.0
+<br />
+D14.0
+<br />
+D15.0
+<br />
+D15.0
+<br />
+D16.0
+</td>
+<td class="date" colspan="2">
+2009-11-07
+<br />
+2010-02-17
+<br />
+2010-04-13
+<br />
+2010-06-10
+<br />
+2010-07-07
+<br />
+2010-07-28
+<br />
+2010-08-25
+<br />
+2010-10-18
+<br />
+2010-09-30
+<br />
+2010-11-15
+</td>
+<td class="result">
+81%
+<br />
+84%
+<br />
+87%
+<br />
+92%
+<br />
+94%
+<br />
+98%
+<br />
+98%
+<br />
+98%
+<br />
+98%
+<br />
+98%
+</td>
+<td>2010-11-01</td>
+<td>2010-11-01</td>
+<td>2011-02-09</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgz-113"></a>
+IEEE Std P802.11z-2010</td>
+<td >A</td>
+<td ><a href="http://standards.ieee.org/board/nes/projects/802-11z.pdf">Extensions to Direct Link Setup</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgz\_update.htm">TGz</a></td>
+<td >Word / PDF<br />D13.00</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a><br />
+<a href="#tgy">802.11y-2008</a><br />
+<a href="#tgw-115">802.11w-2009</a><br />
+<a href="#tgn-74">802.11n-2009</a><br />
+<a href="#tgp-117">802.11p-2010</a></td>
+<td>Actual</td>
+<td class="date">2007-08-22</td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2008-05-03
+<br />
+2008-08-20
+<br />
+2008-12-18
+<br />
+2009-03-05
+<br />
+2009-06-23
+<br />
+2009-08-26
+</td>
+<td class="result">
+64%
+<br />
+66%
+<br />
+84%
+<br />
+88%
+<br />
+92%
+<br />
+96%
+</td>
+<td>2009-06-01</td>
+<td>2009-06-18</td>
+<td class="draft">
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D11.0
+<br />
+D13.0
+</td>
+<td class="date" colspan="2">
+2009-11-07
+<br />
+2010-02-27
+<br />
+2010-05-04
+<br />
+2010-06-10
+<br />
+2010-08-04
+<br />
+2010-08-29
+</td>
+<td class="result">
+87%
+<br />
+87%
+<br />
+94%
+<br />
+95%
+<br />
+95%
+<br />
+98%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2010-10-01</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgp-117"></a>
+IEEE Std P802.11p-2010</td>
+<td >A</td>
+<td ><a href="http://standards.ieee.org/board/nes/projects/802-11p.pdf">Wireless Access for the Vehicular Environment</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgp\_update.htm">TGp</a></td>
+<td >N/A</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a><br />
+<a href="#tgy">802.11y-2008</a><br />
+<a href="#tgw-115">802.11w-2009</a><br />
+<a href="#tgn-74">802.11n-2009</a></td>
+<td>Actual</td>
+<td class="date">2004-09-23</td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+</td>
+<td class="date" colspan="2">
+2006-04-11
+<br />
+2007-01-05
+<br />
+2007-09-12
+<br />
+2008-05-03
+<br />
+2008-12-05
+<br />
+2009-03-31
+<br />
+2009-06-13
+<br />
+2009-08-05
+<br />
+2009-10-10
+</td>
+<td class="result">
+59%
+<br />
+67%
+<br />
+74%
+<br />
+79%
+<br />
+85%
+<br />
+89%
+<br />
+85%
+<br />
+89%
+<br />
+93%
+</td>
+<td>2009-06-01</td>
+<td>2008-06-19</td>
+<td class="draft">
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+</td>
+<td class="date" colspan="2">
+2009-11-22
+<br />
+2010-02-16
+<br />
+2010-04-07
+</td>
+<td class="result">
+93%
+<br />
+96%
+<br />
+99%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2010-07-15</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgw-115"></a>
+IEEE Std P802.11w-2009</td>
+<td >A</td>
+<td ><a href="http://standards.ieee.org/board/nes/projects/802-11w.pdf">Protected Management Frames</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgw\_update.htm">TGw</a></td>
+<td >N/A</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a><br />
+<a href="#tgy">802.11y-2008</a></td>
+<td>Actual</td>
+<td class="date">2005-03-20</td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2006-11-19
+<br />
+2007-05-02
+<br />
+2007-10-19
+<br />
+2008-01-05
+<br />
+2008-02-20
+<br />
+2008-04-18
+</td>
+<td class="result">
+86%
+<br />
+89%
+<br />
+92%
+<br />
+92%
+<br />
+95%
+<br />
+97%
+</td>
+<td>2007-11-13</td>
+<td></td>
+<td class="draft">
+D6.0
+<br />
+D7.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+</td>
+<td class="date" colspan="2">
+2008-09-24
+<br />
+2009-01-18
+<br />
+2009-05-23
+<br />
+2009-06-14
+<br />
+2009-06-28
+</td>
+<td class="result">
+86%
+<br />
+88%
+<br />
+92%
+<br />
+93%
+<br />
+95%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2009-09-11</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgn-74"></a>
+IEEE Std P802.11n-2009</td>
+<td >A</td>
+<td ><a href="http://standards.ieee.org/board/nes/projects/802-11n.pdf">High Throughput</a></td>
+<td ><a href="http://grouper.ieee.org/groups/802/11/Reports/tgn\_update.htm">TGn</a></td>
+<td ></td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a><br />
+<a href="#tgy">802.11y-2008</a><br />
+<a href="#tgw-115">802.11w-2009</a></td>
+<td>Actual</td>
+<td class="date">2003-09-11<br /><span>[2007-09-27]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2006-04-29
+<br />
+2007-03-09
+<br />
+2007-10-27
+<br />
+2008-04-12
+<br />
+2008-06-12
+<br />
+2008-08-05
+<br />
+2008-09-30
+<br />
+2008-12-02
+</td>
+<td class="result">
+47%
+<br />
+83%
+<br />
+85%
+<br />
+88%
+<br />
+90%
+<br />
+91%
+<br />
+94%
+<br />
+95%
+</td>
+<td>2008-12-11</td>
+<td>2008-12-11</td>
+<td class="draft">
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+<br />
+D11.0
+</td>
+<td class="date" colspan="2">
+2009-01-10
+<br />
+2009-03-06
+<br />
+2009-04-04
+<br />
+2009-05-30
+<br />
+2009-07-03
+<br />
+2009-06-20
+</td>
+<td class="result">
+78%
+<br />
+80%
+<br />
+81%
+<br />
+88%
+<br />
+91%
+<br />
+90%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2009-09-11</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgy"></a>
+IEEE Std P802.11y-2008</td>
+<td >A</td>
+<td >3650-3700 MHz Operation in USA</td>
+<td >TGy</td>
+<td >N/A</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a><br />
+<a href="#tgr">802.11r-2008</a></td>
+<td>Actual</td>
+<td class="date">2006-03-16</td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2007-01-07
+<br />
+2007-05-05
+<br />
+2007-06-20
+<br />
+2007-08-21
+<br />
+2007-10-13
+<br />
+2007-12-08
+</td>
+<td class="result">
+76%
+<br />
+84%
+<br />
+91%
+<br />
+94%
+<br />
+96%
+<br />
+99%
+</td>
+<td>2007-06-20</td>
+<td>2007-07-28</td>
+<td class="draft">
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+</td>
+<td class="date" colspan="2">
+2008-01-30
+<br />
+2008-03-08
+<br />
+2008-03-27
+<br />
+2008-03-18
+<br />
+2008-06-20
+</td>
+<td class="result">
+93%
+<br />
+93%
+<br />
+96%
+<br />
+97%
+<br />
+97%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2008-11-06</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgr"></a>
+IEEE Std P802.11r-2008</td>
+<td >A</td>
+<td >Fast Roaming</td>
+<td >TGr</td>
+<td >N/A</td>
+<td >
+<a href="#tgma">802.11-2007</a><br />
+<a href="#tgk-119">802.11k-2008</a></td>
+<td>Actual</td>
+<td class="date">2006-05-25</td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2006-01-04
+<br />
+2006-04-04
+<br />
+2006-10-14
+<br />
+2006-12-04
+<br />
+2007-04-04
+<br />
+2007-06-13
+</td>
+<td class="result">
+81%
+<br />
+88%
+<br />
+86%
+<br />
+92%
+<br />
+95%
+<br />
+97%
+</td>
+<td></td>
+<td>2007-04-11</td>
+<td class="draft">
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D9.0
+</td>
+<td class="date" colspan="2">
+2007-08-30
+<br />
+2007-10-07
+<br />
+2008-02-01
+<br />
+2008-01-17
+</td>
+<td class="result">
+86%
+<br />
+90%
+<br />
+97%
+<br />
+96%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2008-05-09</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgk-119"></a>
+IEEE Std P802.11k-2008</td>
+<td >A</td>
+<td >Radio Resource Measurement</td>
+<td >TGk</td>
+<td >N/A</td>
+<td >
+<a href="#tgma">802.11-2007</a></td>
+<td>Actual</td>
+<td class="date">2002-12-11</td>
+<td class="draft">
+<br />
+<br />
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2007-09-11
+<br />
+2008-01-05
+<br />
+2004-09-11
+<br />
+2005-03-15
+<br />
+2005-11-12
+<br />
+2006-03-31
+<br />
+2006-09-16
+<br />
+2006-11-16
+<br />
+2007-02-13
+<br />
+2007-05-05
+</td>
+<td class="result">
+90%
+<br />
+100%
+<br />
+95%
+<br />
+86%
+<br />
+80%
+<br />
+81%
+<br />
+85%
+<br />
+91%
+<br />
+92%
+<br />
+93%
+</td>
+<td></td>
+<td>2007-04-10</td>
+<td class="draft">
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+<br />
+D12.0
+<br />
+D12.0
+<br />
+D13.0
+</td>
+<td class="date" colspan="2">
+2007-08-13
+<br />
+2007-10-04
+<br />
+2007-12-08
+<br />
+2008-01-17
+<br />
+2008-02-14
+<br />
+2008-02-01
+<br />
+2008-03-18
+</td>
+<td class="result">
+90%
+<br />
+89%
+<br />
+91%
+<br />
+95%
+<br />
+95%
+<br />
+95%
+<br />
+97%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2008-05-09</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgma"></a>
+IEEE Std P802.11-2007</td>
+<td >STD</td>
+<td >802.11 Standard Maintenance Revision</td>
+<td >TGma</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a><br />
+<a href="#tgb">802.11b-1999</a><br />
+<a href="#tgb-cor1">802.11b Cor1-2001</a><br />
+<a href="#tgd">802.11d-2001</a><br />
+<a href="#tgg">802.11g-2003</a><br />
+<a href="#tgh">802.11h-2003</a><br />
+<a href="#tgi">802.11i-2004</a><br />
+<a href="#tgj">802.11j-2004</a><br />
+<a href="#tge">802.11e-2005</a></td>
+<td>Actual</td>
+<td class="date">2003-03-20<br /><span>[2003-03-20]</span></td>
+<td class="draft">
+D1.0
+<br />
+D2.0
+<br />
+D3.0
+<br />
+D4.0
+</td>
+<td class="date" colspan="2">
+2005-05-08
+<br />
+2005-07-17
+<br />
+2005-08-19
+<br />
+2005-09-19
+</td>
+<td class="result">
+91%
+<br />
+94%
+<br />
+95%
+<br />
+96%
+</td>
+<td>2005-08-21</td>
+<td>2005-08-21</td>
+<td class="draft">
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+</td>
+<td class="date" colspan="2">
+2005-11-20
+<br />
+2006-05-10
+<br />
+2006-07-11
+<br />
+2006-09-09
+<br />
+2006-11-07
+</td>
+<td class="result">
+86%
+<br />
+90%
+<br />
+91%
+<br />
+96%
+<br />
+96%
+</td>
+<td>2006-11-08</td>
+<td>2006-11-08</td>
+<td>2007-03-08</td>
+<td></td>
+<td>2012-03-01</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgt"></a>
+IEEE Std P802.11.2</td>
+<td >RP</td>
+<td >Wireless Performance</td>
+<td >TGt</td>
+<td ></td>
+<td ></td>
+<td>Actual</td>
+<td class="date">2008-12-31</td>
+<td class="draft">
+D1.0
+</td>
+<td class="date" colspan="2">
+2007-05-16
+</td>
+<td class="result">
+76%
+</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>2008-05-14</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tge"></a>
+IEEE Std P802.11e-2005</td>
+<td >A</td>
+<td >MAC Enhancements QoS</td>
+<td >TGe</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a><br />
+<a href="#tgb">802.11b-1999</a><br />
+<a href="#tgb-cor1">802.11b Cor1-2001</a><br />
+<a href="#tgd">802.11d-2001</a><br />
+<a href="#tgg">802.11g-2003</a><br />
+<a href="#tgh">802.11h-2003</a><br />
+<a href="#tgi">802.11i-2004</a><br />
+<a href="#tgj">802.11j-2004</a></td>
+<td>Actual</td>
+<td class="date">2000-03-30</td>
+<td class="draft">
+<br />
+<br />
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+<br />
+D8.0
+</td>
+<td class="date" colspan="2">
+2001-05-15
+<br />
+2002-01-16
+<br />
+2002-07-02
+<br />
+2003-01-08
+<br />
+2003-08-22
+<br />
+2003-12-20
+<br />
+2004-02-15
+<br />
+2004-03-10
+</td>
+<td class="result">
+0%
+<br />
+55%
+<br />
+49%
+<br />
+83%
+<br />
+97%
+<br />
+89%
+<br />
+93%
+<br />
+94%
+</td>
+<td></td>
+<td></td>
+<td class="draft">
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+<br />
+D11.0
+<br />
+D12.0
+<br />
+D13.0
+<br />
+D13.0
+</td>
+<td class="date" colspan="2">
+2004-05-30
+<br />
+2004-08-31
+<br />
+2004-10-08
+<br />
+2004-11-11
+<br />
+2004-12-23
+<br />
+2005-04-16
+<br />
+2005-02-18
+</td>
+<td class="result">
+85%
+<br />
+87%
+<br />
+92%
+<br />
+95%
+<br />
+96%
+<br />
+99%
+<br />
+96%
+</td>
+<td>2005-07-22</td>
+<td>2005-07-22</td>
+<td>2005-09-22</td>
+<td></td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgj"></a>
+IEEE Std P802.11j-2004</td>
+<td >A</td>
+<td >4.9 GHz-5 GHz Operation in Japan</td>
+<td >TGj</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a><br />
+<a href="#tgb">802.11b-1999</a><br />
+<a href="#tgb-cor1">802.11b Cor1-2001</a><br />
+<a href="#tgd">802.11d-2001</a><br />
+<a href="#tgg">802.11g-2003</a><br />
+<a href="#tgh">802.11h-2003</a><br />
+<a href="#tgi">802.11i-2004</a></td>
+<td>Actual</td>
+<td class="date">2002-12-11</td>
+<td class="draft">
+D1.0
+<br />
+D1.2
+<br />
+D1.3
+<br />
+D1.4
+</td>
+<td class="date" colspan="2">
+2003-05-12
+<br />
+2004-01-14
+<br />
+2004-03-11
+<br />
+2004-04-20
+</td>
+<td class="result">
+68%
+<br />
+89%
+<br />
+94%
+<br />
+95%
+</td>
+<td>2004-05-13</td>
+<td></td>
+<td class="draft">
+D1.5
+<br />
+D1.6
+</td>
+<td class="date" colspan="2">
+2004-07-02
+<br />
+2004-08-14
+</td>
+<td class="result">
+88%
+<br />
+96%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2004-09-23</td>
+<td>2005-02-02</td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgi"></a>
+IEEE Std P802.11i-2004</td>
+<td >A</td>
+<td >MAC Security Enhancements</td>
+<td >TGi</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a><br />
+<a href="#tgb">802.11b-1999</a><br />
+<a href="#tgb-cor1">802.11b Cor1-2001</a><br />
+<a href="#tgd">802.11d-2001</a><br />
+<a href="#tgg">802.11g-2003</a><br />
+<a href="#tgh">802.11h-2003</a></td>
+<td>Actual</td>
+<td class="date">2001-05-30</td>
+<td class="draft">
+<br />
+D3.0
+<br />
+D4.0
+<br />
+D5.0
+<br />
+D6.0
+<br />
+D7.0
+</td>
+<td class="date" colspan="2">
+2002-05-04
+<br />
+2003-01-12
+<br />
+2003-06-06
+<br />
+2003-08-19
+<br />
+2003-10-09
+<br />
+2003-11-04
+</td>
+<td class="result">
+77%
+<br />
+76%
+<br />
+78%
+<br />
+87%
+<br />
+92%
+<br />
+95%
+</td>
+<td>2003-08-10</td>
+<td></td>
+<td class="draft">
+D7.0
+<br />
+D8.0
+<br />
+D9.0
+<br />
+D10.0
+</td>
+<td class="date" colspan="2">
+2003-12-20
+<br />
+2004-03-12
+<br />
+2004-04-10
+<br />
+2004-05-08
+</td>
+<td class="result">
+89%
+<br />
+92%
+<br />
+98%
+<br />
+98%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2004-06-24</td>
+<td>2005-02-14</td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgh"></a>
+IEEE Std P802.11h-2003</td>
+<td >A</td>
+<td >Spectrum and Transmit Power Management Extensions in the 5 GHz Band in Europe</td>
+<td >TGh</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a><br />
+<a href="#tgb">802.11b-1999</a><br />
+<a href="#tgb-cor1">802.11b Cor1-2001</a><br />
+<a href="#tgd">802.11d-2001</a><br />
+<a href="#tgg">802.11g-2003</a></td>
+<td>Actual</td>
+<td class="date">2000-12-07</td>
+<td class="draft">
+<br />
+<br />
+<br />
+D2.2
+</td>
+<td class="date" colspan="2">
+2001-09-03
+<br />
+2002-05-05
+<br />
+2002-09-01
+<br />
+2002-11-01
+</td>
+<td class="result">
+0%
+<br />
+76%
+<br />
+90%
+<br />
+97%
+</td>
+<td>2002-07-25</td>
+<td></td>
+<td class="draft">
+D3.0
+<br />
+D3.11
+<br />
+D3.6
+</td>
+<td class="date" colspan="2">
+2003-02-06
+<br />
+2003-06-26
+<br />
+2003-04-30
+</td>
+<td class="result">
+92%
+<br />
+98%
+<br />
+96%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2003-09-11</td>
+<td>2003-12-29</td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgg"></a>
+IEEE Std P802.11g-2003</td>
+<td >A</td>
+<td >Further Higher Data Rate Extension in the 2.4 GHz Band</td>
+<td >TGg</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a><br />
+<a href="#tgb">802.11b-1999</a><br />
+<a href="#tgb-cor1">802.11b Cor1-2001</a><br />
+<a href="#tgd">802.11d-2001</a></td>
+<td>Actual</td>
+<td class="date">2000-09-21</td>
+<td class="draft">
+<br />
+<br />
+D5.0
+<br />
+D4.0
+<br />
+D6.1
+</td>
+<td class="date" colspan="2">
+2002-03-11
+<br />
+2002-09-01
+<br />
+2003-01-08
+<br />
+2002-11-01
+<br />
+2003-02-04
+</td>
+<td class="result">
+45%
+<br />
+83%
+<br />
+88%
+<br />
+87%
+<br />
+89%
+</td>
+<td>2002-07-25</td>
+<td></td>
+<td class="draft">
+D6.2
+<br />
+D7.1
+<br />
+D8.2
+</td>
+<td class="date" colspan="2">
+2003-03-09
+<br />
+2003-04-08
+<br />
+2003-05-14
+</td>
+<td class="result">
+84%
+<br />
+85%
+<br />
+96%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2003-06-12</td>
+<td>2003-10-20</td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgb-cor1"></a>
+IEEE Std P802.11b Cor1-2001</td>
+<td >COR</td>
+<td >Corrigenda to IEEE 802.11b-1999</td>
+<td >TGb-Cor1</td>
+<td ></td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a></td>
+<td>Actual</td>
+<td class="date">1999-11-27</td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td class="draft">
+D1.5
+</td>
+<td class="date" colspan="2">
+2001-04-13
+</td>
+<td class="result">
+98%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2001-10-10</td>
+<td>2002-01-30</td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgd"></a>
+IEEE Std P802.11d-2001</td>
+<td >A</td>
+<td >Operation in Additional Regulatory Domains</td>
+<td >TGd</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a><br />
+<a href="#tgb">802.11b-1999</a><br />
+<a href="#tgb-cor1">802.11b Cor1-2001</a></td>
+<td>Actual</td>
+<td class="date">1999-06-26</td>
+<td class="draft">
+<br />
+</td>
+<td class="date" colspan="2">
+2000-04-04
+<br />
+2000-06-26
+</td>
+<td class="result">
+0%
+<br />
+0%
+</td>
+<td>2001-11-29</td>
+<td></td>
+<td class="draft">
+D2.0
+<br />
+D3.0
+</td>
+<td class="date" colspan="2">
+2001-03-01
+<br />
+2001-04-13
+</td>
+<td class="result">
+93%
+<br />
+100%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2001-06-14</td>
+<td>2001-10-25</td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgb"></a>
+IEEE Std P802.11b-1999</td>
+<td >A</td>
+<td >Higher Speed PHY Extension in the 2.4 GHz Band</td>
+<td >TGb</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a><br />
+<a href="#tga">802.11a-1999</a></td>
+<td>Actual</td>
+<td class="date">1997-12-09</td>
+<td class="draft">
+</td>
+<td class="date" colspan="2">
+1998-11-09
+</td>
+<td class="result">
+0%
+</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td>C</td>
+<td>C</td>
+<td>1999-09-16</td>
+<td></td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tga"></a>
+IEEE Std P802.11a-1999</td>
+<td >A</td>
+<td >Higher Speed PHY Extension in the 5GHz Band</td>
+<td >TGa</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a><br />
+<a href="#tgc">802.11c</a></td>
+<td>Actual</td>
+<td class="date">1997-09-16</td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td>C</td>
+<td>C</td>
+<td>1999-09-16</td>
+<td>2000-02-04</td>
+<td>2007-03-08</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="tgf"></a>
+IEEE Std P802.11f-2003</td>
+<td >RP</td>
+<td >Inter-Access Point Protocol Across Distribution Systems Supporting IEEE 802.11 Operation</td>
+<td >TGf</td>
+<td >N/A</td>
+<td ></td>
+<td>Actual</td>
+<td class="date">2000-03-30</td>
+<td class="draft">
+<br />
+<br />
+<br />
+</td>
+<td class="date" colspan="2">
+2001-05-15
+<br />
+2001-09-03
+<br />
+2002-03-10
+<br />
+2002-06-16
+</td>
+<td class="result">
+0%
+<br />
+0%
+<br />
+82%
+<br />
+96%
+</td>
+<td>2002-07-27</td>
+<td></td>
+<td class="draft">
+D4.0
+<br />
+D4.1
+<br />
+D5.0
+<br />
+D6.0
+</td>
+<td class="date" colspan="2">
+2002-10-28
+<br />
+2002-12-19
+<br />
+2003-02-17
+<br />
+2003-04-08
+</td>
+<td class="result">
+88%
+<br />
+95%
+<br />
+97%
+<br />
+98%
+</td>
+<td>C</td>
+<td>C</td>
+<td>2003-06-12</td>
+<td></td>
+<td>2006-02-03</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="macphy"></a>
+IEEE Std P802.11-1999</td>
+<td >STD</td>
+<td >Part II Wireless LAN Medium Access Control MAC and Physical Layer PHY Specifications</td>
+<td >MAC/PHY</td>
+<td >N/A</td>
+<td ></td>
+<td>Actual</td>
+<td class="date">1997-12-09</td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td class="draft">
+<br />
+<br />
+</td>
+<td class="date" colspan="2">
+2003-01-07
+<br />
+2003-04-09
+<br />
+2003-02-02
+</td>
+<td class="result">
+99%
+<br />
+99%
+<br />
+99%
+</td>
+<td>C</td>
+<td>C</td>
+<td>1999-03-18</td>
+<td>1999-07-15</td>
+<td>2005-09-30</td>
+</tr>
+<tr class="row2">
+<td class="first"><a name="macp-111"></a>
+IEEE Std P802.11-1997</td>
+<td >STD</td>
+<td >IEEE Standard for Wireless LAN Medium Access Control MAC and Physical Layer PHY Specifications</td>
+<td >MAC/PHY</td>
+<td >N/A</td>
+<td ></td>
+<td>Actual</td>
+<td class="date">1991-03-21</td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td>C</td>
+<td>C</td>
+<td>1997-06-26</td>
+<td></td>
+<td>1999-07-15</td>
+</tr>
+<tr class="row1">
+<td class="first"><a name="tgc"></a>
+IEEE Std P802.11c</td>
+<td >A</td>
+<td >Media Access Control MAC Bridges - Supplement for Support by IEEE 802.11 [Rolled into IEEE 802.11d]</td>
+<td >TGc</td>
+<td >N/A</td>
+<td >
+<a href="#macphy">802.11-1999</a></td>
+<td>Actual</td>
+<td class="date">1997-12-09</td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td colspan="4">&nbsp;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table id="notes">
+<col width="5%" />
+<col width="19%" />
+<col width="3%" />
+<col width="13%" />
+<col width="12%" />
+<col width="20%" />
+<col width="11%" />
+<col width="17%" />
+<thead>
+<tr>
+<th colspan="8" style="background:black; color: white;">Timeline Chart Notes:</th>
+</tr>
+</thead><tbody>
+<tr>
+<td class="key">C</td>
+<td >&nbsp;=&nbsp; Stage Completed or Currently In-Process</td>
+<td class="key">N/A</td>
+<td >&nbsp;=&nbsp; Not Applicable</td>
+<td class="key">MEC</td>
+<td >&nbsp;=&nbsp;IEEE-SA Mandatory Editorial Coordination</td>
+<td class="key">MDR</td>
+<td >&nbsp;=&nbsp;802.11 WG Mandatory Draft Review</td>
+</tr>
+<tr>
+<td class="key">A / COR</td>
+<td >&nbsp;=&nbsp;Amendment / Corrigendum</td>
+<td class="key">RP</td>
+<td >&nbsp;=&nbsp; Recommended Practice</td>
+<td class="key">Final 802.11 WG</td>
+<td colspan="3">&nbsp;=&nbsp; Approval by 802.11 WG - <a href="http://grouper.ieee.org/groups/802/11/Meetings/Meeting\_Plan.html">Current WG Calendar</a></td>
+</tr>
+<tr>
+<td class="key">Predicted</td>
+<td >&nbsp;=&nbsp; Current Date Estimate</td>
+<td class="key">SB</td>
+<td >&nbsp;=&nbsp; SA Ballot</td>
+<td class="key">Final or Conditional 802 LMSC</td>
+<td colspan="3">&nbsp;=&nbsp; Approval by 802 LMSC at Plenary Session - <a href="http://grouper.ieee.org/groups/802/11/Meetings/Meeting\_Plan.html">Current 802 LMSC Plenary Calendar</a></td>
+</tr>
+<tr>
+<td class="key">Date</td>
+<td >&nbsp;=&nbsp; Actual or Start Date</td>
+<td class="key">STD</td>
+<td >&nbsp;=&nbsp; Standard and/or Revision</td>
+<td class="key">RevCom/Standards Board</td>
+<td colspan="3">&nbsp;=&nbsp; Approval of RevCom / IEEE-SA Standards Board in Normal Session - <a href="http://standards.ieee.org/board/index.html">Current IEEE-SA Calendar</a></td>
+</tr>
+<tr>
+<td class="key">LB</td>
+<td >&nbsp;=&nbsp; Letter Ballot </td>
+<td class="key">TG</td>
+<td >&nbsp;=&nbsp; Task Group</td>
+<td class="key">ANSI</td>
+<td >&nbsp;=&nbsp; American National Standards Institute</td>
+</tr>
+</tbody>
+</table>
+<div id="maintained"><p>This page is maintained by
+<a href="mailto:stephen.mccann@ieee.org">Stephen McCann</a>
+. Comments are welcome.</p></div>
+<p id="trademarks">
+IEEE Std 802.11, 802.11bi , 802.11bf , 802.11bk , 802.11be , 802.11bh , 802.11me , 802.11bt , 802.11br , 802.11bq , 802.11mf , 802.11bp , 802.11bn
+, 802.11.1 and 802.11.2 are trademarks of
+the IEEE. All other names or product names are the trademarks, service
+marks or registered trademarks of their respective holders.
+</p>
+</div>
+</div>
+<div id="footer">
+<table>
+<tr>
+<td><img src="ieeel.gif" alt="IEEE Networking the World" width="80"
+height="69" /></td>
+<td><a href="http://standards.ieee.org/search.html">
+<img src="search.gif" alt="Search IEEE" width="54"
+height="58" /></a></td>
+<td><a href="http://standards.ieee.org/cgi-bin/staffmail">
+<img src="email.gif" alt="E-mail IEEE Staff" width="55"
+height="59" /></a></td>
+<td><a href="http://standards.ieee.org/index.html">
+<img src="home.gif" alt="IEEE Standards Home Page" width="52"
+height="58" /></a></td>
+<td><a href="http://www.ieee.org/">
+<img src="corp.gif" alt="IEEE Corporate Home Page" width="72"
+height="58" /></a></td>
+<td><img src="802.GIF" width="66" height="68" alt="IEEE 802.11"/></td>
+</tr>
+</table>
+<h6 style="text-align:center"><a href="http://www.ieee.org/about/documentation/copyright/">Copyright (c)</a>,
+the Institute of Electrical and Electronics Engineers, Inc. (IEEE). All rights reserved.</h6>
+<h6 style="text-align:center">This website may contain names, logos, designs, titles, words, or phrases that may
+constitute trademarks, service marks, or tradenames of the IEEE or other entities which may be registered in certain jurisdictions.</h6>
+</div>
+</body>
+</html>

@@ -1,0 +1,632 @@
+Contents of https://standards.ieee.org/ieee/802.11/10548/:
+**Current projects that have been authorized by the IEEE SA
+Standards
+Board to develop a standard.**
+
+---
+
+##### P802.11
+
+###### Standard for Information Technology–Telecommunications and Information Exchange Between Systems Local and Metropolitan Area Networks–Specific Requirements–Part 11: Wireless Local Area Network (LAN) Medium Access Control (MAC) and Physical Layer (PHY) Specifications
+
+This standard defines one medium access control (MAC) and several physical layer (PHY) specifications for wireless connectivity for fixed, portable, and moving stations (STAs) within a local area.
+
+[Learn More
+About P802.11](https://standards.ieee.org/ieee/802.11/11852 "Learn More")
+
+##### P802.11bn
+
+###### IEEE Standard for Information Technology - Telecommunications and Information Exchange between Systems - Local and Metropolitan Area Networks - Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications - Amendment: Enhancements for Ultra High Reliability
+
+This amendment defines modifications to both the IEEE Std 802.11 physical layer (PHY) and the IEEE Std 802.11 Medium Access Control (MAC). The amendment specifies enhancements for an Ultra High Reliability capability in a Wireless Local Area Network (WLAN). The Ultra High Reliability capability is defined for both an isolated Basic Service Set (BSS) and overlapping BSSs as:
+• at least one mode of operation capable of increasing throughput by 25%, as measured at the MAC data service Access Point, in at least one Signal to Interference and Noise Ratio (SINR) level (Rate-vs-Range), compared to the Extremely High Throughput MAC/PHY operation, and
+• at least one mode of operation capable of reducing latency by 25% for the 95th percentile of the latency distribution compared to the Extremely High Throughput MAC/PHY operation and
+• at least one mode of operation capable of reducing MAC Protocol Data Unit (MPDU) loss by 25% compared to the Extremely High Throughput MAC/PHY operation for a given scenario, especially for transitions between BSSs.
+This amendment provides a mechanism to reduce power consumption for Access Points (APs) (including mobile APs) and improved Peer-to-Peer (P2P) operation compared to the Extremely High Throughput MAC/PHY operation.
+This amendment applies to carrier frequency operation between 1 GHz and 7.250 GHz.
+This amendment provides for backward compatibility and coexistence with legacy IEEE 802.11 devices in the 2.4 GHz, 5 GHz and 6 GHz unlicensed bands.
+
+[Learn More
+About P802.11bn](https://standards.ieee.org/ieee/802.11bn/11393 "Learn More")
+
+##### P802.11bp
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems - Local and Metropolitan Area Networks--Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment: Enhancements for Ambient Power Communication (AMP)
+
+This amendment defines modifications to both the IEEE 802.11 Medium Access Control layer (MAC) and Physical Layers (PHY) to enable the operation of an Ambient Power communication (AMP) station (STA) that is powered using energy harvesting.
+Operation in sub-1 Gigahertz (GHz) and 2.4 GHz is defined. Specifically, at least one mode of data communication in the sub-1 GHz band is defined and at least one mode of data communication in the 2.4 GHz band with the AMP communication access category (AC) being set to AC\_BK (background) is defined. At least one mode of wireless power transfer in the sub-1 GHz band is defined to support RF energy harvesting.
+This amendment defines mechanisms for the coexistence of an AMP STA and deployed STAs compliant with IEEE Std 802.11™-2020 that operate in the same radio frequency band as the AMP STA.
+
+[Learn More
+About P802.11bp](https://standards.ieee.org/ieee/802.11bp/11592 "Learn More")
+
+##### P802.11bq
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems - Local and Metropolitan Area Networks--Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment: Enhancements for Integrated Millimeter Wave Wireless LAN
+
+This amendment defines standardized modifications to both the IEEE Std 802.11™ physical layer (PHY) and the IEEE Std 802.11 Medium Access Control (MAC) that allows Wireless Local Area Network (WLAN) non-standalone operation in unlicensed bands between 42 GHz and 71 GHz using single-user (SU) Orthogonal Frequency Division Multiplexing (OFDM) based transmissions. The amendment requires that an IEEE 802.11 device supporting this amendment also supports at least one of the 2.4 GHz to 7.25 GHz (sub-7.25 GHz) unlicensed bands. The amendment expands the multi-link operation defined in the sub-7.25 GHz band specifications to support non-standalone operation in the unlicensed bands between 42 GHz and 71 GHz.
+This amendment leverages or reuses existing PHY and MAC specifications defined for the operation in sub-7.25 GHz bands, e.g. SU transmission PHY Protocol Data Unit (PPDU) format and MAC frames, and defines bandwidth modes operating in non-overlapping channels.
+This amendment provides coexistence mechanisms with legacy IEEE 802 devices operating in the unlicensed bands between 42 GHz and 71 GHz.
+
+[Learn More
+About P802.11bq](https://standards.ieee.org/ieee/802.11bq/11872 "Learn More")
+
+##### P802.11br
+
+###### IEEE Standard for Information Technology – Telecommunications and Information Exchange Between Systems Local and Metropolitan Area Networks – Specific Requirements - Part 11: Wireless Local Area Network (LAN) Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment: Enhanced Light Communications
+
+This amendment provides enhanced light communications (ELC) for Wireless LAN operation. This amendment modifies the IEEE 802.11 MAC to support the ELC PHY and multi-link operation. The amendment introduces an ELC PHY through the modification of IEEE 802.11 sub-7.25 GHz PHYs. These modifications are limited to specifying:
+1) Operations in new optical bands in the range of 400 nm to 600 nm and 1200 nm to 1600 nm
+2) New channelization
+3) The use of wavelength division multiplexing (WDM)
+4) Simpler integration of the IEEE 802.11 baseband with optical frontends
+5) PHY support for existing ranging techniques
+6) Methods to reduce the peak-to-average-power ratio
+This amendment provides for compatibility with legacy Light Communications (LC) devices as defined in IEEE Std 802.11bb-2023™ operating in the identified optical bands.
+
+[Learn More
+About P802.11br](https://standards.ieee.org/ieee/802.11br/11993 "Learn More")
+
+##### P802.11bt
+
+###### IEEE Standard for Information Technology–Telecommunications and Information Exchange between Systems–Local and Metropolitan Area Networks–Specific Requirements–Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications–Amendment: Enhancements for Post-Quantum Cryptography
+
+This amendment extends IEEE 802.11 security to support algorithms for post-quantum cryptography (PQC). The extension specifies:
+a) Authentication and key management (AKM) suites for PQC,
+b) Digital signature and key establishment algorithms that use PQC,
+c) A password authenticated key exchange that uses PQC, and
+d) Modifications to key handshake protocols for PQC.
+
+[Learn More
+About P802.11bt](https://standards.ieee.org/ieee/802.11bt/12187 "Learn More")
+
+**Standards approved by the IEEE SA Standards Board that are within
+the
+10-year lifecycle.**
+
+---
+
+##### 802.11be-2024
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems Local and metropolitan area networks--Specific requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 2: Enhancements for Extremely High Throughput (EHT)
+
+This amendment defines standardized modifications to both the IEEE Std 802.11 physical layers (PHY) and the Medium Access Control Layer (MAC) that enable at least one mode of operation capable of supporting a maximum throughput of at least 30 Gbit/s, as measured at the MAC data service access point (SAP), with carrier frequency operation between 1 and 7.250 GHz while ensuring backward compatibility and coexistence with legacy IEEE Std 802.11 compliant devices operating in the 2.4 GHz, 5 GHz, and 6 GHz bands. This amendment defines at least one mode of operation capable of improved worst case latency and jitter. (Note: The PDF of this standard is available at no charge compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=93)
+
+[Learn More
+About 802.11be-2024](https://standards.ieee.org/ieee/802.11be/7516 "Learn More")
+
+##### 802.11bf-2025
+
+###### IEEE Standard for Information Technology -- Telecommunications and Information Exchange Between Systems Local and Metropolitan Area Networks -- Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications - Amendment 4: Enhancements for Wireless LAN Sensing
+
+(Note: the PDF of this standard is available at no cost compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68). This amendment defines modifications to the IEEE 802.11 medium access control (MAC); the physical layer (PHY) service interface of High Efficiency (HE) and Extremely High Throughput (EHT) PHYs; and to the Directional Multi Gigabit (DMG) and enhanced DMG (EDMG) PHYs to enhance Wireless Local Area Network (LAN) sensing operation in license-exempt frequency bands between 1 GHz and 7.125 GHz and above 45 GHz.
+
+[Learn More
+About 802.11bf-2025](https://standards.ieee.org/ieee/802.11bf/11574 "Learn More")
+
+##### 802.11bh-2024
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange Between Systems Local and Metropolitan Area Networks--Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 1: Operation with Randomized and Changing MAC Addresses
+
+This amendment specifies modifications to the IEEE Std 802.11 medium access control (MAC) sublayer mechanisms to preserve the existing services that might otherwise be restricted in environments where STAs in extended service set (ESS) use randomized or changing MAC addresses, without affecting the privacy of the users corresponding to the STAs. User privacy includes exposure of trackable information to third parties or exposure of an individual's presence of behavior. This amendment introduces mechanisms to enable session continuity in the absence of unique MAC address-to-STA mapping. For STAs in an ESS that use randomized or changing MAC addresses, this amendment preserves the ability to provide customer support, conduct network diagnostics and troubleshooting, and detect device arrival in a trusted environment.
+
+[Learn More
+About 802.11bh-2024](https://standards.ieee.org/ieee/802.11bh/10525 "Learn More")
+
+##### 802.11bi-2026
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems Local and Metropolitan Area Networks--Specific Requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 5: Enhanced Service with Privacy Protection
+
+This amendment defines modifications to the IEEE 802.11 medium access control (MAC) sublayer that enhance user privacy protection.
+
+[Learn More
+About 802.11bi-2026](https://standards.ieee.org/ieee/802.11bi/12331 "Learn More")
+
+##### 802.11bk-2025
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems - Local and Metropolitan Area Networks--Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 3: 320MHz Positioning
+
+Modifications to both the IEEE 802.11 medium access control layer (MAC) and physical layers (PHY) are defined in this amendment. It enhances the Fine Timing Measurement protocol to make use of 320 MHz wide channels available with the IEEE 802.11be PHY and MAC.
+
+[Learn More
+About 802.11bk-2025](https://standards.ieee.org/ieee/802.11bk/11117 "Learn More")
+
+##### 8802-11-2022
+
+###### ISO/IEC/IEEE - International Standard - Telecommunications and information exchange between systems--Specific requirements for local and metropolitan area networks--Part 11: Wireless LAN medium access control (MAC) and physical layer (PHY) specifications
+
+Technical corrections and clarifications to IEEE Std 802.11 for wireless local area networks (WLANs) as well as enhancements to the existing medium access control (MAC) and physical layer (PHY) functions are specified in this revision. Amendments 1 to 5 published in 2016 and 2018 have also been incorporated into this revision.
+
+[Learn More
+About 8802-11-2022](https://standards.ieee.org/ieee/8802-11/11064 "Learn More")
+
+##### 8802-11-2018/Amd3-2020
+
+###### ISO/IEC/IEEE Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 11:Wireless LAN medium access control (MAC) and physical layer (PHY) specifications - AMENDMENT 3: Enhancements for very high throughput to support Chinese millimeter wave frequency bands (60 GHz and 45 GHz)
+
+The IEEE 802.11 directional multi-gigabit (DMG) physical layer (PHY) and the medium access control (MAC) layer are modified by this amendment to IEEE Std 802.11-2016 to enable operation in the Chinese millimeter wave frequency band around 60 GHz. This amendment also defines modifications to the IEEE 802.11 PHY and MAC layer to enable operation in the Chinese millimeter wave frequency band around 45 GHz.
+
+[Learn More
+About 8802-11-2018/Amd3-2020](https://standards.ieee.org/ieee/8802-11-2018_Amd3/10340 "Learn More")
+
+##### 8802-11-2018/Amd4-2020
+
+###### ISO/IEC/IEEE International Standard --Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 11: Wireless LAN medium access control (MAC) and physical layer (PHY) specifications - AMENDMENT 4: Enhancements for transit links within bridged network
+
+Protocols, procedures, and managed objects to enhance the ability of IEEE 802.11(TM) media to provide transit links internal to IEEE 802.1Q(TM) bridged networks are specified in this amendment to IEEE Std 802.11(TM)-2016.
+
+[Learn More
+About 8802-11-2018/Amd4-2020](https://standards.ieee.org/ieee/8802-11-2018_Amd4/10341 "Learn More")
+
+##### 8802-11-2018/Amd5-2020
+
+###### IEEE/ISO/IEC International Standard - -Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 11: Wireless LAN medium access control (MAC) and physical layer (PHY) specifications AMENDMENT 5: Preassociation discovery
+
+Modifications to IEEE Std 802.11(TM)-2016, above the physical layer (PHY), to enable delivery of preassociation service discovery information to IEEE 802.11 stations (STAs) are defined in this amendment.
+
+[Learn More
+About 8802-11-2018/Amd5-2020](https://standards.ieee.org/ieee/8802-11-2018_Amd5/10342 "Learn More")
+
+##### 8802-11:2012/Amd.1:-2014
+
+###### ISO/IEC/IEEE International Standard Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 1: Prioritization of Management Frames
+
+A mechanism for prioritization of management frames is provided and a protocol to communicate management frame prioritization policy is specified in this amendment.
+
+[Learn More
+About 8802-11:2012/Amd.1:-2014](https://standards.ieee.org/ieee/8802-11_2012_Amd.1_/5855 "Learn More")
+
+**These standards have been replaced with a revised version of the
+standard, or by a compilation of the original active standard and
+all
+its existing amendments, corrigenda, and errata.**
+
+---
+
+##### 802.11-1999
+
+###### IEEE Standard for Information Technology - Telecommunications and information exchange between systems - Local and Metropolitan Area networks - Specific requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) specifications
+
+This standard is a revision of IEEE Std 802.11-1997. The Management Information Base according to OSI rules has been removed, many redundant management items have been removed, and Annex D has been completed with the Management Information Base according to SNMP. Minor changes have been made throughout the document.
+
+[Learn More
+About 802.11-1999](https://standards.ieee.org/ieee/802.11/1164 "Learn More")
+
+##### 802.11-2007
+
+###### IEEE Standard for Information Technology - Telecommunications and Information Exchange Between Systems - Local and Metropolitan Area Networks - Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications
+
+This revision specifies technical corrections and clarifications to IEEE Std 802.11 for wireless local area networks (WLANS) as well as enhancements to the existing medium access control (MAC) and physical layer (PHY) functions. It also incorporates Amendments 1 through 8 including a corrigendum.
+
+[Learn More
+About 802.11-2007](https://standards.ieee.org/ieee/802.11/3605 "Learn More")
+
+##### 802.11-2012
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems Local and metropolitan area networks--Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications
+
+This revision specifies technical corrections and clarifications to IEEE Std 802.11 for wireless local area networks (WLANS) as well as enhancements to the existing medium access control (MAC) and physical layer (PHY) functions. It also incorporates Amendments 1 to 10 published in 2008 to 2011.
+
+[Learn More
+About 802.11-2012](https://standards.ieee.org/ieee/802.11/4523 "Learn More")
+
+##### 802.11-2016
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems Local and metropolitan area networks--Specific requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications
+
+Technical corrections and clarifications to IEEE Std 802.11 for wireless local area networks (WLANs) as well as enhancements to the existing medium access control (MAC) and physical layer (PHY) functions are specified in this revision. Amendments 1 to 5 published in 2012 and 2013 have also been incorporated into this revision.
+
+[Learn More
+About 802.11-2016](https://standards.ieee.org/ieee/802.11/5536 "Learn More")
+
+##### 802.11-2020
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems - Local and Metropolitan Area Networks--Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications
+
+Technical corrections and clarifications to IEEE Std 802.11 for wireless local area networks (WLANs) as well as enhancements to the existing medium access control (MAC) and physical layer (PHY) functions are specified in this revision. Amendments 1 to 5 published in 2016 and 2018 have also been incorporated into this revision.
+
+[Learn More
+About 802.11-2020](https://standards.ieee.org/ieee/802.11/7028 "Learn More")
+
+##### 802.11-2020/Cor 1-2022
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems - Local and Metropolitan Area Networks--Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications - Corrigendum 1 -- Correct IEEE 802.11ay Assignment of Protected Announce Support bit
+
+A change to IEEE Std 802.11 for wireless local area networks (WLANs) that corrects an error in the position of the Protected Announce Support field in the Extended RSN Capabilities field in the RSN Extension element. (The PDF of this standard is available at not cost compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.11-2020/Cor 1-2022](https://standards.ieee.org/ieee/802.11-2020_Cor_1/10836 "Learn More")
+
+##### 802.11-2020/Cor 2-2024
+
+###### IEEE Approved Draft Standard for Information Technology -Telecommunications and Information Exchange between Systems - Local and Metropolitan Area Networks - Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications - Corrigendum 2 Correct the Number Assignment of the Information Identifier (ID) for Enhanced Broadcast Services (EBCS) element of the Access Network Query Protocol (ANQP)
+
+A change to IEEE Std 802.11 for wireless local area networks (WLANs) that corrects an error in the number used for the information identifier (ID) for the EBCS element of the access network query protocol (ANQP). IEEE P802.11-2020/Cor 2-2024 was approved on February 15, 2024. This corrigendum is included in IEEE Std 802.11bc-2023 and was not published as a separate document.
+
+[Learn More
+About 802.11-2020/Cor 2-2024](https://standards.ieee.org/ieee/802.11-2020_Cor_2/11394 "Learn More")
+
+##### 802.11a-1999
+
+###### IEEE Standard for Telecommunications and Information Exchange Between Systems - LAN/MAN Specific Requirements - Part 11: Wireless Medium Access Control (MAC) and physical layer (PHY) specifications: High Speed Physical Layer in the 5 GHz band
+
+Changes and additions to IEEE Std. 802.11-1999 are provided to support the new highrate physical layer (PHY) for operation in the 5 GHz band.
+
+[Learn More
+About 802.11a-1999](https://standards.ieee.org/ieee/802.11a/1165 "Learn More")
+
+##### 802.11aa-2012
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems Local and metropolitan area networks--Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 2: MAC Enhancements for Robust Audio Video Streaming
+
+Amendment to IEEE Std 802.11(TM)-2012. This amendment specifies enhancements to the IEEE 802.11 medium access control (MAC) for robust audio video (AV) streaming, while maintaining coexistence with other types of traffic.
+
+[Learn More
+About 802.11aa-2012](https://standards.ieee.org/ieee/802.11aa/4359 "Learn More")
+
+##### 802.11ac-2013
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems–Local and metropolitan area networks--Specific requirements--Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications--Amendment 4: Enhancements for Very High Throughput for Operation in Bands below 6 GHz.
+
+The purpose of this amendment is to improve the IEEE 802.11 wireless local area network (WLAN) user experience by providing significantly higher basic service set (BSS) throughput for existing WLAN application areas and to enable new market segments for operation below 6 GHz including distribution of multiple multimedia/data streams.
+
+[Learn More
+About 802.11ac-2013](https://standards.ieee.org/ieee/802.11ac/4473 "Learn More")
+
+##### 802.11ad-2012
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements-Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 3: Enhancements for Very High Throughput in the 60 GHz Band
+
+This amendment defines modifications to both the IEEE 802.11 physical layers (PHYs) and the IEEE 802.11 medium access control layer (MAC) to enable operation in frequencies around 60 GHz and capable of very high throughput.
+
+[Learn More
+About 802.11ad-2012](https://standards.ieee.org/ieee/802.11ad/4527 "Learn More")
+
+##### 802.11ae-2012
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 1: Prioritization of Management Frames
+
+A mechanism for prioritization of management frames is provided and a protocol to communicate management frame prioritization policy is specified in this amendment.
+
+[Learn More
+About 802.11ae-2012](https://standards.ieee.org/ieee/802.11ae/4760 "Learn More")
+
+##### 802.11af-2013
+
+###### IEEE Standard for Information technology - Telecommunications and information exchange between systems - Local and metropolitan area networks - Specific requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 5: Television White Spaces (TVWS) Operation
+
+Enhancements to the IEEE 802.11 physical layers (PHYs) and medium access control (MAC) sublayer to support operation in the white spaces in television bands are defined.
+
+[Learn More
+About 802.11af-2013](https://standards.ieee.org/ieee/802.11af/4761 "Learn More")
+
+##### 802.11ah-2016
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems - Local and metropolitan area networks--Specific requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 2: Sub 1 GHz License Exempt Operation
+
+Modifications to both the IEEE 802.11(TM) physical layer (PHY) and the medium access control (MAC) sublayer to enable operation of license-exempt IEEE 802.11 wireless networks in frequency bands below 1 GHz, excluding the television (TV) White Space bands, with a transmission range up to 1 km and a minimum data rate of at least 100 Kb/s are defined in this amendment.
+
+[Learn More
+About 802.11ah-2016](https://standards.ieee.org/ieee/802.11ah/4960 "Learn More")
+
+##### 802.11ai-2016
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems - Local and metropolitan area networks--Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 1: Fast Initial Link Setup
+
+Mechanisms that provide IEEE Std 802.11 networks with fast initial link setup methods that do not degrade the security offered by Robust Security Network Association (RSNA) already defined in IEEE Std 802.11 are defined in this amendment.
+
+[Learn More
+About 802.11ai-2016](https://standards.ieee.org/ieee/802.11ai/5017 "Learn More")
+
+##### 802.11aj-2018
+
+###### IEEE Standard for Information Technology--Telecommunications and information exchange between systems Local and metropolitan area networks--Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 3: Enhancements for Very High Throughput to Support Chinese Millimeter Wave Frequency Bands(60 GHz and 45 GHz)
+
+The IEEE 802.11™ directional multi-gigabit (DMG) physical layer (PHY) and the medium access control (MAC) layer are modified by this amendment to IEEE Std 802.11™-2016 to enable operation in the Chinese millimeter wave frequency band around 60 GHz. This amendment also defines modifications to the IEEE 802.11 PHY and MAC layer to enable operation in the Chinese millimeter wave frequency band around 45 GHz.
+
+[Learn More
+About 802.11aj-2018](https://standards.ieee.org/ieee/802.11aj/5519 "Learn More")
+
+##### 802.11ak-2018
+
+###### IEEE Standard for Information technology-Telecommunications and information exchange between systems Local and metropolitan area networks-Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 4: Enhancements for Transit Links Within Bridged Networks
+
+Protocols, procedures, and managed objects to enhance the ability of IEEE 802.11 media to provide transit links internal to IEEE 802.1Q bridged networks are specified in this amendment to IEEE Std 802.11-2016.
+
+[Learn More
+About 802.11ak-2018](https://standards.ieee.org/ieee/802.11ak/5559 "Learn More")
+
+##### 802.11aq-2018
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems Local and metropolitan area networks--Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 5: Preassociation Discovery
+
+Modifications to IEEE Std 802.11™-2016, above the physical layer (PHY), to enable delivery of preassociation service discovery information to IEEE 802.11 stations (STAs) are defined in this amendment., above the physical layer (PHY), to enable delivery of preassociation service discovery information to IEEE Std 802.11 stations (STAs).
+
+[Learn More
+About 802.11aq-2018](https://standards.ieee.org/ieee/802.11aq/5560 "Learn More")
+
+##### 802.11ax-2021
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems Local and Metropolitan Area Networks--Specific Requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 1: Enhancements for High-Efficiency WLAN
+
+Modifications to both the IEEE 802.11 physical layer (PHY) and medium access control (MAC) sublayer for high-efficiency operation in frequency bands between 1 GHz and 7.125 GHz are defined in this amendment to IEEE Std 802.11-2020.
+
+[Learn More
+About 802.11ax-2021](https://standards.ieee.org/ieee/802.11ax/7180 "Learn More")
+
+##### 802.11ay-2021
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems Local and Metropolitan Area Networks--Specific Requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 2: Enhanced Throughput for Operation in License-exempt Bands above 45 GHz
+
+In this amendment to IEEE Std 802.11-2020, standardized modifications to both the IEEE 802.11 physical layer (PHY) and the IEEE 802.11 medium access control (MAC) sublayer are defined to enable at least one mode of operation capable of supporting a maximum throughput of at least 20 gigabits per second (measured at the MAC data service access point), while maintaining or improving the power efficiency per station.
+
+[Learn More
+About 802.11ay-2021](https://standards.ieee.org/ieee/802.11ay/6142 "Learn More")
+
+##### 802.11az-2022
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems Local and Metropolitan Area Networks--Specific Requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 4: Enhancements for Positioning
+
+This amendment defines modifications to both the IEEE 802.11 medium access control layer (MAC) and physical layers (PHY). Compared to IEEE Std 802.11-2020 it enables absolute and relative position estimation with higher accuracy, and reduces wireless medium utilization and power consumption, is scalable to dense deployments, and includes security features.
+
+[Learn More
+About 802.11az-2022](https://standards.ieee.org/ieee/802.11az/7226 "Learn More")
+
+##### 802.11b-1999
+
+###### IEEE Standard for Information Technology - Telecommunications and information exchange between systems - Local and Metropolitan networks - Specific requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) specifications: Higher Speed Physical Layer (PHY) Extension in the 2.4 GHz band
+
+Changes and additions are provided for IEEE Std 802.11b-1999 to support the higher rate Physical Layer for operation in the 2.4 GHz band.
+
+[Learn More
+About 802.11b-1999](https://standards.ieee.org/ieee/802.11b/1166 "Learn More")
+
+##### 802.11b-1999/Cor 1-2001
+
+###### IEEE Standard for Information Technology - Telecommunications and Information Exchange Between Systems - Local and Metropolitan Networks - Specific Requirements - Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications: Higher Speed Physical Layer (PHY) Extension in the 2.4 GHz Band - Corrigendum 1
+
+Changes and additions are provided for IEEE Std 802.11b-1999 to support the higher rate Physical Layer for operation in the 2.4 GHz band.
+
+[Learn More
+About 802.11b-1999/Cor 1-2001](https://standards.ieee.org/ieee/802.11b-1999_Cor_1/1167 "Learn More")
+
+##### 802.11ba-2021
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems--Local and Metropolitan Area Networks-Specific Requirements--Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications - Amendment 3: Wake-Up Radio Operation
+
+This amendment defines modifications to both the IEEE 802.11 physical layer (PHY) and the IEEE 802.11 medium access control (MAC) sublayer for wake-up radio operation.
+
+[Learn More
+About 802.11ba-2021](https://standards.ieee.org/ieee/802.11ba/6896 "Learn More")
+
+##### 802.11bb-2023
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems Local and Metropolitan Area Networks--Specific Requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 6: Light Communications
+
+Modifications to existing physical layers (PHYs) and the medium access control layer (MAC) that enable transparent operation of IEEE 802.11 over the light in the 800 nm to 1000 nm band are specified in this amendment. This amendment specifies PHYs that provide bidirectional operations that achieve a minimum and maximum throughput of 10 Mb/s and 9.6 Gb/s, respectively, as measured at the MAC data service access point (SAP), and facilitate interoperability among solid-state light sources with different modulation bandwidths.
+
+[Learn More
+About 802.11bb-2023](https://standards.ieee.org/ieee/802.11bb/10823 "Learn More")
+
+##### 802.11bc-2023
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems Local and Metropolitan Area Networks--Specific Requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 7: Enhanced Broadcast Services
+
+Modifications to the IEEE 802.11 medium access control layer (MAC) for the enhanced transmission and reception of broadcast content, both while associated with an infrastructure basic service set (BSS) and while not associated with an infrastructure BSS, are defined in this amendment. IEEE 802.11-2020/Cor 2-2024 was approved on February 15, 2024. This was included in this PDF and was not publishing as a separate document.
+
+[Learn More
+About 802.11bc-2023](https://standards.ieee.org/ieee/802.11bc/7450 "Learn More")
+
+##### 802.11bd-2022
+
+###### IEEE Standard for Information Technology--Telecommunications and Information Exchange between Systems Local and Metropolitan Area Networks--Specific Requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 5: Enhancements for Next Generation V2X
+
+This amendment defines modifications to both the IEEE 802.11 physical layer (PHY) and the medium access control (MAC) sublayer for next generation vehicle-to-everything (V2X) communication in the 5.9 GHz and 60 GHz frequency bands.
+
+[Learn More
+About 802.11bd-2022](https://standards.ieee.org/ieee/802.11bd/7451 "Learn More")
+
+##### 802.11c-1998
+
+###### IEEE Standard for Information Technology - Telecommunications and information exchange between systems - Local area networks - Media access control (MAC) bridges - Supplement for support by IEEE 802.11
+
+To add a subclause under 2.5 Support of the Internal Sublayer Service by specific MAC Procedures to cover bridge operation with IEEE 802.11 MACs. This supplement to IS 10038 (802.1D) will be developed by the 802.11 Working Group in cooperation with the 802.1 Working Group.
+
+[Learn More
+About 802.11c-1998](https://standards.ieee.org/ieee/802.11c/1168 "Learn More")
+
+##### 802.11d-2001
+
+###### IEEE Standard for Information technology -- Local and metropolitan area networks -- Specific requirements -- Part 11: Wireless Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 3: Specification for operation in additional regulatory domains
+
+This amendment specifies the extensions to IEEE Std 802.11(M) for Wireless Local Area Networks providing specifications for conformant operation beyond the original six regulatory domains of that standard. These extensions provide a mechanism for an IEEE Std 802.11 access point to deliver the required radio transmitter parameters to an IEEE Std 802.11 mobile station, which allows that station to configure its radio to operate within the applicable regulations of a geographic or political subdivision. This mechanism is applicable to all IEEE Std 802.11 PHY types. A secondary benefit of the mechanism described in this amendment is the ability for an IEEE Std 802.11 mobile station to roam between regulatory domains
+
+[Learn More
+About 802.11d-2001](https://standards.ieee.org/ieee/802.11d/1169 "Learn More")
+
+##### 802.11e-2005
+
+###### IEEE Standard for Information technology--Local and metropolitan area networks--Specific requirements--Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications - Amendment 8: Medium Access Control (MAC) Quality of Service Enhancements
+
+This amendment defines the medium access control (MAC) procedures to support local area network (LAN) applications with quality of service (QoS) requirements. The procedures include the transport of voice, audio, and video over IEEE 802.11 wireless LANs (WLANs).
+
+[Learn More
+About 802.11e-2005](https://standards.ieee.org/ieee/802.11e/3131 "Learn More")
+
+##### 802.11g-2003
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications: Further Higher Data Rate Extension in the 2.4 GHz Band
+
+Changes and additions to IEEE Std 802.11, 1999 Edition, as amended by IEEE Stds 802.11a-1999, 802.11b-1999, 802.11b-1999/Cor 1-2001, and 802.11d-2001, are provided to support the further higher data rate extension for operation in the 2.4 GHz band.
+
+Learn More
+About 802.11g-2003
+
+##### 802.11h-2003
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications - Spectrum and Transmit Power Management Extensions in the 5 GHz Band in Europe
+
+IEEE Std 802.11h-2003 Part 11: Wireless Medium Access Control (MAC) and Physical Layer (PHY) specifications: Amendment 5: Spectrum and Transmit Power Management Extensions in the 5 GHz band in Europe
+
+[Learn More
+About 802.11h-2003](https://standards.ieee.org/ieee/802.11h/3070 "Learn More")
+
+##### 802.11i-2004
+
+###### IEEE Standard for information technology-Telecommunications and information exchange between systems-Local and metropolitan area networks-Specific requirements-Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) specifications: Amendment 6: Medium Access Control (MAC) Security Enhancements
+
+This amendment defines security mechanisms for IEEE 802.11. It includes a definition of WEP for backward compatibility with the original standard, IEEE Std 802.11, 1999 Edition. It defines TKIP and CCMP, which provide more robust data protection mechanisms than WEP affords. This amendment introduces the concept of a security association into IEEE 802.11, and defines security association management protocols called the 4-Way Handshake and the Group Key Handshake. Finally, it specifies how IEEE 802.1X may be utilized by IEEE 802.11 LANs to effect authentication.
+
+[Learn More
+About 802.11i-2004](https://standards.ieee.org/ieee/802.11i/3127 "Learn More")
+
+##### 802.11j-2004
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems-Local and metropolitan area networks--Specific requirements--Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) specifications--Amendment 7:4.9 GHz-5 GHz Operation in Japan
+
+This amendment specifies the extensions to IEEE Std 802.11® for Wireless Local Area Networks providing mechanisms for operation in the 4.9 GHz and 5 GHz bands in Japan. This amendment is based on IEEE Std 802.11, 1999 Edition (Reaff 2003), as amended by IEEE Stds 802.11a-1999, 802.11b-1999, 802.11b-1999/Cor 1-2001, 802.11d-2001, 802.11g-2003, 802.11h-2003, and 802.11i-2004.
+
+[Learn More
+About 802.11j-2004](https://standards.ieee.org/ieee/802.11j/3375 "Learn More")
+
+##### 802.11k-2008
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC)and Physical Layer (PHY) Specifications Amendment 1: Radio Resource Measurement of Wireless LANs
+
+This amendment specifies the extensions to IEEE Std 802.11 for Wireless LANs providing mechanisms for Radio Resource Measurement.
+
+[Learn More
+About 802.11k-2008](https://standards.ieee.org/ieee/802.11k/3951 "Learn More")
+
+##### 802.11n-2009
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC)and Physical Layer (PHY) Specifications Amendment 5: Enhancements for Higher Throughput
+
+This amendment defines modifications to both the 802.11 physical layers (PHY) and the 802.11 Medium Access Control Layer (MAC) so that modes of operation can be enabled that are capable of much higher throughputs, with a maximum throughput of at least 100Mb/s, as measured at the MAC data service access point (SAP).
+
+[Learn More
+About 802.11n-2009](https://standards.ieee.org/ieee/802.11n/3952 "Learn More")
+
+##### 802.11p-2010
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 6: Wireless Access in Vehicular Environments
+
+This amendment specifies the extensions to IEEE Std 802.11 for wireless local area networks (WLANs) providing wireless communications while in a vehicular environment.
+
+[Learn More
+About 802.11p-2010](https://standards.ieee.org/ieee/802.11p/3953 "Learn More")
+
+##### 802.11r-2008
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 2: Fast Basic Service Set (BSS) Transition
+
+This amendment specifies the extensions to IEEE Std 802.11-2007 for wireless local area networks (WLANs) providing mechanisms for fast basic service set (BSS) transition.
+
+[Learn More
+About 802.11r-2008](https://standards.ieee.org/ieee/802.11r/3954 "Learn More")
+
+##### 802.11s-2011
+
+###### IEEE Standard for Information Technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) specifications Amendment 10: Mesh Networking
+
+This amendment describes protocols for IEEE 802.11 stations to form self-configuring multi-hop networks that support both broadcast/multicast and unicast data delivery.
+
+[Learn More
+About 802.11s-2011](https://standards.ieee.org/ieee/802.11s/4243 "Learn More")
+
+##### 802.11u-2011
+
+###### IEEE Standard for Information Technology-Telecommunications and information exchange between systems-Local and Metropolitan networks-specific requirements-Part II: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) specifications: Amendment 9: Interworking with External Networks
+
+This amendment specifies enhancements to the IEEE 802.11 medium access control (MAC) that support wireless local area network (WLAN) interworking with external networks. It enables higher layer functionalities to provide overall end-to-end solutions. The main goals of this amendment are aiding network discovery and selection, enabling information transfer from external networks, enabling emergency services, and interfacing subscription service provider networks (SSPNs) to IEEE 802.11 networks that support interworking with external networks.
+
+[Learn More
+About 802.11u-2011](https://standards.ieee.org/ieee/802.11u/3694 "Learn More")
+
+##### 802.11v-2011
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) specifications Amendment 8: IEEE 802.11 Wireless Network Management
+
+This amendment provides Wireless Network Management enhancements to the IEEE 802.11 MAC, and PHY, extending radio measurements to effect a complete and coherent upper layer interface for managing IEEE 802.11 devices in wireless networks.
+
+[Learn More
+About 802.11v-2011](https://standards.ieee.org/ieee/802.11v/3695 "Learn More")
+
+##### 802.11w-2009
+
+###### IEEE Standard for Information technology - Telecommunications and information exchange between systems - Local and metropolitan area networks - Specific requirements. Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 4: Protected Management Frames
+
+This amendment specifies the extensions to IEEE Std 802.11 for wireless local area networks (WLANs) providing mechanisms for protecting management frames.
+
+[Learn More
+About 802.11w-2009](https://standards.ieee.org/ieee/802.11w/3736 "Learn More")
+
+##### 802.11y-2008
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 3: 3650-3700 MHz Operation in USA
+
+This amendment defines enhancements to the IEEE 802.11 physical layer (PHY) and medium access control (MAC) to support operation in the 3650-3700 MHz band in the United States.
+
+[Learn More
+About 802.11y-2008](https://standards.ieee.org/ieee/802.11y/3915 "Learn More")
+
+##### 802.11z-2010
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) specifications Amendment 7: Extensions to Direct-Link Setup (DLS)
+
+This amendment provides direct-link setup enhancements to the IEEE 802.11 MAC and PHY, extending direct-link setup to be independent of the access point (AP), and adding power save capabilities. The direct-link setup is made independent of the AP by tunneling the protocol messages inside data frames.
+
+[Learn More
+About 802.11z-2010](https://standards.ieee.org/ieee/802.11z/4238 "Learn More")
+
+##### 8802-11:2012/Amd.3:-2014
+
+###### ISO/IEC/IEEE International Standard for Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements-Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications Amendment 3: Enhancements for Very High Throughput in the 60 GHz Band (adoption of IEEE Std 802.11ad-2012)
+
+This amendment defines modifications to both the IEEE 802.11 physical layers (PHYs)and the IEEE 802.11 medium access control layer (MAC) to enable operation in frequencies around 60 GHz and capable of very high throughput.
+
+[Learn More
+About 8802-11:2012/Amd.3:-2014](https://standards.ieee.org/ieee/8802-11_2012_Amd.3_/5857 "Learn More")
+
+##### 8802-11:2012/Amd4-2015
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 11: Wireless LAN medium access control (MAC) and physical layer (PHY) specifications AMENDMENT 4
+
+The purpose of this amendment is to improve the ISO/IEC/IEEE 8802.11(TM) wireless local area network (WLAN) user experience by providing significantly higher basic service set (BSS) throughput for existing WLAN application areas and to enable new market segments for operation below 6 GHz including distribution of multiple multimedia/data streams.
+
+[Learn More
+About 8802-11:2012/Amd4-2015](https://standards.ieee.org/ieee/8802-11_2012_Amd4/6190 "Learn More")
+
+##### 8802-11:2012/Amd5-2015
+
+###### ISO/IEC/IEEE International Standard -- Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 11: Wireless LAN medium access control (MAC) and physical layer (PHY) specifications AMENDMENT 5
+
+Enhancements to the ISO/IEC/IEEE 8802.11(TM) physical layers (PHYs) and medium access control (MAC) sublayer to support operation in the white spaces in television bands are defined.
+
+[Learn More
+About 8802-11:2012/Amd5-2015](https://standards.ieee.org/ieee/8802-11_2012_Amd5/6191 "Learn More")
+
+**These standards have been removed from active status through a
+ballot
+where the standard is made inactive as a consensus decision of a
+balloting group.**
+
+---
+
+##### 802.11F-2003
+
+###### IEEE Trial-Use Recommended Practice for Multi-Vendor Access Point Interoperability Via an Inter-Access Point Protocol Across Distribution Systems Supporting IEEE 802.11 Operation
+
+Recommended practices for implementation of an Inter-Access Point Protocol (IAPP) on a Distribution System (DS) supporting ISO/IEC 8802-11:1999 and IEEE 802.11 wireless local access network (WLAN) links are described. The recommended DS utilizes an IAP that provides the necessary capabilities to achieve multi-vendor Access Point (AP) interoperability within the DS. This IAPP is described for a DS consisting of IEEE 802® LAN components utilizing an Internet Engineering Task Force (IETF) Internet Protocol (IP) environment. Throughout this recommended practice, the terms ISO/IEC 8802-11:1999, IEEE 802.11, and IEEE Std 802.11-1999 are used interchangeably to refer to the same document, ISO/IEC 8802-11:1999, and its amendments and supplements published at the time this recommended practice was adopted.
+
+[Learn More
+About 802.11F-2003](https://standards.ieee.org/ieee/802.11F/1171 "Learn More")
+
+**These standards are removed from active status through an
+administrative process for standards that have not undergone a
+revision
+process within 10 years.**
+
+---
+
+No Inactive-Reserved Standards

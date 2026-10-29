@@ -1,0 +1,64 @@
+Contents of https://www.debian.org/releases/stable/amd64/apb.en.html:
+**Table of Contents**
+
+[B.1. Introduction](apbs01.en.html)
+:   [B.1.1. Preseeding methods](apbs01.en.html#preseed-methods)
+
+    [B.1.2. Limitations](apbs01.en.html#preseed-limitations)
+
+[B.2. Using preseeding](apbs02.en.html)
+:   [B.2.1. Loading the preconfiguration file](apbs02.en.html#preseed-loading)
+
+    [B.2.2. Using boot parameters to preseed questions](apbs02.en.html#preseed-bootparms)
+
+    [B.2.3. Auto mode](apbs02.en.html#preseed-auto)
+
+    [B.2.4. Aliases useful with preseeding](apbs02.en.html#preseed-aliases)
+
+    [B.2.5. Examples of boot prompt preseeding](apbs02.en.html#preseed-bootparms-examples)
+
+    [B.2.6. Using a DHCP server to specify preconfiguration files](apbs02.en.html#preseed-dhcp)
+
+[B.3. Creating a preconfiguration file](apbs03.en.html)
+
+[B.4. Contents of the preconfiguration file (for trixie)](apbs04.en.html)
+:   [B.4.1. Localization](apbs04.en.html#preseed-l10n)
+
+    [B.4.2. Speech synthesis](apbs04.en.html#preseed-speech)
+
+    [B.4.3. Network configuration](apbs04.en.html#preseed-network)
+
+    [B.4.4. Network console](apbs04.en.html#preseed-network-console)
+
+    [B.4.5. Mirror settings](apbs04.en.html#preseed-mirror)
+
+    [B.4.6. Account setup](apbs04.en.html#preseed-account)
+
+    [B.4.7. Clock and time zone setup](apbs04.en.html#preseed-time)
+
+    [B.4.8. Partitioning](apbs04.en.html#preseed-partman)
+
+    [B.4.9. Base system installation](apbs04.en.html#preseed-base-installer)
+
+    [B.4.10. Apt setup](apbs04.en.html#preseed-apt)
+
+    [B.4.11. Package selection](apbs04.en.html#preseed-pkgsel)
+
+    [B.4.12. Boot loader installation](apbs04.en.html#preseed-bootloader)
+
+    [B.4.13. Finishing up the installation](apbs04.en.html#preseed-finish)
+
+    [B.4.14. Preseeding other packages](apbs04.en.html#preseed-other)
+
+[B.5. Advanced options](apbs05.en.html)
+:   [B.5.1. Running custom commands during the installation](apbs05.en.html#preseed-hooks)
+
+    [B.5.2. Using preseeding to change default values](apbs05.en.html#preseed-seenflag)
+
+    [B.5.3. Chainloading preconfiguration files](apbs05.en.html#preseed-chainload)
+
+This appendix explains how to preseed answers to questions in `debian-installer` to
+automate your installation.
+
+The configuration fragments used in this appendix are also available as an
+example preconfiguration file from <https://www.debian.org/releases/trixie/example-preseed.txt>.

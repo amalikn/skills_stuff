@@ -1,0 +1,128 @@
+Contents of https://goteleport.com/docs/reference/architecture/authentication/:
+[Report an Issue](https://github.com/gravitational/teleport/issues/new?template=documentation.md&labels=documentation&title=%5Bdocs%5D%20%60%2Fdocs%2Freference%2Farchitecture%2Fauthentication%2F%60%3A%20%3CDESCRIBE%20YOUR%20ISSUE%3E&body=%23%23%20Applies%20To%0A%0A%60%2Fdocs%2Freference%2Farchitecture%2Fauthentication%2F%60%0A%0A%23%23%20Details%0A%0A%3C!--%20Describe%20the%20documentation%20improvements%20you%20wish%20to%20see.%20--%3E%0A%0A%23%23%20How%20will%20we%20know%20this%20is%20resolved%3F%0A%0A%3C!--%20Briefly%20describe%20a%20test%20we%20can%20carry%20out.%20Scope%20this%20as%20narrowly%20as%20possible.%20--%3E%0A%0A%23%23%20Related%20Issues%0A%0A%3C!--%20Please%20make%20an%20effort%20to%20find%20related%20issues%20on%20GitHub%20and%20list%20them%20here.%20This%20makes%20a%20big%20difference%20in%20how%20we%20prioritize%20and%20schedule%20work.%20--%3E%0A)
+
+Is this page helpful?
+
+Teleport handles both authentication and authorization.
+
+* Authentication is about proving an identity of an AI agent, human user, or
+  service.
+* Authorization is proving access rights to something.
+
+This guide explains how Teleport handles authentication with short-lived
+certificates.
+
+## Short-Lived Certificates[​](#short-lived-certificates "Direct link to Short-Lived Certificates")
+
+Certificate Authorities and short-lived certificates are the core of Teleport authentication.
+In Teleport at the start of every connection, a user or a service has to present a valid certificate issued by
+a trusted certificate authority. Clients always initiate mutual TLS or mutual SSH connections.
+
+Teleport Certificate Authority issues short-lived x.509 certificates for web services, databases, kubernetes clusters,
+desktops and SSH certificates for OpenSSH-compatible servers.
+
+### Why certificates?[​](#why-certificates "Direct link to Why certificates?")
+
+* Certificates are tied to user or service identity. Any connection and action can be traced back to a user
+  or a service.
+* Short-lived certificates automatically expire, there is no need to revoke them.
+* Certificates solve trust on first use (TOFU) problems. In a Teleport cluster, all servers have
+  identities and certificates of their own. They will not allow a connection if a client certificate is signed by an
+  untrusted certificate authority.
+* Certificates enable mutually authenticated channel - mTLS, mTLS mitigates a wide range of attacks - spoofing, on-path attacks, credential stuffing and others.
+* Certificates work better for large-scale deployments. Each server or service just needs to validate
+  if the certificate has been signed with a valid certificate authority, and does not need to copy user
+  credentials over to every service.
+
+tip
+
+Teleport issues certificates that are good from a few hours to minutes before they auto-expire without any action.
+The shorter the duration for these certificates, the better.
+Ideally, certs should be issued only for the duration of a session.
+In practice, several hours or the duration of the workday are OK too.
+The expiry date in certificates can not be forged
+without invalidating the certificates, so any system can validate the certificate.
+
+### X.509 certificates[​](#x509-certificates "Direct link to X.509 certificates")
+
+X.509 certificates are the same certificates you use when accessing websites with a browser. They bind
+identity to the public key with a certificate authority's signature.
+
+![x.509 certs](/docs/assets/images/x509-cert@2x-2bbd0b13046258ebe2377690ce2a0423.svg)
+
+Teleport uses x.509 certificates for Kubernetes clusters, databases, web
+services and its own internal components, such as the Proxy Service and Auth
+Service, to establish mutually authenticated TLS connections (mTLS).
+
+### OpenSSH certificates[​](#openssh-certificates "Direct link to OpenSSH certificates")
+
+OpenSSH certificates are similar to X.509 (web) certificates and also bind identity of the user or a server
+to the public key with a certificate authority's signature.
+
+![SSH certs](/docs/assets/images/ssh-cert@2x-442646a0a6663efddb378b223153d7a2.svg)
+
+OpenSSH certificate contain metadata used to authenticate users and hosts:
+
+* List of principals (identities) this certificate belongs to.
+* Signature of the certificate authority who issued it.
+* The expiration date, also known as "time-to-live" or simply TTL.
+* Additional data, such as the node role, is stored as a certificate extension.
+
+### Making Time Work For You[​](#making-time-work-for-you "Direct link to Making Time Work For You")
+
+Expiry is a feature of certificates that makes time work in favor of security.
+SSH and X.509 certificates include an optional expiry date that is verified by
+servers in addition to a signature.
+
+In the diagram above, Alice gets a short lived SSH certificate, but the same rules apply to
+X.509 certificates issued by Teleport and used for Kubernetes, Databases, Web Apps and Desktops.
+
+Teleport issues certificates that are good from a few hours to minutes before they auto-expire without any action.
+Instead of distributing revocation lists, Teleport relies on time to do the job for us.
+
+tip
+
+In some cases, certificate expiration is not fast enough, and all sessions have to be terminated immediately,
+for example during active security incident.
+For those cases, Teleport Proxy can terminate live connections using [session and identity locking](/docs/identity-governance/locking/).
+
+### Short-lived Certs For Users[​](#short-lived-certs-for-users "Direct link to Short-lived Certs For Users")
+
+To issue a certificate to a user, Teleport opens login screen, issues a cert and delivers it back to a user's computer:
+
+We recommend using SSO with GitHub, Okta or any other identity provider and get a cert.
+
+### Short-lived Certs for Services[​](#short-lived-certs-for-services "Direct link to Short-lived Certs for Services")
+
+Deployment automation services, such as Jenkins, can use Teleport's Machine &
+Workload Identity to receive and renew certificates. Teleport Machine & Workload
+Identity's Bot runs alongside services and rotates SSH and X.509 certificates.
+
+### Internal certificates[​](#internal-certificates "Direct link to Internal certificates")
+
+Teleport internal services - the Auth Service, Proxy Service, Agents, and Machine & Workload Identity Bots - use certificates to identify themselves
+within a cluster. To join services to the cluster and receive certificates, admins should use
+[short-lived tokens or cloud identity services](/docs/installation/agents/join-token/).
+
+Unlike users and services, internal services receive long-lived certificates.
+
+To renew these certificates, admins should use certificate authority rotation.
+This is the process of invalidating all previously-issued certificates for nodes
+or users regardless of expiry, and issuing new ones using a new certificate authority.
+
+Take a look at the [Certificate Rotation Guide](/docs/zero-trust-access/management/security/ca-rotation/) to
+learn how to do certificate rotation in practice.
+
+tip
+
+To quickly lock out a potentially compromised Auth Service instance, Proxy
+Service instance, or Teleport Agent without rotating the entire cluster
+certificates, use [session and identity
+locking](/docs/identity-governance/locking/).
+
+## More concepts[​](#more-concepts "Direct link to More concepts")
+
+* [Architecture Overview](/docs/core-concepts/)
+* [Authorization](/docs/reference/architecture/authorization/)
+* [Teleport Agents](/docs/reference/architecture/agents/)
+* [Teleport Proxy](/docs/reference/architecture/proxy/)

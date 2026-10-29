@@ -1,0 +1,1245 @@
+<html><body>[[chapter_ha_manager]]
+ifdef::manvolnum[]
+ha-manager(1)
+=============
+:pve-toplevel:
+
+NAME
+----
+
+ha-manager - Proxmox VE HA Manager
+
+SYNOPSIS
+--------
+
+include::generated/ha-manager.1-synopsis.adoc[]
+
+DESCRIPTION
+-----------
+endif::manvolnum[]
+ifndef::manvolnum[]
+High Availability
+=================
+:pve-toplevel:
+endif::manvolnum[]
+
+Our modern society depends heavily on information provided by
+computers over the network. Mobile devices amplified that dependency,
+because people can access the network any time from anywhere. If you
+provide such services, it is very important that they are available
+most of the time.
+
+We can mathematically define the availability as the ratio of (A), the
+total time a service is capable of being used during a given interval
+to (B), the length of the interval. It is normally expressed as a
+percentage of uptime in a given year.
+
+.Availability - Downtime per Year
+[width="60%",cols="<d,d",options="header"] |="==========================================================" |availability % |downtime per year |99 |3.65 days |99.9 |8.76 hours |99.99 |52.56 minutes |99.999 |5.26 |99.9999 |31.5 seconds |99.99999 |3.15 there are several ways to increase availability. the most elegant solution is rewrite your software, so that you can run it on hosts at same time. software itself needs have a way detect errors and do failover. if only want serve read-only web pages, then this relatively simple. however, generally complex sometimes impossible, because cannot modify yourself. following solutions works without modifying software: * use reliable ``server'' components + note: computer with functionality varying reliability numbers, depending component quality. vendors sell higher as - usually price. eliminate single point of failure (redundant components) ** an uninterruptible power supply (ups) redundant supplies in servers ecc-ram network hardware raid for local storage distributed, vm data reduce downtime rapidly accessible administrators (24 7) availability spare parts (other nodes {pve} cluster) automatic error detection (provided by `ha-manager`) failover virtualization environments like make much easier reach high they remove ``hardware'' dependency. also support setup devices, one host fails, simply start those services another within cluster. better still, provides stack called `ha-manager`, which automatically you. able `ha-manager` ``automated'' administrator. first, configure what resources (vms, containers, ...) should manage. then, observes correct functionality, handles service node case errors. handle normal user requests may start, stop, relocate migrate service. but comes quality more expensive, making them doubles costs least. additional further. carefully calculate benefits, compare costs. tip: increasing from 99% 99.9% 99.9999% 99.99999% very hard costly. has typical times about 2 minutes, get no than 99.999% requirements ------------ must meet before ha: least three cluster (to quorum) shared vms containers redundancy (everywhere) “server” optionally, watchdog be used not available we fall back linux kernel (`softdog`). [[ha_manager_resources]] --------- ha manager's primary management unit resource (or ``ha service''). currently, either virtual machine (vm) or container (ct). each uniquely identified id (`sid`), consists type type-specific id, vmid containers. example, `100`, `vm:100`. where all its dependencies available. default, manager treats every eligible. keep should: options compatible interfaces exist device passthroughs present any these subset nodes, restrict strict xref:ha_manager_node_affinity_rules[node affinity rule]. limits placement, recovery, migration rule's nodes. tasks ---------------- section short overview common tasks. first step enable resource. done adding configuration. using gui, command-line tool, example: ---- # ha-manager add vm:100 now tries running. please note ``requested'' state. example stop resource: set --state stopped again later: started commands. forward commands stack, qm 100 sets requested state `started`. applies `qm stop`, `stopped`. fully asynchronous communicate other members. therefore, takes some until see result such actions. view current configuration use: config actual with: status quorum ok master node1 (active, wed nov 23 11:07:23 2016) lrm elsa 11:07:19 (node1, started) initiate nodes: node2 uses online transfer memory over network, faster vm, restart new node. `relocate` command: finally, will rule references delete rules reference override behavior '--purge 0'. does related need command line all. how detailed description internals. describes involved daemons work together. provide ha, two node: `pve-ha-lrm`:: (lrm), controls running reads states file executes respective `pve-ha-crm`:: (crm), makes cluster-wide decisions. sends lrm, processes results, moves something fails. crm fencing. .locks & [note] locks provided our distributed system (pmxcfs). guarantee active once working. actions when holds lock, mark failed fenced acquire lock. lets us recover securely interference unknown gets supervised currently [[ha_manager_service_states]] ~~~~~~~~~~~~~~ enumeration record displayed gui queried tool: mon 21 07:23:29 07:23:22 ct:100 (elsa, stopped) ct:102 vm:501 here list possible states: stopped:: (confirmed lrm). detects still running, again. request_stop:: stopped. waits confirmation lrm. stopping:: pending request. did request far. started:: asap already fails detected restarts (see xref:ha_manager_start_failure_policy[start policy]). starting:: got fence:: wait fencing inside quorate partition xref:ha_manager_fencing[fencing]). soon successfully placed into recovery recovery:: find on. search depends well part of, any. found, moved initially it's configured so. freeze:: touch while reboot node, daemon xref:ha_manager_package_updates[package updates]). ignored:: act were managed useful, full control desired temporarily, removing migrate:: (live) error:: disabled manual intervention xref:ha_manager_error_recovery[error recovery]). queued:: newly added, seen disabled:: marked `disabled` [[ha_manager_lrm]] ~~~~~~~~~~~~~~~~~~~~~~ (`pve-ha-lrm`) boot thus agent lock:: exclusive idle configured. active:: lock lost means happened was lost. after ` etc pve manager_status` determines execute owns. worker started, workers parallel limited 4 default. default setting changed through datacenter key `max_worker`. finished process collected saved crm. .maximum concurrent adjustment tips value unsuited specific setup. live migrations occur time, lead congestions slower networks big (memory wise) services. also, ensure worst case, congestion minimum, even lowering `max_worker` value. contrary, particularly powerful, high-end it. identifiable uid. finishes, processed written <nodename>/lrm_status`. There the CRM may collect
+it and let its state machine - respective to the commands output - act on it.
+
+The actions on each service between CRM and LRM are normally always synced.
+This means that the CRM requests a state uniquely marked by a UID, the LRM
+then executes this action *one time* and writes back the result, which is also
+identifiable by the same UID. This is needed so that the LRM does not
+execute an outdated command.
+The only exceptions to this behaviour are the `stop` and `error` commands;
+these two do not depend on the result produced and are executed
+always in the case of the stopped state and once in the case of
+the error state.
+
+.Read the Logs
+[NOTE]
+The HA Stack logs every action it makes. This helps to understand what
+and also why something happens in the cluster. Here its important to see
+what both daemons, the LRM and the CRM, did. You may use
+`journalctl -u pve-ha-lrm` on the node(s) where the service is and
+the same command for the pve-ha-crm on the node which is the current master.
+
+
+[[ha_manager_crm]]
+Cluster Resource Manager
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The cluster resource manager (`pve-ha-crm`) starts on each node and
+waits there for the manager lock, which can only be held by one node
+at a time. The node which successfully acquires the manager lock gets
+promoted to the CRM master.
+
+It can be in three states:
+
+wait for agent lock::
+
+The CRM waits for our exclusive lock. This is also used as idle state if no
+service is configured
+
+active::
+
+The CRM holds its exclusive lock and has services configured
+
+lost agent lock::
+
+The CRM lost its lock, this means a failure happened and quorum was lost.
+
+Its main task is to manage the services which are configured to be highly
+available and try to always enforce the requested state. For example, a
+service with the requested state 'started' will be started if its not
+already running. If it crashes it will be automatically started again.
+Thus the CRM dictates the actions the LRM needs to execute.
+
+When a node leaves the cluster quorum, its state changes to unknown.
+If the current CRM can then secure the failed node's lock, the services
+will be 'stolen' and restarted on another node.
+
+When a cluster member determines that it is no longer in the cluster quorum, the
+LRM waits for a new quorum to form. Until there is a cluster quorum, the node
+cannot reset the watchdog. If there are active services on the node, or if the
+LRM or CRM process is not scheduled or is killed, this will trigger a reboot
+after the watchdog has timed out (this happens after 60 seconds).
+
+Note that if a node has an active CRM but the LRM is idle, a quorum loss will
+not trigger a self-fence reset. The reason for this is that all state files and
+configurations that the CRM accesses are backed up by the
+xref:chapter_pmxcfs[clustered configuration file system], which becomes
+read-only upon quorum loss. This means that the CRM only needs to protect itself
+against its process being scheduled for too long, in which case another CRM
+could take over unaware of the situation, causing corruption of the HA state.
+The open watchdog ensures that this cannot happen.
+
+If no service is configured for more than 15 minutes, the CRM automatically
+returns to the idle state and closes the watchdog completely.
+
+HA Simulator
+------------
+
+[thumbnail="screenshot/gui-ha-manager-status.png"]
+
+By using the HA simulator you can test and learn all functionalities of the
+Proxmox VE HA solutions.
+
+By default, the simulator allows you to watch and test the behaviour of a
+real-world 3 node cluster with 6 VMs. You can also add or remove additional VMs
+or Container.
+
+You do not have to setup or configure a real cluster, the HA simulator runs out
+of the box.
+
+Install with apt:
+
+----
+apt install pve-ha-simulator
+----
+
+You can even install the package on any Debian-based system without any
+other Proxmox VE packages.  For that you will need to download the package and
+copy it to the system you want to run it on for installation.  When you install
+the package with apt from the local file system it will also resolve the
+required dependencies for you.
+
+
+To start the simulator on a remote machine you must have an X11 redirection to
+your current system.
+
+If you are on a Linux machine you can use:
+
+----
+ssh root@<ipofpve> -Y
+----
+
+On Windows it works with https://mobaxterm.mobatek.net/[mobaxterm].
+
+After connecting to an existing {pve} with the simulator installed or
+installing it on your local Debian-based system manually, you can try it out as
+follows.
+
+First you need to create a working directory where the simulator saves its
+current state and writes its default config:
+
+----
+mkdir working
+----
+
+Then, simply pass the created directory as a parameter to 'pve-ha-simulator':
+
+----
+pve-ha-simulator working/
+----
+
+You can then start, stop, migrate the simulated HA services, or even check out
+what happens on a node failure.
+
+Configuration
+-------------
+
+The HA stack is well integrated into the {pve} API. So, for example,
+HA can be configured via the `ha-manager` command-line interface, or
+the {pve} web interface - both interfaces provide an easy way to
+manage HA. Automation tools can use the API directly.
+
+All HA configuration files are within `/etc/pve/ha/`, so they get
+automatically distributed to the cluster nodes, and all nodes share
+the same HA configuration.
+
+
+[[ha_manager_resource_config]]
+Resources
+~~~~~~~~~
+
+[thumbnail="screenshot/gui-ha-manager-status.png"]
+
+
+The resource configuration file `/etc/pve/ha/resources.cfg` stores
+the list of resources managed by `ha-manager`. A resource configuration
+inside that list looks like this:
+
+----
+<type>: <name><property><value>
+	...
+----
+
+It starts with a resource type followed by a resource specific name,
+separated with colon. Together this forms the HA resource ID, which is
+used by all `ha-manager` commands to uniquely identify a resource
+(example: `vm:100` or `ct:101`). The next lines contain additional
+properties:
+
+include::generated/ha-resources-opts.adoc[]
+
+Here is a real world example with one VM and one container. As you see,
+the syntax of those files is really simple, so it is even possible to
+read or edit those files using your favorite editor:
+
+.Configuration Example (`/etc/pve/ha/resources.cfg`)
+----
+vm: 501
+    state started
+    max_relocate 2
+
+ct: 102
+    # Note: use default settings for everything
+----
+
+[thumbnail="screenshot/gui-ha-manager-add-resource.png"]
+
+The above config was generated using the `ha-manager` command-line tool:
+
+----
+# ha-manager add vm:501 --state started --max_relocate 2
+# ha-manager add ct:102
+----
+
+
+[[ha_manager_groups]]
+Groups
+~~~~~~
+
+NOTE: HA Groups are deprecated and migrated to HA Node Affinity rules since
+Proxmox VE 9.0.
+
+[thumbnail="screenshot/gui-ha-manager-groups-view.png"]
+
+The HA group configuration file `/etc/pve/ha/groups.cfg` is used to
+define groups of cluster nodes. A resource can be restricted to run
+only on the members of such group. A group configuration look like
+this:
+
+----
+group: <group>
+       nodes <node_list><property><value>
+       ...
+----
+
+include::generated/ha-groups-opts.adoc[]
+
+[thumbnail="screenshot/gui-ha-manager-add-group.png"]
+
+A common requirement is that a resource should run on a specific
+node. Usually the resource is able to run on other nodes, so you can define
+an unrestricted group with a single member:
+
+----
+# ha-manager groupadd prefer_node1 --nodes node1
+----
+
+For bigger clusters, it makes sense to define a more detailed failover
+behavior. For example, you may want to run a set of services on
+`node1` if possible. If `node1` is not available, you want to run them
+equally split on `node2` and `node3`. If those nodes also fail, the
+services should run on `node4`. To achieve this you could set the node
+list to:
+
+----
+# ha-manager groupadd mygroup1 -nodes "node1:2,node2:1,node3:1,node4"
+----
+
+Another use case is if a resource uses other resources only available
+on specific nodes, lets say `node1` and `node2`. We need to make sure
+that HA manager does not use other nodes, so we need to create a
+restricted group with said nodes:
+
+----
+# ha-manager groupadd mygroup2 -nodes "node1,node2" -restricted
+----
+
+The above commands created the following group configuration file:
+
+.Configuration Example (`/etc/pve/ha/groups.cfg`)
+----
+group: prefer_node1
+       nodes node1
+
+group: mygroup1
+       nodes node2:1,node4,node1:2,node3:1
+
+group: mygroup2
+       nodes node2,node1
+       restricted 1
+----
+
+
+The `nofailback` options is mostly useful to avoid unwanted resource
+movements during administration tasks. For example, if you need to
+migrate a service to a node which doesn't have the highest priority in the
+group, you need to tell the HA manager not to instantly move this service
+back by setting the `nofailback` option.
+
+Another scenario is when a service was fenced and it got recovered to
+another node. The admin tries to repair the fenced node and brings it
+up online again to investigate the cause of failure and check if it runs
+stably again. Setting the `nofailback` flag prevents the recovered services from
+moving straight back to the fenced node.
+
+[[ha_manager_rules]]
+Rules
+~~~~~
+
+HA rules are used to put certain constraints on HA-managed resources, which are
+defined in the HA rules configuration file `/etc/pve/ha/rules.cfg`.
+
+----
+<type>: <rule>
+        resources <resources_list><property><value>
+        ...
+----
+
+include::generated/ha-rules-opts.adoc[]
+
+.Available HA Rule Types
+[width="100%",cols="1,3",options="header"]
+|===========================================================
+| HA Rule Type        | Description
+| `node-affinity`     | Places affinity from one or more HA resources to one or
+more nodes.
+
+The affinity `positive` specifies that HA resources should or must be kept on
+one of the specified nodes, while the affinity `negative` specifies that the HA
+resources should or must avoid the specified nodes.
+
+The strictness attribute `strict` specifies whether it is a soft constraint
+("should") or whether it is a hard constraint ("must").
+| `resource-affinity` | Places affinity between two or more HA resources.
+
+The affinity `positive` specifies that HA resources must be kept on the same
+node, while the affinity `negative` specifies that HA resources must be kept on
+separate nodes.
+|===========================================================
+
+[[ha_manager_node_affinity_rules]]
+Node Affinity Rules
+^^^^^^^^^^^^^^^^^^^
+
+By default, an HA resource is able to run on any cluster node, but a common
+requirement is that an HA resource should run on a specific node. That can be
+implemented by defining an HA node affinity rule to make the HA resource
+`vm:100` prefer the node `node1`:
+
+----
+# ha-manager rules add node-affinity ha-rule-vm100 --resources vm:100 --nodes node1
+----
+
+By default, node affinity rules are not strict, i.e., if there is none of the
+specified nodes available, the HA resource can also be moved to other nodes.
+If, on the other hand, an HA resource must be restricted to the specified
+nodes, then the node affinity rule must be set to be strict.
+
+In the previous example, the node affinity rule can be modified to restrict the
+resource `vm:100` to be only on `node1`:
+
+----
+# ha-manager rules set node-affinity ha-rule-vm100 --strict 1
+----
+
+Furthermore, node affinity rules use positive affinity by default, meaning that
+the preferred cluster nodes must be explicitly specified. However, in larger
+clusters, it is often more practical to define node affinity using an opt-out
+approach to avoid long and verbose lists of cluster nodes. For example, the
+following command defines an HA node affinity rule that makes the HA resources
+`ct:200` and `vm:300` avoid the node `node3`:
+
+----
+# ha-manager rules add node-affinity ha-rule-negative \
+        --affinity negative --resources ct:200,vm:300 --nodes node3
+----
+
+Moreover, specific use cases might require defining a more detailed failover
+behavior. For example, the resources `vm:400` and `ct:500` should run on
+`node1`. If `node1` becomes unavailable, the resources should be distributed on
+`node2` and `node3`. If `node2` and `node3` are also unavailable, the resources
+should run on `node4`.
+
+To implement this behavior in a node affinity rule, nodes can be paired with
+priorities to order the preference for nodes. If two or more nodes have the same
+priority, the resources can run on any of them. For the above example, `node1`
+gets the highest priority, `node2` and `node3` get the same priority, and at
+last `node4` gets the lowest priority, which can be omitted to default to `0`:
+
+----
+# ha-manager rules add node-affinity priority-cascade \
+        --resources vm:400,ct:500 --nodes "node1:2,node2:1,node3:1,node4"
+----
+
+The above commands create the following rules in the rules configuration file:
+
+.Node Affinity Rules Configuration Example (`/etc/pve/ha/rules.cfg`)
+----
+node-affinity: ha-rule-vm100
+        nodes node1
+        resources vm:100
+        strict 1
+
+node-affinity: ha-rule-negative
+        nodes node3
+        resources ct:200,vm:300
+        affinity negative
+
+node-affinity: priority-cascade
+        nodes node1:2,node2:1,node3:1,node4
+        resources vm:400,ct:500
+----
+
+Node Affinity Rule Properties
++++++++++++++++++++++++++++++
+
+include::generated/ha-rules-node-affinity-opts.adoc[]
+
+[[ha_manager_resource_affinity_rules]]
+Resource Affinity Rules
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Another common requirement is that two or more HA resources should run on
+either the same node, or should be distributed on separate nodes. These are
+also commonly called "Affinity/Anti-Affinity constraints".
+
+For example, suppose there is a lot of communication traffic between the HA
+resources `vm:100` and `vm:200`, for example, a web server communicating with a
+database server. If those HA resources are on separate nodes, this could
+potentially result in a higher latency and unnecessary network load. Resource
+affinity rules with the affinity `positive` implement the constraint to keep
+the HA resources on the same node:
+
+----
+# ha-manager rules add resource-affinity keep-together \
+    --affinity positive --resources vm:100,vm:200
+----
+
+NOTE: If there are two or more positive resource affinity rules, which have
+common HA resources, then these are treated as a single positive resource
+affinity rule. For example, if the HA resources `vm:100` and `vm:101` and the
+HA resources `vm:101` and `vm:102` are each in a positive resource affinity
+rule, then it is the same as if `vm:100`, `vm:101` and `vm:102` would have been
+in a single positive resource affinity rule.
+
+NOTE: If the HA resources of a positive resource affinity rule are currently
+running on different nodes, the CRS will move the HA resources to the node,
+where most of them are running already. If there is a tie in the HA resource
+count, the node whose name appears first in alphabetical order is selected.
+
+However, suppose there are computationally expensive, and/or distributed
+programs running on the HA resources `vm:200` and `ct:300`, for example,
+sharded database instances. In that case, running them on the same node could
+potentially result in pressure on the hardware resources of the node and will
+slow down the operations of these HA resources. Resource affinity rules with
+the affinity `negative` implement the constraint to spread the HA resources on
+separate nodes:
+
+----
+# ha-manager rules add resource-affinity keep-separate \
+    --affinity negative --resources vm:200,ct:300
+----
+
+Other than node affinity rules, resource affinity rules are strict by default,
+i.e., if the constraints imposed by the resource affinity rules cannot be met
+for an HA resource, the HA Manager will put the HA resource in recovery state
+in case of a failover or in error state elsewhere.
+
+The above commands created the following rules in the rules configuration file:
+
+.Resource Affinity Rules Configuration Example (`/etc/pve/ha/rules.cfg`)
+----
+resource-affinity: keep-together
+        affinity positive
+        resources vm:100,vm:200
+
+resource-affinity: keep-separate
+        affinity negative
+        resources vm:200,ct:300
+----
+
+Interactions between Positive and Negative Resource Affinity Rules
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If there are HA resources in a positive resource affinity rule, which are also
+part of a negative resource affinity rule, then all the other HA resources in
+the positive resource affinity rule are in negative affinity with the HA
+resources of these negative resource affinity rules as well.
+
+For example, if the HA resources `vm:100`, `vm:101`, and `vm:102` are in a
+positive resource affinity rule, and `vm:100` is in a negative resource affinity
+rule with the HA resource `ct:200`, then `vm:101` and `vm:102` are each in
+negative resource affinity with `ct:200` as well.
+
+Note that if there are two or more HA resources in both a positive and negative
+resource affinity rule, then those will be disabled as they cause a conflict:
+Two or more HA resources cannot be kept on the same node and separated on
+different nodes at the same time. For more information on these cases, see the
+section about xref:ha_manager_rule_conflicts[rule conflicts and errors] below.
+
+Interactions between Node and Positive Resource Affinity Rules
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If there are HA resources in a node affinity rule, which are also part of a
+positive resource affinity rule, then all the other HA resources in the
+positive resource affinity rule inherit the node affinity rule as well.
+
+For example, if the HA resources `vm:100`, `vm:101`, and `vm:102` are in a
+positive resource affinity rule, and `vm:102` is in a node affinity rule, which
+restricts `vm:102` to be only on `node3`, then `vm:100` and `vm:101` are
+restricted to be only on `node3` as well.
+
+Please note that if there are two or more HA resources in a positive resource
+affinity rule and in different node affinity rules, then those rules will cause
+an error and will be disabled as this is currently not supported. For more
+information on these cases, see the section about
+xref:ha_manager_rule_conflicts[rule conflicts and errors] below.
+
+Resource Affinity Rule Properties
++++++++++++++++++++++++++++++++++
+
+include::generated/ha-rules-resource-affinity-opts.adoc[]
+
+[[ha_manager_rule_conflicts]]
+Rule Conflicts and Errors
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+HA rules can impose rather complex constraints on the HA resources. To ensure
+that a new or modified HA rule does not introduce uncertainty into the HA
+stack's CRS scheduler, HA rules are tested for feasibility before these are
+applied. For any rules that fail these tests, these rules are disabled until
+the conflicts and errors have been resolved.
+
+Currently, HA rules are checked for the following feasibility tests:
+
+* An HA resource can only be part of a single HA node affinity rule.
+
+* Negative HA node affinity rules cannot specify node priorities.
+
+* Negative HA node affinity rules cannot specify all cluster nodes.
+
+* An HA resource affinity rule must have at least two HA resources.
+
+* A negative HA resource affinity rule cannot specify more HA resources than
+  there are nodes in the cluster. Otherwise, the HA resources do not have
+  enough nodes to be separated.
+
+* A positive HA resource affinity rule cannot specify the same two or more HA
+  resources as a negative HA resources affinity rule. That is, two or more HA
+  resources cannot be kept together and separate at the same time.
+
+* An HA resource can only be part of an HA node affinity rule and an HA
+  resource affinity rule at the same time, if the HA node affinity rule has a
+  single priority class.
+
+* The HA resources of a positive HA resource affinity rule can only be part of
+  a single HA node affinity rule at most.
+
+* The HA resources of a negative HA resource affinity rule cannot be restricted
+  to less nodes than HA resources by their node affinity rules. Otherwise, the
+  HA resources do not have enough nodes to be separated.
+
+[[ha_manager_fencing]]
+Fencing
+-------
+
+On node failures, fencing ensures that the erroneous node is
+guaranteed to be offline. This is required to make sure that no
+resource runs twice when it gets recovered on another node. This is a
+really important task, because without this, it would not be possible to
+recover a resource on another node.
+
+If a node did not get fenced, it would be in an unknown state where
+it may have still access to shared resources. This is really
+dangerous! Imagine that every network but the storage one broke. Now,
+while not reachable from the public network, the VM still runs and
+writes to the shared storage.
+
+If we then simply start up this VM on another node, we would get a
+dangerous race condition, because we write from both nodes. Such
+conditions can destroy all VM data and the whole VM could be rendered
+unusable. The recovery could also fail if the storage protects against
+multiple mounts.
+
+
+How {pve} Fences
+~~~~~~~~~~~~~~~~
+
+There are different methods to fence a node, for example, fence
+devices which cut off the power from the node or disable their
+communication completely. Those are often quite expensive and bring
+additional critical components into a system, because if they fail you
+cannot recover any service.
+
+We thus wanted to integrate a simpler fencing method, which does not
+require additional external hardware. This can be done using
+watchdog timers.
+
+.Possible Fencing Methods
+- external power switches
+- isolate nodes by disabling complete network traffic on the switch
+- self fencing using watchdog timers
+
+Watchdog timers have been widely used in critical and dependable systems
+since the beginning of microcontrollers. They are often simple, independent
+integrated circuits which are used to detect and recover from computer malfunctions.
+
+During normal operation, `ha-manager` regularly resets the watchdog
+timer to prevent it from elapsing. If, due to a hardware fault or
+program error, the computer fails to reset the watchdog, the timer
+will elapse and trigger a reset of the whole server (reboot).
+
+Recent server motherboards often include such hardware watchdogs, but
+these need to be configured. If no watchdog is available or
+configured, we fall back to the Linux Kernel 'softdog'. While still
+reliable, it is not independent of the servers hardware, and thus has
+a lower reliability than a hardware watchdog.
+
+
+Configure Hardware Watchdog
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, all hardware watchdog modules are blocked for security
+reasons. They are like a loaded gun if not correctly initialized. To
+enable a hardware watchdog, you need to specify the module to load in
+'/etc/default/pve-ha-manager', for example:
+
+----
+# select watchdog module (default is softdog)
+WATCHDOG_MODULE=iTCO_wdt
+----
+
+This configuration is read by the 'watchdog-mux' service, which loads
+the specified module at startup.
+
+
+Recover Fenced Services
+~~~~~~~~~~~~~~~~~~~~~~~
+
+After a node failed and its fencing was successful, the CRM tries to
+move services from the failed node to nodes which are still online.
+
+The selection of the recovery nodes is influenced by the list of
+currently active nodes, their respective loads depending on the used
+scheduler, and the affinity rules the service is part of, if any.
+
+First, the CRM builds a set of nodes available to the service. If the
+service is part of a node affinity rule, the set is reduced to the
+highest priority nodes in the node affinity rule. If the service is part
+of a resource affinity rule, the set is further reduced to fulfill their
+constraints, which is either keeping the service on the same node as
+some other services or keeping the service on a different node than some
+other services. Finally, the CRM selects the node with the lowest load
+according to the used scheduler to minimize the possibility of an
+overloaded node.
+
+CAUTION: On node failure, the CRM distributes services to the
+remaining nodes. This increases the service count on those nodes, and
+can lead to high load, especially on small clusters. Please design
+your cluster so that it can handle such worst case scenarios.
+
+
+[[ha_manager_fencing_status]]
+Fencing &amp; Watchdog Status
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `ha-manager status` output includes a fencing entry that shows the CRM
+watchdog state. Each LRM entry additionally shows its own watchdog state.
+
+armed::
+
+The CRM is actively managing services and has its watchdog open. Each node's
+LRM also holds a watchdog while it has its agent lock. On quorum loss or
+daemon failure, the respective watchdog triggers a node reset to ensure safe
+failover.
+
+standby::
+
+The HA stack is ready but no CRM is actively running as master, for example
+when no HA resources are configured yet or the cluster just started. The CRM
+watchdog is not open. Fencing automatically transitions to `armed` once a CRM
+takes over as master.
+
+disarming::
+
+A `disarm-ha` command was issued. The CRM is freezing or suspending services
+from tracking and waiting for all LRMs to release their watchdogs. The CRM
+watchdog is still active during this phase. Each LRM entry's watchdog status
+changes to `released` as it acknowledges the disarm.
+
+disarmed::
+
+All watchdogs have been released cluster-wide. No automatic fencing, failover,
+or recovery takes place.
+See xref:ha_manager_disarm[Disarming HA for Cluster Maintenance].
+
+NOTE: The `watchdog-mux` service keeps the underlying `/dev/watchdog` device
+open for its entire lifetime, even when no HA client is connected. This
+prevents other processes from claiming the device and ensures the HA stack can
+always re-acquire it. Not all hardware watchdog drivers support magic close, so
+closing the device could trigger an unintended reset.
+
+
+[[ha_manager_start_failure_policy]]
+Start Failure Policy
+---------------------
+
+The start failure policy comes into effect if a service failed to start on a
+node one or more times. It can be used to configure how often a restart
+should be triggered on the same node and how often a service should be
+relocated, so that it has an attempt to be started on another node.
+The aim of this policy is to circumvent temporary unavailability of shared
+resources on a specific node. For example, if a shared storage isn't available
+on a quorate node anymore, for instance due to network problems, but is still
+available on other nodes, the relocate policy allows the service to start
+nonetheless.
+
+There are two service start recover policy settings which can be configured
+specific for each resource.
+
+max_restart::
+
+Maximum number of attempts to restart a failed service on the actual
+node.  The default is set to one.
+
+max_relocate::
+
+Maximum number of attempts to relocate the service to a different node.
+A relocate only happens after the max_restart value is exceeded on the
+actual node. The default is set to one.
+
+NOTE: The relocate count state will only reset to zero when the
+service had at least one successful start. That means if a service is
+re-started without fixing the error only the restart policy gets
+repeated.
+
+
+[[ha_manager_error_recovery]]
+Error Recovery
+--------------
+
+If, after all attempts, the service state could not be recovered, it gets
+placed in an error state. In this state, the service won't get touched
+by the HA stack anymore. The only way out is disabling a service:
+
+----
+# ha-manager set vm:100 --state disabled
+----
+
+This can also be done in the web interface.
+
+To recover from the error state you should do the following:
+
+* bring the resource back into a safe and consistent state (e.g.:
+kill its process if the service could not be stopped)
+
+* disable the resource to remove the error flag
+
+* fix the error which led to this failures
+
+* *after* you fixed all errors you may request that the service starts again
+
+
+[[ha_manager_package_updates]]
+Package Updates
+---------------
+
+When updating the ha-manager, you should do one node after the other, never
+all at once for various reasons. First, while we test our software
+thoroughly, a bug affecting your specific setup cannot totally be ruled out.
+Updating one node after the other and checking the functionality of each node
+after finishing the update helps to recover from eventual problems, while
+updating all at once could result in a broken cluster and is generally not
+good practice.
+
+Also, the {pve} HA stack uses a request acknowledge protocol to perform
+actions between the cluster and the local resource manager. For restarting,
+the LRM makes a request to the CRM to freeze all its services. This prevents
+them from getting touched by the Cluster during the short time the LRM is restarting.
+After that, the LRM may safely close the watchdog during a restart.
+Such a restart happens normally during a package update and, as already stated,
+an active master CRM is needed to acknowledge the requests from the LRM. If
+this is not the case the update process can take too long which, in the worst
+case, may result in a reset triggered by the watchdog.
+
+
+[[ha_manager_node_maintenance]]
+Node Maintenance
+----------------
+
+Sometimes it is necessary to perform maintenance on a node, such as replacing
+hardware or simply installing a new kernel image. This also applies while the
+HA stack is in use.
+
+The HA stack can support you mainly in two types of maintenance:
+
+* for general shutdowns or reboots, the behavior can be configured, see
+  xref:ha_manager_shutdown_policy[Shutdown Policy].
+* for maintenance that does not require a shutdown or reboot, or that should
+  not be switched off automatically after only one reboot, you can enable the
+  manual maintenance mode.
+
+
+Maintenance Mode
+~~~~~~~~~~~~~~~~
+
+You can use the manual maintenance mode to mark the node as unavailable for HA
+operation, prompting all services managed by HA to migrate to other nodes.
+
+The target nodes for these migrations are selected from the other currently
+available nodes, and determined by the HA rules configuration and the configured
+cluster resource scheduler (CRS) mode.
+During each migration, the original node will be recorded in the HA managers'
+state, so that the service can be moved back again automatically once the
+maintenance mode is disabled and the node is back online.
+
+Currently you can enabled or disable the maintenance mode using the ha-manager
+CLI tool.
+
+.Enabling maintenance mode for a node
+----
+# ha-manager crm-command node-maintenance enable NODENAME
+----
+
+This will queue a CRM command, when the manager processes this command it will
+record the request for maintenance-mode in the manager status. This allows you
+to submit the command on any node, not just on the one you want to place in, or
+out of the maintenance mode.
+
+Once the LRM on the respective node picks the command up it will mark itself as
+unavailable, but still process all migration commands. This means that the LRM
+self-fencing watchdog will stay active until all active services got moved, and
+all running workers finished.
+
+Note that the LRM status will read `maintenance` mode as soon as the LRM
+picked the requested state up, not only when all services got moved away, this
+user experience is planned to be improved in the future.
+For now, you can check for any active HA service left on the node, or watching
+out for a log line like: `pve-ha-lrm[PID]: watchdog closed (disabled)` to know
+when the node finished its transition into the maintenance mode.
+
+NOTE: The manual maintenance mode is not automatically deleted on node reboot,
+but only if it is either manually deactivated using the `ha-manager` CLI or if
+the manager-status is manually cleared.
+
+.Disabling maintenance mode for a node
+----
+# ha-manager crm-command node-maintenance disable NODENAME
+----
+
+The process of disabling the manual maintenance mode is similar to enabling it.
+Using the `ha-manager` CLI command shown above will queue a CRM command that,
+once processed, marks the respective LRM node as available again.
+
+If you deactivate the maintenance mode, all services that were on the node when
+the maintenance mode was activated will be moved back.
+
+[[ha_manager_shutdown_policy]]
+Shutdown Policy
+~~~~~~~~~~~~~~~
+
+Below you will find a description of the different HA policies for a node
+shutdown. Currently 'Conditional' is the default due to backward compatibility.
+Some users may find that 'Migrate' behaves more as expected.
+
+The shutdown policy can be configured in the Web UI (`Datacenter` -&gt; `Options`
+-&gt; `HA Settings`), or directly in `datacenter.cfg`:
+
+----
+ha: shutdown_policy=<value>
+----
+
+Migrate
+^^^^^^^
+
+Once the Local Resource manager (LRM) gets a shutdown request and this policy
+is enabled, it will mark itself as unavailable for the current HA manager.
+This triggers a migration of all HA Services currently located on this node.
+The LRM will try to delay the shutdown process, until all running services get
+moved away. But, this expects that the running services *can* be migrated to
+another node. In other words, the service must not be locally bound, for example
+by using hardware passthrough. For example, strict node affinity rules tell the
+HA Manager that the service cannot run outside of the chosen set of nodes. If all
+of these nodes are unavailable, the shutdown will hang until you manually
+intervene. Once the shut down node comes back online again, the previously
+displaced services will be moved back, if they were not already manually migrated
+in-between.
+
+NOTE: The watchdog is still active during the migration process on shutdown.
+If the node loses quorum it will be fenced and the services will be recovered.
+
+If you start a (previously stopped) service on a node which is currently being
+maintained, the node needs to be fenced to ensure that the service can be moved
+and started on another available node.
+
+Failover
+^^^^^^^^
+
+This mode ensures that all services get stopped, but that they will also be
+recovered, if the current node is not online soon. It can be useful when doing
+maintenance on a cluster scale, where live-migrating VMs may not be possible if
+too many nodes are powered off at a time, but you still want to ensure HA
+services get recovered and started again as soon as possible.
+
+Freeze
+^^^^^^
+
+This mode ensures that all services get stopped and frozen, so that they won't
+get recovered until the current node is online again.
+
+Conditional
+^^^^^^^^^^^
+
+The 'Conditional' shutdown policy automatically detects if a shutdown or a
+reboot is requested, and changes behaviour accordingly.
+
+.Shutdown
+
+A shutdown ('poweroff') is usually done if it is planned for the node to stay
+down for some time. The LRM stops all managed services in this case. This means
+that other nodes will take over those services afterwards.
+
+NOTE: Recent hardware has large amounts of memory (RAM). So we stop all
+resources, then restart them to avoid online migration of all that RAM. If you
+want to use online migration, you need to invoke that manually before you
+shutdown the node.
+
+
+.Reboot
+
+Node reboots are initiated with the 'reboot' command. This is usually done
+after installing a new kernel. Please note that this is different from
+``shutdown'', because the node immediately starts again.
+
+The LRM tells the CRM that it wants to restart, and waits until the CRM puts
+all resources into the `freeze` state (same mechanism is used for
+xref:ha_manager_package_updates[Package Updates]). This prevents those resources
+from being moved to other nodes. Instead, the CRM starts the resources after the
+reboot on the same node.
+
+
+Manual Resource Movement
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Last but not least, you can also manually move resources to other nodes, before
+you shutdown or restart a node. The advantage is that you have full control,
+and you can decide if you want to use online migration or not.
+
+NOTE: Please do not 'kill' services like `pve-ha-crm`, `pve-ha-lrm` or
+`watchdog-mux`. They manage and use the watchdog, so this can result in an
+immediate node reboot or even reset.
+
+
+[[ha_manager_disarm]]
+Disarming HA for Cluster Maintenance
+-------------------------------------
+
+Certain cluster maintenance tasks, such as reconfiguring the network or the
+cluster communication stack (corosync), can cause temporary quorum loss or
+network partitions. Normally, HA would interpret this as a node failure and
+trigger self-fencing, disrupting services unnecessarily.
+
+The disarm mechanism releases all CRM and LRM watchdogs cluster-wide, allowing
+you to perform such maintenance safely without the risk of nodes being fenced.
+
+IMPORTANT: While disarmed, HA does not protect your services. Failures during
+this period are not automatically recovered. Keep the disarm window as short as
+possible.
+
+.Resource Modes
+
+When disarming HA, you must choose a resource mode that controls how HA managed
+resources are handled while disarmed. The current state of resources is not
+affected.
+
+freeze::
+
+New commands and state changes are not applied. Services stay in their current
+state, but the HA stack does not react to failures or process new requests.
+This is the safest choice when you expect all nodes to remain running.
+
+ignore::
+
+Resources are suspended from HA tracking and can be managed as if they were not
+HA managed. This allows you to manually start, stop, or migrate services while
+HA is disarmed. Use this when you need to manually relocate services during
+maintenance. When re-arming, the CRM rechecks service locations against the
+configuration to pick up any manual migrations.
+
+.Disarming and Re-Arming
+
+To disarm HA with the desired resource mode:
+
+----
+# ha-manager crm-command disarm-ha freeze
+----
+
+or:
+
+----
+# ha-manager crm-command disarm-ha ignore
+----
+
+To re-arm HA after maintenance is complete:
+
+----
+# ha-manager crm-command arm-ha
+----
+
+You can monitor the current state with:
+
+----
+# ha-manager status
+----
+
+The fencing status line shows the current state of the fencing mechanism (see
+xref:ha_manager_fencing_status[Fencing Status]), including the CRM and LRM
+watchdog states.
+
+.The Disarm Process
+
+After you request disarm, the following sequence happens:
+
+. The CRM freezes all services or suspends them from tracking, depending on the
+  chosen resource mode.
+. Each LRM finishes its active workers, then releases its agent lock and
+  watchdog.
+. Once all online LRMs are idle, the CRM releases its own watchdog too.
+
+The CRM keeps the manager lock throughout this process, so it can accept and
+process the `arm-ha` command to reverse it.
+
+If any services are currently being fenced, recovered, or migrated, the disarm
+is deferred until these operations complete. This ensures that services in the
+middle of a transition do not end up in an inconsistent state.
+
+.Nodes Offline During Disarm
+
+If a node is offline when HA is disarmed, its LRM cannot process the disarm
+request. The CRM proceeds to the disarmed state once all *online* LRMs have
+completed their part. The offline node does not block this.
+
+When the offline node comes back online while HA is still disarmed, its LRM
+picks up the disarm state and releases its watchdog without attempting any
+service recovery.
+
+When you re-arm HA, any services that were on the offline node are handled
+according to normal HA recovery rules: they are fenced and recovered if the node
+is still unreachable, or restarted on the node if it has come back online.
+
+.Interaction with Maintenance Mode
+
+If a node is already in maintenance mode when disarm is requested, the
+maintenance migration continues until all services have been moved away. Once no
+active services and workers remain, the LRM releases its lock and watchdog as
+part of the disarm process.
+
+When HA is re-armed, the maintenance mode state is preserved. The node remains
+in maintenance and services are not moved back until maintenance mode is
+explicitly disabled.
+
+CAUTION: While the HA stack is disarmed, no automatic recovery, failover, or
+fencing takes place. A node failure during this window is not detected or
+handled by HA. Keep the disarm window as short as possible and ensure that the
+cluster is in a healthy state before re-arming.
+
+
+[[ha_manager_crs]]
+Cluster Resource Scheduling
+---------------------------
+
+The Cluster Resource Scheduler (CRS) is responsible for selecting new node
+placements for HA resources and keeping HA resources on their allowed nodes.
+
+In every HA Manager round, the scheduler goes through every HA resource and
+checks whether the HA resource needs any new node placement. This new node
+placement can be caused by different actions, such as recovering HA resources
+from a fenced node or a new HA affinity rule. See the section
+xref:ha_manager_crs_scheduling_points[CRS Scheduling Points] for a more thorough
+description of which actions the CRS takes for specific changes in the cluster.
+
+CRS Scheduling Mode
+~~~~~~~~~~~~~~~~~~~
+
+[thumbnail="screenshot/gui-datacenter-options-crs.png"]
+
+The CRS scheduling mode controls how the CRS will calculate the usage
+information for the cluster. This usage information is used as a basis for the
+scheduling decisions. The CRS mode can be changed in the web interface
+(`Datacenter` -&gt; `Options` -&gt; `Cluster Resource Scheduling`). The default mode
+is `basic`. The change will take effect starting with the next HA Manager
+round, which should take no longer than 10 seconds.
+
+[[ha_manager_crs_basic_scheduler]]
+Basic Scheduler
+^^^^^^^^^^^^^^^
+
+The number of active guests on each node is used to choose the best-fitting
+node for an HA resource.
+
+[[ha_manager_crs_static_scheduler]]
+Static-Load Scheduler
+^^^^^^^^^^^^^^^^^^^^^
+
+Static usage information from active guests on each node is used to choose the
+best-fitting node for an HA resource. This includes the configured CPU and
+memory quotas for the active guests.
+
+[[ha_manager_crs_dynamic_scheduler]]
+Dynamic-Load Scheduler
+^^^^^^^^^^^^^^^^^^^^^^
+
+Dynamic usage information from active guests on each node is used to choose the
+best-fitting node for an HA resource. This includes the average CPU and memory
+usage as well as the configured CPU and memory quotas for the active guests.
+
+[[ha_manager_crs_scheduling_points]]
+CRS Scheduling Points
+~~~~~~~~~~~~~~~~~~~~~
+
+In every HA Manager round, the CRS checks whether any HA resources need a new
+node placement, which can be caused by any of the following scheduling points:
+
+HA resource recovery (always active)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When a node with active HA resources fails, all its HA resources need to be
+recovered to other nodes. The CRS algorithm will be used here to balance that
+recovery over the remaining nodes.
+
+HA rule config changes (always active)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If a rule imposes different constraints on the HA resources, the HA stack will
+use the CRS algorithm to find a new target node for the HA resources affected
+by these rules depending on the type of the new rules:
+
+- Node affinity rules: If a node affinity rule is created or HA resources/nodes
+  are added to an existing node affinity rule, the HA stack will use the CRS
+  algorithm to ensure that these HA resources are assigned according to their
+  node and priority constraints.
+
+- Positive resource affinity rules: If a positive resource affinity rule is
+  created or HA resources are added to an existing positive resource affinity
+  rule, the HA stack will use the CRS algorithm to ensure that these HA
+  resources are moved to a common node.
+
+- Negative resource affinity rules: If a negative resource affinity rule is
+  created or HA resources are added to an existing negative resource affinity
+  rule, the HA stack will use the CRS algorithm to ensure that these HA
+  resources are moved to separate nodes.
+
+HA resource rebalance on start (opt-in)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When starting an HA resource with rebalance on start enabled, the CRS will
+select the node best suited for the HA resource. If the selected node is not
+the current node, the HA resource will be migrated to the selected node.
+
+For the xref:ha_manager_crs_basic_scheduler[basic scheduler mode], the node with
+the fewest active guests is considered the best-suited node.
+
+For the xref:ha_manager_crs_static_scheduler[static-load] and
+xref:ha_manager_crs_dynamic_scheduler[dynamic-load] scheduler modes, each node in turn is
+considered as if the HA resource was already running on it, using CPU and
+memory usage from the associated guest configuration. Then for each such
+alternative, CPU and memory usage of all nodes are considered, with memory
+being weighted much more, because it's a truly limited resource. For both, CPU
+and memory, highest usage among nodes (weighted more, as ideally no node should
+be overcommitted) and average usage of all nodes (to still be able to
+distinguish in case there already is a more highly committed node) are
+considered.
+
+This setting can be enabled with the CRS option `ha-rebalance-on-start` in the
+web interface under `Datacenter` -&gt; `Options` -&gt; `Cluster Resource Scheduling`.
+
+IMPORTANT: For the static-load and dynamic-load scheduler modes, this
+functionality is still in technology preview. The more HA resources the more
+possible combinations there are, so it's currently not recommended to use it if
+you have thousands of HA resources.
+
+CRS Load Balancer
+~~~~~~~~~~~~~~~~~
+
+The utilization of individual cluster nodes can vary greatly depending on where
+guests are currently running and how much load these exert at any moment. This
+can cause the node utilizations to become imbalanced over time, where HA
+resources on one node become bottlenecked due to resource contention, while
+another node is barely utilized.
+
+The HA Manager's automatic load balancer can lower the overall cluster
+imbalance by automatically issuing rebalancing migrations. Currently, these
+migrations are issued only for HA resources and executed sequentially.
+Furthermore, these migrations always obey the current HA affinity rules.
+
+Disabling `auto-rebalance` for an HA resource prevents the resource from
+being part of automatically issued rebalancing migrations.
+
+NOTE: Any HA resource with a positive affinity for an HA resource with
+`auto-rebalance` disabled won't be part of rebalancing migrations either.
+
+The automatic load balancing system can be enabled and configured in the web
+interface under `Datacenter` -&gt; `Options` -&gt; `Cluster Resource Scheduling`.
+This allows fine-tuning the various parameters as described in the next
+paragraph for different cluster setups and requirements. The load balancer
+requires either the xref:ha_manager_crs_static_scheduler[static-load] or
+xref:ha_manager_crs_dynamic_scheduler[dynamic-load] scheduler mode to be in use.
+
+In every HA Manager round, each of which lasts around 10 seconds, the
+automatic load balancer checks whether the cluster imbalance exceeds the
+_imbalance threshold_. If the cluster imbalance stays above the threshold for
+at least as many consecutive HA Manager rounds as the _hold duration_, then
+the load balancer will select the rebalancing migration for an HA resource,
+which lowers the overall cluster imbalance the most. The method used to select
+the best rebalancing migration can be set with the _rebalancing method_
+option. Finally, if the selected migration reduces the current cluster
+imbalance by at least the percentage given by the _imbalance improvement_
+option, the load balancer issues the selected migration.
+
+The cluster imbalance is derived from the standard deviation and mean of the
+individual node loads and is normalized to a 0-100% range. Both the _imbalance
+threshold_ and the _imbalance improvement_ are configured in percent. The
+_imbalance threshold_ defaults to 30% and controls the sensitivity of the load
+balancer; with a value of `0` it will try to select a rebalancing migration
+every time the _hold duration_ is exceeded. The _imbalance improvement_
+defaults to 10% and filters what constitutes an acceptable rebalancing
+migration; with a value of `0` it will always commit to a migration even if
+the expected imbalance does not change at all. The value can never be
+negative, so the balancer will never commit to a migration with an expected
+imbalance worse than the current one.
+
+NOTE: It is planned that load balancing will also include non-HA resources in
+the future.
+
+ifdef::manvolnum[]
+include::pve-copyright.adoc[]
+endif::manvolnum[]
+
+</value></value></property></resources_list></rule></type></value></property></node_list></group></value></property></name></type></ipofpve></d,d",options="header"]></body></html>

@@ -1,0 +1,38 @@
+Contents of https://support.apple.com/guide/deployment/intro-to-declarative-device-management-depb1bab77f8/web:
+![](https://help.apple.com/assets/6A7205CCBE02946C700729A7/6A7205D7A147F236440CA052/en_US/312766e3df7f57c1f549da2dab216b36.png)
+
+Declarative device management is an update to the existing protocol for device management and the standard to manage Apple devices. Instead of reacting to actions initiated by the device management service, you define the target configuration state of a device and the device autonomically attempts to achieve and maintain that state. It allows the device to asynchronously apply settings and report status back to the device management service without constant polling, which is ideal for performance and scalability. You can also use it in combination with the existing mobile device management protocol.
+
+Declarative device management gives organizations more confidence that devices are in the desired state and that essential data is kept secure, even without internet connectivity. And from a user perspective, it provides a much more responsive experience.
+
+Status reporting allows a device to share information about its current state, and if there are any changes, these can be reported to the server proactively without having to poll the device for updates. Extensibility is built into the protocol to ensure that declarative management is designed for the present and the future.
+
+See the WWDC24 video [What’s new in device management](https://developer.apple.com/wwdc24/10143).
+
+## Declarations
+
+There are four types of declarations, which are payloads that the server defines, sends to devices, and represents the policy an organization wants to enforce on devices.
+
+| Declaration type | | | Description | | | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Configurations | | | Configurations are similar to profile payloads; for example, accounts, settings, and restrictions. See “Declarative configurations” later in this document. | | | | | | | | |
+| Assets | | | Assets consist of reference data that’s required by configurations for large data items and per-user data; assets have a one-to-many relationship with configurations. See [Authentication credentials and identity asset settings](https://support.apple.com/guide/deployment/authentication-credentials-identity-asset-dep597c7b47d/1/web/1.0). | | | | | | | | |
+| Activations | | | Activations are a set of configurations and assets that are applied atomically (either all are applied or none or applied) to the device. Activations support predicates with variables based on available status items that define logical conditions when the included configurations and assets get applied to the device. For example, “device type is iPad” or “operating system version greater than iPadOS 26.1.” There is a many-to-many relationship between activations and configurations as well as assets. Activations can use an extended predicate syntax and boolean operations to support complex predicate expressions. | | | | | | | | |
+| Management | | | Management conveys the overall management state to the device, describing details about the organization and the capabilities of the device management service.  In addition, a management properties declaration allows servers to set arbitrary properties on the device, which can be directly used in activation predicates. | | | | | | | | |
+
+## Status channel
+
+The status channel is a channel of communication where the device proactively updates the server with new information about itself. Updates of the device state are sent in a status report to the server when a relevant status item changes. Full reports send every 24 hours. The server can subscribe to specific status items so it receives only updates for the changes it cares about.
+
+Status items can be used as variables in activation predicates, allowing the device to operate independently, based on state changes. See [Declarative status reports](https://support.apple.com/guide/deployment/declarative-status-reports-depd90ee8a5f/1/web/1.0).
+
+Helpful?
+
+Character limit:
+250
+
+Please don’t include any personal information in your comment.
+
+Maximum character limit is 250.
+
+Thanks for your feedback.

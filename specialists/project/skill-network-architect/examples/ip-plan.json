@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "segments": [
+    {
+      "id": "office-a",
+      "scope": "tenant-a",
+      "cidr": "10.20.0.0/24",
+      "gateway": "10.20.0.1"
+    },
+    {
+      "id": "office-b",
+      "scope": "tenant-a",
+      "cidr": "10.20.1.0/24",
+      "gateway": "10.20.1.1"
+    },
+    {
+      "id": "isolated-overlap",
+      "scope": "tenant-b",
+      "cidr": "10.20.0.0/24"
+    },
+    {
+      "id": "ipv6-users",
+      "scope": "tenant-a",
+      "cidr": "2001:db8:10::/64",
+      "gateway": "2001:db8:10::1"
+    },
+    {
+      "id": "point-to-point",
+      "scope": "tenant-a",
+      "cidr": "192.0.2.0/31",
+      "gateway": "192.0.2.1"
+    }
+  ]
+}

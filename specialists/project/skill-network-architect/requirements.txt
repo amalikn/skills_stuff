@@ -1,0 +1,2 @@
+# Lint only (just lint); the helpers themselves are standard library only.
+ruff==0.17.3

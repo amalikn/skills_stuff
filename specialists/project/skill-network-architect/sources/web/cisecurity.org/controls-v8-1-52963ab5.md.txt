@@ -1,0 +1,38 @@
+Contents of https://www.cisecurity.org/controls/v8-1:
+### CIS Controls v8.1 is an iterative update to v8. It includes updated alignment to evolving industry standards and frameworks, revised asset classes and CIS Safeguard descriptions, and the addition of the “Govern” security function introduced in the National Institute of Standards and Technology (NIST) Cybersecurity Framework (CSF) 2.0.
+
+As part of our process to evolve the CIS Controls, , we establish "design principles" that guide us through any minor or major updates to the document. Our design principles for this revision are context, coexistence, and consistency.
+
+* Context enhances the scope and practical applicability of Safeguards by incorporating specific examples and additional explanations.
+* Coexistence aligns with other major security frameworks to the extent practical while preserving the unique features of the CIS Controls.
+* Consistency maintains continuity for existing CIS Controls users, ensuring little to no change due to this update.
+
+### So what's new?
+
+* Realigned NIST CSF security function mappings to match NIST CSF 2.0
+* Included new and expanded glossary definitions for reserved words used throughout the Controls (e.g., plan, process, sensitive data)
+* Revised Asset Classes, alongside new mappings to Safeguards
+* Fixed minor typos in Safeguard descriptions
+* Added clarification to a few anemic Safeguard descriptions
+
+### When you download v8.1, you will receive:
+
+* PDF
+* Excel
+* Change Log
+* Implementation Groups
+
+### Controls v8.1 is available in these translations:
+
+* French
+* Italian
+
+Have Questions? We’re here to help. Go to [Controls FAQs](/controls/cis-controls-faq).
+
+![Document Download](/-/jssmedia/project/cisecurity/cisecurity/data/media/img/icon-document-download.svg?h=81&iar=0&w=76&rev=a920e9382ac846b683afebb48323097f&hash=CB93A6C9F42CD94303BE61A5F360FE5E)
+
+## Get the Latest Version of the CIS Controls Today!
+
+CIS Controls v8.1 help you keep on top of your evolving workplace, the technology you need to support it, and the threats confronting those systems. It places specific emphasis on moving to a hybrid or fully cloud environment and managing security across your supply chain.
+
+[Download CIS Controls v8.1](https://learn.cisecurity.org/cis-controls-download)

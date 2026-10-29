@@ -1,0 +1,110 @@
+Contents of https://www.wi-fi.org/discover-wi-fi/wi-fi-certified-7:
+## Wi-Fi (MAC/PHY) technologies
+
+* Wi-Fi 8
+* Wi-Fi 7
+* Wi-Fi 6
+* Wi-Fi 5
+* Wi-Fi 4
+* Wi-Fi HaLow™
+* WiGig
+
+### Wi-Fi 8
+
+Wi-Fi 8 is the next generation of Wi-Fi®, built for a world where robust connectivity is a critical requirement. As Wi-Fi spreads to more places and connects more devices, emerging applications suffer greatly from inconsistent connectivity. Wi-Fi 8 raises the bar for reliability, keeping people, machines, and businesses connected when the stakes are highest.
+
+* **Broad market reach**: meets stringent requirements spanning residential, enterprise, and industrial environments
+* **Demanding new applications**: meets the needs of extended reality (XR), robotics, industrial automation, logistics, and smart agriculture
+* **Strong performance everywhere**: delivers high speeds and deterministic, low latency across a wide range of signal conditions
+* **Smarter coordination**: allows access points (APs) to collaborate instead of competing for spectrum, providing higher capacity in dense deployments
+
+[View all resources](/wi-fi-certified-8-resources)
+
+### Wi-Fi CERTIFIED 7™
+
+Introduced in 2024, Wi-Fi 7 enhances performance across the 2.4 GHz, 5 GHz, and 6 GHz bands, delivering the high throughput, lower latency, and greater reliability that demanding applications need, including AR/VR/XR, immersive 3D training, and ultra-high-definition video streaming. Its advanced features work together to give every connected device a dependable experience in home, enterprise, and industrial environments, even in dense venues like stadiums and large campuses. These features include:
+
+* 320 MHz channels available in the 6 GHz band provide twice the throughput of Wi-Fi 6, enabling multigigabit Wi-Fi device speeds
+* Multi-link operation supports more efficient load balancing of traffic among links, resulting in increased throughput and enhanced reliability
+* 4K quadrature amplitude modulation mode (4K QAM) achieves 20% higher transmission rates than Wi-Fi 6’s 1024 QAM for greater efficiency
+* 512 Compressed Block Ack improves efficiency and reduces overhead
+* Multiple RUs to a single STA improves flexibility for spectrum resource scheduling to enhance spectrum efficiency
+
+[View all resources](/wi-fi-certified-7-resources)
+
+### Wi-Fi CERTIFIED 6®
+
+Introduced in 2018, Wi-Fi 6 delivers higher data rates, greater capacity, stronger performance in dense environments, and improved power efficiency for demanding settings such as large public venues, enterprises, and IoT deployments. Wi‑Fi 6 also introduced Wi‑Fi in the 6 GHz band in addition to the 2.4 GHz and 5 GHz bands available in previous generations, letting devices operate efficiently in the most congested, bandwidth-intensive environments.
+
+Key features of Wi-Fi 6 include:
+
+* Orthogonal frequency division multiple access (OFDMA) effectively shares channels to increase network efficiency and lower latency
+* Multi-user multiple input, multiple output (multi-user MIMO) allows more data to be transferred at one time, enabling APs to concurrently handle more devices
+* 160 MHz channel utilization capability increases bandwidth to deliver greater performance with low latency
+* Target wake time (TWT) significantly improves network efficiency and device battery life
+* 1024 QAM increases throughput for emerging, bandwidth intensive uses by encoding more data in the same amount of spectrum
+* Transmit beamforming enables higher data rates at a given range to increase network capacity
+
+[View all resources](/wi-fi-certified-6-resources)
+
+### Wi-Fi CERTIFIED® ac
+
+Wi-Fi 5 was introduced in 2014 and offers higher capacity, improved power management, and lower latency, delivering multi-gigabit per second data rates while enabling devices to handle demanding applications such as ultra HD and 4K video, multimedia streaming, gaming devices, handsets, and many others. Most Wi-Fi 5 products are dual-band, operating in both the 2.4 GHz and 5 GHz bands. Dual-band networks double capacity because devices can use the less crowded 5 GHz band for high performance applications, and the 2.4 GHz band for basic needs such as web surfing and IoT applications. Wi-Fi 5 introduced power saving features such as longer sleep periods and a reduction in the need to communicate with infrastructure too frequently, bringing value to smaller devices requiring longer battery life.
+
+[View all resources](/wi-fi-certified-ac-resources)
+
+### Wi-Fi CERTIFIED n
+
+Wi-Fi 4 was introduced in 2009 and ensures a product has passed rigorous testing and can deliver the very best user experience with advanced Wi-Fi technology. Wi-Fi 4 can deliver plenty of throughput for bandwidth-hungry applications like music and video, extend reach throughout the home, and support many users at the same time. Wi-Fi Alliance has introduced power saving features that enable devices to benefit from native connectivity to Wi-Fi networks and the Internet without concern for power consumption. Wi-Fi power saving features bring longer sleep periods and reduce the need for devices to communicate with infrastructure too frequently. Wi-Fi 4 includes:
+
+* Enhanced performance and speed
+* Extended reach throughout the home
+* Support for many users without sacrificing signal strength
+
+[View all resources](/wi-fi-certified-n-resources)
+
+### Wi-Fi HaLow™
+
+Introduced in 2017, Wi-Fi HaLow™ operates in sub-1 GHz spectrum to deliver approximately 1 km range, strong wall penetration, and low-power connectivity for IoT sensors and wearables across industrial, agricultural, smart building, and smart city environments. Benefits include multi-vendor interoperability, easy setup without disrupting existing Wi-Fi, months-to-years of coin cell battery life, and no proprietary hubs or gateways.
+
+Wi-Fi HaLow leverages the following features to produce these benefits:
+
+* Narrow band OFDM channels
+* Several device power saving modes
+* Native IP support
+* Latest Wi-Fi security
+
+[View all resources](/wi-fi-halow-resources)
+
+### WiGig
+
+WiGig was introduced in 2016 and allows Wi-Fi devices to access the uncongested 60 GHz frequency band, expanding the Wi-Fi experience for virtual reality, multimedia streaming, gaming, wireless docking, and enterprise applications. Users benefit from the expanded capacity, reduced interference, and multi-gigabit per second speeds.
+
+Popular uses for WiGig products include:
+
+* Wireless docking between devices like smartphones, laptops, projectors, and tablets
+* Simultaneous streaming of multiple, ultra-high definition videos and movies
+* More immersive gaming, augmented reality, and virtual reality experiences
+* Fast download of HD movies
+* Convenient public kiosk services
+* Easier handling of bandwidth intensive applications in enterprise environments
+
+[View all resources](/wigig-resources)
+
+## Wi‑Fi (MAC/PHY) chipset shipments
+
+1.4B
+
+Wi-Fi 7 chipset shipments in 2026
+
+2.2B
+
+Wi-Fi 6 chipset shipments in 2026
+
+1.4B
+
+6 GHz chipset shipments in 2026 (Wi‑Fi 6E & tri-band Wi‑Fi 7)
+
+24M
+
+Wi‑Fi HaLow chipset shipments in 2026

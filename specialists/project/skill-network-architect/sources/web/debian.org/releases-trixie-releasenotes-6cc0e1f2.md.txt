@@ -1,0 +1,89 @@
+[![Image 1: Debian](https://www.debian.org/Pics/openlogo-50.png)](https://www.debian.org/ "Debian Home")
+
+[Skip Quicknav](https://www.debian.org/releases/trixie/releasenotes#content)
+
+*   [Blog](https://bits.debian.org/ "Bits from Debian")
+*   [Micronews](https://micronews.debian.org/ "Micronews from Debian")
+*   [Planet](https://planet.debian.org/ "The Planet of Debian")
+*   [Wiki](https://wiki.debian.org/ "The Debian Wiki")
+
+[Debian Releases](https://www.debian.org/releases/) / [Debian “trixie” Release Information](https://www.debian.org/releases/trixie/) / Debian 13 -- Release Notes
+
+# Debian 13 -- Release Notes
+
+To find out what's new in Debian 13, see the [Release Notes](https://www.debian.org/releases/trixie/release-notes/).
+
+The Release Notes also contain instructions for users who are upgrading from prior releases.
+
+If you have set your browser's localization properly, you can use the above link to get the right HTML version automatically — see [content negotiation](https://www.debian.org/intro/cn). Otherwise, pick the exact language, and format you want from the table below.
+
+*   German:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.de.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.de.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.de.pdf)]
+*   Greek:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.el.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.el.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.el.pdf)]
+*   **English**:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.en.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.en.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.en.pdf)]
+*   Spanish:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.es.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.es.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.es.pdf)]
+*   Persian:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.fa.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.fa.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.fa.pdf)]
+*   French:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.fr.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.fr.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.fr.pdf)]
+*   Galician:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.gl.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.gl.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.gl.pdf)]
+*   Italian:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.it.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.it.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.it.pdf)]
+*   Japanese:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.ja.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.ja.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.ja.pdf)]
+*   Dutch:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.nl.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.nl.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.nl.pdf)]
+*   Polish:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.pl.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.pl.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.pl.pdf)]
+*   Portuguese:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.pt.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.pt.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.pt.pdf)]
+*   Portuguese:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.pt_BR.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.pt_BR.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.pt_BR.pdf)]
+*   Romanian:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.ro.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.ro.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.ro.pdf)]
+*   Swedish:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.sv.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.sv.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.sv.pdf)]
+*   Turkish:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.tr.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.tr.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.tr.pdf)]
+*   Chinese:[[HTML](https://www.debian.org/releases/trixie/release-notes/index.zh_CN.html)][[plain text](https://www.debian.org/releases/trixie/release-notes.zh_CN.txt)][[PDF](https://www.debian.org/releases/trixie/release-notes.zh_CN.pdf)]
+
+* * *
+
+Back to the [Debian Project homepage](https://www.debian.org/).
+
+* * *
+
+ This page is also available in the following languages:  How to set [the default document language](https://www.debian.org/intro/cn)
+
+* * *
+
+**[Home](https://www.debian.org/)**
+
+*   [About](https://www.debian.org/intro/about)
+    *   [Social Contract](https://www.debian.org/social_contract)
+    *   [Code of Conduct](https://www.debian.org/code_of_conduct)
+    *   [Free Software](https://www.debian.org/intro/free)
+    *   [Legal Info](https://www.debian.org/legal)
+
+*   [Help Debian](https://www.debian.org/intro/help)
+
+*   [Getting Debian](https://www.debian.org/distrib/)
+    *   [Network install](https://www.debian.org/distrib/netinst)
+    *   [CD/USB ISO images](https://www.debian.org/CD/)
+    *   [Pure Blends](https://www.debian.org/blends/)
+    *   [Debian Packages](https://www.debian.org/distrib/packages)
+    *   [Developers' Corner](https://www.debian.org/devel/)
+
+*   [News](https://www.debian.org/News/)
+    *   [Project News](https://www.debian.org/News/weekly/)
+    *   [Events](https://www.debian.org/events/)
+
+*   [Documentation](https://www.debian.org/doc/)
+    *   [Release Info](https://www.debian.org/releases/)
+    *   [Debian Wiki](https://wiki.debian.org/)
+
+*   [Support](https://www.debian.org/support)
+    *   [Debian International](https://www.debian.org/international/)
+    *   [Security Information](https://www.debian.org/security/)
+    *   [Bug reports](https://www.debian.org/Bugs/)
+    *   [Mailing Lists](https://www.debian.org/MailingLists/)
+
+*   [Site map](https://www.debian.org/sitemap)
+*   [Search](https://search.debian.org/)
+*   [The Debian Blog](https://bits.debian.org/)
+*   [Debian Micronews](https://micronews.debian.org/)
+*   [Debian Planet](https://planet.debian.org/)
+
+See our [contact page](https://www.debian.org/contact) to get in touch. Web site source code is [available](https://salsa.debian.org/webmaster-team/webwml).
+
+Last Modified: Thu, Oct 23 19:51:34 UTC 2025 Last Built: Wed, Sep 23 15:41:42 UTC 2026   
+ Copyright © 1997-2025 [SPI](https://www.spi-inc.org/) and others; See [license terms](https://www.debian.org/license)  
+ Debian is a registered [trademark](https://www.debian.org/trademark) of Software in the Public Interest, Inc.

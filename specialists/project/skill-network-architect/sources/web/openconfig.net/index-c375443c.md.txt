@@ -1,0 +1,42 @@
+Contents of https://www.openconfig.net/:
+## What is OpenConfig?
+
+OpenConfig defines and implements a common, vendor-independent software layer for managing network devices. OpenConfig operates as an open source project with contributions from network operators, equipment vendors, and the wider community. OpenConfig is led by an Operator Working Group consisting of network operators from multiple segments of the industry.
+
+![](/img/data-models-sm.png)
+
+### Common data models
+
+Consistent and coherent data models designed by users for vendor-neutral management in a large variety of networking use cases.
+
+![](/img/telemetry-sm.png)
+
+### Streaming telemetry
+
+Streaming telemetry is subscription-based model for efficiently and accurately monitoring network devices based on OpenConfig models. Retire SNMP!
+
+![](/img/grpc-sm.png)
+
+### Management protocols
+
+Device management and control protocols based on gRPC, a modern, secure RPC framework built for distributed services.
+
+![](/img/testing-sm.png)
+
+### Testing and compliance
+
+Vendor-independent automation to simplify and accelerate compliance testing of OpenConfig implementations.
+
+## OpenConfig community
+
+OpenConfig working group members and collaborators are drawn from all segments of the networking industry.
+
+major telecom carriers
+
+cloud service providers
+
+enterprise network users
+
+major network equipment vendors
+
+networking software providers (ISVs)

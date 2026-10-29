@@ -1,0 +1,2222 @@
+Contents of https://fio.readthedocs.io/en/latest/fio_doc.html:
+## 1.1. Overview and history[¶](#overview-and-history "Link to this heading")
+
+Fio was originally written to save me the hassle of writing special test case
+programs when I wanted to test a specific workload, either for performance
+reasons or to find/reproduce a bug. The process of writing such a test app can
+be tiresome, especially if you have to do it often. Hence I needed a tool that
+would be able to simulate a given I/O workload without resorting to writing a
+tailored test case again and again.
+
+A test work load is difficult to define, though. There can be any number of
+processes or threads involved, and they can each be using their own way of
+generating I/O. You could have someone dirtying large amounts of memory in a
+memory mapped file, or maybe several threads issuing reads using asynchronous
+I/O. fio needed to be flexible enough to simulate both of these cases, and many
+more.
+
+Fio spawns a number of threads or processes doing a particular type of I/O
+action as specified by the user. fio takes a number of global parameters, each
+inherited by the thread unless otherwise parameters given to them overriding
+that setting is given. The typical use of fio is to write a job file matching
+the I/O load one wants to simulate.
+
+## 1.2. Source[¶](#source "Link to this heading")
+
+Fio resides in a git repo, the canonical place is:
+
+
+
+Snapshots are frequently generated and `fio-git-*.tar.gz` include the git
+meta data as well. Other tarballs are archives of official fio releases.
+Snapshots can download from:
+
+
+
+There are also two official mirrors. Both of these are automatically synced with
+the main repository, when changes are pushed. If the main repo is down for some
+reason, either one of these is safe to use as a backup:
+
+## 1.3. Mailing list[¶](#mailing-list "Link to this heading")
+
+The fio project mailing list is meant for anything related to fio including
+general discussion, bug reporting, questions, and development. For bug reporting,
+see REPORTING-BUGS.
+
+An automated mail detailing recent commits is automatically sent to the list at
+most daily. The list address is [fio@vger.kernel.org](mailto:fio%40vger.kernel.org), subscribe by sending an
+email to [fio+subscribe@vger.kernel.org](mailto:fio+subscribe%40vger.kernel.org) or visit
+<https://subspace.kernel.org/vger.kernel.org.html>.
+
+Archives can be found here:
+
+
+
+or here:
+
+
+
+and archives for the old list can be found here:
+
+## 1.4. Author[¶](#author "Link to this heading")
+
+Fio was written by Jens Axboe <[axboe@kernel.dk](mailto:axboe%40kernel.dk)> to enable flexible testing of
+the Linux I/O subsystem and schedulers. He got tired of writing specific test
+applications to simulate a given workload, and found that the existing I/O
+benchmark/test tools out there weren’t flexible enough to do what he wanted.
+
+Jens Axboe <[axboe@kernel.dk](mailto:axboe%40kernel.dk)> 20060905
+
+## 1.5. Maintainers[¶](#maintainers "Link to this heading")
+
+Fio is maintained by Jens Axboe <[axboe@kernel.dk](mailto:axboe%40kernel.dk) and
+Vincent Fu <[vincentfu@gmail.com](mailto:vincentfu%40gmail.com)> - however, for reporting bugs please use
+the fio reflector or the GitHub page rather than email any of them
+directly. By using the public resources, others will be able to learn from
+the responses too. Chances are also good that other members will be able to
+help with your inquiry as well.
+
+## 1.6. Binary packages[¶](#binary-packages "Link to this heading")
+
+Debian:
+:   Starting with Debian “Squeeze”, fio packages are part of the official
+    Debian repository. <https://packages.debian.org/search?keywords=fio> .
+
+Ubuntu:
+:   Starting with Ubuntu 10.04 LTS (aka “Lucid Lynx”), fio packages are part
+    of the Ubuntu “universe” repository.
+    <https://packages.ubuntu.com/search?keywords=fio> .
+
+Red Hat, Fedora, CentOS & Co:
+:   Starting with Fedora 9/Extra Packages for Enterprise Linux 4, fio
+    packages are part of the Fedora/EPEL repositories.
+    <https://packages.fedoraproject.org/pkgs/fio/> .
+
+Mandriva:
+:   Mandriva has integrated fio into their package repository, so installing
+    on that distro should be as easy as typing `urpmi fio`.
+
+Arch Linux:
+:   An Arch Linux package is provided under the Community sub-repository:
+    <https://www.archlinux.org/packages/?sort=&q=fio>
+
+Solaris:
+:   Packages for Solaris are available from OpenCSW. Install their pkgutil
+    tool (<http://www.opencsw.org/get-it/pkgutil/>) and then install fio via
+    `pkgutil -i fio`.
+
+Windows:
+:   Beginning with fio 3.31 Windows installers for tagged releases are
+    available on GitHub at <https://github.com/axboe/fio/releases>. The
+    latest installers for Windows can also be obtained as GitHub Actions
+    artifacts by selecting a build from
+    <https://github.com/axboe/fio/actions>. These require logging in to a
+    GitHub account.
+
+BSDs:
+:   Packages for BSDs may be available from their binary package repositories.
+    Look for a package “fio” using their binary package managers.
+
+## 1.7. Building[¶](#building "Link to this heading")
+
+Just type:
+
+```
+$ ./configure
+$ make
+$ make install
+```
+
+Note that GNU make is required. On BSDs it’s available from devel/gmake within
+ports directory; on Solaris it’s in the SUNWgmake package. On platforms where
+GNU make isn’t the default, type `gmake` instead of `make`.
+
+Configure will print the enabled options. Note that on Linux based platforms,
+the libaio development packages must be installed to use the libaio
+engine. Depending on the distro, it is usually called libaio-devel or libaio-dev.
+
+For gfio, gtk 2.18 (or newer), associated glib threads, and cairo are required
+to be installed. gfio isn’t built automatically and can be enabled with a
+`--enable-gfio` option to configure.
+
+To build fio with a cross-compiler:
+
+```
+$ make clean
+$ make CROSS_COMPILE=/path/to/toolchain/prefix
+```
+
+Configure will attempt to determine the target platform automatically.
+
+It’s possible to build fio for ESX as well, use the `--esx` switch to
+configure.
+
+The HTTP engine is enabled depending on if the curl and openssl shared libraries
+are detected on the system. For Ubuntu, these packages are libcurl4-openssl-dev
+and libssl-dev.
+
+### 1.7.1. Windows[¶](#windows "Link to this heading")
+
+The minimum versions of Windows for building/running fio are Windows 7/Windows
+Server 2008 R2. On Windows, Cygwin (<https://www.cygwin.com/>) is required in
+order to build fio. To create an MSI installer package install WiX from
+[https://wixtoolset.org](https://wixtoolset.org/) and run `dobuild.cmd` from the `os/windows`
+directory.
+
+How to compile fio on 64-bit Windows:
+
+> 1. Install Cygwin (<https://www.cygwin.com/>). Install **make** and all
+>    packages starting with **mingw64-x86\_64**. Ensure
+>    **mingw64-x86\_64-zlib** are installed if you wish
+>    to enable fio’s log compression functionality.
+> 2. Open the Cygwin Terminal.
+> 3. Go to the fio directory (source files).
+> 4. Run `make clean && make -j`.
+
+To build fio for 32-bit Windows, ensure the -i686 versions of the previously
+mentioned -x86\_64 packages are installed and run `./configure
+--build-32bit-win` before `make`.
+
+It’s recommended that once built or installed, fio be run in a Command Prompt or
+other ‘native’ console such as console2, since there are known to be display and
+signal issues when running it under a Cygwin shell (see
+<https://github.com/mintty/mintty/issues/56> and
+<https://github.com/mintty/mintty/wiki/Tips#inputoutput-interaction-with-alien-programs>
+for details).
+
+### 1.7.2. Documentation[¶](#documentation "Link to this heading")
+
+Fio uses [Sphinx](https://www.sphinx-doc.org/) to generate documentation from the [reStructuredText](https://www.sphinx-doc.org/rest.html) files.
+To build HTML formatted documentation run `make -C doc html` and direct your
+browser to `./doc/output/html/index.html`. To build manual page run
+`make -C doc man` and then `man doc/output/man/fio.1`. To see what other
+output formats are supported run `make -C doc help`.
+
+## 1.8. Platforms[¶](#platforms "Link to this heading")
+
+Fio works on (at least) Linux, Solaris, AIX, HP-UX, OSX, NetBSD, OpenBSD,
+Windows, FreeBSD, and DragonFly. Some features and/or options may only be
+available on some of the platforms, typically because those features only apply
+to that platform (like the solarisaio engine, or the splice engine on Linux).
+
+Some features are not available on FreeBSD/Solaris even if they could be
+implemented, I’d be happy to take patches for that. An example of that is disk
+utility statistics and (I think) huge page support, support for that does exist
+in FreeBSD/Solaris.
+
+Fio uses pthread mutexes for signaling and locking and some platforms do not
+support process shared pthread mutexes. As a result, on such platforms only
+threads are supported. This could be fixed with sysv ipc locking or other
+locking alternatives.
+
+Other \*BSD platforms are untested, but fio should work there almost out of the
+box. Since I don’t do test runs or even compiles on those platforms, your
+mileage may vary. Sending me patches for other platforms is greatly
+appreciated. There’s a lot of value in having the same test/benchmark tool
+available on all platforms.
+
+Note that POSIX aio is not enabled by default on AIX. Messages like these:
+
+```
+Symbol resolution failed for /usr/lib/libc.a(posix_aio.o) because:
+    Symbol _posix_kaio_rdwr (number 2) is not exported from dependent module /unix.
+```
+
+indicate one needs to enable POSIX aio. Run the following commands as root:
+
+```
+# lsdev -C -l posix_aio0
+    posix_aio0 Defined  Posix Asynchronous I/O
+# cfgmgr -l posix_aio0
+# lsdev -C -l posix_aio0
+    posix_aio0 Available  Posix Asynchronous I/O
+```
+
+POSIX aio should work now. To make the change permanent:
+
+```
+# chdev -l posix_aio0 -P -a autoconfig='available'
+    posix_aio0 changed
+```
+
+## 1.9. Running fio[¶](#running-fio "Link to this heading")
+
+Running fio is normally the easiest part - you just give it the job file
+(or job files) as parameters:
+
+```
+$ fio [options] [jobfile] ...
+```
+
+and it will start doing what the *jobfile* tells it to do. You can give more
+than one job file on the command line, fio will serialize the running of those
+files. Internally that is the same as using the [`stonewall`](#cmdoption-arg-stonewall) parameter
+described in the parameter section.
+
+If the job file contains only one job, you may as well just give the parameters
+on the command line. The command line parameters are identical to the job
+parameters, with a few extra that control global parameters. For example, for
+the job file parameter [`iodepth=2`](#cmdoption-arg-iodepth), the mirror command line
+option would be [`--iodepth 2`](#cmdoption-arg-iodepth) or [`--iodepth=2`](#cmdoption-arg-iodepth). You can also use the command line for giving more than one job
+entry. For each [`--name`](#cmdoption-arg-name) option that fio sees, it will start a
+new job with that name. Command line entries following a
+[`--name`](#cmdoption-arg-name) entry will apply to that job, until there are no more
+entries or a new [`--name`](#cmdoption-arg-name) entry is seen. This is similar to the
+job file options, where each option applies to the current job until a new []
+job entry is seen.
+
+fio does not need to run as root, except if the files or devices specified in
+the job section requires that. Some other options may also be restricted, such
+as memory locking, I/O scheduler switching, and decreasing the nice value.
+
+If *jobfile* is specified as `-`, the job file will be read from standard
+input.
+
+## 1.10. How fio works[¶](#how-fio-works "Link to this heading")
+
+The first step in getting fio to simulate a desired I/O workload, is writing a
+job file describing that specific setup. A job file may contain any number of
+threads and/or files – the typical contents of the job file is a *global*
+section defining shared parameters, and one or more job sections describing the
+jobs involved. When run, fio parses this file and sets everything up as
+described. If we break down a job from top to bottom, it contains the following
+basic parameters:
+
+[I/O type](#i-o-type)
+
+> Defines the I/O pattern issued to the file(s). We may only be reading
+> sequentially from this file(s), or we may be writing randomly. Or even
+> mixing reads and writes, sequentially or randomly.
+> Should we be doing buffered I/O, or direct/raw I/O?
+
+[Block size](#block-size)
+
+> In how large chunks are we issuing I/O? This may be a single value,
+> or it may describe a range of block sizes.
+
+[I/O size](#i-o-size)
+
+> How much data are we going to be reading/writing.
+
+[I/O engine](#i-o-engine)
+
+> How do we issue I/O? We could be memory mapping the file, we could be
+> using regular read/write, we could be using splice, async I/O, or even
+> SG (SCSI generic sg).
+
+[I/O depth](#i-o-depth)
+
+> If the I/O engine is async, how large a queuing depth do we want to
+> maintain?
+
+[Target file/device](#target-file-device)
+
+> How many files are we spreading the workload over.
+
+[Threads, processes and job synchronization](#threads-processes-and-job-synchronization)
+
+> How many threads or processes should we spread this workload over.
+
+The above are the basic parameters defined for a workload, in addition there’s a
+multitude of parameters that modify other aspects of how this job behaves.
+
+## 1.11. Command line options[¶](#command-line-options "Link to this heading")
+
+--debug=type[¶](#cmdoption-debug "Link to this definition")
+:   Enable verbose tracing type of various fio actions. May be `all` for all types
+    or individual types separated by a comma (e.g. `--debug=file,mem` will
+    enable file and memory debugging). Currently, additional logging is
+    available for:
+
+    *process*
+    :   Dump info related to processes.
+
+    *file*
+    :   Dump info related to file actions.
+
+    *io*
+    :   Dump info related to I/O queuing.
+
+    *mem*
+    :   Dump info related to memory allocations.
+
+    *blktrace*
+    :   Dump info related to blktrace setup.
+
+    *verify*
+    :   Dump info related to I/O verification.
+
+    *all*
+    :   Enable all debug options.
+
+    *random*
+    :   Dump info related to random offset generation.
+
+    *parse*
+    :   Dump info related to option matching and parsing.
+
+    *diskutil*
+    :   Dump info related to disk utilization updates.
+
+    *job:x*
+    :   Dump info only related to job number x.
+
+    *mutex*
+    :   Dump info only related to mutex up/down ops.
+
+    *profile*
+    :   Dump info related to profile extensions.
+
+    *time*
+    :   Dump info related to internal time keeping.
+
+    *net*
+    :   Dump info related to networking connections.
+
+    *rate*
+    :   Dump info related to I/O rate switching.
+
+    *compress*
+    :   Dump info related to log compress/decompress.
+
+    *steadystate*
+    :   Dump info related to steadystate detection.
+
+    *helperthread*
+    :   Dump info related to the helper thread.
+
+    *zbd*
+    :   Dump info related to support for zoned block devices.
+
+    *?* or *help*
+    :   Show available debug options.
+
+--parse-only[¶](#cmdoption-parse-only "Link to this definition")
+:   Parse options only, don’t start any I/O.
+
+--merge-blktrace-only[¶](#cmdoption-merge-blktrace-only "Link to this definition")
+:   Merge blktraces only, don’t start any I/O.
+
+--output=filename[¶](#cmdoption-output "Link to this definition")
+:   Write output to file filename.
+
+--output-format=format[¶](#cmdoption-output-format "Link to this definition")
+:   Set the reporting format to normal, terse, json, or json+. Multiple
+    formats can be selected, separated by a comma. terse is a CSV based
+    format. json+ is like json, except it adds a full dump of the latency
+    buckets.
+
+--bandwidth-log=filename[¶](#cmdoption-bandwidth-log "Link to this definition")
+:   Generate aggregate bandwidth logs. filename is an optional argument.
+    If not given, Fio will by default create files called
+    “agg-{read,write,trim}\_bw.log”. If the filename argument is given, Fio
+    will create files called “{filename}-{read,write,trim}\_bw.log”.
+
+--minimal[¶](#cmdoption-minimal "Link to this definition")
+:   Print statistics in a terse, semicolon-delimited format.
+
+--append-terse[¶](#cmdoption-append-terse "Link to this definition")
+:   Print statistics in selected mode AND terse, semicolon-delimited format.
+    **Deprecated**, use [`--output-format`](#cmdoption-output-format) instead to select multiple
+    formats.
+
+--terse-version=version[¶](#cmdoption-terse-version "Link to this definition")
+:   Set terse version output format (default 3, or 2 or 4 or 5).
+
+--version[¶](#cmdoption-version "Link to this definition")
+:   Print version information and exit.
+
+--help[¶](#cmdoption-help "Link to this definition")
+:   Print a summary of the command line options and exit.
+
+--cpuclock-test[¶](#cmdoption-cpuclock-test "Link to this definition")
+:   Perform test and validation of internal CPU clock.
+
+--crctest=[test][¶](#cmdoption-crctest "Link to this definition")
+:   Test the speed of the built-in checksumming functions. If no argument is
+    given, all of them are tested. Alternatively, a comma separated list can
+    be passed, in which case the given ones are tested.
+
+--cmdhelp=command[¶](#cmdoption-cmdhelp "Link to this definition")
+:   Print help information for command. May be `all` for all commands.
+
+--enghelp=[ioengine[,command]][¶](#cmdoption-enghelp "Link to this definition")
+:   List all commands defined by ioengine, or print help for command
+    defined by ioengine. If no ioengine is given, list all
+    available ioengines.
+
+--showcmd[¶](#cmdoption-showcmd "Link to this definition")
+:   Convert given job files to a set of command-line options.
+
+--readonly[¶](#cmdoption-readonly "Link to this definition")
+:   Turn on safety read-only checks, preventing writes and trims. The
+    `--readonly` option is an extra safety guard to prevent users from
+    accidentally starting a write or trim workload when that is not desired.
+    Fio will only modify the device under test if
+    rw=write/randwrite/rw/randrw/trim/randtrim/trimwrite is given. This
+    safety net can be used as an extra precaution.
+
+--eta=when[¶](#cmdoption-eta "Link to this definition")
+:   Specifies when real-time ETA estimate should be printed. when may be
+    always, never or auto. auto is the default, it prints ETA
+    when requested if the output is a TTY. always disregards the output
+    type, and prints ETA when requested. never never prints ETA.
+
+--eta-interval=time[¶](#cmdoption-eta-interval "Link to this definition")
+:   By default, fio requests client ETA status roughly every second. With
+    this option, the interval is configurable. Fio imposes a minimum
+    allowed time to avoid flooding the console, less than 250 msec is
+    not supported.
+
+--eta-newline=time[¶](#cmdoption-eta-newline "Link to this definition")
+:   Force a new line for every time period passed. When the unit is omitted,
+    the value is interpreted in seconds.
+
+--status-interval=time[¶](#cmdoption-status-interval "Link to this definition")
+:   Force a full status dump of cumulative (from job start) values at time
+    intervals. This option does *not* provide per-period measurements. So
+    values such as bandwidth are running averages. When the time unit is omitted,
+    time is interpreted in seconds. Note that using this option with
+    `--output-format=json` will yield output that technically isn’t valid
+    json, since the output will be collated sets of valid json. It will need
+    to be split into valid sets of json after the run.
+
+--section=name[¶](#cmdoption-section "Link to this definition")
+:   Only run specified section name in job file. Multiple sections can be specified.
+    The `--section` option allows one to combine related jobs into one file.
+    E.g. one job file could define light, moderate, and heavy sections. Tell
+    fio to run only the “heavy” section by giving `--section=heavy`
+    command line option. One can also specify the “write” operations in one
+    section and “verify” operation in another section. The `--section` option
+    only applies to job sections. The reserved *global* section is always
+    parsed and used.
+
+--alloc-size=kb[¶](#cmdoption-alloc-size "Link to this definition")
+:   Allocate additional internal smalloc pools of size kb in KiB. The
+    `--alloc-size` option increases shared memory set aside for use by fio.
+    If running large jobs with randommap enabled, fio can run out of memory.
+    Smalloc is an internal allocator for shared structures from a fixed size
+    memory pool and can grow to 16 pools. The pool size defaults to 16MiB.
+
+    NOTE: While running `.fio_smalloc.*` backing store files are visible
+    in `/tmp`.
+
+--warnings-fatal[¶](#cmdoption-warnings-fatal "Link to this definition")
+:   All fio parser warnings are fatal, causing fio to exit with an
+    error.
+
+--max-jobs=nr[¶](#cmdoption-max-jobs "Link to this definition")
+:   Set the maximum number of threads/processes to support to nr.
+    NOTE: On Linux, it may be necessary to increase the shared-memory
+    limit (`/proc/sys/kernel/shmmax`) if fio runs into errors while
+    creating jobs.
+
+--server=args[¶](#cmdoption-server "Link to this definition")
+:   Start a backend server, with args specifying what to listen to.
+    See [Client/Server](#client-server) section.
+
+--daemonize=pidfile[¶](#cmdoption-daemonize "Link to this definition")
+:   Background a fio server, writing the pid to the given pidfile file.
+
+--client=hostname[¶](#cmdoption-client "Link to this definition")
+:   Instead of running the jobs locally, send and run them on the given hostname
+    or set of hostnames. See [Client/Server](#client-server) section.
+
+--remote-config=file[¶](#cmdoption-remote-config "Link to this definition")
+:   Tell fio server to load this local file.
+
+--idle-prof=option[¶](#cmdoption-idle-prof "Link to this definition")
+:   Report CPU idleness. option is one of the following:
+
+    > **calibrate**
+    > :   Run unit work calibration only and exit.
+    >
+    > **system**
+    > :   Show aggregate system idleness and unit work.
+    >
+    > **percpu**
+    > :   As **system** but also show per CPU idleness.
+
+--inflate-log=log[¶](#cmdoption-inflate-log "Link to this definition")
+:   Inflate and output compressed log.
+
+--trigger-file=file[¶](#cmdoption-trigger-file "Link to this definition")
+:   Execute trigger command when file exists.
+
+--trigger-timeout=time[¶](#cmdoption-trigger-timeout "Link to this definition")
+:   Execute trigger at this time.
+
+--trigger=command[¶](#cmdoption-trigger "Link to this definition")
+:   Set this command as local trigger.
+
+--trigger-remote=command[¶](#cmdoption-trigger-remote "Link to this definition")
+:   Set this command as remote trigger.
+
+--aux-path=path[¶](#cmdoption-aux-path "Link to this definition")
+:   Use the directory specified by path for generated state files instead
+    of the current working directory.
+
+Any parameters following the options will be assumed to be job files, unless
+they match a job file parameter. Multiple job files can be listed and each job
+file will be regarded as a separate group. Fio will [`stonewall`](#cmdoption-arg-stonewall)
+execution between each group.
+
+## 1.12. Job file format[¶](#job-file-format "Link to this heading")
+
+As previously described, fio accepts one or more job files describing what it is
+supposed to do. The job file format is the classic ini file, where the names
+enclosed in [] brackets define the job name. You are free to use any ASCII name
+you want, except *global* which has special meaning. Following the job name is
+a sequence of zero or more parameters, one per line, that define the behavior of
+the job. If the first character in a line is a ‘;’ or a ‘#’, the entire line is
+discarded as a comment.
+
+A *global* section sets defaults for the jobs described in that file. A job may
+override a *global* section parameter, and a job file may even have several
+*global* sections if so desired. A job is only affected by a *global* section
+residing above it.
+
+The [`--cmdhelp`](#cmdoption-cmdhelp) option also lists all options. If used with a command
+argument, [`--cmdhelp`](#cmdoption-cmdhelp) will detail the given command.
+
+See the examples/ directory for inspiration on how to write job files. Note
+the copyright and license requirements currently apply to examples/ files.
+
+So let’s look at a really simple job file that defines two processes, each
+randomly reading from a 128MiB file:
+
+```
+; -- start job file --
+[global]
+rw=randread
+size=128m
+
+[job1]
+
+[job2]
+
+; -- end job file --
+```
+
+As you can see, the job file sections themselves are empty as all the described
+parameters are shared. As no [`filename`](#cmdoption-arg-filename) option is given, fio makes up a
+filename for each of the jobs as it sees fit. On the command line, this job
+would look as follows:
+
+```
+$ fio --name=global --rw=randread --size=128m --name=job1 --name=job2
+```
+
+Let’s look at an example that has a number of processes writing randomly to
+files:
+
+```
+; -- start job file --
+[random-writers]
+ioengine=libaio
+iodepth=4
+rw=randwrite
+bs=32k
+direct=0
+size=64m
+numjobs=4
+; -- end job file --
+```
+
+Here we have no *global* section, as we only have one job defined anyway. We
+want to use async I/O here, with a depth of 4 for each file. We also increased
+the buffer size used to 32KiB and define numjobs to 4 to fork 4 identical
+jobs. The result is 4 processes each randomly writing to their own 64MiB
+file. Instead of using the above job file, you could have given the parameters
+on the command line. For this case, you would specify:
+
+```
+$ fio --name=random-writers --ioengine=libaio --iodepth=4 --rw=randwrite --bs=32k --direct=0 --size=64m --numjobs=4
+```
+
+When fio is utilized as a basis of any reasonably large test suite, it might be
+desirable to share a set of standardized settings across multiple job files.
+Instead of copy/pasting such settings, any section may pull in an external
+`filename.fio` file with *include filename* directive, as in the following
+example:
+
+```
+; -- start job file including.fio --
+[global]
+filename=/tmp/test
+filesize=1m
+include glob-include.fio
+
+[test]
+rw=randread
+bs=4k
+time_based=1
+runtime=10
+include test-include.fio
+; -- end job file including.fio --
+```
+
+```
+; -- start job file glob-include.fio --
+thread=1
+group_reporting=1
+; -- end job file glob-include.fio --
+```
+
+```
+; -- start job file test-include.fio --
+ioengine=libaio
+iodepth=4
+; -- end job file test-include.fio --
+```
+
+Settings pulled into a section apply to that section only (except *global*
+section). Include directives may be nested in that any included file may contain
+further include directive(s). Include files may not contain [] sections.
+
+### 1.12.1. Environment variables[¶](#environment-variables "Link to this heading")
+
+Fio also supports environment variable expansion in job files. Any sub-string of
+the form `${VARNAME}` as part of an option value (in other words, on the right
+of the ‘=’), will be expanded to the value of the environment variable called
+VARNAME. If no such environment variable is defined, or VARNAME is the
+empty string, the empty string will be substituted.
+
+As an example, let’s look at a sample fio invocation and job file:
+
+```
+$ SIZE=64m NUMJOBS=4 fio jobfile.fio
+```
+
+```
+; -- start job file --
+[random-writers]
+rw=randwrite
+size=${SIZE}
+numjobs=${NUMJOBS}
+; -- end job file --
+```
+
+This will expand to the following equivalent job file at runtime:
+
+```
+; -- start job file --
+[random-writers]
+rw=randwrite
+size=64m
+numjobs=4
+; -- end job file --
+```
+
+Fio ships with a few example job files, you can also look there for inspiration.
+
+### 1.12.2. Reserved keywords[¶](#reserved-keywords "Link to this heading")
+
+Additionally, fio has a set of reserved keywords that will be replaced
+internally with the appropriate value. Those keywords are:
+
+**$pagesize**
+
+> The architecture page size of the running system.
+
+**$mb\_memory**
+
+> Megabytes of total memory in the system.
+
+**$ncpus**
+
+> Number of online available CPUs.
+
+These can be used on the command line or in the job file, and will be
+automatically substituted with the current system values when the job is
+run. Simple math is also supported on these keywords, so you can perform actions
+like:
+
+```
+size=8*$mb_memory
+```
+
+and get that properly expanded to 8 times the size of memory in the machine.
+
+## 1.13. Job file parameters[¶](#job-file-parameters "Link to this heading")
+
+This section describes in details each parameter associated with a job. Some
+parameters take an option of a given type, such as an integer or a
+string. Anywhere a numeric value is required, an arithmetic expression may be
+used, provided it is surrounded by parentheses. Supported operators are:
+
+> * addition (+)
+> * subtraction (-)
+> * multiplication (\*)
+> * division (/)
+> * modulus (%)
+> * exponentiation (^)
+
+For time values in expressions, units are microseconds by default. This is
+different than for time values not in expressions (not enclosed in
+parentheses). The following types are used:
+
+### 1.13.1. Parameter types[¶](#parameter-types "Link to this heading")
+
+**str**
+:   String: A sequence of alphanumeric characters.
+
+**time**
+:   Integer with possible time suffix. Without a unit value is interpreted as
+    seconds unless otherwise specified. Accepts a suffix of ‘d’ for days, ‘h’ for
+    hours, ‘m’ for minutes, ‘s’ for seconds, ‘ms’ (or ‘msec’) for milliseconds and
+    ‘us’ (or ‘usec’) for microseconds. For example, use 10m for 10 minutes.
+
+**int**
+:   Integer. A whole number value, which may contain an integer prefix
+    and an integer suffix:
+
+    [*integer prefix*] **number** [*integer suffix*]
+
+    The optional *integer prefix* specifies the number’s base. The default
+    is decimal. *0x* specifies hexadecimal.
+
+    The optional *integer suffix* specifies the number’s units, and includes an
+    optional unit prefix and an optional unit. For quantities of data, the
+    default unit is bytes. For quantities of time, the default unit is seconds
+    unless otherwise specified.
+
+    With [`kb_base`](#cmdoption-arg-kb_base)=1000, fio follows international standards for unit
+    prefixes. To specify power-of-10 decimal values defined in the
+    International System of Units (SI):
+
+    > * *K* – means kilo (K) or 1000
+    > * *M* – means mega (M) or 1000\*\*2
+    > * *G* – means giga (G) or 1000\*\*3
+    > * *T* – means tera (T) or 1000\*\*4
+    > * *P* – means peta (P) or 1000\*\*5
+
+    To specify power-of-2 binary values defined in IEC 80000-13:
+
+    > * *Ki* – means kibi (Ki) or 1024
+    > * *Mi* – means mebi (Mi) or 1024\*\*2
+    > * *Gi* – means gibi (Gi) or 1024\*\*3
+    > * *Ti* – means tebi (Ti) or 1024\*\*4
+    > * *Pi* – means pebi (Pi) or 1024\*\*5
+
+    For Zone Block Device Mode:
+    :   * *z* – means Zone
+
+    With [`kb_base`](#cmdoption-arg-kb_base)=1024 (the default), the unit prefixes are opposite
+    from those specified in the SI and IEC 80000-13 standards to provide
+    compatibility with old scripts. For example, 4k means 4096.
+
+    For quantities of data, an optional unit of ‘B’ may be included
+    (e.g., ‘kB’ is the same as ‘k’).
+
+    The *integer suffix* is not case sensitive (e.g., m/mi mean mebi/mega,
+    not milli). ‘b’ and ‘B’ both mean byte, not bit.
+
+    Examples with [`kb_base`](#cmdoption-arg-kb_base)=1000:
+
+    > * *4 KiB*: 4096, 4096b, 4096B, 4ki, 4kib, 4kiB, 4Ki, 4KiB
+    > * *1 MiB*: 1048576, 1mi, 1024ki
+    > * *1 MB*: 1000000, 1m, 1000k
+    > * *1 TiB*: 1099511627776, 1ti, 1024gi, 1048576mi
+    > * *1 TB*: 1000000000, 1t, 1000m, 1000000k
+
+    Examples with [`kb_base`](#cmdoption-arg-kb_base)=1024 (default):
+
+    > * *4 KiB*: 4096, 4096b, 4096B, 4k, 4kb, 4kB, 4K, 4KB
+    > * *1 MiB*: 1048576, 1m, 1024k
+    > * *1 MB*: 1000000, 1mi, 1000ki
+    > * *1 TiB*: 1099511627776, 1t, 1024g, 1048576m
+    > * *1 TB*: 1000000000, 1ti, 1000mi, 1000000ki
+
+    To specify times (units are not case sensitive):
+
+    > * *D* – means days
+    > * *H* – means hours
+    > * *M* – means minutes
+    > * *s* – or sec means seconds (default)
+    > * *ms* – or *msec* means milliseconds
+    > * *us* – or *usec* means microseconds
+
+    If the option accepts an upper and lower range, use a colon ‘:’ or
+    minus ‘-’ to separate such values. See [irange](#irange).
+    If the lower value specified happens to be larger than the upper value
+    the two values are swapped.
+
+**bool**
+:   Boolean. Usually parsed as an integer, however only defined for
+    true and false (1 and 0).
+
+**irange**
+:   Integer range with suffix. Allows value range to be given, such as
+    1024-4096. A colon may also be used as the separator, e.g. 1k:4k. If the
+    option allows two sets of ranges, they can be specified with a ‘,’ or ‘/’
+    delimiter: 1k-4k/8k-32k. Also see [int](#int).
+
+**float\_list**
+:   A list of floating point numbers, separated by a ‘:’ character.
+
+With the above in mind, here follows the complete list of fio job parameters.
+
+### 1.13.2. Units[¶](#units "Link to this heading")
+
+kb\_base=int[¶](#cmdoption-arg-kb_base "Link to this definition")
+:   Select the interpretation of unit prefixes in input parameters.
+
+    > **1000**
+    > :   Inputs comply with IEC 80000-13 and the International
+    >     System of Units (SI). Use:
+    >
+    >     > * power-of-2 values with IEC prefixes (e.g., KiB)
+    >     > * power-of-10 values with SI prefixes (e.g., kB)
+    >
+    > **1024**
+    > :   Compatibility mode (default). To avoid breaking old scripts:
+    >
+    >     > * power-of-2 values with SI prefixes
+    >     > * power-of-10 values with IEC prefixes
+
+    See [`bs`](#cmdoption-arg-blocksize) for more details on input parameters.
+
+    Outputs always use correct prefixes. Most outputs include both
+    side-by-side, like:
+
+    ```
+    bw=2383.3kB/s (2327.4KiB/s)
+    ```
+
+    If only one value is reported, then kb\_base selects the one to use:
+
+    > **1000** – SI prefixes
+    >
+    > **1024** – IEC prefixes
+
+unit\_base=int[¶](#cmdoption-arg-unit_base "Link to this definition")
+:   Base unit for reporting. Allowed values are:
+
+    **0**
+    :   Use auto-detection (default).
+
+    **8**
+    :   Byte based.
+
+    **1**
+    :   Bit based.
+
+### 1.13.3. Job description[¶](#job-description "Link to this heading")
+
+name=str[¶](#cmdoption-arg-name "Link to this definition")
+:   ASCII name of the job. This may be used to override the name printed by fio
+    for this job. Otherwise the job name is used. On the command line this
+    parameter has the special purpose of also signaling the start of a new job.
+
+description=str[¶](#cmdoption-arg-description "Link to this definition")
+:   Text description of the job. Doesn’t do anything except dump this text
+    description when this job is run. It’s not parsed.
+
+loops=int[¶](#cmdoption-arg-loops "Link to this definition")
+:   Run the specified number of iterations of this job. Used to repeat the same
+    workload a given number of times. Defaults to 1.
+
+numjobs=int[¶](#cmdoption-arg-numjobs "Link to this definition")
+:   Create the specified number of clones of this job. Each clone of job
+    is spawned as an independent thread or process. May be used to setup a
+    larger number of threads/processes doing the same thing. Each thread is
+    reported separately; to see statistics for all clones as a whole, use
+    [`group_reporting`](#cmdoption-arg-group_reporting) in conjunction with [`new_group`](#cmdoption-arg-new_group).
+    See [`--max-jobs`](#cmdoption-max-jobs). Default: 1.
+
+### 1.13.5. Target file/device[¶](#target-file-device "Link to this heading")
+
+directory=str[¶](#cmdoption-arg-directory "Link to this definition")
+:   Prefix filenames with this directory. Used to place files in a different
+    location than `./`. You can specify a number of directories by
+    separating the names with a ‘:’ character. These directories will be
+    assigned equally distributed to job clones created by [`numjobs`](#cmdoption-arg-numjobs) as
+    long as they are using generated filenames. If specific filename(s) are
+    set fio will use the first listed directory, and thereby matching the
+    filename semantic (which generates a file for each clone if not
+    specified, but lets all clones use the same file if set).
+
+    See the [`filename`](#cmdoption-arg-filename) option for information on how to escape “`:`”
+    characters within the directory path itself.
+
+    Note: To control the directory fio will use for internal state files
+    use [`--aux-path`](#cmdoption-aux-path).
+
+filename=str[¶](#cmdoption-arg-filename "Link to this definition")
+:   Fio normally makes up a filename based on the job name, thread number, and
+    file number (see [`filename_format`](#cmdoption-arg-filename_format)). If you want to share files
+    between threads in a job or several
+    jobs with fixed file paths, specify a filename for each of them to override
+    the default. If the ioengine is file based, you can specify a number of files
+    by separating the names with a ‘:’ colon. So if you wanted a job to open
+    `/dev/sda` and `/dev/sdb` as the two working files, you would use
+    `filename=/dev/sda:/dev/sdb`. This also means that whenever this option is
+    specified, [`nrfiles`](#cmdoption-arg-nrfiles) is ignored. The size of regular files specified
+    by this option will be [`size`](#cmdoption-arg-size) divided by number of files unless an
+    explicit size is specified by [`filesize`](#cmdoption-arg-filesize).
+
+    Each colon in the wanted path must be escaped with a `\`
+    character. For instance, if the path is `/dev/dsk/foo@3,0:c` then you
+    would use `filename=/dev/dsk/foo@3,0\:c` and if the path is
+    `F:\filename` then you would use `filename=F\:\filename`.
+
+    On Windows, disk devices are accessed as `\.\PhysicalDrive0` for
+    the first device, `\.\PhysicalDrive1` for the second etc.
+    Note: Windows and FreeBSD (refer to geom(4)) prevent write access to areas
+    of the disk containing in-use data (e.g. filesystems).
+
+    For HTTP and S3 access, specify a valid URL path or S3 key, respectively.
+    A filename for path-style S3 includes a bucket name (`/bucket/k/e.y`)
+    while a virtual-hosted-style S3 filename `/k/e.y` does not because
+    its bucket name is specified in [`http_host`](#cmdoption-arg-http_host). In both cases, the
+    filename should begin with a `/`. The HTTP engine does not automatically
+    add a leading `/` when constructing URLs from [`http_host`](#cmdoption-arg-http_host) and
+    [`filename`](#cmdoption-arg-filename).
+
+    The filename “-” is a reserved name, meaning *stdin* or *stdout*. Which
+    of the two depends on the read/write direction set.
+
+filename\_format=str[¶](#cmdoption-arg-filename_format "Link to this definition")
+:   If sharing multiple files between jobs, it is usually necessary to have fio
+    generate the exact names that you want. By default, fio will name a file
+    based on the default file format specification of
+    `jobname.jobnumber.filenumber`. With this option, that can be
+    customized. Fio will recognize and replace the following keywords in this
+    string:
+
+    > **$jobname**
+    > :   The name of the worker thread or process.
+    >
+    > **$clientuid**
+    > :   IP of the fio process when using client/server mode.
+    >
+    > **$jobnum**
+    > :   The incremental number of the worker thread or process.
+    >
+    > **$filenum**
+    > :   The incremental number of the file for that worker thread or
+    >     process.
+
+    To have dependent jobs share a set of files, this option can be set to have
+    fio generate filenames that are shared between the two. For instance, if
+    `testfiles.$filenum` is specified, file number 4 for any job will be
+    named `testfiles.4`. The default of `$jobname.$jobnum.$filenum`
+    will be used if no other format specifier is given.
+
+    If you specify a path then the directories will be created up to the
+    main directory for the file. So for example if you specify
+    `filename_format=a/b/c/$jobnum` then the directories a/b/c will be
+    created before the file setup part of the job. If you specify
+    [`directory`](#cmdoption-arg-directory) then the path will be relative that directory,
+    otherwise it is treated as the absolute path.
+
+unique\_filename=bool[¶](#cmdoption-arg-unique_filename "Link to this definition")
+:   To avoid collisions between networked clients, fio defaults to prefixing any
+    generated filenames (with a directory specified) with the source of the
+    client connecting. To disable this behavior, set this option to 0.
+
+filetype=str[¶](#cmdoption-arg-filetype "Link to this definition")
+:   Assume that all files defined in a job are of this type. By default fio
+    will do *stat(2)* for each file to know its file type. For huge
+    filesets it might be a bottleneck, so the option can be used to skip the
+    huge number of syscalls. The file types are:
+
+    > **none**
+    > :   Unset. The default.
+    >
+    > **file**
+    > :   Regular file.
+    >
+    > **block**
+    > :   Block device file.
+    >
+    > **char**
+    > :   Char device file.
+
+opendir=str[¶](#cmdoption-arg-opendir "Link to this definition")
+:   Recursively open any files below directory str. This accepts only a
+    single directory and unlike related options, colons appearing in the
+    path must not be escaped.
+
+lockfile=str[¶](#cmdoption-arg-lockfile "Link to this definition")
+:   Fio defaults to not locking any files before it does I/O to them. If a file
+    or file descriptor is shared, fio can serialize I/O to that file to make the
+    end result consistent. This is usual for emulating real workloads that share
+    files. The lock modes are:
+
+    > **none**
+    > :   No locking. The default.
+    >
+    > **exclusive**
+    > :   Only one thread or process may do I/O at a time, excluding all
+    >     others.
+    >
+    > **readwrite**
+    > :   Read-write locking on the file. Many readers may
+    >     access the file at the same time, but writes get exclusive access.
+
+nrfiles=int[¶](#cmdoption-arg-nrfiles "Link to this definition")
+:   Number of files to use for this job. Defaults to 1. The size of files
+    will be [`size`](#cmdoption-arg-size) divided by this unless explicit size is specified by
+    [`filesize`](#cmdoption-arg-filesize). Files are created for each thread separately, and each
+    file will have a file number within its name by default, as explained in
+    [`filename`](#cmdoption-arg-filename) section.
+
+openfiles=int[¶](#cmdoption-arg-openfiles "Link to this definition")
+:   Number of files to keep open at the same time. Defaults to the same as
+    [`nrfiles`](#cmdoption-arg-nrfiles), can be set smaller to limit the number simultaneous
+    opens.
+
+file\_service\_type=str[¶](#cmdoption-arg-file_service_type "Link to this definition")
+:   Defines how fio decides which file from a job to service next. The following
+    types are defined:
+
+    > **random**
+    > :   Choose a file at random.
+    >
+    > **roundrobin**
+    > :   Round robin over opened files. This is the default.
+    >
+    > **sequential**
+    > :   Finish one file before moving on to the next. Multiple files can
+    >     still be open depending on [`openfiles`](#cmdoption-arg-openfiles).
+    >
+    > **zipf**
+    > :   Use a *Zipf* distribution to decide what file to access.
+    >
+    > **pareto**
+    > :   Use a *Pareto* distribution to decide what file to access.
+    >
+    > **normal**
+    > :   Use a *Gaussian* (normal) distribution to decide what file to
+    >     access.
+    >
+    > **gauss**
+    > :   Alias for normal.
+
+    For *random*, *roundrobin*, and *sequential*, a postfix can be appended to
+    tell fio how many I/Os to issue before switching to a new file. For example,
+    specifying `file_service_type=random:8` would cause fio to issue
+    8 I/Os before selecting a new file at random. For the non-uniform
+    distributions, a floating point postfix can be given to influence how the
+    distribution is skewed. See [`random_distribution`](#cmdoption-arg-random_distribution) for a description
+    of how that would work.
+
+ioscheduler=str[¶](#cmdoption-arg-ioscheduler "Link to this definition")
+:   Attempt to switch the device hosting the file to the specified I/O scheduler
+    before running.
+
+create\_serialize=bool[¶](#cmdoption-arg-create_serialize "Link to this definition")
+:   If true, serialize the file creation for the jobs. This may be handy to
+    avoid interleaving of data files, which may greatly depend on the filesystem
+    used and even the number of processors in the system. Default: true.
+
+create\_fsync=bool[¶](#cmdoption-arg-create_fsync "Link to this definition")
+:   *fsync(2)* the data file after creation. This is the default.
+
+create\_on\_open=bool[¶](#cmdoption-arg-create_on_open "Link to this definition")
+:   If true, don’t pre-create files but allow the job’s open() to create a file
+    when it’s time to do I/O. Default: false – pre-create all necessary files
+    when the job starts.
+
+create\_only=bool[¶](#cmdoption-arg-create_only "Link to this definition")
+:   If true, fio will only run the setup phase of the job. If files need to be
+    laid out or updated on disk, only that will be done – the actual job contents
+    are not executed. Default: false.
+
+allow\_file\_create=bool[¶](#cmdoption-arg-allow_file_create "Link to this definition")
+:   If true, fio is permitted to create files as part of its workload. If this
+    option is false, then fio will error out if
+    the files it needs to use don’t already exist. Default: true.
+
+allow\_mounted\_write=bool[¶](#cmdoption-arg-allow_mounted_write "Link to this definition")
+:   If this isn’t set, fio will abort jobs that are destructive (e.g. that write)
+    to what appears to be a mounted device or partition. This should help catch
+    creating inadvertently destructive tests, not realizing that the test will
+    destroy data on the mounted file system. Note that some platforms don’t allow
+    writing against a mounted device regardless of this option. Default: false.
+
+pre\_read=bool[¶](#cmdoption-arg-pre_read "Link to this definition")
+:   If this is given, files will be pre-read into memory before starting the
+    given I/O operation. This will also clear the [`invalidate`](#cmdoption-arg-invalidate) flag,
+    since it is pointless to pre-read and then drop the cache. This will only
+    work for I/O engines that are seek-able, since they allow you to read the
+    same data multiple times. Thus it will not work on non-seekable I/O engines
+    (e.g. network, splice). Default: false.
+
+unlink=bool[¶](#cmdoption-arg-unlink "Link to this definition")
+:   Unlink (delete) the job files when done. Not the default, as repeated runs of that
+    job would then waste time recreating the file set again and again. Default:
+    false.
+
+unlink\_each\_loop=bool[¶](#cmdoption-arg-unlink_each_loop "Link to this definition")
+:   Unlink (delete) job files after each iteration or loop. Default: false.
+
+zonemode=str[¶](#cmdoption-arg-zonemode "Link to this definition")
+:   Accepted values are:
+
+    > **none**
+    > :   The [`zonerange`](#cmdoption-arg-zonerange), [`zonesize`](#cmdoption-arg-zonesize),
+    >     [`zonecapacity`](#cmdoption-arg-zonecapacity) and [`zoneskip`](#cmdoption-arg-zoneskip)
+    >     parameters are ignored.
+    >
+    > **strided**
+    > :   I/O happens in a single zone until
+    >     [`zonesize`](#cmdoption-arg-zonesize) bytes have been transferred.
+    >     After that number of bytes has been
+    >     transferred processing of the next zone
+    >     starts. [`zonecapacity`](#cmdoption-arg-zonecapacity) is ignored.
+    >
+    > **zbd**
+    > :   Zoned block device mode. I/O happens
+    >     sequentially in each zone, even if random I/O
+    >     has been selected. Random I/O happens across
+    >     all zones instead of being restricted to a
+    >     single zone. The [`zoneskip`](#cmdoption-arg-zoneskip) parameter
+    >     is ignored. [`zonerange`](#cmdoption-arg-zonerange) and
+    >     [`zonesize`](#cmdoption-arg-zonesize) must be identical. If the
+    >     size of the unwritten space in a zone is not
+    >     a multiple of the specified block size at
+    >     workload start, write workloads create unwritten
+    >     remainder areas at the ends of zones and keep
+    >     the zones in open conditions. To free up the
+    >     open zone resources, fio issues zone finish
+    >     operations to the zones with the remainders.
+    >     Trim is handled using a zone reset operation.
+    >     Trim only considers non-empty sequential write
+    >     required and sequential write preferred zones.
+
+zonerange=int[¶](#cmdoption-arg-zonerange "Link to this definition")
+:   Size of a single zone. See also [`zonesize`](#cmdoption-arg-zonesize) and
+    [`zoneskip`](#cmdoption-arg-zoneskip).
+
+zonesize=int[¶](#cmdoption-arg-zonesize "Link to this definition")
+:   For [`zonemode`](#cmdoption-arg-zonemode) =strided, this is the number of bytes to
+    transfer before skipping [`zoneskip`](#cmdoption-arg-zoneskip) bytes. If this parameter
+    is smaller than [`zonerange`](#cmdoption-arg-zonerange) then only a fraction of each zone
+    with [`zonerange`](#cmdoption-arg-zonerange) bytes will be accessed. If this parameter is
+    larger than [`zonerange`](#cmdoption-arg-zonerange) then each zone will be accessed
+    multiple times before skipping to the next zone.
+
+    For [`zonemode`](#cmdoption-arg-zonemode) =zbd, this is the size of a single zone. The
+    [`zonerange`](#cmdoption-arg-zonerange) parameter is ignored in this mode.
+
+zonecapacity=int[¶](#cmdoption-arg-zonecapacity "Link to this definition")
+:   For [`zonemode`](#cmdoption-arg-zonemode) =zbd, this defines the capacity of a single zone,
+    which is the accessible area starting from the zone start address.
+    This parameter only applies when using [`zonemode`](#cmdoption-arg-zonemode) =zbd in
+    combination with regular block devices. If not specified it defaults to
+    the zone size. If the target device is a zoned block device, the zone
+    capacity is obtained from the device information and this option is
+    ignored.
+
+zoneskip=int[¶](#cmdoption-arg-zoneskip "Link to this definition")
+:   For [`zonemode`](#cmdoption-arg-zonemode) =strided, the number of bytes to skip after
+    [`zonesize`](#cmdoption-arg-zonesize) bytes of data have been transferred. This parameter
+    must be zero for [`zonemode`](#cmdoption-arg-zonemode) =zbd.
+
+read\_beyond\_wp=bool[¶](#cmdoption-arg-read_beyond_wp "Link to this definition")
+:   This parameter applies to [`zonemode`](#cmdoption-arg-zonemode) =zbd only.
+
+    Zoned block devices are block devices that consist of multiple zones.
+    Each zone has a type, e.g. conventional or sequential. A conventional
+    zone can be written at any offset that is a multiple of the block
+    size. Sequential zones must be written sequentially. The position at
+    which a write must occur is called the write pointer. A zoned block
+    device can be either drive managed, host managed or host aware. For
+    host managed devices the host must ensure that writes happen
+    sequentially. Fio recognizes host managed devices and serializes
+    writes to sequential zones for these devices.
+
+    If a read occurs in a sequential zone beyond the write pointer then
+    the zoned block device will complete the read without reading any data
+    from the storage medium. Since such reads lead to unrealistically high
+    bandwidth and IOPS numbers fio only reads beyond the write pointer if
+    explicitly told to do so. Default: false.
+
+max\_open\_zones=int[¶](#cmdoption-arg-max_open_zones "Link to this definition")
+:   When a zone of a zoned block device is partially written (i.e. not all
+    sectors of the zone have been written), the zone is in one of three
+    conditions: ‘implicit open’, ‘explicit open’ or ‘closed’. Zoned block
+    devices may have a limit called ‘max\_open\_zones’ (same name as the
+    parameter) on the total number of zones that can simultaneously be in
+    the ‘implicit open’ or ‘explicit open’ conditions. Zoned block devices
+    may have another limit called ‘max\_active\_zones’, on the total number of
+    zones that can simultaneously be in the three conditions. The
+    [`max_open_zones`](#cmdoption-arg-max_open_zones) parameter limits the number of zones to which
+    write commands are issued by all fio jobs, that is, limits the number of
+    zones that will be in the conditions. When the device has the
+    max\_open\_zones limit and does not have the max\_active\_zones limit, the
+    [`max_open_zones`](#cmdoption-arg-max_open_zones) parameter limits the number of zones in the two
+    open conditions up to the limit. In this case, fio includes zones in the
+    two open conditions to the write target zones at fio start. When the
+    device has both the max\_open\_zones and the max\_active\_zones limits, the
+    [`max_open_zones`](#cmdoption-arg-max_open_zones) parameter limits the number of zones in the
+    three conditions up to the limit. In this case, fio includes zones in
+    the three conditions to the write target zones at fio start.
+
+    This parameter is relevant only if the [`zonemode`](#cmdoption-arg-zonemode) =zbd is used.
+    The default value is always equal to the max\_open\_zones limit of the
+    target zoned block device and a value higher than this limit cannot be
+    specified by users unless the option [`ignore_zone_limits`](#cmdoption-arg-ignore_zone_limits) is
+    specified. When [`ignore_zone_limits`](#cmdoption-arg-ignore_zone_limits) is specified or the target
+    device does not have the max\_open\_zones limit, [`max_open_zones`](#cmdoption-arg-max_open_zones)
+    can specify 0 to disable any limit on the number of zones that can be
+    simultaneously written to by all jobs.
+
+job\_max\_open\_zones=int[¶](#cmdoption-arg-job_max_open_zones "Link to this definition")
+:   In the same manner as [`max_open_zones`](#cmdoption-arg-max_open_zones), limit the number of open
+    zones per fio job, that is, the number of zones that a single job can
+    simultaneously write to. A value of zero indicates no limit.
+    Default: zero.
+
+ignore\_zone\_limits=bool[¶](#cmdoption-arg-ignore_zone_limits "Link to this definition")
+:   If this option is used, fio will ignore the maximum number of open
+    zones limit of the zoned block device in use, thus allowing the
+    option [`max_open_zones`](#cmdoption-arg-max_open_zones) value to be larger than the device
+    reported limit. Default: false.
+
+zone\_reset\_threshold=float[¶](#cmdoption-arg-zone_reset_threshold "Link to this definition")
+:   A number between zero and one that indicates the ratio of written bytes
+    in the zones with write pointers in the IO range to the size of the IO
+    range. When current ratio is above this ratio, zones are reset
+    periodically as [`zone_reset_frequency`](#cmdoption-arg-zone_reset_frequency) specifies. If there are
+    multiple jobs when using this option, the IO range for all write jobs
+    has to be the same.
+
+zone\_reset\_frequency=float[¶](#cmdoption-arg-zone_reset_frequency "Link to this definition")
+:   A number between zero and one that indicates how often a zone reset
+    should be issued if the zone reset threshold has been exceeded. A zone
+    reset is submitted after each (1 / zone\_reset\_frequency) write
+    requests. This and the previous parameter can be used to simulate
+    garbage collection activity.
+
+recover\_zbd\_write\_error=bool[¶](#cmdoption-arg-recover_zbd_write_error "Link to this definition")
+:   If this option is specified together with the option
+    [`continue_on_error`](#cmdoption-arg-continue_on_error), check the write pointer positions after the
+    failed writes to sequential write required zones. Then move the write
+    pointers so that the next writes do not fail due to partial writes and
+    unexpected write pointer positions. If [`continue_on_error`](#cmdoption-arg-continue_on_error) is
+    not specified, errors out. When the writes are asynchronous, the write
+    pointer move fills blocks with zero then breaks verify data. If an
+    asynchronous IO engine and [`verify`](#cmdoption-arg-verify) workload are specified,
+    errors out. Default: false.
+
+write\_zone\_remainders=bool[¶](#cmdoption-arg-write_zone_remainders "Link to this definition")
+:   If the size of the unwritten space in a zone is not a multiple of the
+    specified block size at workload start, write workloads create unwritten
+    remainder areas at the ends of zones. By default, fio issues zone finish
+    operations on such zones, transitioning them to the full condition and
+    freeing up open zone resources. However, zone finish operations
+    introduces waits for in-flight writes, reducing overall write
+    throughput. If this option is specified, fio writes data to the
+    remainder areas instead of performing zone finish operations. This
+    improves write throughput by avoiding waits for in-flight writes,
+    particularly in asynchronous write workloads. The drawback of this
+    option is that it requires fio to perform writes smaller than the
+    minimum block size. Consequently, the option [`norandommap`](#cmdoption-arg-norandommap) must
+    be set. If [`norandommap`](#cmdoption-arg-norandommap) is not set, it is automatically set.
+    Default: false.
+
+### 1.13.6. I/O type[¶](#i-o-type "Link to this heading")
+
+direct=bool[¶](#cmdoption-arg-direct "Link to this definition")
+:   If value is true, use non-buffered I/O. This is usually O\_DIRECT. Note that
+    OpenBSD and ZFS on Solaris don’t support direct I/O. On Windows the synchronous
+    ioengines don’t support direct I/O. Default: false.
+
+buffered=bool[¶](#cmdoption-arg-buffered "Link to this definition")
+:   If value is true, use buffered I/O. This is the opposite of the
+    [`direct`](#cmdoption-arg-direct) option. Defaults to true.
+
+readwrite=str, rw=str[¶](#cmdoption-arg-readwrite "Link to this definition")
+:   Type of I/O pattern. Accepted values are:
+
+    > **read**
+    > :   Sequential reads.
+    >
+    > **write**
+    > :   Sequential writes.
+    >
+    > **trim**
+    > :   Sequential trims (Linux block devices and SCSI
+    >     character devices only).
+    >
+    > **randread**
+    > :   Random reads.
+    >
+    > **randwrite**
+    > :   Random writes.
+    >
+    > **randtrim**
+    > :   Random trims (Linux block devices and SCSI
+    >     character devices only).
+    >
+    > **rw,readwrite**
+    > :   Sequential mixed reads and writes.
+    >
+    > **randrw**
+    > :   Random mixed reads and writes.
+    >
+    > **trimwrite**
+    > :   Sequential trim+write sequences. Blocks will be trimmed first,
+    >     then the same blocks will be written to. So if `io_size=64K`
+    >     is specified, Fio will trim a total of 64K bytes and also
+    >     write 64K bytes on the same trimmed blocks. This behaviour
+    >     will be consistent with `number_ios` or other Fio options
+    >     limiting the total bytes or number of I/O’s.
+    >
+    > **randtrimwrite**
+    > :   Like trimwrite, but uses random offsets rather
+    >     than sequential writes.
+
+    Fio defaults to read if the option is not specified. For the mixed I/O
+    types, the default is to split them 50/50. For certain types of I/O the
+    result may still be skewed a bit, since the speed may be different.
+
+    It is possible to specify the number of I/Os to do before getting a new
+    offset by appending `:<nr>` to the end of the string given. For a
+    random read, it would look like `rw=randread:8` for passing in an offset
+    modifier with a value of 8. If the suffix is used with a sequential I/O
+    pattern, then the *<nr>* value specified will be **added** to the generated
+    offset for each I/O turning sequential I/O into sequential I/O with holes.
+    For instance, using `rw=write:4k` will skip 4k for every write. Also see
+    the [`rw_sequencer`](#cmdoption-arg-rw_sequencer) option. If this is used with [`verify`](#cmdoption-arg-verify)
+    then [`verify_header_seed`](#cmdoption-arg-verify_header_seed) will be disabled, unless its explicitly
+    enabled.
+
+rw\_sequencer=str[¶](#cmdoption-arg-rw_sequencer "Link to this definition")
+:   If an offset modifier is given by appending a number to the `rw=<str>`
+    line, then this option controls how that number modifies the I/O offset
+    being generated. Accepted values are:
+
+    > **sequential**
+    > :   Generate sequential offset.
+    >
+    > **identical**
+    > :   Generate the same offset.
+
+    `sequential` is only useful for random I/O, where fio would normally
+    generate a new random offset for every I/O. If you append e.g. 8 to
+    randread, i.e. `rw=randread:8` you would get a new random offset for
+    every 8 I/Os. The result would be a sequence of 8 sequential offsets
+    with a random starting point. However this behavior may change if a
+    sequential I/O reaches end of the file. As sequential I/O is already
+    sequential, setting `sequential` for that would not result in any
+    difference. `identical` behaves in a similar fashion, except it sends
+    the same offset 8 number of times before generating a new offset.
+
+    Example #1:
+
+    ```
+    rw=randread:8
+    rw_sequencer=sequential
+    bs=4k
+    ```
+
+    The generated sequence of offsets will look like this:
+    4k, 8k, 12k, 16k, 20k, 24k, 28k, 32k, 92k, 96k, 100k, 104k, 108k,
+    112k, 116k, 120k, 48k, 52k …
+
+    Example #2:
+
+    ```
+    rw=randread:8
+    rw_sequencer=identical
+    bs=4k
+    ```
+
+    The generated sequence of offsets will look like this:
+    4k, 4k, 4k, 4k, 4k, 4k, 4k, 4k, 92k, 92k, 92k, 92k, 92k, 92k, 92k, 92k,
+    48k, 48k, 48k …
+
+unified\_rw\_reporting=str[¶](#cmdoption-arg-unified_rw_reporting "Link to this definition")
+:   Fio normally reports statistics on a per data direction basis, meaning that
+    reads, writes, and trims are accounted and reported separately. This option
+    determines whether fio reports the results normally, summed together, or as
+    both options.
+    Accepted values are:
+
+    > **none**
+    > :   Normal statistics reporting.
+    >
+    > **mixed**
+    > :   Statistics are summed per data direction and reported together.
+    >
+    > **both**
+    > :   Statistics are reported normally, followed by the mixed statistics.
+    >
+    > **0**
+    > :   Backward-compatible alias for **none**.
+    >
+    > **1**
+    > :   Backward-compatible alias for **mixed**.
+    >
+    > **2**
+    > :   Alias for **both**.
+
+randrepeat=bool[¶](#cmdoption-arg-randrepeat "Link to this definition")
+:   Seed all random number generators in a predictable way so the pattern
+    is repeatable across runs. Default: true.
+
+allrandrepeat=bool[¶](#cmdoption-arg-allrandrepeat "Link to this definition")
+:   Alias for [`randrepeat`](#cmdoption-arg-randrepeat). Default: true.
+
+randseed=int[¶](#cmdoption-arg-randseed "Link to this definition")
+:   Seed the random number generators based on this seed value, to be able to
+    control what sequence of output is being generated. If not set, the random
+    sequence depends on the [`randrepeat`](#cmdoption-arg-randrepeat) setting.
+
+fallocate=str[¶](#cmdoption-arg-fallocate "Link to this definition")
+:   Whether pre-allocation is performed when laying down files.
+    Accepted values are:
+
+    > **none**
+    > :   Do not pre-allocate space.
+    >
+    > **native**
+    > :   Use a platform’s native pre-allocation call but fall back to
+    >     **none** behavior if it fails/is not implemented.
+    >
+    > **posix**
+    > :   Pre-allocate via *posix\_fallocate(3)*.
+    >
+    > **keep**
+    > :   Pre-allocate via *fallocate(2)* with
+    >     FALLOC\_FL\_KEEP\_SIZE set.
+    >
+    > **truncate**
+    > :   Extend file to final size via *ftruncate(2)*
+    >     instead of allocating.
+    >
+    > **0**
+    > :   Backward-compatible alias for **none**.
+    >
+    > **1**
+    > :   Backward-compatible alias for **posix**.
+
+    May not be available on all supported platforms. **keep** is only available
+    on Linux. If using ZFS on Solaris this cannot be set to **posix**
+    because ZFS doesn’t support pre-allocation. Default: **native** if any
+    pre-allocation methods except **truncate** are available, **none** if not.
+
+    Note that using **truncate** on Windows will interact surprisingly
+    with non-sequential write patterns. When writing to a file that has
+    been extended by setting the end-of-file information, Windows will
+    backfill the unwritten portion of the file up to that offset with
+    zeroes before issuing the new write. This means that a single small
+    write to the end of an extended file will stall until the entire
+    file has been filled with zeroes.
+
+fadvise\_hint=str[¶](#cmdoption-arg-fadvise_hint "Link to this definition")
+:   Use *posix\_fadvise(2)* or *posix\_fadvise(2)* to
+    advise the kernel on what I/O patterns are likely to be issued.
+    Accepted values are:
+
+    > **0**
+    > :   Backwards-compatible hint for “no hint”.
+    >
+    > **1**
+    > :   Backwards compatible hint for “advise with fio workload type”. This
+    >     uses **FADV\_RANDOM** for a random workload, and **FADV\_SEQUENTIAL**
+    >     for a sequential workload.
+    >
+    > **sequential**
+    > :   Advise using **FADV\_SEQUENTIAL**.
+    >
+    > **random**
+    > :   Advise using **FADV\_RANDOM**.
+    >
+    > **noreuse**
+    > :   Advise using **FADV\_NOREUSE**. This may be a no-op on older Linux
+    >     kernels. Since Linux 6.3, it provides a hint to the LRU algorithm.
+    >     See the *posix\_fadvise(2)* man page.
+
+write\_hint=str[¶](#cmdoption-arg-write_hint "Link to this definition")
+:   Use *fcntl(2)* to advise the kernel what life time to expect
+    from a write. Only supported on Linux, as of version 4.13. Accepted
+    values are:
+
+    > **none**
+    > :   No particular life time associated with this file.
+    >
+    > **short**
+    > :   Data written to this file has a short life time.
+    >
+    > **medium**
+    > :   Data written to this file has a medium life time.
+    >
+    > **long**
+    > :   Data written to this file has a long life time.
+    >
+    > **extreme**
+    > :   Data written to this file has a very long life time.
+
+    The values are all relative to each other, and no absolute meaning
+    should be associated with them.
+
+offset=int[¶](#cmdoption-arg-offset "Link to this definition")
+:   Start I/O at the provided offset in the file, given as either a fixed size in
+    bytes, zones or a percentage. If a percentage is given, the generated offset will be
+    aligned to the minimum `blocksize` or to the value of `offset_align` if
+    provided. Data before the given offset will not be touched. This
+    effectively caps the file size at real\_size - offset. Can be combined with
+    [`size`](#cmdoption-arg-size) to constrain the start and end range of the I/O workload.
+    A percentage can be specified by a number between 1 and 100 followed by ‘%’,
+    for example, `offset=20%` to specify 20%. In ZBD mode, value can be set as
+    number of zones using ‘z’.
+
+offset\_align=int[¶](#cmdoption-arg-offset_align "Link to this definition")
+:   If set to non-zero value, the byte offset generated by a percentage `offset`
+    is aligned upwards to this value. Defaults to 0 meaning that a percentage
+    offset is aligned to the minimum block size.
+
+offset\_increment=int[¶](#cmdoption-arg-offset_increment "Link to this definition")
+:   If this is provided, then the real offset becomes offset + offset\_increment
+    \* thread\_number, where the thread number is a counter that starts at 0 and
+    is incremented for each sub-job (i.e. when [`numjobs`](#cmdoption-arg-numjobs) option is
+    specified). This option is useful if there are several jobs which are
+    intended to operate on a file in parallel disjoint segments, with even
+    spacing between the starting points. Percentages can be used for this option.
+    If a percentage is given, the generated offset will be aligned to the minimum
+    `blocksize` or to the value of `offset_align` if provided. In ZBD mode, value can
+    also be set as number of zones using ‘z’.
+
+number\_ios=int[¶](#cmdoption-arg-number_ios "Link to this definition")
+:   Fio will normally perform I/Os until it has exhausted the size of the region
+    set by [`size`](#cmdoption-arg-size), or if it exhaust the allocated time (or hits an error
+    condition). With this setting, the range/size can be set independently of
+    the number of I/Os to perform. When fio reaches this number, it will exit
+    normally and report status. Note that this does not extend the amount of I/O
+    that will be done, it will only stop fio if this condition is met before
+    other end-of-job criteria.
+
+fsync=int[¶](#cmdoption-arg-fsync "Link to this definition")
+:   If writing to a file, issue an *fsync(2)* (or its equivalent) of
+    the dirty data for every number of blocks given. For example, if you give 32
+    as a parameter, fio will sync the file after every 32 writes issued. If fio is
+    using non-buffered I/O, we may not sync the file. The exception is the sg
+    I/O engine, which synchronizes the disk cache anyway. Defaults to 0, which
+    means fio does not periodically issue and wait for a sync to complete. Also
+    see [`end_fsync`](#cmdoption-arg-end_fsync), [`fsync_on_close`](#cmdoption-arg-fsync_on_close), and [`end_syncfs`](#cmdoption-arg-end_syncfs).
+
+fdatasync=int[¶](#cmdoption-arg-fdatasync "Link to this definition")
+:   Like [`fsync`](#cmdoption-arg-fsync) but uses *fdatasync(2)* to only sync data and
+    not metadata blocks. In Windows, DragonFlyBSD or OSX there is no
+    *fdatasync(2)* so this falls back to using *fsync(2)*.
+    Defaults to 0, which means fio does not periodically issue and wait for a
+    data-only sync to complete.
+
+write\_barrier=int[¶](#cmdoption-arg-write_barrier "Link to this definition")
+:   Make every N-th write a barrier write.
+
+sync\_file\_range=str:int[¶](#cmdoption-arg-sync_file_range "Link to this definition")
+:   Use *sync\_file\_range(2)* for every int number of write
+    operations. Fio will track range of writes that have happened since the last
+    *sync\_file\_range(2)* call. str can currently be one or more of:
+
+    > **wait\_before**
+    > :   SYNC\_FILE\_RANGE\_WAIT\_BEFORE
+    >
+    > **write**
+    > :   SYNC\_FILE\_RANGE\_WRITE
+    >
+    > **wait\_after**
+    > :   SYNC\_FILE\_RANGE\_WAIT\_AFTER
+
+    So if you do `sync_file_range=wait_before,write:8`, fio would use
+    `SYNC_FILE_RANGE_WAIT_BEFORE | SYNC_FILE_RANGE_WRITE` for every 8
+    writes. Also see the *sync\_file\_range(2)* man page. This option is
+    Linux specific.
+
+overwrite=bool[¶](#cmdoption-arg-overwrite "Link to this definition")
+:   If true, writes to a file will always overwrite existing data. If the file
+    doesn’t already exist, it will be created before the write phase begins. If
+    the file exists and is large enough for the specified write phase, nothing
+    will be done. Default: false.
+
+end\_fsync=bool[¶](#cmdoption-arg-end_fsync "Link to this definition")
+:   If true, *fsync(2)* file contents when a write stage has completed.
+    Default: false.
+
+end\_syncfs=bool[¶](#cmdoption-arg-end_syncfs "Link to this definition")
+:   Equivalent to [`end_fsync`](#cmdoption-arg-end_fsync) but instead of executing
+    *fsync(2)* for each file of a write stage, executes
+    *syncfs(2)* to synchronize all written files with a single
+    system call when a write stage has completed. Default: false.
+
+fsync\_on\_close=bool[¶](#cmdoption-arg-fsync_on_close "Link to this definition")
+:   If true, fio will *fsync(2)* a dirty file on close. This differs
+    from [`end_fsync`](#cmdoption-arg-end_fsync) in that it will happen on every file close, not
+    just at the end of the job. Default: false.
+
+rwmixread=int[¶](#cmdoption-arg-rwmixread "Link to this definition")
+:   Percentage of a mixed workload that should be reads. Default: 50.
+
+rwmixwrite=int[¶](#cmdoption-arg-rwmixwrite "Link to this definition")
+:   Percentage of a mixed workload that should be writes. If both
+    [`rwmixread`](#cmdoption-arg-rwmixread) and [`rwmixwrite`](#cmdoption-arg-rwmixwrite) is given and the values do not
+    add up to 100%, the latter of the two will be used to override the
+    first. This may interfere with a given rate setting, if fio is asked to
+    limit reads or writes to a certain rate. If that is the case, then the
+    distribution may be skewed. Default: 50.
+
+random\_distribution=str:float[:float][,str:float][,str:float][¶](#cmdoption-arg-random_distribution "Link to this definition")
+:   By default, fio will use a completely uniform random distribution when asked
+    to perform random I/O. Sometimes it is useful to skew the distribution in
+    specific ways, ensuring that some parts of the data is more hot than others.
+    fio includes the following distribution models:
+
+    > **random**
+    > :   Uniform random distribution
+    >
+    > **zipf**
+    > :   Zipf distribution
+    >
+    > **pareto**
+    > :   Pareto distribution
+    >
+    > **normal**
+    > :   Normal (Gaussian) distribution
+    >
+    > **zoned**
+    > :   Zoned random distribution
+    >
+    > **zoned\_abs**
+    > :   Zone absolute random distribution
+    >
+    > **sequence**
+    > :   Fixed deterministic sequence of block indices
+
+    When using a **zipf** or **pareto** distribution, an input value is also
+    needed to define the access pattern. For **zipf**, this is the Zipf
+    theta. For **pareto**, it’s the Pareto power. Fio includes a test
+    program, **fio-genzipf**, that can be used visualize what the given input
+    values will yield in terms of hit rates. If you wanted to use **zipf** with
+    a theta of 1.2, you would use `random_distribution=zipf:1.2` as the
+    option. If a non-uniform model is used, fio will disable use of the random
+    map. For the **normal** distribution, a normal (Gaussian) deviation is
+    supplied as a value between 0 and 100.
+
+    The second, optional float is allowed for **pareto**, **zipf** and **normal** distributions.
+    It allows one to set base of distribution in non-default place, giving more control
+    over most probable outcome. This value is in range [0-1] which maps linearly to
+    range of possible random values.
+    Defaults are: random for **pareto** and **zipf**, and 0.5 for **normal**.
+    If you wanted to use **zipf** with a theta of 1.2 centered on 1/4 of allowed value range,
+    you would use `random_distribution=zipf:1.2:0.25`.
+
+    For a **zoned** distribution, fio supports specifying percentages of I/O
+    access that should fall within what range of the file or device. For
+    example, given a criteria of:
+
+    > * 60% of accesses should be to the first 10%
+    > * 30% of accesses should be to the next 20%
+    > * 8% of accesses should be to the next 30%
+    > * 2% of accesses should be to the next 40%
+
+    we can define that through zoning of the random accesses. For the above
+    example, the user would do:
+
+    ```
+    random_distribution=zoned:60/10:30/20:8/30:2/40
+    ```
+
+    A **zoned\_abs** distribution works exactly like the **zoned**, except
+    that it takes absolute sizes. For example, let’s say you wanted to
+    define access according to the following criteria:
+
+    > * 60% of accesses should be to the first 20G
+    > * 30% of accesses should be to the next 100G
+    > * 10% of accesses should be to the next 500G
+
+    we can define an absolute zoning distribution with:
+
+    > random\_distribution=zoned\_abs=60/20G:30/100G:10/500g
+
+    For both **zoned** and **zoned\_abs**, fio supports defining up to
+    256 separate zones.
+
+    Similarly to how [`bssplit`](#cmdoption-arg-bssplit) works for setting ranges and
+    percentages of block sizes. Like [`bssplit`](#cmdoption-arg-bssplit), it’s possible to
+    specify separate zones for reads, writes, and trims. If just one set
+    is given, it’ll apply to all of them. This goes for both **zoned**
+    **zoned\_abs** distributions.
+
+    For a **sequence** distribution, fio supports specifying a fixed deterministic
+    sequence of block indices to be accessed. For example, to access block indices
+    2, 0, and 1 in that exact order, the user would do:
+
+    ```
+    random_distribution=sequence:2,0,1
+    ```
+
+    This repeats the block access pattern indefinitely. Up to 64 sequence
+    elements are supported.
+
+random\_sequence\_stride=bool[¶](#cmdoption-arg-random_sequence_stride "Link to this definition")
+:   Controls the progression behavior of the `sequence` random distribution mode.
+    If set to false (0, default), the sequence is interpreted as fixed, absolute block
+    indices and repeated exactly. If set to true (1), the sequence is interpreted as a
+    relative pattern within a moving block group. After completing each full cycle of
+    the sequence, the base block index automatically advances by the sequence length,
+    creating a progressing “Strided Block Group” pattern across the file.
+
+percentage\_random=int[,int][,int][¶](#cmdoption-arg-percentage_random "Link to this definition")
+:   For a random workload, set how big a percentage should be random. This
+    defaults to 100%, in which case the workload is fully random. It can be set
+    from anywhere from 0 to 100. Setting it to 0 would make the workload fully
+    sequential. Any setting in between will result in a random mix of sequential
+    and random I/O, at the given percentages. Comma-separated values may be
+    specified for reads, writes, and trims as described in [`blocksize`](#cmdoption-arg-blocksize).
+
+norandommap[¶](#cmdoption-arg-norandommap "Link to this definition")
+:   Normally fio will cover every block of the file when doing random I/O. If
+    this option is given, fio will just get a new random offset without looking
+    at past I/O history. This means that some blocks may not be read or written,
+    and that some blocks may be read/written more than once. If this option is
+    used with [`verify`](#cmdoption-arg-verify) then [`verify_header_seed`](#cmdoption-arg-verify_header_seed) will be
+    disabled. If this option is used with [`verify`](#cmdoption-arg-verify) and multiple blocksizes
+    (via [`bsrange`](#cmdoption-arg-blocksize_range)), only intact blocks are verified, i.e.,
+    partially-overwritten blocks are ignored. With an async I/O engine and an I/O
+    depth > 1, header write sequence number verification will be disabled. See
+    [`verify_write_sequence`](#cmdoption-arg-verify_write_sequence).
+
+softrandommap=bool[¶](#cmdoption-arg-softrandommap "Link to this definition")
+:   See [`norandommap`](#cmdoption-arg-norandommap). If fio runs with the random block map enabled and
+    it fails to allocate the map, if this option is set it will continue without
+    a random block map. As coverage will not be as complete as with random maps,
+    this option is disabled by default.
+
+random\_generator=str[¶](#cmdoption-arg-random_generator "Link to this definition")
+:   Fio supports the following engines for generating I/O offsets for random I/O:
+
+    > **tausworthe**
+    > :   Strong 2^88 cycle random number generator.
+    >
+    > **lfsr**
+    > :   Linear feedback shift register generator.
+    >
+    > **tausworthe64**
+    > :   Strong 64-bit 2^258 cycle random number generator.
+
+    **tausworthe** is a strong random number generator, but it requires tracking
+    on the side if we want to ensure that blocks are only read or written
+    once. **lfsr** guarantees that we never generate the same offset twice, and
+    it’s also less computationally expensive. It’s not a true random generator,
+    however, though for I/O purposes it’s typically good enough. **lfsr** only
+    works with single block sizes, not with workloads that use multiple block
+    sizes. If used with such a workload, fio may read or write some blocks
+    multiple times. The default value is **tausworthe**, unless the required
+    space exceeds 2^32 blocks. If it does, then **tausworthe64** is
+    selected automatically.
+
+sprandom=bool[¶](#cmdoption-arg-sprandom "Link to this definition")
+:   SPRandom is a method designed to rapidly precondition SSDs for
+    steady-state random write workloads. It divides the device into
+    equally sized regions and writes the device’s entire physical capacity
+    once, selecting offsets so that the regions have a distribution of
+    invalid blocks matching the distribution that occurs at steady state.
+
+    Default: false.
+
+    It uses **random\_generator=lfsr**, which fio will set by default.
+    Selecting any other random generator will result in an error.
+
+spr\_num\_regions=int[¶](#cmdoption-arg-spr_num_regions "Link to this definition")
+:   See [`sprandom`](#cmdoption-arg-sprandom). Specifies the number of regions used for SPRandom.
+    For large devices it is better to use more regions, to increase precision
+    and reduce memory allocation. The allocation is proportional to the region size.
+
+    Default=100
+
+spr\_op=float[¶](#cmdoption-arg-spr_op "Link to this definition")
+:   See [`sprandom`](#cmdoption-arg-sprandom). Over-provisioning ratio in the range (0, 1),
+    as specified by the SSD manufacturer.
+
+    Default=0.15
+
+spr\_cs=int[¶](#cmdoption-arg-spr_cs "Link to this definition")
+:   See [`sprandom`](#cmdoption-arg-sprandom). Define a cache size in bytes, as specified
+    :   by the SSD manufacturer. When this is non-zero, delay invalidating
+        :   writes by one region in order to make sure that all original
+            writes from a region are flushed from cache before the later
+            invalidating writes are sent to the device. This deferral
+            prevents the original write and the later invalidating write
+            from being present in the device’s cache at the same time which
+            would allow the device to ignore the original write and prevent
+            sprandom from achieving its target validity fractions. The
+            actual cache size is used to ensure that the number of regions
+            is not set so large that the size of a region is smaller than
+            the device cache.
+
+    Default=0
+
+### 1.13.7. Block size[¶](#block-size "Link to this heading")
+
+blocksize=int[,int][,int], bs=int[,int][,int][¶](#cmdoption-arg-blocksize "Link to this definition")
+:   The block size in bytes used for I/O units. Default: 4096. A single value
+    applies to reads, writes, and trims. Comma-separated values may be
+    specified for reads, writes, and trims. A value not terminated in a comma
+    applies to subsequent types.
+
+    Examples:
+
+    > **bs=256k**
+    > :   means 256k for reads, writes and trims.
+    >
+    > **bs=8k,32k**
+    > :   means 8k for reads, 32k for writes and trims.
+    >
+    > **bs=8k,32k,**
+    > :   means 8k for reads, 32k for writes, and default for trims.
+    >
+    > **bs=,8k**
+    > :   means default for reads, 8k for writes and trims.
+    >
+    > **bs=,8k,**
+    > :   means default for reads, 8k for writes, and default for trims.
+
+blocksize\_range=irange[,irange][,irange], bsrange=irange[,irange][,irange][¶](#cmdoption-arg-blocksize_range "Link to this definition")
+:   A range of block sizes in bytes for I/O units. The issued I/O unit will
+    always be a multiple of the minimum size, unless
+    [`blocksize_unaligned`](#cmdoption-arg-blocksize_unaligned) is set.
+
+    Comma-separated ranges may be specified for reads, writes, and trims as
+    described in [`blocksize`](#cmdoption-arg-blocksize).
+
+    Example: `bsrange=1k-4k,2k-8k` also the ‘:’ delimiter `bsrange=1k:4k,2k:8k`.
+
+bssplit=str[,str][,str][¶](#cmdoption-arg-bssplit "Link to this definition")
+:   Sometimes you want even finer grained control of the block sizes
+    issued, not just an even split between them. This option allows you to
+    weight various block sizes, so that you are able to define a specific
+    amount of block sizes issued. The format for this option is:
+
+    ```
+    bssplit=blocksize/percentage:blocksize/percentage
+    ```
+
+    for as many block sizes as needed. So if you want to define a workload
+    that has 50% 64k blocks, 10% 4k blocks, and 40% 32k blocks, you would
+    write:
+
+    ```
+    bssplit=4k/10:64k/50:32k/40
+    ```
+
+    Ordering does not matter. If the percentage is left blank, fio will
+    fill in the remaining values evenly. So a bssplit option like this one:
+
+    ```
+    bssplit=4k/50:1k/:32k/
+    ```
+
+    would have 50% 4k ios, and 25% 1k and 32k ios. The percentages always
+    add up to 100, if bssplit is given a range that adds up to more, it
+    will error out.
+
+    Comma-separated values may be specified for reads, writes, and trims as
+    described in [`blocksize`](#cmdoption-arg-blocksize).
+
+    If you want a workload that has 50% 2k reads and 50% 4k reads, while
+    having 90% 4k writes and 10% 8k writes, you would specify:
+
+    ```
+    bssplit=2k/50:4k/50,4k/90:8k/10
+    ```
+
+    Fio supports defining up to 64 different weights for each data
+    direction.
+
+blocksize\_unaligned, bs\_unaligned[¶](#cmdoption-arg-blocksize_unaligned "Link to this definition")
+:   If set, fio will issue I/O units with any size within
+    [`blocksize_range`](#cmdoption-arg-blocksize_range), not just multiples of the minimum size. This
+    typically won’t work with direct I/O, as that normally requires sector
+    alignment.
+
+bs\_is\_seq\_rand=bool[¶](#cmdoption-arg-bs_is_seq_rand "Link to this definition")
+:   If this option is set, fio will use the normal read,write blocksize settings
+    as sequential,random blocksize settings instead. Any random read or write
+    will use the WRITE blocksize settings, and any sequential read or write will
+    use the READ blocksize settings.
+
+blockalign=int[,int][,int], ba=int[,int][,int][¶](#cmdoption-arg-blockalign "Link to this definition")
+:   Boundary to which fio will align random I/O units. Default:
+    [`blocksize`](#cmdoption-arg-blocksize). Minimum alignment is typically 512b for using direct
+    I/O, though it usually depends on the hardware block size. This option is
+    mutually exclusive with using a random map for files, so it will turn off
+    that option. Comma-separated values may be specified for reads, writes, and
+    trims as described in [`blocksize`](#cmdoption-arg-blocksize).
+
+### 1.13.8. Buffers and memory[¶](#buffers-and-memory "Link to this heading")
+
+zero\_buffers[¶](#cmdoption-arg-zero_buffers "Link to this definition")
+:   Initialize buffers with all zeros. Default: fill buffers with random data.
+
+refill\_buffers[¶](#cmdoption-arg-refill_buffers "Link to this definition")
+:   If this option is given, fio will refill the I/O buffers on every
+    submit. Only makes sense if [`zero_buffers`](#cmdoption-arg-zero_buffers) isn’t specified,
+    naturally. Defaults to being unset i.e., the buffer is only filled at
+    init time and the data in it is reused when possible but if any of
+    [`verify`](#cmdoption-arg-verify), [`buffer_compress_percentage`](#cmdoption-arg-buffer_compress_percentage) or
+    [`dedupe_percentage`](#cmdoption-arg-dedupe_percentage) are enabled then refill\_buffers is also
+    automatically enabled.
+
+scramble\_buffers=bool[¶](#cmdoption-arg-scramble_buffers "Link to this definition")
+:   If [`refill_buffers`](#cmdoption-arg-refill_buffers) is too costly and the target is using data
+    deduplication, then setting this option will slightly modify the I/O buffer
+    contents to defeat normal de-dupe attempts. This is not enough to defeat
+    more clever block compression attempts, but it will stop naive dedupe of
+    blocks. Default: true.
+
+buffer\_compress\_percentage=int[¶](#cmdoption-arg-buffer_compress_percentage "Link to this definition")
+:   If this is set, then fio will attempt to provide I/O buffer content
+    (on WRITEs) that compresses to the specified level. Fio does this by
+    providing a mix of random data followed by fixed pattern data. The
+    fixed pattern is either zeros, or the pattern specified by
+    [`buffer_pattern`](#cmdoption-arg-buffer_pattern). If the buffer\_pattern option is used, it
+    might skew the compression ratio slightly. Setting
+    buffer\_compress\_percentage to a value other than 100 will also
+    enable [`refill_buffers`](#cmdoption-arg-refill_buffers) in order to reduce the likelihood that
+    adjacent blocks are so similar that they over compress when seen
+    together. See [`buffer_compress_chunk`](#cmdoption-arg-buffer_compress_chunk) for how to set a finer or
+    coarser granularity for the random/fixed data region. Defaults to unset
+    i.e., buffer data will not adhere to any compression level.
+
+buffer\_compress\_chunk=int[¶](#cmdoption-arg-buffer_compress_chunk "Link to this definition")
+:   This setting allows fio to manage how big the random/fixed data region
+    is when using [`buffer_compress_percentage`](#cmdoption-arg-buffer_compress_percentage). When
+    buffer\_compress\_chunk is set to some non-zero value smaller than the
+    block size, fio can repeat the random/fixed region throughout the I/O
+    buffer at the specified interval (which particularly useful when
+    bigger block sizes are used for a job). When set to 0, fio will use a
+    chunk size that matches the block size resulting in a single
+    random/fixed region within the I/O buffer. Defaults to 512. When the
+    unit is omitted, the value is interpreted in bytes.
+
+buffer\_pattern=str[¶](#cmdoption-arg-buffer_pattern "Link to this definition")
+:   If set, fio will fill the I/O buffers with this pattern or with the contents
+    of a file. If not set, the contents of I/O buffers are defined by the other
+    options related to buffer contents. The setting can be any pattern of bytes,
+    and can be prefixed with 0x for hex values. It may also be a string, where
+    the string must then be wrapped with `""`. Or it may also be a filename,
+    where the filename must be wrapped with `''` in which case the file is
+    opened and read. Note that not all the file contents will be read if that
+    would cause the buffers to overflow. So, for example:
+
+    ```
+    buffer_pattern='filename'
+    ```
+
+    or:
+
+    ```
+    buffer_pattern="abcd"
+    ```
+
+    or:
+
+    ```
+    buffer_pattern=-12
+    ```
+
+    or:
+
+    ```
+    buffer_pattern=0xdeadface
+    ```
+
+    Also you can combine everything together in any order:
+
+    ```
+    buffer_pattern=0xdeadface"abcd"-12'filename'
+    ```
+
+dedupe\_percentage=int[¶](#cmdoption-arg-dedupe_percentage "Link to this definition")
+:   If set, fio will generate this percentage of identical buffers when
+    writing. These buffers will be naturally dedupable. The contents of the
+    buffers depend on what other buffer compression settings have been set. It’s
+    possible to have the individual buffers either fully compressible, or not at
+    all – this option only controls the distribution of unique buffers. Setting
+    this option will also enable [`refill_buffers`](#cmdoption-arg-refill_buffers) to prevent every buffer
+    being identical.
+
+dedupe\_mode=str[¶](#cmdoption-arg-dedupe_mode "Link to this definition")
+:   If `dedupe_percentage=<int>` is given, then this option controls how fio
+    generates the dedupe buffers.
+
+    > **repeat**
+    > :   Generate dedupe buffers by repeating previous writes
+    >
+    > **working\_set**
+    > :   Generate dedupe buffers from working set
+
+    `repeat` is the default option for fio. Dedupe buffers are generated
+    by repeating previous unique write.
+
+    `working_set` is a more realistic workload.
+    With `working_set`, `dedupe_working_set_percentage=<int>` should be provided.
+    Given that, fio will use the initial unique write buffers as its working set.
+    Upon deciding to dedupe, fio will randomly choose a buffer from the working set.
+    Note that by using `working_set` the dedupe percentage will converge
+    to the desired over time while `repeat` maintains the desired percentage
+    throughout the job.
+
+dedupe\_working\_set\_percentage=int[¶](#cmdoption-arg-dedupe_working_set_percentage "Link to this definition")
+:   If `dedupe_mode=<str>` is set to `working_set`, then this controls
+    the percentage of size of the file or device used as the buffers
+    fio will choose to generate the dedupe buffers from
+
+    Note that size needs to be explicitly provided and only 1 file per
+    job is supported
+
+dedupe\_global=bool[¶](#cmdoption-arg-dedupe_global "Link to this definition")
+:   This controls whether the deduplication buffers will be shared amongst
+    all jobs that have this option set. The buffers are spread evenly between
+    participating jobs.
+
+invalidate=bool[¶](#cmdoption-arg-invalidate "Link to this definition")
+:   Invalidate the buffer/page cache parts of the files to be used prior to
+    starting I/O if the platform and file type support it. Defaults to true.
+    This will be ignored if [`pre_read`](#cmdoption-arg-pre_read) is also specified for the
+    same job.
+
+sync=str[¶](#cmdoption-arg-sync "Link to this definition")
+:   Whether, and what type, of synchronous I/O to use for writes. The allowed
+    values are:
+
+    > **none**
+    > :   Do not use synchronous IO, the default.
+    >
+    > **0**
+    > :   Same as **none**.
+    >
+    > **sync**
+    > :   Use synchronous file IO. For the majority of I/O engines,
+    >     this means using O\_SYNC.
+    >
+    > **1**
+    > :   Same as **sync**.
+    >
+    > **dsync**
+    > :   Use synchronous data IO. For the majority of I/O engines,
+    >     this means using O\_DSYNC.
+
+iomem=str, mem=str[¶](#cmdoption-arg-iomem "Link to this definition")
+:   Fio can use various types of memory as the I/O unit buffer. The allowed
+    values are:
+
+    > **malloc**
+    > :   Use memory from *malloc(3)* as the buffers. Default memory
+    >     type.
+    >
+    > **shm**
+    > :   Use shared memory as the buffers. Allocated through
+    >     *shmget(2)*.
+    >
+    > **shmhuge**
+    > :   Same as shm, but use huge pages as backing.
+    >
+    > **mmap**
+    > :   Use *mmap(2)* to allocate buffers. May either be anonymous memory, or can
+    >     be file backed if a filename is given after the option. The format
+    >     is mem=mmap:/path/to/file.
+    >
+    > **mmaphuge**
+    > :   Use a memory mapped huge file as the buffer backing. Append filename
+    >     after mmaphuge, ala mem=mmaphuge:/hugetlbfs/file.
+    >
+    > **mmapshared**
+    > :   Same as mmap, but use a MMAP\_SHARED mapping.
+    >
+    > **cudamalloc**
+    > :   Use GPU memory as the buffers for GPUDirect RDMA benchmark.
+    >     The [`ioengine`](#cmdoption-arg-ioengine) must be rdma.
+
+    The area allocated is a function of the maximum allowed bs size for the job,
+    multiplied by the I/O depth given. Note that for **shmhuge** and
+    **mmaphuge** to work, the system must have free huge pages allocated. This
+    can normally be checked and set by reading/writing
+    `/proc/sys/vm/nr_hugepages` on a Linux system. Fio assumes a huge page
+    is 2 or 4MiB in size depending on the platform. So to calculate the
+    number of huge pages you need for a given job file, add up the I/O
+    depth of all jobs (normally one unless [`iodepth`](#cmdoption-arg-iodepth) is used) and
+    multiply by the maximum bs set. Then divide that number by the huge
+    page size. You can see the size of the huge pages in
+    `/proc/meminfo`. If no huge pages are allocated by having a
+    non-zero number in nr\_hugepages, using **mmaphuge** or **shmhuge**
+    will fail. Also see [`hugepage-size`](#cmdoption-arg-hugepage-size).
+
+    **mmaphuge** also needs to have hugetlbfs mounted and the file location
+    should point there. So if it’s mounted in `/huge`, you would use
+    mem=mmaphuge:/huge/somefile.
+
+iomem\_align=int, mem\_align=int[¶](#cmdoption-arg-iomem_align "Link to this definition")
+:   This indicates the memory alignment of the I/O memory buffers. Note that
+    the given alignment is applied to the first I/O unit buffer, if using
+    [`iodepth`](#cmdoption-arg-iodepth) the alignment of the following buffers are given by the
+    [`bs`](#cmdoption-arg-blocksize) used. In other words, if using a [`bs`](#cmdoption-arg-blocksize) that is a
+    multiple of the page sized in the system, all buffers will be aligned to
+    this value. If using a [`bs`](#cmdoption-arg-blocksize) that is not page aligned, the alignment
+    of subsequent I/O memory buffers is the sum of the [`iomem_align`](#cmdoption-arg-iomem_align) and
+    [`bs`](#cmdoption-arg-blocksize) used.
+
+hugepage-size=int[¶](#cmdoption-arg-hugepage-size "Link to this definition")
+:   Defines the size of a huge page. Must at least be equal to the system
+    setting, see `/proc/meminfo` and
+    `/sys/kernel/mm/hugepages/`. Defaults to 2 or 4MiB depending on
+    the platform. Should probably always be a multiple of megabytes, so
+    using `hugepage-size=Xm` is the preferred way to set this to avoid
+    setting a non-pow-2 bad value.
+
+lockmem=int[¶](#cmdoption-arg-lockmem "Link to this definition")
+:   Pin the specified amount of memory with *mlock(2)*. Can be used to
+    simulate a smaller amount of memory. The amount specified is per worker.
+
+### 1.13.9. I/O size[¶](#i-o-size "Link to this heading")
+
+size=int[¶](#cmdoption-arg-size "Link to this definition")
+:   The total size of file I/O for each thread of this job. Fio will run until
+    this many bytes has been transferred, unless runtime is altered by other means
+    such as (1) [`runtime`](#cmdoption-arg-runtime), (2) [`io_size`](#cmdoption-arg-io_size) (3) [`number_ios`](#cmdoption-arg-number_ios),
+    (4) gaps/holes while doing I/O’s such as `rw=read:16K`, or (5) sequential
+    I/O reaching end of the file which is possible when [`percentage_random`](#cmdoption-arg-percentage_random)
+    is less than 100.
+    Fio will divide this size between the available files determined by options
+    such as [`nrfiles`](#cmdoption-arg-nrfiles), [`filename`](#cmdoption-arg-filename), unless [`filesize`](#cmdoption-arg-filesize) is
+    specified by the job. If the result of division happens to be 0, the size is
+    set to the physical size of the given files or devices if they exist.
+    If this option is not specified, fio will use the full size of the given
+    files or devices. If the files do not exist, size must be given. It is also
+    possible to give size as a percentage between 1 and 100. If `size=20%` is
+    given, fio will use 20% of the full size of the given files or devices.
+    In ZBD mode, value can also be set as number of zones using ‘z’.
+    Can be combined with [`offset`](#cmdoption-arg-offset) to constrain the start and end range
+    that I/O will be done within.
+
+io\_size=int, io\_limit=int[¶](#cmdoption-arg-io_size "Link to this definition")
+:   Normally fio operates within the region set by [`size`](#cmdoption-arg-size), which means
+    that the [`size`](#cmdoption-arg-size) option sets both the region and size of I/O to be
+    performed. Sometimes that is not what you want. With this option, it is
+    possible to define just the amount of I/O that fio should do. For instance,
+    if [`size`](#cmdoption-arg-size) is set to 20GiB and [`io_size`](#cmdoption-arg-io_size) is set to 5GiB, fio
+    will perform I/O within the first 20GiB but exit when 5GiB have been
+    done. The opposite is also possible – if [`size`](#cmdoption-arg-size) is set to 20GiB,
+    and [`io_size`](#cmdoption-arg-io_size) is set to 40GiB, then fio will do 40GiB of I/O within
+    the 0..20GiB region.
+
+filesize=irange(int)[¶](#cmdoption-arg-filesize "Link to this definition")
+:   Individual file sizes. May be a range, in which case fio will select sizes for
+    files at random within the given range. If not given, each created file is the
+    same size. This option overrides [`size`](#cmdoption-arg-size) in terms of file size, i.e. if
+    [`filesize`](#cmdoption-arg-filesize) is specified then [`size`](#cmdoption-arg-size) becomes merely the default
+    for [`io_size`](#cmdoption-arg-io_size) and has no effect at all if [`io_size`](#cmdoption-arg-io_size) is set
+    explicitly.
+
+file\_append=bool[¶](#cmdoption-arg-file_append "Link to this definition")
+:   Perform I/O after the end of the file. Normally fio will operate within the
+    size of a file. If this option is set,
+
+<error>Content truncated. Call the fetch tool with a start_index of 100000 to get more content.</error>

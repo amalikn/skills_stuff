@@ -1,0 +1,156 @@
+Contents of https://wiki.debian.org/PeriodicUpdates:
+[Translation(s)](/DebianWiki/EditorGuide#translation): English - [Français](/fr/PeriodicUpdates)
+
+---
+
+Automatically install and update new versions of packages with [unattended-upgrades](https://packages.debian.org/unattended-upgrades "DebianPkg").
+
+Contents
+
+1. [Install unattended-upgrades](#Install_unattended-upgrades)
+2. [Configure unattended-upgrades](#Configure_unattended-upgrades)
+   1. [Get more information about changes](#Get_more_information_about_changes)
+   2. [Manual run (for debugging)](#Manual_run_.28for_debugging.29)
+   3. [Modify the schedule via systemd](#Modify_the_schedule_via_systemd)
+   4. [Laptop considerations](#Laptop_considerations)
+3. [Alternatives](#Alternatives)
+4. [See Also](#See_Also)
+
+## Install unattended-upgrades
+
+Debian software is stored in packages, which get new versions from time to time. Most Debian users prefer that to be automated at least some of the time (e.g. major security updates) and manual at least some of the time (e.g. whole new versions of Debian).
+
+Most versions of Debian install [unattended-upgrades](https://packages.debian.org/unattended-upgrades "DebianPkg") with fairly conservative settings, but your system might not have installed the package at all, or might have installed it but disabled it altogether.
+
+To ensure unattended-upgrades is installed, just try to install it again (see [HowToInstallPackages](/HowToInstallPackages)). The process will either succeed or complain it's already been done.
+
+To check unattended-upgrades is enabled, run this in a [terminal](/TerminalEmulator):
+
+```
+sudo dpkg-reconfigure unattended-upgrades
+```
+
+That should ask whether you want to automatically download and install stable updates (the answer is yes).
+
+## Configure unattended-upgrades
+
+1. copy /etc/apt/apt.conf.d/50unattended-upgrades to /etc/apt/apt.conf.d/52unattended-upgrades-local
+
+   * for an explanation, see /usr/share/doc/unattended-upgrades/README.md.gz
+2. open your favourite [text editor](/TextEditor) as [root](/root)
+3. edit /etc/apt/apt.conf.d/52unattended-upgrades-local
+4. find the Unattended-Upgrade::Origins-Pattern section
+5. optionally uncomment (remove the leading // from) any lines you want to auto-update
+
+   * the default configuration auto-installs security updates, but not new features
+6. optionally uncomment and set the Unattended-Upgrade::Mail line
+
+   * may require you to configure a local [MTA](/MTA)
+
+For advanced configuration options, see the comments at the top of /usr/lib/apt/apt.systemd.daily.
+
+## Get more information about changes
+
+If you plan to use unattended-upgrades, you'll want a way to be notified when something goes wrong. Consider installing [apt-listchanges](https://packages.debian.org/apt-listchanges "DebianPkg") and configuring it to send you emails about updates. Or if you suspect something's already happened, check /var/log/dpkg.log and the files in /var/log/unattended-upgrades/.
+
+To configure apt-listchanges, edit /etc/apt/listchanges.conf in your favourite [text editor](/TextEditor) as [root](/root). Here's an example file:
+
+```
+[apt]
+frontend=pager
+email_address=root
+confirm=0
+save_seen=/var/lib/apt/listchanges.db
+which=both
+```
+
+## Manual run (for debugging)
+
+To debug unattended-upgrades, run it manually:
+
+```
+sudo unattended-upgrade -d
+```
+
+## Modify the schedule via systemd
+
+Debian uses the following systemd [timers](https://manpages.debian.org/man/systemd.timer.5 "DebianMan") to run periodic APT maintenance tasks:
+
+* **downloads**: /lib/systemd/system/apt-daily.timer
+* **upgrades**: /lib/systemd/system/apt-daily-upgrade.timer
+
+If you want to more detailed configuration than unattended-upgrades provides, you can use [systemctl edit](https://www.freedesktop.org/software/systemd/man/latest/systemctl.html#edit%20UNIT%E2%80%A6):
+
+```
+sudo systemctl edit apt-daily.timer
+
+
+sudo systemctl status apt-daily.timer
+
+
+sudo systemctl restart apt-daily.timer
+
+
+sudo systemctl edit apt-daily-upgrade.timer
+
+
+sudo systemctl status apt-daily-upgrade.timer
+
+
+sudo systemctl restart apt-daily-upgrade.timer
+```
+
+For example, to set the **download time** to 1AM, edit apt-daily.timer to say:
+
+```
+[Timer]
+
+OnCalendar=
+
+OnCalendar=01:00
+```
+
+![{i}](/htdocs/debwiki/img/icon-info.png "{i}") Before tools like RandomizedDelaySec were introduced, servers would get massive traffic spikes for a few seconds a day, then relative silence the rest of the time. One or two people disabling it won't make much difference, but please consider setting the delay to at least 1h.
+
+## Laptop considerations
+
+If the computer running unattended-upgrades is a laptop, this might have two consequences : delayed updates, updates not applied if running on battery.
+
+The delayed updates should not be a problem : since apt-daily-upgrade.service is run with a systemd timer, systemd will properly run services which missed the exact time trigger, as soon as your system wakes up.
+
+As a default unattended-upgrades will refuse to run if your computer is not running on AC power. APT/Dpkg is a non-atomic packaging system and could leave your computer in a non-functionnal or non-bootable state if abruptly interrupted during an upgrade. However every time you wake up your laptop, if you're not plugged on AC, the planned upgrade is skipped and you're not notified about it. You may thus experience a much larger delay for applying upgrades than the one you configured.
+
+If you are willing to take the risk, you can force upgrades without AC power :
+
+* In /etc/apt/apt.conf.d/50unattended-upgrades add the directive  Unattended-Upgrade::OnlyOnACPower "false";
+* Override the upgrade service with systemctl edit apt-daily-upgrade by adding this :
+
+```
+[Unit]
+ConditionACPower=
+```
+
+## Alternatives
+
+There are alternative ways to achieve periodic or automatic updates besides [unattended-upgrades](https://packages.debian.org/unattended-upgrades "DebianPkg"). The following methods should not be used at the same time.
+
+[cron-apt](https://packages.debian.org/cron-apt "DebianPkg") can be used to do this job.
+
+[GNOME](/GNOME) users can configure automatic updates in the "GNOME Software" application. Navigate to Activities > search for and select Software; within the app select "Preferences" to enable and schedule automatic updates.
+
+**older Debian versions**
+
+Prior to [DebianTrixie](/DebianTrixie), [software-properties-gtk](https://packages.debian.org/software-properties-gtk "DebianPkg") can be used. Once installed, Go to Applications menu > Settings > Software and updates > Updates to configure your update schedule.
+
+## See Also
+
+* /usr/share/doc/unattended-upgrades/README.md.gz
+* /usr/share/doc/apt/examples/configure-index
+* /etc/cron.daily/apt
+* [man apt.conf(5)](https://manpages.debian.org/man/apt.conf.5 "DebianMan")
+* [man unattended-upgrade(8)](https://manpages.debian.org/man/unattended-upgrade.8 "DebianMan")
+* [needrestart\*](https://packages.debian.org/search?keywords=needrestart) packages, to identify additional running processes which must be restarted to apply (previously installed security) updates without rebooting
+
+---
+
+[CategoryPackageManagement](/CategoryPackageManagement) [CategorySystemAdministration](/CategorySystemAdministration)

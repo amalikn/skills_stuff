@@ -1,0 +1,22 @@
+Contents of https://c4model.com/:
+## The C4 model for visualising software architecture
+
+The C4 model is an easy to learn, developer friendly approach to software architecture diagramming:
+
+1. A set of [hierarchical abstractions](/abstractions) - [software systems](/abstractions/software-system), [containers](/abstractions/container), [components](/abstractions/component), and [code](/abstractions/code).
+2. A set of [hierarchical diagrams](/diagrams) - [system context](/diagrams/system-context), [containers](/diagrams/container), [components](/diagrams/component), and [code](/diagrams/code).
+3. An additional set of supporting diagrams - [system landscape](/diagrams/system-landscape), [dynamic](/diagrams/dynamic), and [deployment](/diagrams/deployment).
+4. [Notation independent](/diagrams/notation).
+5. [Tooling independent](/tooling).
+
+|  |  |
+| --- | --- |
+| **Visualising software architecture with the C4 model**   Recorded at "Agile on the Beach 2019", July 2019 | **The C4 model**  Simon Brown |
+
+## About this website
+
+This is the official website for the “C4 model for visualising software architecture”, written by its creator [Simon Brown](https://simonbrown.je/).
+
+ 
+
+---

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "target": 0.999,
+  "model": {
+    "series": [
+      {
+        "name": "site power",
+        "availability": 0.9995
+      },
+      {
+        "parallel": [
+          {
+            "name": "satellite WAN",
+            "availability": 0.99
+          },
+          {
+            "name": "4G backup WAN",
+            "availability": 0.98
+          }
+        ]
+      },
+      {
+        "name": "site router",
+        "availability": 0.9999
+      }
+    ]
+  }
+}

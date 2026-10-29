@@ -1,0 +1,137 @@
+Contents of https://opensource.org/licenses:
+## OSI Approved Licenses
+
+Open source licenses are licenses that comply with the Open Source Definition – in brief, they allow software to be freely used, modified, and shared. To be approved by the Open Source Initiative (also known as the OSI) a license must go through the Open Source Initiative’s [license review process](https://opensource.org/licenses/review-process/).
+
+![](https://opensource.org/wp-content/uploads/2022/10/osi-badge-dark.svg)
+
+Column headers with buttons are sortable
+
+|  |  |  |
+| --- | --- | --- |
+| [1-clause BSD License](https://opensource.org/license/bsd-1-clause) | BSD-1-Clause | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [Academic Free License v. 3.0](https://opensource.org/license/afl-3-0) | AFL-3.0 | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [Adaptive Public License 1.0](https://opensource.org/license/apl-1-0) | APL-1.0 | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [Apache License, Version 2.0](https://opensource.org/license/apache-2-0) | Apache-2.0 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [Apache Software License, version 1.1](https://opensource.org/license/apache-1-1) | Apache-1.1 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Apple Public Source License 2.0](https://opensource.org/license/apsl-2-0) | APSL-2.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Artistic License (Perl) 1.0](https://opensource.org/license/artistic-1-0-perl) | Artistic-1.0-Perl | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Artistic License 1.0](https://opensource.org/license/artistic-1-0) | Artistic-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Artistic License 2.0](https://opensource.org/license/artistic-2-0) | Artistic-2.0 | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [Attribution Assurance License](https://opensource.org/license/aal) | AAL | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [Blue Oak Model License](https://opensource.org/license/blueoak-1-0-0) | BlueOak-1.0.0 | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [Boost Software License 1.0](https://opensource.org/license/bsl-1-0) | BSL-1.0 | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [BSD+Patent](https://opensource.org/license/bsd-2-clause-patent) | BSD-2-Clause-Patent | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [BSD-3-Clause-Open-MPI](https://opensource.org/license/bsd-3-clause-open-mpi) | BSD-3-Clause-Open-MPI | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [Cea Cnrs Inria Logiciel Libre License, version 2.1](https://opensource.org/license/cecill-2-1) | CECILL-2.1 | * [International](https://opensource.org/license/category/international) |
+| [CERN Open Hardware Licence Version 2 – Permissive](https://opensource.org/license/cern-ohl-p-2-0) | CERN-OHL-P-2.0 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [CERN Open Hardware Licence Version 2 – Strongly Reciprocal](https://opensource.org/license/cern-ohl-s-2-0) | CERN-OHL-S-2.0 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [CERN Open Hardware Licence Version 2 – Weakly Reciprocal](https://opensource.org/license/cern-ohl-w-2-0) | CERN-OHL-W-2.0 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [CMU License](https://opensource.org/license/mit-cmu) | MIT-CMU |  |
+| [CNRI Python Open Source GPL Compatible License Agreement](https://opensource.org/license/cnri-python-gpl-compatible) | CNRI-Python-GPL-Compatible | * [Legacy](https://opensource.org/license/category/legacy) |
+| [COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL)](https://opensource.org/license/cddl-1-1) | CDDL-1.1 | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [Common Development and Distribution License 1.0](https://opensource.org/license/cddl-1-0) | CDDL-1.0 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [Common Public Attribution License Version 1.0](https://opensource.org/license/cpal-1-0) | CPAL-1.0 | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [Common Public License Version 1.0](https://opensource.org/license/cpl-1-0) | CPL-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Computer Associates Trusted Open Source License 1.1](https://opensource.org/license/catosl-1-1) | CATOSL-1.1 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Cryptographic Autonomy License](https://opensource.org/license/cal-1-0) | CAL-1.0 | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [CUA Office Public License](https://opensource.org/license/cua-opl-1-0) | CUA-OPL-1.0 | * [Voluntarily retired](https://opensource.org/license/category/voluntarily-retired) |
+| [curl License](https://opensource.org/license/curl) | curl | * [Legacy](https://opensource.org/license/category/legacy) |
+| [Eclipse Public License -v 1.0](https://opensource.org/license/epl-1-0) | EPL-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Eclipse Public License version 2.0](https://opensource.org/license/epl-2-0) | EPL-2.0 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [eCos License version 2.0](https://opensource.org/license/ecos-2-0) | eCos-2.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Educational Community License, Version 1.0](https://opensource.org/license/ecl-1-0) | ECL-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Educational Community License, Version 2.0](https://opensource.org/license/ecl-2-0) | ECL-2.0 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [Eiffel Forum License, version 1](https://opensource.org/license/efl-1-0) | EFL-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Eiffel Forum License, Version 2](https://opensource.org/license/efl-2-0) | EFL-2.0 | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [Entessa Public License Version. 1.0](https://opensource.org/license/entessa) | Entessa | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [EU DataGrid Software License](https://opensource.org/license/eudatagrid) | EUDatagrid | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [European Union Public Licence, version 1.2](https://opensource.org/license/eupl-1-2) | EUPL-1.2 | * [International](https://opensource.org/license/category/international) |
+| [Fair License](https://opensource.org/license/fair) | Fair | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [Frameworx License 1.0](https://opensource.org/license/frameworx-1-0) | Frameworx-1.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [GNU Affero General Public License version 3](https://opensource.org/license/agpl-3-0) | AGPL-3.0 | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [GNU General Public License version 2](https://opensource.org/license/gpl-2-0) | GPL-2.0 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [GNU General Public License version 3](https://opensource.org/license/gpl-3-0) | GPL-3.0 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [GNU General Public License, version 1](https://opensource.org/license/gpl-1-0) | GPL-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [GNU Lesser General Public License version 2.1](https://opensource.org/license/lgpl-2-1) | LGPL-2.1 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [GNU Lesser General Public License version 3](https://opensource.org/license/lgpl-3-0) | LGPL-3.0 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [GNU Library General Public License version 2](https://opensource.org/license/lgpl-2-0) | LGPL-2.0 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [Historical Permission Notice and Disclaimer](https://opensource.org/license/hpnd) | HPND | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [IBM Public License Version 1.0](https://opensource.org/license/ipl-1-0) | IPL-1.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [ICU License](https://opensource.org/license/icu) | ICU |  |
+| [Intel Open Source License](https://opensource.org/license/intel) | Intel | * [Voluntarily retired](https://opensource.org/license/category/voluntarily-retired) |
+| [IPA Font License](https://opensource.org/license/ipa) | IPA | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [ISC License](https://opensource.org/license/isc) | ISC | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [Jabber Open Source License](https://opensource.org/license/jabberpl) |  | * [Voluntarily retired](https://opensource.org/license/category/voluntarily-retired) |
+| [JAM License](https://opensource.org/license/jam) | Jam | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [LaTeX Project Public License, Version 1.3c](https://opensource.org/license/lppl-1-3c) | LPPL-1.3c | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Lawrence Berkeley National Labs BSD Variant License](https://opensource.org/license/bsd-3-clause-lbnl) | BSD-3-Clause-LBNL | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [Licence Libre du Québec – Permissive version 1.1](https://opensource.org/license/liliq-p-1-1) | LiLiQ-P-1.1 | * [International](https://opensource.org/license/category/international) |
+| [Licence Libre du Québec – Réciprocité forte version 1.1](https://opensource.org/license/liliq-rplus-1-1) | LiLiQ-Rplus-1.1 | * [International](https://opensource.org/license/category/international) |
+| [Licence Libre du Québec – Réciprocité version 1.1](https://opensource.org/license/liliq-r-1-1) | LiLiQ-R-1.1 | * [International](https://opensource.org/license/category/international) |
+| [Los Alamos National Labs BSD-3 Variant](https://opensource.org/license/los-alamos-national-labs-bsd-3-variant) |  | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Lucent Public License Version 1.02](https://opensource.org/license/lpl-1-02) | LPL-1.02 | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [Lucent Public License, Plan 9, version 1.0](https://opensource.org/license/lpl-1-0) | LPL-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Microsoft Public License](https://opensource.org/license/ms-pl) | MS-PL | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [Microsoft Reciprocal License](https://opensource.org/license/ms-rl) | MS-RL | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [MirOS Licence](https://opensource.org/license/miros) | MirOS | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [MIT No Attribution License](https://opensource.org/license/mit-0) | MIT-0 | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [MITRE Collaborative Virtual Workspace License](https://opensource.org/license/cvw) |  | * [Voluntarily retired](https://opensource.org/license/category/voluntarily-retired) |
+| [Motosoto Open Source License](https://opensource.org/license/motosoto) | Motosoto | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Mozilla Public License 1.1](https://opensource.org/license/mpl-1-1) | MPL-1.1 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Mozilla Public License 2.0](https://opensource.org/license/mpl-2-0) | MPL-2.0 | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [Mozilla Public License, version 1.0](https://opensource.org/license/mpl-1-0) | MPL-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Mulan Permissive Software License v2](https://opensource.org/license/mulanpsl-2-0) | MulanPSL-2.0 | * [International](https://opensource.org/license/category/international) |
+| [Multics License](https://opensource.org/license/multics) | Multics | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [NASA Open Source Agreement v1.3](https://opensource.org/license/nasa-1-3) | NASA-1.3 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [NAUMEN Public License](https://opensource.org/license/naumen) | Naumen | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [NIST Software License](https://opensource.org/license/nist-software) | NIST-Software | * [Legacy](https://opensource.org/license/category/legacy) |
+| [Nokia Open Source License Version 1.0a](https://opensource.org/license/nokia) | NOKIA | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Non-Profit Open Software License version 3.0](https://opensource.org/license/nposl-3-0) | NPOSL-3.0 | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [NTP License](https://opensource.org/license/ntp) | NTP | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [Open Group Test Suite License](https://opensource.org/license/ogtsl) | OGTSL | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [Open Logistics Foundation License v1.3](https://opensource.org/license/olfl-1-3) | OLFL-1.3 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [Open Software License 2.1](https://opensource.org/license/osl-2-1) | OSL-2.1 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Open Software License, version 1.0](https://opensource.org/license/osl-1-0) | OSL-1.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [OpenLDAP Public License Version 2.8](https://opensource.org/license/oldap-2-8) | OLDAP-2.8 | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [OSC License 1.0](https://opensource.org/license/osc-1-0) | OSC-1.0 | * [International](https://opensource.org/license/category/international) |
+| [OSET Public License version 2.1](https://opensource.org/license/oset-pl-2-1) | OSET-PL-2.1 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [PHP License 3.0](https://opensource.org/license/php-3-0) | PHP-3.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [PHP License 3.01](https://opensource.org/license/php-3-01) | PHP-3.01 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Python License 2.0.1](https://opensource.org/license/python-2-0-1) | Python-2.0.1 | * [Legacy](https://opensource.org/license/category/legacy) |
+| [Python License, Version 2](https://opensource.org/license/python-2-0) | Python-2.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [RealNetworks Public Source License Version 1.0](https://opensource.org/license/rpsl-1-0) | RPSL-1.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Reciprocal Public License 1.5](https://opensource.org/license/rpl-1-5) | RPL-1.5 | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [Reciprocal Public License, version 1.1](https://opensource.org/license/rpl-1-1) | RPL-1.1 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [SIL OPEN FONT LICENSE](https://opensource.org/license/ofl-1-1) | OFL-1.1 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [Simple Public License](https://opensource.org/license/simpl-2-0) | SimPL-2.0 | * [Uncategorized](https://opensource.org/license/category/uncategorized) |
+| [Sun Industry Standards Source License](https://opensource.org/license/sissl) | SISSL | * [Voluntarily retired](https://opensource.org/license/category/voluntarily-retired) |
+| [Sun Public License, Version 1.0](https://opensource.org/license/spl-1-0) | SPL-1.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The 2-Clause BSD License](https://opensource.org/license/bsd-2-clause) | BSD-2-Clause | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [The 3-Clause BSD License](https://opensource.org/license/bsd-3-clause) | BSD-3-Clause | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [The CNRI portion of the multi-part Python License](https://opensource.org/license/cnri-python) | CNRI-Python | * [Superseded](https://opensource.org/license/category/superseded) |
+| [The European Union Public License, version 1.1](https://opensource.org/license/eupl-1-1) | EUPL-1.1 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [The MIT License](https://opensource.org/license/mit) | MIT | * [Popular / Strong Community](https://opensource.org/license/category/popular-strong-community) |
+| [The Nethack General Public License](https://opensource.org/license/ngpl) | NGPL | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The OCLC Research Public License 2.0 License](https://opensource.org/license/oclc-2-0) | OCLC-2.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The Open Software License 3.0](https://opensource.org/license/osl-3-0) | OSL-3.0 | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [The PostgreSQL License](https://opensource.org/license/postgresql) | PostgreSQL | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [The Q Public License Version](https://opensource.org/license/qpl-1-0) | QPL-1.0 | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [The Ricoh Source Code Public License](https://opensource.org/license/rscpl) | RSCPL | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The Sleepycat License](https://opensource.org/license/sleepycat) | Sleepycat | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The Sybase Open Source Licence](https://opensource.org/license/watcom-1-0) | Watcom-1.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The Universal Permissive License Version 1.0](https://opensource.org/license/upl-1-0) | UPL-1.0 | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [The University of Illinois/NCSA Open Source License](https://opensource.org/license/ncsa) | NCSA | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [The Unlicense](https://opensource.org/license/unlicense) | Unlicense | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [The Vovida Software License v. 1.0](https://opensource.org/license/vsl-1-0) | VSL-1.0 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The W3C® Software and Document license](https://opensource.org/license/w3c-20150513) | W3C-20150513 | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The wxWindows Library Licence](https://opensource.org/license/wxwindows) | wxWindows | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [The X.Net, Inc. License](https://opensource.org/license/xnet) | Xnet | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |
+| [The zlib/libpng License](https://opensource.org/license/zlib) | Zlib | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [UNICODE LICENSE V3](https://opensource.org/license/unicode-3-0) | Unicode-3.0 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [Unicode, Inc. License Agreement – Data Files and Software](https://opensource.org/license/unicode-dfs-2016) | Unicode-DFS-2016 | * [Special Purpose](https://opensource.org/license/category/special-purpose) * [Superseded](https://opensource.org/license/category/superseded) |
+| [Upstream Compatibility License v1.0](https://opensource.org/license/ucl-1-0) | UCL-1.0 | * [Special Purpose](https://opensource.org/license/category/special-purpose) |
+| [WordNet](https://opensource.org/license/wordnet) | WordNet | * [Non-Reusable](https://opensource.org/license/category/non-reusable) |
+| [Zero-Clause BSD](https://opensource.org/license/0bsd) | 0BSD | * [Other/Miscellaneous](https://opensource.org/license/category/other-miscellaneous) |
+| [Zope Public License 2.0](https://opensource.org/license/zpl-2-0) | ZPL-2.0 | * [Superseded](https://opensource.org/license/category/superseded) |
+| [Zope Public License 2.1](https://opensource.org/license/zpl-2-1) | ZPL-2.1 | * [Redundant with more popular](https://opensource.org/license/category/redundant-with-more-popular) |

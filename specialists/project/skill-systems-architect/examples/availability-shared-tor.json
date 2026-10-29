@@ -1,0 +1,32 @@
+{
+    "schema_version": 1,
+    "target": 0.999,
+    "model": {
+        "series": [
+            {
+                "name": "site power",
+                "availability": 0.9995
+            },
+            {
+                "name": "shared ToR switch",
+                "availability": 0.9995
+            },
+            {
+                "parallel": [
+                    {
+                        "name": "host A",
+                        "availability": 0.995
+                    },
+                    {
+                        "name": "host B",
+                        "availability": 0.995
+                    }
+                ]
+            },
+            {
+                "name": "guest OS + app",
+                "availability": 0.999
+            }
+        ]
+    }
+}

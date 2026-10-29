@@ -80,6 +80,10 @@ stays project-local.
 - **`skill-nautobot`** and **`skill-openwisp`** (canonical under [`../../platform/`](../../platform/)) — the platform layer this fleet's inventory and monitoring run on. Call them for
   Nautobot models, APIs, Jobs and onboarding mechanics, or OpenWISP registration, metrics, workers and storage. A device fact stays here; a fact true of any
   Nautobot or OpenWISP deployment goes to them as a dated Learned entry.
+- **`skill-network-architect`** and **`skill-systems-architect`** (peer architects, beside this pack) — call them when a task needs design rather than
+  device facts: connectivity, traffic, RF or convergence design to the network architect; compute, storage, OS, identity, endpoint or recovery design to
+  the systems architect. Send their handoff form (`skill-network-architect/templates/handoff.md`), keep ownership of this pack's facts and return concrete evidence. They call back
+  here for platform facts. Skill availability does not confer authorisation.
 
 ## References
 

@@ -1,0 +1,30 @@
+Contents of https://csrc.nist.gov/pubs/sp/800/190/final:
+[Publications](/publications)
+
+[Documentation](#pubs-documentation)
+   
+[Topics](#pubs-topics)
+
+**Date Published:** September 2017
+
+**Planning Note (09/04/2020):**
+
+A [Japanese translation](https://www.ipa.go.jp/security/reports/oversea/nist/ug65p90000019cp4-att/begoj9000000bf1r.pdf) of this publication is now available from the [Information-technology Promotion Agency (IPA), Japan](https://www.ipa.go.jp/security/english/index.html).
+
+(DISCLAIMER: This translation is not an official U.S. Government or NIST translation.  The U.S. Government does not make any representations as to the accuracy of the translation. The official publication is available at <https://doi.org/10.6028/NIST.SP.800-190>.)
+
+  
+
+#### Author(s)
+
+, John Morello (Twistlock), Karen Scarfone (Scarfone Cybersecurity)
+
+Application container technologies, also known as containers, are a form of operating system virtualization combined with application software packaging. Containers provide a portable, reusable, and automatable way to package and run applications. This publication explains the potential security concerns associated with the use of containers and provides recommendations for addressing these concerns.
+
+#### Keywords
+
+application; application container; application software packaging; container; container security; isolation; operating system virtualization; virtualization
+
+##### Control Families
+
+Access Control; Awareness and Training; Audit and Accountability; Configuration Management; Identification and Authentication; Incident Response; Risk Assessment; System and Communications Protection; System and Information Integrity

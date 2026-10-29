@@ -1,0 +1,85 @@
+Contents of https://rpki.readthedocs.io/en/latest/:
+![lastupdated](https://img.shields.io/github/last-commit/NLnetLabs/rpki-doc.svg?label=last%20updated&style=flat-square) [![discord](https://img.shields.io/discord/818584154278199396?label=rpki%20on%20discord&logo=discord&style=flat-square)](https://discord.gg/8dvKB5Ykhy)
+
+Welcome to the documentation of the Resource Public Key Infrastructure (RPKI),
+the community-driven technology based on open standards that is aimed at making
+Internet routing more secure. If you are new to this documentation, we recommend
+that you read the [introduction page](about/introduction.html#doc-about-intro) to get an overview
+of what this documentation has to offer.
+
+Note
+
+This documentation is an open source project maintained by the RPKI
+team at [NLnet Labs](https://nlnetlabs.nl/), who collectively have
+decades of experience with internet software, security and standards.
+NLnet Labs develops the RPKI Validator solution [Routinator](https://nlnetlabs.nl/projects/routing/routinator/) and the RPKI
+Certification Authority [Krill](https://nlnetlabs.nl/projects/routing/krill/).
+
+We always appreciate your feedback and improvements. You can submit
+an issue or pull request on the [GitHub repository](https://github.com/NLnetLabs/rpki-doc/issues), or discuss RPKI
+on [Discord](https://discord.gg/WaPgs8vEKy).
+
+The main documentation is organised into the following sections:
+
+General
+
+* [Introduction](about/introduction.html)
+  + [About this Documentation](about/introduction.html#about-this-documentation)
+  + [About Resource Public Key Infrastructure](about/introduction.html#about-resource-public-key-infrastructure)
+  + [Organisation of this Documentation](about/introduction.html#organisation-of-this-documentation)
+* [FAQ](about/faq.html)
+  + [RPKI Mechanism](about/faq.html#rpki-mechanism)
+  + [Operations and Impact](about/faq.html#operations-and-impact)
+  + [Miscellaneous](about/faq.html#miscellaneous)
+* [Quick Help](about/help.html)
+  + [What is RPKI or ROA?](about/help.html#what-is-rpki-or-roa)
+  + [What do they do?](about/help.html#what-do-they-do)
+  + [How does it work?](about/help.html#how-does-it-work)
+  + [What is in a ROA?](about/help.html#what-is-in-a-roa)
+  + [What happens next?](about/help.html#what-happens-next)
+  + [What can I do about my route having an Invalid state?](about/help.html#what-can-i-do-about-my-route-having-an-invalid-state)
+
+RPKI Technology
+
+* [Introduction](rpki/introduction.html)
+  + [Internet Number Resource Allocation](rpki/introduction.html#internet-number-resource-allocation)
+  + [Mapping the Resource Allocation Hierarchy into the RPKI](rpki/introduction.html#mapping-the-resource-allocation-hierarchy-into-the-rpki)
+  + [X.509 PKI Considerations](rpki/introduction.html#x-509-pki-considerations)
+* [Internet Routing](rpki/bgp-routing.html)
+  + [BGP Best Path Selection](rpki/bgp-routing.html#bgp-best-path-selection)
+  + [Routing Errors](rpki/bgp-routing.html#routing-errors)
+  + [Mitigation of Routing Errors](rpki/bgp-routing.html#mitigation-of-routing-errors)
+  + [The Internet Routing Registry](rpki/bgp-routing.html#the-internet-routing-registry)
+* [Securing BGP](rpki/securing-bgp.html)
+  + [Route Origin Validation](rpki/securing-bgp.html#route-origin-validation)
+  + [Path Validation](rpki/securing-bgp.html#path-validation)
+* [Implementation Models](rpki/implementation-models.html)
+  + [Hosted RPKI](rpki/implementation-models.html#hosted-rpki)
+  + [Delegated RPKI](rpki/implementation-models.html#delegated-rpki)
+* [Using RPKI Data](rpki/using-rpki-data.html)
+  + [Connecting to the Trust Anchor](rpki/using-rpki-data.html#connecting-to-the-trust-anchor)
+  + [Fetching and Verifying](rpki/using-rpki-data.html#fetching-and-verifying)
+  + [Validating Routes](rpki/using-rpki-data.html#validating-routes)
+  + [Local Overrides](rpki/using-rpki-data.html#local-overrides)
+  + [Feeding Routers](rpki/using-rpki-data.html#feeding-routers)
+
+Operations
+
+* [Software Projects](ops/tools.html)
+  + [Relying Party Software](ops/tools.html#relying-party-software)
+  + [RTR Server Software](ops/tools.html#rtr-server-software)
+  + [Certificate Authority Software](ops/tools.html#certificate-authority-software)
+  + [Supporting Tools](ops/tools.html#supporting-tools)
+* [Router Support](ops/router-support.html)
+  + [Hardware Solutions](ops/router-support.html#hardware-solutions)
+  + [Software Solutions](ops/router-support.html#software-solutions)
+* [Resources](ops/resources.html)
+  + [Books](ops/resources.html#books)
+  + [Insights and Statistics](ops/resources.html#insights-and-statistics)
+  + [Operational Experiences](ops/resources.html#operational-experiences)
+  + [Examples of BGP Hijacks](ops/resources.html#examples-of-bgp-hijacks)
+  + [IETF Documents](ops/resources.html#ietf-documents)
+
+## Index[](#index "Link to this heading")
+
+* [Index](genindex.html)

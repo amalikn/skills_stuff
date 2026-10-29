@@ -1,0 +1,88 @@
+Contents of https://graylog.org/post/graylog-v4-0-licensing-sspl/:
+## Why are we changing the license for Graylog?
+
+MongoDB issued its Server Side Public License (SSPL) license in 2018. While this initially drew negative feedback from the open source community, after some clarifications it was well received as a way to address the community’s concerns, and lack of licensing, around open source Software as a Service offerings. This change was designed to make sure that companies who do run publicly available open source software as a service, are giving back to the community.
+
+The SSPL is designed to protect open source projects from international cloud providers that were testing the boundaries of the GPL, potentially harming the open source community. As a part of that community, we want to do our part to make sure those that benefit from open source tools like Graylog also give back.
+
+It should be noted that the new license maintains all of the same freedoms the community has always had with Graylog under GPL – they are free to use, review, modify, and redistribute the source code. The only changes are additional terms that make explicit the conditions for offering a publicly available Graylog as a service.
+
+## **What is the license called and what will be licensed under it?**
+
+The new license is called the Server Side Public License (SSPL). All Graylog Open Source patch releases and versions released on or after the general availability of v4.0 (Graylog v4.0), will be subject to this new license.
+
+## **Is the SSPL on an OSI-recognized open source license?**
+
+The SSPL is based on the GNU General Public License, but it is a new license introduced by MongoDB, not the Free Software Foundation. The SSPL has not been approved by the OSI.
+
+## **What specifically is the difference between the GPL and the SSPL?**
+
+The only substantive modification is section 13, which makes clear the condition to offering Graylog as a service. A company that offers a publicly available Graylog as a service must release the software it uses to offer such service under the terms of the SSPL, including the management software, user interfaces, application program interfaces, automation software, monitoring software, backup software, storage software and hosting software, all such that a user could run an instance of the service using the source code made available.
+
+Section 13 of the SSPL reads as follows:
+
+a. “If you make the functionality of the Program or a modified version available to third parties as a service, you must make the Service Source Code available via network download to everyone at no charge, under the terms of this License. Making the functionality of the Program or modified version available to third parties as a service includes, without limitation, enabling third parties to interact with the functionality of the Program or modified version remotely through a computer network, offering a service the value of which entirely or primarily derives from the value of the Program or modified version, or offering a service that accomplishes for users the primary purpose of the Software or modified version.”
+
+b. “Service Source Code” means the Corresponding Source for the Program or the modified version, and the Corresponding Source for all programs that you use to make the Program or modified version available as a service, including, without limitation, management software, user interfaces, application program interfaces, automation software, monitoring software, backup software, storage software and hosting software, all such that a user could run an instance of the service using the Service Source Code you make available.” A full copy of the SSPL is here.
+
+## **Why is the SSPL based on GPLv3 instead of AGPLv3?**
+
+The AGPL is a modified version of GPL v3. The only additional requirement of AGPL is in section 13: if you run a modified program on a server and let other users communicate with it there, you must open source the source code corresponding to your modified version, known as the “Remote Network Interaction” provision of AGPL.
+
+There is some confusion in the marketplace about the trigger and scope of the Remote Network Interaction provision of AGPL.
+
+As a result, MongoDB decided to base the SSPL on GPL v3 and to add a new section 13 which clearly and explicitly sets forth the conditions to offering the licensed program as a third-party service. As we are in agreement with this approach, we have opted to use MongoDB’s SSPL in place of AGPLv3.
+
+## **Is there any difference between Graylog’s SSPL and MongoDB’s?**
+
+No. The license is identical and MongoDB is encouraging other open source vendors to use the SSPL.
+
+## **Does section 13 of the SSPL apply if I’m offering Graylog as a service for internal-only use?**
+
+No. We do not consider providing Graylog as a service internally or to subsidiary companies to be making it available to a third party.
+
+## **Will Graylog continue to provide open source software?**
+
+Yes, Graylog will continue to support and enhance our open source centralized log management offering.
+
+Although the SSPL is not OSI approved, it maintains all of the same freedoms the community has always had with Graylog under AGPL. Users are free to review, modify, and distribute the software or redistribute modifications to the software. However, the Open Source Initiative (OSI) has its own process for approving what it considers to be an open source license, and the SSPL has not received OSI approval. Graylog software licensed under the SSPL is not considered open source by the OSI.
+
+In addition, all versions of Graylog released prior to the general availability of v4.0 will continue to be licensed under GPL v3.0.
+
+## **How does the license change the current usage of Graylog? Are those users grandfathered in?**
+
+All versions of Graylog released on or after the general availability of v4.0 will be licensed under the SSPL. Prior versions of Graylog released before the general availability of v4.0 will remain under GPLv3; therefore, any use of those versions is governed by GPLv3.
+
+## **What are the implications of this new license on applications built using Graylog and made available as a service (SaaS)?**
+
+There will be no impact to anyone in the community building an application with Graylog as a component. The copyleft condition of Section 13 of the SSPL does not apply to companies building other applications or for internal-only use. It is limited to those that build and offer publicly a Graylog as a Service offering. You are not prohibited from doing so, but must also make the source code of any modifications to Graylog freely available to the public under the terms of this license
+
+## **What are the implications of this new license to customers and partners?**
+
+This SSPL will apply to Graylog Open Source. For the vast majority of the community, there is absolutely no impact from the licensing change. The SSPL maintains all of the same freedoms the community has always had with Graylog under GPL – users are free to use, review, modify, distribute the software or redistribute modifications to the software.
+
+Customers and OEM partners using Graylog under a commercial license will not be affected by this change.
+
+## **How can community members contribute to Graylog repositories under the new license?**
+
+There will be no change to how users contribute to Graylog repositories under the new license.
+
+## **What will happen if someone in the community is currently building something on Graylog?**
+
+Those currently building something on Graylog are not impacted if they continue to use a version released prior to the general availability of v4.0, are building it for internal use only, or are incorporating Graylog as a component in a larger application. The SSPL license only affects those that are building a Graylog as a Service public offering and wish to use a version of Graylog published on or after the general availability of v4.0.
+
+## **How does this affect customers who use Graylog as a service from cloud providers today?**
+
+Graylog will work with existing cloud providers to ensure compliance with the new license, if applicable, or move to a commercial license. This will not directly affect customers of those cloud providers.
+
+link to text file of SSPL<https://www.mongodb.com/licensing/server-side-public-license>
+
+## **Graylog includes 3rd party components that are also licensed under SSPL, how does this impact Graylog users and customers?**
+
+As mentioned above, SSPL is substantively the same as the Free Software Foundation’s GPL except for Section 13 where it concerns open source products being offered to the public “as a Service”. In that case, if the Cloud provider is offering the SSPL product as the primary value of what they are delivering, then they are required to contribute back to the community by making source code free and open for all the components necessary to deliver that service.
+
+For Graylog Open users, as long as you are running Graylog or any of its components for internal use only, you will not trigger the share clause requiring the publication of source code. If you currently offer, or are considering offering Graylog Open as a Service, and have questions or concerns, please [contact us](https://go2.graylog.org/contact-sales) to discuss.
+
+Graylog Enterprise customers who utilize third-party components for free licensed under SSPL are compliant as long as they do not offer direct access to those components to the public in a Cloud or Hosted environment.
+
+Have questions? [Contact us](https://go2.graylog.org/contact-sales)

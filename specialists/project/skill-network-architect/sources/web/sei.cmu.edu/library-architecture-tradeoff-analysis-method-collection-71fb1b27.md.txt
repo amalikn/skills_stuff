@@ -1,0 +1,53 @@
+Contents of https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/:
+The Architecture Tradeoff Analysis Method® (ATAM®) is a method for evaluating software architectures relative to quality attribute goals. ATAM evaluations expose architectural risks that potentially inhibit the achievement of an organization's business goals. The ATAM gets its name because it not only reveals how well an architecture satisfies particular quality goals but it also provides insight into how those quality goals interact with each other—how they trade off against each other.
+
+The ATAM is the leading method in the area of software architecture evaluation. An evaluation using the ATAM typically takes three to four days and gathers together a trained evaluation team, architects, and representatives of the architecture's various stakeholders.
+
+## Challenges
+
+Most complex software systems are required to be modifiable and have good performance. They may also need to be secure, interoperable, portable, and reliable. But for any particular system
+
+* What precisely do these quality attributes such as modifiability, security, performance, and reliability mean?
+* Can a system be analyzed to determine these desired qualities?
+* How soon can such an analysis occur?
+* How do you know if a software architecture for a system is suitable without having to build the system first?
+
+## Description
+
+Business drivers and the software architecture are elicited from project decision-makers. These are refined into scenarios and the architectural decisions made in support of each one. Analysis of scenarios and decisions results in the identification of risks, non-risks, sensitivity points, and tradeoff points in the architecture. Risks are synthesized into a set of risk themes, showing how each one threatens a business driver.
+
+The ATAM consists of nine steps:
+
+1. **Present the ATAM**. The evaluation leader describes the evaluation method to the assembled participants, tries to set their expectations, and answers questions they may have.
+2. **Present business drivers**. A project spokesperson (ideally the project manager or system customer) describes what business goals are motivating the development effort and hence what will be the primary architectural drivers (e.g., high availability or time to market or high security).
+3. **Present architecture**. The architect will describe the architecture, focusing on how it addresses the business drivers.
+4. **Identify architectural approaches**. Architectural approaches are identified by the architect but are not analyzed.
+5. **Generate quality attribute utility tree**. The quality factors that comprise system "utility" (performance, availability, security, modifiability, usability, etc.) are elicited, specified down to the level of scenarios, annotated with stimuli and responses, and prioritized.
+6. **Analyze architectural approaches**. Based on the high-priority factors identified in Step 5, the architectural approaches that address those factors are elicited and analyzed (for example, an architectural approach aimed at meeting performance goals will be subjected to a performance analysis). During this step, architectural risks, sensitivity points, and tradeoff points are identified.
+7. **Brainstorm and prioritize scenarios**. A larger set of scenarios is elicited from the entire group of stakeholders. This set of scenarios is prioritized via a voting process involving the entire stakeholder group.
+8. **Analyze architectural approaches**. This step reiterates the activities of Step 6 but uses the highly ranked scenarios from Step 7. Those scenarios are considered to be test cases to confirm the analysis performed thus far. This analysis may uncover additional architectural approaches, risks, sensitivity points, and tradeoff points, which are then documented.
+9. **Present results**. Based on the information collected in the ATAM (approaches, scenarios, attribute-specific questions, the utility tree, risks, non-risks, sensitivity points, and tradeoffs), the ATAM team presents the findings to the assembled stakeholders.
+
+The most important results are improved architectures. The output of an ATAM is an out-brief presentation and/or a written report that includes the major findings of the evaluation. These are typically:
+
+* a set of architectural approaches identified
+* a "utility tree"—a hierarchic model of the driving architectural requirements
+* the set of scenarios generated and the subset that were mapped onto the architecture
+* a set of quality-attribute-specific questions that were applied to the architecture, and the responses to these questions
+* a set of identified risks
+* a set of identified non-risks
+* a synthesis of the risks into a set of risk themes that threaten to undermine the business goals of the system
+
+## Benefits
+
+* identified risks early in the life cycle
+* increased communication among stakeholders
+* clarified quality attribute requirements
+* improved architecture documentation
+* documented basis for architectural decisions
+
+The most important results are improved architectures. The ATAM aids in eliciting sets of quality requirements along multiple dimensions, analyzing the effects of each requirement in isolation, and then understanding the interactions of these requirements.
+
+## Who Would Benefit
+
+Many people have a stake in a system's architecture, and all of them exert whatever influence they can on the architect(s) to make sure that their goals are addressed. For example, the users want a system that is easy to use and has rich functionality. The maintenance organization wants a system that is easy to modify. The developing organization (as represented by management) wants a system that is easy to build and that will employ the existing workforce to good advantage. The customer (who pays the bill) wants the system to be built on time and within budget. All of these stakeholders will benefit from applying the ATAM. And needless to say, the architect is also a primary beneficiary.

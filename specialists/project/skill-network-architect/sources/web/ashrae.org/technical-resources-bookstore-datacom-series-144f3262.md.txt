@@ -1,0 +1,46 @@
+Contents of https://www.ashrae.org/technical-resources/bookstore/datacom-series:
+> [![](https://www.ashrae.org/image%20library/main%20nav/technical%20resources/ai%20data%20center%20framework/intro_purpose.png)](https://www.ashrae.org/technical-resources/infection-control)
+>
+> #### New! **ASHRAE/NEMA/PNNL AI Data Center Energy Performance Framework**
+>
+> With sections covering all stages of planning, design, construction, operation, and retrofit, the ASHRAE/NEMA/PNNL AI Data Center Energy Performance Framework guides AI data center development toward optimized and energy-efficient performance.
+>
+> [EXPLORE THE FRAMEWORK](https://www.ashrae.org/technical-resources/ai-data-center-framework)
+
+---
+
+#### An essential for professionals in data center design and operations. Keep up to date with the latest in standards and guidance on cooling, energy, humidity, and smart grid solutions.
+
+**[TC 9.9](https://tpc.ashrae.org/?cmtKey=fd4a4ee6-96a3-4f61-8b85-43418dfa988d)** was formed to address concerns of TC 9.9 Mission Critical Facilities, technology spaces and electronic equipment, designs, operations, maintenance, and efficient energy usage of modern data centers and technology spaces.
+
+**TC9.9’s *Mission Statement:*** To be recognized by ALL areas of the datacom industry as the unbiased engineering leader in HVAC and an effective provider of technical information for the datacom industry.
+
+### 
+
+### ASHRAE TC 9.9 Datacom Encyclopedia
+
+The ASHRAE TC 9.9 Datacom Encyclopedia evolved in 2024 from the longstanding ASHRAE Datacom Series, a series of print books that provides information on data center related subjects. Over time, the pertinent information from all the books in this series will transition to be housed in this online encyclopedia, which will replace the book series completely. This comprehensive online encyclopedia collects essential knowledge about important datacom topics such as facility design considerations, ITE design considerations, environmental guidelines, cooling technologies, and energy efficiency in a central hub, providing on-demand access to frequently updated datacom-related content anytime, on any device, anywhere. Access to the encyclopedia is granted via payment of an annual subscription fee.
+
+[SUBSCRIBE/LOG IN](https://datacom.ashrae.org/)
+
+---
+
+### Data Center Standards and Guidance from ASHRAE
+
+|  |  |
+| --- | --- |
+|  | **[ANSI/ASHRAE Standard 90.4-2025, *Energy Standard for Data Centers*](https://store.accuristech.com/standards/ashrae-90-4-2025?product_id=3032033)**  Available in [Korean](https://store.accuristech.com/standards/ashrae-korean-standard-90-4-2022?product_id=3041674) and [Spanish](https://store.accuristech.com/standards/ashrae-spanish-standard-90-4-2022?product_id=2919499) |
+
+|  |  |
+| --- | --- |
+|  | **[Standard 127-2020, *Method of Testing for Rating Air-Conditioning Units Serving Data Center (DC) and Other Information Technology Equipment (ITE)*](https://store.accuristech.com/ashrae/standards/ashrae-127-2020?product_id=2202074)**  Available in [Spanish](https://store.accuristech.com/standards/ashrae-spanish-standard-127-2020?product_id=3042918) |
+
+|  |  |
+| --- | --- |
+|  | **[*ASHRAE Handbook—HVAC Applications*, Chapter 20, Data Centers and Telecommunication Facilities (I-P)](https://store.accuristech.com/ashrae/standards/a20-data-centers-and-telecommunication-facilities-i-p?product_id=2573492)** |
+
+|  |  |
+| --- | --- |
+|  | **[*ASHRAE Handbook—HVAC Applications*, Chapter 20, Data Centers and Telecommunication Facilities (SI)](https://store.accuristech.com/ashrae/standards/a20-data-centers-and-telecommunication-facilities-si?product_id=2573493)** |
+
+---

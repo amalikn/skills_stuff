@@ -1,0 +1,13 @@
+Contents of https://c4model.com/diagrams/checklist:
+|  |  |  |
+| --- | --- | --- |
+| Does every element have a name? | Yes | No |
+| Do you understand the type of every element? (i.e. the level of abstraction; e.g. software system, container, etc) | Yes | No |
+| Do you understand what every element does? | Yes | No |
+| Where applicable, do you understand the technology choices associated with every element? | Yes | No |
+| Do you understand the meaning of all acronyms and abbreviations used? | Yes | No |
+| Do you understand the meaning of all colours used? | Yes | No |
+| Do you understand the meaning of all shapes used? | Yes | No |
+| Do you understand the meaning of all icons used? | Yes | No |
+| Do you understand the meaning of all border styles used? (e.g. solid, dashed, etc) | Yes | No |
+| Do you understand the meaning of all element sizes used? (e.g. small vs large boxes) | Yes | No |

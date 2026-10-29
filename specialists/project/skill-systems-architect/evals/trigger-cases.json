@@ -1,0 +1,58 @@
+{
+ "schema_version": 1,
+ "purpose": "Trigger and near-miss prompts: run after any description change; record results in evals/results.md separately from behavioural cases.",
+ "should_trigger": [
+  "Size a three-node Proxmox cluster so it survives losing one host and still runs every VM.",
+  "Is a two-node cluster with a QDevice safe for our edge site?",
+  "Design backups for Nautobot and its Postgres database with a 15-minute RPO.",
+  "Our Ceph pool is size 3, min_size 1 on three hosts. Is that a problem?",
+  "Plan patching for 240 Debian hosts without taking a whole site down.",
+  "We need break-glass access when Entra ID is unavailable. What is the design?",
+  "Migrate the Graylog and Grafana stack from one VM to a new host with minimal downtime.",
+  "Our Docker Compose app starts before Postgres is ready and crashes. How should it be designed?",
+  "How do we prove we can actually restore the file server within 4 hours?",
+  "Review the plan to run Kubernetes etcd across two zones."
+ ],
+ "should_not_trigger": [
+  {
+   "prompt": "Design the BGP policy for our two upstream ISPs.",
+   "expected_owner": "skill-network-architect"
+  },
+  {
+   "prompt": "Will the WireGuard tunnel MTU break our VXLAN overlay?",
+   "expected_owner": "skill-network-architect"
+  },
+  {
+   "prompt": "What does this SMC Teleport error mean?",
+   "expected_owner": "skill-smc"
+  },
+  {
+   "prompt": "Show the pvecm command output format for a single node.",
+   "expected_owner": "none (product lookup)"
+  },
+  {
+   "prompt": "Lay out this draw.io diagram so the arrows stop crossing.",
+   "expected_owner": "skill-drawio"
+  },
+  {
+   "prompt": "Add a Nautobot Job that syncs devices from cnMaestro.",
+   "expected_owner": "skill-nautobot"
+  },
+  {
+   "prompt": "Write a shell script that rotates logs.",
+   "expected_owner": "skill-coder"
+  },
+  {
+   "prompt": "Which Cambium AP model supports 6 GHz?",
+   "expected_owner": "skill-cambium"
+  },
+  {
+   "prompt": "Plan the Wi-Fi channel layout for the warehouse.",
+   "expected_owner": "skill-network-architect"
+  },
+  {
+   "prompt": "Summarise this email thread.",
+   "expected_owner": "none"
+  }
+ ]
+}

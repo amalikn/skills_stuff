@@ -1,0 +1,118 @@
+Contents of https://www.iana.org/assignments/iana-ipv6-special-registry/:
+### Created
+
+* 2006-01-10
+
+### Last Updated
+
+* 2025-10-09
+
+### Available Formats
+
+* [XML](/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry.xml)
+* [HTML](/assignments/iana-ipv6-special-registry)
+* [TXT](/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry.txt)
+
+---
+
+## IPv6 Special-Purpose Address Space
+
+### Registration Procedure(s)
+
+* IETF Review
+
+### Reference
+
+* [RFC 4773](https://www.iana.org/go/rfc4773): Administration of the IANA Special Purpose IPv6 Address Block
+* [RFC 6890](https://www.iana.org/go/rfc6890): Special-Purpose IP Address Registries
+* [RFC 8190](https://www.iana.org/go/rfc8190): Updates to the Special-Purpose IP Address Registries
+
+### Note
+
+Address prefixes listed in the Special-Purpose Address Registry are
+not guaranteed routability in any particular local or global context.
+
+The IPv4 and IPv6 Special-Purpose Address Registries maintain the following
+information regarding each entry:
+
+* Address Block - A block of IPv4 or IPv6 addresses that has been
+  registered for a special purpose.
+* Name - A descriptive name for the special-purpose address block.
+* RFC - The RFC through which the special-purpose address block was
+  requested.
+* Allocation Date - The date upon which the special-purpose address
+  block was allocated.
+* Termination Date - The date upon which the allocation is to be
+  terminated. This field is applicable for limited-use allocations
+  only.
+* Source - A boolean value indicating whether an address from the
+  allocated special-purpose address block is valid when used as the
+  source address of an IP datagram that transits two devices.
+* Destination - A boolean value indicating whether an address from
+  the allocated special-purpose address block is valid when used as
+  the destination address of an IP datagram that transits two
+  devices.
+* Forwardable - A boolean value indicating whether a router may
+  forward an IP datagram whose destination address is drawn from the
+  allocated special-purpose address block between external
+  interfaces.
+* Globally Reachable - A boolean value indicating whether an IP
+  datagram whose destination address is drawn from the allocated
+  special-purpose address block is forwardable beyond a specified
+  administrative domain.
+* Reserved-by-Protocol - A boolean value indicating whether the
+  special-purpose address block is reserved by IP, itself. This
+  value is "TRUE" if the RFC that created the special-purpose
+  address block requires all compliant IP implementations to behave
+  in a special way when processing packets either to or from
+  addresses contained by the address block.
+
+If the value of "Destination" is FALSE, the values of "Forwardable" and
+"Globally Reachable" must also be false.
+
+### Formerly known as
+
+IANA IPv6 Special-Purpose Address Registry (pursuant to [IESG decision](https://datatracker.ietf.org/doc/narrative-minutes-interim-2025-iesg-18-202509181400/))
+
+### Available Formats
+
+* [CSV](/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry-1.csv)
+
+| Address Block | Name | RFC | Allocation Date | Termination Date | Source | Destination | Forwardable | Globally Reachable | Reserved-by-Protocol |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ::1/128 | Loopback Address | [RFC 4291](https://www.iana.org/go/rfc4291) | 2006-02 | N/A | False | False | False | False | True |
+| ::/128 | Unspecified Address | [RFC 4291](https://www.iana.org/go/rfc4291) | 2006-02 | N/A | True | False | False | False | True |
+| ::ffff:0:0/96 | IPv4-mapped Address | [RFC 4291](https://www.iana.org/go/rfc4291) | 2006-02 | N/A | False | False | False | False | True |
+| 64:ff9b::/96 | IPv4-IPv6 Translat. | [RFC 6052](https://www.iana.org/go/rfc6052) | 2010-10 | N/A | True | True | True | True | False |
+| 64:ff9b:1::/48 | IPv4-IPv6 Translat. | [RFC 8215](https://www.iana.org/go/rfc8215) | 2017-06 | N/A | True | True | True | False | False |
+| 100::/64 | Discard-Only Address Block | [RFC 6666](https://www.iana.org/go/rfc6666) | 2012-06 | N/A | True | True | True | False | False |
+| 100:0:0:1::/64 | Dummy IPv6 Prefix | [RFC 9780](https://www.iana.org/go/rfc9780) | 2025-04 | N/A | True | False | False | False | False |
+| 2001::/23 | IETF Protocol Assignments | [RFC 2928](https://www.iana.org/go/rfc2928) | 2000-09 | N/A | False [[1](#note1)] | False [[1](#note1)] | False [[1](#note1)] | False [[1](#note1)] | False |
+| 2001::/32 | TEREDO | [RFC 4380](https://www.iana.org/go/rfc4380); [RFC 8190](https://www.iana.org/go/rfc8190) | 2006-01 | N/A | True | True | True | N/A [[2](#note2)] | False |
+| 2001:1::1/128 | Port Control Protocol Anycast | [RFC 7723](https://www.iana.org/go/rfc7723) | 2015-10 | N/A | True | True | True | True | False |
+| 2001:1::2/128 | Traversal Using Relays around NAT Anycast | [RFC 8155](https://www.iana.org/go/rfc8155) | 2017-02 | N/A | True | True | True | True | False |
+| 2001:1::3/128 | DNS-SD Service Registration Protocol Anycast | [RFC 9665](https://www.iana.org/go/rfc9665) | 2024-04 | N/A | True | True | True | True | False |
+| 2001:2::/48 | Benchmarking | [RFC 5180](https://www.iana.org/go/rfc5180); [RFC Errata 1752](https://www.iana.org/go/eid1752) | 2008-04 | N/A | True | True | True | False | False |
+| 2001:3::/32 | AMT | [RFC 7450](https://www.iana.org/go/rfc7450) | 2014-12 | N/A | True | True | True | True | False |
+| 2001:4:112::/48 | AS112-v6 | [RFC 7535](https://www.iana.org/go/rfc7535) | 2014-12 | N/A | True | True | True | True | False |
+| 2001:10::/28 | Deprecated (previously ORCHID) | [RFC 4843](https://www.iana.org/go/rfc4843) | 2007-03 | 2014-03 |  |  |  |  |  |
+| 2001:20::/28 | ORCHIDv2 | [RFC 7343](https://www.iana.org/go/rfc7343) | 2014-07 | N/A | True | True | True | True | False |
+| 2001:30::/28 | Drone Remote ID Protocol Entity Tags (DETs) Prefix | [RFC 9374](https://www.iana.org/go/rfc9374) | 2022-12 | N/A | True | True | True | True | False |
+| 2001:db8::/32 | Documentation | [RFC 3849](https://www.iana.org/go/rfc3849) | 2004-07 | N/A | False | False | False | False | False |
+| 2002::/16 [[3](#note3)] | 6to4 | [RFC 3056](https://www.iana.org/go/rfc3056) | 2001-02 | N/A | True | True | True | N/A [[3](#note3)] | False |
+| 2620:4f:8000::/48 | Direct Delegation AS112 Service | [RFC 7534](https://www.iana.org/go/rfc7534) | 2011-05 | N/A | True | True | True | True | False |
+| 3fff::/20 | Documentation | [RFC 9637](https://www.iana.org/go/rfc9637) | 2024-07 | N/A | False | False | False | False | False |
+| 5f00::/16 | Segment Routing (SRv6) SIDs | [RFC 9602](https://www.iana.org/go/rfc9602) | 2024-04 | N/A | True | True | True | False | False |
+| fc00::/7 | Unique-Local | [RFC 4193](https://www.iana.org/go/rfc4193); [RFC 8190](https://www.iana.org/go/rfc8190) | 2005-10 | N/A | True | True | True | False [[4](#note4)] | False |
+| fe80::/10 | Link-Local Unicast | [RFC 4291](https://www.iana.org/go/rfc4291) | 2006-02 | N/A | True | True | False | False | True |
+
+---
+
+## Footnotes
+
+|  |  |
+| --- | --- |
+| [1] | Unless allowed by a more specific allocation. |
+| [2] | See [Section 5 of RFC 4380](https://www.iana.org/go/rfc4380#section-5) for details. |
+| [3] | See [RFC 3056](https://www.iana.org/go/rfc3056) for details. |
+| [4] | See [RFC 4193](https://www.iana.org/go/rfc4193) for more details on the routability of Unique-Local addresses. The Unique-Local prefix is drawn from the IPv6 Global Unicast Address range, but is specified as not globally routed. |

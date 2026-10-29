@@ -1,0 +1,80 @@
+# skill-network-architect task runner. Every recipe is offline and read-only; nothing touches a device, controller or network.
+
+set shell := ["bash", "-uc"]
+set dotenv-load := false
+
+# Recipes go through {{py}}, never a bare interpreter (skills_stuff runtime isolation; same layout as skill-mikrotik).
+# The venv lives in the working-cache peer, never in this repo.
+wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-network-architect"
+py := wc + "/.venv/bin/python"
+scraper := "/Volumes/Data/_ai/_tool/tools_stuff/all-scraper/justfile"
+
+# Show available recipes
+default:
+    @just --list
+
+# Build the working-cache venv from the mise-pinned runtime. Safe to re-run.
+bootstrap:
+    @mkdir -p "{{wc}}"
+    @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
+    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @{{py}} -m pip install --quiet --upgrade pip -r requirements.txt
+    @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
+
+# Fail early rather than falling back to the host interpreter
+_require-venv:
+    @test -x "{{py}}" || { echo "venv missing at {{py}} — run: just bootstrap" >&2; exit 1; }
+
+# Report which runtime the recipes will actually use
+runtimes:
+    @printf 'python  '; {{py}} -c "import sys; print(sys.version.split()[0], sys.executable)" 2>/dev/null || echo "MISSING — run: just bootstrap"
+
+# Unit and CLI tests, including negative inputs
+test: _require-venv
+    {{py}} -B -m unittest discover -s tests -v
+
+# Check one IP plan JSON, e.g. just ip-plan examples/ip-plan.json (exit 0 pass, 1 findings, 2 invalid input)
+ip-plan plan: _require-venv
+    {{py}} -B scripts/ip_plan_check.py "{{plan}}"
+
+# Payload MTU left after stacked encapsulations, e.g. just mtu examples/mtu-budget.json
+mtu budget: _require-venv
+    {{py}} -B scripts/mtu_budget.py "{{budget}}"
+
+# Point-to-point radio link budget and Fresnel clearance, e.g. just link-budget examples/link-budget.json
+link-budget links: _require-venv
+    {{py}} -B scripts/link_budget.py "{{links}}"
+
+# Series/parallel availability against a target (shared helper), e.g. just availability examples/availability.json
+availability model: _require-venv
+    {{py}} -B scripts/availability.py "{{model}}"
+
+# The bundled failing example must return exit 1; anything else is a broken helper
+expected-findings: _require-venv
+    @{{py}} -B scripts/ip_plan_check.py examples/ip-plan-invalid-overlap.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "ip plan: expected exit 1, got $rc" >&2; exit 1; }
+    @{{py}} -B scripts/mtu_budget.py examples/mtu-budget-short.json > /dev/null; rc=$?; test $rc -eq 1 || { echo "mtu: expected exit 1, got $rc" >&2; exit 1; }
+
+# Resolve every external URL cited in the pack's Markdown (uses the network; read-only; not part of check)
+links: _require-venv
+    {{py}} -B scripts/check_links.py .
+
+# Local copies of every cited source (RFC text, PDFs, page snapshots via all-scraper) into the shared store; plan by default, add --apply to write
+fetch-sources *ARGS: _require-venv
+    {{py}} -B scripts/fetch_sources.py . ../skill-systems-architect --store sources --scraper "{{scraper}}" {{ARGS}}
+
+# Rebuild sources.json: keep curated entries, catalogue every cited URL, attach local copies; plan by default, --apply writes, --add <file> merges curated lists
+ledger *ARGS: _require-venv
+    {{py}} -B scripts/sources_ledger.py . --store sources {{ARGS}}
+
+# Ruff lint and format check (ruff.toml: two-space indent, 160 columns)
+lint: _require-venv
+    {{py}} -m ruff check .
+    {{py}} -m ruff format --check .
+
+# Closing check: run before claiming a change to this pack is complete
+check: test expected-findings lint
+    {{py}} -B scripts/ip_plan_check.py examples/ip-plan.json > /dev/null
+    {{py}} -B scripts/mtu_budget.py examples/mtu-budget.json > /dev/null
+    {{py}} -B scripts/link_budget.py examples/link-budget.json > /dev/null
+    {{py}} -B scripts/availability.py examples/availability.json > /dev/null
+    {{py}} -B scripts/check_package.py .

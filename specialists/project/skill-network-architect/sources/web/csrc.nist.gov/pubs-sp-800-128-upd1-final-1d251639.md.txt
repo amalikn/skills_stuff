@@ -1,0 +1,26 @@
+Contents of https://csrc.nist.gov/pubs/sp/800/128/upd1/final:
+[Publications](/publications)
+
+[Documentation](#pubs-documentation)
+   
+[Topics](#pubs-topics)
+
+**Date Published:** August 2011 (includes updates as of 10-10-2019)
+
+**Supersedes:**
+
+[SP 800-128 (08/12/2011)](/pubs/sp/800/128/final)
+
+#### Author(s)
+
+, Kelley Dempsey (NIST), Ron Ross (NIST), Sarbari Gupta (Electrosoft Services), Dennis Bailey (Electrosoft Services)
+
+The purpose of Special Publication 800-128, Guide for Security-Focused Configuration Management of Information Systems, is to provide guidelines for organizations responsible for managing and administering the security of federal information systems and associated environments of operation. Configuration management concepts and principles described in NIST SP 800-128, provide supporting information for NIST SP 800-53, Recommended Security Controls for Federal Information Systems and Organizations. NIST SP 800-128 assumes that information security is an integral part of an organization’s overall configuration management. The focus of this document is on implementation of the information system security aspects of configuration management, and as such the term security-focused configuration management (SecCM) is used to emphasize the concentration on information security. In addition to the fundamental concepts associated with SecCM, the process of applying SecCM practices to information systems is described. The goal of SecCM activities is to manage and monitor the configurations of information systems to achieve adequate security and minimize organizational risk while supporting the desired business functionality and services.
+
+#### Keywords
+
+Configuration management; information systems; security program; risk management framework; security-focused continuous monitoring; SecCM; control; monitoring; security content automation protocol (SCAP)
+
+##### Control Families
+
+Configuration Management

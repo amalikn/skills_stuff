@@ -1,0 +1,58 @@
+{
+ "schema_version": 1,
+ "purpose": "Trigger and near-miss prompts: run after any description change; record results in evals/results.md separately from behavioural cases.",
+ "should_trigger": [
+  "Design the WAN for 40 remote sites on satellite with LTE backup and tell me what fails first.",
+  "We are moving from OSPF to eBGP in the datacenter fabric; what is the migration plan?",
+  "Two offices both use 10.20.0.0/16 and now need a site-to-site tunnel. Options?",
+  "Plan IPv6 addressing for a campus with 30 buildings and guest Wi-Fi.",
+  "Our VXLAN overlay drops large packets after we added WireGuard between sites. Why?",
+  "Will a 12 km 5.8 GHz point-to-point link with 23 dBi dishes close with 15 dB of margin?",
+  "Segment the OT network from corporate users without breaking the historian.",
+  "Is our dual-ISP edge actually redundant? Both circuits enter in the same duct.",
+  "Design DNS, DHCP and NTP so remote sites keep working when the WAN is down.",
+  "Review this firewall and VLAN design for the new warehouse before we order switches."
+ ],
+ "should_not_trigger": [
+  {
+   "prompt": "Show the RouterOS command to print interface link-downs on the site switch.",
+   "expected_owner": "skill-mikrotik"
+  },
+  {
+   "prompt": "What does the ansible-wifi report column 'tstik_reset' mean?",
+   "expected_owner": "skill-smc"
+  },
+  {
+   "prompt": "Which firmware is current for the Cambium ePMP 3000 SM?",
+   "expected_owner": "skill-cambium"
+  },
+  {
+   "prompt": "Lay out this draw.io diagram so the arrows stop crossing.",
+   "expected_owner": "skill-drawio"
+  },
+  {
+   "prompt": "Add a custom field to Nautobot devices for circuit IDs.",
+   "expected_owner": "skill-nautobot"
+  },
+  {
+   "prompt": "Why is OpenWISP not receiving metrics from this device?",
+   "expected_owner": "skill-openwisp"
+  },
+  {
+   "prompt": "Write a Python function that parses this CSV of interfaces.",
+   "expected_owner": "skill-coder"
+  },
+  {
+   "prompt": "Size the Proxmox cluster memory so it survives losing one host.",
+   "expected_owner": "skill-systems-architect"
+  },
+  {
+   "prompt": "How long will a 2 TB restore take over our backup link?",
+   "expected_owner": "skill-systems-architect"
+  },
+  {
+   "prompt": "Write a cover letter for a network engineer role.",
+   "expected_owner": "none"
+  }
+ ]
+}

@@ -1,0 +1,7 @@
+# Optional Codex UI metadata; the skill body is portable.
+interface:
+  display_name: "Network Architect"
+  short_description: "Design and review networks across technologies"
+  default_prompt: "Use $skill-network-architect to review the architecture, identify failure domains and propose measurable validation."
+policy:
+  allow_implicit_invocation: true

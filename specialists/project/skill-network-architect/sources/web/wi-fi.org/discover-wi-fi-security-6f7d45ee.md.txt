@@ -1,0 +1,30 @@
+Contents of https://www.wi-fi.org/discover-wi-fi/security:
+### WPA3™
+
+WPA3™ offers cutting-edge security protocols, simplifying Wi-Fi**®** security, enabling more robust authentication, delivering increased cryptographic strength for highly sensitive data markets, and maintaining the resiliency of mission-critical networks.
+
+WPA3 is mandatory for Wi-Fi CERTIFIED devices and includes additional capabilities specifically for personal and enterprise networks. Users of WPA3-Personal receive increased protections from password guessing attempts, while WPA3-Enterprise users can now take advantage of higher-grade security protocols for sensitive data networks.
+
+WPA3 networks:
+
+* Use the latest security protocols
+* Disallow outdated legacy protocols
+* Require use of Protected Management Frames (PMF)
+
+[View all resources](/wpa3-resources)
+
+### Wi-Fi Enhanced Open™
+
+Wi‑Fi Enhanced Open™ preserves the convenience that open networks offer while reducing some of the risks associated with accessing an unsecured network. Wi-Fi Enhanced Open networks provide unauthenticated data encryption to users, an improvement over traditional open networks with no protections at all.
+
+Wi-Fi Enhanced Open benefits users by providing data encryption that maintains the ease of use of open networks, and benefits network providers because there are no public passphrases to maintain, share, or manage. Wi-Fi Enhanced Open enables the following capabilities:
+
+* Data encryption that maintains the ease of use of open networks
+* No public passphrases to maintain, share, or manage
+* Interoperability with legacy networks, even those using a captive portal
+
+[View all resources](/wi-fi-enhanced-open-resources)
+
+### Protected Management Frames
+
+Protected Management Frames (PMF) extends security protections to unicast (protection from eavesdropping and forging) and multicast (protection from forging) management action frames. PMF augments privacy protections already in place for data frames with mechanisms to improve the resiliency of mission-critical networks. PMF is required for all new certified devices.

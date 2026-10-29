@@ -1,0 +1,32 @@
+Contents of https://csrc.nist.gov/pubs/sp/800/81/r3/final:
+[Publications](/publications)
+
+[Documentation](#pubs-documentation)
+   
+[Topics](#pubs-topics)
+
+**Date Published:** March 2026
+
+**Supersedes:**
+
+[SP 800-81-2 (09/18/2013)](/pubs/sp/800/81/2/final)
+
+**Planning Note (07/10/2026):**
+
+See [potential updates (errata)](/files/pubs/sp/800/81/r3/final/docs/sp800-81r3-potential-updates.xlsx) for SP 800-81r3.
+
+  
+
+#### Author(s)
+
+, Cricket Liu (Infoblox), Ross Gibson (Infoblox)
+
+The Domain Name System (DNS) is an integral part of any enterprise network architecture. An attack against the DNS infrastructure of an enterprise threatens every network operation in that enterprise. DNS operations are composed of different roles that each have their own set of security considerations. This document provides DNS deployment guidelines to secure the DNS protocol and infrastructure, mitigate misuse or misconfiguration, and provide an additional layer of network security as part of a zero trust and/or defense-in-depth security risk management approach.
+
+#### Keywords
+
+Authoritative Name Server; DNS Logging; DNS Security Extensions (DNSSEC); Domain Name System (DNS); Encrypted DNS; Protective DNS; Recursive Name Server; Resource Record (RR)
+
+##### Control Families
+
+None selected

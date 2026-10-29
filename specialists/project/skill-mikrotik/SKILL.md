@@ -89,6 +89,10 @@ locally with `sshpass -e`, so the password never appears in a command that runs 
 - **`skill-smc`** — the SMC box, ansible-wifi, Teleport access, Prometheus/Graylog scripts, and the `rct` TSTIK app that power-cycles this switch. It calls back here for anything about the switch or
   AP itself.
 - **`skill-cambium`** — Cambium radios and APs. MikroTik-vs-Cambium boundary: the device vendor decides the pack.
+- **`skill-network-architect`** and **`skill-systems-architect`** (peer architects, beside this pack) — call them when a task needs design rather than
+  device facts: connectivity, traffic, RF or convergence design to the network architect; compute, storage, OS, identity, endpoint or recovery design to
+  the systems architect. Send their handoff form (`skill-network-architect/templates/handoff.md`), keep ownership of this pack's facts and return concrete evidence. They call back
+  here for platform facts. Skill availability does not confer authorisation.
 
 ## References
 

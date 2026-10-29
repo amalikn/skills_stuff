@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_1417
+Last rotated: 20261029_1751
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -14,28 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
-## Contents
+## 20261029_1750 — Inbound route to the peer architect skills (v0.10.3 -> v0.10.4)
 
-- [20261029_1417 — aurukun: six WAN legs per box; a leg down at draft time is left out (v0.10.2 -> v0.10.3)](#20261029_1417--aurukun-six-wan-legs-per-box-a-leg-down-at-draft-time-is-left-out-v0102---v0103)
-- [20261029_1257 — FDB and VIP placement evidence; TL- model prefix on old SG2428P firmware (v0.10.1 -> v0.10.2)](#20261029_1257--fdb-and-vip-placement-evidence-tl--model-prefix-on-old-sg2428p-firmware-v0101---v0102)
-- [20261029_1215 — ssh_handshake_probe: what SSH a device behind an SMC offers, no login (v0.10.0 -> v0.10.1)](#20261029_1215--ssh_handshake_probe-what-ssh-a-device-behind-an-smc-offers-no-login-v0100---v0101)
-- [20261029_1058 — TP-Link switches on IPSSH firmware: legacy SSH fallbacks (v0.9.9 -> v0.10.0)](#20261029_1058--tp-link-switches-on-ipssh-firmware-legacy-ssh-fallbacks-v099---v0100)
-- [20261029_0958 — ha capture group, multi-SMC hosts and --proxy; aurukun VRRP layout (v0.9.8 -> v0.9.9)](#20261029_0958--ha-capture-group-multi-smc-hosts-and---proxy-aurukun-vrrp-layout-v098---v099)
-- [20261028_2046 — stuck apt_info.py holds the apt lists lock; apt_lock_probe.sh (v0.9.7 -> v0.9.8)](#20261028_2046--stuck-apt_infopy-holds-the-apt-lists-lock-apt_lock_probesh-v097---v098)
-- [20261028_1559 — PIN funnel and fleet check, runtime budget clock (v0.9.6 -> v0.9.7)](#20261028_1559--pin-funnel-and-fleet-check-runtime-budget-clock-v096---v097)
-- [20261028_1516 — rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6)](#20261028_1516--rct_avr_probesh-and-avr-routing-v095---v096)
-- [20261028_1442 — AVR V3.07 vs Thuraya, fleet AVR state (v0.9.4 -> v0.9.5)](#20261028_1442--avr-v307-vs-thuraya-fleet-avr-state-v094---v095)
-- [20261028_1315 — Automated AVR flash, probe self-match, resume_safe (v0.9.3 -> v0.9.4)](#20261028_1315--automated-avr-flash-probe-self-match-resume_safe-v093---v094)
-- [20261028_1242 — AVR serial collision verified on warehouse-rct01 (v0.9.2 -> v0.9.3)](#20261028_1242--avr-serial-collision-verified-on-warehouse-rct01-v092---v093)
-- [20261028_1224 — rct-tstik iridium change: self-persisting command, symlinked copy sources, AVR flash (v0.9.1 -> v0.9.2)](#20261028_1224--rct-tstik-iridium-change-self-persisting-command-symlinked-copy-sources-avr-flash-v091---v092)
-- [20261027_2015 — Slurp close: governed-file adoption, sibling write-backs (v0.9.0 -> v0.9.1)](#20261027_2015--slurp-close-governed-file-adoption-sibling-write-backs-v090---v091)
-- [20261027_2012 — scripts/ arranged into job folders; layout and catalogue checks (v0.8.9 -> v0.9.0)](#20261027_2012--scripts-arranged-into-job-folders-layout-and-catalogue-checks-v089---v090)
-- [20261027_1953 — Staleness audit: branch reach, two checker gaps, version rule (v0.8.8 -> v0.8.9)](#20261027_1953--staleness-audit-branch-reach-two-checker-gaps-version-rule-v088---v089)
-- [20261027_1947 — ansible_change_reach probe; July apt fixes and smc_ltp fix not on rise (v0.8.7 -> v0.8.8)](#20261027_1947--ansible_change_reach-probe-july-apt-fixes-and-smc_ltp-fix-not-on-rise-v087---v088)
-- [20261027_1937 — Open-items tracker reviewed (v0.8.6 -> v0.8.7)](#20261027_1937--open-items-tracker-reviewed-v086---v087)
-- [20261027_1922 — Quoted code excerpt restored after a markdown hook bug (v0.8.5 -> v0.8.6)](#20261027_1922--quoted-code-excerpt-restored-after-a-markdown-hook-bug-v085---v086)
-- [20261027_1459 — smc_change self-repair, kohana cron_job, lockstep timing; link health probe (v0.8.4 -> v0.8.5)](#20261027_1459--smc_change-self-repair-kohana-cron_job-lockstep-timing-link-health-probe-v084---v085)
-- [20261027_1207 — Teleport re-join without a tunnel; first rcp PHP apply (v0.8.3 -> v0.8.4)](#20261027_1207--teleport-re-join-without-a-tunnel-first-rcp-php-apply-v083---v084)
+SKILL.md Related Skills names skill-network-architect and skill-systems-architect and when to call them (design rather than device facts), with their
+handoff form; they call back here for platform facts (operator, 2026-10-29). manifest 0.10.3 -> 0.10.4.
 
 ## 20261029_1417 — aurukun: six WAN legs per box; a leg down at draft time is left out (v0.10.2 -> v0.10.3)
 

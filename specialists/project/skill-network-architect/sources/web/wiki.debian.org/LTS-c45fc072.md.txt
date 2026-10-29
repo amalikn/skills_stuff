@@ -1,0 +1,68 @@
+Contents of https://wiki.debian.org/LTS:
+[Translation(s)](/DebianWiki/EditorGuide#translation): [English](/LTS) - [Deutsch](/de/LTS) - [Español](/es/LTS) - [Français](/fr/LTS) - [Italiano](/it/LTS) - [한국어](/ko/LTS) - [Português](/pt/LTS) - [Português (Brasil)](/pt_BR/LTS) - [Русский](/ru/LTS)
+
+## Debian Long Term Support
+
+Debian Long Term Support (LTS) is a project to extend the lifetime of all Debian stable releases to (at least) 5 years. Debian LTS is handled by a group of volunteers and companies interested in making it a success.
+
+Debian LTS is not handled by the Debian Security and Release teams. Thus the Debian LTS team takes over security maintenance of the various releases once the Debian Security team stops its work.
+
+![/!\](/htdocs/debwiki/img/alert.png "/!\") For more information see [LTS/Bookworm](/LTS/Bookworm), [LTS/Bullseye](/LTS/Bullseye), [LTS/Using](/LTS/Using), [LTS/Installing](/LTS/Installing) and [LTS/FAQ](/LTS/FAQ).
+
+LTS schedule (last updated: 2026-08-31)
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| **Version** | **LTS supported architectures** | **Released** | **LTS schedule** |
+| **Current LTS Release(s)** | | | |
+| Debian 12 [bookworm](/LTS/Bookworm) | i386, amd64, armhf, arm64, ppc64el | 2023-06-10 | 2026-06-11 - 2028-06-30 |
+| Future LTS Release(s) | | | |
+| Debian 13 [trixie](/DebianTrixie) | architecture list to be determined | 2025-08-09 | 2028-08-09 - 2030-06-30 |
+| Previous LTS Releases | | | |
+| Debian 6 [squeeze](/DebianSqueeze) | i386, amd64 | 2011-02-06 | 2014-06-02 - 2016-02-29 |
+| Debian 7 [wheezy](/LTS/Wheezy) | i386, amd64, armel, armhf | 2013-05-04 | 2016-04-26 - 2018-05-31 |
+| Debian 8 [jessie](/LTS/Jessie) | i386, amd64, armel, armhf | 2015-04-26 | 2018-06-17 - 2020-06-30 |
+| Debian 9 [stretch](/LTS/Stretch) | i386, amd64, armel, armhf, arm64 | 2017-06-17 | 2020-07-06 - 2022-06-30 |
+| Debian 10 [buster](/LTS/Buster) | i386, amd64, armhf, arm64 | 2019-06-06 | 2022-08-01 - 2024-06-30 |
+| Debian 11 [bullseye](/LTS/Bullseye) | i386, amd64, armhf, arm64 | 2021-08-14 | 2024-08-15 - 2026-08-31 |
+
+Companies using Debian who benefit from this project are encouraged to either [help directly](https://lts-team.pages.debian.net/wiki/Development.html) or [contribute financially](/LTS/Funding). The number of properly supported packages depends directly on the level of support that the LTS team receives.
+
+All Debian LTS security advisories (DLAs) are published at <https://www.debian.org/lts/security/> where you can also subscribe via RSS feed.
+
+Extended Long Term Support is also available. Please refer to [Extended LTS](/LTS/Extended) for further information.
+
+Contents
+
+1. [Debian Long Term Support](#Debian_Long_Term_Support)
+2. [Important Subpages](#Important_Subpages)
+3. [Get in contact](#Get_in_contact)
+4. [Usage and users survey](#Usage_and_users_survey)
+
+## Important Subpages
+
+See the following sub pages for details:
+
+* [How to use the updates from LTS](/LTS/Using)
+* [FAQ (Frequently Asked Questions) about LTS in Debian](/LTS/FAQ)
+* [How to install a fresh LTS system](/LTS/Installing)
+* [Funding the Debian LTS project](/LTS/Funding)
+* [Members of the Debian LTS team](/LTS/Team)
+* [Contributing to Debian LTS](https://lts-team.pages.debian.net/wiki/Development.html)
+* [ToDo: project wide tasks for everyone](https://salsa.debian.org/lts-team/lts-extra-tasks/-/issues)
+* [Official announcements](/LTS/Announcement)
+* [LTS Logos](/LTS/Logos)
+
+All LTS related pages are listed in the [LTS category](/CategoryLts)
+
+The most important way of communication is the [mailing list debian-lts](/LTS/Contact#debian-lts). See [LTS/Contact](/LTS/Contact) for more.
+
+## Usage and users survey
+
+* July 2020: 
+  + [Results](https://web.archive.org/web/20220511195445/https://lts-team.pages.debian.net/2020/10/15/debian-lts-survey.html)
+  + [Subjective answers summary](https://inguza.com/reportdoc/debian-lts/survey-summary.pdf)
+
+---
+
+[CategoryLts](/CategoryLts) | [CategoryPermalink](/CategoryPermalink)

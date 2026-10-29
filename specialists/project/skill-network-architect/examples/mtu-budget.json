@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "paths": [
+    {
+      "id": "site-wireguard-over-1500",
+      "underlay_mtu": 1500,
+      "layers": [
+        "wireguard-ipv4"
+      ],
+      "required_payload_mtu": 1420
+    },
+    {
+      "id": "evpn-fabric-jumbo",
+      "underlay_mtu": 9216,
+      "layers": [
+        "vxlan-ipv4",
+        "dot1q-inner"
+      ],
+      "required_payload_mtu": 9000
+    }
+  ]
+}

@@ -11,6 +11,11 @@ Last rotated: 20261022_1620
 
 # Changelog
 
+## 20261029_1750 — Inbound route to the peer architect skills (v0.1.30 -> v0.1.31)
+
+SKILL.md Related Skills names skill-network-architect and skill-systems-architect and when to call them (design rather than device facts), with their
+handoff form; they call back here for platform facts (operator, 2026-10-29). manifest 0.1.30 -> 0.1.31.
+
 ## 20261022_1620 — RouterOS platform features for a router-as-site-box evaluation (v0.1.29 -> v0.1.30)
 
 New `references/08_routeros-platform-features.md`, written back from enterprise-strategy's RouterOS future study (operator answers 20261022_1535):

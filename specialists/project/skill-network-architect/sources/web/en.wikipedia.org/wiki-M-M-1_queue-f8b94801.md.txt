@@ -1,0 +1,120 @@
+Contents of https://en.wikipedia.org/wiki/M/M/1_queue:
+From Wikipedia, the free encyclopedia
+
+[![M/M/1 queue diagram](//thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Mm1_queue.svg/250px-Mm1_queue.svg.png?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail)](https://en.wikipedia.org/wiki/File:Mm1_queue.svg)
+
+An M/M/1 queueing node
+
+In [queueing theory](https://en.wikipedia.org/wiki/Queueing_theory "Queueing theory"), a discipline within the mathematical [theory of probability](https://en.wikipedia.org/wiki/Probability_theory "Probability theory"), an **M/M/1 queue** represents the queue length in a system having a single server, where arrivals are determined by a [Poisson process](https://en.wikipedia.org/wiki/Poisson_process "Poisson process") and job service times have an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution "Exponential distribution"). The model name is written in [Kendall's notation](https://en.wikipedia.org/wiki/Kendall's_notation "Kendall's notation"). The model is the most elementary of queueing models[[1]](#cite_note-1) and an attractive object of study as [closed-form expressions](https://en.wikipedia.org/wiki/Closed-form_expression "Closed-form expression") can be obtained for many metrics of interest in this model. An extension of this model with more than one server is the [M/M/c queue](https://en.wikipedia.org/wiki/M/M/c_queue "M/M/c queue").
+
+An M/M/1 queue is a stochastic process whose [state space](https://en.wikipedia.org/wiki/State_space "State space") is the set {0,1,2,3,...} where the value corresponds to the number of customers in the system, including any currently in service.
+
+* Arrivals occur at rate λ according to a [Poisson process](https://en.wikipedia.org/wiki/Poisson_process "Poisson process") and move the process from state *i* to *i* + 1.
+* Service times have an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution "Exponential distribution") with rate parameter μ in the M/M/1 queue, where 1/μ is the mean service time.
+* All arrival times and services times are (usually) assumed to be independent of one another.[[2]](#cite_note-Kleinrock-2)
+* A single server serves customers one at a time from the front of the queue, according to a [first-come, first-served](https://en.wikipedia.org/wiki/First-come,_first-served "First-come, first-served") discipline. When the service is complete the customer leaves the queue and the number of customers in the system reduces by one.
+* The buffer is of infinite size, so there is no limit on the number of customers it can contain.
+
+The model can be described as a [continuous time Markov chain](https://en.wikipedia.org/wiki/Continuous_time_Markov_chain "Continuous time Markov chain") with [transition rate matrix](https://en.wikipedia.org/wiki/Transition_rate_matrix "Transition rate matrix")
+
+:   :   ![{\displaystyle Q={\begin{pmatrix}-\lambda &\lambda \\\mu &-(\mu +\lambda )&\lambda \\&\mu &-(\mu +\lambda )&\lambda \\&&\mu &-(\mu +\lambda )&\lambda &\\&&&&\ddots \end{pmatrix}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/83766149de7c1a04c5470ce6aef618162454e063)
+
+on the state space {0,1,2,3,...}. This is the same continuous time Markov chain as in a [birth–death process](https://en.wikipedia.org/wiki/Birth%E2%80%93death_process "Birth–death process"). The [state space](https://en.wikipedia.org/wiki/State_space "State space") diagram for this chain is as below.
+
+[![](//thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/MM1_queue_state_space.svg/960px-MM1_queue_state_space.svg.png?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail)](https://en.wikipedia.org/wiki/File:MM1_queue_state_space.svg)
+
+## Stationary analysis
+
+[[edit](/w/index.php?title=M/M/1_queue&action=edit&section=2 "Edit section: Stationary analysis")]
+
+The model is considered stable only if λ < μ. If, on average, arrivals happen faster than service completions the queue will grow indefinitely long and the system will not have a stationary distribution. The stationary distribution is the limiting distribution for large values of *t*.
+
+Various performance measures can be computed explicitly for the M/M/1 queue. We write ρ = λ/μ for the utilization of the buffer and require ρ < 1 for the queue to be stable. ρ represents the average proportion of time which the server is occupied.
+
+The probability that the [stationary process](https://en.wikipedia.org/wiki/Stationary_process "Stationary process") is in state *i* (contains *i* customers, including those in service) is[[3]](#cite_note-harrison-3): 172–173
+
+:   ![{\displaystyle \pi _{i}=(1-\rho )\rho ^{i}.\,}](https://wikimedia.org/api/rest_v1/media/math/render/svg/ff23a8a56a4728f3fcf82e72a494254976d3a2e0)
+
+### Average number of customers in the system
+
+[[edit](/w/index.php?title=M/M/1_queue&action=edit&section=3 "Edit section: Average number of customers in the system")]
+
+We see that the number of customers in the system is [geometrically distributed](https://en.wikipedia.org/wiki/Geometric_distribution "Geometric distribution") with parameter 1 − *ρ*. Thus the average number of customers in the system is *ρ*/(1 − *ρ*) and the variance of number of customers in the system is *ρ*/(1 − *ρ*)2. This result holds for any work conserving service regime, such as processor sharing.[[4]](#cite_note-guillemin-4)
+
+### Busy period of server
+
+[[edit](/w/index.php?title=M/M/1_queue&action=edit&section=4 "Edit section: Busy period of server")]
+
+The busy period is the time period measured between the instant a customer arrives to an empty system until the instant a customer departs leaving behind an empty system. The busy period has probability density function[[5]](#cite_note-5)[[6]](#cite_note-6)[[7]](#cite_note-7)[[8]](#cite_note-8)
+
+:   :   ![{\displaystyle f(t)={\begin{cases}{\frac {1}{t{\sqrt {\rho }}}}e^{-(\lambda +\mu )t}I_{1}(2t{\sqrt {\lambda \mu }})&t>0\\0&{\text{otherwise}}\end{cases}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/a79f412011920b502fe5d2a9010fe3f87df3b86b)
+
+where *I*1 is a [modified Bessel function of the first kind](https://en.wikipedia.org/wiki/Modified_Bessel_function_of_the_first_kind "Modified Bessel function of the first kind"),[[9]](#cite_note-9) obtained by using [Laplace transforms](https://en.wikipedia.org/wiki/Laplace_transform "Laplace transform") and inverting the solution.[[10]](#cite_note-stewart-10)
+
+The Laplace transform of the M/M/1 busy period is given by[[11]](#cite_note-11)[[12]](#cite_note-12)[[13]](#cite_note-13): 215
+
+:   :   ![{\displaystyle \mathbb {E} (e^{-sF})={\frac {1}{2\lambda }}(\lambda +\mu +s-{\sqrt {(\lambda +\mu +s)^{2}-4\lambda \mu }})}](https://wikimedia.org/api/rest_v1/media/math/render/svg/ad705715133445db3d7d4717b0d812bfe883b277)
+
+which gives the moments of the busy period, in particular the mean is 1/(*μ* − *λ*) and variance is given by
+
+:   :   ![{\displaystyle {\frac {1}{\mu ^{2}(1-\rho )^{2}}}.}](https://wikimedia.org/api/rest_v1/media/math/render/svg/20ba556cfd3447cdd9be46239e66bd7312d6a0bd)
+
+The average response time or sojourn time (total time a customer spends in the system) does not depend on scheduling discipline and can be computed using [Little's law](https://en.wikipedia.org/wiki/Little's_law "Little's law") as 1/(*μ* − *λ*). The average time spent waiting is 1/(*μ* − *λ*) − 1/*μ* = *ρ*/(*μ* − *λ*). The distribution of response times experienced does depend on scheduling discipline.
+
+#### First-come, first-served discipline
+
+[[edit](/w/index.php?title=M/M/1_queue&action=edit&section=6 "Edit section: First-come, first-served discipline")]
+
+For customers who arrive and find the queue as a stationary process, the response time they experience (the sum of both waiting time and service time) has Laplace transform
+(*μ* − *λ*)/(*s* + *μ* − *λ*)[[14]](#cite_note-14) and therefore [probability density function](https://en.wikipedia.org/wiki/Probability_density_function "Probability density function")[[15]](#cite_note-15)
+
+:   :   ![{\displaystyle f(t)={\begin{cases}(\mu -\lambda )e^{-(\mu -\lambda )t}&t>0\\0&{\text{otherwise.}}\end{cases}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/02ce81cdb08e50e122d211adef406915a56a3dfe)
+
+#### Processor sharing discipline
+
+[[edit](/w/index.php?title=M/M/1_queue&action=edit&section=7 "Edit section: Processor sharing discipline")]
+
+In an M/M/1-PS queue there is no waiting line and all jobs receive an equal proportion of the service capacity.[[16]](#cite_note-coffman-16) Suppose the single server serves at rate 16 and there are 4 jobs in the system, each job will experience service at rate 4. The rate at which jobs receive service changes each time a job arrives at or departs from the system.[[16]](#cite_note-coffman-16)
+
+For customers who arrive to find the queue as a stationary process, the [Laplace transform](https://en.wikipedia.org/wiki/Laplace_transform "Laplace transform") of the distribution of response times experienced by customers was published in 1970,[[16]](#cite_note-coffman-16) for which an integral representation is known.[[17]](#cite_note-17) The waiting time distribution (response time less service time) for a customer requiring *x* amount of service has transform[[3]](#cite_note-harrison-3): 356
+
+:   ![{\displaystyle W^{\ast }(s|x)={\frac {(1-\rho )(1-\rho r^{2})e^{-[\lambda (1-r)+s]x}}{(1-\rho r^{2})-\rho (1-r)^{2}e^{-(\mu /r-\lambda r)x}}}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/834c6b0b9f923076b830d4358853c1a60a080f7c)
+
+where *r* is the smaller root of the equation
+
+:   ![{\displaystyle \lambda r^{2}-(\lambda +\mu +s)r+\mu =0.}](https://wikimedia.org/api/rest_v1/media/math/render/svg/cc02143c56ccc06d5db2ff33b4608aa31a5488cc)
+
+The mean response time for a job arriving and requiring amount *x* of service can therefore be computed as *x μ*/(*μ* − *λ*). An alternative approach computes the same results using a [spectral expansion method](https://en.wikipedia.org/wiki/Spectral_expansion_solution "Spectral expansion solution").[[4]](#cite_note-guillemin-4)
+
+We can write a [probability mass function](https://en.wikipedia.org/wiki/Probability_mass_function "Probability mass function") dependent on *t* to describe the probability that the M/M/1 queue is in a particular state at a given time. We assume that the queue is initially in state *i* and write *p**k*(*t*) for the probability of being in state *k* at time *t*. Then[[2]](#cite_note-Kleinrock-2)[[18]](#cite_note-18)
+
+:   :   ![{\displaystyle p_{k}(t)=e^{-(\lambda +\mu )t}\left[\rho ^{\frac {k-i}{2}}I_{k-i}(at)+\rho ^{\frac {k-i-1}{2}}I_{k+i+1}(at)+(1-\rho )\rho ^{k}\sum _{j=k+i+2}^{\infty }\rho ^{-j/2}I_{j}(at)\right]}](https://wikimedia.org/api/rest_v1/media/math/render/svg/199a5d293ed8310ee0f023ed8c5be0b139adfb7b)
+
+where ![{\displaystyle i}](https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20) is the initial number of customers in the station at time ![{\displaystyle t=0}](https://wikimedia.org/api/rest_v1/media/math/render/svg/43469ec032d858feae5aa87029e22eaaf0109e9c),![{\displaystyle \rho =\lambda /\mu }](https://wikimedia.org/api/rest_v1/media/math/render/svg/9b24373dbb56cd7f8b8359e522bcaf8992da6e4f), ![{\displaystyle a=2{\sqrt {\lambda \mu }}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/9e53bf11e4adaf4bdd7db6b99e69cc57096efacb) and ![{\displaystyle I_{k}}](https://wikimedia.org/api/rest_v1/media/math/render/svg/d658e7f6b34dd1d3025a7c9a72efba5b9f46475d) is the [modified Bessel function of the first kind](https://en.wikipedia.org/wiki/Modified_Bessel_function_of_the_first_kind "Modified Bessel function of the first kind"). Moments for the transient solution can be expressed as the sum of two [monotone functions](https://en.wikipedia.org/wiki/Monotone_function "Monotone function").[[19]](#cite_note-19)
+
+## Diffusion approximation
+
+[[edit](/w/index.php?title=M/M/1_queue&action=edit&section=9 "Edit section: Diffusion approximation")]
+
+When the utilization *ρ* is close to 1 the process can be approximated by a [reflected Brownian motion](https://en.wikipedia.org/wiki/Reflected_Brownian_motion "Reflected Brownian motion") with drift parameter *λ* – *μ* and variance parameter *λ* + *μ*. This heavy traffic limit was first introduced by [John Kingman](https://en.wikipedia.org/wiki/John_Kingman "John Kingman").[[20]](#cite_note-20)
+
+1. [↑](#cite_ref-1) Sturgul, John R. (2000). *Mine design: examples using simulation*. SME. p. vi. [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [0-87335-181-9](https://en.wikipedia.org/wiki/Special:BookSources/0-87335-181-9 "Special:BookSources/0-87335-181-9").
+2. [1](#cite_ref-Kleinrock_2-0) [2](#cite_ref-Kleinrock_2-1) [Kleinrock, Leonard](https://en.wikipedia.org/wiki/Leonard_Kleinrock "Leonard Kleinrock") (1975). *Queueing Systems Volume 1: Theory*. p. 77. [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [0471491101](https://en.wikipedia.org/wiki/Special:BookSources/0471491101 "Special:BookSources/0471491101").
+3. [1](#cite_ref-harrison_3-0) [2](#cite_ref-harrison_3-1) [Harrison, Peter](https://en.wikipedia.org/wiki/Peter_G._Harrison "Peter G. Harrison"); Patel, Naresh M. (1992). [*Performance Modelling of Communication Networks and Computer Architectures*](https://archive.org/details/performancemodel0000harr). Addison–Wesley.
+4. [1](#cite_ref-guillemin_4-0) [2](#cite_ref-guillemin_4-1) Guillemin, F.; Boyer, J. (2001). ["Analysis of the M/M/1 Queue with Processor Sharing via Spectral Theory"](https://web.archive.org/web/20061129234117/http://perso.rd.francetelecom.fr/guillemin/PDFfiles/gps.pdf) (PDF). *[Queueing Systems](https://en.wikipedia.org/wiki/Queueing_Systems "Queueing Systems")*. **39** (4): 377. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1023/A:1013913827667](https://doi.org/10.1023%2FA%3A1013913827667). Archived from [the original](http://perso.rd.francetelecom.fr/guillemin/PDFfiles/gps.pdf) (PDF) on 2006-11-29.
+5. [↑](#cite_ref-5) Abate, J.; [Whitt, W.](https://en.wikipedia.org/wiki/Ward_Whitt "Ward Whitt") (1988). ["Simple spectral representations for the M/M/1 queue"](http://www.columbia.edu/~ww2040/SimpleSpectralMM1.pdf) (PDF). *[Queueing Systems](https://en.wikipedia.org/wiki/Queueing_Systems "Queueing Systems")*. **3** (4): 321. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1007/BF01157854](https://doi.org/10.1007%2FBF01157854).
+6. [↑](#cite_ref-6) Keilson, J.; Kooharian, A. (1960). ["On Time Dependent Queuing Processes"](https://doi.org/10.1214%2Faoms%2F1177705991). *The Annals of Mathematical Statistics*. **31** (1): 104–112. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1214/aoms/1177705991](https://doi.org/10.1214%2Faoms%2F1177705991). [JSTOR](https://en.wikipedia.org/wiki/JSTOR_(identifier) "JSTOR (identifier)") [2237497](https://www.jstor.org/stable/2237497).
+7. [↑](#cite_ref-7) [Karlin, Samuel](https://en.wikipedia.org/wiki/Samuel_Karlin "Samuel Karlin"); McGregor, James (1958). ["Many server queueing processes with Poisson input and exponential service times"](http://msp.org/pjm/1958/8-1/pjm-v8-n1-p08-s.pdf) (PDF). *Pacific J. Math*. **8** (1): 87–118. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.2140/pjm.1958.8.87](https://doi.org/10.2140%2Fpjm.1958.8.87). [MR](https://en.wikipedia.org/wiki/MR_(identifier) "MR (identifier)") [0097132](https://mathscinet.ams.org/mathscinet-getitem?mr=0097132).
+8. [↑](#cite_ref-8) Gross, Donald; Shortle, John F.; Thompson, James M.; Harris, Carl M. (2011-09-23). "2.12 Busy-Period Analysis". *Fundamentals of Queueing Theory*. Wiley. [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [1118211642](https://en.wikipedia.org/wiki/Special:BookSources/1118211642 "Special:BookSources/1118211642").
+9. [↑](#cite_ref-9) Adan, Ivo. ["Course QUE: Queueing Theory, Fall 2003: The M/M/1 system"](http://www.win.tue.nl/~iadan/que/h4.pdf) (PDF). Retrieved 2012-08-06.
+10. [↑](#cite_ref-stewart_10-0) Stewart, William J. (2009). [*Probability, Markov chains, queues, and simulation: the mathematical basis of performance modeling*](https://archive.org/details/probabilitymarko00stew). Princeton University Press. p. [530](https://archive.org/details/probabilitymarko00stew/page/n548). [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [978-0-691-14062-9](https://en.wikipedia.org/wiki/Special:BookSources/978-0-691-14062-9 "Special:BookSources/978-0-691-14062-9").
+11. [↑](#cite_ref-11) Asmussen, S. R. (2003). "Queueing Theory at the Markovian Level". *Applied Probability and Queues*. Stochastic Modelling and Applied Probability. Vol. 51. pp. 60–31. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1007/0-387-21525-5\_3](https://doi.org/10.1007%2F0-387-21525-5_3). [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [978-0-387-00211-8](https://en.wikipedia.org/wiki/Special:BookSources/978-0-387-00211-8 "Special:BookSources/978-0-387-00211-8").
+12. [↑](#cite_ref-12) Adan, I.; Resing, J. (1996). "Simple analysis of a fluid queue driven by an M/M/1 queue". *[Queueing Systems](https://en.wikipedia.org/wiki/Queueing_Systems "Queueing Systems")*. **22** (1–2): 171–174. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1007/BF01159399](https://doi.org/10.1007%2FBF01159399).
+13. [↑](#cite_ref-13) [Kleinrock, Leonard](https://en.wikipedia.org/wiki/Leonard_Kleinrock "Leonard Kleinrock") (1975). [*Queueing Systems: Theory, Volume 1*](https://archive.org/details/queueingsystems02klei). Wiley. [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [0471491101](https://en.wikipedia.org/wiki/Special:BookSources/0471491101 "Special:BookSources/0471491101").
+14. [↑](#cite_ref-14) Harrison, P. G. (1993). "Response time distributions in queueing network models". *Performance Evaluation of Computer and Communication Systems*. Lecture Notes in Computer Science. Vol. 729. pp. 147–164. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1007/BFb0013852](https://doi.org/10.1007%2FBFb0013852). [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [3-540-57297-X](https://en.wikipedia.org/wiki/Special:BookSources/3-540-57297-X "Special:BookSources/3-540-57297-X").
+15. [↑](#cite_ref-15) Stewart, William J. (2009). [*Probability, Markov chains, queues, and simulation: the mathematical basis of performance modeling*](https://archive.org/details/probabilitymarko00stew). Princeton University Press. p. [409](https://archive.org/details/probabilitymarko00stew/page/n427). [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [978-0-691-14062-9](https://en.wikipedia.org/wiki/Special:BookSources/978-0-691-14062-9 "Special:BookSources/978-0-691-14062-9").
+16. [1](#cite_ref-coffman_16-0) [2](#cite_ref-coffman_16-1) [3](#cite_ref-coffman_16-2) [Coffman, E. G.](https://en.wikipedia.org/wiki/Edward_G._Coffman,_Jr. "Edward G. Coffman, Jr."); Muntz, R. R.; [Trotter, H.](https://en.wikipedia.org/wiki/Hale_Trotter "Hale Trotter") (1970). ["Waiting Time Distributions for Processor-Sharing Systems"](https://doi.org/10.1145%2F321556.321568). *[Journal of the ACM](https://en.wikipedia.org/wiki/Journal_of_the_ACM "Journal of the ACM")*. **17**: 123–130. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1145/321556.321568](https://doi.org/10.1145%2F321556.321568).
+17. [↑](#cite_ref-17) Morrison, J. A. (1985). "Response-Time Distribution for a Processor-Sharing System". *SIAM Journal on Applied Mathematics*. **45** (1): 152–167. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1137/0145007](https://doi.org/10.1137%2F0145007). [JSTOR](https://en.wikipedia.org/wiki/JSTOR_(identifier) "JSTOR (identifier)") [2101088](https://www.jstor.org/stable/2101088).
+18. [↑](#cite_ref-18) Robertazzi, Thomas G. (2000). *Computer Networks and Systems*. New York, NY: Springer New York. p. 72. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1007/978-1-4612-1164-8](https://doi.org/10.1007%2F978-1-4612-1164-8). [ISBN](https://en.wikipedia.org/wiki/ISBN_(identifier) "ISBN (identifier)") [978-1-4612-7029-4](https://en.wikipedia.org/wiki/Special:BookSources/978-1-4612-7029-4 "Special:BookSources/978-1-4612-7029-4").
+19. [↑](#cite_ref-19) Abate, J.; [Whitt, W.](https://en.wikipedia.org/wiki/Ward_Whitt "Ward Whitt") (1987). ["Transient behavior of the M/M/l queue: Starting at the origin"](http://www.columbia.edu/~ww2040/TransientMM1questa.pdf) (PDF). *[Queueing Systems](https://en.wikipedia.org/wiki/Queueing_Systems "Queueing Systems")*. **2**: 41–65. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1007/BF01182933](https://doi.org/10.1007%2FBF01182933).
+20. [↑](#cite_ref-20) [Kingman, J. F. C.](https://en.wikipedia.org/wiki/John_Kingman "John Kingman") (October 1961). "The single server queue in heavy traffic". *[Mathematical Proceedings of the Cambridge Philosophical Society](https://en.wikipedia.org/wiki/Mathematical_Proceedings_of_the_Cambridge_Philosophical_Society "Mathematical Proceedings of the Cambridge Philosophical Society")*. **57** (4): 902. [doi](https://en.wikipedia.org/wiki/Doi_(identifier) "Doi (identifier)"):[10.1017/S0305004100036094](https://doi.org/10.1017%2FS0305004100036094). [JSTOR](https://en.wikipedia.org/wiki/JSTOR_(identifier) "JSTOR (identifier)") [2984229](https://www.jstor.org/stable/2984229).

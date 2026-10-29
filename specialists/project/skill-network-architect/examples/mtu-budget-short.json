@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "paths": [
+    {
+      "id": "vxlan-over-wireguard-over-pppoe",
+      "underlay_mtu": 1500,
+      "layers": [
+        "pppoe",
+        "wireguard-ipv4",
+        "vxlan-ipv4"
+      ],
+      "required_payload_mtu": 1500
+    }
+  ]
+}

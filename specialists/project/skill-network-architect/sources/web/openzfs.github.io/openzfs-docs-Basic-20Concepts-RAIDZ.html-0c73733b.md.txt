@@ -1,0 +1,131 @@
+[![Image 1: Logo](https://openzfs.github.io/_static/logo_main.png)](https://openzfs.github.io/index.html)
+
+*   [Getting Started](https://openzfs.github.io/Getting%20Started/index.html)
+*   [Basic Concepts](https://openzfs.github.io/openzfs-docs/index.html)
+    *   [Copy-on-Write](https://openzfs.github.io/openzfs-docs/Copy-on-write.html)
+    *   [Pool Structure](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/index.html)
+        *   [VDEVs](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/VDEVs.html)
+        *   [RAIDZ](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#)
+            *   [Introduction](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#introduction)
+            *   [Space efficiency](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#space-efficiency)
+            *   [Performance considerations](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#performance-considerations)
+            *   [Expansion](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#expansion)
+
+        *   [dRAID](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html)
+        *   [Caching and Auxiliary Devices](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/Caching.html)
+        *   [Special vdev](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/Special%20vdev.html)
+        *   [Changing Pool Layout](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/Changing%20Pool%20Layout.html)
+        *   [Feature Flags](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/Feature%20Flags.html)
+
+    *   [Datasets](https://openzfs.github.io/openzfs-docs/Datasets/index.html)
+    *   [Data Storage](https://openzfs.github.io/openzfs-docs/Data%20Storage/index.html)
+    *   [Operations](https://openzfs.github.io/openzfs-docs/Operations/index.html)
+
+*   [Project and Community](https://openzfs.github.io/Project%20and%20Community/index.html)
+*   [Developer Resources](https://openzfs.github.io/Developer%20Resources/index.html)
+*   [Performance and Tuning](https://openzfs.github.io/Performance%20and%20Tuning/index.html)
+*   [Man Pages](https://openzfs.github.io/man/index.html)
+*   [ZFS Messages](https://openzfs.github.io/msg/index.html)
+*   [License](https://openzfs.github.io/License.html)
+
+[OpenZFS](https://openzfs.github.io/index.html)
+
+*   [](https://openzfs.github.io/index.html)
+*   [Basic Concepts](https://openzfs.github.io/openzfs-docs/index.html)
+*   [Pool Structure](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/index.html)
+*   RAIDZ
+*   [Edit on GitHub](https://github.com/openzfs/openzfs-docs/blob/master/docs/Basic%20Concepts/Pool%20Structure/RAIDZ.rst)
+
+* * *
+
+# RAIDZ[](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#raidz "Link to this heading")
+
+## Introduction[](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#introduction "Link to this heading")
+
+RAIDZ is a variation on RAID-5 that allows for better distribution of parity and eliminates the RAID-5 “write hole” (in which data and parity become inconsistent after a power loss). Data and parity is striped across all disks within a raidz group.
+
+A raidz group can have single, double, or triple parity, meaning that the raidz group can sustain one, two, or three failures, respectively, without losing any data. The `raidz1` vdev type specifies a single-parity raidz group; the `raidz2` vdev type specifies a double-parity raidz group; and the `raidz3` vdev type specifies a triple-parity raidz group. The `raidz` vdev type is an alias for raidz1.
+
+A raidz group of N disks of size X with P parity disks can hold approximately (N-P)*X bytes and can withstand P devices failing without losing data. The minimum number of devices in a raidz group is one more than the number of parity disks. The recommended number is between 3 and 9 to help increase performance.
+
+## Space efficiency[](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#space-efficiency "Link to this heading")
+
+Actual used space for a block in RAIDZ is based on several points:
+
+*   minimal write size is disk sector size (can be set via ashift vdev parameter)
+
+*   stripe width in RAIDZ is dynamic, and starts with at least one data block part, or up to `disks count` minus `parity number` parts of data block
+
+*   one block of data with size of `recordsize` is split equally via `sector size` parts and written on each stripe on RAIDZ vdev
+
+*   each stripe of data will have a part of block
+
+*   in addition to data one, two or three blocks of parity should be written, one per disk; so, for raidz2 of 5 disks there will be 3 blocks of data and 2 blocks of parity
+
+Due to these inputs, if `recordsize` is less or equal to sector size, then RAIDZ’s parity size will be effectively equal to mirror with same redundancy. For example, for raidz1 of 3 disks with `ashift=12` and `recordsize=4K` we will allocate on disk:
+
+*   one 4K block of data
+
+*   one 4K parity block
+
+and usable space ratio will be 50%, same as with double mirror.
+
+Another example for `ashift=12` and `recordsize=128K` for raidz1 of 3 disks:
+
+*   total stripe width is 3
+
+*   one stripe can have up to 2 data parts of 4K size because of 1 parity blocks
+
+*   we will have 128K/8k = 16 stripes with 8K of data and 4K of parity each
+
+*   16 stripes each with 12k, means we write 192k to store 128k
+
+so usable space ratio in this case will be 66%.
+
+The more disks RAIDZ has, the wider the stripe, the greater the space efficiency.
+
+You can find actual parity cost per RAIDZ size here:
+
+([source](https://docs.google.com/spreadsheets/d/1_CO8x03VICdiIMulDjQi9NDBd53qFpUreMQVrF1uS28/edit?usp=sharing))
+
+## Performance considerations[](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#performance-considerations "Link to this heading")
+
+### Write[](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#write "Link to this heading")
+
+A stripe spans across all drives in the array. A one block write will write the stripe part onto each disk. A RAIDZ vdev has a write IOPS of the slowest disk in the array in the worst case because the write operation of all stripe parts must be completed on each disk.
+
+### Read[](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#read "Link to this heading")
+
+A read touches only the columns the block actually occupies, not the whole group. A block of `N` sectors that does not fill a complete stripe row is laid out across `N` data columns; the rest of the group is untouched. Parity is not read at all on a healthy read — it is fetched only when data is missing, or during a scrub or resilver.
+
+So the width of the vdev is not what decides read behavior — the ratio between block size and stripe width is:
+
+*   When a block spans **all** data columns — the usual case, since the default `recordsize` of 128 KiB fills any realistic group — every read costs one I/O on every data disk. Random-read IOPS then works out roughly the same as a single disk’s, however wide the group.
+
+*   When blocks are **small** relative to the group — a database with `recordsize=8K` or `16K` on a wide vdev — each read lands on only a few disks, and concurrent reads to different blocks proceed in parallel. IOPS does scale in that regime, at the cost of the poor space efficiency small records have on RAIDZ (see above).
+
+Streaming bandwidth scales with the number of data disks in both cases.
+
+The rule of thumb “RAIDZ gives you the IOPS of one disk” is therefore about the default large-record configuration, not a property of RAIDZ itself. It is still the right assumption for general-purpose pools, and mirrors remain the better choice when random-read IOPS is the binding constraint.
+
+#### One slow disk[](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#one-slow-disk "Link to this heading")
+
+Because a read completes only when every column it spans has returned, its latency is that of the slowest disk involved. A single sick drive can therefore drag down a whole group ([#9375](https://github.com/openzfs/zfs/issues/9375)).
+
+Since OpenZFS 2.4 this is detected and worked around: a persistently slow child is put in a _sit out_ state, during which reads skip it and reconstruct its data from parity. Writes still go to it, so redundancy is maintained, and scrubs always read it. Up to `nparity` disks may sit out at once. The period is set by `vdev_read_sit_out_secs` (default 600 s; `0` disables detection entirely). Each sit-out bumps the vdev’s `slow_ios` counter and posts an `ereport.fs.zfs.delay` event.
+
+## Expansion[](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html#expansion "Link to this heading")
+
+A raidz vdev can be widened by attaching another device to it:
+
+zpool attach pool raidz2-0 sdX
+
+Fault tolerance is unchanged — a RAID-Z2 stays a RAID-Z2 — and blocks written before the expansion keep their original data-to-parity ratio, just spread over more disks. Only newly written blocks use the wider ratio. See [Changing Pool Layout](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/Changing%20Pool%20Layout.html).
+
+[Previous](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/VDEVs.html "VDEVs")[Next](https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html "dRAID")
+
+* * *
+
+© Copyright 2026, OpenZFS. Last updated on Jul 22, 2026.
+
+ Built with [Sphinx](https://www.sphinx-doc.org/) using a [theme](https://github.com/readthedocs/sphinx_rtd_theme) provided by [Read the Docs](https://readthedocs.org/).

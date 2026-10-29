@@ -1,0 +1,122 @@
+Contents of https://www.iana.org/assignments/iana-ipv4-special-registry/:
+### Created
+
+* 2009-08-19
+
+### Last Updated
+
+* 2025-10-09
+
+### Available Formats
+
+* [XML](/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xml)
+* [HTML](/assignments/iana-ipv4-special-registry)
+* [TXT](/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.txt)
+
+---
+
+## IPv4 Special-Purpose Address Space
+
+### Registration Procedure(s)
+
+* IETF Review
+
+### Reference
+
+* [RFC 5736](https://www.iana.org/go/rfc5736): IANA IPv4 Special Purpose Address Registry
+* [RFC 6890](https://www.iana.org/go/rfc6890): Special-Purpose IP Address Registries
+* [RFC Errata 6404](https://www.iana.org/go/eid6404)
+* [RFC 8190](https://www.iana.org/go/rfc8190): Updates to the Special-Purpose IP Address Registries
+
+### Note
+
+The IETF has reserved the address block of 192.0.0.0/24 for use for
+special purposes relating to protocol assignments. This registry
+contains the current assignments made by the IETF from this address
+block.
+
+Address prefixes listed in the Special-Purpose Address Registry are
+not guaranteed routability in any particular local or global context.
+
+The IPv4 and IPv6 Special-Purpose Address Registries maintain the
+following information regarding each entry:
+
+* Address Block - A block of IPv4 or IPv6 addresses that has been
+  registered for a special purpose.
+* Name - A descriptive name for the special-purpose address block.
+* RFC - The RFC through which the special-purpose address block was
+  requested.
+* Allocation Date - The date upon which the special-purpose address
+  block was allocated.
+* Termination Date - The date upon which the allocation is to be
+  terminated. This field is applicable for limited-use allocations
+  only.
+* Source - A boolean value indicating whether an address from the
+  allocated special-purpose address block is valid when used as the
+  source address of an IP datagram that transits two devices.
+* Destination - A boolean value indicating whether an address from
+  the allocated special-purpose address block is valid when used as
+  the destination address of an IP datagram that transits two
+  devices.
+* Forwardable - A boolean value indicating whether a router may
+  forward an IP datagram whose destination address is drawn from the
+  allocated special-purpose address block between external
+  interfaces.
+* Globally Reachable - A boolean value indicating whether an IP
+  datagram whose destination address is drawn from the allocated
+  special-purpose address block is forwardable beyond a specified
+  administrative domain.
+* Reserved-by-Protocol - A boolean value indicating whether the
+  special-purpose address block is reserved by IP, itself. This
+  value is "TRUE" if the RFC that created the special-purpose
+  address block requires all compliant IP implementations to behave
+  in a special way when processing packets either to or from
+  addresses contained by the address block.
+
+If the value of "Destination" is FALSE, the values of "Forwardable"
+and "Globally Reachable" must also be false.
+
+### Formerly known as
+
+IANA IPv4 Special-Purpose Address Registry (pursuant to [IESG decision](https://datatracker.ietf.org/doc/narrative-minutes-interim-2025-iesg-18-202509181400/))
+
+### Available Formats
+
+* [CSV](/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry-1.csv)
+
+| Address Block | Name | RFC | Allocation Date | Termination Date | Source | Destination | Forwardable | Globally Reachable | Reserved-by-Protocol |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0.0.0.0/8 | "This network" | [RFC 791, Section 3.2](https://www.iana.org/go/rfc791#section-3.2) | 1981-09 | N/A | True | False | False | False | True |
+| 0.0.0.0/32 | "This host on this network" | [RFC 1122, Section 3.2.1.3](https://www.iana.org/go/rfc1122#section-3.2.1.3) | 1981-09 | N/A | True | False | False | False | True |
+| 10.0.0.0/8 | Private-Use | [RFC 1918](https://www.iana.org/go/rfc1918) | 1996-02 | N/A | True | True | True | False | False |
+| 100.64.0.0/10 | Shared Address Space | [RFC 6598](https://www.iana.org/go/rfc6598) | 2012-04 | N/A | True | True | True | False | False |
+| 127.0.0.0/8 | Loopback | [RFC 1122, Section 3.2.1.3](https://www.iana.org/go/rfc1122#section-3.2.1.3) | 1981-09 | N/A | False [[1](#note1)] | False [[1](#note1)] | False [[1](#note1)] | False [[1](#note1)] | True |
+| 169.254.0.0/16 | Link Local | [RFC 3927](https://www.iana.org/go/rfc3927) | 2005-05 | N/A | True | True | False | False | True |
+| 172.16.0.0/12 | Private-Use | [RFC 1918](https://www.iana.org/go/rfc1918) | 1996-02 | N/A | True | True | True | False | False |
+| 192.0.0.0/24 [[2](#note2)] | IETF Protocol Assignments | [RFC 6890, Section 2.1](https://www.iana.org/go/rfc6890#section-2.1) | 2010-01 | N/A | False | False | False | False | False |
+| 192.0.0.0/29 | IPv4 Service Continuity Prefix | [RFC 7335](https://www.iana.org/go/rfc7335) | 2011-06 | N/A | True | True | True | False | False |
+| 192.0.0.8/32 | IPv4 dummy address | [RFC 7600](https://www.iana.org/go/rfc7600) | 2015-03 | N/A | True | False | False | False | False |
+| 192.0.0.9/32 | Port Control Protocol Anycast | [RFC 7723](https://www.iana.org/go/rfc7723) | 2015-10 | N/A | True | True | True | True | False |
+| 192.0.0.10/32 | Traversal Using Relays around NAT Anycast | [RFC 8155](https://www.iana.org/go/rfc8155) | 2017-02 | N/A | True | True | True | True | False |
+| 192.0.0.170/32, 192.0.0.171/32 | NAT64/DNS64 Discovery | [RFC 8880](https://www.iana.org/go/rfc8880); [RFC 7050, Section 2.2](https://www.iana.org/go/rfc7050#section-2.2) | 2013-02 | N/A | False | False | False | False | True |
+| 192.0.2.0/24 | Documentation (TEST-NET-1) | [RFC 5737](https://www.iana.org/go/rfc5737) | 2010-01 | N/A | False | False | False | False | False |
+| 192.31.196.0/24 | AS112-v4 | [RFC 7535](https://www.iana.org/go/rfc7535) | 2014-12 | N/A | True | True | True | True | False |
+| 192.52.193.0/24 | AMT | [RFC 7450](https://www.iana.org/go/rfc7450) | 2014-12 | N/A | True | True | True | True | False |
+| 192.88.99.0/24 | Deprecated (6to4 Relay Anycast) | [RFC 7526](https://www.iana.org/go/rfc7526) | 2001-06 | 2015-03 |  |  |  |  |  |
+| 192.88.99.2/32 | 6a44-relay anycast address | [RFC 6751](https://www.iana.org/go/rfc6751) | 2012-10 | N/A | True | True | True | False | False |
+| 192.168.0.0/16 | Private-Use | [RFC 1918](https://www.iana.org/go/rfc1918) | 1996-02 | N/A | True | True | True | False | False |
+| 192.175.48.0/24 | Direct Delegation AS112 Service | [RFC 7534](https://www.iana.org/go/rfc7534) | 1996-01 | N/A | True | True | True | True | False |
+| 198.18.0.0/15 | Benchmarking | [RFC 2544](https://www.iana.org/go/rfc2544) | 1999-03 | N/A | True | True | True | False | False |
+| 198.51.100.0/24 | Documentation (TEST-NET-2) | [RFC 5737](https://www.iana.org/go/rfc5737) | 2010-01 | N/A | False | False | False | False | False |
+| 203.0.113.0/24 | Documentation (TEST-NET-3) | [RFC 5737](https://www.iana.org/go/rfc5737) | 2010-01 | N/A | False | False | False | False | False |
+| 240.0.0.0/4 | Reserved | [RFC 1112, Section 4](https://www.iana.org/go/rfc1112#section-4) | 1989-08 | N/A | False | False | False | False | True |
+| 255.255.255.255/32 | Limited Broadcast | [RFC 8190](https://www.iana.org/go/rfc8190); [RFC 919, Section 7](https://www.iana.org/go/rfc919#section-7) | 1984-10 | N/A | False | True | False | False | True |
+
+---
+
+## Footnotes
+
+|  |  |
+| --- | --- |
+| [1] | Several protocols have been granted exceptions to this rule. For examples, see [RFC 8029](https://www.iana.org/go/rfc8029) and [RFC 5884](https://www.iana.org/go/rfc5884). |
+| [2] | Not useable unless by virtue of a more specific reservation. |

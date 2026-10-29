@@ -1,0 +1,1 @@
+../../skill-network-architect/templates/test-and-acceptance-plan.md

@@ -1,0 +1,44 @@
+Contents of https://support.apple.com/guide/deployment/manage-filevault-with-device-management-dep0a2cb7686/web:
+![](https://help.apple.com/assets/6A7205CCBE02946C700729A7/6A7205D7A147F236440CA052/en_US/312766e3df7f57c1f549da2dab216b36.png)
+
+## Overview
+
+Organizations can manage FileVault encryption using a device management service.
+
+Having a user be enabled to unlock FileVault requires that they have a secure token and, on a Mac with Apple silicon, that they be volume owners. For more information on secure tokens and volume ownership, see [Use secure token, bootstrap token, and volume ownership in deployments](https://support.apple.com/guide/deployment/use-secure-and-bootstrap-tokens-dep24dbdcf9e/1/web/1.0). Information on how and when users are granted a secure token in specific workflows is provided below.
+
+## Enforce FileVault in Setup Assistant
+
+You can require Mac computers to turn on FileVault during Setup Assistant. This ensures that the internal storage in managed Mac computers is always encrypted before being used. You can decide whether to show the FileVault recovery key to the user or to escrow the personal recovery key with your device management service. To use this feature, ensure that your device management service puts the device in the awaiting configuration state and allows the device to proceed only after FileVault is turned on and, optionally, a recovery key has been escrowed.
+
+On a Mac with macOS 26.4 or later, FileVault is turned on during Setup Assistant by default. You might still want to use the management option to escrow the recovery key and prevent the user from turning FileVault off after Setup Assistant completes.
+
+## Enable FileVault after enrollment
+
+When FileVault isn’t turned on during Setup Assistant, you can use a device management service to turn it on after enrollment, a process is referred to as *deferred enablement*. Deferred enablement requires a logout or login event from the user. You can also customize options such as:
+
+* The number of times a user can defer turning on FileVault.
+* Whether to prompt the user at logout in addition to prompting them at login.
+* Whether to show the recovery key to the user.
+* Which certificate to use to asymmetrically encrypt the recovery key for escrow to the device management service.
+
+You can immediately turn on FileVault if you do the following:
+
+* Provide the user name and password of an existing user account in the FileVault configuration profile.
+* Turn off deferred enablement.
+
+The user account needs to have a secure token for FileVault enablement to be successful. An attempt is made to use the provided credentials to grant the user a secure token if they didn’t already have one. On a Mac with macOS 26.4 or later, it uses the bootstrap token to grant the user account a secure token and turns on FileVault. This option can be useful to turn on FileVault for unattended Mac deployments, where the user account gets created by device management during the enrollment.
+
+## Personal recovery keys
+
+A personal recovery key (PRK) can be used either in recoveryOS or to start up an encrypted Mac directly into macOS.
+
+In recoveryOS, the PRK can be used if prompted by Recovery Assistant, or with the Forgot All Passwords option, to gain access to the recovery environment, which then also unlocks the volume. When using the Forgot All Passwords option, resetting a password for a user isn’t required; the exit button can be clicked to start up directly into recoveryOS.
+
+For the user to start up directly into macOS, press Option-Shift-Return on the FileVault screen to reveal the entry field for the PRK, then they need to press Return (or click the arrow).
+
+Also, for a Mac with Apple silicon with macOS 12.0.1 or later, press Option-Shift-Return to reveal the entry field for the PRK, then press Return (or click the arrow).
+
+There is only one PRK per encrypted volume, and during FileVault enablement from a device management service, you can optionally hide it from the user.
+
+When configuring it for escrow to a device management service, it provides a public key in the form of a certificate to a Mac, which it then uses to asymmetrically encrypt the PRK in a CMS envelope format. The encrypted PRK returns to the service in the security information query, which you can then decrypt for viewing. Because the encryption is asymmetrical, the service itself may not be able to decrypt the PRK (which might require additional steps by an administrator). However, many device management service developers provide the option to manage these keys to allow for viewing directly in their products. The device management service can also optionally rotate PRKs as often as required to help maintain a strong security posture. For example, after using a PRK to unlock a volume.

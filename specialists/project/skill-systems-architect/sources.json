@@ -1,0 +1,2164 @@
+{
+ "schema_version": 1,
+ "research_date": "2026-10-29",
+ "pinning": "Moving branches/pages inspected; no immutable commit pins established; no upstream material vendored.",
+ "sources": [
+  {
+   "id": "SPEC",
+   "title": "Agent Skills specification",
+   "url": "https://agentskills.io/specification",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Portable SKILL.md fields, naming and progressive disclosure; inspected moving page.",
+   "checked": "2026-10-29",
+   "local": "sources/web/agentskills.io/specification-f36ae400.md.txt"
+  },
+  {
+   "id": "CODEX",
+   "title": "Codex skill discovery",
+   "url": "https://learn.chatgpt.com/docs/build-skills",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Local discovery paths and supported skill layout; inspected moving page.",
+   "checked": "2026-10-29",
+   "local": "sources/web/learn.chatgpt.com/docs-build-skills-a07c3ce0.md.txt"
+  },
+  {
+   "id": "CLAUDE",
+   "title": "Claude Code skills",
+   "url": "https://code.claude.com/docs/en/skills",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Personal/project discovery and skill invocation; inspected moving page.",
+   "checked": "2026-10-29",
+   "local": "sources/web/code.claude.com/docs-en-skills-542f21c1.md.txt"
+  },
+  {
+   "id": "SICK",
+   "title": "Antigravity network-engineer",
+   "url": "https://raw.githubusercontent.com/sickn33/antigravity-awesome-skills/main/skills/network-engineer/SKILL.md",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Related skill inspected; its description duplicates wshobson/agents network-engineer, so it is not an independent source (survey 2026-10-29). No text copied.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "SICK-L",
+   "title": "Antigravity license",
+   "url": "https://raw.githubusercontent.com/sickn33/antigravity-awesome-skills/main/LICENSE",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Repository LICENSE is MIT, but licences vary per skill (at least one AGPL-3.0-only); check the individual skill before reuse (survey 2026-10-29).",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "JEFF-D",
+   "title": "Jeffallan devops-engineer",
+   "url": "https://raw.githubusercontent.com/Jeffallan/claude-skills/main/skills/devops-engineer/SKILL.md",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Related modular skill inspected; moving main branch. No upstream code/text copied.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "JEFF-C",
+   "title": "Jeffallan cloud-architect",
+   "url": "https://raw.githubusercontent.com/Jeffallan/claude-skills/main/skills/cloud-architect/SKILL.md",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Related skill inspected; moving main branch.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "JEFF-L",
+   "title": "Jeffallan license",
+   "url": "https://github.com/Jeffallan/claude-skills/blob/main/LICENSE",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "MIT; repository notice inspected after raw fetch failed.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "VOLT-N",
+   "title": "VoltAgent network-engineer",
+   "url": "https://raw.githubusercontent.com/VoltAgent/awesome-claude-code-subagents/main/categories/03-infrastructure/network-engineer.md",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Adjacent subagent definition, not a portable SKILL.md; inspected moving main.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "VOLT-D",
+   "title": "VoltAgent devops-engineer",
+   "url": "https://raw.githubusercontent.com/VoltAgent/awesome-claude-code-subagents/main/categories/03-infrastructure/devops-engineer.md",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Adjacent subagent definition inspected; no copied instructions.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "VOLT-L",
+   "title": "VoltAgent license",
+   "url": "https://raw.githubusercontent.com/VoltAgent/awesome-claude-code-subagents/main/LICENSE",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "MIT; repository notice inspected.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "WSH-N",
+   "title": "wshobson network engineer",
+   "url": "https://raw.githubusercontent.com/wshobson/agents/main/plugins/cloud-infrastructure/agents/network-engineer.md",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Adjacent agent definition inspected; moving main.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "WSH-L",
+   "title": "wshobson license",
+   "url": "https://raw.githubusercontent.com/wshobson/agents/main/LICENSE",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "MIT; repository notice inspected.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "ANS",
+   "title": "Ansible network examples",
+   "url": "https://docs.ansible.com/projects/ansible/latest/network/user_guide/network_best_practices_2.5.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Network automation context; latest is moving, not tested platform support.",
+   "checked": "2026-10-29",
+   "local": "sources/web/docs.ansible.com/projects-ansible-latest-network-user_guide-network_best_practices_2.5.html-d8ab5171.md.txt"
+  },
+  {
+   "id": "PVE",
+   "title": "Proxmox cluster docs source",
+   "url": "https://raw.githubusercontent.com/proxmox/pve-docs/master/pvecm.adoc",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Upstream source used after rendered page returned 403; master unpinned.",
+   "checked": "2026-10-29",
+   "local": "sources/web/raw.githubusercontent.com/proxmox-pve-docs-master-pvecm.adoc-f7baf3d0.md.txt"
+  },
+  {
+   "id": "CEPH",
+   "title": "Ceph Squid CRUSH maps",
+   "url": "https://docs.ceph.com/en/squid/rados/operations/crush-map/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Version-family reference for failure-domain placement.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "ZFS",
+   "title": "OpenZFS concepts",
+   "url": "https://openzfs.github.io/openzfs-docs/Basic%20Concepts/index.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Pool/layout conceptual context; moving docs.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "K8S",
+   "title": "Kubernetes cluster architecture",
+   "url": "https://kubernetes.io/docs/concepts/architecture/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Architecture context; moving current docs, not manifest validation.",
+   "checked": "2026-10-29",
+   "local": "sources/web/kubernetes.io/docs-concepts-architecture-10267ad8.md.txt"
+  },
+  {
+   "id": "LINUX",
+   "title": "Linux admin guide",
+   "url": "https://docs.kernel.org/admin-guide/index.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Kernel/OS context; not distribution-specific operational verification.",
+   "checked": "2026-10-29",
+   "local": "sources/web/docs.kernel.org/admin-guide-index.html-bdbdff36.md.txt"
+  },
+  {
+   "id": "WIN",
+   "title": "Microsoft AD DS overview",
+   "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Directory/identity overview retrieved; no role recovery claims certified.",
+   "checked": "2026-10-29",
+   "local": "sources/web/learn.microsoft.com/en-us-windows-server-identity-ad-ds-get-started-virtual-dc-active-directory-doma-7b49ab95.md.txt"
+  },
+  {
+   "id": "APPLE",
+   "title": "Apple deployment guidance",
+   "url": "https://support.apple.com/guide/deployment/welcome/web",
+   "evidence": "UNVERIFIED",
+   "note": "Direct page retrieval returned 429; search-visible security text not treated as implementation evidence.",
+   "checked": "2026-10-29",
+   "local": "sources/web/support.apple.com/guide-deployment-welcome-web-15d1345f.md.txt"
+  },
+  {
+   "id": "IPV4",
+   "title": "RFC 1918",
+   "url": "https://www.rfc-editor.org/rfc/rfc1918",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Private addressing context; check errata/updates for deployment.",
+   "checked": "2026-10-29",
+   "local": "sources/rfc/rfc1918.txt"
+  },
+  {
+   "id": "IPV6",
+   "title": "RFC 8200",
+   "url": "https://www.rfc-editor.org/rfc/rfc8200",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "IPv6 protocol context; not complete deployment guidance.",
+   "checked": "2026-10-29",
+   "local": "sources/rfc/rfc8200.txt"
+  },
+  {
+   "id": "P2P",
+   "title": "RFC 3021",
+   "url": "https://www.rfc-editor.org/rfc/rfc3021",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "IPv4 /31 point-to-point context.",
+   "checked": "2026-10-29",
+   "local": "sources/rfc/rfc3021.txt"
+  },
+  {
+   "id": "BGP",
+   "title": "RFC 7454",
+   "url": "https://www.rfc-editor.org/rfc/rfc7454",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "BGP operations and security context.",
+   "checked": "2026-10-29",
+   "local": "sources/rfc/rfc7454.txt"
+  },
+  {
+   "id": "FRR",
+   "title": "FRRouting BGP",
+   "url": "https://docs.frrouting.org/en/latest/bgp.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Implementation documentation inspected; exact release not pinned.",
+   "checked": "2026-10-29",
+   "local": "sources/web/docs.frrouting.org/en-latest-bgp.html-67b25ff8.md.txt"
+  },
+  {
+   "id": "WG",
+   "title": "WireGuard",
+   "url": "https://www.wireguard.com/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Project overview inspected; no deployment commands bundled.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "LAB",
+   "title": "containerlab",
+   "url": "https://containerlab.dev/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Lab tool inspected; network image licensing separate.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "TOFU",
+   "title": "OpenTofu intro",
+   "url": "https://opentofu.org/docs/intro/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "IaC context; provider behavior not certified.",
+   "checked": "2026-10-29",
+   "local": "sources/web/opentofu.org/docs-intro-fa188619.md.txt"
+  },
+  {
+   "id": "PY-IP",
+   "title": "Python ipaddress",
+   "url": "https://docs.python.org/3/library/ipaddress.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Standard-library API used by offline checker.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "PY-TEST",
+   "title": "Python unittest",
+   "url": "https://docs.python.org/3/library/unittest.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Standard-library test framework.",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "pve-pvecm",
+   "title": "Proxmox VE Cluster Manager",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-pvecm.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "QDevice, corosync latency, token coefficient; source pve-docs master pvecm.adoc",
+   "checked": "2026-10-29",
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-pvecm.html-29e19a0c.md.txt"
+  },
+  {
+   "id": "pve-ha",
+   "title": "Proxmox VE HA Manager",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-ha-manager.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "60 s watchdog, ~2 min failover",
+   "checked": "2026-10-29",
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-ha-manager.html-f2eed5e3.md.txt"
+  },
+  {
+   "id": "pve-pvesr",
+   "title": "Proxmox VE Storage Replication",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-pvesr.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "ZFS only, 1 min interval",
+   "checked": "2026-10-29",
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-pvesr.html-a3341df1.md.txt"
+  },
+  {
+   "id": "pve-ceph",
+   "title": "Proxmox VE Ceph",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-pveceph.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "size 3/min_size 2, 10 Gbps+, 4 GiB per OSD",
+   "checked": "2026-10-29",
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-pveceph.html-8ec673a4.md.txt"
+  },
+  {
+   "id": "pve-zfs",
+   "title": "Proxmox VE ZFS",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-sysadmin.html#chapter_zfs",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "ARC 10%/16 GiB, HBA, RAID-Z IOPS",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "ceph-mon",
+   "title": "Ceph mon config reference",
+   "url": "https://docs.ceph.com/en/latest/rados/configuration/mon-config-ref/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "0.85/0.90/0.95 ratios",
+   "checked": "2026-10-29",
+   "local": "sources/web/docs.ceph.com/en-latest-rados-configuration-mon-config-ref-24fdf778.md.txt"
+  },
+  {
+   "id": "ceph-crush",
+   "title": "Ceph CRUSH maps",
+   "url": "https://docs.ceph.com/en/latest/rados/operations/crush-map/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "failure domains",
+   "checked": "2026-10-29",
+   "local": "sources/web/docs.ceph.com/en-latest-rados-operations-crush-map-3483988f.md.txt"
+  },
+  {
+   "id": "openzfs-tuning",
+   "title": "OpenZFS Workload Tuning",
+   "url": "https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Workload%20Tuning.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "ashift, recordsize",
+   "checked": "2026-10-29",
+   "local": "sources/web/openzfs.github.io/openzfs-docs-Performance-20and-20Tuning-Workload-20Tuning.html-774eb121.md.txt"
+  },
+  {
+   "id": "pg-pitr",
+   "title": "PostgreSQL Continuous Archiving",
+   "url": "https://www.postgresql.org/docs/current/continuous-archiving.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "18.x docs",
+   "checked": "2026-10-29",
+   "local": "sources/web/postgresql.org/docs-current-continuous-archiving.html-76a6f21e.md.txt"
+  },
+  {
+   "id": "pg-basebackup",
+   "title": "pg_basebackup",
+   "url": "https://www.postgresql.org/docs/current/app-pgbasebackup.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "incremental needs 17+",
+   "checked": "2026-10-29",
+   "local": "sources/web/postgresql.org/docs-current-app-pgbasebackup.html-f629e2d0.md.txt"
+  },
+  {
+   "id": "nist-rpo-rto",
+   "title": "NIST glossary RTO/RPO (SP 800-34r1)",
+   "url": "https://csrc.nist.gov/glossary/term/recovery_time_objective",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "definitions",
+   "checked": "2026-10-29",
+   "local": "sources/web/csrc.nist.gov/glossary-term-recovery_time_objective-63b5ee42.md.txt"
+  },
+  {
+   "id": "nist-800-34",
+   "title": "NIST SP 800-34 Rev.1",
+   "url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "contingency planning",
+   "checked": "2026-10-29",
+   "local": "sources/web/csrc.nist.gov/pubs-sp-800-34-r1-upd1-final-f561a629.md.txt"
+  },
+  {
+   "id": "cisa-ransomware",
+   "title": "CISA #StopRansomware Guide",
+   "url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "offline encrypted backups",
+   "checked": "2026-10-29",
+   "local": "sources/web/cisa.gov/stopransomware-ransomware-guide-90186679.md.txt"
+  },
+  {
+   "id": "pbs-tech",
+   "title": "PBS technical overview",
+   "url": "https://pbs.proxmox.com/docs/technical-overview.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "SHA-256 chunks, 4 MiB fixed",
+   "checked": "2026-10-29",
+   "local": "sources/web/pbs.proxmox.com/docs-technical-overview.html-6b474e77.md.txt"
+  },
+  {
+   "id": "pbs-maint",
+   "title": "PBS maintenance",
+   "url": "https://pbs.proxmox.com/docs/maintenance.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "GC, verify",
+   "checked": "2026-10-29",
+   "local": "sources/web/pbs.proxmox.com/docs-maintenance.html-b411e475.md.txt"
+  },
+  {
+   "id": "docker-restart",
+   "title": "Docker restart policies",
+   "url": "https://docs.docker.com/engine/containers/start-containers-automatically/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "10 s rule",
+   "checked": "2026-10-29",
+   "local": "sources/web/docs.docker.com/engine-containers-start-containers-automatically-31cd7f66.md.txt"
+  },
+  {
+   "id": "compose-order",
+   "title": "Compose startup order",
+   "url": "https://docs.docker.com/compose/how-tos/startup-order/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "service_healthy",
+   "checked": "2026-10-29",
+   "local": "sources/web/docs.docker.com/compose-how-tos-startup-order-6f5d2814.md.txt"
+  },
+  {
+   "id": "etcd-faq",
+   "title": "etcd FAQ",
+   "url": "https://etcd.io/docs/v3.5/faq/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "(n/2)+1, odd members",
+   "checked": "2026-10-29",
+   "local": "sources/web/etcd.io/docs-v3.5-faq-ead1d3bd.md.txt"
+  },
+  {
+   "id": "k8s-etcd",
+   "title": "Kubernetes operating etcd",
+   "url": "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "encrypt snapshots",
+   "checked": "2026-10-29",
+   "local": "sources/web/kubernetes.io/docs-tasks-administer-cluster-configure-upgrade-etcd-01f081fe.md.txt"
+  },
+  {
+   "id": "k8s-disruptions",
+   "title": "Kubernetes disruptions",
+   "url": "https://kubernetes.io/docs/concepts/workloads/pods/disruptions/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "PDBs voluntary only",
+   "checked": "2026-10-29",
+   "local": "sources/web/kubernetes.io/docs-concepts-workloads-pods-disruptions-b2cb58aa.md.txt"
+  },
+  {
+   "id": "D1",
+   "title": "Debian releases",
+   "url": "https://www.debian.org/releases/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "EOL/LTS/ELTS dates",
+   "checked": "2026-10-29",
+   "local": "sources/web/debian.org/releases-21c2f6a9.md.txt"
+  },
+  {
+   "id": "D2",
+   "title": "Debian LTS",
+   "url": "https://wiki.debian.org/LTS",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "bookworm LTS 2026-06-11 to 2028-06-30",
+   "checked": "2026-10-29",
+   "local": "sources/web/wiki.debian.org/LTS-c45fc072.md.txt"
+  },
+  {
+   "id": "D3",
+   "title": "50unattended-upgrades.Debian",
+   "url": "https://github.com/mvo5/unattended-upgrades/blob/master/data/50unattended-upgrades.Debian",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "origins, Automatic-Reboot false",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "U1",
+   "title": "Ubuntu release cycle",
+   "url": "https://ubuntu.com/about/release-cycle",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "26.04 May 2031/2036; 24.04 May 2029",
+   "checked": "2026-10-29",
+   "local": "sources/web/ubuntu.com/about-release-cycle-1a3dfb3a.md.txt"
+  },
+  {
+   "id": "S1",
+   "title": "journald.conf(5)",
+   "url": "https://www.freedesktop.org/software/systemd/man/latest/journald.conf.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Storage default, caps",
+   "checked": "2026-10-29",
+   "local": "sources/web/freedesktop.org/software-systemd-man-latest-journald.conf.html-3447a783.md.txt"
+  },
+  {
+   "id": "S2",
+   "title": "systemd-timesyncd",
+   "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd-timesyncd.service.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "SNTP only",
+   "checked": "2026-10-29",
+   "local": "sources/web/freedesktop.org/software-systemd-man-latest-systemd-timesyncd.service.html-94553e99.md.txt"
+  },
+  {
+   "id": "W2",
+   "title": "Windows LAPS overview",
+   "url": "https://learn.microsoft.com/en-us/windows-server/identity/laps/laps-overview",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "backup targets, DSRM",
+   "checked": "2026-10-29",
+   "local": "sources/web/learn.microsoft.com/en-us-windows-server-identity-laps-laps-overview-f84a0960.md.txt"
+  },
+  {
+   "id": "W3",
+   "title": "Kerberos clock skew policy",
+   "url": "https://learn.microsoft.com/previous-versions/windows/it-pro/windows-10/security/threat-protection/security-policy-settings/maximum-tolerance-for-computer-clock-synchronization",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "default 5 min",
+   "checked": "2026-10-29",
+   "local": "sources/web/learn.microsoft.com/previous-versions-windows-it-pro-windows-10-security-threat-protection-security--9320332d.md.txt"
+  },
+  {
+   "id": "W4",
+   "title": "Entra emergency access",
+   "url": "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/security-emergency-access",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "break-glass",
+   "checked": "2026-10-29",
+   "local": "sources/web/learn.microsoft.com/en-us-entra-identity-role-based-access-control-security-emergency-access-dd736221.md.txt"
+  },
+  {
+   "id": "W6",
+   "title": "Enterprise access model",
+   "url": "https://learn.microsoft.com/en-us/security/privileged-access-workstations/privileged-access-access-model",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "planes",
+   "checked": "2026-10-29",
+   "local": "sources/web/learn.microsoft.com/en-us-security-privileged-access-workstations-privileged-access-access-model-f22bc801.md.txt"
+  },
+  {
+   "id": "A1",
+   "title": "FileVault with device management",
+   "url": "https://support.apple.com/guide/deployment/manage-filevault-with-device-management-dep0a2cb7686/web",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "PRK escrow",
+   "checked": "2026-10-29",
+   "local": "sources/web/support.apple.com/guide-deployment-manage-filevault-with-device-management-dep0a2cb7686-web-b51d24d2.md.txt"
+  },
+  {
+   "id": "A2",
+   "title": "Secure and bootstrap tokens",
+   "url": "https://support.apple.com/guide/deployment/use-secure-and-bootstrap-tokens-dep24dbdcf9e/web",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "macOS 26 behaviour",
+   "checked": "2026-10-29",
+   "local": "sources/web/support.apple.com/guide-deployment-use-secure-and-bootstrap-tokens-dep24dbdcf9e-web-ebb5201d.md.txt"
+  },
+  {
+   "id": "A4",
+   "title": "Platform SSO",
+   "url": "https://support.apple.com/guide/deployment/platform-sso-for-macos-dep7bbb05313/web",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "Secure Enclave key",
+   "checked": "2026-10-29",
+   "local": "sources/web/support.apple.com/guide-deployment-platform-sso-for-macos-dep7bbb05313-web-e35de308.md.txt"
+  },
+  {
+   "id": "N1",
+   "title": "NIST SP 800-63B-4",
+   "url": "https://pages.nist.gov/800-63-4/sp800-63b.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "no periodic change",
+   "checked": "2026-10-29",
+   "local": "sources/web/pages.nist.gov/800-63-4-sp800-63b.html-ada92c9a.md.txt"
+  },
+  {
+   "id": "N61",
+   "title": "NIST SP 800-61r3",
+   "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "April 2025, CSF 2.0",
+   "checked": "2026-10-29",
+   "local": "sources/web/csrc.nist.gov/pubs-sp-800-61-r3-final-f53ed62d.md.txt"
+  },
+  {
+   "id": "O1",
+   "title": "ssh-keygen(1)",
+   "url": "https://man.openbsd.org/ssh-keygen.1",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "certs, KRL",
+   "checked": "2026-10-29",
+   "local": "sources/web/man.openbsd.org/ssh-keygen.1-628431b6.md.txt"
+  },
+  {
+   "id": "O2",
+   "title": "sshd_config(5)",
+   "url": "https://man.openbsd.org/sshd_config.5",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "TrustedUserCAKeys",
+   "checked": "2026-10-29",
+   "local": "sources/web/man.openbsd.org/sshd_config.5-b08c9299.md.txt"
+  },
+  {
+   "id": "T1",
+   "title": "Teleport authentication",
+   "url": "https://goteleport.com/docs/reference/architecture/authentication/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "short-lived certs",
+   "checked": "2026-10-29",
+   "local": "sources/web/goteleport.com/docs-reference-architecture-authentication-57a5d87d.md.txt"
+  },
+  {
+   "id": "N4",
+   "title": "SPIFFE concepts",
+   "url": "https://spiffe.io/docs/latest/spiffe-about/spiffe-concepts/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "SVID types",
+   "checked": "2026-10-29",
+   "local": "sources/web/spiffe.io/docs-latest-spiffe-about-spiffe-concepts-67a100a8.md.txt"
+  },
+  {
+   "id": "P1",
+   "title": "Prometheus storage",
+   "url": "https://prometheus.io/docs/prometheus/latest/storage/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "15d default",
+   "checked": "2026-10-29",
+   "local": "sources/web/prometheus.io/docs-prometheus-latest-storage-c60b69a3.md.txt"
+  },
+  {
+   "id": "G1",
+   "title": "SRE Managing Incidents",
+   "url": "https://sre.google/sre-book/managing-incidents/",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "IC/ops/comms/planning",
+   "checked": "2026-10-29",
+   "local": "sources/web/sre.google/sre-book-managing-incidents-7409e2ac.md.txt"
+  },
+  {
+   "id": "M1",
+   "title": "AWS migration strategies",
+   "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html",
+   "evidence": "VERIFIED_PRIMARY",
+   "note": "7 Rs",
+   "checked": "2026-10-29",
+   "local": "sources/web/docs.aws.amazon.com/prescriptive-guidance-latest-large-migration-guide-migration-strategies.html-dc3d075f.md.txt"
+  },
+  {
+   "id": "C-93566134",
+   "title": "The Twelve-Factor App",
+   "url": "https://12factor.net/",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/12factor.net/index-93566134.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d5366499",
+   "title": "ADR resources",
+   "url": "https://adr.github.io/",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md, references/collaboration-protocol.md, references/diagrams-and-deliverables.md",
+   "generated": true,
+   "local": "sources/web/adr.github.io/index-d5366499.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e55ea0fa",
+   "title": "MADR template",
+   "url": "https://adr.github.io/madr/",
+   "evidence": "CITED",
+   "note": "cited in references/diagrams-and-deliverables.md, templates/decision-record.md",
+   "generated": true,
+   "local": "sources/web/adr.github.io/madr-e55ea0fa.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-49116f92",
+   "title": "arc42 overview",
+   "url": "https://arc42.org/overview",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md, references/diagrams-and-deliverables.md, templates/design.md, templates/requirements-and-constraints.md",
+   "generated": true,
+   "local": "sources/web/arc42.org/overview-49116f92.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-aec0fb05",
+   "title": "asq.org",
+   "url": "https://asq.org/quality-resources/fmea",
+   "evidence": "CITED",
+   "note": "cited in templates/failure-mode-analysis.md",
+   "generated": true,
+   "local": "sources/web/asq.org/quality-resources-fmea-aec0fb05.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-f5342a5e",
+   "title": "C4 model",
+   "url": "https://c4model.com/",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md, references/collaboration-protocol.md, references/diagrams-and-deliverables.md, templates/design.md",
+   "generated": true,
+   "local": "sources/web/c4model.com/index-f5342a5e.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-319c7068",
+   "title": "C4 model review checklist",
+   "url": "https://c4model.com/diagrams/checklist",
+   "evidence": "CITED",
+   "note": "cited in references/diagrams-and-deliverables.md, references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/web/c4model.com/diagrams-checklist-319c7068.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7c3628f3",
+   "title": "autoinst",
+   "url": "https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html",
+   "evidence": "CITED",
+   "note": "cited in references/provisioning-and-lifecycle.md",
+   "generated": true,
+   "local": "sources/web/canonical-subiquity.readthedocs-hosted.com/en-latest-reference-autoinstall-reference.html-7c3628f3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-8b157e6b",
+   "title": "choosealicense.com",
+   "url": "https://choosealicense.com/licenses/",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/choosealicense.com/licenses-8b157e6b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d854d699",
+   "title": "chrony FAQ",
+   "url": "https://chrony-project.org/faq.html",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/chrony-project.org/faq.html-d854d699.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e2b49df1",
+   "title": "gcpurl",
+   "url": "https://cloud.google.com/architecture/migration-to-gcp-getting-started",
+   "evidence": "CITED",
+   "note": "cited in references/migration-and-hybrid.md",
+   "generated": true,
+   "local": "sources/web/cloud.google.com/architecture-migration-to-gcp-getting-started-e2b49df1.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-692ba2f1",
+   "title": "Nygard: Documenting architecture decisions",
+   "url": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md",
+   "generated": true,
+   "local": "sources/web/cognitect.com/blog-2011-11-15-documenting-architecture-decisions-692ba2f1.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-69ab24f1",
+   "title": "nist-rpo",
+   "url": "https://csrc.nist.gov/glossary/term/recovery_point_objective",
+   "evidence": "CITED",
+   "note": "cited in references/backup-disaster-recovery.md",
+   "generated": true,
+   "local": "sources/web/csrc.nist.gov/glossary-term-recovery_point_objective-69ab24f1.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7b0ca573",
+   "title": "NIST SP 800-190",
+   "url": "https://csrc.nist.gov/pubs/sp/800/190/final",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/csrc.nist.gov/pubs-sp-800-190-final-7b0ca573.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-ecea8146",
+   "title": "NIST SP 800-207 Zero Trust Architecture",
+   "url": "https://csrc.nist.gov/pubs/sp/800/207/final",
+   "evidence": "CITED",
+   "note": "cited in references/security-and-service-identity.md",
+   "generated": true,
+   "local": "sources/web/csrc.nist.gov/pubs-sp-800-207-final-ecea8146.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-5238aa1f",
+   "title": "NIST SP 800-209",
+   "url": "https://csrc.nist.gov/pubs/sp/800/209/final",
+   "evidence": "CITED",
+   "note": "cited in references/backup-disaster-recovery.md, references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/csrc.nist.gov/pubs-sp-800-209-final-5238aa1f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-6aadbcc9",
+   "title": "csrc.nist.gov",
+   "url": "https://csrc.nist.gov/pubs/sp/800/40/r4/final",
+   "evidence": "CITED",
+   "note": "cited in templates/lifecycle-and-patching.md",
+   "generated": true,
+   "local": "sources/web/csrc.nist.gov/pubs-sp-800-40-r4-final-6aadbcc9.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-27c5095f",
+   "title": "NIST SP 800-53 Rev. 5",
+   "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final",
+   "evidence": "CITED",
+   "note": "cited in references/security-and-service-identity.md",
+   "generated": true,
+   "local": "sources/web/csrc.nist.gov/pubs-sp-800-53-r5-upd1-final-27c5095f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9a54fa5f",
+   "title": "IETF Datatracker",
+   "url": "https://datatracker.ietf.org/",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/web/datatracker.ietf.org/index-9a54fa5f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-ee0700cc",
+   "title": "Packer documentation",
+   "url": "https://developer.hashicorp.com/packer/docs",
+   "evidence": "CITED",
+   "note": "cited in references/provisioning-and-lifecycle.md",
+   "generated": true,
+   "local": "sources/web/developer.hashicorp.com/packer-docs-ee0700cc.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2710461d",
+   "title": "anscheck",
+   "url": "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html",
+   "evidence": "CITED",
+   "note": "cited in references/provisioning-and-lifecycle.md",
+   "generated": true,
+   "local": "sources/web/docs.ansible.com/ansible-latest-playbook_guide-playbooks_checkmode.html-2710461d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-42b02ff2",
+   "title": "ansstrat",
+   "url": "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_strategies.html",
+   "evidence": "CITED",
+   "note": "cited in references/provisioning-and-lifecycle.md",
+   "generated": true,
+   "local": "sources/web/docs.ansible.com/ansible-latest-playbook_guide-playbooks_strategies.html-42b02ff2.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-577f2439",
+   "title": "Ansible check mode and diff",
+   "url": "https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_checkmode.html",
+   "evidence": "CITED",
+   "note": "cited in references/automation-and-safety.md",
+   "generated": true,
+   "local": "sources/web/docs.ansible.com/projects-ansible-latest-playbook_guide-playbooks_checkmode.html-577f2439.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-57e7a374",
+   "title": "arc42 documentation",
+   "url": "https://docs.arc42.org/home/",
+   "evidence": "CITED",
+   "note": "cited in references/diagrams-and-deliverables.md",
+   "generated": true,
+   "local": "sources/web/docs.arc42.org/home-57e7a374.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-c161c536",
+   "title": "docs.arc42.org",
+   "url": "https://docs.arc42.org/section-11/",
+   "evidence": "CITED",
+   "note": "cited in templates/risk-register.md",
+   "generated": true,
+   "local": "sources/web/docs.arc42.org/section-11-c161c536.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-b05832dc",
+   "title": "arc42 section 3: Context and scope",
+   "url": "https://docs.arc42.org/section-3/",
+   "evidence": "CITED",
+   "note": "cited in references/collaboration-protocol.md",
+   "generated": true,
+   "local": "sources/web/docs.arc42.org/section-3-b05832dc.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-30e64391",
+   "title": "AWS Well-Architected: Reliability pillar",
+   "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md",
+   "generated": true,
+   "local": "sources/web/docs.aws.amazon.com/wellarchitected-latest-reliability-pillar-welcome.html-30e64391.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-de61aa85",
+   "title": "docs.aws.amazon.com",
+   "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+   "evidence": "CITED",
+   "note": "cited in references/backup-disaster-recovery.md",
+   "generated": true,
+   "local": "sources/web/docs.aws.amazon.com/whitepapers-latest-disaster-recovery-workloads-on-aws-disaster-recovery-options--de61aa85.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9232f7af",
+   "title": "Architecture",
+   "url": "https://docs.ceph.com/en/latest/architecture/",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/docs.ceph.com/en-latest-architecture-9232f7af.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e2217246",
+   "title": "Erasure code",
+   "url": "https://docs.ceph.com/en/latest/rados/operations/erasure-code/",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/docs.ceph.com/en-latest-rados-operations-erasure-code-e2217246.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-3f1aed58",
+   "title": "Placement groups",
+   "url": "https://docs.ceph.com/en/latest/rados/operations/placement-groups/",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/docs.ceph.com/en-latest-rados-operations-placement-groups-3f1aed58.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a5b48ac0",
+   "title": "Pools",
+   "url": "https://docs.ceph.com/en/latest/rados/operations/pools/",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/docs.ceph.com/en-latest-rados-operations-pools-a5b48ac0.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-da9ba416",
+   "title": "Ceph hardware recommendations",
+   "url": "https://docs.ceph.com/en/latest/start/hardware-recommendations/",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md, references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/docs.ceph.com/en-latest-start-hardware-recommendations-da9ba416.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-74f07a90",
+   "title": "cloud-init documentation",
+   "url": "https://docs.cloud-init.io/en/latest/",
+   "evidence": "CITED",
+   "note": "cited in references/provisioning-and-lifecycle.md",
+   "generated": true,
+   "local": "sources/web/docs.cloud-init.io/en-latest-74f07a90.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-4d2f0f38",
+   "title": "Docker logging drivers",
+   "url": "https://docs.docker.com/engine/logging/configure/",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/docs.docker.com/engine-logging-configure-4d2f0f38.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7e61efb4",
+   "title": "Docker rootless mode",
+   "url": "https://docs.docker.com/engine/security/rootless/",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/docs.docker.com/engine-security-rootless-7e61efb4.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-ea5bbea4",
+   "title": "Docker volumes",
+   "url": "https://docs.docker.com/engine/storage/volumes/",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/docs.docker.com/engine-storage-volumes-ea5bbea4.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2bd88716",
+   "title": "docs.github.com",
+   "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true
+  },
+  {
+   "id": "C-0da7ccb0",
+   "title": "Linux PSI",
+   "url": "https://docs.kernel.org/accounting/psi.html",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md, references/compute-and-facilities.md, references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/docs.kernel.org/accounting-psi.html-0da7ccb0.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e9e939b8",
+   "title": "Linux KSM",
+   "url": "https://docs.kernel.org/admin-guide/mm/ksm.html",
+   "evidence": "CITED",
+   "note": "cited in references/compute-and-facilities.md",
+   "generated": true,
+   "local": "sources/web/docs.kernel.org/admin-guide-mm-ksm.html-e9e939b8.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d2695308",
+   "title": "Linux NUMA memory policy",
+   "url": "https://docs.kernel.org/admin-guide/mm/numa_memory_policy.html",
+   "evidence": "CITED",
+   "note": "cited in references/compute-and-facilities.md",
+   "generated": true,
+   "local": "sources/web/docs.kernel.org/admin-guide-mm-numa_memory_policy.html-d2695308.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-79c0f84c",
+   "title": "Podman Quadlet (podman-systemd.unit)",
+   "url": "https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/docs.podman.io/en-latest-markdown-podman-systemd.unit.5.html-79c0f84c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-eae2f4d3",
+   "title": "Structurizr documentation",
+   "url": "https://docs.structurizr.com/",
+   "evidence": "CITED",
+   "note": "cited in references/diagrams-and-deliverables.md",
+   "generated": true,
+   "local": "sources/web/docs.structurizr.com/index-eae2f4d3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-f8b94801",
+   "title": "M/M/1 queue",
+   "url": "https://en.wikipedia.org/wiki/M/M/1_queue",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md",
+   "generated": true,
+   "local": "sources/web/en.wikipedia.org/wiki-M-M-1_queue-f8b94801.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9e0e2e59",
+   "title": "fio documentation",
+   "url": "https://fio.readthedocs.io/en/latest/fio_doc.html",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md, references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/fio.readthedocs.io/en-latest-fio_doc.html-9e0e2e59.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9bbaa0ee",
+   "title": "git.proxmox.com",
+   "url": "https://git.proxmox.com/?p=pve-manager.git;a=blob_plain;f=debian/copyright;hb=HEAD",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/git.proxmox.com/p-pve-manager.git-a-blob_plain-f-debian-copyright-hb-HEAD-9bbaa0ee.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7e09ed38",
+   "title": "github.com",
+   "url": "https://github.com/Jeffallan/claude-skills",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true
+  },
+  {
+   "id": "C-b9387346",
+   "title": "github.com",
+   "url": "https://github.com/VoltAgent/awesome-claude-code-subagents",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true
+  },
+  {
+   "id": "C-c7aefeea",
+   "title": "Batfish repository",
+   "url": "https://github.com/batfish/batfish",
+   "evidence": "CITED",
+   "note": "cited in references/automation-and-safety.md, references/research-and-attribution.md",
+   "generated": true
+  },
+  {
+   "id": "C-e2b5bb09",
+   "title": "github.com",
+   "url": "https://github.com/batfish/batfish/blob/master/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true
+  },
+  {
+   "id": "C-90192f3d",
+   "title": "github.com",
+   "url": "https://github.com/netenglabs/suzieq",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true
+  },
+  {
+   "id": "C-4e8ce13e",
+   "title": "github.com",
+   "url": "https://github.com/netenglabs/suzieq/blob/develop/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true
+  },
+  {
+   "id": "C-11a62375",
+   "title": "github.com",
+   "url": "https://github.com/nornir-automation/nornir/blob/main/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true
+  },
+  {
+   "id": "C-6cd48193",
+   "title": "github.com",
+   "url": "https://github.com/sickn33/antigravity-awesome-skills",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true
+  },
+  {
+   "id": "C-4cec78cb",
+   "title": "macOS Security Compliance Project",
+   "url": "https://github.com/usnistgov/macos_security",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true
+  },
+  {
+   "id": "C-31661aae",
+   "title": "s-wsh",
+   "url": "https://github.com/wshobson/agents",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true
+  },
+  {
+   "id": "C-729d1278",
+   "title": "graylog.org",
+   "url": "https://graylog.org/post/graylog-v4-0-licensing-sspl/",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/graylog.org/post-graylog-v4-0-licensing-sspl-729d1278.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d3611dbe",
+   "title": "Kubernetes resource management",
+   "url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md",
+   "generated": true,
+   "local": "sources/web/kubernetes.io/docs-concepts-configuration-manage-resources-containers-d3611dbe.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-4f7e995f",
+   "title": "Topology spread constraints",
+   "url": "https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/kubernetes.io/docs-concepts-scheduling-eviction-topology-spread-constraints-4f7e995f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e1c0be00",
+   "title": "Probes",
+   "url": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/kubernetes.io/docs-tasks-configure-pod-container-configure-liveness-readiness-startup-probes-e1c0be00.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-1260f6c6",
+   "title": "cafurl",
+   "url": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/",
+   "evidence": "CITED",
+   "note": "cited in references/migration-and-hybrid.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/en-us-azure-cloud-adoption-framework-migrate-1260f6c6.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7bd347a9",
+   "title": "Azure Well-Architected: Reliability checklist",
+   "url": "https://learn.microsoft.com/en-us/azure/well-architected/reliability/checklist",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/en-us-azure-well-architected-reliability-checklist-7bd347a9.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-cd04de29",
+   "title": "Microsoft Entra hybrid identity",
+   "url": "https://learn.microsoft.com/en-us/entra/identity/hybrid/",
+   "evidence": "CITED",
+   "note": "cited in references/migration-and-hybrid.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/en-us-entra-identity-hybrid-cd04de29.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-0ce925af",
+   "title": "w5url",
+   "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-guide",
+   "evidence": "CITED",
+   "note": "cited in references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/en-us-windows-server-identity-ad-ds-manage-forest-recovery-guide-ad-forest-recov-0ce925af.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-25bdf635",
+   "title": "krbtgturl",
+   "url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-the-krbtgt-password",
+   "evidence": "CITED",
+   "note": "cited in references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/en-us-windows-server-identity-ad-ds-manage-forest-recovery-guide-ad-forest-recov-25bdf635.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-18aeca40",
+   "title": "Microsoft lifecycle: Windows Server 2025",
+   "url": "https://learn.microsoft.com/lifecycle/products/windows-server-2025",
+   "evidence": "CITED",
+   "note": "cited in references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/learn.microsoft.com/lifecycle-products-windows-server-2025-18aeca40.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-eb2df880",
+   "title": "Parallel change (expand, migrate, contract)",
+   "url": "https://martinfowler.com/bliki/ParallelChange.html",
+   "evidence": "CITED",
+   "note": "cited in references/migration-and-hybrid.md",
+   "generated": true,
+   "local": "sources/web/martinfowler.com/bliki-ParallelChange.html-eb2df880.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-4628814d",
+   "title": "Mermaid",
+   "url": "https://mermaid.js.org/",
+   "evidence": "CITED",
+   "note": "cited in references/diagrams-and-deliverables.md",
+   "generated": true,
+   "local": "sources/web/mermaid.js.org/index-4628814d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-05e4e1db",
+   "title": "OpenChain",
+   "url": "https://openchainproject.org/",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/openchainproject.org/index-05e4e1db.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2629574b",
+   "title": "OSI approved licenses",
+   "url": "https://opensource.org/licenses",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/opensource.org/licenses-2629574b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-6c93c2c7",
+   "title": "Open Source Definition",
+   "url": "https://opensource.org/osd",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/opensource.org/osd-6c93c2c7.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-8de8f872",
+   "title": "OpenTelemetry documentation",
+   "url": "https://opentelemetry.io/docs/",
+   "evidence": "CITED",
+   "note": "cited in references/observability-and-incident.md",
+   "generated": true,
+   "local": "sources/web/opentelemetry.io/docs-8de8f872.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9c581670",
+   "title": "OpenTofu documentation",
+   "url": "https://opentofu.org/docs/",
+   "evidence": "CITED",
+   "note": "cited in references/automation-and-safety.md",
+   "generated": true,
+   "local": "sources/web/opentofu.org/docs-9c581670.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e5537d5b",
+   "title": "OpenTofu state",
+   "url": "https://opentofu.org/docs/language/state/",
+   "evidence": "CITED",
+   "note": "cited in references/provisioning-and-lifecycle.md",
+   "generated": true,
+   "local": "sources/web/opentofu.org/docs-language-state-e5537d5b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-0c73733b",
+   "title": "RAID-Z",
+   "url": "https://openzfs.github.io/openzfs-docs/Basic%20Concepts/RAIDZ.html",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/openzfs.github.io/openzfs-docs-Basic-20Concepts-RAIDZ.html-0c73733b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2f4c6994",
+   "title": "dRAID",
+   "url": "https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/openzfs.github.io/openzfs-docs-Basic-20Concepts-dRAID-20Howto.html-2f4c6994.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a63078e6",
+   "title": "Module parameters",
+   "url": "https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Module%20Parameters.html",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/openzfs.github.io/openzfs-docs-Performance-20and-20Tuning-Module-20Parameters.html-a63078e6.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-8e631246",
+   "title": "zpoolconcepts(7)",
+   "url": "https://openzfs.github.io/openzfs-docs/man/master/7/zpoolconcepts.7.html",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/openzfs.github.io/openzfs-docs-man-master-7-zpoolconcepts.7.html-8e631246.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-f0113272",
+   "title": "PBS remotes and sync",
+   "url": "https://pbs.proxmox.com/docs/managing-remotes.html",
+   "evidence": "CITED",
+   "note": "cited in references/backup-disaster-recovery.md",
+   "generated": true,
+   "local": "sources/web/pbs.proxmox.com/docs-managing-remotes.html-f0113272.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-b43bc68c",
+   "title": "PBS tape backup",
+   "url": "https://pbs.proxmox.com/docs/tape-backup.html",
+   "evidence": "CITED",
+   "note": "cited in references/backup-disaster-recovery.md",
+   "generated": true,
+   "local": "sources/web/pbs.proxmox.com/docs-tape-backup.html-b43bc68c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2a241888",
+   "title": "PlantUML",
+   "url": "https://plantuml.com/",
+   "evidence": "CITED",
+   "note": "cited in references/diagrams-and-deliverables.md",
+   "generated": true,
+   "local": "sources/web/plantuml.com/index-2a241888.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-ee885bfc",
+   "title": "Anthropic: Agent Skills best practices",
+   "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md, references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/web/platform.claude.com/docs-en-agents-and-tools-agent-skills-best-practices-ee885bfc.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a9c9428e",
+   "title": "promprac",
+   "url": "https://prometheus.io/docs/practices/instrumentation/",
+   "evidence": "CITED",
+   "note": "cited in references/observability-and-incident.md",
+   "generated": true,
+   "local": "sources/web/prometheus.io/docs-practices-instrumentation-a9c9428e.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-514a217f",
+   "title": "Linux containers",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-pct.html",
+   "evidence": "CITED",
+   "note": "cited in references/virtualization-and-proxmox.md",
+   "generated": true,
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-pct.html-514a217f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2c21e9e5",
+   "title": "Software-defined network",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-pvesdn.html",
+   "evidence": "CITED",
+   "note": "cited in references/virtualization-and-proxmox.md",
+   "generated": true,
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-pvesdn.html-2c21e9e5.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-35ee7213",
+   "title": "QEMU/KVM VMs",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-qm.html",
+   "evidence": "CITED",
+   "note": "cited in references/virtualization-and-proxmox.md",
+   "generated": true,
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-qm.html-35ee7213.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-1d5e2973",
+   "title": "Proxmox VE host system administration (ZFS, ARC limit)",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-sysadmin.html",
+   "evidence": "CITED",
+   "note": "cited in references/compute-and-facilities.md, references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-sysadmin.html-1d5e2973.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-f0c38f50",
+   "title": "Proxmox VE backup and restore",
+   "url": "https://pve.proxmox.com/pve-docs/chapter-vzdump.html",
+   "evidence": "CITED",
+   "note": "cited in references/backup-disaster-recovery.md",
+   "generated": true,
+   "local": "sources/web/pve.proxmox.com/pve-docs-chapter-vzdump.html-f0c38f50.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-c06835ca",
+   "title": "Proxmox VE admin guide (single page)",
+   "url": "https://pve.proxmox.com/pve-docs/pve-admin-guide.html",
+   "evidence": "CITED",
+   "note": "cited in references/virtualization-and-proxmox.md",
+   "generated": true,
+   "local": "sources/web/pve.proxmox.com/pve-docs-pve-admin-guide.html-c06835ca.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7058aba2",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/FRRouting/frr/master/COPYING",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/FRRouting-frr-master-COPYING-7058aba2.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-cb9388b3",
+   "title": "l-graylog",
+   "url": "https://raw.githubusercontent.com/Graylog2/graylog2-server/master/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/Graylog2-graylog2-server-master-LICENSE-cb9388b3.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-233cb05c",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/ansible/ansible/devel/COPYING",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/ansible-ansible-devel-COPYING-233cb05c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-4dd408f0",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/grafana/grafana/main/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/grafana-grafana-main-LICENSE-4dd408f0.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-028a202a",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/gravitational/teleport/master/build.assets/LICENSE-community",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/gravitational-teleport-master-build.assets-LICENSE-community-028a202a.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d035bca1",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/hashicorp/terraform/main/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/hashicorp-terraform-main-LICENSE-d035bca1.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-f583435f",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/isc-projects/kea/master/COPYING",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/isc-projects-kea-master-COPYING-f583435f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-3d6c767e",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/nautobot/nautobot/develop/LICENSE.txt",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/nautobot-nautobot-develop-LICENSE.txt-3d6c767e.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-b0f9d406",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/netbox-community/netbox/main/LICENSE.txt",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/netbox-community-netbox-main-LICENSE.txt-b0f9d406.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-4a6a5a63",
+   "title": "l-tofu",
+   "url": "https://raw.githubusercontent.com/opentofu/opentofu/main/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/opentofu-opentofu-main-LICENSE-4a6a5a63.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-97451ce4",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/openwisp/openwisp-controller/master/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/openwisp-openwisp-controller-master-LICENSE-97451ce4.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d9d36f6d",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/prometheus/prometheus/main/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/prometheus-prometheus-main-LICENSE-d9d36f6d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-24dbc8d9",
+   "title": "ha-manager",
+   "url": "https://raw.githubusercontent.com/proxmox/pve-docs/master/ha-manager.adoc",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md, references/virtualization-and-proxmox.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/proxmox-pve-docs-master-ha-manager.adoc-24dbc8d9.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a9d56231",
+   "title": "pve-zfs",
+   "url": "https://raw.githubusercontent.com/proxmox/pve-docs/master/local-zfs.adoc",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/proxmox-pve-docs-master-local-zfs.adoc-a9d56231.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-00e89313",
+   "title": "pveceph",
+   "url": "https://raw.githubusercontent.com/proxmox/pve-docs/master/pveceph.adoc",
+   "evidence": "CITED",
+   "note": "cited in references/compute-and-facilities.md, references/storage-and-data.md, references/virtualization-and-proxmox.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/proxmox-pve-docs-master-pveceph.adoc-00e89313.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-fb24176c",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/proxmox/pve-docs/master/pvesr.adoc",
+   "evidence": "CITED",
+   "note": "cited in references/virtualization-and-proxmox.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/proxmox-pve-docs-master-pvesr.adoc-fb24176c.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-c0e4b3c6",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/redis/redis/unstable/LICENSE.txt",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/redis-redis-unstable-LICENSE.txt-c0e4b3c6.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2015904e",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/srl-labs/containerlab/main/LICENSE",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/raw.githubusercontent.com/srl-labs-containerlab-main-LICENSE-2015904e.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-80f768d9",
+   "title": "REUSE",
+   "url": "https://reuse.software/",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md, references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/web/reuse.software/index-80f768d9.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-253812f1",
+   "title": "OpenSSF Scorecard",
+   "url": "https://scorecard.dev/",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md, references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/web/scorecard.dev/index-253812f1.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-525c0973",
+   "title": "SLSA",
+   "url": "https://slsa.dev/",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true,
+   "local": "sources/web/slsa.dev/index-525c0973.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-71a8d760",
+   "title": "SLSA v1.0",
+   "url": "https://slsa.dev/spec/v1.0/",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true,
+   "local": "sources/web/slsa.dev/spec-v1.0-71a8d760.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-db9f8d9b",
+   "title": "SPDX license list",
+   "url": "https://spdx.org/licenses/",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md, references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/web/spdx.org/licenses-db9f8d9b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-79e57d8f",
+   "title": "SRE book: Communication and collaboration",
+   "url": "https://sre.google/sre-book/communication-and-collaboration/",
+   "evidence": "CITED",
+   "note": "cited in references/collaboration-protocol.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-communication-and-collaboration-79e57d8f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-eb6fa891",
+   "title": "SRE book: Eliminating toil",
+   "url": "https://sre.google/sre-book/eliminating-toil/",
+   "evidence": "CITED",
+   "note": "cited in references/automation-and-safety.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-eliminating-toil-eb6fa891.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d8f5395a",
+   "title": "SRE book: Embracing risk",
+   "url": "https://sre.google/sre-book/embracing-risk/",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-embracing-risk-d8f5395a.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2a765c98",
+   "title": "sre.google",
+   "url": "https://sre.google/sre-book/example-postmortem/",
+   "evidence": "CITED",
+   "note": "cited in templates/post-incident-review.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-example-postmortem-2a765c98.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-237b1f08",
+   "title": "Handling overload",
+   "url": "https://sre.google/sre-book/handling-overload/",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-handling-overload-237b1f08.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-71b82c30",
+   "title": "Google SRE book: Monitoring distributed systems",
+   "url": "https://sre.google/sre-book/monitoring-distributed-systems/",
+   "evidence": "CITED",
+   "note": "cited in references/red-flags.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-monitoring-distributed-systems-71b82c30.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-571b75f6",
+   "title": "Google SRE book: Postmortem Culture",
+   "url": "https://sre.google/sre-book/postmortem-culture/",
+   "evidence": "CITED",
+   "note": "cited in references/observability-and-incident.md, templates/post-incident-review.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-postmortem-culture-571b75f6.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2c477f1b",
+   "title": "Google SRE book",
+   "url": "https://sre.google/sre-book/table-of-contents/",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-table-of-contents-2c477f1b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-4beceb7d",
+   "title": "sre.google",
+   "url": "https://sre.google/sre-book/testing-reliability/",
+   "evidence": "CITED",
+   "note": "cited in templates/test-and-acceptance-plan.md",
+   "generated": true,
+   "local": "sources/web/sre.google/sre-book-testing-reliability-4beceb7d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-01fa5281",
+   "title": "SRE workbook: alerting on SLOs",
+   "url": "https://sre.google/workbook/alerting-on-slos/",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md, references/observability-and-incident.md",
+   "generated": true,
+   "local": "sources/web/sre.google/workbook-alerting-on-slos-01fa5281.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a29627dd",
+   "title": "SRE workbook: Canarying releases",
+   "url": "https://sre.google/workbook/canarying-releases/",
+   "evidence": "CITED",
+   "note": "cited in references/automation-and-safety.md, templates/change-and-validation.md",
+   "generated": true,
+   "local": "sources/web/sre.google/workbook-canarying-releases-a29627dd.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-06c934af",
+   "title": "SRE workbook: Implementing SLOs",
+   "url": "https://sre.google/workbook/implementing-slos/",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md, references/observability-and-incident.md",
+   "generated": true,
+   "local": "sources/web/sre.google/workbook-implementing-slos-06c934af.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-6c547d0b",
+   "title": "Google SRE workbook",
+   "url": "https://sre.google/workbook/table-of-contents/",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md",
+   "generated": true,
+   "local": "sources/web/sre.google/workbook-table-of-contents-6c547d0b.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-ffa576aa",
+   "title": "alurl",
+   "url": "https://support.apple.com/guide/deployment/activation-lock-on-mac-dep4e1ae6f2c/web",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/support.apple.com/guide-deployment-activation-lock-on-mac-dep4e1ae6f2c-web-ffa576aa.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d57f0f9d",
+   "title": "a3url",
+   "url": "https://support.apple.com/guide/deployment/install-and-enforce-software-updates-depd30715cbb/web",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/support.apple.com/guide-deployment-install-and-enforce-software-updates-depd30715cbb-web-d57f0f9d.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-aa93fcde",
+   "title": "ddmurl",
+   "url": "https://support.apple.com/guide/deployment/intro-to-declarative-device-management-depb1bab77f8/web",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/support.apple.com/guide-deployment-intro-to-declarative-device-management-depb1bab77f8-web-aa93fcde.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-3b783cb7",
+   "title": "Apple Platform Security",
+   "url": "https://support.apple.com/guide/security/welcome/web",
+   "evidence": "CITED",
+   "note": "cited in references/macos-and-endpoints.md",
+   "generated": true,
+   "local": "sources/web/support.apple.com/guide-security-welcome-web-3b783cb7.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-32b758ef",
+   "title": "SuzieQ documentation",
+   "url": "https://suzieq.readthedocs.io/en/latest/",
+   "evidence": "CITED",
+   "note": "cited in references/automation-and-safety.md",
+   "generated": true,
+   "local": "sources/web/suzieq.readthedocs.io/en-latest-32b758ef.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-bbbfc6aa",
+   "title": "Team Topologies key concepts",
+   "url": "https://teamtopologies.com/key-concepts",
+   "evidence": "CITED",
+   "note": "cited in references/collaboration-protocol.md",
+   "generated": true,
+   "local": "sources/web/teamtopologies.com/key-concepts-bbbfc6aa.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-51279487",
+   "title": "Uptime Institute tier standard",
+   "url": "https://uptimeinstitute.com/tiers",
+   "evidence": "CITED",
+   "note": "cited in references/compute-and-facilities.md",
+   "generated": true,
+   "local": "sources/web/uptimeinstitute.com/tiers-51279487.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-bf133dc9",
+   "title": "Internet Archive Wayback Machine",
+   "url": "https://web.archive.org/",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/web/web.archive.org/index-bf133dc9.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-a9883692",
+   "title": "Debian wiki: PeriodicUpdates",
+   "url": "https://wiki.debian.org/PeriodicUpdates",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/wiki.debian.org/PeriodicUpdates-a9883692.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-144f3262",
+   "title": "ASHRAE Datacom series",
+   "url": "https://www.ashrae.org/technical-resources/bookstore/datacom-series",
+   "evidence": "CITED",
+   "note": "cited in references/compute-and-facilities.md",
+   "generated": true,
+   "local": "sources/web/ashrae.org/technical-resources-bookstore-datacom-series-144f3262.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7c7516a2",
+   "title": "Linux performance tools",
+   "url": "https://www.brendangregg.com/linuxperf.html",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md",
+   "generated": true,
+   "local": "sources/web/brendangregg.com/linuxperf.html-7c7516a2.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-03804b34",
+   "title": "Systems Performance, 2nd ed.",
+   "url": "https://www.brendangregg.com/systems-performance-2nd-edition-book.html",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md, references/compute-and-facilities.md",
+   "generated": true,
+   "local": "sources/web/brendangregg.com/systems-performance-2nd-edition-book.html-03804b34.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-2fc0708e",
+   "title": "USE method",
+   "url": "https://www.brendangregg.com/usemethod.html",
+   "evidence": "CITED",
+   "note": "cited in references/capacity-and-performance.md, references/compute-and-facilities.md, references/red-flags.md",
+   "generated": true,
+   "local": "sources/web/brendangregg.com/usemethod.html-2fc0708e.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-18b22985",
+   "title": "CIS Benchmarks",
+   "url": "https://www.cisecurity.org/cis-benchmarks",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md, references/security-and-service-identity.md, references/windows-and-identity.md",
+   "generated": true,
+   "local": "sources/web/cisecurity.org/cis-benchmarks-18b22985.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-690df840",
+   "title": "www.cognitect.com",
+   "url": "https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
+   "evidence": "CITED",
+   "note": "cited in templates/decision-record.md",
+   "generated": true,
+   "local": "sources/web/cognitect.com/blog-2011-11-15-documenting-architecture-decisions-690df840.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-54bc4149",
+   "title": "Debian installation guide: preseeding",
+   "url": "https://www.debian.org/releases/stable/amd64/apb.en.html",
+   "evidence": "CITED",
+   "note": "cited in references/provisioning-and-lifecycle.md",
+   "generated": true,
+   "local": "sources/web/debian.org/releases-stable-amd64-apb.en.html-54bc4149.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-6cc0e1f2",
+   "title": "Debian 13 release notes",
+   "url": "https://www.debian.org/releases/trixie/releasenotes",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/debian.org/releases-trixie-releasenotes-6cc0e1f2.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-88e580bf",
+   "title": "mid",
+   "url": "https://www.freedesktop.org/software/systemd/man/latest/machine-id.html",
+   "evidence": "CITED",
+   "note": "cited in references/provisioning-and-lifecycle.md",
+   "generated": true,
+   "local": "sources/web/freedesktop.org/software-systemd-man-latest-machine-id.html-88e580bf.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-e8427e30",
+   "title": "systemd.exec(5)",
+   "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true,
+   "local": "sources/web/freedesktop.org/software-systemd-man-latest-systemd.exec.html-e8427e30.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d59b1270",
+   "title": "www.itl.nist.gov",
+   "url": "https://www.itl.nist.gov/div898/handbook/apr/section1/apr181.htm",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md",
+   "generated": true,
+   "local": "sources/web/itl.nist.gov/div898-handbook-apr-section1-apr181.htm-d59b1270.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-fff95ee1",
+   "title": "www.itl.nist.gov",
+   "url": "https://www.itl.nist.gov/div898/handbook/apr/section1/apr182.htm",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md",
+   "generated": true,
+   "local": "sources/web/itl.nist.gov/div898-handbook-apr-section1-apr182.htm-fff95ee1.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-7b2a0e59",
+   "title": "Backup and restore overview",
+   "url": "https://www.postgresql.org/docs/current/backup.html",
+   "evidence": "CITED",
+   "note": "cited in references/backup-disaster-recovery.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-current-backup.html-7b2a0e59.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9544a68f",
+   "title": "High availability and replication",
+   "url": "https://www.postgresql.org/docs/current/high-availability.html",
+   "evidence": "CITED",
+   "note": "cited in references/backup-disaster-recovery.md",
+   "generated": true,
+   "local": "sources/web/postgresql.org/docs-current-high-availability.html-9544a68f.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-bb666cc8",
+   "title": "QEMU CPU models",
+   "url": "https://www.qemu.org/docs/master/system/qemu-cpu-models.html",
+   "evidence": "CITED",
+   "note": "cited in references/compute-and-facilities.md, references/virtualization-and-proxmox.md",
+   "generated": true,
+   "local": "sources/web/qemu.org/docs-master-system-qemu-cpu-models.html-bb666cc8.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-c368a0db",
+   "title": "rfc1034",
+   "url": "https://www.rfc-editor.org/rfc/rfc1034.html",
+   "evidence": "CITED",
+   "note": "cited in references/migration-and-hybrid.md",
+   "generated": true,
+   "local": "sources/rfc/rfc1034.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-9036d389",
+   "title": "RFC 6241 NETCONF",
+   "url": "https://www.rfc-editor.org/rfc/rfc6241.html",
+   "evidence": "CITED",
+   "note": "cited in references/automation-and-safety.md",
+   "generated": true,
+   "local": "sources/rfc/rfc6241.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-bbef8d45",
+   "title": "RFC 8174",
+   "url": "https://www.rfc-editor.org/rfc/rfc8174.html",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/rfc/rfc8174.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-71fb1b27",
+   "title": "SEI ATAM collection",
+   "url": "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/",
+   "evidence": "CITED",
+   "note": "cited in references/architecture-method.md",
+   "generated": true,
+   "local": "sources/web/sei.cmu.edu/library-architecture-tradeoff-analysis-method-collection-71fb1b27.md.txt",
+   "checked": "2026-10-29"
+  },
+  {
+   "id": "C-ede3c414",
+   "title": "Software Heritage",
+   "url": "https://www.softwareheritage.org/",
+   "evidence": "CITED",
+   "note": "cited in references/research-and-attribution.md",
+   "generated": true,
+   "local": "sources/web/softwareheritage.org/index-ede3c414.md.txt",
+   "checked": "2026-10-29"
+  }
+ ]
+}

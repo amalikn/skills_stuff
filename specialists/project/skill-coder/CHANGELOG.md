@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261029_1925 — Pattern P-40: hold citations by a check (ledger, local store, rules as findings)
+
+`references/design-patterns.md` P-40, Learned 2026-10-29 from skill-network-architect (check_ledger, fetch_sources, sources_ledger).
+
 ## 20261029_1915 — Pattern P-39: carry a placement over proven edges, narrow by direction
 
 Learned 2026-10-29 in `references/design-patterns.md`: placement over a typed evidence graph, no site convention (unified-network-controller a8c58f9).

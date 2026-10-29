@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "segments": [
+    {
+      "id": "office-a",
+      "scope": "joined",
+      "cidr": "10.20.0.0/16"
+    },
+    {
+      "id": "office-b",
+      "scope": "joined",
+      "cidr": "10.20.10.0/24"
+    }
+  ]
+}

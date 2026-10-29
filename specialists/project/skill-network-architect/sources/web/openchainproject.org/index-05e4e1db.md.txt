@@ -1,0 +1,6 @@
+Contents of https://openchainproject.org/:
+OpenChain has an [**extensive global community**](https://www.openchainproject.org/participate) of over 1,000 companies collaborating to make the supply chain more trusted, more effective and more efficient. Everyone is invited to be part of what we do. There are no restrictions to join our mailing lists, our calls and most of our events.
+
+OpenChain is also a gateway into the larger governance and management ecosystem for open source. We work with our sister projects at The Linux Foundation like [SPDX](https://spdx.dev/) (SBOM), [OpenSSF](https://openssf.org/) (Security), [TODO Group](https://todogroup.org/) (OSPO) and [CHAOSS](https://chaoss.community/) (Metrics) to improve business management of open source. Examples include collaboration with OpenSSF on the [Global Cyber Policy Working Group](https://openchainproject.org/resources/faq#cra) and integration with the [Open Source Project Security Baseline (OSPS Baseline)](https://openchainproject.org/resources/faq#ospsbaseline), or with TODO Group for [OSPOlogy Live](https://github.com/todogroup/ospology/blob/main/ospology-live/framework.md) events.
+
+You can learn more n our [Frequent Questions page](https://openchainproject.org/resources/faq).

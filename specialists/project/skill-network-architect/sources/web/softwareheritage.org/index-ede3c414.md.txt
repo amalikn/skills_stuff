@@ -1,0 +1,458 @@
+[Close](https://www.softwareheritage.org/)
+
+*   [Mission](https://www.softwareheritage.org/mission/)
+    *   [Heritage](https://www.softwareheritage.org/mission/heritage/)
+    *   [Science](https://www.softwareheritage.org/mission/science/)
+    *   [Industry](https://www.softwareheritage.org/mission/industry/)
+    *   [Approach](https://www.softwareheritage.org/mission/approach/)
+
+*   [Archive](https://www.softwareheritage.org/)
+    *   [Features](https://www.softwareheritage.org/software-heritage-features/)
+    *   [Browse](https://archive.softwareheritage.org/)
+    *   [Save Code Now](https://save.softwareheritage.org/)
+    *   [Save Research Software](https://www.softwareheritage.org/save-reference-research-software/)
+        *   [Benefits](https://www.softwareheritage.org/save-reference-research-software/)
+        *   [Guidelines (HOWTO)](https://www.softwareheritage.org/how-to-archive-reference-code/)
+
+    *   [Save Legacy Code](https://www.softwareheritage.org/)
+        *   [SWH Acquisition Process](https://www.softwareheritage.org/swhap/)
+        *   [Software Stories](https://stories.softwareheritage.org/)
+
+    *   [Browser extensions](https://www.softwareheritage.org/browser-extensions/)
+
+*   [Community](https://softwareheritage.org/community/)
+    *   [Users](https://www.softwareheritage.org/community/users/)
+    *   [Ambassadors](https://www.softwareheritage.org/ambassadors/)
+    *   [Developers](https://www.softwareheritage.org/community/developers/)
+    *   [Scientists](https://www.softwareheritage.org/community/scientists/)
+    *   [Students](https://www.softwareheritage.org/community/students/)
+
+*   [Grants](https://www.softwareheritage.org/grants/)
+*   [Support us](https://www.softwareheritage.org/support)
+    *   [Sponsors](https://www.softwareheritage.org/support/sponsors/)
+    *   [Interest groups](https://www.softwareheritage.org/)
+        *   [Archives and Libraries Interest Group](https://www.softwareheritage.org/support/members-alig/)
+
+    *   [Partners](https://www.softwareheritage.org/support/partners/)
+    *   [Mirrors](https://www.softwareheritage.org/mirrors/)
+    *   [Testimonials](https://www.softwareheritage.org/support/testimonials/)
+    *   [Donate](https://www.softwareheritage.org/donate/)
+
+*   [About](https://www.softwareheritage.org/)
+    *   [FAQ](https://www.softwareheritage.org/software-heritage-faq/)
+    *   [Team](https://www.softwareheritage.org/people/)
+    *   [Advisory Board](https://www.softwareheritage.org/software-heritage-advisory-board/)
+    *   [Work with us](https://www.softwareheritage.org/jobs/)
+    *   [Communication kit](https://www.softwareheritage.org/software-heritage-communication-kit/)
+
+*   [News](https://www.softwareheritage.org/news/)
+    *   [Blog](https://www.softwareheritage.org/blog/)
+    *   [Events](https://www.softwareheritage.org/news/events/)
+    *   [Newsletter](https://www.softwareheritage.org/newsletter/)
+    *   [Publications](https://www.softwareheritage.org/publications/)
+    *   [Annual Reports](https://www.softwareheritage.org/category/annualreport/)
+
+*   [Donate](https://www.softwareheritage.org/donate/)
+*   [![Image 1](https://www.softwareheritage.org/wp-content/plugins/sitepress-multilingual-cms/res/flags/en.png)English](https://www.softwareheritage.org/?lang=en)
+    *   [![Image 2](https://www.softwareheritage.org/wp-content/plugins/sitepress-multilingual-cms/res/flags/fr.png)Français](https://www.softwareheritage.org/?lang=fr "Switch to Français")
+    *   [![Image 3](https://www.softwareheritage.org/wp-content/plugins/sitepress-multilingual-cms/res/flags/es.png)Español](https://www.softwareheritage.org/?lang=es "Switch to Español")
+
+*   [Home](https://www.softwareheritage.org/)
+*   [Development](https://gitlab.softwareheritage.org/)
+*   [Documentation](https://docs.softwareheritage.org/)
+[Operational](https://status.softwareheritage.org/)*   [Login](https://www.softwareheritage.org/auth/)
+
+[![Image 4: Software Heritage](https://www.softwareheritage.org/wp-content/uploads/2015/08/swh-logo.png?ver=1792616928)](https://www.softwareheritage.org/)
+
+### [Software Heritage](https://www.softwareheritage.org/)
+
+*   [Mission](https://www.softwareheritage.org/mission/)
+    *   [Heritage](https://www.softwareheritage.org/mission/heritage/)
+    *   [Science](https://www.softwareheritage.org/mission/science/)
+    *   [Industry](https://www.softwareheritage.org/mission/industry/)
+    *   [Approach](https://www.softwareheritage.org/mission/approach/)
+
+*   [Archive](https://www.softwareheritage.org/)
+    *   [Features](https://www.softwareheritage.org/software-heritage-features/)
+    *   [Browse](https://archive.softwareheritage.org/)
+    *   [Save Code Now](https://save.softwareheritage.org/)
+    *   [Save Research Software](https://www.softwareheritage.org/save-reference-research-software/)
+        *   [Benefits](https://www.softwareheritage.org/save-reference-research-software/)
+        *   [Guidelines (HOWTO)](https://www.softwareheritage.org/how-to-archive-reference-code/)
+
+    *   [Save Legacy Code](https://www.softwareheritage.org/)
+        *   [SWH Acquisition Process](https://www.softwareheritage.org/swhap/)
+        *   [Software Stories](https://stories.softwareheritage.org/)
+
+    *   [Browser extensions](https://www.softwareheritage.org/browser-extensions/)
+
+*   [Community](https://softwareheritage.org/community/)
+    *   [Users](https://www.softwareheritage.org/community/users/)
+    *   [Ambassadors](https://www.softwareheritage.org/ambassadors/)
+    *   [Developers](https://www.softwareheritage.org/community/developers/)
+    *   [Scientists](https://www.softwareheritage.org/community/scientists/)
+    *   [Students](https://www.softwareheritage.org/community/students/)
+
+*   [Grants](https://www.softwareheritage.org/grants/)
+*   [Support us](https://www.softwareheritage.org/support)
+    *   [Sponsors](https://www.softwareheritage.org/support/sponsors/)
+    *   [Interest groups](https://www.softwareheritage.org/)
+        *   [Archives and Libraries Interest Group](https://www.softwareheritage.org/support/members-alig/)
+
+    *   [Partners](https://www.softwareheritage.org/support/partners/)
+    *   [Mirrors](https://www.softwareheritage.org/mirrors/)
+    *   [Testimonials](https://www.softwareheritage.org/support/testimonials/)
+    *   [Donate](https://www.softwareheritage.org/donate/)
+
+*   [About](https://www.softwareheritage.org/)
+    *   [FAQ](https://www.softwareheritage.org/software-heritage-faq/)
+    *   [Team](https://www.softwareheritage.org/people/)
+    *   [Advisory Board](https://www.softwareheritage.org/software-heritage-advisory-board/)
+    *   [Work with us](https://www.softwareheritage.org/jobs/)
+    *   [Communication kit](https://www.softwareheritage.org/software-heritage-communication-kit/)
+
+*   [News](https://www.softwareheritage.org/news/)
+    *   [Blog](https://www.softwareheritage.org/blog/)
+    *   [Events](https://www.softwareheritage.org/news/events/)
+    *   [Newsletter](https://www.softwareheritage.org/newsletter/)
+    *   [Publications](https://www.softwareheritage.org/publications/)
+    *   [Annual Reports](https://www.softwareheritage.org/category/annualreport/)
+
+*   [Donate](https://www.softwareheritage.org/donate/)
+*   [![Image 5](https://www.softwareheritage.org/wp-content/plugins/sitepress-multilingual-cms/res/flags/en.png)English](https://www.softwareheritage.org/?lang=en)
+    *   [![Image 6](https://www.softwareheritage.org/wp-content/plugins/sitepress-multilingual-cms/res/flags/fr.png)Français](https://www.softwareheritage.org/?lang=fr "Switch to Français")
+    *   [![Image 7](https://www.softwareheritage.org/wp-content/plugins/sitepress-multilingual-cms/res/flags/es.png)Español](https://www.softwareheritage.org/?lang=es "Switch to Español")
+
+[](https://www.softwareheritage.org/#)
+
+[](https://www.softwareheritage.org/)
+
+![Image 8](https://www.softwareheritage.org/wp-content/uploads/2016/06/10-SWH_site-carrousel-2.png?ver=1792616928)
+
+### Software [is our] Heritage
+
+![Image 9](https://www.softwareheritage.org/wp-content/uploads/2015/10/SWH_site-carrousel-A2.jpg?ver=1792616928)
+
+### [Software is fragile unlike words carved in stone it can be deleted or get corrupted](https://www.softwareheritage.org/mission/software-is-fragile/)
+
+![Image 10](https://www.softwareheritage.org/wp-content/uploads/2016/06/wood-knot_bw_left.jpg?ver=1792616928)
+
+### [Software is the key to access information and a fundamental part of human heritage](https://www.softwareheritage.org/mission/software-is-the-key/)
+
+![Image 11](https://www.softwareheritage.org/wp-content/uploads/2016/06/10-SWH_site-carrousel-2.png?ver=1792616928)
+
+### [Software Heritage preserves software source code for present and future generations](https://www.softwareheritage.org/mission/heritage/)
+
+### Do we already have your code?
+
+We harvest publicly available source code from many software projects and keep up with development happening there. As of today[our archive](https://www.softwareheritage.org/archive)already contains and keeps safe for you:
+
+##### Source files
+
+8 3 8 0,8 4 8 1 8 9,8 4 8 6 8 4,8 7 8 4 8 1
+
+##### Commits
+
+8 6,8 2 8 3 8 3,8 4 8 1 8 1,8 2 8 9 8 0
+
+##### Projects
+
+8 4 8 4 8 8,8 5 8 8 8 6,8 2 8 7 8 9
+
+**Search archived software projects**
+
+Search 
+
+**Check if we already have source code you care about**
+
+Drag & drop here source code files (.c, .java, .py, …) or enter their[SHA1](https://en.wikipedia.org/wiki/Cryptographic_hash_function).  
+Your files will _not_ be uploaded, but locally hashed by your browser. Files larger than 20 MB may take a while to process, use with care.
+
+[Search](https://www.softwareheritage.org/)[Clear](https://www.softwareheritage.org/)
+
+### We are building the universal software archive
+
+[![Image 12](https://www.softwareheritage.org/wp-content/uploads/2015/10/SWH-logo_anim-texte1.gif?ver=1792616928)](https://archive.softwareheritage.org/)
+
+[Browse the archive](https://archive.softwareheritage.org/)
+
+We**collect**and**preserve**software in source code form, because software embodies our technical and scientific knowledge and humanity cannot afford the risk of losing it.
+
+Software is a precious part of our cultural heritage. We curate and make accessible all the software we collect, because only by**sharing**it we can guarantee its preservation in the very long term.
+
+[Discover our mission](https://www.softwareheritage.org/mission/)
+
+### Use the Archive
+
+[![Image 13](https://www.softwareheritage.org/wp-content/uploads/2021/05/browser_icon_swh_grey-2.jpeg?ver=1792616928)](https://archive.softwareheritage.org/)
+
+##### [Browse](https://archive.softwareheritage.org/)
+
+You can search which software origins (repositories, source packages, etc.) we have already archived and when we have visited it, implementing a “wayback machine” for source code. Once an origin of interest has been identified, the web app allows to browse through it as you usually do with version control system browsing interfaces.
+
+[Browse the archive](https://archive.softwareheritage.org/)
+
+[![Image 14](https://www.softwareheritage.org/wp-content/uploads/2021/05/save_diskette_grey-3.jpeg?ver=1792616928)](https://save.softwareheritage.org/save-and-reference-research-software/)
+
+##### [Save Code Now](https://save.softwareheritage.org/save-and-reference-research-software/)
+
+You can trigger instant archiving of any source code repository that is not yet ingested in the Software Heritage archive, or that is not up to date.
+
+This complements the regular crawling of software origins that is performed on the main code hosting platforms, and gives you the possibility of ensuring that the code you are interested in is properly archived.
+
+[Save Code Now](https://save.softwareheritage.org/save-and-reference-research-software/)
+
+[![Image 15](https://www.softwareheritage.org/wp-content/uploads/2021/05/save_code_now_grey-2.jpeg?ver=1792616928)](https://www.softwareheritage.org/save-and-reference-research-software/)
+
+##### [Archive Research Software](https://www.softwareheritage.org/save-and-reference-research-software/)
+
+You can archive seamlessly your research software artifacts, and add to your research articles precise references to specific versions of the source code, down to fragments of individual source files. Just follow the link below for the guidelines.
+
+[Save research software](https://www.softwareheritage.org/save-and-reference-research-software/)
+
+[![Image 16](https://www.softwareheritage.org/wp-content/uploads/2019/09/collect-curate-1.png?ver=1792616928)](https://www.softwareheritage.org/swhap/)
+
+##### [Rescue Legacy Code](https://www.softwareheritage.org/swhap/)
+
+You can contribute to rescue and curate landmark legacy source code while it is still possible to get hold of it, and talk to the people that created it. For this, you can follow the SWHAP process, developed in collaboration with UNESCO and the University of Pisa.
+
+[Rescue legacy code](https://www.softwareheritage.org/swhap/)
+
+### API
+
+Programmatic access to the content of the archive is available via the[Software Heritage API](https://archive.softwareheritage.org/api/).
+
+The API allows to navigate the archive as a graph of development-related objects, such as file contents, directories, commits, releases. With the API developers can lookup individual objects by their IDs, retrieve their metadata, and jump from one to another following links — e.g., from commits to the corresponding directories or parent commits, from releases to released commits, etc. The API also allows to retrieve crawling information, such as tracked software origins and the full list of visits performed on each of them. This allows, for instance, to know when snapshots of a specific Git repository where taken and, for each of them, where each branch was pointing at the time.
+
+[Read the API documentation](https://archive.softwareheritage.org/api/)
+
+### It concerns all of us. And you can help!
+
+Software is so pervasive in our lives that its preservation concerns all of us. Our[mission](https://www.softwareheritage.org/mission/)and the[archive](https://archive.softwareheritage.org/)we are building will serve the needs of the many, from[cultural institutions](https://www.softwareheritage.org/mission/heritage/)to[scientists](https://www.softwareheritage.org/mission/science/)and[industries](https://www.softwareheritage.org/mission/industry/).
+
+Everyone can help us achieving these ambitious goals.
+
+[![Image 17](https://www.softwareheritage.org/wp-content/uploads/2015/10/action-library__red1.png?ver=1792616928)](https://www.softwareheritage.org/mission/heritage/)
+
+##### [Heritage](https://www.softwareheritage.org/mission/heritage/)
+
+Software is an important part of human production. It is also a key enabler for salvaging our entire digital heritage.
+
+We collect, preserve, and make accessible source code for the benefits of present and future generations.
+
+[Learn more and help](https://www.softwareheritage.org/mission/heritage/)
+
+[![Image 18](https://www.softwareheritage.org/wp-content/uploads/2015/10/action-research__red1.png?ver=1792616928)](https://www.softwareheritage.org/mission/science/)
+
+##### [Science](https://www.softwareheritage.org/mission/science/)
+
+Science relies more and more on software. To guarantee scientific reproducibility we need to preserve it.
+
+Amassing source code at this scale will be challenging, but will also enable the next generation of software studies.
+
+[Learn more and help](https://www.softwareheritage.org/mission/science/)
+
+[![Image 19](https://www.softwareheritage.org/wp-content/uploads/2015/10/action-industry__red1.png?ver=1792616928)](https://www.softwareheritage.org/mission/industry/)
+
+##### [Industry](https://www.softwareheritage.org/mission/industry/)
+
+Software is present in all industrial processes and products.
+
+The universal source code archive we are building will help industry with provenance tracking, long-term archival, and software bill of materials.
+
+[Learn more and help](https://www.softwareheritage.org/mission/industry/)
+
+### Initiator
+
+[![Image 20](https://www.softwareheritage.org/wp-content/uploads/2017/12/inria_testimonial.jpeg?ver=1792616928)](https://www.softwareheritage.org/2017/12/14/inria/)
+
+### [Inria](https://www.softwareheritage.org/2017/12/14/inria/)
+
+[Read More](https://www.softwareheritage.org/2017/12/14/inria/)
+
+### Diamond Sponsors
+
+[![Image 21](https://www.softwareheritage.org/wp-content/uploads/2017/11/Microsoft-Platinuim_dev2-1.png?ver=1792616928)](https://www.microsoft.com/en-us/)
+
+### [Microsoft](https://www.softwareheritage.org/2017/11/06/microsoft-2/)
+
+[Read More](https://www.softwareheritage.org/2017/11/06/microsoft-2/)
+
+[![Image 22](https://www.softwareheritage.org/wp-content/uploads/2025/12/tii_logo_400_180.png?ver=1792616928)](https://www.softwareheritage.org/2026/01/05/technology-innovation-institute-tii/)
+
+### [Technology Innovation Institute (TII)](https://www.softwareheritage.org/2026/01/05/technology-innovation-institute-tii/)
+
+[Read More](https://www.softwareheritage.org/2026/01/05/technology-innovation-institute-tii/)
+
+### Platinum sponsors
+
+[![Image 23](https://www.softwareheritage.org/wp-content/uploads/2021/11/cea-edited.png?ver=1792616928)](https://www.cea.fr/english)
+
+### [CEA](https://www.softwareheritage.org/2021/11/26/cea/)
+
+[Read More](https://www.softwareheritage.org/2021/11/26/cea/)
+
+[![Image 24](https://www.softwareheritage.org/wp-content/uploads/2025/06/LOGO-CNRS_BLEU-copy-2.png?ver=1792616928)](https://www.cnrs.fr/en)
+
+### [CNRS](https://www.softwareheritage.org/2020/11/18/cnrs/)
+
+[Read More](https://www.softwareheritage.org/2020/11/18/cnrs/)
+
+[![Image 25](https://www.softwareheritage.org/wp-content/uploads/2020/02/huawei.png?ver=1792616928)](https://www.huawei.com/)
+
+### [Huawei](https://www.softwareheritage.org/2020/02/12/huawei-5/)
+
+[Read More](https://www.softwareheritage.org/2020/02/12/huawei-5/)
+
+[![Image 26](https://www.softwareheritage.org/wp-content/uploads/2025/07/infosys-logo-jpeg.jpg?ver=1792616928)](https://www.softwareheritage.org/2025/08/11/infosys/)
+
+### [Infosys](https://www.softwareheritage.org/2025/08/11/infosys/)
+
+[Read More](https://www.softwareheritage.org/2025/08/11/infosys/)
+
+[![Image 27](https://www.softwareheritage.org/wp-content/uploads/2019/09/Ministere-charge-enseignement-superieur-et-recherche-edited.png?ver=1792616928)](https://www.enseignementsup-recherche.gouv.fr/)
+
+### [MESRI](https://www.softwareheritage.org/2019/09/05/mesri/)
+
+[Read More](https://www.softwareheritage.org/2019/09/05/mesri/)
+
+### Gold Sponsors
+
+[![Image 28](https://www.softwareheritage.org/wp-content/uploads/2025/06/aws_black.png?ver=1792616928)](https://aws.amazon.com/?nc1=h_ls)
+
+### [Amazon Web Services](https://www.softwareheritage.org/2025/06/17/amazon_sponsor/)
+
+[Read More](https://www.softwareheritage.org/2025/06/17/amazon_sponsor/)
+
+[![Image 29](https://www.softwareheritage.org/wp-content/uploads/2017/11/github-1.png?ver=1792616928)](https://github.com/about)
+
+### [GitHub](https://www.softwareheritage.org/2019/11/22/github-2/)
+
+[Read More](https://www.softwareheritage.org/2019/11/22/github-2/)
+
+[![Image 30](https://www.softwareheritage.org/wp-content/uploads/2018/06/google.png?ver=1792616928)](https://about.google/)
+
+### [Google](https://www.softwareheritage.org/2018/06/02/google/)
+
+[Read More](https://www.softwareheritage.org/2018/06/02/google/)
+
+[![Image 31](https://www.softwareheritage.org/wp-content/uploads/2020/02/oin.png?ver=1792616928)](https://www.openinventionnetwork.com/)
+
+### [Open Invention Network](https://www.softwareheritage.org/2020/02/04/open-invention-network-2/)
+
+[Read More](https://www.softwareheritage.org/2020/02/04/open-invention-network-2/)
+
+[![Image 32](https://www.softwareheritage.org/wp-content/uploads/2020/02/Universite%CC%81-de-Paris.png?ver=1792616928)](https://u-paris.fr/en/)
+
+### [Université de Paris](https://www.softwareheritage.org/2020/02/03/universite-de-paris/)
+
+[Read More](https://www.softwareheritage.org/2020/02/03/universite-de-paris/)
+
+### Silver Sponsors
+
+[![Image 33](https://www.softwareheritage.org/wp-content/uploads/2021/09/Logo_AdaCore.jpeg?ver=1792616928)](https://www.adacore.com/)
+
+### [AdaCore](https://www.softwareheritage.org/2021/09/07/adacore-2/)
+
+[Read More](https://www.softwareheritage.org/2021/09/07/adacore-2/)
+
+[![Image 34](https://www.softwareheritage.org/wp-content/uploads/2024/05/crkn-edited-2.png?ver=1792616928)](https://www.crkn-rcdr.ca/en)
+
+### [CRKN consortium](https://www.softwareheritage.org/2024/05/30/crkn/)
+
+[Read More](https://www.softwareheritage.org/2024/05/30/crkn/)
+
+[![Image 35](https://www.softwareheritage.org/wp-content/uploads/2020/09/Sorbonne-Universite.png?ver=1792616928)](https://www.sorbonne-universite.fr/en)
+
+### [Sorbonne Université](https://www.softwareheritage.org/2020/10/01/sorbonne-universite/)
+
+[Read More](https://www.softwareheritage.org/2020/10/01/sorbonne-universite/)
+
+[![Image 36](https://www.softwareheritage.org/wp-content/uploads/2019/06/universitadipisa.png?ver=1792616928)](https://www.unipi.it/index.php/english)
+
+### [Università di Pisa](https://www.softwareheritage.org/2019/06/27/universita-di-pisa/)
+
+[Read More](https://www.softwareheritage.org/2019/06/27/universita-di-pisa/)
+
+### Bronze Sponsors
+
+[![Image 37](https://www.softwareheritage.org/wp-content/uploads/2026/02/couperin.png?ver=1792616928)](https://www.softwareheritage.org/2026/03/24/couperin/)
+
+### [Couperin](https://www.softwareheritage.org/2026/03/24/couperin/)
+
+[Read More](https://www.softwareheritage.org/2026/03/24/couperin/)
+
+[![Image 38](https://www.softwareheritage.org/wp-content/uploads/2024/07/CSAL-1.png?ver=1792616928)](https://consortium.ch/?lang=en)
+
+### [CSAL – Consortium of Swiss Academic Libraries](https://www.softwareheritage.org/2024/07/04/csal/)
+
+[Read More](https://www.softwareheritage.org/2024/07/04/csal/)
+
+[![Image 39](https://www.softwareheritage.org/wp-content/uploads/2025/05/NWO-logo-RGB_wit_rondom_0.jpg?ver=1792616928)](https://www.softwareheritage.org/2025/05/14/nwo/)
+
+### [NWO – Dutch Research Council](https://www.softwareheritage.org/2025/05/14/nwo/)
+
+[Read More](https://www.softwareheritage.org/2025/05/14/nwo/)
+
+[![Image 40](https://www.softwareheritage.org/wp-content/uploads/2024/11/Sant-Anna-School-of-Advanced-Studies-sponsor.png?ver=1792616928)](https://www.santannapisa.it/en)
+
+### [Sant’Anna School of Advanced Studies](https://www.softwareheritage.org/2024/11/05/42804/)
+
+[Read More](https://www.softwareheritage.org/2024/11/05/42804/)
+
+[![Image 41](https://www.softwareheritage.org/wp-content/uploads/2023/01/scuela_normale_superiore.png?ver=1792616928)](https://www.sns.it/en)
+
+### [Scuola Normale Superiore](https://www.softwareheritage.org/2023/01/09/scuola-normale-superiore/)
+
+[Read More](https://www.softwareheritage.org/2023/01/09/scuola-normale-superiore/)
+
+[![Image 42](https://www.softwareheritage.org/wp-content/uploads/2024/02/universite-loraine.png?ver=1792616928)](https://www.univ-lorraine.fr/en/univ-lorraine/)
+
+### [Université de Lorraine](https://www.softwareheritage.org/2024/02/26/universite-de-loraine/)
+
+[Read More](https://www.softwareheritage.org/2024/02/26/universite-de-loraine/)
+
+[![Image 43](https://www.softwareheritage.org/wp-content/uploads/2025/09/saclay.png?ver=1792616928)](https://www.softwareheritage.org/2025/09/04/universite-paris-saclay/)
+
+### [Université Paris Saclay](https://www.softwareheritage.org/2025/09/04/universite-paris-saclay/)
+
+[Read More](https://www.softwareheritage.org/2025/09/04/universite-paris-saclay/)
+
+[Back to top](https://www.softwareheritage.org/#top)
+
+### Follow us
+
+[](mailto:info@softwareheritage.org)[](https://mstdn.social/@swheritage)[](http://www.linkedin.com/company/swheritage)[](https://www.softwareheritage.org/feed)[](https://twitter.com/SwHeritage)[](https://bsky.app/profile/softwareheritage.org)[](https://www.youtube.com/channel/UCe26PlE3YKTXYvEY9HWdIlQ)
+
+##### Join our newsletter
+
+*   [About](https://www.softwareheritage.org/)
+    *   [Mission](https://www.softwareheritage.org/mission/)
+    *   [People](https://www.softwareheritage.org/people/)
+    *   [Legal](https://www.softwareheritage.org/legal/)
+    *   [Contact](https://odoo.softwareheritage.org/contactus)
+
+*   [Join us!](https://www.softwareheritage.org/)
+    *   [Heritage](https://www.softwareheritage.org/mission/heritage/)
+    *   [Science](https://www.softwareheritage.org/mission/science/)
+    *   [Industry](https://www.softwareheritage.org/mission/industry/)
+    *   [Jobs](https://www.softwareheritage.org/jobs/)
+
+*   [Community](https://www.softwareheritage.org/)
+    *   [Developers](https://www.softwareheritage.org/community/developers/)
+    *   [Scientists](https://www.softwareheritage.org/community/scientists/)
+    *   [Blog](https://www.softwareheritage.org/blog/)
+
+*   [Donate](https://www.softwareheritage.org/donate/)
+
+In collaboration with
+
+[![Image 44](https://www.softwareheritage.org/wp-content/uploads/2021/10/UNESCO_logo_hor_blue-300x64.png)](https://www.unesco.org/en/articles/softwareheritageorg-unesco-and-inria-open-archive-digital-age)
+
+ Search:  [](https://www.softwareheritage.org/#)
+
+*   [English](https://www.softwareheritage.org/?lang=en "Switch to English")
+*   [Français (French)](https://www.softwareheritage.org/?lang=fr "Switch to Français (French)")
+*   [Español (Spanish)](https://www.softwareheritage.org/?lang=es "Switch to Español (Spanish)")
+
+Notifications

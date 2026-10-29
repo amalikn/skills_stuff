@@ -1,0 +1,1 @@
+../../skill-network-architect/references/collaboration-protocol.md

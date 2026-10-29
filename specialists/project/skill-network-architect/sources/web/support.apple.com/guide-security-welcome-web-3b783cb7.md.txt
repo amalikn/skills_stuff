@@ -1,0 +1,41 @@
+Contents of https://support.apple.com/guide/security/welcome/web:
+![An M5 chip that powers the new Mac computers with Apple silicon.](https://help.apple.com/assets/697B90C2034C22A38709E327/697B90C921233886B402A162/en_US/47c44a63c430ff1b9aed4c5f4d565e58.png)
+
+## Hardware security
+
+Secure software requires a foundation of security built into hardware. That’s why Apple devices—with iOS, iPadOS, macOS, tvOS, visionOS, or watchOS—have security capabilities designed into silicon.
+
+[Learn more about Apple hardware security](https://support.apple.com/guide/security/hardware-security-overview-secf020d1074/1/web/1)
+
+![Icons representing the operating systems for iPhone, iPad, and Mac.](https://help.apple.com/assets/697B90C2034C22A38709E327/697B90C921233886B402A162/en_US/efde0b9e36fd078f2f700f2d6f276522.png)
+
+## System security
+
+Building on the unique capabilities of Apple hardware, system security is designed to maximize the security of the operating systems on Apple devices without compromising usability. System security encompasses the startup process, software updates, and the ongoing operation of the operating system.
+
+[Learn how Apple protects users with system security](https://support.apple.com/guide/security/system-security-overview-sec114e4db04/1/web/1)
+
+![A Mac laptop open showing the icon for FileVault.](https://help.apple.com/assets/697B90C2034C22A38709E327/697B90C921233886B402A162/en_US/5cadeee18f54cd0437f6e4bfde56c8af.png)
+
+![Icons representing the App Store and macOS extensions.](https://help.apple.com/assets/697B90C2034C22A38709E327/697B90C921233886B402A162/en_US/65f43c028bcdc53716dad08155d7e931.png)
+
+![Symbols for six of the services that Apple offers: Find My, Apple Wallet, iMessage, iCloud, FaceTime, and Home.](https://help.apple.com/assets/697B90C2034C22A38709E327/697B90C921233886B402A162/en_US/ade2e655b1dabde15c28b809937318bb.png)
+
+## Services security
+
+Apple has built a robust set of services to help users get even more utility and productivity out of their devices. These services include Apple Account, iCloud, Sign in with Apple, Apple Pay, iMessage, FaceTime, Home, and Find My.
+
+[Learn how Apple makes its services secure](https://support.apple.com/guide/security/services-security-overview-sec025128f1b/1/web/1)
+
+To explore Apple Platform Security, select Table of Contents at the top of the page, or enter a word or phrase in the search field. You can also download the guide (where available).
+
+Helpful?
+
+Character limit:
+250
+
+Please don’t include any personal information in your comment.
+
+Maximum character limit is 250.
+
+Thanks for your feedback.

@@ -1,0 +1,319 @@
+[Skip to content](https://www.tiaonline.org/standards/catalog/#wp--skip-link--target)
+
+[![Image 1: TIA Logo](https://tiaonline.org/wp-content/uploads/2026/07/TIA-logo.png)](https://tiaonline.org/)
+
+*   Focus Areas
+    *   [See Focus Areas](https://tiaonline.org/focus-areas/)
+    *   [Data Center Infrastructure](https://tiaonline.org/focus-areas/data-center-infrastructure/)
+    *   [Quality Management](https://tiaonline.org/focus-areas/quality-management/)
+    *   [Supply Chain Security](https://tiaonline.org/focus-areas/supply-chain-security/)
+    *   [Workforce Development](https://tiaonline.org/focus-areas/workforce-development/)
+
+*   Our Work
+    *   [See Our Work](https://tiaonline.org/our-work/)
+    *   Standards
+        *   [See Standards](https://tiaonline.org/our-work/standards/)
+        *   Technical Standards
+            *   [See Technical Standards](https://tiaonline.org/our-work/standards/technical-standards/)
+            *   [Technical Standards Directory](https://tiaonline.org/our-work/standards/technical-standards-directory/)
+            *   [Standards Committees](https://tiaonline.org/our-work/standards/technical-standards-directory/standards-committees/)
+            *   U.S. Technical Advisory Groups
+                *   [See U.S. Technical Advisory Groups](https://tiaonline.org/our-work/standards/technical-standards-directory/us-technical-advisory-groups/)
+                *   [TC 86 Fiber Optics](https://www.iec.ch/dyn/www/f?p=103:7:0::::FSP_ORG_ID,FSP_LANG_ID:1279,25)
+                *   [TC 76](https://www.iec.ch/dyn/www/f?p=103:7:0::::FSP_ORG_ID,FSP_LANG_ID:1264,25)
+                *   [TC 46](https://www.iec.ch/dyn/www/f?p=103:7:0::::FSP_ORG_ID,FSP_LANG_ID:1247,25)
+                *   [ISO/IEC JTC 1/SC 25](https://www.iso.org/committee/45270.html)
+                *   [IEC Smart Cities](https://www.iec.ch/dyn/www/f?p=103:7:500618097075223::::FSP_ORG_ID,FSP_LANG_ID:13073,25)
+
+            *   [Procedures and Guidelines](https://tiaonline.org/our-work/standards/technical-standards-directory/procedures-and-guidelines/)
+            *   [Partnerships and Projects](https://tiaonline.org/our-work/standards/technical-standards-directory/partnerships-and-projects/)
+
+        *   Quality & Security Standards
+            *   [See Quality & Security Standards](https://tiaonline.org/our-work/standards/quality-security-standards/)
+            *   [Quality Management](https://tiaonline.org/our-work/standards/quality-security-standards/quality-management/)
+            *   [Data Center Excellence](https://tiaonline.org/our-work/standards/quality-security-standards/data-center-excellence/)
+            *   [Supply Chain Security](https://tiaonline.org/our-work/standards/quality-security-standards/supply-chain-security/)
+
+        *   [Buy Standards](https://tiaonline.org/our-work/standards/buy-standards/)
+
+    *   Certifications
+        *   [See Certifications](https://tiaonline.org/our-work/certifications/)
+        *   TL 9000
+            *   [See TL 9000](https://tiaonline.org/our-work/certifications/tl-9000/)
+            *   [TL Certification Process](https://tiaonline.org/our-work/certifications/tl-9000/certification-process/)
+            *   [TL Training](https://tiaonline.org/our-work/certifications/tl-9000/training/)
+            *   [TL 9000 Registration](https://tiaonline.org/our-work/certifications/tl-9000/registration/)
+            *   [TL Certification Audit Process](https://tiaonline.org/our-work/certifications/tl-9000/audit-process/)
+            *   [TL Benchmarking](https://tiaonline.org/our-work/certifications/tl-9000/benchmarking/)
+
+        *   SCS 9001
+            *   [See SCS 9001](https://tiaonline.org/our-work/certifications/scs-9001/)
+            *   [SCS Registration](https://tiaonline.org/our-work/certifications/scs-9001/scs-registration/)
+            *   [SCS Training](https://tiaonline.org/our-work/certifications/scs-9001/scs-training/)
+            *   [SCS Audit Process](https://tiaonline.org/our-work/certifications/scs-9001/scs-audit-process/)
+
+        *   DCE 9000
+            *   [See DCE 9000](https://tiaonline.org/our-work/certifications/dce-9000/)
+            *   [DCE Certification Process](https://tiaonline.org/our-work/certifications/dce-9000/dce-certification-process/)
+            *   [DCE Training](https://tiaonline.org/our-work/certifications/dce-9000/dce-training/)
+            *   [DCE Registration](https://tiaonline.org/our-work/certifications/dce-9000/dce-registration/)
+            *   [DCE Audit Process](https://tiaonline.org/our-work/certifications/dce-9000/dce-audit-process/)
+
+        *   TIA-942
+            *   [See TIA-942](https://tiaonline.org/our-work/certifications/tia-942-certification/)
+            *   [Auditors, Training and Consultants](https://tiaonline.org/our-work/certifications/tia-942-certification/auditors-training-consultants/)
+            *   [Certifications and Ratings](https://tiaonline.org/our-work/certifications/tia-942-certification/certifications-and-ratings/)
+            *   [Search Data Centers](https://tiaonline.org/our-work/certifications/tia-942-certification/search-data-centers/)
+
+    *   Policy & Advocacy
+        *   [See Policy & Advocacy](https://tiaonline.org/our-work/policy-advocacy/)
+        *   [Policy Filings](https://tiaonline.org/our-work/policy-advocacy/policy-filings/)
+        *   [Policy Partnerships](https://tiaonline.org/our-work/policy-advocacy/policy-partnerships/)
+
+    *   Industry Programs
+        *   Industry Initiatives
+            *   [See Industry Initiatives](https://tiaonline.org/our-work/industry-programs/industry-initiatives/)
+            *   [FOTC](https://www.tiafotc.org/)
+            *   [SPEC](https://spec.tiaonline.org/)
+            *   [oneM2M](https://www.onem2m.org/)
+
+        *   Workforce Development
+            *   [See Workforce Development](https://tiaonline.org/our-work/industry-programs/workforce-development/)
+            *   [Broadband Nation](https://tiaonline.org/our-work/industry-programs/workforce-development/broadband-nation/)
+            *   [Broadband Nation Expo](https://www.broadbandnationexpo.com/)
+
+        *   Numbering Administration
+            *   [See Numbering Administration](https://tiaonline.org/our-work/industry-programs/numbering-administration/)
+            *   [MEID Products and Services](https://tiaonline.org/our-work/industry-programs/numbering-administration/meid/)
+            *   [MEID Lookup](https://www.tiameid.org/lookup)
+
+*   Resources
+    *   [See Resources](https://tiaonline.org/resources/)
+    *   [Wavelength Blog](https://tiaonline.org/resources/wavelength-blog/)
+    *   [News & Announcements](https://tiaonline.org/resources/news-announcements/)
+    *   [Standards Announcements](https://tiaonline.org/resources/standards-announcements/)
+    *   [Policy Filings](https://tiaonline.org/our-work/policy-advocacy/policy-filings/)
+    *   [Resource Library](https://tiaonline.org/resources/resource-library/)
+
+*   Events
+    *   [See Events](https://tiaonline.org/events/)
+    *   [Event Calendar](https://tiaonline.org/events/event-calendar/)
+    *   [On Demand Webinars](https://tiaonline.org/events/on-demand-webinars/)
+    *   [Broadband Nation Expo](https://www.broadbandnationexpo.com/)
+
+*   About
+    *   [See About](https://tiaonline.org/about-tia/)
+    *   [Contact Us](https://tiaonline.org/about-tia/contact-us/)
+    *   Join TIA
+        *   [See Join TIA](https://tiaonline.org/about-tia/join-tia/)
+        *   [Our Members](https://tiaonline.org/about-tia/join-tia/our-members/)
+
+    *   TIA Leadership
+        *   [See TIA Leadership](https://tiaonline.org/about-tia/tia-leadership/)
+        *   [Staff](https://tiaonline.org/about-tia/tia-leadership/staff/)
+        *   [Board](https://tiaonline.org/about-tia/tia-leadership/board/)
+
+    *   Awards
+        *   [See TIA Awards](https://tiaonline.org/about-tia/awards/)
+        *   [QuEST Forum Awards](https://tiaonline.org/about-tia/quest-forum-awards/)
+
+    *   [Our History](https://tiaonline.org/about-tia/our-history/)
+    *   [Careers](https://tiaonline.org/about-tia/careers/)
+
+Search 
+
+[TIA Connect](https://connect.tiaonline.org/home)
+
+[Login](https://www.tiaonline.org/login/)
+
+[Join](https://tiaonline.org/about-tia/join-tia/)
+
+[![Image 2: TIA Logo](https://tiaonline.org/wp-content/uploads/2026/07/TIA-logo.png)](https://tiaonline.org/)
+
+Mobile Nav
+
+*   Focus Areas
+    *   [See Focus Areas](https://tiaonline.org/focus-areas/)
+    *   [Data Center Infrastructure](https://tiaonline.org/focus-areas/data-center-infrastructure/)
+    *   [Quality Management](https://tiaonline.org/focus-areas/quality-management/)
+    *   [Supply Chain Security](https://tiaonline.org/focus-areas/supply-chain-security/)
+    *   [Workforce Development](https://tiaonline.org/focus-areas/workforce-development/)
+
+*   Our Work
+    *   [See Our Work](https://tiaonline.org/our-work/)
+    *   Standards
+        *   [See Standards](https://tiaonline.org/our-work/standards/)
+        *   Technical Standards
+            *   [See Technical Standards](https://tiaonline.org/our-work/standards/technical-standards/)
+            *   [Technical Standards Directory](https://tiaonline.org/our-work/standards/technical-standards-directory/)
+            *   [Standards Committees](https://tiaonline.org/our-work/standards/technical-standards-directory/standards-committees/)
+            *   U.S. Technical Advisory Groups
+                *   [See U.S. Technical Advisory Groups](https://tiaonline.org/our-work/standards/technical-standards-directory/us-technical-advisory-groups/)
+                *   [TC 86 Fiber Optics](https://www.iec.ch/dyn/www/f?p=103:7:0::::FSP_ORG_ID,FSP_LANG_ID:1279,25)
+                *   [TC 76](https://www.iec.ch/dyn/www/f?p=103:7:0::::FSP_ORG_ID,FSP_LANG_ID:1264,25)
+                *   [TC 46](https://www.iec.ch/dyn/www/f?p=103:7:0::::FSP_ORG_ID,FSP_LANG_ID:1247,25)
+                *   [ISO/IEC JTC 1/SC 25](https://www.iso.org/committee/45270.html)
+                *   [IEC Smart Cities](https://www.iec.ch/dyn/www/f?p=103:7:500618097075223::::FSP_ORG_ID,FSP_LANG_ID:13073,25)
+
+            *   [Procedures and Guidelines](https://tiaonline.org/our-work/standards/technical-standards-directory/procedures-and-guidelines/)
+            *   [Partnerships and Projects](https://tiaonline.org/our-work/standards/technical-standards-directory/partnerships-and-projects/)
+
+        *   Quality & Security Standards
+            *   [See Quality & Security Standards](https://tiaonline.org/our-work/standards/quality-security-standards/)
+            *   [Quality Management](https://tiaonline.org/our-work/standards/quality-security-standards/quality-management/)
+            *   [Data Center Excellence](https://tiaonline.org/our-work/standards/quality-security-standards/data-center-excellence/)
+            *   [Supply Chain Security](https://tiaonline.org/our-work/standards/quality-security-standards/supply-chain-security/)
+
+        *   [Buy Standards](https://tiaonline.org/our-work/standards/buy-standards/)
+
+    *   Certifications
+        *   [See Certifications](https://tiaonline.org/our-work/certifications/)
+        *   TL 9000
+            *   [See TL 9000](https://tiaonline.org/our-work/certifications/tl-9000/)
+            *   [TL Certification Process](https://tiaonline.org/our-work/certifications/tl-9000/certification-process/)
+            *   [TL Training](https://tiaonline.org/our-work/certifications/tl-9000/training/)
+            *   [TL 9000 Registration](https://tiaonline.org/our-work/certifications/tl-9000/registration/)
+            *   [TL Certification Audit Process](https://tiaonline.org/our-work/certifications/tl-9000/audit-process/)
+            *   [TL Benchmarking](https://tiaonline.org/our-work/certifications/tl-9000/benchmarking/)
+
+        *   SCS 9001
+            *   [See SCS 9001](https://tiaonline.org/our-work/certifications/scs-9001/)
+            *   [SCS Registration](https://tiaonline.org/our-work/certifications/scs-9001/scs-registration/)
+            *   [SCS Training](https://tiaonline.org/our-work/certifications/scs-9001/scs-training/)
+            *   [SCS Audit Process](https://tiaonline.org/our-work/certifications/scs-9001/scs-audit-process/)
+
+        *   DCE 9000
+            *   [See DCE 9000](https://tiaonline.org/our-work/certifications/dce-9000/)
+            *   [DCE Certification Process](https://tiaonline.org/our-work/certifications/dce-9000/dce-certification-process/)
+            *   [DCE Training](https://tiaonline.org/our-work/certifications/dce-9000/dce-training/)
+            *   [DCE Registration](https://tiaonline.org/our-work/certifications/dce-9000/dce-registration/)
+            *   [DCE Audit Process](https://tiaonline.org/our-work/certifications/dce-9000/dce-audit-process/)
+
+        *   TIA-942
+            *   [See TIA-942](https://tiaonline.org/our-work/certifications/tia-942-certification/)
+            *   [Auditors, Training and Consultants](https://tiaonline.org/our-work/certifications/tia-942-certification/auditors-training-consultants/)
+            *   [Certifications and Ratings](https://tiaonline.org/our-work/certifications/tia-942-certification/certifications-and-ratings/)
+            *   [Search Data Centers](https://tiaonline.org/our-work/certifications/tia-942-certification/search-data-centers/)
+
+    *   Policy & Advocacy
+        *   [See Policy & Advocacy](https://tiaonline.org/our-work/policy-advocacy/)
+        *   [Policy Filings](https://tiaonline.org/our-work/policy-advocacy/policy-filings/)
+        *   [Policy Partnerships](https://tiaonline.org/our-work/policy-advocacy/policy-partnerships/)
+
+    *   Industry Programs
+        *   Industry Initiatives
+            *   [See Industry Initiatives](https://tiaonline.org/our-work/industry-programs/industry-initiatives/)
+            *   [FOTC](https://www.tiafotc.org/)
+            *   [SPEC](https://spec.tiaonline.org/)
+            *   [oneM2M](https://www.onem2m.org/)
+
+        *   Workforce Development
+            *   [See Workforce Development](https://tiaonline.org/our-work/industry-programs/workforce-development/)
+            *   [Broadband Nation](https://tiaonline.org/our-work/industry-programs/workforce-development/broadband-nation/)
+            *   [Broadband Nation Expo](https://www.broadbandnationexpo.com/)
+
+        *   Numbering Administration
+            *   [See Numbering Administration](https://tiaonline.org/our-work/industry-programs/numbering-administration/)
+            *   [MEID Products and Services](https://tiaonline.org/our-work/industry-programs/numbering-administration/meid/)
+            *   [MEID Lookup](https://www.tiameid.org/lookup)
+
+*   Resources
+    *   [See Resources](https://tiaonline.org/resources/)
+    *   [Wavelength Blog](https://tiaonline.org/resources/wavelength-blog/)
+    *   [News & Announcements](https://tiaonline.org/resources/news-announcements/)
+    *   [Standards Announcements](https://tiaonline.org/resources/standards-announcements/)
+    *   [Policy Filings](https://tiaonline.org/our-work/policy-advocacy/policy-filings/)
+    *   [Resource Library](https://tiaonline.org/resources/resource-library/)
+
+*   Events
+    *   [See Events](https://tiaonline.org/events/)
+    *   [Event Calendar](https://tiaonline.org/events/event-calendar/)
+    *   [On Demand Webinars](https://tiaonline.org/events/on-demand-webinars/)
+    *   [Broadband Nation Expo](https://www.broadbandnationexpo.com/)
+
+*   About
+    *   [See About](https://tiaonline.org/about-tia/)
+    *   [Contact Us](https://tiaonline.org/about-tia/contact-us/)
+    *   Join TIA
+        *   [See Join TIA](https://tiaonline.org/about-tia/join-tia/)
+        *   [Our Members](https://tiaonline.org/about-tia/join-tia/our-members/)
+
+    *   TIA Leadership
+        *   [See TIA Leadership](https://tiaonline.org/about-tia/tia-leadership/)
+        *   [Staff](https://tiaonline.org/about-tia/tia-leadership/staff/)
+        *   [Board](https://tiaonline.org/about-tia/tia-leadership/board/)
+
+    *   Awards
+        *   [See TIA Awards](https://tiaonline.org/about-tia/awards/)
+        *   [QuEST Forum Awards](https://tiaonline.org/about-tia/quest-forum-awards/)
+
+    *   [Our History](https://tiaonline.org/about-tia/our-history/)
+    *   [Careers](https://tiaonline.org/about-tia/careers/)
+
+[TIA Connect](https://connect.tiaonline.org/home)
+
+[Login](https://www.tiaonline.org/login/)
+
+[Join](https://tiaonline.org/about-tia/join-tia/)
+
+# Standards Committees
+
+1.   [Home](https://tiaonline.org/)/
+2.   [Our Work](https://tiaonline.org/our-work/)/
+3.   [Standards](https://tiaonline.org/our-work/standards/)/
+4.   [Technical Standards Directory](https://tiaonline.org/our-work/standards/technical-standards-directory/)/
+5.   Standards Committees
+
+## Active Committees
+
+*   [](https://tiaonline.org/standard-committee/tr-8-mobile-and-personal-private-radio-standards/)## TR-8 | Mobile and Personal Private Radio Standards [Read more: TR-8 | Mobile and Personal Private Radio Standards](https://tiaonline.org/standard-committee/tr-8-mobile-and-personal-private-radio-standards/)  
+*   [](https://tiaonline.org/standard-committee/tr-14-structural-standards-for-communication-and-small-wind-turbine-support-structures/)## TR-14 | Structural Standards for Communication and Small Wind Turbine Support Structures [Read more: TR-14 | Structural Standards for Communication and Small Wind Turbine Support Structures](https://tiaonline.org/standard-committee/tr-14-structural-standards-for-communication-and-small-wind-turbine-support-structures/)  
+*   [](https://tiaonline.org/standard-committee/tr-41-performance-and-accessibility-for-communications-products/)## TR-41 | Performance and Accessibility for Communications Products [Read more: TR-41 | Performance and Accessibility for Communications Products](https://tiaonline.org/standard-committee/tr-41-performance-and-accessibility-for-communications-products/)  
+*   [](https://tiaonline.org/standard-committee/tr-42-i-telecommunications-cabling-systems/)## TR-42 I Telecommunications Cabling Systems [Read more: TR-42 I Telecommunications Cabling Systems](https://tiaonline.org/standard-committee/tr-42-i-telecommunications-cabling-systems/)  
+*   [](https://tiaonline.org/standard-committee/tr-45-i-mobile-and-point-to-point-communications-standards/)## TR-45 I Mobile and Point-to-Point Communications Standards [Read more: TR-45 I Mobile and Point-to-Point Communications Standards](https://tiaonline.org/standard-committee/tr-45-i-mobile-and-point-to-point-communications-standards/)  
+
+## Inactive Committees
+
+*   [](https://tiaonline.org/standard-committee/tr-34-satellite-equipment-systems/)## TR-34 | Satellite Equipment & Systems [Read more: TR-34 | Satellite Equipment & Systems](https://tiaonline.org/standard-committee/tr-34-satellite-equipment-systems/)  
+*   [](https://tiaonline.org/standard-committee/tr-50-i-m2m-smart-device-communications/)## TR-50 I M2M – Smart Device Communications [Read more: TR-50 I M2M – Smart Device Communications](https://tiaonline.org/standard-committee/tr-50-i-m2m-smart-device-communications/)  
+*   [](https://tiaonline.org/standard-committee/tr-51-i-smart-utility-networks/)## TR-51 I Smart Utility Networks [Read more: TR-51 I Smart Utility Networks](https://tiaonline.org/standard-committee/tr-51-i-smart-utility-networks/)  
+
+## **Sign up for updates on standards, policy, certifications,  
+and trends shaping digital infrastructure.**
+
+[Subscribe to Newsletter](https://tiasignalnewsletter.org/)
+
+[![Image 3: TIA Logo](https://tiaonline.org/wp-content/uploads/2026/07/TIA-logo-inverted.png)](https://www.tiaonline.org/)
+
+1201 Wilson Boulevard, Floor 9  
+Arlington, VA 22209
+
+tiacontact@tiaonline.org
+
+*   [Facebook](https://www.facebook.com/TIAEvents/)
+*   [X](https://twitter.com/TIAonline)
+*   [LinkedIn](https://www.linkedin.com/company/tia-telecommunications-industry-association-)
+*   [YouTube](https://www.youtube.com/user/TheTIANow)
+
+*   [Focus Areas](https://tiaonline.org/focus-areas/)
+*   [Our Work](https://tiaonline.org/our-work/)
+*   [Resources](https://tiaonline.org/resources/)
+*   [Events](https://tiaonline.org/events/)
+*   [About](https://tiaonline.org/about-tia/)
+
+*   [Data Center Infrastructure](https://tiaonline.org/focus-areas/data-center-infrastructure/)
+*   [Quality Management](https://tiaonline.org/focus-areas/quality-management/)
+*   [Supply Chain Security](https://tiaonline.org/focus-areas/supply-chain-security/)
+*   [Workforce Development](https://tiaonline.org/focus-areas/workforce-development/)
+
+*   [Join TIA](https://tiaonline.org/about-tia/join-tia/)
+*   [TIA Connect](https://connect.tiaonline.org/home)
+*   [Contact Us](https://tiaonline.org/about-tia/contact-us/)
+
+© 2026 TIA. [Privacy Policy](https://tiaonline.org/privacy-policy/) / [Accessibility Statement](https://tiaonline.org/accessibility-statement/)
+
+[Website by Yoko Co](https://yokoco.com/)
+
+By continuing to browse the site you are agreeing to our use of cookies and similar tracking technologies described in our [privacy policy](https://www.tiaonline.org/privacy-policy/).
+
+I Understand Decline

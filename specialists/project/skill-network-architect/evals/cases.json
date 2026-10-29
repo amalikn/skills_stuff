@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "domain": "network",
+  "cases": [
+    {
+      "id": "N01",
+      "prompt": "Design a tunnel between offices with identical 10.20.0.0/16 prefixes; keep current internet and deploy rules to 200 devices by tomorrow.",
+      "expected": [
+        "Identify collision and return-path/DNS effects",
+        "Compare renumbering with bounded translation or application gateway",
+        "Preserve default routes unless rerouting is intended",
+        "Canary, bound batches, stop/recover and verify real traffic",
+        "Treat Nautobot as optional intent adapter"
+      ],
+      "critical_failures": [
+        "Claim WireGuard fixes overlap",
+        "Fleet-wide untested apply",
+        "Require Nautobot as architecture"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N02",
+      "prompt": "Design Wi-Fi and Cambium backhaul for a remote site; only nominal radio rate is known.",
+      "expected": [
+        "Ask for clients, survey, RF interference and link/path evidence",
+        "Separate RF airtime from wired/backhaul bottlenecks",
+        "Use skill-cambium and skill-smc bidirectionally",
+        "Verify regulatory limits before numerical claims"
+      ],
+      "critical_failures": [
+        "Promise throughput from nominal link rate",
+        "Invent current allowed power/frequency"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N03",
+      "prompt": "The same prefix exists in isolated VRFs. An IP plan flags it as overlap.",
+      "expected": [
+        "Identify routing scope and intentional isolation",
+        "Check future route leakage/interconnection",
+        "Do not reject all cross-scope reuse"
+      ],
+      "critical_failures": [
+        "Declare all overlap invalid"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N04",
+      "prompt": "A dual-stack service works on IPv4 but times out on IPv6.",
+      "expected": [
+        "Trace DNS, local addressing, route, policy, MTU and return path per family",
+        "Check relevant ICMPv6 behavior",
+        "Bound probes and verify application"
+      ],
+      "critical_failures": [
+        "Block all ICMPv6",
+        "Claim ping proves application"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N05",
+      "prompt": "Two internet circuits provide redundancy, but no duct or power evidence exists.",
+      "expected": [
+        "Identify shared local power/path/carrier risks",
+        "Mark physical diversity unverified",
+        "Test degraded capacity and failover"
+      ],
+      "critical_failures": [
+        "Certify HA from two carriers"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N06",
+      "prompt": "A storage fabric will share links with backup and VM migration.",
+      "expected": [
+        "Request latency, loss and rebuild demand from systems architect",
+        "Model normal and failed-link contention",
+        "Specify MTU and user-outcome tests"
+      ],
+      "critical_failures": [
+        "Set universal headroom ratio without evidence"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N07",
+      "prompt": "OpenWISP accepts metric payloads but graphs are empty.",
+      "expected": [
+        "Hand off controller investigation to skill-openwisp",
+        "Separate API, worker, stored freshness, health and graph evidence",
+        "Do not rewrite intended inventory from stale health"
+      ],
+      "critical_failures": [
+        "Declare successful ingestion from HTTP alone"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N08",
+      "prompt": "skill-smc sends an ansible-wifi report of offline sites without timestamps or population details.",
+      "expected": [
+        "Accept inbound architectural review",
+        "Request collector/report revision, time window, timezone, freshness and coverage",
+        "Avoid treating missing samples as zero/outage",
+        "Return service-impact hypotheses and checks to skill-smc"
+      ],
+      "critical_failures": [
+        "Invent report column meanings",
+        "Declare fleet outage without evidence"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N09",
+      "prompt": "skill-drawio requests clarification because the same server is drawn in two racks.",
+      "expected": [
+        "Resolve stable identity, current/proposed state and domain membership",
+        "Return a semantic correction for the canonical map",
+        "Preserve hand-authored drawings"
+      ],
+      "critical_failures": [
+        "Fix only picture layout without architecture decision"
+      ],
+      "status": "authored; see results.md for executed subset"
+    },
+    {
+      "id": "N10",
+      "prompt": "skill-mikrotik reports uplink flaps; skill-cambium reports RF loss in the same site.",
+      "expected": [
+        "Request synchronized timestamps/counter resets and path map",
+        "Correlate power, link, RF and service evidence",
+        "Coordinate skill-smc and peer systems review as needed"
+      ],
+      "critical_failures": [
+        "Choose a vendor cause before comparing evidence"
+      ],
+      "status": "authored; see results.md for executed subset"
+    }
+  ]
+}

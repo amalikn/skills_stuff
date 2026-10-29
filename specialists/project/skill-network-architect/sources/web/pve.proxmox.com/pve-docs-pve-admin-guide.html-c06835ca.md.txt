@@ -1,0 +1,2091 @@
+Contents of https://pve.proxmox.com/pve-docs/pve-admin-guide.html:
+[↑](#)
+
+## 1. Introduction
+
+Proxmox VE is a platform for running virtual machines and containers. It is
+based on Debian GNU/Linux and completely open source. For maximum
+flexibility, Proxmox VE provides two virtualization technologies—Kernel-based
+Virtual Machine (KVM) and Linux Containers (LXC).
+
+A core design goal is to make administration as easy as possible. You
+can use Proxmox VE on a single node, or assemble a cluster of many nodes.
+All management tasks can be done through the web-based management
+interface, and even a novice user can set up and install Proxmox VE within
+minutes.
+
+![Proxmox Software Stack](data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIKICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8IS0tIEdlbmVyYXRlZCBieSBncmFwaHZpeiB2ZXJzaW9uIDIuMzguMCAoMjAxNDA0MTMuMjA0MSkKIC0tPgo8IS0tIFRpdGxlOiBwdmVfc29mdHdhcmVfc3RhY2sgUGFnZXM6IDEgLS0+Cjxzdmcgd2lkdGg9IjUyNnB0IiBoZWlnaHQ9IjQwMXB0Igogdmlld0JveD0iMC4wMCAwLjAwIDUyNi4wMCA0MDEuMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgo8ZyBpZD0iZ3JhcGgwIiBjbGFzcz0iZ3JhcGgiIHRyYW5zZm9ybT0ic2NhbGUoMSAxKSByb3RhdGUoMCkgdHJhbnNsYXRlKDQgMzk3KSI+Cjx0aXRsZT5wdmVfc29mdHdhcmVfc3RhY2s8L3RpdGxlPgo8cG9seWdvbiBmaWxsPSJub25lIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iLTQsNCAtNCwtMzk3IDUyMiwtMzk3IDUyMiw0IC00LDQiLz4KPCEtLSBzdGFjayAtLT4KPGcgaWQ9Im5vZGUxIiBjbGFzcz0ibm9kZSI+PHRpdGxlPnN0YWNrPC90aXRsZT4KPHBvbHlnb24gZmlsbD0iIzAwNjE3ZiIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjEyLC0yODkuNSAxMiwtMzg0LjUgNTA2LC0zODQuNSA1MDYsLTI4OS41IDEyLC0yODkuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjIxMC41IiB5PSItMzY2LjUiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIyMC4wMCIgZmlsbD0id2hpdGUiPlVzZXIgVG9vbHM8L3RleHQ+Cjxwb2x5Z29uIGZpbGw9IiMwMDYxN2YiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIxNCwtMjkxLjUgMTQsLTM1Ni41IDUwNCwtMzU2LjUgNTA0LC0yOTEuNSAxNCwtMjkxLjUiLz4KPHBvbHlnb24gZmlsbD0iI2ZmOTEwMCIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjE5LC0zMjYuNSAxOSwtMzUxLjUgMTA5LC0zNTEuNSAxMDksLTMyNi41IDE5LC0zMjYuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjU0IiB5PSItMzM1LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0id2hpdGUiPnFtPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSIjZmY5MTAwIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMTE0LC0zMjYuNSAxMTQsLTM1MS41IDIyNSwtMzUxLjUgMjI1LC0zMjYuNSAxMTQsLTMyNi41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMTQ5IiB5PSItMzM1LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0id2hpdGUiPnB2ZXNtPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSIjZmY5MTAwIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMjMwLC0zMjYuNSAyMzAsLTM1MS41IDM1MSwtMzUxLjUgMzUxLC0zMjYuNSAyMzAsLTMyNi41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMjY5LjUiIHk9Ii0zMzUuMyIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjE0LjAwIiBmaWxsPSJ3aGl0ZSI+cHZldW08L3RleHQ+Cjxwb2x5Z29uIGZpbGw9IiNmZjkxMDAiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIzNTYsLTMyNi41IDM1NiwtMzUxLjUgNDk5LC0zNTEuNSA0OTksLTMyNi41IDM1NiwtMzI2LjUiLz4KPHRleHQgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSIzOTAuNSIgeT0iLTMzNS4zIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IndoaXRlIj5oYSYjNDU7bWFuYWdlcjwvdGV4dD4KPHBvbHlnb24gZmlsbD0iI2ZmOTEwMCIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjE5LC0yOTYuNSAxOSwtMzIxLjUgMTA5LC0zMjEuNSAxMDksLTI5Ni41IDE5LC0yOTYuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjU0LjUiIHk9Ii0zMDUuMyIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjE0LjAwIiBmaWxsPSJ3aGl0ZSI+cGN0PC90ZXh0Pgo8cG9seWdvbiBmaWxsPSIjZmY5MTAwIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMTE0LC0yOTYuNSAxMTQsLTMyMS41IDIyNSwtMzIxLjUgMjI1LC0yOTYuNSAxMTQsLTI5Ni41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMTQ5IiB5PSItMzA1LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0id2hpdGUiPnB2ZWNtPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSIjZmY5MTAwIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMjMwLC0yOTYuNSAyMzAsLTMyMS41IDM1MSwtMzIxLjUgMzUxLC0yOTYuNSAyMzAsLTI5Ni41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMjY0LjUiIHk9Ii0zMDUuMyIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjE0LjAwIiBmaWxsPSJ3aGl0ZSI+cHZlY2VwaDwvdGV4dD4KPHBvbHlnb24gZmlsbD0iI2ZmOTEwMCIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjM1NiwtMjk2LjUgMzU2LC0zMjEuNSA0OTksLTMyMS41IDQ5OSwtMjk2LjUgMzU2LC0yOTYuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjM5MyIgeT0iLTMwNS4zIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IndoaXRlIj5wdmUmIzQ1O2ZpcmV3YWxsPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSIjMDA2MTdmIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMTIsLTIxOC41IDEyLC0yODMuNSA1MDYsLTI4My41IDUwNiwtMjE4LjUgMTIsLTIxOC41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMjIwLjUiIHk9Ii0yNjUuNSIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjIwLjAwIiBmaWxsPSJ3aGl0ZSI+U2VydmljZXM8L3RleHQ+Cjxwb2x5Z29uIGZpbGw9IiMwMDYxN2YiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIxNCwtMjIwLjUgMTQsLTI1NS41IDUwNCwtMjU1LjUgNTA0LC0yMjAuNSAxNCwtMjIwLjUiLz4KPHBvbHlnb24gZmlsbD0iI2U1NzAwMCIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjE5LC0yMjUuNSAxOSwtMjUwLjUgMTA0LC0yNTAuNSAxMDQsLTIyNS41IDE5LC0yMjUuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjM0IiB5PSItMjM0LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0id2hpdGUiPnB2ZXByb3h5PC90ZXh0Pgo8cG9seWdvbiBmaWxsPSIjZTU3MDAwIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMTA5LC0yMjUuNSAxMDksLTI1MC41IDIxMSwtMjUwLjUgMjExLC0yMjUuNSAxMDksLTIyNS41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMTI0IiB5PSItMjM0LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0id2hpdGUiPnB2ZWRhZW1vbjwvdGV4dD4KPHBvbHlnb24gZmlsbD0iI2U1NzAwMCIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjIxNiwtMjI1LjUgMjE2LC0yNTAuNSAyOTgsLTI1MC41IDI5OCwtMjI1LjUgMjE2LC0yMjUuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjIzMSIgeT0iLTIzNC4zIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IndoaXRlIj5wdmVzdGF0ZDwvdGV4dD4KPHBvbHlnb24gZmlsbD0iI2U1NzAwMCIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjMwMywtMjI1LjUgMzAzLC0yNTAuNSAzOTgsLTI1MC41IDM5OCwtMjI1LjUgMzAzLC0yMjUuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjMxNy41IiB5PSItMjM0LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0id2hpdGUiPnB2ZSYjNDU7aGEmIzQ1O2xybTwvdGV4dD4KPHBvbHlnb24gZmlsbD0iI2U1NzAwMCIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjQwMywtMjI1LjUgNDAzLC0yNTAuNSA0OTksLTI1MC41IDQ5OSwtMjI1LjUgNDAzLC0yMjUuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQxNy41IiB5PSItMjM0LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0id2hpdGUiPnB2ZSYjNDU7Y2x1c3RlcjwvdGV4dD4KPHBvbHlnb24gZmlsbD0iI2FiYmFiYSIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjIwLC05NS41IDIwLC0yMDQuNSAxMzMsLTIwNC41IDEzMywtOTUuNSAyMCwtOTUuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjYxIiB5PSItMTc4LjUiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIyMC4wMCIgZmlsbD0id2hpdGUiPlZNPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjI1LC0xMzcuNSAyNSwtMTYyLjUgNzQsLTE2Mi41IDc0LC0xMzcuNSAyNSwtMTM3LjUiLz4KPHRleHQgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSIzNyIgeT0iLTE0Ni4zIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IiMwMDYxN2YiPkFwcDwvdGV4dD4KPHBvbHlnb24gZmlsbD0id2hpdGUiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSI3OSwtMTM3LjUgNzksLTE2Mi41IDEyOCwtMTYyLjUgMTI4LC0xMzcuNSA3OSwtMTM3LjUiLz4KPHRleHQgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSI5MSIgeT0iLTE0Ni4zIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IiMwMDYxN2YiPkFwcDwvdGV4dD4KPHBvbHlnb24gZmlsbD0iIzAwNjE3ZiIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjI1LC0xMDAuNSAyNSwtMTMyLjUgMTI4LC0xMzIuNSAxMjgsLTEwMC41IDI1LC0xMDAuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjMyLjUiIHk9Ii0xMTEuNSIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjIwLjAwIiBmaWxsPSJ3aGl0ZSI+R3Vlc3QgT1M8L3RleHQ+Cjxwb2x5Z29uIGZpbGw9IiNhYmJhYmEiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIxMzksLTk1LjUgMTM5LC0yMDQuNSAyNTIsLTIwNC41IDI1MiwtOTUuNSAxMzksLTk1LjUiLz4KPHRleHQgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSIxODAiIHk9Ii0xNzguNSIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjIwLjAwIiBmaWxsPSJ3aGl0ZSI+Vk08L3RleHQ+Cjxwb2x5Z29uIGZpbGw9IndoaXRlIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMTQ0LC0xMzcuNSAxNDQsLTE2Mi41IDE5MywtMTYyLjUgMTkzLC0xMzcuNSAxNDQsLTEzNy41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMTU2IiB5PSItMTQ2LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0iIzAwNjE3ZiI+QXBwPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjE5OCwtMTM3LjUgMTk4LC0xNjIuNSAyNDcsLTE2Mi41IDI0NywtMTM3LjUgMTk4LC0xMzcuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjIxMCIgeT0iLTE0Ni4zIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IiMwMDYxN2YiPkFwcDwvdGV4dD4KPHBvbHlnb24gZmlsbD0iIzAwNjE3ZiIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjE0NCwtMTAwLjUgMTQ0LC0xMzIuNSAyNDcsLTEzMi41IDI0NywtMTAwLjUgMTQ0LC0xMDAuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjE1MS41IiB5PSItMTExLjUiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIyMC4wMCIgZmlsbD0id2hpdGUiPkd1ZXN0IE9TPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSIjZmY5MTAwIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMTgsLTY1LjUgMTgsLTkxLjUgMjU0LC05MS41IDI1NCwtNjUuNSAxOCwtNjUuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjEwOC41IiB5PSItNzMuNSIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjIwLjAwIiBmaWxsPSJ3aGl0ZSI+UUVNVTwvdGV4dD4KPHRleHQgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSIzMjAuNSIgeT0iLTE5Mi44IiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiPiA8L3RleHQ+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMzIwLjUiIHk9Ii0xNzAuOCIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjE0LjAwIj4gPC90ZXh0Pgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjMyMC41IiB5PSItMTQ5LjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCI+IDwvdGV4dD4KPHBvbHlnb24gZmlsbD0iI2FiYmFiYSIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjI2NiwtNjcuNSAyNjYsLTEzOS41IDM3OSwtMTM5LjUgMzc5LC02Ny41IDI2NiwtNjcuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjI3OC41IiB5PSItMTEzLjUiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIyMC4wMCIgZmlsbD0id2hpdGUiPkNvbnRhaW5lcjwvdGV4dD4KPHBvbHlnb24gZmlsbD0id2hpdGUiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIyNzEsLTcyLjUgMjcxLC05Ny41IDMyMCwtOTcuNSAzMjAsLTcyLjUgMjcxLC03Mi41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMjgzIiB5PSItODEuMyIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjE0LjAwIiBmaWxsPSIjMDA2MTdmIj5BcHA8L3RleHQ+Cjxwb2x5Z29uIGZpbGw9IndoaXRlIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMzI1LC03Mi41IDMyNSwtOTcuNSAzNzQsLTk3LjUgMzc0LC03Mi41IDMyNSwtNzIuNSIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjMzNyIgeT0iLTgxLjMiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0iIzAwNjE3ZiI+QXBwPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSIjYWJiYWJhIiBzdHJva2U9Im5vbmUiIHBvaW50cz0iMzg1LC02Ny41IDM4NSwtMTM5LjUgNDk4LC0xMzkuNSA0OTgsLTY3LjUgMzg1LC02Ny41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMzk3LjUiIHk9Ii0xMTMuNSIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjIwLjAwIiBmaWxsPSJ3aGl0ZSI+Q29udGFpbmVyPC90ZXh0Pgo8cG9seWdvbiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjM5MCwtNzIuNSAzOTAsLTk3LjUgNDM5LC05Ny41IDQzOSwtNzIuNSAzOTAsLTcyLjUiLz4KPHRleHQgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSI0MDIiIHk9Ii04MS4zIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IiMwMDYxN2YiPkFwcDwvdGV4dD4KPHBvbHlnb24gZmlsbD0id2hpdGUiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSI0NDQsLTcyLjUgNDQ0LC05Ny41IDQ5MywtOTcuNSA0OTMsLTcyLjUgNDQ0LC03Mi41Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iNDU2IiB5PSItODEuMyIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxzYW5zLVNlcmlmIiBmb250LXNpemU9IjE0LjAwIiBmaWxsPSIjMDA2MTdmIj5BcHA8L3RleHQ+Cjxwb2x5Z29uIGZpbGw9IiMwMDYxN2YiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIxMiwtNy41IDEyLC01My41IDUwNiwtNTMuNSA1MDYsLTcuNSAxMiwtNy41Ii8+Cjxwb2x5Z29uIGZpbGw9IiMwMDYxN2YiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIxNCwtOS41IDE0LC01MS41IDUwNCwtNTEuNSA1MDQsLTkuNSAxNCwtOS41Ii8+Cjxwb2x5Z29uIGZpbGw9IiNmZjkxMDAiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIxOSwtMTggMTksLTQzIDY0LC00MyA2NCwtMTggMTksLTE4Ii8+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMjQiIHk9Ii0yNi44IiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IndoaXRlIj5LVk08L3RleHQ+Cjx0ZXh0IHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMTUwLjUiIHk9Ii0yNS41IiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMjAuMDAiIGZpbGw9IndoaXRlIj5MaW51eCBLZXJuZWw8L3RleHQ+Cjxwb2x5Z29uIGZpbGw9IiNmZjkxMDAiIHN0cm9rZT0ibm9uZSIgcG9pbnRzPSIzNDksLTE4IDM0OSwtNDMgNDI0LC00MyA0MjQsLTE4IDM0OSwtMTgiLz4KPHRleHQgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSIzNTQiIHk9Ii0yNi44IiBmb250LWZhbWlseT0iSGVsdmV0aWNhLHNhbnMtU2VyaWYiIGZvbnQtc2l6ZT0iMTQuMDAiIGZpbGw9IndoaXRlIj5BcHBBcm1vcjwvdGV4dD4KPHBvbHlnb24gZmlsbD0iI2ZmOTEwMCIgc3Ryb2tlPSJub25lIiBwb2ludHM9IjQyOSwtMTggNDI5LC00MyA0OTksLTQzIDQ5OSwtMTggNDI5LC0xOCIvPgo8dGV4dCB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQzNCIgeT0iLTI2LjgiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2Esc2Fucy1TZXJpZiIgZm9udC1zaXplPSIxNC4wMCIgZmlsbD0id2hpdGUiPmNncm91cHM8L3RleHQ+CjwvZz4KPC9nPgo8L3N2Zz4K)
+
+### 1.1. Central Management
+
+While many people start with a single node, Proxmox VE can scale out to a
+large set of clustered nodes. The cluster stack is fully integrated
+and ships with the default installation.
+
+Unique Multi-Master Design
+:   Every node in a Proxmox VE cluster can perform all management tasks. There
+    is no single-point-of-failure central management server—any node can
+    manage the entire cluster. This multi-master architecture keeps the
+    cluster manageable even if individual nodes are temporarily
+    unavailable.
+
+Proxmox Cluster File System (pmxcfs)
+:   Proxmox VE uses the Proxmox Cluster File System (pmxcfs), a
+    database-driven file system for storing configuration files. It can
+    store the configuration of thousands of virtual machines. Corosync
+    replicates these files in real time to all cluster nodes. The file
+    system stores all data inside a persistent database on disk, while a
+    copy resides in RAM, providing a maximum storage size of 128 MiB—more
+    than enough for thousands of VMs.
+
+    Proxmox VE is the only virtualization platform using this cluster file
+    system.
+
+Web-based Management Interface
+:   Proxmox VE is simple to use. The included web-based interface, built on
+    the ExtJS JavaScript framework, provides a clean overview of all KVM
+    guests and Linux containers, and full control over all cluster
+    resources. You can manage VMs, containers, storage, and networking
+    from the GUI, including history and syslog viewing for each node,
+    running backup or restore jobs, live migration, and HA-triggered
+    activities. There is no need to install a separate management tool or
+    additional management node.
+
+Command Line
+:   For advanced users who prefer the comfort of a Unix shell or Windows
+    PowerShell, Proxmox VE provides a command-line interface to manage all
+    components of the virtual environment. This command-line interface
+    has intelligent tab completion and full documentation in the form of
+    man pages.
+
+REST API
+:   Proxmox VE uses a RESTful API with JSON as the primary data format. The
+    entire API is formally defined using JSON Schema, enabling fast and
+    easy integration for third-party management tools such as custom
+    hosting environments.
+
+Role-based Administration
+:   You can define granular access for all objects (such as VMs, storage,
+    and nodes) by using role-based user and permission management. Each
+    permission specifies a subject (a user or group) and a role (set of
+    privileges) on a specific path, following the access control list
+    model.
+
+Authentication Realms
+:   Proxmox VE supports multiple authentication sources, including Microsoft
+    Active Directory, LDAP, Linux PAM standard authentication, and the
+    built-in Proxmox VE authentication server.
+
+### 1.2. Flexible Storage
+
+The Proxmox VE storage model is very flexible. Virtual machine images can
+be stored on one or several local storages, or on shared storage such
+as NFS or SAN. You may configure as many storage definitions as you
+like, using all storage technologies available for Debian GNU/Linux.
+
+One major benefit of storing VMs on shared storage is the ability to
+live-migrate running machines without any downtime, as all nodes in
+the cluster have direct access to VM disk images.
+
+The following network storage types are supported:
+
+* LVM group (network backing with iSCSI targets)
+* iSCSI target
+* iSCSI LUNs (direct use)
+* NFS share
+* CIFS share
+* Ceph RBD
+* CephFS
+* Proxmox Backup Server
+
+The following local storage types are supported:
+
+* LVM group (local backing devices such as block devices, Fibre Channel
+  devices, and DRBD)
+* Directory (storage on existing file system)
+* ZFS
+
+### 1.3. Integrated Backup and Restore
+
+The integrated backup tool (vzdump) creates consistent snapshots of
+running containers and KVM guests. It creates an archive of the VM or
+container data, including the configuration files.
+
+Additionally, the [Proxmox Backup Server integration](#storage_pbs)
+provides advanced features, including the ability to combine full backups
+and data deduplication, perform client-side encryption, back up to tape
+or S3 object storage, and sync with other offsite Proxmox Backup Server
+installations.
+
+KVM live backup works for all storage types including VM images on NFS,
+CIFS, iSCSI LUN, and Ceph RBD. The backup format is optimized for
+storing VM backups efficiently—using sparse files, out-of-order data, and
+minimized I/O.
+
+### 1.4. High Availability Cluster
+
+A multi-node Proxmox VE HA cluster enables highly available virtual machines
+and containers. The integrated
+[High Availability (HA) manager](#chapter_ha_manager) automatically
+detects node failures using watchdog-based fencing and restarts affected
+services on healthy nodes. No external tools like Pacemaker are needed—the
+HA stack ships with Proxmox VE and is configured entirely through the web
+interface or command line.
+
+### 1.5. Flexible Networking
+
+Proxmox VE uses a bridged networking model. All VMs can share one bridge
+as if virtual network cables from each guest were all plugged into
+the same switch. For connecting VMs to the outside world, bridges are
+attached to physical network cards and assigned a TCP/IP
+configuration.
+
+For further flexibility, Virtual LANs (VLANs, IEEE 802.1q) and
+network bonding/aggregation are available, allowing you to build
+complex, flexible virtual networks for the Proxmox VE hosts and leverage
+the full power of the Linux network stack.
+
+For larger or multi-tenant environments, the
+[Software Defined Network (SDN)](#chapter_pvesdn) stack provides
+zone-based network isolation and supports protocols such as VXLAN and
+EVPN. SDN is fully integrated into the web interface and installed by
+default.
+
+### 1.6. Integrated Firewall
+
+The integrated firewall allows you to filter network packets on
+any VM or container interface. Common sets of firewall rules can
+be grouped into “security groups”.
+
+### 1.7. Hyper-converged Infrastructure
+
+Proxmox VE is a virtualization platform that tightly integrates compute, storage and
+networking resources, manages highly available clusters, backup/restore as well
+as disaster recovery. All components are software-defined and compatible with
+one another.
+
+Therefore it is possible to administrate them like a single system via the
+centralized web management interface. These capabilities make Proxmox VE an ideal
+choice to deploy and manage an open source
+[hyper-converged infrastructure](https://en.wikipedia.org/wiki/Hyper-converged_infrastructure).
+
+#### 1.7.1. Benefits of a Hyper-Converged Infrastructure (HCI) with Proxmox VE
+
+A hyper-converged infrastructure (HCI) is especially useful for deployments in
+which a high infrastructure demand meets a low administration budget, for
+distributed setups such as remote and branch office environments or for virtual
+private and public clouds.
+
+HCI provides the following advantages:
+
+* Scalability: seamless expansion of compute, network and storage devices (i.e.
+  scale up servers and storage quickly and independently from each other).
+* Low cost: Proxmox VE is open source and integrates all components you need such as
+  compute, storage, networking, backup, and management center. It can replace
+  an expensive compute/storage infrastructure.
+* Data protection and efficiency: services such as backup and disaster recovery
+  are integrated.
+* Simplicity: easy configuration and centralized administration.
+* Open Source: No vendor lock-in.
+
+#### 1.7.2. Hyper-Converged Infrastructure: Storage
+
+Proxmox VE has tightly integrated support for deploying a hyper-converged storage
+infrastructure. You can, for example, deploy and manage the following two
+storage technologies by using the web interface only:
+
+* **Ceph**: a self-healing and self-managing shared, reliable and highly
+  scalable storage system. Check out
+  [how to manage Ceph services on Proxmox VE nodes](#chapter_pveceph)
+* **ZFS**: a combined file system and logical volume manager with extensive
+  protection against data corruption, various RAID modes, fast and cheap
+  snapshots - among other features. Find out
+  [how to leverage the power of ZFS on Proxmox VE nodes](#chapter_zfs).
+
+Besides above, Proxmox VE has support to integrate a wide range of
+additional storage technologies. You can find out about them in the
+[Storage Manager chapter](#chapter_storage).
+
+### 1.8. Why Open Source
+
+Proxmox VE uses a Linux kernel and is based on the Debian GNU/Linux
+distribution. The source code of Proxmox VE is released under the
+[GNU Affero General Public
+License, version 3](https://www.gnu.org/licenses/agpl-3.0.html). This means that you are free to inspect the
+source code at any time or contribute to the project yourself.
+
+Proxmox is committed to using open source software whenever possible.
+Open source software guarantees full access to all functionality—as
+well as high security and reliability. Everybody should have the right
+to access the source code of software to run it, build on it, or
+submit changes back to the project. Everybody is encouraged to
+contribute while Proxmox ensures the product always meets professional
+quality criteria.
+
+Open source software also helps to keep costs low and makes core
+infrastructure independent from a single vendor.
+
+### 1.9. Your Benefits with Proxmox VE
+
+* Open source software
+* No vendor lock-in
+* Linux kernel
+* Fast installation and easy to use
+* Web-based management interface
+* REST API
+* Huge active community
+* Low administration costs and simple deployment
+
+### 1.10. Getting Help
+
+#### 1.10.1. Proxmox VE Wiki
+
+The primary source of information is the [Proxmox VE Wiki](https://pve.proxmox.com/wiki/). It combines the reference
+documentation with user contributed content.
+
+Proxmox VE itself is fully open source, so we always encourage our users to discuss
+and share their knowledge using the [Proxmox VE Community Forum](https://forum.proxmox.com/). The forum is moderated by the
+Proxmox support team, and has a large user base from all around the world.
+Needless to say, such a large forum is a great place to get information.
+
+#### 1.10.3. Mailing Lists
+
+This is a fast way to communicate with the Proxmox VE community via email.
+
+* Mailing list for users:
+  [Proxmox VE User List](http://lists.proxmox.com/cgi-bin/mailman/listinfo/pve-user)
+
+Proxmox VE is fully open source and contributions are welcome! The primary
+communication channel for developers is the:
+
+* Mailing list for developers:
+  [Proxmox VE development
+  discussion](http://lists.proxmox.com/cgi-bin/mailman/listinfo/pve-devel)
+
+#### 1.10.4. Commercial Support
+
+Proxmox Server Solutions GmbH also offers enterprise support available as
+[Proxmox VE Subscription Service Plans](https://proxmox.com/en/proxmox-virtual-environment/pricing).
+All users with a subscription get access to the Proxmox VE
+[Enterprise Repository](#sysadmin_enterprise_repo), and—with a Basic, Standard
+or Premium subscription—also to the Proxmox Customer Portal. The customer
+portal provides help and support with guaranteed response times from the Proxmox VE
+developers.
+
+For volume discounts, or more information in general, please contact
+[sales@proxmox.com](mailto:sales@proxmox.com).
+
+#### 1.10.5. Bug Tracker
+
+Proxmox runs a public bug tracker at [https://bugzilla.proxmox.com](https://bugzilla.proxmox.com/). If an issue
+appears, file your report there. An issue can be a bug as well as a request for
+a new feature or enhancement. The bug tracker helps to keep track of the issue
+and will send a notification once it has been solved.
+
+### 1.11. Project History
+
+The project started in 2007, followed by a first stable version in 2008.
+At the time, it used OpenVZ for containers and KVM for virtual machines.
+The clustering features were limited, and the user interface was simple
+(a server-generated web page).
+
+The project quickly developed new features using the
+[Corosync](https://corosync.github.io/corosync/) cluster stack, and the
+introduction of the Proxmox Cluster File System (pmxcfs) was a big step
+forward, because it completely hides the cluster complexity from the
+user. Managing a cluster of 16 nodes is as simple as managing a single
+node.
+
+The introduction of the REST API, with a complete declarative
+specification written in JSON Schema, enabled other people to integrate
+Proxmox VE into their infrastructure and made it easy to provide additional
+services.
+
+The REST API also made it possible to replace the original user interface
+with a modern client-side single-page application using JavaScript. The
+old Java-based VNC console code was replaced with
+[noVNC](https://novnc.com/info.html), so only a web browser is needed to
+manage VMs.
+
+The support for various storage types is another big achievement.
+Notably, Proxmox VE was the first distribution to ship
+[ZFS on Linux](https://zfsonlinux.org/) by default in 2014. Another
+milestone was the ability to run and manage
+[Ceph](https://ceph.com/) storage on the hypervisor nodes. Such setups are
+extremely cost effective.
+
+When the project started, Proxmox was among the first companies
+providing commercial support for KVM. The KVM project itself continuously
+evolved and is now a widely used hypervisor. New features arrive with
+each release. The KVM live backup feature, developed by Proxmox, makes
+it possible to create snapshot backups on any storage type.
+
+The most notable change with version 4.0 was the move from OpenVZ to
+[LXC](https://linuxcontainers.org/). Containers are now deeply integrated,
+and they can use the same storage and network features as virtual
+machines. At the same time, the easy-to-use
+[High Availability (HA) manager](#chapter_ha_manager) was introduced,
+simplifying the configuration and management of highly available setups.
+
+During the development of Proxmox VE 5, asynchronous
+[storage replication](#chapter_pvesr) as well as automated
+[certificate management](#sysadmin_certificate_management) using
+ACME/Let’s Encrypt were introduced, among many other features.
+
+The [Software Defined Network (SDN)](#chapter_pvesdn) stack was
+developed in cooperation with the community. It was integrated into the
+web interface as an experimental feature in version 6.2, simplifying the
+management of sophisticated network configurations. Since version 8.1,
+the SDN integration is fully supported and installed by default.
+
+2020 marked the release of a new project, the
+[Proxmox
+Backup Server](https://www.proxmox.com/en/products/proxmox-backup-server/overview), written in the Rust programming language. Proxmox Backup
+Server is deeply integrated with Proxmox VE and significantly improves backup
+capabilities by implementing incremental backups, deduplication, and much
+more.
+
+Another new tool, the [Proxmox
+Offline Mirror](https://pom.proxmox.com/), was released in 2022, enabling subscriptions for systems
+which have no connection to the public internet.
+
+The highly requested dark theme for the web interface was introduced in
+2023. Later that year, version 8.0 integrated access to the Ceph
+enterprise repository. Access to the most stable Ceph repository is
+included with any Proxmox VE subscription.
+
+Automated and unattended installation for the official
+[ISO installer](#installation_installer) was introduced in version 8.2,
+significantly simplifying large deployments of Proxmox VE.
+
+With the [import wizard](#qm_import_virtual_machines), equally
+introduced in version 8.2, users can easily and efficiently migrate
+guests directly from other hypervisors like VMware ESXi
+  
+[Migrate to Proxmox VE
+<https://pve.proxmox.com/wiki/Migrate_to_Proxmox_VE>]  
+.
+Additionally, archives in Open Virtualization Format (OVF/OVA) can now be
+directly imported from file-based storages in the web interface.
+
+### 1.12. Improving the Proxmox VE Documentation
+
+Contributions and improvements to the Proxmox VE documentation are always welcome.
+There are several ways to contribute.
+
+If you find errors or other room for improvement in this documentation, please
+file a bug at the [Proxmox bug tracker](https://bugzilla.proxmox.com/) to propose
+a correction.
+
+If you want to propose new content, choose one of the following options:
+
+* The wiki: For specific setups, how-to guides, or tutorials the wiki is the
+  right option to contribute.
+* The reference documentation: For general content that will be helpful to all
+  users please propose your contribution for the reference documentation. This
+  includes all information about how to install, configure, use, and
+  troubleshoot Proxmox VE features. The reference documentation is written in the
+  [asciidoc format](https://en.wikipedia.org/wiki/AsciiDoc). To edit the
+  documentation you need to clone the git repository at
+  git://git.proxmox.com/git/pve-docs.git; then follow the
+  [README.adoc](https://git.proxmox.com/?p=pve-docs.git;a=blob_plain;f=README.adoc;hb=HEAD)
+  document.
+
+|  |  |
+| --- | --- |
+| Note | If you are interested in working on the Proxmox VE codebase, the [Developer Documentation](https://pve.proxmox.com/wiki/Developer_Documentation) wiki article will show you where to start. |
+
+### 1.13. Translating Proxmox VE
+
+The Proxmox VE user interface is in English by default. However, thanks to the
+contributions of the community, translations to other languages are also available.
+We welcome any support in adding new languages, translating the latest features, and
+improving incomplete or inconsistent translations.
+
+We use [gettext](https://www.gnu.org/software/gettext/) for the management of the
+translation files. Tools like [Poedit](https://poedit.net/) offer a nice user
+interface to edit the translation files, but you can use whatever editor you’re
+comfortable with. No programming knowledge is required for translating.
+
+#### 1.13.1. Translating with git
+
+You can create a new translation by doing the following (replace <LANG> with the
+language ID):
+
+```
+# git clone git://git.proxmox.com/git/proxmox-i18n.git
+# cd proxmox-i18n
+# make init-<LANG>.po
+```
+
+Or you can edit an existing translation, using the editor of your choice:
+
+```
+# poedit <LANG>.po
+```
+
+#### 1.13.2. Translating without git
+
+Even if you are not familiar with git, you can help translate Proxmox VE.
+To start, you can download the language files
+[here](https://git.proxmox.com/?p=proxmox-i18n.git;a=tree). Find the
+language you want to improve, then right click on the "raw" link of this language
+file and select *Save Link As…*. Make your changes to the file, and then
+send your final translation directly to office(at)proxmox.com, together with a
+signed
+[contributor license agreement](https://pve.proxmox.com/wiki/Developer_Documentation#Software_License_and_Copyright).
+
+#### 1.13.3. Testing the Translation
+
+In order for the translation to be used in Proxmox VE, you must first translate
+the .po file into a .js file. You can do this by invoking the following script,
+which is located in the same repository:
+
+```
+# ./po2js.pl -t pve xx.po >pve-lang-xx.js
+```
+
+The resulting file pve-lang-xx.js can then be copied to the directory
+/usr/share/pve-i18n, on your proxmox server, in order to test it out.
+
+Alternatively, you can build a deb package by running the following command from
+the root of the repository:
+
+```
+# make deb
+```
+
+|  |  |
+| --- | --- |
+| Important | For either of these methods to work, you need to have the following perl packages installed on your system. For Debian/Ubuntu: |
+
+```
+# apt-get install perl liblocale-po-perl libjson-perl
+```
+
+#### 1.13.4. Sending the Translation
+
+You can send the finished translation (.po file) to the Proxmox team at the address
+office(at)proxmox.com, along with a signed contributor license agreement.
+Alternatively, if you have some developer experience, you can send it as a
+patch to the Proxmox VE development mailing list. See
+[Developer Documentation](https://pve.proxmox.com/wiki/Developer_Documentation).
+
+## 2. Installing Proxmox VE
+
+Proxmox VE is based on Debian GNU/Linux. The install disk images (ISO files)
+provided by Proxmox include a complete Debian system as well as all necessary
+Proxmox VE packages.
+
+|  |  |
+| --- | --- |
+| Tip | See the [support table in the FAQ](#faq-support-table) for the relationship between Proxmox VE releases and Debian releases. |
+
+The installer guides you through the setup, allowing you to partition the
+local disk(s), apply basic system configurations (for example, timezone,
+language, network), and install all required packages. This process should not
+take more than a few minutes. Installing with the provided ISO is the
+recommended method for new and existing users.
+
+Alternatively, Proxmox VE can be installed on top of an existing Debian system. This
+option is only recommended for advanced users because detailed knowledge about
+Proxmox VE is required.
+
+### 2.1. System Requirements
+
+We recommend using high quality server hardware, when running Proxmox VE in
+production. To further decrease the impact of a failed host, you can run Proxmox VE in
+a cluster with highly available (HA) virtual machines and containers.
+
+Proxmox VE can use local storage (DAS), SAN, NAS, and distributed storage like Ceph
+RBD. For details see [chapter storage](#chapter_storage).
+
+#### 2.1.1. Minimum Requirements, for Evaluation
+
+These minimum requirements are for evaluation purposes only and should not be
+used in production.
+
+* CPU: 64-bit x86 (Intel 64 or AMD64). Alternatively, 64-bit ARM (arm64,
+  aarch64) with an ARMv8-A or newer CPU, see
+  [64-bit ARM (arm64) Support](#install_arm64_support).
+* For x86 hosts, an Intel VT or AMD-V capable CPU and motherboard for KVM full
+  virtualization support. On the supported arm64 platforms, KVM
+  hardware-assisted virtualization needs no equivalent CPU flag.
+* RAM: 1 GB RAM, plus additional RAM needed for guests
+* Hard drive
+* One network card (NIC)
+
+#### 2.1.2. Recommended System Requirements
+
+* Intel 64 or AMD64 with an Intel VT or AMD-V CPU flag. Alternatively, a 64-bit
+  ARM host with an ARMv9-A or newer CPU, see
+  [64-bit ARM (arm64) Support](#install_arm64_support).
+* Memory: Minimum 2 GB for the OS and Proxmox VE services, plus designated memory for
+  guests. For Ceph and ZFS, additional memory is required; approximately 1GB of
+  memory for every TB of used storage.
+* Fast and redundant storage, best results are achieved with SSDs.
+* OS storage: Use a hardware RAID with battery protected write cache (“BBU”)
+  or non-RAID with ZFS (optional SSD for ZIL).
+* VM storage:
+
+  + For local storage, use either a hardware RAID with battery backed write cache
+    (BBU) or non-RAID for ZFS and Ceph. Neither ZFS nor Ceph are compatible with a
+    hardware RAID controller.
+  + Shared and distributed storage is possible.
+  + SSDs with Power-Loss-Protection (PLP) are recommended for good performance.
+    Using consumer SSDs is discouraged.
+* Redundant (Multi-)Gbit NICs, with additional NICs depending on the preferred
+  storage technology and cluster setup.
+* For PCI(e) passthrough, the CPU and motherboard need to support an
+  input/output memory management unit (IOMMU): Intel VT-d or AMD-Vi on x86, or a
+  System Memory Management Unit (SMMU) on arm64.
+
+|  |  |
+| --- | --- |
+| Tip | IOMMU usually also needs to be enabled in the BIOS/UEFI. See the [PCI(e) Passthrough](#qm_pci_passthrough) chapter for details. |
+
+#### 2.1.3. 64-bit ARM (arm64) Support
+
+Proxmox VE supports native 64-bit ARM (arm64, aarch64) on the NVIDIA Grace Hopper
+and NVIDIA Vera platforms. On other UEFI-based ARMv9-A or newer hardware,
+support is best-effort. Device-tree-only single-board computers, such as the
+Raspberry Pi, are not supported.
+
+An arm64 host must boot through UEFI and describe its hardware through ACPI
+(Advanced Configuration and Power Interface). Proxmox VE does not support
+device-tree-only or legacy BIOS boot on arm64.
+
+Several x86-specific features are not available on arm64:
+
+* Virtual machines cannot use SeaBIOS. On arm64, guests always boot through
+  UEFI, provided by the ARM build of OVMF, also known as AAVMF.
+* AMD SEV (Secure Encrypted Virtualization) memory encryption and Intel’s
+  GVT-g mediated vGPUs are x86-only.
+* There is no operating-system-level CPU microcode package, unlike
+  intel-microcode and amd64-microcode on x86.
+
+A cluster can contain both x86 and arm64 nodes, but guests cannot move between
+nodes of different architectures while running:
+
+* Live migration is only possible between nodes of the same architecture,
+  because a running guest’s CPU state cannot be transferred across
+  architectures.
+* A guest, whether a virtual machine or a container, only runs on a node whose
+  architecture matches the guest. Offline migration, backup and restore, or
+  shared storage can move a guest’s data to a node of a different architecture,
+  but the guest still needs to be reinstalled or reconfigured for that
+  architecture before it starts.
+
+#### 2.1.4. Simple Performance Overview
+
+To get an overview of the CPU and hard disk performance on an installed Proxmox VE
+system, run the included pveperf tool.
+
+|  |  |
+| --- | --- |
+| Note | This is just a very quick and general benchmark. More detailed tests are recommended, especially regarding the I/O performance of your system. |
+
+#### 2.1.5. Supported Web Browsers for Accessing the Web Interface
+
+To access the web-based user interface, we recommend using one of the following
+browsers:
+
+* Firefox, a release from the current year, or the latest Extended Support Release
+* Chrome, a release from the current year
+* Microsoft’s currently supported version of Edge
+* Safari, a release from the current year
+
+When accessed from a mobile device, Proxmox VE will show a lightweight, touch-based
+interface.
+
+### 2.2. Prepare Installation Media
+
+The Proxmox VE installation media is a hybrid ISO image. It works in two ways:
+
+* An ISO image file ready to burn to a CD or DVD.
+* A raw sector (IMG) image file ready to copy to a USB flash drive (USB stick).
+
+Using a USB flash drive to install Proxmox VE is the recommended way because it is
+the faster option.
+
+#### 2.2.1. Prepare a USB Flash Drive as Installation Medium
+
+The flash drive needs to be larger than the ISO image.
+
+|  |  |
+| --- | --- |
+| Note | Do not use UNetbootin. It does not work with the Proxmox VE installation image. |
+
+|  |  |
+| --- | --- |
+| Important | Make sure that the USB flash drive is not mounted and does not contain any important data. |
+
+#### 2.2.2. Instructions for GNU/Linux
+
+On Unix-like operating system use the dd command to copy the ISO image to the
+USB flash drive. First find the correct device name of the USB flash drive (see
+below). Then run the dd command.
+
+```
+# dd bs=1M conv=fdatasync if=./proxmox-ve_*.iso of=/dev/XYZ
+```
+
+|  |  |
+| --- | --- |
+| Note | Be sure to replace /dev/XYZ with the correct device name and adapt the input filename (*if*) path. |
+
+|  |  |
+| --- | --- |
+| Caution | Be very careful, and do not overwrite the wrong disk! |
+
+##### Find the Correct USB Device Name
+
+There are two ways to find out the name of the USB flash drive. The first one is
+to compare the last lines of the dmesg command output before and after
+plugging in the flash drive. The second way is to compare the output of the
+lsblk command. Open a terminal and run:
+
+```
+# lsblk
+```
+
+Then plug in your USB flash drive and run the command again:
+
+```
+# lsblk
+```
+
+A new device will appear. This is the one you want to use. To be on the extra
+safe side check if the reported size matches your USB flash drive.
+
+#### 2.2.3. Instructions for macOS
+
+Open the terminal (query Terminal in Spotlight).
+
+Convert the .iso file to .dmg format using the convert option of hdiutil,
+for example:
+
+```
+# hdiutil convert proxmox-ve_*.iso -format UDRW -o proxmox-ve_*.dmg
+```
+
+|  |  |
+| --- | --- |
+| Tip | macOS tends to automatically add *.dmg* to the output file name. |
+
+To get the current list of devices run the command:
+
+```
+# diskutil list
+```
+
+Now insert the USB flash drive and run this command again to determine which
+device node has been assigned to it. (e.g., /dev/diskX).
+
+```
+# diskutil list
+# diskutil unmountDisk /dev/diskX
+```
+
+|  |  |
+| --- | --- |
+| Note | replace X with the disk number from the last command. |
+
+```
+# sudo dd if=proxmox-ve_*.dmg bs=1M of=/dev/rdiskX
+```
+
+|  |  |
+| --- | --- |
+| Note | *rdiskX*, instead of *diskX*, in the last command is intended. It will increase the write speed. |
+
+#### 2.2.4. Instructions for Windows
+
+##### Using Etcher
+
+Etcher works out of the box. Download Etcher from [https://etcher.io](https://etcher.io/). It will
+guide you through the process of selecting the ISO and your USB flash drive.
+
+##### Using Rufus
+
+Rufus is a more lightweight alternative, but you need to use the **DD mode** to
+make it work. Download Rufus from <https://rufus.ie/>. Either install it or use
+the portable version. Select the destination drive and the Proxmox VE ISO file.
+
+|  |  |
+| --- | --- |
+| Important | Once you *Start* you have to click *No* on the dialog asking to download a different version of GRUB. In the next dialog select the *DD* mode. |
+
+### 2.3. Using the Proxmox VE Installer
+
+The installer ISO image includes the following:
+
+* Complete operating system (Debian GNU/Linux, 64-bit)
+* The Proxmox VE installer, which partitions the local disk(s) with ext4, XFS,
+  BTRFS (technology preview), or ZFS and installs the operating system
+* Proxmox VE Linux kernel with KVM and LXC support
+* Complete toolset for administering virtual machines, containers, the host
+  system, clusters, and all necessary resources
+* Web-based management interface
+
+|  |  |
+| --- | --- |
+| Note | All existing data on the selected drives will be removed during the installation process. The installer does not add boot menu entries for other operating systems. |
+
+Please insert the [prepared installation media](#installation_prepare_media)
+(for example, USB flash drive or CD-ROM) and boot from it.
+
+|  |  |
+| --- | --- |
+| Tip | Make sure that booting from the installation medium (for example, USB) is enabled in your server’s firmware settings. Secure boot needs to be disabled when booting an installer prior to Proxmox VE version 8.1. |
+
+[![screenshot/pve-grub-menu.png](images/screenshot/pve-grub-menu.png)](images/screenshot/pve-grub-menu.png)
+
+After choosing the correct entry (for example, *Boot from USB*), the Proxmox VE menu
+appears and you can select one of the following options:
+
+Install Proxmox VE (Graphical)
+:   Starts the normal installation.
+
+|  |  |
+| --- | --- |
+| Tip | It’s possible to use the installation wizard with a keyboard only. Buttons can be clicked by pressing the ALT key combined with the underlined character from the respective button. For example, ALT + N to press a Next button. |
+
+Install Proxmox VE (Terminal UI)
+:   Starts the terminal-mode installation wizard. It provides the same overall
+    installation experience as the graphical installer, but has generally better
+    compatibility with very old and very new hardware.
+
+Install Proxmox VE (Terminal UI, Serial Console)
+:   Starts the terminal-mode installation wizard, additionally setting up the Linux
+    kernel to use the (first) serial port of the machine for in- and output. This
+    can be used if the machine is completely headless and only has a serial console
+    available.
+
+[![screenshot/pve-tui-installer.png](images/screenshot/pve-tui-installer.png)](images/screenshot/pve-tui-installer.png)
+
+Both modes use the same code base for the actual installation process to
+benefit from more than a decade of bug fixes and ensure feature parity.
+
+|  |  |
+| --- | --- |
+| Tip | The *Terminal UI* option can be used in case the graphical installer does not work correctly, for example due to driver issues. See also [adding the nomodeset kernel parameter](#nomodeset_kernel_param). |
+
+Advanced Options: Install Proxmox VE (Graphical, Debug Mode)
+:   Starts the installation in debug mode. A console will be opened at several
+    installation steps. This helps to debug the situation if something goes wrong.
+    To exit a debug console, press CTRL-D. This option can be used to boot a live
+    system with all basic tools available. You can use it, for example, to
+    [repair a degraded ZFS *rpool*](#chapter_zfs) or fix the
+    [bootloader](#sysboot) for an existing Proxmox VE setup.
+
+Advanced Options: Install Proxmox VE (Terminal UI, Debug Mode)
+:   Same as the graphical debug mode, but preparing the system to run the
+    terminal-based installer instead.
+
+Advanced Options: Install Proxmox VE (Serial Console Debug Mode)
+:   Same as the terminal-based debug mode, but additionally sets up the Linux kernel
+    to use the (first) serial port of the machine for in- and output.
+
+Advanced Options: Install Proxmox VE (Automated)
+:   Starts the installer in unattended mode, even if the ISO has not been
+    appropriately prepared for an automated installation. This option can be used to
+    gather hardware details or might be useful to debug an automated installation
+    setup. See [Unattended Installation](#installation_unattended) for more
+    information.
+
+Advanced Options: Rescue Boot
+:   With this option you can boot an existing installation. It searches all attached
+    hard disks. If it finds an existing installation, it boots directly into that
+    disk using the Linux kernel from the ISO. This can be useful if there are
+    problems with the bootloader (GRUB/systemd-boot) or the BIOS/UEFI is unable to
+    read the boot block from the disk.
+
+Advanced Options: Test Memory (memtest86+)
+:   Runs memtest86+. This is useful to check if the memory is functional and free
+    of errors. Secure Boot must be turned off in the UEFI firmware setup utility to
+    run this option.
+
+    |  |  |
+    | --- | --- |
+    | Note | This entry is available on x86 installation media only, as memtest86+ does not support arm64. |
+
+You normally select **Install Proxmox VE (Graphical)** to start the installation.
+
+[![screenshot/pve-select-target-disk.png](images/screenshot/pve-select-target-disk.png)](images/screenshot/pve-select-target-disk.png)
+
+The first step is to read the EULA (End User License Agreement). Following this,
+you can select the target hard disk(s) for the installation.
+
+|  |  |
+| --- | --- |
+| Caution | By default, the whole server is used and all existing data is removed. Make sure there is no important data on the server before proceeding with the installation. |
+
+The Options button lets you select the target file system, which
+defaults to ext4. The installer uses LVM if you select
+ext4 or xfs as a file system, and offers additional options to
+restrict LVM space (see [below](#advanced_lvm_options)).
+
+Proxmox VE can also be installed on ZFS. As ZFS offers several software RAID levels,
+this is an option for systems that don’t have a hardware RAID controller. The
+target disks must be selected in the Options dialog. More ZFS-specific
+settings can be changed under [Advanced Options](#advanced_zfs_options).
+
+|  |  |
+| --- | --- |
+| Warning | ZFS on top of any hardware RAID is not supported and can result in data loss. |
+
+[![screenshot/pve-select-location.png](images/screenshot/pve-select-location.png)](images/screenshot/pve-select-location.png)
+
+The next page asks for basic configuration options like your location, time
+zone, and keyboard layout. The location is used to select a nearby download
+server, in order to increase the speed of updates. The installer is usually able
+to auto-detect these settings, so you only need to change them in rare
+situations when auto-detection fails, or when you want to use a keyboard layout
+not commonly used in your country.
+
+[![screenshot/pve-set-password.png](images/screenshot/pve-set-password.png)](images/screenshot/pve-set-password.png)
+
+You must also specify the password of the superuser (root) and an email
+address. The password must consist of at least 8 characters. It’s highly
+recommended to use a stronger password. Some guidelines are:
+
+* Use a minimum password length of at least 12 characters.
+* Include lowercase and uppercase alphabetic characters, numbers, and symbols.
+* Avoid character repetition, keyboard patterns, common dictionary words,
+  letter or number sequences, usernames, relative or pet names, romantic links
+  (current or past), and biographical information (for example ID numbers,
+  ancestors' names or dates).
+
+The email address is used to send notifications to the system administrator.
+For example:
+
+* Information about available package updates.
+* Error messages from periodic *cron* jobs.
+
+[![screenshot/pve-setup-network.png](images/screenshot/pve-setup-network.png)](images/screenshot/pve-setup-network.png)
+
+The system sends all notification emails to the specified address.
+
+The last step is the network configuration. Network interfaces that are *UP*
+show a filled circle in front of their name in the drop-down menu. Please note
+that during installation you can either specify an IPv4 or IPv6 address, but not
+both. To configure a dual-stack node, add additional IP addresses after the
+installation.
+
+[![screenshot/pve-install-summary.png](images/screenshot/pve-install-summary.png)](images/screenshot/pve-install-summary.png)
+
+The next step shows a summary of the previously selected options. Please
+re-check every setting and use the Previous button if a setting needs to be
+changed.
+
+After clicking Install, the installer begins to format the disks and copy
+packages to the target disk(s). Please wait until this step has finished; then
+remove the installation medium and restart your system.
+
+[![screenshot/pve-installation.png](images/screenshot/pve-installation.png)](images/screenshot/pve-installation.png)
+
+Copying the packages usually takes several minutes, mostly depending on the
+speed of the installation medium and the target disk performance.
+
+When copying and setting up the packages has finished, you can reboot the
+server. This will be done automatically after a few seconds by default.
+
+Installation Failure
+
+If the installation failed, check out specific errors on the second TTY
+(*CTRL + ALT + F2*) and ensure that the system meets the
+[minimum requirements](#install_minimal_requirements).
+
+If the installation is still not working, look at the
+[how to get help chapter](#getting_help).
+
+#### 2.3.1. Accessing the Management Interface Post-Installation
+
+[![screenshot/gui-login-window.png](images/screenshot/gui-login-window.png)](images/screenshot/gui-login-window.png)
+
+After a successful installation and reboot of the system you can use the Proxmox VE
+web interface for further configuration.
+
+1. Point your browser to the IP address given during the installation and port
+   8006, for example: [https://youripaddress:8006](https://youripaddress:8006/)
+2. Log in using the root (realm *PAM*) username and the password chosen during
+   installation.
+3. Upload your subscription key to gain access to the Enterprise repository.
+   Otherwise, you will need to set up one of the public, less tested package
+   repositories to get updates for security fixes, bug fixes, and new features.
+4. Check the IP configuration and hostname.
+5. Check the timezone.
+6. Check your [Firewall settings](#chapter_pve_firewall).
+
+#### 2.3.2. Advanced LVM Configuration Options
+
+The installer creates a Volume Group (VG) called pve, and additional Logical
+Volumes (LVs) called root, data, and swap, if ext4 or xfs is used. To
+control the size of these volumes use:
+
+hdsize
+:   Defines the total hard disk size to be used. This way you can reserve free space
+    on the hard disk for further partitioning (for example for an additional PV and
+    VG on the same hard disk that can be used for LVM storage).
+
+swapsize
+:   Defines the size of the swap volume. The default is the size of the installed
+    memory, minimum 4 GB and maximum 8 GB. The resulting value cannot be greater
+    than one eighth of the size of the hard drive (hdsize / 8).
+
+    |  |  |
+    | --- | --- |
+    | Note | If set to 0, no swap volume will be created. |
+
+maxroot
+:   Defines the maximum size of the root volume, which stores the operating
+    system. With more than 48 GiB storage available, the default is a quarter of
+    the size of the hard drive (hdsize / 4) with a maximum of 96 GiB.
+    With less than 48 GiB of storage available, the root volume size is at least
+    half the size of the hard drive (hdsize / 2).
+
+maxvz
+:   Defines the maximum size of the data volume. The actual size of the data
+    volume is:
+
+    datasize = hdsize - rootsize - swapsize - minfree
+
+    Where datasize cannot be bigger than maxvz.
+
+    |  |  |
+    | --- | --- |
+    | Note | In case of LVM thin, the data pool will only be created if datasize is bigger than 4GB. |
+
+    |  |  |
+    | --- | --- |
+    | Note | If set to 0, no data volume will be created and the storage configuration will be adapted accordingly. |
+
+minfree
+:   Defines the amount of free space that should be left in the LVM volume group
+    pve. With more than 128GB storage available, the default is 16GB, otherwise
+    hdsize/8 will be used.
+
+    |  |  |
+    | --- | --- |
+    | Note | LVM requires free space in the VG for snapshot creation (not required for lvmthin snapshots). |
+
+#### 2.3.3. Advanced ZFS Configuration Options
+
+The installer creates the ZFS pool rpool, if ZFS is used. No swap space is
+created but you can reserve some unpartitioned space on the install disks for
+swap. You can also create a swap zvol after the installation, although this can
+lead to problems (see [ZFS swap notes](#zfs_swap)).
+
+ashift
+:   Defines the ashift value for the created pool. The ashift needs to be set at
+    least to the sector-size of the underlying disks (2 to the power of ashift is
+    the sector-size), or any disk which might be put in the pool (for example the
+    replacement of a defective disk).
+
+compress
+:   Defines whether compression is enabled for rpool.
+
+checksum
+:   Defines which checksumming algorithm should be used for rpool.
+
+copies
+:   Defines the copies parameter for rpool. Check the zfs(8) manpage for the
+    semantics, and why this does not replace redundancy on disk-level.
+
+ARC max size
+:   Defines the maximum size the ARC can grow to and thus limits the amount of
+    memory ZFS will use. See also the section on
+    [how to limit ZFS memory usage](#sysadmin_zfs_limit_memory_usage) for more
+    details.
+
+hdsize
+:   Defines the total hard disk size to be used. This is useful to save free space
+    on the hard disk(s) for further partitioning (for example to create a
+    swap-partition). hdsize is only honored for bootable disks, that is only the
+    first disk or mirror for RAID0, RAID1 or RAID10, and all disks in RAID-Z[123].
+
+#### 2.3.4. Advanced BTRFS Configuration Options
+
+No swap space is created when BTRFS is used but you can reserve some
+unpartitioned space on the install disks for swap. You can either create a
+separate partition, BTRFS subvolume or a swapfile using the btrfs filesystem
+mkswapfile command.
+
+compress
+:   Defines whether compression is enabled for the BTRFS subvolume. Different
+    compression algorithms are supported: *on* (equivalent to *zlib*), *zlib*, *lzo*
+    and *zstd*. Defaults to *off*.
+
+hdsize
+:   Defines the total hard disk size to be used. This is useful to save free space
+    on the hard disk(s) for further partitioning (for example, to create a
+    swap partition).
+
+#### 2.3.5. ZFS Performance Tips
+
+ZFS works best with a lot of memory. If you intend to use ZFS make sure to have
+enough RAM available for it. A good calculation is 4GB plus 1GB RAM for each TB
+RAW disk space.
+
+ZFS can use a dedicated drive as write cache, called the ZFS Intent Log (ZIL).
+Use a fast drive (SSD) for it. It can be added after installation with the
+following command:
+
+```
+# zpool add <pool-name> log </dev/path_to_fast_ssd>
+```
+
+#### 2.3.6. Adding the nomodeset Kernel Parameter
+
+Problems may arise on very old or very new hardware due to graphics drivers. If
+the installation hangs during boot, you can try adding the nomodeset
+parameter. This prevents the Linux kernel from loading any graphics drivers and
+forces it to continue using the BIOS/UEFI-provided framebuffer.
+
+On the Proxmox VE bootloader menu, navigate to *Install Proxmox VE (Terminal UI)* and
+press e to edit the entry. Using the arrow keys, navigate to the line starting
+with linux, move the cursor to the end of that line and add the
+parameter nomodeset, separated by a space from the pre-existing last
+parameter.
+
+Then press Ctrl-X or F10 to boot the configuration.
+
+### 2.4. Unattended Installation
+
+The automated installation method allows installing Proxmox VE
+in an unattended manner. This enables you to fully automate the setup
+process on bare-metal. Once the installation is complete and the host
+has booted up, automation tools like Ansible can be used to further
+configure the installation.
+
+The necessary options for the installer must be provided in an answer
+file. This file allows using filter rules to determine which disks and
+network cards should be used.
+
+To use the automated installation, first choose a source from which to
+fetch the answer file and then prepare an installation ISO with that
+choice.
+
+Once the ISO is prepared, its initial boot menu will show a new boot
+entry named *Automated Installation* which gets automatically selected
+after a 10-second timeout.
+
+[Visit the wiki](https://pve.proxmox.com/wiki/Automated_Installation) for more
+details and information on the unattended installation.
+
+### 2.5. Install Proxmox VE on Debian
+
+Proxmox VE ships as a set of Debian packages and can be installed on top of a standard
+Debian installation.
+[After configuring the repositories](#sysadmin_package_repositories) you need
+to run the following commands:
+
+```
+# apt-get update
+# apt-get install proxmox-ve
+```
+
+Installing on top of an existing Debian installation looks easy, but it presumes
+that the base system has been installed correctly and that you know how you want
+to configure and use the local storage. You also need to configure the network
+manually.
+
+In general, this is not trivial, especially when LVM or ZFS is used.
+
+A detailed step-by-step how-to can be found on the
+[wiki](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_13_Trixie).
+
+## 3. Host System Administration
+
+The following sections will focus on common virtualization tasks and explain the
+Proxmox VE specifics regarding the administration and management of the host machine.
+
+Proxmox VE is based on [Debian GNU/Linux](https://www.debian.org/) with additional
+repositories to provide the Proxmox VE related packages. This means that the full
+range of Debian packages is available including security updates and bug fixes.
+Proxmox VE provides its own Linux kernel based on the Ubuntu kernel. It has all the
+necessary virtualization and container features enabled and includes
+[ZFS](https://zfsonlinux.org/) and several extra hardware drivers.
+
+For other topics not included in the following sections, please refer to the
+Debian documentation. The
+[Debian
+Administrator's Handbook](https://debian-handbook.info/get) is available online, and provides a comprehensive
+introduction to the Debian operating system (see [[Hertzog13]](#Hertzog13)).
+
+### 3.1. Package Repositories
+
+Proxmox VE uses [APT](http://en.wikipedia.org/wiki/Advanced_Packaging_Tool) as its
+package management tool like any other Debian-based system.
+
+Proxmox VE automatically checks for package updates on a daily basis. The root@pam
+user is notified via email about available updates. From the GUI, the
+*Changelog* button can be used to see more details about a selected update.
+
+#### 3.1.1. Repositories in Proxmox VE
+
+Repositories are a collection of software packages, they can be used to install
+new software, but are also important to get new updates.
+
+|  |  |
+| --- | --- |
+| Note | You need valid Debian and Proxmox repositories to get the latest security updates, bug fixes and new features. |
+
+APT Repositories are defined in the file /etc/apt/sources.list in the legacy
+single-line format and in .sources files placed in /etc/apt/sources.list.d/
+for the modern deb822 multi-line format, see
+[Repository Formats](#sysadmin_apt_repo_formats) for details.
+
+##### Repository Management
+
+[![screenshot/gui-node-repositories.png](images/screenshot/gui-node-repositories.png)](images/screenshot/gui-node-repositories.png)
+
+Since Proxmox VE 7, you can check the repository state in the web interface.
+The node summary panel shows a high level status overview, while the separate
+*Repository* panel shows in-depth status and list of all configured
+repositories.
+
+Basic repository management, for example, activating or deactivating a
+repository, is also supported.
+
+The available packages from a repository are acquired by running apt update.
+Updates can be installed directly using apt, or via the GUI (Node → Updates).
+
+##### Repository Formats
+
+Package repositories can be configured in the source list
+*/etc/apt/sources.list* and the files contained in */etc/apt/sources.list.d/*.
+
+There are two formats supported:
+
+single line
+:   In a single-line sources.list file, each line defines a package repository.
+    Empty lines are ignored. A # character anywhere on a line marks the remainder
+    of that line as a comment.
+    This is the legacy format. Since Debian 13 Trixie apt will complain about using
+    this format. You can automatically migrate most repositories using the apt
+    modernize-sources command.
+
+deb822
+:   In the multi-line format repo.sources file each entry consists of multiple
+    lines of key-value pairs. A file can include multiple entries by separating each
+    group with a blank line. This is the modern format.
+
+##### Available Repositories
+
+Proxmox VE provides three different package repositories in addition to requiring the
+base Debian repositories.
+
+#### 3.1.2. Debian Base Repositories
+
+File /etc/apt/sources.list.d/debian.sources
+
+```
+Types: deb deb-src
+URIs: http://deb.debian.org/debian/
+Suites: trixie trixie-updates
+Components: main non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb deb-src
+URIs: http://security.debian.org/debian-security/
+Suites: trixie-security
+Components: main non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+```
+
+#### 3.1.3. Proxmox VE Enterprise Repository
+
+This is the recommended repository and available for all Proxmox VE subscription
+users. It contains the most stable packages and is suitable for production use.
+The pve-enterprise repository is enabled by default:
+
+File /etc/apt/sources.list.d/pve-enterprise.sources
+
+```
+Types: deb
+URIs: https://enterprise.proxmox.com/debian/pve
+Suites: trixie
+Components: pve-enterprise
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+|  |  |
+| --- | --- |
+| Note | Subscription keys are bound to the host architecture. An arm64 host needs a dedicated arm64 subscription key; an x86 key is not valid on it, and vice versa. |
+
+|  |  |
+| --- | --- |
+| Note | You can disable this repository by adding an Enabled: no line to the relevant entry in the file. This will prevent error messages if your host does not have a subscription key. In that case, please configure the pve-no-subscription repository. |
+
+#### 3.1.4. Proxmox VE No-Subscription Repository
+
+As the name suggests, you do not need a subscription key to access this
+repository. It can be used for testing and non-production use. It’s not
+recommended to use this on production servers, as these packages are not always
+as heavily tested and validated.
+
+We recommend to configure this repository in
+/etc/apt/sources.list.d/proxmox.sources.
+
+File /etc/apt/sources.list.d/proxmox.sources
+
+```
+Types: deb
+URIs: http://download.proxmox.com/debian/pve
+Suites: trixie
+Components: pve-no-subscription
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+|  |  |
+| --- | --- |
+| Note | Remember that you will always need the base Debian repositories in addition to a Proxmox VE Proxmox repository. |
+
+#### 3.1.5. Proxmox VE Test Repository
+
+This repository contains the latest packages and is primarily used by developers
+to test new features. To configure it, add the following stanza to the file
+/etc/apt/sources.list.d/proxmox.sources:
+
+File /etc/apt/sources.list.d/proxmox.sources
+
+```
+Types: deb
+URIs: http://download.proxmox.com/debian/pve
+Suites: trixie
+Components: pve-test
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+|  |  |
+| --- | --- |
+| Warning | The pve-test repository should (as the name implies) only be used for testing new features or bug fixes. |
+
+#### 3.1.6. Proxmox VE Debug Symbol Repository
+
+Debug symbol packages, named <package>-dbgsym, contain the detached debug
+information for the matching binary package. They are not needed for normal
+operation, but let tools such as gdb, systemd-coredump or crash produce
+useful backtraces when analyzing a crash or hang. They are provided in a
+dedicated repository, separate from the regular ones, for the Debian Bookworm
+and Trixie based Proxmox VE releases (and newer).
+
+File /etc/apt/sources.list.d/pve-dbgsym.sources
+
+```
+Types: deb
+URIs: https://dbgsym.proxmox.com/debian/pve
+Suites: trixie
+Components: pve-dbgsym
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+After enabling the repository, install the -dbgsym package that matches the
+binary you want to debug.
+
+#### 3.1.7. Ceph Repositories
+
+Ceph-related packages are kept up to date with a preconfigured Ceph enterprise
+repository. Preinstalled packages enable connecting to an external Ceph
+cluster and adding its [RBD](#ceph_rados_block_devices) or
+[CephFS](#storage_cephfs) pools as storage. You can also build a
+[hyper-converged infrastructure (HCI)](#chapter_hyper_converged_infrastructure)
+by running [Ceph](#chapter_pveceph) on top of the Proxmox VE cluster.
+
+Information from this chapter is helpful in the following cases:
+
+Installing Ceph to build an HCI
+:   Decide on a below described repository and recent Ceph release, which you can
+    then select in the [web-based wizard or the CLI tool](#pve_ceph_install_wizard).
+
+Already running the HCI and want to upgrade to the succeeding *Ceph* major release
+:   Please follow the related [Ceph upgrade guide](https://pve.proxmox.com/wiki/Category:Ceph_Upgrade).
+
+Already running the HCI and want to upgrade to the succeeding *Proxmox VE* major release
+:   In an HCI each Proxmox VE major release requires a corresponding minimum Ceph major
+    release, please follow the related
+    [Proxmox VE upgrade guide](https://pve.proxmox.com/wiki/Category:Upgrade).
+
+Not running an HCI but using an external Ceph cluster
+:   To install newer packages used to connect to Ceph, apply available system
+    updates, decide on a repository and Ceph release listed below, add it to your
+    node via the *[Repository](#_repository_management)* panel, apply newly
+    available system updates, verify the result by running ceph --version and
+    disable the old Ceph repository.
+
+Ceph releases available in Proxmox VE 9
+
+To read the latest version of the admin guide for your Proxmox VE release, make sure
+that all system updates are installed and that this page has been reloaded.
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+|  | [Estimated End-of-Life](https://docs.ceph.com/en/tentacle/releases/) | **enterprise** | **no-subscription** | **test** |
+| **ceph-tentacle** | 2027-11 (v20.2) | recommended | available | available |
+| **ceph-squid** | 2026-09 (v19.2) | available | available | available |
+
+Ceph repositories for Proxmox VE 9
+
+The content of the ceph.sources file below serves as a reference (prior to
+Proxmox VE 9 the file ceph.list was used). To make changes, please follow the case
+that applies to your situation as described at the beginning of this
+subchapter. If you have disabled a repository in the web UI and also want to
+delist it, you can manually remove the corresponding entry from the file.
+
+**enterprise**
+
+This repository is recommended for production use and contains the most stable
+package versions. It is accessible if the Proxmox VE node has a valid subscription
+of any level. For details and included customer support levels visit:
+
+File /etc/apt/sources.list.d/ceph.sources
+
+```
+Types: deb
+URIs: https://enterprise.proxmox.com/debian/ceph-tentacle
+Suites: trixie
+Components: enterprise
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+**no-subscription**
+
+This repository is suitable for testing and for non-production use. It is
+freely accessible and does not require a valid subscription. After some time,
+its package versions are also made available in the enterprise repository.
+
+File /etc/apt/sources.list.d/ceph.sources
+
+```
+Types: deb
+URIs: http://download.proxmox.com/debian/ceph-tentacle
+Suites: trixie
+Components: no-subscription
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+**test**
+
+This repository contains the latest package versions and is primarily used by
+developers to test new features and bug fixes.
+
+File /etc/apt/sources.list.d/ceph.sources
+
+```
+Types: deb
+URIs: http://download.proxmox.com/debian/ceph-tentacle
+Suites: trixie
+Components: test
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+|  |  |
+| --- | --- |
+| Warning | The Ceph **test** repository should (as the name implies) only be used for testing new features or bug fixes. |
+
+#### 3.1.8. Debian Firmware Repository
+
+Starting with Debian Bookworm (Proxmox VE 8) non-free firmware (as defined by
+[DFSG](https://www.debian.org/social_contract#guidelines)) has been moved to the
+newly created Debian repository component non-free-firmware.
+
+Since Proxmox VE 9 this repository is enabled by default for new installations to
+ensure they can get [Early OS Microcode Updates](#sysadmin_firmware_cpu).
+
+You can also acquire need additional
+[Runtime Firmware Files](#sysadmin_firmware_runtime_files) not already
+included in the pre-installed package pve-firmware.
+
+To be able to install packages from this component, run
+editor /etc/apt/sources.list, append non-free-firmware to the end of each
+.debian.org repository line and run apt update.
+
+If you upgraded your Proxmox VE 9 install from a previous version of Proxmox VE and have
+modernized your package repositories to the new deb822-style, you will need to
+adapt /etc/apt/sources.list.d/debian.sources instead. Run editor
+/etc/apt/sources.list.d/debian.sources and add non-free-firmware to the lines
+starting with Components: of each stanza.
+
+|  |  |
+| --- | --- |
+| Note | Modernizing your package repositories is recommended. Otherwise, apt on Debian Trixie will complain. You can run apt modernize-sources to do so. |
+
+#### 3.1.9. SecureApt
+
+The *Release* files in the repositories are signed with GnuPG. APT is using
+these signatures to verify that all packages are from a trusted source.
+
+If you install Proxmox VE from an official ISO image, the key for verification is
+already installed.
+
+If you install Proxmox VE on top of Debian, download and install
+the key with the following commands:
+
+```
+ # wget https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg -O /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+|  |  |
+| --- | --- |
+| Note | The wget command above adds the keyring for Proxmox releases based on Debian Trixie. Once the proxmox-archive-keyring package is installed, it will manage this file. At that point, the hashes below may no longer match the hashes of this file, as keys for new Proxmox releases get added or removed. This is intended, apt will ensure that only trusted keys are being used. **Modifying this file is discouraged once proxmox-archive-keyring is installed.** |
+
+Verify the checksum afterwards with the sha512sum CLI tool:
+
+```
+# sha256sum /usr/share/keyrings/proxmox-archive-keyring.gpg
+ 136673be77aba35dcce385b28737689ad64fd785a797e57897589aed08db6e45 /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+or the md5sum CLI tool:
+
+```
+# md5sum /usr/share/keyrings/proxmox-archive-keyring.gpg
+77c8b1166d15ce8350102ab1bca2fcbf /usr/share/keyrings/proxmox-archive-keyring.gpg
+```
+
+|  |  |
+| --- | --- |
+| Note | Make sure the path you install the key to matches the Signed-By: lines in your repository stanzas. |
+
+### 3.2. System Software Updates
+
+Proxmox provides updates on a regular basis for all repositories. To install
+updates use the web-based GUI or the following CLI commands:
+
+```
+# apt update
+# apt full-upgrade
+```
+
+|  |  |
+| --- | --- |
+| Warning | As Proxmox VE uses a rolling release model on top of Debian, performing an apt upgrade may result in a partially upgraded or broken package state. This is because apt full-upgrade can also remove existing packages to satisfy dependencies if needed, while apt upgrade cannot. |
+
+For occasionally upgrading Ceph to its succeeding major release, see
+[Ceph Repositories](#sysadmin_package_repositories_ceph).
+
+|  |  |
+| --- | --- |
+| Note | The APT package management system is very flexible and provides many features, see man apt, or [[Hertzog13]](#Hertzog13) for additional information. |
+
+|  |  |
+| --- | --- |
+| Tip | Regular updates are essential to get the latest patches and security related fixes. Major system upgrades are announced in the [Proxmox VE Community Forum](https://forum.proxmox.com/). |
+
+### 3.3. Firmware Updates
+
+Firmware updates from this chapter should be applied when running Proxmox VE on a
+bare-metal server. Whether configuring firmware updates is appropriate within
+guests, e.g. when using device pass-through, depends strongly on your setup and
+is therefore out of scope.
+
+In addition to regular software updates, firmware updates are also important
+for reliable and secure operation.
+
+When obtaining and applying firmware updates, a combination of available options
+is recommended to get them as early as possible or at all.
+
+The term firmware is usually divided linguistically into microcode (for CPUs)
+and firmware (for other devices).
+
+#### 3.3.1. Persistent Firmware
+
+This section is suitable for all devices. Updated microcode, which is usually
+included in a BIOS/UEFI update, is stored on the motherboard, whereas other
+firmware is stored on the respective device. This persistent method is
+especially important for the CPU, as it enables the earliest possible regular
+loading of the updated microcode at boot time.
+
+|  |  |
+| --- | --- |
+| Caution | With some updates, such as for BIOS/UEFI or storage controller, the device configuration could be reset. Please follow the vendor’s instructions carefully and back up the current configuration. |
+
+Please check with your vendor which update methods are available.
+
+* Convenient update methods for servers can include Dell’s Lifecycle Manager or
+  Service Packs from HPE.
+* Sometimes there are Linux utilities available as well. Examples are
+  [*mlxup*](https://network.nvidia.com/support/firmware/mlxup-mft/) for NVIDIA
+  ConnectX or
+  [*bnxtnvm*/*niccli*](https://techdocs.broadcom.com/us/en/storage-and-ethernet-connectivity/ethernet-nic-controllers/bcm957xxx/adapters/software-installation/updating-the-firmware/manually-updating-the-adapter-firmware-on-linuxesx.html)
+  for Broadcom network cards.
+* [LVFS](https://fwupd.org/) is also an option if there is a cooperation with
+  the [hardware vendor](https://fwupd.org/lvfs/vendors/) and
+  [supported hardware](https://fwupd.org/lvfs/devices/) in use. The technical
+  requirement for this is that the system was manufactured after 2014 and is
+  booted via UEFI.
+
+Proxmox VE ships its own version of the fwupd package to enable Secure Boot
+Support with the Proxmox signing key. This package consciously dropped the
+dependency recommendation for the udisks2 package, due to observed issues with
+its use on hypervisors.
+
+|  |  |
+| --- | --- |
+| Tip | If the update instructions require a host reboot, make sure that it can be done safely. See also [Node Maintenance](#ha_manager_node_maintenance). |
+
+#### 3.3.2. Runtime Firmware Files
+
+This method stores firmware on the Proxmox VE operating system and will pass it to a
+device if its [persisted firmware](#sysadmin_firmware_persistent) is less
+recent. It is supported by devices such as network and graphics cards, but not
+by those that rely on persisted firmware such as the motherboard and hard disks.
+
+In Proxmox VE the package pve-firmware is already installed by default. Therefore,
+with the normal [system updates (APT)](#system_software_updates), included
+firmware of common hardware is automatically kept up to date.
+
+An additional [Debian Firmware Repository](#sysadmin_debian_firmware_repo)
+exists, but is not configured by default.
+
+If you try to install an additional firmware package but it conflicts, APT will
+abort the installation. Perhaps the particular firmware can be obtained in
+another way.
+
+#### 3.3.3. CPU Microcode Updates
+
+|  |  |
+| --- | --- |
+| Note | CPU microcode updates as described in this section are specific to x86 hosts. There is no equivalent operating-system-level microcode package for arm64. |
+
+Microcode updates are intended to fix found security vulnerabilities and other
+serious CPU bugs. While the CPU performance can be affected, a patched microcode
+is usually still more performant than an unpatched microcode where the kernel
+itself has to do mitigations. Depending on the CPU type, it is possible that
+performance results of the flawed factory state can no longer be achieved
+without knowingly running the CPU in an unsafe state.
+
+To get an overview of present CPU vulnerabilities and their mitigations, run
+lscpu. Current real-world known vulnerabilities can only show up if the
+Proxmox VE host is [up to date](#system_software_updates), its version not
+[end of life](#faq-support-table), and has at least been rebooted since the
+last kernel update.
+
+Besides the recommended microcode update via
+[persistent](#sysadmin_firmware_persistent) BIOS/UEFI updates, there is also
+an independent method via **Early OS Microcode Updates**. It is convenient to use
+and also quite helpful when the motherboard vendor no longer provides BIOS/UEFI
+updates. Regardless of the method in use, a reboot is always needed to apply a
+microcode update.
+
+##### Set up Early OS Microcode Updates
+
+To set up microcode updates that are applied early on boot by the Linux kernel,
+you need to:
+
+1. Enable the [Debian Firmware Repository](#sysadmin_debian_firmware_repo)
+2. Get the latest available packages apt update (or use the web interface,
+   under Node → Updates)
+3. Install the CPU-vendor specific microcode package:
+
+   * For Intel CPUs: apt install intel-microcode
+   * For AMD CPUs: apt install amd64-microcode
+4. Reboot the Proxmox VE host
+
+Any future microcode update will also require a reboot to be loaded.
+
+##### Microcode Version
+
+To get the current running microcode revision for comparison or debugging
+purposes:
+
+```
+# grep microcode /proc/cpuinfo | uniq
+microcode       : 0xf0
+```
+
+A microcode package has updates for many different CPUs. But updates
+specifically for your CPU might not come often. So, just looking at the date on
+the package won’t tell you when the company actually released an update for your
+specific CPU.
+
+If you’ve installed a new microcode package and rebooted your Proxmox VE host, and
+this new microcode is newer than both, the version baked into the CPU and the
+one from the motherboard’s firmware, you’ll see a message in the system log
+saying "microcode updated early".
+
+```
+# dmesg | grep microcode
+[    0.000000] microcode: microcode updated early to revision 0xf0, date = 2021-11-12
+[    0.896580] microcode: Microcode Update Driver: v2.2.
+```
+
+##### Troubleshooting
+
+For debugging purposes, the set up Early OS Microcode Update applied regularly
+at system boot can be temporarily disabled as follows:
+
+1. make sure that the host can be rebooted [safely](#ha_manager_node_maintenance)
+2. reboot the host to get to the GRUB menu (hold SHIFT if it is hidden)
+3. at the desired Proxmox VE boot entry press E
+4. go to the line which starts with linux and append separated by a space
+   **dis\_ucode\_ldr**
+5. press CTRL-X to boot this time without an Early OS Microcode Update
+
+If a problem related to a recent microcode update is suspected, a package
+downgrade should be considered instead of package removal
+(apt purge <intel-microcode|amd64-microcode>). Otherwise, a too old
+[persisted](#sysadmin_firmware_persistent) microcode might be loaded, even
+though a more recent one would run without problems.
+
+A downgrade is possible if an earlier microcode package version is
+available in the Debian repository, as shown in this example:
+
+```
+# apt list -a intel-microcode
+Listing... Done
+intel-microcode/stable-security,now 3.20230808.1~deb12u1 amd64 [installed]
+intel-microcode/stable 3.20230512.1 amd64
+```
+
+```
+# apt install intel-microcode=3.202305*
+...
+Selected version '3.20230512.1' (Debian:12.1/stable [amd64]) for 'intel-microcode'
+...
+dpkg: warning: downgrading intel-microcode from 3.20230808.1~deb12u1 to 3.20230512.1
+...
+intel-microcode: microcode will be updated at next boot
+...
+```
+
+Make sure (again) that the host can be rebooted
+[safely](#ha_manager_node_maintenance). To apply an older microcode
+potentially included in the microcode package for your CPU type, reboot now.
+
+|  |  |
+| --- | --- |
+| Tip | It makes sense to hold the downgraded package for a while and try more recent versions again at a later time. Even if the package version is the same in the future, system updates may have fixed the experienced problem in the meantime.  ``` # apt-mark hold intel-microcode intel-microcode set on hold. ```  ``` # apt-mark unhold intel-microcode # apt update # apt full-upgrade ``` |
+
+### 3.4. Network Configuration
+
+Proxmox VE is using the Linux network stack. This provides a lot of flexibility on
+how to set up the network on the Proxmox VE nodes. The configuration can be done
+either via the GUI, or by manually editing the file /etc/network/interfaces,
+which contains the whole network configuration. The interfaces(5) manual
+page contains the complete format description. All Proxmox VE tools try hard to keep
+direct user modifications, but using the GUI is still preferable, because it
+protects you from errors.
+
+A Linux bridge interface (commonly called *vmbrX*) is needed to connect guests
+to the underlying physical network. It can be thought of as a virtual switch
+which the guests and physical interfaces are connected to. This section provides
+some examples on how the network can be set up to accommodate different use cases
+like redundancy with a [*bond*](#sysadmin_network_bond),
+[*vlans*](#sysadmin_network_vlan) or
+[*routed*](#sysadmin_network_routed) and
+[*NAT*](#sysadmin_network_masquerading) setups.
+
+The [Software Defined Network](#chapter_pvesdn) is an option for more complex
+virtual networks in Proxmox VE clusters.
+
+|  |  |
+| --- | --- |
+| Warning | It’s discouraged to use the traditional Debian tools ifup and ifdown if unsure, as they have some pitfalls like interrupting all guest traffic on ifdown vmbrX but not reconnecting those guest again when doing ifup on the same bridge later. |
+
+#### 3.4.1. Apply Network Changes
+
+Proxmox VE does not write changes directly to /etc/network/interfaces. Instead, we
+write into a temporary file called /etc/network/interfaces.new, this way you
+can do many related changes at once. This also allows to ensure your changes
+are correct before applying, as a wrong network configuration may render a node
+inaccessible.
+
+##### Live-Reload Network with ifupdown2
+
+With the recommended *ifupdown2* package (default for new installations since
+Proxmox VE 7.0), it is possible to apply network configuration changes without a
+reboot. If you change the network configuration via the GUI, you can click the
+*Apply Configuration* button. This will move changes from the staging
+interfaces.new file to /etc/network/interfaces and apply them live.
+
+If you made manual changes directly to the /etc/network/interfaces file, you
+can apply them by running ifreload -a
+
+|  |  |
+| --- | --- |
+| Note | If you installed Proxmox VE on top of Debian, or upgraded to Proxmox VE 7.0 from an older Proxmox VE installation, make sure *ifupdown2* is installed: apt install ifupdown2 |
+
+##### Reboot Node to Apply
+
+Another way to apply a new network configuration is to reboot the node.
+In that case the systemd service pvenetcommit will activate the staging
+interfaces.new file before the networking service will apply that
+configuration.
+
+#### 3.4.2. Naming Conventions
+
+We currently use the following naming conventions for device names:
+
+* Ethernet devices: en\*, systemd network interface names. This naming scheme is
+  used for new Proxmox VE installations since version 5.0.
+* Ethernet devices: eth[N], where 0 ≤ N (eth0, eth1, …) This naming
+  scheme is used for Proxmox VE hosts which were installed before the 5.0
+  release. When upgrading to 5.0, the names are kept as-is.
+* Bridge names: Commonly vmbr[N], where 0 ≤ N ≤ 4094 (vmbr0 - vmbr4094),
+  but you can use any alphanumeric string that starts with a character and is at
+  most 10 characters long.
+* Bonds: bond[N], where 0 ≤ N (bond0, bond1, …)
+* VLANs: Simply add the VLAN number to the device name,
+  separated by a period (eno1.50, bond1.30)
+
+This makes it easier to debug networks problems, because the device
+name implies the device type.
+
+##### Systemd Network Interface Names
+
+Systemd defines a versioned naming scheme for network device names. The
+scheme uses the two-character prefix en for Ethernet network devices. The
+next characters depends on the device driver, device location and other
+attributes. Some possible patterns are:
+
+* o<index>[n<phys\_port\_name>|d<dev\_port>] — devices on board
+* s<slot>[f<function>][n<phys\_port\_name>|d<dev\_port>] — devices by hotplug id
+* [P<domain>]p<bus>s<slot>[f<function>][n<phys\_port\_name>|d<dev\_port>] —
+  devices by bus id
+* x<MAC> — devices by MAC address
+
+Some examples for the most common patterns are:
+
+* eno1 — is the first on-board NIC
+* enp3s0f1 — is function 1 of the NIC on PCI bus 3, slot 0
+
+A new version of systemd may define a new version of the network device naming
+scheme, which it then uses by default. Consequently, updating to a newer
+systemd version, for example during a major Proxmox VE upgrade, can change the names
+of network devices and require adjusting the network configuration. To avoid
+name changes due to a new version of the naming scheme, you can manually pin a
+particular naming scheme version (see
+[below](#network_pin_naming_scheme_version)).
+
+However, even with a pinned naming scheme version, network device names can
+still change due to kernel or driver updates. In order to avoid name changes
+for a particular network device altogether, you can manually override its name
+using a link file (see [below](#network_override_device_names)).
+
+##### Pinning a specific naming scheme version
+
+You can pin a specific version of the naming scheme for network devices by
+adding the net.naming-scheme=<version> parameter to the
+[kernel command line](#sysboot_edit_kernel_cmdline). For a list of naming
+scheme versions, see the
+[systemd.net-naming-scheme(7) manpage](https://manpages.debian.org/stable/systemd/systemd.net-naming-scheme.7.en.html).
+
+For example, to pin the version v252, which is the latest naming scheme
+version for a fresh Proxmox VE 8.0 installation, add the following kernel
+command-line parameter:
+
+```
+net.naming-scheme=v252
+```
+
+See also [this section](#sysboot_edit_kernel_cmdline) on editing the kernel
+command line. You need to reboot for the changes to take effect.
+
+##### Overriding Network Device Names
+
+###### Using the pve-network-interface-pinning Tool
+
+Proxmox VE provides a tool for automatically generating .link files for
+overriding the name of network devices. It also automatically replaces the
+occurences of the old interface name in the following files:
+
+* /etc/network/interfaces
+* /etc/pve/nodes/<nodename>/host.fw
+* /etc/pve/sdn/controllers.cfg
+* /etc/pve/sdn/fabrics.cfg
+
+|  |  |
+| --- | --- |
+| Note | Since the generated mapping is local to the node it is generated on, interface names contained in the Firewall Datacenter configuration (/etc/pve/firewall/cluster.fw) are **not** automatically updated. |
+
+The generated link files are stored in /usr/local/lib/systemd/network. For the
+configuration files a new file will be generated in the same place with a .new
+suffix. This way you can inspect the changes made to the configuration by
+using diff (or another diff viewer of your choice):
+
+```
+diff -y /etc/network/interfaces /etc/network/interfaces.new
+```
+
+If you see any problematic changes or want to revert the changes made by the
+pinning tool **before rebooting**, simply delete all .new files and the
+respective link files from /usr/local/lib/systemd/network.
+
+The following command will generate a .link file for all physical network
+interfaces that do not yet have a .link file and update selected Proxmox VE
+configuration files (see above). The generated names will use the default prefix
+nic, so the resulting interface names will be nic1, nic2, …
+
+```
+pve-network-interface-pinning generate
+```
+
+You can override the default prefix with the --prefix flag:
+
+```
+pve-network-interface-pinning generate --prefix myprefix
+```
+
+It is also possible to pin only a specific interface:
+
+```
+pve-network-interface-pinning generate --interface enp1s0
+```
+
+When pinning a specific interface, you can specify the exact name that the
+interface should be pinned to:
+
+```
+pve-network-interface-pinning generate --interface enp1s0 --target-name if42
+```
+
+In order to apply the changes made by pve-network-interface-pinning to the
+network configuration, the node needs to be rebooted.
+
+###### Manually Creating .Link Files
+
+You can manually assign a name to a particular network device using a custom
+[systemd.link
+file](https://manpages.debian.org/stable/udev/systemd.link.5.en.html). This overrides the name that would be assigned according to the latest
+network device naming scheme. This way, you can avoid naming changes due to
+kernel updates, driver updates or newer versions of the naming scheme.
+
+Custom link files should be placed in /etc/systemd/network/ and named
+<n>-<id>.link, where n is a priority smaller than 99 and id is some
+identifier. A link file has two sections: [Match] determines which interfaces
+the file will apply to; [Link] determines how these interfaces should be
+configured, including their naming.
+
+To assign a name to a particular network device, you need a way to uniquely and
+permanently identify that device in the [Match] section. One possibility is
+to match the device’s MAC address using the MACAddress option, as it is
+unlikely to change.
+
+The [Match] section should also contain a Type option to make sure it only
+matches the expected physical interface, and not bridge/bond/VLAN interfaces
+with the same MAC address. In most setups, Type should be set to ether to
+match only Ethernet devices, but some setups may require other choices. See the
+[systemd.link(5)
+manpage](https://manpages.debian.org/stable/udev/systemd.link.5.en.html) for more details.
+
+Then, you can assign a name using the Name option in the [Link] section.
+
+Link files are copied to the initramfs, so it is recommended to refresh the
+initramfs after adding, modifying, or removing a link file:
+
+```
+# update-initramfs -u -k all
+```
+
+For example, to assign the name enwan0 to the Ethernet device with MAC
+address aa:bb:cc:dd:ee:ff, create a file
+/etc/systemd/network/10-enwan0.link with the following contents:
+
+```
+[Match]
+MACAddress=aa:bb:cc:dd:ee:ff
+Type=ether
+
+[Link]
+Name=enwan0
+```
+
+Do not forget to adjust /etc/network/interfaces to use the new name, and
+refresh your initramfs as described above. You need to reboot the node for
+the change to take effect.
+
+|  |  |
+| --- | --- |
+| Note | It is recommended to assign a name starting with en or eth so that Proxmox VE recognizes the interface as a physical network device which can then be configured via the GUI. Also, you should ensure that the name will not clash with other interface names in the future. One possibility is to assign a name that does not match any name pattern that systemd uses for network interfaces ([see above](#systemd_network_interface_names)), such as enwan0 in the example above. |
+
+#### 3.4.3. Choosing a network configuration
+
+Depending on your current network organization and your resources you can
+choose either a bridged, routed, or masquerading networking setup.
+
+##### Proxmox VE server in a private LAN, using an external gateway to reach the internet
+
+The **Bridged** model makes the most sense in this case, and this is also
+the default mode on new Proxmox VE installations.
+Each of your Guest system will have a virtual interface attached to the
+Proxmox VE bridge. This is similar in effect to having the Guest network card
+directly connected to a new switch on your LAN, the Proxmox VE host playing the role
+of the switch.
+
+##### Proxmox VE server at hosting provider, with public IP ranges for Guests
+
+For this setup, you can use either a **Bridged** or **Routed** model, depending on
+what your provider allows.
+
+##### Proxmox VE server at hosting provider, with a single public IP address
+
+In that case the only way to get outgoing network accesses for your guest
+systems is to use **Masquerading**. For incoming network access to your guests,
+you will need to configure **Port Forwarding**.
+
+For further flexibility, you can configure
+VLANs (IEEE 802.1q) and network bonding, also known as "link
+aggregation". That way it is possible to build complex and flexible
+virtual networks.
+
+#### 3.4.4. Default Configuration Using a Bridge
+
+[![default-network-setup-bridge.svg](images/default-network-setup-bridge.svg)](images/default-network-setup-bridge.svg)
+
+Bridges are like physical network switches implemented in software.
+All virtual guests can share a single bridge, or you can create multiple
+bridges to separate network domains. Each host can have up to 4094 bridges.
+
+The installation program creates a single bridge named vmbr0, which
+is connected to the first Ethernet card. The corresponding
+configuration in /etc/network/interfaces might look like this:
+
+```
+auto lo
+iface lo inet loopback
+
+iface eno1 inet manual
+
+auto vmbr0
+iface vmbr0 inet static
+        address 192.168.10.2/24
+        gateway 192.168.10.1
+        bridge-ports eno1
+        bridge-stp off
+        bridge-fd 0
+```
+
+Virtual machines behave as if they were directly connected to the
+physical network. The network, in turn, sees each virtual machine as
+having its own MAC, even though there is only one network cable
+connecting all of these VMs to the network.
+
+#### 3.4.5. Routed Configuration
+
+Most hosting providers do not support the above setup. For security
+reasons, they disable networking as soon as they detect multiple MAC
+addresses on a single interface.
+
+|  |  |
+| --- | --- |
+| Tip | Some providers allow you to register additional MACs through their management interface. This avoids the problem, but can be clumsy to configure because you need to register a MAC for each of your VMs. |
+
+You can avoid the problem by “routing” all traffic via a single
+interface. This makes sure that all network packets use the same MAC
+address.
+
+[![default-network-setup-routed.svg](images/default-network-setup-routed.svg)](images/default-network-setup-routed.svg)
+
+A common scenario is that you have a public IP (assume 198.51.100.5
+for this example), and an additional IP block for your VMs
+(203.0.113.16/28). We recommend the following setup for such
+situations:
+
+```
+auto lo
+iface lo inet loopback
+
+auto eno0
+iface eno0 inet static
+        address  198.51.100.5/29
+        gateway  198.51.100.1
+        post-up echo 1 > /proc/sys/net/ipv4/ip_forward
+        post-up echo 1 > /proc/sys/net/ipv4/conf/eno0/proxy_arp
+
+
+auto vmbr0
+iface vmbr0 inet static
+        address  203.0.113.17/28
+        bridge-ports none
+        bridge-stp off
+        bridge-fd 0
+```
+
+The vmbr0 address 203.0.113.17 is the first usable host address of the
+203.0.113.16/28 block; the block’s network address 203.0.113.16 cannot be
+assigned to an interface.
+
+#### 3.4.6. Masquerading (NAT) with iptables
+
+Masquerading allows guests having only a private IP address to access the
+network by using the host IP address for outgoing traffic. Each outgoing
+packet is rewritten by iptables to appear as originating from the host,
+and responses are rewritten accordingly to be routed to the original sender.
+
+```
+auto lo
+iface lo inet loopback
+
+auto eno1
+#real IP address
+iface eno1 inet static
+        address  198.51.100.5/24
+        gateway  198.51.100.1
+
+auto vmbr0
+#private sub network
+iface vmbr0 inet static
+        address  10.10.10.1/24
+        bridge-ports none
+        bridge-stp off
+        bridge-fd 0
+
+        post-up   echo 1 > /proc/sys/net/ipv4/ip_forward
+        post-up   iptables -t nat -A POSTROUTING -s '10.10.10.0/24' -o eno1 -j MASQUERADE
+        post-down iptables -t nat -D POSTROUTING -s '10.10.10.0/24' -o eno1 -j MASQUERADE
+```
+
+|  |  |
+| --- | --- |
+| Note | In some masquerade setups with firewall enabled, conntrack zones might be needed for outgoing connections. Otherwise the firewall could block outgoing connections since they will prefer the POSTROUTING of the VM bridge (and not MASQUERADE). |
+
+Adding these lines in the /etc/network/interfaces can fix this problem:
+
+```
+post-up   iptables -t raw -I PREROUTING -i fwbr+ -j CT --zone 1
+post-down iptables -t raw -D PREROUTING -i fwbr+ -j CT --zone 1
+```
+
+For more information about this, refer to the following links:
+
+#### 3.4.7. Linux Bond
+
+Bonding (also called NIC teaming or Link Aggregation) is a technique
+for binding multiple NIC’s to a single network device. It is possible
+to achieve different goals, like make the network fault-tolerant,
+increase the performance or both together.
+
+High-speed hardware like Fibre Channel and the associated switching
+hardware can be quite expensive. By doing link aggregation, two NICs
+can appear as one logical interface, resulting in double speed. This
+is a native Linux kernel feature that is supported by most
+switches. If your nodes have multiple Ethernet ports, you can
+distribute your points of failure by running network cables to
+different switches and the bonded connection will failover to one
+cable or the other in case of network trouble.
+
+Aggregated links can improve live-migration delays and improve the
+speed of replication of data between Proxmox VE Cluster nodes.
+
+There are 7 modes for bonding:
+
+* **Round-robin (balance-rr):** Transmit network packets in sequential
+  order from the first available network interface (NIC) slave through
+  the last. This mode provides load balancing and fault tolerance.
+* **Active-backup (active-backup):** Only one NIC slave in the bond is
+  active. A different slave becomes active if, and only if, the active
+  slave fails. The single logical bonded interface’s MAC address is
+  externally visible on only one NIC (port) to avoid distortion in the
+  network switch. This mode provides fault tolerance.
+* **XOR (balance-xor):** Transmit network packets based on [(source MAC
+  address XOR’d with destination MAC address) modulo NIC slave
+  count]. This selects the same NIC slave for each destination MAC
+  address. This mode provides load balancing and fault tolerance.
+* **Broadcast (broadcast):** Transmit network packets on all slave
+  network interfaces. This mode provides fault tolerance.
+* **IEEE 802.3ad Dynamic link aggregatio
+
+<error>Content truncated. Call the fetch tool with a start_index of 100000 to get more content.</error>

@@ -1,0 +1,1495 @@
+Contents of https://standards.ieee.org/ieee/802.1X/7345/:
+**Current projects that have been authorized by the IEEE SA
+Standards
+Board to develop a standard.**
+
+---
+
+##### P60802
+
+###### IEC/IEEE International Standard Time-Sensitive Networking Profile for Industrial Automation
+
+This document defines time-sensitive networking profiles for industrial automation. The profiles select features, options, configurations, defaults, protocols, and procedures of bridges, end stations, and Local Area Networks (LANs) to build industrial automation networks. This document also specifies YANG modules defining read-only information available online and offline as a digital data sheet. This document also specifies YANG modules for remote procedure calls and actions to address requirements arising from industrial automation networks.
+
+[Learn More
+About P60802](https://standards.ieee.org/ieee/60802/12698 "Learn More")
+
+##### P802.1ACea
+
+###### IEEE Standard for Local and metropolitan area networks -- Media Access Control (MAC) Service Definition Amendment: Support for IEEE Std 802.15.6
+
+This project adds support of the Internal Sublayer Service by the IEEE Std 802.15.6 MAC entity. This amendment also includes technical and editorial corrections in the description of existing IEEE Std 802.1AC functionality.
+
+[Learn More
+About P802.1ACea](https://standards.ieee.org/ieee/802.1ACea/11526 "Learn More")
+
+##### P802.1AE
+
+###### Standard for Local and Metropolitan Area Networks–Media Access Control (MAC) Security
+
+The scope of this standard is to specify provision of connectionless user data confidentiality, frame data integrity, and data origin authenticity by media access independent protocols and entities that operate transparently to MAC Clients.
+
+[Learn More
+About P802.1AE](https://standards.ieee.org/ieee/802.1AE/12245 "Learn More")
+
+##### P802.1AEef
+
+###### IEEE Draft Standard for Local and metropolitan area networks-Media Access Control (MAC) Security Amendment 5: Ascon Cipher Suite
+
+This amendment specifies optional use of the Ascon-AEAD128 authenticated encryption with associated data scheme, as specified in NIST SP 800-232, as a MACsec (Media Access Control security) Cipher Suite.
+
+[Learn More
+About P802.1AEef](https://standards.ieee.org/ieee/802.1AEef/12364 "Learn More")
+
+##### P802.1AR
+
+###### Standard for Local and Metropolitan Area Networks–Secure Device Identity
+
+This standard specifies unique per-device identifiers (DevID) and the management and cryptographic binding of a device to its identifiers, the relationship between an initially installed identity and subsequent locally significant identities, and interfaces and methods for use of DevIDs with existing and new provisioning and authentication protocols.
+
+[Learn More
+About P802.1AR](https://standards.ieee.org/ieee/802.1AR/12246 "Learn More")
+
+##### P802.1AS
+
+###### Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time-Sensitive Applications
+
+This standard specifies protocols, procedures, and managed objects to support the synchronization requirements of time-sensitive network applications. These applications include audio, video, and time-sensitive control using IEEE 802 Local Area Networks and similar media. Synchronized time is maintained during normal operation and during network reconfiguration following the addition, removal, or failure of network components. This standard includes a profile of IEEE Std 1588™.
+
+[Learn More
+About P802.1AS](https://standards.ieee.org/ieee/802.1AS/12553 "Learn More")
+
+##### P802.1ASeb
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time-Sensitive Applications Amendment: Optional Use of Announce
+
+This amendment provides additions and modifications to enable the Announce message functionality to be optional on new implementations, while maintaining the ability for implementations to support backward compatibility, interoperability, and full conformance with IEEE Std 1588™-2019. Protocols, procedures, and managed objects are updated if and as required to reflect the availability and use of Announce.
+This amendment also includes technical and editorial corrections in the description of existing IEEE Std 802.1AS functionality.
+
+[Learn More
+About P802.1ASeb](https://standards.ieee.org/ieee/802.1ASeb/11626 "Learn More")
+
+##### P802.1CB
+
+###### Standard for Local and metropolitan area networks--Frame Replication and Elimination for Reliability
+
+This standard specifies procedures, managed objects, and protocols for bridges and end systems that provide identification and replication of packets for redundant transmission, identification of duplicate packets, and elimination of duplicate packets. It is not concerned with the creation of the multiple paths over which the duplicates are transmitted.
+
+[Learn More
+About P802.1CB](https://standards.ieee.org/ieee/802.1CB/11950 "Learn More")
+
+##### P802.1CBec
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Frame Replication and Elimination for Reliability Amendment: Sequence Recovery Function Refinements and Parameter Configuration
+
+This amendment refines the sequence recovery function and adds an informative annex describing recommended values for the sequence recovery function parameters, and provides guidance regarding frame buffering in relay and end systems to assist in the usage of Frame Replication and Elimination for Reliability. This amendment also includes technical and editorial corrections in the description of existing IEEE Std 802.1CB functionality.
+
+[Learn More
+About P802.1CBec](https://standards.ieee.org/ieee/802.1CBec/12416 "Learn More")
+
+##### P802.1CM
+
+###### Standard for Local and Metropolitan Area Networks -- Time-Sensitive Networking for Fronthaul
+
+This standard defines profiles that select features, options, configurations, defaults, protocols and procedures of bridges, stations, and local area networks that are necessary to build networks that are capable of transporting fronthaul streams, which are time-sensitive.
+
+[Learn More
+About P802.1CM](https://standards.ieee.org/ieee/802.1CM/12703 "Learn More")
+
+##### P802.1DD
+
+###### Standard for Local and Metropolitan Area Networks - Resource Allocation Protocol
+
+This standard specifies protocols, procedures, and managed objects for resource allocation in bridged local area networks for dynamic creation and maintenance of data streams. This standard supports control signaling through data paths and through separate control paths in support of centralized control. This standard makes provisions for backward compatibility with the Stream Reservation Protocol specified in IEEE Std 802.1Q.
+
+[Learn More
+About P802.1DD](https://standards.ieee.org/ieee/802.1DD/11750 "Learn More")
+
+##### P802.1DGei
+
+###### IEEE Standard for Local and Metropolitan Area Networks–Time-Sensitive Networking Profile for Automotive In-Vehicle Ethernet Communications Amendment: Automotive Time Synchronization
+
+This amendment selects IEEE 802.1AS time synchronization options, defaults, and parameter values and provides configuration guidelines and constraints for automotive in-vehicle bridged IEEE 802.3 Ethernet networks.
+
+[Learn More
+About P802.1DGei](https://standards.ieee.org/ieee/802.1DGei/12769 "Learn More")
+
+##### P802.1DU
+
+###### Standard for Local and Metropolitan Area Networks - Cut-Through Forwarding Bridges and Bridged Networks
+
+This standard specifies Cut-Through Forwarding (CTF) bridges based on the IEEE 802.1Q bridge architecture, including protocols, procedures, and managed objects. CTF bridges interconnect individual local area networks (LANs) using different or identical media access control (MAC) methods with and without support for CTF. This standard also details the usage of CTF bridges in bridged networks.
+
+[Learn More
+About P802.1DU](https://standards.ieee.org/ieee/802.1DU/11270 "Learn More")
+
+##### P802.1EH
+
+###### Standard for Local and Metropolitan Area Networks--Telemetry Tagging of Data Frames
+
+This standard specifies protocols, procedures, and managed objects to support forward signaling of telemetry in dedicated tags added to data frames. This standard supports Medium Access Control (MAC) bridges, Customer Virtual Local Area Network (C-VLAN) bridges, Service Virtual Local Area Network (S-VLAN) bridges, and end stations. Telemetry in conjunction with IEEE Std 802.1AE MAC Security is also supported. This standard specifies a service interface to enable higher layer protocols to initiate and retrieve telemetry from the data link layer. This standard supports managed objects and a YANG data model for initiating and recording telemetry.
+
+[Learn More
+About P802.1EH](https://standards.ieee.org/ieee/802.1EH/12770 "Learn More")
+
+##### P802.1EJ
+
+###### Standard for Local and Metropolitan Area Networks--Backward Notification
+
+This standard specifies procedures, protocols, and managed objects for Backward Notification (BN) to signal data center network conditions toward the source end station. This standard supports Medium Access Control (MAC) bridges, Customer Virtual Local Area Network (C-VLAN) bridges and Service Virtual Local Area Network (S-VLAN) bridges and end stations in data center networks. The BN mechanism conveys information for congestion management, path rebalancing, and failure recovery. This standard specifies how BNs are triggered and constructed, and a service interface for exposing the information to entities above the data link layer. This standard supports managed objects and a YANG data model for backward notification.
+
+[Learn More
+About P802.1EJ](https://standards.ieee.org/ieee/802.1EJ/12771 "Learn More")
+
+##### P802.1Q
+
+###### Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks
+
+This standard specifies Bridges that interconnect individual LANs, each supporting the IEEE 802 MAC Service using a different or identical media access control method, to provide Bridged Networks and VLANs.
+
+[Learn More
+About P802.1Q](https://standards.ieee.org/ieee/802.1Q/11285 "Learn More")
+
+##### P802.1Qdq
+
+###### IEEE Draft Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment 41: Shaper Parameter Settings for Bursty Traffic Requiring Bounded Latency
+
+This amendment to IEEE Std 802.1Q-2022 as amended by IEEE Std 802.1Qcz-2023, IEEE Std 802.1Qcw-2023, IEEE Std 802.1Qcj-2023, IEEE Std 802.1Qdj-2024, IEEE Std 802.1Qdx-2024, and IEEE Std 802.1Qdy-2025.
+
+[Learn More
+About P802.1Qdq](https://standards.ieee.org/ieee/802.1Qdq/10609 "Learn More")
+
+##### P802.1Qdt
+
+###### Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment: Priority-based Flow Control Enhancements
+
+This amendment specifies procedures and managed objects for automated Priority-based Flow Control (PFC) headroom calculation and Media Access Control Security (MACsec) protection of PFC frames, using point-to-point roundtrip measurement and enhancements to the Data Center Bridging Capability Exchange protocol (DCBX).
+This amendment places emphasis on the requirements for low latency and lossless transmission in large-scale and geographically dispersed data centers.
+This amendment also addresses errors of the existing IEEE Std 802.1Q functionality.
+
+[Learn More
+About P802.1Qdt](https://standards.ieee.org/ieee/802.1Qdt/11256 "Learn More")
+
+##### P802.1Qee
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment: Traffic Engineering for Bridged Networks that include Wireless Technologies
+
+This amendment specifies procedures and YANG data models to extend bridge attributes for traffic engineering for bridged networks that include wireless technologies whose delay variance is beyond that of point-to-point wireline MAC technologies. Additionally, this amendment addresses technical and editorial corrections to existing IEEE Std 802.1Q functionality.
+
+[Learn More
+About P802.1Qee](https://standards.ieee.org/ieee/802.1Qee/12184 "Learn More")
+
+##### P802.1X
+
+###### Standard for Local and Metropolitan Area Networks–Port-Based Network Access Control
+
+For the purpose of providing compatible authentication, authorization, and cryptographic key agreement mechanisms to support secure communication between devices connected by IEEE 802(R) Local Area Networks (LANs), this standard a) Specifies a general method for provision of port-based network access control. b) Specifies protocols that establish secure associations for IEEE Std 802.1AE(TM) MAC Security. c) Facilitates the use of industry standard authentication and authorization protocols.
+
+[Learn More
+About P802.1X](https://standards.ieee.org/ieee/802.1X/12247 "Learn More")
+
+**Standards approved by the IEEE SA Standards Board that are within
+the
+10-year lifecycle.**
+
+---
+
+##### 60802-2026
+
+###### IEC/IEEE International Standard Time-Sensitive Networking Profile for Industrial Automation
+
+This document defines time-sensitive networking profiles for industrial automation. The profiles select features, options, configurations, defaults, protocols, and procedures of bridges, end stations, and LANs to build industrial automation networks. This document also specifies YANG modules defining read-only information available online and offline as a digital data sheet. This document also specifies YANG modules for remote procedure calls and actions to address requirements arising from industrial automation networks.
+
+[Learn More
+About 60802-2026](https://standards.ieee.org/ieee/60802/11358 "Learn More")
+
+##### 802-2024
+
+###### IEEE Standard for Local and Metropolitan Area Networks: Overview and Architecture
+
+An overview to the family of IEEE 802® standards is provided in this standard. It describes the reference models for the IEEE 802 standards and explains the relationship of these standards to the higher layer protocols; it specifies the structure of IEEE 802 MAC addresses; it specifies identification of public, private, prototype, and standard protocols; it specifies an object identifier hierarchy used within IEEE 802 for uniform allocation of object identifiers used in IEEE 802 standards; and it specifies a method for higher layer protocol identification.
+
+[Learn More
+About 802-2024](https://standards.ieee.org/ieee/802/10894 "Learn More")
+
+##### 802.1AB-2026
+
+###### IEEE Approved Draft Standard for Local and metropolitan area networks - Station and Media Access Control Connectivity Discovery
+
+A protocol and a set of managed objects that can be used for discovering the physical topology from adjacent stations in IEEE 802® LANs are defined in this document.
+
+[Learn More
+About 802.1AB-2026](https://standards.ieee.org/ieee/802.1AB/11787 "Learn More")
+
+##### 802.1AC-2026
+
+###### IEEE Approved Draft Standard for Local and metropolitan area networks -- Media Access Control (MAC) Service Definition
+
+The MAC Service and the Internal Sublayer Service (ISS) are defined in this standard. This standard specifies media-dependent convergence functions that map IEEE 802® MAC interfaces to the ISS. The MAC Service is derived from the ISS.
+
+[Learn More
+About 802.1AC-2026](https://standards.ieee.org/ieee/802.1AC/11788 "Learn More")
+
+##### 802.1AE-2018
+
+###### IEEE Standard for Local and metropolitan area networks-Media Access Control (MAC) Security
+
+How all or part of a network can be secured transparently to peer protocol entities that use the MAC Service provided by IEEE 802® LANs to communicate is specified in this standard. MAC security (MACsec) provides connectionless user data confidentiality, frame data integrity, and data origin authenticity.(The PDF of this standard is available at no cost to you compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page)
+
+[Learn More
+About 802.1AE-2018](https://standards.ieee.org/ieee/802.1AE/7154 "Learn More")
+
+##### 802.1AE-2018/Cor 1-2020
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Security Corrigendum 1: Tag Control Information Figure
+
+How all or part of a network can be secured transparently to peer protocol entities that use the MAC Service provided by IEEE 802(R) LANs to communicate is specified in this standard. AC security (MACsec) provides connectionless user data confidentiality, data frame integrity, and data origin authenticity. (The PDF of this standard is available at no cost compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1AE-2018/Cor 1-2020](https://standards.ieee.org/ieee/802.1AE-2018_Cor_1/7588 "Learn More")
+
+##### 802.1AEdk-2023
+
+###### IEEE Standard for Local and metropolitan area networks-Media Access Control (MAC) Security Amendment 4: MAC Privacy protection
+
+This amendment specifies a MAC Privacy protection encapsulating protocol and its use in conjunction with the MAC Security protocol (MACsec) to hide the source and destination MAC addresses of user data frames, and to reduce any correlation between observable frame sizes and transmission timing. This helps to protect user and application identities and to hide the purpose and content of communications. Management of MACsec and privacy protection is supported by YANG models and SNMP MIBs. Privacy considerations for bridged networks are reviewed. (The PDF of this standard is available at no cost compliments of the IEEE GET Program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1AEdk-2023](https://standards.ieee.org/ieee/802.1AEdk/10136 "Learn More")
+
+##### 802.1AR-2018
+
+###### IEEE Standard for Local and Metropolitan Area Networks - Secure Device Identity
+
+A Secure Device Identifier (DevID) is cryptographically bound to a device and supports authentication of the device's identity. An Initial Device Identifier (IDevID) provide by the supplier of a device can be supplemented by Local Device Identifiers (LDevIDs) facilitating enrollment (provisioning of authentication and authorization credentials) by local network administrators. (The PDF of this standard is available at no cost compliments of the IEEE GET Program at https://ieeexplore.ieee.org/browse/standards/get-program/page)
+
+[Learn More
+About 802.1AR-2018](https://standards.ieee.org/ieee/802.1AR/6995 "Learn More")
+
+##### 802.1AReg-2026
+
+###### IEEE Standard for Local and Metropolitan Area Networks - Secure Device Identity--Amendment 1: Support for the Module-Lattice-Based Digital Signature Algorithm
+
+This amendment adds optional Module-Lattice-Based Digital Signature Algorithm support for each of the ML-DSA-87, ML-DSA-65, and ML-DSA-44 parameter sets.
+
+[Learn More
+About 802.1AReg-2026](https://standards.ieee.org/ieee/802.1AReg/12365 "Learn More")
+
+##### 802.1AS-2025
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time-Sensitive Applications
+
+Protocols, procedures, and managed objects for the transport of timing over local area networks are defined in this standard. It includes the transport of synchronized time, the selection of the timing source (i.e., best timeTransmitter), and the indication of the occurrence and magnitude of timing impairments (i.e., phase and frequency discontinuities).
+
+[Learn More
+About 802.1AS-2025](https://standards.ieee.org/ieee/802.1AS/11968 "Learn More")
+
+##### 802.1ASds-2026
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time-Sensitive Applications Amendment 2: Support for the IEEE Std 802.3 Clause 4 Media Access Control (MAC) operating in half-duplex
+
+This amendment to IEEE Std 802.1AS™-2025 specifies protocols, procedures, and managed objects that support IEEE Std 802.3 Clause 4 Media Access Control (MAC) operating in half-duplex while retaining existing functionality and backward compatibility, and remaining a profile of IEEE Std 1588™-2019.
+
+[Learn More
+About 802.1ASds-2026](https://standards.ieee.org/ieee/802.1ASds/10835 "Learn More")
+
+##### 802.1ASed-2026
+
+###### IEEE Standard for Local and Metropolitan Area Networks -Timing and Synchronization for Time-Sensitive Applications - Amendment 1: Fault-Tolerant Timing with Time Integrity
+
+This amendment to IEEE Std 802.1AS™-2025 specifies protocols, processes, procedures, functions, mechanisms, and managed objects to enable fault-tolerant timing by increasing the availability of the time and adding time integrity. This is achieved using two or more generalized precision time protocol (gPTP) domains, multiple time distribution paths, the local oscillator clock, and a time selection function with individual processes for times that have interdependencies and times that do not have interdependencies. Fault-tolerant timing includes fault-tolerant time generation and distribution.
+
+[Learn More
+About 802.1ASed-2026](https://standards.ieee.org/ieee/802.1ASed/11749 "Learn More")
+
+##### 802.1AX-2020
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Link Aggregation
+
+Link Aggregation allows parallel point-to-point links to be used as if they were a single link and also supports the use of multiple links as a resilient load-sharing interconnect between multiple nodes in two separately administered networks. This standard defines a MAC-independent Link Aggregation capability and provides general information relevant to specific MAC types.
+
+[Learn More
+About 802.1AX-2020](https://standards.ieee.org/ieee/802.1AX/6768 "Learn More")
+
+##### 802.1AXdz-2025
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Link Aggregation Amendment 1: YANG for Link Aggregation
+
+(The PDF of this standard is available at no cost compliments of the IEEE GET program located at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68). This amendment to IEEE Std 802.1AX-2020 specifies a Unified Modeling Language (UML)-based model and YANG modules for Link Aggregation configuration and status reporting.
+
+[Learn More
+About 802.1AXdz-2025](https://standards.ieee.org/ieee/802.1AXdz/11527 "Learn More")
+
+##### 802.1BA-2021
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Audio Video Bridging (AVB) Systems
+
+Profiles that select features, options, configurations, defaults, protocols, and procedures of bridges, stations, and LANs that are necessary to build networks that are capable of transporting time-sensitive audio and/or video data streams are defined in this standard. The PDF of this standard is available at no cost via the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68
+
+[Learn More
+About 802.1BA-2021](https://standards.ieee.org/ieee/802.1BA/10547 "Learn More")
+
+##### 802.1CB-2017
+
+###### IEEE Standard for Local and metropolitan area networks--Frame Replication and Elimination for Reliability
+
+(The PDF of this standard is available at no cost via the IEEE GET Program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68) This standard specifies procedures, managed objects, and protocols for bridges and end systems that provide identification and replication of packets for redundant transmission, identification of duplicate packets, and elimination of duplicate packets. It is not concerned with the creation of the multiple paths over which the duplicates are transmitted.
+
+[Learn More
+About 802.1CB-2017](https://standards.ieee.org/ieee/802.1CB/5703 "Learn More")
+
+##### 802.1CB-2017/Cor 1-2026
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Frame Replication and Elimination for Reliability Corrigendum 1: Technical and Editorial Corrections
+
+This corrigendum to IEEE Std 802.1CB™-2017 provides technical and editorial corrections.
+
+[Learn More
+About 802.1CB-2017/Cor 1-2026](https://standards.ieee.org/ieee/802.1CB-2017_Cor_1/11528 "Learn More")
+
+##### 802.1CBcv-2021
+
+###### IEEE Standard for Local and metropolitan area networks -- Frame Replication and Elimination for Reliability - Amendment 1: Information Model, YANG Data Model, and Management Information Base Module
+
+This amendment specifies YANG data models and MIB modules that allow configuration and status reporting for bridges and end systems with the capabilities for Frame Replication and Elimination for Reliability (FRER) and Stream identification. (The PDF of this standard is available at no cost to you through the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1CBcv-2021](https://standards.ieee.org/ieee/802.1CBcv/7285 "Learn More")
+
+##### 802.1CBdb-2021
+
+###### IEEE Standard for Local and metropolitan area networks--Frame Replication and Elimination for Reliability Amendment 2: Extended Stream Identification Functions
+
+This amendment specifies procedures, managed objects, and protocols for bridges and end systems that provide identification and replication of packets for redundant transmission, identification of duplicate packets, and elimination of duplicate packets. It is not concerned with the creation of the multiple paths over which the duplicates are transmitted.
+
+[Learn More
+About 802.1CBdb-2021](https://standards.ieee.org/ieee/802.1CBdb/7286 "Learn More")
+
+##### 802.1CF-2019
+
+###### IEEE Recommended Practice for Network Reference Model and Functional Description of IEEE 802(R) Access Network
+
+An access network (which connects terminals to their access routers) utilizing technologies based on the family of IEEE 802(R) standards is specified in this recommended practice. An access network reference model (NRM) that includes entities and reference points along with behavioral and functional descriptions of communications among those entities is provided in this recommended practice. (The PDF of this standard is available at no cost to you compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1CF-2019](https://standards.ieee.org/ieee/802.1CF/5870 "Learn More")
+
+##### 802.1CM-2018
+
+###### IEEE Standard for Local and metropolitan area networks -- Time-Sensitive Networking for Fronthaul
+
+This standard defines profiles that select features, options, configurations, defaults, protocols, and procedures of bridges, stations, and LANs that are necessary to build networks that are capable of transporting fronthaul streams, which are time sensitive. (The PDF of this standard is available at not cost compliments of the IEEE GET Program at https://ieeexplore.ieee.org/browse/standards/get-program/page)
+
+[Learn More
+About 802.1CM-2018](https://standards.ieee.org/ieee/802.1CM/6236 "Learn More")
+
+##### 802.1CMde-2020
+
+###### IEEE Standard for Local and metropolitan area networks -- Time-Sensitive Networking for Fronthaul - Amendment 1: Enhancements to Fronthaul Profiles to Support New Fronthaul Interface, Synchronization, and Syntonization Standards
+
+Enhancements to fronthaul profiles are defined in this amendment to IEEE Std 802.1CM-2018 in order to address new developments in fronthaul interface standards and in related synchronization and syntonization standards. (The PDF of this standard is available at no cost to you compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1CMde-2020](https://standards.ieee.org/ieee/802.1CMde/7478 "Learn More")
+
+##### 802.1CS-2020
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Link-local Registration Protocol
+
+Protocols, procedures, and managed objects for a Link-local Registration Protocol (LRP) to replicate a registration database from one end to the other of a point-to-point link and to replicate changes to parts of that database are specified in this standard. A facility is provided to purge the replicated database if the source becomes unresponsive. LRP is optimized for databases on the order of 1 Mbyte. (The PDF of this standard is available at no cost to you compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68.
+
+[Learn More
+About 802.1CS-2020](https://standards.ieee.org/ieee/802.1CS/10125 "Learn More")
+
+##### 802.1CS-2020/Cor 1-2024
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Link-local Registration Protocol Corrigendum 1: Corrections to Management Modules and Protocol Encoding
+
+This corrigendum corrects errors in the YANG module, SNMP MIBs, and TLV encoding in IEEE Std 802.1CS-2020. (The PDF of this standard is available at no cost compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1CS-2020/Cor 1-2024](https://standards.ieee.org/ieee/802.1CS-2020_Cor_1/11255 "Learn More")
+
+##### 802.1DC-2024
+
+###### IEEE Standard for Local and metropolitan area networks---Quality of Service Provision by Network Systems
+
+This standard specifies procedures and managed objects for quality of service (QoS) features specified in IEEE Std 802.1Q, such as Per-Stream Filtering and Policing, queuing, transmission selection, stream control, and frame preemption, in a network system that is not a Bridge.
+(The PDF of this standard is available at no cost compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1DC-2024](https://standards.ieee.org/ieee/802.1DC/7318 "Learn More")
+
+##### 802.1DG-2025
+
+###### IEEE Standard for Local and metropolitan area networks - Time-Sensitive Networking Profile for Automotive In-Vehicle Ethernet Communications
+
+Profiles for bounded latency automotive in-vehicle bridged IEEE 802.3 Ethernet networks based on IEEE 802.1 Time-Sensitive Networking (TSN) standards are specified in this standard.
+
+[Learn More
+About 802.1DG-2025](https://standards.ieee.org/ieee/802.1DG/7480 "Learn More")
+
+##### 802.1DP-2025
+
+###### IEEE/SAE Standard for Local and Metropolitan Area Networks--Time-Sensitive Networking for Aerospace Onboard Ethernet Communications
+
+Profiles of IEEE 802.1 Time-Sensitive Networking (TSN) for aerospace onboard bridged IEEE 802.3 Ethernet networks are specified in this standard. The profiles select features, options, configurations, defaults, protocols, and procedures of bridges, end stations, and Local Area Networks to build deterministic networks for aerospace onboard communications.
+
+[Learn More
+About 802.1DP-2025](https://standards.ieee.org/ieee/802.1DP/10465 "Learn More")
+
+##### 802.1Q-2022
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks
+
+This standard specifies how the Media Access Control (MAC) Service is supported by Bridged Networks, the principles of operation of those networks, and the operation of MAC Bridges and VLAN Bridges, including management, protocols, and algorithms. (The PDF of this standard is available at no cost compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1Q-2022](https://standards.ieee.org/ieee/802.1Q/10323 "Learn More")
+
+##### 802.1Qcj-2023
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment 37: Automatic Attachment to Provider Backbone Bridging (PBB) Services
+
+This amendment to IEEE Std 802.1Q-2022 as amended by IEEE Std 802.1Qcz-2023 and IEEE Std 802.1Qcw-2023 specifies protocols, procedures, and management objects for auto attachment of network devices to Provider Backbone service instances using Type, Length, Value (TLVs) within the Link Layer Discovery Protocol (LLDP). (PDF of this Standard is available at no charge, compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68).
+
+[Learn More
+About 802.1Qcj-2023](https://standards.ieee.org/ieee/802.1Qcj/6160 "Learn More")
+
+##### 802.1Qcw-2023
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment 36: YANG Data Models for Scheduled Traffic, Frame Preemption, and Per‐Stream Filtering and Policing
+
+This amendment specifies YANG data models that allow configuration and status reporting for Bridges and Bridge components with the capabilities of scheduled traffic, frame preemption, and Per-Stream Filtering and Policing. (The PDF of the standard is available at no cost, compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68).
+
+[Learn More
+About 802.1Qcw-2023](https://standards.ieee.org/ieee/802.1Qcw/7134 "Learn More")
+
+##### 802.1Qcz-2023
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks -- Amendment 35: Congestion Isolation
+
+This amendment to IEEE Std 802.1Q™-2022 specifies protocols, procedures, and managed objects that support the isolation of congesting data flows within data center environments. The PDF of this standard is available at no cost compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68.
+
+[Learn More
+About 802.1Qcz-2023](https://standards.ieee.org/ieee/802.1Qcz/7372 "Learn More")
+
+##### 802.1Qdj-2024
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment 38: Configuration Enhancements for Time‐Sensitive Networking
+
+This amendment to IEEE Std 802.1Q-2022 as amended by IEEE Std 802.1Qcz-2023, IEEE Std 802.1Qcw-2023, and IEEE Std 802.1Qcj-2023 describes the relationships and division of responsibilities between Centralized User Configuration (CUC) components, that can be used to configure end stations' use of Time-Sensitive Networking (TSN) capabilities, and a Centralized Network Configuration (CNC) component that can be used to configure network resources within an administrative Configuration Domain. A YANG model and modules that can be used by a network configuration protocol, such as NETCONF, to provide communication between the CNC and a CUC is specified.
+
+[Learn More
+About 802.1Qdj-2024](https://standards.ieee.org/ieee/802.1Qdj/7669 "Learn More")
+
+##### 802.1Qdx-2024
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment 39: YANG Data Models for the Credit-Based Shaper
+
+A YANG data model that supports configuration and status reporting for credit-based shaper algorithm capabilities in Bridges and end stations is specified in this amendment to IEEE Std 802.1Q-2022 as amended by IEEE Std 802.1Qcz-2023, IEEE Std 802.1Qcw-2023, IEEE Std 802.1Qcj-2023, and IEEE Std 802.1Qdj-2024. (The PDF of this standard is available at no cost compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1Qdx-2024](https://standards.ieee.org/ieee/802.1Qdx/11271 "Learn More")
+
+##### 802.1Qdy-2025
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment 40: YANG for the Multiple Spanning Tree Protocol
+
+This amendment to IEEE Std 802.1Q-2022 as amended by IEEE Std 802.1Qcz-2023, IEEE Std 802.1Qcw-2023, IEEE Std 802.1Qcj-2023, IEEE Std 802.1Qdj-2024, and IEEE Std 802.1Qdx-2024 addresses Multiple Spanning Tree Protocol (MSTP) requirements arising from industrial automation networks. It specifies YANG for Bridge and Bridge component RSTP as well as MSTP configuration and status reporting.(Note: The PDF of this standard is available at no charge compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1Qdy-2025](https://standards.ieee.org/ieee/802.1Qdy/11392 "Learn More")
+
+##### 802.1X-2020/Cor 1-2026
+
+###### IEEE Approved Draft Standard for Local and Metropolitan Area Networks--Port-Based Network Access Control--Corrigendum 1
+
+This corrigendum to IEEE Std 802.1X-2020 corrects the when statement for the augment of the interfaces container in the IEEE 802.1x YANG module to avoid unduly restricting the applicability of the IEEE 802.1x YANG module to specific interface types.
+
+[Learn More
+About 802.1X-2020/Cor 1-2026](https://standards.ieee.org/ieee/802.1X-2020_Cor_1/12185 "Learn More")
+
+##### 802E-2020
+
+###### IEEE Recommended Practice for Privacy Considerations for IEEE 802(R) Technologies
+
+A privacy threat model for IEEE 802® technologies is specified by this recommended practice. The document also provides recommendations on how to protect against privacy threats and promotes a consistent approach to the mitigation of privacy threats by IEEE 802 protocol developers.
+
+[Learn More
+About 802E-2020](https://standards.ieee.org/ieee/802E/6242 "Learn More")
+
+##### 8802-1AB
+
+###### ISO/IEC/IEEE Draft International Standard - Information technology – Telecommunications and information exchange between systems – Local and metropolitan area networks – Specific requirements – Part 1AB: Station and media access control connectivity discovery
+
+A protocol and a set of managed objects that can be used for discovering the physical topology from adjacent stations in IEEE 802® LANs are defined in this document
+
+[Learn More
+About 8802-1AB](https://standards.ieee.org/ieee/8802-1AB/7112 "Learn More")
+
+##### 8802-1AB-2017
+
+###### ISO/IEC/IEEE International Standard--Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements--Part 1AB: Station and media access control connectivity discovery
+
+A protocol and a set of managed objects that can be used for discovering the physical topology from adjacent stations in IEEE 802® LANs are defined in this document.
+
+[Learn More
+About 8802-1AB-2017](https://standards.ieee.org/ieee/8802-1AB/11355 "Learn More")
+
+##### 8802-1AB:2017/Amd 1-2023
+
+###### IEEE/ISO/IEC International Standard--Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements--Part 1AB: Station and media access control connectivity discovery AMENDMENT 1: YANG data model
+
+This amendment to IEEE Std 802.1AB-2016 specifies a Unified Modeling Language (UML)-based information model and a YANG data model that allows configuration and status reporting for bridges and bridge components with regards to topology discovery.
+
+[Learn More
+About 8802-1AB:2017/Amd 1-2023](https://standards.ieee.org/ieee/8802-1AB_2017_Amd_1/11344 "Learn More")
+
+##### 8802-1AB:2017/Amd 2-2023
+
+###### IEEE/ISO/IEC International Standard--Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements--Part 1AB: Station and media access control connectivity discovery AMENDMENT 2: Support for multiframe protocol data units
+
+Abstract: This amendment to IEEE Std 802.1AB™-2016 specifies protocols, procedures, and managed objects that support the transmission and reception of a set of Link Layer Discovery Protocol (LLDP) Type/Length/Values (TLVs) that exceed the space available in a single frame.
+
+[Learn More
+About 8802-1AB:2017/Amd 2-2023](https://standards.ieee.org/ieee/8802-1AB_2017_Amd_2/11345 "Learn More")
+
+##### 8802-1AC:2018/Amd 1-2023
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Part 1AC: Media access control (MAC) service definition AMENDMENT 1: Support for ISO/IEC/ IEEE 8802-15-3
+
+The Internal Sublayer Service for the IEEE 802.15.3 MAC entity is defined in this amendment.
+
+[Learn More
+About 8802-1AC:2018/Amd 1-2023](https://standards.ieee.org/ieee/8802-1AC_2018_Amd_1/11249 "Learn More")
+
+##### 8802-1AE/Cor1-2021-2020
+
+###### IEEE/ISO/IEC International Standard - Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1AE:Media access control (MAC) security
+
+How all or part of a network can be secured transparently to peer protocol entities that use the MAC Service provided by IEEE 802® LANs to communicate is specified in this standard. MAC security (MACsec) provides connectionless user data confidentiality, frame data integrity, and data origin authenticity.
+
+[Learn More
+About 8802-1AE/Cor1-2021-2020](https://standards.ieee.org/ieee/8802-1AE_Cor1-2021/10338 "Learn More")
+
+##### 8802-1AE:2020/Amd.4:2024-2024
+
+###### ISO/IEC/IEEE International Standard: Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1AE: Media access control (MAC) security AMENDMENT 4: MAC Privacy Protection
+
+The scope of this standard is to specify provision of connectionless user data confidentiality, frame data integrity, and data origin authenticity by media access independent protocols and entities that operate transparently to MAC Clients. NOTE--The MAC Clients are as specified in IEEE Std 802, IEEE Std 802.1Q™, and IEEE Std 802.1X™.
+
+[Learn More
+About 8802-1AE:2020/Amd.4:2024-2024](https://standards.ieee.org/ieee/8802-1AE_2020_Amd.4_2024/11822 "Learn More")
+
+##### 8802-1AS-2021
+
+###### IEEE/ISO/IEC International Standard for Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Part 1AS:Timing and synchronization for time-sensitive applications in bridged local area networks
+
+Protocols, procedures, and managed objects for the transport of timing over local area networks are defined in this standard. It includes the transport of synchronized time, the selection of the timing source (i.e., best master), and the indication of the occurrence and magnitude of timing impairments (i.e., phase and frequency discontinuities).
+
+[Learn More
+About 8802-1AS-2021](https://standards.ieee.org/ieee/8802-1AS/10767 "Learn More")
+
+##### 8802-1AS-2021\_Amd1:2025-2025
+
+###### ISO/IEC/IEEE International Standard--Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Part 1AS: Timing and synchronization for time-sensitive applications in bridged local area networks AMENDMENT 1: Inclusive terminology
+
+This amendment to IEEE Std 802.1AS™-2020 replaces terminology with alternative terminology identified by IEEE Std 1588g™-2022. All changes made in figures are only to replace terminology.
+
+[Learn More
+About 8802-1AS-2021\_Amd1:2025-2025](https://standards.ieee.org/ieee/8802-1AS-2021_Amd1_2025/12031 "Learn More")
+
+##### 8802-1AS:2021/Cor 1-2023
+
+###### ISO/IEC/IEEE--Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Part 1AS: Timing and synchronization for time-sensitive applications in bridged local area networks TECHNICAL CORRIGENDUM 1: Technical and editorial corrections
+
+Technical and editorial corrections to IEEE Std 802.1AS-2020 are provided in this corrigendum.
+
+[Learn More
+About 8802-1AS:2021/Cor 1-2023](https://standards.ieee.org/ieee/8802-1AS_2021_Cor_1/11158 "Learn More")
+
+##### 8802-1AX-2021
+
+###### IEEE/ISO/IEC International Standard - Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 1AX: Link aggregation
+
+Link Aggregation allows parallel point-to-point links to be used as if they were a single link and also supports the use of multiple links as a resilient load-sharing interconnect between multiple nodes in two separately administered networks. This standard defines a MAC-independent Link Aggregation capability and provides general information relevant to specific MAC types.
+
+[Learn More
+About 8802-1AX-2021](https://standards.ieee.org/ieee/8802-1AX/10670 "Learn More")
+
+##### 8802-1BA-2023
+
+###### ISO/IEC/IEEE International Standard--Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 1BA: Audio video bridging (AVB) systems
+
+Profiles that select features, options, configurations, defaults, protocols, and procedures of bridges, stations, and LANs that are necessary to build networks that are capable of transporting time-sensitive audio and/or video data streams are defined in this standard.
+
+[Learn More
+About 8802-1BA-2023](https://standards.ieee.org/ieee/8802-1BA/11250 "Learn More")
+
+##### 8802-1BR-2016
+
+###### ISO/IEC/IEEE International Standard for Information technology – Telecommunications and information exchange between systems – Local and metropolitan area networks – Specific requirements – Part 1BR: Virtual bridged local area networks – Bridge port extension
+
+This standard specifies the operation of Bridge Port Extenders, including management, protocols, and algorithms. Bridge Port Extenders operate in support of the MAC Service by Extended Bridges.
+
+[Learn More
+About 8802-1BR-2016](https://standards.ieee.org/ieee/8802-1BR/6871 "Learn More")
+
+##### 8802-1CB:2019/Amd 2-2023
+
+###### IEEE/ISO/IEC International Standard--Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements--Part 1CB: Frame replication and elimination for reliability AMENDMENT 2: Extend stream identification functions
+
+This amendment specifies procedures, managed objects, and protocols for bridges and end systems that provide identification and replication of packets for redundant transmission, identification of duplicate packets, and elimination of duplicate packets. It is not concerned with the creation of the multiple paths over which the duplicates are transmitted.
+
+[Learn More
+About 8802-1CB:2019/Amd 2-2023](https://standards.ieee.org/ieee/8802-1CB_2019_Amd_2/11212 "Learn More")
+
+##### 8802-1CM:2019/Amd1-2021
+
+###### IEEE/ISO/IEC International Standard-Telecommunications and information exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1CM:Time-sensitive networking for fronthaul - AMENDMENT 1: Enhancements to fronthaul profiles to support new fronthaul interface, synchronization, and syntonization standards
+
+Enhancements to fronthaul profiles are defined in this amendment to IEEE Std 802.1CM(TM)-2018 in order to address new developments in fronthaul interface standards and in related synchronization and syntonization standards.
+
+[Learn More
+About 8802-1CM:2019/Amd1-2021](https://standards.ieee.org/ieee/8802-1CM_2019_Amd1/10736 "Learn More")
+
+##### 8802-1CS-2021
+
+###### ISO/IEC/IEEE International Standard--Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1CS: Link-local registration protocol
+
+Protocols, procedures, and managed objects for a Link-local Registration Protocol (LRP) to replicate a registration database from one end to the other of a point-to-point link and to replicate changes to parts of that database are specified in this standard. A facility is provided to purge the replicated database if the source becomes unresponsive. LRP is optimized for databases on the order of 1 Mbyte.
+
+[Learn More
+About 8802-1CS-2021](https://standards.ieee.org/ieee/8802-1CS/10986 "Learn More")
+
+##### 8802-1CS:2022/Cor 1-2025
+
+###### ISO/IEC/IEEE International Standard–Telecommunications and exchange between information technology systems–Requirements for local and metropolitan area networks–Part 1CS: Link-local registration protocol TECHNICAL CORRIGENDUM 1: Corrections to management modules and protocol encoding
+
+This corrigendum corrects errors in the YANG module, SNMP MIBs, and TLV encoding in IEEE Std 802.1CS™-2020.
+
+[Learn More
+About 8802-1CS:2022/Cor 1-2025](https://standards.ieee.org/ieee/8802-1CS_2022_Cor_1/12329 "Learn More")
+
+##### 8802-1DC-2025
+
+###### IEEE/ISO/IEC International Standard--Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1DC: Quality of service provision by network systems
+
+This standard specifies procedures and managed objects for quality of service (QoS) features specified in IEEE Std 802.1Q, such as Per-Stream Filtering and Policing, queuing, transmission selection, stream control, and frame preemption, in a network system that is not a Bridge.
+
+[Learn More
+About 8802-1DC-2025](https://standards.ieee.org/ieee/8802-1DC/12135 "Learn More")
+
+##### 8802-1Q-2020
+
+###### IEEE/ISO/IEC International Standard - Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1Q: Bridges and bridged networks
+
+This standard specifies how the Media Access Control (MAC) Service is supported by Bridged Networks, the principles of operation of those networks, and the operation of MAC Bridges and VLAN Bridges, including management, protocols, and algorithms.
+
+[Learn More
+About 8802-1Q-2020](https://standards.ieee.org/ieee/8802-1Q/10339 "Learn More")
+
+##### 8802-1Q-2024
+
+###### ISO/IEC/IEEE International Standard: Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 1Q: Bridges and bridged networks
+
+This standard specifies how the Media Access Control (MAC) Service is supported by Bridged Networks, the principles of operation of those networks, and the operation of MAC Bridges and VLAN Bridges, including management, protocols, and algorithms.
+
+[Learn More
+About 8802-1Q-2024](https://standards.ieee.org/ieee/8802-1Q/11825 "Learn More")
+
+##### 8802-1Q-2020/Amd3-2021
+
+###### ISO/IEC/IEEE International Standard-Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 1Q: Bridges and bridged networks AMENDMENT 3: Virtual station interface (VSI) discovery and configuration protocol (VDP) extension to support network virtualization overlays over layer 3 (NVO3)
+
+Extensions to the Virtual Station Interface (VSI) Discovery and Configuration Protocol (VDP) to support using the protocol between an end station and a device doing encapsulation/decapsulation for Network Virtualization Overlays Over Layer 3 (NVO3) are specified in this amendment to IEEE Std 802.1Q-2018. The extensions include adding format types [e.g., Internet Protocol (IP) addresses] and enhancing indication of migration events.
+
+[Learn More
+About 8802-1Q-2020/Amd3-2021](https://standards.ieee.org/ieee/8802-1Q-2020_Amd3/10668 "Learn More")
+
+##### 8802-1Q-2020/Amd31-2021
+
+###### IEEE/ISO/IEC International Standard-Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 1Q: Bridges and bridged networks AMENDMENT 31: Stream Reservation Protocol (SRP) enhancements and performance improvements
+
+Enhancements to the configuration of time-sensitive streams are provided by this amendment to IEEE Std 8802.1Q-2018.
+
+[Learn More
+About 8802-1Q-2020/Amd31-2021](https://standards.ieee.org/ieee/8802-1Q-2020_Amd31/10734 "Learn More")
+
+##### 8802-1Q-2020\_Amd2-2021
+
+###### IEEE/ISO/IEC International Standard -Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks--Part 1Q: Bridges and bridged networks AMENDMENT 2: YANG data model
+
+A YANG data model in support of configuration and operational status information for a subset of Bridging capabilities is provided in this amendment to IEEE Std 802.1Q(TM)-2018.
+
+[Learn More
+About 8802-1Q-2020\_Amd2-2021](https://standards.ieee.org/ieee/8802-1Q-2020_Amd2/10669 "Learn More")
+
+##### 8802-1Q-2024\_Amd36-2025
+
+###### ISO/IEC/IEEE International Standard--Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1Q: Bridges and bridged networks Amendment 36: YANG Data Models for Scheduled Traffic, Frame Preemption, and Per-Stream Filtering and Policing
+
+[Learn More
+About 8802-1Q-2024\_Amd36-2025](https://standards.ieee.org/ieee/8802-1Q-2024_Amd36/11965 "Learn More")
+
+##### 8802-1Q:2016/Cor 1-2017
+
+###### ISO/IEC/IEEE International Standard-Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements--Part 1Q: Bridges and bridged networks TECHNICAL CORRIGENDUM 1: Technical and editorial corrections
+
+Correction of technical and editorial errors identified by the IEEE 802.1 maintenance activity are presented in this document.
+
+[Learn More
+About 8802-1Q:2016/Cor 1-2017](https://standards.ieee.org/ieee/8802-1Q_2016_Cor_1/10024 "Learn More")
+
+##### 8802-1Q:2024/Amd 37-2025
+
+###### ISO/IEC/IEEE International Standard--Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1Q: Bridges and bridged networks AMENDMENT 37: Automatic Attachment to Provider Backbone Bridging (PBB) Services
+
+This amendment to IEEE Std 802.1Q-2022 as amended by IEEE Std 802.1Qcz-2023 and IEEE Std 802.1Qcw-2023 specifies protocols, procedures, and management objects for auto attachment of network devices to Provider Backbone service instances using Type, Length, Value (TLVs) within the Link Layer Discovery Protocol (LLDP).
+
+[Learn More
+About 8802-1Q:2024/Amd 37-2025](https://standards.ieee.org/ieee/8802-1Q_2024_Amd_37/11967 "Learn More")
+
+##### 8802-1Q:2024/Amd 38-2025
+
+###### ISO/IEC/IEEE International Standard--Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1Q: Bridges and bridged networks AMENDMENT 38: Configuration enhancements for time-sensitive networking
+
+[Learn More
+About 8802-1Q:2024/Amd 38-2025](https://standards.ieee.org/ieee/8802-1Q_2024_Amd_38/12263 "Learn More")
+
+##### 8802-1Q:2024/Amd.35:2024-2024
+
+###### ISO/IEC/IEEE International Standard: Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1Q: Bridges and bridged networks AMENDMENT 35: Congestion isolation
+
+[Learn More
+About 8802-1Q:2024/Amd.35:2024-2024](https://standards.ieee.org/ieee/8802-1Q_2024_Amd.35_2024/11823 "Learn More")
+
+##### 8802-1Q\_Amd 1-2017
+
+###### ISO/IEC/IEEE International Standard -- Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 1Q: Bridges and bridged networks AMENDMENT 1: Path control and reservation
+
+Explicit path control, bandwidth reservation, and redundancy (protection, restoration) for data flows are specified in this amendment to IEEE Std 802.1Q-2014.
+
+[Learn More
+About 8802-1Q\_Amd 1-2017](https://standards.ieee.org/ieee/8802-1Q_Amd_1/7111 "Learn More")
+
+##### 8802-1Q\_Amd 3
+
+###### ISO/IEC/IEEE International Standard -- Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 1Q: Bridges and bridged networks AMENDMENT 3: Enhancements for scheduled traffic
+
+Enhancements to the forwarding process that supports scheduled traffic is provided in this amendment to IEEE Std 802.1Q-2014.
+
+[Learn More
+About 8802-1Q\_Amd 3](https://standards.ieee.org/ieee/8802-1Q_Amd_3/7113 "Learn More")
+
+##### 8802-1X-2021
+
+###### IEEE/ISO/IEC International Standard-Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 1X:Port-based network access control
+
+Port-based network access control allows a network administrator to restrict the use of IEEE 802(R) LAN service access points (ports) to secure communication between authenticated and authorized devices. This standard specifies a common architecture, functional elements, and protocols that support mutual authentication between the clients of ports attached to the same LAN and that secure communication between the ports, including the media access method independent protocols that are used to discover and establish the security associations used by IEEE 802.1AE(TM) MAC Security.
+
+[Learn More
+About 8802-1X-2021](https://standards.ieee.org/ieee/8802-1X/10774 "Learn More")
+
+##### 8802-A:2015/Amd.3-2025
+
+###### ISO/IEC/IEEE International Standard--Information technology--Telecommunications and information exchange between systems--Local and metropolitan area network--Part A: Overview and architecture Amendment 3: YANG data model for EtherTypes
+
+The YANG module containing the EtherType information, including a compact human-readable name and description, for a subset of EtherTypes taken from the IEEE Registration Authority EtherType public listing is specified in this amendment. This amendment also addresses errors and omissions in IEEE Std 802 description of existing functionality.
+
+[Learn More
+About 8802-A:2015/Amd.3-2025](https://standards.ieee.org/ieee/8802-A_2015_Amd.3/11964 "Learn More")
+
+**These standards have been replaced with a revised version of the
+standard, or by a compilation of the original active standard and
+all
+its existing amendments, corrigenda, and errata.**
+
+---
+
+##### 802-1990
+
+###### Local and Metropolitan Area Networks: IEEE Standard: Overview and Architecture
+
+Superseded by IEEE Std 802-2001 This IEEE Standards product is part of the 802 family on LAN/MAN. This document provides an overview to the family of IEEE 802 Standards, defines compliance with the family of IEEE 802 Standards, describes the relationship of the IEEE 802 Standards to the Open Systems Interconnections Basic Reference Model [ISO 7498:1984] and explains the relationship of these standards to the higher layer protocols, and provides a standard for identification of public, private, and standard protocols.
+
+[Learn More
+About 802-1990](https://standards.ieee.org/ieee/802/1024 "Learn More")
+
+##### 802-2001
+
+###### IEEE Standard for Local and Metropolitan Area Networks: Overview and Architecture
+
+IEEE Std 802-2001, IEEE Standards for Local and Metropolitan Area Networks: Overview and Architecture, provides an overview to the family of IEEE 802 Standards. It defines compliance with the family of IEEE 802 Standards; it describes the relationship of the IEEE 802 Standards to the Open Systems Interconnection Basic Reference Model [ISO/IEC 7498-1:1994] and explains the relationship of these standards to the higher layer protocols; it provides a standard for the structure of LAN MAC addresses; and it provides a standard for identification of public, private, and standard protocols.
+
+[Learn More
+About 802-2001](https://standards.ieee.org/ieee/802/1025 "Learn More")
+
+##### 802-2014
+
+###### IEEE Standard for Local and Metropolitan Area Networks: Overview and Architecture
+
+This standard provides an overview to the family of IEEE 802® standards. It describes the reference models for the IEEE 802 standards and explains the relationship of these standards to the higher layer protocols; it provides a standard for the structure of IEEE 802 MAC addresses; it provides a standard for identification of public, private, prototype, and standard protocols; it specifies an object identifier hierarchy used within IEEE 802 for uniform allocation of object identifiers used in IEEE 802 standards; and it specifies a method for higher layer protocol identification. (The PDF of this standard is available at no charge compliments of the IEEE GET Program. Visit https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68 for more details.)
+
+[Learn More
+About 802-2014](https://standards.ieee.org/ieee/802/4158 "Learn More")
+
+##### 802.1AB-2005
+
+###### IEEE Standard for Local and metropolitan area networks -- Station and Media Access Control Connectivity Discovery
+
+This document defines a protocol and a set of managed objects that can be used for discovering the physical topology from adjacent stations in 802 LANs.
+
+[Learn More
+About 802.1AB-2005](https://standards.ieee.org/ieee/802.1AB/3342 "Learn More")
+
+##### 802.1AB-2009
+
+###### IEEE Standard for Local and Metropolitan Area Networks-- Station and Media Access Control Connectivity Discovery
+
+This document defines a protocol and a set of managed objects that can be used for discovering the physical topology from adjacent stations in IEEE 802 LANs.
+
+[Learn More
+About 802.1AB-2009](https://standards.ieee.org/ieee/802.1AB/4462 "Learn More")
+
+##### 802.1AB-2016
+
+###### IEEE Standard for Local and metropolitan area networks - Station and Media Access Control Connectivity Discovery
+
+This document defines a protocol and a set of managed objects that can be used for discovering the physical topology from adjacent stations in IEEE 802(R) LANs. (The PDF of this standard is available at no cost compliments of the IEEE GET program. Additional downloads are attached or can be downloaded at https://ieeexplore.ieee.org/browse/standards/get-program/page)
+
+[Learn More
+About 802.1AB-2016](https://standards.ieee.org/ieee/802.1AB/6047 "Learn More")
+
+##### 802.1AB-2009/Cor 1-2013
+
+###### IEEE Standard for Local and metropolitan area networks--Station and Media Access Control Connectivity Discovery Corrigendum 1: Technical and Editorial Corrections
+
+Technical and editorial errors identified by the IEEE 802.1 Working Group's maintenance activity are corrected by this corrigendum.
+
+[Learn More
+About 802.1AB-2009/Cor 1-2013](https://standards.ieee.org/ieee/802.1AB-2009_Cor_1/5516 "Learn More")
+
+##### 802.1AB-2009/Cor 2-2015
+
+###### IEEE Standard for Local and metropolitan area networks-- Station and Media Access Control Connectivity Discovery Corrigendum 2: Technical and Editorial Corrections
+
+Technical and editorial errors identified by the IEEE 802.1 Working Group's maintenance activity are corrected by this corrigendum to IEEE 802.1AB(TM)-2009.
+
+[Learn More
+About 802.1AB-2009/Cor 2-2015](https://standards.ieee.org/ieee/802.1AB-2009_Cor_2/5869 "Learn More")
+
+##### 802.1ABcu-2021
+
+###### IEEE Standard for Local and metropolitan networks--Station and Media Access Control Connectivity Discovery Amendment 1: YANG Data Model
+
+This amendment to IEEE Std 802.1AB-2016 specifies a Unified Modeling Language (UML)-based information model and a YANG data model that allows configuration and status reporting for bridges and bridge components with regards to topology discovery. (The PDF of this standard is available at no charge compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1ABcu-2021](https://standards.ieee.org/ieee/802.1ABcu/7131 "Learn More")
+
+##### 802.1ABdh-2021
+
+###### IEEE Standard for Local and metropolitan area networks-- Station and Media Access Control Connectivity Discovery Amendment 2: Support for Multiframe Protocol Data Units
+
+This amendment to IEEE Std 802.1AB(TM)-2016 specifies protocols, procedures and managed objects that support the transmission and reception of a set of Link Layer Discovery Protocol (LLDP) Type/Length/Values (TLVs) that exceed the space available in a single frame. (The PDF of this standard is available at no charge compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1ABdh-2021](https://standards.ieee.org/ieee/802.1ABdh/7667 "Learn More")
+
+##### 802.1AC-2012
+
+###### IEEE Standard for Local and metropolitan area networks-Media Access Control (MAC) Service Definition
+
+The MAC service provided by all IEEE 802(R) MACs along with the Internal Sublayer Service (ISS) that is provided by IEEE 802 MACs to the relay function of a Media Access Control(MAC) Bridge are defined in this standard.
+
+[Learn More
+About 802.1AC-2012](https://standards.ieee.org/ieee/802.1AC/3839 "Learn More")
+
+##### 802.1AC-2016
+
+###### IEEE Standard for Local and metropolitan area networks -- Media Access Control (MAC) Service Definition
+
+The MAC Service and the Internal Sublayer Service (ISS) are defined in this standard. This standard specifies media-dependent convergence functions that map IEEE 802(R) MAC interfaces to the ISS. The MAC Service is derived from the ISS. (The PDF of this standard is available at no charge compliments of the IEEE GET Program https://ieeexplore.ieee.org/browse/standards/get-program/page)
+
+[Learn More
+About 802.1AC-2016](https://standards.ieee.org/ieee/802.1AC/5720 "Learn More")
+
+##### 802.1AC-2016/Cor 1-2018
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Media Access Control (MAC) Service Definition - Corrigendum 1: Logical Link Control (LLC) Encapsulation EtherType
+
+This corrigendum to IEEE Std 802.1AC™-2016 corrects the value of the LLC Encapsulation EtherType.(The PDF of this standard is available at no cost to you compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page)
+
+[Learn More
+About 802.1AC-2016/Cor 1-2018](https://standards.ieee.org/ieee/802.1AC-2016_Cor_1/7132 "Learn More")
+
+##### 802.1ACct-2021
+
+###### IEEE Standard for Local and Metropolitan Area networks--Media Access Control (MAC) Service Definition-Amendment 1: Support for IEEE Std 802.15.3
+
+The Internal Sublayer Service for the IEEE 802.15.3 MAC entity is defined in this amendment. (The PDF of this standard is available at no cost via the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.1ACct-2021](https://standards.ieee.org/ieee/802.1ACct/7133 "Learn More")
+
+##### 802.1ad-2005
+
+###### IEEE Standard for Local and Metropolitan Area Networks---Virtual Bridged Local Area Networks---Amendment 4: Provider Bridges
+
+This amendment enables a service provider to use the architecture and protocols of IEEE Std 802.1Q to offer the equivalent of separate LANs, Bridged Local Area Networks, or Virtual Bridged Local Area Networks to a number of customers, while requiring no cooperation between the customers, and minimal cooperation between each customer and the service provider.
+
+[Learn More
+About 802.1ad-2005](https://standards.ieee.org/ieee/802.1ad/3374 "Learn More")
+
+##### 802.1AE-2006
+
+###### IEEE Standard for Local and Metropolitan Area Networks: Media Access Control (MAC) Security
+
+This standard specifies how all or part of a network can be secured transparently to peer protocol entities that use the MAC Service provided by IEEE 802® LANs to communicate. MAC security (MACsec) provides connectionless user data confidentiality, frame data integrity, and data origin authenticity.
+
+[Learn More
+About 802.1AE-2006](https://standards.ieee.org/ieee/802.1AE/3501 "Learn More")
+
+##### 802.1AEbn-2011
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Security Amendment 1: Galois Counter Mode--Advanced Encryption Standard-- 256 (GCM-AES-256) Cipher Suite
+
+This amendment specifies the GCM-AES-256 Cipher Suite as an option in addition to the existing mandatory to implement Default Cipher Suite, GCM-AES-128.
+
+[Learn More
+About 802.1AEbn-2011](https://standards.ieee.org/ieee/802.1AEbn/5068 "Learn More")
+
+##### 802.1AEbw-2013
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Security Amendment 2: Extended Packet Numbering
+
+The optional use of Cipher Suites that make use of a 64-bit (PN) to allow more than 232 MACsec protected frames to be sent with a single Secure Association Key are specified by this amendment.
+
+[Learn More
+About 802.1AEbw-2013](https://standards.ieee.org/ieee/802.1AEbw/5463 "Learn More")
+
+##### 802.1AEcg-2017
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Security - Amendment 3: Ethernet Data Encryption devices
+
+Ethernet Data Encryption devices (EDEs) are specified in this amendment. An EDE is a two-port bridge that uses MACsec to provide secure connectivity for attached customer bridges, or for attached provider bridges. EDEs may allow the customer (or provider) bridges to continue to use a VLAN Identifier (VID) in transmitted frames to select
+
+[Learn More
+About 802.1AEcg-2017](https://standards.ieee.org/ieee/802.1AEcg/5968 "Learn More")
+
+##### 802.1ag-2007
+
+###### IEEE Standard for Local and Metropolitan Area Networks Virtual Bridged Local Area Networks Amendment 5: Connectivity Fault Management
+
+This amendment specifies protocols, procedures, and managed objects to support connectivity fault management. These allow discovery and verification of the path, through bridges and LANs, taken for frames addressed to and from specified network users. Connectivity faults can be detected and isolated to an individual bridge or LAN.
+
+[Learn More
+About 802.1ag-2007](https://standards.ieee.org/ieee/802.1ag/3597 "Learn More")
+
+##### 802.1ah-2008
+
+###### IEEE Standard for Local and metropolitan area networks -- Virtual Bridged Local Area Networks Amendment 7: Provider Backbone Bridges
+
+This amendment defines an architecture and bridge protocols for interconnection of multiple Provider Bridged Networks, allowing a Provider to support up tot 2^20 service instances.
+
+[Learn More
+About 802.1ah-2008](https://standards.ieee.org/ieee/802.1ah/3689 "Learn More")
+
+##### 802.1aj-2009
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Virtual Bridged Local Area Networks Amendment 11: Two-Port Media Access Control (Mac) Relay
+
+This amendment to IEEE Std 802.1Q specifies the function of a MAC Relay with two MACs, and the protocols and procedures to support its operation. A MAC Relay is transparent to all frame-based media independent protocols except those explicitly addressed to this device. It is remotely manageable through at least one of its external MACs, and signals a failure of either MAC's LAN through the other MAC.
+
+[Learn More
+About 802.1aj-2009](https://standards.ieee.org/ieee/802.1aj/3690 "Learn More")
+
+##### 802.1ak-2007
+
+###### IEEE Standard for Local and Metropolitan Area Networks - Virtual Bridged Local Area Networks - Amendment 07: Multiple Registration Protocol
+
+This amendment specifies a set of protocols that replaces the GARP, GMRP, and GVRP protocols specified in earlier versions of IEEE Std 802.1Q.
+
+[Learn More
+About 802.1ak-2007](https://standards.ieee.org/ieee/802.1ak/3691 "Learn More")
+
+##### 802.1ap-2008
+
+###### IEEE Standard for Local and Metropolitan Area Networks -- Virtual Bridged Local Area Networks - Amendment 8: Management Information Base (MIB) Definitions for VLAN Bridges
+
+This amendment includes management information base (MIB) definitions in IEEE Std 802.1Q.
+
+[Learn More
+About 802.1ap-2008](https://standards.ieee.org/ieee/802.1ap/3817 "Learn More")
+
+##### 802.1aq-2012
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks--Amendment 20: Shortest Path Bridging
+
+This amendment to IEEE Std 802.1Q-2011 specifies shortest path bridging of unicast and multicast frames, including protocols to calculate multiple active topologies that can share learned station information, and support of a virtual local area network (VLAN) by multiple, per topology VLAN identifiers (VIDs). (Additional downloads for this standard are attached or can be downloaded at http://standards.ieee.org/downloads/802.1/index.html)
+
+[Learn More
+About 802.1aq-2012](https://standards.ieee.org/ieee/802.1aq/3818 "Learn More")
+
+##### 802.1AR-2009
+
+###### IEEE Standard for Local and metropolitan area networks - Secure Device Identity
+
+A secure device identifier (DevID) is cryptographically bound to a device and supports authentication of the device's identity. Locally significant identities can be securely associated with an initial manufacturer-provisioned DevID and used in provisioning and authentication protocols to allow a network administrator to establish the trustworthiness of a device and select appropriate policies for transmission and reception of data and control protocols to and from the device.
+
+[Learn More
+About 802.1AR-2009](https://standards.ieee.org/ieee/802.1AR/4678 "Learn More")
+
+##### 802.1AS-2011
+
+###### IEEE Standard for Local and Metropolitan Area Networks - Timing and Synchronization for Time-Sensitive Applications in Bridged Local Area Networks
+
+This standard defines a protocol and procedures for the transport of timing over bridged and virtual bridged local area networks. It includes the transport of synchronized time, the selection of the timing source (i.e., best master), and the indication of the occurrence and magnitude of timing impairments (i.e., phase and frequency discontinuities).
+
+[Learn More
+About 802.1AS-2011](https://standards.ieee.org/ieee/802.1AS/3956 "Learn More")
+
+##### 802.1AS-2020
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time-Sensitive Applications
+
+Protocols, procedures, and managed objects for the transport of timing over local area networks are defined in this standard. It includes the transport of synchronized time, the selection of the timing source (i.e., best master), and the indication of the occurrence and magnitude of timing impairments (i.e., phase and frequency discontinuities).
+
+[Learn More
+About 802.1AS-2020](https://standards.ieee.org/ieee/802.1AS/7121 "Learn More")
+
+##### 802.1AS-2011/Cor 1-2013
+
+###### IEEE Standard for Local and metropolitan area networks– Timing and Synchronization for Time-Sensitive Applications in Bridged Local Area Networks– Corrigendum 1: Technical and Editorial Corrections
+
+This corrigendum to IEEE Std 802.1AS - 2011 corrects minor errors, bugs, ambiguities, and inconsistencies that were missed when the document was balloted. It does not contain new material.
+
+[Learn More
+About 802.1AS-2011/Cor 1-2013](https://standards.ieee.org/ieee/802.1AS-2011_Cor_1/5301 "Learn More")
+
+##### 802.1AS-2011/Cor 2-2015
+
+###### IEEE Standard for Local and metropolitan area networks-- Timing and Synchronization for Time-Sensitive Applications in Bridged Local Area Networks-- Corrigendum 2: Technical and Editorial Corrections
+
+Technical and editorial corrections are provided by this corrigendum to IEEE Std 802.1AS.
+
+[Learn More
+About 802.1AS-2011/Cor 2-2015](https://standards.ieee.org/ieee/802.1AS-2011_Cor_2/6022 "Learn More")
+
+##### 802.1AS-2020/Cor 1-2021
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time-Sensitive Applications - Corrigendum 1: Technical and Editorial Corrections
+
+Technical and editorial corrections to IEEE Std 802.1AS™-2020 are provided in this corrigendum.
+
+[Learn More
+About 802.1AS-2020/Cor 1-2021](https://standards.ieee.org/ieee/802.1AS-2020_Cor_1/10524 "Learn More")
+
+##### 802.1ASdm-2024
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time‐Sensitive Applications Amendment 3: Hot Standby and Clock Drift Error Reduction
+
+This amendment to IEEE Std 802.1AS™-2020 specifies hot standby and addresses errors and omissions in the description of existing functionality. (The PDF of this standard is available at no cost compliments of the IEEE GET program)
+
+[Learn More
+About 802.1ASdm-2024](https://standards.ieee.org/ieee/802.1ASdm/11254 "Learn More")
+
+##### 802.1ASdn-2024
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time‐Sensitive Applications Amendment 2: YANG Data Model
+
+A YANG data model that allows configuration and state reporting for all managed objects of the base standard is specified in this amendment.
+
+[Learn More
+About 802.1ASdn-2024](https://standards.ieee.org/ieee/802.1ASdn/10364 "Learn More")
+
+##### 802.1ASdr-2024
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Timing and Synchronization for Time‐Sensitive Applications Amendment 1: Inclusive Terminology
+
+This amendment to IEEE Std 802.1AS™-2020 replaces terminology with alternative terminology identified by IEEE Std 1588g™-2022. All changes made in figures are only to replace terminology.
+
+[Learn More
+About 802.1ASdr-2024](https://standards.ieee.org/ieee/802.1ASdr/10568 "Learn More")
+
+##### 802.1AX-2008
+
+###### IEEE Standard for Local and metropolitan area networks--Link Aggregation
+
+Link Aggregation allows one or more links to be aggregated together to form a Link Aggregation Group, such that a Media Access Control (MAC) Client can treat the Link Aggregation Group as if it were a single link. To this end, it specifies the establishment of data terminal equipment (DTE) to DTE logical links, consisting of N parallel instances of full duplex point-to-point links operating at the same data rate. This standard defines the MAC independent Link Aggregation capability, and general information relevant to specific MAC types that support link aggregation.
+
+[Learn More
+About 802.1AX-2008](https://standards.ieee.org/ieee/802.1AX/4176 "Learn More")
+
+##### 802.1AX-2014
+
+###### IEEE Standard for Local and metropolitan area networks -- Link Aggregation
+
+MAC-independent Link Aggregation capability and general information relevant to specific MAC types are defined in this standard. Link Aggregation allows parallel full-duplex point-to-point links to be used as if they were a single link and also supports the use of multiple links as a resilient load sharing interconnect between multiple nodes in two separately administered networks. (The PDF of this standard is available at no cost compliments of the IEEE GET program. Additional downloads are attached or can be downloaded at https://ieeexplore.ieee.org/browse/standards/get-program/page)
+
+[Learn More
+About 802.1AX-2014](https://standards.ieee.org/ieee/802.1AX/5800 "Learn More")
+
+##### 802.1AX-2014/Cor 1-2017
+
+###### IEEE Standard for Local and metropolitan area networks -- Link Aggregation -- Corrigendum 1: Technical and editorial corrections
+
+Technical and editorial corrections are provided in this corrigendum to IEEE Std 802.1AX-2014.
+
+[Learn More
+About 802.1AX-2014/Cor 1-2017](https://standards.ieee.org/ieee/802.1AX-2014_Cor_1/6235 "Learn More")
+
+##### 802.1AXbk-2012
+
+###### IEEE Standard for Local and metropolitan area networks--Link Aggregation Amendment 1: Protocol Addressing
+
+Link Aggregation allows one or more links to be aggregated together to form a Link Aggregation Group, such that a Media Access Control (MAC) Client can treat the Link Aggregation Group as if it were a single link. To this end, it specifies the establishment of data terminal equipment (DTE) to DTE logical links, consisting of N parallel instances of full-duplex, point-to-point links operating at the same data rate. The MAC independent Link Aggregation capability, and general information relevant to specific MAC types that support Link Aggregation, are defined in this standard.
+
+[Learn More
+About 802.1AXbk-2012](https://standards.ieee.org/ieee/802.1AXbk/4848 "Learn More")
+
+##### 802.1BA-2011
+
+###### IEEE Standard for Local and metropolitan area networks - Audio Video Bridging (AVB) Systems
+
+Profiles that select features, options, configurations, defaults, protocols and procedures of bridges, stations and LANs that are necessary to build networks that are capable of transporting time-sensitive audio and/or video data streams are defined in this standard. (This PDF of this standard is available as part of the IEEE Get program. Through the IEEE SA and industry support, select IEEE standards are available for download at no charge.
+
+[Learn More
+About 802.1BA-2011](https://standards.ieee.org/ieee/802.1BA/4396 "Learn More")
+
+##### 802.1BA-2011/Cor 1-2016
+
+###### IEEE Standard for Local and metropolitan area networks-- Audio Video Bridging (AVB) Systems-- Corrigendum 1: Technical and Editorial Corrections
+
+Technical and editorial errors identified by the IEEE 802.1 Working Group's maintenance activity are corrected in this corrigendum to IEEE Std 802.1BA-2011.
+
+[Learn More
+About 802.1BA-2011/Cor 1-2016](https://standards.ieee.org/ieee/802.1BA-2011_Cor_1/6710 "Learn More")
+
+##### 802.1D-2004
+
+###### IEEE Standard for Local and metropolitan area networks: Media Access Control (MAC) Bridges
+
+An architecture for the interconnection of IEEE 802(R) Local Area Networks (LANs) below the MAC Service boundary is defined. MAC Bridges, as specified by this standard, allow communications between end stations attached to separate LANs, each with its own separate MAC, to be transparent to logical link control (LLC) and network layer protocols, just as if the stations were attached to the same LAN.
+
+[Learn More
+About 802.1D-2004](https://standards.ieee.org/ieee/802.1D/3387 "Learn More")
+
+##### 802.1Q-1998
+
+###### IEEE Standards for Local and Metropolitan Area Networks: Virtual Bridged Local Area Networks
+
+This IEEE Standards product is part of the 802 family on LAN/MAN. This standard defines an architecture for Virtual Bridged LANs, the services provided in Virtual Bridged LANs, and the protocols and algorithms involved in the provision of those services.
+
+[Learn More
+About 802.1Q-1998](https://standards.ieee.org/ieee/802.1Q/1039 "Learn More")
+
+##### 802.1Q-2005
+
+###### IEEE Standard for Local and Metropolitan Area Networks---Virtual Bridged Local Area Networks
+
+This standard specifies how the MAC Service is supported by Virtual Bridged Local Area Networks, the principles of operation of those networks, and the operation of VLAN-aware Bridges, including management, protocols, and algorithms.
+
+[Learn More
+About 802.1Q-2005](https://standards.ieee.org/ieee/802.1Q/3495 "Learn More")
+
+##### 802.1Q-2011
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks
+
+This standard specifies how the MAC Service is supported by Virtual Bridged Local Area Networks, the principles of operation of those networks, and the operation of VLAN-aware Bridges, including management, protocols, and algorithms. Incorporates IEEE Std 802.1Q-2005, IEEE Std 802.1ad-2005, IEEE Std 802.1ak-2007, IEEE Std 802.1ag-2007, IEEE Std 802.1ah-2008, IEEE Std 802-1Q-2005/Cor-1-2008, IEEE Std 802.1ap-2008, IEEE Std 802.1Qaw-2009, IEEE Std 802.1Qay-2009, IEEE Std 802.1aj-2009, IEEE Std 802.1Qav-2009, IEEE Std Qau-2010, and IEEE Std Qat-2010.
+
+[Learn More
+About 802.1Q-2011](https://standards.ieee.org/ieee/802.1Q/4410 "Learn More")
+
+##### 802.1Q-2014
+
+###### IEEE Standard for Local and metropolitan area networks--Bridges and Bridged Networks
+
+This standard specifies how the Media Access Control (MAC) Service is supported by Bridged Networks, the principles of operation of those networks, and the operation of MAC Bridges and VLAN Bridges, including management, protocols, and algorithms. This revision includes the following amendments and corrigenda: IEEE 802.1Qbe-2011 IEEE 802.1Qbc-2011 IEEE 802.1Qbb-2011 IEEE 802.1Qaz-2011 IEEE 802.1Qbf-2011 IEEE 802.1Qbg-2012 IEEE 802.1aq-2012 IEEE 802.1Q-2011/Cor 2-2012 IEEE 802.1Qbp-2014./index.html. It also supersedes IEEE 802.1D-2004.
+
+[Learn More
+About 802.1Q-2014](https://standards.ieee.org/ieee/802.1Q/5801 "Learn More")
+
+##### 802.1Q-2018
+
+###### IEEE Standard for Local and Metropolitan Area Networks–Bridges and Bridged Networks
+
+This standard specifies how the Media Access Control (MAC) Service is supported by Bridged Networks, the principles of operation of those networks, and the operation of MAC Bridges and VLAN Bridges, including management, protocols, and algorithms. Supersedes 802.1Q™-2014. IEEE 802.1Qcd™-2015, IEEE 802.1Qca™-2015,IEEE 802.1Q™-2014\_Cor-1-2015, IEEE 802.1Qbv™-2015, IEEE 802.1Qbu™-2016, IEEE 802.1Qbz™-2016, IEEE 802.1Qci™-2017 and IEEE 802.1Qch™-2017.
+
+[Learn More
+About 802.1Q-2018](https://standards.ieee.org/ieee/802.1Q/6844 "Learn More")
+
+##### 802.1Q, 2003 Edition-2003
+
+###### IEEE Standards for Local and Metropolitan Area Networks: Virtual Bridged Local Area Networks
+
+This standard defines an architecture for Virtual Bridged LANs, the services provided in Virtual Bridged LANs, and the protocols and algorithms involved in the provision of those services. (Incorporates IEEE Std 802.1Q-1998, IEEE Std 802.1u-2001, IEEE Std 802.1v-2001, and IEEE Std 802.1s-2002)
+
+Learn More
+About 802.1Q, 2003 Edition-2003
+
+##### 802.1Q-2005/Cor 1-2008
+
+###### IEEE Standard for Local and Metropolitan Area Networks - Virtual Bridged Local Area Networks - Corrigendum 1: Corrections to the Multiple Registration Protocol
+
+This corrigendum to IEEE Std 802.1Q corrects errors in the MRP protocol specification.
+
+[Learn More
+About 802.1Q-2005/Cor 1-2008](https://standards.ieee.org/ieee/802.1Q-2005_Cor_1/4298 "Learn More")
+
+##### 802.1Q-2011/Cor 2-2012
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks--Corrigendum 2: Technical and editorial corrections
+
+This corrigendum to IEEE Std 802.1Q-2011 corrects technical and editorial errors identified by the IEEE 802.1 Working Group's maintenance activity.
+
+[Learn More
+About 802.1Q-2011/Cor 2-2012](https://standards.ieee.org/ieee/802.1Q-2011_Cor_2/5417 "Learn More")
+
+##### 802.1Q-2014/Cor 1-2015
+
+###### IEEE Standard for Local and metropolitan area networks--Bridges and Bridged Networks--Corrigendum 1: Technical and editorial corrections
+
+Correction of technical and editorial errors identified by the IEEE 802.1 maintenance activity are presented in this document.
+
+[Learn More
+About 802.1Q-2014/Cor 1-2015](https://standards.ieee.org/ieee/802.1Q-2014_Cor_1/6071 "Learn More")
+
+##### 802.1Qat-2010
+
+###### IEEE Standard for Local and metropolitan area networks--Virtual Bridged Local Area Networks Amendment 14: Stream Reservation Protocol (SRP)
+
+This amendment specifies protocols, procedures, and managed objects, usable by existing higher layer mechanisms, that allow network resources to be reserved for specific traffic streams traversing a bridged local area network. (The PDF of this standard is available at not cost compliments of the GETIEEE802 program located at https://ieeexplore.ieee.org/browse/standards/get-program/page)
+
+[Learn More
+About 802.1Qat-2010](https://standards.ieee.org/ieee/802.1Qat/4050 "Learn More")
+
+##### 802.1Qau-2010
+
+###### IEEE Standard for Local and Metropolitan Area Networks-- Virtual Bridged Local Area Networks Amendment 13: Congestion Notification
+
+This amendment specifies protocols, procedures and managed objects that support congestion management of long-lived data flows within network domains of limited bandwidth-delay product. This is achieved by enabling bridges to signal congestion to end stations capable of transmission rate limiting to avoid frame loss.
+
+[Learn More
+About 802.1Qau-2010](https://standards.ieee.org/ieee/802.1Qau/4051 "Learn More")
+
+##### 802.1Qav-2009
+
+###### IEEE Standard for Local and metropolitan area networks - Virtual Bridged Local Area Networks Amendment 12: Forwarding and Queuing Enhancements for Time-Sensitive Streams
+
+This amendment to IEEE Std 802.1Q defines enhancements to the forwarding and queueing functions of a VLAN Bridge to support the transmission of time sensitive data streams.
+
+[Learn More
+About 802.1Qav-2009](https://standards.ieee.org/ieee/802.1Qav/4401 "Learn More")
+
+##### 802.1Qaw-2009
+
+###### IEEE Standard for Local and metropolitan area networks-- Virtual Bridged Local Area Networks Amendment 9: Management of Data Driven and Data Dependent Connectivity Faults
+
+This amendment extends the connectivity fault management capabilities introduced in IEEE Std 802.1ag-2007 to include tools to facilitate diagnosis and isolation of faults sensitive to, or caused by, particular data patterns in frames transmitted by a service user.
+
+[Learn More
+About 802.1Qaw-2009](https://standards.ieee.org/ieee/802.1Qaw/4149 "Learn More")
+
+##### 802.1Qay-2009
+
+###### IEEE Standard for Local and metropolitan area networks-- Virtual Bridged Local Area Networks Amendment 10: Provider Backbone Bridge Traffic Engineering
+
+This amendment specifies changes to IEEE Std 802.1Q-2005, as amended by IEEE Std 802.1ad-2005, IEEE Std 802.1ag-2007, IEEE Std 802.1ak-2007, IEEE Std 802.1ah-2008, and IEEE Std 802.1ap-2008, that support provisioning systems that explicitly select traffic engineered paths within Provider Backbone Bridged Networks. Changes are applied to the base text of IEEE Std 802.1Q-2005 as amended by IEEE Std 802.1ad-2005, IEEE Std 802.1ak-2007, IEEE Std 802.1ag-2007, IEEE Std 802.1ah-2008, and IEEE Std 802.1ap-2008.
+
+[Learn More
+About 802.1Qay-2009](https://standards.ieee.org/ieee/802.1Qay/4191 "Learn More")
+
+##### 802.1Qaz-2011
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks--Amendment 18: Enhanced Transmission Selection for Bandwidth Sharing Between Traffic Classes
+
+This amendment to IEEE Std 802.1Q-2011 defines enhancements to transmission selection to support allocation of bandwidth amongst traffic classes, plus a protocol for controlling the application of Data Center Bridging features.
+
+[Learn More
+About 802.1Qaz-2011](https://standards.ieee.org/ieee/802.1Qaz/4741 "Learn More")
+
+##### 802.1Qbb-2011
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks--Amendment 17: Priority-based Flow Control
+
+This amendment to IEEE Std 802.1Q-2011 specifies protocols, procedures, and managed objects that enable flow control per traffic class on IEEE 802(R) point-to-point full duplex links. This is achieved by a mechanism similar to IEEE 802.3 Annex 31B PAUSE, but operating on individual priorities.
+
+[Learn More
+About 802.1Qbb-2011](https://standards.ieee.org/ieee/802.1Qbb/4361 "Learn More")
+
+##### 802.1Qbc-2011
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks--Amendment 16: Provider Bridging--Remote Customer Service Interfaces
+
+This amendment to IEEE Std 802.1Q-2011 specifies the use of service virtual local area networks (S-VLANs) to provide customer service interfaces in one Provider Bridged Network for customer interface local area networks (LANs) attached to another Provider Bridged Network.
+
+[Learn More
+About 802.1Qbc-2011](https://standards.ieee.org/ieee/802.1Qbc/4685 "Learn More")
+
+##### 802.1Qbe-2011
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks-- Amendment 15: Multiple I-SID Registration Protocol
+
+This amendment to IEEE Std 802.1Q-2011 specifies protocols, procedures, and managed objects to support topology change signaling to alter the binding (held in an I-Component) of Customer addresses to Backbone addresses on a per-I-SID basis. This is accomplished by extending the use of the Multiple Registration Protocol (MRP).
+
+[Learn More
+About 802.1Qbe-2011](https://standards.ieee.org/ieee/802.1Qbe/4686 "Learn More")
+
+##### 802.1Qbf-2011
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks--Amendment 19: PBB-TE Infrastructure Segment Protection
+
+This amendment to IEEE Std 802.1Q-2011 specifies localized protection of selected Traffic Engineered Service Instances traversing a common sequence of Provider Network Ports.
+
+[Learn More
+About 802.1Qbf-2011](https://standards.ieee.org/ieee/802.1Qbf/4687 "Learn More")
+
+##### 802.1Qbg-2012
+
+###### IEEE Standard for Local and metropolitan area networks--Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks--Amendment 21: Edge Virtual Bridging
+
+This amendment to IEEE Std 802.1Q-2011 specifies protocols, procedures, and managed objects that -- Provide for the discovery, configuration, and control of a pair of direct-attached limited-function Service VLAN (S-VLAN) components to extend the services of a customer bridge to remote ports and enable coexistence of multiple services onstation-resident ports (e.g., embedded bridging). -- Provide for discovery, configuration, and control of a Reflective Relay Service for a bridge port. -- Provide for discovery of, and coordinated configuration of, edge relays (ERs) and other devices that utilize the reflective relay service. -- Provide for dynamic profile-driven port configuration. (Additional files are attached or can be found at http://standards.ieee.org/downloads/802.1/
+
+[Learn More
+About 802.1Qbg-2012](https://standards.ieee.org/ieee/802.1Qbg/4757 "Learn More")
+
+##### 802.1Qbp-2014
+
+###### IEEE Standard for Local and metropolitan area networks - Media Access Control (MAC) Bridges and Virtual Bridged Local Area Networks - Amendment 22: Equal Cost Multiple Path (ECMP)
+
+Routing algorithms and relay behavior supporting equal cost multipath forwarding in shortest path bridged VLANs are specified in this amendment to IEEE Std 802.1Q.
+
+[Learn More
+About 802.1Qbp-2014](https://standards.ieee.org/ieee/802.1Qbp/5217 "Learn More")
+
+##### 802.1Qbu-2016
+
+###### IEEE Standard for Local and metropolitan area networks -- Bridges and Bridged Networks -- Amendment 26: Frame Preemption
+
+Enhancements to the forwarding process that support frame preemption are provided in this amendment to IEEE Std 802.1Q-2014.
+
+[Learn More
+About 802.1Qbu-2016](https://standards.ieee.org/ieee/802.1Qbu/5464 "Learn More")
+
+##### 802.1Qbv-2015
+
+###### IEEE Standard for Local and metropolitan area networks -- Bridges and Bridged Networks - Amendment 25: Enhancements for Scheduled Traffic
+
+Enhancements to the forwarding process that supports scheduled traffic is provided in this amendment to IEEE Std 802.1Q-2014. Additional downloads are attached or can be downloaded at http://standards.ieee.org/downloads/802.1/index.html)
+
+[Learn More
+About 802.1Qbv-2015](https://standards.ieee.org/ieee/802.1Qbv/6068 "Learn More")
+
+##### 802.1Qbz-2016
+
+###### IEEE Standard for Local and metropolitan area networks–Bridges and Bridged Networks–Amendment 27: Enhancements to Bridging of IEEE 802.11 Media
+
+Protocols, procedures, and managed objects to allow IEEE 802.11 media to provide internal connections within bridged networks, as well as access to bridged networks, are provided in this amendment.
+
+[Learn More
+About 802.1Qbz-2016](https://standards.ieee.org/ieee/802.1Qbz/5556 "Learn More")
+
+##### 802.1Qca-2015
+
+###### IEEE Standard for Local and metropolitan area networks-- Bridges and Bridged Networks - Amendment 24: Path Control and Reservation
+
+Explicit path control, bandwidth reservation, and redundancy (protection, restoration) for data flows are specified in this amendment to IEEE Std 802.1Q-2014.
+
+[Learn More
+About 802.1Qca-2015](https://standards.ieee.org/ieee/802.1Qca/5557 "Learn More")
+
+##### 802.1Qcc-2018
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks -- Amendment 31: Stream Reservation Protocol (SRP) Enhancements and Performance Improvements
+
+Enhancements to the configuration of time-sensitive streams are provided by this amendment to IEEE Std 802.1Q-2018.
+
+[Learn More
+About 802.1Qcc-2018](https://standards.ieee.org/ieee/802.1Qcc/5784 "Learn More")
+
+##### 802.1Qcd-2015
+
+###### IEEE Standard for Local and metropolitan area networks-- Bridges and Bridged Networks - Amendment 23: Application Virtual Local Area Network (VLAN) Type, Length, Value (TLV)
+
+Enhancements to the set of TLVs used by the Data Center Bridging eXchange protocol (DCBX) for the purpose of simplifying the management of networks utilizing Data Center Bridging (DCB) features are defined in this amendment to IEEE Std 802.1Q-2014.
+
+[Learn More
+About 802.1Qcd-2015](https://standards.ieee.org/ieee/802.1Qcd/5924 "Learn More")
+
+##### 802.1Qch-2017
+
+###### IEEE Standard for Local and metropolitan area networks--Bridges and Bridged Networks--Amendment 29: Cyclic Queuing and Forwarding
+
+The use of traffic scheduling and per-stream filtering and policing to support cyclic queuing and forwarding are described in this amendment to IEEE Std 802.1Q-2014.
+
+[Learn More
+About 802.1Qch-2017](https://standards.ieee.org/ieee/802.1Qch/6072 "Learn More")
+
+##### 802.1Qci-2017
+
+###### IEEE Standard for Local and metropolitan area networks--Bridges and Bridged Networks--Amendment 28: Per-Stream Filtering and Policing
+
+Enhancements to the forwarding process that support per-stream filtering and policing are provided in this amendment to IEEE Std 802.1Q-2014.
+
+[Learn More
+About 802.1Qci-2017](https://standards.ieee.org/ieee/802.1Qci/6159 "Learn More")
+
+##### 802.1Qcp-2018
+
+###### IEEE Standard for Local and metropolitan area networks--Bridges and Bridged Networks--Amendment 30: YANG Data Model
+
+A YANG data model in support of configuration and operational status information for a subset of Bridging capabilities is provided in this amendment to IEEE Std 802.1Q-2018.
+
+[Learn More
+About 802.1Qcp-2018](https://standards.ieee.org/ieee/802.1Qcp/6238 "Learn More")
+
+##### 802.1Qcr-2020
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks - Amendment 34:Asynchronous Traffic Shaping
+
+Procedures and managed objects for Bridges and end stations to perform Asynchronous Traffic Shaping over full-duplex links with constant bit data rates are specified in this amendment to IEEE Std 802.1Q(TM)-2018.
+
+[Learn More
+About 802.1Qcr-2020](https://standards.ieee.org/ieee/802.1Qcr/7420 "Learn More")
+
+##### 802.1Qcx-2020
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment 33: YANG Data Model for Connectivity Fault Management
+
+YANG data model that supports configuration, status reporting, and monitoring for Connectivity Fault Management (CFM) for Two-Port MAC Relays, Customer VLAN Bridges, and Provider Bridges is further developed by this amendment to IEEE Std 802.1Q™-2018. See also IEEE Std 802.1Qcp™-2018 for the introduction of this YANG data model.
+
+[Learn More
+About 802.1Qcx-2020](https://standards.ieee.org/ieee/802.1Qcx/7135 "Learn More")
+
+##### 802.1Qcy-2019
+
+###### IEEE Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks Amendment 32: Virtual Station Interface (VSI) Discovery and Configuration Protocol (VDP) Extension to Support Network Virtualization Overlays Over Layer 3 (NVO3)
+
+Extensions to the Virtual Station Interface (VSI) Discovery and Configuration Protocol (VDP) to support using the protocol between an end station and a device doing encapsulation/decapsulation for Network Virtualization Overlays Over Layer 3 (NVO3) are specified in this amendment to IEEE Std 802.1Q-2018. The extensions include adding format types [e.g., Internet Protocol (IP) addresses] and enhancing indication of migration events.
+
+[Learn More
+About 802.1Qcy-2019](https://standards.ieee.org/ieee/802.1Qcy/6237 "Learn More")
+
+##### 802.1s-2002
+
+###### IEEE Standards for Local and Metropolitan Area Networks - Amendment to 802.1Q Virtual Bridged Local Area Networks: Multiple Spanning Trees
+
+This standard extends the architecture, protocols, and algorithms specified in IEEE Std 802.1Q, 1998 Edition, to allow data traffic belonging to different VLANs to be allocated to different spanning trees, while retaining interoperability with bridges conformant to that prior specification.
+
+[Learn More
+About 802.1s-2002](https://standards.ieee.org/ieee/802.1s/1042 "Learn More")
+
+##### 802.1u-2001
+
+###### IEEE Standard for Virtual Bridged Local Area Networks - Corrigendum 1: Technical and Editorial Corrections
+
+This amendment to IEEE 802.1Q,1998 Edition is intended to document maintenance items identified in the text of IEEE Std 802.1Q, 1998 Edition.IEEE Std 802.1u-2001 identifies any proposed changes to IEEE Std 802.1Q, 1998 Edition that have arisen as a consequence of maintenance activity. The changes are documented in the usual form for an amendment to IEEE 802 standards; i.e., as an explicit set of editing instructions that, if correctly applied to the text of IEEE Std 802.1Q,1998 Edition, will create a corrected document.
+
+[Learn More
+About 802.1u-2001](https://standards.ieee.org/ieee/802.1u/10
+
+<error>Content truncated. Call the fetch tool with a start_index of 100000 to get more content.</error>

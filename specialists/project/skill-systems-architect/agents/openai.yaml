@@ -1,0 +1,7 @@
+# Optional Codex UI metadata; the skill body is portable.
+interface:
+  display_name: "Systems Architect"
+  short_description: "Design and review systems and infrastructure"
+  default_prompt: "Use $skill-systems-architect to review the architecture, identify failure domains and propose measurable validation."
+policy:
+  allow_implicit_invocation: true

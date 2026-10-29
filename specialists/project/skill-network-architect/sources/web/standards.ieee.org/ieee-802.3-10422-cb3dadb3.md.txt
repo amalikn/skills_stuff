@@ -1,0 +1,918 @@
+Contents of https://standards.ieee.org/ieee/802.3/10422/:
+**Standards approved by the IEEE SA Standards Board that are within
+the
+10-year lifecycle.**
+
+---
+
+##### 802.3-2022/Cor 1-2024
+
+###### IEEE Standard for Ethernet - Corrigendum 1 - Multi-Gigabit Automotive Medium Dependent Interface (MDI) Return Loss
+
+This corrigendum to IEEE Std 802.3-2022 corrects the MDI Return Loss specification for MultiGigabit Automotive Physical Layer entities (PHY) in Clause 149 and Clause 165.
+
+[Learn More
+About 802.3-2022/Cor 1-2024](https://standards.ieee.org/ieee/802.3-2022_Cor_1/11529 "Learn More")
+
+##### 802.3-2022/Cor 2-2026
+
+###### IEEE Standard for Ethernet - Corrigendum 2: Multi-Gigabit Optical Automotive Ethernet TDFOM Normalization Factors
+
+This corrigendum includes changes to IEEE Std 802.3-2022 to correct the normalization factors used for the Transmitter Distortion Figure of Merit (TDFOM) calculation in Clause 166.
+
+[Learn More
+About 802.3-2022/Cor 2-2026](https://standards.ieee.org/ieee/802.3-2022_Cor_2/12048 "Learn More")
+
+##### 802.3.1-2024
+
+###### IEEE Standard for Ethernet Structure of Management Information version 2 (SMIv2) Data Model Definitions
+
+This standard defines Structure of Management Information version 2 (SMIv2) MIB module specifications for IEEE Std 802.3 Ethernet and associated managed object branch and leaf assignments used in the variable descriptors in IEEE Std 802.3 Variable Request operations, administration, and maintenance protocol data units (OAMPDU).
+
+[Learn More
+About 802.3.1-2024](https://standards.ieee.org/ieee/802.3.1/11244 "Learn More")
+
+##### 802.3.2-2025
+
+###### IEEE Standard for Ethernet YANG Data Model Definitions
+
+(Note: The PDF of this standard is available at no cost compliments of the IEEE GET Program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68) YANG models for IEEE Std 802.3 are defined in this standard. This standard also publishes these models in a machine-readable format.
+
+[Learn More
+About 802.3.2-2025](https://standards.ieee.org/ieee/802.3.2/11245 "Learn More")
+
+##### 802.3ck-2022
+
+###### IEEE Standard for Ethernet Amendment 4: Physical Layer Specifications and Management Parameters for 100 Gb/s, 200 Gb/s, and 400 Gb/s Electrical Interfaces Based on 100 Gb/s Signaling
+
+This amendment to IEEE Std 802.3-202x adds Clause 161 through Clause 163, Annex 120F, Annex 120G, and Annex 162A through Annex 162D, Annex 163A, and Annex 163B. This amendment includes Physical Layer specifications and management parameters for 100 Gb/s, 200 Gb/s, and 400 Gb/s electrical interfaces based on 100 Gb/s signaling. (The PDF of this standard is available at no cost compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.3ck-2022](https://standards.ieee.org/ieee/802.3ck/7322 "Learn More")
+
+##### 802.3cs-2022
+
+###### IEEE Standard for Ethernet Amendment 2: Physical Layers and Management Parameters for Increased-Reach Point-to-Multipoint Ethernet Optical Subscriber Access (Super-PON)
+
+Super-PON optical subscriber access networks, which are in the family of Ethernet passive optical networks (EPONs), are defined in this amendment to IEEE Std 802.3-2022. Super-PON has a reach of up to 50 km and up to 1024 ONUs over a point-to-multipoint passive optical distribution network (ODN) through wavelength division multiplexing (WDM). A Super-PON ODN contains a passive wavelength router that determines the channels used by the ODN. This standard specifies the Super-PON Reconciliation Sublayer (RS), Physical Coding Sublayer (PCS), Physical Medium Attachment (PMA) sublayer, and Physical Medium Dependent (PMD) sublayer at a MAC data rate of 10 Gb/s in the downstream direction and of 10 Gb/s or 2.5 Gb/s in the upstream direction. (The PDF of this standard is available at no cost compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.3cs-2022](https://standards.ieee.org/ieee/802.3cs/7449 "Learn More")
+
+##### 802.3cx-2023
+
+###### IEEE Standard for Ethernet Amendment 6: Media Access Control (MAC) Service Interface and Management Parameters to Support Improved Precision Time Protocol (PTP) Timestamping Accuracy
+
+This amendment to IEEE Std 802.3-2022 modifies Clause 30, Clause 45, and Clause 90, and adds Annex 90A to enhance support for time synchronization protocols by providing options for sub-nanosecond reporting of the transmit and receive path data delays, selection of the data delay measurement point, and dynamic reporting of path data delay variation. (The PDF of this standard is available at no charge compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68.)
+
+[Learn More
+About 802.3cx-2023](https://standards.ieee.org/ieee/802.3cx/10135 "Learn More")
+
+##### 802.3cy-2023
+
+###### IEEE Standard for Ethernet Amendment 8: Physical Layer Specifications and Management Parameters for 25 Gb/s - Electrical Automotive Ethernet
+
+This amendment to IEEE Std 802.3-2022 adds physical layer specifications and management parameters for 25 Gb/s operation on a single balanced pair of conductors suitable for automotive applications. NOTE: The PDF of this standard is available at no cost to you compliments of the IEEE GET program, https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68.
+
+[Learn More
+About 802.3cy-2023](https://standards.ieee.org/ieee/802.3cy/10280 "Learn More")
+
+##### 802.3cz-2023
+
+###### IEEE Standard for Ethernet Amendment 7: Physical Layer Specifications and Management Parameters for Multi-Gigabit Glass Optical Fiber Automotive Ethernet
+
+This amendment to IEEE Std 802.3-2022 adds Physical Layer specifications and management parameters for 2.5 Gb/s, 5 Gb/s, 10 Gb/s, 25 Gb/s, and 50 Gb/s operation on glass optical fiber in an automotive environment. (The PDF of this standard is available at no charge compliments of the IEEE GET program
+
+[Learn More
+About 802.3cz-2023](https://standards.ieee.org/ieee/802.3cz/10918 "Learn More")
+
+##### 802.3da-2026
+
+###### IEEE Standard for Ethernet Amendment 10: Physical Layer Specifications and Management Parameters for Enhancement of 10 Mb/s Operation over Single Balanced Pair Multidrop Segments
+
+This amendment to IEEE Std 802.3-2022 specifies additions and appropriate modifications to enhance the 10 Mb/s shared-medium (multidrop) mode of the 10BASE-T1S Physical Layer in a new, multidrop-only, Physical Layer specification (including reconciliation sublayers, management parameters, Ethernet support for time synchronization protocols, and optional power delivery to support multiple Powered Devices on the 10 Mb/s mixing segment).
+
+[Learn More
+About 802.3da-2026](https://standards.ieee.org/ieee/802.3da/10282 "Learn More")
+
+##### 802.3db-2022
+
+###### IEEE Standard for Ethernet - Amendment 3: Physical Layer Specifications and Management Parameters for 100 Gb/s, 200 Gb/s, and 400 Gb/s Operation over Optical Fiber using 100 Gb/s Signaling
+
+This amendment to IEEE Std 802.3-2022 adds Physical Layer specifications and management parameters for 100 Gb/s, 200 Gb/s, and 400 Gb/s Ethernet optical interfaces based on 100 Gb/s per wavelength optical signaling over multimode fiber. (The PDF of this standard is available at no charge compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.3db-2022](https://standards.ieee.org/ieee/802.3db/10283 "Learn More")
+
+##### 802.3dd-2022
+
+###### IEEE Standard for Ethernet Amendment 1: Power over Data Lines of Single Pair Ethernet
+
+This amendment to IEEE Std 802.3-2022 makes editorial and technical corrections, refinements, and clarifications to Clause 104 Power over Data Lines of Single Pair Ethernet, and related portions of the standard. No new to features are added by the amendment. (The PDF of this standard is available at no cost to you compliments of the IEEE GET program at https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.3dd-2022](https://standards.ieee.org/ieee/802.3dd/10569 "Learn More")
+
+##### 802.3de-2022
+
+###### IEEE Standard for Ethernet - Amendment 5: Enhancements to the MAC Merge and Time Synchronization Service Interface for Point-to-Point 10 Mb/s Single Pair Ethernet
+
+This amendment to IEEE Std 802.3-2022 specifies additions to and appropriate modifications of the IEEE Std 802.3 MAC Merge sublayer and the Time Synchronization Service Interface (TSSI) to support 10 Mb/s Single-Pair Ethernet point to point PHYs. (The PDF of this standard is available at no cost compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.3de-2022](https://standards.ieee.org/ieee/802.3de/10693 "Learn More")
+
+##### 802.3df-2024
+
+###### IEEE Standard for Ethernet Amendment 9: Media Access Control Parameters for 800 Gb/s and Physical Layers and Management Parameters for 400 Gb/s and 800 Gb/s Operation
+
+This amendment includes changes to IEEE Std 802.3-2022 and adds Clause 169 through Clause 173, Annex 172A, and Annex 173A. This amendment adds MAC parameters, Physical Layers, and management parameters for the transfer of IEEE 802.3 format frames at 400 Gb/s and 800 Gb/s. Additional files can be found here: https://standards.ieee.org/wp-content/uploads/2024/03/802.3df-2024\_downloads.zip. (The PDF of this standard is available at no cost compliments of the IEEE GET program https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68)
+
+[Learn More
+About 802.3df-2024](https://standards.ieee.org/ieee/802.3df/11107 "Learn More")
+
+##### 802.3dg-2026
+
+###### IEEE Standard for Ethernet Amendment 12: Physical Layer Specifications and Management Parameters for 100 Mb/s Operation and Associated Power Delivery over a Single Balanced Pair of Conductors
+
+This amendment to IEEE Std 802.3-2022 specifies additions and appropriate modifications to add 100 Mb/s Physical Layer (PHY) specifications and management parameters for operation, and associated optional provision of power, over a single balanced pair of conductors.
+
+[Learn More
+About 802.3dg-2026](https://standards.ieee.org/ieee/802.3dg/10880 "Learn More")
+
+##### 802.3dk-2026
+
+###### IEEE Standard for Ethernet Amendment 11: Bidirectional 100 Gb/s Optical Access PHYs
+
+This amendment to IEEE Std 802.3-2022 adds Physical Layer specifications and management parameters for 100 Gb/s Ethernet optical interfaces for bidirectional operation over a single strand of single-mode fiber with reaches of at least 10 km, 20 km, and 40 km.
+
+[Learn More
+About 802.3dk-2026](https://standards.ieee.org/ieee/802.3dk/11116 "Learn More")
+
+##### 8802-3-1-2015
+
+###### ISO/IEC/IEEE International Standard - Information technology - Management Information Base (MIB) - Definitions for Ethernet - Part 3-1
+
+The Management Information Base (MIB) module specifications for IEEE Std 802.3, also known as Ethernet, are contained in this standard. It includes the Structure of Management Information Version 2 (SMIv2) MIB module specifications formerly produced and published by the Internet Engineering Task Force (IETF), and the Guidelines for the Definition of Managed Objects (GDMO) MIB modules formerly specified within IEEE Std 802.3, as well as extensions resulting from amendments to IEEE Std 802.3. The SMIv2 MIB modules are intended for use with the Simple Network Management Protocol (SNMP), commonly used to manage Ethernet.
+
+[Learn More
+About 8802-3-1-2015](https://standards.ieee.org/ieee/8802-3-1/6187 "Learn More")
+
+##### 8802-3-2-2021
+
+###### IEEE/ISO/IEC International Standard for Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 3-2:Standard for Ethernet YANG data model definitions
+
+YANG models for IEEE Std 802.3 are defined in this standard. This standard also publishes these models in a machine-readable format.
+
+[Learn More
+About 8802-3-2-2021](https://standards.ieee.org/ieee/8802-3-2/10772 "Learn More")
+
+##### 8802-3:2021/Amd 10-2021
+
+###### ISO/IEC/IEEE International Standard--Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 3: Standard for Ethernet Amendment 10: Maintenance #14: Isolation
+
+This amendment to IEEE Std 802.3-2018 replaces references to the IEC 60950 series of standards with appropriate references to the IEC 62368 series and makes appropriate changes to the standard corresponding to the new references.
+
+[Learn More
+About 8802-3:2021/Amd 10-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd_10/10987 "Learn More")
+
+##### 8802-3:2021/Amd 11-2021
+
+###### ISO/IEC/IEEE International Standard--Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 3: Standard for Ethernet AMENDMENT 11: Physical layers and management parameters for 100 Gb/s and 400 Gb/s operation over singlemode fiber at 100 Gb/s per wavelength
+
+This amendment to IEEE Std 802.3-2018 adds Physical Layer specifications and management parameters for 100 Gb/s and 400 Gb/s Ethernet optical interfaces for reaches up to 10 km based on 100 Gb/s per wavelength optical signaling.
+
+[Learn More
+About 8802-3:2021/Amd 11-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd_11/10988 "Learn More")
+
+##### 8802-3:2021/Amd 12-2022
+
+###### ISO/IEC/IEEE International Standard - Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 3: Standard for Ethernet AMENDMENT 12: Maintenance #15: Power over Ethernet
+
+This amendment implements editorial and technical corrections, refinements, and clarifications to Clause 145, Power over Ethernet, and related portions of the standard. No new features are added by this amendment.
+
+[Learn More
+About 8802-3:2021/Amd 12-2022](https://standards.ieee.org/ieee/8802-3_2021_Amd_12/11061 "Learn More")
+
+##### 8802-3:2021/Amd 13-2022
+
+###### IEEE/ISO/IEC International Standard -Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 3: Standard for Ethernet AMENDMENT 13: Physical layers and management parameters for 100 Gb/s operation over DWDM systems
+
+This amendment includes changes to IEEE Std 802.3-2018 and adds Clause 152 through Clause 154 and Annex 154A. This amendment adds 100 Gb/s Physical Layer specifications and management parameters for operation over DWDM systems using a combination of phase and amplitude modulation with coherent detection for reaches of at least 80 km.
+
+[Learn More
+About 8802-3:2021/Amd 13-2022](https://standards.ieee.org/ieee/8802-3_2021_Amd_13/11062 "Learn More")
+
+##### 8802-3:2021/Amd 14-2022
+
+###### IEEE/ISO/IEC International Standard - Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 3: Standard for Ethernet AMENDMENT 14: Bidirectional 10 Gb/s, 25 Gb/s, and 50 Gb/s optical access PHYs
+
+This amendment to IEEE Std 802.3-2018 adds Physical Layer specifications and management parameters for 10 Gb/s, 25 Gb/s, and 50 Gb/s Ethernet optical interfaces for bidirectional operation over a single strand of single-mode fiber with reaches of at least 10 km, 20 km, and 40 km.
+
+[Learn More
+About 8802-3:2021/Amd 14-2022](https://standards.ieee.org/ieee/8802-3_2021_Amd_14/11063 "Learn More")
+
+##### 8802-3:2021/Amd 4-2021
+
+###### IEEE/ISO/IEC Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 3: Standard for Ethernet AMENDMENT 4: Physical layers and management parameters for 50 Gb/s,200 Gb/s, and 400 Gb/s operation over single-mode fiber
+
+This amendment to IEEE Std 802.3-2018 adds Physical Layer (PHY) specifications and management parameters for 50 Gb/s, 200 Gb/s, and 400 Gb/s operation over single-mode fiber with reaches of at least 40 km.
+
+[Learn More
+About 8802-3:2021/Amd 4-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd_4/10732 "Learn More")
+
+##### 8802-3:2021/Amd1-2021
+
+###### IEEE/ISO/IEC International Standard-Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 3: Standard for Ethernet AMENDMENT 1: Physical layer specifications and management parameters for 2.5 Gb/s and 5 Gb/s operation over backplane
+
+Ethernet Media Access Control (MAC) parameters, Physical Layer specifications, and management objects for the serial transfer of Ethernet format frames at 2.5 Gb/s and 5 Gb/s over electrical backplanes are defined in this amendment to IEEE Std 802.3-2018.
+
+[Learn More
+About 8802-3:2021/Amd1-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd1/10812 "Learn More")
+
+##### 8802-3:2021/Amd2-2021
+
+###### IEEE/ISO/IEC-Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 3: Standard for Ethernet AMENDMENT 2: Physical layer and management parameters for power over Ethernet over 4 pairs
+
+The maximum Powered Device (PD) power available is increased by this amendment to IEEE Std 802.3-2018 by utilizing all four pairs in the specified structured wiring plant. This represents a substantial change to the capabilities of Ethernet with standardized power. The power classification information exchanged during negotiation is extended to allow meaningful power management capability. These enhancements solve the problem of higher power and more efficient standardized Power over Ethernet (PoE) delivery systems.
+
+[Learn More
+About 8802-3:2021/Amd2-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd2/10811 "Learn More")
+
+##### 8802-3:2021/Amd3-2021
+
+###### IEEE/ISO/IEC International Standard-Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 3: Standard for Ethernet AMENDMENT 3: Media access control parameters for 50 Gb/s and physical layers and management parameters for 50 Gb/s, 100 Gb/s, and 200 Gb/s operation
+
+Clause 131 through Clause 140 and Annex 135A through Annex 136D are added to IEEE Std 802.3-2018 by this amendment to specify IEEE 802.3 Media Access Control (MAC) parameters, Physical Layer specifications, and management parameters for the transfer of IEEE 802.3 format frames at 50 Gb/s, 100 Gb/s, and 200 Gb/s.
+
+[Learn More
+About 8802-3:2021/Amd3-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd3/10810 "Learn More")
+
+##### 8802-3:2021/Amd5-2021
+
+###### IEEE/ISO/IEC International Standard-Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 3: Standard for Ethernet AMENDMENT 5: Physical layers specifications and management parameters for 10 Mb/s operation and associated power delivery over a single balanced pair of conductors
+
+This amendment to IEEE Std 802.3-2018 specifies additions and appropriate modifications to add 10 Mb/s Physical Layer (PHY) specifications and management parameters for operation, and associated optional provision of power, over a single balanced pair of conductors.
+
+[Learn More
+About 8802-3:2021/Amd5-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd5/10776 "Learn More")
+
+##### 8802-3:2021/Amd6-2021
+
+###### IEEE/ISO/IEC-International Standard-Telecommunications and exchange between information technology systems--Requirements for local and metropolitan area networks--Part 3:Standard for Ethernet AMENDMENT 6: Maintenance #13:Power over ethernet over 2 pairs
+
+This amendment to IEEE Std 802.3-2018 makes technical and editorial corrections and refinements to Power over Ethernet over 2-pairs in Clause 33.
+
+[Learn More
+About 8802-3:2021/Amd6-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd6/10737 "Learn More")
+
+##### 8802-3:2021/Amd7-2021
+
+###### IEEE/ISO/IEC International Standard -Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 3: Standard for Ethernet AMENDMENT 7: Physical layer and management parameters for 400 Gb/s over multimode fiber
+
+This amendment to IEEE Std 802.3-2018 adds Clause 150. This amendment adds Physical L yer (PHY) specifications and management parameters for 400 Gb/s operation on four pairs (400GBASE-SR4.2) and eight pairs (400GBASE-SR8) of multimode fiber, over reaches of at least 100 m.
+
+[Learn More
+About 8802-3:2021/Amd7-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd7/10735 "Learn More")
+
+##### 8802-3:2021/Amd8-2021
+
+###### IEEE/ISO/IEC Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 3:Standard for Ethernet AMENDMENT 8: Physical layer specifications and management parameters for 2.5 Gb/s, 5 Gb/s, and 10 Gb/s automotive electrical ethernet
+
+This amendment to IEEE Std 802.3-2018 adds physical layer specifications and 2.5 Gb/s, 5 Gb/s, and 10 Gb/s operation on a single balanced pair of ductors suitable for automotive applications.
+
+[Learn More
+About 8802-3:2021/Amd8-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd8/10733 "Learn More")
+
+##### 8802-3:2021/Amd9-2021
+
+###### IEEE/ISO/IEC International Standard-Telecommunications and exchange between information technology systems -- Requirements for local and metropolitan area networks -- Part 3: Standard for Ethernet AMENDMENT 9: Physical layer specifications and management parameters for 25 Gb/s and 50 Gb/s passive optical networks
+
+This amendment to IEEE Std 802.3-2018 extends the operation of Ethernet passive optical networks (EPONs) to multiple channels of 25 Gb/s providing both symmetric and asymmetric operation for the following data rates downstream/upstream): 25/10 Gb/s, 25/25 Gb/s, 50/10 Gb/s, 50/25 Gb/s, and 50/50 Gb/s. This standard specifies the 25 Gb/s EPON Multi-Channel Reconciliation Sublayer (MCRS), Nx25G-EPON Physical Coding Sublayers (PCSs), Physical Media Attachment (PMA) sublayers, and Physical Medium Dependent (PMD) sublayers that support both symmetric and asymmetric data rates while maintaining backward compatibility with already deployed 10 Gb/s EPON equipment. Backward compatibility with deployed 1G-EPON and ITU-T G.984 GPON is maintained with 25GBASE-PQ for the specific case of 1G-EPON and GPON ONUs using reduced-band (40 nm) lasers. The EPON operation is defined for distances of at least 20 km, and for a split ratio of at least 1:32.
+
+[Learn More
+About 8802-3:2021/Amd9-2021](https://standards.ieee.org/ieee/8802-3_2021_Amd9/10777 "Learn More")
+
+**These standards have been replaced with a revised version of the
+standard, or by a compilation of the original active standard and
+all
+its existing amendments, corrigenda, and errata.**
+
+---
+
+##### 802.3-2002
+
+###### IEEE Standard for Information technology-Telecommunications and information exchange between systems-Local and metropolitan area networks-Specific requirements Part 3: Carrier sense multiple access with collision detection (CSMA/CD) access method and physical layer specifications
+
+The media access control characteristics for the Carrier Sense Multiple Access with Collision Detection (CSMA/CD) access method for shared medium local area networks are described. The control characteristics for full duplex dedicated channel use are also described. Specifications are provided for MAU types 1BASE5 at 1 Mb/s; Attachment Unit Interface (AUI) and MAU types 10BASE5, 10BASE2, FOIRL (fiber optic inter-repeater link), 10BROAD36, 10BASE-T, 10BASE-FL, 10BASE-FB, and 10BASE-FP at 10 Mb/s; Media Independent Interface (MII) and PHY types 100BASE-T4, 100BASE-TX, 100BASE-FX, and 100BASE-T2 at100 Mb/s; and the Gigabit MII (GMII) and 1000BASE-X PHY types, 1000BASE-SX, 1000BASE-LX, and 1000BASE-CX, which operate at 1000 Mb/s (Gigabit Ethernet) as well as PHY type 1000BASE-T. Repeaters specifications are provided at each speed. Full duplex specifications are provided at the Physical Layer for 10BASE-T, 10BASE-FL, 100BASE-TX, 100BASE-FX, 100BASE-T2, and Gigabit Ethernet. System considerations for multisegment networks at each speed and management information base (MIB) specifications and additions to support Virtual Bridged Local Area Networks (VLANs) as specified in IEEE P802.1Q (R) are also provided. Also specified is an optional Link Aggregation sublayer which multiple physical links to be aggregated together to form a single logical link.
+
+[Learn More
+About 802.3-2002](https://standards.ieee.org/ieee/802.3/3052 "Learn More")
+
+##### 802.3-2005
+
+###### IEEE Standard for Information Technology - Telecommunications and Information Exchange Between Systems - Local and Metropolitan Area Networks - Specific Requirements Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications
+
+Ethernet local area network operation is specified for selected speeds of operation from 1 Mb/s to 10 Gb/s using a common media access control (MAC) specification, management information base (MIB), and capability for Link Aggregation of multiple physical links into a single logical link. The Carrier Sense Multiple Access with Collision Detection (CSMA/CD) MAC protocol specifies shared medium (half duplex) operation, as well as full duplex operation. Speed specific Media Independent Interfaces (MIIs) allow use of selected physical layer (PHY) interfaces for operation over coaxial, twisted pair or fiber optic cables. System considerations for multisegment shared access networks describe the use of Repeaters which are defined for operational speeds up to 1000 Mb/s. Local Area Network (LAN) operation is supported at all speeds. Other specified capabilities include: various PHY types for access networks, PHYs suitable for metropolitan area network applications, and the provision of power over selected twisted pair PHY types. (Supersedes 802.3-2002 + 802.3ae-2002 + 802.3af-2003 + 802.3ah-2004 + 802.3aj-2003 + 802.3ak-2004).
+
+[Learn More
+About 802.3-2005](https://standards.ieee.org/ieee/802.3/3910 "Learn More")
+
+##### 802.3-2008
+
+###### IEEE Standard for Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications
+
+Ethernet local area network operation is specified for selected speeds of operation from 1 Mb/s to 10 Gb/s using a common media access control (MAC) specification and management information base (MIB). The Carrier Sense Multiple Access with Collision Detection (CSMA/CD) MAC protocol specifies shared medium (half duplex) operation, as well as full duplex operation. Speed specific Media Independent Interfaces (MIIs) allow use of selected Physical Layer devices (PHY) for operation over coaxial, twisted pair or fiber optic cables. System considerations for multisegment shared access networks describe the use of Repeaters which are defined for operational speeds up to 1000 Mb/s. Local Area Network (LAN) operation is supported at all speeds.
+
+[Learn More
+About 802.3-2008](https://standards.ieee.org/ieee/802.3/4227 "Learn More")
+
+##### 802.3-2012
+
+###### IEEE Standard for Ethernet
+
+Ethernet local area network operation is specified for selected speeds of operation from 1 Mb/s to 100 Gb/s using a common media access control (MAC) specification and management information base (MIB). The Carrier Sense Multiple Access with Collision Detection (CSMA/CD) MAC protocol specifies shared medium (half duplex) operation, as well as full duplex operation. Speed specific Media Independent Interfaces (MIIs) allow use of selected Physical Layer devices (PHY) for operation over coaxial, twisted-pair or fiber optic cables. System considerations for multisegment shared access networks describe the use of Repeaters that are defined for operational speeds up to 1000 Mb/s. Local Area Network (LAN) operation is supported at all speeds. Other specified capabilities include various PHY types for access networks, PHYs suitable for metropolitan area network applications, and the provision of power over selected twisted-pair PHY types.
+
+[Learn More
+About 802.3-2012](https://standards.ieee.org/ieee/802.3/5084 "Learn More")
+
+##### 802.3-2015
+
+###### IEEE Standard for Ethernet
+
+Ethernet local area network operation is specified for selected speeds of operation from 1 Mb/s to 100 Gb/s using a common media access control (MAC) specification and management information base (MIB). The Carrier Sense Multiple Access with Collision Detection (CSMA/CD) MAC protocol specifies shared medium (half duplex) operation, as well as full duplex operation. Speed specific Media Independent Interfaces (MIIs) allow use of selected Physical Layer devices (PHY) for operation over coaxial, twisted pair or fiber optic cables, or electrical backplanes. System considerations for multisegment shared access networks describe the use of Repeaters which are defined for operational speeds up to 1000 Mb/s. Local Area Network (LAN) operation is supported at all speeds. Other specified capabilities include: various PHY types for access networks, PHYs suitable for metropolitan area network applications, and the provision of power over selected twisted pair PHY types.
+
+[Learn More
+About 802.3-2015](https://standards.ieee.org/ieee/802.3/6003 "Learn More")
+
+##### 802.3-2018
+
+###### IEEE Standard for Ethernet
+
+Ethernet local area network operation is specified for selected speeds of operation from 1 Mb/s to 400 Gb/s using a common media access control (MAC) specification and management information base (MIB). The Carrier Sense Multiple Access with Collision Detection (CSMA/CD) MAC protocol specifies shared medium (half duplex) operation, as well as full duplex operation. Speed specific Media Independent Interfaces (MIIs) allow use of selected Physical Layer devices (PHY) for operation over coaxial, twisted pair or fiber optic cables, or electrical backplanes. System considerations for multi-segment shared access networks describe the use of Repeaters that are defined for operational speeds up to 1000 Mb/s. Local Area Network (LAN) operation is supported at all speeds. Other specified capabilities include: various PHY types for access networks, PHYs suitable for metropolitan area network applications, and the provision of power over selected twisted pair PHY types.
+
+[Learn More
+About 802.3-2018](https://standards.ieee.org/ieee/802.3/7071 "Learn More")
+
+##### 802.3-2005/Cor 1-2006
+
+###### IEEE Standard for Information Technology - Telecommunications and Information Exchange Between Systems - Local and Metropolitan Area Networks - Specific Requirements Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications - Corrigendum 1
+
+This corrigendum clarifies and corrects isolation text including harmonization for both powered and unpowered Medium Dependent Interfaces
+
+[Learn More
+About 802.3-2005/Cor 1-2006](https://standards.ieee.org/ieee/802.3-2005_Cor_1/3820 "Learn More")
+
+##### 802.3-2005/Cor 2-2007
+
+###### IEEE Standard for Information Technology - Telecommunications and Information Exchange Between Systems - Local and Metropolitan Area Networks - Specific Requirements Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications - Corrigendum 2: IEEE Std 802.3an-2006 10GBASE-T Correction
+
+Corrigendum to IEEE Std 802.3-2005. This corrigendum will correct Equation 55-55. It has been incorporated into the second printing of IEEE Std 802.3an-2006.
+
+[Learn More
+About 802.3-2005/Cor 2-2007](https://standards.ieee.org/ieee/802.3-2005_Cor_2/4150 "Learn More")
+
+##### 802.3-2008/Cor 1-2009
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications Corrigendum 1: Timing Considerations for PAUSE Operation
+
+The correction to the PAUSE reaction timing delay for the 10GBASE-T port type is addressed in this corrigendum to IEEE Std 802.3-2008.
+
+[Learn More
+About 802.3-2008/Cor 1-2009](https://standards.ieee.org/ieee/802.3-2008_Cor_1/4562 "Learn More")
+
+##### 802.3-2015/Cor 1-2017
+
+###### IEEE Standard for Ethernet - Corrigendum 1: Multi-lane Timestamping
+
+This corrigendum to IEEE Std 802.3-2015 clarifies which lane of the media dependent interface (MDI) of a multi-lane Physical Layer entity (PHY) is used as the timestamping reference point.
+
+[Learn More
+About 802.3-2015/Cor 1-2017](https://standards.ieee.org/ieee/802.3-2015_Cor_1/6752 "Learn More")
+
+##### 802.3-REVam-2005
+
+###### IEEE Standard for Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- specific requirements Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications
+
+Ethernet local area network operation is specified for selected speeds of operation from 1 Mb/s to 10 Gb/s using a common media access control (MAC) specification, management information base (MIB), and capability for Link Aggregation of multiple physical links into a single logical link. The Carrier Sense Multiple Access with Collision Detection (CSMA/CD) MAC protocol specifies shared medium (half duplex) operation, as well as full duplex operation. Speed specific Media Independent Interfaces (MIIs) allow use of selected physical layer (PHY) interfaces for operation over coaxial, twisted pair or fiber optic cables. System considerations for multisegment shared access networks describe the use of Repeaters which are defined for operational speeds up to 1000 Mb/s. Local Area Network (LAN) operation is supported at all speeds. Other specified capabilities include: various PHY types for access networks, PHYs suitable for metropolitan area network applications, and the provision of power over selected twisted pair PHY types.
+
+[Learn More
+About 802.3-REVam-2005](https://standards.ieee.org/ieee/802.3-REVam/3568 "Learn More")
+
+##### 802.3.1-2011
+
+###### IEEE Standard for Management Information Base (MIB) Definitions for Ethernet
+
+The Management Information Base (MIB) module specifications for IEEE Std 802.3, also known as Ethernet, are contained in this standard. It includes the Structure of Management Information Version 2 (SMIv2) MIB module specifications formerly produced and published by the Internet Engineering Task Force (IETF), and the Guidelines for the Definition of Managed Objects (GDMO) MIB modules formerly specified within IEEE Std 802.3, as well as extensions resulting from amendments to IEEE Std 802.3. The SMIv2 MIB modules are intended for use with the Simple Network Management Protocol (SNMP), commonly used to manage Ethernet.
+
+[Learn More
+About 802.3.1-2011](https://standards.ieee.org/ieee/802.3.1/4561 "Learn More")
+
+##### 802.3.2-2019
+
+###### IEEE Standard for Ethernet - YANG Data Model Definitions
+
+This standard defines YANG modules for various Ethernet devices specified in IEEE Std 802.3. This includes half-duplex and full-duplex data terminal equipment (DTE) using either Carrier Sense Multiple Access / Collision Detection (CSMA/CD) or Multipoint Control Protocol (MPCP), and Power Sourcing Equipment (PSE).
+
+[Learn More
+About 802.3.2-2019](https://standards.ieee.org/ieee/802.3.2/6829 "Learn More")
+
+##### 802.3ah-2004
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment: Media Access Control Parameters, Physical Layers, and Management Parameters for Subscriber Access Networks
+
+This amendment to IEEE Std 802.3-2002 as amended by IEEE Std 802.3ae-2002, IEEE Std 802.3af-2003, IEEE Std 802.3aj-2003, and IEEE Std 802.3ak-2004 combines a minimal set of extensions to the IEEE 802.3 Media Access Control (MAC) and MAC Control sublayers with a family of Physical (PHY) Layers. These Physical Layers include optical fiber and voice grade copper cable Physical Medium Dependent sublayers (PMDs) for point-to-point connections in subscriber access networks. This amendment also introduces the concept of Ethernet Passive Optical Networks (EPONs), in which a point to multi-point (P2MP) network topology is implemented with passive optical splitters, along with optical fiber PMDs that support this topology. In addition, a mechanism for network Operations, Administration and Maintenance (OAM) is included to facilitate network operation and troubleshooting. To support these innovations, options for unidirectional transmission of frames are provided for 100BASE-X, 1000BASE-X, 10GBASE-R, 10GBASE-W, and 10GBASE-X.
+
+[Learn More
+About 802.3ah-2004](https://standards.ieee.org/ieee/802.3ah/3179 "Learn More")
+
+##### 802.3aj-2003
+
+###### Standard for Information Technology - Telecommunications and Information Exchange Between Systems - Local and Metropolitan Area Networks - Specific Requirements - Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications - Maintenance 7
+
+Superseded by IEEE Std 802.3-2005 IEEE Std 802.3, which addresses the CSMA/CD access method and physical layer specifications will be enhanced through necessary amendments and corrigenda.
+
+[Learn More
+About 802.3aj-2003](https://standards.ieee.org/ieee/802.3aj/3436 "Learn More")
+
+##### 802.3ak-2004
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment: Physical Layer and Management Parameters for 10 Gb/s Operation, Type 10GBASE-CX4
+
+This amendment to IEEE Std 802.3-2002 as amended by IEEE Std 802.3ae-2002, IEEE Std 802.3af-2003 and IEEE Std 802.3aj-2003 specifies a new physical layer medium dependent sublayer interface for 10Gb/s Ethernet. 10GBASE-CX4 specifies an equipment interconnect based on the 10 Gigabit Attachment Unit Interface (XAUI) for up to 15 m of balanced shielded cabling.
+
+[Learn More
+About 802.3ak-2004](https://standards.ieee.org/ieee/802.3ak/3439 "Learn More")
+
+##### 802.3an-2006
+
+###### IEEE Standard for Information Technology - Telecommunications and Information Exchange Between Systems - LAN/MAN - Specific Requirements Part 3: CSMA/CD Access Method and Physical Layer Specifications - Amendment: Physical Layer and Management Parameters for 10 Gb/s Operation, Type 10GBASE-T
+
+This amendment to IEEE Std 802.3-2005 specifies a new Physical Coding Sublayer interface and a new Physical Medium Attachment sublayer interface for 10 Gb/s Ethernet. 10GBASE-T specifies a LAN interconnect for up to 100 m of balanced twisted-pair structured cabling systems.
+
+[Learn More
+About 802.3an-2006](https://standards.ieee.org/ieee/802.3an/3560 "Learn More")
+
+##### 802.3ap-2007
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: CSMA/CD Access Method and Physical Layer Specifications - Amendment: Ethernet Operation Over Electrical Backplanes
+
+This amendment to IEEE Std 802.3-2005 includes the new Clause 69 through Clause 74. Clause 69 provides an overview of Ethernet operation over electrical backplanes. Clause 70 through Clause 72 define three new PMDs developed for operation over electrical backplanes. 1000BASE-KX specifies 1 Gb/s serial operation, 10GBASE-KX4 specifies 10 Gb/s 4-lane operation, and 10GBASE-KR specifies 10 Gb/s serial operation. Clause 73 specifies an Auto-Negotiation function for use over electrical backplanes. Finally, Clause 74 specifies an optional forward error correction (FEC) sublayer for 10GBASE-R PHYs for improved link performance.
+
+[Learn More
+About 802.3ap-2007](https://standards.ieee.org/ieee/802.3ap/3598 "Learn More")
+
+##### 802.3aq-2006
+
+###### IEEE Standard for Information technology -- Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications - Amendment 2: Physical Layer and Management Parameters for 10 Gb/s Operation, Type 10GBASE-LRM
+
+Amendment to IEEE Std 802.3-2005 This amendment to IEEE Std 802.3-2005 specifies a new PMD, 10GBASE-LRM, for serial, 10 Gb/s operation over up to 220 m of 62.5 µm and 50 µm multimode fiber, including installed, FDDI grade multimode fiber
+
+[Learn More
+About 802.3aq-2006](https://standards.ieee.org/ieee/802.3aq/3599 "Learn More")
+
+##### 802.3as-2006
+
+###### IEEE Standard for Information technology-- Telecommunications and information exchange between systems-- Local and metropolitan area networks-- Specific requirements Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications
+
+This amendment to IEEE Std 802.3-2005 extends the IEEE 802.3 basic frame format with the addition of an envelope frame to accommodate additional prefixes and suffixes required by higher layer encapsulation protocols such as those defined by IEEE 802.1 (e.g., Provider Bridges, MAC Security), ITU-T or IETF (e.g., MPLS).
+
+[Learn More
+About 802.3as-2006](https://standards.ieee.org/ieee/802.3as/3693 "Learn More")
+
+##### 802.3at-2009
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment 3: Data Terminal Equipment (DTE) Power via the Media Dependent Interface (MDI) Enhancements
+
+This amendment includes changes to IEEE Std 802.3-2008 to augment the capabilities of IEEE Std 802.3 with higher power levels and improved power management information.
+
+[Learn More
+About 802.3at-2009](https://standards.ieee.org/ieee/802.3at/4553 "Learn More")
+
+##### 802.3av-2009
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment 1: Physical Layer Specifications and Management Parameters for 10 Gb/s Passive Optical Networks
+
+This amendment to IEEE Std 802.3-2008 extends Ethernet Passive Optical Networks (EPONs) operation to 10 Gb/s providing both symmetric, 10 Gb/s downstream and upstream, and asymmetric, 10 Gb/s downstream and 1 Gb/s upstream, data rates. It specifies the 10 Gb/s EPON Reconciliation Sublayer, 10GBASE-PR symmetric and 10/1GBASE-PRX Physical Coding Sublayers (PCSs) and Physical Media Attachments (PMAs), and Physical Medium Dependent sublayers (PMDs) that support both symmetric and asymmetric data rates while maintaining complete backward compatibility with already deployed 1 Gb/s.
+
+[Learn More
+About 802.3av-2009](https://standards.ieee.org/ieee/802.3av/4060 "Learn More")
+
+##### 802.3az-2010
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment 5: Media Access Control Parameters, Physical Layers, and Management Parameters for Energy-Efficient Ethernet
+
+This amendment to IEEE Std 802.3-2008 specifies changes to several existing physical layers to enable energy-efficient operation of Ethernet. Changes to 10BASE-T include a reduction in transmit voltage requirements. Changes to 100BASE-TX, 1000BASE-T, 10GBASE-T, 1000BASE-KX, 10GBASE-KX4 and 10GBASE-KR include the definition of a Low Power Idle (LPI) mode and mechanisms to communicate and manage the entry and exit into and out of LPI and the operation of this mode. New Link Layer Discovery Protocol (LLDP) TLVs are defined for negotiating system level energy-efficiency parameters.
+
+[Learn More
+About 802.3az-2010](https://standards.ieee.org/ieee/802.3az/4270 "Learn More")
+
+##### 802.3ba-2010
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment 4: Media Access Control Parameters, Physical Layers, and Management Parameters for 40 Gb/s and 100 Gb/s Operation
+
+This amendment to IEEE Std 802.3-2008 includes changes to IEEE Std 802.3-2008 and adds Clause 80 through Clause 88, Annex 83A through Annex 83C, Annex 85A, and Annex 86A. This amendment includes IEEE 802.3 Media Access Control (MAC) parameters, Physical Layer specifications, and management parameters for the transfer of IEEE 802.3 format frames at 40 Gb/s and 100 Gb/s.
+
+[Learn More
+About 802.3ba-2010](https://standards.ieee.org/ieee/802.3ba/4319 "Learn More")
+
+##### 802.3bc-2009
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment 2: Ethernet Organizationally Specific Type, Length, Value (TLVs)
+
+This amendment to IEEE Std 802.3-2008 transfers the IEEE 802.3 Organizationally Specific TLVs, specified in IEEE Std 802.1AB(TM)-2009, Station and Media Access Control Connectivity Discovery, to IEEE Std 802.3.
+
+[Learn More
+About 802.3bc-2009](https://standards.ieee.org/ieee/802.3bc/4563 "Learn More")
+
+##### 802.3bd-2011
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: CSMA/CD Access Method and Physical Layer Specifications - Amendment 8: MAC Control Frame for Priority-based Flow Control
+
+MAC Control Frame to support IEEE 802.1Q Priority-based Flow Control is defined in this amendment.
+
+[Learn More
+About 802.3bd-2011](https://standards.ieee.org/ieee/802.3bd/4611 "Learn More")
+
+##### 802.3bf-2011
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment 7: Media Access Control (MAC) Service Interface and Management Parameters to Support Time Synchronization Protocols
+
+This amendment to IEEE Std 802.3 defines the Time Synchronization Service Interface (TSSI) to indicate when the Start Frame Delimiter (SFD) crosses the generic Medium Independent Interface (xMII), together with management objects indicating transmit and receive data delay between the Medium Dependent Interface (MDI) and xMII for the given Physical Layer devices (PHY). Both features are required to support time synchronization protocols, e.g., IEEE Std 802.1AS or IEEE Std 1588-2008.
+
+[Learn More
+About 802.3bf-2011](https://standards.ieee.org/ieee/802.3bf/4759 "Learn More")
+
+##### 802.3bg-2011
+
+###### IEEE Standard for Information technology-- Local and metropolitan area networks-- Specific requirements-- Part 3: CSMA/CD Access Method and Physical Layer Specifications Amendment 6: Physical Layer and Management Parameters for Serial 40 Gb/s Ethernet Operation Over Single Mode Fiber
+
+This amendment to IEEE Std 802.3-2008 specifies a new Physical Medium Dependent (PMD) sublayer, 40GBASE-FR, for serial 40Gb/s operation over up to 2 km of single-mode fiber.
+
+[Learn More
+About 802.3bg-2011](https://standards.ieee.org/ieee/802.3bg/4849 "Learn More")
+
+##### 802.3bj-2014
+
+###### IEEE Standard for Ethernet Amendment 2: Physical Layer Specifications and Management Parameters for 100 Gb/s Operation Over Backplanes and Copper Cables
+
+100 Gb/s Physical Layer (PHY) specifications and management parameters for operation on electrical backplanes and twinaxial copper cables are added by this amendment to IEEE Std 802.3-2012. This amendment also specifies optional Energy Efficient Ethernet (EEE) for 40 Gb/s and 100 Gb/s operation over electrical backplanes and copper cables.
+
+[Learn More
+About 802.3bj-2014](https://standards.ieee.org/ieee/802.3bj/5551 "Learn More")
+
+##### 802.3bk-2013
+
+###### IEEE Standard for Ethernet - Amendment 1: Physical Layer Specifications and Management Parameters for Extended Ethernet Passive Optical Networks
+
+This amendment to IEEE Std 802.3 defines the physical layer specifications and management parameters for EPON operation on point-to-multipoint passive optical networks supporting extended power budget classes of PX30, PX40, PRX40, and PR40 PMDs.
+
+[Learn More
+About 802.3bk-2013](https://standards.ieee.org/ieee/802.3bk/5441 "Learn More")
+
+##### 802.3bm-2015
+
+###### IEEE Standard for Ethernet - Amendment 3: Physical Layer Specifications and Management Parameters for 40 Gb/s and 100 Gb/s Operation over Fiber Optic Cables
+
+Physical Layer specifications and management parameters for 40 Gb/s operation over single-mode fiber (40GBASE-ER4) and for 100 Gb/s operation over multimode fiber (100GBASE-SR4) are added by this amendment. This amendment also specifies a four-lane variant of the 100 Gigabit Attachment Unit Interface (CAUI-4) and optional Energy Efficient Ethernet (EEE) for 40 Gb/s and 100 Gb/s operation over fiber optic cables.
+
+[Learn More
+About 802.3bm-2015](https://standards.ieee.org/ieee/802.3bm/5657 "Learn More")
+
+##### 802.3bn-2016
+
+###### IEEE Standard for Ethernet Amendment 6: Physical Layer Specifications and Management Parameters for Ethernet Passive Optical Networks Protocol over Coax
+
+Physical Layer specifications and management parameters for the operation of Ethernet Passive Optical Networks (EPON) Protocol over coaxial media is defined by this amendment to IEEE Std 802.3-2015.
+
+[Learn More
+About 802.3bn-2016](https://standards.ieee.org/ieee/802.3bn/5518 "Learn More")
+
+##### 802.3bp-2016
+
+###### IEEE Standard for Ethernet Amendment 4: Physical Layer Specifications and Management Parameters for 1 Gb/s Operation over a Single Twisted-Pair Copper Cable
+
+This amendment to IEEE Std 802.3-2015 adds point-to-point 1 Gb/s Physical Layer (PHY) specifications and management parameters for operation on a single twisted-pair copper cable in an automotive application.
+
+[Learn More
+About 802.3bp-2016](https://standards.ieee.org/ieee/802.3bp/5925 "Learn More")
+
+##### 802.3bq-2016
+
+###### IEEE Standard for Ethernet Amendment 3: Physical Layer and Management Parameters for 25 Gb/s and 40 Gb/s Operation, Types 25GBASE-T and 40GBASE-T
+
+This amendment to IEEE Std 802.3-2015 specifies new Physical Coding Sublayer (PCS) interfaces and new Physical Medium Attachment (PMA) sublayer interfaces for 25 Gb/s Ethernet and 40 Gb/s Ethernet. 25GBASE-T and 40GBASE-T specify LAN interconnects for up to 30 m of balanced twisted-pair structured cabling, for 25 Gb/s and 40 Gb/s, respectively.
+
+[Learn More
+About 802.3bq-2016](https://standards.ieee.org/ieee/802.3bq/6227 "Learn More")
+
+##### 802.3br-2016
+
+###### IEEE Standard for Ethernet Amendment 5: Specification and Management Parameters for Interspersing Express Traffic
+
+This amendment to IEEE Std 802.3-2015 specifies additions to and appropriate modifications to add support for interspersing express traffic over a single physical link.
+
+[Learn More
+About 802.3br-2016](https://standards.ieee.org/ieee/802.3br/5814 "Learn More")
+
+##### 802.3bs-2017
+
+###### IEEE Standard for Ethernet Amendment 10: Media Access Control Parameters, Physical Layers, and Management Parameters for 200 Gb/s and 400 Gb/s Operation
+
+Clause 116 through Clause 124 and Annex 119A through Annex 120E are added by this amendment to IEEE Std 802.3-2015. This amendment includes IEEE 802.3 Media Access Control (MAC) parameters, Physical Layer specifications, and management parameters for the transfer of IEEE 802.3 format frames at 200 Gb/s and 400 Gb/s.
+
+[Learn More
+About 802.3bs-2017](https://standards.ieee.org/ieee/802.3bs/6748 "Learn More")
+
+##### 802.3bt-2018
+
+###### IEEE Standard for Ethernet Amendment 2: Physical Layer and Management Parameters for Power over Ethernet over 4 pairs
+
+The maximum Powered Device (PD) power available is increased by this amendment to IEEE Std 802.3-2018 by utilizing all four pairs in the specified structured wiring plant. This represents a substantial change to the capabilities of Ethernet with standardized power. The power classification information exchanged during negotiation is extended to allow meaningful power management capability. These enhancements solve the problem of higher power and more efficient standardized Power over Ethernet (PoE) delivery systems.
+
+[Learn More
+About 802.3bt-2018](https://standards.ieee.org/ieee/802.3bt/6749 "Learn More")
+
+##### 802.3bu-2016
+
+###### IEEE Standard for Ethernet--Amendment 8: Physical Layer and Management Parameters for Power over Data Lines (PoDL) of Single Balanced Twisted-Pair Ethernet
+
+Specifications and management parameters for the provision of power via a single twisted pair to connected Data Terminal Equipment (DTE) with IEEE 802.3 single balanced twisted-pair interfaces are added by this amendment to IEEE Std 802.3-2015.
+
+[Learn More
+About 802.3bu-2016](https://standards.ieee.org/ieee/802.3bu/5816 "Learn More")
+
+##### 802.3bv-2017
+
+###### IEEE Standard for Ethernet Amendment 9: Physical Layer Specifications and Management Parameters for 1000 Mb/s Operation Over Plastic Optical Fiber
+
+A family of three point-to-point physical layers (PHYs) for 1000 Mb/s operation over duplex plastic optical fiber (POF) and related management parameters are specified by this amendment to IEEE Std 802.3-2015.
+
+[Learn More
+About 802.3bv-2017](https://standards.ieee.org/ieee/802.3bv/6023 "Learn More")
+
+##### 802.3bw-2015
+
+###### IEEE Standard for Ethernet Amendment 1: Physical Layer Specifications and Management Parameters for 100 Mb/s Operation over a Single Balanced Twisted Pair Cable (100BASE-T1)
+
+The 100BASE-T1 Physical Layer (PHY) specifications and management parameters for point-to-point full duplex 100 Mb/s operation over single twisted pair balanced cabling is defined in this amendment. This specification provides fully functional and electrical specifications for the type 100BASE-T1 PHY. This specification also specifies the baseband medium used with 100BASE-T1.
+
+[Learn More
+About 802.3bw-2015](https://standards.ieee.org/ieee/802.3bw/5969 "Learn More")
+
+##### 802.3by-2016
+
+###### IEEE Standard for Ethernet -- Amendment 2: Media Access Control Parameters, Physical Layers, and Management Parameters for 25 Gb/s Operation Amendment 2: Media Access Control Parameters, Physical Layers, and Management Parameters for 25 Gb/s Operation
+
+This amendment to IEEE Std 802.3-2015 adds Physical Layer (PHY) specifications and management parameters for 25 Gb/s operation over twinaxial copper cabling (25GBASE-CR and 25GBASE-CR-S), electrical backplanes (25GBASE-KR and 25GBASE-KR-S), and multimode fiber (25GBASE-SR). This amendment also specifies a 25 Gigabit Attachment Unit Interface (25GAUI) and optional Energy Efficient Ethernet (EEE).
+
+[Learn More
+About 802.3by-2016](https://standards.ieee.org/ieee/802.3by/6024 "Learn More")
+
+##### 802.3bz-2016
+
+###### IEEE Standard for Ethernet Amendment 7: Media Access Control Parameters, Physical Layers, and Management Parameters for 2.5 Gb/s and 5 Gb/s Operation, Types 2.5GBASE-T and 5GBASE-T
+
+Ethernet Media Access Control (MAC) parameters, Physical Layer specifications, and management objects for the transfer of Ethernet format frames at 2.5 Gb/s and 5 Gb/s over balanced twisted-pair transmission media used in structured cabling are defined in this amendment to IEEE Std 802.3-2015.
+
+[Learn More
+About 802.3bz-2016](https://standards.ieee.org/ieee/802.3bz/6130 "Learn More")
+
+##### 802.3ca-2020
+
+###### IEEE Standard for Ethernet Amendment 9: Physical Layer Specifications and Management Parameters for 25 Gb/s and 50 Gb/s Passive Optical Networks
+
+This amendment to IEEE Std 802.3-2018 extends the operation of Ethernet passive optical networks (EPONs) to multiple channels of 25 Gb/s providing both symmetric and asymmetric operation for the following data rates downstream/upstream): 25/10 Gb/s, 25/25 Gb/s, 50/10 Gb/s, 50/25 Gb/s, and 50/50 Gb/s. This standard specifies the 25 Gb/s EPON Multi-Channel Reconciliation Sublayer (MCRS), Nx25G-EPON Physical Coding Sublayers (PCSs), Physical Media Attachment (PMA) sublayers, and Physical Medium Dependent (PMD) sublayers that support both symmetric and asymmetric data rates while maintaining backward compatibility with already deployed 10 Gb/s EPON equipment. Backward compatibility with deployed 1G-EPON and ITU-T G.984 GPON is maintained with 25GBASE-PQ for the specific case of 1G-EPON and GPON ONUs using reduced-band (40 nm) lasers. The EPON operation is defined for distances of at least 20 km, and for a split ratio of at least 1:32.
+
+[Learn More
+About 802.3ca-2020](https://standards.ieee.org/ieee/802.3ca/7440 "Learn More")
+
+##### 802.3cb-2018
+
+###### IEEE Standard for Ethernet - Amendment 1:Physical Layer Specifications and Management Parameters for 2.5 Gb/s and 5 Gb/s Operation over Backplane
+
+Ethernet Media Access Control (MAC) parameters, Physical Layer specifications, and management objects for the serial transfer of Ethernet format frames at 2.5 Gb/s and 5 Gb/s over electrical backplanes are defined in this amendment to IEEE Std 802.3-2018.
+
+[Learn More
+About 802.3cb-2018](https://standards.ieee.org/ieee/802.3cb/6819 "Learn More")
+
+##### 802.3cc-2017
+
+###### IEEE Standard for Ethernet - Amendment 11: Physical Layer and Management Parameters for Serial 25 Gb/s Ethernet Operation Over Single-Mode Fiber
+
+This amendment to IEEE Std 802.3-2015 adds Physical Layer (PHY) specifications and management parameters for 25 Gb/s operation over single-mode fiber at reaches of at least 10 km (25GBASE-LR) and 40 km (25GBASE-ER).
+
+[Learn More
+About 802.3cc-2017](https://standards.ieee.org/ieee/802.3cc/6753 "Learn More")
+
+##### 802.3cd-2018
+
+###### IEEE Standard for Ethernet - Amendment 3: Media Access Control Parameters for 50 Gb/s and Physical Layers and Management Parameters for 50 Gb/s, 100 Gb/s, and 200 Gb/s Operation
+
+Clause 131 through Clause 140 and Annex 135A through Annex 136D are added to IEEE Std 802.3-2018 by this amendment to specify IEEE 802.3 Media Access Control (MAC) parameters, Physical Layer specifications, and management parameters for the transfer of IEEE 802.3 format frames at 50 Gb/s, 100 Gb/s, and 200 Gb/s.
+
+[Learn More
+About 802.3cd-2018](https://standards.ieee.org/ieee/802.3cd/6754 "Learn More")
+
+##### 802.3cg-2019
+
+###### IEEE Standard for Ethernet - Amendment 5: Physical Layer Specifications and Management Parameters for 10 Mb/s Operation and Associated Power Delivery over a Single Balanced Pair of Conductors
+
+This amendment to IEEE Std 802.3-2018 specifies additions and appropriate modifications to add 10 Mb/s Physical Layer (PHY) specifications and management parameters for operation, and associated optional provision of power, over a single balanced pair of conductors.
+
+[Learn More
+About 802.3cg-2019](https://standards.ieee.org/ieee/802.3cg/7308 "Learn More")
+
+##### 802.3ch-2020
+
+###### IEEE Standard for Ethernet--Amendment 8:Physical Layer Specifications and Management Parameters for 2.5 Gb/s, 5 Gb/s, and 10 Gb/s Automotive Electrical Ethernet
+
+This amendment to IEEE Std 802.3-2018 adds physical layer specifications and management parameters for 2.5 Gb/s, 5 Gb/s, and 10 Gb/s operation on a single balanced pair of conductors suitable for automotive applications.
+
+[Learn More
+About 802.3ch-2020](https://standards.ieee.org/ieee/802.3ch/7058 "Learn More")
+
+##### 802.3cm-2020
+
+###### IEEE Standard for Ethernet -- Amendment 7: Physical Layer and Management Parameters for 400 Gb/s over Multimode Fiber
+
+This amendment to IEEE Std 802.3-2018 adds Clause 150. This amendment adds Physical Layer (PHY) specifications and management parameters for 400 Gb/s operation on four pairs (400GBASE-SR4.2) and eight pairs (400GBASE-SR8) of multimode fiber, over reaches of at least 100 m.
+
+[Learn More
+About 802.3cm-2020](https://standards.ieee.org/ieee/802.3cm/7323 "Learn More")
+
+##### 802.3cn-2019
+
+###### IEEE Standard for Ethernet - Amendment 4: Physical Layers and Management Parameters for 50Gb/s, 200Gb/s, and 400Gb/s Operation over Single-Mode Fiber
+
+This amendment to IEEE Std 802.3-2018 adds Physical Layer (PHY) specifications and management parameters for 50 Gb/s, 200 Gb/s, and 400 Gb/s operation over single-mode fiber with reaches of at least 40 km.
+
+[Learn More
+About 802.3cn-2019](https://standards.ieee.org/ieee/802.3cn/7472 "Learn More")
+
+##### 802.3cp-2021
+
+###### IEEE Standard for Ethernet -- Amendment 14: Bidirectional 10 Gb/s, 25 Gb/s, and 50 Gb/s Optical Access PHYs
+
+This amendment to IEEE Std 802.3-2018 adds Physical Layer specifications and management parameters for 10 Gb/s, 25 Gb/s, and 50 Gb/s Ethernet optical interfaces for bidirectional operation over a single strand of single-mode fiber with reaches of at least 10 km, 20 km, and 40 km.
+
+[Learn More
+About 802.3cp-2021](https://standards.ieee.org/ieee/802.3cp/7448 "Learn More")
+
+##### 802.3cq-2020
+
+###### IEEE Standard for Ethernet Amendment 6: Maintenance #13: Power over Ethernet over 2 pairs
+
+This amendment to IEEE Std 802.3-2018 makes technical and editorial corrections and refinements to Power over Ethernet over 2-pairs in Clause 33.
+
+[Learn More
+About 802.3cq-2020](https://standards.ieee.org/ieee/802.3cq/7375 "Learn More")
+
+##### 802.3cr-2021
+
+###### IEEE Standard for Ethernet Amendment 10: Maintenance #14: Isolation
+
+This amendment to IEEE Std 802.3-2018 replaces references to the IEC 60950 series of standards with appropriate references to the IEC 62368 series and makes appropriate changes to the standard corresponding to the new references.
+
+[Learn More
+About 802.3cr-2021](https://standards.ieee.org/ieee/802.3cr/7376 "Learn More")
+
+##### 802.3ct-2021
+
+###### IEEE Standard for Ethernet Amendment 13: Physical Layers and Management Parameters for 100 Gb/s Operation over DWDM Systems
+
+This amendment includes changes to IEEE Std 802.3-2018 and adds Clause 152 through Clause 154 and Annex 154A. This amendment adds 100 Gb/s Physical Layer specifications and management parameters for operation over DWDM systems using a combination of phase and amplitude modulation with coherent detection for reaches of at least 80 km.
+
+[Learn More
+About 802.3ct-2021](https://standards.ieee.org/ieee/802.3ct/10127 "Learn More")
+
+##### 802.3cu-2021
+
+###### IEEE Standard for Ethernet - Amendment 11: Physical Layers and Management Parameters for 100 Gb/s and 400 Gb/s Operation over Single-Mode Fiber at 100 Gb/s per Wavelength
+
+This amendment to IEEE Std 802.3-2018 adds Physical Layer specifications and management parameters for 100 Gb/s and 400 Gb/s Ethernet optical interfaces for reaches up to 10 km based on 100 Gb/s per wavelength optical signaling.
+
+[Learn More
+About 802.3cu-2021](https://standards.ieee.org/ieee/802.3cu/7515 "Learn More")
+
+##### 802.3cv-2021
+
+###### IEEE Standard for Ethernet Amendment 12: Maintenance #15: Power over Ethernet
+
+This amendment implements editorial and technical corrections, refinements, and clarifications to Clause 145, Power over Ethernet, and related portions of the standard. No new features are added by this amendment.
+
+[Learn More
+About 802.3cv-2021](https://standards.ieee.org/ieee/802.3cv/7670 "Learn More")
+
+##### 8802-3:2017/Amd 1-2017
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 3: Standard for Ethernet Amendment 1: Physical Layer Specifications and Management Parameters for 100 Mb/s Operation over a Single Balanced Twisted Pair Cable (100BASE-T1)
+
+This amendment to IEEE Std 802.3-2015 adds Physical Layer (PHY) specifications and management parameters for 25 Gb/s operation over twinaxial copper cabling (25GBASE-CR and 25GBASE-CR-S), electrical backplanes (25GBASE-KR and 25GBASE-KR-S), and multimode fiber (25GBASE-SR). This amendment also specifies a 25 Gigabit Attachment Unit Interface (25GAUI) and optional Energy Efficient Ethernet (EEE).
+
+[Learn More
+About 8802-3:2017/Amd 1-2017](https://standards.ieee.org/ieee/8802-3_2017_Amd_1/10013 "Learn More")
+
+##### 8802-3:2017/Amd 2-2017
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 3 Standard for Ethernet: Amendment 2: Media Access Control Parameters, Physical Layers, and Management Parameters for 25 Gb/s Operation
+
+This amendment to IEEE Std 802.3-2015 adds Physical Layer (PHY) specifications and management parameters for 25 Gb/s operation over twinaxial copper cabling (25GBASE-CR and 25GBASE-CR-S), electrical backplanes (25GBASE-KR and 25GBASE-KR-S), and multimode fiber (25GBASE-SR). This amendment also specifies a 25 Gigabit Attachment Unit Interface (25GAUI) and optional Energy Efficient Ethernet (EEE).
+
+[Learn More
+About 8802-3:2017/Amd 2-2017](https://standards.ieee.org/ieee/8802-3_2017_Amd_2/10014 "Learn More")
+
+##### 8802-3:2017/Amd 3-2017
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and Information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 3: Standard for Ethernet Amendment 3: Physical Layer and Management Parameters for 25 Gb/s and 40 Gb/s Operation, Types 25GBASE-T and 40GBASE-T
+
+This amendment to IEEE Std 802.3-2015 specifies new Physical Coding Sublayer (PCS) interfaces and new Physical Medium Attachment (PMA) sublayer interfaces for 25 Gb/s Ethernet and 40 Gb/s Ethernet. 25GBASE-T and 40GBASE-T specify LAN interconnects for up to 30 m of balanced twisted-pair structured cabling, for 25 Gb/s and 40 Gb/s, respectively.
+
+[Learn More
+About 8802-3:2017/Amd 3-2017](https://standards.ieee.org/ieee/8802-3_2017_Amd_3/10015 "Learn More")
+
+##### 8802-3:2017/Amd 4-2017
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 3: Standard for Ethernet Amendment 4: Physical Layer Specifications and Management Parameters for 1 Gb/s Operation over a Single Twisted-Pair Copper Cable
+
+This amendment to IEEE Std 802.3-2015 adds point-to-point 1 Gb/s Physical Layer (PHY) specifications and management parameters for operation on a single twisted-pair copper cable in an automotive application.
+
+[Learn More
+About 8802-3:2017/Amd 4-2017](https://standards.ieee.org/ieee/8802-3_2017_Amd_4/10016 "Learn More")
+
+##### 8802-3:2017/Amd 5-2017
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks --Specific requirements - Part 3: Standard for Ethernet AMENDMENT 5: Specification and management parameters for interspersing express traffic
+
+This amendment to IEEE Std 802.3-2015 specifies additions to and appropriate modifications to add support for interspersing express traffic over a single physical link.
+
+[Learn More
+About 8802-3:2017/Amd 5-2017](https://standards.ieee.org/ieee/8802-3_2017_Amd_5/10021 "Learn More")
+
+##### 8802-3:2017/Amd 6-2018
+
+###### ISO/IEC/IEEE International Standard - Information technology - Telecommunications and information exchange between systems - Local and metropolitan area networks - Specific requirements - Part 3: Standard for Ethernet AMENDMENT 6: Physical layer specifications and management parameters for ethernet passive optical networks protocol over coax
+
+Physical Layer specifications and management parameters for the operation of Ethernet Passive Optical Networks (EPON) Protocol over coaxial media is defined by this amendment to IEEE Std 802.3-2015.
+
+[Learn More
+About 8802-3:2017/Amd 6-2018](https://standards.ieee.org/ieee/8802-3_2017_Amd_6/10059 "Learn More")
+
+##### 8802-3:2017/Amd 7-2017
+
+###### ISO/IEC/IEEE International Standard-Information technology--Telecommunications and information exchange between systems--Local and metropolitan area networks--Specific requirements-Part 3: Standard for Ethernet Amendment 7: Media Access Control Parameters, Physical Layers, and Management Parameters for 2.5 Gb/s and 5 Gb/s Operation, Types 2.5GBASE-T and 5GBASE-T
+
+Protocols, procedures, and managed objects to allow IEEE 802.11 media to provide internal connections within bridged networks, as well as access to bridged networks, are provided in this amendment.
+
+[Learn More
+About 8802-3:2017/Amd 7-2017](https://standards.ieee.org/ieee/8802-3_2017_Amd_7/10022 "Learn More")
+
+##### 8802-3:2017/Amd 8-2018
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 3: Standard for Ethernet AMENDMENT 8: Physical layer and management parameters for Power over Data Lines (PoDL) of single balanced twisted-pair Ethernet
+
+Specifications and management parameters for the provision of power via a single twisted pair to connected Data Terminal Equipment (DTE) with IEEE 802.3 single balanced twisted-pair interfaces are added by this amendment to IEEE Std 802.3-2015.
+
+[Learn More
+About 8802-3:2017/Amd 8-2018](https://standards.ieee.org/ieee/8802-3_2017_Amd_8/10055 "Learn More")
+
+##### 8802-3:2017/Amd 9-2018
+
+###### ISO/IEC/IEEE International Standard - Information technology -- Telecommunications and information exchange between systems -- Local and metropolitan area networks -- Specific requirements -- Part 3: Standard for Ethernet AMENDMENT 9: Physical layer specifications and management parameters for 1000 Mb/s operation over plastic optical fiber
+
+A family of three point-to-point physical layers (PHYs) for 1000 Mb/s operation over duplex plastic optical fiber (POF) and related management parameters are specified by this amendment to IEEE Std 802.3-2015.
+
+[Learn More
+About 8802-3:2017/Amd 9-2018](https://standards.ieee.org/ieee/8802-3_2017_Amd_9/10056 "Learn More")
+
+**These standards have been removed from active status through a
+ballot
+where the standard is made inactive as a consensus decision of a
+balloting group.**
+
+---
+
+##### 1802.3-2001
+
+###### IEEE Conformance Test Methodology for IEEE Standards for Local and Metropolitan Area Networks - Specific Requirements - Part 3: Carrier Sense Multiple Access With Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications
+
+Administratively withdrawn December 2007. Abstract methods for the conformance testing of 802.3 Clause 14 (10BASE-T MAU) implementations in order to satisfy conformance requirements arising from the ISO/IEC 8802-3 (IEEE Std 802.3) specification are provided.
+
+[Learn More
+About 1802.3-2001](https://standards.ieee.org/ieee/1802.3/2329 "Learn More")
+
+**These standards are removed from active status through an
+administrative process for standards that have not undergone a
+revision
+process within 10 years.**
+
+---
+
+##### 802.3.1-2013
+
+###### IEEE Standard for Management Information Base (MIB) Definitions for Ethernet
+
+The Management Information Base (MIB) module specifications for IEEE Std 802.3TM, also known as Ethernet, are contained in this standard. It includes the Structure of Management Information Version 2 (SMIv2) MIB module specifications formerly produced and published by the Internet Engineering Task Force (IETF), as well as extensions resulting from amendments to IEEE Std 802.3. The SMIv2 MIB modules are intended for use with the Simple Network Management Protocol (SNMP), commonly used to manage Ethernet. The PDF of this standard is available at no cost compliments of the GETIEEE program. For more information go to https://ieeexplore.ieee.org/browse/standards/get-program/page
+
+[Learn More
+About 802.3.1-2013](https://standards.ieee.org/ieee/802.3.1/5263 "Learn More")

@@ -1,0 +1,16 @@
+Contents of https://www.itu.int/rec/R-REC-P.837/en:
+|  |  |  |  |
+| --- | --- | --- | --- |
+| **Main** | | | |
+| **Number** | **Title** | **Status** | **Questions** |
+| [**P.837-8 (09/2025)**](./recommendation.asp?lang=en&parent=R-REC-P.837-8-202509-I) | Characteristics of precipitation for propagation modelling | In force **(Main)** | N/A |
+|  | | | |
+| **Previous versions** | | | |
+| **Number** | **Title** | **Status** | **Questions** |
+| [**P.837-7 (06/2017)**](./recommendation.asp?lang=en&parent=R-REC-P.837-7-201706-S) | Characteristics of precipitation for propagation modelling | Superseded | 201/3 |
+| [**P.837-6 (02/2012)**](./recommendation.asp?lang=en&parent=R-REC-P.837-6-201202-S) | Characteristics of precipitation for propagation modelling   Note - Software implementation of the method for the conversion of rain rate statistics with different integration time for Recommendation ITU-R P.837-6 provided in the zip file | Superseded | 201/3 |
+| [**P.837-5 (08/2007)**](./recommendation.asp?lang=en&parent=R-REC-P.837-5-200708-S) | Characteristics of precipitation for propagation modelling | Superseded | 201/3 |
+| [**P.837-4 (04/2003)**](./recommendation.asp?lang=en&parent=R-REC-P.837-4-200304-S) | Characteristics of precipitation for propagation modelling | Superseded | 201/3 |
+| [**P.837-3 (02/2001)**](./recommendation.asp?lang=en&parent=R-REC-P.837-3-200102-S) | Characteristics of precipitation for propagation modelling | Superseded | 201/3 |
+| [**P.837-2 (10/99)**](./recommendation.asp?lang=en&parent=R-REC-P.837-2-199910-S) | Characteristics of precipitation for propagation modelling | Superseded | N/A |
+| [**P.837-1 (08/94)**](./recommendation.asp?lang=en&parent=R-REC-P.837-1-199408-S) | Characteristics of precipitation for propagation modelling | Superseded | N/A |

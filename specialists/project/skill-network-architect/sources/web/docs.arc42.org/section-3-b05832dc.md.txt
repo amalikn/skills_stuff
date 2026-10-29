@@ -1,0 +1,188 @@
+Contents of https://docs.arc42.org/section-3/:
+1. [Home](/home/)
+2. [Sections](/home/#template-sections)
+3. 3. Context and Scope
+
+On this page
+
+## Content
+
+System scope and context - as the name suggests - delimits your system (i.e. your scope) from all its communication partners (neighboring systems and users, i.e. the context of your system). It thereby specifies the external interfaces.
+
+If necessary, differentiate the business context (domain specific inputs and outputs) from the technical context (channels, protocols, hardware).
+
+## Motivation
+
+The domain interfaces and technical interfaces to communication partners are among
+your system’s most critical aspects. Make sure that you completely understand them.
+
+## Form
+
+* Various context diagrams
+* Lists of communication partners and their interfaces.
+
+## Examples
+
+See below, separated into business- and technical context.
+
+## 3.1 Business context
+
+### Content
+
+Specification of *all* communication partners (users, IT-systems, …) with explanations of domain specific inputs and outputs or interfaces.
+Optionally you can add domain specific formats or communication protocols.
+
+### Motivation
+
+All stakeholders should understand which data are exchanged with the environment of the system.
+
+### Form
+
+All kinds of diagrams that show the system as a black box and specify the domain interfaces to communiations partners.
+
+Alternatively (or additionally) you can use a table. The title of the table is the name of your system, the three columns contain the name of the communication partner, the inputs, and the outputs.
+
+### Examples
+
+* [:Example Business Context: HTML Sanity Checker](/examples/business-context-1/)
+* [:Example Business Context: MaMa](/examples/context-business-2/)
+* [:Example Business Context: TrafficPursuitUnit](/examples/business-context-3/)
+* [:Example Business Context: status.arc42.org](/examples/business-context-4/)
+
+Want to see this section inside a whole document?
+Read [the context and scope of real systems](https://examples.arc42.org/sections/03-context-and-scope/) at examples.arc42.org.
+
+### *<insert diagram or table>*
+
+### *<(optionally:) insert explanation of external domain interfaces>*
+
+## 3.2 Technical context
+
+### Contents
+
+Technical interfaces (channels and transmission media) linking your system to its environment.
+In addition a mapping of domain specific input/output to the channels, i.e. an explanation with I/O uses which channel.
+
+### Motivation
+
+Many stakeholders make architectural decision based on the technical interfaces between the system and its context. Especially infrastructure or hardware designers decide these technical interfaces.
+
+### Form
+
+E.g. UML deployment diagram describing channels to neighboring systems, together with a mapping table showing the relationships between channels and input/output.
+
+### Examples
+
+* [:Example Technical Context: HTML Sanity Checker](/examples/technical-context-1/)
+* [:Example Technical Context: TrafficPursuitUnit](/examples/technical-context-4/)
+
+### *<insert diagram or table>*
+
+### *<(optionally:) insert explanation of technical interfaces>*
+
+### *<insert mapping of input/output to channels>*
+
+---
+
+## Practical Tips
+
+* [Tip 3-1: Explicitly demarcate your system from its environment!](/tips/3-1/)
+
+  [#context](/keywords/#context)
+  [#external-interface](/keywords/#external-interface)
+* [Tip 3-2: Show the context as diagram!](/tips/3-2/)
+
+  [#context](/keywords/#context)
+  [#external-interface](/keywords/#external-interface)
+  [#essential](/keywords/#essential)
+* [Tip 3-3: Combine the context diagram with a table!](/tips/3-3/)
+
+  [#context](/keywords/#context)
+  [#essential](/keywords/#essential)
+* [Tip 3-4: Explicitly indicate risks in the context!](/tips/3-4/)
+
+  [#context](/keywords/#context)
+  [#risk](/keywords/#risk)
+* [Tip 3-5: Restrict the context to an overview, avoid too many details!](/tips/3-5/)
+
+  [#context](/keywords/#context)
+  [#essential](/keywords/#essential)
+  [#lean](/keywords/#lean)
+* [Tip 3-6: Simplify the context by categorization!](/tips/3-6/)
+
+  [#context](/keywords/#context)
+  [#external-interface](/keywords/#external-interface)
+  [#lean](/keywords/#lean)
+* [Tip 3-7: If many external systems are involved, aggregate (cluster) them by explicit criteria!](/tips/3-7/)
+
+  [#context](/keywords/#context)
+  [#cluster](/keywords/#cluster)
+  [#criteria](/keywords/#criteria)
+* [Tip 3-8: Aggregate (cluster) similar neighbour systems with ports!](/tips/3-8/)
+
+  [#context](/keywords/#context)
+  [#port](/keywords/#port)
+* [Tip 3-9: Show all (all!) external interfaces!](/tips/3-9/)
+
+  [#context](/keywords/#context)
+  [#external-interface](/keywords/#external-interface)
+  [#essential](/keywords/#essential)
+* [Tip 3-10: Differentiate business and technical context!](/tips/3-10/)
+
+  [#context](/keywords/#context)
+  [#technical-context](/keywords/#technical-context)
+  [#business-context](/keywords/#business-context)
+* [Tip 3-11: In the business context, show data flows (instead of dependencies)!](/tips/3-11/)
+
+  [#context](/keywords/#context)
+  [#business-context](/keywords/#business-context)
+* [Tip 3-12: Show external influences in the context!](/tips/3-12/)
+
+  [#context](/keywords/#context)
+* [Tip 3-13: Show transitive dependencies in the context!](/tips/3-13/)
+
+  [#context](/keywords/#context)
+* [Tip 3-14: Pay attention to quality requirements at external interfaces!](/tips/3-14/)
+
+  [#context](/keywords/#context)
+  [#quality-goal](/keywords/#quality-goal)
+  [#external-interface](/keywords/#external-interface)
+* [Tip 3-15: Show the technical context (in case hardware is central to your system)!](/tips/3-15/)
+
+  [#context](/keywords/#context)
+  [#technical-context](/keywords/#technical-context)
+* [Tip 3-16: Use the technical context to describe protocols or channels!](/tips/3-16/)
+
+  [#context](/keywords/#context)
+  [#thorough](/keywords/#thorough)
+  [#technical-context](/keywords/#technical-context)
+* [Tip 3-17: Combine business context with technical information!](/tips/3-17/)
+
+  [#context](/keywords/#context)
+  [#technical-context](/keywords/#technical-context)
+  [#business-context](/keywords/#business-context)
+  [#infrastructure](/keywords/#infrastructure)
+  [#lean](/keywords/#lean)
+* [Tip 3-18: Explain the relationship between domain interfaces and their technical realization!](/tips/3-18/)
+
+  [#context](/keywords/#context)
+  [#interface](/keywords/#interface)
+* [Tip 3-19: Defer technical context to the deployment view!](/tips/3-19/)
+
+  [#context](/keywords/#context)
+  [#technical-context](/keywords/#technical-context)
+  [#deployment-view](/keywords/#deployment-view)
+  [#lean](/keywords/#lean)
+
+See [here for questions related to context, scope and external interfaces](https://faq.arc42.org/category_c/#c-sec-3).
+
+### Complete Examples
+
+See [the context and scope of real systems](https://examples.arc42.org/sections/03-context-and-scope/), documented in full at examples.arc42.org.
+
+[Previous
+2. Constraints
+Technical and organizational constraints, conventions](/section-2/)
+[Next 
+4. Solution Strategy
+Fundamental solution decisions and ideas](/section-4/)

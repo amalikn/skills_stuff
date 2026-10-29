@@ -1,0 +1,25 @@
+{
+    "schema_version": 1,
+    "nodes": [
+        {
+            "id": "etcd1",
+            "domain": "zone-a"
+        },
+        {
+            "id": "etcd2",
+            "domain": "zone-b"
+        },
+        {
+            "id": "etcd3",
+            "domain": "zone-c"
+        }
+    ],
+    "must_survive": [
+        "node:etcd1",
+        "node:etcd2",
+        "node:etcd3",
+        "domain:zone-a",
+        "domain:zone-b",
+        "domain:zone-c"
+    ]
+}

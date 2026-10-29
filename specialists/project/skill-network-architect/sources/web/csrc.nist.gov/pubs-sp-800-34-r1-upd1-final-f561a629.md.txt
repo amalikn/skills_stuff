@@ -1,0 +1,30 @@
+Contents of https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final:
+[Publications](/publications)
+
+[Documentation](#pubs-documentation)
+   
+[Topics](#pubs-topics)
+
+**Date Published:** May 2010 (Updated 11/11/2010)
+
+**Supersedes:**
+
+[SP 800-34 Rev. 1 (05/31/2010)](/pubs/sp/800/34/r1/final)
+
+**Planning Note (03/17/2023):**
+
+Send inquiries about this publication to [[email protected]](/cdn-cgi/l/email-protection#eb988e88c6888e999fab8582989fc58c849dd4989e89818e889fd6a5a2b8bfced9dbb8bbced9dbd3dbdbc6d8dfced9dbb98e9dc5ced9dbdaced9db82859a9e829992).
+
+#### Author(s)
+
+, Pauline Bowen (NIST), Amy Phillips (BAH), Dean Gallup (BAH), David Lynes (BAH)
+
+This publication assists organizations in understanding the purpose, process, and format of information system contingency planning development through practical, real-world guidelines. This guidance document provides background information on interrelationships between information system contingency planning and other types of security and emergency management-related contingency plans, organizational resiliency, and the system development life cycle. This document provides guidance to help personnel evaluate information systems and operations to determine contingency planning requirements and priorities.
+
+#### Keywords
+
+incident response plan; contingency planning; disaster recovery plan; information system contingency plan; resilience
+
+##### Control Families
+
+Contingency Planning; Maintenance; Planning; Risk Assessment; System and Services Acquisition

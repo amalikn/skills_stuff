@@ -1,0 +1,33 @@
+Contents of https://arc42.org/overview:
+The arc42 template · 12 sections
+
+## arc42 at a glance
+
+arc42 answers two questions in a pragmatic way: **what** should you document and communicate about your architecture, and **how**. Twelve sections, each with a clear purpose, tailorable to your specific needs.
+
+Open source and free, also for commercial use. Proven in practice since 2005, used by teams worldwide.
+
+Every tile links straight to its detailed documentation on [docs.arc42.org](https://docs.arc42.org/): purpose, contents, motivation, and practical tips for each section.
+
+Requirements & quality
+Structures & views
+Concepts, technologies, decisions
+
+## Further information
+
+Now that you know the template sections, dive deeper at your own pace:
+
+* Real-world [examples of arc42 documentation](/examples/)
+* [Frequently asked questions](https://faq.arc42.org/) about using arc42 in practice
+* The extensive [template documentation](https://docs.arc42.org/), organized by section
+* The [arc42 quality model](https://quality.arc42.org/), a structured collection of quality attributes
+
+Need something lighter than twelve sections? An [arc42 canvas](/canvas/) captures a whole system on a single page.
+
+[Browse all documentation](/documentation/)
+
+## Learn arc42 in a training
+
+Prefer learning from a trainer? We teach arc42 and iSAQB-accredited trainings, from Foundation to a number of advanced topics, on-site and remote.
+
+[Trainings & upcoming dates →](/learn/)

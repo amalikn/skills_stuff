@@ -1,0 +1,69 @@
+Contents of https://docs.cloud-init.io/en/latest/:
+`Cloud-init` is the *industry standard* multi-distribution method for
+cross-platform cloud instance initialization. It is supported across all major
+public cloud providers, provisioning systems for private cloud infrastructure,
+and bare-metal installations.
+
+During boot, `cloud-init` identifies the cloud it is running on and
+initializes the system accordingly. Cloud instances will automatically be
+provisioned during first boot with networking, storage, SSH keys, packages
+and various other system aspects already configured.
+
+`Cloud-init` provides the necessary glue between launching a cloud instance
+and connecting to it so that it works as expected.
+
+For cloud users, `cloud-init` provides no-install first-boot configuration
+management of a cloud instance. For cloud providers, it provides instance setup
+that can be integrated with your cloud.
+
+If you would like to read more about what cloud-init is, what it does and how
+it works, read our [high-level introduction](explanation/introduction.html#introduction).
+
+---
+
+**Tutorials**
+
+Get started - a hands-on introduction to `cloud-init` for new users
+
+[Tutorials](tutorial/index.html)
+
+**How-to guides**
+
+Step-by-step guides covering key operations and common tasks
+
+[How-to guides](howto/index.html)
+
+**Reference**
+
+Technical information - specifications, APIs, architecture
+
+[Reference](reference/index.html)
+
+**Explanation**
+
+Discussion and clarification of key topics
+
+[Explanation](explanation/index.html)
+
+---
+
+## Having trouble? We would like to help![¶](#having-trouble-we-would-like-to-help "Permalink to this heading")
+
+* [Work through the tutorials](tutorial/index.html#tutorial-index) if you’re new to
+  `cloud-init`
+* Use the search bar at the upper left to search the documentation
+* [Read the FAQ](explanation/faq.html#faq) for answers to some common questions
+* Join the conversation at [GitHub Discussions](https://github.com/canonical/cloud-init/discussions)
+* Find a bug? See [Report bugs](howto/bugs.html#reporting-bugs)
+
+## Project and community[¶](#project-and-community "Permalink to this heading")
+
+`Cloud-init` is an open source project that warmly welcomes community
+projects, contributions, suggestions, fixes and constructive feedback.
+
+* Read the [Code of Conduct](https://ubuntu.com/community/code-of-conduct)
+* Ask questions in the `#cloud-init` [room on Matrix](https://matrix.to/#/%23cloud-init:ubuntu.com)
+* Follow announcements or ask a question on [GitHub Discussions](https://github.com/canonical/cloud-init/discussions)
+* [Contribute on GitHub](development/index.html#development)
+* See the latest [release schedule](https://github.com/canonical/cloud-init/milestones)
+* See past [events](development/summit.html#summit)

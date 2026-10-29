@@ -6,48 +6,20 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_1158
+Last rotated: 20261029_1751
 ---
 
 # Changelog — skill-cambium
-
-## Contents
-
-- [20261029_1915 — E500 has no CLI LLDP neighbour view (no version change)](#20261029_1915--e500-has-no-cli-lldp-neighbour-view-no-version-change)
-- [20261029_1220 — cnWave SNMP silence is per unit (no version change)](#20261029_1220--cnwave-snmp-silence-is-per-unit-no-version-change)
-- [20261029_1040 — cnWave 1.2.1 SNMP identity and E430W model name (no version change)](#20261029_1040--cnwave-121-snmp-identity-and-e430w-model-name-no-version-change)
-- [20261027_2013 — skill-smc script paths moved into job folders (no version change)](#20261027_2013--skill-smc-script-paths-moved-into-job-folders-no-version-change)
-- [20261020_0944 — Write-back evidence: code excerpts and screenshots (no version change)](#20261020_0944--write-back-evidence-code-excerpts-and-screenshots-no-version-change)
-- [20261019_1119 — LINKPlanner best-server analysis is not footprint overlap (no version change)](#20261019_1119--linkplanner-best-server-analysis-is-not-footprint-overlap-no-version-change)
-- [20261015_1750 — Volatile config keys per family; no family has a change marker (no version change)](#20261015_1750--volatile-config-keys-per-family-no-family-has-a-change-marker-no-version-change)
-- [20261015_1553 — Concurrent SNMP walks lose no evidence; SNMP is not a login (no version change)](#20261015_1553--concurrent-snmp-walks-lose-no-evidence-snmp-is-not-a-login-no-version-change)
-- [20261015_1442 — Radio parameters over SNMP per family; no azimuth or beamwidth anywhere (no version change)](#20261015_1442--radio-parameters-over-snmp-per-family-no-azimuth-or-beamwidth-anywhere-no-version-change)
-- [20261015_1313 — A closed connection through the SMC hop is an unreachable unit (old-looma config backup) (no version change)](#20261015_1313--a-closed-connection-through-the-smc-hop-is-an-unreachable-unit-old-looma-config-backup-no-version-change)
-- [20261015_1115 — LLDP as each family sends it: cnWave V5000 sends its address as the port id (no version change)](#20261015_1115--lldp-as-each-family-sends-it-cnwave-v5000-sends-its-address-as-the-port-id-no-version-change)
-- [20261015_0130 — LAN MAC rule measured per family; cambiumLANMACAddress in the OID registry (v0.8.1 -> v0.8.2)](#20261015_0130--lan-mac-rule-measured-per-family-cambiumlanmacaddress-in-the-oid-registry-v081---v082)
-- [20261014_2230 — MAC identity by family; Option 82 pairs no unit; as-built patterns across seven sets (v0.8.0 -> v0.8.1)](#20261014_2230--mac-identity-by-family-option-82-pairs-no-unit-as-built-patterns-across-seven-sets-v080---v081)
-- [20261014_1956 — ePMP ARP MAC = LAN + 1 confirmed on Force 300-25 (v0.7.10 -> v0.8.0)](#20261014_1956--epmp-arp-mac--lan--1-confirmed-on-force-300-25-v0710---v080)
-- [20261013_2226 — Sidekick commissioning leaves no installer record; as-built sets (v0.7.9 -> v0.7.10)](#20261013_2226--sidekick-commissioning-leaves-no-installer-record-as-built-sets-v079---v0710)
-- [20261011_1744 — Correction: SM bridge table shows the router (show bridge sta), intermittently (v0.7.8 -> v0.7.9)](#20261011_1744--correction-sm-bridge-table-shows-the-router-show-bridge-sta-intermittently-v078---v079)
-- [20261011_1431 — Router-to-SM facts by site type; no CFM on ePMP (v0.7.7 -> v0.7.8)](#20261011_1431--router-to-sm-facts-by-site-type-no-cfm-on-epmp-v077---v078)
-- [20261011_1359 — Force 300 SM CLI: no neighbour or ARP view of its router (v0.7.6 -> v0.7.7)](#20261011_1359--force-300-sm-cli-no-neighbour-or-arp-view-of-its-router-v076---v077)
-- [20261010_1805 — Governed-file standard: recipes, CHANGELOG rotated (v0.7.5 -> v0.7.6)](#20261010_1805--governed-file-standard-recipes-changelog-rotated-v075---v076)
-- [20261009_1806 — Sidekick writes the ePMP installer record: field formats, write OIDs, model map (v0.7.4 -> v0.7.5)](#20261009_1806--sidekick-writes-the-epmp-installer-record-field-formats-write-oids-model-map-v074---v075)
-- [20261009_1705 — R195P to SM: the provisioning record, measured against every live source; towers boot together; V2000 answers SNMP (v0.7.3 -> v0.7.4)](#20261009_1705--r195p-to-sm-the-provisioning-record-measured-against-every-live-source-towers-boot-together-v2000-answers-snmp-v073---v074)
-- [20261009_1547 — Force 300 / R195P boot window re-measured on 30 pairs; isolated reboots (v0.7.2 -> v0.7.3)](#20261009_1547--force-300--r195p-boot-window-re-measured-on-30-pairs-isolated-reboots-v072---v073)
-- [20261009_1408 — home-48 syslog test rolled back (v0.7.1 -> v0.7.2)](#20261009_1408--home-48-syslog-test-rolled-back-v071---v072)
-- [20261009_1348 — Force 300 SM and R195P: one to one, PoE dependency and failure states (device view) (v0.7.0 -> v0.7.1)](#20261009_1348--force-300-sm-and-r195p-one-to-one-poe-dependency-and-failure-states-device-view-v070---v071)
-- [20261009_1341 — R195P host keys regenerated each boot (ramfs /etc); remote syslog off as provisioned; nvram enable does nothing (v0.6.52 -> v0.7.0)](#20261009_1341--r195p-host-keys-regenerated-each-boot-ramfs-etc-remote-syslog-off-as-provisioned-nvram-enable-does-nothing-v0652---v070)
-- [20261009_1315 — Force 300 SM LLDP transmit failing; R195P LLDP tooling and no central logs (v0.6.51 -> v0.6.52)](#20261009_1315--force-300-sm-lldp-transmit-failing-r195p-lldp-tooling-and-no-central-logs-v0651---v0652)
-- [20261009_1048 — An ePMP radio's role is its mode, not its model: cambiumSubModeType (v0.6.50 -> v0.6.51)](#20261009_1048--an-epmp-radios-role-is-its-mode-not-its-model-cambiumsubmodetype-v0650---v0651)
-- [20261009_0330 — Which SM an R195P hangs from: the 3000L bridge table and Option 82, not the units (v0.6.49 -> v0.6.50)](#20261009_0330--which-sm-an-r195p-hangs-from-the-3000l-bridge-table-and-option-82-not-the-units-v0649---v0650)
-
-**20261016_2115 — v0.8.3:** Reference 03 adds observed as-built label variants, unique-match and conflict guards from UNC's conversion audit. No device changes.
 
 ## 20261029_1915 — E500 has no CLI LLDP neighbour view (no version change)
 
 Disputed 2026-10-29 in `references/06_device-api-cli-reference.md`: E500 4.2.3-r2 refuses `show lldp-neighbors`; place E-series by
 switch LLDP, boot correlation or controller topology, never by name (unified-network-controller placement engine, a8c58f9).
+
+## 20261029_1750 — Inbound route to the peer architect skills (v0.8.3 -> v0.8.4)
+
+SKILL.md Related Skills names skill-network-architect and skill-systems-architect and when to call them (design rather than device facts), with their
+handoff form; they call back here for platform facts (operator, 2026-10-29). manifest 0.8.3 -> 0.8.4.
 
 ## 20261029_1220 — cnWave SNMP silence is per unit (no version change)
 

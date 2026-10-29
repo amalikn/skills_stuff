@@ -1,0 +1,212 @@
+Contents of https://standards.ieee.org/ieee/1588/6825/:
+**Current projects that have been authorized by the IEEE SA
+Standards
+Board to develop a standard.**
+
+---
+
+##### P1588
+
+###### Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems
+
+This standard defines a network protocol, the Precision Time Protocol (PTP), enabling accurate and precise synchronization of the real-time clocks of devices in networked distributed systems.
+The protocol is applicable to systems where devices communicate via networks, including Ethernet. The standard allows multicast communication, unicast communication or both.
+The protocol:
+• Enables heterogeneous systems that include clocks of various inherent precision, resolution, and stability to synchronize to a grandmaster clock.
+• Supports synchronization in the sub-microsecond range with minimal network bandwidth and local clock computing resources.
+• Enhances support for synchronization to better than 1 nanosecond.
+• Specifies how corrections for path asymmetry are made, if the asymmetry values are known. The grandmaster clock can be synchronized to a source of time external to the system, if time traceable to international standards or other source of time is required.
+• Provides information for devices to compute Coordinated Universal Time (UTC) from the protocol distributed time, if the grandmaster clock is traceable to international standards and is able to access pending leap-second changes. Options are also provided to allow end devices to compute other time scales from the protocol distributed time scale.
+• Defines timing domains in which system timing is consistent.
+• Establishes the timing topology.
+• Allows, via the default behavior of the protocol, simple systems to be installed and operated without requiring the administrative attention of users to determine the system timing topology.
+The standard:
+• Defines all needed data types, message formats, required computations, internal states, the behavior of devices with respect to transmitting, receiving, and processing protocol communications.
+• Provides for the management of protocol artifacts in devices.
+• Defines formal mechanisms for message extensions and the requirements for profiles that allow customization for specific application domains.
+• Defines conformance requirements.
+• Provides optional specifications for protocol security.
+• Specifies requirements for mapping the protocol to specific network implementations and defines such mappings, including User Datagram Protocol (UDP)/Internet Protocol (IP versions 4 and 6), and layer-2 IEEE Std 802.3 Ethernet.
+• Documents conditions under which this standard is backward compatible with IEEE Std 1588-2008 and IEEE Std 1588-2019.
+
+[Learn More
+About P1588](https://standards.ieee.org/ieee/1588/11795 "Learn More")
+
+##### P1588.1
+
+###### Standard for Client Server Precision Clock Synchronization Protocol
+
+This standard defines a simple and precise time transfer protocol called the Client Server Precision Time Protocol (CSPTP). CSPTP uses Precision Time Protocol (PTP) messages defined in IEEE Std 1588, to take advantage of timing support in network switches and routers. Therefore, CSPTP can achieve time transfer accuracies comparable to what can be achieved using PTP. However, CSPTP is logically isolated from PTP, and therefore can coexist with existing PTP networks. CSPTP allows clients to request timing information from any CSPTP server and allows the servers to operate without keeping state information on clients.
+
+[Learn More
+About P1588.1](https://standards.ieee.org/ieee/1588.1/11644 "Learn More")
+
+##### P1588f
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment: Enhancements for Latency and Asymmetry Calibration
+
+This amendment enhances support for latency and asymmetry calibration, and also provides informative text related to these enhancements. It corrects errors in the text and clarifies unclear passages.
+
+[Learn More
+About P1588f](https://standards.ieee.org/ieee/1588f/12029 "Learn More")
+
+##### P1588i
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems--Amendment: Profile configuration
+
+This amendment clarifies the conditions under which a PTP Profile operates on a PTP Instance, or on a PTP Port. The amendment specifies one or more data set members to select the PTP Profile in operation. This amendment fixes errors and clarifies language in the standard.
+
+[Learn More
+About P1588i](https://standards.ieee.org/ieee/1588i/12050 "Learn More")
+
+##### P1588j
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems–Amendment: Enhancements to the Unicast Message Negotiation Procedures and to Performance Monitoring Options
+
+This amendment:
+1. Enhances the existing unicast message negotiation specified in Clause 16.1 making use of Signaling messages to carry the reasons for the grantor to deny the unicast request, while maintaining backward compatibility with current clause 16.1.
+2. Adds more flexibility to the performance monitoring option in Annex J, on the following aspects while maintaining backward compatibility with current Annex J: allowing performance monitoring for parameters listed in Table J.1 also on PTP ports not in the Time-Receiver state, addressing aspects related to the reference used to calculate the statistics (e.g., whether it is the Local PTP Clock or some other external timing reference such as a local Global Navigation Satellite System (GNSS) receiver), adding the possibility to collect data faster than once every 15 minutes.
+3. updates Management Information Base (MIB) and YANG data models
+4. Corrects errors in the text and clarifies passages that are unclear.
+
+[Learn More
+About P1588j](https://standards.ieee.org/ieee/1588j/12051 "Learn More")
+
+##### P1588k
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems – Amendment: Security Enhancements
+
+This amendment provides several enhancements to improve Precision Time Protocol (PTP) security. These enhancements include:1) support for additional key management mechanisms; 2) updates on the use of existing key management mechanisms; 3) updates on the use of optional fields in the authentication Type Length Value (TLV); 4) provision of additional guidance on the use of the security in deployments of PTP; 5) expansion of IEEE 1588 data sets to support security options and updates to the Management Information Base (MIB) and YANG data model to include the new data sets; 6) corrections and clarifications of unclear passages in the standard.
+
+[Learn More
+About P1588k](https://standards.ieee.org/ieee/1588k/12117 "Learn More")
+
+##### P1588m
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems– Amendment: Maintenance
+
+This is a maintenance amendment. It clarifies ambiguities, fixes errors, and makes changes in language to improve consistency in the standard.
+
+[Learn More
+About P1588m](https://standards.ieee.org/ieee/1588m/12229 "Learn More")
+
+##### P1588n
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment: Data Sets for Enhanced Accuracy Metrics and Foreign Master
+
+This amendment specifies data sets for the Enhanced Accuracy Metrics feature and the Foreign Master feature. This amendment also specifies Management Information Base (MIB) and YANG (see 8.1) for these data sets. This amendment fixes errors in the standard and clarifies unclear passages.
+
+[Learn More
+About P1588n](https://standards.ieee.org/ieee/1588n/12308 "Learn More")
+
+**Standards approved by the IEEE SA Standards Board that are within
+the
+10-year lifecycle.**
+
+---
+
+##### 1588a-2023
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment 3: Precision Time Protocol (PTP) Enhancements for Best Master Clock Algorithm (BMCA) Mechanisms
+
+Updates to information and messages for the Enhanced Accuracy TLV are provided in this amendment to IEEE 1588-2019. This amendment also clarifies the operation of the best master clock algorithm (BMCA), provides a new annex about the default BMCA, corrects errors in the text, and clarifies unclear passages.
+
+[Learn More
+About 1588a-2023](https://standards.ieee.org/ieee/1588a/10395 "Learn More")
+
+##### 1588b-2022
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment 1: Precision Time Protocol (PTP) Mapping for Transport over the Optical Transport Network (OTN)
+
+This amendment to IEEE Std 1588-2019 adds a normative annex that specifies the mapping of PTP to the OTN; and adds an enumeration value to the network Protocol table (Table 3, in 7.4.1; and corrects errors in the text and clarifies unclear passages.
+
+[Learn More
+About 1588b-2022](https://standards.ieee.org/ieee/1588b/10396 "Learn More")
+
+##### 1588c-2024
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment: Clarification of Terminology
+
+This standard is an amendment of IEEE Std 1588™-2019. Updates to various sections to correct text, make clarifications, and other improvements are provided in this amendment.
+
+[Learn More
+About 1588c-2024](https://standards.ieee.org/ieee/1588c/10397 "Learn More")
+
+##### 1588d-2023
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment 4: GDOI (Group Domain of Interpretation) Key Management
+
+(2nd printing) Updates to IEEE Std 1588™-2019 are provided in this amendment. This amendment also adds guidelines on the application and operation of GDOI (Group Domain of Interpretation) key management to Annex P. and it corrects errors and clarifies statements in 16.4 and Annex P.
+
+[Learn More
+About 1588d-2023](https://standards.ieee.org/ieee/1588d/11091 "Learn More")
+
+##### 1588e-2024
+
+###### IEEE Standard for Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment 5: MIB and YANG Modules
+
+Updates to IEEE Std 1588™-2019 are provided in this amendment. This amendment specifies the structure and content of the IEEE 1588 MIB and YANG modules.
+
+[Learn More
+About 1588e-2024](https://standards.ieee.org/ieee/1588e/10399 "Learn More")
+
+##### 1588g-2022
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment 2: Master-Slave Optional Alternative Terminology
+
+This amendment to IEEE Std 1588-2019 identifies alternative terms for "master" and "slave" used in implementations or PTP profiles; identifies alternative names for port state names; and identifies abbreviations for clock roles or port states.
+
+[Learn More
+About 1588g-2022](https://standards.ieee.org/ieee/1588g/10478 "Learn More")
+
+##### 1588h-2026
+
+###### IEEE Approved Draft Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems Amendment: Option to Disable Announcement Messages
+
+This draft standard is an amendment of IEEE Std 1588™-2019. This amendment: identifies an option to configure a PTP Port to disable Announce messages
+
+[Learn More
+About 1588h-2026](https://standards.ieee.org/ieee/1588h/11767 "Learn More")
+
+**These standards have been replaced with a revised version of the
+standard, or by a compilation of the original active standard and
+all
+its existing amendments, corrigenda, and errata.**
+
+---
+
+##### 1588-2002
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems
+
+Replaced by IEC 61588-2004 (SH95292 or SS95292) Dual-logo document Abstract: A protocol to synchronize independent clocks running on separate nodes of a distributed measurement and control system to a high degree of accuracy and precision is specified. The protocol is independent of the networking technology, and the system topology is self-configuring.
+
+[Learn More
+About 1588-2002](https://standards.ieee.org/ieee/1588/3140 "Learn More")
+
+##### 1588-2008
+
+###### IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems
+
+This standard defines a protocol enabling precise synchronization of clocks in measurement and control systems implemented with technologies such as network communication, local computing and distributed objects. The protocol is applicable to systems communicating by local area networks supporting multicast messaging including but not limited to Ethernet. The protocol enables heterogeneous systems that include clocks of various inherent precision, resolution, and stability to synchronize to a grandmaster clock. The protocol supports system-wide synchronization accuracy in the sub-microsecond range with minimal network and local clock computing resources. The default behavior of the protocol allows simple systems to be installed and operated without requiring the administrative attention of users. The standard includes mappings to UDP/IP, DeviceNet and a layer-2 Ethernet implementation. An Interpretation is available at http://standards.ieee.org/reading/ieee/interp/1588-2008.html
+
+[Learn More
+About 1588-2008](https://standards.ieee.org/ieee/1588/4355 "Learn More")
+
+**These standards have been removed from active status through a
+ballot
+where the standard is made inactive as a consensus decision of a
+balloting group.**
+
+---
+
+No Inactive-Withdrawn Standards
+
+**These standards are removed from active status through an
+administrative process for standards that have not undergone a
+revision
+process within 10 years.**
+
+---
+
+No Inactive-Reserved Standards

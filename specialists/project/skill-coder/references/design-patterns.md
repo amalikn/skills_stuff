@@ -808,6 +808,38 @@ while changed:                                   # colocation.propagate (a8c58f9
                 clash[dst].update({at[dst]: via.get(dst, "anchor"), at[src]: f"{source} from {src}"})
 ```
 
+### P-40 Hold citations by a check: a ledger of every cited URL, a local copy keyed by URL, rules as findings
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (skill-network-architect `scripts/check_package.py` check_ledger and
+> check_prose, `scripts/fetch_sources.py`, `scripts/sources_ledger.py`; uncommitted at write time: 356 sources stored, 271 ledger entries,
+> every rule failing its own negative test) (reusable_candidate) Pattern P-40.
+
+- **Problem:** reference documents decay quietly: links rot, a claim loses its source, a rewrite drops a citation, and writing rules (width,
+  diagram form, link form) hold only while someone remembers them. Review catches some of it once; nothing catches it on the next edit.
+- **Solution:** three parts. (1) A fetcher keeps a local copy of every cited URL in a store keyed by URL, with an index (path, sha256,
+  retrieved); plan by default, `--apply` writes, resumable from the index, bounded workers, a process-group kill on timeout. (2) A ledger
+  builder keeps curated evidence entries and catalogues every other cited URL as generated, attaching the local copy. (3) The offline check
+  fails on any cited URL missing from the ledger and on each writing rule, and every rule has a negative test that breaks it on purpose.
+- **Why it works:** the expensive, networked parts (fetch, link probe) run on demand; the cheap invariant (cited implies catalogued) runs on
+  every check, so a new citation cannot land without its ledger row and the fetch that gives it a local copy.
+- **Reuse:** any knowledge pack, runbook set or design repo that cites external material; vendor-document stores; research reports.
+- **Pitfalls:** a 2xx proves a page exists, not that it still says what was claimed; 401/403/429 and TLS chain errors are unknown, not
+  dead; JS-rendered pages return near-empty bodies, so set a body floor and retry with a JS renderer; URLs with parentheses need a balanced
+  pattern; a store shared by two packs lives in one and the other symlinks it.
+- **Realised in:** Python:
+
+```python
+def check_ledger(root):                          # check_package.py (skill-network-architect)
+  known = {e.get("url") for e in json.loads((root / "sources.json").read_text()).get("sources", [])}
+  findings = []
+  for path in [root / "SKILL.md", *(root / "references").glob("*.md"), *(root / "templates").glob("*.md")]:
+    text = re.sub(r"```.*?```", "", path.read_text(), flags=re.DOTALL)   # diagrams and code are not citations
+    for url in sorted(set(LEDGER_URL.findall(text))):
+      if url.rstrip(".,;:") not in known:
+        findings.append(f"source not in sources.json (run just ledger --apply): {path.name}: {url}")
+  return findings
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet

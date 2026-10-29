@@ -1,0 +1,22 @@
+Contents of https://www.itu.int/rec/R-REC-P.526/en:
+|  |  |  |  |
+| --- | --- | --- | --- |
+| **Main** | | | |
+| **Number** | **Title** | **Status** | **Questions** |
+| [**P.526-16 (11/2025)**](./recommendation.asp?lang=en&parent=R-REC-P.526-16-202511-I) | Propagation by diffraction | In force **(Main)** | 202-5/3 |
+|  | | | |
+| **Previous versions** | | | |
+| **Number** | **Title** | **Status** | **Questions** |
+| [**P.526-15 (10/2019)**](./recommendation.asp?lang=en&parent=R-REC-P.526-15-201910-S) | Propagation by diffraction   Note - This version of the Recommendation is incorporated by reference in the Radio Regulations. | Superseded | 202/3 |
+| [**P.526-14 (01/2018)**](./recommendation.asp?lang=en&parent=R-REC-P.526-14-201801-S) | Propagation by diffraction | Superseded | 202/3 |
+| [**P.526-13 (11/2013)**](./recommendation.asp?lang=en&parent=R-REC-P.526-13-201311-S) | Propagation by diffraction | Superseded | 202/3 |
+| [**P.526-12 (02/2012)**](./recommendation.asp?lang=en&parent=R-REC-P.526-12-201202-S) | Propagation by diffraction | Superseded | 202/3 |
+| [**P.526-11 (10/2009)**](./recommendation.asp?lang=en&parent=R-REC-P.526-11-200910-S) | Propagation by diffraction | Superseded | 202/3 |
+| [**P.526-10 (02/2007)**](./recommendation.asp?lang=en&parent=R-REC-P.526-10-200702-S) | Propagation by diffraction | Superseded | 202/3 |
+| [**P.526-9 (08/05)**](./recommendation.asp?lang=en&parent=R-REC-P.526-9-200508-S) | Propagation by diffraction | Superseded | 202/3 |
+| [**P.526-8 (04/2003)**](./recommendation.asp?lang=en&parent=R-REC-P.526-8-200304-S) | Propagation by diffraction | Superseded | 202/3 |
+| [**P.526-7 (02/01)**](./recommendation.asp?lang=en&parent=R-REC-P.526-7-200102-S) | Propagation by diffraction | Superseded | N/A |
+| [**P.526-6 (10/99)**](./recommendation.asp?lang=en&parent=R-REC-P.526-6-199910-S) | Propagation by diffraction | Superseded | N/A |
+| [**P.526-5 (08/97)**](./recommendation.asp?lang=en&parent=R-REC-P.526-5-199708-S) | Propagation by diffraction | Superseded | N/A |
+| [**P.526-4 (10/95)**](./recommendation.asp?lang=en&parent=R-REC-P.526-4-199510-S) | Propagation by diffraction | Superseded | N/A |
+| [**P.526-3 (08/94)**](./recommendation.asp?lang=en&parent=R-REC-P.526-3-199408-S) | Progagation by diffraction | Superseded | N/A |

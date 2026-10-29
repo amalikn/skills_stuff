@@ -1,0 +1,52 @@
+Contents of https://docs.ceph.com/en/latest/architecture/:
+Notice
+
+This document is for a development version of Ceph.
+
+These pages explain how Ceph stores data, keeps it available when hardware
+fails, and serves it to clients.
+
+![The Ceph stack: RADOS at the base; librados above it; RADOS Gateway (RGW), RBD, and CephFS on top, each reached by applications, hosts or virtual machines, and clients.](../_images/stack.png)
+
+How Ceph Stores Data
+
+* [The Ceph Storage Cluster](storage-cluster/#arch-ceph-storage-cluster): RADOS, the
+  object store under every Ceph service.
+* [Scalability and High Availability](scalability-high-availability/#arch-scalability-and-high-availability): CRUSH, the cluster map, Monitor
+  quorum, and authentication.
+* [Dynamic Cluster Management](dynamic-cluster-management/): pools,
+  placement groups, peering, rebalancing, and scrubbing.
+* [Erasure Coding](erasure-coding/): how chunks are written and read.
+
+How Clients Use It
+
+* [Ceph Clients](ceph-clients/#architecture-ceph-clients): object, block, and file
+  interfaces.
+* [Ceph Protocol](ceph-protocol/): librados, watch/notify, and striping.
+
+Extending Ceph and Legacy Features
+
+* [Ceph Object Classes](extending-ceph/): extending the OSD with your own
+  object methods.
+* [Cache Tiering (Deprecated)](cache-tiering/): kept for clusters that
+  still run it.
+
+Why This Matters for Sizing
+
+Heartbeats, peering, rebalancing, and recovery run on the OSD hosts, so every
+server needs CPU, RAM, and network for them. See
+[Hardware Recommendations](../start/hardware-recommendations/#hardware-recommendations).
+
+Next Steps
+
+* [The Parts of a Ceph Cluster](../start/ceph-cluster-components/#ceph-cluster-components)
+* [Deploying a Single-Host Test Cluster](../start/quick-start-cephadm/#quick-start-cephadm)
+
+Additional Resources
+
+* [Glossary](../glossary/)
+* [Hardware Recommendations](../start/hardware-recommendations/#hardware-recommendations)
+
+Brought to you by the Ceph Foundation
+
+The Ceph Documentation is a community resource funded and hosted by the non-profit [Ceph Foundation](https://ceph.io/en/foundation/). If you would like to support this and our other efforts, please consider [joining now](https://ceph.io/en/foundation/join/).

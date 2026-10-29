@@ -1,0 +1,23 @@
+Contents of https://www.itu.int/rec/T-REC-G.8275.1/en:
+|  |  |  |
+| --- | --- | --- |
+| **In force components** | | |
+| **Number** | **Title** | **Status** |
+| [**G.8275.1/Y.1369.1 (02/26)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202602-I) | Precision time protocol telecom profile for phase/time synchronization with full timing support from the network | In force |
+| [**G.8275.1 (2026) Amendment 1 (08/26)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202608-P!Amd1) |  | In force (prepublished) |
+|  | | |
+| **Superseded and Withdrawn components** | | |
+| **Number** | **Title** | **Status** |
+| [**G.8275.1/Y.1369.1 (2014) Corrigendum 1 (01/15)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-201501-T!Cor1) | This Corrigendum was never published separately; its content has been included in the published Rec. ITU-T G.8275.1/Y.1369.1 (07/2014). | Superseded |
+| [**G.8275.1/Y.1369.1 (07/14)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-201407-S) | Precision time protocol telecom profile for phase/time synchronization with full timing support from the network | Superseded |
+| [**G.8275.1/Y.1369.1 (06/16)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-201606-S) | Precision time protocol telecom profile for phase/time synchronization with full timing support from the network | Superseded |
+| [**G.8275.1/Y.1369.1 (2016) Amendment 1 (08/17)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-201708-S!Amd1) |  | Superseded |
+| [**G.8275.1/Y.1369.1 (2016) Amendment 2 (03/18)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-201803-S!Amd2) |  | Superseded |
+| [**G.8275.1/Y.1369.1 (2016) Amendment 3 (08/19)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-201908-S!Amd3) |  | Superseded |
+| [**G.8275.1/Y.1369.1 (03/20)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202003-S) | Precision time protocol telecom profile for phase/time synchronization with full timing support from the network | Superseded |
+| [**G.8275.1/Y.1369.1 (2020) Amendment 1 (11/20)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202011-S!Amd1) |  | Superseded |
+| [**G.8275.1/Y.1369.1 (2020) Amendment 2 (06/21)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202106-S!Amd2) |  | Superseded |
+| [**G.8275.1/Y.1369.1 (2020) Amendment 3 (02/22)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202202-S!Amd3) |  | Superseded |
+| [**G.8275.1/Y.1369.1 (11/22)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202211-S) | Precision time protocol telecom profile for phase/time synchronization with full timing support from the network | Superseded |
+| [**G.8275.1/Y.1369.1 (2022) Amendment 1 (01/24)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202401-S!Amd1) |  | Superseded |
+| [**G.8275.1/Y.1369.1 (2022) Amendment 2 (08/24)**](./recommendation.asp?lang=en&parent=T-REC-G.8275.1-202408-S!Amd2) |  | Superseded |

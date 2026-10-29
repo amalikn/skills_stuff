@@ -1,0 +1,1976 @@
+Contents of https://docs.frrouting.org/en/latest/bgp.html:
+BGP stands for Border Gateway Protocol. The latest BGP version is 4.
+BGP-4 is one of the Exterior Gateway Protocols and the de facto standard
+interdomain routing protocol. BGP-4 is described in [**RFC 1771**](https://datatracker.ietf.org/doc/html/rfc1771.html) and updated by
+[**RFC 4271**](https://datatracker.ietf.org/doc/html/rfc4271.html). [**RFC 2858**](https://datatracker.ietf.org/doc/html/rfc2858.html) adds multiprotocol support to BGP-4.
+
+## Starting BGP[](#starting-bgp "Link to this heading")
+
+Configuration for the daemon should be saved in the FRR integrated configuration
+file located in /etc/frr/frr.conf, see [Integrated Config File](basic.html#config-file) for more
+information on system configuration.
+
+Prior versions of FRR supported reading and writing per-daemon config files;
+however, with the introduction of the centralized management daemon `mgmtd`
+this could no longer be supported.
+
+In order to allow for an orderly transition from per-daemon config files to the
+integrated config file, FRR daemons will continue to try and **read** their
+specific per-daemon configuration file as before. Additionally the config can
+still be loaded directly using the `-f` or `--config-file` CLI options;
+however, these files will **not** be updated when the configuration is written
+(e.g., with the `write mem` command).
+
+Warning
+
+Per-daemon files will **no longer** be updated when the user issues a `write
+memory` command. Therefore these per-daemon config files should only be used
+as a mechanism for transitioning to the integrated config, and then removed.
+
+*bgpd* specific invocation options are described below. Common options may also
+be specified ([Common Invocation Options](basic.html#common-invocation-options)).
+
+-p, --bgp\_port <port>[](#cmdoption-bgpd-p "Link to this definition")
+:   Set the bgp protocol’s port number. When port number is 0, that means do not
+    listen bgp port.
+
+-l, --listenon[](#cmdoption-bgpd-l "Link to this definition")
+:   Specify specific IP addresses for bgpd to listen on, rather than its default
+    of `0.0.0.0` / `::`. This can be useful to constrain bgpd to an internal
+    address, or to run multiple bgpd processes on one host. Multiple addresses
+    can be specified.
+
+    In the following example, bgpd is started listening for connections on the
+    addresses 100.0.1.2 and fd00::2:2. The options -d (runs in daemon mode) and
+    -f (uses specific configuration file) are also used in this example as we
+    are likely to run multiple bgpd instances, each one with different
+    configurations, when using -l option.
+
+    Note that this option implies the –no\_kernel option, and no learned routes will be installed into the linux kernel.
+
+```
+# /usr/lib/frr/bgpd -d -f /some-folder/bgpd.conf -l 100.0.1.2 -l fd00::2:2
+```
+
+-n, --no\_kernel[](#cmdoption-bgpd-n "Link to this definition")
+:   Do not install BGP routes into zebra (and therefore not into the Linux
+    kernel). This is the supported way to keep BGP from programming routes
+    when you still need a working FRR process, for example a route reflector
+    or multiple bgpd processes in the same namespace.
+
+    bgpd still opens a ZAPI connection to zebra. FRR protocol daemons are
+    tightly integrated with zebra for interface, VRF, nexthop-tracking, label,
+    and other state; they are not intended to run as a standalone process
+    without zebra.
+
+    This option can also be toggled during runtime by using the
+    `[no] bgp no-rib` commands in VTY shell.
+
+    Note that this option will persist after saving the configuration during
+    runtime, unless unset by the `no bgp no-rib` command in VTY shell prior to
+    a configuration write operation.
+
+-S, --skip\_runas[](#cmdoption-bgpd-S "Link to this definition")
+:   Skip the normal process of checking capabilities and changing user and group
+    information.
+
+-e, --ecmp[](#cmdoption-bgpd-e "Link to this definition")
+:   Run BGP with a limited ecmp capability, that is different than what BGP
+    was compiled with. The value specified must be greater than 0 and less
+    than or equal to the MULTIPATH\_NUM specified on compilation.
+
+-Z, --no\_zebra[](#cmdoption-bgpd-Z "Link to this definition")
+:   Deprecated. This option is buggy and misleading: it does not fully stop
+    communication with zebra, and FRR is tightly integrated with zebra.
+
+    Do not use this option. It will be removed in a future release. To avoid
+    installing BGP routes into zebra, use `-n` / `--no_kernel` (or
+    `bgp no-rib` at runtime).
+
+-s, --socket\_size[](#cmdoption-bgpd-s "Link to this definition")
+:   When opening tcp connections to our peers, set the socket send buffer
+    size that the kernel will use for the peers socket. This option
+    is only really useful at a very large scale. Experimentation should
+    be done to see if this is helping or not at the scale you are running
+    at.
+
+-x, --v6-with-v4-nexthops[](#cmdoption-bgpd-x "Link to this definition")
+:   Allow BGP to peer in the V6 afi, when the interface only has v4 addresses.
+    This allows bgp to install the v6 routes with a v6 nexthop that has the
+    v4 address encoded in the nexthop. Zebra’s equivalent option currently
+    overrides the bgp setting.
+
+-K, --graceful\_restart[](#cmdoption-bgpd-K "Link to this definition")
+:   Bgpd will use this option to denote either a planned FRR graceful
+    restart or a bgpd-only graceful restart, and this will drive the BGP
+    GR restarting router procedures.
+
+### LABEL MANAGER[](#label-manager "Link to this heading")
+
+-I, --int\_num[](#cmdoption-bgpd-I "Link to this definition")
+:   Set zclient id. This is required when using Zebra label manager in proxy mode.
+
+## Basic Concepts[](#basic-concepts "Link to this heading")
+
+### Autonomous Systems[](#autonomous-systems "Link to this heading")
+
+From [**RFC 1930**](https://datatracker.ietf.org/doc/html/rfc1930.html):
+
+> An AS is a connected group of one or more IP prefixes run by one or more
+> network operators which has a SINGLE and CLEARLY DEFINED routing policy.
+
+Each AS has an identifying number associated with it called an ASN. This is a two octet value ranging in value from 1
+to 65535. The AS numbers 64512 through 65535 are defined as private AS numbers.
+Private AS numbers must not be advertised on the global Internet.
+
+The ASN is one of the essential elements of
+BGP. BGP is a distance vector routing protocol, and the AS-Path framework
+provides distance vector metric and loop detection to BGP.
+
+### Address Families[](#address-families "Link to this heading")
+
+Multiprotocol extensions enable BGP to carry routing information for multiple
+network layer protocols. BGP supports an Address Family Identifier (AFI) for
+IPv4 and IPv6. Support is also provided for multiple sets of per-AFI
+information via the BGP Subsequent Address Family Identifier (SAFI). FRR
+supports SAFIs for unicast information, labeled information ([**RFC 3107**](https://datatracker.ietf.org/doc/html/rfc3107.html) and
+[**RFC 8277**](https://datatracker.ietf.org/doc/html/rfc8277.html)), and Layer 3 VPN information ([**RFC 4364**](https://datatracker.ietf.org/doc/html/rfc4364.html) and [**RFC 4659**](https://datatracker.ietf.org/doc/html/rfc4659.html)).
+
+### Route Selection[](#route-selection "Link to this heading")
+
+The route selection process used by FRR’s BGP implementation uses the following
+decision criterion, starting at the top of the list and going towards the
+bottom until one of the factors can be used.
+
+0. **Admin distance check**
+
+   When one route is locally redistributed and another route is either locally
+   aggregated or received from another BGP speaker, prefer the route with a
+   lower admin distance.
+1. **Weight check**
+
+   Prefer higher local weight routes to lower routes.
+2. **Local preference check**
+
+   Prefer higher local preference routes to lower.
+3. **Local route check**
+
+   Prefer local routes (statics, aggregates, redistributed) to received routes.
+
+   If `bgp bestpath aigp` is enabled, and both paths that are compared have
+   AIGP attribute, BGP uses AIGP tie-breaking unless both of the paths have the
+   AIGP metric attribute. This means that the AIGP attribute is not evaluated
+   during the best path selection process between two paths when one path does
+   not have the AIGP attribute.
+4. **AS path length check**
+
+   Prefer shortest hop-count AS\_PATHs.
+5. **Origin check**
+
+   Prefer the lowest origin type route. That is, prefer IGP origin routes to
+   EGP, to Incomplete routes.
+6. **MED check**
+
+   Where routes with a MED were received from the same AS, prefer the route
+   with the lowest MED. [Multi-Exit Discriminator](#bgp-med).
+7. **External check**
+
+   Prefer the route received from an external, eBGP peer over routes received
+   from other types of peers.
+8. **IGP cost check**
+
+   Prefer the route with the lower IGP cost.
+9. **Multi-path check**
+
+   If multi-pathing is enabled, then check whether the routes not yet
+   distinguished in preference may be considered equal. If
+   [`bgp bestpath as-path multipath-relax`](#clicmd-bgp-bestpath-as-path-multipath-relax) is set, all such routes are
+   considered equal; otherwise, only routes received via iBGP with identical
+   AS\_PATHs or routes received from eBGP neighbours in the same AS are
+   considered equal.
+10. **Already-selected external check**
+
+    Where both routes were received from eBGP peers, then prefer the route
+    which is already selected. Note that this check is not applied if
+    [`bgp bestpath compare-routerid`](#clicmd-bgp-bestpath-compare-routerid) is configured. This check can
+    prevent some cases of oscillation.
+11. **Router-ID check**
+
+    Prefer the route with the lowest router-ID. If the route has an
+    ORIGINATOR\_ID attribute, through iBGP reflection, then that router ID is
+    used, otherwise the router-ID of the peer the route was received from is
+    used.
+12. **Cluster-List length check**
+
+    The route with the shortest cluster-list length is used. The cluster-list
+    reflects the iBGP reflection path the route has taken.
+13. **Peer address**
+
+    Prefer the route received from the peer with the higher transport layer
+    address, as a last-resort tie-breaker.
+
+### Capability Negotiation[](#capability-negotiation "Link to this heading")
+
+When adding IPv6 routing information exchange feature to BGP. There were some
+proposals. IETF
+IDR adopted a proposal called Multiprotocol
+Extension for BGP. The specification is described in [**RFC 2283**](https://datatracker.ietf.org/doc/html/rfc2283.html). The protocol
+does not define new protocols. It defines new attributes to existing BGP. When
+it is used exchanging IPv6 routing information it is called BGP-4+. When it is
+used for exchanging multicast routing information it is called MBGP.
+
+*bgpd* supports Multiprotocol Extension for BGP. So if a remote peer supports
+the protocol, *bgpd* can exchange IPv6 and/or multicast routing information.
+
+Traditional BGP did not have the feature to detect a remote peer’s
+capabilities, e.g. whether it can handle prefix types other than IPv4 unicast
+routes. This was a big problem using Multiprotocol Extension for BGP in an
+operational network. [**RFC 2842**](https://datatracker.ietf.org/doc/html/rfc2842.html) adopted a feature called Capability
+Negotiation. *bgpd* use this Capability Negotiation to detect the remote peer’s
+capabilities. If a peer is only configured as an IPv4 unicast neighbor, *bgpd*
+does not send these Capability Negotiation packets (at least not unless other
+optional BGP features require capability negotiation).
+
+By default, FRR will bring up peering with minimal common capability for the
+both sides. For example, if the local router has unicast and multicast
+capabilities and the remote router only has unicast capability the local router
+will establish the connection with unicast only capability. When there are no
+common capabilities, FRR sends Unsupported Capability error and then resets the
+connection.
+
+## BGP Router Configuration[](#bgp-router-configuration "Link to this heading")
+
+### ASN and Router ID[](#asn-and-router-id "Link to this heading")
+
+First of all you must configure BGP router with the [`router bgp ASN`](#clicmd-router-bgp-ASN)
+command. The AS number is an identifier for the autonomous system. The AS
+identifier can either be a number or two numbers separated by a period. The
+BGP protocol uses the AS identifier for detecting whether the BGP connection is
+internal or external.
+
+router bgp ASN[](#clicmd-router-bgp-ASN "Link to this definition")
+:   Enable a BGP protocol process with the specified ASN. After
+    this statement you can input any BGP Commands.
+
+bgp router-id A.B.C.D[](#clicmd-bgp-router-id-A.B.C.D "Link to this definition")
+:   This command specifies the router-ID. If *bgpd* connects to *zebra* it gets
+    interface and address information. In that case default router ID value is
+    selected as the largest IP Address of the interfaces. When router zebra is
+    not enabled *bgpd* can’t get interface information so router-id is set to
+    0.0.0.0, which is invalid and BGP session can’t be established.
+
+    So please set router-id by manually.
+
+### Multiple Autonomous Systems[](#multiple-autonomous-systems "Link to this heading")
+
+FRR’s BGP implementation is capable of running multiple autonomous systems at
+once. Each configured AS corresponds to a [Virtual Routing and Forwarding](zebra.html#zebra-vrf). In the past, to get
+the same functionality the network administrator had to run a new *bgpd*
+process; using VRFs allows multiple autonomous systems to be handled in a
+single process.
+
+When using multiple autonomous systems, all router config blocks after the
+first one must specify a VRF to be the target of BGP’s route selection. This
+VRF must be unique within respect to all other VRFs being used for the same
+purpose, i.e. two different autonomous systems cannot use the same VRF.
+However, the same AS can be used with different VRFs.
+
+Note
+
+The separated nature of VRFs makes it possible to peer a single *bgpd*
+process to itself, on one machine. Note that this can be done fully within
+BGP without a corresponding VRF in the kernel or Zebra, which enables some
+practical use cases such as [route reflectors](#bgp-route-reflector)
+and route servers.
+
+Configuration of additional autonomous systems, or of a router that targets a
+specific VRF, is accomplished with the following command:
+
+router bgp ASN vrf VRFNAME[](#clicmd-router-bgp-ASN-vrf-VRFNAME "Link to this definition")
+:   `VRFNAME` is matched against VRFs configured in the kernel. When `vrf
+    VRFNAME` is not specified, the BGP protocol process belongs to the default
+    VRF.
+
+An example configuration with multiple autonomous systems might look like this:
+
+```
+router bgp 1
+ neighbor 10.0.0.1 remote-as 20
+ neighbor 10.0.0.2 remote-as 30
+!
+router bgp 2 vrf blue
+ neighbor 10.0.0.3 remote-as 40
+ neighbor 10.0.0.4 remote-as 50
+!
+router bgp 3 vrf red
+ neighbor 10.0.0.5 remote-as 60
+ neighbor 10.0.0.6 remote-as 70
+...
+```
+
+See also
+
+[VRF Route Leaking](#bgp-vrf-route-leaking)
+
+### Views[](#views "Link to this heading")
+
+In addition to supporting multiple autonomous systems, FRR’s BGP implementation
+also supports *views*.
+
+BGP views are almost the same as normal BGP processes, except that routes
+selected by BGP are not installed into the kernel routing table. Each BGP view
+provides an independent set of routing information which is only distributed
+via BGP. Multiple views can be supported, and BGP view information is always
+independent from other routing protocols and Zebra/kernel routes. BGP views use
+the core instance (i.e., default VRF) for communication with peers.
+
+router bgp AS-NUMBER view NAME[](#clicmd-router-bgp-AS-NUMBER-view-NAME "Link to this definition")
+:   Make a new BGP view. You can use an arbitrary word for the `NAME`. Routes
+    selected by the view are not installed into the kernel routing table.
+
+    With this command, you can setup Route Server like below.
+
+    ```
+    !
+    router bgp 1 view 1
+     neighbor 10.0.0.1 remote-as 2
+     neighbor 10.0.0.2 remote-as 3
+    !
+    router bgp 2 view 2
+     neighbor 10.0.0.3 remote-as 4
+     neighbor 10.0.0.4 remote-as 5
+    ```
+
+show [ip] bgp view NAME[](#clicmd-show-ip-bgp-view-NAME "Link to this definition")
+:   Display the routing table of BGP view `NAME`.
+
+### Route Selection[](#id4 "Link to this heading")
+
+bgp bestpath as-path confed[](#clicmd-bgp-bestpath-as-path-confed "Link to this definition")
+:   This command specifies that the length of confederation path sets and
+    sequences should should be taken into account during the BGP best path
+    decision process.
+
+bgp bestpath as-path multipath-relax[](#clicmd-bgp-bestpath-as-path-multipath-relax "Link to this definition")
+:   This command specifies that BGP decision process should consider paths
+    of equal AS\_PATH length candidates for multipath computation. Without
+    the knob, the entire AS\_PATH must match for multipath computation.
+
+bgp bestpath compare-routerid[](#clicmd-bgp-bestpath-compare-routerid "Link to this definition")
+:   Ensure that when comparing routes where both are equal on most metrics,
+    including local-pref, AS\_PATH length, IGP cost, MED, that the tie is broken
+    based on router-ID.
+
+    If this option is enabled, then the already-selected check, where
+    already selected eBGP routes are preferred, is skipped.
+
+    If a route has an ORIGINATOR\_ID attribute because it has been reflected,
+    that ORIGINATOR\_ID will be used. Otherwise, the router-ID of the peer the
+    route was received from will be used.
+
+    The advantage of this is that the route-selection (at this point) will be
+    more deterministic. The disadvantage is that a few or even one lowest-ID
+    router may attract all traffic to otherwise-equal paths because of this
+    check. It may increase the possibility of MED or IGP oscillation, unless
+    other measures were taken to avoid these. The exact behaviour will be
+    sensitive to the iBGP and reflection topology.
+
+bgp bestpath peer-type multipath-relax[](#clicmd-bgp-bestpath-peer-type-multipath-relax "Link to this definition")
+:   This command specifies that BGP decision process should consider paths
+    from all peers for multipath computation. If this option is enabled,
+    paths learned from any of eBGP, iBGP, or confederation neighbors will
+    be multipath if they are otherwise considered equal cost.
+
+bgp bestpath aigp[](#clicmd-bgp-bestpath-aigp "Link to this definition")
+:   Use the bgp bestpath aigp command to evaluate the AIGP attribute during
+    the best path selection process between two paths that have the AIGP
+    attribute.
+
+    When bgp bestpath aigp is disabled, BGP does not use AIGP tie-breaking
+    rules unless paths have the AIGP attribute.
+
+    Disabled by default.
+
+bgp bestpath use-imported-attributes[](#clicmd-bgp-bestpath-use-imported-attributes "Link to this definition")
+:   When routes are leaked between VRFs using `import vrf`, the bestpath
+    selection process by default uses the source VRF’s path attributes (AS path
+    length, Origin, MED, Originator-ID) for comparison. This command changes
+    the behavior to use the imported path’s attributes instead.
+
+    Disabled by default.
+
+bgp bestpath med missing-as-worst[](#clicmd-bgp-bestpath-med-missing-as-worst "Link to this definition")
+:   If the paths MED value is missing and this command is configured
+    then treat it as the worse possible value that it can be.
+
+maximum-paths (1-128)[](#clicmd-maximum-paths-1-128 "Link to this definition")
+:   Sets the maximum-paths value used for ecmp calculations for this
+    bgp instance in EBGP. The maximum value listed, 128, can be limited by
+    the ecmp cli for bgp or if the daemon was compiled with a lower
+    ecmp value. This value can also be set in ipv4/ipv6 unicast/labeled
+    unicast to only affect those particular afi/safi’s.
+
+maximum-paths ibgp (1-128) [equal-cluster-length][](#clicmd-maximum-paths-ibgp-1-128-equal-cluster-length "Link to this definition")
+:   Sets the maximum-paths value used for ecmp calculations for this
+    bgp instance in IBGP. The maximum value listed, 128, can be limited by
+    the ecmp cli for bgp or if the daemon was compiled with a lower
+    ecmp value. This value can also be set in ipv4/ipv6 unicast/labeled
+    unicast to only affect those particular afi/safi’s.
+
+### Administrative Distance Metrics[](#administrative-distance-metrics "Link to this heading")
+
+distance bgp (1-255) (1-255) (1-255)[](#clicmd-distance-bgp-1-255-1-255-1-255 "Link to this definition")
+:   This command changes distance value of BGP. The arguments are the distance
+    values for external routes, internal routes and local routes
+    respectively.
+
+distance (1-255) A.B.C.D/M[](#clicmd-distance-1-255-A.B.C.D-M "Link to this definition")
+
+distance (1-255) A.B.C.D/M WORD[](#clicmd-distance-1-255-A.B.C.D-M-WORD "Link to this definition")
+:   Sets the administrative distance for a particular route.
+
+    If the system has a static route configured from the kernel, it has a
+    distance of 0. In some cases, it might be useful to override the route
+    from the FRR. E.g.: Kernel has a statically configured default route,
+    and you received another default route from the BGP and want to install
+    it to be preferred over the static route. In such a case, you MUST set
+    a higher distance from the kernel.
+
+### Require policy on EBGP[](#require-policy-on-ebgp "Link to this heading")
+
+bgp ebgp-requires-policy[](#clicmd-bgp-ebgp-requires-policy "Link to this definition")
+:   This command requires incoming and outgoing filters to be applied
+    for eBGP sessions as part of RFC-8212 compliance. Without the incoming
+    filter, no routes will be accepted. Without the outgoing filter, no
+    routes will be announced.
+
+    This is enabled by default for the traditional configuration and
+    turned off by default for datacenter configuration.
+
+    When you enable/disable this option you MUST clear the session.
+
+    When the incoming or outgoing filter is missing you will see
+    “(Policy)” sign under `show bgp summary`:
+
+    ```
+    exit1# show bgp summary
+
+    IPv4 Unicast Summary:
+    BGP router identifier 10.10.10.1, local AS number 65001 VRF default vrf-id 0
+    BGP table version 4
+    RIB entries 7, using 1344 bytes of memory
+    Peers 2, using 43 KiB of memory
+
+    Neighbor        V         AS   MsgRcvd   MsgSent   TblVer  InQ OutQ  Up/Down State/PfxRcd   PfxSnt Desc
+    192.168.0.2     4      65002         8        10        0    0    0 00:03:09            5 (Policy) N/A
+    fe80:1::2222    4      65002         9        11        0    0    0 00:03:09     (Policy) (Policy) N/A
+    ```
+
+    Additionally a show bgp neighbor command would indicate in the For address family:
+    block that:
+
+    ```
+    exit1# show bgp neighbor
+    ...
+    For address family: IPv4 Unicast
+     Update group 1, subgroup 1
+     Packet Queue length 0
+     Inbound soft reconfiguration allowed
+     Community attribute sent to this neighbor(all)
+     Inbound updates discarded due to missing policy
+     Outbound updates discarded due to missing policy
+     0 accepted prefixes
+    ```
+
+### Reject routes with AS\_SET or AS\_CONFED\_SET types[](#reject-routes-with-as-set-or-as-confed-set-types "Link to this heading")
+
+bgp reject-as-sets[](#clicmd-bgp-reject-as-sets "Link to this definition")
+:   This command enables rejection of incoming and outgoing routes having AS\_SET or AS\_CONFED\_SET type.
+
+    The aggregated routes are not sent to the contributing neighbors.
+
+    It’s defined under RFC 9774 and it’s enabled by default.
+
+### Enforce first AS[](#enforce-first-as "Link to this heading")
+
+bgp enforce-first-as[](#clicmd-bgp-enforce-first-as "Link to this definition")
+:   To configure a router to deny an update received from an external BGP (eBGP)
+    peer that does not list its autonomous system number at the beginning of
+    the AS\_PATH in the incoming update, use the `bgp enforce-first-as` command
+    in router configuration mode.
+
+    In order to exclude an arbitrary neighbor from this enforcement, use the
+    command `no neighbor NAME enforce-first-as`. And vice-versa if a global
+    enforcement is disabled, you can override this behavior per neighbor too.
+
+    Default: enabled.
+
+Note
+
+If you have a peering to RS (Route-Server), most likely you MUST disable the
+first AS enforcement.
+
+### Suppress duplicate updates[](#suppress-duplicate-updates "Link to this heading")
+
+bgp suppress-duplicates[](#clicmd-bgp-suppress-duplicates "Link to this definition")
+:   For example, BGP routers can generate multiple identical announcements with
+    empty community attributes if stripped at egress. This is an undesired behavior.
+    Suppress duplicate updates if the route actually not changed.
+    Default: enabled.
+
+### Send Hard Reset CEASE Notification for Administrative Reset[](#send-hard-reset-cease-notification-for-administrative-reset "Link to this heading")
+
+bgp hard-administrative-reset[](#clicmd-bgp-hard-administrative-reset "Link to this definition")
+:   Send Hard Reset CEASE Notification for ‘Administrative Reset’ events.
+
+    When disabled, and Graceful Restart Notification capability is exchanged
+    between the peers, Graceful Restart procedures apply, and routes will be
+    retained.
+
+    Enabled by default.
+
+### Disable checking if nexthop is connected on EBGP sessions[](#disable-checking-if-nexthop-is-connected-on-ebgp-sessions "Link to this heading")
+
+bgp disable-ebgp-connected-route-check[](#clicmd-bgp-disable-ebgp-connected-route-check "Link to this definition")
+:   This command is used to disable the connection verification process for EBGP peering sessions
+    that are reachable by a single hop but are configured on a loopback interface or otherwise
+    configured with a non-directly connected IP address.
+
+### Route Flap Dampening[](#route-flap-dampening "Link to this heading")
+
+bgp dampening (1-45) (1-20000) (1-50000) (1-255)[](#clicmd-bgp-dampening-1-45-1-20000-1-50000-1-255 "Link to this definition")
+:   This command enables (with optionally specified dampening parameters) or
+    disables route-flap dampening for all routes of a BGP instance.
+
+neighbor PEER dampening [(1-45) [(1-20000) (1-20000) (1-255)]][](#clicmd-neighbor-PEER-dampening-1-45-1-20000-1-20000-1-255 "Link to this definition")
+:   This command enables (with optionally specified dampening parameters) or
+    disables route-flap dampening for all routes learned from a BGP peer.
+
+neighbor GROUP dampening [(1-45) [(1-20000) (1-20000) (1-255)]][](#clicmd-neighbor-GROUP-dampening-1-45-1-20000-1-20000-1-255 "Link to this definition")
+:   This command enables (with optionally specified dampening parameters) or
+    disables route-flap dampening for all routes learned from peers of a peer
+    group.
+
+    half-life
+    :   Half-life time for the penalty in minutes (default value: 15).
+
+    reuse-threshold
+    :   Value to start reusing a route (default value: 750).
+
+    suppress-threshold
+    :   Value to start suppressing a route (default value: 2000).
+
+    max-suppress
+    :   Maximum duration to suppress a stable route in minutes (default value:
+        60).
+
+    The route-flap damping algorithm is compatible with [**RFC 2439**](https://datatracker.ietf.org/doc/html/rfc2439.html). The use of
+    these commands is not recommended nowadays.
+
+    At the moment, route-flap dampening is not working per VRF and is working only
+    for IPv4 unicast and multicast.
+
+    With different parameter sets configurable for BGP instances, peer groups and
+    peers, the active dampening profile for a route is chosen on the fly,
+    allowing for various changes in configuration (i.e. peer group memberships)
+    during runtime. The parameter sets are taking precedence in the following
+    order:
+
+    1. Peer
+    2. Peer group
+    3. BGP instance
+
+    The negating commands do not allow to exclude a peer/peer group from a peer
+    group/BGP instances configuration.
+
+### Multi-Exit Discriminator[](#multi-exit-discriminator "Link to this heading")
+
+The BGP MED attribute has properties which
+can cause subtle convergence problems in BGP. These properties and problems
+have proven to be hard to understand, at least historically, and may still not
+be widely understood. The following attempts to collect together and present
+what is known about MED, to help operators and FRR users in designing and
+configuring their networks.
+
+The BGP MED attribute is intended to allow one AS to indicate its
+preferences for its ingress points to another AS. The MED attribute will not be
+propagated on to another AS by the receiving AS - it is ‘non-transitive’ in the
+BGP sense.
+
+E.g., if AS X and AS Y have 2 different BGP peering points, then AS X might set
+a MED of 100 on routes advertised at one and a MED of 200 at the other. When AS
+Y selects between otherwise equal routes to or via AS X, AS Y should prefer to
+take the path via the lower MED peering of 100 with AS X. Setting the MED
+allows an AS to influence the routing taken to it within another, neighbouring
+AS.
+
+In this use of MED it is not really meaningful to compare the MED value on
+routes where the next AS on the paths differs. E.g., if AS Y also had a route
+for some destination via AS Z in addition to the routes from AS X, and AS Z had
+also set a MED, it wouldn’t make sense for AS Y to compare AS Z’s MED values to
+those of AS X. The MED values have been set by different administrators, with
+different frames of reference.
+
+The default behaviour of BGP therefore is to not compare MED values across
+routes received from different neighbouring ASes. In FRR this is done by
+comparing the neighbouring, left-most AS in the received AS\_PATHs of the routes
+and only comparing MED if those are the same.
+
+Unfortunately, this behaviour of MED, of sometimes being compared across routes
+and sometimes not, depending on the properties of those other routes, means MED
+can cause the order of preference over all the routes to be undefined. That is,
+given routes A, B, and C, if A is preferred to B, and B is preferred to C, then
+a well-defined order should mean the preference is transitive (in the sense of
+orders and that A would be preferred to C.
+
+However, when MED is involved this need not be the case. With MED it is
+possible that C is actually preferred over A. So A is preferred to B, B is
+preferred to C, but C is preferred to A. This can be true even where BGP
+defines a deterministic ‘most preferred’ route out of the full set of A,B,C.
+With MED, for any given set of routes there may be a deterministically
+preferred route, but there need not be any way to arrange them into any order
+of preference. With unmodified MED, the order of preference of routes literally
+becomes undefined.
+
+That MED can induce non-transitive preferences over routes can cause issues.
+Firstly, it may be perceived to cause routing table churn locally at speakers;
+secondly, and more seriously, it may cause routing instability in iBGP
+topologies, where sets of speakers continually oscillate between different
+paths.
+
+The first issue arises from how speakers often implement routing decisions.
+Though BGP defines a selection process that will deterministically select the
+same route as best at any given speaker, even with MED, that process requires
+evaluating all routes together. For performance and ease of implementation
+reasons, many implementations evaluate route preferences in a pair-wise fashion
+instead. Given there is no well-defined order when MED is involved, the best
+route that will be chosen becomes subject to implementation details, such as
+the order the routes are stored in. That may be (locally) non-deterministic,
+e.g.: it may be the order the routes were received in.
+
+This indeterminism may be considered undesirable, though it need not cause
+problems. It may mean additional routing churn is perceived, as sometimes more
+updates may be produced than at other times in reaction to some event .
+
+This first issue can be fixed with a more deterministic route selection that
+ensures routes are ordered by the neighbouring AS during selection.
+[`bgp deterministic-med`](#clicmd-bgp-deterministic-med). This may reduce the number of updates as routes
+are received, and may in some cases reduce routing churn. Though, it could
+equally deterministically produce the largest possible set of updates in
+response to the most common sequence of received updates.
+
+A deterministic order of evaluation tends to imply an additional overhead of
+sorting over any set of n routes to a destination. The implementation of
+deterministic MED in FRR scales significantly worse than most sorting
+algorithms at present, with the number of paths to a given destination. That
+number is often low enough to not cause any issues, but where there are many
+paths, the deterministic comparison may quickly become increasingly expensive
+in terms of CPU.
+
+Deterministic local evaluation can *not* fix the second, more major, issue of
+MED however. Which is that the non-transitive preference of routes MED can
+cause may lead to routing instability or oscillation across multiple speakers
+in iBGP topologies. This can occur with full-mesh iBGP, but is particularly
+problematic in non-full-mesh iBGP topologies that further reduce the routing
+information known to each speaker. This has primarily been documented with iBGP
+[route-reflection](#bgp-route-reflector) topologies. However, any
+route-hiding technologies potentially could also exacerbate oscillation with MED.
+
+This second issue occurs where speakers each have only a subset of routes, and
+there are cycles in the preferences between different combinations of routes -
+as the undefined order of preference of MED allows - and the routes are
+distributed in a way that causes the BGP speakers to ‘chase’ those cycles. This
+can occur even if all speakers use a deterministic order of evaluation in route
+selection.
+
+E.g., speaker 4 in AS A might receive a route from speaker 2 in AS X, and from
+speaker 3 in AS Y; while speaker 5 in AS A might receive that route from
+speaker 1 in AS Y. AS Y might set a MED of 200 at speaker 1, and 100 at speaker
+3. I.e, using ASN:ID:MED to label the speakers:
+
+```
+.
+          /---------------\\
+X:2------|--A:4-------A:5--|-Y:1:200
+            Y:3:100--|-/   |
+          \\---------------/
+```
+
+Assuming all other metrics are equal (AS\_PATH, ORIGIN, 0 IGP costs), then based
+on the RFC4271 decision process speaker 4 will choose X:2 over Y:3:100, based
+on the lower ID of 2. Speaker 4 advertises X:2 to speaker 5. Speaker 5 will
+continue to prefer Y:1:200 based on the ID, and advertise this to speaker 4.
+Speaker 4 will now have the full set of routes, and the Y:1:200 it receives
+from 5 will beat X:2, but when speaker 4 compares Y:1:200 to Y:3:100 the MED
+check now becomes active as the ASes match, and now Y:3:100 is preferred.
+Speaker 4 therefore now advertises Y:3:100 to 5, which will also agrees that
+Y:3:100 is preferred to Y:1:200, and so withdraws the latter route from 4.
+Speaker 4 now has only X:2 and Y:3:100, and X:2 beats Y:3:100, and so speaker 4
+implicitly updates its route to speaker 5 to X:2. Speaker 5 sees that Y:1:200
+beats X:2 based on the ID, and advertises Y:1:200 to speaker 4, and the cycle
+continues.
+
+The root cause is the lack of a clear order of preference caused by how MED
+sometimes is and sometimes is not compared, leading to this cycle in the
+preferences between the routes:
+
+```
+.
+ /---> X:2 ---beats---> Y:3:100 --\\
+|                                   |
+|                                   |
+ \\---beats--- Y:1:200 <---beats---/
+```
+
+This particular type of oscillation in full-mesh iBGP topologies can be
+avoided by speakers preferring already selected, external routes rather than
+choosing to update to new a route based on a post-MED metric (e.g. router-ID),
+at the cost of a non-deterministic selection process. FRR implements this, as
+do many other implementations, so long as it is not overridden by setting
+[`bgp bestpath compare-routerid`](#clicmd-bgp-bestpath-compare-routerid), and see also
+[Route Selection](#bgp-route-selection).
+
+However, more complex and insidious cycles of oscillation are possible with
+iBGP route-reflection, which are not so easily avoided. These have been
+documented in various places. See, e.g.:
+
+* [[bgp-route-osci-cond]](#bgp-route-osci-cond)
+* [[stable-flexible-ibgp]](#stable-flexible-ibgp)
+* [[ibgp-correctness]](#ibgp-correctness)
+
+for concrete examples and further references.
+
+There is as of this writing *no* known way to use MED for its original purpose;
+*and* reduce routing information in iBGP topologies; *and* be sure to avoid the
+instability problems of MED due the non-transitive routing preferences it can
+induce; in general on arbitrary networks.
+
+There may be iBGP topology specific ways to reduce the instability risks, even
+while using MED, e.g.: by constraining the reflection topology and by tuning
+IGP costs between route-reflector clusters, see [**RFC 3345**](https://datatracker.ietf.org/doc/html/rfc3345.html) for details. In the
+near future, the Add-Path extension to BGP may also solve MED oscillation while
+still allowing MED to be used as intended, by distributing “best-paths per
+neighbour AS”. This would be at the cost of distributing at least as many
+routes to all speakers as a full-mesh iBGP would, if not more, while also
+imposing similar CPU overheads as the “Deterministic MED” feature at each
+Add-Path reflector.
+
+More generally, the instability problems that MED can introduce on more
+complex, non-full-mesh, iBGP topologies may be avoided either by:
+
+* Setting [`bgp always-compare-med`](#clicmd-bgp-always-compare-med), however this allows MED to be compared
+  across values set by different neighbour ASes, which may not produce
+  coherent desirable results, of itself.
+* Effectively ignoring MED by setting MED to the same value (e.g.: 0) using
+  `set metric METRIC` on all received routes, in combination with
+  setting [`bgp always-compare-med`](#clicmd-bgp-always-compare-med) on all speakers. This is the simplest
+  and most performant way to avoid MED oscillation issues, where an AS is happy
+  not to allow neighbours to inject this problematic metric.
+
+As MED is evaluated after the AS\_PATH length check, another possible use for
+MED is for intra-AS steering of routes with equal AS\_PATH length, as an
+extension of the last case above. As MED is evaluated before IGP metric, this
+can allow cold-potato routing to be implemented to send traffic to preferred
+hand-offs with neighbours, rather than the closest hand-off according to the
+IGP metric.
+
+Note that even if action is taken to address the MED non-transitivity issues,
+other oscillations may still be possible. E.g., on IGP cost if iBGP and IGP
+topologies are at cross-purposes with each other - see the Flavel and Roughan
+paper above for an example. Hence the guideline that the iBGP topology should
+follow the IGP topology.
+
+bgp deterministic-med[](#clicmd-bgp-deterministic-med "Link to this definition")
+:   Carry out route-selection in way that produces deterministic answers
+    locally, even in the face of MED and the lack of a well-defined order of
+    preference it can induce on routes. Without this option the preferred route
+    with MED may be determined largely by the order that routes were received
+    in.
+
+    Setting this option will have a performance cost that may be noticeable when
+    there are many routes for each destination. Currently in FRR it is
+    implemented in a way that scales poorly as the number of routes per
+    destination increases.
+
+    The default is that this option is not set.
+
+Note that there are other sources of indeterminism in the route selection
+process, specifically, the preference for older and already selected routes
+from eBGP peers, [Route Selection](#bgp-route-selection).
+
+bgp always-compare-med[](#clicmd-bgp-always-compare-med "Link to this definition")
+:   Always compare the MED on routes, even when they were received from
+    different neighbouring ASes. Setting this option makes the order of
+    preference of routes more defined, and should eliminate MED induced
+    oscillations.
+
+    If using this option, it may also be desirable to use
+    `set metric METRIC` to set MED to 0 on routes received from external
+    neighbours.
+
+    This option can be used, together with `set metric METRIC` to use
+    MED as an intra-AS metric to steer equal-length AS\_PATH routes to, e.g.,
+    desired exit points.
+
+### Graceful Restart[](#graceful-restart "Link to this heading")
+
+BGP graceful restart functionality as defined in
+[RFC-4724](https://tools.ietf.org/html/rfc4724/) defines the mechanisms that
+allows BGP speaker to continue to forward data packets along known routes
+while the routing protocol information is being restored.
+
+Usually, when BGP on a router restarts, all the BGP peers detect that the
+session went down and then came up. This “down/up” transition results in a
+“routing flap” and causes BGP route re-computation, generation of BGP routing
+updates, and unnecessary churn to the forwarding tables.
+
+The following functionality is provided by graceful restart:
+
+1. The feature allows the restarting router to indicate to the helping peer the
+   routes it can preserve in its forwarding plane during control plane restart
+   by sending graceful restart capability in the OPEN message sent during
+   session establishment. Graceful restart notification flag and/or restart
+   time can also be changed during the dynamic BGP capabilities. If using
+   dynamic capabilities, no session reset is required, thus it’s very useful
+   to increase restart time before doing a software upgrade or so.
+2. The feature allows helping router to advertise to all other peers the routes
+   received from the restarting router which are preserved in the forwarding
+   plane of the restarting router during control plane restart.
+
+```
+(R1)-----------------------------------------------------------------(R2)
+
+1. BGP Graceful Restart Capability exchanged between R1 & R2.
+
+<--------------------------------------------------------------------->
+
+2. Kill BGP Process at R1.
+
+---------------------------------------------------------------------->
+
+3. R2 Detects the above BGP Restart & verifies BGP Restarting
+  Capability of R1.
+
+4. Start BGP Process at R1.
+
+5. Re-establish the BGP session between R1 & R2.
+
+<--------------------------------------------------------------------->
+
+6. R2 Send initial route updates, followed by End-Of-Rib.
+
+<----------------------------------------------------------------------
+
+7. R1 was waiting for End-Of-Rib from R2 & which has been received
+  now.
+
+8. R1 now runs BGP Best-Path algorithm. Send Initial BGP  Update,
+  followed by End-Of Rib
+
+<--------------------------------------------------------------------->
+```
+
+#### BGP-GR Preserve-Forwarding State[](#bgp-gr-preserve-forwarding-state "Link to this heading")
+
+BGP OPEN message carrying optional capabilities for Graceful Restart has
+8 bit “Flags for Address Family” for given AFI and SAFI. This field contains
+bit flags relating to routes that were advertised with the given AFI and SAFI.
+
+```
+0 1 2 3 4 5 6 7
++-+-+-+-+-+-+-+-+
+|F|   Reserved  |
++-+-+-+-+-+-+-+-+
+```
+
+The most significant bit is defined as the Forwarding State (F) bit, which
+can be used to indicate whether the forwarding state for routes that were
+advertised with the given AFI and SAFI has indeed been preserved during the
+previous BGP restart. When set (value 1), the bit indicates that the
+forwarding state has been preserved.
+The remaining bits are reserved and MUST be set to zero by the sender and
+ignored by the receiver.
+
+bgp graceful-restart preserve-fw-state[](#clicmd-bgp-graceful-restart-preserve-fw-state "Link to this definition")
+
+FRR gives us the option to enable/disable the “F” flag using this specific
+vty command. However, it doesn’t have the option to enable/disable
+this flag only for specific AFI/SAFI i.e. when this command is used, it
+applied to all the supported AFI/SAFI combinations for this peer.
+
+#### End-of-RIB (EOR) message[](#end-of-rib-eor-message "Link to this heading")
+
+An UPDATE message with no reachable Network Layer Reachability Information
+(NLRI) and empty withdrawn NLRI is specified as the End-of-RIB marker that can
+be used by a BGP speaker to indicate to its peer the completion of the initial
+routing update after the session is established.
+
+For the IPv4 unicast address family, the End-of-RIB marker is an UPDATE message
+with the minimum length. For any other address family, it is an UPDATE message
+that contains only the MP\_UNREACH\_NLRI attribute with no withdrawn routes for
+that <AFI, SAFI>.
+
+Although the End-of-RIB marker is specified for the purpose of BGP graceful
+restart, it is noted that the generation of such a marker upon completion of
+the initial update would be useful for routing convergence in general, and thus
+the practice is recommended.
+
+#### Route Selection Deferral Timer[](#route-selection-deferral-timer "Link to this heading")
+
+Specifies the time the restarting router defers the route selection process
+after restart.
+
+Restarting Router : The usage of route election deferral timer is specified
+in <https://tools.ietf.org/html/rfc4724#section-4.1>
+
+Once the session between the Restarting Speaker and the Receiving Speaker is
+re-established, the Restarting Speaker will receive and process BGP messages
+from its peers.
+
+However, it MUST defer route selection for an address family until it either.
+
+1. Receives the End-of-RIB marker from all its peers (excluding the ones with
+   the “Restart State” bit set in the received capability and excluding the ones
+   that do not advertise the graceful restart capability).
+2. The Selection\_Deferral\_Timer timeout.
+
+bgp graceful-restart select-defer-time (0-3600)[](#clicmd-bgp-graceful-restart-select-defer-time-0-3600 "Link to this definition")
+:   This is command, will set deferral time to value specified.
+
+bgp graceful-restart rib-stale-time (1-3600)[](#clicmd-bgp-graceful-restart-rib-stale-time-1-3600 "Link to this definition")
+:   This is command, will set the time for which stale routes are kept in RIB.
+
+bgp graceful-restart restart-time (0-4095)[](#clicmd-bgp-graceful-restart-restart-time-0-4095 "Link to this definition")
+:   Set the time to wait to delete stale routes before a BGP open message
+    is received.
+
+    Using with Long-lived Graceful Restart capability, this is recommended
+    setting this timer to 0 and control stale routes with
+    `bgp long-lived-graceful-restart stale-time`.
+
+    Default value is 120.
+
+bgp graceful-restart stalepath-time (1-4095)[](#clicmd-bgp-graceful-restart-stalepath-time-1-4095 "Link to this definition")
+:   This is command, will set the max time (in seconds) to hold onto
+    restarting peer’s stale paths.
+
+    It also controls Enhanced Route-Refresh timer.
+
+    If this command is configured and the router does not receive a Route-Refresh EoRR
+    message, the router removes the stale routes from the BGP table after the timer
+    expires. The stale path timer is started when the router receives a Route-Refresh
+    BoRR message.
+
+bgp graceful-restart notification[](#clicmd-bgp-graceful-restart-notification "Link to this definition")
+:   Indicate Graceful Restart support for BGP NOTIFICATION messages.
+
+    After changing this parameter, you have to reset the peers in order to advertise
+    N-bit in Graceful Restart capability.
+
+    Without Graceful-Restart Notification capability (N-bit not set), GR is not
+    activated when receiving CEASE/HOLDTIME expire notifications.
+
+    When sending `CEASE/Administrative Reset` (`clear bgp`), the session is closed
+    and routes are not retained. When N-bit is set and `bgp hard-administrative-reset`
+    is turned off Graceful-Restart is activated and routes are retained.
+
+    Enabled by default.
+
+#### BGP Per Peer Graceful Restart[](#bgp-per-peer-graceful-restart "Link to this heading")
+
+Ability to enable and disable graceful restart, helper and no GR at all mode
+functionality at peer level.
+
+So bgp graceful restart can be enabled at modes global BGP level or at per
+peer level. There are two FSM, one for BGP GR global mode and other for peer
+per GR.
+
+Default global mode is helper and default peer per mode is inherit from global.
+If per peer mode is configured, the GR mode of this particular peer will
+override the global mode.
+
+#### BGP GR Peer Mode Commands[](#bgp-gr-peer-mode-commands "Link to this heading")
+
+neighbor A.B.C.D graceful-restart[](#clicmd-neighbor-A.B.C.D-graceful-restart "Link to this definition")
+:   This command will enable BGP graceful restart functionality at the peer
+    level.
+
+neighbor A.B.C.D graceful-restart-helper[](#clicmd-neighbor-A.B.C.D-graceful-restart-helper "Link to this definition")
+:   This command will enable BGP graceful restart helper only functionality
+    at the peer level.
+
+neighbor A.B.C.D graceful-restart-disable[](#clicmd-neighbor-A.B.C.D-graceful-restart-disable "Link to this definition")
+:   This command will disable the entire BGP graceful restart functionality
+    at the peer level.
+
+#### BGP GR Support For L2VPN EVPN[](#bgp-gr-support-for-l2vpn-evpn "Link to this heading")
+
+To support GR for L2VPN EVPN AFI SAFI in BGP, following changes were made:
+
+1. If GR is enabled for a BGP instance, then GR select
+   deferral timer will be started for all GR supported AFI-SAFIs after
+   BGP is finished reading configs.This way, BGP will not have to wait
+   for the 1st peer to comeup to start the select-deferral-timer for
+   that VRF, AFI-SAFI
+2. All L2VPN route will be marked as deferred in default VRF,
+   imported into destination VRF/VNI table and then marked as deferred in
+   destination VRF/VNI as well
+3. Deferred bestpath selection will be skipped for IPv4 and IPv6 unicast in
+   non-default VRFs until L2VPN EVPN AFI-SAFI in default VRF completes GR.
+   This ensures that deferred bestpaths calculation in non-default VRF
+   is done only after paths are imported from default to non-default VRF
+4. On GR helper, when the peer that has GR enabled goes down,
+   BGP will mark all the L2VPN EVPN routes in default VRF as stale.
+   If the peer doesn’t comeup before GR restart timer expires, then
+   the L2VPN EVPN routes in default VRF that were previously marked
+   stale needs to be unimported from all the VRFs and VNIs (IP and MAC
+   table) before deleting it in L2VPN EVPN table in default VRF
+
+#### BGP GR Show Commands[](#bgp-gr-show-commands "Link to this heading")
+
+show bgp [<ipv4|ipv6>] [<view|vrf> VRF] neighbors [<A.B.C.D|X:X::X:X|WORD>] graceful-restart [json][](#clicmd-show-bgp-ipv4-ipv6-view-vrf-VRF-neighbors-A.B.C.D-X-X-X-X-WORD-graceful-restart-json "Link to this definition")
+:   This command will display information about the neighbors graceful-restart status
+
+#### BGP Show Neighbors Brief Command[](#bgp-show-neighbors-brief-command "Link to this heading")
+
+show [ip] bgp [<view|vrf> VIEWVRFNAME] [<ipv4|ipv6>] neighbors [<A.B.C.D|X:X::X:X|WORD>] [graceful-restart] [json [brief [established|failed]]][](#clicmd-show-ip-bgp-view-vrf-VIEWVRFNAME-ipv4-ipv6-neighbors-A.B.C.D-X-X-X-X-WORD-graceful-restart-json-brief-established-failed "Link to this definition")
+:   Display BGP neighbor information. Without `json`, output is the usual
+    detailed text. With `json`, output is full neighbor detail in JSON.
+
+    The `brief` keyword is only valid together with `json`. Use `json brief`
+    for a reduced JSON object per neighbor (hostname, remoteAs, localAs,
+    lastResetDueTo, status, lastResetTimerMsecs, messageStats with
+    totalSent/totalRecv, and addressFamilyInfo with acceptedPrefixCounter and
+    sentPrefixCounter per AFI/SAFI).
+
+    After `json brief`, you may add `established` to include only neighbors in
+    Established state, or `failed` for neighbors not in Established (for
+    example Idle, Active, Connect).
+
+    `graceful-restart` shows graceful-restart-related neighbor information; it
+    may be combined with `json` as in the command grammar above. See also
+    [`show bgp [<ipv4|ipv6>] [<view|vrf> VRF] neighbors [<A.B.C.D|X:X::X:X|WORD>] graceful-restart [json]`](#clicmd-show-bgp-ipv4-ipv6-view-vrf-VRF-neighbors-A.B.C.D-X-X-X-X-WORD-graceful-restart-json).
+
+### Long-lived Graceful Restart[](#long-lived-graceful-restart "Link to this heading")
+
+Currently, only restarter mode is supported. This capability is advertised only
+if graceful restart capability is negotiated.
+
+bgp long-lived-graceful-restart stale-time (1-16777215)[](#clicmd-bgp-long-lived-graceful-restart-stale-time-1-16777215 "Link to this definition")
+:   Specifies the maximum time to wait before purging long-lived stale routes for
+    helper routers.
+
+    Default is 0, which means the feature is off by default. Only graceful
+    restart takes into account.
+
+### Administrative Shutdown[](#administrative-shutdown "Link to this heading")
+
+bgp shutdown [message MSG...][](#clicmd-bgp-shutdown-message-MSG... "Link to this definition")
+:   Administrative shutdown of all peers of a bgp instance. Drop all BGP peers,
+    but preserve their configurations. The peers are notified in accordance with
+    [RFC 8203](https://tools.ietf.org/html/rfc8203/) by sending a
+    `NOTIFICATION` message with error code `Cease` and subcode
+    `Administrative Shutdown` prior to terminating connections. This global
+    shutdown is independent of the neighbor shutdown, meaning that individually
+    shut down peers will not be affected by lifting it.
+
+    An optional shutdown message MSG can be specified.
+
+bgp shutdown no-notify[](#clicmd-bgp-shutdown-no-notify "Link to this definition")
+:   Administrative shutdown of all peers of a bgp instance without sending
+    BGP notification messages. This is useful in active/standby HA setups
+    where, when the node becomes standby, BGP should be shut down without
+    sending notifications in order to preserve BGP Graceful Restart state
+    on the receiving peers.
+
+### Networks[](#networks "Link to this heading")
+
+network A.B.C.D/M[](#clicmd-network-A.B.C.D-M "Link to this definition")
+:   This command adds the announcement network.
+
+    ```
+    router bgp 1
+     address-family ipv4 unicast
+      network 10.0.0.0/8
+     exit-address-family
+    ```
+
+    This configuration example says that network 10.0.0.0/8 will be
+    announced to all neighbors. Some vendors’ routers don’t advertise
+    routes if they aren’t present in their IGP routing tables; bgpd
+    doesn’t care about IGP routes when announcing its routes.
+
+bgp network import-check[](#clicmd-bgp-network-import-check "Link to this definition")
+:   This configuration modifies the behavior of the network statement.
+    If you have this configured the underlying network must exist in
+    the rib. If you have the [no] form configured then BGP will not
+    check for the networks existence in the rib. For versions 7.3 and
+    before frr defaults for datacenter were the network must exist,
+    traditional did not check for existence. For versions 7.4 and beyond
+    both traditional and datacenter the network must exist.
+
+### IPv6 Support[](#ipv6-support "Link to this heading")
+
+neighbor A.B.C.D activate[](#clicmd-neighbor-A.B.C.D-activate "Link to this definition")
+:   This configuration modifies whether to enable an address family for a
+    specific neighbor. By default only the IPv4 unicast address family is
+    enabled.
+
+    ```
+    router bgp 1
+     address-family ipv6 unicast
+      neighbor 2001:0DB8::1 activate
+      network 2001:0DB8:5009::/64
+     exit-address-family
+    ```
+
+    This configuration example says that network 2001:0DB8:5009::/64 will be
+    announced and enables the neighbor 2001:0DB8::1 to receive this announcement.
+
+    By default, only the IPv4 unicast address family is announced to all
+    neighbors. Using the ‘no bgp default ipv4-unicast’ configuration overrides
+    this default so that all address families need to be enabled explicitly.
+
+    ```
+    router bgp 1
+     no bgp default ipv4-unicast
+     neighbor 10.10.10.1 remote-as 2
+     neighbor 2001:0DB8::1 remote-as 3
+     address-family ipv4 unicast
+      neighbor 10.10.10.1 activate
+      network 192.168.1.0/24
+     exit-address-family
+     address-family ipv6 unicast
+      neighbor 2001:0DB8::1 activate
+      network 2001:0DB8:5009::/64
+     exit-address-family
+    ```
+
+    This configuration demonstrates how the ‘no bgp default ipv4-unicast’ might
+    be used in a setup with two upstreams where each of the upstreams should only
+    receive either IPv4 or IPv6 announcements.
+
+    Using the `bgp default ipv6-unicast` configuration, IPv6 unicast
+    address family is enabled by default for all new neighbors.
+
+nexthop prefer-global[](#clicmd-nexthop-prefer-global "Link to this definition")
+:   This command is used within an IPv6 address family configuration (IPv6
+    unicast, IPv6 multicast, or IPv6 labeled-unicast) to control which nexthop
+    is installed to Zebra and the kernel routing table.
+
+    When a BGP UPDATE is received with both a global IPv6 address and a
+    link-local IPv6 address as nexthops, the BGP RIB stores both nexthops.
+    However, only one nexthop can be installed to Zebra for packet forwarding.
+    This command causes BGP to install the global IPv6 address to Zebra instead
+    of the link-local address. By default, FRR installs link-local addresses
+    when both are available.
+
+    **Important:** This command does not change the BGP RIB contents - the RIB
+    always contains both global and link-local nexthops when both are received.
+    It only affects which nexthop is selected for installation to Zebra and
+    subsequently to the kernel routing table.
+
+    This is similar to using `set ipv6 next-hop prefer-global` in a route-map,
+    but applies globally to all routes received for the configured address family,
+    rather than being applied on a per-route basis. When both configurations are
+    present, they work cooperatively (both set the same flag).
+
+    The `no` form of this command restores the default behavior of installing
+    link-local addresses to Zebra.
+
+    ```
+    router bgp 65000
+     address-family ipv6 unicast
+      nexthop prefer-global
+     exit-address-family
+    ```
+
+    Default: disabled (link-local addresses are installed to Zebra).
+
+bgp ipv6-auto-ra[](#clicmd-bgp-ipv6-auto-ra "Link to this definition")
+:   By default, bgpd can ask Zebra to enable sending IPv6 router advertisement
+    messages on interfaces. For example, this happens for unnumbered peers
+    support or when extended-nexthop capability is used. The `no` form of this
+    command disables such behaviour.
+
+### Route Aggregation[](#route-aggregation "Link to this heading")
+
+#### Route Aggregation-IPv4 Address Family[](#route-aggregation-ipv4-address-family "Link to this heading")
+
+aggregate-address A.B.C.D/M[](#clicmd-aggregate-address-A.B.C.D-M "Link to this definition")
+:   This command specifies an aggregate address.
+
+    In order to advertise an aggregated prefix, a more specific (longer) prefix
+    MUST exist in the BGP table. For example, if you want to create an
+    `aggregate-address 10.0.0.0/24`, you should make sure you have something
+    like `10.0.0.5/32` or `10.0.0.0/26`, or any other smaller prefix in the
+    BGP table. The routing information table (RIB) is not enough, you have to
+    redistribute them into the BGP table.
+
+aggregate-address A.B.C.D/M route-map NAME[](#clicmd-aggregate-address-A.B.C.D-M-route-map-NAME "Link to this definition")
+:   Apply a route-map for an aggregated prefix.
+
+aggregate-address A.B.C.D/M origin <egp|igp|incomplete>[](#clicmd-aggregate-address-A.B.C.D-M-origin-egp-igp-incomplete "Link to this definition")
+:   Override ORIGIN for an aggregated prefix.
+
+aggregate-address A.B.C.D/M as-set[](#clicmd-aggregate-address-A.B.C.D-M-as-set "Link to this definition")
+:   This command specifies an aggregate address. Resulting routes include
+    AS set.
+
+aggregate-address A.B.C.D/M summary-only[](#clicmd-aggregate-address-A.B.C.D-M-summary-only "Link to this definition")
+:   This command specifies an aggregate address.
+
+    Longer prefixes advertisements of more specific routes to all neighbors are suppressed.
+
+aggregate-address A.B.C.D/M matching-MED-only[](#clicmd-aggregate-address-A.B.C.D-M-matching-MED-only "Link to this definition")
+:   Configure the aggregated address to only be created when the routes MED
+    match, otherwise no aggregated route will be created.
+
+aggregate-address A.B.C.D/M suppress-map NAME[](#clicmd-aggregate-address-A.B.C.D-M-suppress-map-NAME "Link to this definition")
+:   Similar to summary-only, but will only suppress more specific routes that
+    are matched by the selected route-map.
+
+aggregate-address A.B.C.D/M upa [drop] [max-routes (1-4294967295)][](#clicmd-aggregate-address-A.B.C.D-M-upa-drop-max-routes-1-4294967295 "Link to this definition")
+:   Enable Unreachable Prefix Announcement (UPA) for this aggregate. When component
+    routes are withdrawn or become unreachable, UPA routes are originated with
+    the UPA extended community (type 0x03, subtype 0x09) instead of withdrawing
+    the aggregate.
+
+    The optional `drop` keyword sets the D-bit in the UPA extended community,
+    signaling to receivers that they should install a blackhole/drop entry for
+    the prefix.
+
+    The `max-routes` parameter specifies a cap on the number of simultaneous
+    UPA routes that can be originated for this aggregate (0 = unlimited).
+
+    See [Unreachable Prefix Announcement (UPA)](#bgp-upa) for detailed information about UPA configuration and behavior.
+
+    This configuration example sets up an `aggregate-address` under the ipv4
+    address-family.
+
+    ```
+    router bgp 1
+     address-family ipv4 unicast
+      aggregate-address 10.0.0.0/8
+      aggregate-address 20.0.0.0/8 as-set
+      aggregate-address 40.0.0.0/8 summary-only
+      aggregate-address 50.0.0.0/8 route-map aggr-rmap
+     exit-address-family
+    ```
+
+#### Route Aggregation-IPv6 Address Family[](#route-aggregation-ipv6-address-family "Link to this heading")
+
+aggregate-address X:X::X:X/M[](#clicmd-aggregate-address-X-X-X-X-M "Link to this definition")
+:   This command specifies an aggregate address.
+
+aggregate-address X:X::X:X/M route-map NAME[](#clicmd-aggregate-address-X-X-X-X-M-route-map-NAME "Link to this definition")
+:   Apply a route-map for an aggregated prefix.
+
+aggregate-address X:X::X:X/M origin <egp|igp|incomplete>[](#clicmd-aggregate-address-X-X-X-X-M-origin-egp-igp-incomplete "Link to this definition")
+:   Override ORIGIN for an aggregated prefix.
+
+aggregate-address X:X::X:X/M as-set[](#clicmd-aggregate-address-X-X-X-X-M-as-set "Link to this definition")
+:   This command specifies an aggregate address. Resulting routes include
+    AS set.
+
+aggregate-address X:X::X:X/M summary-only[](#clicmd-aggregate-address-X-X-X-X-M-summary-only "Link to this definition")
+:   This command specifies an aggregate address.
+
+    Longer prefixes advertisements of more specific routes to all neighbors are suppressed
+
+aggregate-address X:X::X:X/M matching-MED-only[](#clicmd-aggregate-address-X-X-X-X-M-matching-MED-only "Link to this definition")
+:   Configure the aggregated address to only be created when the routes MED
+    match, otherwise no aggregated route will be created.
+
+aggregate-address X:X::X:X/M suppress-map NAME[](#clicmd-aggregate-address-X-X-X-X-M-suppress-map-NAME "Link to this definition")
+:   Similar to summary-only, but will only suppress more specific routes that
+    are matched by the selected route-map.
+
+aggregate-address X:X::X:X/M upa [drop] [max-routes (1-4294967295)][](#clicmd-aggregate-address-X-X-X-X-M-upa-drop-max-routes-1-4294967295 "Link to this definition")
+:   Enable Unreachable Prefix Announcement (UPA) for this aggregate. When component
+    routes are withdrawn or become unreachable, UPA routes are originated with
+    the UPA extended community (type 0x03, subtype 0x09) instead of withdrawing
+    the aggregate.
+
+    The optional `drop` keyword sets the D-bit in the UPA extended community,
+    signaling to receivers that they should install a blackhole/drop entry for
+    the prefix.
+
+    The `max-routes` parameter specifies a cap on the number of simultaneous
+    UPA routes that can be originated for this aggregate (0 = unlimited).
+
+    See [Unreachable Prefix Announcement (UPA)](#bgp-upa) for detailed information about UPA configuration and behavior.
+
+    This configuration example sets up an `aggregate-address` under the ipv6
+    address-family.
+
+    ```
+    router bgp 1
+     address-family ipv6 unicast
+      aggregate-address 10::0/64
+      aggregate-address 20::0/64 as-set
+      aggregate-address 40::0/64 summary-only
+      aggregate-address 50::0/64 route-map aggr-rmap
+     exit-address-family
+    ```
+
+### Unreachable Prefix Announcement (UPA)[](#unreachable-prefix-announcement-upa "Link to this heading")
+
+Unreachable Prefix Announcement (UPA) is a BGP mechanism defined in
+`draft-ietf-idr-upa-02` that allows routers to signal that a prefix is
+unreachable without withdrawing the route entirely. This enables downstream
+routers to take appropriate action (such as blackholing traffic) while
+maintaining route presence in the BGP table.
+
+#### UPA Overview[](#upa-overview "Link to this heading")
+
+Traditionally, when all component routes of an aggregate disappear, the
+aggregate itself must be withdrawn. UPA solves this by advertising the
+aggregate with a special **UPA Extended Community** (type 0x03, subtype 0x09)
+that contains:
+
+* **Router ID**: The originating router’s BGP router ID (4 bytes)
+* **D-bit (Drop flag)**: Whether receivers should install a blackhole entry
+
+When peers receive a route with the UPA extended community, they can:
+
+* Install a blackhole route to drop traffic immediately (D-bit)
+* Apply special policies (rate limiting, diversion to scrubbing centers, etc.)
+* Log/alert on unreachable prefixes
+
+Honoring the D-bit is opt-in: a receiver installs a blackhole/drop entry for a
+received UPA route **only** if UPA is enabled for that neighbor with
+`neighbor X upa`. Without that configuration the D-bit is ignored and no
+unreachable route is installed, even though the route (and its UPA extended
+community) remains visible in the BGP table.
+
+#### UPA Configuration[](#upa-configuration "Link to this heading")
+
+UPA must be enabled on both the aggregate and the BGP neighbor.
+
+**On the aggregate:**
+
+```
+router bgp 65001
+ address-family ipv4 unicast
+  aggregate-address 10.0.0.0/8 upa drop max-routes 100
+ exit-address-family
+```
+
+This enables UPA for the aggregate 10.0.0.0/8. When component routes become
+unreachable, UPA routes are originated up to the max-routes limit.
+
+**On the neighbor:**
+
+```
+router bgp 65001
+ neighbor 192.0.2.1 remote-as 65002
+ address-family ipv4 unicast
+  neighbor 192.0.2.1 activate
+  neighbor 192.0.2.1 upa
+ exit-address-family
+```
+
+`neighbor X upa` governs UPA in both directions for that neighbor: only such
+neighbors are sent UPA-tagged routes (others receive normal route withdrawals,
+maintaining backward compatibility), and only for such neighbors is the D-bit of
+a received UPA route honored (a drop/blackhole entry installed). The
+`neighbor X upa` command is documented in [Peers](#bgp-peers).
+
+#### Global UPA Origination[](#global-upa-origination "Link to this heading")
+
+In addition to per-aggregate UPA, UPA origination can be enabled globally for an
+address-family. This originates UPA routes for any prefix that becomes
+unreachable, independent of aggregate configuration.
+
+upa originate-all[](#clicmd-upa-originate-all "Link to this definition")
+:   Enable global UPA origination for the address-family. When any prefix becomes
+    unreachable, a UPA route is originated instead of a plain withdrawal.
+
+upa drop[](#clicmd-upa-drop "Link to this definition")
+:   Set the D-bit in globally originated UPA Extended Communities, signaling
+    receivers to install a blackhole/drop entry.
+
+upa max-routes (1-4294967295)[](#clicmd-upa-max-routes-1-4294967295 "Link to this definition")
+:   Limit the maximum number of simultaneous global UPA routes that can be
+    originated for the address-family. The default is `0` (unlimited).
+
+#### UPA Behavior[](#upa-behavior "Link to this heading")
+
+* Aggregate is advertised normally when component routes are present
+* When components are withdrawn, UPA routes are originated with the UPA ExtCom
+* If `drop` is configured, the D-bit is set in the UPA extended community,
+  signaling receivers to install a blackhole/drop entry
+* When components become reachable again, UPA routes are automatically withdrawn
+* Multiple UPA originators’ Router-IDs are aggregated in a single UPDATE
+  (up to 200 per prefix; a warning is logged above 100)
+* UPA routes always lose best-path selection to non-UPA routes
+
+#### UPA Show Commands[](#upa-show-commands "Link to this heading")
+
+show bgp [<view|vrf> VIEWVRFNAME] [<ipv4|ipv6>] [unicast] upa [json][](#clicmd-show-bgp-view-vrf-VIEWVRFNAME-ipv4-ipv6-unicast-upa-json "Link to this definition")
+:   Display UPA routes in the BGP routing table. Shows all routes that have
+    the UPA extended community set.
+
+show bgp [<view|vrf> VIEWVRFNAME] [<ipv4|ipv6>] [unicast] upa statistics [json][](#clicmd-show-bgp-view-vrf-VIEWVRFNAME-ipv4-ipv6-unicast-upa-statistics-json "Link to this definition")
+:   Display UPA statistics including global UPA configuration state, number of
+    tracked UPA routes, and active UPA route count.
+
+show bgp [<ipv4|ipv6> [unicast]] neighbors <A.B.C.D|X:X::X:X|WORD> upa [json][](#clicmd-show-bgp-ipv4-ipv6-unicast-neighbors-A.B.C.D-X-X-X-X-WORD-upa-json "Link to this definition")
+:   Display per-neighbor UPA information, including whether UPA sending is
+    enabled for the neighbor.
+
+#### UPA Debugging[](#upa-debugging "Link to this heading")
+
+debug bgp upa[](#clicmd-debug-bgp-upa "Link to this definition")
+:   Enable debugging of UPA origination, withdrawal, and Extended Community
+    processing.
+
+### Redistribution[](#redistribution "Link to this heading")
+
+Redistribution configuration should be placed under the `address-family`
+section for the specific AF to redistribute into. Protocol availability for
+redistribution is determined by BGP AF; for example, you cannot redistribute
+OSPFv3 into `address-family ipv4 unicast` as OSPFv3 supports IPv6.
+
+redistribute <babel|connected|eigrp|isis|kernel|openfabric|ospf|ospf6|rip|ripng|sharp|static> [metric (0-4294967295)] [route-map WORD][](#clicmd-redistribute-babel-connected-eigrp-isis-kernel-openfabric-ospf-ospf6-rip-ripng-sharp-static-metric-0-4294967295-route-map-WORD "Link to this definition")
+:   Redistribute routes from other protocols into BGP.
+
+    Note - When redistributing a static route, or any other route, into BGP,
+    the Admin Distance is carried into BGP, and is used in BGP’s Best Path
+    calculation. When comparing a redistributed route with a local aggregate,
+    or a route learned dynamically from another BGP speaker, the one with a
+    lower Admin Distance is more preferred.
+
+redistribute <table|table-direct> (1-65535)] [metric (0-4294967295)] [route-map WORD][](#clicmd-redistribute-table-table-direct-1-65535-metric-0-4294967295-route-map-WORD "Link to this definition")
+:   Redistribute routes from a routing table ID into BGP. There are two
+    techniques for redistribution:
+
+    * Standard Table Redistribution `table (1-65535)`:
+      :   + Routes from the specified routing table ID are imported into the
+            default routing table using the `ip import-table ID` command.
+          + These routes are identified by the protocol type “T[ID]” when
+            displayed with `show (ip|ipv6) route`.
+          + The `redistribute table ID` command then integrates these routes
+            into BGP.
+    * Direct Table Redistribution `table-direct (1-65535)`:
+      :   + This method directly imports routes from the designated routing table
+            ID into BGP, omitting the step of adding to the default routing table.
+          + This method is especially relevant when the specified table ID is
+            checked against routing by appending the appropriate ip rules.
+
+Redistribute routes from a routing table number into BGP.
+
+redistribute vnc-direct[](#clicmd-redistribute-vnc-direct "Link to this definition")
+:   Redistribute VNC direct (not via zebra) routes to BGP process.
+
+show bgp [<view|vrf> VRFNAME] <ipv4|ipv6> unicast redistribute [json][](#clicmd-show-bgp-view-vrf-VRFNAME-ipv4-ipv6-unicast-redistribute-json "Link to this definition")
+:   Display the current redistribution configuration for the specified BGP
+    instance. Shows which protocols are being redistributed into BGP along with
+    their associated metrics, instances, and route-maps if configured.
+
+show bgp [<view|vrf> VRFNAME] <ipv4|ipv6> unicast aggregate-address [A.B.C.D/M|X:X::X:X/M] [json][](#clicmd-show-bgp-view-vrf-VRFNAME-ipv4-ipv6-unicast-aggregate-address-A.B.C.D-M-X-X-X-X-M-json "Link to this definition")
+:   Display runtime information for configured aggregate-address entries.
+    When a specific prefix is provided, shows details for that aggregate only.
+    The output includes:
+
+    * Summary-only and AS-set flags
+    * Origin (IGP/EGP/incomplete)
+    * Matching route count and origin breakdown (incomplete, EGP counts)
+    * MED state (match enabled, initialized, mismatched, value)
+    * Route-map and suppress-map names if configured
+    * Aggregated attributes (community, extended community, large community, AS path)
+
+    Example output:
+
+    ```
+    Aggregate: 192.168.0.0/24
+      Summary-only: yes, AS-set: no
+      Origin: igp
+      Matching routes: 3 (incomplete: 0, egp: 0)
+      MED: match=yes, initialized=yes, mismatched=no, value=100
+      Suppress-map: my-suppress-map
+    ```
+
+bgp update-delay MAX-DELAY[](#clicmd-bgp-update-delay-MAX-DELAY "Link to this definition")
+
+bgp update-delay MAX-DELAY ESTABLISH-WAIT[](#clicmd-bgp-update-delay-MAX-DELAY-ESTABLISH-WAIT "Link to this definition")
+:   This feature is used to enable read-only mode on BGP process restart or when
+    a BGP process is cleared using ‘clear ip bgp \*’. Note that this command is
+    configured at the global level and applies to all bgp instances/vrfs. It
+    cannot be used at the same time as the “update-delay” command described below,
+    which is entered in each bgp instance/vrf desired to delay update installation
+    and advertisements. The global and per-vrf approaches to defining update-delay
+    are mutually exclusive.
+
+    When applicable, read-only mode would begin as soon as the first peer reaches
+    Established status and a timer for max-delay seconds is started. During this
+    mode BGP doesn’t run any best-path or generate any updates to its peers. This
+    mode continues until:
+
+    1. All the configured peers, except the shutdown peers, have sent explicit EOR
+       (End-Of-RIB) or an implicit-EOR. The first keep-alive after BGP has reached
+       Established is considered an implicit-EOR.
+       If the establish-wait optional value is given, then BGP will wait for
+       peers to reach established from the beginning of the update-delay till the
+       establish-wait period is over, i.e. the minimum set of established peers for
+       which EOR is expected would be peers established during the establish-wait
+       window, not necessarily all the configured neighbors.
+    2. max-delay period is over.
+
+    On hitting any of the above two conditions, BGP resumes the decision process
+    and generates updates to its peers.
+
+    Default max-delay is 0, i.e. the feature is off by default.
+
+update-delay MAX-DELAY[](#clicmd-update-delay-MAX-DELAY "Link to this definition")
+
+update-delay MAX-DELAY ESTABLISH-WAIT[](#clicmd-update-delay-MAX-DELAY-ESTABLISH-WAIT "Link to this definition")
+:   This feature is used to enable read-only mode on BGP process restart or when
+    a BGP process is cleared using ‘clear ip bgp \*’. Note that this command is
+    configured under the specific bgp instance/vrf that the feature is enabled for.
+    It cannot be used at the same time as the global “bgp update-delay” described
+    above, which is entered at the global level and applies to all bgp instances.
+    The global and per-vrf approaches to defining update-delay are mutually
+    exclusive.
+
+    When applicable, read-only mode would begin as soon as the first peer reaches
+    Established status and a timer for max-delay seconds is started. During this
+    mode BGP doesn’t run any best-path or generate any updates to its peers. This
+    mode continues until:
+
+    1. All the configured peers, except the shutdown peers, have sent explicit EOR
+       (End-Of-RIB) or an implicit-EOR. The first keep-alive after BGP has reached
+       Established is considered an implicit-EOR.
+       If the establish-wait optional value is given, then BGP will wait for
+       peers to reach established from the beginning of the update-delay till the
+       establish-wait period is over, i.e. the minimum set of established peers for
+       which EOR is expected would be peers established during the establish-wait
+       window, not necessarily all the configured neighbors.
+    2. max-delay period is over.
+
+    On hitting any of the above two conditions, BGP resumes the decision process
+    and generates updates to its peers.
+
+    Default max-delay is 0, i.e. the feature is off by default.
+
+bgp advertisement-delay (1-3600)[](#clicmd-bgp-advertisement-delay-1-3600 "Link to this definition")
+:   With `update-delay`, both FIB programming and advertisements are deferred,
+    meaning the restarting router cannot forward local traffic until the delay
+    completes. `advertisement-delay` takes a different approach: it allows
+    best-path selection and FIB programming to proceed normally so local
+    forwarding works immediately, while holding only the advertisements to
+    prevent the router from attracting remote traffic before it has a complete
+    routing state.
+
+    After a non-graceful restart, peers detect the session loss and withdraw
+    routes to this router, so the receiver has no routes to this router at all.
+    `advertisement-delay` controls when this router re-announces itself,
+    ensuring it only attracts traffic once it has fully converged. While a
+    graceful restart is in progress for a BGP instance, `advertisement-delay`
+    is not started for that instance – the GR restarter path handles route
+    retention separately. Other instances are unaffected.
+
+    This feature holds route advertisements to peers for a configured number of
+    seconds after the first peer reaches Established status. The delay applies
+    to all address families (AFI/SAFI). Note that this command is configured at
+    the global level and applies to all bgp instances/vrfs. It cannot be used
+    at the same time as the per-vrf `advertisement-delay` command described
+    below. The global and per-vrf approaches are mutually exclusive.
+
+    When the first peer reaches Established, a timer for the configured delay is
+    started. During this period, best-path selection and FIB programming proceed
+    normally, but route advertisements to peers are held. When the timer
+    expires, advertisements are released to all established peers.
+
+    When both `update-delay` and `advertisement-delay` are configured, both
+    timers start when the first peer reaches Established. Route advertisements
+    are released at `max(update-delay, advertisement-delay)`; whichever
+    finishes last triggers the release.
+
+    This feature runs after startup and also re-triggers on
+    `clear bgp *`, similar to `update-delay`.
+    It does not re-trigger if peers flap after the delay has completed.
+
+    Changing or removing this configuration while the timer is running takes
+    effect from the next startup or next `clear bgp *`.
+
+    This parameter is unrelated to the per-neighbor or per-peer-group
+    `advertisement-interval`, which controls the minimum time between
+    individual route advertisements to a specific peer.
+
+    Default max-delay is 0, i.e. the feature is off by default.
+
+advertisement-delay (1-3600)[](#clicmd-advertisement-delay-1-3600 "Link to this definition")
+:   With `update-delay`, both FIB programming and advertisements are deferred,
+    meaning the restarting router cannot forward local traffic until the delay
+    completes. `advertisement-delay` takes a different approach: it allows
+    best-path selection and FIB programming to proceed normally so local
+    forwarding works immediately, while holding only the advertisements to
+    prevent the router from attracting remote traffic before it has a complete
+    routing state.
+
+    After a non-graceful restart, peers detect the session loss and withdraw
+    routes to this router, so the receiver has no routes to this router at all.
+    `advertisement-delay` controls when this router re-announces itself,
+    ensuring it only attracts traffic once it has fully converged. While a
+    graceful restart is in progress for a BGP instance, `advertisement-delay`
+    is not started for that instance – the GR restarter path handles route
+    retention separately. Other instances are unaffected.
+
+    This feature holds route advertisements to peers for a configured number of
+    seconds after the first BGP peer in any VRF reaches Established status.
+    Note that this command is configured under the specific bgp instance/vrf
+    that the feature is enabled for. It cannot be used at the same time as the
+    global `bgp advertisement-delay` described above. The global and per-vrf
+    approaches are mutually exclusive.
+
+    The timer is VRF-aware: when the first peer in any VRF (including the
+    default VRF) reaches Established, the advertisement-delay timer starts for
+    every VRF that has it configured. A VRF that has no BGP peers of its own,
+    and learns its routes by import from another instance, is held as well.
+    Each VRF manages its own timer independently.
+
+    Because a peer in one VRF starts the timer everywhere it is configured,
+    enable it only on the VRFs whose advertisements should be held. A VRF
+    that carries the sessions used to reach other routers will otherwise hold
+    those advertisements too.
+
+    During the delay period, best-path selection and FIB programming proceed
+    normally, but route advertisements to peers are held. When the timer
+    expires, advertisements are released to all established peers.
+
+    When both `update-delay` and `advertisement-delay` are configured, both
+    timers start when the first peer reaches Established. Route advertisements
+    are released at `max(update-delay, advertisement-delay)`; whichever
+    finishes last triggers the release.
+
+    The delay applies to all address families (AFI/SAFI).
+
+    This feature runs after startup and also re-triggers on
+    `clear bgp *`, similar to `update-delay`.
+    It does not re-trigger if peers flap after the delay has completed.
+
+    Changing or removing this configuration while the timer is running takes
+    effect from the next startup or next `clear bgp *`.
+
+    This parameter is unrelated to the per-neighbor or per-peer-group
+    `advertisement-interval`, which controls the minimum time between
+    individual route advertisements to a specific peer.
+
+    Default max-delay is 0, i.e. the feature is off by default.
+
+table-map ROUTE-MAP-NAME[](#clicmd-table-map-ROUTE-MAP-NAME "Link to this definition")
+:   This feature is used to apply a route-map on route updates from BGP to
+    Zebra. All the applicable match operations are allowed, such as match on
+    prefix, next-hop, communities, etc. Set operations for this attach-point are
+    limited to metric and next-hop only. Any operation of this feature does not
+    affect BGPs internal RIB.
+
+    Supported for ipv4 and ipv6 address families. It works on multi-paths as
+    well, however, metric setting is based on the best-path only.
+
+### Peers[](#peers "Link to this heading")
+
+#### Defining Peers[](#defining-peers "Link to this heading")
+
+neighbor PEER remote-as ASN[](#clicmd-neighbor-PEER-remote-as-ASN "Link to this definition")
+:   Creates a new neighbor whose remote-as is ASN. PEER can be an IPv4 address
+    or an IPv6 address or an interface to use for the connection.
+
+    ```
+    router bgp 1
+     neighbor 10.0.0.1 remote-as 2
+    ```
+
+    In this case my router, in AS-1, is trying to peer with AS-2 at 10.0.0.1.
+
+    This command must be the first command used when configuring a neighbor. If
+    the remote-as is not specified, *bgpd* will complain like this:
+
+    ```
+    can't find neighbor 10.0.0.1
+    ```
+
+neighbor PEER remote-as internal[](#clicmd-neighbor-PEER-remote-as-internal "Link to this definition")
+:   Create a peer as you would when you specify an ASN, except that if the
+    peers ASN is different than mine as specified under the [`router bgp ASN`](#clicmd-router-bgp-ASN)
+    command the connection will be denied.
+
+neighbor PEER remote-as external[](#clicmd-neighbor-PEER-remote-as-external "Link to this definition")
+:   Create a peer as you would when you specify an ASN, except that if the
+    peers ASN is the same as mine as specified under the [`router bgp ASN`](#clicmd-router-bgp-ASN)
+    command the connection will be denied.
+
+neighbor PEER remote-as auto[](#clicmd-neighbor-PEER-remote-as-auto "Link to this definition")
+:   The neighbor’s ASN is detected automatically from the OPEN message.
+
+neighbor PEER oad[](#clicmd-neighbor-PEER-oad "Link to this definition")
+:   Mark a peer belonging to the One Administrative Domain.
+
+    Some networks span more than one autonomous system and require more
+    flexibility in the propagation of path attributes.It is worth noting that
+    these multi-AS networks have a common or single administrative entity.
+    These networks are said to belong to One Administrative Domain (OAD).
+    It is desirable to carry IBGP-only attributes across EBGP peerings when
+    the peers belong to an OAD.
+
+    Enabling this peering sub-type will allow the propagation of non-transitive
+    attributes across EBGP peerings (e.g. local-preference). Make sure to
+    turn this peering type on for all peers in the OAD.
+
+    The AIGP attribute is not propagated implicitly over EBGP-OAD sessions. Per
+    `draft-uttaro-idr-bgp-oad` its default is “disabled” and it must be enabled
+    explicitly with `neighbor PEER aigp` on both ends of each OAD session.
+
+    Disabled by default.
+
+bgp listen range <A.B.C.D/M|X:X::X:X/M> peer-group PGNAME[](#clicmd-bgp-listen-range-A.B.C.D-M-X-X-X-X-M-peer-group-PGNAME "Link to this definition")
+:   Accept connections from any peers in the specified prefix. Configuration
+    from the specified peer-group is used to configure these peers.
+
+Note
+
+When using BGP listen ranges, if the associated peer group has TCP MD5
+authentication configured, your kernel must support this on prefixes. On
+Linux, this support was added in kernel version 4.14. If your kernel does
+not support this feature you will get a warning in the log file, and the
+listen range will only accept connections from peers without MD5 configured.
+
+Additionally, we have observed that when using this option at scale (several
+hundred peers) the kernel may hit its option memory limit. In this situation
+you will see error messages like:
+
+`bgpd: sockopt_tcp_signature: setsockopt(23): Cannot allocate memory`
+
+In this case you need to increase the value of the sysctl
+`net.core.optmem_max` to allow the kernel to allocate the necessary option
+memory.
+
+bgp listen limit <1-65535>[](#clicmd-bgp-listen-limit-1-65535 "Link to this definition")
+:   Define the maximum number of peers accepted for one BGP instance. This
+    limit is set to 100 by default. Increasing this value will really be
+    possible if more file descriptors are available in the BGP process. This
+    value is defined by the underlying system (ulimit value), and can be
+    overridden by –limit-fds. More information is available in chapter
+    ([Common Invocation Options](basic.html#common-invocation-options)).
+
+coalesce-time (0-4294967295)[](#clicmd-coalesce-time-0-4294967295 "Link to this definition")
+:   The time in milliseconds that BGP will delay before deciding what peers
+    can be put into an update-group together in order to generate a single
+    update for them. The default time is 1000.
+
+#### Configuring Peers[](#configuring-peers "Link to this heading")
+
+neighbor PEER shutdown [message MSG...] [rtt (1-65535) [count (1-255)]][](#clicmd-neighbor-PEER-shutdown-message-MSG...-rtt-1-65535-count-1-255 "Link to this definition")
+:   Shutdown the peer. We can delete the neighbor’s configuration by
+    `no neighbor PEER remote-as ASN` but all configuration of the neighbor
+    will be deleted. When you want to preserve the configuration, but want to
+    drop the BGP peer, use this syntax.
+
+    Optionally you can specify a shutdown message MSG.
+
+    Also, you can specify optionally `rtt` in milliseconds to automatically
+    shutdown the peer if round-trip-time becomes higher than defined.
+
+    Additional `count` parameter is the number of keepalive messages to count
+    before shutdown the peer if round-trip-time becomes higher than defined.
+
+neighbor PEER disable-connected-check[](#clicmd-neighbor-PEER-disable-connected-check "Link to this definition")
+:   Allow peerings between directly connected eBGP peers using loopback
+    addresses.
+
+neighbor PEER disable-link-bw-encoding-ieee[](#clicmd-neighbor-PEER-disable-link-bw-encoding-ieee "Link to this definition")
+:   By default bandwidth in extended communities is carried encoded as IEEE
+    floating-point format, which is according to the draft.
+
+    Older versions have the implementation where extended community bandwidth
+    value is carried encoded as uint32. To enable backward compatibility we
+    need to disable IEEE floating-point encoding option per-peer.
+
+neighbor PEER extended-link-bandwidth[](#clicmd-neighbor-PEER-extended-link-bandwidth "Link to this definition")
+:   By default bandwidth in extended communities is carried encoded as IEEE
+    floating-point format, and is limited to maximum of 25 Gbps.
+
+    Enabling this parameter, you can use the bandwidth of to 4294967295 Mbps.
+
+    This is disabled by default.
+
+neighbor PEER enforce-first-as[](#clicmd-neighbor-PEER-enforce-first-as "Link to this definition")
+:   Discard updates received from the specified (eBGP) peer if the AS\_PATH
+    attribute does not contain the PEER’s ASN as the first AS\_PATH segment.
+
+    You can enable or disable this enforcement globally too using
+    `bgp enforce-first-as` command.
+
+    Default: enabled.
+
+neighbor PEER extended-optional-parameters[](#clicmd-neighbor-PEER-extended-optional-parameters "Link to this definition")
+:   Force Extended Optional Parameters Length format to be used for OPEN messages.
+
+    By default, it’s disabled. If the standard optional parameters length is
+    higher than one-octet (255), then extended format is enabled automatically.
+
+    For testing purposes, extended format can be enabled with this command.
+
+neighbor PEER ebgp-multihop[](#clicmd-neighbor-PEER-ebgp-multihop "Link to this definition")
+:   Specifying `ebgp-multihop` allows sessions with eBGP neighbors to
+    establish when they are multiple hops away. When the neighbor is not
+    directly connected and this knob is not enabled, the session will not
+    establish.
+
+    If the peer’s IP address is not in the RIB and is reachable via the
+    default route, then you have to enable `ip nht resolve-via-default`.
+
+neighbor PEER description ...[](#clicmd-neighbor-PEER-description-... "Link to this definition")
+:   Set description of the peer.
+
+neighbor PEER interface [v6only] [peer-group NAME][](#clicmd-neighbor-PEER-interface-v6only-peer-group-NAME "Link to this definition")
+:   Configure an interface-based (unnumbered) BGP peer; `PEER` is the interface
+    name. By default, *bgpd* tries to derive the neighbor IPv4 address from a /30
+    or /31 on the interface and establish the session over IPv4; if that is not
+    possible, it uses the peer’s IPv6 link-local address. If `v6only` is
+    specified, *bgpd* skips trying IPv4 and establishes the session directly via
+    IPv6 link-local. For the local TCP source address, see
+    `neighbor PEER update-source` below.
+
+neighbor PEER interface [v6only] remote-as <internal|external|auto|ASN>[](#clicmd-neighbor-PEER-interface-v6only-remote-as-internal-external-auto-ASN "Link to this definition")
+:   Configure an interface-based BGP peer and set `remote-as` in one command.
+    Session address selection follows `neighbor PEER interface` above. Use
+    `internal` for iBGP and `external` for eBGP sessions, or specify an ASN
+    if you wish. This connection type is meant for point to point connections.
+    If you are on an ethernet segment and attempt to use this with more than one
+    bgp neighbor, only one neighbor will come up, due to how this feature works.
+
+neighbor PEER next-hop-self [force][](#clicmd-neighbor-PEER-next-hop-self-force "Link to this definition")
+:   This command specifies an announced route’s nexthop as being equivalent to
+    the address of the bgp router if it is learned via eBGP. This will also
+    bypass third-party next-hops in favor of the local bgp address. If the
+    optional keyword `force` is specified the modification is done also for
+    routes learned via iBGP.
+
+neighbor PEER attribute-unchanged [{as-path|next-hop|med}][](#clicmd-neighbor-PEER-attribute-unchanged-as-path-next-hop-med "Link to this definition")
+:   This command specifies attributes to be left unchanged for advertisements
+    sent to a peer. Use this to leave the next-hop unchanged in ipv6
+    configurations, as the route-map directive to leave the next-hop unchanged
+    is only available for ipv4.
+
+neighbor PEER update-source <IFNAME|ADDRESS>[](#clicmd-neighbor-PEER-update-source-IFNAME-ADDRESS "Link to this definition")
+:   Specify the IPv4 or IPv6 source address to use for the BGP session to this
+    neighbour, may be specified as either an IP address directly or as an
+    interface name (in which case the *zebra* daemon MUST be running in order
+    for *bgpd* to be able to retrieve interface state). When there are multiple
+    addresses on the chosen IFNAME then BGP will use the address that matches
+    the most number of bits in comparison to the destination peer address.
+
+    ```
+    router bgp 64555
+     neighbor foo update-source 192.168.0.1
+     neighbor bar update-source lo0
+    ```
+
+neighbor PEER ip-transparent[](#clicmd-neighbor-PEER-ip-transparent "Link to this definition")
+:   Use this command when you need to establish a BGP session with a
+    neighbor using an IP address that you do *not* own. Some typical use
+    cases include running BGP in a container without configuring the
+    address on a loopback interface, peering over a virtual (floating)
+    IP (VIP), or operating as a transparent IP firewall.
+    The BGP TCP session shall have a TCP source address that you set with
+    neighbor PEER update-source A.B.C.D.
+
+neighbor PEER default-originate [route-map WORD][](#clicmd-neighbor-PEER-default-originate-route-map-WORD "Link to this definition")
+:   *bgpd*’s default is to not announce the default route (0.0.0.0/0) even if it
+    is in routing table. When you want to announce default routes to the peer,
+    use this command.
+
+    If `route-map` keyword is specified, then the default route will be
+    originated only if route-map conditions are met. For example, announce
+    the default route only if `10.10.10.10/32` route exists and set an
+    arbitrary community for a default route.
+
+    ```
+    router bgp 64555
+     address-family ipv4 unicast
+      neighbor 192.168.255.1 default-originate route-map default
+    !
+    ip prefix-list p1 seq 5 permit 10.10.10.10/32
+    !
+    route-map default permit 10
+     match ip address prefix-list p1
+     set community 123:123
+    !
+    ```
+
+neighbor PEER port PORT[](#clicmd-neighbor-PEER-port-PORT "Link to this definition")
+
+neighbor PEER password PASSWORD[](#clicmd-neighbor-PEER-password-PASSWORD "Link to this definition")
+:   Set a MD5 password to be used with the tcp socket that is being used
+    to connect to the remote peer. Please note if you are using this
+    command with a large number of peers on linux you should consider
+    modifying the net.core.optmem\_max sysctl to a larger value to
+    avoid out of memory errors from the linux kernel.
+
+neighbor PEER send-nexthop-characteristics[](#clicmd-neighbor-PEER-send-nexthop-characteristics "Link to this definition")
+:   Send the BGP Next Hop Dependent Characteristics Attribute (NHC) to the peer.
+
+    If the route is learned and NHC attribute is present with Next-Next Hop Nodes
+    (NNHN) TLV set, then the number of NNHN can be used for weighted ECMP.
+
+    In order to use weighted ECMP with NNHN, `bgp bestpath bandwidth ignore`
+    must be configured (do not use Link Bandwidth extended community).
+
+    Default: disabled.
+
+neighbor PEER send-community <both|all|extended|standard|large>[](#clicmd-neighbor-PEER-send-community-both-all-extended-standard-large "Link to this definition")
+:   Send the communities to the peer.
+
+    Default: enabled.
+
+:   Send the extended RPKI communities to the peer. RPKI extended community
+    can be send only to iBGP and eBGP-OAD peers.
+
+    Default: disabled.
+
+neighbor PEER upa[](#clicmd-neighbor-PEER-upa "Link to this definition")
+:   Enable UPA (Unreachable Prefix Announcement) for this peer. This governs
+    both directions:
+
+    * Outbound: locally originated UPA routes and received routes carrying the
+      UPA extended community (type 0x03, subtype 0x09) are announced to this
+      neighbor.
+    * Inbound: the D-bit of UPA routes received from this neighbor is honored,
+      i.e. a blackhole/drop entry is installed into zebra. Without this option
+      the D-bit is ignored and no unreachable route is installed.
+
+    Neighbors without this option will receive standard route withdrawals
+    when aggregates become unreachable, maintaining backward compatibility.
+
+    This capability must be configured together with the aggregate-address
+    `upa` option on the originating router.
+    See [Unreachable Prefix Announcement (UPA)](#bgp-upa) for detailed information.
+
+    Default: disabled.
+
+neighbor PEER weight WEIGHT[](#clicmd-neighbor-PEER-weight-WEIGHT "Link to this definition")
+:   This command specifies a default weight value for the neighbor’s routes.
+
+neighbor PEER maximum-prefix NUMBER [force][](#clicmd-neighbor-PEER-maximum-prefix-NUMBER-force "Link to this definition")
+:   Sets a maximum number of prefixes we can receive from a given peer. If this
+    number is exceeded, the BGP session will be destroyed.
+
+    In practice, it is generally preferable to use a prefix-list to limit what
+    prefixes are received from the peer instead of using this knob. Tearing down
+    the BGP session when a limit is exceeded is far more destructive than merely
+    rejecting undesired prefixes. The prefix-list method is also much more
+    granular and offers much smarter matching criterion than number of received
+    prefixes, making it more suited to implementing policy.
+
+    If `force` is set, then ALL prefixes are counted for maximum instead of
+    accepted only. This is useful for cases where an inbound filter is applied,
+    but you want maximum-prefix to act on ALL (including filtered) prefixes. This
+    option requires [`neighbor PEER soft-reconfiguration inbound`](#clicmd-neighbor-PEER-soft-reconfiguration-inbound) to be enabled for the peer.
+
+neighbor PEER soft-reconfiguration inbound[](#clicmd-neighbor-PEER-soft-reconfiguration-inbound "Link to this definition")
+:   Allow inbo
+
+<error>Content truncated. Call the fetch tool with a start_index of 100000 to get more content.</error>

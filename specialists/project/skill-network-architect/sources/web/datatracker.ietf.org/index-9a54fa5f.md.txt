@@ -1,0 +1,186 @@
+[Skip to main content](https://datatracker.ietf.org/#content)
+
+[![Image 1: IETF Logo](https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-white.svg)![Image 2: IETF Logo](https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor.svg) Datatracker](https://datatracker.ietf.org/)
+
+*   [Groups](https://datatracker.ietf.org/#)
+    *   By area/parent
+    *   [Apps & Realtime](https://datatracker.ietf.org/wg/#ART)
+    *   [General](https://datatracker.ietf.org/wg/#GEN)
+    *   [Internet](https://datatracker.ietf.org/wg/#INT)
+    *   [Ops & Management](https://datatracker.ietf.org/wg/#OPS)
+    *   [Routing](https://datatracker.ietf.org/wg/#RTG)
+    *   [Security](https://datatracker.ietf.org/wg/#SEC)
+    *   [Web and Internet Transport](https://datatracker.ietf.org/wg/#WIT)
+    *   [IESG](https://datatracker.ietf.org/group/iesg/about/)
+    *   [IAB](https://datatracker.ietf.org/program/)
+    *   [IRTF](https://datatracker.ietf.org/rg/)
+    *   [IETF LLC](https://datatracker.ietf.org/adm/)
+    *   [RFC Editor](https://datatracker.ietf.org/rfcedtyp/)
+    *   [Other](https://datatracker.ietf.org/group/)
+        *   [Active AGs](https://datatracker.ietf.org/ag/)
+        *   [Active Areas](https://datatracker.ietf.org/area/)
+        *   [Active Directorates](https://datatracker.ietf.org/dir/)
+        *   [Active IAB Workshops](https://datatracker.ietf.org/iabworkshop/)
+        *   [Active Programs](https://datatracker.ietf.org/program/)
+        *   [Active RAGs](https://datatracker.ietf.org/rag/)
+        *   [Active Teams](https://datatracker.ietf.org/team/)
+
+    *   
+* * *
+
+    *   New work
+    *   [Chartering groups](https://datatracker.ietf.org/group/chartering/)
+    *   [BOFs](https://datatracker.ietf.org/wg/bofs/)
+    *   [BOF Requests](https://datatracker.ietf.org/doc/bof-requests)
+    *   
+* * *
+
+    *   Other groups
+    *   [Concluded groups](https://datatracker.ietf.org/group/concluded/)
+    *   [Non-WG lists](https://datatracker.ietf.org/list/nonwg)
+
+*   [Documents](https://datatracker.ietf.org/#)
+    *   [Search](https://datatracker.ietf.org/doc/search)
+    *   [Recent I-Ds](https://datatracker.ietf.org/doc/recent)
+    *   [Submit an Internet-Draft](https://datatracker.ietf.org/submit/)
+    *   
+* * *
+
+    *    RFC streams 
+    *   [IAB](https://datatracker.ietf.org/stream/iab/)
+    *   [IRTF](https://datatracker.ietf.org/stream/irtf/)
+    *   [ISE](https://datatracker.ietf.org/stream/ise/)
+    *   [Editorial](https://datatracker.ietf.org/stream/editorial/)
+    *   
+* * *
+
+    *    Subseries 
+    *   [STD](https://datatracker.ietf.org/doc/std)[BCP](https://datatracker.ietf.org/doc/bcp)[FYI](https://datatracker.ietf.org/doc/fyi)
+
+*   [Meetings](https://datatracker.ietf.org/#)
+    *   [Agenda](https://datatracker.ietf.org/meeting/agenda)
+    *   [Materials](https://datatracker.ietf.org/meeting/materials)
+    *   [Floor plan](https://datatracker.ietf.org/meeting/floor-plan)
+    *   [Registration](https://www.ietf.org/how/meetings/register/)
+    *   [Important dates](https://datatracker.ietf.org/meeting/important-dates/)
+    *   [Request a session](https://datatracker.ietf.org/meeting/session/request/)
+    *   [Session requests](https://datatracker.ietf.org/meeting/requests)
+    *   
+* * *
+
+    *    Upcoming meetings 
+    *   [Upcoming meetings](https://datatracker.ietf.org/meeting/upcoming)
+    *   
+* * *
+
+    *    Past meetings 
+    *   [Past meetings](https://datatracker.ietf.org/meeting/past)
+    *   [Meeting proceedings](https://www.ietf.org/how/meetings/past/)
+
+*   [Other](https://datatracker.ietf.org/#)
+    *   [IPR disclosures](https://datatracker.ietf.org/ipr/)
+    *   [Liaison statements](https://datatracker.ietf.org/liaison/)
+    *   [IESG agenda](https://datatracker.ietf.org/iesg/agenda/)
+    *   [NomComs](https://datatracker.ietf.org/nomcom/)
+    *   [Downref registry](https://datatracker.ietf.org/doc/downref)
+    *   [Statistics](https://datatracker.ietf.org/#)
+        *   [I-Ds/RFCs](https://datatracker.ietf.org/stats/document/)
+        *   [Meetings](https://datatracker.ietf.org/stats/meeting/)
+
+    *   [API Help](https://datatracker.ietf.org/api/)
+    *   [Release notes](https://datatracker.ietf.org/release/)
+    *   [System status](https://status.ietf.org/)
+    *   
+* * *
+
+    *   [Report a bug](https://github.com/ietf-tools/datatracker/issues/new/choose)
+
+*   [User](https://datatracker.ietf.org/#)
+    *   [Sign in](https://datatracker.ietf.org/accounts/login/?next=/)
+    *   [Password reset](https://datatracker.ietf.org/accounts/reset/)
+    *   [Preferences](https://datatracker.ietf.org/accounts/settings/)
+    *   [New account](https://datatracker.ietf.org/accounts/create/)
+    *   [List subscriptions](https://datatracker.ietf.org/#)
+        *   [IETF Lists](https://mailman3.ietf.org/mailman3/lists/)
+        *   [IRTF Lists](https://mailman3.irtf.org/mailman3/lists/)
+        *   [IAB Lists](https://mailman3.iab.org/mailman3/lists/)
+        *   [RFC-Editor Lists](https://mailman3.rfc-editor.org/mailman3/lists/)
+
+[Report a bug](https://github.com/ietf-tools/datatracker/issues/new/choose)[Sign in](https://datatracker.ietf.org/accounts/login/?next=/)
+
+![Image 3: IETF Logo](https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-white.svg)![Image 4: IETF Logo](https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo.svg)
+
+# Datatracker
+
+The IETF Datatracker is the day-to-day front-end to the IETF database for people who work on IETF standards.   
+ It contains data about the documents, working groups, meetings, agendas, minutes, presentations, and more, of the IETF.
+
+The primary public face of the IETF is at [www.ietf.org](https://www.ietf.org/).
+
+## IETF Document Search
+
+ Search 
+
+## Additional search criteria
+
+Document Type 
+
+- [x] RFC 
+
+- [x] Internet-Draft (active) 
+
+- [x] Internet-Draft (expired, replaced or withdrawn) 
+
+- [x] Agenda 
+
+- [x] BOF request 
+
+- [x] Bluesheets 
+
+- [x] Charter 
+
+- [x] Chat log 
+
+- [x] Conflict review 
+
+- [x] Minutes 
+
+- [x] Narrative minutes 
+
+- [x] Polls 
+
+- [x] Proceedings materials 
+
+- [x] Recording 
+
+- [x] Review 
+
+- [x] Slides 
+
+- [x] Statement 
+
+- [x] Status change 
+
+Author or Affiliation Name 
+
+WG 
+
+Area 
+
+AD 
+
+IESG State 
+
+IRTF State 
+
+Stream 
+
+ Search 
+
+Clear
+
+[Search page for www.ietf.org website](https://www.ietf.org/search)[Search page for IETF mail list archives](https://mailarchive.ietf.org/arch/)
+
+[IETF](https://www.ietf.org/)[IESG](https://www.ietf.org/iesg/)[IAB](https://www.iab.org/)[IRTF](https://www.irtf.org/)[IETF LLC](https://www.ietf.org/llc/)[IETF Trust](https://trustee.ietf.org/)[RFC Editor](https://www.rfc-editor.org/)[IANA](https://www.iana.org/)[Privacy Statement](https://www.ietf.org/privacy-statement/)
+
+[About IETF Datatracker](https://datatracker.ietf.org/release/about)[Version 12.82.1 (release - 3aa2f63)](https://github.com/ietf-tools/datatracker/releases/tag/12.82.1)[System Status](https://status.ietf.org/) Report a bug: [GitHub](https://github.com/ietf-tools/datatracker/issues/new/choose)[Email](mailto:tools-help@ietf.org)

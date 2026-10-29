@@ -1,0 +1,83 @@
+Contents of https://docs.ceph.com/en/latest/start/hardware-recommendations/:
+Notice
+
+This document is for a development version of Ceph.
+
+Every hardware choice balances failure domains, cost, and performance. This
+page gives the principles. [Minimum Hardware per Daemon](../minimum-hardware/#minimum-hardware), [CPU and Memory Sizing](../hardware-cpu-memory/#hardware-cpu-memory),
+[Storage Devices](../hardware-storage-devices/#hardware-storage-devices), and [Network Sizing](../hardware-networks/#hardware-networks) give the numbers. No two clusters are alike: benchmark
+before you buy.
+
+## Keep Failure Domains Small[](#keep-failure-domains-small "Link to this heading")
+
+A failure domain is any component whose loss prevents access to one or more
+[OSDs](../../glossary/#term-OSD) or other Ceph daemons. Examples are a stopped daemon on a
+host, a failed storage drive, an OS crash, a malfunctioning NIC, a failed
+power supply, a network outage, and a power outage.
+
+Sharing failure domains costs less; isolating every one costs more.
+
+These principles keep failure domains small:
+
+* Ceph daemons are spread across many hosts.
+* A host runs Ceph daemons of one type, and is configured for that type.
+* Processes that use the cluster, such as OpenStack, OpenNebula, CloudStack,
+  or Kubernetes, run on separate hosts.
+* More, smaller nodes are safer than fewer, denser nodes: when a host with a
+  large share of the cluster’s capacity fails, recovery can push OSDs past
+  the [full ratio](../../rados/configuration/mon-config-ref/#storage-capacity), and Ceph halts operations
+  to prevent data loss.
+
+## Balance Cost, Performance, and Risk[](#balance-cost-performance-and-risk "Link to this heading")
+
+These principles apply to every component:
+
+* CPUs are chosen for IOPS (I/O operations per second) per core, not for
+  cores per OSD. Each Metadata Server ([MDS](../../glossary/#term-MDS)) cannot exploit many
+  cores, so its latency is lowest with a high clock rate rather than a large
+  number of cores.
+* More RAM is better; size for peak use, not for a calm period. See
+  [CPU and Memory Sizing](../hardware-cpu-memory/#hardware-cpu-memory).
+* The operating system has its own drive, and each OSD has its own drive.
+  HDD OSDs, other than deep archives, gain from moving WAL+DB (write-ahead
+  log and metadata database) to a shared SSD; SSD OSDs keep WAL+DB on the
+  device. Ratios and sizing: [Storage Devices](../hardware-storage-devices/#hardware-storage-devices).
+* Monitor databases, CephFS metadata, and RGW index and log pools belong on
+  enterprise-class SSDs even when bulk data lives on HDDs; see
+  [Storage Devices](../hardware-storage-devices/#hardware-storage-devices).
+* Production clusters use enterprise-class drives with power loss
+  protection.
+* Cost is judged by total cost of ownership, not by price per terabyte:
+  larger HDDs cost less per terabyte but deliver fewer IOPS per TB, and when
+  RAID HBAs, chassis, and data center space are counted, SSDs often cost
+  less overall.
+* Drives are benchmarked before a significant purchase, and again to choose
+  the write cache setting.
+
+## Networks[](#networks "Link to this heading")
+
+Network bandwidth must carry client traffic plus replication and recovery
+traffic. A faster network shortens recovery, and so the window in which a
+second failure can lose data; the larger the cluster, the more often that
+window opens. Bond links across two switches so that one switch is not a
+failure domain for the host, and put management and BMC (baseboard
+management controller) traffic on a separate out-of-band network. Numbers
+and bonding guidance: [Network Sizing](../hardware-networks/#hardware-networks).
+
+## Minimum Hardware Recommendations[](#minimum-hardware-recommendations "Link to this heading")
+
+The bare minimum per daemon is listed on [Minimum Hardware per Daemon](../minimum-hardware/#minimum-hardware).
+
+## Additional Resources[](#additional-resources "Link to this heading")
+
+* [CPU and Memory Sizing](../hardware-cpu-memory/#hardware-cpu-memory)
+* [Storage Devices](../hardware-storage-devices/#hardware-storage-devices)
+* [Network Sizing](../hardware-networks/#hardware-networks)
+* [Minimum Hardware per Daemon](../minimum-hardware/#minimum-hardware)
+* [OS Recommendations](../os-recommendations/#os-recommendations)
+* [The Parts of a Ceph Cluster](../ceph-cluster-components/#ceph-cluster-components)
+* [Ceph blog](https://ceph.io/en/news/blog/) (performance articles)
+
+Brought to you by the Ceph Foundation
+
+The Ceph Documentation is a community resource funded and hosted by the non-profit [Ceph Foundation](https://ceph.io/en/foundation/). If you would like to support this and our other efforts, please consider [joining now](https://ceph.io/en/foundation/join/).

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "nodes": [
+    {
+      "id": "a1",
+      "domain": "rack-a",
+      "memory_gib": 96,
+      "reserve_gib": 16
+    },
+    {
+      "id": "a2",
+      "domain": "rack-a",
+      "memory_gib": 96,
+      "reserve_gib": 16
+    },
+    {
+      "id": "b1",
+      "domain": "rack-b",
+      "memory_gib": 64,
+      "reserve_gib": 16
+    },
+    {
+      "id": "b2",
+      "domain": "rack-b",
+      "memory_gib": 128,
+      "reserve_gib": 16
+    }
+  ],
+  "demand_gib": 140,
+  "headroom_fraction": 0,
+  "scenarios": [
+    {
+      "id": "normal",
+      "failed_nodes": [],
+      "failed_domains": []
+    },
+    {
+      "id": "lose-a1",
+      "failed_nodes": [
+        "a1"
+      ],
+      "failed_domains": []
+    },
+    {
+      "id": "lose-rack-a",
+      "failed_nodes": [],
+      "failed_domains": [
+        "rack-a"
+      ]
+    }
+  ],
+  "restore": {
+    "data_gib": 1024,
+    "throughput_mbps": 10000,
+    "efficiency": 1,
+    "fixed_seconds": 0,
+    "rto_seconds": 1800
+  }
+}
