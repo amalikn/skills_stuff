@@ -7,6 +7,8 @@
 #   PTY=1      type the command into an interactive session (CLIs that ignore an exec command); PTY_WAIT seconds to wait for output
 #   LINES_OUT  lines of output to print on success (default 25)
 #   TSH_PROXY  Teleport proxy (default teleport.apn.au; nbn sites use teleport.communitywifi.net.au)
+#   PROBE_USER user for entries that store none (the enterprise fallbacks are tried as admin; 2026-10-29: an empty user made ssh print
+#              its usage text, which the probe once read as ACCEPTED)
 #
 # One password prompt per entry (NumberOfPasswordPrompts=1), entries tried in the order given, stops at the first that works and prints
 # the entry name and the first lines of the command output. The password goes from `kp` into SSHPASS for sshpass -e on this Mac; the SMC
@@ -25,6 +27,8 @@ nc -z 127.0.0.1 "$port" 2>/dev/null || { echo "$smc $ip: port 22 not reachable t
 
 for entry in "$@"; do
   user=$(kp show -a UserName "$entry" 2>/dev/null) || { echo "$entry: not in KeePass"; continue; }
+  user=${PROBE_USER:-$user}
+  [ -n "$user" ] || { echo "$smc $ip: $entry stores no user; set PROBE_USER"; continue; }
   SSHPASS=$(kp show -s -a Password "$entry" 2>/dev/null); export SSHPASS
   sshopts=(-p "$port" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -o ConnectTimeout=20 -o PubkeyAuthentication=no
            -o NumberOfPasswordPrompts=1)
@@ -38,6 +42,7 @@ for entry in "$@"; do
   unset SSHPASS
   case "$out" in
     *"Permission denied"*|*"Authentication failed"*|*"Too many authentication"*) echo "$smc $ip: $entry ($user) rejected" ;;
+    "usage: ssh"*|*"Connection closed"*|*"Connection refused"*|*"timed out"*) echo "$smc $ip: $entry ($user) NOT TRIED: ${out%%$'\n'*}" ;;
     "") echo "$smc $ip: $entry ($user) UNCONFIRMED - login not refused but no output (2026-10-07: the ePMP 1000 Hotspot did this for a password its web login rejects)" ;;
     *) echo "$smc $ip: $entry ($user) ACCEPTED"; printf '%s\n' "$out" | head -${LINES_OUT:-25}; exit 0 ;;
   esac

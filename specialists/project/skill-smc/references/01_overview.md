@@ -273,6 +273,15 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 >   sub-interface); a box's own switch is learned alone on its trunk port; the box's own ports are `permanent`. The master holds the VIP as a
 >   `secondary` inet on `bridge_500` (`ip -o -4 addr show dev bridge_500`).
 > - At a multi-SMC site the capture tools need the box name as given (`aurukun-smc02`) and the proxy named (`--proxy`), both added 2026-10-29.
+
+> **Learned 2026-10-29** · aurukun-smc01..03 (`nbn_accelerate`) · VERIFIED_PRIMARY · Source: `ip route show table all` in the 09:47 evidence
+> set and unified-network-controller `just wc::uplinks read` (14:00, public IP and ASN per leg) · Falsifier: a box at the site with more or
+> fewer than six WAN tables, or a leg whose ASN is not NBN Co
+> Each aurukun box has **six WAN legs of its own** (operator: six internet links per SMC, 18 at the site), the same interface names on every
+> box, each with its own routing table and default route: `enp1s0`, `enp2s0`, `vlan521`, `vlan523`, `vlan532`, `vlan534`; every one NBN Co
+> (Sky Muster). The other templated uplink VLANs (522, 524-526, 531, 533, 535, 536) hold no address. A leg that is down when an uplink
+> plan is drafted reads "provider unknown (ASN none)" and is left out (smc01 `enp1s0`, Port 1): count each box's WAN tables before
+> trusting a draft, and redraft when one was missing.
 - **Central hosting.** Prometheus and Graylog run in AWS Sydney (ap-southeast-2) and are managed by Malik. Eclipse is hosted in SY3, is high availability and is monitored by the NOC. RADIUS and
   802.1X are not used anywhere.
 - **Satellite round trip.** Depends on the link: Sky Muster Plus 600–800 ms; Starlink under 100 ms. Operator figures, not a measurement.

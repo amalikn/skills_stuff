@@ -221,3 +221,25 @@ galiwinku 3). OUIs seen include `98:25:4A`, `A8:42:A1` and `5C:E9:31`. Whether t
 
 > **Learned 2026-10-29 (b)** · SG2428P firmware 4.0.1 · VERIFIED_PRIMARY · Source: `show system-info` of aurukun T1Switch2 and T2Switch2 · Falsifier: a 4.0.1 unit reporting `SG2428P`.
 > Firmware 4.0.1 reports `Hardware Version - TL-SG2428P 4.0`; 5.x reports `SG2428P 5.30`. Same product: strip `TL-` before matching a catalog type.
+
+> **Learned 2026-10-29 (c)** · SG2428P firmware 5.30.x vs 4.0.1 vs 1.0.0 · VERIFIED_PRIMARY · Source: reads of aurukun's six switches through
+> aurukun-smc01, 2026-10-29; unified-network-controller `src/unc/tasks/site_readers/switch_dialects.py` (commit 7582008) · Falsifier: a 4.0.1 or
+> 1.0.0 switch that answers `show lldp neighbor-information` with no interface, or any SG2428P that answers `show mac address-table all`
+> The CLI differs by firmware, so a reader must send the command the release answers:
+> - MAC table: `show mac address-table` on every release; `show mac address-table all` is "Invalid parameter" on all of them.
+> - LLDP neighbours: 5.30.x prints a table from `show lldp neighbor-information`; 4.0.1 and 1.0.0 answer that bare with "Incomplete command" and
+>   need it per interface: `show lldp neighbor-information interface gigabitEthernet 1/0/N`. `show lldp` (global state) and `show interface status`
+>   are the same on all three.
+> - Enable is `enable` with no password on these units (`privilege: enable-no-password`).
+>
+> **Learned 2026-10-29 (d)** · aurukun six switches · VERIFIED_PRIMARY · Source: `show lldp` per switch, 2026-10-29 · Falsifier: a seventh aurukun
+> switch, or one of these six with LLDP off after the save
+> LLDP ships OFF on the TP-Link site switches: at aurukun only Switch1 had it on; the other five read `LLDP Status: Disabled`. The operator enabled
+> it on all six (`configure` -> `lldp` -> `exit` -> `copy running-config startup-config`; a write, operator-approved). With it on, the switches name
+> their directly-wired Cambium radios and APs as LLDP neighbours (port ID `eth1` for E-series, the management IP for cnWave), which the MAC table
+> alone cannot. A port with no LLDP neighbour but one learned MAC is still placed from the MAC table.
+>
+> **Learned 2026-10-29 (e)** · aurukun management VLAN 500 · UNVERIFIED (identity not confirmed) · Source: T1Switch2 MAC table + SSH banner, 2026-10-29
+> A Raspberry Pi (`OpenSSH ... Raspbian`, MQTT tcp/1883 open, Pi-Foundation MAC `d8:3a:dd:...`) was found at 10.255.0.250 on T1Switch2 Gi1/0/24,
+> on the management VLAN, reachable from all three SMCs, not in Nautobot and opened by no Cambium credential. Likely an on-site UPS/battery MQTT
+> monitor (mosquitto/apn-mqtt-client); confirm with the site team before trusting or touching it.

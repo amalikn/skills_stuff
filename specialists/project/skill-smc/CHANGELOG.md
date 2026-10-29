@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_1257
+Last rotated: 20261029_1417
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261029_1417 — aurukun: six WAN legs per box; a leg down at draft time is left out (v0.10.2 -> v0.10.3)](#20261029_1417--aurukun-six-wan-legs-per-box-a-leg-down-at-draft-time-is-left-out-v0102---v0103)
 - [20261029_1257 — FDB and VIP placement evidence; TL- model prefix on old SG2428P firmware (v0.10.1 -> v0.10.2)](#20261029_1257--fdb-and-vip-placement-evidence-tl--model-prefix-on-old-sg2428p-firmware-v0101---v0102)
 - [20261029_1215 — ssh_handshake_probe: what SSH a device behind an SMC offers, no login (v0.10.0 -> v0.10.1)](#20261029_1215--ssh_handshake_probe-what-ssh-a-device-behind-an-smc-offers-no-login-v0100---v0101)
 - [20261029_1058 — TP-Link switches on IPSSH firmware: legacy SSH fallbacks (v0.9.9 -> v0.10.0)](#20261029_1058--tp-link-switches-on-ipssh-firmware-legacy-ssh-fallbacks-v099---v0100)
@@ -35,7 +36,11 @@ Last reviewed: 2026-10-27
 - [20261027_1922 — Quoted code excerpt restored after a markdown hook bug (v0.8.5 -> v0.8.6)](#20261027_1922--quoted-code-excerpt-restored-after-a-markdown-hook-bug-v085---v086)
 - [20261027_1459 — smc_change self-repair, kohana cron_job, lockstep timing; link health probe (v0.8.4 -> v0.8.5)](#20261027_1459--smc_change-self-repair-kohana-cron_job-lockstep-timing-link-health-probe-v084---v085)
 - [20261027_1207 — Teleport re-join without a tunnel; first rcp PHP apply (v0.8.3 -> v0.8.4)](#20261027_1207--teleport-re-join-without-a-tunnel-first-rcp-php-apply-v083---v084)
-- [20261027_1050 — smc_change: done SMCs skipped before connecting, runs per flavor, retries, TASK_TIMING, journal freeze (v0.8.2 -> v0.8.3)](#20261027_1050--smc_change-done-smcs-skipped-before-connecting-runs-per-flavor-retries-task_timing-journal-freeze-v082---v083)
+
+## 20261029_1417 — aurukun: six WAN legs per box; a leg down at draft time is left out (v0.10.2 -> v0.10.3)
+
+Learned 2026-10-29 in `references/01_overview.md` (WAN legs): every aurukun box has six NBN Co WAN legs with their own routing
+tables; an uplink plan drafted while one is down leaves it out (unified-network-controller, smc01 `enp1s0`).
 
 ## 20261029_1257 — FDB and VIP placement evidence; TL- model prefix on old SG2428P firmware (v0.10.1 -> v0.10.2)
 
@@ -189,12 +194,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
   on an overlay Pi the clear is RAM-only.
 - `references/19_smc-change-role.md`: first rcp prod apply (jigalong-smc01, 10/10, 736 s, created `runs/rcp/`) and its verify (10/10).
 - version 0.8.3 -> 0.8.4.
-
-## 20261027_1050 — smc_change: done SMCs skipped before connecting, runs per flavor, retries, TASK_TIMING, journal freeze (v0.8.2 -> v0.8.3)
-
-- `references/19_smc-change-role.md`: new section "Done skip, runs per flavor, retries, timing, journal freeze (2026-10-27)" with code
-  excerpts (group_by split, recovery drift rule); per-flavor `runs/<flavor>/` paths throughout; captive portal render documented as part of the
-  PHP verification (home and wifi/terms, bad markers, same status, unhealthy baseline refuses).
-- `scripts/smc_change_runs_table.py` reads `runs/<flavor>/records` (every flavor from `runs/`, or one); `scripts/smc_change_compare_records.py`
-  globs the per-flavor layout and closes its files (ruff SIM115). Unit test and smoke runs on real records pass.
-- `RUNBOOK.md` unchanged in routing (reference 19 already routes smc_change); version 0.8.2 -> 0.8.3.

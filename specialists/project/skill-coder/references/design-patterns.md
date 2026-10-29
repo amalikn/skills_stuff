@@ -698,6 +698,36 @@ merged = merge_reads(reads)          # sums and unions by address, then one PATC
 - **Reuse:** topology from LLDP/ARP/FDB, dependency graphs from logs.
 - **Pitfalls:** never fall back to "first observer wins"; show an undecidable item as unplaced.
 
+### P-36 Widen a name's scope by renaming in place, never by recreating
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `wc-local/scripts/smc/smc_uplink_circuits.py`
+> `rename_legacy`, e62633c: a site gained two more boxes, so `<site>-internet02` became `<box>-internet02`) (reusable_candidate) Pattern P-36.
+
+- **Problem:** an identifier was built from a scope that turned out too wide (one name per site, but now there are several boxes per site);
+  the new scheme gives every new object a narrower name, while the objects already made carry history (cables, links, change log) under the old one.
+- **Solution:** the plan row carries both the new name and the legacy one; on apply, when the legacy object exists and the new name is free,
+  PATCH its name; when both exist, change nothing and report it for a person; the dry run says "would rename". Then the usual find-or-create
+  runs on the new name and finds the renamed object.
+- **Why it works:** identity is the object, not its name, so everything attached stays attached; the rename is idempotent (the second run finds
+  no legacy object), and a clash never picks a winner silently.
+- **Reuse:** any naming scheme whose scope widens later: per-box after per-site, per-tenant after global, a version or region added to a key.
+- **Pitfalls:** scope the lookup (provider, Location) so a namesake elsewhere is not renamed; single-scope cases must produce identical names
+  (new == legacy) and cost no extra calls.
+- **Realised in:** Python:
+
+```python
+def rename_legacy(c, path, field, legacy, name, scope, counts, log=print):   # smc_uplink_circuits.py (e62633c)
+    if not legacy or legacy == name:
+        return
+    old = c.first(path, f"{field}={q(legacy)}&{scope}")
+    if old is None:
+        return
+    if c.first(path, f"{field}={q(name)}&{scope}"):
+        log(f"  note: both {legacy} and {name} exist; {legacy} left for the operator")
+        return
+    c.call("PATCH", f"{path}{old['id']}/", {field: name})
+```
+
 ### P-37 A cache proved by a differential assert, keyed so an undo hits
 
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (skill-drawio `scripts/flowmap/e2e.py` `_refresh` and `_crossings`,

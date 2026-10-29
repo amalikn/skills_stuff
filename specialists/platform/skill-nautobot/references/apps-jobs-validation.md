@@ -43,6 +43,47 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > **Learned 2026-10-13** · Nautobot 3.2.3 · VERIFIED_PRIMARY · Source: installed `nautobot/extras/models/jobs.py` ScheduledJob.save (begin_approval_workflow on first save), on_workflow_approved (enabled, ACTIVE), and `nautobot/extras/models/approvals.py` find_for_model · Falsifier: a ScheduledJob created with `ScheduledJob.create_schedule` from inside a Job runs without waiting while a matching definition exists
 > A Job can stop at an approval by queuing another Job: `ScheduledJob.create_schedule(job_model, user, job_kwargs={...})` saves a ScheduledJob, and its first save starts the matching ApprovalWorkflowDefinition (state Pending, disabled); approval enables it and it runs. A definition's `model_constraints` are passed to `.filter()`, so ORM lookups such as `{"job_model__name__in": [...]}` work. Definitions are unique on (model content type, weight), and a fresh install ships "Scheduled Jobs Approval - Example" on Scheduled Jobs at weight 100 (its constraint matches no Job): pick another weight; the highest weight is tried first. The approver needs `change` on the stage, the workflow and the ScheduledJob under review; no rule stops the requester approving their own run. A Job flagged `has_sensitive_variables` cannot carry an approval.
 
+> **Learned 2026-10-29** · Nautobot 3.2.3, celery 5.6.3, django-celery-beat · VERIFIED_PRIMARY (read on a deployment) · Source: the
+> scheduler's start log and traceback (`nautobot/core/celery/schedulers.py` line 120, `model.celery_kwargs`); unified-network-controller
+> `unc_ownership/__init__.py` ready() · Falsifier: a `CELERY_BEAT_SCHEDULE` entry added in an app's `ready()` shows "Sending due task" in the
+> scheduler's log under `NautobotDatabaseScheduler`
+> An app cannot add a periodic Celery task through `settings.CELERY_BEAT_SCHEDULE`: Nautobot's beat runs `NautobotDatabaseScheduler`,
+> whose entry class reads `celery_kwargs` from its model, and django-celery-beat's `PeriodicTask` built from the static schedule has none.
+> Beat logs `Cannot add entry '<name>' to database schedule: AttributeError("'PeriodicTask' object has no attribute 'celery_kwargs'")` once
+> at start and never sends the task. The worker still lists the task as registered and the documented beat health check (heartbeat file)
+> passes, so nothing else shows it: grep the scheduler log for "Cannot add entry" after a deploy. Schedule recurring app work as a Nautobot
+> Job with a ScheduledJob instead (the supported scheduler model).
+>
+> ```python
+> schedule = dict(getattr(settings, "CELERY_BEAT_SCHEDULE", {}))      # unc_ownership/__init__.py ready(): never scheduled
+> schedule.setdefault("unc-onboarding-execution-reconcile", {
+>     "task": "unc_ownership.tasks.reconcile_onboarding_executions", "schedule": 60.0,
+> })
+> settings.CELERY_BEAT_SCHEDULE = schedule
+> ```
+>
+> No visual surface.
+
+> **Learned 2026-10-29** · Nautobot 3.2.3 · VERIFIED_PRIMARY (read on a deployment) · Source: HTTP 400 from `POST /extras/config-contexts/`
+> on a deployment; unified-network-controller `asbuilt_reference.reference` (20a65ab) · Falsifier: a Config Context with a schema typing a
+> field `string` saves with that field `null`
+> A Config Context Schema validates `data` with JSON Schema, where an absent field and a `null` one differ: a property typed `string` refuses
+> `null` ("None is not of type 'string'") though it may be left out. A loader that reads YAML written by hand (`lot: null` for "unknown")
+> drops null entries before the write, or the schema types the field `["string", "null"]`.
+>
+> No visual surface.
+
+> **Learned 2026-10-29** · Nautobot 3.2.3 · VERIFIED_PRIMARY (read on a deployment) · Source: HTTP 400 from `PATCH /extras/relationships/<id>/`;
+> unified-network-controller `src/unc/tasks/multi_smc/reported_by.py` (commit b5b794f) · Falsifier: a Relationship whose `type` changes while it has
+> associations
+> A Relationship's `type` cannot be changed while any association exists: `PATCH` with a new `type` returns 400 "Not supported to change the type of
+> the relationship when some associations are present in the database, delete all ... first". To widen one-to-many to many-to-many in place: back
+> every association up to a file, DELETE them (bulk DELETE and list-body POST are both supported on `/extras/relationship-associations/`; delete
+> needs `admin`), PATCH the type, then recreate from the backup (as the import writer), checking every pair. The key is unchanged, so code reading
+> the Relationship by key is untouched. A rerun with the backup recreates only the pairs now missing.
+>
+> No visual surface.
+
 > **Learned 2026-10-19** · Nautobot 3.2.3 · VERIFIED_PRIMARY (read on a deployment) · Source: ApprovalWorkflowDefinition `model_constraints` `{'job_model__name__in': [...]}` on UNC01, and the catalog seeder that writes it · Falsifier: a 3.2.x definition that matches a renamed Job by class.
 > An approval definition for Jobs matches the Job's display name (`job_model__name__in`), not its class. Renaming a gate Job's `Meta.name` therefore
 > drops its approval silently: the ScheduledJob saves, no definition matches, and the Job runs unapproved. During a rename list both names in the

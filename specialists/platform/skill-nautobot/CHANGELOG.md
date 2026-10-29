@@ -14,6 +14,9 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261029 Learned 2026-10-29 in `references/apps-jobs-validation.md`: an app's `CELERY_BEAT_SCHEDULE` entry is refused by
+  `NautobotDatabaseScheduler` (`celery_kwargs`) and never runs; a Config Context Schema refuses `null` for a typed field (unified-network-controller).
+- 20261029 Learned 2026-10-29 in `references/data-model.md`: a depth-1 `cable_peer` may be a front port (`object_type`), not an Interface.
 - 20261029 Learned 2026-10-29 in `references/data-model.md` (section 9): VRRP across boxes is native (Device and Interface Redundancy
   Groups, VRRP and Anycast IP roles); fields verified on 3.2.3.
 - 20261020 Learned 2026-10-20 (b) in `references/operations-cookbook.md`: `?tags=<name>` answers 400 for an unknown tag (fail open); remove a custom-field choice only after migrating its holders (unified-network-controller).

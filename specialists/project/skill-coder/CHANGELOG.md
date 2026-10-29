@@ -19,6 +19,11 @@ Last rotated: 20261028_2101
 Learned 2026-10-29 in `references/design-patterns.md`: a cache proved by a differential assert, keyed so an undo hits (skill-drawio 73017a9,
 811c918); an estimate nominates, the real measure decides, never worse than the start (skill-drawio 1e6557d).
 
+## 20261029_1420 — Pattern P-36: widen a name's scope by renaming in place
+
+Learned 2026-10-29 in `references/design-patterns.md` (P-36), from unified-network-controller `smc_uplink_circuits.rename_legacy`
+(e62633c): Circuits and NTDs named per site renamed to per box, never recreated.
+
 ## 20261029_1257 — Patterns P-33 to P-35 (multi-SMC build)
 
 `references/design-patterns.md`: read all then write once; pick a moving leader once per cycle; place by evidence with a listed ledger (unified-network-controller, 2026-10-29).

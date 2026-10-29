@@ -770,3 +770,22 @@ Three device facts found when the UNC capture corpus was reviewed for lessons; e
 - **ePMP AP connected stations:** the obsolete `cambiumAPConnectedSTAListTable` (`.1.3.6.1.4.1.17713.21.1.2.11`) answers noSuchObject on live ePMP
   3000L APs; per-SM data comes only from `cambiumAPConnectedSTATable` (`.1.3.6.1.4.1.17713.21.1.2.30`). Evidence: the T1/T2 capture at hope-vale,
   2026-09-21. Firmware version not in the capture (UNVERIFIED).
+
+**Learned 2026-10-29 — network discovery protocols (LLDP/CDP) per family, read at aurukun (unified-network-controller audit, `captures/aurukun-discovery-protocols-20261029/`).**
+
+- **No CDP on any Cambium model** read: the CISCO-CDP-MIB returns noSuchObject on E500, E430H, cnWave and ePMP. VERIFIED_PRIMARY (device walks).
+- **cnPilot E-series (E500, E430H) send LLDP** (REST config key `system.lldp='true'`), from firmware 3.8 onward; the port ID they send is the
+  port name `eth1`, not a MAC. On the switch they show as that unit on its wired port. VERIFIED_PRIMARY (device + Cambium community post 57689).
+- **E430W on 3.7-r9 has no LLDP** at all (no `lldp` key in its config); support starts at 3.8. Place such a unit by the switch MAC table.
+- **cnWave (V3000/V5000) send LLDP even with `CAMBIUM_LLDP_ENABLED=False`** in `minion.envParams` — that flag does NOT gate transmit (seen 1.2.1
+  and 1.4: the flag reads False yet the switch hears them). The earlier note that LLDP is off by configuration on this family is wrong. Its real
+  state is the switch's neighbour table, not the flag. VERIFIED_PRIMARY (switch LLDP + device config).
+- **ePMP Force 300-16 (4.7.0.1):** LLDP rx and tx, readable over SNMP — `networkLLDP .1.3.6.1.4.1.17713.21.3.23.1.0` and `networkLLDPMode .23.2.0`
+  (both `1` = on at aurukun). No CDP. VERIFIED_PRIMARY.
+- **The aurukun Force 300 pair answers the `apn-snmp-ro` community, not `nbn-snmp-ro`**, although aurukun is an nbn_accelerate site. Units that
+  timed out on the nbn community still answered REST, so they were not dead.
+- None of LLDP-MIB is exposed over SNMP on these families (the neighbour view is the switch's, or the unit's CLI `show lldp-neighbors`).
+
+**Learned 2026-10-29 (b) — `device-login-probe.sh` empty-user bug fixed.** An entry with no stored UserName made `ssh` print its usage text,
+which the probe read as ACCEPTED. The script now skips an entry with no user unless `PROBE_USER` is set, and treats `usage: ssh`/`Connection
+closed/refused`/timeout as NOT TRIED. Commit in skills_stuff (pending push). Source: `scripts/device-login-probe.sh`.

@@ -428,3 +428,18 @@ Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/sta
 >
 > No visual surface.
 
+> **Learned 2026-10-29** · Nautobot 3.2.3 · VERIFIED_PRIMARY (read on a deployment) · Source: REST `InterfaceSerializer` at depth 1 on a
+> deployment; unified-network-controller `wc-local/scripts/smc/uplink_sites.py` native_vlans (e62633c) · Falsifier: a depth-1 `cable_peer`
+> of an interface cabled to a front port comes back without `object_type`, or `/dcim/interfaces/<front-port id>/` answers 200
+> An interface's `cable_peer` is whatever the cable ends on, not always an Interface: an interface cabled to a pass-through device's front
+> port reads `{"object_type": "dcim.frontport", "url": ".../api/dcim/front-ports/<id>/"}` (a Circuit termination likewise). Fetching it as
+> `/dcim/interfaces/<id>/` answers 404. Check `object_type` (or the URL) before following the peer.
+>
+> ```python
+> peer = i.get("cable_peer") or {}            # uplink_sites.native_vlans (e62633c)
+> if peer.get("id") and (peer.get("object_type") == "dcim.interface" or "/dcim/interfaces/" in (peer.get("url") or "")):
+>     far = b.nautobot_get(f"/dcim/interfaces/{peer['id']}/?depth=1")
+> ```
+>
+> No visual surface.
+
