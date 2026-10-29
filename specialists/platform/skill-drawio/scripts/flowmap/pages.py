@@ -279,26 +279,44 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
     return page
 
 
-def render(data: dict, profile: Profile) -> str:
-    """The whole draw.io file for a validated map.
+def named_pages(data: dict, profile: Profile) -> list[tuple[int, str, Page]]:
+    """Every page of the drawing in file order, each with its audit rank and the name an audit line starts with (2026-10-29: one build serves
+    the file and its audit, so the audit reads the pages drawn, flow pages with their family labels included).
 
     Args:
         data: the validated map.
         profile: the project's drawing profile.
 
     Returns:
-        The file text: banner, then an uncompressed `<mxfile>` with the Overview, the End-to-end page (then one per family when
-        `look.e2e_family_pages` is on), one page per flow, and the decision pages after the
-        Overview when the map has an `options` block, `decision_pages` or `option_pages`.
+        [(rank, name, page)]: the Overview, the decision pages after it when the map has an `options` block, `decision_pages` or
+        `option_pages`, the End-to-end page (then one per family when `look.e2e_family_pages` is on), one page per flow; rank orders audit
+        lines (Overview 0, End-to-end 1, family 2, decision 3, flow 4).
     """
     comps, labels = {c["id"]: c for c in data["components"]}, flow_labels(data, profile)
-    pages = ([overview_page(data, profile), end_to_end_page(data, profile)] + family_pages(data, profile)   # family pages only with look.e2e_family_pages
-             + [flow_page(f, comps, labels[f["id"]], profile) for f in paged_flows(data, profile)])
+    paged = paged_flows(data, profile)
+    out = ([(0, "Overview", overview_page(data, profile)), (1, "End-to-end", end_to_end_page(data, profile))]
+           + [(2, p.name, p) for p in family_pages(data, profile)]   # family pages only with look.e2e_family_pages
+           + [(4, f"Flow {i + 1} ({f['id']})", flow_page(f, comps, labels[f["id"]], profile)) for i, f in enumerate(data["flows"]) if f in paged])
     for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: decision pages go right after the Overview, in map order
-        pages.insert(1 + k, options_page(data, profile, block, pid, name))
-    for page in pages:   # the background layer locked on every page: nothing on it moves by accident (operator, 2026-10-26)
+        out.insert(1 + k, (3, name, options_page(data, profile, block, pid, name)))
+    for _rank, _name, page in out:   # the background layer locked on every page: nothing on it moves by accident (operator, 2026-10-26)
         page.base_locked = bool(profile.look.get("lock_base_layer"))
-    return mxfile(pages, profile.host, banner(profile.generator, profile.map, profile.command, profile.check))
+    return out
+
+
+def render(data: dict, profile: Profile, built: list[tuple[int, str, Page]] | None = None) -> str:
+    """The whole draw.io file for a validated map.
+
+    Args:
+        data: the validated map.
+        profile: the project's drawing profile.
+        built: the pages from named_pages(), when the caller keeps them; default built here.
+
+    Returns:
+        The file text: banner, then an uncompressed `<mxfile>` with the pages named_pages() lists.
+    """
+    built = named_pages(data, profile) if built is None else built
+    return mxfile([page for _rank, _name, page in built], profile.host, banner(profile.generator, profile.map, profile.command, profile.check))
 
 
 def evaluate(root: Path, profile: Profile) -> Outcome:
@@ -309,7 +327,7 @@ def evaluate(root: Path, profile: Profile) -> Outcome:
         profile: the project's drawing profile.
 
     Returns:
-        The outcome: problems, the rendered text, and whether the file on disk is stale.
+        The outcome: problems, the rendered text and its pages, and whether the file on disk is stale.
     """
     data, problems = load(root, profile)
     # The banner is an XML comment, where "--" is illegal: draw.io then refuses the whole file ("Export failed").
@@ -317,10 +335,11 @@ def evaluate(root: Path, profile: Profile) -> Outcome:
                  for k, v in (("command", profile.command), ("check", profile.check)) if "--" in v]
     if problems or data is None:
         return Outcome(problems=problems)
-    text = render(data, profile)
+    built = named_pages(data, profile)
+    text = render(data, profile, built)
     out = root / profile.output
     current = out.read_text(encoding="utf-8") if out.is_file() else None
-    return Outcome(text=text, drift=current != text)
+    return Outcome(text=text, drift=current != text, pages=built)
 
 
 def flow_list(data: dict | None) -> list[str]:

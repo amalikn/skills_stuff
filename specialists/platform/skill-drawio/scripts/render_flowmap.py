@@ -9,6 +9,7 @@ Usage (from the project root):
     render_flowmap.py --map docs/flows/flows.yaml --write        # validate and write the drawing (files only)
     render_flowmap.py --map docs/flows/flows.yaml --list         # one line per flow (read only)
     render_flowmap.py --map docs/flows/flows.yaml --audit        # layout audit of the routed pages (read only)
+    render_flowmap.py --map docs/flows/flows.yaml --write --audit   # write, then audit the same pages (one render)
     render_flowmap.py --map docs/flows/flows.yaml --audit --look e2e_loops=true   # audit as if the map set a look key (read only)
 Exit: 0 valid and current (or written); 1 on a problem, drift or an audit fault; 2 on bad arguments.
 """
@@ -22,7 +23,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from drawio.audit import faults, page_audit
-from flowmap import e2e, e2e_family, map_parts, model, options, overview, pages
+from flowmap import model, pages
 from flowmap.profile import Profile, look_report
 
 #: The oldest Python this script runs on (stdlib; PyYAML to read the map).
@@ -63,14 +64,19 @@ def audit(root: Path, profile: Profile) -> list[str]:
     data, problems = model.load(root, profile)
     if problems or data is None:
         return [f"map: {p}" for p in problems]
-    return ([f"Overview: {f}" for f in faults(page_audit(overview.overview_page(data, profile)))]
-            + [f"End-to-end: {f}" for f in faults(page_audit(e2e.end_to_end_page(data, profile)))]
-            + [f"{p.name}: {f}" for p in e2e_family.family_pages(data, profile) for f in faults(page_audit(p))]
-            + [f"{name}: {f}" for pid, name, block in model.option_blocks(data)
-               for f in faults(page_audit(options.options_page(data, profile, block, pid, name)))]
-            + [f"Flow {i + 1} ({fl['id']}): {f}" for i, fl in enumerate(data["flows"])   # flow pages too (2026-10-21: overlaps went unseen)
-               if fl in map_parts.paged_flows(data, profile)
-               for f in faults(page_audit(pages.flow_page(fl, {c["id"]: c for c in data["components"]}, i + 1, profile)))])
+    return audit_pages(pages.named_pages(data, profile))
+
+
+def audit_pages(built: list) -> list[str]:
+    """The layout faults of pages already built, Overview first, then End-to-end, family, decision and flow pages.
+
+    Args:
+        built: [(rank, name, page)] from flowmap.pages.named_pages (or Outcome.pages).
+
+    Returns:
+        "<page>: <fault>: <id>" lines; empty when clean.
+    """
+    return [f"{name}: {f}" for _rank, name, page in sorted(built, key=lambda b: b[0]) for f in faults(page_audit(page))]   # stable: file order within a rank
 
 
 def look_overrides(pairs: list[str]) -> dict:
@@ -103,7 +109,7 @@ def with_looks(profile: Profile, pairs: list[str], auditing: bool) -> Profile | 
     Args:
         profile: the map's profile.
         pairs: the `--look` values.
-        auditing: whether --audit was given; overrides are refused otherwise, so nothing is written from them.
+        auditing: whether a read-only --audit was given; overrides are refused otherwise, so nothing is written from them.
 
     Returns:
         The profile (unchanged without pairs), or None after printing why the overrides were refused.
@@ -111,7 +117,7 @@ def with_looks(profile: Profile, pairs: list[str], auditing: bool) -> Profile | 
     if not pairs:
         return profile
     if not auditing:
-        print("render_flowmap: --look needs --audit", file=sys.stderr)
+        print("render_flowmap: --look needs --audit without --write", file=sys.stderr)
         return None
     try:
         return replace(profile, look={**profile.look, **look_overrides(pairs)})
@@ -137,7 +143,8 @@ def main(argv: list[str] | None = None) -> int:
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--write", action="store_true", help="write the drawing")
     mode.add_argument("--list", action="store_true", help="one line per flow (read only)")
-    mode.add_argument("--audit", action="store_true", help="layout audit of the Overview, End-to-end, decision and flow pages (read only)")
+    ap.add_argument("--audit", action="store_true",
+                    help="layout audit of the Overview, End-to-end, decision and flow pages (read only; with --write, of the pages written)")
     ap.add_argument("--look", action="append", default=[], metavar="KEY=JSON",
                     help="with --audit: a drawing.look key as if the map set it, to try a setting first (repeatable; value as JSON)")
     args = ap.parse_args(argv)
@@ -147,14 +154,17 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, ValueError) as exc:
         print(f"render_flowmap: {exc}", file=sys.stderr)
         return 2
-    profile = with_looks(profile, args.look, args.audit)
+    if args.audit and args.list:
+        print("render_flowmap: --audit and --list do not combine", file=sys.stderr)
+        return 2
+    profile = with_looks(profile, args.look, args.audit and not args.write)   # never write a drawing from --look overrides
     if profile is None:
         return 2
     if args.list:
         data, problems = model.load(root, profile)
         print("\n".join(pages.flow_list(data) + [f"problem: {p}" for p in problems]))
         return 1 if problems else 0
-    if args.audit:
+    if args.audit and not args.write:
         found = audit(root, profile)
         print("\n".join(found) or "audit: clean (no layout fault on the Overview, End-to-end, decision or flow pages)")
         return 1 if found else 0
@@ -171,6 +181,10 @@ def main(argv: list[str] | None = None) -> int:
         except FileExistsError as exc:
             print(f"render_flowmap: {exc}", file=sys.stderr)
             return 1
+        if args.audit:
+            found = audit_pages(outcome.pages)
+            print("\n".join(found) or "audit: clean (no layout fault on the Overview, End-to-end, decision or flow pages)")
+            return 1 if found else 0
         return 0
     if outcome.drift:
         print(f"drift: {profile.output} differs from what {profile.map} renders; rerun with --write")

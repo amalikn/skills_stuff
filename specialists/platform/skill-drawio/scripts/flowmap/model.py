@@ -35,11 +35,13 @@ class Outcome:
         problems: schema and reference problems; a non-empty list means nothing is rendered.
         text: the rendered draw.io XML, or None when there were problems.
         drift: True when the file on disk differs from `text`.
+        pages: [(audit rank, name, page)] behind `text` (flowmap.pages.named_pages), for an audit of the same pages.
     """
 
     problems: list[str] = field(default_factory=list)
     text: str | None = None
     drift: bool = False
+    pages: list = field(default_factory=list)
 
 
 def step_targets(steps: list[dict], k: int) -> list[str]:
