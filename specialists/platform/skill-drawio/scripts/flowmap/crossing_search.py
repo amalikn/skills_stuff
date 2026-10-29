@@ -264,6 +264,7 @@ def improve(grid: object) -> None:
         grid: the End-to-end page being improved (flowmap.e2e.EndToEnd); its slot and port orders are set in place.
     """
     grid.pts, grid.segs, grid.bbox, grid.spans, grid.span_keys = {}, {}, {}, {}, {}
+    grid.shape, grid.shape_ids, grid.pair_memo = {}, {}, {}   # e2e._crossings' memo: crossings per pair of distinct polylines
     every = {link.cid for link in grid.links}
     grid._refresh(every)
     start = deepcopy((grid.vslot, grid.gslot, grid.pools))

@@ -116,15 +116,20 @@ class EndToEnd(E2EGrid):
             The count.
         """
         n = 0
+        memo, shape = self.pair_memo, self.shape
         for a in cids:
-            sa, (ax0, ay0, ax1, ay1) = self.segs[a], self.bbox[a]
+            sa, (ax0, ay0, ax1, ay1), ka = self.segs[a], self.bbox[a], shape[a]
             for b, sb in self.segs.items():
                 if b == a or (b in cids and b < a):
                     continue
                 bx0, by0, bx1, by1 = self.bbox[b]
                 if bx0 > ax1 or ax0 > bx1 or by0 > ay1 or ay0 > by1:   # boxes apart: no crossing (keeps the search fast)
                     continue
-                n += count_crossings(sa, sb)
+                key = (ka, shape[b])   # an undone trial redraws the same polylines, so most pairs were counted before
+                c = memo.get(key)
+                if c is None:
+                    c = memo[key] = count_crossings(sa, sb)
+                n += c
         return n
 
     def _refresh(self, cids: set) -> None:
@@ -138,6 +143,7 @@ class EndToEnd(E2EGrid):
             self.segs[cid] = oriented(self.pts[cid])
             xs, ys = [x for x, _y in self.pts[cid]], [y for _x, y in self.pts[cid]]
             self.bbox[cid] = (min(xs), min(ys), max(xs), max(ys))
+            self.shape[cid] = self.shape_ids.setdefault(tuple(self.pts[cid]), len(self.shape_ids))   # one id per distinct polyline
             for key in self.span_keys.pop(cid, ()):   # the vertical runs _runs_ok reads, kept with the polylines (2026-10-29: 2.6 s on UNC)
                 del self.spans[key]
             runs = self._verticals(self.by[cid])
