@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_1208
+Last rotated: 20261029_1257
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261029_1257 — FDB and VIP placement evidence; TL- model prefix on old SG2428P firmware (v0.10.1 -> v0.10.2)](#20261029_1257--fdb-and-vip-placement-evidence-tl--model-prefix-on-old-sg2428p-firmware-v0101---v0102)
 - [20261029_1215 — ssh_handshake_probe: what SSH a device behind an SMC offers, no login (v0.10.0 -> v0.10.1)](#20261029_1215--ssh_handshake_probe-what-ssh-a-device-behind-an-smc-offers-no-login-v0100---v0101)
 - [20261029_1058 — TP-Link switches on IPSSH firmware: legacy SSH fallbacks (v0.9.9 -> v0.10.0)](#20261029_1058--tp-link-switches-on-ipssh-firmware-legacy-ssh-fallbacks-v099---v0100)
 - [20261029_0958 — ha capture group, multi-SMC hosts and --proxy; aurukun VRRP layout (v0.9.8 -> v0.9.9)](#20261029_0958--ha-capture-group-multi-smc-hosts-and---proxy-aurukun-vrrp-layout-v098---v099)
@@ -35,7 +36,10 @@ Last reviewed: 2026-10-27
 - [20261027_1459 — smc_change self-repair, kohana cron_job, lockstep timing; link health probe (v0.8.4 -> v0.8.5)](#20261027_1459--smc_change-self-repair-kohana-cron_job-lockstep-timing-link-health-probe-v084---v085)
 - [20261027_1207 — Teleport re-join without a tunnel; first rcp PHP apply (v0.8.3 -> v0.8.4)](#20261027_1207--teleport-re-join-without-a-tunnel-first-rcp-php-apply-v083---v084)
 - [20261027_1050 — smc_change: done SMCs skipped before connecting, runs per flavor, retries, TASK_TIMING, journal freeze (v0.8.2 -> v0.8.3)](#20261027_1050--smc_change-done-smcs-skipped-before-connecting-runs-per-flavor-retries-task_timing-journal-freeze-v082---v083)
-- [20261026_2222 — smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)](#20261026_2222--smc_change-new-order-passed-on-two-pis-second-drop-at-chroot-dpkg-v081---v082)
+
+## 20261029_1257 — FDB and VIP placement evidence; TL- model prefix on old SG2428P firmware (v0.10.1 -> v0.10.2)
+
+Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tplink-site-switches.md` (b).
 
 ## 20261029_1215 — ssh_handshake_probe: what SSH a device behind an SMC offers, no login (v0.10.0 -> v0.10.1)
 
@@ -194,7 +198,3 @@ Last reviewed: 2026-10-27
 - `scripts/smc_change_runs_table.py` reads `runs/<flavor>/records` (every flavor from `runs/`, or one); `scripts/smc_change_compare_records.py`
   globs the per-flavor layout and closes its files (ruff SIM115). Unit test and smoke runs on real records pass.
 - `RUNBOOK.md` unchanged in routing (reference 19 already routes smc_change); version 0.8.2 -> 0.8.3.
-
-## 20261026_2222 — smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)
-
-- `references/19_smc-change-role.md`: alpara and amatjatpalk 11/11 on the lower-dir-first order; alkngarrija-smc01 unreachable during the async chroot dpkg (second drop at that step, I/O-starvation hypothesis unverified); run_once patch and the operator's spec-declared design (open).

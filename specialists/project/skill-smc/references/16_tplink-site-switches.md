@@ -219,3 +219,5 @@ galiwinku 3). OUIs seen include `98:25:4A`, `A8:42:A1` and `5C:E9:31`. Whether t
 > "-o", "KexAlgorithms=+diffie-hellman-group1-sha1", "-o", "Ciphers=+aes128-cbc",
 > ```
 
+> **Learned 2026-10-29 (b)** · SG2428P firmware 4.0.1 · VERIFIED_PRIMARY · Source: `show system-info` of aurukun T1Switch2 and T2Switch2 · Falsifier: a 4.0.1 unit reporting `SG2428P`.
+> Firmware 4.0.1 reports `Hardware Version - TL-SG2428P 4.0`; 5.x reports `SG2428P 5.30`. Same product: strip `TL-` before matching a catalog type.

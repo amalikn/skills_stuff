@@ -269,6 +269,9 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 >   On 2026-10-29 smc01 flipped about hourly from 02:36 (40 transitions that day vs 4-8 a day before): its WAN, not the boxes.
 > - **DHCP is not shared**: no `failover peer`; each box runs its own `dhcpd` (619 / 587 / 149 active leases). A reader that takes leases from one
 >   box sees about a third of the site's clients; read all three.
+> - Placement evidence: `bridge fdb show br bridge_500` lists learned entries as `<mac> dev enp3s0.500 master bridge_500` (the trunk's VLAN 500
+>   sub-interface); a box's own switch is learned alone on its trunk port; the box's own ports are `permanent`. The master holds the VIP as a
+>   `secondary` inet on `bridge_500` (`ip -o -4 addr show dev bridge_500`).
 > - At a multi-SMC site the capture tools need the box name as given (`aurukun-smc02`) and the proxy named (`--proxy`), both added 2026-10-29.
 - **Central hosting.** Prometheus and Graylog run in AWS Sydney (ap-southeast-2) and are managed by Malik. Eclipse is hosted in SY3, is high availability and is monitored by the NOC. RADIUS and
   802.1X are not used anywhere.
