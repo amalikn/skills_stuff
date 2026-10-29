@@ -275,7 +275,6 @@ class E2EGrid:
     def _pools(self) -> None:
         """The ports per (channel, row), ordered by where each arrow heads, and the row heights they need."""
         self.pools: dict[tuple[int, int], list] = {}
-        self.port_at: dict[tuple[str, str], int] = {}   # _port_y's last index per (link, end); checked before use
         for link in self.links:
             if link.kind == "straight":
                 self.pools.setdefault(link.exit[:2], []).append((link.cid, "both"))
@@ -346,12 +345,7 @@ class E2EGrid:
         link = self.by[cid]
         key = link.exit[:2] if end == "exit" else link.entry[:2]
         users = self.pools[key]
-        # A pool holds one entry per (link, end), so an index that still points at it is the one a scan would find: no pool mutation needs
-        # to update this cache (2026-10-29: the scan ran 4.3 M times on UNC's End-to-end page).
-        i = self.port_at.get((cid, end), -1)
-        if not (0 <= i < len(users) and users[i][0] == cid and users[i][1] in (end, "both")):
-            i = next(i for i, u in enumerate(users) if u[0] == cid and (u[1] == end or u[1] == "both"))
-            self.port_at[(cid, end)] = i
+        i = next(i for i, u in enumerate(users) if u[0] == cid and (u[1] == end or u[1] == "both"))
         r = key[1]
         return self.row_top[r] + self.row_h[r] / 2 + (i - (len(users) - 1) / 2) * E2E_PORT_SP
 
