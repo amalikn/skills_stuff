@@ -61,7 +61,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     import render_flowmap   # the front end builds the project's profile from the map's drawing block
     root = Path(".")
-    profile = render_flowmap.profile_for(root, args.map, args.schema, "")
+    profile = render_flowmap.profile_for(root, args.map, args.schema or str(render_flowmap.SCHEMA), "")   # the renderer's default schema (2026-10-29)
     data, problems = model.load(root, profile)
     if problems or data is None:
         print("\n".join(f"map: {p}" for p in problems) or "map: cannot be read")
