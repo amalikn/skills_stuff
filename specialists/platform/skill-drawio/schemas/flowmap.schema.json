@@ -708,7 +708,7 @@
             },
             "overview_group_search": {
               "type": "boolean",
-              "description": "Overview page: move the groups the map does not pin (drawing.group_cell) to the grid cells where the thick group-to-group arrows cross least (straight-line crossings weighted by dependency count, plus length and row-skip terms); default false."
+              "description": "Overview page: move the groups the map does not pin (drawing.group_cell): candidate placements are each routed for real and the one with the fewest thick-arrow crossings is kept, never with more shared runs than the map's own placement (which is a candidate, so the page is never worse); default false."
             },
             "overview_row_search": {
               "type": "boolean",
@@ -716,7 +716,7 @@
             },
             "e2e_row_search": {
               "type": "boolean",
-              "description": "End-to-end pages: after the barycentre ordering, swap boxes inside each column while that lowers the arrow crossings the grid implies (arrows between two columns, arcs inside a column and arrows leaving a column across them); default false."
+              "description": "End-to-end pages: after the barycentre ordering, swap boxes inside each column while that lowers the arrow crossings the grid implies; the searched order is kept only when its real routes cross less than the barycentre order's; default false."
             },
             "e2e_loops": {
               "type": "boolean",
