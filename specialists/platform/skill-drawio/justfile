@@ -203,6 +203,12 @@ render-flowmap *args: _require-venv
 count-crossings *args: _require-venv
     @{{py}} scripts/count_crossings.py "$@"
 
+# [read-only] Layout quality of every page of a drawing (crossings, shared runs, bends, length, arrows through boxes, overlaps): just layout-quality FILE [--all] [--where]
+# Or two versions: just layout-quality AFTER --compare BEFORE (exit 3 when a page got worse)
+[positional-arguments]
+layout-quality *args: _require-venv
+    @{{py}} scripts/layout_quality.py "$@"
+
 # [read-only] Measure a line-colour palette (contrast on white, CIEDE2000 to the nearest other) and optionally suggest more: just palette-check --suggest 5
 [positional-arguments]
 palette-check *args: _require-venv

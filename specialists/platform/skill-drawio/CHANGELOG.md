@@ -16,6 +16,26 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261029 Speed review applied, one item per commit, each proved by `cmp` of the three consumers' renders (unified-network-controller,
+  smc-resiliency, smc_change) against a baseline, plus `just test`: B no crossing count on a search undo; F `count_crossings --compare`
+  parses each file once (4.1 -> 0.33 s); C E2E vertical-run spans kept in `_refresh` (stale-cache assert never fired); H one page build
+  for render and audit, `render_flowmap --write --audit` in one pass (the audit now reads the drawn flow pages, family labels included;
+  `--look` still refused when writing); D E2E crossings memoised per pair of distinct polylines. E (port index cache) was applied and
+  reverted: 0.3 s, and it pushed `e2e_grid.py` past the 400-line rule. UNC render 18.3 -> 10.1 s (211 MB peak), smc-resiliency 1.05 ->
+  0.84 s; all byte-identical. Not applied: A (reusing the search after a gap widens is identical today but not guaranteed: `_runs_ok`
+  spacing changes with the stretch) and G (0.1 s); operator 2026-10-29: "time efficiency is not problem here". `e2e._swapper` moved to
+  `crossing_search.swapper` and `render_flowmap.write` split from `main` (size rules). Also fixed: `flow_quality.py` without `--schema`
+  failed on every map (its default was "", now the renderer's schema).
+- 20261029 Layout quality analysis, first slice. `scripts/layout_quality.py` (`just layout-quality`): per page arrows, crossings, shared
+  runs, bends, length, arrows through boxes (a label belongs to its arrow by id, else by centre when no arrow joins it) and overlapping
+  labelled boxes; `--compare` exits 3 when a page got worse. Baseline: no arrow through a box and no overlap on any page of the three
+  consumers; crossings are the problem, nearly all on End-to-end pages (UNC full E2E 3613, smc-resiliency 475) and UNC's Overview (245).
+  With the opt-in searches on, UNC got worse on two pages (Onboarding 427 -> 506, Operator pages 44 -> 48: the E2E column search scores a
+  grid estimate) and the Overview merged two thick-arrow pairs (shared runs 1 -> 3). Fixed: `flowmap.e2e.routed_e2e` routes and searches
+  both column orders in full and keeps the searched one only when its real crossings are fewer; `placement.best_cells` keeps a candidate
+  only with no more shared runs than the map's placement. UNC with the three look keys: 4555 -> 4277 crossings, Overview 245 -> 135,
+  no page worse (compare exit 0). Existing drawings byte-identical; tests in `tests/test_layout_quality.py` and `tests/test_placement_search.py`.
+
 - 20261027 Fold long flow pages (ROADMAP item built): `drawing.look.fold` (`off` default, `serpentine`, `z`) and `fold_after` (7), per flow
   `layout: {fold, fold_after}` (schema). New `scripts/flowmap/fold.py` (rows; each row routed by the ordinary router on a scratch page left to right, then
   copied, mirrored for a right-to-left row) and `scripts/flowmap/fold_turns.py` (arrows between rows through gutters). Operator review the same day: a

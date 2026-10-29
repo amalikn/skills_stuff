@@ -126,6 +126,32 @@ def with_looks(profile: Profile, pairs: list[str], auditing: bool) -> Profile | 
         return None
 
 
+def write(root: Path, profile: Profile, outcome: object, then_audit: bool) -> int:
+    """Write the rendered drawing and, when asked, audit the same pages (one render for `--write --audit`).
+
+    Args:
+        root: the project root.
+        profile: the profile.
+        outcome: flowmap.pages.evaluate's outcome, without problems.
+        then_audit: also audit the pages written.
+
+    Returns:
+        0 written (and clean); 1 when the target is a hand-made drawing or the audit found a fault.
+    """
+    try:
+        out = pages.write_drawing(root, profile, outcome)
+        print(f"wrote {out.relative_to(root) if out.is_relative_to(root) else out}")   # --output may sit outside the root
+        print("\n".join(look_report(model.read_map(root, profile.map) or {})))
+    except FileExistsError as exc:
+        print(f"render_flowmap: {exc}", file=sys.stderr)
+        return 1
+    if not then_audit:
+        return 0
+    found = audit_pages(outcome.pages)
+    print("\n".join(found) or "audit: clean (no layout fault on the Overview, End-to-end, decision or flow pages)")
+    return 1 if found else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """Command line.
 
@@ -174,18 +200,7 @@ def main(argv: list[str] | None = None) -> int:
     if outcome.problems:
         return 1
     if args.write:
-        try:
-            out = pages.write_drawing(root, profile, outcome)
-            print(f"wrote {out.relative_to(root) if out.is_relative_to(root) else out}")   # --output may sit outside the root
-            print("\n".join(look_report(model.read_map(root, profile.map) or {})))
-        except FileExistsError as exc:
-            print(f"render_flowmap: {exc}", file=sys.stderr)
-            return 1
-        if args.audit:
-            found = audit_pages(outcome.pages)
-            print("\n".join(found) or "audit: clean (no layout fault on the Overview, End-to-end, decision or flow pages)")
-            return 1 if found else 0
-        return 0
+        return write(root, profile, outcome, args.audit)
     if outcome.drift:
         print(f"drift: {profile.output} differs from what {profile.map} renders; rerun with --write")
         return 1

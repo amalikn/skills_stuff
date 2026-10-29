@@ -10,6 +10,8 @@ Imported, not run: `from flowmap.e2e import end_to_end_page` with the skill's sc
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, header_height, label
 from drawio.route import count_crossings, oriented
 
@@ -20,26 +22,10 @@ from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
 from .profile import Profile
 from .loops import draw_loops, plan_loops
-from .crossing_search import improve
+from .crossing_search import improve, swapper
 from .isolate import BOX_TAG, E2E_DIMMED, LEGEND_TAG, dim_level, group_tag, isolate_link
 from .tips import comp_tags, comp_tip
 
-
-def _swapper(order: list, i: int, j: int) -> object:
-    """A callable swapping two entries of a list (its own inverse).
-
-    Args:
-        order: the list.
-        i: one index.
-        j: the other.
-
-    Returns:
-        The callable.
-    """
-    def run() -> None:
-        """Swap the entries."""
-        order[i], order[j] = order[j], order[i]
-    return run
 
 class EndToEnd(E2EGrid):
     """Lays out, improves and draws the End-to-end page."""
@@ -206,7 +192,7 @@ class EndToEnd(E2EGrid):
             for s in range(len(slots) - 1):
                 ta, tb = inv[s], inv[s + 1]
                 cids = users.get((ch, ta), set()) | users.get((ch, tb), set())
-                if self._try(_swapper(slots, ta, tb), cids, check_runs):
+                if self._try(swapper(slots, ta, tb), cids, check_runs):
                     changed = True
                     inv = {s2: t for t, s2 in enumerate(slots)}
         return changed
@@ -358,6 +344,26 @@ class EndToEnd(E2EGrid):
         return page
 
 
+def routed_e2e(data: dict, profile: Profile, numbers: dict | None = None) -> EndToEnd:
+    """An End-to-end page laid out and improved; with `look.e2e_row_search` the searched column order is kept only when its real routes
+    cross less than the barycentre order's (its grid estimate made two UNC pages worse, 2026-10-29).
+
+    Args:
+        data: the validated map, or one family's part of it.
+        profile: the drawing profile.
+        numbers: {flow id: its number in the whole map} for a part; default the flows' order.
+
+    Returns:
+        The page model to draw.
+    """
+    searched = EndToEnd(data, profile, numbers)
+    if not profile.look.get("e2e_row_search"):
+        return searched
+    plain = EndToEnd(data, replace(profile, look={**profile.look, "e2e_row_search": False}), numbers)
+    plain.profile = profile   # the order was the only difference; draw with the map's own look
+    return searched if searched._crossings(set(searched.segs)) < plain._crossings(set(plain.segs)) else plain
+
+
 def end_to_end_page(data: dict, profile: Profile) -> Page:
     """The End-to-end page: every component in tier columns, every flow as a coloured path, one layer per family; a family with `own_page`
     is left off (flowmap.e2e_family draws it alone) and the rest are numbered among themselves (flowmap.map_parts.flow_numbers).
@@ -371,9 +377,9 @@ def end_to_end_page(data: dict, profile: Profile) -> Page:
     """
     part = shared_part(data, profile)
     if part is data:
-        return EndToEnd(data, profile).page()
+        return routed_e2e(data, profile).page()
     numbers = flow_numbers(data, profile)
-    e2e = EndToEnd(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})   # no empty column
+    e2e = routed_e2e(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})   # no empty column
     e2e.title = "**End-to-end flow: every component, every shared flow** (a family with its own page is drawn only there)"
     return e2e.page()
 

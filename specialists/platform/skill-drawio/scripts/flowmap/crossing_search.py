@@ -339,3 +339,20 @@ def _swap(order: list, i: int) -> object:
         """Swap the entries."""
         order[i], order[i + 1] = order[i + 1], order[i]
     return run
+
+
+def swapper(order: list, i: int, j: int) -> object:
+    """A callable swapping two entries of a list (its own inverse).
+
+    Args:
+        order: the list.
+        i: one index.
+        j: the other.
+
+    Returns:
+        The callable.
+    """
+    def run() -> None:
+        """Swap the entries."""
+        order[i], order[j] = order[j], order[i]
+    return run

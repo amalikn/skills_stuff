@@ -3,9 +3,11 @@
 Stdlib only.
 
 - E2E pages (look key e2e_row_search): column_search over e2e_edges, scored by grid_crossings (arrows between two columns whose ends swap
-  order, arcs inside one column that interleave, an arrow leaving a column across an arc).
+  order, arcs inside one column that interleave, an arrow leaving a column across an arc); flowmap.e2e.routed_e2e keeps its order only
+  when the real routes cross less than the barycentre order's.
 - Overview group interiors (overview_row_search): row_search, scored by row_crossings between consecutive rows.
-- Overview group grid (overview_group_search): group_search moves the groups the map does not pin, scored by group_cost.
+- Overview group grid (overview_group_search): candidates from group_candidates, each routed (routed_crossings); best_cells keeps the
+  fewest thick-arrow crossings with no more shared runs than the map's own placement.
 """
 
 from __future__ import annotations
@@ -299,14 +301,43 @@ def group_candidates(cells: dict, pinned: set, pairs: dict, ncol: int, restarts:
     return out
 
 
-def routed_crossings(ov) -> int:
-    """Crossings between the thick arrows as the overview routes them now (their real polylines, not a proxy).
+def shared_runs(lines: list) -> int:
+    """Pairs of runs from different polylines lying along each other: parallel, closer than 8 px and overlapping by more than 2 px (the rule
+    of scripts/count_crossings.alongside, which measures the drawn file).
+
+    Args:
+        lines: polylines, [[(x, y), ...], ...].
+
+    Returns:
+        The count over every pair of polylines.
+    """
+    def along(p: tuple, q: tuple) -> bool:
+        """Whether two horizontal or two vertical runs lie along each other.
+
+        Args:
+            p: one run.
+            q: the other.
+
+        Returns:
+            True for parallel runs closer than 8 px that overlap by more than 2 px.
+        """
+        (a, b), (c, d) = p, q
+        for k in (1, 0):   # horizontal runs (same y), then vertical (same x)
+            if a[k] == b[k] and c[k] == d[k] and abs(a[k] - c[k]) < 8:
+                return max(min(a[1 - k], b[1 - k]), min(c[1 - k], d[1 - k])) < min(max(a[1 - k], b[1 - k]), max(c[1 - k], d[1 - k])) - 2
+        return False
+    runs = [list(zip(pts, pts[1:])) for pts in lines]
+    return sum(along(p, q) for i in range(len(runs)) for j in range(i + 1, len(runs)) for p in runs[i] for q in runs[j])
+
+
+def routed_crossings(ov) -> tuple[int, int]:
+    """Crossings and shared runs between the thick arrows as the overview routes them now (their real polylines, not a proxy).
 
     Args:
         ov: the flowmap.overview.Overview being laid out.
 
     Returns:
-        Segment crossings between different thick arrows.
+        (segment crossings between different thick arrows, pairs of their runs lying along each other).
     """
     ov.gpos = {gi: (ov.col_left[ov.gcol[gi]] + (ov.col_w[ov.gcol[gi]] - gl.width) / 2, ov.row_top[ov.grow[gi]], gl.width,
                       ov.gh_of[gi]) for gi, gl in ov.lay.items()}
@@ -314,26 +345,29 @@ def routed_crossings(ov) -> int:
     row_bot = [ov.row_top[r] + ov.row_h[r] for r in range(ov.nrow)]
     lines = [ov._thick_points(p, frac, row_bot) for p in ov.plans]
     segs = [list(zip(pts, pts[1:])) for pts in lines]
-    return sum(1 for i in range(len(segs)) for j in range(i + 1, len(segs)) for s in segs[i] for t in segs[j] if crossing(s, t) is not None)
+    n = sum(1 for i in range(len(segs)) for j in range(i + 1, len(segs)) for s in segs[i] for t in segs[j] if crossing(s, t) is not None)
+    return n, shared_runs(lines)
 
 def best_cells(ov) -> None:
     """overview_group_search (operator, 2026-10-28): route each candidate placement from group_candidates and keep the one whose thick
-    arrows really cross least; the map's own placement is a candidate, so the result is never worse. Pinned groups never move.
+    arrows really cross least without more shared runs than the map's own placement (2026-10-29: UNC's 245 -> 130 had merged two pairs of
+    thick arrows); the map's own placement is a candidate, so the result is never worse. Pinned groups never move.
 
     Args:
         ov: the flowmap.overview.Overview being laid out; re-placed in place.
     """
-    best, best_n = ov.cells0, routed_crossings(ov)
+    best, (best_n, limit) = ov.cells0, routed_crossings(ov)
     for cells in group_candidates(ov.cells0, set(ov.profile.group_cells), cross_pairs(ov), ov.ncol)[1:]:
         ov._place_cells(cells)
         ov._plan()
         ov._grid()
-        n = routed_crossings(ov)
-        if n < best_n:
+        n, shared = routed_crossings(ov)
+        if n < best_n and shared <= limit:
             best, best_n = cells, n
     ov._place_cells(best)
     ov._plan()
     ov._grid()
+
 
 def cross_pairs(ov) -> dict:
     """Thick-arrow group pairs by name and how many dependencies each carries, as the overview's _plan counts them.

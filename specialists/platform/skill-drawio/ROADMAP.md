@@ -56,9 +56,12 @@ together: UNC render 17.5 -> 5.95 s, byte-identical. Order: B, F, C, A, H, E, D+
 
 ## Layout quality analysis (2026-10-28, operator) `OPEN`
 
-Not part of the speed review. Next: a quality baseline per page for the three consumers (crossings, shared runs, bends, length,
-label clashes); then routing (port order, channel track nudging as libavoid, orthogonal routing as ELK), E2E placement scored on real
-routes (the shared engine loop), and overview channel routing (most of UNC's 130 remaining crossings).
+Not part of the speed review. Done 2026-10-29: the baseline tool (`just layout-quality`, CHANGELOG 20261029) and real-route guards on
+both placement searches (E2E column order, Overview group grid). Baseline: crossings only (no arrow through a box, no overlap), nearly all
+on End-to-end pages. Next: E2E placement searched on real routes rather than only guarded (each swap routed; UNC's full E2E page holds
+3471 crossings with the search on); routing (port order, channel track nudging as libavoid, orthogonal routing as ELK); overview channel
+routing (most of UNC's 135 remaining Overview crossings). UNC's schema still lacks the look keys `e2e_row_search`,
+`overview_row_search`, `overview_group_search` (the project's change, not this pack's).
 
 ## Box placement research (2026-10-28, operator: "search them, don't incorporate at this stage") `OPEN`
 

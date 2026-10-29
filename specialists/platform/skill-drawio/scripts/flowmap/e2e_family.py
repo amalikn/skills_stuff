@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from drawio.mxfile import Page
 
-from .e2e import EndToEnd
+from .e2e import routed_e2e
 from .map_parts import flow_numbers, flows_part, narrowed
 from .model import flow_family
 from .profile import Profile
@@ -57,7 +57,7 @@ def family_page(data: dict, profile: Profile, fam: str, name: str, part: dict) -
         The page, id `end-to-end-<family>`, its cell ids renamed to `e2f-<family>-`.
     """
     numbers = flow_numbers(data, profile)   # an own family counts from 1; the others keep the full page's numbers
-    e2e = EndToEnd(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})
+    e2e = routed_e2e(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})
     nums = ", ".join(str(numbers[f["id"]]) for f in part["flows"])
     own = fam in profile.own_families
     e2e.title = f"**End-to-end: {name}** (flows {nums}; " + ("drawn on this page only)" if own else "the full End-to-end page shows every flow)")

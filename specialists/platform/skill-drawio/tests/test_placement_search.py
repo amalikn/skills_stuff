@@ -1,5 +1,5 @@
 """Offline tests for the placement searches (operator, 2026-10-28): overview_row_search, overview_group_search and e2e_row_search,
-all in flowmap.placement.
+all in flowmap.placement, and the real-route guard on e2e_row_search (flowmap.e2e.routed_e2e, 2026-10-29).
 Modules tested here (the contract test looks for each name): "placement".
 
 Run: `just test` (unittest, the pack's venv). The scripts folder is put on sys.path, as a consuming project does.
@@ -12,9 +12,13 @@ import sys
 import unittest
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 pl = importlib.import_module("flowmap.placement")
+e2e, profile = importlib.import_module("flowmap.e2e"), importlib.import_module("flowmap.profile")
+EXAMPLE = ROOT / "examples" / "shop" / "flows.yaml"
 
 
 class OverviewRowSearch(unittest.TestCase):
@@ -58,6 +62,26 @@ class E2ERowSearch(unittest.TestCase):
         self.assertEqual(pl.grid_crossings(edges, row, colof), 1)
         pl.column_search([["a", "b", "c", "d"]], row, colof, edges)
         self.assertEqual(pl.grid_crossings(edges, row, colof), 0)
+
+
+class RealRouteGuards(unittest.TestCase):
+    """A placement search result is kept only when its real routes are no worse (2026-10-29)."""
+
+    def test_shared_runs(self) -> None:
+        """Two lines along each other within 8 px count once; further apart, or only touching end to end, they do not."""
+        self.assertEqual(pl.shared_runs([[(0, 50), (100, 50)], [(40, 54), (160, 54)]]), 1)
+        self.assertEqual(pl.shared_runs([[(0, 50), (100, 50)], [(0, 70), (100, 70)], [(100, 50), (140, 50)]]), 0)
+
+    def test_e2e_search_never_worse_than_barycentre(self) -> None:
+        """With e2e_row_search on, the page kept has no more real crossings than the barycentre order's."""
+        data = yaml.safe_load(EXAMPLE.read_text(encoding="utf-8"))
+        data["drawing"]["look"] = {**(data["drawing"].get("look") or {}), "e2e_row_search": True}
+        on = profile.Profile.from_drawing(data, "flows.yaml", "s.json", "g")
+        off = profile.Profile.from_drawing({**data, "drawing": {**data["drawing"], "look": {**data["drawing"]["look"], "e2e_row_search": False}}},
+                                           "flows.yaml", "s.json", "g")
+        kept, plain = e2e.routed_e2e(data, on), e2e.EndToEnd(data, off)
+        self.assertLessEqual(kept._crossings(set(kept.segs)), plain._crossings(set(plain.segs)))
+        self.assertIs(kept.profile, on)
 
 
 if __name__ == "__main__":
