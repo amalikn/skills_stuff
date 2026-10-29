@@ -14,6 +14,13 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-10-27 20:39 (operational): the skill-ai-it session repointed this `justfile` to `scripts/checks/doc_freshness.py` and `role_check.py`; `just check`
+  passes again. Left uncommitted with this slurp's lines (no commit asked).
+- 2026-10-27 20:38 (incident): the commit of the two lines below was not made: `just check` exited 2 because skill-ai-it `scripts/doc_freshness.py` was moved to
+  `scripts/checks/` by another session (uncommitted) while this justfile names the old path; the pack's own ruff and 42 tests passed. Not bypassed; options in SCRATCHPAD.
+- 2026-10-27 (proposed, not decided): this changelog's dated bullets give the wiki page no Recent changes (the generator reads dated headings).
+- 2026-10-27 20:32 (fix, wiki_stuff `45423a3`): `project_page.py` now accepts annotated `## Current state` headings (`— KEEP`, comment, date);
+  this pack's wiki page shows its Current state. Open item closed.
 - 2026-10-27 20:21 (docs): `references/feature-inventory.md` gains the v2 staged roadmap (gate 0 = real-corpus pilot; stages 1 gap matrix, 2 deterministic
   additions, 3 semantic and optional model adapter, 4a code and Mermaid, 4b draw.io and ASCII, 4c PDF and Office, 5 federation within one portfolio,
   6 slurp Step 4b, 7 optional engines), each stage with its `V2-T` exit tests; the v1 "rejected" line now says which two items v2 narrows.

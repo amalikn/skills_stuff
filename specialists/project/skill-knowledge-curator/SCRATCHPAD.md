@@ -31,8 +31,10 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 - Render's secret regex can false-positive on prose such as "token: abcdef" (fails closed); tune if a pilot hits it.
 - v2 stage 1 inputs (spec section 13): Mermaid and draw.io encodings in use, existing shared SQLite index and its routing, slurp overlap; a read-only survey answers the first.
 - V7 (`V2-T` test-ID namespace) and V8 (v1 layout) are agent defaults, not asked; confirm with the operator when convenient.
-- wiki_stuff `scripts/project_page.py` `section_entries` matches `## Current state` exactly, so a `## Current state — KEEP` heading renders no state on the
-  project page (found 2026-10-27); fix belongs in wiki_stuff, not done here.
+- Uncommitted here (2026-10-27 20:39): SCRATCHPAD and changelog lines from the 20:30-20:39 slurp, plus `justfile` repointed to skill-ai-it `scripts/checks/`
+  by the session moving those scripts (its edit, not this one); `just check` green again. Commit all three together in the next chat.
+- Wiki page shows no Recent changes: `project_page.py` reads dated CHANGELOG headings, this changelog keeps dated bullets under `## Unreleased`. Undecided: dated
+  headings here (`just changelog-entry`) or teach the generator to read bullets.
 
 ## Recent decisions — KEEP
 
@@ -45,13 +47,15 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 - 2026-10-27: docs moved and renamed, 12 conflicts found and settled with the operator, v1 kernel and references written under skill-coder, skill-coder P-31 write-back.
 - 2026-10-27 evening: v2 spec catalogued and renamed, nine conflicts settled in two question rounds, v2 staged roadmap written; slurp and commit.
+- 2026-10-27 20:30: wiki_stuff `project_page.py` fixed for annotated headings (`45423a3`); commit here blocked by skill-ai-it's in-progress script move.
 
 ## Next actions — KEEP
 
-1. Real-corpus pilot (gate 0): copy the MCP audit corpus to a scratch folder, `just kc init` / `inventory --apply`, extract claims by worksheet batches, relate, review with the operator.
-2. Record results in references/evaluation.md; then v2 stage 1 (code-level gap matrix) per references/feature-inventory.md.
+1. Next chat: rerun `just check`, then commit and push the pending SCRATCHPAD, changelog and justfile changes (say in the message that the justfile edit came from the skill-ai-it session).
+2. Real-corpus pilot (gate 0): copy the MCP audit corpus to a scratch folder, `just kc init` / `inventory --apply`, extract claims by worksheet batches, relate,
+   review with the operator; record results in references/evaluation.md, then v2 stage 1 (gap matrix).
 
 ## Memory pointers — KEEP
 
-- memory-keeper channel `skill-kc`: keys `skill-kc.build-20261027`, `session.closeout.20261027.skill-kc`; checkpoint `slurp-20261027-skill-kc`; v2 session key `skill-kc.v2-spec-20261027`, checkpoint `slurp-20261027-skill-kc-v2`.
+- memory-keeper channel `skill-kc`: keys `skill-kc.build-20261027`, `session.closeout.20261027.skill-kc`; checkpoint `slurp-20261027-skill-kc`; v2 session key `skill-kc.v2-spec-20261027`, checkpoint `slurp-20261027-skill-kc-v2`; handoff key `skill-kc.handoff-20261027`, checkpoint `slurp-20261027-skill-kc-handoff`.
 - project-context project `skill-knowledge-curator`.
