@@ -188,3 +188,11 @@ naming conventions or from live ARP tables on each site's SMC box (both of which
 635-device multi-site export). Resolved a site (`Aurukun`, 83 devices across 8 network sub-objects) that neither the device-name-prefix pass nor the ARP-table pass had found any trace of at all.
 
 Never called a write endpoint (config/reboot/onboard) against this API — only `GET /api/v2/access/token`, `GET /api/v2/networks`, `GET /api/v2/devices`.
+
+> **Learned 2026-10-29** · cnMaestro estate · USER_STATED + VERIFIED_PRIMARY · Source: operator ("no other cnMaestro exists anymore", 2026-10-29)
+> and one read-only token + GET pass against `cnmaestro.communitywifi.net.au` (certificate verified, by name) the same evening · Falsifier: a
+> device listed under an nbn network there again.
+> apn-cnmaestro01 is the only cnMaestro in use. cw-cnmaestro01 still answers its API, but its `Aurukun_APs` network holds 0 devices: it is
+> not a source of device records or positions any more. apn-cnmaestro01 has no API (X edition ended 2026-10-01), so anything held only
+> there (for example a device's map position) is read through its web UI. Connect to the controller by name with TLS verified, never by
+> IP with verification off.
