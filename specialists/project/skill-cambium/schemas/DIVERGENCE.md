@@ -4,7 +4,7 @@ Category: device-reference
 Status: current
 Authority: primary — derived from the fleet sweep observations in schemas/_observations/
 Scope: Where devices of the same family disagree about their own response shape
-Last reviewed: 2026-09-22
+Last reviewed: 2026-10-29
 Summary: Per-endpoint breakdown of which response fields are universal across the fleet and which split by model, firmware or site, generated from the sweep rather than asserted.
 ---
 

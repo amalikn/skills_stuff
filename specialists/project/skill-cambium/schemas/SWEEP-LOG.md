@@ -4,14 +4,14 @@ Category: device-reference
 Status: current
 Authority: primary — the run record behind the contract in this tree
 Scope: Every sweep run that produced or corrected the device response schemas, with its settings, result and defects
-Last reviewed: 2026-09-20
+Last reviewed: 2026-10-29
 Summary: Per-run record of the five sweeps of 2026-09-20 — what each run was configured to do, what it produced, what it got wrong, and why two of them had to be discarded and repeated.
 ---
 
 # Cambium Schema Sweep Log
 
-Five runs on 2026-09-20 produced the contract in this tree. Two produced confidently wrong data and had to be repeated; two more recovered gaps the first pass had left. This file keeps that history because the merged schema does not: a
-contract shows what was concluded, not how much of the evidence behind it was discarded, and the two defects below are the kind that recur.
+Five runs on 2026-09-20 produced the contract in this tree. Two produced confidently wrong data and had to be repeated; two more recovered gaps the first pass had left. This file keeps that history
+because the merged schema does not: a contract shows what was concluded, not how much of the evidence behind it was discarded, and the two defects below are the kind that recur.
 
 The standard itself is in [README.md](README.md); per-endpoint disagreement is in [DIVERGENCE.md](DIVERGENCE.md).
 
@@ -29,21 +29,28 @@ The standard itself is in [README.md](README.md); per-endpoint disagreement is i
 
 ## Run summary
 
-| #   | Scope            | Completed (UTC) | Sites | Observations | Findings | Outcome                                                |
-| --- | ---------------- | --------------- | ----- | ------------ | -------- | ------------------------------------------------------ |
-| 1   | All 5 families   | 06:38:32        | 36    | 73           | 31       | Kept for 4 families; **Wi-Fi client data void**, discarded |
-| 2   | Enterprise Wi-Fi | 06:50:12        | 36    | 35           | 2        | **Discarded** — client data still void, wrong hypothesis |
-| 3   | Enterprise Wi-Fi | —               | 36    | 35           | 2        | Kept — 32 client-bearing, 248 client records           |
-| 4   | 6 gap sites      | 07:21:33        | 6     | 7            | 26       | Kept — recovered 7 of 12 gaps                          |
-| 5   | 3 sites, `-legacy` fallback | —               | 3     | 4            | 17       | Kept — recovered 4 more; **1 gap left of 12**          |
+| #   | Scope                       | Completed (UTC) | Sites | Observations | Findings | Outcome                                                |
+| --- | --------------------------- | --------------- | ----- | ------------ | -------- | ------------------------------------------------------ |
+| 1   | All 5 families              | 06:38:32        | 36    | 73           | 31       | Kept for 4 families; **Wi-Fi client data void**, discarded |
+| 2   | Enterprise Wi-Fi            | 06:50:12        | 36    | 35           | 2        | **Discarded** — client data still void, wrong hypothesis |
+| 3   | Enterprise Wi-Fi            | —               | 36    | 35           | 2        | Kept — 32 client-bearing, 248 client records           |
+| 4   | 6 gap sites                 | 07:21:33        | 6     | 7            | 26       | Kept — recovered 7 of 12 gaps                          |
+| 5   | 3 sites, `-legacy` fallback | 07:42:46        | 3     | 4            | 17       | Kept — recovered 4 more; **1 gap left of 12**          |
 
-Final state: **121 of 122 site/family pairs contracted** from 122 observations. One gap: hope-vale cnWave, hardware down.
+Final state: **121 of 122 site/family pairs contracted** from 122 observations. One gap: hope-vale cnWave, hardware down (or, by a later ARP reading, unreachable from the site's SMC box; see
+[README.md](README.md#coverage-and-remaining-gaps)).
+
+Completion times for Runs 1, 4 and 5 are the `swept_utc` of each run's findings file. The 06:50:12 given for Run 2 is unverified: the surviving `sweep-findings-wifi.json`, which Run 3 overwrote (see
+[Findings files](#findings-files)), carries that `swept_utc`, and the kept Wi-Fi observations were captured 06:47 to 06:50:12, which fits Run 3; whether Run 3 re-fetched or re-parsed Run 2's output is not recorded. The
+12 observations merged on 2026-09-21 and 2026-09-22 (the first XV2-2T0 and E430H, and the `counters` snapshot canaries) came from no sweep run and are not counted here; [README.md](README.md#current-coverage) gives the standard's
+current totals.
 
 ## Run 1 — full fleet, all families
 
 The first complete pass. Started single-threaded against amata as a trial, then run wide.
 
-- **Produced:** 73 observations across all 36 sites; all of `epmp-ap`, `epmp-sm`, `cnpilot-r-series` and `cnwave-60ghz` in the current contract come from this run and Run 4.
+- **Produced:** 73 observations across all 36 sites; the sweep's `epmp-ap`, `epmp-sm`, `cnpilot-r-series` and `cnwave-60ghz` observations come from this run, Run 4 and Run 5, plus four stage-1
+  baselines taken by hand before it (hope-vale ePMP AP and SM, burringurrah R-series, doomadgee cnWave).
 - **Findings, 31:** 25 adapter failures (ePMP SM 10, R-series 7, ePMP AP 5, cnWave 3), 4 port-forward failures, 1 Wi-Fi site where no device accepted the vault credential, 1 unreachable.
 - **Models this run first recorded:** cnWave V1000 and V3000 beside V5000, ePMP Force 300-16 beside Force 300-25 and 3000L. None of these appeared in the single-site baseline.
 - **What it got wrong:** every Wi-Fi observation had an empty `client-summary`. The AP selection was right and the client counts were right — counts of 7, 9, 12, 21, 33, 62 were recorded — yet the
@@ -59,8 +66,8 @@ Run on the hypothesis that the probe's **second login** to the winning AP was be
 
 ## Run 3 — Wi-Fi re-sweep, parser fixed
 
-The actual cause was local, not on the device — see [Defects](#defects-found-in-the-sweep-tooling). Verified against wandawuy by hand first: the same session that reported 60 clients returned the full
-client list, proving the device was never the problem.
+The actual cause was local, not on the device — see [Defects](#defects-found-in-the-sweep-tooling). Verified against wandawuy by hand first: the same session that reported 60 clients returned the full client list, proving the device was
+never the problem.
 
 - **Change:** parse the response header and the endpoint blocks independently, so slicing the header no longer consumes the first block's delimiter.
 - **Result:** 35 observations, **32 client-bearing, 248 real client records**, both models present.
@@ -138,10 +145,11 @@ sweep by shortening its patience converts slow devices into false negatives** �
 
 All under `schemas/_observations/`, holding per-attempt records rather than per-gap conclusions:
 
-| File                            | Run | Findings |
-| ------------------------------- | --- | -------- |
-| `sweep-findings.json`           | 1   | 31       |
-| `sweep-findings-wifi.json`      | 3   | 2        |
-| `sweep-findings-gap-retry.json` | 4   | 26       |
+| File                               | Run | Findings |
+| ---------------------------------- | --- | -------- |
+| `sweep-findings.json`              | 1   | 31       |
+| `sweep-findings-wifi.json`         | 3   | 2        |
+| `sweep-findings-gap-retry.json`    | 4   | 26       |
+| `sweep-findings-legacy-retry.json` | 5   | 17       |
 
 Run 2's findings were overwritten by Run 3, which wrote to the same path — its observations were discarded anyway, but the findings file is not a complete archive of that run.

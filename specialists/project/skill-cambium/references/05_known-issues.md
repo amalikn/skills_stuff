@@ -523,3 +523,9 @@ the SMC then cannot open the channel to the unit: the local socket is closed bef
 >   answered under arm 60. A sysName `node-00-04-56-..` is enough to name the family; the model needs a login (REST), which read V3000.
 > - An E430W on 3.7-r9 reports its model as `cnPilot E430W` (marketing name, as E500 and E430H do), so a catalog keyed on the bare code needs
 >   the prefix stripped. E430W and E430H are separate products (different end of support).
+
+> **Learned 2026-10-29 (b)** · cnWave V3000/V5000 firmware 1.4 · VERIFIED_PRIMARY · Source: `snmpget` sysDescr/sysName on the site's read-only
+> community from two of the site's SMCs, same minute · Falsifier: a silent unit answering once its SNMP setting is read.
+> SNMP silence is per unit, not per firmware: at one site 1.4 units answered ("Cambium cnWave V3000 Distribution Node, Version 1.4") while other
+> 1.4 units gave no response at all, from both boxes, also to the other programme's community; their REST login (identify) named them. Treat a
+> silent cnWave as SNMP disabled or restricted on that unit, read it by login, and do not write its SNMP settings while cnMaestro manages it.

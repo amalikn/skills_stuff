@@ -4,7 +4,7 @@ Category: device-reference
 Status: current — fleet sweep complete across all 36 sites
 Authority: primary — derived from live devices, supersedes MIB mirrors for response shape
 Scope: The response contract for every Cambium device family in the APN estate
-Last reviewed: 2026-09-20
+Last reviewed: 2026-10-29
 Summary: Machine-readable contracts for what each Cambium device family actually returns, derived from live observation rather than vendor documentation, with per-site conformance as the mechanism for finding divergence.
 ---
 
@@ -19,11 +19,12 @@ Summary: Machine-readable contracts for what each Cambium device family actually
 - [How `required` is derived](#how-required-is-derived)
 - [Privacy rules](#privacy-rules)
 - [Current coverage](#current-coverage)
+  - [Coverage and remaining gaps](#coverage-and-remaining-gaps)
   - [The `-legacy` credential finding](#the--legacy-credential-finding)
   - [What the fleet added over a single site](#what-the-fleet-added-over-a-single-site)
-  - [Map-shaped responses](#map-shaped-responses)
   - [What the fleet disagrees about](#what-the-fleet-disagrees-about)
-  - [Coverage and remaining gaps](#coverage-and-remaining-gaps)
+  - [Map-shaped responses](#map-shaped-responses)
+  - [SNMP layer — added 2026-09-21](#snmp-layer--added-2026-09-21)
 - [Extending the standard](#extending-the-standard)
 - [The fleet sweep](#the-fleet-sweep)
 
@@ -58,7 +59,8 @@ Every schema declares `x-cambium.layer`. The two are not comparable and must nev
 | `adapter-normalized` | The output of this pack's adapter getters       | ePMP AP/SM, cnPilot R-series, cnWave 60 GHz                             |
 
 The split is practical, not principled: only the Falcon families expose raw endpoints conveniently. Contracting the other three at their adapter boundary is still worth having — it is the surface
-consuming code actually sees. Raw-endpoint schemas for those families remain open work.
+consuming code actually sees. Raw-endpoint schemas for those families remain open work, apart from the `counters` endpoint each gained on 2026-09-22, which is contracted as `raw-endpoint`. A third
+layer, `snmp`, is described under [SNMP layer](#snmp-layer--added-2026-09-21).
 
 ## How to read a schema
 
@@ -82,7 +84,8 @@ A field is `required` when it appeared on **every observation that actually retu
 The qualifier is the important part. An endpoint that returns an empty array is not evidence that its fields are absent — an AP with no clients attached says nothing about what a client record
 contains. Counting those observations would drag every field to optional and destroy the contract. They are excluded from the presence maths and reported separately in `x-evidence`.
 
-This was not a hypothetical: the first merge of the `client-summary` contract for `enterprise-wifi` produced **zero** required fields out of 95, purely because the E500 had no clients associated at capture time.
+This was not a hypothetical: the first merge of the `client-summary` contract for `enterprise-wifi` produced **zero** required fields out of 95, purely because the E500 had no clients associated at
+capture time.
 
 The practical consequence for the sweep: **for client-bearing endpoints, target the device with clients**, not an arbitrary one. Sweep client counts across a site first, then contract the busiest
 device. A site where nothing had a client contributes no evidence for that endpoint and must be recorded as such rather than silently skipped.
@@ -99,35 +102,24 @@ Device-side identifiers — AP MAC, radio BSSID, SM MAC, serial — are infrastr
 
 ## Current coverage
 
-Fleet sweep complete, 2026-09-20. All 36 sites, one representative device per family per site, **122 observations covering 121 of 122 site/family pairs**.
+Fleet sweep complete, 2026-09-20. All 36 sites, one representative device per family per site, **122 observations covering 121 of 122 site/family pairs**. Current standard, after the merges described
+below the table:
 
-| Family | Endpoints | Fields | Observations | Layer | Models seen |
-| --- | --- | --- | --- | --- | --- |
-| `enterprise-wifi` | 9 | 381 | 36 | `raw-endpoint` | E500, XV2 |
-| `cnwave-60ghz` | 13 | 40 | 5 | `adapter-normalized` | V1000, V3000, V5000 |
-| `cnpilot-r-series` | 2 | 8 | 9 | `adapter-normalized` | R195P |
-| `epmp-ap` | 4 | 20 | 36 | `adapter-normalized` | Force 300-16, Force 300-25, ePMP 3000L |
-| `epmp-sm` | 4 | 14 | 36 | `adapter-normalized` | Force 300-16, Force 300-25 |
+| Family             | Endpoints | Fields | Observations | Layer                                           | Models seen                            |
+| ------------------ | --------- | ------ | ------------ | ----------------------------------------------- | -------------------------------------- |
+| `enterprise-wifi`  | 9         | 484    | 38           | `raw-endpoint`                                  | E430H, E500, XV2, XV2-2T0              |
+| `cnwave-60ghz`     | 14        | 41     | 7            | `adapter-normalized`; `counters` `raw-endpoint` | V1000, V3000, V5000                    |
+| `cnpilot-r-series` | 3         | 17     | 11           | `adapter-normalized`; `counters` `raw-endpoint` | R195P                                  |
+| `epmp-ap`          | 5         | 31     | 39           | `adapter-normalized`; `counters` `raw-endpoint` | Force 300-16, Force 300-25, ePMP 3000L |
+| `epmp-sm`          | 5         | 25     | 39           | `adapter-normalized`; `counters` `raw-endpoint` | Force 300-16, Force 300-25             |
 
-`client-summary` rests on **32 record-bearing observations covering 248 real client records**, which is what makes its `required` set meaningful rather than one site's accident.
+`client-summary` rests on **33 record-bearing observations covering 254 real client records** (the sweep's Run 3 gave 32 and 248; kalumburu's E500 added 6 in Run 5), which is what makes its `required`
+set meaningful rather than one site's accident.
 
-### What the fleet added over a single site
-
-The single-site baseline would have shipped a contract that was wrong in both directions. Against the fleet: `client-summary` grew 95 → **98** fields, `device-summary` 45 → **47**,
-`platform-info` 15 → **16**, `radio-rf-summary` 15 → **16**. Three cnWave models (V1000, V3000, V5000) and two more ePMP models appeared that the baseline never saw.
-
-### What the fleet disagrees about
-
-Full breakdown in [DIVERGENCE.md](DIVERGENCE.md); the run-by-run history, including two sweeps that had to be discarded, is in [SWEEP-LOG.md](SWEEP-LOG.md). The headline: **in `client-summary` only 43 of 98 fields are universal — 54 split by model.** An adapter written against an XV2 alone would depend
-on fields more than half of which an E500 does not return. `radio-rf-summary` is worse in proportion: 7 universal against 9 model-split.
-
-Two findings that need a decision rather than a note:
-
-- **`ip6_ll` returns different JSON types across the fleet — `array` on some sites, `string` on others** — and is absent entirely at 17 sites. Any code that indexes it breaks on the other shape. It
-  is also an identifying field, so the contract records the conflict without recording values.
-- **the R-series `interfaces` getter is not contractable as it stands.** Its six "site-specific fields" are interface *names* used as object keys — `eth2.17`, `eth2.550`, `wan1.500` — so each site's
-  VLAN configuration appears as schema fields. That is an adapter design problem, not device divergence: a response keyed by site-variable names has no stable shape. It should return a list of
-  interface objects with the name as a value.
+**Merged since the sweep (2026-09-21 and 2026-09-22): 12 more observations, 134 in all.** The first XV2-2T0 on `7.1.1-r5` (horn-island) and the first E430H (mowanjum) were merged into
+`enterprise-wifi`, and snapshot canaries at hope-vale, horn-island, mornington and mowanjum added a `counters` endpoint (`raw-endpoint` layer) to the other four families. The table above is the
+standard as it now stands; every observation in `schemas/_observations/` passes `schema_tool.py check` against it (re-run 2026-10-29). Fields count each endpoint's top-level fields, a map-shaped
+endpoint counting its value fields, and exclude the SNMP layer, which has its own table below.
 
 ### Coverage and remaining gaps
 
@@ -141,17 +133,18 @@ Two rounds of recovery closed 11 of the 12 gaps a first pass left:
   `-legacy` fallback, which recovered all three kalumburu families and mornington's R-series.
 
 One gap remains: **hope-vale cnWave 60 GHz**, 7 devices, TLS handshake EOF on four devices at full timeout with both credentials. All three units also failed ping earlier, so this reads as genuinely
-down hardware rather than an access problem.
+down hardware rather than an access problem. A later reading (2026-09-21, [references/06](../references/06_device-api-cli-reference.md)) found that hope-vale's SMC box holds no ARP entry for the cnWave subnet, which that reference reads as a
+routing or VLAN question; from the box, down units and an unreachable subnet look the same, so the cause is not settled.
 
-**Operator decision 2026-09-20: accepted, not pursued.** The units are not being chased for this exercise. The contract is not harmed — cnWave is already covered by four observations across three
-models (V1000, V3000, V5000) from other sites, so hope-vale would add a fourth site rather than a missing shape. Re-run the sweep for that one site if the hardware comes back; nothing else is
-blocked on it.
+**Operator decision 2026-09-20: accepted, not pursued.** The units are not being chased for this exercise. The contract is not harmed — cnWave is already covered by five sweep observations across
+three models (V1000, V3000, V5000) from five other sites, so hope-vale would add a sixth site rather than a missing shape. Re-run the sweep for that one site if the hardware comes back; nothing else
+is blocked on it.
 
 ### The `-legacy` credential finding
 
-Worth separating from the sweep, because it is an estate fact rather than a tooling one. Two sites authenticate only with the older password, across independent families and vendors' own login
-paths. Confirmed by hand before the fallback was added: at kalumburu the primary Enterprise Wi-Fi entry returns `Invalid username or password` while the `-legacy` entry returns `{"success":true}` on
-the same device. Credential rotation reached most of the estate but not these sites, and anything that assumes one current password per family will report them as unreachable.
+Worth separating from the sweep, because it is an estate fact rather than a tooling one. Two sites authenticate only with the older password, across independent families and vendors' own login paths.
+Confirmed by hand before the fallback was added: at kalumburu the primary Enterprise Wi-Fi entry returns `Invalid username or password` while the `-legacy` entry returns `{"success":true}` on the same
+device. Credential rotation reached most of the estate but not these sites, and anything that assumes one current password per family will report them as unreachable.
 
 ### What the fleet added over a single site
 
@@ -160,18 +153,18 @@ The single-site baseline would have shipped a contract wrong in both directions.
 
 ### What the fleet disagrees about
 
-Full breakdown in [DIVERGENCE.md](DIVERGENCE.md); the run-by-run history is in [SWEEP-LOG.md](SWEEP-LOG.md). The headline: **in `client-summary` only 43 of 98 fields are universal — 54 split by
-model.** An adapter written against an XV2 alone would depend on fields more than half of which an E500 does not return. `radio-rf-summary` is worse in proportion: 7 universal against 9 model-split.
+Full breakdown in [DIVERGENCE.md](DIVERGENCE.md); the run-by-run history is in [SWEEP-LOG.md](SWEEP-LOG.md). The headline: **in `client-summary` only 43 of 98 fields are universal — 54 split by model.** An adapter written against an
+XV2 alone would depend on fields more than half of which an E500 does not return. `radio-rf-summary` is worse in proportion: 7 universal against 9 model-split.
 
 **`ip6_ll` returned a different JSON type by model** — an `array` on XV2 (10 observations), a `string` on E500 (6), absent where the client has no link-local (17). **Resolved 2026-09-20: the adapter
 now normalises it to a list on every record**, including records where the device omits the key. A list is the lossless direction; normalising to a string would truncate any XV2 client holding more
 than one address. The observations in this tree predate that change, so the contract still records both shapes as evidence of why it was needed.
 
-It is also **EUI-64 derived, so it encodes the client's MAC**: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to client MAC `6A-85-B9-AC-BB-89`. It carries the same identifying
-information as the MAC field and is redacted on the same footing.
+It is also **EUI-64 derived, so it encodes the client's MAC**: the observed `fe80::6885:b9ff:feac:bb89` resolves exactly to client MAC `6A-85-B9-AC-BB-89`. It carries the same identifying information
+as the MAC field and is redacted on the same footing.
 
-**The REST client endpoint fails on busy APs, and SNMP is what survives.** The device truncates `client-summary` at exactly 60,000 bytes while still returning HTTP 200, so the JSON ends mid-record
-and will not parse — confirmed on an AP with roughly 60 clients, and no pagination parameter is honoured. A busy AP therefore yields *nothing*, not partial data.
+**The REST client endpoint fails on busy APs, and SNMP is what survives.** The device truncates `client-summary` at exactly 60,000 bytes while still returning HTTP 200, so the JSON ends mid-record and
+will not parse — confirmed on an AP with roughly 60 clients, and no pagination parameter is honoured. A busy AP therefore yields *nothing*, not partial data.
 
 **Tested head to head, 2026-09-20.** On the same AP at the same time, REST returned unparseable truncated JSON while an SNMP walk of `cambiumClientTable` returned **63 complete client rows from 1008
 varbinds** against a reported count of 64. A walk is many small PDUs, so it has no equivalent single-response cap. (This became testable only once `snmpget` was installed on that site's SMC box —
@@ -181,7 +174,7 @@ before that, the boxes carrying the binary all fronted APs of about ten clients.
 MIB at all. So the fields lost on a busy AP are exactly the ones SNMP cannot replace: above roughly 60 clients you can have client detail *without* per-client RSSI or session start. That is a
 constraint on the client/session model, not merely a collector preference — decide deliberately whether the busiest APs are allowed a thinner client record than the rest.
 
-Shapes still unknown because nothing anywhere returned a record: the ePMP SM `clients` getter (empty on all 36 observations — an SM has no clients, so this is probably correct by design) and the
+Shapes still unknown because nothing anywhere returned a record: the ePMP SM `clients` getter (empty on all 39 observations — an SM has no clients, so this is probably correct by design) and the
 cnWave `links_count` getter. The cnWave `gps` getter is `null` fleet-wide. The ePMP AP `wireless_link` getter is null-or-object, which is contract rather than a gap.
 
 ### Map-shaped responses
@@ -191,14 +184,13 @@ adapter. Contracting its keys as fields was a defect in the schema tool, not in 
 fields". Such endpoints are now listed in the tool's `MAP_SHAPED` registry and contracted as `additionalProperties` describing the **value** shape, with the observed keys recorded separately. The
 R-series interface value is three fields: `ipv4_addresses`, `is_up`, `mac_address`.
 
-**Keys are contracted by role (2026-09-24).** A map's keys vary by site, so they cannot be contracted by name, but that does not leave them unchecked. The tool's `MAP_ROLES` registry
-gives each map-shaped endpoint a list of roles, each a name pattern with count bounds and what the reference records about it; `merge` writes it into the schema as `x-roles`, and
-`check` requires every observed key to fall into exactly one role within bounds, and every value to fit the value schema. The R-series roles are `loopback` (`lo`), `lan_bridge`
-(`br0`, the LAN MAC), `switch_port` (`eth2`), `switch_vlan` (`eth2.N`, management on `eth2.500`), `wan` (`wanN`, name varies per unit, may be absent), `wan_vlan`, `radio` (`raN`,
-`raiN`; band per interface not recorded), `radio_client` (`apcliN`, `apcliiN`), `wds` (`wdsN`) and `qos_pseudo` (`imqN`, not traffic). All eleven observations conform; the check was
-falsified five ways (an unknown name, an unknown port, no LAN bridge, no switch VLAN, a new value field), each failing for its own reason. Bounds stay loose where the evidence is:
-the 2026-09-20 observations are one per site and may combine units, so only single-instance roles carry a maximum. `DIVERGENCE.md` is computed from the raw observations and still
-lists these names as site-specific fields; read it for which sites have which VLANs, not as a contract failure.
+**Keys are contracted by role (2026-09-24).** A map's keys vary by site, so they cannot be contracted by name, but that does not leave them unchecked. The tool's `MAP_ROLES` registry gives each
+map-shaped endpoint a list of roles, each a name pattern with count bounds and what the reference records about it; `merge` writes it into the schema as `x-roles`, and `check` requires every observed
+key to fall into exactly one role within bounds, and every value to fit the value schema. The R-series roles are `loopback` (`lo`), `lan_bridge` (`br0`, the LAN MAC), `switch_port` (`eth2`),
+`switch_vlan` (`eth2.N`, management on `eth2.500`), `wan` (`wanN`, name varies per unit, may be absent), `wan_vlan`, `radio` (`raN`, `raiN`; band per interface not recorded), `radio_client` (`apcliN`,
+`apcliiN`), `wds` (`wdsN`) and `qos_pseudo` (`imqN`, not traffic). All eleven observations conform; the check was falsified five ways (an unknown name, an unknown port, no LAN bridge, no switch VLAN,
+a new value field), each failing for its own reason. Bounds stay loose where the evidence is: the 2026-09-20 observations are one per site and may combine units, so only single-instance roles carry a
+maximum. `DIVERGENCE.md` is computed from the raw observations and still lists these names as site-specific fields; read it for which sites have which VLANs, not as a contract failure.
 
 **Verified against upstream, 2026-09-20.** NAPALM's own documentation shows `get_interfaces` returning a dict keyed by interface name — `{"Ethernet1/1": {"is_up": …, "is_enabled": …, "description": …,
 "last_flapped": …, "speed": …, "mac_address": …}}` (the NAPALM project's own docs — `mock_driver.rst` and `cli.rst` in its documentation tree). The keying convention is genuine rather than this pack's
@@ -213,11 +205,11 @@ NAPALM's documented fields will find four of the six missing.
 A third layer beside `raw-endpoint` and `adapter-normalized`. Derived from live `snmpwalk -On` captures by `scripts/snmp_schema_from_walk.py`, never from a MIB mirror, because the live agents expose
 more columns than the mirrors document.
 
-| Family | Schema | Entry OID | Columns | Rows | Walked against |
-| --- | --- | --- | --- | --- | --- |
-| `enterprise-wifi` | `snmp-radio-entry` | `.1.3.6.1.4.1.17713.22.1.2.1` | 18 | 2 | XV2 `6.6.0.3-r9`, hope-vale |
-| `epmp-ap` | `snmp-connected-sta` | `.1.3.6.1.4.1.17713.21.1.2.30.1` | 42 (13 undocumented) | 10 | ePMP 3000L `4.7.0.1`, hope-vale |
-| `cnwave-60ghz` | `snmp-link-entry` | `.1.3.6.1.4.1.17713.60.1.1.1` | 6 | 2 | V5000 DN `1.4`, mornington |
+| Family            | Schema               | Entry OID                        | Columns              | Rows | Walked against                  |
+| ----------------- | -------------------- | -------------------------------- | -------------------- | ---- | ------------------------------- |
+| `enterprise-wifi` | `snmp-radio-entry`   | `.1.3.6.1.4.1.17713.22.1.2.1`    | 18                   | 2    | XV2 `6.6.0.3-r9`, hope-vale     |
+| `epmp-ap`         | `snmp-connected-sta` | `.1.3.6.1.4.1.17713.21.1.2.30.1` | 42 (13 undocumented) | 10   | ePMP 3000L `4.7.0.1`, hope-vale |
+| `cnwave-60ghz`    | `snmp-link-entry`    | `.1.3.6.1.4.1.17713.60.1.1.1`    | 6                    | 2    | V5000 DN `1.4`, mornington      |
 
 Read `x-oid-column` as the column number under the **entry** OID — note each entry ends in `.1`, and a row is `<entry>.<column>.<index>`. `x-undocumented-in-mib` marks a column the live agent returns
 that no mirror held here names; those keep `column_N` names rather than invented ones.
@@ -255,6 +247,6 @@ Run 2026-09-20 across all 36 sites by `scripts/fleet_schema_sweep.py`. Rules it 
 1. **One representative per family per site**, chosen by client count where the endpoint is client-bearing.
 2. **Throttle ePMP** — the family has a limited concurrent-session budget; do not run it wide in parallel.
 3. **Record unreachable and empty as findings**, never as skips. A site with no reachable device of a family is a fact about the estate.
-4. **Verify the jump host before concluding a site is down.** `snmpget` is absent on `rcp`-flavour SMC boxes — a sweep that shells out to a missing binary will report a healthy site as dead. See
-   `skill-smc`'s known-issues reference.
+4. **Verify the jump host before concluding a site is down.** `snmpget` was absent on most `rcp`-flavour SMC boxes until 2026-09-20 (now installed on every `rcp` and `nbn_accelerate` box, not on
+   `rct`) — a sweep that shells out to a missing binary will report a healthy site as dead. See `skill-smc`'s known-issues reference.
 5. **Merge, then diff.** Divergence between sites is the output that matters; record it in [references/05_known-issues.md](../references/05_known-issues.md) rather than silently widening the contract.

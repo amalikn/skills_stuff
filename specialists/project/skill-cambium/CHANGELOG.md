@@ -6,13 +6,15 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_2014
+Last rotated: 20261029_1158
 ---
 
 # Changelog — skill-cambium
 
 ## Contents
 
+- [20261029_1220 — cnWave SNMP silence is per unit (no version change)](#20261029_1220--cnwave-snmp-silence-is-per-unit-no-version-change)
+- [20261029_1040 — cnWave 1.2.1 SNMP identity and E430W model name (no version change)](#20261029_1040--cnwave-121-snmp-identity-and-e430w-model-name-no-version-change)
 - [20261027_2013 — skill-smc script paths moved into job folders (no version change)](#20261027_2013--skill-smc-script-paths-moved-into-job-folders-no-version-change)
 - [20261020_0944 — Write-back evidence: code excerpts and screenshots (no version change)](#20261020_0944--write-back-evidence-code-excerpts-and-screenshots-no-version-change)
 - [20261019_1119 — LINKPlanner best-server analysis is not footprint overlap (no version change)](#20261019_1119--linkplanner-best-server-analysis-is-not-footprint-overlap-no-version-change)
@@ -38,9 +40,12 @@ Last rotated: 20261027_2014
 - [20261009_1315 — Force 300 SM LLDP transmit failing; R195P LLDP tooling and no central logs (v0.6.51 -> v0.6.52)](#20261009_1315--force-300-sm-lldp-transmit-failing-r195p-lldp-tooling-and-no-central-logs-v0651---v0652)
 - [20261009_1048 — An ePMP radio's role is its mode, not its model: cambiumSubModeType (v0.6.50 -> v0.6.51)](#20261009_1048--an-epmp-radios-role-is-its-mode-not-its-model-cambiumsubmodetype-v0650---v0651)
 - [20261009_0330 — Which SM an R195P hangs from: the 3000L bridge table and Option 82, not the units (v0.6.49 -> v0.6.50)](#20261009_0330--which-sm-an-r195p-hangs-from-the-3000l-bridge-table-and-option-82-not-the-units-v0649---v0650)
-- [20261009_0207 — epmp_field_probe.py: an ePMP unit's fields with values withheld, and the installer's record (v0.6.48 -> v0.6.49)](#20261009_0207--epmp_field_probepy-an-epmp-units-fields-with-values-withheld-and-the-installers-record-v0648---v0649)
 
 **20261016_2115 — v0.8.3:** Reference 03 adds observed as-built label variants, unique-match and conflict guards from UNC's conversion audit. No device changes.
+
+## 20261029_1220 — cnWave SNMP silence is per unit (no version change)
+
+Learned 2026-10-29 (b) in `references/05_known-issues.md`: firmware-1.4 cnWave units at one site split between answering SNMP and silent; read the silent ones by login.
 
 ## 20261029_1040 — cnWave 1.2.1 SNMP identity and E430W model name (no version change)
 
@@ -193,7 +198,3 @@ references/01_overview.md (RF planning) gains a Learned 2026-10-16 entry from LI
 - 05_known-issues.md: the R195P section corrected: the AP's bridge table and the router's Wi-Fi clients joined with the SMC's Option 82 leases name the SM; old-looma names disagree for some routers.
 - 06_device-api-cli-reference.md: a burst trace on cnWave port counters (tower 4's CN nic2 carries 3000L-ap-5).
 - From unified-network-controller D10, read-only at old-looma (ICMP only for the bursts).
-
-## 20261009_0207 — epmp_field_probe.py: an ePMP unit's fields with values withheld, and the installer's record (v0.6.48 -> v0.6.49)
-
-- `scripts/epmp_field_probe.py`, recipe `just epmp-fields`: the read-only REST field check run by hand on 2026-10-09 (Force 300 position fields at hope-vale and old-looma), made persistent: one login, coordinates and secrets never printed, `--installer` decodes the low-touch record. Smoke-tested on old-looma sm-33.
