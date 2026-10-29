@@ -112,7 +112,7 @@ def compare(before: str, after: str, prefix: str = "") -> tuple[list, tuple]:
         Returns:
             [(crossings, shared runs) per page].
         """
-        return [(crossings(r), alongside(r)) for r in (page_runs(text, k + 1, prefix) for k in range(len(read.pages(text))))]
+        return [(crossings(r), alongside(r)) for r in (wire_runs(pg["wires"], prefix) for pg in read.pages(text))]   # parsed once
     b, a = measure(before), measure(after)
     pad = max(len(a), len(b))
     b, a = b + [(0, 0)] * (pad - len(b)), a + [(0, 0)] * (pad - len(a))
@@ -134,7 +134,19 @@ def page_runs(file_text: str, page: int, prefix: str) -> dict[str, list]:
     Raises:
         IndexError: when the page does not exist.
     """
-    wires = read.pages(file_text)[page - 1]["wires"]
+    return wire_runs(read.pages(file_text)[page - 1]["wires"], prefix)
+
+
+def wire_runs(wires: list[dict], prefix: str) -> dict[str, list]:
+    """Each arrow's straight runs from one page's wires.
+
+    Args:
+        wires: the page's wires (drawio.read.pages(...)[k]["wires"]).
+        prefix: keep only arrows whose id starts with this ("" for every arrow).
+
+    Returns:
+        {arrow id: runs}.
+    """
     return {w["id"]: [tuple(map(tuple, r)) for r in zip(w["path"], w["path"][1:])]
             for w in wires if w["id"].startswith(prefix) and len(w["path"]) > 1}
 
