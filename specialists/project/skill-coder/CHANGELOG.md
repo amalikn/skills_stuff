@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261029_1257 — Patterns P-33 to P-35 (multi-SMC build)
+
+`references/design-patterns.md`: read all then write once; pick a moving leader once per cycle; place by evidence with a listed ledger (unified-network-controller, 2026-10-29).
+
 ## 20261029_1220 — Learned: a check that skips when its tool is missing cannot fail
 
 Learned 2026-10-29 in `references/testing.md`: report a missing tool, never skip silently (unified-network-controller pre-commit hook, 27 to 29 Oct).

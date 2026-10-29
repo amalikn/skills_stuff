@@ -650,6 +650,54 @@ if DATED.search(path.name):             # -YYYYMMDD_hhmm.md: a dated report or r
   return True
 ```
 
+### P-33 Read every source, merge, then write once; write nothing when a source is silent
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `wc-local/scripts/collector/dhcp_leases.py`
+> `check_site`, commit 5505ab5: three DHCP servers at one site, 242 + 211 + 157 leases merged, one write) (reusable_candidate) Pattern P-33.
+
+- **Problem:** several sources each hold part of one record (three redundant boxes each lease part of a site's clients); a loop that writes per
+  source lets the last source win and can end what the others hold.
+- **Solution:** read all sources (in parallel, bounded), merge by key, then write the record once; when any source fails, write nothing for that
+  record and report it, since a partial merge would look like loss.
+- **Why it works:** the write sees the whole truth or none of it; sessions keyed by the union are never ended by a source that simply was not read.
+- **Reuse:** any per-site aggregate fed by several collectors (leases, neighbours, inventories from redundant controllers).
+- **Pitfalls:** a single-source site must keep its old behaviour byte for byte; a source that legitimately has nothing differs from a failed read.
+- **Realised in:** Python:
+
+```python
+with ThreadPoolExecutor(max_workers=min(BOX_WORKERS, len(smcs))) as pool:
+    reads = list(zip(smcs, pool.map(lambda box: read_one(box, domain), smcs)))
+failed = [(box, raw["error"]) for box, raw in reads if "error" in raw]
+if failed:   # a partial set would end the silent box's sessions: write nothing for the site
+    ...
+merged = merge_reads(reads)          # sums and unions by address, then one PATCH and one sync
+```
+
+### P-34 Pick a moving leader once per cycle
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `src/unc/tasks/site_readers/serving_box.py`
+> `CyclePicks`, 5505ab5: the VRRP master moved about hourly; polling picks it once per cycle) (reusable_candidate) Pattern P-34.
+
+- **Problem:** work must go through whichever member currently leads (a VRRP master), and the leader can move mid-run.
+- **Solution:** at the start of a cycle read every member's state in parallel, pick the leader (fallback: configured priority order, said aloud;
+  two leaders: the first by priority, both named), then hand every caller in that cycle the same pick.
+- **Why it works:** a cycle never straddles two vantage points, so readings are comparable; a flap costs one cycle, not half-done data.
+- **Reuse:** any active/standby pair or cluster with a floating address.
+- **Pitfalls:** cache per cycle, never across cycles; a single-member case must cost zero extra calls.
+- **Realised in:** Python: a lock-guarded `dict[site, Pick]` filled on first `get(site)` (`CyclePicks`).
+
+### P-35 Place by evidence; keep every sighting in a listed ledger
+
+> **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (unified-network-controller `src/unc/policy/multi_smc_topology.py`, 5505ab5:
+> a layer-2 site where every box sees every device) (reusable_candidate) Pattern P-35.
+
+- **Problem:** on a shared network every observer sees everything, so "seen by X" drawn as links becomes all-to-all spaghetti.
+- **Solution:** place only by evidence that names a physical relation (a MAC learned alone on a cable port, a held link); everything else is
+  conserved in a ledger listed beside the drawing (unplaced, sighting only); every source link is either drawn or listed exactly once.
+- **Why it works:** the drawing stays true and readable, and nothing is silently dropped; conservation is testable.
+- **Reuse:** topology from LLDP/ARP/FDB, dependency graphs from logs.
+- **Pitfalls:** never fall back to "first observer wins"; show an undecidable item as unplaced.
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet
