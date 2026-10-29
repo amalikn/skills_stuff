@@ -6,10 +6,15 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261010_1806
+Last rotated: 20261029_2029
 ---
 
 # Changelog
+
+## 20261029_2028 — blind_ab.py: blind A/B grading packet and unblinded per-criterion scoring (0.1.10)
+
+New `scripts/blind_ab.py` (`just blind-ab`), catalogued in scripts/README.md; promoted from the skill-network-architect evaluation
+(2026-10-29), including `--drop-criterion` for a criterion one side cannot earn. Smoke-tested on 22 real cases.
 
 ## 20261029_2013 — Method write-back from the 2026-10-29 harvest (0.1.9)
 
@@ -178,16 +183,6 @@ re-upgraded onto managed block version `2026-09-23-template-sourced-blocks-v1`, 
 The package-specific drift handling, update rules and answer-contract addition remain below the END marker as `###` subsections of *Package-specific routing*, so they extend the generic sections
 rather than colliding with them, and a future upgrade cannot reach them. Re-verified after the re-upgrade: `just check` 189 passed, `just nav-validate` 0 warnings and 0 failures, `just lint-md` 0
 errors, `just validate-all` green, and a second consecutive `just nav-upgrade` left `AI_NAVIGATION.md` byte-identical.
-
-## 0.1.1 — 2026-09-23
-
-`scripts/render_report.py` no longer reports age and declared change as one reason. A verdict that died of age now reads `expired: older than <max_age>`; one killed by a declared invalidation reads
-`invalidated: <trigger> (<reference>)`, naming the trigger from the invalidation record; when both apply, both are listed. Merging them collapsed two states that call for different actions — re-run
-it, versus find out what changed — which is the failure this skill exists to prevent, so the renderer was committing it. Found on independent verification of the 0.1.0 build. The four checked-in
-example reports were regenerated against the corrected renderer.
-
-Also in this pass: every markdown file in the package was reflowed to the 200-column prose rule, and `SKILL.md`'s `description` was folded to a `>-` block matching the house style in
-`skill-walk-before-run`. The frontmatter was verified to still parse and the description text to round-trip unchanged.
 
 ## 0.1.0 — 2026-09-23
 

@@ -10,16 +10,16 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 # SCRATCHPAD
 
-## Current state (2026-10-29)
+## Current state (2026-10-29, closeout)
 
-- v2.0.0: adopted into skills_stuff conventions, every reference and template deepened, source-checked and restructured; local source store and
-  ledger in place; `just check` passes. Committed ab9b2fb; symlink-installed in ~/.claude/skills and ~/.agents/skills (2026-10-29).
-- Behavioural eval rerun 2026-10-29 with and without the skill: see evals/results.md.
+- v2.2.0: research-deepened references on one backbone, incl. databases-and-ha, ai-inference-platforms, edge-appliances,
+  fleet-management, service-provider-systems; 8 helpers incl. quorum, ceph, restore, eol; filled examples; reads APN context from
+  ../skill-network-architect/operator/apn/.
+- Committed in skills_stuff up to b6f399f; push pending (operator).
 
 ## Next actions
 
-1. Done 2026-10-29: committed (ab9b2fb) and symlink-installed.
-2. Act on the gap list in evals/results.md (Proxmox/product-lookup routing gap, templates without filled worked examples, references over 180 lines).
-3. Rerun `just links` and `just fetch-sources --apply` before each release; `just ledger --apply` after any new citation.
-4. Gaps from the 2026-10-29 eval closed in v2.1.0 (20261029_1951); see CHANGELOG.
-5. References run 180-300 lines by design (verified tables kept); narrow questions load one section via the routing table.
+1. Operator: push skills_stuff (see the network pack SCRATCHPAD).
+2. Verify the open items: Apple Business built-in MDM depth (FileVault escrow, enforced updates), Patroni maximum_lag_on_failover default,
+   libvirt multiqueue change needing a full stop and start per version, colocation kVA billing as a general rule.
+3. PostgreSQL 14 reaches end of support 2026-11-12: any APN database on 14 needs a plan (eol register).

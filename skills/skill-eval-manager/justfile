@@ -87,6 +87,10 @@ audit_scripts:
 
 # Must exit 0 before durable work is called complete. Fix the project when it fails, never the check.
 # Governance coherence checks — assert this project's governance claims against reality
+# Blind A/B grading: `packet` shuffles two answer sets into X/Y with the key kept apart; `score` unblinds per criterion (--drop-criterion)
+blind-ab *ARGS: _require-venv
+    @{{py}} scripts/blind_ab.py {{ARGS}}
+
 check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check

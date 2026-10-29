@@ -7,6 +7,7 @@
 - [record_result.py](#record_resultpy)
 - [render_report.py](#render_reportpy)
 - [record_writeback.py](#record_writebackpy)
+- [blind_ab.py](#blind_abpy)
 - [eval_common.py](#eval_commonpy)
 - [check_governance.py](#check_governancepy)
 - [Running these scripts](#running-these-scripts)
@@ -42,6 +43,16 @@ file(s) that now carry it. Inputs: `--source-project`, `--kind`, `--finding`, an
 cannot claim a destination before the content is in it; `--open` records an honest outstanding loop instead. Safety:
 append-only, never rewrites a line. Idempotency: no — each run appends a new row with a new `entry_id`; supersede a
 mistaken row rather than editing it.
+
+## blind_ab.py
+
+Purpose: compare two answer sets for the same cases without the grader knowing which is which. `packet` writes packet.md into --out (each case
+with its prompt, expected points, critical failures and two answers shuffled as X and Y; `Loaded:` lines dropped) and key.json, which
+stays with the coordinator. `score` unblinds a grader's per-criterion JSON (`[{case, answer, criteria, critical_failure}]`) and prints
+each side's mean on a 16-point scale, wins, cases at or above the bar and critical failures. `--drop-criterion` repeats the comparison
+without a criterion that one side could not earn (a 2026-10-29 review showed `interfaces` rewarded knowledge the baseline lacked).
+Recipe: `just blind-ab packet|score ...`. Safety: writes only into `--out`; standard library only. Smoke-tested 2026-10-29 on 22 real
+cases: reproduced the recorded 9.75 vs 12.71 (10.10 vs 13.55 without interfaces).
 
 ## eval_common.py
 

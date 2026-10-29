@@ -10,16 +10,16 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 # SCRATCHPAD
 
-## Current state (2026-10-29)
+## Current state (2026-10-29, closeout)
 
-- v2.0.0: adopted into skills_stuff conventions, every reference and template deepened, source-checked and restructured; local source store and
-  ledger in place; `just check` passes. Committed ab9b2fb; symlink-installed in ~/.claude/skills and ~/.agents/skills (2026-10-29).
-- Behavioural eval rerun 2026-10-29 with and without the skill: see evals/results.md.
+- v2.2.0: research-deepened, source-checked references on one backbone; 21 references, 19 templates with filled examples, 11 helpers;
+  local source store (519 items) and sources.json ledger; APN operator context in operator/apn/ (index plus four files).
+- Evals: skill 22/22 against a baseline, and 22/22 against a fair baseline given the specialist registry (12.71 vs 9.75).
+- Committed in skills_stuff up to b6f399f (concurrent session's commit carried this session's files); push pending (operator).
 
 ## Next actions
 
-1. Done 2026-10-29: committed (ab9b2fb) and symlink-installed.
-2. Act on the gap list in evals/results.md (Proxmox/product-lookup routing gap, templates without filled worked examples, references over 180 lines).
+1. Operator: `git -C /Volumes/Data/_ai/_skills/skills_stuff push origin main` (auto mode refused the agent's push).
+2. Verify the open items: nbn maximum frame sizes for RFC 4638, whether the POI count changed since 2012, carrier-side STIR, PRI format.
 3. Rerun `just links` and `just fetch-sources --apply` before each release; `just ledger --apply` after any new citation.
-4. Gaps from the 2026-10-29 eval closed in v2.1.0 (20261029_1951); see CHANGELOG.
-5. References run 180-300 lines by design (verified tables kept); narrow questions load one section via the routing table.
+4. Next eval: run the trigger set live in a fresh session (not only the description proxy).
