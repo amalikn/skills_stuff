@@ -263,7 +263,7 @@ def improve(grid: object) -> None:
     Args:
         grid: the End-to-end page being improved (flowmap.e2e.EndToEnd); its slot and port orders are set in place.
     """
-    grid.pts, grid.segs, grid.bbox = {}, {}, {}
+    grid.pts, grid.segs, grid.bbox, grid.spans, grid.span_keys = {}, {}, {}, {}, {}
     every = {link.cid for link in grid.links}
     grid._refresh(every)
     start = deepcopy((grid.vslot, grid.gslot, grid.pools))

@@ -128,7 +128,7 @@ class EndToEnd(E2EGrid):
         return n
 
     def _refresh(self, cids: set) -> None:
-        """Recompute the polylines of the given links.
+        """Recompute the polylines of the given links and their vertical runs.
 
         Args:
             cids: the link ids.
@@ -138,6 +138,11 @@ class EndToEnd(E2EGrid):
             self.segs[cid] = oriented(self.pts[cid])
             xs, ys = [x for x, _y in self.pts[cid]], [y for _x, y in self.pts[cid]]
             self.bbox[cid] = (min(xs), min(ys), max(xs), max(ys))
+            for key in self.span_keys.pop(cid, ()):   # the vertical runs _runs_ok reads, kept with the polylines (2026-10-29: 2.6 s on UNC)
+                del self.spans[key]
+            runs = self._verticals(self.by[cid])
+            self.spans.update((key, (ch, lo, hi)) for ch, lo, hi, key in runs)
+            self.span_keys[cid] = [key for _ch, _lo, _hi, key in runs]
 
     def _runs_ok(self, cids: set) -> bool:
         """Whether the given links' vertical runs still keep E2E_SP from every other run sharing their track (ports moved).
@@ -148,10 +153,7 @@ class EndToEnd(E2EGrid):
         Returns:
             True when every shared track keeps its separation.
         """
-        spans = {}
-        for link in self.links:
-            for ch, lo, hi, key in self._verticals(link):
-                spans[key] = (ch, lo, hi)
+        spans = self.spans   # kept current by _refresh
         for cid in cids:
             for ch, lo, hi, key in self._verticals(self.by[cid]):
                 for other in self.vruns[(ch, self.vtrack[key])]:
