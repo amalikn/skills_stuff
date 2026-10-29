@@ -21,6 +21,10 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Fleet adoption
 
+- [ ] **The budget pass dropped an undecided open item** (found 2026-10-29, unified-network-controller): `just budget --apply` reported "3 line(s)
+  lost" and SCRATCHPAD's `20261022_1237` open item (Teleport write rights, explained, not decided) was in neither the file nor `docs/history/`;
+  it was restored from git. A working-state item must be archived or kept, never lost: make the audit fail the pass (and restore) instead of
+  only reporting, with a test on a SCRATCHPAD whose Open items exceed the budget.
 - [ ] **Rotation leaves stale Contents lines** (found 2026-10-29, unified-network-controller, four times in one day): `rotate --apply` moves a
   dated entry to `docs/history/` but keeps its `- [title](#anchor)` line in the CHANGELOG's Contents, so the next `just check` fails on a broken
   anchor. Fix: drop Contents lines whose anchor no longer exists in the same pass, and test it on a CHANGELOG with a Contents block.
