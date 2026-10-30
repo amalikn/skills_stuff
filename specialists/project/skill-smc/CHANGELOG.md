@@ -14,6 +14,13 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261030_1719 — rct-tstik AVR data map, smc_change conditions and loop, rct_avr_probe modem fields (v0.10.6 -> v0.10.7)
+
+Learned 2026-10-30 (ansible-wifi chat 0a7b835b): `references/02_service-map.md` (what update:stats reads from the AVR, stats.json, master's
+Thuraya labels and unpadded version, `/bin/sh` is dash), `references/19_smc-change-role.md` (facts, conditions, when, loop; local-knowledge-ansible
+`7ef59c7`). `scripts/probes/rct_avr_probe.sh` adds modem, modem_net, modem_comms and sim (Iridium* or Thuraya* fields); its test passes.
+manifest 0.10.6 -> 0.10.7.
+
 ## 20261030_1222 — install_missing, controller lookups and pinned PHP, Teleport duplicate node after a data-dir wipe (v0.10.5 -> v0.10.6)
 
 Learned 2026-10-30 (ansible-wifi chat cad11710): `references/19_smc-change-role.md` (apt_pin `install_missing`, kept out of the target;

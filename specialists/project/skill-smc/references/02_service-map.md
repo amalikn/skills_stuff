@@ -329,6 +329,35 @@ on `/dev/ttyS0`. The `release/iridium` build (2026-10-28) adds `/viewstats2`, `/
 the self test (`/selftest` button) turns the fans on and runs `php artisan self:tests`, whose results page is `/st_results`. `vendor/`, `.env`
 and `storage/config.json` are git-tracked, so a fresh clone resets the site config (`roles/smc_application/tasks/main.yml` deploys that way).
 
+> **Learned 2026-10-30** · what rct-tstik reads from the AVR, where it keeps it, and how the two builds label it · VERIFIED_PRIMARY (read on
+> warehouse-rct01, release/iridium `971d8d04`, and myra-vale-smc01, master `e39d158`, over Teleport) · Source: `/var/www/html/rct-tstik/app/Services/
+> IOManager.php` and `StatsManager.php` on both boxes; their stats pages `/` and `/viewstats2`; `storage/stats.json` · Falsifier: a tstik build
+> whose stats.json lacks `AVRVersion`, or an Iridium-fitted master box that shows `IridiumModel`
+> - `py_avrloader*.py` only reads the AVR **version** (and resets or flashes it). Everything else comes from `artisan update:stats`, which sends
+>   about 14 read-only requests (`IOManager.php`): `AVRGetFirmwareVersion`, `PSStatusRequest` (power rails: LAN, NTD, UI, modem, I2C, Aux; main and
+>   backup V/A, MikroTik 450Gx4, 8 V and NTD rails), `CheckTemperature(1..3)` (board and two external), `FANStatusRequest` (state, rpm),
+>   `UIStatusRequest` (handset mode, emergency button/override), `VoIPHealthRequest`, `ChargerStatusRequest` + `ChargerMessageReceiveRequest`
+>   (battery V/temp, charge state, PV in/out, heatsink temp, days since full charge), `SystemConfigStatusRequest` (emergency and SMS numbers, delays;
+>   SC* thresholds as raw hex), `SystemStatusRequest` (warnings, emergency mode), `THStatusRequest`/`THENStatusRequest` (modem link, mode, network
+>   registration, RSSI), `ThurayaProductRequest` (modem model, serial, firmware, SIM serial, IMSI), `ThurayaTimePosRequest` (lat/lon, LAC, cell,
+>   time), `I2CStatusRequest`. TiniVer and the PING_* rows are host-side, not AVR. Write requests exist (power per rail, fans, charger, emergency
+>   config, raw Iridium/I2C data); none are read-only.
+> - The results go to `storage/stats.json` (`{"<Field>": {"value": ..}}`), rewritten every 5 minutes: read that file, not the serial port, for
+>   a cheap fleet read (`scripts/probes/rct_avr_probe.sh`; an age over 15 minutes means update:stats is not running).
+> - **master labels every modem field `Thuraya*`** and prints the AVR minor unpadded (`$bRead[3] . "." . $bRead[4]`: "3.7" is V3.07); the iridium
+>   build labels them `Iridium*` and pads ("3.07"). myra-vale on master (Iridium equipment per the operator, 2026-10-30) read `ThurayaModel
+>   SM-2500`, SIM serial empty, `0 - Not Registered`; warehouse-rct01 on iridium reads `9523N`, SIM present, `1 - Registered`. Whether master
+>   misreads an Iridium modem or a Thuraya one is still fitted is not settled: confirm on the iridium build before calling it a fault.
+> - The SMC's `/bin/sh` is **dash** (`readlink -f /bin/sh` on myra-vale): smc_change specs' shell runs under it (no `[[ ]]`, arrays, `{1..n}`).
+>
+> ```php
+> // app/Services/IOManager.php (rct-tstik master e39d158) - the unpadded version
+> $bRead = $this->sioAVR->readData(6);
+> $sRes  = $bRead[3] . "." . $bRead[4];
+> ```
+>
+> Screenshot pending: the tstik stats page of an Iridium box after a release/iridium deploy (redacted serials), next session.
+
 ### IoT / Other
 
 | Service   | Role        | Unit        | Config            | Notes                |

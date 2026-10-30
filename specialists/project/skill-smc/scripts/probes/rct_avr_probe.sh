@@ -7,7 +7,8 @@
 #
 # Prints one `AVRPROBE|<node>|host=<hostname>|key=value|...` line per box: avr (AVRVersion as tstik's Stats page shows it; tstik drops the
 # minor's leading zero, so 3.7 is V3.07), tini (TiniVer), stats_age_s (seconds since update:stats last wrote stats.json; cron runs it every
-# 5 minutes), tstik (rct-tstik HEAD), loader (py_avrloader_v2.py / py_avrloader.py in /home), overlay (1 = overlayroot), and with QUERY=1
+# 5 minutes), tstik (rct-tstik HEAD), loader (py_avrloader_v2.py / py_avrloader.py in /home), overlay (1 = overlayroot), modem, modem_net,
+# modem_comms and sim (the satellite modem's model, network status, AVR-to-modem link and whether a SIM serial reads), and with QUERY=1
 # avr_query (the version the AVR itself reports through the loader, two-digit minor with v2). Default mode only reads files: no serial
 # traffic. QUERY=1 sends one version request on /dev/ttyS0 after waiting for cron's update:stats to finish (the two collide on the unlocked
 # port: tstik re-runs stty and flushes before every send). Writes nothing on the box or locally.
@@ -20,7 +21,7 @@ usage() {
   #
   # Args: none.
   # Returns: 0; writes the usage text to stdout.
-  sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 # The on-box probe. Kept in one quoted heredoc so nothing expands locally. Every pgrep is anchored at "^php " (a pattern without ^ also
@@ -34,6 +35,11 @@ out="$out$(kv stats_age_s "$( [ -f "$s" ] && echo $(( $(date +%s) - $(stat -c %Y
 out="$out$(kv tstik "$(git -C "$t" rev-parse --short HEAD 2>/dev/null)")"
 out="$out$(kv loader "$(cd /home 2>/dev/null && ls py_avrloader_v2.py py_avrloader.py 2>/dev/null | tr '\n' ' ')")"
 out="$out$(kv overlay "$(mount | grep -c 'on / type overlay')")"
+# The satellite modem as tstik's stats name it: Iridium* on the release/iridium build, Thuraya* on master (whose fields read Thuraya
+# whatever modem is fitted, so a master box with Iridium equipment can still show the old labels). The first non-empty of each pair.
+first() { for k in "$@"; do v=$(val "$k"); [ -n "$v" ] && { printf '%s' "$v"; return; }; done; }
+out="$out$(kv modem "$(first IridiumModel ThurayaModel)")$(kv modem_net "$(first IridiumNetworkStatus ThurayaNetworkStatus)")"
+out="$out$(kv modem_comms "$(first IridiumAVRComms ThurayaAVRComms)")$(kv sim "$( [ -n "$(first IridiumSIMSerial ThurayaSIMSerial)" ] && echo present || echo absent)")"
 if [ "${QUERY:-0}" = 1 ]; then
   l=/home/py_avrloader_v2.py; [ -f "$l" ] || l=/home/py_avrloader.py
   for i in $(seq 1 60); do pgrep -f '^php [a]rtisan update:stats' >/dev/null || break; sleep 1; done

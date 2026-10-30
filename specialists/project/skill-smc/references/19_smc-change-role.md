@@ -684,3 +684,42 @@ smc_change_attempt_started: "{{ smc_change_attempt_started | default(now().times
 > ```
 >
 > No visual surface.
+
+## Facts, conditions, when and loop (2026-10-30)
+
+> **Learned 2026-10-30** · per-box choice of actions and checks; loop on any action · VERIFIED_PRIMARY (offline: `just test` 34 OK,
+> `just test_conditions` 17 ok; real spec judged for AVR 3.07/2.14 x flash on/off with `just judge`; the avr_version fact read 3.07 on
+> warehouse-rct01 and myra-vale through files/facts.py; old and new target formula equal for all five specs) · Source: roles/smc_change
+> tasks/conditions.yml, templates/spec_actions.j2, load_spec.yml, probe_cfg.yml, backup.yml, rollback_locate.yml (local-knowledge-ansible
+> `7ef59c7`) · Falsifier: a passed SMC that reruns after adding only a `when`; a resumed flash run that picks actions from a fresh fact read
+> - `facts:` read-only commands on the SMC before the probe; `conditions:` named, either Jinja over host vars or `{fact, equals|in|match}`;
+>   `when:` on any action or verify check (name, list, `not name`); `loop:` on any action, item fields over the action's, both whens apply.
+> - Decided before the before-probe, so probe, plan, gates and stage 6 see only what applies; the plan lists each skip with the failed condition.
+> - The decision goes in the journal (a resume reuses it: a flashed AVR reads 3.07 afterwards) and the backup's `actions.txt` (a rollback undoes
+>   only those). `when` is kept out of the target like `install_missing`. A failed fact refuses an apply.
+> - Pitfalls found building it (ansible-core 2.21): a `set_fact` in prepare.yml's `run_once` fixes host-variable templates to the first host,
+>   so the loop expansion is a lookup-backed default instead; never put a fact inside Jinja (the fingerprint renders the whole spec before
+>   facts exist).
+> - rct-tstik-iridium-update now copies only the 3.07 image, the current version's image and `avr_flash.sh`, and only on a flash run (was all
+>   four images, ~440 kB, every apply); its target moved to `062940dd...`, so passed SMCs (warehouse-rct01, aeroplane-1) rerun once.
+>
+> ```yaml
+> # files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update.yml (7ef59c7)
+> conditions:
+>   flash_wanted: "{{ (rct_avr_flash | default(false) | bool) and (smc_bases_iridium | default(false) | bool) }}"
+>   avr_at_214: {fact: avr_version, equals: '2.14'}
+> actions:
+>   - type: copy
+>     transient: true
+>     when: [flash_wanted, not avr_at_307]
+>     loop:
+>       - {src: firmwares/Firmware_Debug_V3.07_Flash.enc, dest: /run/smc-change-avr-Firmware_Debug_V3.07_Flash.enc}
+>       - {src: firmwares/FirmwareV2.14Test.enc, dest: /run/smc-change-avr-FirmwareV2.14Test.enc, when: avr_at_214}
+> ```
+>
+> ```yaml
+> # roles/smc_change/defaults/main.yml (7ef59c7): rendered per host on each use
+> smc_change_actions: "{{ lookup('ansible.builtin.template', role_path ~ '/templates/spec_actions.j2') | from_json }}"
+> ```
+>
+> No visual surface.
