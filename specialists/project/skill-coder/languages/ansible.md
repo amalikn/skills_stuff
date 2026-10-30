@@ -329,3 +329,11 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > - `when:` needs a real boolean: `when: a | default({}) or b` fails ("derived from value of type 'dict'"); write `(a | default({}) | length > 0)`.
 > - There is no `length` test: `reject('length')` fails; use `map('length') | select('equalto', 0)`.
 > - `set_fact` from a `{% %}` block: build JSON text (`{{ out | to_json }}`) and `| from_json` it, so the structure survives as data.
+
+> **Learned 2026-10-30 (f)** · ansible-core 2.21.5 in git hooks: "Ansible requires blocking IO on stdin/stdout/stderr. Non-blocking file handles
+> detected: <stderr>" · VERIFIED_PRIMARY (ansible-wifi pre-push hook failed from VS Code's Git and from an agent shell; passed after the fix, push
+> 9a3a21f0..a8a9d254) · Source: ansible-wifi `.git/hooks/pre-push` (local hook, 2026-10-30) · Falsifier: the same hook failing with all three
+> descriptors redirected to files
+> ansible-core checks that fds 0-2 are blocking at start. A hook inherits git's pipes, which VS Code and agent terminals leave non-blocking, so any
+> `ansible-playbook`/`ansible-lint` run there must get plain files on all three: `cmd </dev/null >"$log" 2>&1 || { cat "$log" >&2; fail; }`.
+> Redirecting stdout alone (`>/dev/null`) is not enough.
