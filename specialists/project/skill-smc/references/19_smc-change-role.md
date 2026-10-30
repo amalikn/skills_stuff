@@ -697,6 +697,8 @@ smc_change_attempt_started: "{{ smc_change_attempt_started | default(now().times
 > - Decided before the before-probe, so probe, plan, gates and stage 6 see only what applies; the plan lists each skip with the failed condition.
 > - The decision goes in the journal (a resume reuses it: a flashed AVR reads 3.07 afterwards) and the backup's `actions.txt` (a rollback undoes
 >   only those). `when` is kept out of the target like `install_missing`. A failed fact refuses an apply.
+>   So gate each fact on the flags of the step it serves: rct-tstik's `avr_version` reads stats.json only where the run may flash, else prints
+>   `not-read` (local-knowledge-ansible `11348bc`), or a box with stopped stats would be refused the code update too.
 > - Pitfalls found building it (ansible-core 2.21): a `set_fact` in prepare.yml's `run_once` fixes host-variable templates to the first host,
 >   so the loop expansion is a lookup-backed default instead; never put a fact inside Jinja (the fingerprint renders the whole spec before
 >   facts exist).

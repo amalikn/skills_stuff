@@ -1003,7 +1003,8 @@ def team_text(text: str) -> str:
   depend on per-target state.
 - **Pitfalls:** keep the facts out of anything hashed before they are read (the run fingerprint, the target identity); keep the per-step
   `when` out of the identity of what is applied, or adding a condition reruns every finished target; give old backups without a saved
-  decision the old behaviour (undo everything).
+  decision the old behaviour (undo everything). Read a fact only where a step that uses it may run: a fact read everywhere turns an
+  unrelated broken input (a stale status file) into a refusal of every target, even those that need nothing from it (local-knowledge-ansible 11348bc).
 - **Realised in:** Ansible (smc_change). Excerpt:
 
 ```yaml
