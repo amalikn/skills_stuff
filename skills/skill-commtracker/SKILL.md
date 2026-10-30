@@ -7,6 +7,25 @@ metadata:
 
 # skill-commtracker — Communication Thread Tracker
 
+## Contents
+
+- [Use When](#use-when)
+- [Step 1 — Identify Source Type and Multi-Email Containers](#step-1--identify-source-type-and-multi-email-containers)
+- [Step 2 — Determine Thread File](#step-2--determine-thread-file)
+- [Step 3 — Extract Fields](#step-3--extract-fields)
+- [Step 4 — Clean the Body](#step-4--clean-the-body)
+- [Step 4.5 — Save attachments and inline images to disk](#step-45--save-attachments-and-inline-images-to-disk)
+- [Step 5 — Assign Entry ID and Slug](#step-5--assign-entry-id-and-slug)
+- [Step 6 — Insert Entry](#step-6--insert-entry)
+- [Step 7 — Update Contents TOC](#step-7--update-contents-toc)
+- [New Thread Bootstrap](#new-thread-bootstrap)
+- [Helper Scripts](#helper-scripts)
+- [Project Integration](#project-integration)
+- [Extraction Quality Check](#extraction-quality-check)
+- [Code changes](#code-changes)
+
+---
+
 ## Use When
 
 Invoke for any of:
@@ -23,34 +42,38 @@ Invoke for any of:
 
 ## Step 1 — Identify Source Type and Multi-Email Containers
 
-| Signal | Source type |
-|---|---|
-| File path ending in `.eml` | EML file (single email) |
-| File path ending in `.eml` AND filename starts with `conversations-` or `multi-` | **Multi-email container** — one file holding multiple embedded `.eml` attachments that should each become a separate entry in the thread tracker |
-| Text block with `From:`, `To:`, `Subject:`, `Date:` header lines | Pasted email |
-| File path ending in `teams-messages.md` (or similar staging file) | Teams staging file |
-| User says "teams", "chat", or text from a Teams notification | Teams message (direct) |
-| User provides a phone-call transcript/recording writeup | Call |
-| User provides an in-person/meeting transcript or notes | Meeting |
-| Anything else | Other — ask user for fields interactively |
+| Signal                                                                       | Source type                                                                                                           |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| File path ending in `.eml`                                                   | EML file (single email)                                                                                               |
+| File path ending in `.eml` AND filename starts with `conversations-`         | **Multi-email container** — one file holding multiple embedded `.eml` attachments that should each become a separate  |
+|   or `multi-`                                                                |   entry in the thread tracker                                                                                         |
+| Text block with `From:`, `To:`, `Subject:`, `Date:` header lines             | Pasted email                                                                                                          |
+| File path ending in `teams-messages.md` (or similar staging file)            | Teams staging file                                                                                                    |
+| User says "teams", "chat", or text from a Teams notification                 | Teams message (direct)                                                                                                |
+| User provides a phone-call transcript/recording writeup                      | Call                                                                                                                  |
+| User provides an in-person/meeting transcript or notes                       | Meeting                                                                                                               |
+| Anything else                                                                | Other — ask user for fields interactively                                                                             |
 
 If the source type is ambiguous, ask the user before proceeding.
 
-**Multi-email container (`conversations-*.eml` / `multi-*.eml`):** When detected, the outer email body is discarded (it is typically a forwarding wrapper with no substantive content). Instead, process each embedded `.eml` attachment as its own email entry. The `extract.py` script names them `{slug}-01-*.eml`, `{slug}-02-*.eml`, etc. — run `extract.py` first to extract all embedded `.eml` files, then run `extract.py` again on each extracted `.eml` file individually to get its headers, body, and attachments for the thread tracker.
+**Multi-email container (`conversations-*.eml` / `multi-*.eml`):** When detected, the outer email body is discarded (it is typically a forwarding wrapper with no substantive content). Instead, process
+each embedded `.eml` attachment as its own email entry. The `extract.py` script names them `{slug}-01-*.eml`, `{slug}-02-*.eml`, etc. — run `extract.py` first to extract all embedded `.eml` files,
+then run `extract.py` again on each extracted `.eml` file individually to get its headers, body, and attachments for the thread tracker.
 
 ---
 
 ## Step 2 — Determine Thread File
 
 1. Check if the user specified a thread file path explicitly. If yes, use it.
-2. **Per-subdirectory threading:** If the source `.eml` file lives in a subdirectory of `communications/` (e.g. `communications/apn/`, `communications/vocus/`), the thread file belongs in that same subdirectory — use `communications/<subdir>/communications-tracking.md`. This keeps threads isolated per correspondence stream.
+2. **Per-subdirectory threading:** If the source `.eml` file lives in a subdirectory of `communications/` (e.g. `communications/apn/`, `communications/vocus/`), the thread file belongs in that same
+   subdirectory — use `communications/<subdir>/communications-tracking.md`. This keeps threads isolated per correspondence stream.
 3. Check if the project has a `communications/communications-tracking.md` relative to the working directory. If yes, use it.
 4. If no thread file exists yet, ask the user for:
    - Thread file path (suggest the appropriate path per rule 2)
    - Thread title (e.g. "Medical Examination Request Thread")
    - One-line description of what the thread tracks
    - Source file reference (e.g. the `.eml` filename or "pasted email")
-   Then bootstrap a new thread file (see **New Thread Bootstrap** below).
+Then bootstrap a new thread file (see **New Thread Bootstrap** below).
 
 ---
 
@@ -66,7 +89,8 @@ Read the file. Extract from MIME headers:
 - `Subject:` → full subject line
 - Body → decoded plain-text part (prefer text/plain over text/html)
 
-**Internal domain configuration:** If the project specifies an internal domain (e.g. `apn.net.au`), preserve the email address only long enough to check the domain, then discard it. Mark any sender or recipient whose domain does not match as `**[External]**`. If no domain is configured, show display names only with no marking.
+**Internal domain configuration:** If the project specifies an internal domain (e.g. `apn.net.au`), preserve the email address only long enough to check the domain, then discard it. Mark any sender or
+recipient whose domain does not match as `**[External]**`. If no domain is configured, show display names only with no marking.
 
 **Attachments and inline images:** After extracting headers and body, walk all MIME parts:
 
@@ -126,8 +150,7 @@ Prefix the entry ID with `Teams` not `Email`.
 
 ### Call / Meeting transcript
 
-A phone call or in-person meeting, provided as a transcript file, pasted dictation, or the user's
-own recollection. Extract:
+A phone call or in-person meeting, provided as a transcript file, pasted dictation, or the user's own recollection. Extract:
 - Date/time (may be approximate — see verbatim-vs-reported handling below)
 - Medium: `Phone call` or `In-person meeting`
 - Participants (names, not roles, unless roles are how the user refers to them)
@@ -136,37 +159,25 @@ own recollection. Extract:
 Prefix the entry ID with `Call` (phone) or `Meeting` (in-person) — not `Email` or `Teams`.
 
 **Verbatim transcript vs. reported speech — mark clearly which one this is:**
-- If a full transcript exists (recording writeup, dictation), treat it as verbatim per ADR-001
-  (no paraphrasing) and write it up as a normal dialogue entry.
-- If no transcript exists and the user is recounting a call/meeting from memory, the entry is
-  **reported speech, not verbatim**. Mark it explicitly: add a `**Status:** VERBAL_UNRECORDED —
-  reported by [name] from memory; no transcript exists` line, and label the dialogue/summary
-  section `**Reported account (not verbatim — [name]'s recollection):**` rather than presenting
-  it as quoted dialogue. Do not upgrade a recollection into quoted speech.
+- If a full transcript exists (recording writeup, dictation), treat it as verbatim per ADR-001 (no paraphrasing) and write it up as a normal dialogue entry.
+- If no transcript exists and the user is recounting a call/meeting from memory, the entry is **reported speech, not verbatim**. Mark it explicitly: add a `**Status:** VERBAL_UNRECORDED — reported by
+  [name] from memory; no transcript exists` line, and label the dialogue/summary section `**Reported account (not verbatim — [name]'s recollection):**` rather than presenting it as quoted dialogue. Do
+  not upgrade a recollection into quoted speech.
 
-**Long transcripts — cross-reference instead of full duplication:** if the source transcript is
-long (as a rule of thumb, longer than roughly 150–200 lines, or clearly a full meeting/consultation
-transcript rather than a short exchange), do not paste the entire transcript into the tracker
-entry. Instead:
-1. Keep the full transcript as its own file under `communications/` (reformatted per **Transcript
-   source cleanup** below if needed).
-2. In the tracker entry, write: a **Source** line pointing to the full file, a short set of **key
-   verbatim extracts** (the handful of quotes that actually matter, per ADR-001), a **Key points**
-   bullet summary, and a **Case note** giving strategic significance.
+**Long transcripts — cross-reference instead of full duplication:** if the source transcript is long (as a rule of thumb, longer than roughly 150–200 lines, or clearly a full meeting/consultation
+transcript rather than a short exchange), do not paste the entire transcript into the tracker entry. Instead:
+1. Keep the full transcript as its own file under `communications/` (reformatted per **Transcript source cleanup** below if needed).
+2. In the tracker entry, write: a **Source** line pointing to the full file, a short set of **key verbatim extracts** (the handful of quotes that actually matter, per ADR-001), a **Key points** bullet
+   summary, and a **Case note** giving strategic significance.
 This keeps the tracker itself scannable while preserving the full record separately.
 
-**Transcript source cleanup:** user-provided transcripts (dictated, exported from a recording
-tool) often use plain-text conventions instead of markdown — unicode section dividers (e.g. `⸻`)
-instead of `---`, and unlabelled `Speaker:` lines instead of bold. Before filing, reformat the
-source file itself to standard markdown: `#`/`##` headers for sections, `**Speaker:**` for
-turn labels, `---` for dividers. Preserve all wording exactly — this is formatting cleanup only,
-never a content edit.
+**Transcript source cleanup:** user-provided transcripts (dictated, exported from a recording tool) often use plain-text conventions instead of markdown — unicode section dividers (e.g. `⸻`) instead
+of `---`, and unlabelled `Speaker:` lines instead of bold. Before filing, reformat the source file itself to standard markdown: `#`/`##` headers for sections, `**Speaker:**` for turn labels, `---` for
+dividers. Preserve all wording exactly — this is formatting cleanup only, never a content edit.
 
-**Fact conflicts — stop and confirm, don't guess:** if a call/meeting transcript's stated date,
-a name, or another detail conflicts with an already-tracked fact elsewhere in the project (a
-different dated communication implies a different date, a name doesn't match a known person),
-stop and ask the user to confirm before filing. Do not silently pick one version or infer which
-is correct — get it wrong here and every downstream chronology/case-file entry inherits the error.
+**Fact conflicts — stop and confirm, don't guess:** if a call/meeting transcript's stated date, a name, or another detail conflicts with an already-tracked fact elsewhere in the project (a different
+dated communication implies a different date, a name doesn't match a known person), stop and ask the user to confirm before filing. Do not silently pick one version or infer which is correct — get it
+wrong here and every downstream chronology/case-file entry inherits the error.
 
 ### Other
 
@@ -189,9 +200,7 @@ Strip the following from the body before writing to the thread file:
 - Any explicit references to attachments (replace with `[Attachment: filename]`)
 
 **CID substitution:** Replace `[cid:CONTENT-ID]` references in the body with a markdown image link
-pointing to the saved file: `![filename](attachments/YYYYMMDD_HHMM-filename)`. Match by the
-Content-ID extracted in Step 3. If no CID match is found, substitute with
-`![inline image](attachments/YYYYMMDD_HHMM-inline-image-N.ext)`.
+pointing to the saved file: `![filename](attachments/YYYYMMDD_HHMM-filename)`. Match by the Content-ID extracted in Step 3. If no CID match is found, substitute with `![inline image](attachments/YYYYMMDD_HHMM-inline-image-N.ext)`.
 
 ---
 
@@ -212,23 +221,20 @@ Skip entirely if no attachments or inline images were found in Step 3.
 
 ## Step 5 — Assign Entry ID and Slug
 
-1. Count existing entries in the thread file for the correct prefix (`Email`, `Teams`, `Call`, or
-   `Meeting` — each type numbers independently). New entry = N+1 for that prefix.
-2. Format the timestamp slug: `YYYYMMDD_HHMM` in 24-hour time from the extracted date (or
-   `YYYYMMDD` alone if no reliable time is known — do not invent a time).
+1. Count existing entries in the thread file for the correct prefix (`Email`, `Teams`, `Call`, or `Meeting` — each type numbers independently). New entry = N+1 for that prefix.
+2. Format the timestamp slug: `YYYYMMDD_HHMM` in 24-hour time from the extracted date (or `YYYYMMDD` alone if no reliable time is known — do not invent a time).
 3. Generate a 5–7 word summary of the message content for the heading.
 
 Example: `Email 3 - 20260226_1340 - Scope-limited medical details proposed`
 
-**Newly-discovered communications that predate or interleave with the existing sequence:** number each type
-sequentially in chronological order (Meeting 1, 2, 3 …) and renumber the later entries of that type to make room.
-Do not use `0` or letter suffixes such as `2a` / `2b` (operator, 12 Oct 2026). When renumbering:
+**Newly-discovered communications that predate or interleave with the existing sequence:** number each type sequentially in chronological order (Meeting 1, 2, 3 …) and renumber the later entries of
+that type to make room. Do not use `0` or letter suffixes such as `2a` / `2b` (operator, 12 Oct 2026). When renumbering:
 - Map every old number to its new one in a single pass (use placeholders so `2 → 3` and `3 → 4` do not chain).
 - Update the heading, the Contents line and every in-file anchor and `[Meeting N]` reference, then check all `#anchor` links resolve.
-- Search the project for references to the old numbers outside the tracker (chronology, case file, scratchpad, skill state). Update live
-  documents; leave dated history such as CHANGELOG entries as written and record the old → new mapping in a new entry.
-- Insert the new entry at its correct chronological position (see Step 6). An entry with no known time goes where the evidence places it,
-  with the slug as `YYYYMMDD` and a note saying the position is inferred.
+- Search the project for references to the old numbers outside the tracker (chronology, case file, scratchpad, skill state). Update live documents; leave dated history such as CHANGELOG entries as
+  written and record the old → new mapping in a new entry.
+- Insert the new entry at its correct chronological position (see Step 6). An entry with no known time goes where the evidence places it, with the slug as `YYYYMMDD` and a note saying the position is
+  inferred.
 
 ---
 
@@ -279,11 +285,11 @@ Entry format:
   - Wrong: `communications/attachments/slug-filename.png`
   - Correct: `attachments/slug-filename.png`
 - **CID substitution** — replace `[cid:CONTENT-ID]` with `![alt text](attachments/slug-filename)` using the saved image, never with a text placeholder like `[Attachment: filename]`
-- **Teams chats with several turns** (operator, 2026-10-23: "a lot of extra gap"): keep each turn one block, no `---` between turns and no blank
-  line after the speaker label. Write `**Name (h:mm PM):**\` and put the turn's lines under it, each line but the last ending in `\` (a hard line
-  break); one blank line between turns; a table in a turn keeps a blank line above and below. The entry still ends with one `---`. The opening
-  message needs no label (the `**From:**` line names its sender).
-- **Forwarded messages** — strip the full forwarded/quoted content; replace with `*[Prior thread omitted — see below for summary]*` then a concise bullet-point summary. Do not use subheadings like `### Forwarded`
+- **Teams chats with several turns** (operator, 2026-10-23: "a lot of extra gap"): keep each turn one block, no `---` between turns and no blank line after the speaker label. Write `**Name (h:mm
+  PM):**\` and put the turn's lines under it, each line but the last ending in `\` (a hard line break); one blank line between turns; a table in a turn keeps a blank line above and below. The entry
+  still ends with one `---`. The opening message needs no label (the `**From:**` line names its sender).
+- **Forwarded messages** — strip the full forwarded/quoted content; replace with `*[Prior thread omitted — see below for summary]*` then a concise bullet-point summary. Do not use subheadings like
+  `### Forwarded`
 
 ---
 
@@ -295,19 +301,16 @@ At the top of the thread file, in the `## Contents` section, add (or insert in c
 - [Email N - YYYYMMDD_HHMM - short summary](#email-n)
 ```
 
-Anchor format: lowercase, spaces → hyphens, remove special characters. E.g. `Email 3 - 20260226_1340 - Scope-limited medical details proposed` → `#email-3---20260226_1340---scope-limited-medical-details-proposed`.
+Anchor format: lowercase, spaces → hyphens, remove special characters. E.g. `Email 3 - 20260226_1340 - Scope-limited medical details proposed` →
+`#email-3---20260226_1340---scope-limited-medical-details-proposed`.
 
-**Special characters — how GFM slugging actually handles them** (verify against these, not just
-"remove special characters" — this is where anchor mismatches most often happen):
-- Punctuation with no letters either side (`:`, `,`, `;`, `"`, `'`, `(`, `)`) — removed entirely,
-  **not** replaced with a hyphen. `"hard reset" meeting:` → `hard reset meeting` (single space
-  where the colon was, since the colon sat between two words already separated by a space).
+**Special characters — how GFM slugging actually handles them** (verify against these, not just "remove special characters" — this is where anchor mismatches most often happen):
+- Punctuation with no letters either side (`:`, `,`, `;`, `"`, `'`, `(`, `)`) — removed entirely, **not** replaced with a hyphen. `"hard reset" meeting:` → `hard reset meeting` (single space where the
+  colon was, since the colon sat between two words already separated by a space).
 - `/` — removed with no replacement and no space inserted. `hours/attendance` → `hoursattendance`.
-- `+` and em-dash `—` — removed, but since they're normally surrounded by spaces on both sides,
-  removing just the character leaves a double space, which becomes a **double hyphen** in the
-  anchor. `Stu + Martin` → `stu--martin`; `2026 — Title` → `2026--title`.
-- Compute the anchor by hand for anything with this punctuation, then double-check it against an
-  existing similarly-punctuated heading elsewhere in the same file if one exists — don't guess.
+- `+` and em-dash `—` — removed, but since they're normally surrounded by spaces on both sides, removing just the character leaves a double space, which becomes a **double hyphen** in the anchor. `Stu
+  + Martin` → `stu--martin`; `2026 — Title` → `2026--title`.
+- Compute the anchor by hand for anything with this punctuation, then double-check it against an existing similarly-punctuated heading elsewhere in the same file if one exists — don't guess.
 
 Verify the anchor matches what GitHub-flavored Markdown would generate from the heading text.
 
@@ -338,9 +341,7 @@ Then proceed to insert the first entry as per Steps 5–7.
 
 ## Helper Scripts
 
-Helper scripts at `scripts/` (relative to this skill):
-Use these instead of inline `ctx_execute` when available. The `ctx_execute` fallback remains
-valid for one-off sessions without the scripts.
+Helper scripts at `scripts/` (relative to this skill): Use these instead of inline `ctx_execute` when available. The `ctx_execute` fallback remains valid for one-off sessions without the scripts.
 
 ### extract.py — use instead of inline ctx_execute for Step 3 + Step 4.5
 
@@ -352,12 +353,14 @@ python ~/.agents/scripts/commtracker/extract.py <eml-path> \
   [--tz <IANA zone>]           # e.g. Australia/Sydney; Outlook saves Date in UTC, so pass it for local slugs
 ```
 
-Outputs JSON to stdout: `date_iso`, `date_human`, `slug`, `from/to/cc`, `subject`,
-`body_text` (disclaimers stripped), `attachments[]` (saved to disk), `signature_images_skipped`.
+Outputs JSON to stdout: `date_iso`, `date_human`, `slug`, `from/to/cc`, `subject`, `body_text` (disclaimers stripped), `attachments[]` (saved to disk), `signature_images_skipped`.
 
-Claude reads the JSON and performs Steps 4–7 (body cleaning decisions, CID substitution,
-entry title, tracker write). For EML files >256KB, use this script — it avoids pushing
-raw base64 into context.
+Claude reads the JSON and performs Steps 4–7 (body cleaning decisions, CID substitution, entry title, tracker write). For EML files >256KB, use this script — it avoids pushing raw base64 into context.
+
+> **Learned 2026-10-30** · extract.py signature detection · VERIFIED_PRIMARY (observed) · Source: `scripts/extract.py` `is_signature_image` (Outlook-xxxxxxxx, UUID names, ≤200 bytes only) on
+> an Outlook for Mac sent item · Falsifier: an Outlook desktop logo returned with `is_signature: true` Outlook desktop signature logos come as inline `image001.png`, `image003.png` (about 10 to 13 KB,
+> `cid:image001.png@...`) and are returned with `is_signature: false`; the body shows them only as alt text after the sign-off ("[Logo Description automatically generated]"). Judge them from the body:
+> an image placed only in the signature block is not kept in the tracker, even when the JSON marks it substantive.
 
 ### reconcile.py — use for Step 2 reconciliation runs
 
@@ -365,8 +368,7 @@ raw base64 into context.
 python ~/.agents/scripts/commtracker/reconcile.py <communications-dir>
 ```
 
-Compares `.eml` files in the folder against `communications-tracking.md`. Reports exact
-matches, AEST-timezone matches, same-date candidates, and genuinely untracked files.
+Compares `.eml` files in the folder against `communications-tracking.md`. Reports exact matches, AEST-timezone matches, same-date candidates, and genuinely untracked files.
 
 ### apply_corrections.py — correct transcript dialogue after review
 
@@ -374,10 +376,9 @@ matches, AEST-timezone matches, same-date candidates, and genuinely untracked fi
 python ~/.agents/scripts/commtracker/apply_corrections.py <transcript.md> <corrections.tsv> [--table] [--dry-run]
 ```
 
-For **Transcript source cleanup** when names and terms are misheard: review the transcript, write the corrections as a
-TSV (`transcribed<TAB>corrected`; `\n` splits a mis-attributed turn), then apply. Only the dialogue below `## Full…`
-changes; `--table` records every change so the original stays reconstructable. Correcting misheard words is a content
-change, so do it only when the user asks, and mark guesses `[?: …]`.
+For **Transcript source cleanup** when names and terms are misheard: review the transcript, write the corrections as a TSV (`transcribed<TAB>corrected`; `\n` splits a mis-attributed turn), then apply.
+Only the dialogue below `## Full…` changes; `--table` records every change so the original stays reconstructable. Correcting misheard words is a content change, so do it only when the user asks, and
+mark guesses `[?: …]`.
 
 ### toc.py — regenerate Contents TOC
 
@@ -386,16 +387,16 @@ python ~/.agents/scripts/commtracker/toc.py <tracker-file>          # preview
 python ~/.agents/scripts/commtracker/toc.py <tracker-file> --update  # apply
 ```
 
-Regenerates the `## Contents` block from every entry heading (`## Email N`, `## Teams N`, `## Call N`,
-`## Meeting N`) in file order, using correct GFM anchors and keeping a blank line before `---`. Run after
-adding a new entry instead of computing anchors manually. `--update` refuses (exit 2) if the new Contents
-would have fewer entries than the old one; pass `--allow-shrink` only when that is intended.
+Regenerates the `## Contents` block from every entry heading (`## Email N`, `## Teams N`, `## Call N`, `## Meeting N`) in file order, using correct GFM anchors and keeping a blank line before `---`.
+Run after adding a new entry instead of computing anchors manually. `--update` refuses (exit 2) if the new Contents would have fewer entries than the old one; pass `--allow-shrink` only when that is
+intended.
 
 ---
 
 ## Project Integration
 
-Projects that have a specific communications folder, preferred thread file path, or an internal domain can define a thin wrapper skill that sets defaults and delegates here. Example wrapper (project-local):
+Projects that have a specific communications folder, preferred thread file path, or an internal domain can define a thin wrapper skill that sets defaults and delegates here. Example wrapper
+(project-local):
 
 ```markdown
 # of-si-thread-sync
@@ -431,5 +432,5 @@ If any check fails, fix it before writing.
 
 ## Code changes
 
-Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply
-(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.
+Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule): its rules apply (purpose header, docstrings, `--apply` for writes, timeouts,
+tests, measured runtime) and the session owes it a write-back.
