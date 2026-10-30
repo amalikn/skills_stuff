@@ -295,3 +295,20 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > With the default linear strategy every task finishes on all hosts of a batch before the next starts, so a per-host timer between stage
 > markers measures the batch's wall-clock for that stage: the slowest host (or one reboot) sets every host's line. Measure per-host work
 > with a task-timing callback, not stage markers, and size budgets per batch.
+
+> **Learned 2026-10-30 (a)** · Jinja2 3 in ansible-core 2.21.5, filters and `+` · VERIFIED_PRIMARY (local render; an `apt_pin` names list deduplicated only its last term) · Source:
+> local-knowledge-ansible `roles/smc_change/tasks/actions/apt_pin.yml` (`smc_change_pin_names`), commit cf4f994 · Falsifier: `{{ [1] + [1] | unique | list }}` rendering `[1]`
+> A filter binds tighter than `+`, `~` and comparisons: `a + b | default([]) + c | unique | list` applies `unique | list` to `c` alone. Wrap each
+> operand that takes a filter and the whole sum: `((a | list) + (b | default([])) + (c | default([]))) | unique | list`.
+
+> **Learned 2026-10-30 (b)** · ansible-core 2.21.5, free-form `shell:` / `command:` · VERIFIED_PRIMARY (`--syntax-check`: "failed at splitting arguments, either an
+> unbalanced jinja2 block or quotes" on a `shell: |` script copied from a spec) · Source: ansible-wifi `roles/smc_application/tasks/ubuntu-php-cve-2026-109618.yml`, commit fb6ae80b ·
+> Falsifier: a free-form `shell: |` holding `'Class "?[^ ]+"? not found'` that passes `--syntax-check`
+> The free-form form runs Ansible's `k=v` argument splitter over the script, which fails on a quote it cannot pair (a `"` inside `'...'` in a
+> regex is enough). Pass scripts as `shell: {cmd: |, executable: /bin/bash}`: `cmd` is not split. Same for any script copied in from elsewhere.
+
+> **Learned 2026-10-30 (c)** · ansible-core 2.21.5, `import_tasks` placement · VERIFIED_PRIMARY (`'import_tasks' is not a valid attribute for a Play`) · Source: ansible-wifi
+> `smc_rise_deploy.yml`, commit fb6ae80b · Falsifier: a playbook with `- import_tasks: x.yml` at play level passing `--syntax-check`
+> A playbook's top level takes plays and `import_playbook` only; `import_tasks` / `include_tasks` must sit in a play's `tasks:`. To run a task file
+> between imported playbooks, wrap it in its own play (`hosts`, `gather_facts`, `tasks: [import_tasks ...]`); `when:` on that import still
+> applies to every imported task, and host facts set by earlier plays (`set_fact`) are still there.

@@ -170,3 +170,10 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > [ -n "$proxy" ] && args+=(--proxy="$proxy")
 > exec tsh ${args[@]+"${args[@]}"} ssh "root@$host" "$remote"
 > ```
+
+> **Learned 2026-10-30** · bash, `set -o pipefail` with `grep -q` · VERIFIED_PRIMARY (ansible-lint `risky-shell-pipe` on `ss ... | grep -q`; reasoning from `grep -q`
+> exiting at the first match) · Source: ansible-wifi `roles/smc_application/tasks/ubuntu-php-cve-2026-109618.yml` review, commit fb6ae80b · Falsifier: `set -o pipefail; yes | grep -q y`
+> returning 0
+> `grep -q` (and `head`) exits at the first match; the writer then dies of SIGPIPE (141), and with `pipefail` the pipeline fails on a match:
+> a check that passes turns into a failure. Adding `pipefail` because a linter asks is wrong there. Drop the pipe (`grep -q X <<<"$(cmd)"`, or
+> capture first: `out=$(cmd); grep -q X <<<"$out"`), or keep `pipefail` only where every stage reads all its input.

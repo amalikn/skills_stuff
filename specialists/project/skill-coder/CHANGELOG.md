@@ -14,6 +14,14 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261030_1224 — Learned: filter precedence, free-form shell splitting, import_tasks placement, pipefail with grep -q
+
+Learned 2026-10-30 (ansible-wifi chat cad11710) in `languages/ansible.md` (a: a filter binds tighter than `+`; b: free-form `shell:` splits
+arguments, use `cmd:`; c: `import_tasks` only inside a play) and `languages/shell.md` (`pipefail` turns a passing `grep -q` into SIGPIPE 141).
+
+- `languages/ansible.md`: Learned 2026-10-30 (a), (b), (c)
+- `languages/shell.md`: Learned 2026-10-30
+
 ## 20261029_2035 — Write-back log index (backfill)
 
 Learned entries whose CHANGELOG line was rotated away or never named the file, indexed so the write-back contract test can trace each:
@@ -62,7 +70,7 @@ From the 2026-10-29 knowledge harvest of the apn and personal projects (read-onl
 
 `references/design-patterns.md` P-40, Learned 2026-10-29 from skill-network-architect (check_ledger, fetch_sources, sources_ledger).
 
-## 20261029_2030 — Learned: know what the commit gate runs
+## 20261029_2027 — Learned: know what the commit gate runs
 
 Learned 2026-10-29 in `references/version-control-and-review.md`: a gate without tests passed 14 failing tests (unified-network-controller e6dee23).
 
