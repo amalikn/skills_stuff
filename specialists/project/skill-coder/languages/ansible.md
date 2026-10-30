@@ -312,3 +312,20 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > A playbook's top level takes plays and `import_playbook` only; `import_tasks` / `include_tasks` must sit in a play's `tasks:`. To run a task file
 > between imported playbooks, wrap it in its own play (`hosts`, `gather_facts`, `tasks: [import_tasks ...]`); `when:` on that import still
 > applies to every imported task, and host facts set by earlier plays (`set_fact`) are still there.
+
+> **Learned 2026-10-30 (d)** · ansible-core 2.21.5, `set_fact` with `run_once` freezes host-variable templates · VERIFIED_PRIMARY (two local hosts,
+> `hv=AAA`/`BBB`: the include_vars value rendered per host, the run_once set_fact gave `AAA` to both) · Source: local-knowledge-ansible
+> `ansible-wifi/roles/smc_change/defaults/main.yml` `smc_change_actions`, commit 7ef59c7 · Falsifier: a run_once `set_fact` of a structure holding
+> `{{ inventory_hostname }}` that renders per host afterwards
+> Data loaded with `include_vars` stays a lazy template: each host renders its own variables on use. A `set_fact` renders at set time, and
+> with `run_once` that is the first host's render, copied to every host. To derive data from per-host templates once per run, make it a
+> variable whose value is a lookup, e.g. `x: "{{ lookup('ansible.builtin.template', role_path ~ '/templates/x.j2') | from_json }}"` in
+> `defaults/`: it renders per host on each use (put the logic in `templates/` so a code fingerprint covers it). Outside a role task `role_path`
+> is unset, and `include_role` keeps role defaults private unless `public: true`.
+
+> **Learned 2026-10-30 (e)** · ansible-core 2.21.5 templating quirks in Jinja blocks · VERIFIED_PRIMARY (local runs of tasks/conditions.yml and
+> load_spec.yml) · Source: local-knowledge-ansible commit 7ef59c7 · Falsifier: an empty `{% macro %}` call that yields `''`; `when:` accepting a dict
+> - A macro whose output is empty returns **None**, not `''`: `m(x).split('|')` raises. Collect results with `namespace(list=[])` in a loop.
+> - `when:` needs a real boolean: `when: a | default({}) or b` fails ("derived from value of type 'dict'"); write `(a | default({}) | length > 0)`.
+> - There is no `length` test: `reject('length')` fails; use `map('length') | select('equalto', 0)`.
+> - `set_fact` from a `{% %}` block: build JSON text (`{{ out | to_json }}`) and `| from_json` it, so the structure survives as data.

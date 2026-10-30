@@ -985,6 +985,41 @@ def team_text(text: str) -> str:
 # then: if any text still contains "nautobot": raise ValueError(f"workbook still names Nautobot at ...")
 ```
 
+### P-47 Decide per item once from read facts, persist the decision, never re-judge it
+
+> **Learned 2026-10-30** · design pattern, any language (realised in Ansible) · VERIFIED_PRIMARY (offline: 17-assert fixture incl. resume; real spec
+> judged for 4 fact/flag combinations; fact read on 2 live boxes) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/conditions.yml`,
+> `backup.yml`, `rollback_locate.yml`, commit 7ef59c7 · Falsifier: a resumed or rolled-back run whose action set differs from the original run's (reusable_candidate)
+
+- **Problem:** a change runner must do different steps on different targets (flash only where the firmware is old; ship only the rollback image
+  the target needs), and the facts that decide it are on the target. The change itself moves those facts, so a resume or a rollback that
+  reads them again picks a different set of steps: it skips a half-done step or undoes one that never ran.
+- **Solution:** read the facts with a read-only call before anything else, judge named conditions into one decision (which step indexes run,
+  which checks apply, which were skipped and why), and persist that decision with the transaction: the resume journal and the backup it would
+  roll back from. Resume and rollback load the decision; they never judge again. A fact that cannot be read refuses the target.
+- **Why it works:** the decision is part of the transaction, like its baseline: everything after it (checks, plan, gates, undo) agrees on one
+  set of steps. Conditions are named and the plan prints the failed name per skipped step, so a skip is visible, not silent.
+- **Reuse:** firmware updates by current version, package changes by installed set, migrations by schema version, any rollout whose steps
+  depend on per-target state.
+- **Pitfalls:** keep the facts out of anything hashed before they are read (the run fingerprint, the target identity); keep the per-step
+  `when` out of the identity of what is applied, or adding a condition reruns every finished target; give old backups without a saved
+  decision the old behaviour (undo everything).
+- **Realised in:** Ansible (smc_change). Excerpt:
+
+```yaml
+# tasks/backup.yml (7ef59c7): the decision goes with the backup a rollback restores
+- name: List the actions this apply runs, for a rollback
+  ansible.builtin.copy:
+    content: |
+      {% for a in smc_change_actions %}
+      {% if smc_change_active is not defined or loop.index0 in smc_change_active %}
+      {{ loop.index }} {{ a.type }}
+      {% endif %}
+      {% endfor %}
+    dest: "{{ smc_change_backup_path }}/actions.txt"
+# tasks/main.yml: a resume restores the journal's decision (conditions.yml step restore), never a fresh read
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet

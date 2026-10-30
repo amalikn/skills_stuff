@@ -14,6 +14,15 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261030_1721 — Pattern P-47 (decide once from facts, persist it); Learned: run_once set_fact freezes templates, 2.21 Jinja quirks
+
+Learned 2026-10-30 (ansible-wifi chat 0a7b835b, smc_change conditions and loop, local-knowledge-ansible 7ef59c7) in
+`references/design-patterns.md` P-47 and `languages/ansible.md` (d: a run_once `set_fact` renders host templates once, use a lookup-backed
+default; e: empty macro returns None, boolean `when`, no `length` test, JSON out of Jinja blocks).
+
+- `references/design-patterns.md`: Learned 2026-10-30, P-47
+- `languages/ansible.md`: Learned 2026-10-30 (d), (e)
+
 ## 20261030_1249 — Pattern P-46: audience words at the output boundary, with a leak guard
 
 Learned 2026-10-30 (apn unified-network-controller, site workbook for the site team) in `references/design-patterns.md` P-46: translate the
