@@ -654,3 +654,33 @@ smc_change_attempt_started: "{{ smc_change_attempt_started | default(now().times
 # roles/smc_change/tasks/record.yml
 'elapsed_seconds': (now().timestamp() | float - smc_change_attempt_started | default(now().timestamp()) | float) | round(3),
 ```
+
+## apt_pin installs a missing package: install_missing (2026-10-30)
+
+> **Learned 2026-10-30** · apt_pin `install_missing`, kept out of the target · VERIFIED_PRIMARY (offline tests 34 OK; `just target-hash` 4f2e5063 before
+> and after; map-smc01 rct apply 20261030_110256 passed with `missing=[]`) · Source: roles/smc_change files/probe/10_apt_pin.py, tasks/actions/apt_pin.yml,
+> apt_pin_rollback.yml, guard.yml, backup.yml, load_spec.yml (local-knowledge-ansible `cf4f994`) · Falsifier: a box with php8.1 but no
+> libapache2-mod-php8.1 that an apply refuses, or a passed SMC that reruns after a spec edit adding only `install_missing`
+> - apt_pin touched only installed packages (`installed()` keeps dpkg state `ii`; live install `only_upgrade: true`), so a box missing
+>   `libapache2-mod-php8.1` failed `php_module` before the change and was refused as an unhealthy baseline, never fixed.
+> - `install_missing: [pkg]` on an apt_pin action: the probe lists absent ones as `missing` / `missing_lower` only where another of the action's
+>   packages is installed; `pkgs` stays what dpkg had (so recovery's `untouched()` still sees an install). Gates expect `pkgs | missing` after.
+> - Kept out of `smc_change_target` with `resume_safe`: passed SMCs had the package (the gate needed it), so moving the target would rerun every
+>   one. A box that lost it after passing: `-e smc_change_mode=verify` sweep, then `-e smc_change_force=true` per host.
+> - The guard's waiver accepts any unhealthy baseline when something is missing, not only the checks the package explains (open: narrow it).
+> - Rollback: backup `added.txt` ("live|lower pkg"); `dpkg -r` them before `dpkg -i` of the saved builds, or an older php8.1-common leaves the new
+>   mod_php unconfigurable.
+>
+> ```yaml
+> # roles/smc_change/tasks/load_spec.yml (local-knowledge-ansible cf4f994)
+> smc_change_target: >-
+>   {{ smc_change_spec.actions | map('dict2items') | map('rejectattr', 'key', 'in', ['resume_safe', 'install_missing']) | map('items2dict') | list
+>      | to_json(sort_keys=true) | hash('sha256') }}
+> ```
+>
+> ```python
+> # roles/smc_change/files/probe/10_apt_pin.py (cf4f994)
+> missing = sorted(p for p in act.get("install_missing", []) if live and p not in live)
+> ```
+>
+> No visual surface.

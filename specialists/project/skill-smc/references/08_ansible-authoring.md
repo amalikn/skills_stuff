@@ -2120,3 +2120,32 @@ that is not installed carries the same risk.
 > (`interfaces: '{{ topology_interfaces }}'`, `dhcp_scopes: '{{ topology_dhcp_scopes }}'`, `bridges`, `portal_fqdn`, `portal_address`; the role
 > defaults are null placeholders) and load role defaults at role precedence (a throwaway role whose `defaults/main.yml` links the real one),
 > never `include_vars`, which would outrank the inventory. The topology plugin is found with `ANSIBLE_VARS_PLUGINS=<ansible-wifi>/vars_plugins`.
+
+### Lookups run on the controller: `date -Is` breaks from macOS; PHP installs pinned against the ondrej PPA (2026-10-30)
+
+> **Learned 2026-10-30** · controller-side lookups; pinned PHP build · VERIFIED_PRIMARY (macOS `date -Is` → "invalid argument 's' for -I", rc 1;
+> local render equal to `date -Iseconds`) · Source: ansible-wifi `fb6ae80b` on `rise` (roles/smc_rise_watchdog/tasks/main.yml,
+> roles/smc_application/vars/php.yml, tasks/ubuntu-php-install-configure.yml, tasks/ubuntu-php-cve-2026-109618.yml) · Falsifier: a pipe lookup
+> that runs on the SMC, or an smc_application reinstall that lands a sury build
+> - `lookup('pipe', ...)` always runs on the machine running Ansible. `date -Is` is GNU only; BSD `date` on macOS takes `-Iseconds`. It is also
+>   the controller's clock. For a value about the SMC use facts: the watchdog bootstrap timestamp is now built from `ansible_facts.date_time`
+>   (local time with offset, which its schema wants; `date_time.iso8601` is UTC). Needs `gather_facts`.
+> - `ubuntu-php-install-configure.yml` adds `ppa:ondrej/php`; an unpinned `php8.1-*` install takes the sury build, whose version string compares
+>   newer than Ubuntu's `8.1.2-1ubuntu2.x` (so "older than target" checks pass it; its CVE status UNVERIFIED), and the reinstall removed
+>   `libapache2-mod-php8.1` without putting it back. Now every package is pinned to `php_build` (8.1.2-1ubuntu2.28), deps first because
+>   `custom_apt_install.yml` installs one package at a time, mod_php last; a reinstall fails unless every php8.1 build equals `php_build`.
+>
+> ```yaml
+> # roles/smc_rise_watchdog/tasks/main.yml (ansible-wifi fb6ae80b)
+> vars:
+>   smc_local_iso: >-
+>     {{ ansible_facts.date_time.date }}T{{ ansible_facts.date_time.time
+>     }}{{ ansible_facts.date_time.tz_offset[:3] }}:{{ ansible_facts.date_time.tz_offset[3:] }}
+> # roles/smc_application/vars/php.yml
+> php_pkgs_pinned: >-
+>   {{ (['common', 'opcache', 'readline', 'cli'] + (php_pkg_suffixes | reject('eq', 'cli') | list))
+>      | map('regex_replace', '^(.*)$', 'php' ~ php_version ~ '-\1=' ~ php_build) | list
+>      + ['libapache2-mod-php' ~ php_version ~ '=' ~ php_build] }}
+> ```
+>
+> No visual surface.

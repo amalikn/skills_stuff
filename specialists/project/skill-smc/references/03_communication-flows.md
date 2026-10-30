@@ -83,6 +83,18 @@ run on a period (hostname, `site.txt`, Teleport version, `disk` when `disk_count
 2026-10-14: if `/var/lib/teleport` is lost, deleting it and restarting Teleport re-joins the node from `/etc/teleport.yaml`; smc-resiliency's identity
 partition design relies on this.
 
+**Duplicate node after clearing `/var/lib/teleport` (kaltjiti-fergon-smc01, nbn_accelerate, 2026-10-30; resolved by itself).** The operator deleted
+`/var/lib/teleport` and restarted Teleport (12:12:12). The node re-joined at once under a new host id (`Generating new host UUID`, registered via
+the proxy 12:12:15, tunnel mode 12:12:47, no errors after), but `tsh ls` listed two `kaltjiti-fergon-smc01` records until the old id's
+record expired at 12:21:19 (about 9 min after its last heartbeat), and `tsh ssh root@<hostname>` was ambiguous in that window. The errors seen
+were not the new node's: `Uploader scan failed ... open /var/lib/teleport/log/upload/streaming/default: no such file` and `Agent pool exited:
+context canceled` came from the old process, whose data dir was deleted under it, then from its SIGTERM. `Failed to run command and update
+label: exit status 127. labels/labels.go:153` is the `versions` label: `/etc/teleport.yaml` still runs `/usr/local/bin/role_versions_labels.sh`,
+which is not on the box; the current `roles/smc_teleport/templates/teleport.yaml.j2:94` has that label commented out, so the box's config is
+older than the template (once per start with `period: 1h`; cosmetic). Read-only checks used (backdoor, hostname verified):
+`scripts/access/backdoor_exec.sh <host> - < probe.sh`, `tsh ls -v ... hostname=<host>` (ids), `tsh ls --format=json` (`metadata.expires`).
+Lesson: after a data-dir wipe, wait for the old record to expire (or address the node by id) before calling Teleport broken.
+
 **Re-join that never connects (banana-well-smc01, 2026-10-27; resolved by itself ~12:30, the link, not the clock).** After `/var/lib/teleport` was cleared and Teleport restarted,
 the auth server logged `Node "<host>" [<new host id>] has joined the cluster` (method token) at 11:38, 11:41 and 11:43: a new host id, re-joining
 every 2-3 minutes because its reverse tunnel never came up, so it never got a node record. `tsh ls` kept listing the **old** host id until its

@@ -14,6 +14,13 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261030_1222 — install_missing, controller lookups and pinned PHP, Teleport duplicate node after a data-dir wipe (v0.10.5 -> v0.10.6)
+
+Learned 2026-10-30 (ansible-wifi chat cad11710): `references/19_smc-change-role.md` (apt_pin `install_missing`, kept out of the target;
+local-knowledge-ansible `cf4f994`), `references/08_ansible-authoring.md` (pipe lookups run on the controller, macOS `date -Is`; smc_application
+PHP pinned against the ondrej PPA, mod_php kept; ansible-wifi `fb6ae80b`), `references/03_communication-flows.md` (kaltjiti-fergon-smc01: two
+node records for ~9 min after clearing `/var/lib/teleport`; old-process errors; exit 127 from a stale `versions` label). manifest 0.10.5 -> 0.10.6.
+
 ## 20261029_2011 — Harvest write-back: tbot repair, onboarding latency, D12, Kea gate, switch needs, voice options, DNS-only capture (v0.10.4 -> v0.10.5)
 
 Learned 2026-10-29 from the architect-pack harvest of apn projects: `references/03_communication-flows.md` (stale tbot state; "did not match any
