@@ -14,6 +14,13 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261030_1249 — Pattern P-46: audience words at the output boundary, with a leak guard
+
+Learned 2026-10-30 (apn unified-network-controller, site workbook for the site team) in `references/design-patterns.md` P-46: translate the
+internal platform's words where the file is written, phrase table then fallback, and refuse the write if the term survives.
+
+- `references/design-patterns.md`: Learned 2026-10-30, P-46
+
 ## 20261030_1224 — Learned: filter precedence, free-form shell splitting, import_tasks placement, pipefail with grep -q
 
 Learned 2026-10-30 (ansible-wifi chat cad11710) in `languages/ansible.md` (a: a filter binds tighter than `+`; b: free-form `shell:` splits

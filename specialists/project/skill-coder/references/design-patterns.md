@@ -955,6 +955,36 @@ def classify(scan, targets):                    # rover_sevs_query.py: never gue
 - **Pitfalls:** check the contract on every run, not once at setup; people edit headers.
 - **Realised in:** Python, personal project; excerpt not taken.
 
+### P-46 Audience words at the output boundary, with a guard that refuses a leak
+
+> **Learned 2026-10-30** · design pattern, any language · VERIFIED_PRIMARY (source read and run 2026-10-30: 2,000+ texts per workbook, 0 left; 15 tests) · Source: apn unified-network-controller
+> `src/unc/tasks/site_workbook/xlsx.py` (`team_text`, `team_words`; uncommitted at write time) · Falsifier: a generated workbook for the team that still names the internal platform (reusable_candidate) Pattern P-46.
+
+- **Problem:** a generator's model, notes and tests speak the internal platform's language ("in Nautobot, not drawn", source `nautobot`),
+  but the document goes to people who never use that platform. Renaming through the model breaks the internal readers and tests;
+  editing the output by hand is lost on the next run.
+- **Solution:** keep the model's words; translate once where the file is written: an ordered table of specific phrases (most specific
+  first, so they read naturally), then a general regex fallback, applied to every cell, comment and validation prompt; then scan the
+  finished file and **raise** if the forbidden term survives anywhere. Source labels go through a separate display map.
+- **Why it works:** the model and its tests stay unchanged; the fallback means no phrase leaks, and the guard turns a phrase the table
+  missed into a refused write rather than a document that quietly leaks.
+- **Reuse:** customer-facing exports of internal data, reports that must not name a vendor, redaction of hostnames from shared logs.
+- **Pitfalls:** formula cells must be skipped (their text is code); comments are replaced, not edited in place, in openpyxl; the
+  fallback's grammar is rough, so grow the specific table from each run's output.
+- **Realised in:** Python (openpyxl). Excerpt:
+
+```python
+def team_text(text: str) -> str:
+  for old, new in TEAM_PHRASES:          # specific phrases first
+    text = text.replace(old, new)
+  for pattern, new in TEAM_FALLBACK:     # then any other mention
+    text = pattern.sub(new, text)
+  return text
+
+# team_words(wb): every cell (not formulas), comment and validation prompt through team_text,
+# then: if any text still contains "nautobot": raise ValueError(f"workbook still names Nautobot at ...")
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet
