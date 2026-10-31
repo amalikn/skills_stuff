@@ -244,7 +244,7 @@ def subagent_events(path: pathlib.Path, since: str = ""):
     for sub_path in sorted(folder.glob("agent-*.jsonl")) if folder.is_dir() else []:
         meta_path = sub_path.with_name(sub_path.stem + ".meta.json")
         meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
-        first, report = "", ""
+        first, report, handback = "", "", ""
         for line in _lines(sub_path):
             try:
                 row = json.loads(line)
@@ -252,13 +252,47 @@ def subagent_events(path: pathlib.Path, since: str = ""):
                 continue
             first = first or row.get("timestamp", "")
             if row.get("type") == "assistant":
-                text = text_of((row.get("message") or {}).get("content"))
-                report = text or report
+                content = (row.get("message") or {}).get("content")
+                report = text_of(content) or report
+                for block in content if isinstance(content, list) else []:
+                    if isinstance(block, dict) and block.get("name") == "SubagentHandback":
+                        handback = str((block.get("input") or {}).get("message", ""))
         if first and first >= since:
-            yield first, "subagent", f"{meta.get('agentType', '?')}: {meta.get('description', sub_path.stem)} -> {report}"
+            yield first, "subagent", f"{meta.get('agentType', '?')}: {meta.get('description', sub_path.stem)} -> {handback or report}"
         for ts, kind, text in events(sub_path, since):
             if kind in ("bash", "file", "mcp", "tool"):
                 yield ts, f"sub-{kind}", text
+
+
+def subagent_reports(path: pathlib.Path) -> list[tuple[str, list[str]]]:
+    """Every sub-agent's final reports, in full: its SubagentHandback messages, one per run when it was resumed.
+
+    Args:
+        path: The session's transcript.
+
+    Returns:
+        (agent label, reports) per sub-agent; with no hand-back, the last assistant text.
+    """
+    out = []
+    folder = path.with_suffix("") / "subagents"
+    for sub_path in sorted(folder.glob("agent-*.jsonl")) if folder.is_dir() else []:
+        meta_path = sub_path.with_name(sub_path.stem + ".meta.json")
+        meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
+        reports, last = [], ""
+        for line in _lines(sub_path):
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            if row.get("type") != "assistant":
+                continue
+            content = (row.get("message") or {}).get("content")
+            last = text_of(content) or last
+            for block in content if isinstance(content, list) else []:
+                if isinstance(block, dict) and block.get("name") == "SubagentHandback":
+                    reports.append(str((block.get("input") or {}).get("message", "")))
+        out.append((f"{meta.get('agentType', '?')}: {meta.get('description', sub_path.stem)}", reports or ([last] if last else [])))
+    return out
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -273,6 +307,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--transcript", type=pathlib.Path)
     ap.add_argument("--since", default="", help="ISO time prefix, e.g. 2026-10-09T01:53 (UTC, as the transcript stores it)")
+    ap.add_argument("--reports", action="store_true", help="print every sub-agent's final reports in full, not the passes")
     ap.add_argument("--pass", dest="which", choices=["1", "2", "3"], help="only pass 1 (user), 2 (side effects) or 3 (sub-agents)")
     args = ap.parse_args(argv)
     path = args.transcript or default_transcript(pathlib.Path.cwd())
@@ -280,6 +315,11 @@ def main(argv: list[str] | None = None) -> int:
             "2": {"compaction", "bash", "file", "mcp", "tool", "sub-bash", "sub-file", "sub-mcp", "sub-tool"},
             "3": {"subagent"}}.get(args.which)
     print(f"transcript: {path}")
+    if args.reports:
+        for label, reports in subagent_reports(path):
+            for n, report in enumerate(reports, 1):
+                print(f"\n===== {label} (report {n} of {len(reports)}) =====\n{report}")
+        return 0
     counts: dict[str, int] = {}
     for ts, kind, text in sorted([*events(path, args.since), *subagent_events(path, args.since)], key=lambda e: e[0]):
         if keep and kind not in keep:

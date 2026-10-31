@@ -131,6 +131,7 @@ Findings (fixes are listed in [feature-inventory.md](feature-inventory.md), "Fix
 | P15 | The default `exclude_dirs` drops any folder named `archive`, so a source pack's `archive/` was silently skipped; the exclusion shows only in the inventory report | Continuum inventory |
 | P16 | A pack of parallel agents needs a shared file: three `kc` steps have no path filter (`worksheet`), no coverage in dry run (P9), and no way to list ids by file, so every agent wrote its own helpers; six near-identical `coverage.py` scripts resulted | Continuum batches |
 | P17 | Derived pages are not the deliverable for design corpora: operators want authored pages; a page-to-ledger coverage gate (`check_architecture_coverage.py`) and per-area registers (`render_claim_registers.py`) gave the proof without `kc render` | Continuum 2026-11-01 |
+| P18 | Agent claim text can be lossy against its own excerpt: rewrite agents reading the sources corrected truncated and relabelled claims, though every excerpt had verified. Excerpt checks prove the quote, not the paraphrase | Continuum rewrite pass, 2026-11-01 |
 
 Full run (same day, option "shared vocabulary + coarser granularity"): 8 extraction agents, 904 of 904 sections accounted for (876 claims-extracted, 28 context), 3,491 claims
 (3.86 per section, down from 10.9 in the canary), every batch's dry run and apply exit 0 with zero vocabulary-conformance issues; agent cost about 1.66M tokens, 9-16 minutes

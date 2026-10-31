@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 01:31 (learned): `references/evaluation.md` P18, claim text can be lossy against a verified excerpt.
 - 2026-11-01 01:10 (learned, Continuum closeout): `references/evaluation.md` findings P14-P17 and `references/feature-inventory.md` fixes (CORRECTED duplicates, archive default, agent tooling gaps, authored-page coverage). Totals on that corpus: 45 sources, 3,495 claims, 100 conflicts, 33 decided.
 - 2026-10-30 19:34 (learned, Continuum full run): `references/evaluation.md` records the full extraction run (904 sections, 3,491 claims, 3.86 per section, about 1.66M agent tokens) and findings P12 (provenance in scope hides cross-source conflicts) and P13 (18,129 candidate pairs in 5.2 s; decision-point grouping as the review unit); `references/feature-inventory.md` gains fixes P12-P13.
 - 2026-10-30 18:43 (learned, first real-corpus pilot, operator request): `references/evaluation.md` gains "Pilot on the Continuum corpus" (measured run, probe showing cross-source conflict recall depends on agent predicate wording, findings P1-P11 with evidence and code excerpt at `cdce4fa`); `references/feature-inventory.md` gains "Fixes from the Continuum pilot". Kernel steps all ran; nothing built yet.

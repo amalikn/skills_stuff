@@ -78,6 +78,12 @@ commands, file writes, MCP writes). Use it whenever the session is long or was c
 
 `scripts/transcript_passes.py --pass 3` lists the sub-agents; the full run prints all three passes.
 
+**Read the reports, not the labels (operator, 2026-11-01: "wite to skill-slurp-chat so it does not miss such thinsg again").** Pass 3 prints one line per agent. Run
+`scripts/transcript_passes.py --reports` and read every report in full, every run of a resumed agent. From each, list as items: whatever it flags for a decision or check ("please check", "for the
+operator", "could not", "not checked"); defects it found in sources; proposals and gaps it logged in its own files (`vocab-proposals-*`, `*-followups`); and limits on its evidence. A report relayed to the
+operator in chat is not captured: each item needs a governed file. On 2026-11-01 a re-walk found 64 proposals, 13 source defects and a dozen follow-ups that had lived only in agent reports, after a close
+that reported 6b passed.
+
 From the three passes, list every significant item as a numbered **item list**, one line each. Each item has a type:
 
 | Type                  | Examples                                                                                           |
@@ -174,6 +180,9 @@ Run the project's own governance check (e.g. `scripts/check_governance.py`, `jus
 Before reporting, check the capture against the conversation, not against the item list:
 - Every user message from pass 1 has a destination in the coverage table (or a stated reason it needs none).
 - Every side-effect action from pass 2 is in a change-log entry or the operational memory key.
+- Every sub-agent's report was read in full (`--reports`), and each flagged item, source defect, proposal and output file it wrote has a destination. Count them; list each agent output file not yet routed.
+- Every question asked and every answer has a destination, and any message that arrived after the previous slurp is covered: work after a close reopens it.
+- A claim of "traced" names how: a table in a governed file, built from the transcript, not recalled from context.
 - Every repo with changes has its companions applied (Step 6) and its check passing.
 - Every engaged skill (Step 5b) has its owed facts present, read back and committed; a dirty skill file is a failed audit.
 - No row bundles unrelated items; one operator decision is one row and one `record_decision`.
@@ -206,6 +215,9 @@ Then regenerate the project's wiki page from those files (operator, 2026-10-10; 
 When the request includes "commit and push", commit and push those wiki_stuff paths too, staged by name (operator, 2026-10-19).
 
 ## Step 8 — Closeout mode only
+Closeout writes the whole-chat record into the project (`session-record-<stamp>.md` or the project's equivalent): each operator message with its destination, each agent with its output, follow-ups by owner,
+defects in source material, unmerged proposals, and side effects outside the repositories. Decisions taken after a close are slurped before the next commit: memory, `record_decision`, then a sweep for pages still
+calling them open. Re-run the project's check after the first commit of a previously untracked folder: tracked-only tools see it for the first time (2026-11-01).
 Before the closeout entry, run Step 6b over the whole conversation, not only since the last slurp (operator, 2026-10-20: "why did I had to remind
 you"): every operator message in both passes traced to its entry in the governed record; an item an earlier slurp missed is written now.
 One more memory-keeper `progress` entry, key `session.closeout.<YYYYMMDD>.<topic>`: Session / Workstream, Scope, Completed, Files Changed, Decisions, Open Issues, Next Actions, Persistence Status
@@ -231,6 +243,9 @@ companion rules, the Step 6b result, and the last memory-keeper and project-cont
 | "The status file will be updated next session."   | A stale status source misleads the next reader now.                           |
 | "The time is about HH:MM."                        | Run `date`.                                                                   |
 | "The compaction summary covers the early part"    | It is lossy. Run `scripts/transcript_passes.py` on the raw transcript        |
+| "The agents' reports were in the chat, so they are captured" | Relayed is not recorded. Read `--reports`; route each flagged item to a file (2026-11-01: 64 proposals missed) |
+| "Pass 3 shows each agent's report" | It shows one line. `--reports` prints them whole |
+| "The close was earlier; these decisions came after" | Work after a close reopens it: slurp it before the commit |
 | "I saved a summary earlier, so that work is done" | A mid-session note is not a slurp; the boundary is the last slurp (Step 2)     |
 | "I wrote CHANGELOG entries as I worked, so it is covered" | Not until each operator message is traced to one (6b); a 2026-10-20 rename and a half-done review had none |
 | "Close only needs the delta since the last slurp" | Close re-runs 6b over the whole chat: an item an earlier slurp missed stays missed |

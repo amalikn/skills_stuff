@@ -51,6 +51,36 @@ class SubagentPassTest(unittest.TestCase):
         self.assertTrue(any(kind == "sub-bash" for _, kind, _ in got), got)
 
 
+class SubagentReportTest(unittest.TestCase):
+    """Final reports arrive as SubagentHandback calls; a resumed agent files several (operator, 2026-11-01)."""
+
+    def _session(self, tmp: str, rows: list[dict]) -> pathlib.Path:
+        session = pathlib.Path(tmp) / "s1.jsonl"
+        session.write_text("")
+        folder = pathlib.Path(tmp) / "s1" / "subagents"
+        folder.mkdir(parents=True)
+        (folder / "agent-x.meta.json").write_text(json.dumps({"agentType": "general-purpose", "description": "Check"}))
+        (folder / "agent-x.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+        return session
+
+    def test_every_handback_is_a_report(self) -> None:
+        """All hand-backs come back whole, in order; a trailing chat line is not a report."""
+        hand = lambda m: {"type": "assistant", "timestamp": "2026-10-29T01:00:00Z", "message": {"content": [
+            {"type": "tool_use", "name": "SubagentHandback", "input": {"message": m}}]}}
+        chat = {"type": "assistant", "timestamp": "2026-10-29T01:02:00Z", "message": {"content": [{"type": "text", "text": "Now the dry run."}]}}
+        long = "Follow-up for the operator: " + "x" * 400
+        with tempfile.TemporaryDirectory() as tmp:
+            got = tp.subagent_reports(self._session(tmp, [hand("first"), hand(long), chat]))
+        self.assertEqual(got, [("general-purpose: Check", ["first", long])])
+
+    def test_no_handback_falls_back_to_last_text(self) -> None:
+        """An older transcript with no hand-back keeps its last assistant text."""
+        chat = {"type": "assistant", "timestamp": "2026-10-29T01:02:00Z", "message": {"content": [{"type": "text", "text": "Found X."}]}}
+        with tempfile.TemporaryDirectory() as tmp:
+            got = tp.subagent_reports(self._session(tmp, [chat]))
+        self.assertEqual(got, [("general-purpose: Check", ["Found X."])])
+
+
 class TypedTextTest(unittest.TestCase):
     """typed_text and the pass-1 events built on it."""
 
