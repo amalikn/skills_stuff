@@ -44,6 +44,7 @@ The last two were added 2026-09-27. UNINDEXED-DIR asks whether an index EXISTS; 
 exists and lists nothing is the same defect as no index, and only comparing its text with the folder finds it.
 An index that deliberately describes rather than lists (bulk dated captures, say) declares so, with a reason:
     <!-- inverse-sweep:describes-only reason="..." -->
+A subtree of supplied source material that may never be edited declares so with a file `.inverse-sweep-immutable` holding the reason.
 
 Exit 1 if anything is found, so the Phase 7 gate can block on it.
 
@@ -97,10 +98,32 @@ NOT_ENTRIES = {"__init__.py", "__pycache__", ".gitkeep", "py.typed"}
 UNLISTED_ROWS_PER_INDEX = 5
 
 
+IMMUTABLE_MARKER = ".inverse-sweep-immutable"
+IMMUTABLE_ROOTS: set[Path] = set()
+
+
+def load_immutable_roots(root: Path) -> None:
+    """Find folders declared immutable source material: their files may never be edited, so an index cannot be added.
+
+    Args:
+      root: audit root.
+
+    Returns:
+      None; fills IMMUTABLE_ROOTS. A marker needs a stated reason: an empty file declares nothing.
+    """
+    IMMUTABLE_ROOTS.clear()
+    for marker in root.rglob(IMMUTABLE_MARKER):
+        if marker.is_file() and marker.read_text(errors="replace").strip():
+            IMMUTABLE_ROOTS.add(marker.parent)
+
+
 def skipped(p: Path) -> bool:
     """Prefix-aware, because the audit's own snapshot directory is `.staleness-audit-snapshot-<stamp>`
-    and an exact-name skip set does not match it — the first run reported its own snapshot back to it."""
-    return any(part in SKIP_DIR_PARTS or part.startswith(".staleness-audit") for part in p.parts)
+    and an exact-name skip set does not match it — the first run reported its own snapshot back to it.
+    Also skips a subtree declared immutable by a marker file with a reason."""
+    if any(part in SKIP_DIR_PARTS or part.startswith(".staleness-audit") for part in p.parts):
+        return True
+    return any(r == p or r in p.parents for r in IMMUTABLE_ROOTS)
 
 
 def tracked_files(root: Path) -> list[Path]:
@@ -379,6 +402,7 @@ def main() -> int:
     a = ap.parse_args()
 
     root = Path(a.root).resolve()
+    load_immutable_roots(root)
     files = tracked_files(root)
     cats = catalog_text(root, a.catalog)
 

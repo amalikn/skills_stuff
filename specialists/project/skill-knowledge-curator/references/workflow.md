@@ -16,6 +16,7 @@ Summary: >-
 
 - [Who does what](#who-does-what)
 - [The loop](#the-loop)
+- [External verification (not yet in the kernel)](#external-verification-not-yet-in-the-kernel)
 - [Project files](#project-files)
 - [Exit codes](#exit-codes)
 - [Runtime](#runtime)
@@ -57,6 +58,20 @@ Run from the skill folder (`just kc <command> <project> ...` or `python scripts/
 Incremental runs: inventory appends records only for new, changed, renamed or removed files; unchanged blocks keep their section IDs and coverage; candidates skips classified pairs; a decision is
 never asked twice. A changed source reopens checks through `validate` and the evidence gate, not silently.
 
+## External verification (not yet in the kernel)
+
+`kc` verifies that each excerpt exists in a local source; it does not check links or whether an `external_fact` is still true upstream. Until `kc links` and the verification record are built
+(feature-inventory, Deferred), run them as a separate pass: check every cited URL, and check each `external_fact` claim against the primary upstream source (vendor documentation, licence file,
+official repository). Fetch blocked pages with all-scraper (`just -f /Volumes/Data/_ai/_tool/tools_stuff/all-scraper/justfile fetch <url> --markdown [--js]`). Record per claim: upstream URL, date
+checked, the upstream excerpt and a verdict (`VERIFIED_PRIMARY`, `VERIFIED_SECONDARY`, `CONTRADICTED`, `UNVERIFIED`), and keep the capture in the project. A `CONTRADICTED` external fact becomes a
+conflict for the operator; it never silently rewrites the source claim. First run: the Continuum corpus, 2026-10-30.
+
+Reference implementation for the future `kc links`: `/Volumes/Data/_ai/_tool/tools_stuff/continuum/scripts/check_links.py` (stdlib, read-only; run there as `just check-links`). Design points worth
+keeping when porting it: GET, not HEAD (many documentation sites answer HEAD wrongly); every request timed out (15 s) with one retry on 429/5xx; bounded parallelism (8 workers, at most 2 per host);
+each URL carries every citing `path:line`, which in the kernel becomes the citing claims and sections; outcomes `ok`, `redirected`, `blocked` (401/403/429, often a bot wall: retry through all-scraper
+before calling it dead), `broken`, `unreachable`; exit 1 on any non-ok outcome. A 200 proves only that the page exists today, not that it still says what the claim cites; that is the external-fact
+check above. Measured 2026-10-30: 121 URLs from 44 sources in 25.8 s, one confirmed 404.
+
 ## Project files
 
 ```text
@@ -80,17 +95,14 @@ The JSONL ledgers are the record (append-only events; the current state is a fol
 never stored.
 
 > **Learned 2026-10-29** · staying current with external authorities · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal research project) ·
-> Source: project_stuff/me vehicle-import track `scripts/README.md` (knowledge_refresh row) · Falsifier: a body-hash watch that rewrote
-> unchanged captures or missed a real change
-> A watch loop re-reads each tracked authority and hashes the content that can change, never the header that carries the retrieval date;
-> unchanged writes nothing; changed keeps both captures, logs the supersession and exits non-zero when the source feeds a decision gate. A
-> coverage check flags any authority a regression or page cites that nobody watches.
+> Source: project_stuff/me vehicle-import track `scripts/README.md` (knowledge_refresh row) · Falsifier: a body-hash watch that rewrote unchanged captures or missed a real change A watch loop re-reads
+> each tracked authority and hashes the content that can change, never the header that carries the retrieval date; unchanged writes nothing; changed keeps both captures, logs the supersession and
+> exits non-zero when the source feeds a decision gate. A coverage check flags any authority a regression or page cites that nobody watches.
 
 > **Learned 2026-10-29 (b)** · project structure for exploratory work · VERIFIED_SECONDARY (harvest 2026-10-29 of two personal workspaces) · Source:
-> project_stuff/me portfolio `README.md` files · Falsifier: a shared fact promoted to the parent for one consumer that never gained a second
-> Structure exploratory ventures as independently killable tracks under a portfolio parent, each with its own stated position. Shared facts
-> move up to the parent only when a second track needs them, so one track can be tested or killed without disturbing the others and the
-> parent never holds a single track's assumptions.
+> project_stuff/me portfolio `README.md` files · Falsifier: a shared fact promoted to the parent for one consumer that never gained a second Structure exploratory ventures as independently killable
+> tracks under a portfolio parent, each with its own stated position. Shared facts move up to the parent only when a second track needs them, so one track can be tested or killed without disturbing
+> the others and the parent never holds a single track's assumptions.
 
 
 ## Exit codes

@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261101_0103 — Gate output in recipes
+
+- `references/testing.md`: Learned 2026-11-01, a gate must keep its output in the recipe (Continuum).
+
 ## 20261030_1721 — Pattern P-47 (decide once from facts, persist it); Learned: run_once set_fact freezes templates, 2.21 Jinja quirks
 
 Learned 2026-10-30 (ansible-wifi chat 0a7b835b, smc_change conditions and loop, local-knowledge-ansible 7ef59c7) in

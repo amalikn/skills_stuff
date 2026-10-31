@@ -91,6 +91,10 @@ input formats are [schemas/](schemas/). A worked example is [tests/fixtures/pilo
 - **skill-ai-it, skill-project-coherence:** governance files. The curator reports the `AGENTS.md` line a promotion needs; one of those skills, or the operator, adds it.
 - **skill-coder:** every change to this pack's code.
 - **The domain skill** (skill-smc, skill-nautobot, and others): read it before classifying a technical claim in its domain.
+- **all-scraper** (`/Volumes/Data/_ai/_tool/tools_stuff/all-scraper`): the fetcher for upstream pages that WebFetch or curl cannot read (403, Cloudflare/Turnstile, bot walls,
+  JavaScript-only pages) when checking a link or an `external_fact` claim: `just -f /Volumes/Data/_ai/_tool/tools_stuff/all-scraper/justfile fetch <url> --markdown [--js]` (also
+  `search`, `crawl`). Save each capture you rely on inside the curated project with its URL, fetch time and method. A problem with all-scraper itself is written back to that tool (its
+  AGENTS.md, "Feedback write-back"). Excerpt verification proves a source says something, not that it is true; upstream checks are a separate step (operator, 2026-10-30).
 
 ## Output format
 

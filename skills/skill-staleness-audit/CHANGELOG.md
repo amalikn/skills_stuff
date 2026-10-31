@@ -17,6 +17,8 @@
 
 ## Unreleased
 
+- 2026-11-01 (feature): `scripts/inverse_sweep.py` honours `.inverse-sweep-immutable` (with a reason) for immutable source subtrees, found auditing Continuum `docs/research`; two tests in `scripts/tests/test_gate_and_scanners.py`; `SKILL.md` Phase 7.
+
 - 20261029 `patterns/check-hardening.md` (Derive, never author): derived figures are recomputed from their inputs,
   with a deny-list of retired values and an author marker for intentional quotations (2026-10-29 harvest write-back).
 - 20261027 Tool hazards (SKILL.md): the gate's YAML duplicate-key step is SKIPPED under a host python3 without PyYAML; the Phase 4 gate counts filled rows, so stock verdicts pass it (skill-ai-it audit 20261027_2023).

@@ -134,6 +134,18 @@ milestone.
 > smaller. Normalise raw exports into one table with row counts and hashes per input, and reconcile any count of things against an
 > independent list before writing a conclusion.
 
+> **Learned 2026-11-01** · gates added to a task runner · VERIFIED_PRIMARY · Source: `tools_stuff/continuum/justfile` recipe `check` · Falsifier: a recipe that discards stdout and still shows why it failed
+> A new gate wired into a recipe with `>/dev/null` fails with no reason on screen, and the negative test's expected text can never match. Keep the check's own output in the recipe, or print the
+> failure to stderr; prove it by running the recipe red and matching the failure text, not the exit code alone.
+
+```just
+# continuum/justfile: the gate stays verbose so a red run names what failed
+check: _require-venv
+    @{{py}} scripts/check_governance.py
+    @{{py}} -I scripts/render_claim_registers.py --check
+    @{{py}} -I scripts/check_architecture_coverage.py
+```
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with

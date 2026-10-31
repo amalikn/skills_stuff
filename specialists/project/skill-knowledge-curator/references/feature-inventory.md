@@ -18,6 +18,7 @@ Summary: >-
 - [Added beyond the source documents](#added-beyond-the-source-documents)
 - [Deferred](#deferred)
 - [v2 staged roadmap](#v2-staged-roadmap)
+- [Fixes from the Continuum pilot](#fixes-from-the-continuum-pilot)
 - [Invariants and where they are enforced](#invariants-and-where-they-are-enforced)
 
 ## Built in v1
@@ -54,6 +55,7 @@ slurp-style intake; validate; report; single-writer lock; path containment; secr
 | SilverBullet, Quartz, LLM Wiki one-way compile, MCP facade   | A usability test shows a gap; never a second writable truth store |
 | CI workflow for structural checks                            | A project asks for it                                             |
 | Non-Markdown formats beyond inventory (`unsupported` today)  | A pilot project needs one                                         |
+| External verification: `kc links` (every URL with citing claims and sections, status, redirect) and an external-fact verification record (upstream URL, date, upstream excerpt, verdict) with a promotion gate | Proven on the Continuum pilot first: `tools_stuff/continuum/scripts/check_links.py` (operator, 2026-10-30: "should that feature be added to skill-kc?"); blocked pages go through all-scraper |
 
 Rejected for v1: vector database, daemon or crawler, knowledge graph, autonomous fact approval, edits to governing files, cross-portfolio federation (apn and personal records are never cross-indexed;
 INV-015). The v2 roadmap below narrows two of these (operator, 2026-10-27): a relationship graph within one portfolio (stage 5), and vector search only as an optional engine on measured need (stage
@@ -96,6 +98,29 @@ Rules for every stage:
 
 Open before stage 1 (v2 section 13): which Mermaid families and draw.io encodings the operator's projects use (a read-only survey answers it); whether a shared SQLite index already exists and where it
 sits under the data, cache and runtime routing; whether any slurp step already indexes symbols or relations.
+
+## Fixes from the Continuum pilot
+
+From [evaluation.md](evaluation.md), "Pilot on the Continuum corpus" (2026-10-30). Proposed, not built; each needs a test that fails first.
+
+| Finding | Fix |
+| ------- | --- |
+| P1 | `kc vocabulary`: subjects, predicates and topic keys already in the ledger, served with every worksheet batch; `claims` warns when a new subject or predicate is a near match (RapidFuzz) of an existing one; `candidates` also blocks on `topic_key` and on subject with a fuzzy predicate match |
+| P2 | Rank cross-source pairs first; suppress same-source pairs whose subjects differ unless a negation signal fires; report same-source and cross-source counts |
+| P3 | `query` and pages show `unreviewed candidate pairs: n` per claim; `validate` warns while pairs touching `CURRENT` claims are unclassified |
+| P4 | `HISTORICAL`/`SUPERSEDED` need a relation, a `successor` or a source-stated supersession in the evidence; render links successor and predecessor both ways |
+| P5 | Render by project subcategory into folders (one page per subcategory or topic group), category pages becoming indexes |
+| P6 | Granularity rule in claim-model-and-taxonomy.md: one claim per independently changeable decision; a table row is one claim unless its cells change independently; a list of chosen tools is one claim |
+| P7 | Topic-key convention `<source-short-id>.<local-key>` for source-local numbering (ADR-001), plus a shared key for the subject it decides |
+| P8 | `validate --strict`: fail while any section is `pending` |
+| P9 | `claims` dry run reports the sections it would close |
+| P10 | Evidence errors quote the cited lines and the nearest match |
+| P12 | `claims` warns when a scope key names provenance (`source`, `author`, `document`, `file`) rather than the situation a claim holds in; provenance belongs in evidence and labels |
+| P13 | `kc decision-points`: group claims by subject and predicate (and by topic) across two or more sources with differing objects; serve groups to the relate step instead of raw pairs; measure `candidates` against its budget at 3,500 claims |
+| P14 | `CORRECTED` reuses the existing operator claim when the wording matches, or takes a project-wide scope |
+| P15 | Remove `archive` from the default, or warn loudly when an excluded folder holds Markdown |
+| P16 | `worksheet --path`, `claims --coverage`, and a `kc sections --path` listing |
+| P17 | Port the Continuum register and coverage scripts as `kc registers` and `kc page-coverage` (reference: `tools_stuff/continuum/scripts/`) |
 
 ## Invariants and where they are enforced
 

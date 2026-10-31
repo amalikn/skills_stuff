@@ -21,6 +21,11 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Fleet adoption
 
+- [ ] **Bootstrap template drift and untracked coverage** (found 2026-10-30, Continuum): generating `context-map.yaml` from its template and running
+  `just nav-validate` reports legacy update_rules and missing governance_navigation; add the validator-required mapping to the template.
+  `just context_pack` with the Repomix template includes both justfile and Justfile on case-insensitive macOS, duplicating one file; select the actual runner.
+  `just stale` reports zero findings on an entirely untracked project because file_headers.tracked uses git ls-files without --others; report the empty scope
+  or explicitly cover untracked bootstrap files. Consumer workaround: explicit mapping, single runner include, and validation in a disposable tracked copy.
 - [ ] **The budget pass dropped an undecided open item** (found 2026-10-29, unified-network-controller): `just budget --apply` reported "3 line(s)
   lost" and SCRATCHPAD's `20261022_1237` open item (Teleport write rights, explained, not decided) was in neither the file nor `docs/history/`;
   it was restored from git. A working-state item must be archived or kept, never lost: make the audit fail the pass (and restore) instead of

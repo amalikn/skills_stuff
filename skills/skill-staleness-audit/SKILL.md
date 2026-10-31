@@ -245,7 +245,8 @@ python3 <skill>/scripts/inverse_sweep.py --record      # ORPHAN-DIR / UNINDEXED-
 ```
 
 An index that **exists but lists nothing** is the same defect as no index: `EMPTY-INDEX` and `UNLISTED` compare each folder's `readme.md` with the folder's contents. A folder index that describes
-rather than lists declares it: `<!-- inverse-sweep:describes-only reason="..." -->`.
+rather than lists declares it: `<!-- inverse-sweep:describes-only reason="..." -->`. A subtree of supplied source material that may never be edited declares a file
+`.inverse-sweep-immutable` holding the reason (an empty file declares nothing); never add files to source packs to satisfy the sweep (2026-11-01).
 
 **This was prose until 2026-08-12 and nothing implemented it**, so a run in which the sweep never happened still reached GATE PASSED — three defects walked through that hole on a real project. It is
 now a script, and `verify_completeness.py` blocks on it. `DISPLACED` is the state a permissive path resolver structurally cannot express: an index listing files by the bare names they carried before

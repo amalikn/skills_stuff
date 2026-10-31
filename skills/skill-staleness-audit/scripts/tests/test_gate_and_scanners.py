@@ -163,6 +163,26 @@ class IndexContents(Fixture):
         out = run("inverse_sweep.py", cwd=self.root)
         self.assertEqual(out.returncode, 0, out.stdout)
 
+    def test_immutable_marker_exempts_a_subtree(self) -> None:
+        write(self.root, "README.md", "# proj\n\n- `docs/`\n- `sources/`\n")
+        write(self.root, "sources/README.md", "# s\n\n- `one.md`\n")
+        for n in ("sources/one.md", "sources/two.md"):
+            write(self.root, n, "# x\n")
+        out = run("inverse_sweep.py", cwd=self.root)
+        self.assertIn("sources/two.md", out.stdout)
+        write(self.root, "sources/.inverse-sweep-immutable", "reason: supplied source packs, never edited\n")
+        out = run("inverse_sweep.py", cwd=self.root)
+        self.assertNotIn("sources/two.md", out.stdout)
+
+    def test_empty_immutable_marker_does_not_exempt(self) -> None:
+        write(self.root, "README.md", "# proj\n\n- `docs/`\n- `sources/`\n")
+        write(self.root, "sources/README.md", "# s\n\n- `one.md`\n")
+        for n in ("sources/one.md", "sources/two.md"):
+            write(self.root, n, "# x\n")
+        write(self.root, "sources/.inverse-sweep-immutable", "")
+        out = run("inverse_sweep.py", cwd=self.root)
+        self.assertIn("sources/two.md", out.stdout)
+
     def test_marker_named_in_prose_does_not_opt_out(self) -> None:
         write(self.root, "docs/readme.md", "# docs\n\nThe `inverse-sweep:describes-only` marker opts out.\n")
         write(self.root, "docs/b.md", "# b\n")
