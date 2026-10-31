@@ -25,7 +25,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   `just nav-validate` reports legacy update_rules and missing governance_navigation; add the validator-required mapping to the template.
   `just context_pack` with the Repomix template includes both justfile and Justfile on case-insensitive macOS, duplicating one file; select the actual runner.
   `just stale` reports zero findings on an entirely untracked project because file_headers.tracked uses git ls-files without --others; report the empty scope
-  or explicitly cover untracked bootstrap files. Consumer workaround: explicit mapping, single runner include, and validation in a disposable tracked copy.
+  or explicitly cover untracked bootstrap files. Confirmed 2026-11-01: `just check` passed before the first commit of an untracked project and failed with 41 freshness findings immediately after it, because immutable sources became visible; the gate should run against `--others` too, or say that it covered nothing. Consumer workaround: explicit mapping, single runner include, and validation in a disposable tracked copy.
 - [ ] **The budget pass dropped an undecided open item** (found 2026-10-29, unified-network-controller): `just budget --apply` reported "3 line(s)
   lost" and SCRATCHPAD's `20261022_1237` open item (Teleport write rights, explained, not decided) was in neither the file nor `docs/history/`;
   it was restored from git. A working-state item must be archived or kept, never lost: make the audit fail the pass (and restore) instead of
