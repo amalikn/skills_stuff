@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261101_0214 — apt-get update fix reaches rise (v0.10.10 -> v0.10.11)
+
+Learned 2026-11-01 (ansible-wifi `rise` a9d6e6b7): `references/13_known-issues.md`, branch reach of the helper change.
+
 ## 20261101_0128 — one failed apt source stopping smc_bases; apt module versus apt-get update (v0.10.9 -> v0.10.10)
 
 Learned 2026-11-01 (ansible-wifi `iridium` 8608c717): `references/13_known-issues.md`.

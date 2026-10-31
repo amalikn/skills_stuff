@@ -1576,5 +1576,7 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 
 - The first attempt fails intermittently: 1 of 3 test runs, and the operator's `smc_bases` run took one retry then passed. Cause `UNVERIFIED`: the failing stderr was not kept. `flock` on
   `/var/lib/apt/lists/lock` does not reproduce it, so it is no test of apt lock contention.
+- Branch reach: the same task is on `rise` at `d6a41ad1`/`a9d6e6b7`. Rise refreshes before `Clear APT/dpkg locks`, so the retries cannot clear a stuck lock there, and `roles/smc_graylog/tasks/main.yml:18,51`
+  stay strict. The helper also runs from `smc_rise_deploy.yml`, `smc_rise_common`, `smc_update_kernel` and `smc_graylog.yml` on rise. No rise run has exercised it yet.
 - Limits: a total network loss also exits 0 with warnings here, and fails only at a later install. Strict refreshes remain at `custom_apt_install.yml:177` (after the 3600 s window; 60 retries at
   60 s), `ubuntu-php-install-configure.yml:54` and `ubuntu-mariadb-install-configure.yml:47`.
