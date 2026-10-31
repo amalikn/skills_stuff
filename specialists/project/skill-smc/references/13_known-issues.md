@@ -1509,3 +1509,26 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 - So a change to the SMC's LAN side (safe mode, return to generic, rollback) must keep `10.255.0.1` on VLAN 500 as gateway and NTP source and a route
   out for public DNS; DHCP on VLAN 500 matters for the Cambium units (Option 43), not for the switch. Same entry in skill-mikrotik
   `references/05_known-issues.md`.
+
+## 2026-11-01 — porting smc_application's PHP fix from rise to a master-based branch; pre-push traps (INFO)
+
+- Branch `iridium` (ansible-wifi, from master `696a7244`, tip `4aaebca0`) carries the PHP CVE-2026-109618 tasks without the rest of rise. The tasks import
+  `roles/smc_rise_common/tasks/guard_no_overlay.yml` statically, so that file must travel with them or the play fails at parse. On this branch a box with
+  overlayroot active aborts in `smc_application`, after earlier roles have run: rise's guard plays at the top of `smc_bases.yml` (`1a370327`) were not ported.
+- master's `custom_apt_install.yml` checks availability with `apt-cache policy`. Pinned `pkg=ver` names need the version removed first; rise's helper uses
+  `apt-cache show` and accepts them. `UNVERIFIED` live (`tsh` cert expired): reading of apt's name handling, no box run. Fix on `iridium`:
+
+  ```yaml
+  # roles/_helpers/custom_apt_install.yml, ansible-wifi 4aaebca0
+  - name: Collect apt candidate for each package
+    shell: |
+      apt-cache policy {{ pkg.split('=')[0] }} 2>/dev/null | awk '/Candidate:/{print $2; exit}'
+  ```
+
+- `smc_bases.yml` is CRLF. Python text mode rewrites it to LF, every line becomes "changed", and the ansible-lint delta gate then blocks the file's old
+  findings (27 here). Edit it at byte level; `git diff --numstat` shows the size of the edit before committing.
+- The pre-push hook's venv (`skills-runtime/ansible-wifi`, ansible-core 2.17) has no `ansible.posix`, so its syntax check fails on the bare `selinux` task in
+  `roles/smc_system` whenever a push includes `smc_bases.yml`. That is an environment gap (`OPEN`), not a repo defect. It passes, with the gate still running, when
+  `ANSIBLE_COLLECTIONS_PATH` names a collections root that holds it (Homebrew's ansible here). The hook lints whole files in yamllint, so old errors in a touched file block.
+- The Bash vars guard blocks commands that name an inventory vars file with a printing command (`git show`, `git diff`, `ansible-inventory --host`), even when output is
+  redirected. Use `ansible-vars-guard.py read`, `grep -c`, or a no-print `git cherry-pick -n`; redaction hides commit hashes too.

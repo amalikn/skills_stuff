@@ -14,6 +14,11 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261101_0030 — PHP fix ported from rise to a master-based branch; pre-push traps (v0.10.7 -> v0.10.8)
+
+Learned 2026-11-01 (ansible-wifi `iridium` 4aaebca0): `references/13_known-issues.md` (guard_no_overlay travels with the PHP tasks, pinned names in master's
+custom_apt_install, smc_bases.yml CRLF and the lint delta gate, hook venv without ansible.posix, vars guard behaviour).
+
 ## 20261030_1719 — rct-tstik AVR data map, smc_change conditions and loop, rct_avr_probe modem fields (v0.10.6 -> v0.10.7)
 
 Learned 2026-10-30 (ansible-wifi chat 0a7b835b): `references/02_service-map.md` (what update:stats reads from the AVR, stats.json, master's
