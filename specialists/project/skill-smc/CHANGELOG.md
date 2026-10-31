@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261101_0128 — one failed apt source stopping smc_bases; apt module versus apt-get update (v0.10.9 -> v0.10.10)
+
+Learned 2026-11-01 (ansible-wifi `iridium` 8608c717): `references/13_known-issues.md`.
+
 ## 20261101_0108 — overlayroot.conf vs local.conf in smc_disable_overlay; Teleport vars (v0.10.8 -> v0.10.9)
 
 Learned 2026-11-01 (ansible-wifi `iridium` afbc8f1b): `references/13_known-issues.md`.

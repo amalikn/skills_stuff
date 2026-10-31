@@ -1553,3 +1553,28 @@ later"): read every nbn_* box (`systemctl is-active fqdn2ip`), then run the play
 - `teleport.yaml.j2` needs `wifi_git`, `kohana_git` and `telemetry_git`; only `smc_bases.yml` passes them. master's `smc_disable_overlay.yml` and role called `smc_teleport` without them
   (`'wifi_git' is undefined`). `iridium` comments both out, as rise does; passing the vars would flip an Iridium host's Teleport labels.
 - `iridium`'s old enable role has no log caps, oversized-file check or size cap, and exits 0 when the kernel check skips enabling. Rerun on myra-vale-smc01 not yet confirmed.
+
+## 2026-11-01 — one failed apt source stopped smc_bases at smc_setup; `apt` module versus `apt-get update` (INFO)
+
+- `packages.graylog2.org` returned 503 from myra-vale-smc01 and from outside the fleet (2026-11-01 01:13 to at least 01:20 AEDT). `smc_setup` failed with
+  `Failed to update apt cache after 5 retries: ` and a blank reason. Rise has the same task, so copying from rise does not help.
+- Cause, read in source (ansible-core 2.21 `modules/apt.py`, python-apt `apt.Cache.update`): `update_cache` calls `cache.update()`, which raises `FetchFailedException` when any source
+  fails. `apt-get update` warns and exits 0 for the same failure, and that exit runs `APT::Update::Post-Invoke-Success`, so the stamp advances and later `cache_valid_time` tasks skip their refresh.
+- A helper that wipes `/var/lib/apt/lists` first and then refreshes strictly leaves a box with no lists when a run stops there. Fix on `iridium`:
+
+  ```yaml
+  # roles/_helpers/custom_apt_update_cache.yml, ansible-wifi 8608c717
+  - name: Update apt cache (a failed optional source only warns)
+    ansible.builtin.command: apt-get update
+    register: apt_lists_update
+    changed_when: false
+    failed_when: apt_lists_update.rc != 0 or apt_lists_update.stderr is search('^E:', multiline=True)
+    until: apt_lists_update is succeeded
+    retries: 5
+    delay: 30
+  ```
+
+- The first attempt fails intermittently: 1 of 3 test runs, and the operator's `smc_bases` run took one retry then passed. Cause `UNVERIFIED`: the failing stderr was not kept. `flock` on
+  `/var/lib/apt/lists/lock` does not reproduce it, so it is no test of apt lock contention.
+- Limits: a total network loss also exits 0 with warnings here, and fails only at a later install. Strict refreshes remain at `custom_apt_install.yml:177` (after the 3600 s window; 60 retries at
+  60 s), `ubuntu-php-install-configure.yml:54` and `ubuntu-mariadb-install-configure.yml:47`.
