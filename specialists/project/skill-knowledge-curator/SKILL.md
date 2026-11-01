@@ -36,7 +36,7 @@ never edits, moves or deletes a source. It adds no daemon, vector store, knowled
 
 ## Orient first
 
-1. **Status.** v1 kernel with the Continuum pilot fixes (2026-11-01; 99 tests pass). Continuum (45 sources, 3,496 claims) is the real-corpus pilot; gate 0 failed on the labelled MCP pilot: 44.4% conflict recall against an 80% mark, with all three P0 labels missed, so never call a project's conflicts complete. Semantic recall is not
+1. **Status.** v1 kernel with the Continuum pilot fixes (2026-11-01; 100 tests pass). Continuum (45 sources, 3,496 claims) is the real-corpus pilot; gate 0 failed on the labelled MCP pilot: 62.2% conflict recall against an 80% mark, with two of three P0 labels missed, so never call a project's conflicts complete. Semantic recall is not
    measured, `render`, `promote` and `archive-plan` have not served a real project, skill-slurp-chat Step 4b is not wired, and archiving is plan-only. Do not say a project has been curated until its
    `kc validate` passes and the operator has reviewed it.
 2. Read the target project's `AGENTS.md` and governing files first. Project rules outrank this skill. Never cross-index apn and personal projects.

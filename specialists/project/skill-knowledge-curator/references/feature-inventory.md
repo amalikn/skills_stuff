@@ -68,7 +68,7 @@ Source: [v2 spec](../docs/knowledge-curator-foss-implementation-spec-v2.md), bui
 
 Rules for every stage:
 
-- **Gate 0:** failed 2026-11-01: 44.4% recall against the 80% mark ([evaluation.md](evaluation.md)); v2 stages and slurp Step 4b are held.
+- **Gate 0:** failed 2026-11-01: 62.2% recall against the 80% mark ([evaluation.md](evaluation.md)); v2 stages and slurp Step 4b are held.
 - One stage at a time; a stage is done when its listed V2 tests pass, `just check` is green and its runtime is measured against a stated budget.
 - Before any new dependency: pin the exact version and check its current licence, platforms and transitive runtime from upstream (v2 section 4); record it in `requirements*.txt` and a seam module.
 - v1 stays the base: two-axis status (C3), jsonschema, the single `ledger.py` writer, `--apply` gating, promotion gates. v2 additions are optional fields, optional installs or new seams.

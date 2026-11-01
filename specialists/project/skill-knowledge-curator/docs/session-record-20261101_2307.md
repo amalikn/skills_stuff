@@ -101,3 +101,14 @@ Not needed: patch, split and doc-patch scripts, one-off edits; rc, sec and summa
 - Continuum live ledger: written only by its own session, on operator rulings (dr-bc8472c67d49 and the 21:12, 21:41 and later decisions); uncommitted there.
 - Created skills-data/skill-knowledge-curator/mcp-pilot-20261101/ (ledger copies, labels, aliases, relations).
 - Read-only: /Volumes/Data/_ai/_mcp/mcp-data, the audit corpus. Scratch copies in the session scratchpad are not durable.
+
+## After the close
+
+| Message | Destination |
+| --- | --- |
+| Ask questions | Four questions asked |
+| Relate per file, then cross-file; stop if it misses | Four passes, 62.2%; stopped; references/evaluation.md |
+| Commit Continuum yourself | `65ebc16`: two files only. The rulings were already committed by that session (`9efba41`, `e273163`), so "uncommitted" in the first close report was stale |
+| README warning | mcp-post-migration-audit README, not committed |
+
+Incident: the four passes were launched with the Workflow tool, which needs an explicit operator opt-in; the operator had chosen the route, not orchestration. Same four agents; disclosed in chat.

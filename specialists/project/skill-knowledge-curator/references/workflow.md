@@ -72,7 +72,7 @@ Measured on the MCP pilot ([evaluation.md](evaluation.md)). Agents started toget
 1. `just restate-copies <project> > copies.json`, then `claims --file copies.json --apply`: byte copies need no agent.
 2. Consolidate: one agent reads `vocabulary` and writes `aliases.json` (same thing or same question merges; merely related stays apart; one level only), then `aliases --file ... --apply`. Topics fell from 245 to 148.
 3. Relate by reading: one agent reads `kc topics` whole, across topics too, and records every disagreeing pair, including inside one file and with historical claims. `decision-points` and `candidates` are prompts, not the task.
-4. Measure with `recall --labels` when a labelled set exists. Labels are written blind to `kc` output, with the pass mark fixed first. This pipeline reached 44.4% on the MCP set: one relate pass is not enough, so never report conflicts as complete.
+4. Measure with `recall --labels` when a labelled set exists. Labels are written blind to `kc` output, with the pass mark fixed first. This pipeline reached 44.4% on the MCP set, and 62.2% after a pass per file (`topics --by-file`, reading sources beside claims) plus a cross-file pass. Within-file reached 87.5%, so keep that pass; cross-file reached 25%. Never report conflicts as complete.
 
 ## External verification (not yet in the kernel)
 
@@ -138,7 +138,7 @@ never stored.
 Budget: kernel commands under 2 s for a 50-document project; the agent's extraction is the expensive part. Measured 2026-10-27 on an M2 Max, Python 3.14.5: the 42-test suite in 1.1-1.8 s; `inventory`
 dry run over the MCP post-migration audit corpus (24 files, 213 sections) 0.14 s. Every command reports `elapsed_s`. Re-measure when a project passes 500 documents.
 
-Measured 2026-11-01 on a copy of the Continuum ledger (45 sources, 3,496 claims): `candidates` 1.9 s, within budget after P25, `decision-points` 0.09 s, `validate` 0.26 s (0.8 s with rendered pages), `render` 0.55 s, others under 0.1 s. `drift` 0.25 s. The 99-test suite takes 4.4 s.
+Measured 2026-11-01 on a copy of the Continuum ledger (45 sources, 3,496 claims): `candidates` 1.9 s, within budget after P25, `decision-points` 0.09 s, `validate` 0.26 s (0.8 s with rendered pages), `render` 0.55 s, others under 0.1 s. `drift` 0.25 s. The 100-test suite takes 4.4 s.
 
 ## Settled source conflicts
 

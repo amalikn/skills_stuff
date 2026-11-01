@@ -18,7 +18,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 - Pack built 2026-10-27: `SKILL.md` (alias skill-kc), 8 references, 4 schemas, `scripts/knowledge_curator.py` (kc) over `knowledge_curator_lib/`, 42 tests, `just check` green.
 - Installed as symlinks in `~/.claude/skills` and `~/.codex/skills`; `/skill-kc` alias in `~/.claude/CLAUDE.md`.
-- 2026-11-01: Continuum fixes built (P1-P4, P8-P10, P12-P16, P18-P21, P25-P28), `kc aliases`, `topics`, `recall`, 99 tests, `just check` green; gate 0 failed on the labelled MCP pilot, 44.4% against 80% (references/evaluation.md).
+- 2026-11-01: Continuum fixes built (P1-P4, P8-P10, P12-P16, P18-P21, P25-P28), `kc aliases`, `topics`, `recall`, 100 tests, `just check` green; gate 0 failed on the labelled MCP pilot, 62.2% against 80% after two routes (references/evaluation.md).
 - Real use: Continuum only (45 sources, 3,496 claims). `render`, `promote`, `archive-plan`, slurp `intake` have not served a real project.
 - v2 spec catalogued 2026-10-27 (`docs/knowledge-curator-foss-implementation-spec-v2.md`); conflicts V1-V9 settled; staged roadmap in references/feature-inventory.md, nothing built.
 
@@ -26,6 +26,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 - `candidates` 1.9 s at 3,496 claims, within budget; `kc drift` precision is low, advisory only.
 - Not built: P5, P6, P7, P17, P22-P24 (references/feature-inventory.md, Fixes). P25's predicate list came from Continuum's counts; `must` stays in conflict detection.
+- Audit project README warning on `mcp-data` written, not committed (operator asked for the note, not a commit).
 - Continuum recorded the operator rulings of 2026-11-01 21:41 (55 decided, 45 open); `cf-73c4a38aa4` left open by the operator. `cl-1334d9309fb3` successor repaired live (`dr-bc8472c67d49`, P27). Stale conflicts `cf-3a630057ef` and `cf-7076d1e08a` not yet reviewed there.
 - MCP audit cases A-F: optional since 2026-11-01.
 - `kc amend` proven live 2026-11-01 21:12: Continuum recorded `cl-88cec07d70a0` and `cl-f3c2d0e95086` under `cf-d846a9dbb3` (`dr-0c0fe64c12f5`, `dr-cc7b80dd7306`); `validate` ok, 61 decisions.
@@ -55,7 +56,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
-1. Operator to choose how to raise recall (a second relate pass, a pass per file for within-file conflicts, P30-P32); rerun `kc recall` on `skills-data/skill-knowledge-curator/mcp-pilot-20261101/`. P29, v2 stage 1 and slurp Step 4b held.
+1. Stopped by operator rule after two routes: operator decides the next step (cross-file and time-evolution are weakest; review load is 184 conflicts). `kc recall` reruns on `skills-data/skill-knowledge-curator/mcp-pilot-20261101/`. P29, v2 stage 1 and slurp Step 4b held.
 
 ## Memory pointers — KEEP
 

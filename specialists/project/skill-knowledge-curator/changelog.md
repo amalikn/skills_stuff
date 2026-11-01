@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 23:15 (learned, operator request): `kc topics --by-file`; second relate route on the MCP pilot, 62.2% against the 80% mark, within-file 87.5%, cross-file 25%; stopped by operator rule, mark kept. 100 tests. `references/evaluation.md`.
 - 2026-11-01 23:07 (feature): `scripts/restate_byte_copies.py`, `just restate-copies`; `kc topics`; `references/workflow.md` gains the parallel, consolidate and relate procedure. 99 tests. Whole-chat record: `docs/session-record-20261101_2307.md`, including incidents (OPA refusal, patch aborts, corrected claims, the premature gate pass).
 - 2026-11-01 23:04 (learned, operator request): gate 0 failed: blind labelled set of 54, recall 44.4% of 45 after aliases and a relate agent, all three P0 labels missed; P29, v2 stage 1 and slurp Step 4b not started. Findings P30-P32. `references/evaluation.md`.
 - 2026-11-01 22:32 (feature, operator request): `kc aliases` (consolidation for comparison only, new `.kc/aliases.jsonl`, revocable) and `kc recall` (labelled recall harness); new schemas `alias-input`, `gold-conflict`; 96 tests.

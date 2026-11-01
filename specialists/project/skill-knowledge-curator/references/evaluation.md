@@ -7,7 +7,7 @@ Scope: The merged acceptance catalog, which test covers each item and its status
 Last reviewed: 2026-11-01
 Summary: >-
   One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (99 tests);
-  gate 0 failed on the labelled MCP pilot, 44.4% recall (2026-11-01); semantic recall is not measured. Settles source conflict C9.
+  gate 0 failed on the labelled MCP pilot, 62.2% recall after two routes (2026-11-01); semantic recall is not measured. Settles source conflict C9.
 ---
 
 # Evaluation
@@ -160,7 +160,7 @@ cross-source conflict pass by topic in addition to `kc candidates`.
 ## Gate 0 and the rerun (2026-11-01)
 
 Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP
-cases A-F become optional. **Result: passed, then reopened by the operator (2026-11-01) after the MCP audit pilot below showed the probe assumed a shared topic; then failed against the labelled mark (44.4% against 80%).** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
+cases A-F become optional. **Result: passed, then reopened by the operator (2026-11-01) after the MCP audit pilot below showed the probe assumed a shared topic; then failed against the labelled mark (62.2% against 80%).** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
 
 Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read only):
 
@@ -245,6 +245,10 @@ The strict rule undercounts, and this is secondary, not the gate: the agent reco
 per-server startup tables (G39-G41) and cross-file counts. Total agent cost of the pilot: about 1.08M tokens (extraction 608k, labels 189k, consolidation 114k, relate 170k).
 
 Case status after relate: A, 19 `time-evolution` relations, each with a verified excerpt. B and C, nothing decided by number, both sides kept. D, synthetic file not rerun through relate. E and F pass.
+
+Second route (operator, 2026-11-01): three within-file passes and one cross-file pass, reading sources beside claims, same labels and mark; 121 new relations, 511k tokens, pilot total about 1.59M. **Failed again: 62.2% (28 of 45), blocking 62.1%, with
+two of three P0 labels missed; stopped and the mark kept, as the operator ruled.** By kind: within-file 87.5% (from 43.8%), time-evolution 60%, authority 50%, cross-file 25%. Of 17 not reached, 3 were never extracted, 1 sits inside one claim, and 7 have both
+sides in other relations (secondary, not the gate). Review load grew: 184 open conflicts over 382 claims, 74 read stale, precision unmeasured. A pass per file is worth keeping; cross-file and time-evolution remain the weak kinds.
 
 New findings: P30, 31 of 65 new conflicts read stale at once, because one relate batch held a `time-evolution` and a `true-conflict` on the same claims. P31, `time-evolution` needs a stated replacement, and many real retained-then-retired pairs
 have none, so they land as `true-conflict`. P32, the agent could not tell which byte copy to cite.
