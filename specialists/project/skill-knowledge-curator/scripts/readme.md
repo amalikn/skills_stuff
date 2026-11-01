@@ -36,6 +36,9 @@ Summary: >-
 | `group-review` | group, `--reason`                                    | `.kc/relations.jsonl`                                           | records a group as classified; a new claim reopens itself  |
 | `aliases`      | `--file` (schemas/alias-input.schema.json)           | `.kc/aliases.jsonl`                                             | comparison only; claims never change; `revoked` undoes one |
 | `recall`       | `--labels` (schemas/gold-conflict.schema.json)       | -                                                               | read-only; scores labelled conflicts against review        |
+| `status-map`   | -                                                    | -                                                               | read-only; each status cites its line                      |
+| `triage`       | `--undo RUN`                                         | `.kc/conflicts.jsonl`                                           | dismisses noise with rule and run; P0 never clears         |
+| `sample`       | `--size`, `--seed`, `--status`, `--exclude`, `--score` | `.kc/reports/sample-<seed>.json`                              | blind cards; Wilson interval                               |
 | `drift`        | `--path GLOB`                                        | -                                                               | read-only; advisory, flags and never refuses               |
 | `relate`       | `--file`                                             | `.kc/relations.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | whole batch refused on any error                           |
 | `review`       | -                                                    | `.kc/reports/review-queue.md`                                   | exit 2 while conflicts are open                            |
@@ -78,6 +81,7 @@ earlier one.
 | `amendments.py`                                               | `kc amend`: add a claim to a conflict, repair a successor                            |
 | `drift.py`, `stale.py`                                        | Claim text against cited lines; open conflicts overtaken elsewhere                   |
 | `aliases.py`, `recall.py`                                     | Consolidation aliases for comparison; labelled recall harness                        |
+| `status_map.py`, `triage.py`, `sampling.py`                   | What a document says of itself; noise gates; blind cards and intervals               |
 | `render.py`                                                   | Deterministic pages and index.json; secret scan                                      |
 | `promote.py`                                                  | Gates and promotion records                                                          |
 | `archive_plan.py`                                             | Candidates, referrers, restore rehearsal                                             |

@@ -26,12 +26,13 @@ from . import (
   report,
   settings,
   state,
+  status_map,
   validate,
   worksheet,
   yaml_io,
 )
 from .command_support import Noop, now, reject
-from .commands_review import cmd_aliases, cmd_amend, cmd_decide, cmd_group_review
+from .commands_review import cmd_aliases, cmd_amend, cmd_decide, cmd_group_review, cmd_sample, cmd_triage
 from .errors import ConflictBlocker, InputError, ReviewNeeded, SourceChanged, ValidationFailed
 
 
@@ -259,6 +260,9 @@ COMMANDS = {
   "decision-points": lambda root, a: decision_points.decision_points(state.load(root)),
   "topics": lambda root, a: decision_points.by_file(state.load(root)) if a.by_file else decision_points.topics(state.load(root)),
   "aliases": cmd_aliases,
+  "status-map": lambda root, a: {"files": status_map.files(state.load(root))},
+  "triage": cmd_triage,
+  "sample": cmd_sample,
   "recall": lambda root, a: recall.score(state.load(root), Path(a.labels)),
   "group-review": cmd_group_review,
   "drift": lambda root, a: drift.report(state.load(root), a.path),

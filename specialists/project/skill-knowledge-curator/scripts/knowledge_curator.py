@@ -10,7 +10,8 @@ deterministic kernel that checks and records it (references/workflow.md).
 Usage:
   python scripts/knowledge_curator.py <command> --project <dir> [options]   (or `just kc <command> <dir> ...`)
   commands: init, inventory, worksheet, sections, vocabulary, coverage, claims, candidates, decision-points, relate, review,
-            decide, amend, group-review, aliases, topics, recall, drift, render, promote, archive-plan, query, intake, validate, report
+            decide, amend, group-review, aliases, status-map, triage, sample, topics, recall, drift, render, promote,
+            archive-plan, query, intake, validate, report
   Example: python scripts/knowledge_curator.py inventory --project tests/fixtures/pilot
 
 Inputs:
@@ -19,7 +20,8 @@ Inputs:
   --payload FILE     intake payload (schemas/intake-payload.schema.json)
   KC_ACTOR           name recorded on decisions and promotions (default project-owner)
 
-Safety: read-only by default. With --apply: init writes .kc/config.yaml; inventory, claims, relate, decide, amend, group-review, aliases and promote append to
+Safety: read-only by default. With --apply: init writes .kc/config.yaml; inventory, claims, relate, decide, amend, group-review,
+aliases, triage and promote append to
 .kc/*.jsonl; render writes knowledge/ pages (never a promoted page) and .kc/proposals/; review and archive-plan write a report
 under .kc/. Nothing ever edits, moves or deletes a source document or a governing file, commits or pushes.
 
@@ -53,25 +55,23 @@ class Parser(argparse.ArgumentParser):
     self.exit(1, f"{self.prog}: error: {message}\n")
 
 
-def build_parser() -> Parser:
-  """Command-line parser.
+def _add_reading_options(sub) -> None:
+  """Options of the read-side commands.
 
-  Returns:
-    The parser.
+  Args:
+    sub: the subparsers object.
   """
-  p = Parser(prog="kc", description="Knowledge Curator: deterministic kernel. Read-only unless --apply.")
-  sub = p.add_subparsers(dest="command", required=True, parser_class=Parser)
-  for name in COMMANDS:
-    s = sub.add_parser(name)
-    s.add_argument("--project", required=True, help="project root")
-    if name in ("init", "inventory", "claims", "relate", "review", "decide", "amend", "group-review", "aliases", "render", "promote", "archive-plan"):
-      s.add_argument("--apply", action="store_true", help="write (default: plan only)")
-    if name in ("claims", "relate", "aliases"):
-      s.add_argument("--file", required=True)
   sub.choices["claims"].add_argument("--coverage", action="store_true", help="also report per-file sections closed and left")
   sub.choices["worksheet"].add_argument("--batch", type=int, default=1)
   sub.choices["recall"].add_argument("--labels", required=True, help="gold conflicts, JSON array (schemas/gold-conflict.schema.json)")
   sub.choices["topics"].add_argument("--by-file", action="store_true", help="claims under each cited file, in line order")
+  sub.choices["triage"].add_argument("--undo", help="reopen what this run_id dismissed")
+  sa = sub.choices["sample"]
+  sa.add_argument("--size", type=int, default=40)
+  sa.add_argument("--seed", type=int, default=20261101)
+  sa.add_argument("--status", default="open", help="conflict status to draw from, e.g. dismissed")
+  sa.add_argument("--exclude", help="JSON file of records with conflict_id to leave out")
+  sa.add_argument("--score", help="verdicts JSON: print precision with a Wilson interval")
   gr = sub.choices["group-review"]
   gr.add_argument("group", help="group_id from decision-points")
   gr.add_argument("--reason", required=True)
@@ -79,6 +79,14 @@ def build_parser() -> Parser:
     sub.choices[name].add_argument("--path", help="glob limiting the files, e.g. 'docs/*.md'")
   sub.choices["candidates"].add_argument("--limit", type=int, help="return only the top pairs; counts still cover all")
   sub.choices["validate"].add_argument("--strict", action="store_true", help="exit 3 while any section is pending")
+
+
+def _add_review_options(sub) -> None:
+  """Options of the commands that record review outcomes.
+
+  Args:
+    sub: the subparsers object.
+  """
   d = sub.choices["decide"]
   d.add_argument("conflict")
   d.add_argument("action", choices=settings.ACTIONS)
@@ -110,6 +118,40 @@ def build_parser() -> Parser:
   q.add_argument("--limit", type=int, default=10)
   q.add_argument("--history", action="store_true", help="include superseded and historical claims")
   sub.choices["intake"].add_argument("--payload", required=True)
+
+
+def build_parser() -> Parser:
+  """Command-line parser.
+
+  Returns:
+    The parser.
+  """
+  p = Parser(prog="kc", description="Knowledge Curator: deterministic kernel. Read-only unless --apply.")
+  sub = p.add_subparsers(dest="command", required=True, parser_class=Parser)
+  for name in COMMANDS:
+    s = sub.add_parser(name)
+    s.add_argument("--project", required=True, help="project root")
+    if name in (
+      "init",
+      "inventory",
+      "claims",
+      "relate",
+      "review",
+      "decide",
+      "amend",
+      "group-review",
+      "aliases",
+      "triage",
+      "sample",
+      "render",
+      "promote",
+      "archive-plan",
+    ):
+      s.add_argument("--apply", action="store_true", help="write (default: plan only)")
+    if name in ("claims", "relate", "aliases"):
+      s.add_argument("--file", required=True)
+  _add_reading_options(sub)
+  _add_review_options(sub)
   return p
 
 

@@ -189,7 +189,7 @@ def group_review(st: State, group_id: str, reason: str) -> dict:
   raise InputError(f"unknown or already reviewed group {group_id}")
 
 
-def _byte_copies(st: State, claim: dict) -> list[str]:
+def byte_copies(st: State, claim: dict) -> list[str]:
   """Cited paths that repeat another cited file's bytes: the shortest path is kept, so a view cites one file per byte group (P32).
 
   Args:
@@ -219,7 +219,7 @@ def topics(st: State) -> dict:
     disp = st.disposition(cid)
     if disp not in ("DUPLICATE", "REJECTED"):
       view = compared(st, c)
-      copies = _byte_copies(st, c)
+      copies = byte_copies(st, c)
       lines = sorted({f"{e['path']}:{e['line_start']}-{e['line_end']}" for e in c["evidence"] if e["path"] not in copies})
       row = {"claim_id": cid, "subject": view["subject"], "predicate": view["predicate"], "text": c["claim_text"]}
       out.setdefault(view["topic_key"], []).append(row | {"disposition": disp, "kind": c["kind"], "lines": lines, "byte_copies": copies})

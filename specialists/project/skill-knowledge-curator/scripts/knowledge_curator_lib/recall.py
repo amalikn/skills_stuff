@@ -5,6 +5,7 @@ its sides. A side no claim cites is not_extracted: an extraction miss, not a pai
 """
 
 from collections import Counter
+from itertools import combinations
 from pathlib import Path
 
 from . import candidates, claims, decision_points, schema
@@ -28,23 +29,27 @@ def _citing(st: State, side: dict) -> set[str]:
   return {cid for cid, c in st.claims.items() if any(e["path"] == side["path"] and e["line_start"] <= side["line"] <= e["line_end"] for e in c["evidence"])}
 
 
-def status(label: dict, st: State, reached: set[frozenset]) -> str:
+def status(label: dict, st: State, reached: set[frozenset], dismissed: set[frozenset]) -> str:
   """Outcome for one label.
 
   Args:
     label: the gold conflict.
     st: current state.
     reached: pairs that reach review.
+    dismissed: pairs triage cleared.
 
   Returns:
-    reached, missed, same_claim or not_extracted.
+    reached, dismissed, missed, same_claim or not_extracted.
   """
   left, right = _citing(st, label["a"]), _citing(st, label["b"])
   if not left or not right:
     return "not_extracted"
   if left & right:
     return "same_claim"
-  return "reached" if any(frozenset((a, b)) in reached for a in left for b in right) else "missed"
+  pairs = {frozenset((a, b)) for a in left for b in right}
+  if pairs & reached:
+    return "reached"
+  return "dismissed" if pairs & dismissed else "missed"
 
 
 def _rate(rows: list[dict]) -> float:
@@ -77,7 +82,10 @@ def score(st: State, path: Path) -> dict:
   if bad:
     raise InputError("labels rejected:\n  " + "\n  ".join(bad))
   reached = {frozenset(p["claims"]) for p in candidates.pairs(st)["pairs"]} | candidates.classified(st) | decision_points.review_pairs(st)
-  rows = [{"id": r["id"], "kind": r["kind"], "severity": r["severity"], "status": status(r, st, reached)} for r in labels if not r.get("excluded")]
+  dismissed = {frozenset(p) for c in st.conflicts.values() if c["status"] == "dismissed" for p in combinations(c["claims"], 2)}
+  live = {frozenset(p) for c in st.open_conflicts() for p in combinations(c["claims"], 2)}
+  reached = (reached - dismissed) | live
+  rows = [{"id": r["id"], "kind": r["kind"], "severity": r["severity"], "status": status(r, st, reached, dismissed)} for r in labels if not r.get("excluded")]
   blocking = [r for r in rows if r["severity"] in GATE_BLOCKING]
   summary = {
     "total": len(rows),

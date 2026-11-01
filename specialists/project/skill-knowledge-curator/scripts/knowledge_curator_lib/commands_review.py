@@ -4,9 +4,10 @@ Imported by commands.py, not run. Each function takes the project root and the p
 KcError subclass. Safety: writes only through ledger.py, and only when args.apply is set.
 """
 
+import json
 from pathlib import Path
 
-from . import aliases, amendments, claims, decision_points, decisions, ledger, settings, state
+from . import aliases, amendments, claims, decision_points, decisions, ledger, sampling, settings, state, triage
 from .command_support import Noop, now, reject
 from .errors import InputError
 
@@ -74,6 +75,47 @@ def cmd_amend(root: Path, args) -> dict:
     res = amendments.amend(st, args.conflict, args.add_claim, args.supersede, args.reason, who, now())
   _record_decision(root, res, args.apply)
   return {"applied": args.apply, "decision": res.decision}
+
+
+def cmd_triage(root: Path, args) -> dict:
+  """Sort open conflicts, dismissing noise with --apply; --undo reopens one run's dismissals.
+
+  Args:
+    root: project root.
+    args: parsed arguments.
+
+  Returns:
+    Result.
+  """
+  st = state.load(root)
+  if args.undo:
+    events = triage.undo(st, args.undo)
+    out = {"run_id": args.undo, "reopened": len(events)}
+  else:
+    out = triage.plan(st, now().isoformat(timespec="seconds"))
+    events = out.pop("events")
+    out["dismissed"] = len(events)
+  with ledger.write_lock(root) if args.apply else Noop():
+    ledger.append(root, "conflicts", events, args.apply)
+  return {"applied": args.apply, **out}
+
+
+def cmd_sample(root: Path, args) -> dict:
+  """Draw blind cards, or score verdicts; --apply saves the cards under .kc/reports/.
+
+  Args:
+    root: project root.
+    args: parsed arguments.
+
+  Returns:
+    Result.
+  """
+  if args.score:
+    return sampling.score(Path(args.score))
+  res = sampling.cards(state.load(root), args.size, args.seed, args.status, Path(args.exclude) if args.exclude else None)
+  with ledger.write_lock(root) if args.apply else Noop():
+    ledger.write_text(root, f"{settings.KC_DIR}/reports/sample-{args.seed}.json", json.dumps(res, indent=1) + "\n", args.apply)
+  return res
 
 
 def cmd_aliases(root: Path, args) -> dict:

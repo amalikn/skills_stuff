@@ -30,7 +30,11 @@ def build(st: State) -> dict:
     "sources": {"live": len(live), "unsupported": sum(s["ingestion_state"] == "unsupported" for s in live.values())},
     "coverage": claims_mod.coverage(st)["counts"],
     "claims": {"total": len(st.claims), "by_disposition": dict(sorted(disp.items()))},
-    "conflicts": {"open_by_severity": dict(sorted(sev.items())), "resolved": sum(c["status"] == "resolved" for c in st.conflicts.values())},
+    "conflicts": {
+      "open_by_severity": dict(sorted(sev.items())),
+      "resolved": sum(c["status"] == "resolved" for c in st.conflicts.values()),
+      "dismissed": sum(c["status"] == "dismissed" for c in st.conflicts.values()),
+    },
     "stale_conflicts": stale.stale_conflicts(st),
     "decisions": len(st.decisions),
     "promoted_pages": sorted(p for p, r in st.promotions.items() if r["status"] == "promoted"),
