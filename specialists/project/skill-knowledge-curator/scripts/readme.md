@@ -47,6 +47,10 @@ Summary: >-
 | `validate`     | `--strict`                                           | -                                                               | read-only; exit 3 or 5 on errors                           |
 | `report`       | -                                                    | -                                                               | read-only                                                  |
 
+`ledger_diff.py <before> <after>` (`just ledger-diff`) compares two projects' folded ledgers: claim dispositions, successors, conflict status and members. Read-only, standard library. Exit 0
+match, 1 differ, 2 missing ledger. Rehearse a decision sequence on a scratch copy with real sources, then diff against live before `--apply`; a single dry run cannot show a later step undoing an
+earlier one.
+
 ## Library modules
 
 `scripts/knowledge_curator_lib/`, lowest layer first. Feature modules depend on the layers below, never on each other's private helpers.

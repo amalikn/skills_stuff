@@ -39,6 +39,10 @@ _require-venv:
 kc command project *ARGS: _require-venv
     @{{py}} scripts/knowledge_curator.py "$1" --project "$2" "${@:3}"
 
+# Diff two projects' folded ledgers: rehearse decisions on a scratch copy, compare before applying (read-only; exit 1 = they differ).
+ledger-diff before after: _require-venv
+    @{{py}} scripts/ledger_diff.py "{{before}}" "{{after}}"
+
 # Run the unit and end-to-end tests (read-only; temporary copies only).
 test: _require-venv
     @{{py}} -m unittest discover -s tests
