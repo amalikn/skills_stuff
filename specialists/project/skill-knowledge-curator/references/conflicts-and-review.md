@@ -124,7 +124,8 @@ Trying `amend` on a scratch copy needs a real copy of the sources, because it re
 
 `candidates.multi_valued_predicates` lists predicates that hold many values, so a differing object alone is no signal; negation and numbers still pair them, so they stay in conflict detection. Set it in
 `.kc/config.yaml`; the list replaces the default. When a coordinator reads a decision point whole, `kc group-review <group_id> --reason ... --apply` records it as classified; a later claim reopens only its
-own pairs. `review` marks a card **Stale** when a member or the recommendation is no longer live, and `kc report` lists these as `stale_conflicts`.
+own pairs. `decision-points` also returns `word_groups`: claims from different sources sharing a rare subject word, whatever their topic, for agents who worked apart. They share a word, not a question, so read them
+after key groups; `candidates.subject_word_floor` and `subject_word_share` set the rarity limit, and `group-review` clears them too. `review` marks a card **Stale** when a member or the recommendation is no longer live, and `kc report` lists these as `stale_conflicts`.
 
 ## Answering while unresolved
 

@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 22:11 (feature, operator request): P28 subject-word groups in `kc decision-points`; gate 0 reopened by the operator; floor 15 from a measured sweep, recall about 12%. 86 tests. `references/evaluation.md`.
 - 2026-11-01 22:08 (learned, operator request): MCP audit pilot in `references/evaluation.md`: 382 claims, 607,527 agent tokens; cases E, F pass, cross-agent recall fails (P28, P29), which undercuts the gate 0 probe.
 - 2026-11-01 21:50 (feature, operator request): P25 multi-valued predicates and `kc group-review`, P18 `kc drift` and claim warnings, P21 `stale_conflicts` in `report`, `validate` and review cards; new modules `drift.py`, `stale.py`. 82 tests. On Continuum: review prompts 1,158 to 607 claims, `candidates` 1.9 s, within budget. `references/evaluation.md`.
 - 2026-11-01 21:44 (fix, Continuum report): P27, `decide` keeps a successor set elsewhere (`kept_successors`); `kc amend --set-successor` repairs a link; new module `amendments.py`. 71 tests. `references/evaluation.md`.

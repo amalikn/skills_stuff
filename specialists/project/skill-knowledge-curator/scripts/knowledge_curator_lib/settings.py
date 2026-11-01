@@ -70,6 +70,9 @@ DEFAULT_CONFIG = {
     "fts_common_share": 0.1,
     "subject_ratio": 85,
     # Predicates that hold many values, so a differing object alone is no disagreement; negation and numbers still pair them (P25).
+    # A subject word on at most this share of live claims (never fewer than subject_word_floor) groups claims across topics (P28).
+    "subject_word_share": 0.03,
+    "subject_word_floor": 15,
     "multi_valued_predicates": ["must", "must not", "is tested by", "has open question", "has risk", "is out of scope", "serves"],
   },
   "worksheet": {"max_sections": 25, "max_chars": 12000, "max_vocabulary": 200},

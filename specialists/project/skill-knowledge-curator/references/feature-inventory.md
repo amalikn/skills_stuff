@@ -68,7 +68,7 @@ Source: [v2 spec](../docs/knowledge-curator-foss-implementation-spec-v2.md), bui
 
 Rules for every stage:
 
-- **Gate 0:** passed 2026-11-01 on the Continuum rerun ([evaluation.md](evaluation.md), redefined by the operator); MCP cases A-F are optional.
+- **Gate 0:** reopened 2026-11-01 by the operator after the MCP audit pilot ([evaluation.md](evaluation.md)); v2 stages and slurp Step 4b are held.
 - One stage at a time; a stage is done when its listed V2 tests pass, `just check` is green and its runtime is measured against a stated budget.
 - Before any new dependency: pin the exact version and check its current licence, platforms and transitive runtime from upstream (v2 section 4); record it in `requirements*.txt` and a seam module.
 - v1 stays the base: two-axis status (C3), jsonschema, the single `ledger.py` writer, `--apply` gating, promotion gates. v2 additions are optional fields, optional installs or new seams.
@@ -102,7 +102,7 @@ sits under the data, cache and runtime routing; whether any slurp step already i
 ## Fixes from the Continuum pilot
 
 From [evaluation.md](evaluation.md), "Pilot on the Continuum corpus" (2026-10-30). **Built 2026-11-01** (tests `tests/test_continuum_recall.py`, `test_continuum_tooling.py`, each failing first):
-P1-P4, P8-P10, P12-P16, P19, P20, and P18, P21, P25-P27 the same day. **Not built:** P5, P6, P7, P17, P22-P24; each needs a test that fails first.
+P1-P4, P8-P10, P12-P16, P19, P20, and P18, P21, P25-P28 the same day. **Not built:** P5, P6, P7, P17, P22-P24; each needs a test that fails first.
 
 P1 went beyond the row below: same-topic cross-source pairs need only a shared subject word, because fuzzy predicates missed the real wording. P12 also ignores provenance keys when comparing
 scopes, which repairs existing ledgers. P15 dropped `archive` from the default and excludes `archive_dir` by path, and warns on any other excluded folder holding Markdown.
@@ -134,7 +134,7 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | P25 | Mark multi-valued predicates in config so a differing object alone is no signal, without exempting them from conflict detection: `must` holds 17 Continuum conflict memberships and `must not` 4. Start from `must`, `must not`, `is tested by`, `has open question`, `has risk`, `is out of scope`, `serves`; not `is implemented with`, `contains`, `exposes`, `has exit criterion`, `has decision`, `is defined as`. Let a reviewed group be recorded as one classification |
 | P26 | `decide` refuses to revive a claim superseded outside this conflict unless `--override-supersession`, which the decision records; `validate` warns on past revivals with no override |
 | P27 | `decide` keeps a successor set by another conflict and lists it in `kept_successors`; `kc amend <cf> --set-successor <claim> --successor <id>` repairs a link, append-only |
-| P28 | Design open: group topic-free pairs by rare subject word in `decision-points`, or run a consolidation pass over topics and subjects after parallel extraction, or apply batches in sequence so each sees the vocabulary |
+| P28 | Built: `decision-points` returns `word_groups` around a rare subject word (operator chose this over a consolidation pass or sequential batches). Recall stays low; a consolidation pass is the next option |
 | P29 | Pair same-source claims on one rare subject word with differing objects, ranked low |
 | P24 | Port with P17: conformance into `claims`, verification into the external-fact record |
 

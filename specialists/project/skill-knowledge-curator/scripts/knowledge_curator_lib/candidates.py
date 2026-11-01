@@ -38,7 +38,7 @@ def situation(scope: dict) -> dict:
   return {k: v for k, v in scope.items() if k.lower() not in settings.PROVENANCE_SCOPE_KEYS}
 
 
-def _overlaps(a: dict, b: dict) -> bool:
+def overlaps(a: dict, b: dict) -> bool:
   """Whether two situations can be the same: every key both name has the same value (a missing key matches any).
 
   Args:
@@ -157,7 +157,7 @@ def signals(a: dict, b: dict, ratio: float, subject_ratio: float = 85) -> list[s
   out = []
   same_subject = norm_cached(a["subject"]) == norm_cached(b["subject"])
   same_key = same_subject and norm_cached(a["predicate"]) == norm_cached(b["predicate"])
-  overlap = _overlaps(a["situation"], b["situation"])
+  overlap = overlaps(a["situation"], b["situation"])
   differ = norm_cached(a["object"]) != norm_cached(b["object"])
   many = a["multi"] and b["multi"]
   if same_key and overlap and differ and not many:

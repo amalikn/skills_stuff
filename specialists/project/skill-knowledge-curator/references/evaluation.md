@@ -6,8 +6,8 @@ Authority: local-supplement; handoff section 8 (T01-T14), design doc sections 12
 Scope: The merged acceptance catalog, which test covers each item and its status, the semantic evaluation still owed, and the pilot plan on the MCP audit corpus
 Last reviewed: 2026-11-01
 Summary: >-
-  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (82 tests);
-  gate 0 passed on the Continuum rerun (2026-11-01); semantic recall is not measured. Settles source conflict C9.
+  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (86 tests);
+  gate 0 reopened after the MCP audit pilot (2026-11-01); semantic recall is not measured. Settles source conflict C9.
 ---
 
 # Evaluation
@@ -157,7 +157,7 @@ cross-source conflict pass by topic in addition to `kc candidates`.
 ## Gate 0 and the rerun (2026-11-01)
 
 Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP
-cases A-F become optional. **Result: passed, then undercut by the MCP audit pilot below: the probe assumed a shared topic.** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
+cases A-F become optional. **Result: passed, then reopened by the operator (2026-11-01) after the MCP audit pilot below showed the probe assumed a shared topic. Reopened until cross-agent pairs are found on the MCP ledger.** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
 
 Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read only):
 
@@ -209,6 +209,18 @@ the same rule adds 12,445 pairs, so it needs grouping, not more raw pairs.
 
 `kc drift` flagged 42 of 382 (11%); all 8 sampled were heading, table-label or list context, so precision is low here too. Agents used it to reword claims, which is useful; one left 69 warnings alone.
 Step9 and step11 each contradict themselves on `mcp-data`; two agents noticed, and `kc` does not surface it.
+
+Subject-word groups built the same day (P28): cross-source claims sharing a subject word within the rarity limit form a `word_groups` entry in `decision-points`, adding no raw pairs. Floor sweep on the MCP ledger:
+
+| Floor | Word pairs | Voicemode combinations hit, of 288 | `mcp-data` hit, of 105 |
+| --- | --- | --- | --- |
+| 5 | 387 | 12 | 9 |
+| 15 (default) | 929 | 35 | 9 |
+| 30 | 2,349 | 72 | 21 |
+| 60 | 2,695 | 72 | 21 |
+
+Cross-agent pairs are found now (none before), but recall stays low, near 12%, and about 228 groups over 270 live claims is little reduction for a reviewer. The combinations come from a text match, so they are a
+proxy and not a labelled set. Continuum gains 146 word groups (about 6,800 pairs) in 0.11 s. Word groups stay a prompt to read, weaker than key groups.
 
 ## Release gate
 

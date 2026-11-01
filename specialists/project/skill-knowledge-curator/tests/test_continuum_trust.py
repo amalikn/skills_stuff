@@ -1,4 +1,4 @@
-"""Continuum pilot regressions: review prompts that mean something, claim drift, stale conflicts (P18, P21, P25).
+"""Continuum pilot regressions: review prompts that mean something, claim drift, stale conflicts (P18, P21, P25, P28).
 
 Each test failed before its fix (references/evaluation.md).
 
@@ -76,6 +76,67 @@ class GroupReviewTest(FixCase, unittest.TestCase):
     """An unknown group exits 1."""
     self.pipeline("related")
     self.assertEqual(self.kc("group-review", "dp-nope", "--reason", "r")[0], 1)
+
+
+SHIM_A = {"text": "The voicemode shims are retained.", "subject": "voicemode shims", "predicate": "status", "object": "retained", "topic": "voicemode.step8"}
+SHIM_B = {
+  "text": "The voicemode compatibility links are retired.",
+  "subject": "voicemode compatibility links",
+  "predicate": "ended as",
+  "object": "retired",
+  "topic": "shims.final",
+}
+
+
+class SubjectWordTest(FixCase, unittest.TestCase):
+  """P28: agents working apart share no topic; a rare subject word still groups their claims, without adding raw pairs."""
+
+  def word_group(self, word: str) -> dict | None:
+    """The subject-word group for a word.
+
+    Args:
+      word: the word.
+
+    Returns:
+      The group, or None.
+    """
+    return next((g for g in self.kc("decision-points")[1]["word_groups"] if g["word"] == word), None)
+
+  def test_different_topics_group_on_a_rare_word(self):
+    """Different topic, subject and predicate across sources form a group; candidates stays as it was."""
+    self.pipeline("related")
+    a, b = self.two_sources(SHIM_A, SHIM_B)
+    group = self.word_group("voicemode")
+    self.assertEqual({c["claim_id"] for c in group["claims"]}, {a, b})
+    self.assertEqual(group["unclassified_pairs"], 1)
+    self.assertFalse(any(set(p["claims"]) == {a, b} for p in self.kc("candidates")[1]["pairs"]))
+
+  def test_group_review_clears_a_word_group(self):
+    """A word group can be reviewed whole."""
+    self.pipeline("related")
+    self.two_sources(SHIM_A, SHIM_B)
+    gid = self.word_group("voicemode")["group_id"]
+    self.assertEqual(self.kc("group-review", gid, "--reason", "read both", "--apply")[0], 0)
+    self.assertIsNone(self.word_group("voicemode"))
+
+  def test_same_source_and_multi_valued_stay_out(self):
+    """One source, or two claims on a multi-valued predicate, make no word group."""
+    self.pipeline("related")
+    self.two_sources({**SHIM_A, "predicate": "must"}, {**SHIM_B, "predicate": "must"})
+    self.assertIsNone(self.word_group("voicemode"))
+
+  def test_common_word_is_not_a_group(self):
+    """A word on more claims than the rarity limit makes no group."""
+    self.pipeline("related")
+    cfg = self.root / ".kc" / "config.yaml"
+    data = lib("yaml_io").load(cfg.read_text())
+    data["candidates"]["subject_word_floor"] = 5
+    cfg.write_text(lib("yaml_io").dump(data))
+    self.two_sources(SHIM_A, SHIM_B)
+    path = self.add_doc("many.md", ["# Doc", ""] + [f"Fact {n} of voicemode here." for n in range(8)])
+    rows = [make_claim(path, 3 + n, f"Fact {n} of voicemode here.", f"voicemode item {n}", "is", f"thing {n}", "many.rows") for n in range(8)]
+    self.ingest(rows, "--apply")
+    self.assertIsNone(self.word_group("voicemode"))
 
 
 class DriftTest(FixCase, unittest.TestCase):
