@@ -6,8 +6,8 @@ promoted pages unchanged since promotion, knowledge pages matching a fresh rende
 Safety: read-only.
 """
 
+from . import candidates, ids, inventory, render, settings
 from . import claims as claims_mod
-from . import ids, inventory, render, settings
 from .errors import KcError
 from .evidence import Reader, recheck
 from .state import State
@@ -54,6 +54,14 @@ def _record_checks(st: State, out: dict) -> None:
       out["errors"].append(f"{cid}: CURRENT without evidence or decision (INV-005)")
   for cf in st.conflicts.values():
     out["errors"].extend(f"{cf['conflict_id']}: unknown claim {c}" for c in cf["claims"] if c not in st.claims)
+  related = {c for r in st.relations.values() for c in r["claims"]}
+  unlinked = [
+    cid
+    for cid, ev in st.dispositions.items()
+    if ev["disposition"] in ("HISTORICAL", "SUPERSEDED") and not ev.get("successor") and not ev.get("historical_basis") and cid not in related
+  ]
+  if unlinked:
+    out["warnings"].append(f"{len(unlinked)} historical or superseded claim(s) with no successor, relation or stated basis: {', '.join(sorted(unlinked)[:5])}")
   decided = {d["decision_id"] for d in st.decisions}
   for d in st.decisions:
     if d["conflict_id"] not in st.conflicts:
@@ -112,11 +120,12 @@ def _page_checks(st: State, out: dict) -> None:
   out["warnings"].extend(f"{rel}: proposal pending for a promoted page" for rel in sorted(rendered.proposals))
 
 
-def run(st: State) -> dict:
+def run(st: State, strict: bool = False) -> dict:
   """Run every check.
 
   Args:
     st: current state.
+    strict: done-gate: a section not yet accounted for is an error, not a warning (P8).
 
   Returns:
     {"ok", "errors", "warnings", "source_changed", "checks"}.
@@ -129,6 +138,11 @@ def run(st: State) -> dict:
   cov = claims_mod.coverage(st)["counts"]
   out["checks"]["coverage"] = cov
   if cov.get("pending") or cov.get("pending-review"):
-    out["warnings"].append(f"{cov.get('pending', 0) + cov.get('pending-review', 0)} section(s) not yet accounted for (kc worksheet)")
+    (out["errors"] if strict else out["warnings"]).append(
+      f"{cov.get('pending', 0) + cov.get('pending-review', 0)} section(s) not yet accounted for (kc worksheet)"
+    )
+  unreviewed = candidates.unreviewed_counts(st)
+  if unreviewed:
+    out["warnings"].append(f"{len(unreviewed)} claim(s) have unclassified cross-source pairs: unreviewed, not disputed (kc decision-points)")
   out["ok"] = not out["errors"]
   return out

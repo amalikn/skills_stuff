@@ -11,7 +11,7 @@ import os
 import re
 from dataclasses import dataclass, field
 
-from . import ids, settings
+from . import candidates, ids, settings
 from .errors import ValidationFailed
 from .state import State
 
@@ -78,6 +78,7 @@ def _claim_line(st: State, cid: str) -> str:
   parts = [f"- {c['claim_text']}", f"`{c['kind']}`"]
   if c["scope"]:
     parts.append("scope " + ", ".join(f"`{k}={v}`" for k, v in sorted(c["scope"].items())))
+  parts.extend(f"replaces `{old}`" for old in st.predecessors.get(cid, []))
   links = ", ".join(_link(st, e) for e in c["evidence"])
   if links:
     parts.append(f"sources: {links} ({c['independent_sources']} independent)")
@@ -113,13 +114,14 @@ def _front_matter(title: str, status: str, summary: str) -> list[str]:
   ]
 
 
-def _category_page(st: State, cat: str, promoted: dict | None) -> tuple[str, dict]:
+def _category_page(st: State, cat: str, promoted: dict | None, pending_pairs: dict) -> tuple[str, dict]:
   """Text and summary of one category page.
 
   Args:
     st: current state.
     cat: category.
     promoted: the page's promotion record when promoted.
+    pending_pairs: claim_id -> unreviewed cross-source pairs.
 
   Returns:
     (page text, summary).
@@ -138,6 +140,9 @@ def _category_page(st: State, cat: str, promoted: dict | None) -> tuple[str, dic
   body = ["", f"# {cat.capitalize()}", ""]
   if blocking:
     body += [f"> **Not settled:** open P0/P1 conflict(s) {', '.join(f'`{b}`' for b in blocking)}; see [open-issues.md](open-issues.md).", ""]
+  unreviewed = sum(1 for cid in current if cid in pending_pairs)
+  if unreviewed:
+    body += [f"> **Unreviewed:** {unreviewed} claim(s) here have unclassified cross-source pairs; run `kc decision-points`.", ""]
   topics: dict[str, list[str]] = {}
   for cid in current:
     topics.setdefault(st.claims[cid]["topic_key"], []).append(cid)
@@ -282,11 +287,12 @@ def render(st: State) -> Rendered:
   """
   out, kdir = Rendered(), st.cfg["knowledge_dir"]
   cats = sorted({c["primary_category"] for c in st.claims.values()} | {p.rsplit("/", 1)[-1][:-3] for p in st.promotions})
+  pending_pairs = candidates.unreviewed_counts(st)
   for cat in (c for c in cats if c in settings.CATEGORIES):
     path = f"{kdir}/{cat}.md"
     promo = st.promotions.get(path)
     promo = promo if promo and promo["status"] == "promoted" else None
-    text, page = _category_page(st, cat, promo)
+    text, page = _category_page(st, cat, promo, pending_pairs)
     out.pages.append(page)
     on_disk = st.root / path
     if promo and on_disk.exists() and on_disk.read_text(encoding="utf-8") != text:

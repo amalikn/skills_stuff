@@ -9,7 +9,7 @@ records for ledger.append.
 import datetime as dt
 from dataclasses import dataclass, field
 
-from . import ids
+from . import ids, settings
 from .errors import InputError, SourceChanged
 from .evidence import Reader, recheck
 from .state import State
@@ -58,8 +58,8 @@ def _card(st: State, cf: dict) -> list[str]:
   Returns:
     Lines.
   """
-  a, b = cf["claims"]
   rec = cf.get("recommended_current")
+  labels = {cid: chr(ord("A") + n) for n, cid in enumerate(cf["claims"])}
   lines = [
     f"### {cf['conflict_id']} · {cf['severity']} · {cf['conflict_type']}",
     "",
@@ -67,14 +67,13 @@ def _card(st: State, cf: dict) -> list[str]:
     "",
     "| | Claim | Kind / status | Disposition | Sources |",
     "| --- | --- | --- | --- | --- |",
-    _claim_row(st, "A", a),
-    _claim_row(st, "B", b),
+    *[_claim_row(st, label, cid) for cid, label in labels.items()],
     "",
     f"**Assessment:** {cf['reason']}",
   ]
   if cf.get("hypotheses"):
     lines.append("**Hypotheses:** " + "; ".join(cf["hypotheses"]))
-  lines.append(f"**Recommendation:** current = {'A' if rec == a else 'B'} (`{rec}`)" if rec else "**Recommendation:** none; evidence does not settle it.")
+  lines.append(f"**Recommendation:** current = {labels.get(rec, '?')} (`{rec}`)" if rec else "**Recommendation:** none; evidence does not settle it.")
   cid = cf["conflict_id"]
   lines += [
     "",
@@ -147,6 +146,22 @@ def _corrected_claim(st: State, cf: dict, text: str, decision_id: str) -> dict:
   return {"record": "claim", "claim_id": cid, **body, "evidence": [], "independent_sources": 0, "version_id": ids.make_id("cv", cid, body, [])}
 
 
+def _existing_operator_claim(st: State, text: str) -> str | None:
+  """An operator claim already holding this wording, whatever its scope (P14: one ruling, one claim).
+
+  Args:
+    st: current state.
+    text: the corrected statement.
+
+  Returns:
+    Its claim ID, or None.
+  """
+  want = ids.norm(text)
+  return next(
+    (cid for cid, c in sorted(st.claims.items()) if c.get("decision_id") and c["epistemic_status"] == "APPROVED" and ids.norm(c["claim_text"]) == want), None
+  )
+
+
 def _targets(st: State, cf: dict, action: str, current: str | None, scope_note: str | None) -> tuple[list[str], list[str]]:
   """Claims made current and superseded by an action (CORRECTED handled by the caller).
 
@@ -179,6 +194,31 @@ def _targets(st: State, cf: dict, action: str, current: str | None, scope_note: 
   return [], []
 
 
+def _apply_correction(st: State, cf: dict, text: str | None, decision_id: str, res: DecideResult) -> tuple[list[str], list[str]]:
+  """Claims made current and superseded by CORRECTED, reusing identical operator wording (P14).
+
+  Args:
+    st: current state.
+    cf: the conflict.
+    text: the corrected statement.
+    decision_id: the decision.
+    res: result gaining any new claim.
+
+  Returns:
+    (current claim IDs, superseded claim IDs).
+
+  Raises:
+    InputError: no corrected text.
+  """
+  if not text:
+    raise InputError("CORRECTED needs --corrected-text")
+  claim_id = _existing_operator_claim(st, text)
+  if not claim_id:
+    res.claims.append(_corrected_claim(st, cf, text, decision_id))
+    claim_id = res.claims[-1]["claim_id"]
+  return [claim_id], [c for c in cf["claims"] if c != claim_id]
+
+
 def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, now: dt.datetime, **opts) -> DecideResult:
   """Build the records for one operator decision.
 
@@ -209,11 +249,7 @@ def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, no
   previous = [d["decision_id"] for d in st.decisions if d.get("conflict_id") == conflict_id]
   res = DecideResult(decision={})
   if action == "CORRECTED":
-    if not opts.get("corrected_text"):
-      raise InputError("CORRECTED needs --corrected-text")
-    new = _corrected_claim(st, cf, opts["corrected_text"], did)
-    res.claims.append(new)
-    current, superseded = [new["claim_id"]], list(cf["claims"])
+    current, superseded = _apply_correction(st, cf, opts.get("corrected_text"), did, res)
   else:
     current, superseded = _targets(st, cf, action, opts.get("current"), opts.get("scope_note"))
   res.decision = {
@@ -238,4 +274,66 @@ def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, no
     res.dispositions.append(
       {"record": "disposition", "claim_id": cid, "disposition": "SUPERSEDED", "successor": current[0] if current else None, "reason": reason, "by": did}
     )
+  return res
+
+
+def amend(st: State, conflict_id: str, claim_id: str, supersede: bool, reason: str, actor: str, now: dt.datetime) -> DecideResult:
+  """Add a claim to a conflict: an operator ruling reaches a claim the conflict did not list (evaluation.md P19).
+
+  Append-only, like decide: the conflict gains the claim, and on a decided conflict --supersede retires it under the ruling.
+
+  Args:
+    st: current state.
+    conflict_id: the conflict.
+    claim_id: claim to add.
+    supersede: supersede it under the conflict's latest decision; False keeps its disposition.
+    reason: the operator's reason (required).
+    actor: who decided.
+    now: decision time (timezone-aware).
+
+  Returns:
+    The decision result.
+
+  Raises:
+    InputError: unknown conflict or claim, missing reason, claim already listed, or a supersede with no ruling to apply.
+    SourceChanged: the claim's evidence moved.
+  """
+  cf = st.conflicts.get(conflict_id)
+  if cf is None:
+    raise InputError(f"unknown conflict {conflict_id}")
+  if claim_id not in st.claims:
+    raise InputError(f"unknown claim {claim_id}")
+  if claim_id in cf["claims"]:
+    raise InputError(f"{claim_id} is already in {conflict_id}")
+  if not reason or not reason.strip():
+    raise InputError("--reason is required")
+  previous = [d for d in st.decisions if d.get("conflict_id") == conflict_id]
+  rulings = [d for d in previous if d["current_claims"]]
+  if supersede and (cf["status"] == "open" or not rulings):
+    raise InputError("--supersede needs a decided conflict; use --keep, or decide it first")
+  _revalidate(st, {"claims": [claim_id]})
+  decided_at = now.isoformat(timespec="seconds")
+  did = ids.make_id("dr", conflict_id, settings.AMEND_ACTION, claim_id, decided_at)
+  current = rulings[-1]["current_claims"] if rulings else []
+  res = DecideResult(
+    decision={
+      "record": "decision",
+      "decision_id": did,
+      "conflict_id": conflict_id,
+      "action": settings.AMEND_ACTION,
+      "actor": actor,
+      "decided_at": decided_at,
+      "reason": reason,
+      "answer_text": None,
+      "scope_note": None,
+      "added_claim": claim_id,
+      "current_claims": current,
+      "superseded_claims": [claim_id] if supersede else [],
+      "previous_decision_id": previous[-1]["decision_id"] if previous else None,
+    }
+  )
+  evidence_ids = sorted({*cf["evidence_ids"], *(e["evidence_id"] for e in st.claims[claim_id]["evidence"])})
+  res.conflicts.append({**cf, "claims": [*cf["claims"], claim_id], "evidence_ids": evidence_ids})
+  if supersede:
+    res.dispositions.append({"record": "disposition", "claim_id": claim_id, "disposition": "SUPERSEDED", "successor": current[0], "reason": reason, "by": did})
   return res

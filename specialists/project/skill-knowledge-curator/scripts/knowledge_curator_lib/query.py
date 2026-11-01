@@ -7,6 +7,7 @@ named so an answer can say the matter is not settled (design doc 7.9). Safety: i
 import re
 import sqlite3
 
+from . import candidates
 from .state import State
 
 _TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]+")
@@ -36,19 +37,22 @@ def search(st: State, text: str, limit: int = 10, include_history: bool = False)
   query = " OR ".join('"' + t + '"' for t in tokens)
   rows = db.execute("SELECT cid FROM f WHERE f MATCH ? ORDER BY rank", (query,)).fetchall()
   db.close()
+  unreviewed = candidates.unreviewed_counts(st)
   out = []
   for (cid,) in rows:
     disp = st.effective(cid)
     if not include_history and disp in ("SUPERSEDED", "HISTORICAL", "DUPLICATE", "REJECTED"):
       continue
     c = st.claims[cid]
+    open_conflicts = st.open_conflicts(cid)
     out.append(
       {
         "claim_id": cid,
         "text": c["claim_text"],
         "disposition": disp,
-        "settled": disp == "CURRENT",
-        "conflicts": [{"conflict_id": cf["conflict_id"], "severity": cf["severity"], "question": cf["question"]} for cf in st.open_conflicts(cid)],
+        "settled": disp == "CURRENT" and not open_conflicts,
+        "unreviewed_pairs": unreviewed.get(cid, 0),
+        "conflicts": [{"conflict_id": cf["conflict_id"], "severity": cf["severity"], "question": cf["question"]} for cf in open_conflicts],
         "page": f"{st.cfg['knowledge_dir']}/{c['primary_category']}.md",
         "evidence": [f"{e['path']}:{e['line_start']}-{e['line_end']}" for e in c["evidence"]],
         "successor": (st.dispositions.get(cid) or {}).get("successor"),

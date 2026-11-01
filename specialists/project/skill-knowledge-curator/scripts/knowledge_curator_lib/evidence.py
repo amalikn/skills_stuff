@@ -5,10 +5,11 @@ inside the cited lines; nothing is cited unchecked (design doc 5.2). When a sour
 elsewhere and reports it relocated or broken. Safety: reads source files below the project root.
 """
 
-from . import ids, ledger
+from . import fuzzy, ids, ledger
 from .state import State
 
 MAX_WINDOW = 60
+NEAR_LINE_RATIO = 70
 
 
 class Reader:
@@ -61,6 +62,44 @@ def _sections_overlapping(st: State, version_id: str, start: int, end: int) -> l
   return sorted(s["section_id"] for s in st.sections.values() if s["source_version_id"] == version_id and s["line_start"] <= end and s["line_end"] >= start)
 
 
+def cited_text(reader: Reader, span: dict, limit: int = 120) -> str:
+  """What a span's cited lines hold, for an error message.
+
+  Args:
+    reader: file reader.
+    span: {source_path, line_start, line_end}.
+    limit: maximum characters.
+
+  Returns:
+    Whitespace-normalised text, or "" when the file or lines cannot be read.
+  """
+  got = reader.read(span["source_path"])
+  lines = got[1].splitlines() if got else []
+  return ids.norm_ws("\n".join(lines[span["line_start"] - 1 : span["line_end"]]))[:limit]
+
+
+def _not_found(rel: str, lines: list[str], span: dict) -> str:
+  """Error for an excerpt outside its cited lines: quotes those lines and the nearest match, so an off-by-one fixes itself (P10).
+
+  Args:
+    rel: source path.
+    lines: file lines.
+    span: the span.
+
+  Returns:
+    The message.
+  """
+  start, end = span["line_start"], span["line_end"]
+  held = ids.norm_ws("\n".join(lines[start - 1 : end]))[:120]
+  found = _locate(lines, span["excerpt"])
+  if found:
+    where = f"found at line {found[0]}" if found[0] == found[1] else f"found at lines {found[0]}-{found[1]}"
+  else:
+    near = fuzzy.nearest(span["excerpt"], [ln for ln in lines if ln.strip()], NEAR_LINE_RATIO, subset=True)
+    where = f"nearest line {lines.index(near) + 1}: {ids.norm_ws(near)[:120]!r}" if near else "no similar line in the file"
+  return f"{rel}:{start}-{end}: excerpt not found in the cited lines; cited lines hold {held!r}; {where}"
+
+
 def verify_span(reader: Reader, span: dict) -> tuple[dict | None, str | None, bool]:
   """Check one agent-supplied span and build its evidence record.
 
@@ -86,7 +125,7 @@ def verify_span(reader: Reader, span: dict) -> tuple[dict | None, str | None, bo
   if start > end or end > len(lines):
     return None, f"{rel}: lines {start}-{end} outside the file ({len(lines)} lines)", False
   if ids.norm_ws(span["excerpt"]) not in ids.norm_ws("\n".join(lines[start - 1 : end])):
-    return None, f"{rel}:{start}-{end}: excerpt not found in the cited lines", False
+    return None, _not_found(rel, lines, span), False
   rec = {
     "source_id": src["source_id"],
     "source_version_id": src["source_version_id"],
@@ -116,6 +155,8 @@ def _locate(lines: list[str], excerpt: str) -> tuple[int, int] | None:
   for i in range(len(lines)):
     for j in range(i, min(len(lines), i + MAX_WINDOW)):
       if want in ids.norm_ws("\n".join(lines[i : j + 1])):
+        while i < j and want in ids.norm_ws("\n".join(lines[i + 1 : j + 1])):
+          i += 1
         return i + 1, j + 1
   return None
 

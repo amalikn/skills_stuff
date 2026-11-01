@@ -28,6 +28,7 @@ class State:
     conflicts: conflict_id -> latest conflict event.
     decisions: decision records in order.
     promotions: page path -> latest promotion record.
+    predecessors: claim_id -> claims whose disposition names it as successor.
   """
 
   root: Path
@@ -42,6 +43,7 @@ class State:
   conflicts: dict = field(default_factory=dict)
   decisions: list = field(default_factory=list)
   promotions: dict = field(default_factory=dict)
+  predecessors: dict = field(default_factory=dict)
 
   def source_by_path(self) -> dict:
     """Live (not removed) sources keyed by project-relative path.
@@ -138,6 +140,9 @@ def load(root: Path, cfg: dict | None = None) -> State:
   for rec in read["sections"]:
     st.sections[rec["section_id"]] = rec
   _fold_claims(st, read["claims"])
+  for cid, event in sorted(st.dispositions.items()):
+    if event.get("successor"):
+      st.predecessors.setdefault(event["successor"], []).append(cid)
   for rec in read["relations"]:
     st.relations[rec["relation_id"]] = rec
   for rec in read["conflicts"]:

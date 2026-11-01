@@ -132,3 +132,121 @@ class PilotCase:
       The claim ID.
     """
     return next(cid for cid, c in self.state().claims.items() if c["claim_text"] == text)
+
+
+def make_claim(path: str, line: int, excerpt: str, subject: str, predicate: str, obj: str, topic: str, **extra) -> dict:
+  """Build one claim input.
+
+  Args:
+    path: source path.
+    line: source line.
+    excerpt: exact excerpt.
+    subject: claim subject.
+    predicate: claim predicate.
+    obj: claim object.
+    topic: topic key.
+    **extra: other claim fields.
+
+  Returns:
+    The claim input.
+  """
+  rec = {
+    "record": "claim",
+    "subject": subject,
+    "predicate": predicate,
+    "object": obj,
+    "claim_text": excerpt,
+    "kind": "decision",
+    "epistemic_status": "OBSERVED",
+    "primary_category": "architecture",
+    "topic_key": topic,
+    "disposition": "CURRENT",
+    "evidence": [{"source_path": path, "line_start": line, "line_end": line, "excerpt": excerpt}],
+  }
+  rec.update(extra)
+  return rec
+
+
+class FixCase(PilotCase):
+  """Pilot copy plus helpers that add one document and its claims."""
+
+  def add_doc(self, name: str, lines: list[str]) -> str:
+    """Write a source document and inventory it.
+
+    Args:
+      name: file name under docs/.
+      lines: its lines.
+
+    Returns:
+      The project-relative path.
+    """
+    (self.root / "docs" / name).write_text("\n".join(lines) + "\n")
+    code, _, err = self.kc("inventory", "--apply")
+    self.assertEqual(code, 0, err)
+    return f"docs/{name}"
+
+  def ingest(self, records: list[dict], *flags: str) -> tuple[int, dict, str]:
+    """Run kc claims on records.
+
+    Args:
+      records: claim inputs.
+      *flags: extra options such as --apply.
+
+    Returns:
+      The kc result.
+    """
+    path = self.root.parent / "batch.json"
+    path.write_text(json.dumps(records))
+    return self.kc("claims", "--file", str(path), *flags)
+
+  def two_sources(self, left: dict, right: dict) -> tuple[str, str]:
+    """Add two one-claim documents, each with its own excerpt.
+
+    Args:
+      left: fields for the first claim.
+      right: fields for the second claim.
+
+    Returns:
+      Both claim IDs.
+    """
+    out = []
+    for name, f in (("left.md", left), ("right.md", right)):
+      path = self.add_doc(name, ["# Doc", "", f["text"]])
+      code, res, err = self.ingest([make_claim(path, 3, f["text"], f["subject"], f["predicate"], f["object"], f["topic"], **f.get("extra", {}))], "--apply")
+      self.assertEqual(code, 0, err)
+      out.append(res["ids"][0] if len(res["ids"]) == 1 else self.claim_for(f["text"]))
+    return out[0], out[1]
+
+  def conflict(self, a: str, b: str, severity: str = "P2") -> str:
+    """Open a conflict between two claims.
+
+    Args:
+      a: first claim.
+      b: second claim.
+      severity: severity.
+
+    Returns:
+      The conflict ID.
+    """
+    path = self.root.parent / "rel.json"
+    rec = {"record": "relation", "claims": [a, b], "relation": "true-conflict", "severity": severity, "reason": "they disagree", "question": "Which one?"}
+    path.write_text(json.dumps([rec]))
+    code, _, err = self.kc("relate", "--file", str(path), "--apply")
+    self.assertEqual(code, 0, err)
+    return lib("relations").conflict_id_for([a, b])
+
+
+COORD_A = {
+  "text": "The coordinator keeps Fastify.",
+  "subject": "continuum coordinator",
+  "predicate": "implementation",
+  "object": "Fastify",
+  "topic": "system.coordinator",
+}
+COORD_B = {
+  "text": "The coordinator uses Rust Axum.",
+  "subject": "continuum coordinator",
+  "predicate": "uses framework",
+  "object": "Axum",
+  "topic": "system.coordinator",
+}

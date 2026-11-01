@@ -41,6 +41,11 @@ RELATIONS = (
 )
 SECTION_STATUSES = ("context", "unreadable", "pending-review")
 ACTIONS = ("ACCEPT_RECOMMENDATION", "USE_OTHER", "BOTH_APPLY_SCOPED", "CORRECTED", "DEFER")
+AMEND_ACTION = "AMEND"
+# Scope keys naming where a claim came from, not the situation it holds in (evaluation.md P12): ignored when comparing scopes.
+PROVENANCE_SCOPE_KEYS = ("source", "author", "document", "file")
+# Tool folders whose Markdown is never project knowledge, so an exclusion here is not worth a warning (P15).
+QUIET_EXCLUDES = (".git", ".kc", "node_modules", ".venv", "__pycache__", ".remember", ".code-context-notes")
 PROMOTION_GATES = ("no_open_p0_p1", "operator_decision", "governing_files", "evidence_verified")
 
 GIT_TIMEOUT_S = 10
@@ -50,7 +55,7 @@ DEFAULT_CONFIG = {
   "schema_version": 1,
   "project_id": None,
   "include": ["**/*.md"],
-  "exclude_dirs": [".git", ".kc", "knowledge", "archive", "node_modules", ".venv", "__pycache__", ".remember", ".code-context-notes"],
+  "exclude_dirs": [".git", ".kc", "knowledge", "node_modules", ".venv", "__pycache__", ".remember", ".code-context-notes"],
   "knowledge_dir": "knowledge",
   "archive_dir": "archive/originals",
   "governing_files": ["AGENTS.md"],
@@ -58,8 +63,8 @@ DEFAULT_CONFIG = {
   # Operator chose the first three (2026-10-27); evidence_verified added by default on review because a source edited after render
   # would otherwise be promoted stale. A project may drop it in .kc/config.yaml.
   "promotion_gates": ["no_open_p0_p1", "operator_decision", "governing_files", "evidence_verified"],
-  "candidates": {"min_ratio": 80, "fts_neighbours": 20},
-  "worksheet": {"max_sections": 25, "max_chars": 12000},
+  "candidates": {"min_ratio": 80, "fts_neighbours": 20, "fts_tokens": 8, "fts_common_share": 0.1, "subject_ratio": 85},
+  "worksheet": {"max_sections": 25, "max_chars": 12000, "max_vocabulary": 200},
 }
 
 

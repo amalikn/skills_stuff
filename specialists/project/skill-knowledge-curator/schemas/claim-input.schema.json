@@ -170,6 +170,19 @@
           }
         }
       }
+    },
+    "successor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Claim that replaces this one (HISTORICAL or SUPERSEDED)."
+    },
+    "historical_basis": {
+      "enum": [
+        "source-stated"
+      ],
+      "description": "The cited source itself says this is past or replaced."
     }
   }
 }

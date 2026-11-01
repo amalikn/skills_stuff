@@ -25,6 +25,7 @@ from . import (
   settings,
   state,
   validate,
+  worksheet,
   yaml_io,
 )
 from .errors import ConflictBlocker, InputError, ReviewNeeded, SourceChanged, ValidationFailed
@@ -122,7 +123,8 @@ def cmd_inventory(root: Path, args) -> dict:
     ledger.append(root, "sources", res.source_records, args.apply)
     ledger.append(root, "sections", res.section_records, args.apply)
     ledger.write_text(root, f"{settings.KC_DIR}/reports/inventory.json", json.dumps(snapshot, indent=2, sort_keys=True) + "\n", args.apply)
-  return {"applied": args.apply, "counts": res.counts, "new_sections": len(res.section_records), **snapshot}
+  warnings = inventory.excluded_markdown(root, st.cfg, res.exclusions)
+  return {"applied": args.apply, "counts": res.counts, "new_sections": len(res.section_records), "warnings": warnings, **snapshot}
 
 
 def _ingest(root: Path, args, kind: str) -> dict:
@@ -153,12 +155,32 @@ def _ingest(root: Path, args, kind: str) -> dict:
       ledger.append(root, "relations", res.relations, args.apply)
       ledger.append(root, "conflicts", res.conflicts, args.apply)
       ledger.append(root, "claims", res.dispositions, args.apply)
-  return {
+  out = {
     "applied": args.apply,
     "skipped": res.skipped,
     **{k: len(v) for k, v in plan.items()},
     "ids": sorted({r.get("claim_id") or r.get("relation_id") or r.get("section_id") for v in plan.values() for r in v}),
   }
+  if kind == "claims":
+    effect = worksheet.batch_effect(st, res)
+    out |= {"warnings": res.warnings, "sections_closed": effect["sections_closed"]}
+    if args.coverage:
+      out["coverage"] = effect["coverage"]
+  return out
+
+
+def _record_decision(root: Path, res: decisions.DecideResult, apply: bool) -> None:
+  """Append one decision's records under the write lock.
+
+  Args:
+    root: project root.
+    res: the decision result.
+    apply: write (False plans only).
+  """
+  with ledger.write_lock(root) if apply else _noop():
+    ledger.append(root, "decisions", [res.decision], apply)
+    ledger.append(root, "conflicts", res.conflicts, apply)
+    ledger.append(root, "claims", res.claims + res.dispositions, apply)
 
 
 def cmd_decide(root: Path, args) -> dict:
@@ -184,11 +206,23 @@ def cmd_decide(root: Path, args) -> dict:
     corrected_text=args.corrected_text,
     answer_text=args.answer_text,
   )
-  with ledger.write_lock(root) if args.apply else _noop():
-    ledger.append(root, "decisions", [res.decision], args.apply)
-    ledger.append(root, "conflicts", res.conflicts, args.apply)
-    ledger.append(root, "claims", res.claims + res.dispositions, args.apply)
+  _record_decision(root, res, args.apply)
   return {"applied": args.apply, "decision": res.decision, "new_claims": [c["claim_id"] for c in res.claims]}
+
+
+def cmd_amend(root: Path, args) -> dict:
+  """Add a claim to a conflict, superseding or keeping it.
+
+  Args:
+    root: project root.
+    args: parsed arguments.
+
+  Returns:
+    Result.
+  """
+  res = decisions.amend(state.load(root), args.conflict, args.add_claim, args.supersede, args.reason, args.actor or settings.actor(), _now())
+  _record_decision(root, res, args.apply)
+  return {"applied": args.apply, "decision": res.decision}
 
 
 def cmd_render(root: Path, args) -> dict:
@@ -303,7 +337,7 @@ def cmd_validate(root: Path, args) -> dict:
     SourceChanged: a source changed (exit 5).
     ValidationFailed: any other error (exit 3).
   """
-  res = validate.run(state.load(root))
+  res = validate.run(state.load(root), args.strict)
   if not res["ok"]:
     emit(res)
     raise (SourceChanged if res["source_changed"] else ValidationFailed)(f"{len(res['errors'])} validation error(s)")
@@ -313,13 +347,17 @@ def cmd_validate(root: Path, args) -> dict:
 COMMANDS = {
   "init": cmd_init,
   "inventory": cmd_inventory,
-  "worksheet": lambda root, a: claims.worksheet(state.load(root), a.batch),
+  "worksheet": lambda root, a: worksheet.batch(state.load(root), a.batch, a.path),
+  "sections": lambda root, a: worksheet.sections(state.load(root), a.path),
+  "vocabulary": lambda root, a: worksheet.vocabulary(state.load(root)),
   "coverage": lambda root, a: claims.coverage(state.load(root)),
   "claims": lambda root, a: _ingest(root, a, "claims"),
-  "candidates": lambda root, a: candidates.pairs(state.load(root)),
+  "candidates": lambda root, a: candidates.pairs(state.load(root), a.limit),
+  "decision-points": lambda root, a: candidates.decision_points(state.load(root)),
   "relate": lambda root, a: _ingest(root, a, "relations"),
   "review": cmd_review,
   "decide": cmd_decide,
+  "amend": cmd_amend,
   "render": cmd_render,
   "promote": cmd_promote,
   "archive-plan": cmd_archive_plan,

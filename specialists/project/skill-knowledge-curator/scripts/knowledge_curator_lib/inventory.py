@@ -83,7 +83,9 @@ def discover(root: Path, cfg: dict) -> tuple[list[str], list[dict]]:
     for name in sorted(dirnames):
       if name in cfg["exclude_dirs"]:
         excluded.append({"path": (rel_dir / name).as_posix(), "reason": "excluded directory (config exclude_dirs)"})
-    dirnames[:] = sorted(d for d in dirnames if d not in cfg["exclude_dirs"])
+      elif (rel_dir / name).as_posix() == cfg["archive_dir"]:
+        excluded.append({"path": cfg["archive_dir"], "reason": "the curator's archive folder (config archive_dir)"})
+    dirnames[:] = sorted(d for d in dirnames if d not in cfg["exclude_dirs"] and (rel_dir / d).as_posix() != cfg["archive_dir"])
     for name in sorted(filenames):
       rel = (rel_dir / name).as_posix()
       if not _included(rel, cfg["include"]):
@@ -95,6 +97,28 @@ def discover(root: Path, cfg: dict) -> tuple[list[str], list[dict]]:
         continue
       files.append(rel)
   return sorted(files), sorted(excluded, key=lambda e: e["path"])
+
+
+def excluded_markdown(root: Path, cfg: dict, exclusions: list[dict]) -> list[str]:
+  """Warnings for excluded folders that hold Markdown, so an exclusion by name is never silent (P15).
+
+  Args:
+    root: project root.
+    cfg: project config.
+    exclusions: from discover.
+
+  Returns:
+    Messages, naming each folder and its Markdown count.
+  """
+  out = []
+  for item in exclusions:
+    path = PurePosixPath(item["path"])
+    if not item["reason"].startswith("excluded directory") or path.name in settings.QUIET_EXCLUDES or item["path"] == cfg["knowledge_dir"]:
+      continue
+    count = sum(1 for _ in (root / item["path"]).rglob("*.md"))
+    if count:
+      out.append(f"{item['path']}: excluded but holds {count} Markdown file(s); remove it from exclude_dirs to read them")
+  return out
 
 
 def section_records(source_id: str, version_id: str, text: str) -> list[dict]:

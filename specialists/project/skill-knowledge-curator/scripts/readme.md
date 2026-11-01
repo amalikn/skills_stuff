@@ -26,19 +26,23 @@ Summary: >-
 | -------------- | ---------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------- |
 | `init`         | -                                                    | `.kc/config.yaml`, `.kc/.gitignore`                             | never overwrites an existing config                        |
 | `inventory`    | -                                                    | `.kc/sources.jsonl`, `sections.jsonl`, `reports/inventory.json` | reads sources; `git rev-parse` with a 10 s timeout         |
-| `worksheet`    | `--batch N`                                          | -                                                               | read-only                                                  |
+| `worksheet`    | `--batch N`, `--path GLOB`                           | -                                                               | read-only; carries the ledger vocabulary                   |
+| `sections`     | `--path GLOB`                                        | -                                                               | read-only; status and claim IDs per section                |
+| `vocabulary`   | -                                                    | -                                                               | read-only; term counts                                     |
 | `coverage`     | -                                                    | -                                                               | read-only                                                  |
-| `claims`       | `--file` (.json/.jsonl)                              | `.kc/claims.jsonl`                                              | whole batch refused on any error                           |
-| `candidates`   | -                                                    | -                                                               | read-only; in-memory FTS5                                  |
+| `claims`       | `--file` (.json/.jsonl), `--coverage`                | `.kc/claims.jsonl`                                              | whole batch refused on any error; warnings never refuse    |
+| `candidates`   | `--limit N`                                          | -                                                               | read-only; in-memory FTS5                                  |
+| `decision-points` | -                                                 | -                                                               | read-only                                                  |
 | `relate`       | `--file`                                             | `.kc/relations.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | whole batch refused on any error                           |
 | `review`       | -                                                    | `.kc/reports/review-queue.md`                                   | exit 2 while conflicts are open                            |
 | `decide`       | conflict, action, `--reason`, action options         | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | re-checks evidence first (exit 5 on change)                |
+| `amend`        | conflict, `--add-claim`, `--supersede`/`--keep`, `--reason` | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl` | re-checks the claim's evidence; append-only                |
 | `render`       | `--check`                                            | `knowledge/*`, `.kc/proposals/*`                                | never overwrites a promoted page; refuses secret-like text |
 | `promote`      | `--page`, `--approve-digest`, `--reason`, `--revoke` | promotion record, re-rendered pages                             | gates must pass; digest-bound                              |
 | `archive-plan` | -                                                    | `.kc/archive-plans/<batch>.json`                                | never moves sources; rehearsal in a temp folder            |
 | `query`        | text, `--limit`, `--history`                         | -                                                               | read-only                                                  |
 | `intake`       | `--payload`                                          | -                                                               | read-only                                                  |
-| `validate`     | -                                                    | -                                                               | read-only; exit 3 or 5 on errors                           |
+| `validate`     | `--strict`                                           | -                                                               | read-only; exit 3 or 5 on errors                           |
 | `report`       | -                                                    | -                                                               | read-only                                                  |
 
 ## Library modules
@@ -55,10 +59,11 @@ Summary: >-
 | `state.py`                                                    | Folds the ledgers into current state; effective disposition                          |
 | `inventory.py`                                                | Discovery, fingerprints, renames, removals, sections                                 |
 | `evidence.py`                                                 | Span verification and recheck                                                        |
-| `claims.py`                                                   | Claim intake, coverage, worksheet                                                    |
-| `candidates.py`                                               | Candidate pairs and signals                                                          |
+| `claims.py`                                                   | Claim intake and coverage                                                            |
+| `worksheet.py`                                                | Worksheet batches, section listing, vocabulary, batch effect                         |
+| `candidates.py`                                               | Candidate pairs and signals, decision points, unreviewed counts                      |
 | `relations.py`                                                | Relation intake and automatic dispositions                                           |
-| `decisions.py`                                                | Review cards and decisions                                                           |
+| `decisions.py`                                                | Review cards, decisions and amendments                                               |
 | `render.py`                                                   | Deterministic pages and index.json; secret scan                                      |
 | `promote.py`                                                  | Gates and promotion records                                                          |
 | `archive_plan.py`                                             | Candidates, referrers, restore rehearsal                                             |

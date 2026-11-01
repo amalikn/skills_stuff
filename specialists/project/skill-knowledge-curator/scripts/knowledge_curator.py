@@ -9,8 +9,8 @@ deterministic kernel that checks and records it (references/workflow.md).
 
 Usage:
   python scripts/knowledge_curator.py <command> --project <dir> [options]   (or `just kc <command> <dir> ...`)
-  commands: init, inventory, worksheet, coverage, claims, candidates, relate, review, decide, render, promote,
-            archive-plan, query, intake, validate, report
+  commands: init, inventory, worksheet, sections, vocabulary, coverage, claims, candidates, decision-points, relate, review,
+            decide, amend, render, promote, archive-plan, query, intake, validate, report
   Example: python scripts/knowledge_curator.py inventory --project tests/fixtures/pilot
 
 Inputs:
@@ -19,7 +19,7 @@ Inputs:
   --payload FILE     intake payload (schemas/intake-payload.schema.json)
   KC_ACTOR           name recorded on decisions and promotions (default project-owner)
 
-Safety: read-only by default. With --apply: init writes .kc/config.yaml; inventory, claims, relate, decide and promote append to
+Safety: read-only by default. With --apply: init writes .kc/config.yaml; inventory, claims, relate, decide, amend and promote append to
 .kc/*.jsonl; render writes knowledge/ pages (never a promoted page) and .kc/proposals/; review and archive-plan write a report
 under .kc/. Nothing ever edits, moves or deletes a source document or a governing file, commits or pushes.
 
@@ -64,17 +64,30 @@ def build_parser() -> Parser:
   for name in COMMANDS:
     s = sub.add_parser(name)
     s.add_argument("--project", required=True, help="project root")
-    if name in ("init", "inventory", "claims", "relate", "review", "decide", "render", "promote", "archive-plan"):
+    if name in ("init", "inventory", "claims", "relate", "review", "decide", "amend", "render", "promote", "archive-plan"):
       s.add_argument("--apply", action="store_true", help="write (default: plan only)")
     if name in ("claims", "relate"):
       s.add_argument("--file", required=True)
+  sub.choices["claims"].add_argument("--coverage", action="store_true", help="also report per-file sections closed and left")
   sub.choices["worksheet"].add_argument("--batch", type=int, default=1)
+  for name in ("worksheet", "sections"):
+    sub.choices[name].add_argument("--path", help="glob limiting the files, e.g. 'docs/*.md'")
+  sub.choices["candidates"].add_argument("--limit", type=int, help="return only the top pairs; counts still cover all")
+  sub.choices["validate"].add_argument("--strict", action="store_true", help="exit 3 while any section is pending")
   d = sub.choices["decide"]
   d.add_argument("conflict")
   d.add_argument("action", choices=settings.ACTIONS)
   d.add_argument("--reason", required=True)
   for opt in ("--current", "--scope-note", "--corrected-text", "--answer-text", "--actor"):
     d.add_argument(opt)
+  am = sub.choices["amend"]
+  am.add_argument("conflict")
+  am.add_argument("--add-claim", required=True)
+  am.add_argument("--reason", required=True)
+  am.add_argument("--actor")
+  how = am.add_mutually_exclusive_group(required=True)
+  how.add_argument("--supersede", action="store_true", help="supersede the claim under the conflict's ruling")
+  how.add_argument("--keep", action="store_true", help="list the claim on the conflict, disposition unchanged")
   r = sub.choices["render"]
   r.add_argument("--check", action="store_true", help="exit 3 when pages differ from a fresh rendering")
   pr = sub.choices["promote"]
