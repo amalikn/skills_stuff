@@ -253,6 +253,9 @@ sides in other relations (secondary, not the gate). Review load grew: 184 open c
 New findings: P30, 31 of 65 new conflicts read stale at once, because one relate batch held a `time-evolution` and a `true-conflict` on the same claims. P31, `time-evolution` needs a stated replacement, and many real retained-then-retired pairs
 have none, so they land as `true-conflict`. P32, the agent could not tell which byte copy to cite.
 
+Third attempt, marks fixed before measuring (operator, 2026-11-01): recall as before, plus at least 70% of a random sample of open conflicts judged real (90% stays the release target). Agents stay blind to the labels, so the pass improves by kind and never from
+the missed labels. If it fails, stop and accept the limit: `kc` ships as extraction, decisions and within-file checks, with cross-file recall stated, and no fourth round. If it passes, slurp Step 4b lands off by default: it runs only in a project with `.kc/`, and a skip is reported.
+
 ## Release gate
 
 All deterministic items pass, the real-corpus pilot gives useful evidence-backed retrieval reviewed by the operator, semantic targets are measured (or exceptions accepted), and no high-severity
