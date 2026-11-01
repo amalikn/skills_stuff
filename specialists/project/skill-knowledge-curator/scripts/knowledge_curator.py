@@ -71,6 +71,7 @@ def build_parser() -> Parser:
   sub.choices["claims"].add_argument("--coverage", action="store_true", help="also report per-file sections closed and left")
   sub.choices["worksheet"].add_argument("--batch", type=int, default=1)
   sub.choices["recall"].add_argument("--labels", required=True, help="gold conflicts, JSON array (schemas/gold-conflict.schema.json)")
+  sub.choices["topics"].add_argument("--by-file", action="store_true", help="claims under each cited file, in line order")
   gr = sub.choices["group-review"]
   gr.add_argument("group", help="group_id from decision-points")
   gr.add_argument("--reason", required=True)

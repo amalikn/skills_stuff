@@ -112,6 +112,19 @@ class TopicsTest(AliasCase, unittest.TestCase):
     self.assertIn("lines", topic[0])
 
 
+class ByFileTest(AliasCase, unittest.TestCase):
+  """kc topics --by-file: one file's claims in source order, for finding contradictions inside it."""
+
+  def test_claims_listed_under_each_cited_file_in_line_order(self):
+    """A file lists its claims by line; a claim citing two files shows under both."""
+    self.pipeline("related")
+    path = self.add_doc("two.md", ["# Doc", "", "Second fact here.", "", "First fact here."])
+    rows = [make_claim(path, 5, "First fact here.", "aa", "is", "x", "t.a"), make_claim(path, 3, "Second fact here.", "bb", "is", "y", "t.b")]
+    self.ingest(rows, "--apply")
+    listed = self.kc("topics", "--by-file")[1]["files"][path]
+    self.assertEqual([r["text"] for r in listed], ["Second fact here.", "First fact here."])
+
+
 class RecallTest(AliasCase, unittest.TestCase):
   """kc recall scores a labelled set against what reaches review."""
 

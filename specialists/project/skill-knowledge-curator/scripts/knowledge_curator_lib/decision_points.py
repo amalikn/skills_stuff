@@ -218,6 +218,23 @@ def topics(st: State) -> dict:
   return {"topics": dict(sorted(out.items())), "claims": sum(len(v) for v in out.values())}
 
 
+def by_file(st: State) -> dict:
+  """Claims under each file they cite, in line order, for reading one document against itself (P29).
+
+  Args:
+    st: current state.
+
+  Returns:
+    {"files": {path: [rows]}}.
+  """
+  out: dict[str, list[tuple[int, dict]]] = {}
+  for rows in topics(st)["topics"].values():
+    for row in rows:
+      for ev in st.claims[row["claim_id"]]["evidence"]:
+        out.setdefault(ev["path"], []).append((ev["line_start"], row))
+  return {"files": {path: [r for _, r in sorted(rows, key=lambda x: (x[0], x[1]["claim_id"]))] for path, rows in sorted(out.items())}}
+
+
 def review_pairs(st: State) -> set[frozenset]:
   """Every pair a decision point puts in front of a reviewer, key and word groups alike.
 
