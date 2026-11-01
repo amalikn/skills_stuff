@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261101_1937 — smc_change reporting and fallback, kernel drift, pre-push venv (v0.10.11 -> v0.11.0)
+
+Learned 2026-11-01: `references/13_known-issues.md` (overlay `Find root device details`, AVR ahead of Iridium, unpinned kernel meta-package and purge without re-flash, stats 2.11, pre-push venv, deploy never enables overlay), `references/19_smc-change-role.md` (action outcomes, busy lower dir, RULE-011, governance of the role), `SKILL.md` pointer. New `scripts/probes/smc_boot_kernel_probe.sh`, `just smc_boot_kernel`.
+
 ## 20261101_0214 — apt-get update fix reaches rise (v0.10.10 -> v0.10.11)
 
 Learned 2026-11-01 (ansible-wifi `rise` a9d6e6b7): `references/13_known-issues.md`, branch reach of the helper change.

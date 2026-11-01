@@ -725,3 +725,57 @@ smc_change_attempt_started: "{{ smc_change_attempt_started | default(now().times
 > ```
 >
 > No visual surface.
+
+### Action outcomes in the summary, record and state (2026-11-01)
+
+Every apply logs what each action did, with no spec key. Source: `roles/smc_change/tasks/action_run.yml`, `action_skips.yml`, `action_facts.yml` (local-knowledge-ansible, uncommitted at writing).
+`actions` (record and state): `UPDATED`, `ALREADY` or `SKIPPED, avr_at_307 already true (avr_version=3.07)`. `fact_changes` holds spec facts that moved. `state.versions` is unrelated: installed package
+versions after an `apt_pin`, one mapping per action, so `[]` on a change without `apt_pin` is correct. A run without `-e rct_avr_flash=true` reads no AVR version, so it says `flash_wanted is false`, not 3.07.
+
+```yaml
+# tasks/action_run.yml (excerpt): a command's work trees are found, not declared
+smc_change_git_paths: >-
+  {{ ((smc_change_action.cmd | default('') ~ ' ' ~ smc_change_action.check | default('')) | regex_findall('/[A-Za-z0-9._/-]+') | unique | list)[:20]
+     if smc_change_action.type == 'command' else [] }}
+```
+
+### Busy lower dir: every change falls back as php-cve does (RULE-011, 2026-11-01)
+
+fish-river-smc01 stopped at the stage 10 close under `reboot: never`, gates all passed, `mount point is busy`, no process holding it. Cause `UNVERIFIED`. Role now, nothing in the spec: `reboot` defaults
+to `overlay_fallback`; a stage 7 close that stays busy reboots at stage 8; a stage 10 close that stays busy arms `files/changes/rearm_or_reboot.sh` with `at` (`smc_change_rearm_minutes`, default 5, RULE-009);
+a lower dir already read-write with no journal is worked on, no longer refused. `files/tests/test_spec_reboot.py` fails a `reboot: never` with no reason on the line above.
+
+```yaml
+# tasks/cleanup.yml (uncommitted at writing): the stage 10 close arms the job instead of failing
+vars:
+  smc_change_overlay_step: close
+  smc_change_overlay_rearm: "{{ smc_change_spec.reboot | default('overlay_fallback') == 'overlay_fallback' }}"
+```
+
+Same day: the action log is in the journal, so a resume keeps it (fish-river-smc01 lost it at resume); cleanup now pools files an action saved after the stage 5 manifest (`shared` never appeared for
+rct-tstik's AVR image); the conditions message lists `RUNS` lines; labels carry the action type, and a command with no matching `verify` entry shows its `when`.
+
+Same day: `rearm_or_reboot.sh` no longer names apache2, kohana or any other process. `files/changes/rearm_head.py` prints the spec's `restart` list in front of it (`REARM_SERVICES`, `REARM_PATTERNS_B64`), for the
+role's `at` job and `just rearm` alike, so the recipe needs the change's own justfile. `files/tests/test_rearm.py` runs the real script against stub commands.
+
+### Stage 10 busy close and AVR reset, first real results (2026-11-01)
+
+gumuluji-smc01: stage 7 closed the lower dir, stage 10 reopened it to remove the backup folder and the close stayed busy 9 x 10 s with no holder found. The `at` job fired at 18:23, stopped `php -S`, stayed busy
+and rebooted the box, which came back healthy (lower ro, commit live and lower, AVR 3.07). Same stage 10 busy on fish-river-smc01. Cause `UNVERIFIED`. The job runs after the playbook ends, so the run's record and
+state still say `passed` with `lower_busy.rearm_in_minutes` and never record the outcome.
+
+`stats.json` read AVR 2.11 while the loader read 3.07 on the same box, on gumuluji and briefly fish-river. Operator 2026-11-01: a flashed AVR needs a restart. `avr_flash.sh` now runs the loader's `-r` after a
+successful flash; a reset is not yet run on a real box. A Pi's clock is about 10 minutes behind straight after a reboot, so `who -b` and box timestamps mislead until NTP corrects it.
+
+Later the same day (uncommitted at writing): an overlay apply moves its backup to the controller at stage 7 (`tasks/backup_move.yml`), so stage 10 no longer reopens the lower dir for it (operator: reopening was the
+fault). The close and the `at` job drop the dentry cache between tries (`UNVERIFIED` cause). The run waits for the job (`tasks/rearm_wait.yml`) and records `lower_busy.outcome`: remounted, rebooted, still read-write or
+unreachable. `avr_flash.sh` resets the AVR before cron starts. None of these has run on a real box yet.
+
+### Governance of this role (2026-11-01)
+
+`roles/smc_change/AGENTS.md` (local-knowledge-ansible) holds the rules for writing specs and editing the role, including the mistakes to avoid; `change-spec-template.yml` starts a new spec. This file records how the role
+behaves and what was learned; rules go there.
+
+Final same day: bar-barrum-smc01 (resumed at stage 6) and jungalina-smc01 passed with the stage 7 backup move, no busy close and no reboot. `RUNS` lines give the commit from the facts call (`_commit_<index>` facts, kept out of `facts`), and every action task name carries its action number.
+
+Close of the same day: gumuluji-smc01's `at` job ran end to end (stopped `php -S`, stayed busy 9 x 10 s, rebooted, came back with lower ro), before `tasks/rearm_wait.yml` existed. Seven sites took tstik `971d8d04` and V3.07 ahead of the Iridium install; myra-vale was already flashed.

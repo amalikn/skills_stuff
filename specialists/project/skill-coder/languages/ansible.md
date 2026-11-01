@@ -337,3 +337,18 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > ansible-core checks that fds 0-2 are blocking at start. A hook inherits git's pipes, which VS Code and agent terminals leave non-blocking, so any
 > `ansible-playbook`/`ansible-lint` run there must get plain files on all three: `cmd </dev/null >"$log" 2>&1 || { cat "$log" >&2; fail; }`.
 > Redirecting stdout alone (`>/dev/null`) is not enough.
+
+> **Learned 2026-11-01** · Ansible and tooling traps from a role refactor · VERIFIED_PRIMARY (ansible-wifi roles/smc_change test runs, ansible-core 2.21.5) · Source: ansible-wifi `roles/smc_change/tasks/conditions.yml`, `tasks/stage.yml`,
+> `files/tests/test_action_report.yml` (local-knowledge-ansible, 2026-11-01) · Falsifier: an int-keyed dict surviving `to_json | from_json`
+> - A dict built in Jinja and passed through `to_json | from_json` has string keys. `commits.update({i: x})` then `.get(i)` never matches: key on strings, read with `.get(i | string)`.
+> - `loop.index0` under `{% for a in list if cond %}` counts the filtered items, not the list. Filter inside the loop body when the index must match the list.
+> - A `>-` scalar keeps the newline around a more-indented line, so a Jinja continuation line prints a literal `\n`. Normalise once where the text is printed.
+> - An unquoted task name with `: ` after a Jinja expression is a YAML parse error (ansible-playbook exit 4). Use ` - `.
+> - A script editing a CRLF file must read and write with `newline=''`: a plain `open()` rewrites every line. A diff of hundreds of lines for a small edit is that.
+> - Never probe a tool with `--help` on a production box unless its help is confirmed: `flash-kernel --help` took the flag as a kernel version and started installing.
+>
+> ```yaml
+> # roles/smc_change/tasks/conditions.yml: string keys, because the dict crosses JSON
+> {%- if r.value -%}{%- set _ = commits.update({name[8:]: r.value}) -%}{%- endif -%}
+> {%- set now = (c.commits | default({})).get(i | string, '') -%}
+> ```
