@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 
 from . import (
+  amendments,
   archive_plan,
   candidates,
   claims,
@@ -221,7 +222,15 @@ def cmd_amend(root: Path, args) -> dict:
   Returns:
     Result.
   """
-  res = decisions.amend(state.load(root), args.conflict, args.add_claim, args.supersede, args.reason, args.actor or settings.actor(), _now())
+  st, who = state.load(root), args.actor or settings.actor()
+  if args.set_successor:
+    if not args.successor:
+      raise InputError("--set-successor needs --successor")
+    res = amendments.set_successor(st, args.conflict, args.set_successor, args.successor, args.reason, who, _now())
+  else:
+    if not (args.supersede or args.keep):
+      raise InputError("--add-claim needs --supersede or --keep")
+    res = amendments.amend(st, args.conflict, args.add_claim, args.supersede, args.reason, who, _now())
   _record_decision(root, res, args.apply)
   return {"applied": args.apply, "decision": res.decision}
 

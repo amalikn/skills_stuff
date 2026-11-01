@@ -1,4 +1,4 @@
-"""Continuum pilot regressions: decision reach, agent tooling and silent passes (P4, P8-P10, P14-P16, P19, P26).
+"""Continuum pilot regressions: decision reach, agent tooling and silent passes (P4, P8-P10, P14-P16, P19, P26, P27).
 
 Each test failed before its fix (references/evaluation.md).
 
@@ -103,8 +103,8 @@ class DecisionReachTest(FixCase, unittest.TestCase):
     self.assertEqual(self.kc("amend", opened, "--add-claim", extra, "--supersede", "--reason", "r")[0], 1)
 
 
-class ReversalTest(FixCase, unittest.TestCase):
-  """P26: a decision on one conflict never silently revives a claim another conflict's decision superseded."""
+class SharedClaimCase(FixCase):
+  """One claim superseded under a first conflict and still listed on a second."""
 
   def shared_claim(self) -> tuple[str, str, str]:
     """Claim a superseded under one conflict and still listed on a second, open one.
@@ -119,6 +119,10 @@ class ReversalTest(FixCase, unittest.TestCase):
     path = self.add_doc("third.md", ["# Doc", "", "The coordinator runs Go."])
     self.ingest([make_claim(path, 3, "The coordinator runs Go.", "go service", "runs", "Go", "other.topic")], "--apply")
     return a, b, self.conflict(a, self.claim_for("The coordinator runs Go."))
+
+
+class ReversalTest(SharedClaimCase, unittest.TestCase):
+  """P26: a decision on one conflict never silently revives a claim another conflict's decision superseded."""
 
   def test_scoped_decision_refuses_to_revive(self):
     """BOTH_APPLY_SCOPED naming a claim superseded elsewhere exits 1, writes nothing, and names the claim."""
@@ -146,6 +150,36 @@ class ReversalTest(FixCase, unittest.TestCase):
     with ledger.open("a") as out:
       out.write(json.dumps(event) + "\n")
     self.assertTrue(any("revived" in w and a in w for w in self.kc("validate")[1]["warnings"]))
+
+
+class SuccessorTest(SharedClaimCase, unittest.TestCase):
+  """P27: a decision on one conflict keeps a successor set elsewhere; a successor changes only on request."""
+
+  def test_decide_keeps_standing_successor(self):
+    """Superseding a claim already superseded elsewhere keeps its successor and says so."""
+    a, b, second = self.shared_claim()
+    other = next(c for c in self.state().conflicts[second]["claims"] if c != a)
+    code, out, err = self.kc("decide", second, "USE_OTHER", "--current", other, "--reason", "r", "--apply")
+    self.assertEqual(code, 0, err)
+    st = self.state()
+    self.assertEqual(st.dispositions[a]["successor"], b)
+    self.assertEqual(st.decisions[-1]["kept_successors"], [a])
+    self.assertEqual(out["decision"]["kept_successors"], [a])
+
+  def test_set_successor_repairs_a_link(self):
+    """Setting a successor changes one link, append-only, and is refused on a claim that is not superseded."""
+    a, b, second = self.shared_claim()
+    other = next(c for c in self.state().conflicts[second]["claims"] if c != a)
+    first = next(c["conflict_id"] for c in self.state().conflicts.values() if a in c["claims"] and b in c["claims"])
+    code, _, err = self.kc("amend", first, "--set-successor", a, "--successor", other, "--reason", "wrong link", "--apply")
+    self.assertEqual(code, 0, err)
+    st = self.state()
+    self.assertEqual(st.disposition(a), "SUPERSEDED")
+    self.assertEqual(st.dispositions[a]["successor"], other)
+    self.assertEqual(st.decisions[-1]["action"], "AMEND")
+    self.assertEqual(self.kc("amend", first, "--set-successor", b, "--successor", other, "--reason", "r")[0], 1)
+    self.assertEqual(self.kc("amend", first, "--set-successor", a, "--successor", "cl-nope", "--reason", "r")[0], 1)
+    self.assertTrue(self.kc("validate")[1]["ok"])
 
 
 class AgentToolingTest(FixCase, unittest.TestCase):

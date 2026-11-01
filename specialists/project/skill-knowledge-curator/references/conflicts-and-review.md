@@ -115,7 +115,8 @@ A ruling can cover a claim the conflict did not list. `kc amend <cf> --add-claim
 Identical `CORRECTED` wording on a second conflict reuses the first operator claim.
 
 `decide` refuses to make a claim current when another conflict or relation superseded it. If the operator means that, `--override-supersession` revives it and the decision records the override; `validate` warns
-on any revival with no override.
+on any revival with no override. A claim already superseded elsewhere keeps its successor (`kept_successors` on the decision); `kc amend <cf> --set-successor <claim> --successor <id> --reason ...` repairs a
+wrong link.
 
 Trying `amend` on a scratch copy needs a real copy of the sources, because it re-checks the claim's evidence: missing sources exit 5, and a symlink to the live tree exits 1 (path escapes the project root).
 

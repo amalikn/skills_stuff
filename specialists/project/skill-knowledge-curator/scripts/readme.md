@@ -36,7 +36,7 @@ Summary: >-
 | `relate`       | `--file`                                             | `.kc/relations.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | whole batch refused on any error                           |
 | `review`       | -                                                    | `.kc/reports/review-queue.md`                                   | exit 2 while conflicts are open                            |
 | `decide`       | conflict, action, `--reason`, `--override-supersession`, options | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | re-checks evidence first (exit 5 on change)                |
-| `amend`        | conflict, `--add-claim`, `--supersede`/`--keep`, `--reason` | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl` | re-checks the claim's evidence; append-only                |
+| `amend`        | conflict, `--add-claim` + `--supersede`/`--keep`, or `--set-successor` + `--successor`, `--reason` | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl` | re-checks the claim's evidence; append-only                |
 | `render`       | `--check`                                            | `knowledge/*`, `.kc/proposals/*`                                | never overwrites a promoted page; refuses secret-like text |
 | `promote`      | `--page`, `--approve-digest`, `--reason`, `--revoke` | promotion record, re-rendered pages                             | gates must pass; digest-bound                              |
 | `archive-plan` | -                                                    | `.kc/archive-plans/<batch>.json`                                | never moves sources; rehearsal in a temp folder            |
@@ -63,7 +63,8 @@ Summary: >-
 | `worksheet.py`                                                | Worksheet batches, section listing, vocabulary, batch effect                         |
 | `candidates.py`                                               | Candidate pairs and signals, decision points, unreviewed counts                      |
 | `relations.py`                                                | Relation intake and automatic dispositions                                           |
-| `decisions.py`                                                | Review cards, decisions and amendments                                               |
+| `decisions.py`                                                | Review cards and decisions                                                           |
+| `amendments.py`                                               | `kc amend`: add a claim to a conflict, repair a successor                            |
 | `render.py`                                                   | Deterministic pages and index.json; secret scan                                      |
 | `promote.py`                                                  | Gates and promotion records                                                          |
 | `archive_plan.py`                                             | Candidates, referrers, restore rehearsal                                             |

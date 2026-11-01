@@ -9,7 +9,7 @@ records for ledger.append.
 import datetime as dt
 from dataclasses import dataclass, field
 
-from . import ids, settings
+from . import ids
 from .errors import InputError, SourceChanged
 from .evidence import Reader, recheck
 from .state import State
@@ -110,7 +110,7 @@ def review_markdown(st: State) -> str:
   return "\n".join(out).rstrip() + "\n"
 
 
-def _revalidate(st: State, cf: dict) -> None:
+def revalidate(st: State, cf: dict) -> None:
   """Re-check the evidence behind every claim in a conflict.
 
   Args:
@@ -242,6 +242,44 @@ def _revived(st: State, conflict_id: str, current: list[str], override: bool) ->
   return sorted(found)
 
 
+def _standing_successors(st: State, conflict_id: str, superseded: list[str]) -> list[str]:
+  """Claims this decision would supersede that are already superseded elsewhere: their successor stands (P27).
+
+  Args:
+    st: current state.
+    conflict_id: the conflict being decided.
+    superseded: claims the decision supersedes.
+
+  Returns:
+    The claims whose disposition is left alone.
+  """
+  own = {d["decision_id"] for d in st.decisions if d.get("conflict_id") == conflict_id}
+  events = {c: st.dispositions.get(c, {}) for c in superseded}
+  return sorted(c for c, ev in events.items() if ev.get("disposition") == "SUPERSEDED" and ev.get("successor") and ev["by"] not in own)
+
+
+def _record_dispositions(st: State, conflict_id: str, res: DecideResult, reason: str) -> None:
+  """Disposition events for a decision, leaving standing successors alone and listing them on the decision.
+
+  Args:
+    st: current state.
+    conflict_id: the conflict decided.
+    res: result holding the decision, gaining the events.
+    reason: the operator's reason.
+  """
+  dec = res.decision
+  current, superseded, did = dec["current_claims"], dec["superseded_claims"], dec["decision_id"]
+  for cid in current:
+    res.dispositions.append({"record": "disposition", "claim_id": cid, "disposition": "CURRENT", "reason": reason, "by": did})
+  standing = _standing_successors(st, conflict_id, superseded)
+  if standing:
+    dec["kept_successors"] = standing
+  for cid in (c for c in superseded if c not in standing):
+    res.dispositions.append(
+      {"record": "disposition", "claim_id": cid, "disposition": "SUPERSEDED", "successor": current[0] if current else None, "reason": reason, "by": did}
+    )
+
+
 def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, now: dt.datetime, **opts) -> DecideResult:
   """Build the records for one operator decision.
 
@@ -266,7 +304,7 @@ def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, no
     raise InputError(f"unknown conflict {conflict_id}")
   if not reason or not reason.strip():
     raise InputError("--reason is required")
-  _revalidate(st, cf)
+  revalidate(st, cf)
   decided_at = now.isoformat(timespec="seconds")
   did = ids.make_id("dr", conflict_id, action, decided_at)
   previous = [d["decision_id"] for d in st.decisions if d.get("conflict_id") == conflict_id]
@@ -294,72 +332,5 @@ def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, no
     res.decision["overrides_supersession"] = revived
   status = "open" if action == "DEFER" else "resolved"
   res.conflicts.append({**cf, "status": status, "decided_by": did})
-  for cid in current:
-    res.dispositions.append({"record": "disposition", "claim_id": cid, "disposition": "CURRENT", "reason": reason, "by": did})
-  for cid in superseded:
-    res.dispositions.append(
-      {"record": "disposition", "claim_id": cid, "disposition": "SUPERSEDED", "successor": current[0] if current else None, "reason": reason, "by": did}
-    )
-  return res
-
-
-def amend(st: State, conflict_id: str, claim_id: str, supersede: bool, reason: str, actor: str, now: dt.datetime) -> DecideResult:
-  """Add a claim to a conflict: an operator ruling reaches a claim the conflict did not list (evaluation.md P19).
-
-  Append-only, like decide: the conflict gains the claim, and on a decided conflict --supersede retires it under the ruling.
-
-  Args:
-    st: current state.
-    conflict_id: the conflict.
-    claim_id: claim to add.
-    supersede: supersede it under the conflict's latest decision; False keeps its disposition.
-    reason: the operator's reason (required).
-    actor: who decided.
-    now: decision time (timezone-aware).
-
-  Returns:
-    The decision result.
-
-  Raises:
-    InputError: unknown conflict or claim, missing reason, claim already listed, or a supersede with no ruling to apply.
-    SourceChanged: the claim's evidence moved.
-  """
-  cf = st.conflicts.get(conflict_id)
-  if cf is None:
-    raise InputError(f"unknown conflict {conflict_id}")
-  if claim_id not in st.claims:
-    raise InputError(f"unknown claim {claim_id}")
-  if claim_id in cf["claims"]:
-    raise InputError(f"{claim_id} is already in {conflict_id}")
-  if not reason or not reason.strip():
-    raise InputError("--reason is required")
-  previous = [d for d in st.decisions if d.get("conflict_id") == conflict_id]
-  rulings = [d for d in previous if d["current_claims"]]
-  if supersede and (cf["status"] == "open" or not rulings):
-    raise InputError("--supersede needs a decided conflict; use --keep, or decide it first")
-  _revalidate(st, {"claims": [claim_id]})
-  decided_at = now.isoformat(timespec="seconds")
-  did = ids.make_id("dr", conflict_id, settings.AMEND_ACTION, claim_id, decided_at)
-  current = rulings[-1]["current_claims"] if rulings else []
-  res = DecideResult(
-    decision={
-      "record": "decision",
-      "decision_id": did,
-      "conflict_id": conflict_id,
-      "action": settings.AMEND_ACTION,
-      "actor": actor,
-      "decided_at": decided_at,
-      "reason": reason,
-      "answer_text": None,
-      "scope_note": None,
-      "added_claim": claim_id,
-      "current_claims": current,
-      "superseded_claims": [claim_id] if supersede else [],
-      "previous_decision_id": previous[-1]["decision_id"] if previous else None,
-    }
-  )
-  evidence_ids = sorted({*cf["evidence_ids"], *(e["evidence_id"] for e in st.claims[claim_id]["evidence"])})
-  res.conflicts.append({**cf, "claims": [*cf["claims"], claim_id], "evidence_ids": evidence_ids})
-  if supersede:
-    res.dispositions.append({"record": "disposition", "claim_id": claim_id, "disposition": "SUPERSEDED", "successor": current[0], "reason": reason, "by": did})
+  _record_dispositions(st, conflict_id, res, reason)
   return res
