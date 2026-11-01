@@ -6,10 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_2029
+Last rotated: 20261102_0002
 ---
 
 # Changelog
+
+## 20261102_0002 — Learned: say what a briefed figure counts
+
+`references/04_falsifiability.md`, from the skill-knowledge-curator external research (2026-11-02).
 
 ## 20261101_2353 — Learned: three measures for a filter, blind mixed audit
 
@@ -191,10 +195,3 @@ re-upgraded onto managed block version `2026-09-23-template-sourced-blocks-v1`, 
 The package-specific drift handling, update rules and answer-contract addition remain below the END marker as `###` subsections of *Package-specific routing*, so they extend the generic sections
 rather than colliding with them, and a future upgrade cannot reach them. Re-verified after the re-upgrade: `just check` 189 passed, `just nav-validate` 0 warnings and 0 failures, `just lint-md` 0
 errors, `just validate-all` green, and a second consecutive `just nav-upgrade` left `AI_NAVIGATION.md` byte-identical.
-
-## 0.1.0 — 2026-09-23
-
-Initial release. Ships a portable eval-definition contract, observation/falsifiability schemas, append-only JSONL history tooling, a derived Markdown scorecard, two unlike worked suites, and negative
-validation fixtures.
-
-The release deliberately separates definitions from execution, makes `stale` and `not_evaluated` derived states, permits six falsifiability methods, and reserves but does not implement basis hashing.
