@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement; both source documents, operator decisions 2026-10-27, enhancements added in the first build
 Scope: Every feature from the three source documents and the enhancements added beyond them, with disposition (built, deferred, rejected) and invariant coverage
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-01
 Summary: >-
   What exists now, what was added beyond the documents and why, what is deferred and on what trigger, the v2 staged roadmap (stages 1-7, nothing
   built), and where each design invariant is enforced.
@@ -68,7 +68,7 @@ Source: [v2 spec](../docs/knowledge-curator-foss-implementation-spec-v2.md), bui
 
 Rules for every stage:
 
-- **Gate 0:** no stage starts before the real-corpus pilot passes (cases A-F in [evaluation.md](evaluation.md)).
+- **Gate 0:** passed 2026-11-01 on the Continuum rerun ([evaluation.md](evaluation.md), redefined by the operator); MCP cases A-F are optional.
 - One stage at a time; a stage is done when its listed V2 tests pass, `just check` is green and its runtime is measured against a stated budget.
 - Before any new dependency: pin the exact version and check its current licence, platforms and transitive runtime from upstream (v2 section 4); record it in `requirements*.txt` and a seam module.
 - v1 stays the base: two-axis status (C3), jsonschema, the single `ledger.py` writer, `--apply` gating, promotion gates. v2 additions are optional fields, optional installs or new seams.
@@ -101,7 +101,11 @@ sits under the data, cache and runtime routing; whether any slurp step already i
 
 ## Fixes from the Continuum pilot
 
-From [evaluation.md](evaluation.md), "Pilot on the Continuum corpus" (2026-10-30). Proposed, not built; each needs a test that fails first.
+From [evaluation.md](evaluation.md), "Pilot on the Continuum corpus" (2026-10-30). **Built 2026-11-01** (tests `tests/test_continuum_recall.py`, `test_continuum_tooling.py`, each failing first): P1-P4, P8-P10,
+P12-P16, P19, P20. **Not built:** P5, P6, P7, P17, P18, P21-P25; each needs a test that fails first.
+
+P1 went beyond the row below: same-topic cross-source pairs need only a shared subject word, because fuzzy predicates missed the real wording. P12 also ignores provenance keys when comparing
+scopes, which repairs existing ledgers. P15 dropped `archive` from the default and excludes `archive_dir` by path, and warns on any other excluded folder holding Markdown.
 
 | Finding | Fix |
 | ------- | --- |
@@ -121,6 +125,14 @@ From [evaluation.md](evaluation.md), "Pilot on the Continuum corpus" (2026-10-30
 | P15 | Remove `archive` from the default, or warn loudly when an excluded folder holds Markdown |
 | P16 | `worksheet --path`, `claims --coverage`, and a `kc sections --path` listing |
 | P17 | Port the Continuum register and coverage scripts as `kc registers` and `kc page-coverage` (reference: `tools_stuff/continuum/scripts/`) |
+| P18 | Lint claim text against its excerpt: numbers, negation and names in the text must appear in the excerpt; flag, never refuse, because a paraphrase can be right |
+| P19 | `kc amend <cf> --add-claim <id> --supersede/--keep --reason`: append-only, links `previous_decision_id`, `successor` is the ruling's current claim; `--supersede` needs a decided conflict |
+| P20 | `settled` is `CURRENT` with no open conflict of any severity; publishing still uses `effective()` |
+| P21 | `review` flags open conflicts whose claims were touched by a later decision, and a recommendation naming a superseded claim |
+| P22 | `kc page-claims`: facts on an authored page with no claim id, offered as a batch to extract |
+| P23 | Vocabulary proposal records with a merge step in `kc vocabulary` |
+| P25 | Mark multi-valued predicates in config so they stop pairing, and let a reviewed decision-point group be recorded as one classification |
+| P24 | Port with P17: conformance into `claims`, verification into the external-fact record |
 
 ## Invariants and where they are enforced
 

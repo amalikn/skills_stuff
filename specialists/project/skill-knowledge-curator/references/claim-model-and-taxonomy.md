@@ -68,6 +68,9 @@ Each span is `{source_path, line_start, line_end, excerpt}`. Intake refuses it u
 excerpt occurs inside them. The stored evidence record adds `source_id`, `source_version_id`, `source_sha256`, `excerpt_sha256`, the overlapping `section_ids` and an `evidence_id`. Later checks
 (`validate`, `decide`, the `evidence_verified` gate) re-read the file: `valid`, `relocated` (found elsewhere: warning), `broken` or `missing` (error, exit 5).
 
+Intake rules (2026-11-01): a claim entered as `HISTORICAL` or `SUPERSEDED` needs `successor` (a claim ID) or `historical_basis: source-stated`. Scope holds the situation a claim applies in, never
+its provenance: `source`, `author`, `document` and `file` keys are ignored when comparing scopes, and `claims` warns on them. Provenance belongs in evidence and labels.
+
 > **Learned 2026-10-29** · claim extraction from design documents · VERIFIED_SECONDARY (harvest 2026-10-29 of a cloud-repatriation design programme) ·
 > Source: aws-to-local `.archcore/rules/single-source-and-restraint.rule.md`, `methodology-freeze.rule.md`, `audit-copy-integrity.rule.md`;
 > `docs/platform-approach-revision-plan-rev06-20260728_1723.md:41-42` · Falsifier: a design corpus where present-tense descriptions of

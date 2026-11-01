@@ -4,10 +4,10 @@ Category: reference
 Status: current
 Authority: local-supplement; handoff section 8 (T01-T14), design doc sections 12-13 (T-001 to T-012, semantic targets, metamorphic tests), merged; results measured 2026-10-27
 Scope: The merged acceptance catalog, which test covers each item and its status, the semantic evaluation still owed, and the pilot plan on the MCP audit corpus
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-01
 Summary: >-
-  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (42 tests);
-  semantic recall and the real-corpus pilot are not yet measured. Settles source conflict C9.
+  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (66 tests);
+  gate 0 passed on the Continuum rerun (2026-11-01); semantic recall is not measured. Settles source conflict C9.
 ---
 
 # Evaluation
@@ -18,6 +18,7 @@ Summary: >-
 - [Semantic evaluation (not yet measured)](#semantic-evaluation-not-yet-measured)
 - [Pilot on the MCP post-migration audit](#pilot-on-the-mcp-post-migration-audit)
 - [Pilot on the Continuum corpus (2026-10-30)](#pilot-on-the-continuum-corpus-2026-10-30)
+- [Gate 0 and the rerun (2026-11-01)](#gate-0-and-the-rerun-2026-11-01)
 - [Release gate](#release-gate)
 
 ## Deterministic catalog
@@ -67,7 +68,7 @@ threshold, at least 90% precision for conflict prompts, and 100% evidence validi
 
 ## Pilot on the MCP post-migration audit
 
-Corpus: `/Volumes/Data/_ai/_project/project_stuff/mcp-post-migration-audit` (24 Markdown files). A read-only inventory on 2026-10-27 found 213 sections and five byte-identical pairs between
+Optional since 2026-11-01: gate 0 now rests on Continuum (see below). Cases A-F were not run. Corpus: `/Volumes/Data/_ai/_project/project_stuff/mcp-post-migration-audit` (24 Markdown files). A read-only inventory on 2026-10-27 found 213 sections and five byte-identical pairs between
 `final-audit-pack/` and the step reports (design case F, found automatically). Next, read-only with ledgers in a scratch copy first:
 
 | Case | Expectation                                                                                               |
@@ -132,6 +133,13 @@ Findings (fixes are listed in [feature-inventory.md](feature-inventory.md), "Fix
 | P16 | A pack of parallel agents needs a shared file: three `kc` steps have no path filter (`worksheet`), no coverage in dry run (P9), and no way to list ids by file, so every agent wrote its own helpers; six near-identical `coverage.py` scripts resulted | Continuum batches |
 | P17 | Derived pages are not the deliverable for design corpora: operators want authored pages; a page-to-ledger coverage gate (`check_architecture_coverage.py`) and per-area registers (`render_claim_registers.py`) gave the proof without `kc render` | Continuum 2026-11-01 |
 | P18 | Agent claim text can be lossy against its own excerpt: rewrite agents reading the sources corrected truncated and relabelled claims, though every excerpt had verified. Excerpt checks prove the quote, not the paraphrase | Continuum rewrite pass, 2026-11-01 |
+| P20 | `query` returned `settled: true` for claims in open P2 conflicts (88 claims on Continuum), against [conflicts-and-review.md](conflicts-and-review.md): `settled` reused the publishing test `effective()`. A P2 stays `CURRENT` by design, yet it is disputed | `cf-7ce3397662`, 2026-11-01 |
+| P21 | Open conflicts are not rechecked after a decision: three Continuum P2s may be narrowed, two snapshot conflicts follow the storage decision, and `cf-03f35fb879` carries a stale recommendation | Continuum session record, follow-ups |
+| P22 | Facts added from cited lines during an authored-page rewrite get no claim id; nothing routes them back to the ledger | Continuum session record, follow-ups |
+| P23 | 64 vocabulary proposals from extraction have no home in `kc`; they stayed unmerged in a project file | Continuum session record |
+| P24 | Two Continuum gates are not planned for porting: `apply_claim_batch.py` (vocabulary conformance before dry run) and `check_verification.py` | `tools_stuff/continuum/scripts/` |
+| P25 | `unreviewed_pairs` and `decision-points` count unrecorded pairs, not disagreements. A coordinator that reviews by topic records few pairs (428 on Continuum against 3,704 open), and multi-valued predicates (`must`, `is tested by`) pair claims that only add to each other. A sample of 6 of 249 groups: no clear contradiction, one possible (Temporal optional against durable orchestration) | `kc decision-points` on a scratch copy, 2026-11-01 |
+| P19 | `decide` only supersedes claims listed in the conflict: an operator ruling that also covers related claims (se `cl-88cec07d70a0`, pf `cl-f3c2d0e95086` under cf-d846a9dbb3) leaves them CURRENT, held only in the decision text. Re-deciding with `previous_decision_id` works for refinement, but there is no way to add a claim to a decided conflict | Continuum first-slice decisions, 2026-11-01 |
 
 Full run (same day, option "shared vocabulary + coarser granularity"): 8 extraction agents, 904 of 904 sections accounted for (876 claims-extracted, 28 context), 3,491 claims
 (3.86 per section, down from 10.9 in the canary), every batch's dry run and apply exit 0 with zero vocabulary-conformance issues; agent cost about 1.66M tokens, 9-16 minutes
@@ -140,6 +148,26 @@ per batch in parallel; each batch applied in under 1 s; `validate` ok. Three of 
 
 Interim practice until the fixes land: give every extraction batch one shared vocabulary file (subjects, predicates, topic-key namespaces per source), and run a
 cross-source conflict pass by topic in addition to `kc candidates`.
+
+## Gate 0 and the rerun (2026-11-01)
+
+Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP cases
+A-F become optional. **Result: passed.** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
+
+Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read only):
+
+| Measure | Before | After |
+| --- | --- | --- |
+| Probe: Fastify claim worded with subject and predicate unlike the Axum claims | 0 pairs | paired with "Rust Axum" (`same-topic-cross-source`) |
+| Cross-source pairs with `same-key-different-object` | hidden by provenance scope | 8,603 of about 19,800 pairs |
+| Review unit | 17,196 raw pairs | 249 decision points over 1,173 claims (0.09 s) |
+| `candidates` runtime | 5.2-5.7 s | 2.2 s, **over the 2 s budget** with 40% more pairs compared; FTS 3.1 s to 0.6 s |
+| `validate` | `ok`, no warnings | `ok`, warns on 1,172 claims with no recorded pair classification (review prompts, P25) and one unlinked historical claim |
+
+Exercised end to end on the scratch copy: `amend` on the two P19 claims, `render --apply` (0.55 s), `validate --strict` (0.8 s), `review`. Pair counts stay high because pairs are ranked, not dropped: only 78
+same-source pairs are suppressed. Agents use `decision-points` and `candidates --limit`.
+
+Read 1,172 and 249 as review prompts, not disputes (P25). They are neither 1,172 new conflicts nor a clean result: they can hide a real conflict that nobody recorded.
 
 ## Release gate
 

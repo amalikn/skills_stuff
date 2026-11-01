@@ -79,7 +79,7 @@ A higher step number, a longer text, a more confident tone or more copies decide
 | -------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
 | P0       | Security, destructive instruction, incompatible production runbook or current architecture | Blocks the page's promotion and every archive candidate citing it  |
 | P1       | Conflicting requirements, implementation decisions, verified outcomes                      | Claims publish as `REVIEW_REQUIRED`; blocks promotion of that page |
-| P2       | Terminology, alternative proposals, low-impact ambiguity                                   | Claims stay `CURRENT`, listed in open issues                       |
+| P2       | Terminology, alternative proposals, low-impact ambiguity                                   | Claims stay `CURRENT`, listed in open issues, `settled: false`     |
 | P3       | Duplicate or style difference                                                              | Not a conflict: classify `equivalent`                              |
 
 ## Review card and actions
@@ -108,7 +108,14 @@ No answer means `REVIEW_REQUIRED`, never default approval; no scheduled run may 
 (`--actor` or `KC_ACTOR`), `decided_at`, `reason`, `answer_text` (the operator's words when given), `scope_note`, `current_claims`, `superseded_claims` and `previous_decision_id`. A reversal is a new
 decision naming the old one; nothing is overwritten (INV-016). Identity comes from the session, not from authentication: do not call it verified.
 
+## Amending a conflict
+
+A ruling can cover a claim the conflict did not list. `kc amend <cf> --add-claim <id> --supersede --reason ... --apply` adds it to a decided conflict and supersedes it under the ruling;
+`--keep` lists it and leaves its disposition, on an open or decided conflict. Each records an `AMEND` decision naming the previous one. Record it only from the operator's own ruling.
+Identical `CORRECTED` wording on a second conflict reuses the first operator claim.
+
 ## Answering while unresolved
 
-`kc query <text>` returns `settled: false` and the open conflict for a disputed claim. An agent answers: "Not settled: A says X, B says Y; conflict cf-... awaits a decision", never one side as fact
+`kc query <text>` returns `settled: false` and the open conflict for a disputed claim, at any severity, and `unreviewed_pairs` for cross-source pairs nobody has classified (a prompt to look,
+not a dispute). An agent answers: "Not settled: A says X, B says Y; conflict cf-... awaits a decision", never one side as fact
 (design 7.9). Superseded and historical claims appear only with `--history`, marked as such (INV-013).

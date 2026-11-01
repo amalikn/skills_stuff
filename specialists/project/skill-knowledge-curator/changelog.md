@@ -14,6 +14,10 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 20:56 (feature, operator request): Continuum fixes built, each test failing first (24 new tests, 66 total): `settled` false on any open conflict (P20); `kc vocabulary`, `kc sections`, `kc decision-points`, `kc amend`; `worksheet --path` and vocabulary, `claims --coverage`, `sections_closed` and warnings, `candidates --limit`, cross-source ranking and `same-topic-cross-source`, `validate --strict`; provenance scope keys ignored; `archive` off the default exclusions; `HISTORICAL`/`SUPERSEDED` need a basis; `CORRECTED` reuses identical wording; review cards take more than two claims. `references/` updated; new module `worksheet.py`. `candidates` 5.2 s to 2.2 s, still over its 2 s budget.
+- 2026-11-01 20:56 (decision, operator): gate 0 redefined and passed on the Continuum rerun; MCP cases A-F optional. `references/evaluation.md`, findings P20-P24 added.
+- 2026-11-01 20:56 (docs, operator request): `SKILL.md` workflow diagram redrawn as three stages with who acts at each step.
+- 2026-11-01 20:37 (learned): `references/evaluation.md` P19, `decide` cannot supersede claims outside the conflict.
 - 2026-11-01 01:31 (learned): `references/evaluation.md` P18, claim text can be lossy against a verified excerpt.
 - 2026-11-01 01:10 (learned, Continuum closeout): `references/evaluation.md` findings P14-P17 and `references/feature-inventory.md` fixes (CORRECTED duplicates, archive default, agent tooling gaps, authored-page coverage). Totals on that corpus: 45 sources, 3,495 claims, 100 conflicts, 33 decided.
 - 2026-10-30 19:34 (learned, Continuum full run): `references/evaluation.md` records the full extraction run (904 sections, 3,491 claims, 3.86 per section, about 1.66M agent tokens) and findings P12 (provenance in scope hides cross-source conflicts) and P13 (18,129 candidate pairs in 5.2 s; decision-point grouping as the review unit); `references/feature-inventory.md` gains fixes P12-P13.

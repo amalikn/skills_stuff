@@ -40,20 +40,22 @@ Run from the skill folder (`just kc <command> <project> ...` or `python scripts/
 | 0    | `init`                                               | kernel                             | `.kc/config.yaml`, `.kc/.gitignore`                                                               |
 | 1    | `inventory`                                          | kernel                             | `.kc/sources.jsonl`, `.kc/sections.jsonl`, `.kc/reports/inventory.json` (exclusions,              |
 |      |                                                      |                                    |   byte-duplicate groups)                                                                          |
-| 2    | `worksheet [--batch N]`                              | kernel serves, agent reads         | nothing: pending sections with their text, bounded by `worksheet.max_sections` / `max_chars`      |
-| 3    | `claims --file claims.json`                          | agent writes the file,             | `.kc/claims.jsonl` (claim versions, initial dispositions, section statuses); any error rejects    |
-|      |                                                      |   kernel verifies                  |   the whole batch                                                                                 |
+| 2    | `worksheet [--batch N] [--path GLOB]`                | kernel serves, agent reads         | nothing: pending sections with their text, bounded by `worksheet.max_sections` / `max_chars`,     |
+|      |                                                      |                                    |   plus the ledger `vocabulary` to reuse                                                           |
+| 3    | `claims --file claims.json [--coverage]`             | agent writes the file,             | `.kc/claims.jsonl` (claim versions, initial dispositions, section statuses); any error rejects    |
+|      |                                                      |   kernel verifies                  |   the whole batch; dry run reports `warnings`, `sections_closed`                                  |
 | 4    | `coverage`                                           | kernel                             | nothing; repeat 2-3 until no `pending`                                                            |
-| 5    | `candidates`                                         | kernel                             | nothing: unclassified pairs with signals                                                          |
+| 5    | `decision-points`, `candidates [--limit N]`          | kernel                             | nothing: groups to review, then unclassified pairs, cross-source first, with `counts`             |
 | 6    | `relate --file relations.json`                       | agent writes, kernel               | `.kc/relations.jsonl`, `.kc/conflicts.jsonl`, disposition events                                  |
 |      |                                                      |   applies policy                   |                                                                                                   |
 | 7    | `review`                                             | kernel prints, operator reads      | `.kc/reports/review-queue.md`; exit 2 while conflicts are open                                    |
-| 8    | `decide <cf> <ACTION> --reason ...`                  | operator answers, agent records    | `.kc/decisions.jsonl`, conflict and disposition events                                            |
+| 8    | `decide <cf> <ACTION> --reason ...`, `amend <cf> ...`  | operator answers, agent records  | `.kc/decisions.jsonl`, conflict and disposition events                                            |
 | 9    | `render [--check]`                                   | kernel                             | `knowledge/*.md`, `knowledge/index.json`; promoted pages go to `.kc/proposals/` instead           |
-| 10   | `validate`                                           | kernel                             | nothing; exit 3 (or 5 for a changed source) on any error                                          |
+| 10   | `validate [--strict]`                                | kernel                             | nothing; exit 3 (or 5 for a changed source) on any error; `--strict` fails on pending sections    |
 | 11   | `promote --page ... [--approve-digest D --reason R]` | operator approves                  | promotion record; page re-rendered as promoted                                                    |
 | 12   | `archive-plan`                                       | kernel                             | `.kc/archive-plans/<batch>.json` (plan only)                                                      |
-| any  | `query <text>`, `report`, `intake --payload`         | kernel                             | nothing                                                                                           |
+| any  | `query <text>`, `report`, `intake --payload`,        | kernel                             | nothing                                                                                           |
+|      |   `sections [--path GLOB]`, `vocabulary`             |                                    |                                                                                                   |
 
 Incremental runs: inventory appends records only for new, changed, renamed or removed files; unchanged blocks keep their section IDs and coverage; candidates skips classified pairs; a decision is
 never asked twice. A changed source reopens checks through `validate` and the evidence gate, not silently.
@@ -121,6 +123,9 @@ never stored.
 
 Budget: kernel commands under 2 s for a 50-document project; the agent's extraction is the expensive part. Measured 2026-10-27 on an M2 Max, Python 3.14.5: the 42-test suite in 1.1-1.8 s; `inventory`
 dry run over the MCP post-migration audit corpus (24 files, 213 sections) 0.14 s. Every command reports `elapsed_s`. Re-measure when a project passes 500 documents.
+
+Measured 2026-11-01 on a copy of the Continuum ledger (45 sources, 3,496 claims): `candidates` 2.2 s, over budget (surfaced in [evaluation.md](evaluation.md); the persisted FTS cache in the Deferred list is the
+next step), `decision-points` 0.09 s, `validate` 0.26 s (0.8 s with rendered pages), `render` 0.55 s, others under 0.1 s. The 66-test suite takes 2.5 s.
 
 ## Settled source conflicts
 
