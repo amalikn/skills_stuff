@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261028_2101
+Last rotated: 20261101_2353
 ---
 
 # Changelog
@@ -198,7 +198,3 @@ Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_w
 ## 20261026_2222 — Ansible: run_once is per serial batch, results reach every host
 
 - `languages/ansible.md`: Learned 2026-10-26 (f) - run_once applies include_vars, set_fact and register to all batch hosts; when judged on the first host; once per batch, not per run.
-
-## 20261026_2146 — Ansible: until does not retry unreachable; async drop-proof waits; callbacks_enabled in 2.21
-
-- `languages/ansible.md`: Learned 2026-10-26 (e) - until/retries and unreachable hosts, async + await pattern, async shell in check mode, callback_whitelist ignored in 2.21, callback options are a literal DOCUMENTATION (local-knowledge-ansible `76b0f86`).
