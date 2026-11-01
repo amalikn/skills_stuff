@@ -18,7 +18,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 - Pack built 2026-10-27: `SKILL.md` (alias skill-kc), 8 references, 4 schemas, `scripts/knowledge_curator.py` (kc) over `knowledge_curator_lib/`, 42 tests, `just check` green.
 - Installed as symlinks in `~/.claude/skills` and `~/.codex/skills`; `/skill-kc` alias in `~/.claude/CLAUDE.md`.
-- 2026-11-01: Continuum fixes built (P1-P4, P8-P10, P12-P16, P18-P21, P25-P28), `kc aliases`, `topics`, `recall`, 97 tests, `just check` green; gate 0 failed on the labelled MCP pilot, 44.4% against 80% (references/evaluation.md).
+- 2026-11-01: Continuum fixes built (P1-P4, P8-P10, P12-P16, P18-P21, P25-P28), `kc aliases`, `topics`, `recall`, 99 tests, `just check` green; gate 0 failed on the labelled MCP pilot, 44.4% against 80% (references/evaluation.md).
 - Real use: Continuum only (45 sources, 3,496 claims). `render`, `promote`, `archive-plan`, slurp `intake` have not served a real project.
 - v2 spec catalogued 2026-10-27 (`docs/knowledge-curator-foss-implementation-spec-v2.md`); conflicts V1-V9 settled; staged roadmap in references/feature-inventory.md, nothing built.
 
@@ -59,5 +59,6 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Memory pointers — KEEP
 
+- 2026-11-01 close: memory-keeper `session.closeout.20261101.skill-kc`, `skill-kc.mcp-pilot-20261101`; checkpoint `slurp-20261101-skill-kc-close`; record `docs/session-record-*`; pilot data `skills-data/skill-knowledge-curator/mcp-pilot-20261101/`.
 - memory-keeper channel `skill-kc`: keys `skill-kc.build-20261027`, `session.closeout.20261027.skill-kc`; checkpoint `slurp-20261027-skill-kc`; v2 session key `skill-kc.v2-spec-20261027`, checkpoint `slurp-20261027-skill-kc-v2`; handoff key `skill-kc.handoff-20261027`, checkpoint `slurp-20261027-skill-kc-handoff`.
 - project-context project `skill-knowledge-curator`.

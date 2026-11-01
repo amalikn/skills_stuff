@@ -11,6 +11,10 @@ Last rotated: 20261029_2029
 
 # Changelog
 
+## 20261101_2307 — Learned: probes inherit assumptions; blind keys and pre-committed marks
+
+`references/04_falsifiability.md`, from the skill-knowledge-curator gate 0 result (2026-11-01).
+
 ## 20261029_2028 — blind_ab.py: blind A/B grading packet and unblinded per-criterion scoring (0.1.10)
 
 New `scripts/blind_ab.py` (`just blind-ab`), catalogued in scripts/README.md; promoted from the skill-network-architect evaluation

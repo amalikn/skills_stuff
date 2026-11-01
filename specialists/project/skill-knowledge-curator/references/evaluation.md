@@ -6,7 +6,7 @@ Authority: local-supplement; handoff section 8 (T01-T14), design doc sections 12
 Scope: The merged acceptance catalog, which test covers each item and its status, the semantic evaluation still owed, and the pilot plan on the MCP audit corpus
 Last reviewed: 2026-11-01
 Summary: >-
-  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (97 tests);
+  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (99 tests);
   gate 0 failed on the labelled MCP pilot, 44.4% recall (2026-11-01); semantic recall is not measured. Settles source conflict C9.
 ---
 

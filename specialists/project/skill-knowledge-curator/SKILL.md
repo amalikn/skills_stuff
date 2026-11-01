@@ -36,7 +36,7 @@ never edits, moves or deletes a source. It adds no daemon, vector store, knowled
 
 ## Orient first
 
-1. **Status.** v1 kernel with the Continuum pilot fixes (2026-11-01; 97 tests pass). Continuum (45 sources, 3,496 claims) is the real-corpus pilot; gate 0 failed on the labelled MCP pilot: 44.4% conflict recall against an 80% mark, with all three P0 labels missed, so never call a project's conflicts complete. Semantic recall is not
+1. **Status.** v1 kernel with the Continuum pilot fixes (2026-11-01; 99 tests pass). Continuum (45 sources, 3,496 claims) is the real-corpus pilot; gate 0 failed on the labelled MCP pilot: 44.4% conflict recall against an 80% mark, with all three P0 labels missed, so never call a project's conflicts complete. Semantic recall is not
    measured, `render`, `promote` and `archive-plan` have not served a real project, skill-slurp-chat Step 4b is not wired, and archiving is plan-only. Do not say a project has been curated until its
    `kc validate` passes and the operator has reviewed it.
 2. Read the target project's `AGENTS.md` and governing files first. Project rules outrank this skill. Never cross-index apn and personal projects.
@@ -92,7 +92,7 @@ never edits, moves or deletes a source. It adds no daemon, vector store, knowled
 1. `init`, `inventory` (dry run, then `--apply`).
 2. `worksheet`: for each batch, reuse its `vocabulary` terms and write claims JSON (one proposition each, exact excerpts, `context` with a reason for sections without claims), then `claims --file ...
    --apply`. Act on `warnings`. Repeat until `coverage` shows no `pending`. Parallel agents take one file each with `worksheet --path`; the coordinator applies batches one at a time.
-3. `decision-points`, then `candidates --limit N`: work the groups first, read both spans and their paragraphs for a pair, write relations JSON (classify `uncertain` when unsure), then `relate --file
+3. After parallel batches, consolidate (`aliases`), then relate by reading `kc topics` ([references/workflow.md](references/workflow.md)). Use `decision-points` and `candidates --limit N` as prompts: read both spans and their paragraphs for a pair, write relations JSON (classify `uncertain` when unsure), then `relate --file
    ... --apply`.
 4. `review`: put each card to the operator in the session, grouped by topic. Record only an explicit answer with `decide ... --apply`. No answer leaves it open. When a ruling also covers a claim
    outside the conflict, record that with `amend <cf> --add-claim <id> --supersede --reason ... --apply`.

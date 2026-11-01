@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261101_2307 — Learned: a predicate answering a second question
+
+`references/testing.md`, from skill-knowledge-curator (2026-11-01).
+
 ## 20261101_1937 — Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits
 
 Learned 2026-11-01 in `languages/ansible.md`, from ansible-wifi smc_change.

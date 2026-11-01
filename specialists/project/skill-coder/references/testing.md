@@ -188,3 +188,12 @@ check: _require-venv
 > # skill-drawio tests/test_e2e_family.py ClickIsolate._run
 > self.assertIs(sel.get("transient"), True)   # never a saved change: a click on a cell defaults to one in draw.io
 > ```
+
+> **Learned 2026-11-01** · any flag derived from a state · VERIFIED_PRIMARY · Source: skill-knowledge-curator `scripts/knowledge_curator_lib/query.py` at `f819ff3` · Falsifier: a shared predicate that stays right for two callers asking different questions
+> A predicate written for one question silently answers another. `settled` reused the publishing test, so a disputed P2 claim read as settled while 42 tests passed: the fixture's conflicts were all P1. Name the question each caller asks, and test the case where the answers differ.
+
+```python
+# query.py at f819ff3: effective() asks "may this be published", settled asks "is this disputed"
+open_conflicts = st.open_conflicts(cid)
+"settled": disp == "CURRENT" and not open_conflicts,
+```

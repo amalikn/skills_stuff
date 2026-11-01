@@ -43,6 +43,10 @@ kc command project *ARGS: _require-venv
 ledger-diff before after: _require-venv
     @{{py}} scripts/ledger_diff.py "{{before}}" "{{after}}"
 
+# Print claim and context records that carry a project's claims onto its byte-identical files (read-only).
+restate-copies project: _require-venv
+    @{{py}} scripts/restate_byte_copies.py "{{project}}"
+
 # Run the unit and end-to-end tests (read-only; temporary copies only).
 test: _require-venv
     @{{py}} -m unittest discover -s tests

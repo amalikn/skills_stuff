@@ -68,3 +68,8 @@ the pinned release: the tool printed its unknown-command text and exited 0. An i
 survive a restart was never restarted. Assert on specific content the feature alone produces, check the exit code and the owning daemon's
 log (no error lines), and exercise the condition the claim is about; a counterexample that removes the feature must turn the eval red
 (2026-10-29 harvest).
+
+> **Learned 2026-11-01** · pass marks and answer keys · VERIFIED_PRIMARY (a curation tool's recall gate, measured) · Source: skill-knowledge-curator `references/evaluation.md`, Gate 0 result · Falsifier: a probe built from the feature's
+> own assumption that predicts the result of a blind labelled set
+> A hand-built probe inherits the assumption under test. A recall probe gave both claims one topic, passed, and opened a gate; agents working apart shared 1 of 245 topics, and a blind labelled set then scored 44.4% against an 80% mark.
+> Commit the mark before measuring, have an agent write the answer key without seeing the tool's output, score each stage separately, and keep the mark when it fails. Report any kinder reading as secondary, beside the result and never in place of it.
