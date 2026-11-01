@@ -9,7 +9,7 @@ from collections import Counter
 from itertools import combinations
 
 from . import ids
-from .candidates import classified, multi_valued, norm_cached, overlaps, situation, source_ids
+from .candidates import classified, compared, multi_valued, norm_cached, overlaps, situation, source_ids
 from .errors import InputError
 from .state import State
 
@@ -40,7 +40,7 @@ def _key_groups(st: State) -> dict[tuple, list[str]]:
   groups: dict[tuple, list[str]] = {}
   multi = multi_valued(st)
   for cid in sorted(st.claims):
-    c = st.claims[cid]
+    c = compared(st, st.claims[cid])
     if st.disposition(cid) in ("CURRENT", "REVIEW_REQUIRED") and norm_cached(c["predicate"]) not in multi:
       where = tuple(sorted((k.lower(), str(v).lower()) for k, v in situation(c["scope"]).items()))
       groups.setdefault((norm_cached(c["subject"]), norm_cached(c["predicate"]), where), []).append(cid)
@@ -57,7 +57,7 @@ def _word_groups(st: State) -> dict[str, list[str]]:
     word -> claim IDs, for words within the rarity limit. Claims on multi-valued predicates stay out.
   """
   cfg, multi = st.cfg["candidates"], multi_valued(st)
-  live = {c: x for c, x in st.claims.items() if st.disposition(c) in ("CURRENT", "REVIEW_REQUIRED")}
+  live = {c: compared(st, x) for c, x in st.claims.items() if st.disposition(c) in ("CURRENT", "REVIEW_REQUIRED")}
   project = set(_WORD.findall(norm_cached(st.cfg["project_id"])))
   groups: dict[str, list[str]] = {}
   for cid in sorted(live):
@@ -81,7 +81,7 @@ def _word_pairs(st: State, members: list[str], done: set) -> list[tuple[str, str
   """
   out = []
   for a, b in _open_pairs(st, members, done):
-    ca, cb = st.claims[a], st.claims[b]
+    ca, cb = compared(st, st.claims[a]), compared(st, st.claims[b])
     same_key = norm_cached(ca["subject"]) == norm_cached(cb["subject"]) and norm_cached(ca["predicate"]) == norm_cached(cb["predicate"])
     if not same_key and overlaps(situation(ca["scope"]), situation(cb["scope"])):
       out.append((a, b))
@@ -187,6 +187,20 @@ def group_review(st: State, group_id: str, reason: str) -> dict:
     rel = ids.make_id("grp", group_id, found[0])
     return {"record": "group_review", "relation_id": rel, "relation": "group-reviewed", "group_id": group_id, "claims": found[0], "reason": reason}
   raise InputError(f"unknown or already reviewed group {group_id}")
+
+
+def review_pairs(st: State) -> set[frozenset]:
+  """Every pair a decision point puts in front of a reviewer, key and word groups alike.
+
+  Args:
+    st: current state.
+
+  Returns:
+    Pairs as frozensets of two claim IDs.
+  """
+  done = classified(st)
+  found = {frozenset(p) for members in _key_groups(st).values() for p in _open_pairs(st, members, done)}
+  return found | {frozenset(p) for members in _word_groups(st).values() for p in _word_pairs(st, members, done)}
 
 
 def unreviewed_counts(st: State) -> dict[str, int]:

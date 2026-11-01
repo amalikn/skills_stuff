@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kc/alias-input",
+  "title": "Consolidation alias (kc aliases input): two wordings of one thing, used only when comparing claims",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record", "field", "term", "canonical", "reason"],
+  "properties": {
+    "record": {"const": "alias"},
+    "field": {"enum": ["subject", "predicate", "topic_key"]},
+    "term": {"type": "string", "minLength": 1},
+    "canonical": {"type": "string", "minLength": 1},
+    "reason": {"type": "string", "minLength": 3},
+    "revoked": {"type": "boolean"}
+  }
+}

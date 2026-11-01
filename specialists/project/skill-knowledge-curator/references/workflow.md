@@ -58,6 +58,9 @@ Run from the skill folder (`just kc <command> <project> ...` or `python scripts/
 |      |   `sections [--path GLOB]`, `vocabulary`,            |                                    |                                                                                                   |
 |      |   `drift [--path GLOB]`                              |                                    |                                                                                                   |
 | any  | `group-review <group_id> --reason ...`               | agent records a whole group        | `.kc/relations.jsonl` (`group_review` record)                                                     |
+| 4b   | `aliases --file aliases.json`                        | consolidation agent writes,        | `.kc/aliases.jsonl`: run after parallel extraction, from `vocabulary`; comparison only            |
+|      |                                                      |   kernel checks                    |                                                                                                   |
+| any  | `recall --labels gold.json`                          | kernel                             | nothing: labelled conflicts against what reaches review                                           |
 
 Incremental runs: inventory appends records only for new, changed, renamed or removed files; unchanged blocks keep their section IDs and coverage; candidates skips classified pairs; a decision is
 never asked twice. A changed source reopens checks through `validate` and the evidence gate, not silently.

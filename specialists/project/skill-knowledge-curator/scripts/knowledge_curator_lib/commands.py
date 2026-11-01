@@ -5,12 +5,10 @@ raises a KcError subclass whose exit_code the front end returns. Safety: writes 
 is set (promote --apply and archive-plan --apply included); dry runs take no lock.
 """
 
-import datetime as dt
 import json
 from pathlib import Path
 
 from . import (
-  amendments,
   archive_plan,
   candidates,
   claims,
@@ -22,6 +20,7 @@ from . import (
   ledger,
   promote,
   query,
+  recall,
   relations,
   render,
   report,
@@ -31,16 +30,9 @@ from . import (
   worksheet,
   yaml_io,
 )
+from .command_support import Noop, now, reject
+from .commands_review import cmd_aliases, cmd_amend, cmd_decide, cmd_group_review
 from .errors import ConflictBlocker, InputError, ReviewNeeded, SourceChanged, ValidationFailed
-
-
-def _now() -> dt.datetime:
-  """Current local time, timezone-aware.
-
-  Returns:
-    The time.
-  """
-  return dt.datetime.now().astimezone()
 
 
 def emit(data: dict) -> None:
@@ -50,21 +42,6 @@ def emit(data: dict) -> None:
     data: the result.
   """
   print(json.dumps(data, indent=2, sort_keys=True, ensure_ascii=False))
-
-
-def _reject(errors: list[str], changed: bool) -> None:
-  """Fail an intake batch.
-
-  Args:
-    errors: messages.
-    changed: a source changed under the batch.
-
-  Raises:
-    SourceChanged: when changed.
-    InputError: otherwise.
-  """
-  msg = "batch rejected, nothing written:\n  " + "\n  ".join(errors)
-  raise SourceChanged(msg) if changed else InputError(msg)
 
 
 def cmd_init(root: Path, args) -> dict:
@@ -80,33 +57,10 @@ def cmd_init(root: Path, args) -> dict:
   if settings.kc_path(root, settings.CONFIG_FILE).exists():
     return {"changed": False, "detail": ".kc/config.yaml exists; edit it by hand"}
   cfg = {**settings.DEFAULT_CONFIG, "project_id": root.resolve().name}
-  with ledger.write_lock(root) if args.apply else _noop():
+  with ledger.write_lock(root) if args.apply else Noop():
     a = ledger.write_text(root, f"{settings.KC_DIR}/{settings.CONFIG_FILE}", yaml_io.dump(cfg), args.apply)
     ledger.write_text(root, f"{settings.KC_DIR}/.gitignore", "cache/\nlocks/\n", args.apply)
   return {"changed": a, "applied": args.apply, "config": cfg}
-
-
-class _noop:
-  """Context manager that does nothing (dry runs take no lock)."""
-
-  def __enter__(self):
-    """Enter.
-
-    Returns:
-      None.
-    """
-    return None
-
-  def __exit__(self, *exc):
-    """Exit without suppressing errors.
-
-    Args:
-      *exc: exception info.
-
-    Returns:
-      False.
-    """
-    return False
 
 
 def cmd_inventory(root: Path, args) -> dict:
@@ -122,7 +76,7 @@ def cmd_inventory(root: Path, args) -> dict:
   st = state.load(root)
   res = inventory.build(st)
   snapshot = {"exclusions": res.exclusions, "duplicate_groups": res.duplicate_groups}
-  with ledger.write_lock(root) if args.apply else _noop():
+  with ledger.write_lock(root) if args.apply else Noop():
     ledger.append(root, "sources", res.source_records, args.apply)
     ledger.append(root, "sections", res.section_records, args.apply)
     ledger.write_text(root, f"{settings.KC_DIR}/reports/inventory.json", json.dumps(snapshot, indent=2, sort_keys=True) + "\n", args.apply)
@@ -150,8 +104,8 @@ def _ingest(root: Path, args, kind: str) -> dict:
     res = relations.ingest(st, records)
     plan = {"relations": res.relations, "conflicts": res.conflicts, "dispositions": res.dispositions}
   if res.errors:
-    _reject(res.errors, res.source_changed)
-  with ledger.write_lock(root) if args.apply else _noop():
+    reject(res.errors, res.source_changed)
+  with ledger.write_lock(root) if args.apply else Noop():
     if kind == "claims":
       ledger.append(root, "claims", res.claims + res.dispositions + res.sections, args.apply)
     else:
@@ -172,87 +126,6 @@ def _ingest(root: Path, args, kind: str) -> dict:
   return out
 
 
-def _record_decision(root: Path, res: decisions.DecideResult, apply: bool) -> None:
-  """Append one decision's records under the write lock.
-
-  Args:
-    root: project root.
-    res: the decision result.
-    apply: write (False plans only).
-  """
-  with ledger.write_lock(root) if apply else _noop():
-    ledger.append(root, "decisions", [res.decision], apply)
-    ledger.append(root, "conflicts", res.conflicts, apply)
-    ledger.append(root, "claims", res.claims + res.dispositions, apply)
-
-
-def cmd_decide(root: Path, args) -> dict:
-  """Record an operator decision on a conflict.
-
-  Args:
-    root: project root.
-    args: parsed arguments.
-
-  Returns:
-    Result.
-  """
-  st = state.load(root)
-  res = decisions.decide(
-    st,
-    args.conflict,
-    args.action,
-    args.reason,
-    args.actor or settings.actor(),
-    _now(),
-    current=args.current,
-    scope_note=args.scope_note,
-    corrected_text=args.corrected_text,
-    answer_text=args.answer_text,
-    override_supersession=args.override_supersession,
-  )
-  _record_decision(root, res, args.apply)
-  return {"applied": args.apply, "decision": res.decision, "new_claims": [c["claim_id"] for c in res.claims]}
-
-
-def cmd_amend(root: Path, args) -> dict:
-  """Add a claim to a conflict, superseding or keeping it.
-
-  Args:
-    root: project root.
-    args: parsed arguments.
-
-  Returns:
-    Result.
-  """
-  st, who = state.load(root), args.actor or settings.actor()
-  if args.set_successor:
-    if not args.successor:
-      raise InputError("--set-successor needs --successor")
-    res = amendments.set_successor(st, args.conflict, args.set_successor, args.successor, args.reason, who, _now())
-  else:
-    if not (args.supersede or args.keep):
-      raise InputError("--add-claim needs --supersede or --keep")
-    res = amendments.amend(st, args.conflict, args.add_claim, args.supersede, args.reason, who, _now())
-  _record_decision(root, res, args.apply)
-  return {"applied": args.apply, "decision": res.decision}
-
-
-def cmd_group_review(root: Path, args) -> dict:
-  """Record a decision point as reviewed whole.
-
-  Args:
-    root: project root.
-    args: parsed arguments.
-
-  Returns:
-    Result.
-  """
-  rec = decision_points.group_review(state.load(root), args.group, args.reason)
-  with ledger.write_lock(root) if args.apply else _noop():
-    ledger.append(root, "relations", [rec], args.apply)
-  return {"applied": args.apply, "group_review": rec}
-
-
 def cmd_render(root: Path, args) -> dict:
   """Render knowledge pages.
 
@@ -268,7 +141,7 @@ def cmd_render(root: Path, args) -> dict:
   """
   st = state.load(root)
   out = render.render(st)
-  with ledger.write_lock(root) if args.apply else _noop():
+  with ledger.write_lock(root) if args.apply else Noop():
     changed = sorted(p for p, t in {**out.files, **out.proposals}.items() if ledger.write_text(root, p, t, args.apply))
   if args.check and changed:
     raise ValidationFailed("knowledge pages differ from a fresh rendering: " + ", ".join(changed))
@@ -296,12 +169,12 @@ def cmd_promote(root: Path, args) -> dict:
   if not args.reason:
     raise InputError("--reason is required with --apply")
   if args.revoke:
-    rec = promote.promotion_record(st, result, args.actor or settings.actor(), args.reason, _now(), status="revoked")
+    rec = promote.promotion_record(st, result, args.actor or settings.actor(), args.reason, now(), status="revoked")
   else:
     if not result["ready"]:
       gate = result["gates"].get("no_open_p0_p1", {"pass": True})
       raise (ConflictBlocker if not gate["pass"] else ValidationFailed)(f"promotion refused: {json.dumps(result['gates'])}")
-    rec = promote.promotion_record(st, result, args.actor or settings.actor(), args.reason, _now())
+    rec = promote.promotion_record(st, result, args.actor or settings.actor(), args.reason, now())
   with ledger.write_lock(root):
     ledger.append(root, "decisions", [rec], True)
     fresh = render.render(state.load(root))
@@ -343,7 +216,7 @@ def cmd_review(root: Path, args) -> dict:
   """
   st = state.load(root)
   text = decisions.review_markdown(st)
-  with ledger.write_lock(root) if args.apply else _noop():
+  with ledger.write_lock(root) if args.apply else Noop():
     ledger.write_text(root, f"{settings.KC_DIR}/reports/review-queue.md", text, args.apply)
   print(text)
   if st.open_conflicts():
@@ -382,6 +255,8 @@ COMMANDS = {
   "claims": lambda root, a: _ingest(root, a, "claims"),
   "candidates": lambda root, a: candidates.pairs(state.load(root), a.limit),
   "decision-points": lambda root, a: decision_points.decision_points(state.load(root)),
+  "aliases": cmd_aliases,
+  "recall": lambda root, a: recall.score(state.load(root), Path(a.labels)),
   "group-review": cmd_group_review,
   "drift": lambda root, a: drift.report(state.load(root), a.path),
   "relate": lambda root, a: _ingest(root, a, "relations"),

@@ -8,7 +8,7 @@ A claim's disposition is the last disposition event for it; the effective dispos
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import ledger, settings
+from . import ids, ledger, settings
 
 
 @dataclass
@@ -29,6 +29,7 @@ class State:
     decisions: decision records in order.
     promotions: page path -> latest promotion record.
     predecessors: claim_id -> claims whose disposition names it as successor.
+    aliases: field -> {normalised term: normalised canonical form}.
     revivals: claim_id -> (superseding record, reviving record) for claims a later event made CURRENT again.
   """
 
@@ -45,6 +46,7 @@ class State:
   decisions: list = field(default_factory=list)
   promotions: dict = field(default_factory=dict)
   predecessors: dict = field(default_factory=dict)
+  aliases: dict = field(default_factory=dict)
   revivals: dict = field(default_factory=dict)
 
   def source_by_path(self) -> dict:
@@ -54,6 +56,19 @@ class State:
       path -> latest source_version record.
     """
     return {s["path"]: s for s in self.sources.values() if s.get("ingestion_state") != "removed"}
+
+  def canonical(self, name: str, value: str) -> str:
+    """Term used for comparison: its alias when one is live, otherwise itself, normalised.
+
+    Args:
+      name: subject, predicate or topic_key.
+      value: the term.
+
+    Returns:
+      The normalised term.
+    """
+    term = ids.norm(value)
+    return self.aliases.get(name, {}).get(term, term)
 
   def disposition(self, claim_id: str) -> str:
     """Recorded disposition of a claim.
@@ -154,6 +169,12 @@ def load(root: Path, cfg: dict | None = None) -> State:
     st.relations[rec["relation_id"]] = rec
   for rec in read["conflicts"]:
     st.conflicts[rec["conflict_id"]] = rec
+  for rec in read["aliases"]:
+    terms = st.aliases.setdefault(rec["field"], {})
+    if rec["revoked"]:
+      terms.pop(rec["term"], None)
+    else:
+      terms[rec["term"]] = rec["canonical"]
   for rec in read["decisions"]:
     if rec["record"] == "promotion":
       st.promotions[rec["page"]] = rec

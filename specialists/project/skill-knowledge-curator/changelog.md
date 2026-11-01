@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 22:32 (feature, operator request): `kc aliases` (consolidation for comparison only, new `.kc/aliases.jsonl`, revocable) and `kc recall` (labelled recall harness); new schemas `alias-input`, `gold-conflict`; 96 tests.
 - 2026-11-01 22:30 (decision, operator): gate 0 pass mark fixed before measuring: 80% of labelled MCP conflicts reach review, all P0 and P1. `references/evaluation.md`.
 - 2026-11-01 22:30 (learned, Continuum): `scripts/ledger_diff.py`, `just ledger-diff`: end-state diff of two ledgers for rehearsing decision sequences; 4 tests.
 - 2026-11-01 22:11 (feature, operator request): P28 subject-word groups in `kc decision-points`; gate 0 reopened by the operator; floor 15 from a measured sweep, recall about 12%. 86 tests. `references/evaluation.md`.

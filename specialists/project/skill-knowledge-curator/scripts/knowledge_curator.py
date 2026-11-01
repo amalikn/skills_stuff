@@ -10,7 +10,7 @@ deterministic kernel that checks and records it (references/workflow.md).
 Usage:
   python scripts/knowledge_curator.py <command> --project <dir> [options]   (or `just kc <command> <dir> ...`)
   commands: init, inventory, worksheet, sections, vocabulary, coverage, claims, candidates, decision-points, relate, review,
-            decide, amend, group-review, drift, render, promote, archive-plan, query, intake, validate, report
+            decide, amend, group-review, aliases, recall, drift, render, promote, archive-plan, query, intake, validate, report
   Example: python scripts/knowledge_curator.py inventory --project tests/fixtures/pilot
 
 Inputs:
@@ -19,7 +19,7 @@ Inputs:
   --payload FILE     intake payload (schemas/intake-payload.schema.json)
   KC_ACTOR           name recorded on decisions and promotions (default project-owner)
 
-Safety: read-only by default. With --apply: init writes .kc/config.yaml; inventory, claims, relate, decide, amend, group-review and promote append to
+Safety: read-only by default. With --apply: init writes .kc/config.yaml; inventory, claims, relate, decide, amend, group-review, aliases and promote append to
 .kc/*.jsonl; render writes knowledge/ pages (never a promoted page) and .kc/proposals/; review and archive-plan write a report
 under .kc/. Nothing ever edits, moves or deletes a source document or a governing file, commits or pushes.
 
@@ -64,12 +64,13 @@ def build_parser() -> Parser:
   for name in COMMANDS:
     s = sub.add_parser(name)
     s.add_argument("--project", required=True, help="project root")
-    if name in ("init", "inventory", "claims", "relate", "review", "decide", "amend", "group-review", "render", "promote", "archive-plan"):
+    if name in ("init", "inventory", "claims", "relate", "review", "decide", "amend", "group-review", "aliases", "render", "promote", "archive-plan"):
       s.add_argument("--apply", action="store_true", help="write (default: plan only)")
-    if name in ("claims", "relate"):
+    if name in ("claims", "relate", "aliases"):
       s.add_argument("--file", required=True)
   sub.choices["claims"].add_argument("--coverage", action="store_true", help="also report per-file sections closed and left")
   sub.choices["worksheet"].add_argument("--batch", type=int, default=1)
+  sub.choices["recall"].add_argument("--labels", required=True, help="gold conflicts, JSON array (schemas/gold-conflict.schema.json)")
   gr = sub.choices["group-review"]
   gr.add_argument("group", help="group_id from decision-points")
   gr.add_argument("--reason", required=True)

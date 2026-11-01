@@ -34,6 +34,8 @@ Summary: >-
 | `candidates`   | `--limit N`                                          | -                                                               | read-only; in-memory FTS5                                  |
 | `decision-points` | -                                                 | -                                                               | read-only; each group has a `group_id`                     |
 | `group-review` | group, `--reason`                                    | `.kc/relations.jsonl`                                           | records a group as classified; a new claim reopens itself  |
+| `aliases`      | `--file` (schemas/alias-input.schema.json)           | `.kc/aliases.jsonl`                                             | comparison only; claims never change; `revoked` undoes one |
+| `recall`       | `--labels` (schemas/gold-conflict.schema.json)       | -                                                               | read-only; scores labelled conflicts against review        |
 | `drift`        | `--path GLOB`                                        | -                                                               | read-only; advisory, flags and never refuses               |
 | `relate`       | `--file`                                             | `.kc/relations.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | whole batch refused on any error                           |
 | `review`       | -                                                    | `.kc/reports/review-queue.md`                                   | exit 2 while conflicts are open                            |
@@ -73,11 +75,12 @@ earlier one.
 | `decisions.py`                                                | Review cards and decisions                                                           |
 | `amendments.py`                                               | `kc amend`: add a claim to a conflict, repair a successor                            |
 | `drift.py`, `stale.py`                                        | Claim text against cited lines; open conflicts overtaken elsewhere                   |
+| `aliases.py`, `recall.py`                                     | Consolidation aliases for comparison; labelled recall harness                        |
 | `render.py`                                                   | Deterministic pages and index.json; secret scan                                      |
 | `promote.py`                                                  | Gates and promotion records                                                          |
 | `archive_plan.py`                                             | Candidates, referrers, restore rehearsal                                             |
 | `query.py`, `intake.py`, `validate.py`, `report.py`           | Retrieval, caller intake, gates, status                                              |
-| `commands.py`                                                 | One function per subcommand (keeps the front end small)                              |
+| `commands.py`, `commands_review.py`, `command_support.py`      | One function per subcommand (keeps the front end small)                              |
 
 ## Exit codes and runtime
 

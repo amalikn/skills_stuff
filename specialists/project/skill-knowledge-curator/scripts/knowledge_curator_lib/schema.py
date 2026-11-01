@@ -11,7 +11,7 @@ from jsonschema import Draft202012Validator
 
 from .settings import SCHEMA_DIR
 
-RECORD_SCHEMAS = {"claim": "claim-input", "section_status": "section-status-input", "relation": "relation-input"}
+RECORD_SCHEMAS = {"alias": "alias-input", "claim": "claim-input", "section_status": "section-status-input", "relation": "relation-input"}
 
 
 @functools.cache

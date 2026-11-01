@@ -14,7 +14,7 @@ SKILL_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_DIR = SKILL_ROOT / "schemas"
 KC_DIR = ".kc"
 CONFIG_FILE = "config.yaml"
-LEDGERS = ("sources", "sections", "claims", "relations", "conflicts", "decisions")
+LEDGERS = ("sources", "sections", "claims", "relations", "conflicts", "decisions", "aliases")
 
 CATEGORIES = ("architecture", "requirements", "technical", "governance", "operations")
 KINDS = ("observed", "target", "requirement", "proposal", "decision", "hypothesis", "test_result", "external_fact", "procedure")

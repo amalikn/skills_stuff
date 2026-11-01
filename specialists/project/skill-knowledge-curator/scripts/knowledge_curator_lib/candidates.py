@@ -63,6 +63,24 @@ def source_ids(claim: dict) -> set[str]:
   return {e["source_sha256"] for e in claim["evidence"]}
 
 
+def compared(st: State, claim: dict) -> dict:
+  """Claim as compared: subject, predicate and topic carry their consolidation aliases (P28).
+
+  Args:
+    st: current state.
+    claim: the claim.
+
+  Returns:
+    A shallow copy with canonical terms.
+  """
+  return {
+    **claim,
+    "subject": st.canonical("subject", claim["subject"]),
+    "predicate": st.canonical("predicate", claim["predicate"]),
+    "topic_key": st.canonical("topic_key", claim["topic_key"]),
+  }
+
+
 def _prepared(claim: dict, project: str, multi: set[str]) -> dict:
   """Claim with its per-claim comparison facts computed once, not per pair (pairs() compares about 190,000 pairs at 3,500 claims).
 
@@ -233,7 +251,9 @@ def pairs(st: State, limit: int | None = None) -> dict:
   """
   cfg = st.cfg["candidates"]
   multi = multi_valued(st)
-  active = {cid: _prepared(c, st.cfg["project_id"], multi) for cid, c in st.claims.items() if st.disposition(cid) not in ("DUPLICATE", "REJECTED")}
+  active = {
+    cid: _prepared(compared(st, c), st.cfg["project_id"], multi) for cid, c in st.claims.items() if st.disposition(cid) not in ("DUPLICATE", "REJECTED")
+  }
   done = classified(st)
   by_subject: dict[str, set[str]] = {}
   by_topic: dict[str, set[str]] = {}
