@@ -222,6 +222,9 @@ Subject-word groups built the same day (P28): cross-source claims sharing a subj
 Cross-agent pairs are found now (none before), but recall stays low, near 12%, and about 228 groups over 270 live claims is little reduction for a reviewer. The combinations come from a text match, so they are a
 proxy and not a labelled set. Continuum gains 146 word groups (about 6,800 pairs) in 0.11 s. Word groups stay a prompt to read, weaker than key groups.
 
+Gate 0 pass mark, fixed before measuring (operator, 2026-11-01): on a labelled set of about 30 real MCP conflicts, written by an agent blind to `kc` output, at least 80% reach review and every P0 or P1 conflict
+does. A conflict reaches review when a candidate pair or a decision-point group holds claims citing both of its sides. Ledger kept at `skills-data/skill-knowledge-curator/mcp-pilot-20261101/`.
+
 ## Release gate
 
 All deterministic items pass, the real-corpus pilot gives useful evidence-backed retrieval reviewed by the operator, semantic targets are measured (or exceptions accepted), and no high-severity
