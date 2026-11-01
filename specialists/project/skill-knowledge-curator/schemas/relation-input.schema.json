@@ -100,6 +100,12 @@
           "description": "Exact text from the cited lines; compared whitespace-normalised."
         }
       }
+    },
+    "basis": {
+      "enum": [
+        "dated-order"
+      ],
+      "description": "time-evolution with no stated replacement: proposed for the operator, never applied."
     }
   },
   "allOf": [
@@ -141,9 +147,18 @@
       "then": {
         "required": [
           "superseded",
-          "successor",
-          "supersession_evidence"
-        ]
+          "successor"
+        ],
+        "if": {
+          "required": [
+            "basis"
+          ]
+        },
+        "else": {
+          "required": [
+            "supersession_evidence"
+          ]
+        }
       }
     }
   ]

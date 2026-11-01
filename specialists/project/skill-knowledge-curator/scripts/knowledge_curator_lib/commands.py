@@ -123,6 +123,8 @@ def _ingest(root: Path, args, kind: str) -> dict:
     out |= {"warnings": res.warnings, "sections_closed": effect["sections_closed"]}
     if args.coverage:
       out["coverage"] = effect["coverage"]
+  else:
+    out["warnings"] = sorted(set(res.warnings))
   return out
 
 

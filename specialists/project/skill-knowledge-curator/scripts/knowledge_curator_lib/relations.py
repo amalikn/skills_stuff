@@ -27,6 +27,7 @@ class RelateResult:
     errors: messages; non-empty means nothing may be appended.
     skipped: inputs already recorded.
     source_changed: True when a supersession excerpt's source changed.
+    warnings: advisory messages; nothing is refused for them.
   """
 
   relations: list = field(default_factory=list)
@@ -35,6 +36,7 @@ class RelateResult:
   errors: list = field(default_factory=list)
   skipped: int = 0
   source_changed: bool = False
+  warnings: list = field(default_factory=list)
 
 
 def conflict_id_for(claims: list[str]) -> str:
@@ -93,6 +95,38 @@ def _conflict(st: State, rec: dict, rel_id: str) -> dict:
   }
 
 
+def _proposal(st: State, rec: dict, rel_id: str) -> dict:
+  """Conflict event for a dated-order time-evolution: the operator confirms it, nothing is superseded (P31).
+
+  Args:
+    st: current state.
+    rec: relation input.
+    rel_id: relation ID.
+
+  Returns:
+    The conflict event.
+  """
+  question = "Is the later claim a replacement of the earlier one? The sources state no replacement."
+  body = {**rec, "severity": "P2", "conflict_type": "time-evolution-proposed", "question": question, "recommended_current": rec["successor"]}
+  return _conflict(st, body, rel_id)
+
+
+def _overtaken(st: State, rec: dict, res: RelateResult) -> list[str]:
+  """Warnings for a conflict opened on a claim no longer live, in the ledger or earlier in this batch (P30).
+
+  Args:
+    st: current state.
+    rec: relation input.
+    res: result so far.
+
+  Returns:
+    Messages.
+  """
+  gone = {d["claim_id"] for d in res.dispositions if d["disposition"] in ("SUPERSEDED", "DUPLICATE")}
+  stale = [c for c in rec["claims"] if c in gone or st.disposition(c) not in ("CURRENT", "REVIEW_REQUIRED")]
+  return [f"{c}: conflict opens on an overtaken claim; check it still needs a ruling" for c in stale if rec["relation"] in ("true-conflict", "uncertain")]
+
+
 def _check(st: State, rec: dict) -> list[str]:
   """Reference checks beyond the schema.
 
@@ -127,7 +161,9 @@ def _apply_one(st: State, rec: dict, rel_id: str, reader: Reader, res: RelateRes
   out = {"record": "relation", "relation_id": rel_id, **{k: v for k, v in rec.items() if k not in ("record", "supersession_evidence")}}
   out["claims"] = sorted(rec["claims"])
   kind = rec["relation"]
-  if kind == "time-evolution":
+  if kind == "time-evolution" and rec.get("basis") == "dated-order":
+    res.conflicts.append(_proposal(st, rec, rel_id))
+  elif kind == "time-evolution":
     ev, err, changed = verify_span(reader, rec["supersession_evidence"])
     res.source_changed |= changed
     if err:
@@ -176,5 +212,6 @@ def ingest(st: State, records: list[dict]) -> RelateResult:
     if rel_id in st.relations or any(r["relation_id"] == rel_id for r in res.relations):
       res.skipped += 1
       continue
+    res.warnings.extend(_overtaken(st, rec, res))
     res.errors.extend(f"#{n}: {p}" for p in _apply_one(st, rec, rel_id, reader, res))
   return res

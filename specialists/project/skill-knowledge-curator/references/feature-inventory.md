@@ -102,7 +102,7 @@ sits under the data, cache and runtime routing; whether any slurp step already i
 ## Fixes from the Continuum pilot
 
 From [evaluation.md](evaluation.md), "Pilot on the Continuum corpus" (2026-10-30). **Built 2026-11-01** (tests `tests/test_continuum_recall.py`, `test_continuum_tooling.py`, each failing first):
-P1-P4, P8-P10, P12-P16, P19, P20, and P18, P21, P25-P28 the same day. **Not built:** P5, P6, P7, P17, P22-P24; each needs a test that fails first.
+P1-P4, P8-P10, P12-P16, P19, P20, and P18, P21, P25-P28 and P30-P32 the same day. **Not built:** P5, P6, P7, P17, P22-P24; each needs a test that fails first.
 
 P1 went beyond the row below: same-topic cross-source pairs need only a shared subject word, because fuzzy predicates missed the real wording. P12 also ignores provenance keys when comparing
 scopes, which repairs existing ledgers. P15 dropped `archive` from the default and excludes `archive_dir` by path, and warns on any other excluded folder holding Markdown.
@@ -136,9 +136,9 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | P27 | `decide` keeps a successor set by another conflict and lists it in `kept_successors`; `kc amend <cf> --set-successor <claim> --successor <id>` repairs a link, append-only |
 | P28 | Built: `decision-points` returns `word_groups` around a rare subject word (operator chose this over a consolidation pass or sequential batches). Recall stays low; a consolidation pass is the next option |
 | P29 | Pair same-source claims on one rare subject word with differing objects, ranked low |
-| P30 | `relate` warns on one batch mixing both, or applies time-evolution first and skips a conflict on a claim it superseded |
-| P31 | Accept `time-evolution` on dated order alone as `proposed`, for the operator to confirm |
-| P32 | Mark byte copies in `kc topics` and name the citing rule |
+| P30 | `relate` warns when a conflict opens on a claim no longer live, in the ledger or earlier in the batch |
+| P31 | `time-evolution` with `basis: dated-order` needs no excerpt, supersedes nothing and opens a `time-evolution-proposed` conflict recommending the later claim |
+| P32 | `kc topics` cites one path per byte group and lists `byte_copies`; `--by-file` repeats no claim |
 | P24 | Port with P17: conformance into `claims`, verification into the external-fact record |
 
 ## Invariants and where they are enforced

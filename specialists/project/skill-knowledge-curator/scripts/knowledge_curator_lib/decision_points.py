@@ -189,6 +189,22 @@ def group_review(st: State, group_id: str, reason: str) -> dict:
   raise InputError(f"unknown or already reviewed group {group_id}")
 
 
+def _byte_copies(st: State, claim: dict) -> list[str]:
+  """Cited paths that repeat another cited file's bytes: the shortest path is kept, so a view cites one file per byte group (P32).
+
+  Args:
+    st: current state.
+    claim: the claim.
+
+  Returns:
+    The repeating paths, sorted.
+  """
+  groups: dict[str, set[str]] = {}
+  for ev in claim["evidence"]:
+    groups.setdefault(ev["source_sha256"], set()).add(ev["path"])
+  return sorted(p for paths in groups.values() for p in paths if p != min(paths, key=lambda x: (len(x), x)))
+
+
 def topics(st: State) -> dict:
   """Claims by consolidated topic, for the relate agent: same-source and historical claims included, since conflicts live there too.
 
@@ -203,18 +219,10 @@ def topics(st: State) -> dict:
     disp = st.disposition(cid)
     if disp not in ("DUPLICATE", "REJECTED"):
       view = compared(st, c)
-      lines = sorted({f"{e['path']}:{e['line_start']}-{e['line_end']}" for e in c["evidence"]})
-      out.setdefault(view["topic_key"], []).append(
-        {
-          "claim_id": cid,
-          "subject": view["subject"],
-          "predicate": view["predicate"],
-          "text": c["claim_text"],
-          "disposition": disp,
-          "kind": c["kind"],
-          "lines": lines,
-        }
-      )
+      copies = _byte_copies(st, c)
+      lines = sorted({f"{e['path']}:{e['line_start']}-{e['line_end']}" for e in c["evidence"] if e["path"] not in copies})
+      row = {"claim_id": cid, "subject": view["subject"], "predicate": view["predicate"], "text": c["claim_text"]}
+      out.setdefault(view["topic_key"], []).append(row | {"disposition": disp, "kind": c["kind"], "lines": lines, "byte_copies": copies})
   return {"topics": dict(sorted(out.items())), "claims": sum(len(v) for v in out.values())}
 
 
@@ -227,12 +235,14 @@ def by_file(st: State) -> dict:
   Returns:
     {"files": {path: [rows]}}.
   """
-  out: dict[str, list[tuple[int, dict]]] = {}
+  first: dict[str, dict[str, tuple[int, dict]]] = {}
   for rows in topics(st)["topics"].values():
     for row in rows:
       for ev in st.claims[row["claim_id"]]["evidence"]:
-        out.setdefault(ev["path"], []).append((ev["line_start"], row))
-  return {"files": {path: [r for _, r in sorted(rows, key=lambda x: (x[0], x[1]["claim_id"]))] for path, rows in sorted(out.items())}}
+        seen = first.setdefault(ev["path"], {})
+        if row["claim_id"] not in seen or ev["line_start"] < seen[row["claim_id"]][0]:
+          seen[row["claim_id"]] = (ev["line_start"], row)
+  return {"files": {path: [r for _, r in sorted(rows.values(), key=lambda x: (x[0], x[1]["claim_id"]))] for path, rows in sorted(first.items())}}
 
 
 def review_pairs(st: State) -> set[frozenset]:

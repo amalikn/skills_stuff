@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 23:28 (feature): P30 `relate` warnings, P31 `time-evolution` `basis: dated-order`, P32 byte copies in reading views. 104 tests.
 - 2026-11-01 23:25 (decision, operator): third gate attempt fixed before measuring: precision at least 70% as well as recall; on failure stop and accept the limit; slurp Step 4b off by default. Audit README warning committed (project_stuff `d22119c`).
 - 2026-11-01 23:15 (learned, operator request): `kc topics --by-file`; second relate route on the MCP pilot, 62.2% against the 80% mark, within-file 87.5%, cross-file 25%; stopped by operator rule, mark kept. 100 tests. `references/evaluation.md`.
 - 2026-11-01 23:07 (feature): `scripts/restate_byte_copies.py`, `just restate-copies`; `kc topics`; `references/workflow.md` gains the parallel, consolidate and relate procedure. 99 tests. Whole-chat record: `docs/session-record-20261101_2307.md`, including incidents (OPA refusal, patch aborts, corrected claims, the premature gate pass).
