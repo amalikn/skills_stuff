@@ -256,6 +256,9 @@ have none, so they land as `true-conflict`. P32, the agent could not tell which 
 Third attempt, marks fixed before measuring (operator, 2026-11-01): recall as before, plus at least 70% of a random sample of open conflicts judged real (90% stays the release target). Agents stay blind to the labels, so the pass improves by kind and never from
 the missed labels. If it fails, stop and accept the limit: `kc` ships as extraction, decisions and within-file checks, with cross-file recall stated, and no fourth round. If it passes, slurp Step 4b lands off by default: it runs only in a project with `.kc/`, and a skip is reported.
 
+Precision of recorded conflicts, measured blind on a seeded sample of 40 of the 184: **27.5%** (11 real, 29 noise, 0 unclear) against the 70% mark, so gate 0 cannot close this round whatever recall reaches. Ten of the 11 share one cause, the `mcp-data` path. Noise: a superseded
+banner over an old body (8, a judgement call; counted real the figure is 47.5%), earlier against later steps, different scope. P33: noise is not filtered or grouped by root cause before a person sees it.
+
 ## Release gate
 
 All deterministic items pass, the real-corpus pilot gives useful evidence-backed retrieval reviewed by the operator, semantic targets are measured (or exceptions accepted), and no high-severity

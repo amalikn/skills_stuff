@@ -26,6 +26,8 @@ Venv: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-knowledge-curator/.v
 
 ## Working rules
 
+- **Aim** (operator, 2026-11-01): kc extracts knowledge and information out of data and avoids noise. Judge a change by noise removed first and recall second; a higher conflict count is not progress.
+- **Tools and models** (operator, 2026-11-01): build scripts that use purpose-built tools and models for this work, local first and an optional install, rather than relying on agents reading everything.
 - **All code follows skill-coder** (operator, 2026-10-20): purpose header with run line and safety, Google docstrings, `--apply` gated in the writer (`ledger.py` is the only writer), timeouts on
   subprocesses, a seam module per third-party package, tests, measured runtime, two-space indent, ruff.
 - Settle any conflict between the two source documents with the operator and record it in `docs/catalog.md`; never edit both sides speculatively.
