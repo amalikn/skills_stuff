@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 21:05 (docs, Continuum session): `references/conflicts-and-review.md` says a scratch `amend` needs a real copy of the sources. Continuum ran `render_claim_registers.py` after amend and a `claim-batch` dry run against this kernel: both pass; `--apply` not run.
 - 2026-11-01 20:56 (feature, operator request): Continuum fixes built, each test failing first (24 new tests, 66 total): `settled` false on any open conflict (P20); `kc vocabulary`, `kc sections`, `kc decision-points`, `kc amend`; `worksheet --path` and vocabulary, `claims --coverage`, `sections_closed` and warnings, `candidates --limit`, cross-source ranking and `same-topic-cross-source`, `validate --strict`; provenance scope keys ignored; `archive` off the default exclusions; `HISTORICAL`/`SUPERSEDED` need a basis; `CORRECTED` reuses identical wording; review cards take more than two claims. `references/` updated; new module `worksheet.py`. `candidates` 5.2 s to 2.2 s, still over its 2 s budget.
 - 2026-11-01 20:56 (decision, operator): gate 0 redefined and passed on the Continuum rerun; MCP cases A-F optional. `references/evaluation.md`, findings P20-P24 added.
 - 2026-11-01 20:56 (docs, operator request): `SKILL.md` workflow diagram redrawn as three stages with who acts at each step.

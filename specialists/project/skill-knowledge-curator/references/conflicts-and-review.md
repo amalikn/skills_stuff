@@ -114,6 +114,8 @@ A ruling can cover a claim the conflict did not list. `kc amend <cf> --add-claim
 `--keep` lists it and leaves its disposition, on an open or decided conflict. Each records an `AMEND` decision naming the previous one. Record it only from the operator's own ruling.
 Identical `CORRECTED` wording on a second conflict reuses the first operator claim.
 
+Trying `amend` on a scratch copy needs a real copy of the sources, because it re-checks the claim's evidence: missing sources exit 5, and a symlink to the live tree exits 1 (path escapes the project root).
+
 ## Answering while unresolved
 
 `kc query <text>` returns `settled: false` and the open conflict for a disputed claim, at any severity, and `unreviewed_pairs` for cross-source pairs nobody has classified (a prompt to look,
