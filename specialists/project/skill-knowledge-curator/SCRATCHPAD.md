@@ -55,7 +55,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
-1. Run a second real corpus (MCP audit), since Continuum is the only real test so far, then v2 stage 1 (gap matrix).
+1. Decide P28 with the operator: MCP pilot shows cross-agent recall unsolved (references/evaluation.md). Hold v2 stage 1 and slurp Step 4b until then.
 
 ## Memory pointers — KEEP
 

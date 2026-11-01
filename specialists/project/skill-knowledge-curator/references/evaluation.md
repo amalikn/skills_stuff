@@ -142,6 +142,8 @@ Findings (fixes are listed in [feature-inventory.md](feature-inventory.md), "Fix
 | P25 | `unreviewed_pairs` and `decision-points` count unrecorded pairs, not disagreements. A coordinator that reviews by topic records few pairs (428 on Continuum against 3,704 open), and multi-valued predicates (`must`, `is tested by`) pair claims that only add to each other. A sample of 6 of 249 groups: no clear contradiction, one possible (Temporal optional against durable orchestration) | `kc decision-points` on a scratch copy, 2026-11-01 |
 | P26 | `decide` wrote `CURRENT` for every current claim with no check for a standing supersession from another conflict: two `BOTH_APPLY_SCOPED` rulings silently revived `cl-5d7b64cf7209` and `cl-ee80b763aa6d` | Continuum ledger, reported by its session and verified, 2026-11-01 |
 | P27 | `decide` overwrote the successor of a claim already superseded elsewhere: closing `cf-407523c08c` repointed `cl-1334d9309fb3` from a Capsule definition to an execution-mode claim, and re-order was needed to protect a restore | Continuum rulings, 2026-11-01 21:41 |
+| P28 | Separate agents share almost no topics, so topic-gated pairing misses cross-agent disagreement; `worksheet` vocabulary is empty for agents started in parallel | MCP audit pilot, 2026-11-01 |
+| P29 | A contradiction inside one file is suppressed or unpaired: same source, different subjects, no negation signal | Step9, step11 on `mcp-data` |
 | P19 | `decide` only supersedes claims listed in the conflict: an operator ruling that also covers related claims (se `cl-88cec07d70a0`, pf `cl-f3c2d0e95086` under cf-d846a9dbb3) leaves them CURRENT, held only in the decision text. Re-deciding with `previous_decision_id` works for refinement, but there is no way to add a claim to a decided conflict | Continuum first-slice decisions, 2026-11-01 |
 
 Full run (same day, option "shared vocabulary + coarser granularity"): 8 extraction agents, 904 of 904 sections accounted for (876 claims-extracted, 28 context), 3,491 claims
@@ -155,7 +157,7 @@ cross-source conflict pass by topic in addition to `kc candidates`.
 ## Gate 0 and the rerun (2026-11-01)
 
 Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP
-cases A-F become optional. **Result: passed.** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
+cases A-F become optional. **Result: passed, then undercut by the MCP audit pilot below: the probe assumed a shared topic.** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
 
 Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read only):
 
@@ -184,6 +186,29 @@ After P25, P18 and P21 (same day, read-only on the live ledger, 3,496 claims):
 
 `kc drift` precision is low and unmeasured: most of a sample of 10 were heading or list context, so it is a list to read, never a gate. Its negation check runs one way, a negation dropped from the excerpt. `stale` reads
 dispositions only and cannot see semantic narrowing, so an unflagged conflict is not proven fresh.
+
+## Pilot on the MCP audit corpus (2026-11-01)
+
+Scratch copy, ledger discarded; 24 files, 213 sections, 382 claims (1.9 per section); four agents, no shared vocabulary on purpose, 607,527 agent tokens (about 2,960 per section, against 1,836 on Continuum);
+`claims --apply` clean on every batch, `validate --strict` ok, `candidates` 0.08 s. The relate stage was not run, so no conflict was opened and no decision made.
+
+**Result: cross-agent recall is not solved, and the gate 0 probe was too easy.** That probe gave both claims the same topic, which separate agents do not do: 1 of 245 topics spans batches, and 12 of 205 pairs
+cross them. None of 108 cross-batch voicemode retained-or-retired combinations paired (a text match, so not all are real conflicts), and only 1 of 36 `mcp-data` active-or-retired combinations did.
+
+| Case | Result |
+| --- | --- |
+| A | Partial: pairs inside one agent's batch are found; step8 "retained" against step10-12 across agents is not. Time-evolution not tested (no relate) |
+| B | Holds so far: nothing acts on a file number. Not tested by relate |
+| C | Holds so far: failure and recovery both kept. Not tested by relate |
+| D | Paired (2 pairs, `kind-differs`, similarity 70.7), nothing published. Conflict not opened (no relate). Rests on a text score, not on the subject |
+| E | Pass: evidence hash matches the source bytes |
+| F | Pass: 104 claims on byte pairs count one independent source |
+
+Experiment: a topic-free rule (cross-source, a shared subject word used by at most 3% of claims, objects differ) finds the misses: 74 voicemode retire-or-retain pairs and 27 `mcp-data` pairs for 362 extra pairs, 0.01 s. On Continuum
+the same rule adds 12,445 pairs, so it needs grouping, not more raw pairs.
+
+`kc drift` flagged 42 of 382 (11%); all 8 sampled were heading, table-label or list context, so precision is low here too. Agents used it to reword claims, which is useful; one left 69 warnings alone.
+Step9 and step11 each contradict themselves on `mcp-data`; two agents noticed, and `kc` does not surface it.
 
 ## Release gate
 

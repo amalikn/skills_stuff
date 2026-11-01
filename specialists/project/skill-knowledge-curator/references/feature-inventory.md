@@ -134,6 +134,8 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | P25 | Mark multi-valued predicates in config so a differing object alone is no signal, without exempting them from conflict detection: `must` holds 17 Continuum conflict memberships and `must not` 4. Start from `must`, `must not`, `is tested by`, `has open question`, `has risk`, `is out of scope`, `serves`; not `is implemented with`, `contains`, `exposes`, `has exit criterion`, `has decision`, `is defined as`. Let a reviewed group be recorded as one classification |
 | P26 | `decide` refuses to revive a claim superseded outside this conflict unless `--override-supersession`, which the decision records; `validate` warns on past revivals with no override |
 | P27 | `decide` keeps a successor set by another conflict and lists it in `kept_successors`; `kc amend <cf> --set-successor <claim> --successor <id>` repairs a link, append-only |
+| P28 | Design open: group topic-free pairs by rare subject word in `decision-points`, or run a consolidation pass over topics and subjects after parallel extraction, or apply batches in sequence so each sees the vocabulary |
+| P29 | Pair same-source claims on one rare subject word with differing objects, ranked low |
 | P24 | Port with P17: conformance into `claims`, verification into the external-fact record |
 
 ## Invariants and where they are enforced
