@@ -151,7 +151,7 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | INV-004 one disposition                  | Fold keeps the last disposition event per claim                              |
 | INV-005 evidence                         | `claims` intake refusal; `validate`                                          |
 | INV-006 conflict blocking                | `State.effective`; render's Not settled; promotion gate                      |
-| INV-007 human authority                  | Only `decide` resolves conflicts; only explicit answers                      |
+| INV-007 human authority                  | Only `decide` resolves conflicts; only explicit answers. Narrowing agreed, not built: evidence-backed, reversible automatic resolution, proposals until 95% right on 40+ samples (AGENTS.md, Triage) |
 | INV-008 no newest-wins                   | Claim IDs include the object; candidates pair same-key claims                |
 | INV-009 no loss by dedupe                | Restatements merge evidence; DUPLICATE keeps its evidence and link           |
 | INV-010 safe archive                     | Plan only, rehearsal, referrers                                              |

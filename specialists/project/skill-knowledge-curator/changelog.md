@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 23:36 (rule, operator): triage: report real conflicts, resolve evidence-backed ones reversibly, question the rest, dismiss noise with a reason using intelligent tools; automatic decisions stay proposals until 95% right on 40+ samples. Narrows INV-007. `AGENTS.md`. Not built yet.
 - 2026-11-01 23:32 (rule, operator): kc's aim is knowledge without noise; build scripts on purpose-built tools and models, local first. `AGENTS.md`. Precision measured at 27.5% against the 70% mark. `references/evaluation.md`.
 - 2026-11-01 23:28 (feature): P30 `relate` warnings, P31 `time-evolution` `basis: dated-order`, P32 byte copies in reading views. 104 tests.
 - 2026-11-01 23:25 (decision, operator): third gate attempt fixed before measuring: precision at least 70% as well as recall; on failure stop and accept the limit; slurp Step 4b off by default. Audit README warning committed (project_stuff `d22119c`).
