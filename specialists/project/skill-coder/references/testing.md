@@ -197,3 +197,14 @@ check: _require-venv
 open_conflicts = st.open_conflicts(cid)
 "settled": disp == "CURRENT" and not open_conflicts,
 ```
+
+> **Learned 2026-11-01 (b)** · a gate that hides records · VERIFIED_PRIMARY · Source: skill-knowledge-curator `scripts/knowledge_curator_lib/triage.py` at `8113528` · Falsifier: a broad gate that cleared no real record in a dry run against known verdicts
+> A gate that hides records needs a guard that runs first and a dry run against known verdicts before any `--apply`. The first gates passed their unit tests and cleared 7 of 11 real conflicts, because the guard matched exact paths while the real cases named a child of the path.
+
+```python
+# triage.py at 8113528: the guard runs before every gate, and P0 before the guard
+if cf["severity"] == "P0":
+  return row | {"guard": "p0"}
+if _opposite_status(ca, cb):
+  return row | {"guard": "same-identifier-opposite-status"}
+```

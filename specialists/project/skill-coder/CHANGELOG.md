@@ -14,6 +14,10 @@ Last rotated: 20261028_2101
 
 # Changelog
 
+## 20261101_2353 — Learned: guard first and dry-run a gate that hides records
+
+`references/testing.md`, from skill-knowledge-curator (2026-11-01).
+
 ## 20261101_2307 — Learned: a predicate answering a second question
 
 `references/testing.md`, from skill-knowledge-curator (2026-11-01).

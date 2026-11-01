@@ -6,8 +6,8 @@ Authority: local-supplement; handoff section 8 (T01-T14), design doc sections 12
 Scope: The merged acceptance catalog, which test covers each item and its status, the semantic evaluation still owed, and the pilot plan on the MCP audit corpus
 Last reviewed: 2026-11-01
 Summary: >-
-  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (99 tests);
-  gate 0 failed on the labelled MCP pilot, 62.2% recall after two routes (2026-11-01); semantic recall is not measured. Settles source conflict C9.
+  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (120 tests);
+  gate 0 failed three attempts on the MCP pilot, precision 37.5%, recall 51.1% after triage (2026-11-01); semantic recall is not measured. Settles source conflict C9.
 ---
 
 # Evaluation
@@ -160,7 +160,7 @@ cross-source conflict pass by topic in addition to `kc candidates`.
 ## Gate 0 and the rerun (2026-11-01)
 
 Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP
-cases A-F become optional. **Result: passed, then reopened by the operator (2026-11-01) after the MCP audit pilot below showed the probe assumed a shared topic; then failed against the labelled mark (62.2% against 80%).** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
+cases A-F become optional. **Result: passed, then reopened by the operator (2026-11-01) after the MCP audit pilot below showed the probe assumed a shared topic; then failed three attempts against the marks (final: precision 37.5% against 70%, recall 51.1% against 80%).** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
 
 Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read only):
 
@@ -258,6 +258,25 @@ the missed labels. If it fails, stop and accept the limit: `kc` ships as extract
 
 Precision of recorded conflicts, measured blind on a seeded sample of 40 of the 184: **27.5%** (11 real, 29 noise, 0 unclear) against the 70% mark, so gate 0 cannot close this round whatever recall reaches. Ten of the 11 share one cause, the `mcp-data` path. Noise: a superseded
 banner over an old body (8, a judgement call; counted real the figure is 47.5%), earlier against later steps, different scope. P33: noise is not filtered or grouped by root cause before a person sees it.
+
+### Third attempt result (2026-11-01): failed
+
+Round three (blind passes over time, authority and facts, 29 claims, 63 relations): recall 66.7%, blocking 65.5%, one P0 label reached; open conflicts 243, 106 flagged stale. Reading more added about 59 conflicts for 2 labels.
+
+Operator rulings before building: research items B0-B2 only; a banner is noise unless the value is still current; new rules are judged on a fresh sample; the "no fourth round" rule yields to the new aim.
+
+`kc triage` on a copy took 243 open conflicts to 96 (147 dismissed). Tuned on the first 40 verdicts, where it first cleared 7 of 11 real ones; a fix cut that to 2, and tuning stopped there. Fresh blind test, 80 shuffled cards, seeds 7701 and 7702, neither used in tuning:
+
+| Measure | Result | Mark | Wilson 95% |
+| --- | --- | --- | --- |
+| Precision of kept conflicts | **37.5%** (15 of 40) | 70% | 24.2-53.0% |
+| Automatic clears right | **92.5%** (37 of 40) | 95% | 80.1-97.4% |
+| Recall after triage | **51.1%**, blocking 55.2% | 80%, all P0/P1 | 7 labels dismissed |
+
+Gate 0 stays failed, so P29, v2 stage 1 and slurp Step 4b were not started, and triage stays a proposal: `kc triage --apply` is the operator's bulk confirmation, on a copy so far. Precision rose from 27.5%, though the intervals overlap. Wrong clears: `disjoint-scope` 2 of 10, `superseded-section` 1 of 25; on these rates
+the 147 dismissals hide about 11 real conflicts. All 15 real kept conflicts share one cause, the `mcp-data` path, so grouping by cause (research B3) would cut the review far more than any precision figure shows. The answer key and the judges define history differently: a labelled time-evolution pair is a label to recall and noise to a judge, which is part of the recall loss.
+
+Cost: about 2.9M agent tokens for the pilot, research included. Research report: `skills-data/skill-knowledge-curator/research-20261101/foss-accuracy-options-20261101_2335.md`. Its negative finding: nothing purpose-built beats an LLM reading the sources, and no published system on a real corpus shows both marks; rule gates and root grouping need no new dependency.
 
 ## Release gate
 

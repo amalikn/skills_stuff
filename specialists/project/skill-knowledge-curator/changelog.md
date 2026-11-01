@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 23:53 (learned, operator request): third attempt failed: precision 37.5% against 70%, clears 92.5% right against 95%, recall 51.1% after triage; triage stays a proposal; P29, v2 stage 1, slurp Step 4b not started. Round three added 59 conflicts for 2 labels. `references/evaluation.md`, `references/conflicts-and-review.md`.
 - 2026-11-01 23:49 (feature, operator request): research build items B0-B2: `kc sample`, `kc status-map`, `kc triage` (gates `superseded-section`, `disjoint-scope`, `sequential-steps`, `byte-copy`, `plan-vs-state`; guard for a gone path still named elsewhere; reversible with `--undo`); recall no longer counts dismissed pairs. 120 tests. Research report in `skills-data/skill-knowledge-curator/research-20261101/`.
 - 2026-11-01 23:36 (rule, operator): triage: report real conflicts, resolve evidence-backed ones reversibly, question the rest, dismiss noise with a reason using intelligent tools; automatic decisions stay proposals until 95% right on 40+ samples. Narrows INV-007. `AGENTS.md`. Not built yet.
 - 2026-11-01 23:32 (rule, operator): kc's aim is knowledge without noise; build scripts on purpose-built tools and models, local first. `AGENTS.md`. Precision measured at 27.5% against the 70% mark. `references/evaluation.md`.

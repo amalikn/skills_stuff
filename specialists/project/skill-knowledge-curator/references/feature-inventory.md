@@ -68,7 +68,7 @@ Source: [v2 spec](../docs/knowledge-curator-foss-implementation-spec-v2.md), bui
 
 Rules for every stage:
 
-- **Gate 0:** failed 2026-11-01: 62.2% recall against the 80% mark ([evaluation.md](evaluation.md)); v2 stages and slurp Step 4b are held.
+- **Gate 0:** failed three attempts 2026-11-01: precision 37.5% against 70%, recall 51.1% against 80% ([evaluation.md](evaluation.md)); v2 stages and slurp Step 4b are held.
 - One stage at a time; a stage is done when its listed V2 tests pass, `just check` is green and its runtime is measured against a stated budget.
 - Before any new dependency: pin the exact version and check its current licence, platforms and transitive runtime from upstream (v2 section 4); record it in `requirements*.txt` and a seam module.
 - v1 stays the base: two-axis status (C3), jsonschema, the single `ledger.py` writer, `--apply` gating, promotion gates. v2 additions are optional fields, optional installs or new seams.
@@ -139,6 +139,7 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | P30 | `relate` warns when a conflict opens on a claim no longer live, in the ledger or earlier in the batch |
 | P31 | `time-evolution` with `basis: dated-order` needs no excerpt, supersedes nothing and opens a `time-evolution-proposed` conflict recommending the later claim |
 | P32 | `kc topics` cites one path per byte group and lists `byte_copies`; `--by-file` repeats no claim |
+| P33 | Built as `kc triage`, `kc status-map`, `kc sample`; proposals until a blind sample is 95% right (92.5% so far). Next by the research: B3 `kc roots`, then B4 `kc verify` |
 | P24 | Port with P17: conformance into `claims`, verification into the external-fact record |
 
 ## Invariants and where they are enforced

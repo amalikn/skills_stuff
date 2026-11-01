@@ -127,6 +127,11 @@ Trying `amend` on a scratch copy needs a real copy of the sources, because it re
 own pairs. `decision-points` also returns `word_groups`: claims from different sources sharing a rare subject word, whatever their topic, for agents who worked apart. They share a word, not a question, so read them
 after key groups; `candidates.subject_word_floor` and `subject_word_share` set the rarity limit, and `group-review` clears them too. `review` marks a card **Stale** when a member or the recommendation is no longer live, and `kc report` lists these as `stale_conflicts`.
 
+## Triage
+
+`kc triage` sorts open conflicts into noise (a named gate fired, with its proof), proposed and needs_human, and P0 never clears. A path called gone that the other side still names goes to a person whatever the banners say. A banner clears a value only when a later source speaks to it. `--apply` records
+`dismissed` with rule and run; `--undo <run>` reopens. Until a blind sample of at least 40 clears is 95% right, it is the operator's bulk confirmation, never automatic. Measured: 92.5%. Audit with `kc sample --status dismissed`.
+
 ## Answering while unresolved
 
 `kc query <text>` returns `settled: false` and the open conflict for a disputed claim, at any severity, and `unreviewed_pairs` for cross-source pairs nobody has classified (a prompt to look,

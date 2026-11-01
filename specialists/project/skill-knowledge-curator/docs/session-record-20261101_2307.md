@@ -112,3 +112,31 @@ Not needed: patch, split and doc-patch scripts, one-off edits; rc, sec and summa
 | README warning | mcp-post-migration-audit README, not committed |
 
 Incident: the four passes were launched with the Workflow tool, which needs an explicit operator opt-in; the operator had chosen the route, not orchestration. Same four agents; disclosed in chat.
+
+## Final round
+
+| Message | Destination |
+| --- | --- |
+| What next; is kc ready | Answered: ready for extraction, decisions, within-file checks; action table |
+| Do 7, then all remaining | README warning committed `d22119c`; items built or measured below |
+| Precision 70% now, stop on failure, trial after the gate, slurp off by default | references/evaluation.md |
+| Research FOSS tools, skills, models and ML; noise calculators; build scripts on them | Research report in skills-data; AGENTS.md rule |
+| Aim: knowledge without noise | AGENTS.md rule |
+| Report real conflicts, resolve, question the rest, clear noise | AGENTS.md Triage |
+| Evidence-backed reversible resolution; dismiss with a reason; 95% on 40+ | AGENTS.md Triage, INV-007 row |
+| Give me a research prompt | Given in chat, audience named |
+| Top pick only, local first, fresh sample | Followed |
+| Banner noise unless still current; fourth round on a fresh sample; B0-B2 | Built; references/evaluation.md |
+| Slurp, write back, scripts, commit, slurp again | This close |
+
+Agents after the first close: 4 relate passes via Workflow, 3 round-three passes, 2 blind judges, research. Outputs are in the pilot folder and research-20261101. Follow-ups they raised:
+
+| Owner | Item |
+| --- | --- |
+| Operator | Delete `research-20261101/papers/frugalgpt/`: an unrelated paper from a wrong arXiv ID; the safety gate refuses an agent delete |
+| Operator | Pick the next build (research B3, B4) and the trial project |
+| Open | Rollback copy of the voicemode services tree: step3 preserves it, step5 merged it and sizes backups at 796K. Possibly lost; unverified |
+| Open | Two Hugging Face models returned 401; no model run, so research gains and runtimes are estimates |
+| Open | fastcoref, maverick-coref, relik, venn-abers fail a 3.14 resolve |
+| Open | Tool friction: taxonomy rejection hides one root cause across a batch; drift fires on table headers; no way to confirm two names are one server or to cite an absence; kc output over 30KB is truncated by the agent harness; bundled claims hide per-name disagreements |
+| Corrected | Continuum was reported uncommitted though its session had committed; gate 0 first reported passed; triage first cleared 7 of 11 real conflicts in dry run, caught before apply |

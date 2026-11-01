@@ -11,6 +11,10 @@ Last rotated: 20261029_2029
 
 # Changelog
 
+## 20261101_2353 — Learned: three measures for a filter, blind mixed audit
+
+`references/04_falsifiability.md`, from the skill-knowledge-curator triage measure (2026-11-01).
+
 ## 20261101_2307 — Learned: probes inherit assumptions; blind keys and pre-committed marks
 
 `references/04_falsifiability.md`, from the skill-knowledge-curator gate 0 result (2026-11-01).
