@@ -27,7 +27,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 - `candidates` 2.2 s at 3,496 claims, over its 2 s budget; next step is the persisted FTS cache (Deferred list).
 - Not built: P5, P6, P7, P17, P18, P21-P25 (references/feature-inventory.md, Fixes).
 - MCP audit cases A-F: optional since 2026-11-01.
-- Continuum ledger repairs are for the operator: `kc amend` on `cl-88cec07d70a0` and `cl-f3c2d0e95086` under `cf-d846a9dbb3`, tested on a scratch copy only.
+- `kc amend` proven live 2026-11-01 21:12: Continuum recorded `cl-88cec07d70a0` and `cl-f3c2d0e95086` under `cf-d846a9dbb3` (`dr-0c0fe64c12f5`, `dr-cc7b80dd7306`); `validate` ok, 61 decisions.
 - Semantic evaluation gold set (design 13.2) not built.
 - skill-slurp-chat Step 4b wiring: unblocked by gate 0, not started.
 - NLI signal untested: `just bootstrap-nli` not run (pulls torch); label order of the default model is UNVERIFIED.
@@ -54,8 +54,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
-1. Apply the Continuum `kc amend` repairs if the operator agrees (Open items).
-2. Build P25, P18 and P21, the remaining trust gaps, then v2 stage 1 (gap matrix).
+1. Build P25, P18 and P21, the remaining trust gaps, then v2 stage 1 (gap matrix).
 
 ## Memory pointers — KEEP
 
