@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261101_1958 — smc_qos back on the meta-package (v0.11.1 -> v0.11.2)
+
+Learned 2026-11-01 (ansible-wifi `rise` c22318fe): `references/13_known-issues.md`, kernel drift entry.
+
 ## 20261101_1944 — Kernel fix reaches rise (v0.11.0 -> v0.11.1)
 
 Learned 2026-11-01 (ansible-wifi `rise` 8684e5ec): `references/13_known-issues.md`, kernel drift entry.
