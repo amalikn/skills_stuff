@@ -98,6 +98,20 @@ class AliasTest(AliasCase, unittest.TestCase):
     self.assertEqual(self.aliases(chain)[0], 1)
 
 
+class TopicsTest(AliasCase, unittest.TestCase):
+  """kc topics: the relate agent's reading view, by consolidated topic."""
+
+  def test_aliases_join_topics_and_history_is_kept(self):
+    """Aliased topics read as one, with same-source and historical claims shown; DUPLICATE and REJECTED stay out."""
+    self.pipeline("related")
+    a, b = self.two_sources(A, B)
+    self.aliases([alias("topic_key", "final.links", "voicemode.step8")], "--apply")
+    topic = self.kc("topics")[1]["topics"]["voicemode.step8"]
+    self.assertEqual({r["claim_id"] for r in topic}, {a, b})
+    self.assertIn("disposition", topic[0])
+    self.assertIn("lines", topic[0])
+
+
 class RecallTest(AliasCase, unittest.TestCase):
   """kc recall scores a labelled set against what reaches review."""
 

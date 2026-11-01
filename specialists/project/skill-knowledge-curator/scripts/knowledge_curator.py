@@ -10,7 +10,7 @@ deterministic kernel that checks and records it (references/workflow.md).
 Usage:
   python scripts/knowledge_curator.py <command> --project <dir> [options]   (or `just kc <command> <dir> ...`)
   commands: init, inventory, worksheet, sections, vocabulary, coverage, claims, candidates, decision-points, relate, review,
-            decide, amend, group-review, aliases, recall, drift, render, promote, archive-plan, query, intake, validate, report
+            decide, amend, group-review, aliases, topics, recall, drift, render, promote, archive-plan, query, intake, validate, report
   Example: python scripts/knowledge_curator.py inventory --project tests/fixtures/pilot
 
 Inputs:

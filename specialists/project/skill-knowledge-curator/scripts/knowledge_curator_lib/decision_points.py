@@ -189,6 +189,35 @@ def group_review(st: State, group_id: str, reason: str) -> dict:
   raise InputError(f"unknown or already reviewed group {group_id}")
 
 
+def topics(st: State) -> dict:
+  """Claims by consolidated topic, for the relate agent: same-source and historical claims included, since conflicts live there too.
+
+  Args:
+    st: current state.
+
+  Returns:
+    {"topics": {topic: [rows]}, "claims": n}.
+  """
+  out: dict[str, list[dict]] = {}
+  for cid, c in sorted(st.claims.items()):
+    disp = st.disposition(cid)
+    if disp not in ("DUPLICATE", "REJECTED"):
+      view = compared(st, c)
+      lines = sorted({f"{e['path']}:{e['line_start']}-{e['line_end']}" for e in c["evidence"]})
+      out.setdefault(view["topic_key"], []).append(
+        {
+          "claim_id": cid,
+          "subject": view["subject"],
+          "predicate": view["predicate"],
+          "text": c["claim_text"],
+          "disposition": disp,
+          "kind": c["kind"],
+          "lines": lines,
+        }
+      )
+  return {"topics": dict(sorted(out.items())), "claims": sum(len(v) for v in out.values())}
+
+
 def review_pairs(st: State) -> set[frozenset]:
   """Every pair a decision point puts in front of a reviewer, key and word groups alike.
 

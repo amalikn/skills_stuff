@@ -255,6 +255,7 @@ COMMANDS = {
   "claims": lambda root, a: _ingest(root, a, "claims"),
   "candidates": lambda root, a: candidates.pairs(state.load(root), a.limit),
   "decision-points": lambda root, a: decision_points.decision_points(state.load(root)),
+  "topics": lambda root, a: decision_points.topics(state.load(root)),
   "aliases": cmd_aliases,
   "recall": lambda root, a: recall.score(state.load(root), Path(a.labels)),
   "group-review": cmd_group_review,
