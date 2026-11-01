@@ -88,6 +88,7 @@ def build_parser() -> Parser:
   how = am.add_mutually_exclusive_group(required=True)
   how.add_argument("--supersede", action="store_true", help="supersede the claim under the conflict's ruling")
   how.add_argument("--keep", action="store_true", help="list the claim on the conflict, disposition unchanged")
+  d.add_argument("--override-supersession", action="store_true", help="revive a claim another conflict superseded, on purpose")
   r = sub.choices["render"]
   r.add_argument("--check", action="store_true", help="exit 3 when pages differ from a fresh rendering")
   pr = sub.choices["promote"]

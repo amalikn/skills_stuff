@@ -54,6 +54,11 @@ def _record_checks(st: State, out: dict) -> None:
       out["errors"].append(f"{cid}: CURRENT without evidence or decision (INV-005)")
   for cf in st.conflicts.values():
     out["errors"].extend(f"{cf['conflict_id']}: unknown claim {c}" for c in cf["claims"] if c not in st.claims)
+  by_id = {d["decision_id"]: d for d in st.decisions}
+  for cid, (old, new) in sorted(st.revivals.items()):
+    conflict_a, conflict_b = by_id.get(old, {}).get("conflict_id"), by_id.get(new, {}).get("conflict_id")
+    if (conflict_a is None or conflict_a != conflict_b) and cid not in by_id.get(new, {}).get("overrides_supersession", []):
+      out["warnings"].append(f"{cid}: superseded by {old}, revived by {new} with no recorded override")
   related = {c for r in st.relations.values() for c in r["claims"]}
   unlinked = [
     cid

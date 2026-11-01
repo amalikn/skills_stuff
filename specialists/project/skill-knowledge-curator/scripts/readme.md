@@ -35,7 +35,7 @@ Summary: >-
 | `decision-points` | -                                                 | -                                                               | read-only                                                  |
 | `relate`       | `--file`                                             | `.kc/relations.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | whole batch refused on any error                           |
 | `review`       | -                                                    | `.kc/reports/review-queue.md`                                   | exit 2 while conflicts are open                            |
-| `decide`       | conflict, action, `--reason`, action options         | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | re-checks evidence first (exit 5 on change)                |
+| `decide`       | conflict, action, `--reason`, `--override-supersession`, options | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | re-checks evidence first (exit 5 on change)                |
 | `amend`        | conflict, `--add-claim`, `--supersede`/`--keep`, `--reason` | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl` | re-checks the claim's evidence; append-only                |
 | `render`       | `--check`                                            | `knowledge/*`, `.kc/proposals/*`                                | never overwrites a promoted page; refuses secret-like text |
 | `promote`      | `--page`, `--approve-digest`, `--reason`, `--revoke` | promotion record, re-rendered pages                             | gates must pass; digest-bound                              |

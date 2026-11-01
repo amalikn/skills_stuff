@@ -205,6 +205,7 @@ def cmd_decide(root: Path, args) -> dict:
     scope_note=args.scope_note,
     corrected_text=args.corrected_text,
     answer_text=args.answer_text,
+    override_supersession=args.override_supersession,
   )
   _record_decision(root, res, args.apply)
   return {"applied": args.apply, "decision": res.decision, "new_claims": [c["claim_id"] for c in res.claims]}

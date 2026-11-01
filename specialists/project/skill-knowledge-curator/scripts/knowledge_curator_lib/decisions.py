@@ -219,6 +219,29 @@ def _apply_correction(st: State, cf: dict, text: str | None, decision_id: str, r
   return [claim_id], [c for c in cf["claims"] if c != claim_id]
 
 
+def _revived(st: State, conflict_id: str, current: list[str], override: bool) -> list[str]:
+  """Claims a decision would make current though another conflict or relation superseded them (P26).
+
+  Args:
+    st: current state.
+    conflict_id: the conflict being decided.
+    current: claims the decision makes current.
+    override: the operator revives them on purpose.
+
+  Returns:
+    The revived claims (empty unless override).
+
+  Raises:
+    InputError: a claim would be revived without override.
+  """
+  own = {d["decision_id"] for d in st.decisions if d.get("conflict_id") == conflict_id}
+  found = {c: st.dispositions[c]["by"] for c in current if st.disposition(c) == "SUPERSEDED" and st.dispositions[c]["by"] not in own}
+  if found and not override:
+    named = ", ".join(f"{c} (by {by})" for c, by in sorted(found.items()))
+    raise InputError(f"would revive superseded claim(s): {named}; pass --override-supersession if the operator means that")
+  return sorted(found)
+
+
 def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, now: dt.datetime, **opts) -> DecideResult:
   """Build the records for one operator decision.
 
@@ -229,7 +252,7 @@ def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, no
     reason: the operator's reason (required).
     actor: who decided.
     now: decision time (timezone-aware).
-    **opts: current, scope_note, corrected_text, answer_text.
+    **opts: current, scope_note, corrected_text, answer_text, override_supersession.
 
   Returns:
     The decision result.
@@ -252,6 +275,7 @@ def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, no
     current, superseded = _apply_correction(st, cf, opts.get("corrected_text"), did, res)
   else:
     current, superseded = _targets(st, cf, action, opts.get("current"), opts.get("scope_note"))
+  revived = _revived(st, conflict_id, current, opts.get("override_supersession", False))
   res.decision = {
     "record": "decision",
     "decision_id": did,
@@ -266,6 +290,8 @@ def decide(st: State, conflict_id: str, action: str, reason: str, actor: str, no
     "superseded_claims": superseded,
     "previous_decision_id": previous[-1] if previous else None,
   }
+  if revived:
+    res.decision["overrides_supersession"] = revived
   status = "open" if action == "DEFER" else "resolved"
   res.conflicts.append({**cf, "status": status, "decided_by": did})
   for cid in current:

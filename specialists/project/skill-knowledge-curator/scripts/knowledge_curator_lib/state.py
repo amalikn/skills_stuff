@@ -29,6 +29,7 @@ class State:
     decisions: decision records in order.
     promotions: page path -> latest promotion record.
     predecessors: claim_id -> claims whose disposition names it as successor.
+    revivals: claim_id -> (superseding record, reviving record) for claims a later event made CURRENT again.
   """
 
   root: Path
@@ -44,6 +45,7 @@ class State:
   decisions: list = field(default_factory=list)
   promotions: dict = field(default_factory=dict)
   predecessors: dict = field(default_factory=dict)
+  revivals: dict = field(default_factory=dict)
 
   def source_by_path(self) -> dict:
     """Live (not removed) sources keyed by project-relative path.
@@ -119,6 +121,11 @@ def _fold_claims(st: State, records: list[dict]) -> None:
     if kind == "claim":
       st.claims[rec["claim_id"]] = rec
     elif kind == "disposition":
+      prior = st.dispositions.get(rec["claim_id"])
+      if prior and prior["disposition"] == "SUPERSEDED" and rec["disposition"] == "CURRENT":
+        st.revivals[rec["claim_id"]] = (prior["by"], rec["by"])
+      elif rec["disposition"] != "CURRENT":
+        st.revivals.pop(rec["claim_id"], None)
       st.dispositions[rec["claim_id"]] = rec
     elif kind == "section_status":
       st.section_status[rec["section_id"]] = rec

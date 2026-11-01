@@ -1,10 +1,11 @@
-"""Continuum pilot regressions: decision reach, agent tooling and silent passes (P4, P8-P10, P14-P16, P19).
+"""Continuum pilot regressions: decision reach, agent tooling and silent passes (P4, P8-P10, P14-P16, P19, P26).
 
 Each test failed before its fix (references/evaluation.md).
 
 Run: python -m unittest discover -s tests (or `just test`). Safety: files only, under temporary copies.
 """
 
+import json
 import unittest
 
 from helpers import COORD_A, COORD_B, FixCase, lib, make_claim
@@ -100,6 +101,51 @@ class DecisionReachTest(FixCase, unittest.TestCase):
     opened = lib("relations").conflict_id_for([a, b])
     extra = self.claim_for("The coordinator runs Go.")
     self.assertEqual(self.kc("amend", opened, "--add-claim", extra, "--supersede", "--reason", "r")[0], 1)
+
+
+class ReversalTest(FixCase, unittest.TestCase):
+  """P26: a decision on one conflict never silently revives a claim another conflict's decision superseded."""
+
+  def shared_claim(self) -> tuple[str, str, str]:
+    """Claim a superseded under one conflict and still listed on a second, open one.
+
+    Returns:
+      (claim a, winner b, second conflict ID).
+    """
+    self.pipeline("related")
+    a, b = self.two_sources(COORD_A, COORD_B)
+    cf = self.conflict(a, b)
+    self.assertEqual(self.kc("decide", cf, "USE_OTHER", "--current", b, "--reason", "r", "--apply")[0], 0)
+    path = self.add_doc("third.md", ["# Doc", "", "The coordinator runs Go."])
+    self.ingest([make_claim(path, 3, "The coordinator runs Go.", "go service", "runs", "Go", "other.topic")], "--apply")
+    return a, b, self.conflict(a, self.claim_for("The coordinator runs Go."))
+
+  def test_scoped_decision_refuses_to_revive(self):
+    """BOTH_APPLY_SCOPED naming a claim superseded elsewhere exits 1, writes nothing, and names the claim."""
+    a, _, second = self.shared_claim()
+    code, _, err = self.kc("decide", second, "BOTH_APPLY_SCOPED", "--scope-note", "s", "--reason", "r", "--apply")
+    self.assertEqual(code, 1)
+    self.assertIn(a, err)
+    self.assertEqual(self.state().disposition(a), "SUPERSEDED")
+
+  def test_override_is_recorded(self):
+    """--override-supersession revives on purpose: the decision records it and validate stays quiet."""
+    a, _, second = self.shared_claim()
+    code, _, err = self.kc("decide", second, "BOTH_APPLY_SCOPED", "--scope-note", "s", "--reason", "r", "--override-supersession", "--apply")
+    self.assertEqual(code, 0, err)
+    st = self.state()
+    self.assertEqual(st.disposition(a), "CURRENT")
+    self.assertEqual(st.decisions[-1]["overrides_supersession"], [a])
+    self.assertFalse(any("revived" in w for w in self.kc("validate")[1]["warnings"]))
+
+  def test_validate_flags_past_reversal(self):
+    """A ledger reversed by the old kernel is flagged until the claim is superseded again."""
+    a, _, second = self.shared_claim()
+    ledger = self.root / ".kc" / "claims.jsonl"
+    event = {"record": "disposition", "claim_id": a, "disposition": "CURRENT", "reason": "old kernel", "by": "dr-other"}
+    with ledger.open("a") as out:
+      out.write(json.dumps(event) + "\n")
+    self.assertTrue(any("revived" in w and a in w for w in self.kc("validate")[1]["warnings"]))
 
 
 class AgentToolingTest(FixCase, unittest.TestCase):
