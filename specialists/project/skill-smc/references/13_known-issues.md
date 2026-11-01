@@ -1654,7 +1654,7 @@ if not device.startswith(('/', '\\')) and ':/' not in device or fstype == 'none'
 - `smc_enable_overlay.yml` then did nothing and reported `failed=0`: `ls /lib/modules | tail -n1` differs from `uname -r`, so 36 tasks skip after a `Not on the last downloaded kernel version` debug line.
 - `smc_update_kernel` removes every non-target kernel (`cleanup_old_kernels: true`, outside the update block), but `flash-kernel --force <target>` is inside that block, which skips when the running kernel is the
   target. The purge at 19:31 left `/boot/firmware` on `1110` with its modules gone: a reboot then boots a kernel with no modules. `zz-flash-kernel` in `postrm.d` runs `flash-kernel "$abi"` with the removed
-  version and did not restore the target (cause of that `UNVERIFIED`). Repaired by hand: `flash-kernel --force 5.15.0-1078-raspi`. Fleet not surveyed: `just smc_boot_kernel <proxy> <target> <nodes>`.
+  version and did not restore the target (cause of that `UNVERIFIED`). Repaired by hand: `flash-kernel --force 5.15.0-1078-raspi`. Fleet not surveyed: `just smc_boot_kernel <proxy> <target> <nodes>`. Fix on `rise` `8684e5ec` (not on `iridium` or `master`; not yet run on a box): `smc_update_kernel` proves and flashes the next boot on every run, `smc_qos` installs the target's package, `smc_rise_enable_overlay` fails on a mismatch.
 - `flash-kernel --help` is not help: it takes the argument as a kernel version and starts installing. Run twice on `myra-vale-smc01`, it left an empty `/boot/dtbs/--help`.
 
 ```yaml
