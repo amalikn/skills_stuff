@@ -26,7 +26,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 - `candidates` 1.9 s at 3,496 claims, within budget; `kc drift` precision is low, advisory only.
 - Not built: P5, P6, P7, P17, P22-P24 (references/feature-inventory.md, Fixes). P25's predicate list came from Continuum's counts; `must` stays in conflict detection.
-- Continuum recorded the operator rulings of 2026-11-01 21:41 (55 decided, 45 open); `cf-73c4a38aa4` left open by the operator. Repair pending there: `cl-1334d9309fb3` successor back to `cl-c9b26284d37f` (`kc amend cf-1c11b8d333 --set-successor`, P27).
+- Continuum recorded the operator rulings of 2026-11-01 21:41 (55 decided, 45 open); `cf-73c4a38aa4` left open by the operator. `cl-1334d9309fb3` successor repaired live (`dr-bc8472c67d49`, P27). Stale conflicts `cf-3a630057ef` and `cf-7076d1e08a` not yet reviewed there.
 - MCP audit cases A-F: optional since 2026-11-01.
 - `kc amend` proven live 2026-11-01 21:12: Continuum recorded `cl-88cec07d70a0` and `cl-f3c2d0e95086` under `cf-d846a9dbb3` (`dr-0c0fe64c12f5`, `dr-cc7b80dd7306`); `validate` ok, 61 decisions.
 - Semantic evaluation gold set (design 13.2) not built.
