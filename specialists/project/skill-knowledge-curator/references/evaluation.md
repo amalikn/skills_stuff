@@ -278,6 +278,9 @@ the 147 dismissals hide about 11 real conflicts. All 15 real kept conflicts shar
 
 Cost: about 2.9M agent tokens for the pilot, research included. Research report: `skills-data/skill-knowledge-curator/research-20261101/foss-accuracy-options-20261101_2335.md`. Its negative finding: nothing purpose-built beats an LLM reading the sources, and no published system on a real corpus shows both marks; rule gates and root grouping need no new dependency.
 
+Cause of the `mcp-data` cluster, confirmed 2026-11-02: project_stuff commit `ea698f0` rewrote `/Volumes/Data/_ai/mcp-data` to `/Volumes/Data/_ai/_mcp/mcp-data` in step12, turning a retired root and the live root into one string. Most real conflicts in the pilot rest on that one edit, so the samples are
+not independent and the corpus is less varied than its counts suggest. Sample by root cause, or report decisions per cause. External reports: `docs/research/readme.md`.
+
 ## Release gate
 
 All deterministic items pass, the real-corpus pilot gives useful evidence-backed retrieval reviewed by the operator, semantic targets are measured (or exceptions accepted), and no high-severity

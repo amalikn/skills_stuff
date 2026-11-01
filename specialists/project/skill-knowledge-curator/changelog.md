@@ -14,6 +14,8 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-02 00:16 (learned): `mcp-data` cause confirmed in project_stuff `ea698f0`; samples are not independent. `references/evaluation.md`, `docs/research/readme.md`.
+- 2026-11-02 00:15 (docs, operator request): fifth external research report in `docs/research/`, verbatim; index updated with what it raises against our measures.
 - 2026-11-02 00:02 (close): session record extended; skill-eval-manager write-back on briefing outside researchers.
 - 2026-11-02 00:00 (docs, operator request): `docs/research/`: four external research reports kept verbatim, with an index of disagreements and next steps. Unverified; for a later chat.
 - 2026-11-01 23:53 (learned, operator request): third attempt failed: precision 37.5% against 70%, clears 92.5% right against 95%, recall 51.1% after triage; triage stays a proposal; P29, v2 stage 1, slurp Step 4b not started. Round three added 59 conflicts for 2 labels. `references/evaluation.md`, `references/conflicts-and-review.md`.

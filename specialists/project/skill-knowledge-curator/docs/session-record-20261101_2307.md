@@ -153,3 +153,12 @@ Agents after the first close: 4 relate passes via Workflow, 3 round-three passes
 Incident: a checkpoint description and memory note said the write-back was done before its check passed; skill-eval-manager's CHANGELOG was over budget, then rotated.
 
 The index records where the reports disagree and that they predate the triage result. The operator also still owes the rulings listed under "For you" in the last report: next build, new test corpus, trial project, the misfiled paper.
+
+## Fifth report
+
+| Message | Destination |
+| --- | --- |
+| This is the fifth one | `docs/research/`, verbatim from the transcript; index updated |
+| Once done slurp close, commit and push | This entry |
+
+Finding from it, verified here: project_stuff commit `ea698f0` rewrote `/Volumes/Data/_ai/mcp-data` to `/Volumes/Data/_ai/_mcp/mcp-data` in step12, so the `mcp-data` conflicts come from that rewrite. Open for the operator: whether to correct the reports, and whether the audit README warning should say confirmed instead of inferred.

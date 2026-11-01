@@ -55,7 +55,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
-0. Explore `docs/research/readme.md`: four external reports, unverified; start with where they disagree.
+0. Explore `docs/research/readme.md`: five external reports, unverified; start with report 5 and the points it raises against our measures. Open: correct the audit reports after `ea698f0`, and change the README warning from inferred to confirmed.
 1. Operator picks: research B3 `kc roots` is the obvious next build (all 15 real kept conflicts share one cause), then B4 `kc verify`. Measure on a new corpus: the MCP labels are used up. P29, v2 stage 1 and slurp Step 4b held.
 
 ## Memory pointers — KEEP
