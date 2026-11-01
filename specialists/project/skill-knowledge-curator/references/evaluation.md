@@ -68,8 +68,9 @@ threshold, at least 90% precision for conflict prompts, and 100% evidence validi
 
 ## Pilot on the MCP post-migration audit
 
-Optional since 2026-11-01: gate 0 now rests on Continuum (see below). Cases A-F were not run. Corpus: `/Volumes/Data/_ai/_project/project_stuff/mcp-post-migration-audit` (24 Markdown files). A read-only inventory on 2026-10-27 found 213 sections and five byte-identical pairs between
-`final-audit-pack/` and the step reports (design case F, found automatically). Next, read-only with ledgers in a scratch copy first:
+Optional since 2026-11-01: gate 0 now rests on Continuum (see below). Cases A-F were not run. Corpus: `/Volumes/Data/_ai/_project/project_stuff/mcp-post-migration-audit` (24 Markdown files). A
+read-only inventory on 2026-10-27 found 213 sections and five byte-identical pairs between `final-audit-pack/` and the step reports (design case F, found automatically). Next, read-only with ledgers
+in a scratch copy first:
 
 | Case | Expectation                                                                                               |
 | ---- | --------------------------------------------------------------------------------------------------------- |
@@ -151,8 +152,8 @@ cross-source conflict pass by topic in addition to `kc candidates`.
 
 ## Gate 0 and the rerun (2026-11-01)
 
-Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP cases
-A-F become optional. **Result: passed.** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
+Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP
+cases A-F become optional. **Result: passed.** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
 
 Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read only):
 
@@ -164,8 +165,8 @@ Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read 
 | `candidates` runtime | 5.2-5.7 s | 2.2 s, **over the 2 s budget** with 40% more pairs compared; FTS 3.1 s to 0.6 s |
 | `validate` | `ok`, no warnings | `ok`, warns on 1,172 claims with no recorded pair classification (review prompts, P25) and one unlinked historical claim |
 
-Exercised end to end on the scratch copy: `amend` on the two P19 claims, `render --apply` (0.55 s), `validate --strict` (0.8 s), `review`. Pair counts stay high because pairs are ranked, not dropped: only 78
-same-source pairs are suppressed. Agents use `decision-points` and `candidates --limit`.
+Exercised end to end on the scratch copy: `amend` on the two P19 claims, `render --apply` (0.55 s), `validate --strict` (0.8 s), `review`. Pair counts stay high because pairs are ranked, not dropped:
+only 78 same-source pairs are suppressed. Agents use `decision-points` and `candidates --limit`.
 
 Read 1,172 and 249 as review prompts, not disputes (P25). They are neither 1,172 new conflicts nor a clean result: they can hide a real conflict that nobody recorded.
 

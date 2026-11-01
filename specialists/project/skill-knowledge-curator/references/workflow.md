@@ -124,8 +124,8 @@ never stored.
 Budget: kernel commands under 2 s for a 50-document project; the agent's extraction is the expensive part. Measured 2026-10-27 on an M2 Max, Python 3.14.5: the 42-test suite in 1.1-1.8 s; `inventory`
 dry run over the MCP post-migration audit corpus (24 files, 213 sections) 0.14 s. Every command reports `elapsed_s`. Re-measure when a project passes 500 documents.
 
-Measured 2026-11-01 on a copy of the Continuum ledger (45 sources, 3,496 claims): `candidates` 2.2 s, over budget (surfaced in [evaluation.md](evaluation.md); the persisted FTS cache in the Deferred list is the
-next step), `decision-points` 0.09 s, `validate` 0.26 s (0.8 s with rendered pages), `render` 0.55 s, others under 0.1 s. The 66-test suite takes 2.5 s.
+Measured 2026-11-01 on a copy of the Continuum ledger (45 sources, 3,496 claims): `candidates` 2.2 s, over budget (surfaced in [evaluation.md](evaluation.md); the persisted FTS cache in the Deferred
+list is the next step), `decision-points` 0.09 s, `validate` 0.26 s (0.8 s with rendered pages), `render` 0.55 s, others under 0.1 s. The 66-test suite takes 2.5 s.
 
 ## Settled source conflicts
 
