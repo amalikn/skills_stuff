@@ -68,7 +68,7 @@ Source: [v2 spec](../docs/knowledge-curator-foss-implementation-spec-v2.md), bui
 
 Rules for every stage:
 
-- **Gate 0:** reopened 2026-11-01 by the operator after the MCP audit pilot ([evaluation.md](evaluation.md)); v2 stages and slurp Step 4b are held.
+- **Gate 0:** failed 2026-11-01: 44.4% recall against the 80% mark ([evaluation.md](evaluation.md)); v2 stages and slurp Step 4b are held.
 - One stage at a time; a stage is done when its listed V2 tests pass, `just check` is green and its runtime is measured against a stated budget.
 - Before any new dependency: pin the exact version and check its current licence, platforms and transitive runtime from upstream (v2 section 4); record it in `requirements*.txt` and a seam module.
 - v1 stays the base: two-axis status (C3), jsonschema, the single `ledger.py` writer, `--apply` gating, promotion gates. v2 additions are optional fields, optional installs or new seams.
@@ -136,6 +136,9 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | P27 | `decide` keeps a successor set by another conflict and lists it in `kept_successors`; `kc amend <cf> --set-successor <claim> --successor <id>` repairs a link, append-only |
 | P28 | Built: `decision-points` returns `word_groups` around a rare subject word (operator chose this over a consolidation pass or sequential batches). Recall stays low; a consolidation pass is the next option |
 | P29 | Pair same-source claims on one rare subject word with differing objects, ranked low |
+| P30 | `relate` warns on one batch mixing both, or applies time-evolution first and skips a conflict on a claim it superseded |
+| P31 | Accept `time-evolution` on dated order alone as `proposed`, for the operator to confirm |
+| P32 | Mark byte copies in `kc topics` and name the citing rule |
 | P24 | Port with P17: conformance into `claims`, verification into the external-fact record |
 
 ## Invariants and where they are enforced

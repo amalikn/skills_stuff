@@ -14,6 +14,7 @@ Budget: 200 lines, 25 KB
 
 ## Unreleased
 
+- 2026-11-01 23:04 (learned, operator request): gate 0 failed: blind labelled set of 54, recall 44.4% of 45 after aliases and a relate agent, all three P0 labels missed; P29, v2 stage 1 and slurp Step 4b not started. Findings P30-P32. `references/evaluation.md`.
 - 2026-11-01 22:32 (feature, operator request): `kc aliases` (consolidation for comparison only, new `.kc/aliases.jsonl`, revocable) and `kc recall` (labelled recall harness); new schemas `alias-input`, `gold-conflict`; 96 tests.
 - 2026-11-01 22:30 (decision, operator): gate 0 pass mark fixed before measuring: 80% of labelled MCP conflicts reach review, all P0 and P1. `references/evaluation.md`.
 - 2026-11-01 22:30 (learned, Continuum): `scripts/ledger_diff.py`, `just ledger-diff`: end-state diff of two ledgers for rehearsing decision sequences; 4 tests.

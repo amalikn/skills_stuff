@@ -6,8 +6,8 @@ Authority: local-supplement; handoff section 8 (T01-T14), design doc sections 12
 Scope: The merged acceptance catalog, which test covers each item and its status, the semantic evaluation still owed, and the pilot plan on the MCP audit corpus
 Last reviewed: 2026-11-01
 Summary: >-
-  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (86 tests);
-  gate 0 reopened after the MCP audit pilot (2026-11-01); semantic recall is not measured. Settles source conflict C9.
+  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (97 tests);
+  gate 0 failed on the labelled MCP pilot, 44.4% recall (2026-11-01); semantic recall is not measured. Settles source conflict C9.
 ---
 
 # Evaluation
@@ -144,6 +144,9 @@ Findings (fixes are listed in [feature-inventory.md](feature-inventory.md), "Fix
 | P27 | `decide` overwrote the successor of a claim already superseded elsewhere: closing `cf-407523c08c` repointed `cl-1334d9309fb3` from a Capsule definition to an execution-mode claim, and re-order was needed to protect a restore | Continuum rulings, 2026-11-01 21:41 |
 | P28 | Separate agents share almost no topics, so topic-gated pairing misses cross-agent disagreement; `worksheet` vocabulary is empty for agents started in parallel | MCP audit pilot, 2026-11-01 |
 | P29 | A contradiction inside one file is suppressed or unpaired: same source, different subjects, no negation signal | Step9, step11 on `mcp-data` |
+| P30 | A relate batch mixing `time-evolution` and `true-conflict` on the same claims makes the new conflict stale at once: 31 of 65 | MCP pilot, relate stage |
+| P31 | `time-evolution` requires a stated replacement, so real retained-then-retired pairs without one land as `true-conflict` | MCP pilot, relate stage |
+| P32 | `kc topics` lists both byte copies without saying which to cite | MCP pilot, relate stage |
 | P19 | `decide` only supersedes claims listed in the conflict: an operator ruling that also covers related claims (se `cl-88cec07d70a0`, pf `cl-f3c2d0e95086` under cf-d846a9dbb3) leaves them CURRENT, held only in the decision text. Re-deciding with `previous_decision_id` works for refinement, but there is no way to add a claim to a decided conflict | Continuum first-slice decisions, 2026-11-01 |
 
 Full run (same day, option "shared vocabulary + coarser granularity"): 8 extraction agents, 904 of 904 sections accounted for (876 claims-extracted, 28 context), 3,491 claims
@@ -157,7 +160,7 @@ cross-source conflict pass by topic in addition to `kc candidates`.
 ## Gate 0 and the rerun (2026-11-01)
 
 Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP
-cases A-F become optional. **Result: passed, then reopened by the operator (2026-11-01) after the MCP audit pilot below showed the probe assumed a shared topic. Reopened until cross-agent pairs are found on the MCP ledger.** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
+cases A-F become optional. **Result: passed, then reopened by the operator (2026-11-01) after the MCP audit pilot below showed the probe assumed a shared topic; then failed against the labelled mark (44.4% against 80%).** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
 
 Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read only):
 
@@ -224,6 +227,27 @@ proxy and not a labelled set. Continuum gains 146 word groups (about 6,800 pairs
 
 Gate 0 pass mark, fixed before measuring (operator, 2026-11-01): on a labelled set of about 30 real MCP conflicts, written by an agent blind to `kc` output, at least 80% reach review and every P0 or P1 conflict
 does. A conflict reaches review when a candidate pair or a decision-point group holds claims citing both of its sides. Ledger kept at `skills-data/skill-knowledge-curator/mcp-pilot-20261101/`.
+
+### Gate 0 result (2026-11-01): failed
+
+Scored on 45 labels (54 written blind, 9 low-confidence excluded by the operator; 3 P0, 26 P1). Same reach rule throughout; exact pair of lines required.
+
+| Stage | Recall | Blocking (P0, P1) |
+| --- | --- | --- |
+| Deterministic pairing | 9.3% (of 54) | 13.8% |
+| Plus 272 consolidation aliases | 20.0% | 24.1% |
+| Plus relate agent reading by topic (85 relations, 65 conflicts) | **44.4%** | **48.3%**, all three P0 labels missed |
+
+Mark was 80% with every P0 and P1 reached, so the gate stays closed; by the operator's condition P29, v2 stage 1 and slurp Step 4b were not started. Of 45: 20 reached, 21 missed, 3 not extracted, 1 same claim.
+By kind: time-evolution 60%, authority 50%, within-file 43.8%, cross-file 12.5%. The relate agent read `topics.json` whole, not `decision-points`, so word groups were not what produced this.
+
+The strict rule undercounts, and this is secondary, not the gate: the agent recorded the `mcp-data` P0 as step8 against step11, which is not the labelled pair (G14, G15). One pass by one agent also leaves real gaps, such as the
+per-server startup tables (G39-G41) and cross-file counts. Total agent cost of the pilot: about 1.08M tokens (extraction 608k, labels 189k, consolidation 114k, relate 170k).
+
+Case status after relate: A, 19 `time-evolution` relations, each with a verified excerpt. B and C, nothing decided by number, both sides kept. D, synthetic file not rerun through relate. E and F pass.
+
+New findings: P30, 31 of 65 new conflicts read stale at once, because one relate batch held a `time-evolution` and a `true-conflict` on the same claims. P31, `time-evolution` needs a stated replacement, and many real retained-then-retired pairs
+have none, so they land as `true-conflict`. P32, the agent could not tell which byte copy to cite.
 
 ## Release gate
 

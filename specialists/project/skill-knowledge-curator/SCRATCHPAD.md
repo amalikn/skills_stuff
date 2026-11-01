@@ -18,7 +18,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 - Pack built 2026-10-27: `SKILL.md` (alias skill-kc), 8 references, 4 schemas, `scripts/knowledge_curator.py` (kc) over `knowledge_curator_lib/`, 42 tests, `just check` green.
 - Installed as symlinks in `~/.claude/skills` and `~/.codex/skills`; `/skill-kc` alias in `~/.claude/CLAUDE.md`.
-- 2026-11-01: Continuum fixes built (P1-P4, P8-P10, P12-P16, P18-P21, P25-P28), 86 tests, `just check` green; gate 0 reopened after the MCP audit pilot (references/evaluation.md).
+- 2026-11-01: Continuum fixes built (P1-P4, P8-P10, P12-P16, P18-P21, P25-P28), `kc aliases`, `topics`, `recall`, 97 tests, `just check` green; gate 0 failed on the labelled MCP pilot, 44.4% against 80% (references/evaluation.md).
 - Real use: Continuum only (45 sources, 3,496 claims). `render`, `promote`, `archive-plan`, slurp `intake` have not served a real project.
 - v2 spec catalogued 2026-10-27 (`docs/knowledge-curator-foss-implementation-spec-v2.md`); conflicts V1-V9 settled; staged roadmap in references/feature-inventory.md, nothing built.
 
@@ -55,7 +55,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
-1. Operator to decide whether gate 0 closes: word groups find cross-agent pairs, recall about 12%. A consolidation pass is the next option. v2 stage 1 and slurp Step 4b held until then.
+1. Operator to choose how to raise recall (a second relate pass, a pass per file for within-file conflicts, P30-P32); rerun `kc recall` on `skills-data/skill-knowledge-curator/mcp-pilot-20261101/`. P29, v2 stage 1 and slurp Step 4b held.
 
 ## Memory pointers — KEEP
 
