@@ -14,7 +14,7 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
-## 20261101_1944 — Kernel fix reaches rise
+## 20261101_1944 — Kernel fix reaches rise (v0.11.0 -> v0.11.1)
 
 Learned 2026-11-01 (ansible-wifi `rise` 8684e5ec): `references/13_known-issues.md`, kernel drift entry.
 
