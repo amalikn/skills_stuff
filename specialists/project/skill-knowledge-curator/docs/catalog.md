@@ -48,6 +48,8 @@ Knowledge Curator (alias skill-kc): evidence-linked classification, deduplicatio
 | [knowledge-curator-foss-implementation-spec-v2.md](knowledge-curator-foss-implementation-spec-v2.md) | design v2    | Slurp Step 4c, FOSS tool matrix, code and diagram parsing, federated cross-project links, claim schema, run envelope, tests    |
 |                                                      |              |   T01-T18 (own numbering), stages 1-7                                                                                          |
 
+Also `docs/research/`: four external research reports, verbatim and unverified, indexed in [docs/research/readme.md](research/readme.md).
+
 ## Skill pack
 
 | Path                 | What it holds                                                                                                                                         |

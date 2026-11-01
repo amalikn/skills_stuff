@@ -55,6 +55,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
+0. Explore `docs/research/readme.md`: four external reports, unverified; start with where they disagree.
 1. Operator picks: research B3 `kc roots` is the obvious next build (all 15 real kept conflicts share one cause), then B4 `kc verify`. Measure on a new corpus: the MCP labels are used up. P29, v2 stage 1 and slurp Step 4b held.
 
 ## Memory pointers — KEEP

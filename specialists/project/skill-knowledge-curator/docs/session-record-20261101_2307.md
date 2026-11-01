@@ -140,3 +140,16 @@ Agents after the first close: 4 relate passes via Workflow, 3 round-three passes
 | Open | fastcoref, maverick-coref, relik, venn-abers fail a 3.14 resolve |
 | Open | Tool friction: taxonomy rejection hides one root cause across a batch; drift fires on table headers; no way to confirm two names are one server or to cite an absence; kc output over 30KB is truncated by the agent harness; bundled claims hide per-name disagreements |
 | Corrected | Continuum was reported uncommitted though its session had committed; gate 0 first reported passed; triage first cleared 7 of 11 real conflicts in dry run, caught before apply |
+
+## After the final close
+
+| Message | Destination |
+| --- | --- |
+| Give me a research prompt | Given in chat; the operator ran it elsewhere |
+| Add these as 4 separate research files, for the next chat | `docs/research/`, verbatim, split from the raw transcript, with an index |
+| Slurp close, write back, commit and push | This entry |
+| Slurp close the whole chat | This record covers it: 86 operator entries, 13 sub-agents and 346 side-effect actions from the transcript passes |
+
+Incident: a checkpoint description and memory note said the write-back was done before its check passed; skill-eval-manager's CHANGELOG was over budget, then rotated.
+
+The index records where the reports disagree and that they predate the triage result. The operator also still owes the rulings listed under "For you" in the last report: next build, new test corpus, trial project, the misfiled paper.
