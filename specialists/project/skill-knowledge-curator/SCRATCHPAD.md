@@ -18,14 +18,14 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 - Pack built 2026-10-27: `SKILL.md` (alias skill-kc), 8 references, 4 schemas, `scripts/knowledge_curator.py` (kc) over `knowledge_curator_lib/`, 42 tests, `just check` green.
 - Installed as symlinks in `~/.claude/skills` and `~/.codex/skills`; `/skill-kc` alias in `~/.claude/CLAUDE.md`.
-- 2026-11-01: Continuum fixes built (P1-P4, P8-P10, P12-P16, P19, P20), 66 tests, `just check` green; gate 0 passed on the scratch rerun (references/evaluation.md).
+- 2026-11-01: Continuum fixes built (P1-P4, P8-P10, P12-P16, P18-P21, P25-P27), 82 tests, `just check` green; gate 0 passed on the scratch rerun (references/evaluation.md).
 - Real use: Continuum only (45 sources, 3,496 claims). `render`, `promote`, `archive-plan`, slurp `intake` have not served a real project.
 - v2 spec catalogued 2026-10-27 (`docs/knowledge-curator-foss-implementation-spec-v2.md`); conflicts V1-V9 settled; staged roadmap in references/feature-inventory.md, nothing built.
 
 ## Open items — KEEP
 
-- `candidates` 2.2 s at 3,496 claims, over its 2 s budget; next step is the persisted FTS cache (Deferred list).
-- Not built: P5, P6, P7, P17, P18, P21-P25 (references/feature-inventory.md, Fixes). P25's predicate list came from Continuum's counts; `must` stays in conflict detection.
+- `candidates` 1.9 s at 3,496 claims, within budget; `kc drift` precision is low, advisory only.
+- Not built: P5, P6, P7, P17, P22-P24 (references/feature-inventory.md, Fixes). P25's predicate list came from Continuum's counts; `must` stays in conflict detection.
 - Continuum recorded the operator rulings of 2026-11-01 21:41 (55 decided, 45 open); `cf-73c4a38aa4` left open by the operator. Repair pending there: `cl-1334d9309fb3` successor back to `cl-c9b26284d37f` (`kc amend cf-1c11b8d333 --set-successor`, P27).
 - MCP audit cases A-F: optional since 2026-11-01.
 - `kc amend` proven live 2026-11-01 21:12: Continuum recorded `cl-88cec07d70a0` and `cl-f3c2d0e95086` under `cf-d846a9dbb3` (`dr-0c0fe64c12f5`, `dr-cc7b80dd7306`); `validate` ok, 61 decisions.
@@ -55,7 +55,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
-1. Build P25, P18 and P21, the remaining trust gaps, then v2 stage 1 (gap matrix).
+1. Run a second real corpus (MCP audit), since Continuum is the only real test so far, then v2 stage 1 (gap matrix).
 
 ## Memory pointers — KEEP
 

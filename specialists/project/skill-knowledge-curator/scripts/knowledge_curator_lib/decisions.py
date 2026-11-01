@@ -9,7 +9,7 @@ records for ledger.append.
 import datetime as dt
 from dataclasses import dataclass, field
 
-from . import ids
+from . import ids, stale
 from .errors import InputError, SourceChanged
 from .evidence import Reader, recheck
 from .state import State
@@ -73,6 +73,9 @@ def _card(st: State, cf: dict) -> list[str]:
   ]
   if cf.get("hypotheses"):
     lines.append("**Hypotheses:** " + "; ".join(cf["hypotheses"]))
+  why = stale.reasons(st, cf)
+  if why:
+    lines.append("**Stale:** " + "; ".join(why))
   lines.append(f"**Recommendation:** current = {labels.get(rec, '?')} (`{rec}`)" if rec else "**Recommendation:** none; evidence does not settle it.")
   cid = cf["conflict_id"]
   lines += [

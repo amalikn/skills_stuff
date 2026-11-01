@@ -102,7 +102,7 @@ sits under the data, cache and runtime routing; whether any slurp step already i
 ## Fixes from the Continuum pilot
 
 From [evaluation.md](evaluation.md), "Pilot on the Continuum corpus" (2026-10-30). **Built 2026-11-01** (tests `tests/test_continuum_recall.py`, `test_continuum_tooling.py`, each failing first):
-P1-P4, P8-P10, P12-P16, P19, P20, and P26-P27 the same day. **Not built:** P5, P6, P7, P17, P18, P21-P25; each needs a test that fails first.
+P1-P4, P8-P10, P12-P16, P19, P20, and P18, P21, P25-P27 the same day. **Not built:** P5, P6, P7, P17, P22-P24; each needs a test that fails first.
 
 P1 went beyond the row below: same-topic cross-source pairs need only a shared subject word, because fuzzy predicates missed the real wording. P12 also ignores provenance keys when comparing
 scopes, which repairs existing ledgers. P15 dropped `archive` from the default and excludes `archive_dir` by path, and warns on any other excluded folder holding Markdown.

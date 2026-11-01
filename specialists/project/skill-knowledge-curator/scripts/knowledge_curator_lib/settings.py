@@ -63,7 +63,15 @@ DEFAULT_CONFIG = {
   # Operator chose the first three (2026-10-27); evidence_verified added by default on review because a source edited after render
   # would otherwise be promoted stale. A project may drop it in .kc/config.yaml.
   "promotion_gates": ["no_open_p0_p1", "operator_decision", "governing_files", "evidence_verified"],
-  "candidates": {"min_ratio": 80, "fts_neighbours": 20, "fts_tokens": 8, "fts_common_share": 0.1, "subject_ratio": 85},
+  "candidates": {
+    "min_ratio": 80,
+    "fts_neighbours": 20,
+    "fts_tokens": 8,
+    "fts_common_share": 0.1,
+    "subject_ratio": 85,
+    # Predicates that hold many values, so a differing object alone is no disagreement; negation and numbers still pair them (P25).
+    "multi_valued_predicates": ["must", "must not", "is tested by", "has open question", "has risk", "is out of scope", "serves"],
+  },
   "worksheet": {"max_sections": 25, "max_chars": 12000, "max_vocabulary": 200},
 }
 

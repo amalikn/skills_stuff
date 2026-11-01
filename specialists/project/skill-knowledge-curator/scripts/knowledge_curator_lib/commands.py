@@ -14,7 +14,9 @@ from . import (
   archive_plan,
   candidates,
   claims,
+  decision_points,
   decisions,
+  drift,
   intake,
   inventory,
   ledger,
@@ -235,6 +237,22 @@ def cmd_amend(root: Path, args) -> dict:
   return {"applied": args.apply, "decision": res.decision}
 
 
+def cmd_group_review(root: Path, args) -> dict:
+  """Record a decision point as reviewed whole.
+
+  Args:
+    root: project root.
+    args: parsed arguments.
+
+  Returns:
+    Result.
+  """
+  rec = decision_points.group_review(state.load(root), args.group, args.reason)
+  with ledger.write_lock(root) if args.apply else _noop():
+    ledger.append(root, "relations", [rec], args.apply)
+  return {"applied": args.apply, "group_review": rec}
+
+
 def cmd_render(root: Path, args) -> dict:
   """Render knowledge pages.
 
@@ -363,7 +381,9 @@ COMMANDS = {
   "coverage": lambda root, a: claims.coverage(state.load(root)),
   "claims": lambda root, a: _ingest(root, a, "claims"),
   "candidates": lambda root, a: candidates.pairs(state.load(root), a.limit),
-  "decision-points": lambda root, a: candidates.decision_points(state.load(root)),
+  "decision-points": lambda root, a: decision_points.decision_points(state.load(root)),
+  "group-review": cmd_group_review,
+  "drift": lambda root, a: drift.report(state.load(root), a.path),
   "relate": lambda root, a: _ingest(root, a, "relations"),
   "review": cmd_review,
   "decide": cmd_decide,

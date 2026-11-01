@@ -6,7 +6,7 @@ Authority: local-supplement; handoff section 8 (T01-T14), design doc sections 12
 Scope: The merged acceptance catalog, which test covers each item and its status, the semantic evaluation still owed, and the pilot plan on the MCP audit corpus
 Last reviewed: 2026-11-01
 Summary: >-
-  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (66 tests);
+  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (82 tests);
   gate 0 passed on the Continuum rerun (2026-11-01); semantic recall is not measured. Settles source conflict C9.
 ---
 
@@ -171,6 +171,19 @@ Exercised end to end on the scratch copy: `amend` on the two P19 claims, `render
 only 78 same-source pairs are suppressed. Agents use `decision-points` and `candidates --limit`.
 
 Read 1,172 and 249 as review prompts, not disputes (P25). They are neither 1,172 new conflicts nor a clean result: they can hide a real conflict that nobody recorded.
+
+After P25, P18 and P21 (same day, read-only on the live ledger, 3,496 claims):
+
+| Measure | Before | After |
+| --- | --- | --- |
+| Claims with unclassified pairs | 1,158 | 607 |
+| Decision points, open pairs | 249, 3,704 | 160, 1,010 |
+| `candidates` runtime | 2.2 s, over budget | 1.9 s, **within the 2 s budget** |
+| `kc drift` | none | 282 of 3,390 flagged (8.3%), 0.25 s; 47% before it read the cited lines |
+| Stale conflicts | listed by hand | 2 found: `cf-3a630057ef`, and `cf-7076d1e08a` that nobody had listed |
+
+`kc drift` precision is low and unmeasured: most of a sample of 10 were heading or list context, so it is a list to read, never a gate. Its negation check runs one way, a negation dropped from the excerpt. `stale` reads
+dispositions only and cannot see semantic narrowing, so an unflagged conflict is not proven fresh.
 
 ## Release gate
 

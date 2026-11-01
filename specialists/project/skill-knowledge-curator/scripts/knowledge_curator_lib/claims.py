@@ -13,7 +13,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import fuzzy, ids, schema, settings
+from . import drift, fuzzy, ids, schema, settings
 from .errors import InputError
 from .evidence import Reader, cited_text, verify_span
 from .state import State
@@ -272,7 +272,7 @@ def ingest(st: State, records: list[dict]) -> IngestResult:
   res.errors.extend(
     f"{d['claim_id']}: successor {d['successor']} does not exist" for d in res.dispositions if d.get("successor") and d["successor"] not in known
   )
-  res.warnings = _input_warnings(st, records)
+  res.warnings = _input_warnings(st, records) + [f"{c['claim_id']}: {f}" for c in res.claims for f in drift.check_claim(reader, c)]
   return res
 
 

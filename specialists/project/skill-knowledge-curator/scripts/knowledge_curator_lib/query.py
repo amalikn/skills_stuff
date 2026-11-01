@@ -7,7 +7,7 @@ named so an answer can say the matter is not settled (design doc 7.9). Safety: i
 import re
 import sqlite3
 
-from . import candidates
+from . import decision_points
 from .state import State
 
 _TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]+")
@@ -37,7 +37,7 @@ def search(st: State, text: str, limit: int = 10, include_history: bool = False)
   query = " OR ".join('"' + t + '"' for t in tokens)
   rows = db.execute("SELECT cid FROM f WHERE f MATCH ? ORDER BY rank", (query,)).fetchall()
   db.close()
-  unreviewed = candidates.unreviewed_counts(st)
+  unreviewed = decision_points.unreviewed_counts(st)
   out = []
   for (cid,) in rows:
     disp = st.effective(cid)

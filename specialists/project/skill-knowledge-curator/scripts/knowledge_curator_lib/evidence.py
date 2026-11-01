@@ -62,13 +62,13 @@ def _sections_overlapping(st: State, version_id: str, start: int, end: int) -> l
   return sorted(s["section_id"] for s in st.sections.values() if s["source_version_id"] == version_id and s["line_start"] <= end and s["line_end"] >= start)
 
 
-def cited_text(reader: Reader, span: dict, limit: int = 120) -> str:
+def cited_text(reader: Reader, span: dict, limit: int | None = 120) -> str:
   """What a span's cited lines hold, for an error message.
 
   Args:
     reader: file reader.
     span: {source_path, line_start, line_end}.
-    limit: maximum characters.
+    limit: maximum characters, or None for all.
 
   Returns:
     Whitespace-normalised text, or "" when the file or lines cannot be read.

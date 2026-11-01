@@ -4,6 +4,7 @@ Imported, not run. Safety: read-only.
 """
 
 from . import claims as claims_mod
+from . import stale
 from .state import State
 
 
@@ -30,6 +31,7 @@ def build(st: State) -> dict:
     "coverage": claims_mod.coverage(st)["counts"],
     "claims": {"total": len(st.claims), "by_disposition": dict(sorted(disp.items()))},
     "conflicts": {"open_by_severity": dict(sorted(sev.items())), "resolved": sum(c["status"] == "resolved" for c in st.conflicts.values())},
+    "stale_conflicts": stale.stale_conflicts(st),
     "decisions": len(st.decisions),
     "promoted_pages": sorted(p for p, r in st.promotions.items() if r["status"] == "promoted"),
   }

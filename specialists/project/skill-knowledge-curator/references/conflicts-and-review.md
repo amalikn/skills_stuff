@@ -120,6 +120,12 @@ wrong link.
 
 Trying `amend` on a scratch copy needs a real copy of the sources, because it re-checks the claim's evidence: missing sources exit 5, and a symlink to the live tree exits 1 (path escapes the project root).
 
+## Review prompts
+
+`candidates.multi_valued_predicates` lists predicates that hold many values, so a differing object alone is no signal; negation and numbers still pair them, so they stay in conflict detection. Set it in
+`.kc/config.yaml`; the list replaces the default. When a coordinator reads a decision point whole, `kc group-review <group_id> --reason ... --apply` records it as classified; a later claim reopens only its
+own pairs. `review` marks a card **Stale** when a member or the recommendation is no longer live, and `kc report` lists these as `stale_conflicts`.
+
 ## Answering while unresolved
 
 `kc query <text>` returns `settled: false` and the open conflict for a disputed claim, at any severity, and `unreviewed_pairs` for cross-source pairs nobody has classified (a prompt to look,

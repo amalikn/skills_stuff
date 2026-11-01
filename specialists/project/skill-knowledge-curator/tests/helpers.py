@@ -217,19 +217,22 @@ class FixCase(PilotCase):
       out.append(res["ids"][0] if len(res["ids"]) == 1 else self.claim_for(f["text"]))
     return out[0], out[1]
 
-  def conflict(self, a: str, b: str, severity: str = "P2") -> str:
+  def conflict(self, a: str, b: str, severity: str = "P2", recommended: str | None = None) -> str:
     """Open a conflict between two claims.
 
     Args:
       a: first claim.
       b: second claim.
       severity: severity.
+      recommended: claim to recommend.
 
     Returns:
       The conflict ID.
     """
     path = self.root.parent / "rel.json"
     rec = {"record": "relation", "claims": [a, b], "relation": "true-conflict", "severity": severity, "reason": "they disagree", "question": "Which one?"}
+    if recommended:
+      rec["recommended_current"] = recommended
     path.write_text(json.dumps([rec]))
     code, _, err = self.kc("relate", "--file", str(path), "--apply")
     self.assertEqual(code, 0, err)

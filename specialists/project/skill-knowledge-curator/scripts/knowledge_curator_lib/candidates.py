@@ -22,11 +22,11 @@ _NUM = re.compile(r"\d+(?:\.\d+)*")
 _TOKEN = re.compile(r"[a-z0-9][a-z0-9._-]{2,}")
 
 
-_norm = lru_cache(maxsize=None)(ids.norm)
+norm_cached = lru_cache(maxsize=None)(ids.norm)
 _subject_similarity = lru_cache(maxsize=None)(fuzzy.similarity)
 
 
-def _situation(scope: dict) -> dict:
+def situation(scope: dict) -> dict:
   """Scope without provenance keys: where a claim came from never separates it from another source (P12).
 
   Args:
@@ -42,7 +42,7 @@ def _overlaps(a: dict, b: dict) -> bool:
   """Whether two situations can be the same: every key both name has the same value (a missing key matches any).
 
   Args:
-    a: first situation, from _situation.
+    a: first situation, from situation.
     b: second situation.
 
   Returns:
@@ -51,7 +51,7 @@ def _overlaps(a: dict, b: dict) -> bool:
   return all(str(a[k]).lower() == str(b[k]).lower() for k in a.keys() & b.keys())
 
 
-def _source_ids(claim: dict) -> set[str]:
+def source_ids(claim: dict) -> set[str]:
   """Independent sources of a claim (byte copies count once).
 
   Args:
@@ -63,24 +63,26 @@ def _source_ids(claim: dict) -> set[str]:
   return {e["source_sha256"] for e in claim["evidence"]}
 
 
-def _prepared(claim: dict, project: str) -> dict:
+def _prepared(claim: dict, project: str, multi: set[str]) -> dict:
   """Claim with its per-claim comparison facts computed once, not per pair (pairs() compares about 190,000 pairs at 3,500 claims).
 
   Args:
     claim: the claim.
     project: project ID, not counted as a subject word.
+    multi: normalised multi-valued predicates.
 
   Returns:
-    A copy carrying sources, situation, numbers, negated and subject_words.
+    A copy carrying sources, situation, numbers, negated, subject_words and multi.
   """
   text = claim["claim_text"]
   return {
     **claim,
-    "sources": _source_ids(claim),
-    "situation": _situation(claim["scope"]),
+    "sources": source_ids(claim),
+    "situation": situation(claim["scope"]),
     "numbers": set(_NUM.findall(text)),
     "negated": bool(_NEG.search(text)),
-    "subject_words": set(_norm(claim["subject"]).split()) - set(_norm(project).split()),
+    "subject_words": set(norm_cached(claim["subject"]).split()) - set(norm_cached(project).split()),
+    "multi": norm_cached(claim["predicate"]) in multi,
   }
 
 
@@ -137,7 +139,7 @@ def _shared_subject(a: dict, b: dict, subject_ratio: float) -> bool:
   Returns:
     True when they match.
   """
-  return bool(a["subject_words"] & b["subject_words"]) or _subject_similarity(_norm(a["subject"]), _norm(b["subject"])) >= subject_ratio
+  return bool(a["subject_words"] & b["subject_words"]) or _subject_similarity(norm_cached(a["subject"]), norm_cached(b["subject"])) >= subject_ratio
 
 
 def signals(a: dict, b: dict, ratio: float, subject_ratio: float = 85) -> list[str]:
@@ -153,15 +155,16 @@ def signals(a: dict, b: dict, ratio: float, subject_ratio: float = 85) -> list[s
     Signal names, sorted.
   """
   out = []
-  same_subject = _norm(a["subject"]) == _norm(b["subject"])
-  same_key = same_subject and _norm(a["predicate"]) == _norm(b["predicate"])
+  same_subject = norm_cached(a["subject"]) == norm_cached(b["subject"])
+  same_key = same_subject and norm_cached(a["predicate"]) == norm_cached(b["predicate"])
   overlap = _overlaps(a["situation"], b["situation"])
-  differ = _norm(a["object"]) != _norm(b["object"])
-  if same_key and overlap and differ:
+  differ = norm_cached(a["object"]) != norm_cached(b["object"])
+  many = a["multi"] and b["multi"]
+  if same_key and overlap and differ and not many:
     out.append("same-key-different-object")
-  if same_key and not overlap:
+  if same_key and not overlap and not many:
     out.append("same-key-different-scope")
-  if not same_key and overlap and differ and a["topic_key"] == b["topic_key"] and not a["sources"] & b["sources"]:
+  if not same_key and not many and overlap and differ and a["topic_key"] == b["topic_key"] and not a["sources"] & b["sources"]:
     if same_subject or _shared_subject(a, b, subject_ratio):
       out.append("same-topic-cross-source")
   if not (same_key or ratio >= 70):
@@ -189,7 +192,7 @@ def _pair_row(st: State, a: str, b: str, ratio: float, sig: list[str]) -> dict:
     The row.
   """
   ca, cb = st.claims[a], st.claims[b]
-  shared = _source_ids(ca) & _source_ids(cb)
+  shared = source_ids(ca) & source_ids(cb)
   return {
     "claims": [a, b],
     "texts": [ca["claim_text"], cb["claim_text"]],
@@ -215,7 +218,7 @@ def _suppressed(a: dict, b: dict, sig: list[str]) -> bool:
   Returns:
     True when the pair shares a source, the subjects differ and no negation signal fired.
   """
-  return bool(a["sources"] & b["sources"]) and _norm(a["subject"]) != _norm(b["subject"]) and "negation-asymmetry" not in sig
+  return bool(a["sources"] & b["sources"]) and norm_cached(a["subject"]) != norm_cached(b["subject"]) and "negation-asymmetry" not in sig
 
 
 def pairs(st: State, limit: int | None = None) -> dict:
@@ -229,8 +232,9 @@ def pairs(st: State, limit: int | None = None) -> dict:
     {"pairs": [...], "nli": bool, "compared": n, "counts": {...}}; cross-source pairs with a signal first, then by similarity.
   """
   cfg = st.cfg["candidates"]
-  active = {cid: _prepared(c, st.cfg["project_id"]) for cid, c in st.claims.items() if st.disposition(cid) not in ("DUPLICATE", "REJECTED")}
-  done = {frozenset(r["claims"]) for r in st.relations.values()}
+  multi = multi_valued(st)
+  active = {cid: _prepared(c, st.cfg["project_id"], multi) for cid, c in st.claims.items() if st.disposition(cid) not in ("DUPLICATE", "REJECTED")}
+  done = classified(st)
   by_subject: dict[str, set[str]] = {}
   by_topic: dict[str, set[str]] = {}
   for cid, c in active.items():
@@ -260,74 +264,28 @@ def pairs(st: State, limit: int | None = None) -> dict:
   return {"pairs": rows[:limit], "nli": scores is not None, "compared": len(seen), "counts": counts}
 
 
-def _key_groups(st: State) -> dict[tuple, list[str]]:
-  """Live claims grouped by subject, predicate and situation.
+def multi_valued(st: State) -> set[str]:
+  """Normalised multi-valued predicates for a project.
 
   Args:
     st: current state.
 
   Returns:
-    (subject, predicate, situation) -> claim IDs.
+    The predicates.
   """
-  groups: dict[tuple, list[str]] = {}
-  for cid in sorted(st.claims):
-    if st.disposition(cid) in ("CURRENT", "REVIEW_REQUIRED"):
-      c = st.claims[cid]
-      situation = tuple(sorted((k.lower(), str(v).lower()) for k, v in _situation(c["scope"]).items()))
-      groups.setdefault((ids.norm(c["subject"]), ids.norm(c["predicate"]), situation), []).append(cid)
-  return groups
+  return {norm_cached(p) for p in st.cfg["candidates"]["multi_valued_predicates"]}
 
 
-def _open_pairs(st: State, members: list[str], done: set) -> list[tuple[str, str]]:
-  """Unclassified pairs in a group that disagree across sources.
-
-  Args:
-    st: current state.
-    members: claim IDs.
-    done: classified pairs.
-
-  Returns:
-    The pairs.
-  """
-  out = []
-  for a, b in combinations(members, 2):
-    ca, cb = st.claims[a], st.claims[b]
-    if frozenset((a, b)) not in done and ids.norm(ca["object"]) != ids.norm(cb["object"]) and not _source_ids(ca) & _source_ids(cb):
-      out.append((a, b))
-  return out
-
-
-def decision_points(st: State) -> dict:
-  """Reviewable groups: one subject and predicate across two or more sources with differing objects and unclassified pairs (P13).
+def classified(st: State) -> set[frozenset]:
+  """Pairs already reviewed, by a relation or by a group review.
 
   Args:
     st: current state.
 
   Returns:
-    {"groups": [...], "claims": n}; the groups with the most sources first.
+    Each pair as a frozenset of two claim IDs.
   """
-  done = {frozenset(r["claims"]) for r in st.relations.values()}
-  groups = []
-  for (subject, predicate, situation), members in _key_groups(st).items():
-    remaining = _open_pairs(st, members, done)
-    if remaining:
-      rows = [{"claim_id": c, "object": st.claims[c]["object"], "paths": sorted({e["path"] for e in st.claims[c]["evidence"]})} for c in members]
-      sources = len({s for c in members for s in _source_ids(st.claims[c])})
-      groups.append(
-        {"subject": subject, "predicate": predicate, "scope": dict(situation), "sources": sources, "unclassified_pairs": len(remaining), "claims": rows}
-      )
-  groups.sort(key=lambda g: (-g["sources"], -g["unclassified_pairs"], g["subject"], g["predicate"]))
-  return {"groups": groups, "claims": len({c["claim_id"] for g in groups for c in g["claims"]})}
-
-
-def unreviewed_counts(st: State) -> dict[str, int]:
-  """Per-claim count of unclassified cross-source disagreements on the same key; cheap enough for query and validate (P3).
-
-  Args:
-    st: current state.
-
-  Returns:
-    claim_id -> count (claims with none are absent).
-  """
-  done = {frozenset(r["claims"]) for r in st.relations.values()}
-  return dict(Counter(c for members in _key_groups(st).values() for pair in _open_pairs(st, members, done) for c in pair))
+  done = set()
+  for rec in st.relations.values():
+    done.update(frozenset(pair) for pair in combinations(rec["claims"], 2))
+  return done

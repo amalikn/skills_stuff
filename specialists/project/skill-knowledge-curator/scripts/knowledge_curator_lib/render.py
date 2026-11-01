@@ -11,7 +11,7 @@ import os
 import re
 from dataclasses import dataclass, field
 
-from . import candidates, ids, settings
+from . import decision_points, ids, settings
 from .errors import ValidationFailed
 from .state import State
 
@@ -287,7 +287,7 @@ def render(st: State) -> Rendered:
   """
   out, kdir = Rendered(), st.cfg["knowledge_dir"]
   cats = sorted({c["primary_category"] for c in st.claims.values()} | {p.rsplit("/", 1)[-1][:-3] for p in st.promotions})
-  pending_pairs = candidates.unreviewed_counts(st)
+  pending_pairs = decision_points.unreviewed_counts(st)
   for cat in (c for c in cats if c in settings.CATEGORIES):
     path = f"{kdir}/{cat}.md"
     promo = st.promotions.get(path)

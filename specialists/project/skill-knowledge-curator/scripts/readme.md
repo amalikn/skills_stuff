@@ -32,7 +32,9 @@ Summary: >-
 | `coverage`     | -                                                    | -                                                               | read-only                                                  |
 | `claims`       | `--file` (.json/.jsonl), `--coverage`                | `.kc/claims.jsonl`                                              | whole batch refused on any error; warnings never refuse    |
 | `candidates`   | `--limit N`                                          | -                                                               | read-only; in-memory FTS5                                  |
-| `decision-points` | -                                                 | -                                                               | read-only                                                  |
+| `decision-points` | -                                                 | -                                                               | read-only; each group has a `group_id`                     |
+| `group-review` | group, `--reason`                                    | `.kc/relations.jsonl`                                           | records a group as classified; a new claim reopens itself  |
+| `drift`        | `--path GLOB`                                        | -                                                               | read-only; advisory, flags and never refuses               |
 | `relate`       | `--file`                                             | `.kc/relations.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | whole batch refused on any error                           |
 | `review`       | -                                                    | `.kc/reports/review-queue.md`                                   | exit 2 while conflicts are open                            |
 | `decide`       | conflict, action, `--reason`, `--override-supersession`, options | `.kc/decisions.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | re-checks evidence first (exit 5 on change)                |
@@ -61,10 +63,12 @@ Summary: >-
 | `evidence.py`                                                 | Span verification and recheck                                                        |
 | `claims.py`                                                   | Claim intake and coverage                                                            |
 | `worksheet.py`                                                | Worksheet batches, section listing, vocabulary, batch effect                         |
-| `candidates.py`                                               | Candidate pairs and signals, decision points, unreviewed counts                      |
+| `candidates.py`                                               | Candidate pairs and signals                                                          |
+| `decision_points.py`                                          | Review groups, unreviewed counts, group review                                       |
 | `relations.py`                                                | Relation intake and automatic dispositions                                           |
 | `decisions.py`                                                | Review cards and decisions                                                           |
 | `amendments.py`                                               | `kc amend`: add a claim to a conflict, repair a successor                            |
+| `drift.py`, `stale.py`                                        | Claim text against cited lines; open conflicts overtaken elsewhere                   |
 | `render.py`                                                   | Deterministic pages and index.json; secret scan                                      |
 | `promote.py`                                                  | Gates and promotion records                                                          |
 | `archive_plan.py`                                             | Candidates, referrers, restore rehearsal                                             |

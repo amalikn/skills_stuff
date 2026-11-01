@@ -6,8 +6,8 @@ promoted pages unchanged since promotion, knowledge pages matching a fresh rende
 Safety: read-only.
 """
 
-from . import candidates, ids, inventory, render, settings
 from . import claims as claims_mod
+from . import decision_points, ids, inventory, render, settings, stale
 from .errors import KcError
 from .evidence import Reader, recheck
 from .state import State
@@ -146,7 +146,10 @@ def run(st: State, strict: bool = False) -> dict:
     (out["errors"] if strict else out["warnings"]).append(
       f"{cov.get('pending', 0) + cov.get('pending-review', 0)} section(s) not yet accounted for (kc worksheet)"
     )
-  unreviewed = candidates.unreviewed_counts(st)
+  overtaken = stale.stale_conflicts(st)
+  if overtaken:
+    out["warnings"].append(f"{len(overtaken)} open conflict(s) look overtaken by rulings elsewhere (kc report, stale_conflicts)")
+  unreviewed = decision_points.unreviewed_counts(st)
   if unreviewed:
     out["warnings"].append(f"{len(unreviewed)} claim(s) have unclassified cross-source pairs: unreviewed, not disputed (kc decision-points)")
   out["ok"] = not out["errors"]
