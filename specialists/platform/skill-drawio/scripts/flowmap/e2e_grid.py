@@ -21,6 +21,7 @@ from .model import MARGIN, e2e_tier, flow_extras, flow_family
 from .profile import Profile
 from .shapes import fit_height
 from . import placement
+from .crossing_search import swap_cells
 from .tips import connector_tip, e2e_groups, step_arrow_tip
 
 #: Box width and least height; port spacing on a box side; distance of the first and last track from a channel's or corridor's border (the
@@ -99,13 +100,14 @@ class Link:
 class E2EGrid:
     """Places, plans and sizes the End-to-end page (flowmap.e2e.EndToEnd turns the plans into polylines)."""
 
-    def __init__(self, data: dict, profile: Profile, numbers: dict | None = None) -> None:
+    def __init__(self, data: dict, profile: Profile, numbers: dict | None = None, band_swaps: tuple = ()) -> None:
         """Place every component, plan every link and size the grid.
 
         Args:
             data: the validated map (or one family's part of it, flowmap.e2e_family).
             profile: the project's drawing profile (tiers, band, families).
             numbers: {flow id: its number in the whole map}, so a part keeps the whole map's x of x.y; default the flows' order here.
+            band_swaps: pairs of band components whose cells are swapped, in order (flowmap.crossing_search.band_search).
         """
         self.data, self.profile = data, profile
         self.number = numbers or {f["id"]: i for i, f in enumerate(data["flows"], 1)}
@@ -114,7 +116,7 @@ class E2EGrid:
         self.ncol = len(profile.tiers)
         # Channels sit between columns; a one-column page keeps one on its right, so links inside the column still have a track (2026-10-19).
         self.nch = max(self.ncol - 1, 1)
-        self.cell, self.band = self._place()
+        self.cell, self.band = swap_cells(self._place(), band_swaps)
         self.groups, self.group_of = e2e_groups(data, profile, numbers)
         self.links = self._links()
         # Links inside one column always use the channel on its right, the last column's too (operator, 2026-10-26): on its left they
@@ -188,14 +190,12 @@ class E2EGrid:
         for cid in (c for c in self.comps if tier[c] is None):
             cs = [colof[n] for n in nbr[cid] if n in colof]
             pref = int(sum(cs) / len(cs) + 0.5) if cs else 1
-            band_row = n_rows
-            while True:
+            for band_row in range(n_rows, n_rows + len(self.comps) + 1):   # a row always has room by the last
                 free = sorted((c for c in range(self.ncol) if (c, band_row) not in taken), key=lambda c, pref=pref: (abs(c - pref), c))
                 if free:
                     cell[cid] = (free[0], band_row)
                     taken.add(cell[cid])
                     break
-                band_row += 1
         return cell
 
     def _links(self) -> list:

@@ -17,6 +17,11 @@ the rest with its own value, the same opacity to the eye: 15.001 for the first c
 that value and restores them; a click on another colour finds a different value and dims them as its own, so switching takes one click.
 In the editor a click runs a link directly only on a cell whose layer is locked (Graph click handler), so the clickable layers are locked.
 
+A box lights its own arrows (operator, 2026-11-02): on the End-to-end pages and the step pages a click on a box keeps that box, every arrow
+or dashed line touching it and the boxes at their other ends. On a step page a click on an arrow keeps that one arrow, its label and its two
+boxes, never a colour. The links are the same toggles; each box and step arrow has its own index, so its own dim value. A step that opens
+another flow keeps that link: a cell runs one link.
+
 Imported, not run: `from flowmap.isolate import isolate_link` with the skill's scripts/ on sys.path.
 """
 
@@ -34,6 +39,10 @@ LEGEND_TAG = "legend"
 E2E_DIMMED = ("step-arrow", "connector", BOX_TAG, LEGEND_TAG)
 #: Everything a click on the Overview dims: thick arrows with their counts and dots, thin arrows, legend rows.
 OV_DIMMED = ("ov-thick", "ov-thin", LEGEND_TAG)
+#: The tag of a step box on a step page.
+STEP_BOX_TAG = "step-box"
+#: Everything a click on a step page dims: arrows with their labels, and step boxes.
+FLOW_DIMMED = ("step-arrow", "back-arrow", STEP_BOX_TAG)
 #: Opacity of the rest when `look.click_isolate` is true rather than a number.
 DIM = 0.15
 
@@ -64,6 +73,58 @@ def group_tag(look: dict, group: str) -> str:
         The tag.
     """
     return tag("flow" if look.get("e2e_layers", "family") == "flow" else "family", group)
+
+
+def node_tag(box: str) -> str:
+    """The tag shared by a box, the arrows touching it and the boxes at their other ends.
+
+    Args:
+        box: the box's id (a component or a step).
+
+    Returns:
+        The tag.
+    """
+    return tag("node", box)
+
+
+def neighbour_tags(pairs: list[tuple[str, str]]) -> dict[str, tuple]:
+    """Each box's tags from the arrows on its page: its own node tag, then those of the boxes it shares an arrow with.
+
+    Args:
+        pairs: every arrow's (source box, target box).
+
+    Returns:
+        {box id: its tags}, for the boxes in `pairs`.
+    """
+    out: dict[str, dict] = {}
+    for a, b in pairs:
+        out.setdefault(a, {node_tag(a): 1})[node_tag(b)] = 1
+        out.setdefault(b, {node_tag(b): 1})[node_tag(a)] = 1
+    return {box: tuple(tags) for box, tags in out.items()}
+
+
+def step_isolation(page: object, edges: list, steps: list[dict], dim: float) -> None:
+    """Set a step page's tags and click links: an arrow shows itself alone, a box shows its arrows.
+
+    Args:
+        page: the page, its arrows' `tags` already set.
+        edges: the page's arrows as flowmap.flow_geometry.step_edges gives them.
+        steps: the flow's steps.
+        dim: the opacity of the rest.
+    """
+    fid_box = {s["id"]: f"{page.page_id.removeprefix('flow-')}-s-{s['id']}" for s in steps}
+    near = neighbour_tags([(a, b) for _cid, a, b, _text, _style in edges])
+    arrows: dict[str, list] = {}
+    for i, (cid, a, b, _text, _style) in enumerate(edges):
+        own = tag("arrow", str(i))
+        page.tags[cid] = (*page.tags[cid], own, node_tag(a), node_tag(b))
+        page.links[cid] = isolate_link(i, FLOW_DIMMED, own, dim)
+        for box in {a, b}:
+            arrows.setdefault(box, []).append(own)
+    for i, step in enumerate(steps, len(edges)):   # after the arrows, so every dim value on the page is its own
+        sid = step["id"]
+        page.tags[fid_box[sid]] = (STEP_BOX_TAG, *near.get(sid, (node_tag(sid),)), *arrows.get(sid, ()))
+        page.links[fid_box[sid]] = isolate_link(i, FLOW_DIMMED, node_tag(sid), dim)
 
 
 def isolate_link(index: int, dimmed: tuple, keep: str, dim: float) -> str:

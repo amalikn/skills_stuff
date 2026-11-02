@@ -180,6 +180,21 @@ def label_spot(cid: str, pts: dict, page: Page, label_w: float, label_h: float) 
 LEGEND_CHAR_W = 6.5
 
 
+def ground_at(grounds: list, x: float, y: float) -> str:
+    """The colour beneath a point, for an arrow label: the line stays out of its digits with no white patch (operator, 2026-11-02: "no
+    white background", as on the step pages' lanes).
+
+    Args:
+        grounds: (left, top, right, bottom, fill) of each filled area, the last drawn last.
+        x: the point's x.
+        y: the point's y.
+
+    Returns:
+        The fill there; white off every area.
+    """
+    return next((fill for x0, y0, x1, y1, fill in reversed(grounds) if x0 <= x <= x1 and y0 <= y <= y1), "#ffffff")
+
+
 def legend_text(total: str | None, loops: bool, click: bool) -> str:
     """The End-to-end legend's line on how to read an arrow.
 
@@ -196,8 +211,8 @@ def legend_text(total: str | None, loops: bool, click: bool) -> str:
             "x.1 starts at the component the flow runs on, and a step done by the same component as the step before "
             + ("is a loop on its box. " if loops else "has no arrow. ") + "**Dashed line, dot end:** not a step; the flow runs on, is owned by or depends on that component. "
             "Hover an arrow for what happens. Arcs mark crossings."
-            + (" **Click** an arrow, a dashed line, a label or a legend row to see that flow alone; click it again to see "
-               "every flow." if click else ""))
+            + (" **Click** an arrow, a dashed line, a label or a legend row to see that flow alone, or a box to see its "
+               "arrows; click it again to see everything." if click else ""))
 
 
 def legend_fit(text: str, width: float) -> tuple[str, float]:

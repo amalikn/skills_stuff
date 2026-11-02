@@ -16,21 +16,26 @@ from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, header_height, 
 from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BAND_HEAD, E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_SP, E2E_TIER_HEAD, E2EGrid, Link, e2e_box_lines, e2e_text_height
-from .step_labels import label_setup, label_spot, legend_fit, legend_text, step_label, total_words
+from .step_labels import ground_at, label_setup, label_spot, step_label, total_words
 from .map_parts import flow_numbers, narrowed, shared_part
 from .model import MARGIN, comp_style, status_style
-from .shapes import component_shape, component_shapes_used, fit_height, person_badge, shape_legend
+from .shapes import component_shape, fit_height, person_badge
 from .profile import Profile
 from .loops import draw_loops, plan_loops
-from .crossing_search import improve, swapper
-from .isolate import BOX_TAG, E2E_DIMMED, LEGEND_TAG, dim_level, group_tag, isolate_link
+from .crossing_search import band_search, improve, swapper
+from .legend import draw_legend
+from .isolate import BOX_TAG, E2E_DIMMED, dim_level, group_tag, isolate_link, neighbour_tags, node_tag
 from .tips import comp_tags, comp_tip
+
+
+#: The fills behind the End-to-end grid: a tier's column stripe and the band below the columns.
+STRIPE_FILL, BAND_FILL = "#f4f6f9", "#fbf8ee"
 
 
 class EndToEnd(E2EGrid):
     """Lays out, improves and draws the End-to-end page."""
 
-    def __init__(self, data: dict, profile: Profile, numbers: dict | None = None) -> None:
+    def __init__(self, data: dict, profile: Profile, numbers: dict | None = None, band_swaps: tuple = ()) -> None:
         """Place, plan and size (E2EGrid), then improve track and port orders to cut crossings.
 
         Args:
@@ -38,7 +43,7 @@ class EndToEnd(E2EGrid):
             profile: the project's drawing profile.
             numbers: {flow id: its number in the whole map} for a part; default the flows' order.
         """
-        super().__init__(data, profile, numbers)
+        super().__init__(data, profile, numbers, band_swaps)
         self.title = "**End-to-end flow: every component, every flow**"
         self.label_font, self.step_total, self.n_steps, self.label_w, self.label_h = label_setup(self.links, data, self.number, profile)
         self._improve()
@@ -239,15 +244,17 @@ class EndToEnd(E2EGrid):
         page.box("e2e-title", label(*head), MARGIN, MARGIN + 60 - head_h, right - MARGIN, head_h,
                  HEADER_STYLE, link="data:page/id,overview")
         last_tier_bottom = self.row_top[self.band - 1] + self.row_h[self.band - 1]
+        self.grounds = [(self.col_x[c] - 8, self.gap_top[-1], self.col_x[c] + E2E_BW + 8, last_tier_bottom + 8, STRIPE_FILL) for c in range(len(self.profile.tiers))]
         for c, (name, _groups) in enumerate(self.profile.tiers):
             page.box(f"e2e-stripe-{c}", "", self.col_x[c] - 8, self.gap_top[-1], E2E_BW + 16, last_tier_bottom + 8 - self.gap_top[-1],
-                     "rounded=0;html=1;fillColor=#f4f6f9;strokeColor=none;")
+                     f"rounded=0;html=1;fillColor={STRIPE_FILL};strokeColor=none;")
             page.box(f"e2e-tier-{c}", label(f"**{name}**"), self.col_x[c], self.gap_top[-1] + E2E_TIER_HEAD[0], E2E_BW, E2E_TIER_HEAD[1],
                      "text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;")
         if self.band < self.n_rows:
             band_top = self.gap_top[self.band - 1] + self.gap_h[self.band - 1] - 8
-            page.box("e2e-band", "", MARGIN - 8, band_top, right - MARGIN + 16, self.bottom - band_top - self.gap_h[self.n_rows - 1] + 16,
-                     "rounded=0;html=1;fillColor=#fbf8ee;strokeColor=none;")
+            band_h = self.bottom - band_top - self.gap_h[self.n_rows - 1] + 16
+            page.box("e2e-band", "", MARGIN - 8, band_top, right - MARGIN + 16, band_h, f"rounded=0;html=1;fillColor={BAND_FILL};strokeColor=none;")
+            self.grounds.append((MARGIN - 8, band_top, right + 8, band_top + band_h, BAND_FILL))
             page.box("e2e-band-head", label(f"**{self.profile.band_title}**"), self.col_x[0], self.gap_top[self.band - 1] + E2E_BAND_HEAD[0],
                      E2E_BW, E2E_BAND_HEAD[1],
                      "text;html=1;align=left;verticalAlign=middle;fontSize=14;")
@@ -265,6 +272,8 @@ class EndToEnd(E2EGrid):
             page.add_layer(f"e2e-L-{fam}", f"Flow {name}" if per_flow else f"Family: {name}", locked=dim is not None)
         for link in self.links:   # hover text and tags on every arrow and connector, and on each arrow's x.y label
             page.tips[link.cid], page.tags[link.cid] = link.tip.replace("(no arrow)", "(a loop on it)" if self.loops else "(no arrow)"), link.tags
+            if dim is not None:
+                page.tags[link.cid] = (*link.tags, node_tag(link.src), node_tag(link.dst))   # a click on either box lights it
             if dim is not None:   # one click shows that flow alone, a second click all flows (operator, 2026-10-26)
                 page.links[link.cid] = isolate_link(self.group_index[link.family], E2E_DIMMED, group_tag(self.profile.look, link.family), dim)
         width = self.profile.look.get("connector_width", 1.25)
@@ -282,40 +291,8 @@ class EndToEnd(E2EGrid):
             if link.klass == "thick":
                 cx, cy = label_spot(link.cid, {**self.pts, **{lp.cid: lp.pts for lp in self.loops}}, page, self.label_w, self.label_h)
                 page.mark(f"{link.cid}-l", step_label(link.text, self.n_steps[link.text.split('.')[0]], self.step_total), cx, cy, self.label_w, self.label_h,
-                          f"text;html=1;align=center;verticalAlign=middle;fontSize={self.label_font:g};fontColor={colour[link.family]};labelBackgroundColor=#ffffff;"
+                          f"text;html=1;align=center;verticalAlign=middle;fontSize={self.label_font:g};fontColor={colour[link.family]};labelBackgroundColor={ground_at(self.grounds, cx, cy)};"
                           "spacing=0;", owner=link.cid, layer=f"e2e-L-{link.family}")
-
-    def _legend(self, page: Page, right: float) -> None:
-        """The family legend under the grid: a swatch and the family's flows per family, then how to read an arrow.
-
-        Args:
-            page: the page.
-            right: the right edge of the last column.
-        """
-        y = self.bottom + 10
-        per_flow = self.profile.look.get("e2e_layers", "family") == "flow"
-        total = self.step_total
-        count = {f["title"]: f" ({len(f['steps'])} step{'' if len(f['steps']) == 1 else 's'})" if total else "" for f in self.data["flows"]}   # legend step counts (2026-10-26)
-        page.box("e2e-leg-title", label("**Legend: flows** (one colour and layer each)" if per_flow else "**Legend: flow families** (one layer each)"),
-                 MARGIN, y, 600, 24, "text;html=1;align=left;fontSize=14;")
-        dim, leg = dim_level(self.profile.look), "1"
-        if dim is not None:   # rows on a locked layer, so a click runs there
-            leg = "e2e-L-legend"
-            page.add_layer(leg, "Legend (click a row)", locked=True)
-        for i, (fam, name, col, titles) in enumerate(self.groups):
-            ly, gtag = y + 34 + i * 28, group_tag(self.profile.look, fam)
-            iso = {} if dim is None else {"tags": (gtag, LEGEND_TAG), "link": isolate_link(i, E2E_DIMMED, gtag, dim)}
-            page.box(f"e2e-leg-{fam}-s", "", MARGIN, ly + 10, 40, 3, f"rounded=0;html=1;fillColor={col};strokeColor=none;", layer=leg, **iso)
-            text = f"**{name}**{count[titles[0]]}" if per_flow else f"**{name}:** " + "; ".join(t + count[t] for t in titles)
-            page.box(f"e2e-leg-{fam}-t", label(text), MARGIN + 50, ly, right - MARGIN - 50, 24,
-                     "text;html=1;align=left;verticalAlign=middle;fontSize=12;", layer=leg, **iso)
-        ly = y + 34 + len(self.groups) * 28 + 6
-        text = legend_text(self.step_total, bool(self.loops), dim is not None)
-        wrap, h = legend_fit(text, right - MARGIN)
-        page.box("e2e-leg-solid", label(text), MARGIN, ly, right - MARGIN, h, f"text;html=1;{wrap}align=left;verticalAlign=middle;fontSize=12;")
-        used = component_shapes_used(list(self.comps.values()), self.profile)
-        if used:   # the symbols the boxes use, as on a flow page
-            shape_legend(page, used, MARGIN, ly + h + 16, "e2e")
 
     def page(self, page_id: str = "end-to-end", name: str = "") -> Page:
         """Draw the page: frame, boxes, arrows and labels per family, and the legend.
@@ -330,17 +307,20 @@ class EndToEnd(E2EGrid):
         page = Page(page_id, name or f"{self.profile.look.get('e2e_tab', 'End-to-end')} flow")
         right = self.col_x[-1] + E2E_BW + (self.ch_w[-1] if self.nch >= self.ncol else 0)   # a one-column page draws its channel too
         self._frame(page, right)
-        for cid, comp in self.comps.items():
+        dim = dim_level(self.profile.look)
+        near = neighbour_tags([(x.src, x.dst) for x in self.links])
+        for i, (cid, comp) in enumerate(self.comps.items(), len(self.groups)):   # after the legend's rows: each click has its own dim value
+            click = {} if dim is None else {"link": isolate_link(i, E2E_DIMMED, node_tag(cid), dim)}
             c, _r = self.cell[cid]
             top, height = self._box_span(cid)
             page.box(f"e2e-c-{cid}", label(*e2e_box_lines(comp, self.profile.look['heading_scale'])), self.col_x[c], top, E2E_BW, height,
                      comp_style(comp["kind"], self.profile, "fontSize=11;verticalAlign=middle;spacingLeft=6;spacingRight=6;" + status_style(comp)
                                 + component_shape(comp, self.profile)),
                      tooltip=comp_tip(comp), solid=True,
-                     tags=comp_tags(comp, self.data["flows"]) + ((BOX_TAG,) if dim_level(self.profile.look) is not None else ()))
+                     tags=comp_tags(comp, self.data["flows"]) + (() if dim is None else (BOX_TAG, *near.get(cid, (node_tag(cid),)))), **click)
             person_badge(page, comp, self.profile, f"e2e-c-{cid}", self.col_x[c] + E2E_BW, top + height)
         self._arrows(page)
-        self._legend(page, right)
+        draw_legend(self, page, right)
         return page
 
 
@@ -356,12 +336,17 @@ def routed_e2e(data: dict, profile: Profile, numbers: dict | None = None) -> End
     Returns:
         The page model to draw.
     """
-    searched = EndToEnd(data, profile, numbers)
-    if not profile.look.get("e2e_row_search"):
-        return searched
-    plain = EndToEnd(data, replace(profile, look={**profile.look, "e2e_row_search": False}), numbers)
-    plain.profile = profile   # the order was the only difference; draw with the map's own look
-    return searched if searched._crossings(set(searched.segs)) < plain._crossings(set(plain.segs)) else plain
+    best, order = EndToEnd(data, profile, numbers), profile
+    if profile.look.get("e2e_row_search"):
+        order = replace(profile, look={**profile.look, "e2e_row_search": False})
+        plain = EndToEnd(data, order, numbers)
+        if best._crossings(set(best.segs)) < plain._crossings(set(plain.segs)):
+            order = profile
+        else:
+            best = plain
+    best = band_search(best, lambda swaps: EndToEnd(data, order, numbers, swaps), profile.look)
+    best.profile = profile   # the order was the only difference; draw with the map's own look
+    return best
 
 
 def end_to_end_page(data: dict, profile: Profile) -> Page:

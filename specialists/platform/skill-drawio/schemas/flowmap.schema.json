@@ -746,6 +746,10 @@
               "type": "boolean",
               "description": "Overview page: after the barycentre ordering inside each group, swap boxes within a row while that lowers the crossings between consecutive rows; default false."
             },
+            "e2e_band_search": {
+              "type": "boolean",
+              "description": "End-to-end pages: swap two boxes in the band below the columns when the real routes then cross less; default true."
+            },
             "e2e_row_search": {
               "type": "boolean",
               "description": "End-to-end pages: after the barycentre ordering, swap boxes inside each column while that lowers the arrow crossings the grid implies; the searched order is kept only when its real routes cross less than the barycentre order's; default false."

@@ -515,3 +515,17 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 
 > **Learned 2026-10-29** · network topology from data, any renderer · VERIFIED_SECONDARY · Source: unified-network-controller `docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` lines 809-825, IC4-IC8 (apn 5cba35f; layout figures from literature, the Grafana cap read from its source by that round) · Falsifier: a force-directed layout that redraws a 100-400-station sector identically on every load
 > For a wireless access network, scope each view to one site (about 88 devices there) or one AP sector (100-400 stations), never the whole estate; draw a point-to-multipoint star with a deterministic concentric or radial layout (AP at the centre, stations on arcs ordered by azimuth or signal), not force-directed; store node coordinates with the data so a reload draws the same picture; and check the viewer's node cap first (Grafana Node Graph: 200 nodes, per-site use only). The project later chose ELK layered site compounds with radial sectors plus a GPS-placed map; no candidate had been visually inspected when the register was written.
+
+> **Learned 2026-11-02** · band boxes swap · VERIFIED_PRIMARY · Source: `scripts/flowmap/crossing_search.py` `band_search`; smc_change End-to-end page 114 crossings to 59, render cost 0.25 s to 2.36 s on that page · Falsifier: a page whose band
+> swap raises its crossings
+> Each band box is placed alone, nearest its neighbours' mean column, so two boxes are never weighed together, and the row search only moves boxes inside a column (operator, 2026-11-02: swapping two band boxes would have removed an overlap).
+> `look.e2e_band_search` (default on) rebuilds the page per pair and keeps a swap only on a strict drop in real-route crossings. Every candidate is a full layout, so re-measure on a map with many band boxes.
+> Screenshot pending: the example map has no such swap; see the smc_change E2E flow page.
+>
+> ```python
+> # scripts/flowmap/crossing_search.py, uncommitted at time of writing
+> for pair in combinations(band, 2):
+>   trial = build((*swaps, pair))
+>   if trial._crossings(set(trial.segs)) < best._crossings(set(best.segs)):
+>     best, swaps, gained = trial, (*swaps, pair), True
+> ```

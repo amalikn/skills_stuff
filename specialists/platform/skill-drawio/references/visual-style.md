@@ -188,10 +188,12 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   Nothing is saved: the file never counts as changed. The clickable layers are locked (the editor runs a link on a click only there). `look.lock_base_layer` locks every page's background layer;
   `look.e2e_tab` names the End-to-end tabs ("E2E flow", "E2E: <family>") (operator, 2026-10-26: "make it a toggle ... with a single step", "clicking on dashed lines should also do the same", "do the
   same for the overview legend arrow colors", "make the background layer locked on all the pages", "change End-to-end to E2E ... in the tab names").
+- With `look.click_isolate` on, a click on a box keeps it, every arrow or dashed line touching it and the boxes at their other ends, on End-to-end and step pages. On a step page a click on an arrow
+  keeps that arrow, its label and its two boxes, never a colour. A step that opens another flow keeps that link: a cell runs one link. Every page's base layer is locked with it on (operator, 2026-11-02).
 - Box names and arrow labels are bold (operator, 2026-10-19). Labels mix bold field names with plain values; render `**...**` spans as `<b>` everywhere in a line, and test that no literal `**`
   survives into the drawing [C-D30].
 - Code paths in a monospace font (`<font face="Courier New">`), with soft breaks so they wrap ([layout-and-routing.md](layout-and-routing.md)).
-- Arrow labels sit on a white label background (`labelBackgroundColor=#ffffff`) so a crossing line does not run through the digits.
+- Arrow labels sit on a label background so a crossing line does not run through the digits: the colour beneath them (a lane, a column stripe, the band), white only on bare page.
 - Size boxes to their text; a box that is too small for its text is a fault, and so is a group much taller than its content. The Overview's flow index boxes follow it too: each is as tall as its
   wrapped title and status line (operator, 2026-10-22: "box ten and eleven is getting a bit tight"; `overview_index.index_height`).
 - Keep step boxes wider than tall: long text widens a box (`look.max_aspect`, 0.8) rather than stretching it; rounded shapes use a fixed corner radius so a tall box never becomes a pill (operator,
@@ -504,3 +506,15 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > **Learned 2026-10-27** · family labels · VERIFIED_PRIMARY · Source: `scripts/flowmap/map_parts.py` (`flow_labels`),
 > `tests/test_own_page.py` (`test_one_flow_family_has_no_number`) · Falsifier: a family with one flow labelled "<prefix> 1" A family of one flow is labelled by its prefix alone: "PHP fix 1. Step by
 > step" numbered a list of one (operator: "why overview page still calls it php fix 1"). Name the prefix after the subject (here the change, `PHP CVE-2026-109618`), not a stale working title.
+
+> **Learned 2026-11-02** · box and arrow clicks · VERIFIED_PRIMARY · Source: `scripts/flowmap/isolate.py` `step_isolation`, `neighbour_tags`; `just viewer-click` on smc_change's `flows.drawio` in draw.io 32.5.5's viewer · Falsifier: a box
+> click that leaves an arrow touching it dimmed, or a second click that leaves any cell dimmed
+> A shared tag per box (`node-<id>`) on the box, its arrows and their far boxes makes one `isolate_link` serve every kind of click. Each box and step arrow takes its own index, so its own dim value and one-click switching.
+> Screenshot pending: a click state on the example map, next engagement.
+>
+> ```python
+> # scripts/flowmap/isolate.py, uncommitted at time of writing
+> own = tag("arrow", str(i))
+> page.tags[cid] = (*page.tags[cid], own, node_tag(a), node_tag(b))
+> page.links[cid] = isolate_link(i, FLOW_DIMMED, own, dim)
+> ```

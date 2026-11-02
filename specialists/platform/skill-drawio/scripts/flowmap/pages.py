@@ -21,6 +21,7 @@ from .map_parts import flow_labels, paged_flows
 from .model import option_blocks
 from .options import options_page
 from .flowchart.pages import flowchart_pages
+from .isolate import dim_level, step_isolation
 from .fold import fold_rows, fold_setting, folded_page
 from .lane_fold import foldable, lane_fold_page
 from .flow_geometry import LANE_HEAD_W, back_arrow, step_edges, col_gap, column_lefts, label_gaps, label_widths, plan_runs, reserve, run_ys, step_width
@@ -132,10 +133,11 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
     y = lane_y[li] + r_top + (lane_h[li] - r_top - r_bot - h) / 2   # centred in the lane, below the room kept for arrow runs
     gate = f"GATE: {s['gate']}" if s.get("gate") else ""
     tip = step_tip(s, f"{number}.{k + 1}", comps[s["actor"]]["name"])
-    page.box(f"{fid}-s-{s['id']}", label(*texts[s["id"]]), x, y, w, h,
+    cid = f"{fid}-s-{s['id']}"
+    page.box(cid, label(*texts[s["id"]]), x, y, w, h,
              comp_style(comps[s["actor"]]["kind"], profile, "fontSize=10;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=6;"
-                        + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]), tooltip=tip, tags=step_tags(s, shapes[s["id"]]),
-             link=f"data:page/id,flow-{s['flow']}" if s.get("flow") else "", solid=True)   # an obstacle for the router and the audit
+                        + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]), tooltip=tip, tags=(*step_tags(s, shapes[s["id"]]), *page.tags.get(cid, ())),
+             link=f"data:page/id,flow-{s['flow']}" if s.get("flow") else page.links.get(cid, ""), solid=True)   # an obstacle for the router and the audit
     note = note_lines(s, k + 1)
     if len(note) == 1 and profile.look.get("empty_notes", "hide") == "hide":   # nothing under the title: no note (operator review, 2026-10-21)
         return 0
@@ -214,6 +216,8 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
         back = "back to" in text
         page.tags[cid] = ("back-arrow",) if back else ("step-arrow",)
         page.tips[cid] = flow_arrow_tip(number, (order[a], by_id[a]), (order[b], by_id[b]), comps[by_id[b]["actor"]]["name"], back)
+    if dim_level(profile.look) is not None:
+        step_isolation(page, edges, steps, dim_level(profile.look))
     style, after = fold_setting(flow, profile.look)
     if style == "lane" and foldable(steps):   # a long run folds inside its own lane (`layout: {fold: lane}`)
         return lane_fold_page(page, (flow, comps, number, profile), (shapes, texts, box_w, box_h, edges), (_step, flow_header, after))
@@ -272,7 +276,7 @@ def named_pages(data: dict, profile: Profile) -> list[tuple[int, str, Page]]:
     for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: decision pages go right after the Overview, in map order
         out.insert(1 + k, (3, name, options_page(data, profile, block, pid, name)))
     for _rank, _name, page in out:   # the background layer locked on every page: nothing on it moves by accident (operator, 2026-10-26)
-        page.base_locked = bool(profile.look.get("lock_base_layer"))
+        page.base_locked = bool(profile.look.get("lock_base_layer") or profile.look.get("click_isolate"))   # the editor runs a link only on a locked layer
     return out
 
 

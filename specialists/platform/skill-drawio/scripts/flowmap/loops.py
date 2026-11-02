@@ -20,9 +20,9 @@ from drawio.cell import tag
 from drawio.mxfile import ARROW_HEAD, Page
 
 from .e2e_grid import E2E_BAND_HEAD, E2E_BW, E2E_TIER_HEAD
-from .isolate import E2E_DIMMED, group_tag, isolate_link
+from .isolate import E2E_DIMMED, group_tag, isolate_link, node_tag
 from .model import flow_family
-from .step_labels import e2e_label_size, step_label
+from .step_labels import e2e_label_size, ground_at, step_label
 from .tips import tip_html
 
 #: Loop height: its last run reaches the box at the audit's head room for a step arrow (drawio.audit.HEAD_ROOM "thick").
@@ -202,11 +202,13 @@ def draw_loops(e2e: object, page: Page, colour: dict, dim: float | None) -> None
             loop.pts = [(cx - LOOP_W / 2, y), (cx - LOOP_W / 2, y + s * LOOP_H), (cx + LOOP_W / 2, y + s * LOOP_H), (cx + LOOP_W / 2, y)]
             page.tips[loop.cid], page.tags[loop.cid] = loop.tip, loop.tags
             if dim is not None:
+                page.tags[loop.cid] = (*loop.tags, node_tag(comp))
                 page.links[loop.cid] = isolate_link(e2e.group_index[loop.family], E2E_DIMMED, group_tag(e2e.profile.look, loop.family), dim)
             layer, col = f"e2e-L-{loop.family}", colour[loop.family]
             page.route(loop.cid, f"e2e-c-{comp}", f"e2e-c-{comp}", loop.pts,
                        f"edgeStyle=none;rounded=1;html=1;strokeColor={col};strokeWidth=2;{ARROW_HEAD}endSize=6;", klass="thick", layer=layer)
             lw, lh = e2e_label_size([(loop.text, loop.n)], e2e.label_font, e2e.step_total)
-            page.mark(f"{loop.cid}-l", step_label(loop.text, loop.n, e2e.step_total), cx, y + s * (LOOP_H + 2 + lh / 2), lw, lh,
-                      f"text;html=1;align=center;verticalAlign=middle;fontSize={e2e.label_font:g};fontColor={col};labelBackgroundColor=#ffffff;"
+            ly = y + s * (LOOP_H + 2 + lh / 2)
+            page.mark(f"{loop.cid}-l", step_label(loop.text, loop.n, e2e.step_total), cx, ly, lw, lh,
+                      f"text;html=1;align=center;verticalAlign=middle;fontSize={e2e.label_font:g};fontColor={col};labelBackgroundColor={ground_at(e2e.grounds, cx, ly)};"
                       "spacing=0;", owner=loop.cid, layer=layer)
