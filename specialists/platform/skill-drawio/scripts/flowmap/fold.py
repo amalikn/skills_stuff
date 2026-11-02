@@ -59,7 +59,7 @@ def fold_rows(flow: dict, look: dict) -> list[list[int]]:
     """
     style, after = fold_setting(flow, look)
     n = len(flow["steps"])
-    if style == "off" or n <= after:
+    if style in ("off", "lane") or n <= after:
         return [list(range(n))]
     count = max(2, int(n / after + 0.5))
     sizes = [n // count + (k < n % count) for k in range(count)]

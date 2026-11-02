@@ -21,7 +21,8 @@ from .map_parts import flow_labels, paged_flows
 from .model import option_blocks
 from .options import options_page
 from .flowchart.pages import flowchart_pages
-from .fold import fold_rows, folded_page
+from .fold import fold_rows, fold_setting, folded_page
+from .lane_fold import foldable, lane_fold_page
 from .flow_geometry import LANE_HEAD_W, back_arrow, step_edges, col_gap, column_lefts, label_gaps, label_widths, plan_runs, reserve, run_ys, step_width
 from .lanes import draw_lanes
 from .routing import route_flow
@@ -249,6 +250,9 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
         back = "back to" in text
         page.tags[cid] = ("back-arrow",) if back else ("step-arrow",)
         page.tips[cid] = flow_arrow_tip(number, (order[a], by_id[a]), (order[b], by_id[b]), comps[by_id[b]["actor"]]["name"], back)
+    style, after = fold_setting(flow, profile.look)
+    if style == "lane" and foldable(steps):   # a long run folds inside its own lane (`layout: {fold: lane}`)
+        return lane_fold_page(page, (flow, comps, number, profile), (shapes, texts, box_w, box_h, edges), (_step, flow_header, after))
     widths = label_widths(steps, edges, profile.look)
     rows = fold_rows(flow, profile.look)
     if len(rows) > 1:   # a long flow drawn in rows (`drawing.look.fold`; operator, 2026-10-27)

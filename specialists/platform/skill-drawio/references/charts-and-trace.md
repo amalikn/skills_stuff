@@ -73,6 +73,9 @@ Nothing the map does not state is drawn, so no message flows. A gateway keeps it
 A step's `branches` key holds decisions its words only state, each with a `question` and tagged `outcomes` (`run: ` into the step, `skip: ` past it, `stop: ` to a stop). Charts, lanes and BPMN draw a diamond
 before the step; step pages ignore the key, so their numbers and End-to-end labels stay put. Writing every decision as a real step would have renumbered 37 reviewed pages. Outcomes that all go one way draw nothing.
 
+A very wide step page folds with `layout: {fold: lane, fold_after: 4}` on the flow: a run of more than four steps by one actor snakes back and forth inside that actor's lane, which grows taller, and every lane
+appears once (operator, 2026-11-02). Notes keep to their step's column, stacked under the lanes. Only a flow with no branches folds this way; any other keeps its normal page. `serpentine` and `z` fold the whole flow into rows instead.
+
 ## Read the map before the code
 
 `trace_query.py` answers from the map and gives the code to open next. Every step shown carries its review state, because an index that hides its own staleness is worse than none.

@@ -210,6 +210,7 @@
               "enum": [
                 "off",
                 "serpentine",
+                "lane",
                 "z"
               ]
             },
@@ -644,6 +645,7 @@
               "enum": [
                 "off",
                 "serpentine",
+                "lane",
                 "z"
               ],
               "description": "A flow page longer than fold_after steps drawn in rows: off (default), serpentine (every second row right to left, a short turn arrow down) or z (every row left to right, the turn arrow back under the row)."

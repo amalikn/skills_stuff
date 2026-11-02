@@ -1,4 +1,4 @@
-"""Tests for how a chart is arranged: measured diamond exits, lane order, sideways hand-offs and exits to the left."""
+"""Tests for how a chart is arranged: measured diamond exits, lane order, sideways hand-offs and exits to the left; flowmap "lane_fold" too."""
 
 import sys
 import unittest
@@ -11,6 +11,8 @@ from drawio.audit import faults, page_audit
 from flowmap.flowchart.graph import chart_graph, lane_map, layers, place, swap_branches
 from flowmap.flowchart.order import improve_branches, lane_cost, lane_order, score
 from flowmap.flowchart.page import chart_page
+from flowmap.lane_fold import foldable, snake
+from flowmap.pages import flow_page
 from test_flowchart import COMPS, Lanes, flow, profile, step
 
 
@@ -38,6 +40,44 @@ class Turned(unittest.TestCase):
         upright = chart_page({**self.F, "_vertical": True}, Lanes.COMPS, profile(), (set(), set()), "lanes").rects["lanes-f-c-a"]
         turned = chart_page(self.F, Lanes.COMPS, profile(), (set(), set()), "lanes").rects["lanes-f-c-a"]
         self.assertEqual(upright[2:], turned[2:])
+
+
+class LaneFold(unittest.TestCase):
+    """A long run folds inside its own lane."""
+
+    def steps(self) -> list:
+        """One step, a long run by one actor, then one more.
+
+        Returns:
+            The steps.
+        """
+        return [step("a")] + [step(f"m{k}", actor="d") for k in range(7)] + [step("z")]
+
+    def test_a_long_run_snakes_and_the_rest_keep_a_column(self):
+        """Three rows of three, every second row running back."""
+        place, rows = snake(self.steps(), 3)
+        self.assertEqual(rows["d"], 3)
+        self.assertEqual([place[k] for k in range(1, 8)], [(1, 0), (2, 0), (3, 0), (3, 1), (2, 1), (1, 1), (1, 2)])
+        self.assertEqual(place[8], (4, 0))
+
+    def test_only_a_straight_flow_folds(self):
+        """A branch keeps the normal page."""
+        self.assertTrue(foldable(self.steps()))
+        self.assertFalse(foldable([step("a", next=["c", "b"], gate="q"), step("b"), step("c")]))
+
+    def test_each_lane_appears_once_and_the_audit_passes(self):
+        """Two actors, two lanes, however long the run."""
+        f = {**flow(self.steps()), "runs_on": "c", "owner": "c", "category": "x", "layout": {"fold": "lane", "fold_after": 3}}
+        comps = {k: {**v, "host": "h"} for k, v in Lanes.COMPS.items()}
+        page = flow_page(f, comps, 1, profile())
+        self.assertEqual(sum(cid.startswith("f-lanehead-") for cid in page.rects), 2)
+        self.assertEqual(faults(page_audit(page)), [])
+
+    def test_a_branching_flow_is_left_alone(self):
+        """It draws, unfolded."""
+        f = {**flow([step("a", next=["c", "b"], gate="q"), step("b"), step("c")]), "runs_on": "c", "owner": "c", "category": "x", "layout": {"fold": "lane", "fold_after": 2}}
+        comps = {k: {**v, "host": "h"} for k, v in COMPS.items()}
+        self.assertEqual(faults(page_audit(flow_page(f, comps, 1, profile()))), [])
 
 
 class Order(unittest.TestCase):
