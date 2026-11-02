@@ -17,9 +17,11 @@ from drawio.mxfile import ARROW_HEAD, BLANK, Page, header_height, label, wrapped
 
 from ..flow_geometry import BACK_MARK
 from . import bpmn
+from .lanes import LANE_HEAD, draw_lanes
 from .labels import mark_size, place_labels
 from .branches import expand_branches
 from .graph import END, START, Graph, Grid, chart_graph, is_decision, lane_columns, lane_map, place, swap_branches
+from .order import improve_branches
 from .route import CHANNEL, TRACK, assign_tracks, exit_point, left_channels, plan_gaps
 from ..model import GAP, MARGIN, comp_style, step_targets
 from ..profile import Profile
@@ -28,8 +30,8 @@ from ..tips import step_tip
 
 #: Box width, characters a line at that width (font 11), line height, least box height and the widest a decision grows to.
 BOX_W, BOX_CHARS, LINE_H, BOX_H, DECISION_MAX = 240, 34, 15, 56, 440
-#: A swimlane's heading height, and the space after its gutter.
-LANE_HEAD, GUTTER_GAP = 30, 16
+#: The space after a lane's gutter.
+GUTTER_GAP = 16
 TABS = {"chart": "Chart", "lanes": "Lanes", "bpmn": "BPMN"}
 #: Space between columns; in a gap between rows, the room under a box for a label and the room above a box for an arrowhead.
 COL_GAP, LABEL_ROOM, HEAD_ROOM = 70, 24, 30
@@ -312,6 +314,21 @@ def _edge_points(chart: Chart, ys: dict, e: object, route: tuple) -> list:
     return pts + [(entries[key], _node_rect(chart, ys, e.dst)[1])]
 
 
+def _polylines(chart: Chart) -> list:
+    """Every arrow's polyline as the graph stands, for comparing two ways of drawing it.
+
+    Args:
+        chart: the chart.
+
+    Returns:
+        The polylines.
+    """
+    legs, entries = plan_gaps(chart)
+    tracks = assign_tracks(legs)
+    ys = _rows(chart, tracks, 0)
+    return [_edge_points(chart, ys, e, (legs, entries, tracks)) for e in chart.graph.edges]
+
+
 def draw_edges(page: Page, chart: Chart, ys: dict, route: tuple) -> None:
     """Draw every arrow and its label.
 
@@ -338,25 +355,6 @@ def draw_edges(page: Page, chart: Chart, ys: dict, route: tuple) -> None:
     place_labels(page, items)
 
 
-def draw_lanes(page: Page, chart: Chart, ys: dict) -> None:
-    """The vertical swimlanes behind the chart: a band per actor, its name at the top, shaded by turns; the last band also holds the arrows back.
-
-    Args:
-        page: the page.
-        chart: the chart.
-        ys: _rows()'s result.
-    """
-    fid = chart.flow["id"]
-    top, bottom = ys["top"][0] - LANE_HEAD - 8, ys["bottom"]
-    ends = [chart.col_left[c] for c in chart.first_col[1:-1]] + [chart.channel_x + CHANNEL * len(chart.channels)]
-    for k, actor in enumerate(chart.actors):
-        left, right = chart.col_left[chart.first_col[k]], ends[k]
-        fill, line = ("#ffffff", "#000000") if chart.bpmn else ("#eef2f6" if k % 2 == 0 else "#f8fafc", "none")
-        page.box(f"{fid}-lane-{k}", "", left, top, right - left, bottom - top, f"rounded=0;html=1;fillColor={fill};strokeColor={line};")
-        page.box(f"{fid}-lane-head-{k}", label(f"**{chart.comps[actor]['name']}**"), left, top, right - left, LANE_HEAD,
-                 f"rounded=0;whiteSpace=wrap;html=1;fillColor={fill};strokeColor={line};fontSize=12;fontColor=#1f3a5f;")
-
-
 def chart_page(flow: dict, comps: dict, profile: Profile, page_ids: tuple, mode: str = "chart") -> Page:
     """One flowchart page: a header with the purpose and trigger, the chart (in vertical swimlanes when asked), and a legend of its symbols.
 
@@ -375,6 +373,8 @@ def chart_page(flow: dict, comps: dict, profile: Profile, page_ids: tuple, mode:
     page = Page(fid, f"{TABS[mode]}: {flow['title']}"[:60])
     head = [f"**{flow['title']}** ({TABS[mode].lower()})", BLANK, flow["purpose"], BLANK, f"**Trigger:** {flow['trigger']['kind']}: {flow['trigger']['detail']}",
             BLANK, "[back to Overview]"]
+    if swimlanes:
+        improve_branches(chart.graph, lambda: _polylines(chart))
     legs, entries = plan_gaps(chart)
     tracks = assign_tracks(legs)
     width = max(900.0, chart.channel_x + CHANNEL * len(chart.channels) - MARGIN)

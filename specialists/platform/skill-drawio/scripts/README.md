@@ -137,6 +137,8 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/flowchart/branches.py` | A step's `branches` expanded into diamonds for chart pages | `safe` |
 | `scripts/flowmap/flowchart/bpmn.py` | BPMN symbols for a lane page, with draw.io's own shapes | `safe` |
 | `scripts/flowmap/flowchart/labels.py` | Place arrow labels at the first clear spot | `safe` |
+| `scripts/flowmap/flowchart/lanes.py` | The bands behind a swimlane page | `safe` |
+| `scripts/flowmap/flowchart/order.py` | Pick each diamond's way out by measuring crossings, bends and length | `safe` |
 | `scripts/flowmap/flowchart/page.py` | The regular flowchart page: symbols, ports, tracks, labels (`look.flowcharts`) | `safe` |
 | `scripts/flowmap/__init__.py` | Package `flowmap`: data-first flow maps | `safe` |
 | `scripts/flowmap/profile.py` | `Profile`: a project's paths, kind colours, tiers and families; `from_drawing()` defaults | `safe` |

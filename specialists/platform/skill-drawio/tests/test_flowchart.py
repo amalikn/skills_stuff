@@ -14,11 +14,12 @@ from flowmap.flowchart.labels import place_labels
 from flowmap.flowchart.page import chart_page, short_text
 from flowmap.flowchart.branches import _after_answer, _short, expand_branches
 from flowmap.flowchart.graph import END, START, chart_graph, swap_branches, lane_columns, lane_map, layers, place, spine, stitched
+from flowmap.flowchart.order import improve_branches, score
 from flowmap.flowchart.pages import _named, chart_flows, flowchart_pages
 from flowmap.pages import named_pages
 from flowmap.profile import Profile
 
-#: The modules under test, for the contract test: "graph", "route", "page", "pages", "bpmn", "labels", "branches".
+#: The modules under test, for the contract test: "graph", "route", "page", "pages", "bpmn", "labels", "branches", "order", "lanes".
 ROOT = Path(__file__).resolve().parents[1] / "examples" / "shop"
 COMPS = {"c": {"id": "c", "name": "Comp", "kind": "service"}}
 
@@ -182,6 +183,27 @@ class Branches(unittest.TestCase):
         """No key, the same object."""
         f = flow([step("a")])
         self.assertIs(expand_branches(f), f)
+
+
+class Order(unittest.TestCase):
+    """A diamond's exits are chosen by measure."""
+
+    def test_score_counts_a_crossing_first(self):
+        """A crossing outweighs any length."""
+        cross = [[(0, 5), (10, 5)], [(5, 0), (5, 10)]]
+        apart = [[(0, 0), (900, 0)], [(0, 9), (900, 9)]]
+        self.assertLess(score(apart), score(cross))
+
+    def test_keeps_the_better_way_round(self):
+        """A swap that scores better stays; asked again, it stays too."""
+        g = chart_graph(flow([step("a", gate="q", next=["b", "c"]), step("b"), step("c")]))
+        worse = [[(0, 5), (10, 5)], [(5, 0), (5, 10)]]
+        better = [[(0, 0), (1, 0)]]
+        draw = lambda: better if next(e for e in g.edges if e.dst == "b").index == 1 else worse
+        improve_branches(g, draw)
+        self.assertEqual(next(e for e in g.edges if e.dst == "b").index, 1)
+        improve_branches(g, draw)
+        self.assertEqual(next(e for e in g.edges if e.dst == "b").index, 1)
 
 
 class Sideways(unittest.TestCase):
