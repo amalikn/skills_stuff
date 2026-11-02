@@ -100,7 +100,7 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 
 - A generated drawing carries the banner and is never hand-edited; a hand-made drawing is never regenerated over.
 - Every arrow on a routed page has explicit waypoints, and `drawio.audit.page_audit()` reports nothing before the drawing ships.
-- A vertical swimlane holds one column of boxes, never two side by side (operator, 2026-11-02).
+- Swimlanes and BPMN run left to right by default, for a wide screen; `:vertical` keeps a page upright. A lane holds one line of boxes, never two side by side (operator, 2026-11-02).
 - A step's review is cleared only by `--accept` after reading its diff; a hook on a person's commits is installed by that person.
 - Export, crop, trace every arrow and fix before showing a drawing; never send an unreviewed first render.
 - Every subprocess (the draw.io CLI) has a timeout; a write takes `--write` or `--apply`.

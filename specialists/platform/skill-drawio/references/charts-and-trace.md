@@ -31,7 +31,7 @@ Summary: >-
 | ------------------ | ---------------------------------------------------------------------------- | ------------------------------------------ | ----------------- |
 | Step by step       | Left to right, a horizontal lane per component, a note per step              | Who does what, with reads, writes and code | default           |
 | Flowchart          | Top to bottom, no lanes, a straight spine, labelled diamonds, red stop boxes | The logic: what decides what               | `look.flowcharts` |
-| Vertical swimlanes | Top to bottom, a column per actor, one stack of boxes in each                | Hand-offs between actors                   | `look.swimlanes`  |
+| Swimlanes | A band per actor, left to right by default for a wide screen; `:vertical` for a tall chart | Hand-offs between actors | `look.swimlanes` |
 | BPMN               | The lanes in BPMN symbols, in a pool                                         | A reader who knows BPMN, process reviews   | `look.bpmn`       |
 
 Lanes grow wide with many actors: eight made the smc_change Apply page unreadable at a normal zoom, six read well. Use a plain flowchart for a flow with many actors.
@@ -47,6 +47,8 @@ drawing:
     swimlanes: [family:smsc]
     bpmn: [family:smsc]
 ```
+
+Lanes and BPMN run left to right by default (operator, 2026-11-02: screens are wide); an entry ending `:vertical` (`smsc-steps:vertical`, `family:hosts:vertical`) keeps that page upright.
 
 In a family chart a flow joins the chain only if its trigger kind is `after`: a rollback has a command of its own and never follows the proof.
 
@@ -124,6 +126,8 @@ Accept only after reading the diff against the step. Bulk `all` is for a first b
 
 ## What a pass does not prove
 
+On smc_change the stamp means an agent review: agents wrote the corrections, a script applied them, about five were re-checked in the code, and branch tags began as keyword matches. One reviewer's to-do note reached a step that way. The `by` field says so. Check the code before relying on a chart for a live change.
+
 It proves every cited change was looked at, not that the words are right; an accept can be careless. Whole-file references over-flag: one edit to a shared task file raised 14 steps on smc_change, so
 cite a symbol where one exists. Ansible task files have no symbol yet, because a task name holds spaces and `code_ref` does not allow them.
 
@@ -137,7 +141,7 @@ cite a symbol where one exists. Ansible task files have no symbol yet, because a
 > A flow map breaks cycles by map order (ELK's MODEL_ORDER idea), so a chart never depends on a tie-break. All 111 chart, lane and BPMN pages of 37 smc_change flows passed the audit, but the first
 > render still showed a rollback drawn after the proof: an audit checks geometry, not meaning. Look at the page.
 
-> **Learned 2026-11-02** · map accuracy · VERIFIED_PRIMARY · Source: five reviewers read 203 smc_change steps against their code, 2026-11-02; findings sampled against the code · Falsifier: a re-review that finds the map accurate without these fixes
+> **Learned 2026-11-02** · map accuracy · VERIFIED_SECONDARY · Source: five reviewer agents read 203 smc_change steps against their code, 2026-11-02; a handful of findings re-checked in the code · Falsifier: a re-review that finds the map accurate without these fixes
 > A map thought current had a wrong or stale claim in 94 of 203 steps, 98 branches hidden in prose, and 42 steps citing no code (now 4). The commonest error was one sentence copied across flows, so a shared fact belongs in one step that others link to.
 
 > **Learned 2026-11-02** · swimlanes · USER_STATED · Source: operator review with a reference image, 2026-11-02 · Falsifier: the operator accepts boxes side by side in a lane

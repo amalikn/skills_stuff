@@ -42,8 +42,8 @@ def step_style(shape: str, fill: str = "#ffffff", stroke: str = "#000000") -> st
     return style if shape == "terminator" else style.replace("fillColor=#ffffff", f"fillColor={fill}").replace("strokeColor=#000000", f"strokeColor={stroke}")
 
 
-def event(page: Page, cid: str, kind: str, rect: tuple, lines: list[str]) -> None:
-    """Draw an event centred on its cell's left part, with its words beside it.
+def event(page: Page, cid: str, kind: str, rect: tuple, lines: list[str], turned: bool = False) -> None:
+    """Draw an event with its words beside it, centred in its cell, or at the cell's left on a turned page, where arrows arrive from the left.
 
     Args:
         page: the page.
@@ -51,13 +51,17 @@ def event(page: Page, cid: str, kind: str, rect: tuple, lines: list[str]) -> Non
         kind: a key of OUTLINE.
         rect: the node's cell (x, y, width, height).
         lines: its words.
+        turned: the page runs left to right.
     """
     x, y, w, h = rect
     outline, symbol = OUTLINE[kind]
-    left = x + w / 2 - EVENT / 2
+    left = x if turned else x + w / 2 - EVENT / 2
     top = y + h / 2 - EVENT / 2
     page.box(cid, "", left, top, EVENT, EVENT, (ERROR if kind == "error" else EVENT_STYLE).format(outline=outline, symbol=symbol), solid=True)
-    page.box(f"{cid}-text", label(*lines), left + EVENT + 4, y, EVENT_TEXT, h, TEXT)   # beside the circle, in the half of the cell to its right
+    if turned and kind == "start":   # an arrow leaves its right side, so its words go above
+        page.box(f"{cid}-text", label(*lines), left - 4, top - 20, EVENT_TEXT + 40, 18, TEXT)
+    else:
+        page.box(f"{cid}-text", label(*lines), left + EVENT + 4, y, EVENT_TEXT, h, TEXT)   # beside the circle, in the half of the cell to its right
 
 
 def legend(page: Page, x: float, y: float, prefix: str) -> None:

@@ -1,5 +1,5 @@
 """Which flowchart pages a map asks for: `drawing.look.flowcharts` (plain) and `drawing.look.swimlanes` (vertical lanes), `drawing.look.bpmn` (the lanes in BPMN symbols), each a list of flow ids,
-`family:<id>` for a family joined into one chart, or "all". Stdlib only.
+`family:<id>` for a family joined into one chart, or "all"; lanes run left to right unless an entry ends `:vertical`. Stdlib only.
 
 Imported, not run: `from flowmap.flowchart.pages import flowchart_pages` with the skill's scripts/ on sys.path.
 """
@@ -30,9 +30,11 @@ def chart_flows(data: dict, profile: Profile, key: str = "flowcharts") -> list[d
     if wanted == "all":
         return list(flows.values())
     out = []
-    for item in wanted:
+    for entry in wanted:
+        item = entry.removesuffix(":vertical")
+        upright = {"_vertical": True} if item != entry else {}
         if not item.startswith("family:"):
-            out.append(flows[item])
+            out.append({**flows[item], **upright})
             continue
         family = item.split(":", 1)[1]
         members = [f for f in data["flows"] if flow_family(f, profile) == family]
@@ -41,7 +43,7 @@ def chart_flows(data: dict, profile: Profile, key: str = "flowcharts") -> list[d
         # a rollback has a command of its own, and never runs after the proof.
         first = next((k for k, f in enumerate(members) if f["trigger"]["kind"] == "command"), 0)
         chain = members[first:first + 1] + [f for f in members[first + 1:] if f["trigger"]["kind"] == "after"]
-        out.append({**stitched(family, chain), "title": title})
+        out.append({**stitched(family, chain), "title": title, **upright})
     return out
 
 

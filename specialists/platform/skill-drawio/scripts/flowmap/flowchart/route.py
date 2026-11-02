@@ -10,6 +10,8 @@ from __future__ import annotations
 
 #: Track pitch in a gap (room for the arrows' hops) and channel spacing for arrows back up.
 TRACK, CHANNEL = 18, 18
+#: The room above a box for an arrowhead, and the height of a row only long arrows pass through.
+HEAD_ROOM, EMPTY_ROW = 30, 56
 #: How far an entry moves along a box's top to clear another arrow.
 NUDGE = 30
 
@@ -185,3 +187,40 @@ def assign_tracks(legs: dict) -> dict:
             out[(key, gap, a)] = t
         out["count"][gap] = len(used)
     return out
+
+
+def row_spans(chart: object, tracks: dict, top: float) -> dict:
+    """Each row's top and height, and each gap's first track.
+
+    Args:
+        chart: the chart.
+        tracks: assign_tracks()'s result.
+        top: the first row's top.
+
+    Returns:
+        {"top": {row: y}, "h": {row: height}, "track": {gap row: y}}.
+    """
+    rows = chart.grid.rows
+    last = max(rows.values())
+    tops, heights, track_y, y = {}, {}, {}, top
+    for r in range(last + 1):
+        heights[r] = max((chart.size[n][1] for n in chart.graph.order if rows[n] == r), default=EMPTY_ROW)   # a lane can leave a row to long arrows alone
+        tops[r] = y
+        track_y[r] = y + heights[r] + chart.label_room
+        y += heights[r] + chart.label_room + max(tracks["count"].get(r, 1) - 1, 0) * TRACK + HEAD_ROOM
+    return {"top": tops, "h": heights, "track": track_y, "bottom": y}
+
+
+def node_rect(chart: object, ys: dict, nid: str) -> tuple[float, float, float, float]:
+    """A node's box, centred on its cell.
+
+    Args:
+        chart: the chart.
+        ys: row_spans()'s result.
+        nid: the node id.
+
+    Returns:
+        (x, y, width, height).
+    """
+    r, (w, h) = chart.grid.rows[nid], chart.size[nid]
+    return chart.cx[chart.grid.cols[nid]] - w / 2, ys["top"][r] + (ys["h"][r] - h) / 2, w, h

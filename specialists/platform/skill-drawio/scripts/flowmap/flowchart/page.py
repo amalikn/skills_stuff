@@ -17,12 +17,12 @@ from drawio.mxfile import ARROW_HEAD, BLANK, Page, header_height, label, wrapped
 
 from ..flow_geometry import BACK_MARK
 from . import bpmn
-from .lanes import LANE_HEAD, draw_lanes
+from .lanes import LANE_HEAD, View, draw_lanes
 from .labels import mark_size, place_labels
 from .branches import expand_branches
 from .graph import END, START, Graph, Grid, chart_graph, is_decision, lane_columns, lane_map, place, swap_branches
 from .order import improve_branches
-from .route import CHANNEL, TRACK, assign_tracks, exit_point, left_channels, plan_gaps
+from .route import CHANNEL, TRACK, assign_tracks, exit_point, left_channels, node_rect, plan_gaps, row_spans
 from ..model import GAP, MARGIN, comp_style, step_targets
 from ..profile import Profile
 from ..shapes import SHAPES, shape_legend
@@ -33,8 +33,10 @@ BOX_W, BOX_CHARS, LINE_H, BOX_H, DECISION_MAX = 240, 34, 15, 56, 440
 #: The space after a lane's gutter.
 GUTTER_GAP = 16
 TABS = {"chart": "Chart", "lanes": "Lanes", "bpmn": "BPMN"}
-#: Space between columns; in a gap between rows, the room under a box for a label and the room above a box for an arrowhead.
-COL_GAP, LABEL_ROOM, HEAD_ROOM = 70, 24, 30
+#: The same room on a page turned on its side.
+TURNED_LABEL_ROOM, TURNED_GAP = 56, 36
+#: Space between columns; in a gap between rows, the room under a box for a label.
+COL_GAP, LABEL_ROOM = 70, 24
 #: Where a step with no `label` is cut, in characters.
 CUT = 64
 JUMP = 6
@@ -135,6 +137,8 @@ class Chart:
         self.flow, self.comps, self.profile, self.page_ids = flow, comps, profile, page_ids
         self.graph = chart_graph(flow)
         self.lanes, self.actors, self.first_col, self.bpmn = None, [], [], mode == "bpmn"
+        self.turned = mode != "chart" and not flow.get("_vertical")
+        self.label_room = TURNED_LABEL_ROOM if self.turned else LABEL_ROOM   # on a turned page this gap is sideways, and words need more of it
         if mode != "chart":
             self.lanes, self.actors = lane_map(self.graph)
             self.first_col = lane_columns(len(self.actors))
@@ -151,6 +155,10 @@ class Chart:
             self.size[nid] = _size(self.text[nid], shape)
             if self.bpmn and nid not in self.graph.steps:
                 self.size[nid] = (BOX_W, max(bpmn.EVENT, self.size[nid][1] * 2 if nid in self.graph.stops else 0))
+                if self.turned:
+                    self.size[nid] = (bpmn.EVENT, bpmn.EVENT) if nid == START else (bpmn.EVENT + 4 + bpmn.EVENT_TEXT, self.size[nid][1])
+            if self.turned:
+                self.size[nid] = self.size[nid][::-1]   # laid out on its side
         self._columns()
 
     def _lines(self, nid: str) -> list[str]:
@@ -181,7 +189,7 @@ class Chart:
         widths = {c: 0 for c in range(last + 1)}
         for nid, c in self.grid.cols.items():
             widths[c] = max(widths[c], self.size[nid][0])
-        gap = max([COL_GAP] + [mark_size(t)[0] + 40 for t in self.labels.values() if t])
+        gap = TURNED_GAP if self.turned else max([COL_GAP] + [mark_size(t)[0] + 40 for t in self.labels.values() if t])   # words run across a turned gap, not along it
         words = [mark_size(self.labels[key])[0] for key in self.left if self.labels[key]]
         self.left_x = MARGIN + len(set(self.left.values())) * CHANNEL if self.left else MARGIN   # the channels, then room for a label on the way out
         self.cx, self.col_left, x = {}, {}, self.left_x + (max(words + [0]) + 28 if self.left else 0)
@@ -208,44 +216,7 @@ class Chart:
         return {src: cx - w * 0.3 + w * 0.6 * i / (len(ordered) - 1) for i, (src, _) in enumerate(ordered)}
 
 
-def _rows(chart: Chart, tracks: dict, top: float) -> dict:
-    """Each row's top and height, and each gap's first track.
-
-    Args:
-        chart: the chart.
-        tracks: assign_tracks()'s result.
-        top: the first row's top.
-
-    Returns:
-        {"top": {row: y}, "h": {row: height}, "track": {gap row: y}}.
-    """
-    rows = chart.grid.rows
-    last = max(rows.values())
-    tops, heights, track_y, y = {}, {}, {}, top
-    for r in range(last + 1):
-        heights[r] = max((chart.size[n][1] for n in chart.graph.order if rows[n] == r), default=BOX_H)   # a lane can leave a row to long arrows alone
-        tops[r] = y
-        track_y[r] = y + heights[r] + LABEL_ROOM
-        y += heights[r] + LABEL_ROOM + max(tracks["count"].get(r, 1) - 1, 0) * TRACK + HEAD_ROOM
-    return {"top": tops, "h": heights, "track": track_y, "bottom": y}
-
-
-def _node_rect(chart: Chart, ys: dict, nid: str) -> tuple[float, float, float, float]:
-    """A node's box, centred on its cell.
-
-    Args:
-        chart: the chart.
-        ys: _rows()'s result.
-        nid: the node id.
-
-    Returns:
-        (x, y, width, height).
-    """
-    r, (w, h) = chart.grid.rows[nid], chart.size[nid]
-    return chart.cx[chart.grid.cols[nid]] - w / 2, ys["top"][r] + (ys["h"][r] - h) / 2, w, h
-
-
-def draw_nodes(page: Page, chart: Chart, ys: dict) -> list[str]:
+def draw_nodes(page: View, chart: Chart, ys: dict) -> list[str]:
     """Draw every node.
 
     Args:
@@ -258,15 +229,15 @@ def draw_nodes(page: Page, chart: Chart, ys: dict) -> list[str]:
     """
     fid, used = chart.flow["id"], []
     for n, nid in enumerate(chart.graph.order):
-        x, y, w, h = _node_rect(chart, ys, nid)
+        rect = node_rect(chart, ys, nid)
         text = label(*chart.text[nid])
         if chart.bpmn and nid not in chart.graph.steps:
             kind = "error" if nid in chart.graph.stops else "start" if nid == START else "end"
-            bpmn.event(page, f"{fid}-c-{nid}", kind, (x, y, w, h), chart.text[nid])
+            bpmn.event(page.page, f"{fid}-c-{nid}", kind, page.rect(*rect), chart.text[nid], chart.turned)
         elif nid in chart.graph.stops:
-            page.box(f"{fid}-c-{nid}", text, x, y, w, h, STOP_BOX, solid=True)
+            page.box(f"{fid}-c-{nid}", text, rect, STOP_BOX, solid=True)
         elif nid in (START, END):
-            page.box(f"{fid}-c-{nid}", text, x, y, w, h, END_BOX, solid=True)
+            page.box(f"{fid}-c-{nid}", text, rect, END_BOX, solid=True)
             used.append("terminator")
         else:
             s, shape = chart.graph.steps[nid], chart.shapes[nid]
@@ -274,7 +245,7 @@ def draw_nodes(page: Page, chart: Chart, ys: dict) -> list[str]:
             style = bpmn.step_style(shape, *chart.profile.style(actor["kind"])) if chart.bpmn else comp_style(actor["kind"], chart.profile, "fontSize=11;" + SHAPES[shape][0])
             charts, flows = chart.page_ids
             link = f"data:page/id,chart-{s['flow']}" if s.get("flow") in charts else f"data:page/id,flow-{s['flow']}" if s.get("flow") in flows else ""
-            page.box(f"{fid}-c-{nid}", text, x, y, w, h, style, link=link, tooltip=step_tip(s, str(n), actor["name"]), solid=True)
+            page.box(f"{fid}-c-{nid}", text, rect, style, link=link, tooltip=step_tip(s, str(n), actor["name"]), solid=True)
             used.append(shape)
     return used
 
@@ -293,25 +264,25 @@ def _edge_points(chart: Chart, ys: dict, e: object, route: tuple) -> list:
     """
     legs, entries, tracks = route
     key = (e.src, e.dst)
-    sx, sy, sw, sh = _node_rect(chart, ys, e.src)
+    sx, sy, sw, sh = node_rect(chart, ys, e.src)
     if e.kind == "main" and chart.grid.rows[e.src] == chart.grid.rows[e.dst]:   # a hand-off level with its source runs sideways
-        return [(sx + sw, sy + sh / 2), (_node_rect(chart, ys, e.dst)[0], sy + sh / 2)]
+        return [(sx + sw, sy + sh / 2), (node_rect(chart, ys, e.dst)[0], sy + sh / 2)]
     if key in chart.left:
-        tx, ty, _tw, th = _node_rect(chart, ys, e.dst)
+        tx, ty, _tw, th = node_rect(chart, ys, e.dst)
         lane = chart.left_x - CHANNEL * chart.left[key]
         return [(sx, sy + sh / 2), (lane, sy + sh / 2), (lane, ty + th / 2), (tx, ty + th / 2)]
     side, x = exit_point(chart, e)
     mid = sy + sh / 2
     if e.kind == "stop" and chart.lanes:
-        _dx, dy, _dw, dh = _node_rect(chart, ys, e.dst)
-        return [(x, sy + sh), (x, dy + dh / 2 - bpmn.EVENT / 2 if chart.bpmn else dy)]   # a BPMN stop is a circle centred in its cell
+        _dx, dy, _dw, dh = node_rect(chart, ys, e.dst)
+        return [(x, sy + sh), (x, dy + dh / 2 - bpmn.EVENT / 2 if chart.bpmn and not chart.turned else dy)]   # an upright BPMN stop is a circle centred in its cell
     if e.kind == "stop":
-        return [(sx + sw, mid), (_node_rect(chart, ys, e.dst)[0], mid)]
+        return [(sx + sw, mid), (node_rect(chart, ys, e.dst)[0], mid)]
     pts = [(sx + sw if x > sx else sx, mid), (x, mid)] if side else [(x, sy + sh)]
     for gap, a, b in legs[key]:
         y = ys["track"][gap] + tracks[(key, gap, a)] * TRACK
         pts += [(a, y), (b, y)]
-    return pts + [(entries[key], _node_rect(chart, ys, e.dst)[1])]
+    return pts + [(entries[key], node_rect(chart, ys, e.dst)[1])]
 
 
 def _polylines(chart: Chart) -> list:
@@ -325,11 +296,11 @@ def _polylines(chart: Chart) -> list:
     """
     legs, entries = plan_gaps(chart)
     tracks = assign_tracks(legs)
-    ys = _rows(chart, tracks, 0)
+    ys = row_spans(chart, tracks, 0)
     return [_edge_points(chart, ys, e, (legs, entries, tracks)) for e in chart.graph.edges]
 
 
-def draw_edges(page: Page, chart: Chart, ys: dict, route: tuple) -> None:
+def draw_edges(page: View, chart: Chart, ys: dict, route: tuple) -> None:
     """Draw every arrow and its label.
 
     Args:
@@ -341,22 +312,22 @@ def draw_edges(page: Page, chart: Chart, ys: dict, route: tuple) -> None:
     fid, items = chart.flow["id"], []
     for e in chart.graph.edges:
         words = chart.labels[(e.src, e.dst)]
-        pts = _edge_points(chart, ys, e, route)
+        pts = page.points(_edge_points(chart, ys, e, route))
         cid = f"{fid}-ce-{e.src}-{e.dst}"
         colour = COLOURS.get(words, COLOURS[""])
         style = BACK if e.kind == "back" else STOP_EDGE if e.kind == "stop" else EDGE + f"strokeColor={colour};"
         style = EDGE + f"strokeColor={COLOURS['No'] if e.kind == 'stop' else colour};" if chart.bpmn else style   # BPMN: all sequence flows, so all solid
-        page.route(cid, f"{fid}-c-{e.src}", f"{fid}-c-{e.dst}", pts, style, "thin", jump=JUMP)
+        page.page.route(cid, f"{fid}-c-{e.src}", f"{fid}-c-{e.dst}", pts, style, "thin", jump=JUMP)
         if e.kind == "back" and not words:
             words = "back"
         if words or e.kind == "stop":
             base = BACK_MARK if e.kind == "back" else LABEL_MARK
             items.append((cid, words or "fails", pts, base + f"fontColor={COLOURS['No'] if e.kind == 'stop' else colour};", e.index > 1))
-    place_labels(page, items)
+    place_labels(page.page, items)
 
 
 def chart_page(flow: dict, comps: dict, profile: Profile, page_ids: tuple, mode: str = "chart") -> Page:
-    """One flowchart page: a header with the purpose and trigger, the chart (in vertical swimlanes when asked), and a legend of its symbols.
+    """One flowchart page: a header with the purpose and trigger, the chart (in swimlanes when asked, left to right unless the entry says vertical), and a legend of its symbols.
 
     Args:
         flow: the flow (a stitched one for a family).
@@ -377,18 +348,22 @@ def chart_page(flow: dict, comps: dict, profile: Profile, page_ids: tuple, mode:
         improve_branches(chart.graph, lambda: _polylines(chart))
     legs, entries = plan_gaps(chart)
     tracks = assign_tracks(legs)
-    width = max(900.0, chart.channel_x + CHANNEL * len(chart.channels) - MARGIN)
+    span = chart.channel_x + CHANNEL * len(chart.channels)
+    width = max(900.0, (row_spans(chart, tracks, LANE_HEAD + 8)["bottom"] if chart.turned else span - MARGIN))
     head_h = header_height(head, width, 80)
     page.box(f"{fid}-chart-head", label(*head), MARGIN, MARGIN, width, head_h,
              "rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=12;",
              link="data:page/id,overview")
-    ys = _rows(chart, tracks, MARGIN + head_h + GAP + (LANE_HEAD + 8 if swimlanes else 0))
+    below = MARGIN + head_h + GAP
+    ys = row_spans(chart, tracks, LANE_HEAD + 8 if chart.turned else below + (LANE_HEAD + 8 if swimlanes else 0))
+    view = View(page, chart.turned, MARGIN, below - MARGIN + 8)
     if swimlanes:
-        draw_lanes(page, chart, ys)
-    used = draw_nodes(page, chart, ys)
-    draw_edges(page, chart, ys, (legs, entries, tracks))
+        draw_lanes(view, chart, ys)
+    used = draw_nodes(view, chart, ys)
+    draw_edges(view, chart, ys, (legs, entries, tracks))
+    legend_y = (span + view.dy if chart.turned else ys["bottom"]) + GAP
     if chart.bpmn:
-        bpmn.legend(page, MARGIN, ys["bottom"] + GAP, f"{fid}-chart")
+        bpmn.legend(page, MARGIN, legend_y, f"{fid}-chart")
     else:
-        shape_legend(page, list(dict.fromkeys(used)), MARGIN, ys["bottom"] + GAP, f"{fid}-chart")
+        shape_legend(page, list(dict.fromkeys(used)), MARGIN, legend_y, f"{fid}-chart")
     return page

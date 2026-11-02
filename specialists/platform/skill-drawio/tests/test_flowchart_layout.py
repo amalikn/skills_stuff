@@ -14,6 +14,32 @@ from flowmap.flowchart.page import chart_page
 from test_flowchart import COMPS, Lanes, flow, profile, step
 
 
+class Turned(unittest.TestCase):
+    """Lanes run left to right by default."""
+
+    F = flow([step("a"), step("b", actor="d", gate="ok?", next=["c", "a"], failures=["x"]), step("c", failures=["boom"]), step("e", actor="d"), step("f")])
+
+    def test_horizontal_is_the_default_and_clean(self):
+        """Later steps sit further right, lanes stack down, and the audit passes in both notations."""
+        for mode in ("lanes", "bpmn"):
+            page = chart_page(self.F, Lanes.COMPS, profile(), (set(), set()), mode)
+            self.assertEqual(faults(page_audit(page)), [], mode)
+            a, c = page.rects[f"{mode}-f-c-a"], page.rects[f"{mode}-f-c-c"]
+            self.assertGreater(c[0], a[0])
+            self.assertLess(page.rects[f"{mode}-f-lane-head-0"][2], page.rects[f"{mode}-f-lane-head-0"][3])
+
+    def test_a_vertical_entry_keeps_the_page_upright(self):
+        """The heading sits along the top, and the suffix is valid in a map."""
+        page = chart_page({**self.F, "_vertical": True}, Lanes.COMPS, profile(), (set(), set()), "lanes")
+        self.assertGreater(page.rects["lanes-f-lane-head-0"][2], page.rects["lanes-f-lane-head-0"][3])
+
+    def test_a_box_keeps_its_shape_when_turned(self):
+        """Turning moves a box; it does not lie down."""
+        upright = chart_page({**self.F, "_vertical": True}, Lanes.COMPS, profile(), (set(), set()), "lanes").rects["lanes-f-c-a"]
+        turned = chart_page(self.F, Lanes.COMPS, profile(), (set(), set()), "lanes").rects["lanes-f-c-a"]
+        self.assertEqual(upright[2:], turned[2:])
+
+
 class Order(unittest.TestCase):
     """A diamond's exits are chosen by measure."""
 
@@ -60,7 +86,7 @@ class LeftExit(unittest.TestCase):
     def test_step_with_a_stop_heads_left_without_crossing_it(self):
         """The arrow leaves the box's left side, and the audit passes."""
         f = flow([step("a", failures=["x"]), step("b", actor="d", failures=["boom"]), step("c")])
-        page = chart_page(f, Lanes.COMPS, profile(), (set(), set()), "lanes")
+        page = chart_page({**f, "_vertical": True}, Lanes.COMPS, profile(), (set(), set()), "lanes")
         self.assertEqual(faults(page_audit(page)), [])
         out = next(r for r in page.routes if r.cid.endswith("-b-c"))
         self.assertEqual(out.points[0][0], page.rects[out.src][0])
@@ -78,7 +104,7 @@ class Sideways(unittest.TestCase):
         rows = layers(g, lanes)
         self.assertEqual(rows["a"], rows["b"])
         self.assertGreater(rows["c"], rows["b"])
-        self.assertEqual(faults(page_audit(chart_page(f, Lanes.COMPS, profile(), (set(), set()), "lanes"))), [])
+        self.assertEqual(faults(page_audit(chart_page({**f, "_vertical": True}, Lanes.COMPS, profile(), (set(), set()), "lanes"))), [])
 
     def test_a_decision_hands_off_downward(self):
         """Two ways out need the room below."""
@@ -99,7 +125,7 @@ class BranchSwap(unittest.TestCase):
     def test_stop_under_a_diamond_is_reached_straight_down(self):
         """In a lane the stop sits under the diamond, so its arrow leaves by the bottom and keeps its words."""
         f = flow([step("a", branches=[{"question": "Fit?", "outcomes": ["run: yes", "stop: no: refused"]}]), step("b", actor="d")])
-        page = chart_page(f, Lanes.COMPS, profile(), (set(), set()), "lanes")
+        page = chart_page({**f, "_vertical": True}, Lanes.COMPS, profile(), (set(), set()), "lanes")
         self.assertEqual(faults(page_audit(page)), [])
         down = next(r for r in page.routes if r.cid.endswith("-stop1"))
         self.assertEqual(down.points[0][0], down.points[-1][0])
