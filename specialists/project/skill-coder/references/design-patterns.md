@@ -81,34 +81,30 @@ Evidence:     VERIFIED_PRIMARY | VERIFIED_SECONDARY | CANDIDATE, with what was o
 > **Learned 2026-10-27 (a)** · design pattern, any language · VERIFIED_PRIMARY (two unrelated changes ran on one engine unchanged) · Source: local-knowledge-ansible ansible-wifi `roles/smc_change` (CHANGELOG 20261027_1042) · Falsifier: a new change that needed an engine edit naming its type
 > (reusable_candidate: proven in one project, not yet in a second) Pattern P-01, written generically below.
 
-- **Problem:** every change to a fleet (a package pin, a config line, a hosts file, a scripted fix) becomes its own script, each with its
-  own backup, verify and rollback bugs; the tenth change is no safer than the first.
+- **Problem:** every change to a fleet (a package pin, a config line, a hosts file, a scripted fix) becomes its own script, each with its own backup, verify and rollback bugs; the tenth change is no
+  safer than the first.
 - **Solution, the anatomy:**
-  1. **An engine** runs the same stages for every change: load and check the spec, scope (which targets it applies to), probe before,
-     guard (refuse an unfit or unhealthy target), back up, act, restart, reboot if the policy says, probe after and judge gates, clean up,
-     record. The engine never names an action type, a package or a file.
-  2. **An action catalogue**: one file per action type (`apt_pin`, `template`, `copy`, `ini`, `command`), each with a paired undo file
-     (`<type>_rollback`). The engine dispatches by the spec's `type`; rollback dispatches the undo files in reverse order. A new type is two
-     new files and no engine edit.
-  3. **A check catalogue**: one plug-in per check (`services`, `commands`, `http`, `processes`, `logs`, `files`, `apt_pin`), each giving
-     collect, healthy, gates and describe; the spec turns them on by naming their keys.
-  4. **The change is data**: a spec file says what it applies to, the actions with their parameters, what to back up, what to restart,
-     the reboot policy, how long to soak, and what proves it worked. Reviewing a change is reading one data file.
-- **Contracts that keep it generic:** the spec's shape is checked at load (unknown type, bad policy: the whole run fails before any target
-  is touched); rollback refuses a type with no undo file; every new per-change behaviour is a spec field whose default is today's
-  behaviour (so old specs keep working); `proves` checks (false before, true after: what the change fixes) are kept apart from health
+  1. **An engine** runs the same stages for every change: load and check the spec, scope (which targets it applies to), probe before, guard (refuse an unfit or unhealthy target), back up, act,
+     restart, reboot if the policy says, probe after and judge gates, clean up, record. The engine never names an action type, a package or a file.
+  2. **An action catalogue**: one file per action type (`apt_pin`, `template`, `copy`, `ini`, `command`), each with a paired undo file (`<type>_rollback`). The engine dispatches by the spec's `type`;
+     rollback dispatches the undo files in reverse order. A new type is two new files and no engine edit.
+  3. **A check catalogue**: one plug-in per check (`services`, `commands`, `http`, `processes`, `logs`, `files`, `apt_pin`), each giving collect, healthy, gates and describe; the spec turns them on by
+     naming their keys.
+  4. **The change is data**: a spec file says what it applies to, the actions with their parameters, what to back up, what to restart, the reboot policy, how long to soak, and what proves it worked.
+     Reviewing a change is reading one data file.
+- **Contracts that keep it generic:** the spec's shape is checked at load (unknown type, bad policy: the whole run fails before any target is touched); rollback refuses a type with no undo file; every
+  new per-change behaviour is a spec field whose default is today's behaviour (so old specs keep working); `proves` checks (false before, true after: what the change fixes) are kept apart from health
   checks, so a target is never refused for lacking the fix it is about to get; type knowledge lives only in the type's files.
-- **Why it works:** safety (baseline, guard, backup, journal, gates, record) is written once and every change inherits it; adding a change
-  is cheap, adding a capability is local; the same spec runs in check, apply, verify and rollback modes.
-- **Reuse:** database migrations (actions = DDL, data fix, index build; checks = row counts, query plans); Kubernetes or cloud config
-  rollouts (actions = patch, scale, annotate); network device changes (actions = config block, firmware; checks = neighbours, routes); SaaS
-  admin changes through an API. Anywhere many small, similar changes hit many targets.
-- **Pitfalls:** a one-change exception coded in the engine (move it to a spec field); a type that cannot be undone (write the undo file
-  first, or have the spec carry an explicit `undo` command); checks that hit a default endpoint and look healthy on a dead service.
-- **How to add an action type:** write `<type>.yml` (apply on every target path it must reach) and `<type>_rollback.yml`; add its keys to
-  the spec check; add a probe part if its effect needs its own check; write one spec using it and run it in check mode, then canary.
-- **Realised in:** Ansible, `roles/smc_change` (`tasks/apply.yml`, `tasks/rollback.yml`, `tasks/actions/`, `files/probe/`,
-  `files/changes/<name>/<name>.yml`), local-knowledge-ansible ansible-wifi, 2026-10-23 onward. Python, the probe's check registry.
+- **Why it works:** safety (baseline, guard, backup, journal, gates, record) is written once and every change inherits it; adding a change is cheap, adding a capability is local; the same spec runs in
+  check, apply, verify and rollback modes.
+- **Reuse:** database migrations (actions = DDL, data fix, index build; checks = row counts, query plans); Kubernetes or cloud config rollouts (actions = patch, scale, annotate); network device
+  changes (actions = config block, firmware; checks = neighbours, routes); SaaS admin changes through an API. Anywhere many small, similar changes hit many targets.
+- **Pitfalls:** a one-change exception coded in the engine (move it to a spec field); a type that cannot be undone (write the undo file first, or have the spec carry an explicit `undo` command);
+  checks that hit a default endpoint and look healthy on a dead service.
+- **How to add an action type:** write `<type>.yml` (apply on every target path it must reach) and `<type>_rollback.yml`; add its keys to the spec check; add a probe part if its effect needs its own
+  check; write one spec using it and run it in check mode, then canary.
+- **Realised in:** Ansible, `roles/smc_change` (`tasks/apply.yml`, `tasks/rollback.yml`, `tasks/actions/`, `files/probe/`, `files/changes/<name>/<name>.yml`), local-knowledge-ansible ansible-wifi,
+  2026-10-23 onward. Python, the probe's check registry.
 
 ```yaml
 # Engine: dispatch by type (tasks/apply.yml), undo last first and refuse a type with no undo file (tasks/rollback.yml)
@@ -136,15 +132,13 @@ verify:
   proves: [{cmd: 'grep -qx "127.0.1.1 $(hostname)" /etc/hosts'}]
 ```
 
-- **Evidence:** VERIFIED_PRIMARY, a package pin (PHP security fix, dozens of production targets) and a hosts-file fix ran on the same engine
-  with no engine edit; rollback of both proven on a bench target.
+- **Evidence:** VERIFIED_PRIMARY, a package pin (PHP security fix, dozens of production targets) and a hosts-file fix ran on the same engine with no engine edit; rollback of both proven on a bench
+  target.
 
 > **Learned 2026-10-29 (f)** · P-01 in an analysis tool · VERIFIED_SECONDARY (harvest 2026-10-29 of the apn workspace) · Source: apn `scripts/speed_tier_engine.py` (`CarrierConfig`, `export()`), `scripts/README.md` · Falsifier: a new supplier added to the engine by
-> editing the engine rather than by a config object
-> A second shape of P-01: one analysis engine, and each supplier supplies a frozen config object (database path, the SQL, rate-card SQL,
-> tier and product-group maps) and calls `export()`. The engine's docstring lists the exact columns a supplier's query must return, so the
-> query contract is written down, and the workbook it writes keeps live formulas rather than pasted values so a reviewer can audit each
-> figure. It refuses to run on an unmapped category rather than dropping its rows.
+> editing the engine rather than by a config object A second shape of P-01: one analysis engine, and each supplier supplies a frozen config object (database path, the SQL, rate-card SQL, tier and
+> product-group maps) and calls `export()`. The engine's docstring lists the exact columns a supplier's query must return, so the query contract is written down, and the workbook it writes keeps live
+> formulas rather than pasted values so a reviewer can audit each figure. It refuses to run on an unmapped category rather than dropping its rows.
 
 ### P-02 Before/after probe with baseline gates
 
@@ -167,9 +161,8 @@ register(Check("http", collect=http_collect, healthy=http_healthy, gates=http_ga
 ```
 
 - **Evidence:** VERIFIED_PRIMARY, captive portal pages judged before and after every PHP apply on production; unhealthy baselines refused.
-- **Second project (smc-resiliency, `spike/onbox/smcbox/health.py:169-183`):** external reach counts against the change only if it passed
-  before and fails after; reach already down is stored as "unjudged" and rechecked later; during an outage new changes are held (a return to
-  last-known-good excepted), since a bad change made then could never be judged.
+- **Second project (smc-resiliency, `spike/onbox/smcbox/health.py:169-183`):** external reach counts against the change only if it passed before and fails after; reach already down is stored as
+  "unjudged" and rechecked later; during an outage new changes are held (a return to last-known-good excepted), since a bad change made then could never be judged.
 
 ### P-03 Write-ahead journal with a code fingerprint
 
@@ -289,9 +282,8 @@ smc_change_target: >-
 - **Problem:** an optional pre-filter (is the target listed online?) that errors can silently drop every target, while a safety gate that errors must stop the change.
 - **Solution:** decide per check which way it fails. Filters fail open: a failed lookup filters nothing and says so once. Gates fail closed: missing data is a failed gate.
 - **Reuse:** feature flags, rate limiters, pre-commit hooks versus release gates.
-- **Realised in:** Ansible, `tasks/pending.yml` (tsh filter: a failed `tsh ls` keeps its targets). Second project: unified-network-controller's
-  ownership guard fails open when its catalog cannot be read, because a guard that can only refuse would otherwise take the whole system down
-  (P-16).
+- **Realised in:** Ansible, `tasks/pending.yml` (tsh filter: a failed `tsh ls` keeps its targets). Second project: unified-network-controller's ownership guard fails open when its catalog cannot be
+  read, because a guard that can only refuse would otherwise take the whole system down (P-16).
 
 ### P-11 Freeze code under in-flight transactions
 
@@ -328,7 +320,8 @@ if all_problems:
 > Pattern P-13, written generically below.
 
 - **Problem:** a risky operation path is switched on because someone wrote it, not because anyone proved it.
-- **Solution:** one plain table per target kind: mechanism, rollback class, `proven`, evidence text. Supported means a mechanism exists **and** proven is true; a kind missing from the table is unsupported, not an error. Checked before any adapter is touched; enabling a kind is one row change citing its evidence; a test keeps the table's keys equal to the adapter registry.
+- **Solution:** one plain table per target kind: mechanism, rollback class, `proven`, evidence text. Supported means a mechanism exists **and** proven is true; a kind missing from the table is
+  unsupported, not an error. Checked before any adapter is touched; enabling a kind is one row change citing its evidence; a test keeps the table's keys equal to the adapter registry.
 - **Why it works:** the system can never claim more than its evidence; the table is the audit trail.
 - **Reuse:** payment refunds per provider, migration strategies per database, feature rollout per device class.
 - **Pitfalls:** every row still unproven means the path has never run for real; say so in status.
@@ -348,7 +341,9 @@ def supported(self) -> bool:
 > Pattern P-14, written generically below.
 
 - **Problem:** "rollback" means different things per target, and "failed" hides whether anything changed.
-- **Solution:** each target declares its rollback class: R0 stop and tell the operator, R1 the target's own transactional revert, R2 restore a redacted backup (secrets re-injected from the vault only at restore), R3 a compensating write of the previous values. Fixed stages: authorise, capability, back up, validate, delta, preview, apply, read back, verify. Every run ends in one named state (`unsupported`, `not_authorised`, `cancelled` already in state, `failed`, `succeeded`, `rolled_back`, `rollback_failed`) with one correlation id and one JSONL audit line.
+- **Solution:** each target declares its rollback class: R0 stop and tell the operator, R1 the target's own transactional revert, R2 restore a redacted backup (secrets re-injected from the vault only
+  at restore), R3 a compensating write of the previous values. Fixed stages: authorise, capability, back up, validate, delta, preview, apply, read back, verify. Every run ends in one named state
+  (`unsupported`, `not_authorised`, `cancelled` already in state, `failed`, `succeeded`, `rolled_back`, `rollback_failed`) with one correlation id and one JSONL audit line.
 - **Why it works:** callers act on a state that says what happened to the target, not on an exception.
 - **Reuse:** cloud resource changes, ERP data fixes, firmware pushes.
 - **Pitfalls:** never try a stronger rollback than declared; an untested R1 is worse than an honest R0.
@@ -360,7 +355,9 @@ def supported(self) -> bool:
 > Pattern P-15, written generically below.
 
 - **Problem:** a change can kill the process making it, or the connection you would undo it over, and then nobody reverts it.
-- **Solution:** before the change, arm a timer that lives on the target and outside the process (a transient systemd timer) to restore last-known-good after a deadline; stage the candidate and keep last-known-good on the target. Apply detached; judge health; success writes a confirm file or cancels the timer, a handled failure reverts and cancels it. The revert also restarts what died under the bad config.
+- **Solution:** before the change, arm a timer that lives on the target and outside the process (a transient systemd timer) to restore last-known-good after a deadline; stage the candidate and keep
+  last-known-good on the target. Apply detached; judge health; success writes a confirm file or cancels the timer, a handled failure reverts and cancels it. The revert also restarts what died under
+  the bad config.
 - **Why it works:** the undo does not depend on the thing that may hang, crash or lose its link.
 - **Reuse:** remote firewall and DNS changes, database parameter changes, edge and IoT config, feature-flag flips.
 - **Pitfalls:** reset the timer's failed state before arming; its deadline must exceed the health deadline; restoring files without restarting services is not last-known-good.
@@ -378,7 +375,9 @@ arm_timer(deadline + 120)
 > Pattern P-16, written generically below.
 
 - **Problem:** several writers (people, collectors, importers) overwrite each other, and "this field does not apply here" is mixed up with "you may not write it".
-- **Solution:** a catalog holds two axes: ownership class (operator, device, inventory, system; mirror or unused in secondary systems) and applicability (capability flags per type). Writers are named accounts; an anonymous writer is a non-writer (fail closed). The guard itself fails open when its catalog cannot be read (see P-10). Applicability enforcement stays behind a flag until run on real data.
+- **Solution:** a catalog holds two axes: ownership class (operator, device, inventory, system; mirror or unused in secondary systems) and applicability (capability flags per type). Writers are named
+  accounts; an anonymous writer is a non-writer (fail closed). The guard itself fails open when its catalog cannot be read (see P-10). Applicability enforcement stays behind a flag until run on real
+  data.
 - **Why it works:** each question has one place to answer it; new hardware adds capabilities, not exceptions.
 - **Reuse:** CRM fields owned by sales vs sync jobs, config keys owned by people vs automation, multi-source master data.
 - **Pitfalls:** a per-model `not-applicable` class broke at the first new hardware model; keep applicability as capabilities.
@@ -390,7 +389,8 @@ arm_timer(deadline + 120)
 > Pattern P-17, written generically below.
 
 - **Problem:** an abstraction quietly takes on the vocabulary of its first consumer.
-- **Solution:** the contract names no framework; it is proven by two thin shims to two different destinations against failure criteria written before the code (either shim over ~300 lines, or any framework-only field needed). Leakage is checked mechanically: an AST scan of class and field identifiers against banned framework nouns; prose is not scanned, so comments may explain.
+- **Solution:** the contract names no framework; it is proven by two thin shims to two different destinations against failure criteria written before the code (either shim over ~300 lines, or any
+  framework-only field needed). Leakage is checked mechanically: an AST scan of class and field identifiers against banned framework nouns; prose is not scanned, so comments may explain.
 - **Why it works:** two consumers expose the bias one hides; criteria fixed first cannot be bent to pass.
 - **Reuse:** storage-agnostic domain models, payment or SMS provider ports, LLM provider layers.
 - **Pitfalls:** scan identifiers, not text, or the check blocks documentation.
@@ -407,7 +407,8 @@ return [(name, noun) for name in _protocol_identifiers() for noun in FRAMEWORK_N
 > Pattern P-18, written generically below.
 
 - **Problem:** stuck locks get cleared by hand while the owner is in fact still running.
-- **Solution:** dry run by default; one exact key, no wildcards; the owner must be a job in a terminal state; host-idle evidence must be fresh (seconds old) and is re-read just before the delete; every queued or running request is inspected and any unknown state means refuse; the delete is compare-and-swap (watch the lock and queues, `--expected-owner` from the preview).
+- **Solution:** dry run by default; one exact key, no wildcards; the owner must be a job in a terminal state; host-idle evidence must be fresh (seconds old) and is re-read just before the delete;
+  every queued or running request is inspected and any unknown state means refuse; the delete is compare-and-swap (watch the lock and queues, `--expected-owner` from the preview).
 - **Why it works:** every way the owner could still be alive is a refusal, not a guess.
 - **Reuse:** distributed cron locks, leases on stuck CI runners, database advisory locks.
 - **Pitfalls:** a preview-then-apply without compare-and-swap races the owner.
@@ -419,7 +420,9 @@ return [(name, noun) for name in _protocol_identifiers() for noun in FRAMEWORK_N
 > Pattern P-19, written generically below.
 
 - **Problem:** "may X replace Y?" grows into an N x N table that cannot keep up.
-- **Solution:** each type gets two vendor-neutral attributes (placement, function) plus two exception lists (may-replace, never-replaces); fixed order: deny wins; an explicit allow holds even for an unclassified type; unclassified is refused; otherwise both attributes must match. Returns (verdict, reason) and the reason is shown to the approver. The rule imports no framework, so it is tested alone.
+- **Solution:** each type gets two vendor-neutral attributes (placement, function) plus two exception lists (may-replace, never-replaces); fixed order: deny wins; an explicit allow holds even for an
+  unclassified type; unclassified is refused; otherwise both attributes must match. Returns (verdict, reason) and the reason is shown to the approver. The rule imports no framework, so it is tested
+  alone.
 - **Why it works:** O(types) data instead of O(types^2); the order makes every verdict explainable.
 - **Reuse:** substitute products, equivalent drugs, compatible spare parts.
 - **Pitfalls:** keep the rule pure (no framework imports) so its table of cases is tested directly.
@@ -431,7 +434,8 @@ return [(name, noun) for name in _protocol_identifiers() for noun in FRAMEWORK_N
 > Pattern P-20, written generically below.
 
 - **Problem:** "it works" is claimed on a transport acknowledgement, against a denominator the system itself controls.
-- **Solution:** evidence layers are ranked (transport < stored < rendered < durable); each eval declares its population, an oracle that is independent and does not route through the evaluated path, how long a result stays valid and what invalidates it, and a fixture that can make it fail. Results append to a JSONL history; corrections are new records that supersede, never edits.
+- **Solution:** evidence layers are ranked (transport < stored < rendered < durable); each eval declares its population, an oracle that is independent and does not route through the evaluated path,
+  how long a result stays valid and what invalidates it, and a fixture that can make it fail. Results append to a JSONL history; corrections are new records that supersede, never edits.
 - **Why it works:** the claim names its strength; old results cannot be rewritten into passes.
 - **Reuse:** data-pipeline SLAs, ML deployment acceptance, migration completeness.
 - **Pitfalls:** an oracle sharing the system's code path proves nothing.
@@ -443,7 +447,9 @@ return [(name, noun) for name in _protocol_identifiers() for noun in FRAMEWORK_N
 > Pattern P-21, written generically below.
 
 - **Problem:** a gradual move to a new code location stalls, or new code keeps landing in the old place.
-- **Solution:** a shim is detected by AST (docstring starts with "Shim" and it imports the new package); any other module in the old tree must be in a baseline that may only shrink, and a stale entry is reported; warn first, then fail. Retired paths go to a redirect map so dated records still resolve; the map is checked so it cannot excuse a path that is really gone. Size and docstring budgets ratchet the same way.
+- **Solution:** a shim is detected by AST (docstring starts with "Shim" and it imports the new package); any other module in the old tree must be in a baseline that may only shrink, and a stale entry
+  is reported; warn first, then fail. Retired paths go to a redirect map so dated records still resolve; the map is checked so it cannot excuse a path that is really gone. Size and docstring budgets
+  ratchet the same way.
 - **Why it works:** progress is monotone and visible; history keeps resolving.
 - **Reuse:** monolith to packages, API v1 to v2, renaming config keys across repos.
 - **Pitfalls:** 18 non-shim modules landed in the old tree while no check existed; add the ratchet before the move starts.
@@ -474,7 +480,8 @@ return json.loads(SAFE_VARS.read_text(...)), "safe mode"
 > Pattern P-23, written generically below.
 
 - **Problem:** an apply step does not change identity fields of live objects, so a check passes on the old state (a false pass).
-- **Solution:** diff the declared definitions before and after (canonical JSON), delete the live objects that changed or vanished, and let the reconciler recreate them; the presence check and command runner are injected so tests need no root.
+- **Solution:** diff the declared definitions before and after (canonical JSON), delete the live objects that changed or vanished, and let the reconciler recreate them; the presence check and command
+  runner are injected so tests need no root.
 - **Why it works:** identity changes become recreates, which the reconciler already handles.
 - **Reuse:** immutable fields in infrastructure tools, immutable specs in orchestrators, cache invalidation.
 - **Pitfalls:** the false pass was found only by changing an identity field (a VLAN id); test that case.
@@ -492,7 +499,8 @@ for name in sorted(set(before) | set(after)):
 > Pattern P-24, written generically below.
 
 - **Problem:** a config tree must be replaced atomically and checked by validators that only read fixed paths.
-- **Solution:** render into a fresh directory; run the native validators against it, binding it over the fixed path inside a private mount namespace; rename live to `previous` and the new tree into place; keep `previous` until the next render, since readers may still hold it.
+- **Solution:** render into a fresh directory; run the native validators against it, binding it over the fixed path inside a private mount namespace; rename live to `previous` and the new tree into
+  place; keep `previous` until the next render, since readers may still hold it.
 - **Why it works:** the live path only ever holds a validated tree; rename is atomic.
 - **Reuse:** web server configs, certificate bundles, static site deploys.
 - **Pitfalls:** deleting the old tree before readers refresh left the live path empty for a moment.
@@ -504,7 +512,8 @@ for name in sorted(set(before) | set(after)):
 > Pattern P-25, written generically below.
 
 - **Problem:** a config bundle must not be replayed, downgraded or applied to the wrong target.
-- **Solution:** verify the signature; then three fit checks: same hardware id, same compatibility level, set number above the committed one. Write to the idle A/B slot, read back byte for byte, commit only after health passes.
+- **Solution:** verify the signature; then three fit checks: same hardware id, same compatibility level, set number above the committed one. Write to the idle A/B slot, read back byte for byte, commit
+  only after health passes.
 - **Why it works:** binding plus monotone numbers turn replay and downgrade into refusals.
 - **Reuse:** firmware and licence files, mobile config bundles, edge model pushes.
 - **Pitfalls:** a committed number must be stored where a reset cannot roll it back.
@@ -516,7 +525,8 @@ for name in sorted(set(before) | set(after)):
 > Pattern P-26, written generically below.
 
 - **Problem:** an experiment on a live box must not run on the wrong box or leave it changed.
-- **Solution:** print the plan unless `--apply`; refuse unless the hostname equals the named lab host and the box is in the expected state; a trap cleans up and checks the restored file matches its backup byte for byte; results as key=value lines; `set -e` off on purpose where probes are expected to fail.
+- **Solution:** print the plan unless `--apply`; refuse unless the hostname equals the named lab host and the box is in the expected state; a trap cleans up and checks the restored file matches its
+  backup byte for byte; results as key=value lines; `set -e` off on purpose where probes are expected to fail.
 - **Why it works:** every safety condition is checked by the script, not remembered by the operator.
 - **Reuse:** chaos experiments, DR drills, one-off production diagnostics.
 - **Pitfalls:** a fleet survey built on it still goes one box, then five, then all, with a time limit per call.
@@ -533,7 +543,8 @@ trap 'cleanup; exit $rc' EXIT
 > Pattern P-27, written generically below.
 
 - **Problem:** status trackers drift from the design documents that define what "done" means.
-- **Solution:** the ledger holds only states, verdicts and evidence; the criteria are parsed from the design documents' checklists. A new checklist item fails the check until the ledger has a verdict; a pass needs `verified` and evidence; tracker pages are rendered from the ledger and drift fails.
+- **Solution:** the ledger holds only states, verdicts and evidence; the criteria are parsed from the design documents' checklists. A new checklist item fails the check until the ledger has a verdict;
+  a pass needs `verified` and evidence; tracker pages are rendered from the ledger and drift fails.
 - **Why it works:** criteria have one owner (the design), verdicts another (the ledger); neither can silently diverge.
 - **Reuse:** compliance control matrices, release readiness checklists, acceptance trackers.
 - **Pitfalls:** copying criteria into the ledger recreates the drift.
@@ -545,7 +556,8 @@ trap 'cleanup; exit $rc' EXIT
 > Pattern P-28, written generically below.
 
 - **Problem:** the path that brings a box back reachable must not depend on what may be broken, and silent self-healing hides faults.
-- **Solution:** at boot, bring up the uplink and out-of-band tunnel from the read-only release and identity only; mount the writable area `nofail`; a hardware watchdog resets hangs, and every watchdog reset is recorded as a fault (a persistent history that tells it from a power cut).
+- **Solution:** at boot, bring up the uplink and out-of-band tunnel from the read-only release and identity only; mount the writable area `nofail`; a hardware watchdog resets hangs, and every watchdog
+  reset is recorded as a fault (a persistent history that tells it from a power cut).
 - **Why it works:** reachability survives any writable-state damage; recoveries stay visible.
 - **Reuse:** appliances, kiosks, remote sensors, edge gateways.
 - **Pitfalls:** a recovery counted as uptime hides a failing unit.
@@ -557,7 +569,8 @@ trap 'cleanup; exit $rc' EXIT
 > Pattern P-29, written generically below.
 
 - **Problem:** devices boot with clocks far behind (months), so time-based checks mean nothing.
-- **Solution:** the clock never runs earlier than the release build stamp; without trusted time a package is accepted on signature and binding and marked expiry unchecked; when trusted time arrives, uncommitted expired packages are refused; a committed healthy package is reported, never torn down, for expiry.
+- **Solution:** the clock never runs earlier than the release build stamp; without trusted time a package is accepted on signature and binding and marked expiry unchecked; when trusted time arrives,
+  uncommitted expired packages are refused; a committed healthy package is reported, never torn down, for expiry.
 - **Why it works:** time checks run only when time can be trusted, and never break a working target.
 - **Reuse:** certificate checks on RTC-less devices, licence expiry offline, token validation after long sleep.
 - **Pitfalls:** TLS to the time source itself fails until the clock is right; plan the first sync.
@@ -568,18 +581,14 @@ trap 'cleanup; exit $rc' EXIT
 > **Learned 2026-10-27** · design pattern, any language · VERIFIED_PRIMARY (folded flow pages: right-to-left rows routed by the unchanged left-to-right router, every layout audit clean, five consumer drawings byte-identical with the feature off) · Source: skill-drawio `scripts/flowmap/fold.py` (CHANGELOG 20261027, uncommitted at writing) · Falsifier: a mirrored row whose copied arrows fail an audit the unmirrored row passes
 > (reusable_candidate: proven in one project, not yet in a second) Pattern P-30, written generically below.
 
-- **Problem:** a tuned solver (a router, a layout, a parser) assumes one orientation; a feature needs the mirrored or rotated case, and teaching every
-  function a second direction spreads conditionals through code that took many reviews to get right.
-- **Solution:** run the solver unchanged on a scratch copy laid out in its own frame, record what it produced (the call arguments, keyed by
-  what survived its own undo passes), then replay the result into the real output through the transform. Only cases the frame cannot hold
-  (here, arrows between rows) are solved in the real frame.
-- **Why it works:** the transform is an isometry, so every property the solver guarantees (clearances, no overlaps) survives it; the solver
-  stays one tested path.
-- **Reuse:** right-to-left text layout through a left-to-right engine; a mirrored board in a game AI; a reversed time axis through a forward
-  scheduler.
-- **Pitfalls:** results that encode the frame (a label "left of" a line) must be re-anchored after the transform; record by (id, final geometry),
-  not by id, when the solver can retry and roll back; outputs that depend on the surroundings (a background colour sampled under a label) need
-  the scratch copy to hold the same surroundings.
+- **Problem:** a tuned solver (a router, a layout, a parser) assumes one orientation; a feature needs the mirrored or rotated case, and teaching every function a second direction spreads conditionals
+  through code that took many reviews to get right.
+- **Solution:** run the solver unchanged on a scratch copy laid out in its own frame, record what it produced (the call arguments, keyed by what survived its own undo passes), then replay the result
+  into the real output through the transform. Only cases the frame cannot hold (here, arrows between rows) are solved in the real frame.
+- **Why it works:** the transform is an isometry, so every property the solver guarantees (clearances, no overlaps) survives it; the solver stays one tested path.
+- **Reuse:** right-to-left text layout through a left-to-right engine; a mirrored board in a game AI; a reversed time axis through a forward scheduler.
+- **Pitfalls:** results that encode the frame (a label "left of" a line) must be re-anchored after the transform; record by (id, final geometry), not by id, when the solver can retry and roll back;
+  outputs that depend on the surroundings (a background colour sampled under a label) need the scratch copy to hold the same surroundings.
 - **Realised in:** Python, skill-drawio `scripts/flowmap/fold.py` (`_Scratch`, `_copy_routes`, `_copy_marks`):
 
 ```python
@@ -628,19 +637,17 @@ def body_digest(text: str) -> str:                              # render.py: ban
 
 > **Learned 2026-10-27** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate: proven in one project) · Source: skill-ai-it: 467 references in 43 files across 30 projects repointed when its flat scripts/ became family folders; every caller's check run after, no path errors · Falsifier: a repoint run whose plan rewrote a local file that merely shares the moved script's name, or left a caller still using the old path (Pattern P-32)
 
-- **Problem:** a shared tool's files move, and many other repositories call them by path from task runners, docs and code; a blind search and replace
-  breaks history and hits unrelated files that happen to share a name.
-- **Solution:** (1) the move is data: a map of name to new folder; (2) a plan-by-default rewriter matches only the old qualified form (`scripts/<name>.py`,
-  not a path already moved), prints counts per file and writes with `--apply`; (3) it skips history by file kind (change logs, history and archive folders,
-  dated `<slug>-YYYYMMDD_hhmm` files, generated context, vendored clones); (4) it leaves a reference alone when the caller's own project has a file by that
-  name; (5) then every caller's own check runs and its output is searched for path errors specifically.
-- **Why it works:** the plan shows the blast radius before a write; idempotence comes from matching only the old form; the namesake guard keeps a local
-  copy's references local; running callers' checks proves behaviour, not text.
+- **Problem:** a shared tool's files move, and many other repositories call them by path from task runners, docs and code; a blind search and replace breaks history and hits unrelated files that
+  happen to share a name.
+- **Solution:** (1) the move is data: a map of name to new folder; (2) a plan-by-default rewriter matches only the old qualified form (`scripts/<name>.py`, not a path already moved), prints counts per
+  file and writes with `--apply`; (3) it skips history by file kind (change logs, history and archive folders, dated `<slug>-YYYYMMDD_hhmm` files, generated context, vendored clones); (4) it leaves a
+  reference alone when the caller's own project has a file by that name; (5) then every caller's own check runs and its output is searched for path errors specifically.
+- **Why it works:** the plan shows the blast radius before a write; idempotence comes from matching only the old form; the namesake guard keeps a local copy's references local; running callers' checks
+  proves behaviour, not text.
 - **Reuse:** renaming a shared library module, moving a config file other repos read, retiring a recipe name across a fleet of task runners.
-- **Pitfalls:** (a) code that builds the path (`DIR / f"{name}.py"`) has no old string to match: grep for the folder constant as well and fix those loaders
-  to search the new layout (two projects on 2026-10-27); (b) dated sections inside a living file (a SCRATCHPAD session block) are history too, and were
-  rewritten until a rotation audit reported them lost; (c) a self-check whose scans were flat (`scripts/*.py`) silently dropped 81 assertions after the
-  move: recount a checker's assertions before and after, and make scans recursive.
+- **Pitfalls:** (a) code that builds the path (`DIR / f"{name}.py"`) has no old string to match: grep for the folder constant as well and fix those loaders to search the new layout (two projects on
+  2026-10-27); (b) dated sections inside a living file (a SCRATCHPAD session block) are history too, and were rewritten until a rotation audit reported them lost; (c) a self-check whose scans were
+  flat (`scripts/*.py`) silently dropped 81 assertions after the move: recount a checker's assertions before and after, and make scans recursive.
 - **Realised in:** Python, skill-ai-it `scripts/adoption/repoint_paths.py`:
 
 ```python
@@ -660,10 +667,10 @@ if DATED.search(path.name):             # -YYYYMMDD_hhmm.md: a dated report or r
 
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `wc-local/scripts/collector/dhcp_leases.py` `check_site`, commit 5505ab5: three DHCP servers at one site, 242 + 211 + 157 leases merged, one write · Falsifier: a merged write that ended a client lease one source still held, or a write made while one source was failing (Pattern P-33)
 
-- **Problem:** several sources each hold part of one record (three redundant boxes each lease part of a site's clients); a loop that writes per
-  source lets the last source win and can end what the others hold.
-- **Solution:** read all sources (in parallel, bounded), merge by key, then write the record once; when any source fails, write nothing for that
-  record and report it, since a partial merge would look like loss.
+- **Problem:** several sources each hold part of one record (three redundant boxes each lease part of a site's clients); a loop that writes per source lets the last source win and can end what the
+  others hold.
+- **Solution:** read all sources (in parallel, bounded), merge by key, then write the record once; when any source fails, write nothing for that record and report it, since a partial merge would look
+  like loss.
 - **Why it works:** the write sees the whole truth or none of it; sessions keyed by the union are never ended by a source that simply was not read.
 - **Reuse:** any per-site aggregate fed by several collectors (leases, neighbours, inventories from redundant controllers).
 - **Pitfalls:** a single-source site must keep its old behaviour byte for byte; a source that legitimately has nothing differs from a failed read.
@@ -683,8 +690,8 @@ merged = merge_reads(reads)          # sums and unions by address, then one PATC
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `src/unc/tasks/site_readers/serving_box.py` `CyclePicks`, 5505ab5: the VRRP master moved about hourly; polling picks it once per cycle · Falsifier: two callers in the same cycle acting on different leaders after a mid-cycle failover (Pattern P-34)
 
 - **Problem:** work must go through whichever member currently leads (a VRRP master), and the leader can move mid-run.
-- **Solution:** at the start of a cycle read every member's state in parallel, pick the leader (fallback: configured priority order, said aloud;
-  two leaders: the first by priority, both named), then hand every caller in that cycle the same pick.
+- **Solution:** at the start of a cycle read every member's state in parallel, pick the leader (fallback: configured priority order, said aloud; two leaders: the first by priority, both named), then
+  hand every caller in that cycle the same pick.
 - **Why it works:** a cycle never straddles two vantage points, so readings are comparable; a flap costs one cycle, not half-done data.
 - **Reuse:** any active/standby pair or cluster with a floating address.
 - **Pitfalls:** cache per cycle, never across cycles; a single-member case must cost zero extra calls.
@@ -695,8 +702,8 @@ merged = merge_reads(reads)          # sums and unions by address, then one PATC
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `src/unc/policy/multi_smc_topology.py`, 5505ab5: a layer-2 site where every box sees every device · Falsifier: a source link that is neither drawn nor listed in the ledger, or a link drawn from a sighting with no physical evidence (Pattern P-35)
 
 - **Problem:** on a shared network every observer sees everything, so "seen by X" drawn as links becomes all-to-all spaghetti.
-- **Solution:** place only by evidence that names a physical relation (a MAC learned alone on a cable port, a held link); everything else is
-  conserved in a ledger listed beside the drawing (unplaced, sighting only); every source link is either drawn or listed exactly once.
+- **Solution:** place only by evidence that names a physical relation (a MAC learned alone on a cable port, a held link); everything else is conserved in a ledger listed beside the drawing (unplaced,
+  sighting only); every source link is either drawn or listed exactly once.
 - **Why it works:** the drawing stays true and readable, and nothing is silently dropped; conservation is testable.
 - **Reuse:** topology from LLDP/ARP/FDB, dependency graphs from logs.
 - **Pitfalls:** never fall back to "first observer wins"; show an undecidable item as unplaced.
@@ -705,16 +712,14 @@ merged = merge_reads(reads)          # sums and unions by address, then one PATC
 
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `wc-local/scripts/smc/smc_uplink_circuits.py` `rename_legacy`, e62633c: a site gained two more boxes, so `<site>-internet02` became `<box>-internet02` · Falsifier: an object whose cables or change log were lost because it was recreated under the new name rather than renamed (Pattern P-36)
 
-- **Problem:** an identifier was built from a scope that turned out too wide (one name per site, but now there are several boxes per site);
-  the new scheme gives every new object a narrower name, while the objects already made carry history (cables, links, change log) under the old one.
-- **Solution:** the plan row carries both the new name and the legacy one; on apply, when the legacy object exists and the new name is free,
-  PATCH its name; when both exist, change nothing and report it for a person; the dry run says "would rename". Then the usual find-or-create
-  runs on the new name and finds the renamed object.
-- **Why it works:** identity is the object, not its name, so everything attached stays attached; the rename is idempotent (the second run finds
-  no legacy object), and a clash never picks a winner silently.
+- **Problem:** an identifier was built from a scope that turned out too wide (one name per site, but now there are several boxes per site); the new scheme gives every new object a narrower name, while
+  the objects already made carry history (cables, links, change log) under the old one.
+- **Solution:** the plan row carries both the new name and the legacy one; on apply, when the legacy object exists and the new name is free, PATCH its name; when both exist, change nothing and report
+  it for a person; the dry run says "would rename". Then the usual find-or-create runs on the new name and finds the renamed object.
+- **Why it works:** identity is the object, not its name, so everything attached stays attached; the rename is idempotent (the second run finds no legacy object), and a clash never picks a winner
+  silently.
 - **Reuse:** any naming scheme whose scope widens later: per-box after per-site, per-tenant after global, a version or region added to a key.
-- **Pitfalls:** scope the lookup (provider, Location) so a namesake elsewhere is not renamed; single-scope cases must produce identical names
-  (new == legacy) and cost no extra calls.
+- **Pitfalls:** scope the lookup (provider, Location) so a namesake elsewhere is not renamed; single-scope cases must produce identical names (new == legacy) and cost no extra calls.
 - **Realised in:** Python:
 
 ```python
@@ -734,16 +739,15 @@ def rename_legacy(c, path, field, legacy, name, scope, counts, log=print):   # s
 
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: skill-drawio `scripts/flowmap/e2e.py` `_refresh` and `_crossings`, 73017a9 and 811c918: a local search's crossing counts, 18.3 -> 10.1 s on the largest drawing, output byte-identical · Falsifier: the differential assert passing while cached and recomputed values differ, or an undo that misses the cache (Pattern P-37)
 
-- **Problem:** a search recomputes a pure but costly value (crossings of a polyline pair, spans of a link) millions of times, and most trials
-  are undone; a cache invalidated by version numbers misses on every undo, and a cache updated at many mutation sites goes stale at one.
-- **Solution:** key the memo on the content (intern each polyline as a tuple to a small id; cache per pair of ids), or keep the cache at the
-  one choke point every mutation already passes through (`_refresh`). Prove it before trusting it: a temporary switch computes the fresh value
-  beside the cached one and asserts they match on every call over every real input (all consumers and the tests), then is removed; the
-  outputs must still compare byte for byte.
+- **Problem:** a search recomputes a pure but costly value (crossings of a polyline pair, spans of a link) millions of times, and most trials are undone; a cache invalidated by version numbers misses
+  on every undo, and a cache updated at many mutation sites goes stale at one.
+- **Solution:** key the memo on the content (intern each polyline as a tuple to a small id; cache per pair of ids), or keep the cache at the one choke point every mutation already passes through
+  (`_refresh`). Prove it before trusting it: a temporary switch computes the fresh value beside the cached one and asserts they match on every call over every real input (all consumers and the tests),
+  then is removed; the outputs must still compare byte for byte.
 - **Why it works:** an undo restores the same content and so the same key; a pure function of its key never needs invalidating.
 - **Reuse:** any trial-and-undo search (layout, scheduling, packing), memoised geometry, incremental scores.
-- **Pitfalls:** a cache whose validity depends on all mutation sites (a position index into a list mutated everywhere) needs a
-  check-before-use test instead, and earns its keep only when measured (0.3 s here: reverted); watch memory (211 MB peak here).
+- **Pitfalls:** a cache whose validity depends on all mutation sites (a position index into a list mutated everywhere) needs a check-before-use test instead, and earns its keep only when measured (0.3
+  s here: reverted); watch memory (211 MB peak here).
 - **Realised in:** Python:
 
 ```python
@@ -759,10 +763,10 @@ if c is None:
 
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: skill-drawio `scripts/flowmap/e2e.py` `routed_e2e` and `placement.best_cells`, 1e6557d: a column-order search scored by a grid estimate made two pages worse, 427 -> 506 and 44 -> 48 crossings · Falsifier: a shipped result whose real measure is worse than the starting layout on any tracked metric (Pattern P-38)
 
-- **Problem:** a search scored by a cheap proxy finds the proxy's optimum, which on real output can be worse than doing nothing, or better
-  on the main measure and worse on another (two arrows merged onto one run).
-- **Solution:** keep the start as a candidate; run each candidate through the real pipeline and measure what is shipped; keep a candidate only
-  on a strict improvement of the main measure with no regression of the guarded ones; a tie keeps the start.
+- **Problem:** a search scored by a cheap proxy finds the proxy's optimum, which on real output can be worse than doing nothing, or better on the main measure and worse on another (two arrows merged
+  onto one run).
+- **Solution:** keep the start as a candidate; run each candidate through the real pipeline and measure what is shipped; keep a candidate only on a strict improvement of the main measure with no
+  regression of the guarded ones; a tie keeps the start.
 - **Why it works:** the result is never worse than the start by construction, so the search can only help; the proxy only orders the work.
 - **Reuse:** placement, query plans, compiler heuristics, any optimiser with a cheap model and an expensive truth.
 - **Pitfalls:** the guard must measure the same thing a reviewer sees (a drawn-file measure, not the proxy); name the guarded secondary measures.
@@ -778,18 +782,16 @@ return searched if searched._crossings(set(searched.segs)) < plain._crossings(se
 
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: unified-network-controller `src/unc/policy/colocation.py`, a8c58f9: one site went from 0 of 110 units placed to 85, 1 conflict held, in 0.03 s, with no site-specific rule · Falsifier: a unit placed by carry-over across a wireless or uplink edge, or two conflicting placements resolved silently by processing order (Pattern P-39)
 
-- **Problem:** where each item stands (a tower, a rack, a room) is known for a few items only, sites are built and named differently, and a
-  rule written for one site's habit (a number in a name) misplaces the next site's units.
-- **Solution:** a graph of typed edges. Anchors are the few items placed by strong evidence. Edges that prove "together" (a cable seen by
-  LLDP or recorded, shared power) carry a placement, repeated to a fixed point; edges that prove "apart" (a radio link) never do; edges that
-  only say "somewhere behind X" narrow the candidates to what lies downstream of X in the network's direction (through access radios, never
-  back up through an uplink). A name is a tie-breaker only when a token names exactly one candidate. Two placements reaching one item are held.
-- **Why it works:** every placement carries the chain of evidence that made it, so it can be gated by strength (separate apply flags) and
-  audited; nothing depends on a convention; disagreement surfaces instead of resolving by processing order.
-- **Reuse:** asset placement from discovery, rack/room inference from switch ports, service-to-host mapping from traffic, any "where is it" over
-  partial evidence.
-- **Pitfalls:** a forwarding table is not a cable (a port can front a transparent bridge); a carried hub drags its neighbours unless hub-to-hub
-  needs direct proof; a "one per slot" assumption runs last and only when no rival wants the slot; report the unplaced with their candidates.
+- **Problem:** where each item stands (a tower, a rack, a room) is known for a few items only, sites are built and named differently, and a rule written for one site's habit (a number in a name)
+  misplaces the next site's units.
+- **Solution:** a graph of typed edges. Anchors are the few items placed by strong evidence. Edges that prove "together" (a cable seen by LLDP or recorded, shared power) carry a placement, repeated to
+  a fixed point; edges that prove "apart" (a radio link) never do; edges that only say "somewhere behind X" narrow the candidates to what lies downstream of X in the network's direction (through
+  access radios, never back up through an uplink). A name is a tie-breaker only when a token names exactly one candidate. Two placements reaching one item are held.
+- **Why it works:** every placement carries the chain of evidence that made it, so it can be gated by strength (separate apply flags) and audited; nothing depends on a convention; disagreement
+  surfaces instead of resolving by processing order.
+- **Reuse:** asset placement from discovery, rack/room inference from switch ports, service-to-host mapping from traffic, any "where is it" over partial evidence.
+- **Pitfalls:** a forwarding table is not a cable (a port can front a transparent bridge); a carried hub drags its neighbours unless hub-to-hub needs direct proof; a "one per slot" assumption runs
+  last and only when no rival wants the slot; report the unplaced with their candidates.
 - **Realised in:** Python:
 
 ```python
@@ -810,18 +812,16 @@ while changed:                                   # colocation.propagate (a8c58f9
 
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (reusable_candidate) · Source: skill-network-architect `scripts/check_package.py` check_ledger and check_prose, `scripts/fetch_sources.py`, `scripts/sources_ledger.py`; uncommitted at write time: 356 sources stored, 271 ledger entries, every rule failing its own negative test · Falsifier: a citation that lands in a reference while just check still passes without its sources.json row (Pattern P-40)
 
-- **Problem:** reference documents decay quietly: links rot, a claim loses its source, a rewrite drops a citation, and writing rules (width,
-  diagram form, link form) hold only while someone remembers them. Review catches some of it once; nothing catches it on the next edit.
-- **Solution:** three parts. (1) A fetcher keeps a local copy of every cited URL in a store keyed by URL, with an index (path, sha256,
-  retrieved); plan by default, `--apply` writes, resumable from the index, bounded workers, a process-group kill on timeout. (2) A ledger
-  builder keeps curated evidence entries and catalogues every other cited URL as generated, attaching the local copy. (3) The offline check
-  fails on any cited URL missing from the ledger and on each writing rule, and every rule has a negative test that breaks it on purpose.
-- **Why it works:** the expensive, networked parts (fetch, link probe) run on demand; the cheap invariant (cited implies catalogued) runs on
-  every check, so a new citation cannot land without its ledger row and the fetch that gives it a local copy.
+- **Problem:** reference documents decay quietly: links rot, a claim loses its source, a rewrite drops a citation, and writing rules (width, diagram form, link form) hold only while someone remembers
+  them. Review catches some of it once; nothing catches it on the next edit.
+- **Solution:** three parts. (1) A fetcher keeps a local copy of every cited URL in a store keyed by URL, with an index (path, sha256, retrieved); plan by default, `--apply` writes, resumable from the
+  index, bounded workers, a process-group kill on timeout. (2) A ledger builder keeps curated evidence entries and catalogues every other cited URL as generated, attaching the local copy. (3) The
+  offline check fails on any cited URL missing from the ledger and on each writing rule, and every rule has a negative test that breaks it on purpose.
+- **Why it works:** the expensive, networked parts (fetch, link probe) run on demand; the cheap invariant (cited implies catalogued) runs on every check, so a new citation cannot land without its
+  ledger row and the fetch that gives it a local copy.
 - **Reuse:** any knowledge pack, runbook set or design repo that cites external material; vendor-document stores; research reports.
-- **Pitfalls:** a 2xx proves a page exists, not that it still says what was claimed; 401/403/429 and TLS chain errors are unknown, not
-  dead; JS-rendered pages return near-empty bodies, so set a body floor and retry with a JS renderer; URLs with parentheses need a balanced
-  pattern; a store shared by two packs lives in one and the other symlinks it.
+- **Pitfalls:** a 2xx proves a page exists, not that it still says what was claimed; 401/403/429 and TLS chain errors are unknown, not dead; JS-rendered pages return near-empty bodies, so set a body
+  floor and retry with a JS renderer; URLs with parentheses need a balanced pattern; a store shared by two packs lives in one and the other symlinks it.
 - **Realised in:** Python:
 
 ```python
@@ -841,19 +841,17 @@ def check_ledger(root):                          # check_package.py (skill-netwo
 > **Learned 2026-10-29** · design pattern, any language · VERIFIED_PRIMARY (source read 2026-10-29; the project records 0.06-0.4 s per run and a self-test of about 3 s proven able to fail by breaking two features) · Source: apn `scripts/project_sync.py` (`write_cas`, `recently_edited`, `SYNC_ID`; commit e69d6d7), `scripts/project_sync_selftest.sh` · Falsifier: a delivery that overwrote a live
 > session's edit, or was delivered twice after a crash (reusable_candidate) Pattern P-41.
 
-- **Problem:** a tool delivers messages or rows into files that live agent sessions are editing at the same time (scratchpads,
-  trackers). A plain read-modify-write loses the session's edit; a crash mid-delivery leaves no way to know what was sent.
-- **Solution:** (1) write only between start and end markers (`<!-- sync:<box>:start -->` ... `end`), never elsewhere in the file;
-  (2) one exclusive lock for the tool; (3) compare-and-swap: re-read just before an atomic replace and write nothing if the file changed
-  since it was read (defer to the next run); (4) a settle window: a target edited in the last N seconds is deferred; (5) every item
-  carries an id, searched in the target and in the places rotation moves lines to before delivery, so a rerun after a crash skips what
-  arrived; (6) an item marked sent but now missing is reported (exit 1), never re-sent, because someone removed it on purpose or by
-  accident and only a person can tell which. Exit 0 clean, 1 needs attention, 2 usage.
-- **Why it works:** the writable region bounds the damage, CAS and the settle window keep the tool out of a live edit, and ids make
-  delivery idempotent without a separate state file that could disagree with the target.
+- **Problem:** a tool delivers messages or rows into files that live agent sessions are editing at the same time (scratchpads, trackers). A plain read-modify-write loses the session's edit; a crash
+  mid-delivery leaves no way to know what was sent.
+- **Solution:** (1) write only between start and end markers (`<!-- sync:<box>:start -->` ... `end`), never elsewhere in the file; (2) one exclusive lock for the tool; (3) compare-and-swap: re-read
+  just before an atomic replace and write nothing if the file changed since it was read (defer to the next run); (4) a settle window: a target edited in the last N seconds is deferred; (5) every item
+  carries an id, searched in the target and in the places rotation moves lines to before delivery, so a rerun after a crash skips what arrived; (6) an item marked sent but now missing is reported
+  (exit 1), never re-sent, because someone removed it on purpose or by accident and only a person can tell which. Exit 0 clean, 1 needs attention, 2 usage.
+- **Why it works:** the writable region bounds the damage, CAS and the settle window keep the tool out of a live edit, and ids make delivery idempotent without a separate state file that could
+  disagree with the target.
 - **Reuse:** status pages several tools update; inbox files between agents; generated blocks inside hand-edited documents.
-- **Pitfalls:** the id must survive wrapping (no spaces in the comment); search rotated history too or a rotated item is re-sent; a
-  self-test must be shown to fail when a feature is broken, or it proves only that the happy path runs.
+- **Pitfalls:** the id must survive wrapping (no spaces in the comment); search rotated history too or a rotated item is re-sent; a self-test must be shown to fail when a feature is broken, or it
+  proves only that the happy path runs.
 - **Realised in:** Python:
 
 ```python
@@ -879,17 +877,12 @@ def recently_edited(path, settle):
 > **Learned 2026-10-29 (b)** · design pattern, any language · VERIFIED_PRIMARY (source read 2026-10-29) · Source: project_stuff/me vehicle-import track `scripts/rover_sevs_query.py` (`classify`) · Falsifier: a NOT_FOUND emitted while a page
 > of the register was never read (reusable_candidate) Pattern P-42.
 
-- **Problem:** an earlier helper read only the first page of a paginated register and reported "not found", and the untested negative
-  entered the knowledge base as a fact.
-- **Solution:** every lookup returns FOUND, NOT_FOUND or CHECK_FAILED. NOT_FOUND is emitted only when every page was walked
-  (`pages_seen == pages_total`); any tool error, missing dependency or short walk is CHECK_FAILED with a reason. Match locally on the
-  fetched rows rather than trusting the site's own filter.
-- **Why it works:** "absent" becomes a claim that needs proof of coverage; incomplete coverage has its own name and cannot be read as a
-  negative.
-- **Reuse:** fleet surveys (a device not answering is not a device without the feature), inventory reconciliations, licence and
-  registration checks, log searches over a retention window.
-- **Pitfalls:** a recorded "none" without a completeness flag should be read as "not found by this search", not "does not exist"; a
-  site's search box is a filter you cannot audit.
+- **Problem:** an earlier helper read only the first page of a paginated register and reported "not found", and the untested negative entered the knowledge base as a fact.
+- **Solution:** every lookup returns FOUND, NOT_FOUND or CHECK_FAILED. NOT_FOUND is emitted only when every page was walked (`pages_seen == pages_total`); any tool error, missing dependency or short
+  walk is CHECK_FAILED with a reason. Match locally on the fetched rows rather than trusting the site's own filter.
+- **Why it works:** "absent" becomes a claim that needs proof of coverage; incomplete coverage has its own name and cannot be read as a negative.
+- **Reuse:** fleet surveys (a device not answering is not a device without the feature), inventory reconciliations, licence and registration checks, log searches over a retention window.
+- **Pitfalls:** a recorded "none" without a completeness flag should be read as "not found by this search", not "does not exist"; a site's search box is a filter you cannot audit.
 - **Realised in:** Python:
 
 ```python
@@ -915,11 +908,10 @@ def classify(scan, targets):                    # rover_sevs_query.py: never gue
 > **Learned 2026-10-29 (c)** · design pattern, any language · VERIFIED_SECONDARY (harvest 2026-10-29 of two personal research projects) · Source: project_stuff/me vehicle-import track `scripts/README.md` (browser_fetch row) · Falsifier: an access-denied, bot-check or
 > consent page stored as evidence by a capture tool with a body classifier (reusable_candidate) Pattern P-43.
 
-- **Problem:** a capture tool stores fetched pages as evidence. Every failure observed (access denied, a bot interstitial, a cookie wall)
-  arrived as HTTP 200 with a full body, so status-code checks stored junk as evidence.
-- **Solution:** stamp each capture with URL, retrieval time, HTTP status, the page's own last-updated line and a body hash; run a
-  classifier that must rule the body to be the expected content before anything is written; refuse to write an unclassified body. Keep
-  404s and refused captures, labelled as negative evidence, rather than deleting them.
+- **Problem:** a capture tool stores fetched pages as evidence. Every failure observed (access denied, a bot interstitial, a cookie wall) arrived as HTTP 200 with a full body, so status-code checks
+  stored junk as evidence.
+- **Solution:** stamp each capture with URL, retrieval time, HTTP status, the page's own last-updated line and a body hash; run a classifier that must rule the body to be the expected content before
+  anything is written; refuse to write an unclassified body. Keep 404s and refused captures, labelled as negative evidence, rather than deleting them.
 - **Why it works:** the write is gated on what the body is, not on what the transport said.
 - **Reuse:** vendor-document stores, compliance evidence capture, API scrapers whose errors come back as 200 with an error page.
 - **Pitfalls:** classifiers drift as sites change; keep the rejected bodies so a misclassification can be reviewed.
@@ -930,11 +922,10 @@ def classify(scan, targets):                    # rover_sevs_query.py: never gue
 > **Learned 2026-10-29 (d)** · design pattern, any language · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal project) · Source: project_stuff/me reporting project `scripts/work-summary-digest.py`, `scripts/work-summary-report.py` · Falsifier: a digest that
 > silently includes or drops a project missing from its config list (reusable_candidate) Pattern P-44.
 
-- **Problem:** a digest groups records (here: projects in a session-memory store) by a config list; a new record outside the list is
-  either silently dropped or silently lumped in, and the report looks complete.
-- **Solution:** read the store read-only; classify from the declared list; warn loudly on every unclassified record; filter known noise by
-  declared patterns; append output as dated, fenced sections with a generated marker instead of merging into earlier text; roll
-  out-of-period sections to archive files idempotently. A second tool imports the first's rules instead of copying them.
+- **Problem:** a digest groups records (here: projects in a session-memory store) by a config list; a new record outside the list is either silently dropped or silently lumped in, and the report looks
+  complete.
+- **Solution:** read the store read-only; classify from the declared list; warn loudly on every unclassified record; filter known noise by declared patterns; append output as dated, fenced sections
+  with a generated marker instead of merging into earlier text; roll out-of-period sections to archive files idempotently. A second tool imports the first's rules instead of copying them.
 - **Why it works:** the unclassified count is the coverage signal; appending keeps every generated section reproducible and reviewable.
 - **Reuse:** cost allocation by tag, alert routing tables, changelog digests, any report built from a mapping that can lag reality.
 - **Pitfalls:** a rollover that removes sections leaves a contents block stale unless it is rebuilt in the same run.
@@ -945,11 +936,9 @@ def classify(scan, targets):                    # rover_sevs_query.py: never gue
 > **Learned 2026-10-29 (e)** · design pattern, any language · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal project) · Source: project_stuff/me finance-notes project `scripts/moon_list_ops.py` · Falsifier: a hand-renamed column in the edited table that the tool
 > writes through without stopping (reusable_candidate) Pattern P-45.
 
-- **Problem:** a helper updates Markdown tables that people also edit; a renamed column or reordered header makes it write values into
-  the wrong place, and it can only be tested against the live API.
-- **Solution:** before any write, check that each target file still matches its expected header contract (the exact column list); take
-  data from the API or from a deterministic fixture file; render a no-write draft by default and write only on apply. A malformed
-  contract or fixture is a hard stop.
+- **Problem:** a helper updates Markdown tables that people also edit; a renamed column or reordered header makes it write values into the wrong place, and it can only be tested against the live API.
+- **Solution:** before any write, check that each target file still matches its expected header contract (the exact column list); take data from the API or from a deterministic fixture file; render a
+  no-write draft by default and write only on apply. A malformed contract or fixture is a hard stop.
 - **Why it works:** the contract check turns a silent misplacement into a refusal, and the fixture makes the whole path testable offline.
 - **Reuse:** trackers and registers maintained in Markdown or CSV by both people and scripts; generated rows inside hand-kept tables.
 - **Pitfalls:** check the contract on every run, not once at setup; people edit headers.
@@ -958,19 +947,18 @@ def classify(scan, targets):                    # rover_sevs_query.py: never gue
 ### P-46 Audience words at the output boundary, with a guard that refuses a leak
 
 > **Learned 2026-10-30** · design pattern, any language · VERIFIED_PRIMARY (source read and run 2026-10-30: 2,000+ texts per workbook, 0 left; 15 tests) · Source: apn unified-network-controller
-> `src/unc/tasks/site_workbook/xlsx.py` (`team_text`, `team_words`; uncommitted at write time) · Falsifier: a generated workbook for the team that still names the internal platform (reusable_candidate) Pattern P-46.
+> `src/unc/tasks/site_workbook/xlsx.py` (`team_text`, `team_words`; uncommitted at write time) · Falsifier: a generated workbook for the team that still names the internal platform
+> (reusable_candidate) Pattern P-46.
 
-- **Problem:** a generator's model, notes and tests speak the internal platform's language ("in Nautobot, not drawn", source `nautobot`),
-  but the document goes to people who never use that platform. Renaming through the model breaks the internal readers and tests;
-  editing the output by hand is lost on the next run.
-- **Solution:** keep the model's words; translate once where the file is written: an ordered table of specific phrases (most specific
-  first, so they read naturally), then a general regex fallback, applied to every cell, comment and validation prompt; then scan the
-  finished file and **raise** if the forbidden term survives anywhere. Source labels go through a separate display map.
-- **Why it works:** the model and its tests stay unchanged; the fallback means no phrase leaks, and the guard turns a phrase the table
-  missed into a refused write rather than a document that quietly leaks.
+- **Problem:** a generator's model, notes and tests speak the internal platform's language ("in Nautobot, not drawn", source `nautobot`), but the document goes to people who never use that platform.
+  Renaming through the model breaks the internal readers and tests; editing the output by hand is lost on the next run.
+- **Solution:** keep the model's words; translate once where the file is written: an ordered table of specific phrases (most specific first, so they read naturally), then a general regex fallback,
+  applied to every cell, comment and validation prompt; then scan the finished file and **raise** if the forbidden term survives anywhere. Source labels go through a separate display map.
+- **Why it works:** the model and its tests stay unchanged; the fallback means no phrase leaks, and the guard turns a phrase the table missed into a refused write rather than a document that quietly
+  leaks.
 - **Reuse:** customer-facing exports of internal data, reports that must not name a vendor, redaction of hostnames from shared logs.
-- **Pitfalls:** formula cells must be skipped (their text is code); comments are replaced, not edited in place, in openpyxl; the
-  fallback's grammar is rough, so grow the specific table from each run's output.
+- **Pitfalls:** formula cells must be skipped (their text is code); comments are replaced, not edited in place, in openpyxl; the fallback's grammar is rough, so grow the specific table from each run's
+  output.
 - **Realised in:** Python (openpyxl). Excerpt:
 
 ```python
@@ -988,23 +976,20 @@ def team_text(text: str) -> str:
 ### P-47 Decide per item once from read facts, persist the decision, never re-judge it
 
 > **Learned 2026-10-30** · design pattern, any language (realised in Ansible) · VERIFIED_PRIMARY (offline: 17-assert fixture incl. resume; real spec
-> judged for 4 fact/flag combinations; fact read on 2 live boxes) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/conditions.yml`,
-> `backup.yml`, `rollback_locate.yml`, commit 7ef59c7 · Falsifier: a resumed or rolled-back run whose action set differs from the original run's (reusable_candidate)
+> judged for 4 fact/flag combinations; fact read on 2 live boxes) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/conditions.yml`, `backup.yml`, `rollback_locate.yml`, commit
+> 7ef59c7 · Falsifier: a resumed or rolled-back run whose action set differs from the original run's (reusable_candidate)
 
-- **Problem:** a change runner must do different steps on different targets (flash only where the firmware is old; ship only the rollback image
-  the target needs), and the facts that decide it are on the target. The change itself moves those facts, so a resume or a rollback that
-  reads them again picks a different set of steps: it skips a half-done step or undoes one that never ran.
-- **Solution:** read the facts with a read-only call before anything else, judge named conditions into one decision (which step indexes run,
-  which checks apply, which were skipped and why), and persist that decision with the transaction: the resume journal and the backup it would
-  roll back from. Resume and rollback load the decision; they never judge again. A fact that cannot be read refuses the target.
-- **Why it works:** the decision is part of the transaction, like its baseline: everything after it (checks, plan, gates, undo) agrees on one
-  set of steps. Conditions are named and the plan prints the failed name per skipped step, so a skip is visible, not silent.
-- **Reuse:** firmware updates by current version, package changes by installed set, migrations by schema version, any rollout whose steps
-  depend on per-target state.
-- **Pitfalls:** keep the facts out of anything hashed before they are read (the run fingerprint, the target identity); keep the per-step
-  `when` out of the identity of what is applied, or adding a condition reruns every finished target; give old backups without a saved
-  decision the old behaviour (undo everything). Read a fact only where a step that uses it may run: a fact read everywhere turns an
-  unrelated broken input (a stale status file) into a refusal of every target, even those that need nothing from it (local-knowledge-ansible 11348bc).
+- **Problem:** a change runner must do different steps on different targets (flash only where the firmware is old; ship only the rollback image the target needs), and the facts that decide it are on
+  the target. The change itself moves those facts, so a resume or a rollback that reads them again picks a different set of steps: it skips a half-done step or undoes one that never ran.
+- **Solution:** read the facts with a read-only call before anything else, judge named conditions into one decision (which step indexes run, which checks apply, which were skipped and why), and
+  persist that decision with the transaction: the resume journal and the backup it would roll back from. Resume and rollback load the decision; they never judge again. A fact that cannot be read
+  refuses the target.
+- **Why it works:** the decision is part of the transaction, like its baseline: everything after it (checks, plan, gates, undo) agrees on one set of steps. Conditions are named and the plan prints the
+  failed name per skipped step, so a skip is visible, not silent.
+- **Reuse:** firmware updates by current version, package changes by installed set, migrations by schema version, any rollout whose steps depend on per-target state.
+- **Pitfalls:** keep the facts out of anything hashed before they are read (the run fingerprint, the target identity); keep the per-step `when` out of the identity of what is applied, or adding a
+  condition reruns every finished target; give old backups without a saved decision the old behaviour (undo everything). Read a fact only where a step that uses it may run: a fact read everywhere
+  turns an unrelated broken input (a stale status file) into a refusal of every target, even those that need nothing from it (local-knowledge-ansible 11348bc).
 - **Realised in:** Ansible (smc_change). Excerpt:
 
 ```yaml
@@ -1021,10 +1006,34 @@ def team_text(text: str) -> str:
 # tasks/main.yml: a resume restores the journal's decision (conditions.yml step restore), never a fresh read
 ```
 
+### P-48 One write frame for many fields: rebuild it from a read, prove it with a read
+
+> **Learned 2026-11-02** · design pattern, any language (realised in Python) · VERIFIED_PRIMARY (13 offline tests on captured bytes; a change and its reverse on one live device) · `reusable_candidate` ·
+> Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/changes/rct-tstik-iridium-update/avr_emergency.py` · Falsifier: a device whose other fields change after such a write
+
+- **Problem:** a device has one write command that sets every field, and the job is to change one. A hand-typed frame carries one target's values to every target, and its checksum goes stale.
+- **Solution:** read first and validate the reply. Copy its bytes into the frame, replace only the named field and compute the checksum. Refuse on an unexpected current value, skip when already at the
+  target, and write only with `--apply`. Done means the echo and a fresh read both equal the target; otherwise exit non-zero and print the way back.
+- **Why it works:** the target's own bytes are the template, so fields the tool does not model survive.
+- **Reuse elsewhere:** registers, config blobs, or any API that replaces a whole object.
+- **Pitfalls:** a shared port can change between read and write, so keep clear of other writers. Compare a live read, not a cached copy. Test with bytes captured from the device. What code implies
+  about a device's handling of blank fields stays a guess until a real submission is read back (2026-11-02: a blank field proved to mean keep, against the first reading of the code).
+
+```python
+# avr_emergency.py - only the named numbers change
+wanted = before.replaced(targets)
+if wanted == before:
+  return EXIT_OK
+echo = write_settings(port, wanted)
+after = read_settings(port)
+if after.payload != wanted.payload:
+  raise ReplyError("the stored settings differ from the target")
+```
+
 ## Language realisations
 
-Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet
-built anywhere; move it to built, with its source, when a project does.
+Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project
+does.
 
 | Pattern | Ansible (`languages/ansible.md`)                                     | Python (`languages/python.md`)                                  |
 | ------- | -------------------------------------------------------------------- | --------------------------------------------------------------- |
@@ -1036,11 +1045,9 @@ built anywhere; move it to built, with its source, when a project does.
 | P-12    | built: `--check` before apply                                        | built: `smc_change_runs_by_flavor.py` `plan()` then `--apply`   |
 
 > **Learned 2026-10-28** · optimise the real outcome, not a proxy · VERIFIED_PRIMARY (skill-drawio overview group placement, UNC overview: 245 crossings) · Source: skill-drawio `scripts/flowmap/placement.py` (`group_candidates`, `best_cells`) · Falsifier: a search on a
-> proxy score that keeps improving the real measure as it searches harder
-> A cheap proxy can rank candidates but must not choose: scoring group placements by straight-line crossings gave 131 real crossings with
-> 12 restarts and 182 with 40 (the proxy improved, the drawing got worse); a channel-path proxy gave 192 and 171. Generate candidates with the
-> proxy (several seeded starts, as Graphviz and ELK do), then evaluate each with the real computation and keep the best; include the current
-> state as a candidate so the result is never worse: 130 real crossings, stable.
+> proxy score that keeps improving the real measure as it searches harder A cheap proxy can rank candidates but must not choose: scoring group placements by straight-line crossings gave 131 real
+> crossings with 12 restarts and 182 with 40 (the proxy improved, the drawing got worse); a channel-path proxy gave 192 and 171. Generate candidates with the proxy (several seeded starts, as Graphviz
+> and ELK do), then evaluate each with the real computation and keep the best; include the current state as a candidate so the result is never worse: 130 real crossings, stable.
 
 ```python
 best, best_n = current, real_cost(current)

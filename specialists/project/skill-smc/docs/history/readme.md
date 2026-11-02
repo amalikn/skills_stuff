@@ -55,3 +55,4 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 - [changelog-20261029_1257.md](changelog-20261029_1257.md) 1 entries from `CHANGELOG.md`, 2026-10-26 to 2026-10-26.
 - [changelog-20261029_1417.md](changelog-20261029_1417.md) 1 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
 - [changelog-20261029_1751.md](changelog-20261029_1751.md) 1 entries from `CHANGELOG.md`, 2026-09-08 to 2026-09-08.
+- [changelog-20261102_1132.md](changelog-20261102_1132.md) 5 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.

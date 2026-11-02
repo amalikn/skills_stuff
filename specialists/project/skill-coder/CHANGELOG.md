@@ -9,10 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261101_2353
+Last rotated: 20261102_1132
 ---
 
 # Changelog
+
+## 20261102_1132 — Learned: one write frame for many fields
+
+`references/design-patterns.md` P-48, from ansible-wifi (2026-11-02).
 
 ## 20261101_2353 — Learned: guard first and dry-run a gate that hides records
 
@@ -194,7 +198,3 @@ Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_w
 - `languages/ansible.md`: Learned 2026-10-27 (g) once-per-run play before the serial play with group_by keeps batches dense; (h) parenthesise a filter chain before a Jinja test; (i) ssh retries only
   rc 255, pauses 2^n-1 capped 30 s, 8 retries ride out ~117 s, per-play `ansible_ssh_retries`; (j) `run_once` on include_tasks needs `apply`, a skipped task still registers.
 - `languages/python.md`: Learned 2026-10-27 `git -C` resolves a relative destination under its directory; resolve paths first.
-
-## 20261026_2222 — Ansible: run_once is per serial batch, results reach every host
-
-- `languages/ansible.md`: Learned 2026-10-26 (f) - run_once applies include_vars, set_fact and register to all batch hosts; when judged on the first host; once per batch, not per run.
