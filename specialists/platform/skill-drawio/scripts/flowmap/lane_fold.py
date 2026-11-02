@@ -17,7 +17,7 @@ from .routing import JUMP, PLAIN, STYLE, draw_label
 from .shapes import lane_shape, shape_legend
 
 #: Least space between columns, for an arrow's number; the gap between a lane's rows; how far below a box an arrow runs when it leaves by the bottom.
-LEAST_GAP, ROW_ROOM, UNDER = 70, 56, 14
+LEAST_GAP, ROW_ROOM, UNDER = 70, 56, 30
 
 
 def foldable(steps: list[dict]) -> bool:
@@ -133,7 +133,9 @@ def lane_fold_page(page: Page, ctx: tuple, sized: tuple, how: tuple) -> Page:
     width = lefts[last] + widths[last] + GAP - MARGIN
     top = MARGIN + draw_header(page, flow, comps, number, width) + GAP
     lanes = list(dict.fromkeys(s["actor"] for s in steps))
-    room = {(li, "bottom"): sum(heights.get((actor, r), 0) + ROW_ROOM for r in range(1, rows[actor])) for li, actor in enumerate(lanes)}
+    # A lane whose last row runs back keeps room under it: the arrow out leaves by the bottom and must sit inside the band, not on its edge.
+    room = {(li, "bottom"): sum(heights.get((actor, r), 0) + ROW_ROOM for r in range(1, rows[actor])) + (2 * UNDER if rows[actor] % 2 == 0 else 0)
+            for li, actor in enumerate(lanes)}
     _names, lane_y, lane_h = draw_lanes(page, flow, comps, profile, top, box_h, box_w, room, width, lanes)
     notes_y = {col: top + sum(lane_h) + GAP for col in lefts}
     for k, (col, row) in sorted(place.items()):

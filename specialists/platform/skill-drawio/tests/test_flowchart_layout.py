@@ -68,7 +68,7 @@ class LaneFold(unittest.TestCase):
     def test_each_lane_appears_once_and_the_audit_passes(self):
         """Two actors, two lanes, however long the run."""
         f = {**flow(self.steps()), "runs_on": "c", "owner": "c", "category": "x", "layout": {"fold": "lane", "fold_after": 3}}
-        comps = {k: {**v, "host": "h"} for k, v in Lanes.COMPS.items()}
+        comps = {k: {**v, "host": "h", "health": "h", "group": "g"} for k, v in Lanes.COMPS.items()}
         page = flow_page(f, comps, 1, profile())
         self.assertEqual(sum(cid.startswith("f-lanehead-") for cid in page.rects), 2)
         self.assertEqual(faults(page_audit(page)), [])
@@ -76,8 +76,22 @@ class LaneFold(unittest.TestCase):
     def test_a_branching_flow_is_left_alone(self):
         """It draws, unfolded."""
         f = {**flow([step("a", next=["c", "b"], gate="q"), step("b"), step("c")]), "runs_on": "c", "owner": "c", "category": "x", "layout": {"fold": "lane", "fold_after": 2}}
-        comps = {k: {**v, "host": "h"} for k, v in COMPS.items()}
+        comps = {k: {**v, "host": "h", "health": "h", "group": "g"} for k, v in COMPS.items()}
         self.assertEqual(faults(page_audit(flow_page(f, comps, 1, profile()))), [])
+
+
+class LaneFoldExit(unittest.TestCase):
+    """The arrow out of a folded lane stays inside the band."""
+
+    def test_arrow_out_of_a_row_running_back_clears_the_lane_edge(self):
+        """Its long run sits at least 20 px above the lane's bottom edge."""
+        steps = [step(f"m{k}", actor="d") for k in range(4)] + [step("z")]
+        f = {**flow(steps), "runs_on": "c", "owner": "c", "category": "x", "layout": {"fold": "lane", "fold_after": 2}}
+        comps = {k: {**v, "host": "h", "health": "h", "group": "g"} for k, v in Lanes.COMPS.items()}
+        page = flow_page(f, comps, 1, profile())
+        out = next(r for r in page.routes if r.cid.endswith("m3-z"))
+        lane = page.rects["f-lane-0"]
+        self.assertLessEqual(out.points[1][1], lane[1] + lane[3] - 20)
 
 
 class Order(unittest.TestCase):
