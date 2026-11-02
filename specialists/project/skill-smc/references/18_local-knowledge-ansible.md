@@ -93,7 +93,7 @@ path is `UNVERIFIED` until a canary on warehouse-rct01 with its overlay enabled.
 > paths in the ansible-wifi checkout are symlinks into this folder, all ignored through `.git/info/exclude`; a new local playbook or role follows the same pattern (the role's runs/ records stay in the
 > knowledge repository). No visual surface.
 
-> **Learned 2026-11-02** · VERIFIED_PRIMARY · local-knowledge-ansible `ansible-wifi/roles/smc_change/files/changes/rct-tstik-iridium-update/avr_emergency.py` (recipes `emergency`, `emergency-all`,
+> **Learned 2026-11-02** · VERIFIED_PRIMARY · local-knowledge-ansible `ansible-wifi/roles/smc_change/files/shared/avr_emergency.py` with the change `rct-avr-smsc` (recipes `emergency`, `emergency-all`,
 > test `files/tests/test_avr_emergency.py`): read, plan or `--apply` the AVR emergency and SMS numbers. Facts: `02_service-map.md`, entry of the same date.
 
 > **Learned 2026-10-26** · VERIFIED_PRIMARY · local-only `roles/smc_change` now contains controller journals, explicit safe resume,

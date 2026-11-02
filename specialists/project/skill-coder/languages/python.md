@@ -12,6 +12,20 @@ Summary: >-
 
 # Python override
 
+> **Learned 2026-11-02** · ruff through a symlinked path · VERIFIED_PRIMARY · Source: ansible-wifi, `uvx ruff format` on a file under a git-excluded symlink · Falsifier: ruff finding the config through the symlink
+> ruff run on a path through a symlinked folder missed the project's `ruff.toml` and reformatted a two-space test file to four. Pass `--config` with the physical path, and read the diff of a format
+> run.
+
+## Contents
+
+- [Authoritative sources](#authoritative-sources)
+- [Tools](#tools)
+- [Core rule mapping](#core-rule-mapping)
+- [Size and limit tweaks](#size-and-limit-tweaks)
+- [Open items](#open-items)
+
+---
+
 ## Authoritative sources
 
 PEP 8 (style), PEP 257 (docstrings), PEP 20 (the Zen of Python), the Google Python Style Guide, the Python standard library docs (`subprocess`, `venv`), the typing specification (Protocols), the
@@ -52,18 +66,17 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 |   (suppression)                       |                                                                                                                                                              |
 
 > **Learned 2026-10-19** · python 3.14 · VERIFIED_PRIMARY · Source: /Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/render/flows_drawio.py (thin wrapper over skill-drawio) · Falsifier: a linter that flags importlib.import_module after a sys.path change
-> A module that must change `sys.path` before importing (a project's seam to a skill pack, a test putting `scripts/` on the path) loads the rest with
-> `importlib.import_module(...)` and plain assignments instead of `import` statements below code: the imports stay at the top of the file, so E402 never
-> fires and no `# noqa` is needed. Re-exported names are then ordinary assignments a reader can grep.
+> A module that must change `sys.path` before importing (a project's seam to a skill pack, a test putting `scripts/` on the path) loads the rest with `importlib.import_module(...)` and plain
+> assignments instead of `import` statements below code: the imports stay at the top of the file, so E402 never fires and no `# noqa` is needed. Re-exported names are then ordinary assignments a
+> reader can grep.
 
 > **Learned 2026-10-19** · python 3.12+ · VERIFIED_PRIMARY · Source: scripts/import_layers.py analyse() (fan-in); tests/test_import_graph_report.py · Falsifier: a report built from set-valued edges whose tied counts keep one order under different PYTHONHASHSEED values
-> `Counter.most_common()` orders equal counts by first insertion, so counts built by walking sets (an import graph's edge sets) list tied entries in
-> an order that changes between runs with string hash randomisation. A report or a top-N cut that must be stable sorts by `(-count, name)` instead.
+> `Counter.most_common()` orders equal counts by first insertion, so counts built by walking sets (an import graph's edge sets) list tied entries in an order that changes between runs with string hash
+> randomisation. A report or a top-N cut that must be stable sorts by `(-count, name)` instead.
 
 > **Learned 2026-10-20** · python 3.12+ · VERIFIED_PRIMARY · Source: unified-network-controller `scripts/checks/ata_chain_check.py` `check_site` (commit 5b3d4e6) · Falsifier: a ThreadPoolExecutor.map that keeps the other results when one task raises SystemExit
-> `except Exception` does not catch `SystemExit`: a library helper that calls `sys.exit()` on failure (here a sweep on an unreachable host) ended a
-> whole `ThreadPoolExecutor.map` over six sites and the buffered output with it. Per-item isolation catches `(Exception, SystemExit)`, and a long
-> run prints with `-u` or flushes so a killed run still leaves its lines.
+> `except Exception` does not catch `SystemExit`: a library helper that calls `sys.exit()` on failure (here a sweep on an unreachable host) ended a whole `ThreadPoolExecutor.map` over six sites and
+> the buffered output with it. Per-item isolation catches `(Exception, SystemExit)`, and a long run prints with `-u` or flushes so a killed run still leaves its lines.
 >
 > ```python
 > try:
@@ -91,10 +104,9 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
   rules cover it).
 
 > **Learned 2026-10-20 (b)** · python, scripted edits of Python source · VERIFIED_PRIMARY (two of nine rewritten files broke: tests failed with NameError and a remote agent's CalledProcessError) · Source: unified-network-controller `wc-local/scripts/collector/dhcp_leases.py` and `wc-local/scripts/collector/reachability.py` (fixed before commit 3efcb27) · Falsifier: a source file whose embedded code strings hold no import lines
-> A rewrite that places a new import "after the last import line" by matching lines also matches imports inside string literals: a remote-agent
-> program sent over ssh (`import datetime`) or a Django shell script (`from swapper import load_model`). The import landed in the string, so
-> the module failed to load and the remote program gained a line its host could not run. Find the insertion point from the AST, the last
-> top-level `Import`/`ImportFrom` node of the module body:
+> A rewrite that places a new import "after the last import line" by matching lines also matches imports inside string literals: a remote-agent program sent over ssh (`import datetime`) or a Django
+> shell script (`from swapper import load_model`). The import landed in the string, so the module failed to load and the remote program gained a line its host could not run. Find the insertion point
+> from the AST, the last top-level `Import`/`ImportFrom` node of the module body:
 >
 > ```python
 > tree = ast.parse(text)
@@ -103,10 +115,9 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > ```
 
 > **Learned 2026-10-21** · python 3.14 (stdlib `dataclasses`, `importlib.util`) · VERIFIED_PRIMARY (the test module failed to import: `AttributeError: 'NoneType' object has no attribute '__dict__'` in `dataclasses._is_type`) · Source: unified-network-controller `tests/test_plan_timeline.py` loading `scripts/render/plan_timeline.py` (2026-10-21) · Falsifier: a module with a `@dataclass` and
-> `from __future__ import annotations` that loads by `spec_from_file_location` without a `sys.modules` entry
-> A test that loads a script by path must register the module in `sys.modules` before `exec_module` when the script defines a dataclass:
-> with postponed annotations, `dataclasses` looks the class's module up in `sys.modules` to resolve `ClassVar` and `InitVar` strings,
-> and an unregistered module is `None` there.
+> `from __future__ import annotations` that loads by `spec_from_file_location` without a `sys.modules` entry A test that loads a script by path must register the module in `sys.modules` before
+> `exec_module` when the script defines a dataclass: with postponed annotations, `dataclasses` looks the class's module up in `sys.modules` to resolve `ClassVar` and `InitVar` strings, and an
+> unregistered module is `None` there.
 >
 > ```python
 > spec = importlib.util.spec_from_file_location("plan_timeline", ROOT / "scripts/render/plan_timeline.py")
@@ -116,9 +127,8 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > ```
 
 > **Learned 2026-10-22 (e)** · python, pathlib containment checks · VERIFIED_PRIMARY (a unit test failed on macOS: a target under a temporary folder read as outside the root) · Source: skill-ai-it `scripts/checks/anchor_links.py` `broken_links`, commit fdf90d0 · Falsifier: `Path.is_relative_to`
-> returns True for a resolved child of an unresolved root that sits behind a symlink.
-> Resolve both sides before `is_relative_to` (or `relative_to`): a target built with `.resolve()` follows symlinks, so an unresolved root such as
-> macOS's `/var/folders/...` (really `/private/var/...`) never contains it and every file reads as outside.
+> returns True for a resolved child of an unresolved root that sits behind a symlink. Resolve both sides before `is_relative_to` (or `relative_to`): a target built with `.resolve()` follows symlinks,
+> so an unresolved root such as macOS's `/var/folders/...` (really `/private/var/...`) never contains it and every file reads as outside.
 >
 > ```python
 > root = root.resolve()  # targets are resolved, so the root must be too (macOS /var is /private/var)
@@ -128,27 +138,21 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > ```
 
 > **Learned 2026-10-23** · ruff 0.17.2 · VERIFIED_PRIMARY (ansible-wifi checkout, 2026-10-23) · Source: `uvx ruff config indent-width`; local-knowledge-ansible `ansible-wifi-root-governance/ruff.toml`, `roles/smc_change/files/probe/check.sh` · Falsifier: ruff formatting an
-> excluded file passed by name with `force-exclude = true`
-> Two-space Python with ruff: `indent-width = 2` (the default is 4). To apply a new style to new files only, list the existing files in
-> `extend-exclude` and set `force-exclude = true`, so a hook or editor that passes an excluded file by name is still skipped (measured:
-> the 22 tracked files reported "No Python files found"; a new four-space file was flagged). ruff honours git's ignore rules, including
-> `.git/info/exclude`, so files reached through a git-excluded symlink are skipped; run from the physical path (`pwd -P`). Python joined from
-> parts before it runs is linted on the joined program (names cross files) and formatted per part. A backslash inside an f-string
-> expression is a SyntaxError before Python 3.12; compute it outside the f-string when the code may run on 3.10 (Ubuntu 22.04).
+> excluded file passed by name with `force-exclude = true` Two-space Python with ruff: `indent-width = 2` (the default is 4). To apply a new style to new files only, list the existing files in
+> `extend-exclude` and set `force-exclude = true`, so a hook or editor that passes an excluded file by name is still skipped (measured: the 22 tracked files reported "No Python files found"; a new
+> four-space file was flagged). ruff honours git's ignore rules, including `.git/info/exclude`, so files reached through a git-excluded symlink are skipped; run from the physical path (`pwd -P`).
+> Python joined from parts before it runs is linted on the joined program (names cross files) and formatted per part. A backslash inside an f-string expression is a SyntaxError before Python 3.12;
+> compute it outside the f-string when the code may run on 3.10 (Ubuntu 22.04).
 
 > **Learned 2026-10-23 (b)** · pyright/Pylance, modules joined before they run · VERIFIED_PRIMARY · Source: pyright docs "Execution Environment Options" (docs/configuration.md); ansible-wifi local-knowledge `ansible-wifi-root-governance/pyrightconfig.json` · Falsifier: an
-> `executionEnvironments` entry whose diagnostic override does not change the report for files under its root
-> Parts that a controller joins into one program (each part uses names another part defines) show "X is not defined" in the editor for every part.
-> Keep the linter on the joined program as the real check, and turn the rule off for that folder only with a root `pyrightconfig.json`
-> (`{"executionEnvironments": [{"root": "<folder>", "reportUndefinedVariable": "none"}]}`), never an inline suppression. A `"//"` comment key is
-> reported as an unrecognized setting: document the config in the project's rules instead. Proven: `npx pyright@1.1.407 <part>` 0 warnings with it,
-> 3 "is not defined" without.
+> `executionEnvironments` entry whose diagnostic override does not change the report for files under its root Parts that a controller joins into one program (each part uses names another part defines)
+> show "X is not defined" in the editor for every part. Keep the linter on the joined program as the real check, and turn the rule off for that folder only with a root `pyrightconfig.json`
+> (`{"executionEnvironments": [{"root": "<folder>", "reportUndefinedVariable": "none"}]}`), never an inline suppression. A `"//"` comment key is reported as an unrecognized setting: document the
+> config in the project's rules instead. Proven: `npx pyright@1.1.407 <part>` 0 warnings with it, 3 "is not defined" without.
 
 > **Learned 2026-10-27** · git 2.x, Python 3.14 subprocess · VERIFIED_PRIMARY (failed `--apply` run, then fixed and re-run: 198 moves) · Source: local-knowledge-ansible `scripts/smc_change_runs_by_flavor.py` `move()` · Falsifier: `git -C <dir> mv <name> <relative dst>`
-> landing the file at `<cwd>/<relative dst>`
-> `git -C <dir>` changes directory before reading its arguments, so a relative destination resolves under `<dir>`, not the caller's cwd: the
-> first migration run failed with exit 128 on its first file. Resolve both paths before calling git, and plan every move before the first one
-> (a dry run that prints them) so a failure mid-way leaves a known state.
+> landing the file at `<cwd>/<relative dst>` `git -C <dir>` changes directory before reading its arguments, so a relative destination resolves under `<dir>`, not the caller's cwd: the first migration
+> run failed with exit 128 on its first file. Resolve both paths before calling git, and plan every move before the first one (a dry run that prints them) so a failure mid-way leaves a known state.
 >
 > ```python
 > src, dst = src.resolve(), dst.resolve()  # git -C changes directory, so relative paths would point elsewhere
@@ -156,5 +160,5 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > subprocess.run(["git", "-C", str(src.parent), "mv", src.name, str(dst)], check=True)
 > ```
 
-> Design patterns realised in Python (resumable journal, done ledger, partition before batch, plug-in probe, plan then apply) are in
-> [../references/design-patterns.md](../references/design-patterns.md), table "Language realisations"; entries here record the Python behaviour they rely on.
+> Design patterns realised in Python (resumable journal, done ledger, partition before batch, plug-in probe, plan then apply) are in [../references/design-patterns.md](../references/design-patterns.md), table "Language realisations";
+> entries here record the Python behaviour they rely on.

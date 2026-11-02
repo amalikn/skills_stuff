@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261102_1347 — smc_change specs, trackers, shared scripts; AVR numbers ruling (v0.11.3 -> v0.11.4)
+
+Learned 2026-11-02: `references/19_smc-change-role.md` (vars, scripts, files/shared, transient tool, pool naming, fact_same, trackers, abandoned_clean apt_pin only), `references/02_service-map.md` (three numbers, reboot evidence, stats page, port), `references/18_local-knowledge-ansible.md`.
+
 ## 20261102_1132 — AVR emergency and SMS numbers (v0.11.2 -> v0.11.3)
 
 Learned 2026-11-02 (rct-tstik 971d8d0, warehouse-rct01): `references/02_service-map.md` (framing, `/ec` path, blank fields kept, survey), `references/18_local-knowledge-ansible.md` (`avr_emergency.py`).

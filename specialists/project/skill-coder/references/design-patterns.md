@@ -1030,6 +1030,25 @@ if after.payload != wanted.payload:
   raise ReplyError("the stored settings differ from the target")
 ```
 
+### P-49 A tracker is a view rebuilt from the records, never a file appended to
+
+> **Learned 2026-11-02** · design pattern, any language (realised in Python) · VERIFIED_PRIMARY (10 offline tests; five real changes, 581 records, 0.45 s) · `reusable_candidate` · Source: local-knowledge-ansible
+> `ansible-wifi/roles/smc_change/files/tracker.py` · Falsifier: a tracker row that differs from its record after a rebuild
+
+- **Problem:** people need a status sheet per change, across many runs and parallel hosts. An appended file races between hosts, drifts from the records and has no past runs.
+- **Solution:** keep one JSON record per run as the only source. After every run, rebuild the whole CSV from the records and replace it in one step. Give each named value its own column. Derive the
+  second view (one row per item, its last real state) from the same rows.
+- **Why it works:** a rebuild has no state to corrupt, repairs itself, and backfills history on first use. Nothing in a job's spec is needed, so new jobs get it free.
+- **Reuse elsewhere:** any job with per-run records: backups, migrations, batch jobs.
+- **Pitfalls:** say what counts as a state: a read-only probe or an attempt that never connected must not replace it. Keep a broken record as a row, never drop it. A spreadsheet may strip `+` and
+  leading zeros.
+
+```python
+# files/tracker.py - last real state, not last attempt
+real = [r for r in runs if r.get("mode") in STATE_MODES and r.get("result") not in NOT_A_STATE]
+state = real[-1] if real else runs[-1]
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

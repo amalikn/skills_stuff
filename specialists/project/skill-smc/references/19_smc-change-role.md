@@ -16,7 +16,6 @@ Summary: >-
 
 ## Contents
 
-- [Interrupted-change recovery and production PHP review (2026-10-26)](#interrupted-change-recovery-and-production-php-review-2026-10-26)
 - [When to use it](#when-to-use-it)
 - [Where it is](#where-it-is)
 - [Running it](#running-it)
@@ -29,6 +28,15 @@ Summary: >-
 - [Extending it](#extending-it)
 - [Status and open items](#status-and-open-items)
 - [Pitfalls it already handles](#pitfalls-it-already-handles)
+- [Interrupted-change recovery and production PHP review (2026-10-26)](#interrupted-change-recovery-and-production-php-review-2026-10-26)
+- [Drop-proof installs, leftover chroot, lower dir first (2026-10-26 evening)](#drop-proof-installs-leftover-chroot-lower-dir-first-2026-10-26-evening)
+- [Done skip, runs per flavor, retries, timing, journal freeze (2026-10-27)](#done-skip-runs-per-flavor-retries-timing-journal-freeze-2026-10-27)
+- [Stranded-run self-repair, kohana cron jobs, lockstep timing, wh and nbn_accelerate (2026-10-27 afternoon)](#stranded-run-self-repair-kohana-cron-jobs-lockstep-timing-wh-and-nbn_accelerate-2026-10-27-afternoon)
+- [rct-tstik-iridium-update: a command that writes the lower dir itself, copy sources under RULE-007 (2026-10-28)](#rct-tstik-iridium-update-a-command-that-writes-the-lower-dir-itself-copy-sources-under-rule-007-2026-10-28)
+- [Spec values, script files, trackers and shared scripts: rct-avr-smsc (2026-11-02)](#spec-values-script-files-trackers-and-shared-scripts-rct-avr-smsc-2026-11-02)
+- [Runtime budget counts the wait for earlier batches (2026-10-28)](#runtime-budget-counts-the-wait-for-earlier-batches-2026-10-28)
+- [apt_pin installs a missing package: install_missing (2026-10-30)](#apt_pin-installs-a-missing-package-install_missing-2026-10-30)
+- [Facts, conditions, when and loop (2026-10-30)](#facts-conditions-when-and-loop-2026-10-30)
 
 ## When to use it
 
@@ -55,8 +63,9 @@ ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_c
 ```
 
 Main options: `smc_change_serial` (default 1), `smc_change_on_refusal` (`skip` default: a refused host is recorded and skipped), `smc_change_rollback` (`repack` default), `smc_change_soak_minutes`
-(5), `smc_change_reboot` (true), `smc_change_allow_unhealthy_baseline`, `smc_change_allow_nbn_wh`, `smc_change_report_dir` (default `roles/smc_change/files/changes`), `smc_change_runs_dir` (default `<report_dir>/<change>/runs`). An unreachable host is recorded and
-skipped, so one offline box does not stop a fleet run (side-agent review, 2026-10-23); a host that fails after its change started stops the run.
+(5), `smc_change_reboot` (true), `smc_change_allow_unhealthy_baseline`, `smc_change_allow_nbn_wh`, `smc_change_report_dir` (default `roles/smc_change/files/changes`), `smc_change_runs_dir` (default
+`<report_dir>/<change>/runs`). An unreachable host is recorded and skipped, so one offline box does not stop a fleet run (side-agent review, 2026-10-23); a host that fails after its change started
+stops the run.
 
 Rollout pattern (operator, depth before breadth): one stage box in `check`, then `apply`; one prod box per flavor; then the flavor with `-e smc_change_serial=5`, run by the operator from the
 handed-over command.
@@ -70,8 +79,8 @@ the run with its result (`passed`, `gates_failed`, `failed`, `refused`, `unreach
 
 ## Writing a change spec
 
-`files/changes/<name>/<name>.yml` (one folder per change: the spec, its flow-map parts and its `runs/`; operator, 2026-10-26), `name` equal to the file name; templates in `templates/<name>/`, copied files in `files/<name>/`. A check runs only when the spec lists it. The PHP spec, abridged (source:
-`roles/smc_change/files/changes/php-cve-2026-109618/php-cve-2026-109618.yml`):
+`files/changes/<name>/<name>.yml` (one folder per change: the spec, its flow-map parts and its `runs/`; operator, 2026-10-26), `name` equal to the file name; templates in `templates/<name>/`, copied
+files in `files/<name>/`. A check runs only when the spec lists it. The PHP spec, abridged (source: `roles/smc_change/files/changes/php-cve-2026-109618/php-cve-2026-109618.yml`):
 
 ```yaml
 name: php-cve-2026-109618
@@ -123,29 +132,25 @@ over the two- reboot disable/enable-overlay path). `UNVERIFIED` until the wareho
 ## Nothing left on the box, run records, rollback
 
 Operator, 2026-10-23: nothing may be left on an SMC after a successful change. The role writes nothing on the box except the change and, during the run, its backup. Stage 10 (successful apply only)
-copies the backup to `files/changes/<spec>/runs/<flavor>/backups/<host>-<start>/` on the controller, removes it from the box (lower dir included), removes the .debs apt downloaded and dpkg-repack if the run installed it,
-and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `files/changes/<spec>/runs/<flavor>/records/<host>-<spec>-<mode>-<start>.json` (standard layout since 2026-10-27, operator: one folder per flavor, the `-i` inventory folder, made on its first run; moved by
-`local-knowledge-ansible/ansible-wifi/scripts/smc_change_runs_by_flavor.py`, which moved six active journals safely because `defaults/` is outside the
-resume fingerprint; older trees kept them flat in `runs/` or `runs/records/`) on the controller only: result, stage and task of a
-failure, refusal or unreachable reason, gates, plan, backup path, both probes.
+copies the backup to `files/changes/<spec>/runs/<flavor>/backups/<host>-<start>/` on the controller, removes it from the box (lower dir included), removes the .debs apt downloaded and dpkg-repack if
+the run installed it, and fails if anything it listed is left. A failed run keeps its backup on the box. Every run writes `files/changes/<spec>/runs/<flavor>/records/<host>-<spec>-<mode>-<start>.json`
+(standard layout since 2026-10-27, operator: one folder per flavor, the `-i` inventory folder, made on its first run; moved by
+`local-knowledge-ansible/ansible-wifi/scripts/smc_change_runs_by_flavor.py`, which moved six active journals safely because `defaults/` is outside the resume fingerprint; older trees kept them flat in
+`runs/` or `runs/records/`) on the controller only: result, stage and task of a failure, refusal or unreachable reason, gates, plan, backup path, both probes.
 
-Rollback is a mode: `-e smc_change_mode=rollback` (operator, 2026-10-23). It finds the newest backup of the change for the host (controller
-`files/changes/<spec>/runs/<flavor>/backups/<host>-*` first, else one a failed apply left on the box; `-e smc_change_rollback_from=<host>-<start>` picks one),
-stages it, and undoes the actions last first through `tasks/actions/<type>_rollback.yml`: `apt_pin` reinstalls the saved .debs with
-`dpkg -i` (live, and in a lower-dir chroot on overlay boxes), `template`/`copy`/`ini` restore the file from `paths.tgz`, `command` runs the
-spec's `undo`. It restarts, reboots per the spec, and is judged on health plus `restored`. Allowed on an unhealthy box. Check-mode run on
-nocprov-smc01 found the box backup of the operator's apply and its six `.18` builds; a real rollback has not run (it would reinstate the
-vulnerable build).
+Rollback is a mode: `-e smc_change_mode=rollback` (operator, 2026-10-23). It finds the newest backup of the change for the host (controller `files/changes/<spec>/runs/<flavor>/backups/<host>-*` first,
+else one a failed apply left on the box; `-e smc_change_rollback_from=<host>-<start>` picks one), stages it, and undoes the actions last first through `tasks/actions/<type>_rollback.yml`: `apt_pin`
+reinstalls the saved .debs with `dpkg -i` (live, and in a lower-dir chroot on overlay boxes), `template`/`copy`/`ini` restore the file from `paths.tgz`, `command` runs the spec's `undo`. It restarts,
+reboots per the spec, and is judged on health plus `restored`. Allowed on an unhealthy box. Check-mode run on nocprov-smc01 found the box backup of the operator's apply and its six `.18` builds; a
+real rollback has not run (it would reinstate the vulnerable build).
 
 ## Already done, and force
 
-Each passed apply or rollback is stored per host in `files/changes/<spec>/runs/<flavor>/state/<host>.json` on the controller (operator, 2026-10-23: a rerun must
-skip the SMCs already done). Since 2026-10-27 (operator: a done SMC is ignored, not verified again) the playbook's first play, `tasks/pending.yml`, reads that state and
-the journal on the controller and runs the change play over `smc_change_todo` only: done SMCs get no ping, probe, serial slot or record
-(apply, check and assess skip a passed apply; rollback a passed rollback; verify never). Before that, each skip still cost about 17 s and a
-batch slot (`already_done` records of 20261027_081918). Proved controller-only: check on 20-mile and alpara ran in 2 s with no connection;
-the split put arrkapa-smc01 (no state) in todo; `-e
-smc_change_force=true` re-runs them (tested in check mode on nocprov-smc01 with a stored state: skipped, then not skipped with force).
+Each passed apply or rollback is stored per host in `files/changes/<spec>/runs/<flavor>/state/<host>.json` on the controller (operator, 2026-10-23: a rerun must skip the SMCs already done). Since
+2026-10-27 (operator: a done SMC is ignored, not verified again) the playbook's first play, `tasks/pending.yml`, reads that state and the journal on the controller and runs the change play over
+`smc_change_todo` only: done SMCs get no ping, probe, serial slot or record (apply, check and assess skip a passed apply; rollback a passed rollback; verify never). Before that, each skip still cost
+about 17 s and a batch slot (`already_done` records of 20261027_081918). Proved controller-only: check on 20-mile and alpara ran in 2 s with no connection; the split put arrkapa-smc01 (no state) in
+todo; `-e smc_change_force=true` re-runs them (tested in check mode on nocprov-smc01 with a stored state: skipped, then not skipped with force).
 
 ## Extending it
 
@@ -189,17 +194,14 @@ As of 2026-10-23:
 - A `command` action on an overlay box must set `chroot`, or the role's own reboot undoes it unseen (side-agent review).
 
 > **Learned 2026-10-23** · overlay lower dir close and reboot policy · VERIFIED-OBSERVED (php-rct-smc01, first real overlay apply and rollback) ·
-> Source: roles/smc_change/tasks/main.yml, tasks/persist_overlay.yml, tasks/reboot.yml (local-knowledge, uncommitted local-only role) · Falsifier: an
-> overlay apply that replaces a file a running process maps and still remounts the lower dir ro before that process restarts
-> The first overlay apply failed at stage 6: `mount -o remount,ro /media/root-ro` gave "mount point is busy". dpkg in the chroot had replaced
-> `libphp8.1.so`, the PHP extensions and `/usr/bin/php8.1` in the lower dir while apache2 and cron's `php -S` still mapped the old inodes
-> (`/proc/<pid>/maps` "(deleted)"); a filesystem with unlinked-but-open inodes refuses a read-only remount. Restarting apache2 and killing `php -S`
-> (cron relaunches it) emptied the list and the remount worked. Fix: the lower dir now closes after stage 7 (restart), and only a failed backup or
-> action closes it at once; a close that still fails names the holders. New spec policy `reboot: overlay_fallback` (operator, 2026-10-23: reboot only
-> as the last resort): an overlay box reboots only when the lower dir stays read-write after the restarts, then the role checks it came back ro;
-> otherwise the apt_pin chroot check of the lower dir's dpkg database is the persistence proof. The PHP spec uses it. Rollback then passed with no
-> reboot (lower dir ro, `.18` live and lower). The kernel calls changes to a mounted overlay's lower layer undefined behaviour (VERIFIED_PRIMARY,
-> docs.kernel.org/filesystems/overlayfs.html, "Changes to underlying filesystems"); the upper tmpfs copy masks it until the next reboot.
+> Source: roles/smc_change/tasks/main.yml, tasks/persist_overlay.yml, tasks/reboot.yml (local-knowledge, uncommitted local-only role) · Falsifier: an overlay apply that replaces a file a running
+> process maps and still remounts the lower dir ro before that process restarts The first overlay apply failed at stage 6: `mount -o remount,ro /media/root-ro` gave "mount point is busy". dpkg in the
+> chroot had replaced `libphp8.1.so`, the PHP extensions and `/usr/bin/php8.1` in the lower dir while apache2 and cron's `php -S` still mapped the old inodes (`/proc/<pid>/maps` "(deleted)"); a
+> filesystem with unlinked-but-open inodes refuses a read-only remount. Restarting apache2 and killing `php -S` (cron relaunches it) emptied the list and the remount worked. Fix: the lower dir now
+> closes after stage 7 (restart), and only a failed backup or action closes it at once; a close that still fails names the holders. New spec policy `reboot: overlay_fallback` (operator, 2026-10-23:
+> reboot only as the last resort): an overlay box reboots only when the lower dir stays read-write after the restarts, then the role checks it came back ro; otherwise the apt_pin chroot check of the
+> lower dir's dpkg database is the persistence proof. The PHP spec uses it. Rollback then passed with no reboot (lower dir ro, `.18` live and lower). The kernel calls changes to a mounted overlay's
+> lower layer undefined behaviour (VERIFIED_PRIMARY, docs.kernel.org/filesystems/overlayfs.html, "Changes to underlying filesystems"); the upper tmpfs copy masks it until the next reboot.
 >
 > ```yaml
 > - name: Restart
@@ -213,24 +215,20 @@ As of 2026-10-23:
 >   when: smc_change_before.overlay
 > ```
 >
-> Flow map: `roles/smc_change/drawio/parts/master.yaml` and its parts assemble to `drawio/flows.yaml`, which renders `drawio/flows.drawio`, both with
-> `just smc_change_flows`; `just smc_change_flows_check` reports drift in either. Pages: Overview, `E2E flow` (the modes Check, Apply,
-> Verify, Rollback), one `E2E: <change>` page per change spec, then the mode pages. A change spec's folder `files/changes/<spec>/` holds its parts
-> `flow-components.yaml` and `flow-flows.yaml`, included from master, and a family in `drawing.families` with `own_page: true, flow_pages: false`: its flows explain
-> the change itself (where the affected code runs, the fix, why it takes effect, the proof, the rollback), each step naming the stage that
-> does it, numbered from 1 and kept off the `E2E flow` page. Written by hand from the spec; nothing generates them (operator, 2026-10-26).
+> Flow map: `roles/smc_change/drawio/parts/master.yaml` and its parts assemble to `drawio/flows.yaml`, which renders `drawio/flows.drawio`, both with `just smc_change_flows`; `just
+> smc_change_flows_check` reports drift in either. Pages: Overview, `E2E flow` (the modes Check, Apply, Verify, Rollback), one `E2E: <change>` page per change spec, then the mode pages. A change
+> spec's folder `files/changes/<spec>/` holds its parts `flow-components.yaml` and `flow-flows.yaml`, included from master, and a family in `drawing.families` with `own_page: true, flow_pages: false`:
+> its flows explain the change itself (where the affected code runs, the fix, why it takes effect, the proof, the rollback), each step naming the stage that does it, numbered from 1 and kept off the
+> `E2E flow` page. Written by hand from the spec; nothing generates them (operator, 2026-10-26).
 
 > **Learned 2026-10-23** · spec fields proves and soak_minutes, undo backup path · VERIFIED_PRIMARY · Source: php-rct-smc01 runs of
-> etc-hosts-hostname (apply refused, then rollback, apply); roles/smc_change files/probe/30_commands.py, tasks/load_spec.yml,
-> tasks/actions/command_rollback.yml, tasks/verify.yml · Falsifier: an apply refused as unhealthy only because a `proves` check is false before the change
-> `verify.commands` doubles as baseline health, so a spec whose checks describe the fixed state was refused as "already unhealthy" (needed
-> `-e smc_change_allow_unhealthy_baseline=true`). New `verify.proves` (same form as commands): run in both probes, never counted as health,
-> judged as the `proves` gate after an apply and ignored by a rollback (which is judged on health plus `restored`). New spec `soak_minutes`
-> (operator, 2026-10-23): `-e smc_change_soak_minutes` wins, then the spec, then 5; 0 for a change that restarts nothing (hosts change: 45 s, not
-> 6 min). A `command` action's `undo` gets `SMC_CHANGE_BACKUP`, the folder of the backup being restored as seen live or inside the chroot:
-> after a passed apply the cleanup stage leaves no backup on the box, and rollback stages the controller copy in `/var/cache/smc_change/rollback`
-> (lower dir on overlay boxes); the spec itself is templated at load and cannot name role variables. Spec `etc-hosts-hostname` writes the
-> smc_network form (`127.0.0.1 localhost <host>`, `127.0.1.1 <host>`) live and in the lower dir; proven apply, rollback, apply.
+> etc-hosts-hostname (apply refused, then rollback, apply); roles/smc_change files/probe/30_commands.py, tasks/load_spec.yml, tasks/actions/command_rollback.yml, tasks/verify.yml · Falsifier: an apply
+> refused as unhealthy only because a `proves` check is false before the change `verify.commands` doubles as baseline health, so a spec whose checks describe the fixed state was refused as "already
+> unhealthy" (needed `-e smc_change_allow_unhealthy_baseline=true`). New `verify.proves` (same form as commands): run in both probes, never counted as health, judged as the `proves` gate after an
+> apply and ignored by a rollback (which is judged on health plus `restored`). New spec `soak_minutes` (operator, 2026-10-23): `-e smc_change_soak_minutes` wins, then the spec, then 5; 0 for a change
+> that restarts nothing (hosts change: 45 s, not 6 min). A `command` action's `undo` gets `SMC_CHANGE_BACKUP`, the folder of the backup being restored as seen live or inside the chroot: after a passed
+> apply the cleanup stage leaves no backup on the box, and rollback stages the controller copy in `/var/cache/smc_change/rollback` (lower dir on overlay boxes); the spec itself is templated at load
+> and cannot name role variables. Spec `etc-hosts-hostname` writes the smc_network form (`127.0.0.1 localhost <host>`, `127.0.1.1 <host>`) live and in the lower dir; proven apply, rollback, apply.
 >
 > ```yaml
 > - name: Run the undo live
@@ -241,17 +239,14 @@ As of 2026-10-23:
 > ```
 
 > **Learned 2026-10-26** · spec field backup.shared: name-identified backup files kept once for all SMCs · VERIFIED_PRIMARY (offline) · Source:
-> local-knowledge-ansible `2ade781`, roles/smc_change tasks/cleanup.yml, tasks/rollback_locate.yml, tasks/load_spec.yml; warehouse-rct01 apply
-> 20261026_145159 fetched the same seven php8.1 .debs per SMC · Falsifier: a second SMC at an already pooled version still fetches its .debs
-> Operator, 2026-10-26: the same build must not be copied from every SMC, and which files that applies to is the change spec's choice, not the
-> role's (the role stays generic; a future change may want per-SMC copies or share another file type). Spec `backup.shared` is a list of globs;
-> stage 10 fetches only backup files whose name the controller pool `files/changes/<spec>/runs/<flavor>/backups/shared/`
-> lacks, links fetched ones into the pool (`ln` never overwrites, so two SMCs fetching the same name at once leave one copy) and writes
-> `shared.txt` in the host folder; rollback copies the listed files back beside `paths.tgz`. Absent or `[]` = full copy per SMC (etc-hosts-hostname,
-> php-ini-upload-progress-off). The match is by name only: dpkg-repack of one build on two SMCs gives different bytes (embedded timestamps), so a
-> checksum compare would never share anything. Only list files whose name changes when the content does (`<package>_<version>_<arch>.deb`); the
-> spec loader refuses globs matching `paths.tgz` (same name on every SMC, that SMC's own config). Per-SMC config differences stay in `paths.tgz`,
-> restored after `dpkg -i --force-confold`. Tested offline (glob split, pool skip, race guard, missing `shared.txt`); not yet run on an SMC.
+> local-knowledge-ansible `2ade781`, roles/smc_change tasks/cleanup.yml, tasks/rollback_locate.yml, tasks/load_spec.yml; warehouse-rct01 apply 20261026_145159 fetched the same seven php8.1 .debs per
+> SMC · Falsifier: a second SMC at an already pooled version still fetches its .debs Operator, 2026-10-26: the same build must not be copied from every SMC, and which files that applies to is the
+> change spec's choice, not the role's (the role stays generic; a future change may want per-SMC copies or share another file type). Spec `backup.shared` is a list of globs; stage 10 fetches only
+> backup files whose name the controller pool `files/changes/<spec>/runs/<flavor>/backups/shared/` lacks, links fetched ones into the pool (`ln` never overwrites, so two SMCs fetching the same name at
+> once leave one copy) and writes `shared.txt` in the host folder; rollback copies the listed files back beside `paths.tgz`. Absent or `[]` = full copy per SMC (etc-hosts-hostname,
+> php-ini-upload-progress-off). The match is by name only: dpkg-repack of one build on two SMCs gives different bytes (embedded timestamps), so a checksum compare would never share anything. Only list
+> files whose name changes when the content does (`<package>_<version>_<arch>.deb`); the spec loader refuses globs matching `paths.tgz` (same name on every SMC, that SMC's own config). Per-SMC config
+> differences stay in `paths.tgz`, restored after `dpkg -i --force-confold`. Tested offline (glob split, pool skip, race guard, missing `shared.txt`); not yet run on an SMC.
 >
 > ```yaml
 > # roles/smc_change/tasks/cleanup.yml (local-knowledge-ansible 2ade781)
@@ -264,26 +259,21 @@ As of 2026-10-23:
 > ```
 
 > **Learned 2026-10-26** · soak counted from the restart, start_now, PHP checks beyond the portal home page · VERIFIED_PRIMARY (offline role
-> code; live probes read-only) · Source: roles/smc_change tasks/restart.yml, tasks/reboot.yml, tasks/verify.yml, playbooks/smc_change.yml (Run
-> summary); warehouse-rct01 apply 20261026_145159 (17 min: ~3.5 min cron wait then a 5 min soak that saw 1 access-log line); access logs of 4
-> prod RCT SMCs (adjamarragu, alice-well, bidyadanga-airport, cave-hill: 13-123 page loads over all kept logs) · Falsifier: a soak that runs
-> the full soak_minutes after a cron wait, or a start_now process that runs twice
-> The soak waits only for what is left of `soak_minutes` after the restart (or the reboot), so the cron wait counts toward it. A `restart.processes`
-> entry with `start_now: true` is started at once from root's own cron line (cron's `/bin/sh`, `PATH=/usr/bin:/bin` and the crontab's `NAME=value`
-> lines, via `setsid -f`), after waiting up to 10 s for the old process to exit. Only for programs that cope with cron starting them again: rct-tstik
-> (`cd /var/www/html/rct-tstik/public && nohup php -S 10.254.0.1:8080 &>/dev/null`, no "already running?" check) does, because a second copy cannot
-> bind the port. Spec php-cve-2026-109618 now soaks 1 minute and checks the portal's `/index.php/wifi/terms` (a second view, loaded by real
-> clients; `/` and `/index.php/wifi/index` are the same page) and the tstik page on 8080 by port test plus page text. `pgrep -f 'php -S '` inside
-> a shell matches the shell's own command line, so shell checks test the port instead. Root's crontab also runs `57 23 * * * pkill -9 php` (kills
-> CLI PHP nightly; cron restarts it). The final Run summary now prints each host's gates (`gates 10/10 hold: ...` or the failed ones).
-> Probe commands take optional `name` (labels the line and shows the command's last output line) and `timeout` (s, default 30). The PHP spec
-> checks rct-tstik's AVR by running `php artisan update:stats` (root cron */5; ~15 s, 24 serial reads over `SerialIIO("serial4", 19200 ...)`
-> in app/Services/IOManager.php) and judging the lines it appends to storage/logs/laravel.log: at least one `Total Read Data[126,...]` and no
-> `Unable to read the data from AVR`. Every RCT SMC has an AVR except the bench Pi php-rct-smc01 (operator, 2026-10-26), whose log holds only
-> empty reads and that error; a log that never held a `Total Read Data[126` line is taken as no AVR and passes. laravel.log is one large
-> file (270-436 MB on prod) with thousands of network `local.ERROR` lines (cURL 6/28, socket_connect), so a gate on any ERROR would fail every
-> site; 0 AVR errors ever on warehouse-rct01, alice-well, cave-hill, adjamarragu. Check mode on warehouse-rct01 (2026-10-26, 120 s): portal-terms
-> 200, tstik page renders, 24 AVR reads, no errors. `/index.php/wifi/terms` answers 200 with HTML on prod wh, nbn_accelerate, nbn_wh and rcp too.
+> code; live probes read-only) · Source: roles/smc_change tasks/restart.yml, tasks/reboot.yml, tasks/verify.yml, playbooks/smc_change.yml (Run summary); warehouse-rct01 apply 20261026_145159 (17 min:
+> ~3.5 min cron wait then a 5 min soak that saw 1 access-log line); access logs of 4 prod RCT SMCs (adjamarragu, alice-well, bidyadanga-airport, cave-hill: 13-123 page loads over all kept logs) ·
+> Falsifier: a soak that runs the full soak_minutes after a cron wait, or a start_now process that runs twice The soak waits only for what is left of `soak_minutes` after the restart (or the reboot),
+> so the cron wait counts toward it. A `restart.processes` entry with `start_now: true` is started at once from root's own cron line (cron's `/bin/sh`, `PATH=/usr/bin:/bin` and the crontab's
+> `NAME=value` lines, via `setsid -f`), after waiting up to 10 s for the old process to exit. Only for programs that cope with cron starting them again: rct-tstik (`cd /var/www/html/rct-tstik/public
+> && nohup php -S 10.254.0.1:8080 &>/dev/null`, no "already running?" check) does, because a second copy cannot bind the port. Spec php-cve-2026-109618 now soaks 1 minute and checks the portal's
+> `/index.php/wifi/terms` (a second view, loaded by real clients; `/` and `/index.php/wifi/index` are the same page) and the tstik page on 8080 by port test plus page text. `pgrep -f 'php -S '` inside
+> a shell matches the shell's own command line, so shell checks test the port instead. Root's crontab also runs `57 23 * * * pkill -9 php` (kills CLI PHP nightly; cron restarts it). The final Run
+> summary now prints each host's gates (`gates 10/10 hold: ...` or the failed ones). Probe commands take optional `name` (labels the line and shows the command's last output line) and `timeout` (s,
+> default 30). The PHP spec checks rct-tstik's AVR by running `php artisan update:stats` (root cron */5; ~15 s, 24 serial reads over `SerialIIO("serial4", 19200 ...)` in app/Services/IOManager.php)
+> and judging the lines it appends to storage/logs/laravel.log: at least one `Total Read Data[126,...]` and no `Unable to read the data from AVR`. Every RCT SMC has an AVR except the bench Pi
+> php-rct-smc01 (operator, 2026-10-26), whose log holds only empty reads and that error; a log that never held a `Total Read Data[126` line is taken as no AVR and passes. laravel.log is one large file
+> (270-436 MB on prod) with thousands of network `local.ERROR` lines (cURL 6/28, socket_connect), so a gate on any ERROR would fail every site; 0 AVR errors ever on warehouse-rct01, alice-well,
+> cave-hill, adjamarragu. Check mode on warehouse-rct01 (2026-10-26, 120 s): portal-terms 200, tstik page renders, 24 AVR reads, no errors. `/index.php/wifi/terms` answers 200 with HTML on prod wh,
+> nbn_accelerate, nbn_wh and rcp too.
 >
 > ```yaml
 > - name: Let client traffic reach the changed box (what is left of the soak)
@@ -296,24 +286,21 @@ As of 2026-10-23:
 
 ## Interrupted-change recovery and production PHP review (2026-10-26)
 
-`VERIFIED_PRIMARY` (source and direct runtime, ansible-wifi branch `rise`; local-knowledge base `aacf57c` plus uncommitted recovery work):
-production RCT PHP apply 20261026_161421 passed 11/11 gates in 792 s. Seven `.18` packages became `.28` live and in the lower dir; lower dir ro,
-no reboot, portal/terms/TSTIK render, 24 AVR reads without errors, unchanged modules, no deleted PHP maps. Fresh read-only checks confirmed
-package/service/mount/pages/cleanup state; controller config tar and seven saved old builds exist. PIN activation and forced reboot survival
-were not demonstrated. Review: local-knowledge `evidence/smc-change-recovery-20261026_1701.md`.
+`VERIFIED_PRIMARY` (source and direct runtime, ansible-wifi branch `rise`; local-knowledge base `aacf57c` plus uncommitted recovery work): production RCT PHP apply 20261026_161421 passed 11/11 gates
+in 792 s. Seven `.18` packages became `.28` live and in the lower dir; lower dir ro, no reboot, portal/terms/TSTIK render, 24 AVR reads without errors, unchanged modules, no deleted PHP maps. Fresh
+read-only checks confirmed package/service/mount/pages/cleanup state; controller config tar and seven saved old builds exist. PIN activation and forced reboot survival were not demonstrated. Review:
+local-knowledge `evidence/smc-change-recovery-20261026_1701.md`.
 
-`USER_STATED` (2026-10-26): add a generic recovery journal and safe explicit resume; optimize only after phase timings exist.
-`VERIFIED_PRIMARY`: prior `verify.yml` called `record.yml`, which marked done before cleanup. Interim records now say `verified`; only final
-verified-and-cleaned applies/rollbacks say `passed` and update state. Journals under `runs/<flavor>/journal/<host>.json` are controller-only, 0600,
-written before writes/phases, retaining the original baseline/id/backup/cleanup ownership. Attempts have separate record timestamps.
+`USER_STATED` (2026-10-26): add a generic recovery journal and safe explicit resume; optimize only after phase timings exist. `VERIFIED_PRIMARY`: prior `verify.yml` called `record.yml`, which marked
+done before cleanup. Interim records now say `verified`; only final verified-and-cleaned applies/rollbacks say `passed` and update state. Journals under `runs/<flavor>/journal/<host>.json` are
+controller-only, 0600, written before writes/phases, retaining the original baseline/id/backup/cleanup ownership. Attempts have separate record timestamps.
 
-Use `-e smc_change_mode=assess` for read-only recovery safety (skips application commands); it reports complete, safe_to_restart,
-safe_to_resume or needs_repair. Resume is on by default (`smc_change_resume: true`, operator 2026-10-26; `false` refuses an unfinished SMC), in the original mode. An unfinished journal blocks a new apply even
-with force. Changed spec/code/assets, incomplete dpkg state, chroot residue, changed overlay or missing backup evidence refuse recovery.
-Phase 5 repeats backup; 6 replays only actions declaring `resume_safe: true`; 7/8 repeats restart/close; 9/10 reverifies then repeats cleanup.
-PHP's exact-version action opts in. Writable lower layers route through restart/close and must be ro at verification. A partly deleted
-remote backup cannot truncate the controller shared-file manifest: cleanup uses the original journaled list. Do not run competing controllers
-for the same SMC/change; atomic journal replacement is not an operator lock. Legacy failures have no inferred resume checkpoint. Legacy check-mode/read-only records neither invent a failure nor hide a prior real failure.
+Use `-e smc_change_mode=assess` for read-only recovery safety (skips application commands); it reports complete, safe_to_restart, safe_to_resume or needs_repair. Resume is on by default
+(`smc_change_resume: true`, operator 2026-10-26; `false` refuses an unfinished SMC), in the original mode. An unfinished journal blocks a new apply even with force. Changed spec/code/assets,
+incomplete dpkg state, chroot residue, changed overlay or missing backup evidence refuse recovery. Phase 5 repeats backup; 6 replays only actions declaring `resume_safe: true`; 7/8 repeats
+restart/close; 9/10 reverifies then repeats cleanup. PHP's exact-version action opts in. Writable lower layers route through restart/close and must be ro at verification. A partly deleted remote
+backup cannot truncate the controller shared-file manifest: cleanup uses the original journaled list. Do not run competing controllers for the same SMC/change; atomic journal replacement is not an
+operator lock. Legacy failures have no inferred resume checkpoint. Legacy check-mode/read-only records neither invent a failure nor hide a prior real failure.
 
 ```yaml
 # roles/smc_change/tasks/record.yml (base aacf57c + uncommitted 2026-10-26 recovery)
@@ -327,35 +314,31 @@ for the same SMC/change; atomic journal replacement is not an operator lock. Leg
     - smc_change_cleanup_complete | default(false) | bool
 ```
 
-Validation: five unit-test methods (~0.013 s, stage/safety scenarios), real controller journal/state fixture, red/green partial-cleanup
-regression; read-only live resume-fact fixture (25 OK, changed=0) and assessment passed. A real interrupted mutating SMC has not been
-fault-injected. `lint_new.sh` all language/inventory checks passed in 9.26 s. Records now include phase timings, elapsed seconds, budget and
-over-budget flag (900 s default; report, never abandon an in-flight SMC). Prior run lacked phase timings: 302 s came after the final probe;
-performance optimization is deferred to measured subsequent runs. Flow map adds Assess/Resume; renders/checks and six changed pages reviewed.
-Screenshots: `screenshots/20261026-smc-change-recovery/` (generic pages, no customer identifiers).
+Validation: five unit-test methods (~0.013 s, stage/safety scenarios), real controller journal/state fixture, red/green partial-cleanup regression; read-only live resume-fact fixture (25 OK,
+changed=0) and assessment passed. A real interrupted mutating SMC has not been fault-injected. `lint_new.sh` all language/inventory checks passed in 9.26 s. Records now include phase timings, elapsed
+seconds, budget and over-budget flag (900 s default; report, never abandon an in-flight SMC). Prior run lacked phase timings: 302 s came after the final probe; performance optimization is deferred to
+measured subsequent runs. Flow map adds Assess/Resume; renders/checks and six changed pages reviewed. Screenshots: `screenshots/20261026-smc-change-recovery/` (generic pages, no customer identifiers).
 
-> **Learned 2026-10-26 (evening)** · overlay Pi reboot fallback, Pi clock, satellite session drops, resume by default · VERIFIED_PRIMARY
-> (live read-only: adjamarragu-smc01 records 20261026_173435/180915/182818, assess runs; alice-well, cave-hill portal timings) · Source:
-> roles/smc_change tasks/persist_overlay.yml, reboot.yml, probe.yml, recovery.yml, files/probe/40_http.py, files/recovery.py (local-knowledge-ansible,
-> uncommitted at write time) · Falsifier: a fallback reboot whose record has no `lower_busy`, or an after-probe that fails on a page answering in 3 s
+> **Learned 2026-10-26 (evening)** · overlay Pi reboot fallback, Pi clock, satellite session drops, resume by default · VERIFIED_PRIMARY (live read-only: adjamarragu-smc01 records
+> 20261026_173435/180915/182818, assess runs; alice-well, cave-hill portal timings) · Source: roles/smc_change tasks/persist_overlay.yml, reboot.yml, probe.yml, recovery.yml, files/probe/40_http.py,
+> files/recovery.py (local-knowledge-ansible, uncommitted at write time) · Falsifier: a fallback reboot whose record has no `lower_busy`, or an after-probe that fails on a page answering in 3 s
 > - **Portal home page is slow by design**: `/` calls the WiFi API upstream (`Model::factory('WIFI_API')` in `controller/wifi.php`), 2.8-10 s on
->   unpatched RCT SMCs; `/index.php/wifi/terms` answers in 0.04 s. adjamarragu-smc01 missed the probe's fixed 20 s right after its fallback reboot
->   (curl rc 28) while terms answered: http checks now take per-endpoint `timeout` (portal 45) and `retries` (1, only on curl 7/28/52/56).
+> unpatched RCT SMCs; `/index.php/wifi/terms` answers in 0.04 s. adjamarragu-smc01 missed the probe's fixed 20 s right after its fallback reboot (curl rc 28) while terms answered: http checks now take
+> per-endpoint `timeout` (portal 45) and `retries` (1, only on curl 7/28/52/56).
 > - **A Pi has no RTC**: after a boot its clock is wrong until NTP corrects it (adjamarragu's apache logged its post-boot start ~8 min early);
->   HTTPS calls fail (tstik logs `certificate is not yet valid`) and Teleport is slow to connect (operator). `timedatectl` NTPSynchronized stays
->   `no` under ntpd (warehouse-rct01), so reboot.yml waits until the SMC clock is within 60 s of the controller's (10 min, not fatal).
+> HTTPS calls fail (tstik logs `certificate is not yet valid`) and Teleport is slow to connect (operator). `timedatectl` NTPSynchronized stays `no` under ntpd (warehouse-rct01), so reboot.yml waits
+> until the SMC clock is within 60 s of the controller's (10 min, not fatal).
 > - **Lower dir EBUSY**: the remount was tried once, straight after the restarts; it is now tried every 10 s for 90 s before the fallback reboot,
->   and the record keeps `lower_busy` (error, attempts, holders: mapped and open deleted files, `/var/log` left out). What held adjamarragu's
->   lower dir is unknown: holders were only printed then, and the reboot cleared the overlay upper layer.
+> and the record keeps `lower_busy` (error, attempts, holders: mapped and open deleted files, `/var/log` left out). What held adjamarragu's lower dir is unknown: holders were only printed then, and
+> the reboot cleared the overlay upper layer.
 > - **Teleport tunnels drop sessions** ("Connection closed by UNKNOWN port 65535") while `tsh ls` still lists the node: the probe ignores one
->   unreachable result, waits with `wait_for_connection` (600 s) and probes again. Ansible's docs do not say `until`/`retries` repeat an
->   unreachable task, so the role does not rely on that.
+> unreachable result, waits with `wait_for_connection` (600 s) and probes again. Ansible's docs do not say `until`/`retries` repeat an unreachable task, so the role does not rely on that.
 > - **Records feed recovery**: a failed run that stopped before stage 5 with no backup changed nothing and is skipped by `legacy_failed`
->   (aeroplane-1-smc01 was refused `needs_repair` twice over its own pre-change refusals); `already_done` is not tied to the role-code
->   fingerprint (a role edit would otherwise re-run restarts and a possible reboot on every patched SMC) but to `target`, a hash of the spec's
->   actions without `resume_safe`, stored with the state: a spec moved to a newer build re-runs its SMCs; older states without it count as done.
+> (aeroplane-1-smc01 was refused `needs_repair` twice over its own pre-change refusals); `already_done` is not tied to the role-code fingerprint (a role edit would otherwise re-run restarts and a
+> possible reboot on every patched SMC) but to `target`, a hash of the spec's actions without `resume_safe`, stored with the state: a spec moved to a newer build re-runs its SMCs; older states without
+> it count as done.
 > - **Resume**: on by default; nothing unfinished means a normal run (one command for a batch); code changed since the start refuses phases 5-8
->   but lets 9-10 (verify, cleanup) run on the current code (`drifted` in the decision); a writable lower dir with drift is refused.
+> but lets 9-10 (verify, cleanup) run on the current code (`drifted` in the decision); a writable lower dir with drift is refused.
 >
 > ```yaml
 > - name: Probe the host ({{ 'before' if smc_change_probe_base is none else 'after' }})
@@ -369,19 +352,17 @@ Screenshots: `screenshots/20261026-smc-change-recovery/` (generic pages, no cust
 >   when: smc_change_probe_first.unreachable | default(false)
 > ```
 
-> **Learned 2026-10-26 (19:30)** · smc_change run time on satellite SMCs · VERIFIED_PRIMARY (aeroplane-1-smc01 apply 185058 phase timings and
-> its /var/log/dpkg.log; warehouse-rct01 check runs; alice-well read-only pool match) · Source: roles/smc_change (local-knowledge-ansible,
-> uncommitted at write time) · Falsifier: a probe whose AVR read takes > 30 s with no cron run in progress
+> **Learned 2026-10-26 (19:30)** · smc_change run time on satellite SMCs · VERIFIED_PRIMARY (aeroplane-1-smc01 apply 185058 phase timings and its /var/log/dpkg.log; warehouse-rct01 check runs;
+> alice-well read-only pool match) · Source: roles/smc_change (local-knowledge-ansible, uncommitted at write time) · Falsifier: a probe whose AVR read takes > 30 s with no cron run in progress
 > - A remote Ansible call costs ~3.5 s over Teleport+satellite; a reconnect 11-15 s (ControlPersist 60 s drops it after each soak or wait).
->   The play now sets `ansible_ssh_args` with ControlPersist 10m and ServerAliveInterval 15 x 3.
+> The play now sets `ansible_ssh_args` with ControlPersist 10m and ServerAliveInterval 15 x 3.
 > - `pgrep -f` inside a shell matches the shell's own command line whenever the script text contains the pattern's target, even with the
->   `[a]rtisan` trick if the script also runs `php artisan ...` literally: the AVR check waited 60 s every probe. Spell the command through
->   a variable (`a=artisan; php "$a" update:stats`).
+> `[a]rtisan` trick if the script also runs `php artisan ...` literally: the AVR check waited 60 s every probe. Spell the command through a variable (`a=artisan; php "$a" update:stats`).
 > - Two `dpkg-repack` copies of one installed build are different files (control holds "Repackaged on <date>", archive metadata differs) with
->   identical `md5sums`; comparing sha256 of `/var/lib/dpkg/info/<pkg>[:arch].md5sums` with the pooled .deb's md5sums, plus a clean
->   `dpkg --verify`, identifies the build. Stage 5 now reuses pooled builds that way and skips installing dpkg-repack when all match.
+> identical `md5sums`; comparing sha256 of `/var/lib/dpkg/info/<pkg>[:arch].md5sums` with the pooled .deb's md5sums, plus a clean `dpkg --verify`, identifies the build. Stage 5 now reuses pooled
+> builds that way and skips installing dpkg-repack when all match.
 > - apt's cache keeps the .debs of the live install (`/var/cache/apt/archives`, RAM upper layer on overlay Pis: gone after a restart); the
->   lower-dir install copies them instead of `apt-get download` again.
+> lower-dir install copies them instead of `apt-get download` again.
 >
 > ```bash
 > a=artisan
@@ -389,10 +370,10 @@ Screenshots: `screenshots/20261026-smc-change-recovery/` (generic pages, no cust
 > cd /var/www/html/rct-tstik && timeout 120 php "$a" update:stats >/dev/null 2>&1
 > ```
 > - Resume after a code change (2026-10-26, widened by the operator after akwalirrumanja-smc01 was cut off in stage 7): only backup and
->   actions (5-6) are refused; restart, close, verify and cleanup (7-10) run on current code. Rollback material is judged per file on the
->   SMC or the controller (pooled builds live only in the pool). Journal timings are named from the phase number.
+> actions (5-6) are refused; restart, close, verify and cleanup (7-10) run on current code. Rollback material is judged per file on the SMC or the controller (pooled builds live only in the pool).
+> Journal timings are named from the phase number.
 > - `pkill -f` from a task whose `environment:` holds the pattern kills the task itself: Ansible puts environment variables on the remote
->   command line (akwalirrumanja-smc01 lost its session at the stop/start step twice). The pattern now goes base64-encoded:
+> command line (akwalirrumanja-smc01 lost its session at the stop/start step twice). The pattern now goes base64-encoded:
 >
 > ```yaml
 >   environment:
@@ -400,20 +381,19 @@ Screenshots: `screenshots/20261026-smc-change-recovery/` (generic pages, no cust
 >   # in the script: pat=$(printf '%s' "$SMC_PATTERN_B64" | base64 -d); pkill -f -- "$pat"
 > ```
 > - Root's `57 23 * * * pkill -9 php` on RCT SMCs is a workaround (operator, 2026-10-26): it clears PHP and Python processes that pile up
->   from cron jobs started without a running-check (e.g. `*/5 ... nohup php -S 10.254.0.1:8080`). Proposed, not decided: guard those cron
->   lines with `flock -n` (or a pgrep check) and drop the nightly kill.
+> from cron jobs started without a running-check (e.g. `*/5 ... nohup php -S 10.254.0.1:8080`). Proposed, not decided: guard those cron lines with `flock -n` (or a pgrep check) and drop the nightly
+> kill.
 
 
 ## Drop-proof installs, leftover chroot, lower dir first (2026-10-26 evening)
 
-`VERIFIED_PRIMARY` (runtime, local-knowledge-ansible `76b0f86`): alice-well-smc01's Teleport session dropped at "Install the .debs inside
-the chroot". dpkg finished in the lower dir (lower dpkg `ii .28`, audit clean) but the block's `always` close never ran: binds on
-`/media/root-ro/{dev,dev/pts,proc,sys}`, `policy-rc.d`, staging dir, lower rw. The next run refused `needs_repair` (correct). After a manual
-unbind/remove the resume passed 11/11, but two `php /usr/local/bin/kohana status:update:usage` processes (not in the spec's restart list)
-held old php8.1 files, the remount stayed EBUSY for 138 s and the SMC rebooted (phase 8 455 s). Fixes:
+`VERIFIED_PRIMARY` (runtime, local-knowledge-ansible `76b0f86`): alice-well-smc01's Teleport session dropped at "Install the .debs inside the chroot". dpkg finished in the lower dir (lower dpkg `ii
+.28`, audit clean) but the block's `always` close never ran: binds on `/media/root-ro/{dev,dev/pts,proc,sys}`, `policy-rc.d`, staging dir, lower rw. The next run refused `needs_repair` (correct).
+After a manual unbind/remove the resume passed 11/11, but two `php /usr/local/bin/kohana status:update:usage` processes (not in the spec's restart list) held old php8.1 files, the remount stayed EBUSY
+for 138 s and the SMC rebooted (phase 8 455 s). Fixes:
 
-- Installs run async and wait through `tasks/await_job.yml`. An `until` loop does not retry an unreachable host (ansible-core
-  `task_executor.py`: a connection failure raises out of the retry loop), so the wait copies the probe's pattern:
+- Installs run async and wait through `tasks/await_job.yml`. An `until` loop does not retry an unreachable host (ansible-core `task_executor.py`: a connection failure raises out of the retry loop), so
+  the wait copies the probe's pattern:
 
 ```yaml
 # roles/smc_change/tasks/await_job.yml (76b0f86)
@@ -431,15 +411,13 @@ held old php8.1 files, the remount stayed EBUSY for 138 s and the SMC rebooted (
 # ... then async_status again (a second drop ends the play for the host)
 ```
 
-- `files/recovery_safety.py` reports `dpkg_busy` (by `/proc/<pid>/comm`, so no command line self-matches) and `own_leftover` (the journal
-  says policy-rc.d was not there before, nothing installing); `recovery.py` then returns `safe_to_resume` with `close_chroot`, and main.yml
-  closes the chroot and removes the staging dir before anything else. Anyone else's chroot, a running dpkg or a failed audit stays
-  `needs_repair`.
-- `USER_STATED` (operator, 2026-10-26): on overlay SMCs apt_pin installs the lower dir first and live only when no reboot follows; cron is
-  paused for the gap. After the lower-dir install `files/reboot_holders.py` (read-only, 0.3 s on alice-well) lists processes mapping or
-  holding deleted files owned by the changed packages (lower dpkg `-L`), split into ones the spec restarts (systemd unit in the cgroup, or a
-  restart pattern) and others; any other holder after up to 60 s, or spec `always`/`overlay_only`, sets `smc_change_reboot_planned`
-  (journalled): no live install, no stage 7 restarts, lower dir flushed, stage 8 reboots.
+- `files/recovery_safety.py` reports `dpkg_busy` (by `/proc/<pid>/comm`, so no command line self-matches) and `own_leftover` (the journal says policy-rc.d was not there before, nothing installing);
+  `recovery.py` then returns `safe_to_resume` with `close_chroot`, and main.yml closes the chroot and removes the staging dir before anything else. Anyone else's chroot, a running dpkg or a failed
+  audit stays `needs_repair`.
+- `USER_STATED` (operator, 2026-10-26): on overlay SMCs apt_pin installs the lower dir first and live only when no reboot follows; cron is paused for the gap. After the lower-dir install
+  `files/reboot_holders.py` (read-only, 0.3 s on alice-well) lists processes mapping or holding deleted files owned by the changed packages (lower dpkg `-L`), split into ones the spec restarts
+  (systemd unit in the cgroup, or a restart pattern) and others; any other holder after up to 60 s, or spec `always`/`overlay_only`, sets `smc_change_reboot_planned` (journalled): no live install, no
+  stage 7 restarts, lower dir flushed, stage 8 reboots.
 
 ```yaml
 # roles/smc_change/tasks/actions/apt_pin.yml (76b0f86) - the cron pause before the chroot dpkg
@@ -449,32 +427,29 @@ systemd-run --quiet --unit=smc-change-cron-resume --on-active=15min /bin/systemc
 systemctl stop cron
 ```
 
-- Check mode: the lower-dir version read runs with `check_mode: false` and the assert is skipped in check mode (it failed on overlay SMCs
-  against an empty list). Async `shell` under `--check` returns "Command would have run if not in check mode" and runs nothing (tested).
-- `VERIFIED_PRIMARY` measurement: any task that touches an SMC costs 5-24 s over Teleport/satellite; a `--check` apply on alkngarrija-smc01
-  spent 123 s in stage 6 with nothing installed. alligator-hole-smc01 (async code, live-first) passed 11/11 in 441 s, stage 6 240 s.
-- Incident: an agent check run and the operator's apply probed alkngarrija-smc01 at the same second; both `artisan update:stats` hit the AVR
-  serial port, one read failed (`Unable to read the data from AVR`), both runs refused. One controller per SMC, check runs included.
-- Not yet run for real: the lower-dir-first order, the cron pause, a real drop through `await_job.yml`. Test SMC: alkngarrija-smc01
-  (operator: not warehouse-rct01). Runs table: `just smc_change_runs <change>` (`scripts/ansible/smc_change_runs_table.py`).
+- Check mode: the lower-dir version read runs with `check_mode: false` and the assert is skipped in check mode (it failed on overlay SMCs against an empty list). Async `shell` under `--check` returns
+  "Command would have run if not in check mode" and runs nothing (tested).
+- `VERIFIED_PRIMARY` measurement: any task that touches an SMC costs 5-24 s over Teleport/satellite; a `--check` apply on alkngarrija-smc01 spent 123 s in stage 6 with nothing installed.
+  alligator-hole-smc01 (async code, live-first) passed 11/11 in 441 s, stage 6 240 s.
+- Incident: an agent check run and the operator's apply probed alkngarrija-smc01 at the same second; both `artisan update:stats` hit the AVR serial port, one read failed (`Unable to read the data from
+  AVR`), both runs refused. One controller per SMC, check runs included.
+- Not yet run for real: the lower-dir-first order, the cron pause, a real drop through `await_job.yml`. Test SMC: alkngarrija-smc01 (operator: not warehouse-rct01). Runs table: `just smc_change_runs
+  <change>` (`scripts/ansible/smc_change_runs_table.py`).
 
-`VERIFIED_PRIMARY` (runs 2026-10-26 21:38-22:20, role at local-knowledge-ansible `76b0f86`): the lower-dir-first order passed 11/11 on
-alpara-smc01 and amatjatpalk-smc01 (overlay, live install after the lower dir, no reboot, stage 6 261/244 s, cron-started processes back
-after the pause). alkngarrija-smc01's first real apply lost SSH ~2 min into the async chroot dpkg (banner timeouts) and stayed unreachable
-past `wait_for_connection`'s 600 s; the Teleport tunnel was still listed while SSH closed and the autossh backdoor was down. Second drop
-today at the same step (alice-well-smc01 the first): `UNVERIFIED` hypothesis that dpkg's writes to the SD card starve sshd; to check on the
-SMC's dpkg.log and journal, candidate fix `ionice -c3 nice -n19` on the chroot dpkg. `run_once` for the role's bookkeeping is a patch in
-local-knowledge `plans/smc-change-run-once-20261026_2220.patch` (not applied); the operator wants run-once steps defined by the role and
-declared in the change spec (design open).
+`VERIFIED_PRIMARY` (runs 2026-10-26 21:38-22:20, role at local-knowledge-ansible `76b0f86`): the lower-dir-first order passed 11/11 on alpara-smc01 and amatjatpalk-smc01 (overlay, live install after
+the lower dir, no reboot, stage 6 261/244 s, cron-started processes back after the pause). alkngarrija-smc01's first real apply lost SSH ~2 min into the async chroot dpkg (banner timeouts) and stayed
+unreachable past `wait_for_connection`'s 600 s; the Teleport tunnel was still listed while SSH closed and the autossh backdoor was down. Second drop today at the same step (alice-well-smc01 the
+first): `UNVERIFIED` hypothesis that dpkg's writes to the SD card starve sshd; to check on the SMC's dpkg.log and journal, candidate fix `ionice -c3 nice -n19` on the chroot dpkg. `run_once` for the
+role's bookkeeping is a patch in local-knowledge `plans/smc-change-run-once-20261026_2220.patch` (not applied); the operator wants run-once steps defined by the role and declared in the change spec
+(design open).
 
 ## Done skip, runs per flavor, retries, timing, journal freeze (2026-10-27)
 
 Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `plans/smc-change-resume-20261027_1038/README.md`.
 
-- **Done SMCs are left out before any connection** (operator: "an smc which has been completed ... is ignored in the next run"). The
-  playbook's first play (no serial, controller only) runs `tasks/pending.yml` and the change play runs over `smc_change_todo`. apply, check
-  and assess skip a passed apply of the current target; rollback a passed rollback; verify never; `-e smc_change_force=true` none. The
-  summary lists them as ALREADY DONE.
+- **Done SMCs are left out before any connection** (operator: "an smc which has been completed ... is ignored in the next run"). The playbook's first play (no serial, controller only) runs
+  `tasks/pending.yml` and the change play runs over `smc_change_todo`. apply, check and assess skip a passed apply of the current target; rollback a passed rollback; verify never; `-e
+  smc_change_force=true` none. The summary lists them as ALREADY DONE.
 
   ```yaml
   - name: Group the host as done or still to do
@@ -482,26 +457,22 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
       key: "{{ 'smc_change_done' if smc_change_done_why is defined else 'smc_change_todo' }}"
   ```
 
-- **Run evidence per flavor** (operator: "the standard for all the changes"): `files/changes/<spec>/runs/<flavor>/{records,state,journal,
-  backups}`, flavor = the `-i` inventory folder, made on its first run (`smc_change_runs_dir` in `defaults/main.yml`). Moved by
-  `scripts/smc_change_runs_by_flavor.py` (dry run by default; `--with-active` only when `runs_dir` moves in the same step).
-- **SSH retries**: `ansible_ssh_retries: 8` on the change play rides out ~117 s of a satellite or Teleport blip (rc 255 only; ansible.cfg's 3
-  gave ~4 s). Seen: banana-well-smc01 "Data could not be sent ... Connection closed" while staging .debs in stage 6.
-- **TASK_TIMING**: `true` writes `task_timing/smc_change-<start>.json` (slowest first) and prints one line; `verbose` also prints the per-task
-  lines and recap (the old `true`); `TASK_TIMING_DIR` moves it.
-- **Teleport online filter (live since 2026-10-27 13:24)**: `tsh ls --proxy=<proxy> --format=json flavor=<inventory folder>,env=<inventory file>`
-  once per run; the `flavor` and `env` labels match the inventory folder and file (rct prod 290, rct stage 1; rcp prod 17 of 21 in
-  inventory, the four `generic-*` hosts not in Teleport). Label form and `--query 'labels.flavor == "rct"'` return the same.
-- **Run-once preparation (live since 2026-10-27 13:24; 9 probe-join lines per SMC gone)**: `tasks/prepare.yml` does spec load and check, plan banner, fingerprint, probe program and
-  folders once per run in the first play; `tasks/probe_cfg.yml` keeps the per-SMC HTTP resolution.
-- **Captive portal render is part of the PHP verification**: the spec's `http` checks `portal` (home) and `portal-terms`
-  (`/index.php/wifi/terms`) at the SMC's portal FQDN must redirect, or answer 200 with HTML and none of the bad markers, with the same status
-  as the before-probe; a portal broken before the change refuses the apply (`files/probe/40_http.py`, `tasks/guard.yml`). Shown as the first
+- **Run evidence per flavor** (operator: "the standard for all the changes"): `files/changes/<spec>/runs/<flavor>/{records,state,journal, backups}`, flavor = the `-i` inventory folder, made on its
+  first run (`smc_change_runs_dir` in `defaults/main.yml`). Moved by `scripts/smc_change_runs_by_flavor.py` (dry run by default; `--with-active` only when `runs_dir` moves in the same step).
+- **SSH retries**: `ansible_ssh_retries: 8` on the change play rides out ~117 s of a satellite or Teleport blip (rc 255 only; ansible.cfg's 3 gave ~4 s). Seen: banana-well-smc01 "Data could not be
+  sent ... Connection closed" while staging .debs in stage 6.
+- **TASK_TIMING**: `true` writes `task_timing/smc_change-<start>.json` (slowest first) and prints one line; `verbose` also prints the per-task lines and recap (the old `true`); `TASK_TIMING_DIR` moves
+  it.
+- **Teleport online filter (live since 2026-10-27 13:24)**: `tsh ls --proxy=<proxy> --format=json flavor=<inventory folder>,env=<inventory file>` once per run; the `flavor` and `env` labels match the
+  inventory folder and file (rct prod 290, rct stage 1; rcp prod 17 of 21 in inventory, the four `generic-*` hosts not in Teleport). Label form and `--query 'labels.flavor == "rct"'` return the same.
+- **Run-once preparation (live since 2026-10-27 13:24; 9 probe-join lines per SMC gone)**: `tasks/prepare.yml` does spec load and check, plan banner, fingerprint, probe program and folders once per
+  run in the first play; `tasks/probe_cfg.yml` keeps the per-SMC HTTP resolution.
+- **Captive portal render is part of the PHP verification**: the spec's `http` checks `portal` (home) and `portal-terms` (`/index.php/wifi/terms`) at the SMC's portal FQDN must redirect, or answer 200
+  with HTML and none of the bad markers, with the same status as the before-probe; a portal broken before the change refuses the apply (`files/probe/40_http.py`, `tasks/guard.yml`). Shown as the first
   step of the PHP Prove flow.
-- **An active journal freezes the role code** (RULE-007, incident 2026-10-27): editing `tasks/pending.yml` under open journals made six
-  resumes `needs_repair`; they resume only on the exact file they started with (both kept with sha256 in the plans folder). The fingerprint
-  covers `tasks`, `templates`, `files` (less `files/changes`, `files/tests`) plus the resolved spec, so the spec is frozen too; `defaults/`,
-  `meta/`, `drawio/` and the playbook are not.
+- **An active journal freezes the role code** (RULE-007, incident 2026-10-27): editing `tasks/pending.yml` under open journals made six resumes `needs_repair`; they resume only on the exact file they
+  started with (both kept with sha256 in the plans folder). The fingerprint covers `tasks`, `templates`, `files` (less `files/changes`, `files/tests`) plus the resolved spec, so the spec is frozen
+  too; `defaults/`, `meta/`, `drawio/` and the playbook are not.
 
   ```python
   drifted = journal.get("fingerprint") != data.get("fingerprint")
@@ -509,21 +480,18 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
     result["reasons"] = ["Host or resolved spec fingerprint changed; do not replay this transaction."]
   ```
 
-**First rcp prod apply (2026-10-27).** jigalong-smc01 (x86_64, plain root): apply `20261027_112044` passed 10/10 gates in 736 s with no reboot
-(BACKUP 89 s, ACTIONS 143 s, VERIFY 311 s, CLEANUP 159 s; the empty rcp pool meant its own repack); it created `runs/rcp/{state,journal,
-records}` on its first run, proving the per-flavor layout for a new flavor. A read-only `verify` at 12:05 passed 10/10 (49 s), captive portal
-home and terms 200 with HTML and no PHP error markers.
+**First rcp prod apply (2026-10-27).** jigalong-smc01 (x86_64, plain root): apply `20261027_112044` passed 10/10 gates in 736 s with no reboot (BACKUP 89 s, ACTIONS 143 s, VERIFY 311 s, CLEANUP 159 s;
+the empty rcp pool meant its own repack); it created `runs/rcp/{state,journal, records}` on its first run, proving the per-flavor layout for a new flavor. A read-only `verify` at 12:05 passed 10/10
+(49 s), captive portal home and terms 200 with HTML and no PHP error markers.
 
 ## Stranded-run self-repair, kohana cron jobs, lockstep timing, wh and nbn_accelerate (2026-10-27 afternoon)
 
-Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1451; commits 0e8a2f0 (recovery, cron_job, tstik check), 7ff3a30
-(prepare-once live, interim record).
+Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1451; commits 0e8a2f0 (recovery, cron_job, tstik check), 7ff3a30 (prepare-once live, interim record).
 
-- **A drifted apply cut off at 5-6 that installed nothing repairs itself (`abandoned_clean`)** (operator: "why cant it be built into the
-  php fix change?"). Five rct SMCs were stuck at 6/11 after a role edit; read-only, every php8.1 package was still the old build live and in
-  the lower dir and only the lower dir was left read-write. Now: lower dir remounted read-only, journal moved to
-  `runs/<flavor>/journal/superseded/<host>-<start>.json`, fresh start. Apply mode only: check, verify and assess reach the same decision
-  (the journal's mode stands in for theirs) and must not change the box (found by a side agent before any such run).
+- **A drifted apply cut off at 5-6 that installed nothing repairs itself (`abandoned_clean`)** (operator: "why cant it be built into the php fix change?"). Five rct SMCs were stuck at 6/11 after a
+  role edit; read-only, every php8.1 package was still the old build live and in the lower dir and only the lower dir was left read-write. Now: lower dir remounted read-only, journal moved to
+  `runs/<flavor>/journal/superseded/<host>-<start>.json`, fresh start. Apply mode only: check, verify and assess reach the same decision (the journal's mode stands in for theirs) and must not change
+  the box (found by a side agent before any such run).
 
   ```python
   # files/recovery.py (0e8a2f0)
@@ -534,12 +502,10 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1451; commits 0e
     result.update(classification="abandoned_clean", can_start=True, supersede_journal=True, close_lower=bool(safety.get("lower_rw")))
   ```
 
-- **Every flavor runs the portal's Kohana jobs from root's cron** (`kohana status:update:usage` every minute, `status:update:status` every
-  5, `status:clean:up` daily; rcp also `status:push:wifi:site:broker`; read on jigalong, barrakiah, areyonga, engawala). One still on the
-  old build held the lower dir past the 90 s close window and forced the fallback reboot (areyonga-smc01, binjari-top-camp-smc01:
-  `lower_busy` holder `php /usr/local/bin/kohana status:update:usage`). Spec restarts them with the new `respawn: cron_job`: stopped
-  whenever one is running at the restart (not only if the before-probe saw one), never waited for, not in the processes gate. Root's own
-  nightly `pkill -9 php` already kills them.
+- **Every flavor runs the portal's Kohana jobs from root's cron** (`kohana status:update:usage` every minute, `status:update:status` every 5, `status:clean:up` daily; rcp also
+  `status:push:wifi:site:broker`; read on jigalong, barrakiah, areyonga, engawala). One still on the old build held the lower dir past the 90 s close window and forced the fallback reboot
+  (areyonga-smc01, binjari-top-camp-smc01: `lower_busy` holder `php /usr/local/bin/kohana status:update:usage`). Spec restarts them with the new `respawn: cron_job`: stopped whenever one is running at
+  the restart (not only if the before-probe saw one), never waited for, not in the processes gate. Root's own nightly `pkill -9 php` already kills them.
 
   ```yaml
   # tasks/restart.yml (0e8a2f0)
@@ -548,30 +514,27 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1451; commits 0e
     - smc_change_proc.respawn == 'cron_job' or smc_change_before.processes[smc_change_proc.pattern] | default(0) | int > 0
   ```
 
-- **rct-tstik exists on rct only; wh serves python3 telemetry on 8080.** A check keyed on "something listens on 8080" refused three wh SMCs
-  as unhealthy; it now skips where `/var/www/html/rct-tstik` is absent. Per flavor, the long-running cron PHP program: rcp, nbn_accelerate,
-  nbn_wh `php Start.php` (apn-mqtt-client); rct `php -S` on 10.254.0.1:8080 (rct-tstik); wh none.
-- **Batches run in lockstep.** With `smc_change_serial` N, Ansible's linear strategy finishes each task on every host before the next, so
-  every host's stage time is the batch's: one fallback reboot (314 s) or a slow satellite host sets every line (wh batch of five 1,151 s, rct
-  batch of six 1,828 s, both over the 900 s budget). A host resumed past a stage shows its wait inside the stage before.
-- **Interim verify record**: verify.yml writes a record before cleanup; it no longer opens stage 11, so the summary reads 9 VERIFY,
-  10 CLEANUP, 11 RECORD (`smc_change_record_interim`).
+- **rct-tstik exists on rct only; wh serves python3 telemetry on 8080.** A check keyed on "something listens on 8080" refused three wh SMCs as unhealthy; it now skips where `/var/www/html/rct-tstik`
+  is absent. Per flavor, the long-running cron PHP program: rcp, nbn_accelerate, nbn_wh `php Start.php` (apn-mqtt-client); rct `php -S` on 10.254.0.1:8080 (rct-tstik); wh none.
+- **Batches run in lockstep.** With `smc_change_serial` N, Ansible's linear strategy finishes each task on every host before the next, so every host's stage time is the batch's: one fallback reboot
+  (314 s) or a slow satellite host sets every line (wh batch of five 1,151 s, rct batch of six 1,828 s, both over the 900 s budget). A host resumed past a stage shows its wait inside the stage before.
+- **Interim verify record**: verify.yml writes a record before cleanup; it no longer opens stage 11, so the summary reads 9 VERIFY, 10 CLEANUP, 11 RECORD (`smc_change_record_interim`).
 - **`include_tasks` files load when reached**: editing `tasks/` while a playbook runs changes the running play, journals or not.
-- **Results:** wh 6/6 passed (engawala canary; areyonga fallback reboot); first nbn_accelerate amata-smc01 passed (x86, no reboot,
-  `php Start.php` 2 before and after); rct batches of five (12:29) and six (12:50) passed.
+- **Results:** wh 6/6 passed (engawala canary; areyonga fallback reboot); first nbn_accelerate amata-smc01 passed (x86, no reboot, `php Start.php` 2 before and after); rct batches of five (12:29) and
+  six (12:50) passed.
 
 ## rct-tstik-iridium-update: a command that writes the lower dir itself, copy sources under RULE-007 (2026-10-28)
 
 Source: local-knowledge-ansible ansible-wifi (base commit 608697b, change uncommitted at writing), change record
 `roles/smc_change/files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update-20261028_1221.md`.
 
-- **The spec**: rct only. rct-tstik to `release/iridium` at `smc_bases_telemetry_iridium_git.commit` (1318c7b), `py_avrloader_v2.py` and AVR firmware
-  V3.07 to `/home`; `reboot: never`; gates from the tester's checks (stats page as `commands`; iridium routes, `artisan self:tests` + `/st_results`,
-  AVR menu `-m` with exit 0, HEAD at the commit live and lower as `proves`). Canary aeroplane-1-smc01 passed 8/8 gates in 592 s (2026-10-28).
-- **Spec values can name inventory vars.** The spec is templated at load per host, so `'{{ smc_bases_telemetry_iridium_git.commit }}'` in a
-  command keeps the inventory the one place the commit lives (role vars are not available there; `command_rollback.yml` header).
-- **A command that persists itself, no chroot, no reboot.** For a large tree pulled over the satellite, `chroot: true` would download it twice. The
-  command clones live, then `cp -a` into `/media/root-ro` (read-write during stage 6), and its `check` asserts both HEADs:
+- **The spec**: rct only. rct-tstik to `release/iridium` at `smc_bases_telemetry_iridium_git.commit` (1318c7b), `py_avrloader_v2.py` and AVR firmware V3.07 to `/home`; `reboot: never`; gates from the
+  tester's checks (stats page as `commands`; iridium routes, `artisan self:tests` + `/st_results`, AVR menu `-m` with exit 0, HEAD at the commit live and lower as `proves`). Canary aeroplane-1-smc01
+  passed 8/8 gates in 592 s (2026-10-28).
+- **Spec values can name inventory vars.** The spec is templated at load per host, so `'{{ smc_bases_telemetry_iridium_git.commit }}'` in a command keeps the inventory the one place the commit lives
+  (role vars are not available there; `command_rollback.yml` header).
+- **A command that persists itself, no chroot, no reboot.** For a large tree pulled over the satellite, `chroot: true` would download it twice. The command clones live, then `cp -a` into
+  `/media/root-ro` (read-write during stage 6), and its `check` asserts both HEADs:
 
   ```yaml
   # files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update.yml (excerpt)
@@ -584,11 +547,10 @@ Source: local-knowledge-ansible ansible-wifi (base commit 608697b, change uncomm
         [ "$(git -C "$l$d" rev-parse HEAD 2>/dev/null)" = "$c" ]
   ```
 
-  The same anchor is reused as a `proves` entry, so the persistence is gated, not assumed. Cost: the new tree (~54 MiB + .git) sits in the upper
-  tmpfs until the next boot (operator accepted, 2026-10-28).
-- **Copy sources while RULE-007 freezes `files/`.** `copy` reads `files/<spec>/<src>`; adding files there changes the role fingerprint and breaks
-  active journals' resume. A directory symlink `files/<spec> -> changes/<spec>` is invisible to `recovery.py --fingerprint` (`is_file()` false,
-  `rglob` does not follow it): fingerprint `2f6534b46e94...` identical before and after.
+The same anchor is reused as a `proves` entry, so the persistence is gated, not assumed. Cost: the new tree (~54 MiB + .git) sits in the upper tmpfs until the next boot (operator accepted,
+2026-10-28).
+- **Copy sources while RULE-007 freezes `files/`.** `copy` reads `files/<spec>/<src>`; adding files there changes the role fingerprint and breaks active journals' resume. A directory symlink
+  `files/<spec> -> changes/<spec>` is invisible to `recovery.py --fingerprint` (`is_file()` false, `rglob` does not follow it): fingerprint `2f6534b46e94...` identical before and after.
 
   ```python
   # files/recovery.py fingerprint (608697b)
@@ -599,11 +561,10 @@ Source: local-knowledge-ansible ansible-wifi (base commit 608697b, change uncomm
         continue
   ```
 
-- **copy cannot roll back a file that did not exist.** `copy_rollback.yml` always includes `_files_rollback.yml`, which fails when `paths.tgz`
-  lacks the file; new files (`/home/...`) therefore stop a rollback. Put command actions last so their undo runs first. Fix waiting in
-  `plans/smc-change-copy-rollback-new-file-20261028_1145.patch` (remove a copied file the backup never held).
-- **A check that must fail before the change belongs in `proves`.** `commands` must already hold before an apply or the SMC is refused; the loader
-  is absent and the tree is master before, so those checks are `proves`.
+- **copy cannot roll back a file that did not exist.** `copy_rollback.yml` always includes `_files_rollback.yml`, which fails when `paths.tgz` lacks the file; new files (`/home/...`) therefore stop a
+  rollback. Put command actions last so their undo runs first. Fix waiting in `plans/smc-change-copy-rollback-new-file-20261028_1145.patch` (remove a copied file the backup never held).
+- **A check that must fail before the change belongs in `proves`.** `commands` must already hold before an apply or the SMC is refused; the loader is absent and the tree is master before, so those
+  checks are `proves`.
 - **Check mode can still act** when a probe command does: `artisan self:tests` writes `st_results.blade.php` and `update:stats` reads the AVR.
 - **The probe prints `proves` by command text**, not `name` (cosmetic; noted while the role is frozen).
 
@@ -611,15 +572,13 @@ Source: local-knowledge-ansible ansible-wifi (base commit 608697b, change uncomm
 
 Source: change record `rct-tstik-iridium-update-20261028_1221.md` sections 2.2 and 5.2a (local-knowledge-ansible, uncommitted at writing).
 
-- **The spec now flashes the AVR** (action 3): stop cron, a `systemd-run --on-active=15min` timer that starts cron whatever happens, wait for
-  `update:stats`, flash (exit 5/6 retried 3 times), read the version, run `update:stats` once, start cron and cancel the timer. All of it runs
-  as the transient unit `smc-change-avr-flash` (`systemd-run --wait`), so a dropped satellite session ends only the waiting client.
-  `cron.service` has `KillMode=process`: stopping cron leaves `php -S` serving. warehouse-rct01: AVR 3.06 -> 3.07, 7/7 gates, 269 s.
-- **The probe's own command line holds the spec.** `PROBE_CONFIG` is in the environment, which Ansible puts on the remote command line, so any
-  check's `pgrep -f` matches the probe when its pattern also appears in the spec (here the restart pattern `artisan update:stats`). Each such
-  wait ran its full 60 s (self test 79 s, AVR check 66 s per probe). Anchor at the program, `pgrep -f '^php [a]rtisan update:stats'`:
-  probe 155 s -> 31 s. Guard: `files/tests/test_spec_pgrep.py` (`just test`) fails on an unanchored `pgrep -f` in any spec; the PHP-CVE
-  spec is listed as frozen there until its journals close.
+- **The spec now flashes the AVR** (action 3): stop cron, a `systemd-run --on-active=15min` timer that starts cron whatever happens, wait for `update:stats`, flash (exit 5/6 retried 3 times), read the
+  version, run `update:stats` once, start cron and cancel the timer. All of it runs as the transient unit `smc-change-avr-flash` (`systemd-run --wait`), so a dropped satellite session ends only the
+  waiting client. `cron.service` has `KillMode=process`: stopping cron leaves `php -S` serving. warehouse-rct01: AVR 3.06 -> 3.07, 7/7 gates, 269 s.
+- **The probe's own command line holds the spec.** `PROBE_CONFIG` is in the environment, which Ansible puts on the remote command line, so any check's `pgrep -f` matches the probe when its pattern
+  also appears in the spec (here the restart pattern `artisan update:stats`). Each such wait ran its full 60 s (self test 79 s, AVR check 66 s per probe). Anchor at the program, `pgrep -f '^php
+  [a]rtisan update:stats'`: probe 155 s -> 31 s. Guard: `files/tests/test_spec_pgrep.py` (`just test`) fails on an unanchored `pgrep -f` in any spec; the PHP-CVE spec is listed as frozen there until
+  its journals close.
 
   ```yaml
   # files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update.yml, action 3 check (excerpt)
@@ -629,24 +588,59 @@ Source: change record `rct-tstik-iridium-update-20261028_1221.md` sections 2.2 a
     cd /home && printf 'q\n' | timeout 60 python3 py_avrloader_v2.py -d /dev/ttyS0 -m 2>&1 | grep -q 'AVR version=3.07'
   ```
 
-- **A failed run whose spec was then edited needs two things set aside**, not one: `assess` says `needs_repair` (fingerprint changed in phase
-  6); after the journal moves to `runs/<flavor>/journal/superseded/`, the next apply is still refused at 3/11 because the failed record has no
-  journal (`legacy_failed` in `files/recovery.py`). Move the record to `runs/<flavor>/records/superseded/` too (the `find` is not recursive),
-  and copy the on-box backup to `runs/<flavor>/backups/superseded/` before removing it. Operator-approved repair, warehouse-rct01.
-- **`resume_safe: true` per action, reviewed**: copies (same bytes again), a flash whose check waits out the unit and skips at the target
-  version, a clone whose check covers live and lower HEAD. Without it a plain drop at stage 6 on a prod SMC needs the repair above.
+- **A failed run whose spec was then edited needs two things set aside**, not one: `assess` says `needs_repair` (fingerprint changed in phase 6); after the journal moves to
+  `runs/<flavor>/journal/superseded/`, the next apply is still refused at 3/11 because the failed record has no journal (`legacy_failed` in `files/recovery.py`). Move the record to
+  `runs/<flavor>/records/superseded/` too (the `find` is not recursive), and copy the on-box backup to `runs/<flavor>/backups/superseded/` before removing it. Operator-approved repair,
+  warehouse-rct01.
+- **`resume_safe: true` per action, reviewed**: copies (same bytes again), a flash whose check waits out the unit and skips at the target version, a clone whose check covers live and lower HEAD.
+  Without it a plain drop at stage 6 on a prod SMC needs the repair above.
+
+## Spec values, script files, trackers and shared scripts: rct-avr-smsc (2026-11-02)
+
+> **Learned 2026-11-02** · VERIFIED_PRIMARY (apply on warehouse-rct01 13:11 passed in 132 s; check mode, judge on two Iridium hosts and one not, 95 tests, ansible-core 2.21.5) · not proven on a box: the cron
+> pause, the `files/shared` copy path, the backup pool, the page refresh, a rollback · Falsifier: a spec `vars:` value that does not reach the resolved cmd
+
+- **Values** sit in a `vars:` block at the top of the spec, read as `smc_change_spec.vars.<name>`. Names never look like inventory variables (operator: no `smc_bases_*`).
+- **No shell in the steps:** each step is the spec's value block plus one `scripts/*.sh` by `file` lookup; a script holds no value or Jinja and takes each with `: "${NAME:?}"`. The text lands in the
+  resolved spec, so target and fingerprint cover it. `judge_conditions.yml` sets `role_path` for those lookups.
+- **`files/shared/`** holds scripts two changes can use; a spec reaches them with `src: ../../shared/<file>`. They are role code, so fingerprinted and frozen by RULE-007.
+- **Transient tool:** a `copy` with `transient: true` to `/run`, removed at stage 10. Facts are re-read after verify, before cleanup, so a fact can use it. A later `just verify` has no tool, so its
+  proves fail. A failed run skips cleanup and leaves the `/run` copies.
+- **Backup pool** matches by name, so a file goes in `backup.shared` only with its content hash in its name; per-SMC data never does.
+- **A `when` on a step skips and marks the SMC done**, so a state to retry later belongs in the script as a failure.
+- **Reports:** spec facts land in state, record and summary. `fact_same` lists facts already at their value (`(already the same)`), `fact_changes` the moved ones, and the summary prints every fact.
+- **Trackers:** `files/tracker.py` rebuilds `runs/tracker.csv` (every run) and `<change>/tracker-summary.csv` (each site's latest real apply or rollback) from the records after every run, for every
+  spec; `just tracker` by hand. An `outcome` column says what the actions did (changed, partly skipped, already done, skipped), as `passed` can mean every action was skipped; records older than action
+  logging leave it blank. Files under `files/changes/` are outside the role fingerprint.
+- **`abandoned_clean` is `apt_pin`-only** (`untouched()` in `files/recovery.py`): a `copy` or `command` spec edited after a failed run stays `needs_repair`, and `assess` can never report that class
+  (it needs mode apply). Repair: journal and failed record to `superseded/`, backup copied off and removed. A failure at stages 1-4 needs no repair. So edit a spec before a run, or roll a failure back
+  first.
+- **`check` skips a done SMC:** only 29 tasks run; `-e smc_change_force=true` makes check mode read it. Facts and conditions are outside the target, so adding them leaves passed SMCs done.
+
+```yaml
+# files/changes/rct-avr-smsc/rct-avr-smsc.yml (local-knowledge-ansible, 2026-11-02)
+vars:
+  smsc_target: "<number>"
+  step_values: |
+    SMSC_TARGET='{{ smc_change_spec.vars.smsc_target }}'
+actions:
+  - type: copy
+    transient: true
+    loop:
+      - {src: ../../shared/avr_emergency.py, dest: "{{ smc_change_spec.vars.avr_tool }}"}
+  - type: command
+    cmd: "{{ smc_change_spec.vars.step_values }}{{ lookup('ansible.builtin.file', smc_change_spec.vars.script_dir ~ '/smsc_write.sh') }}"
+```
 
 ## Runtime budget counts the wait for earlier batches (2026-10-28)
 
-The "Attempt runtime budget" line (record.yml) is wall time since the host's stage 1, not the time its own change took. Stage 1 sets the attempt
-clock with `default()` when the run starts, and nothing resets it when the host's serial batch begins (main.yml "Note the start time" sets only
-the string `smc_change_attempt_start`). A later batch's figure therefore includes every earlier batch, all in 1/11 SPEC; and because a batch moves
-in lockstep, every host in it prints the same figure, milliseconds apart.
+The "Attempt runtime budget" line (record.yml) is wall time since the host's stage 1, not the time its own change took. Stage 1 sets the attempt clock with `default()` when the run starts, and nothing
+resets it when the host's serial batch begins (main.yml "Note the start time" sets only the string `smc_change_attempt_start`). A later batch's figure therefore includes every earlier batch, all in
+1/11 SPEC; and because a batch moves in lockstep, every host in it prints the same figure, milliseconds apart.
 
-Case, rct run 20261028_145907, batch 2 (djarrakapi-smc01 to elitjia-smc01, attempt_start 15:35:29): 3449.7 s each, of which SPEC 2177 s is the
-wait for batch 1 (14:59:45 to about 15:35); the batch's own work was about 1272 s (ACTIONS 630, CLEANUP 218, VERIFY 130, BACKUP 122). To read the real
-figure, subtract 1/11 SPEC in the record's `phase_timings`. Proposed fix, not applied (RULE-007): set `smc_change_attempt_started` and
-`smc_change_phase_started` from `now().timestamp()` in "Note the start time".
+Case, rct run 20261028_145907, batch 2 (djarrakapi-smc01 to elitjia-smc01, attempt_start 15:35:29): 3449.7 s each, of which SPEC 2177 s is the wait for batch 1 (14:59:45 to about 15:35); the batch's
+own work was about 1272 s (ACTIONS 630, CLEANUP 218, VERIFY 130, BACKUP 122). To read the real figure, subtract 1/11 SPEC in the record's `phase_timings`. Proposed fix, not applied (RULE-007): set
+`smc_change_attempt_started` and `smc_change_phase_started` from `now().timestamp()` in "Note the start time".
 
 ```yaml
 # roles/smc_change/tasks/stage.yml (local-knowledge-ansible 76b0f86): first value wins for the whole run
@@ -658,18 +652,18 @@ smc_change_attempt_started: "{{ smc_change_attempt_started | default(now().times
 ## apt_pin installs a missing package: install_missing (2026-10-30)
 
 > **Learned 2026-10-30** · apt_pin `install_missing`, kept out of the target · VERIFIED_PRIMARY (offline tests 34 OK; `just target-hash` 4f2e5063 before
-> and after; map-smc01 rct apply 20261030_110256 passed with `missing=[]`) · Source: roles/smc_change files/probe/10_apt_pin.py, tasks/actions/apt_pin.yml,
-> apt_pin_rollback.yml, guard.yml, backup.yml, load_spec.yml (local-knowledge-ansible `cf4f994`) · Falsifier: a box with php8.1 but no
-> libapache2-mod-php8.1 that an apply refuses, or a passed SMC that reruns after a spec edit adding only `install_missing`
+> and after; map-smc01 rct apply 20261030_110256 passed with `missing=[]`) · Source: roles/smc_change files/probe/10_apt_pin.py, tasks/actions/apt_pin.yml, apt_pin_rollback.yml, guard.yml, backup.yml,
+> load_spec.yml (local-knowledge-ansible `cf4f994`) · Falsifier: a box with php8.1 but no libapache2-mod-php8.1 that an apply refuses, or a passed SMC that reruns after a spec edit adding only
+> `install_missing`
 > - apt_pin touched only installed packages (`installed()` keeps dpkg state `ii`; live install `only_upgrade: true`), so a box missing
->   `libapache2-mod-php8.1` failed `php_module` before the change and was refused as an unhealthy baseline, never fixed.
+> `libapache2-mod-php8.1` failed `php_module` before the change and was refused as an unhealthy baseline, never fixed.
 > - `install_missing: [pkg]` on an apt_pin action: the probe lists absent ones as `missing` / `missing_lower` only where another of the action's
->   packages is installed; `pkgs` stays what dpkg had (so recovery's `untouched()` still sees an install). Gates expect `pkgs | missing` after.
+> packages is installed; `pkgs` stays what dpkg had (so recovery's `untouched()` still sees an install). Gates expect `pkgs | missing` after.
 > - Kept out of `smc_change_target` with `resume_safe`: passed SMCs had the package (the gate needed it), so moving the target would rerun every
->   one. A box that lost it after passing: `-e smc_change_mode=verify` sweep, then `-e smc_change_force=true` per host.
+> one. A box that lost it after passing: `-e smc_change_mode=verify` sweep, then `-e smc_change_force=true` per host.
 > - The guard's waiver accepts any unhealthy baseline when something is missing, not only the checks the package explains (open: narrow it).
 > - Rollback: backup `added.txt` ("live|lower pkg"); `dpkg -r` them before `dpkg -i` of the saved builds, or an older php8.1-common leaves the new
->   mod_php unconfigurable.
+> mod_php unconfigurable.
 >
 > ```yaml
 > # roles/smc_change/tasks/load_spec.yml (local-knowledge-ansible cf4f994)
@@ -688,22 +682,19 @@ smc_change_attempt_started: "{{ smc_change_attempt_started | default(now().times
 ## Facts, conditions, when and loop (2026-10-30)
 
 > **Learned 2026-10-30** · per-box choice of actions and checks; loop on any action · VERIFIED_PRIMARY (offline: `just test` 34 OK,
-> `just test_conditions` 17 ok; real spec judged for AVR 3.07/2.14 x flash on/off with `just judge`; the avr_version fact read 3.07 on
-> warehouse-rct01 and myra-vale through files/facts.py; old and new target formula equal for all five specs) · Source: roles/smc_change
-> tasks/conditions.yml, templates/spec_actions.j2, load_spec.yml, probe_cfg.yml, backup.yml, rollback_locate.yml (local-knowledge-ansible
-> `7ef59c7`) · Falsifier: a passed SMC that reruns after adding only a `when`; a resumed flash run that picks actions from a fresh fact read
+> `just test_conditions` 17 ok; real spec judged for AVR 3.07/2.14 x flash on/off with `just judge`; the avr_version fact read 3.07 on warehouse-rct01 and myra-vale through files/facts.py; old and new
+> target formula equal for all five specs) · Source: roles/smc_change tasks/conditions.yml, templates/spec_actions.j2, load_spec.yml, probe_cfg.yml, backup.yml, rollback_locate.yml
+> (local-knowledge-ansible `7ef59c7`) · Falsifier: a passed SMC that reruns after adding only a `when`; a resumed flash run that picks actions from a fresh fact read
 > - `facts:` read-only commands on the SMC before the probe; `conditions:` named, either Jinja over host vars or `{fact, equals|in|match}`;
->   `when:` on any action or verify check (name, list, `not name`); `loop:` on any action, item fields over the action's, both whens apply.
+> `when:` on any action or verify check (name, list, `not name`); `loop:` on any action, item fields over the action's, both whens apply.
 > - Decided before the before-probe, so probe, plan, gates and stage 6 see only what applies; the plan lists each skip with the failed condition.
 > - The decision goes in the journal (a resume reuses it: a flashed AVR reads 3.07 afterwards) and the backup's `actions.txt` (a rollback undoes
->   only those). `when` is kept out of the target like `install_missing`. A failed fact refuses an apply.
->   So gate each fact on the flags of the step it serves: rct-tstik's `avr_version` reads stats.json only where the run may flash, else prints
->   `not-read` (local-knowledge-ansible `11348bc`), or a box with stopped stats would be refused the code update too.
+> only those). `when` is kept out of the target like `install_missing`. A failed fact refuses an apply. So gate each fact on the flags of the step it serves: rct-tstik's `avr_version` reads stats.json
+> only where the run may flash, else prints `not-read` (local-knowledge-ansible `11348bc`), or a box with stopped stats would be refused the code update too.
 > - Pitfalls found building it (ansible-core 2.21): a `set_fact` in prepare.yml's `run_once` fixes host-variable templates to the first host,
->   so the loop expansion is a lookup-backed default instead; never put a fact inside Jinja (the fingerprint renders the whole spec before
->   facts exist).
+> so the loop expansion is a lookup-backed default instead; never put a fact inside Jinja (the fingerprint renders the whole spec before facts exist).
 > - rct-tstik-iridium-update now copies only the 3.07 image, the current version's image and `avr_flash.sh`, and only on a flash run (was all
->   four images, ~440 kB, every apply); its target moved to `062940dd...`, so passed SMCs (warehouse-rct01, aeroplane-1) rerun once.
+> four images, ~440 kB, every apply); its target moved to `062940dd...`, so passed SMCs (warehouse-rct01, aeroplane-1) rerun once.
 >
 > ```yaml
 > # files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update.yml (7ef59c7)
@@ -729,8 +720,9 @@ smc_change_attempt_started: "{{ smc_change_attempt_started | default(now().times
 ### Action outcomes in the summary, record and state (2026-11-01)
 
 Every apply logs what each action did, with no spec key. Source: `roles/smc_change/tasks/action_run.yml`, `action_skips.yml`, `action_facts.yml` (local-knowledge-ansible, uncommitted at writing).
-`actions` (record and state): `UPDATED`, `ALREADY` or `SKIPPED, avr_at_307 already true (avr_version=3.07)`. `fact_changes` holds spec facts that moved. `state.versions` is unrelated: installed package
-versions after an `apt_pin`, one mapping per action, so `[]` on a change without `apt_pin` is correct. A run without `-e rct_avr_flash=true` reads no AVR version, so it says `flash_wanted is false`, not 3.07.
+`actions` (record and state): `UPDATED`, `ALREADY` or `SKIPPED, avr_at_307 already true (avr_version=3.07)`. `fact_changes` holds spec facts that moved. `state.versions` is unrelated: installed
+package versions after an `apt_pin`, one mapping per action, so `[]` on a change without `apt_pin` is correct. A run without `-e rct_avr_flash=true` reads no AVR version, so it says `flash_wanted is
+false`, not 3.07.
 
 ```yaml
 # tasks/action_run.yml (excerpt): a command's work trees are found, not declared
@@ -741,9 +733,9 @@ smc_change_git_paths: >-
 
 ### Busy lower dir: every change falls back as php-cve does (RULE-011, 2026-11-01)
 
-fish-river-smc01 stopped at the stage 10 close under `reboot: never`, gates all passed, `mount point is busy`, no process holding it. Cause `UNVERIFIED`. Role now, nothing in the spec: `reboot` defaults
-to `overlay_fallback`; a stage 7 close that stays busy reboots at stage 8; a stage 10 close that stays busy arms `files/changes/rearm_or_reboot.sh` with `at` (`smc_change_rearm_minutes`, default 5, RULE-009);
-a lower dir already read-write with no journal is worked on, no longer refused. `files/tests/test_spec_reboot.py` fails a `reboot: never` with no reason on the line above.
+fish-river-smc01 stopped at the stage 10 close under `reboot: never`, gates all passed, `mount point is busy`, no process holding it. Cause `UNVERIFIED`. Role now, nothing in the spec: `reboot`
+defaults to `overlay_fallback`; a stage 7 close that stays busy reboots at stage 8; a stage 10 close that stays busy arms `files/changes/rearm_or_reboot.sh` with `at` (`smc_change_rearm_minutes`,
+default 5, RULE-009); a lower dir already read-write with no journal is worked on, no longer refused. `files/tests/test_spec_reboot.py` fails a `reboot: never` with no reason on the line above.
 
 ```yaml
 # tasks/cleanup.yml (uncommitted at writing): the stage 10 close arms the job instead of failing
@@ -755,27 +747,29 @@ vars:
 Same day: the action log is in the journal, so a resume keeps it (fish-river-smc01 lost it at resume); cleanup now pools files an action saved after the stage 5 manifest (`shared` never appeared for
 rct-tstik's AVR image); the conditions message lists `RUNS` lines; labels carry the action type, and a command with no matching `verify` entry shows its `when`.
 
-Same day: `rearm_or_reboot.sh` no longer names apache2, kohana or any other process. `files/changes/rearm_head.py` prints the spec's `restart` list in front of it (`REARM_SERVICES`, `REARM_PATTERNS_B64`), for the
-role's `at` job and `just rearm` alike, so the recipe needs the change's own justfile. `files/tests/test_rearm.py` runs the real script against stub commands.
+Same day: `rearm_or_reboot.sh` no longer names apache2, kohana or any other process. `files/changes/rearm_head.py` prints the spec's `restart` list in front of it (`REARM_SERVICES`,
+`REARM_PATTERNS_B64`), for the role's `at` job and `just rearm` alike, so the recipe needs the change's own justfile. `files/tests/test_rearm.py` runs the real script against stub commands.
 
 ### Stage 10 busy close and AVR reset, first real results (2026-11-01)
 
-gumuluji-smc01: stage 7 closed the lower dir, stage 10 reopened it to remove the backup folder and the close stayed busy 9 x 10 s with no holder found. The `at` job fired at 18:23, stopped `php -S`, stayed busy
-and rebooted the box, which came back healthy (lower ro, commit live and lower, AVR 3.07). Same stage 10 busy on fish-river-smc01. Cause `UNVERIFIED`. The job runs after the playbook ends, so the run's record and
-state still say `passed` with `lower_busy.rearm_in_minutes` and never record the outcome.
+gumuluji-smc01: stage 7 closed the lower dir, stage 10 reopened it to remove the backup folder and the close stayed busy 9 x 10 s with no holder found. The `at` job fired at 18:23, stopped `php -S`,
+stayed busy and rebooted the box, which came back healthy (lower ro, commit live and lower, AVR 3.07). Same stage 10 busy on fish-river-smc01. Cause `UNVERIFIED`. The job runs after the playbook ends,
+so the run's record and state still say `passed` with `lower_busy.rearm_in_minutes` and never record the outcome.
 
-`stats.json` read AVR 2.11 while the loader read 3.07 on the same box, on gumuluji and briefly fish-river. Operator 2026-11-01: a flashed AVR needs a restart. `avr_flash.sh` now runs the loader's `-r` after a
-successful flash; a reset is not yet run on a real box. A Pi's clock is about 10 minutes behind straight after a reboot, so `who -b` and box timestamps mislead until NTP corrects it.
+`stats.json` read AVR 2.11 while the loader read 3.07 on the same box, on gumuluji and briefly fish-river. Operator 2026-11-01: a flashed AVR needs a restart. `avr_flash.sh` now runs the loader's `-r`
+after a successful flash; a reset is not yet run on a real box. A Pi's clock is about 10 minutes behind straight after a reboot, so `who -b` and box timestamps mislead until NTP corrects it.
 
-Later the same day (uncommitted at writing): an overlay apply moves its backup to the controller at stage 7 (`tasks/backup_move.yml`), so stage 10 no longer reopens the lower dir for it (operator: reopening was the
-fault). The close and the `at` job drop the dentry cache between tries (`UNVERIFIED` cause). The run waits for the job (`tasks/rearm_wait.yml`) and records `lower_busy.outcome`: remounted, rebooted, still read-write or
-unreachable. `avr_flash.sh` resets the AVR before cron starts. None of these has run on a real box yet.
+Later the same day (uncommitted at writing): an overlay apply moves its backup to the controller at stage 7 (`tasks/backup_move.yml`), so stage 10 no longer reopens the lower dir for it (operator:
+reopening was the fault). The close and the `at` job drop the dentry cache between tries (`UNVERIFIED` cause). The run waits for the job (`tasks/rearm_wait.yml`) and records `lower_busy.outcome`:
+remounted, rebooted, still read-write or unreachable. `avr_flash.sh` resets the AVR before cron starts. None of these has run on a real box yet.
 
 ### Governance of this role (2026-11-01)
 
-`roles/smc_change/AGENTS.md` (local-knowledge-ansible) holds the rules for writing specs and editing the role, including the mistakes to avoid; `change-spec-template.yml` starts a new spec. This file records how the role
-behaves and what was learned; rules go there.
+`roles/smc_change/AGENTS.md` (local-knowledge-ansible) holds the rules for writing specs and editing the role, including the mistakes to avoid; `change-spec-template.yml` starts a new spec. This file
+records how the role behaves and what was learned; rules go there.
 
-Final same day: bar-barrum-smc01 (resumed at stage 6) and jungalina-smc01 passed with the stage 7 backup move, no busy close and no reboot. `RUNS` lines give the commit from the facts call (`_commit_<index>` facts, kept out of `facts`), and every action task name carries its action number.
+Final same day: bar-barrum-smc01 (resumed at stage 6) and jungalina-smc01 passed with the stage 7 backup move, no busy close and no reboot. `RUNS` lines give the commit from the facts call
+(`_commit_<index>` facts, kept out of `facts`), and every action task name carries its action number.
 
-Close of the same day: gumuluji-smc01's `at` job ran end to end (stopped `php -S`, stayed busy 9 x 10 s, rebooted, came back with lower ro), before `tasks/rearm_wait.yml` existed. Seven sites took tstik `971d8d04` and V3.07 ahead of the Iridium install; myra-vale was already flashed.
+Close of the same day: gumuluji-smc01's `at` job ran end to end (stopped `php -S`, stayed busy 9 x 10 s, rebooted, came back with lower ro), before `tasks/rearm_wait.yml` existed. Seven sites took
+tstik `971d8d04` and V3.07 ahead of the Iridium install; myra-vale was already flashed.

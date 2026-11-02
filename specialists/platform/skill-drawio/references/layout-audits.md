@@ -78,8 +78,9 @@ reaches, and a test asserts the list is empty. Write such checks beside the page
 
 ## Every audit must be able to fail
 
-An audit that never fails proves nothing. Each audit has a test that feeds it a deliberately bad drawing and asserts the fault is reported, beside a test that a clean route passes [C-D29]. In this pack's `tests/test_layout_rules.py` (moved from UNC's `tests/test_flows_drawio.py`, 2026-10-19) these are: a clean route passes; box crossing; diagonal run; shared run; short head; label on another arrow and overlapping labels; arc clash (and arc clash on thin
-arrows); missing layer; untouched component. The real map's Overview and End-to-end pages are then checked by "passes every audit" tests.
+An audit that never fails proves nothing. Each audit has a test that feeds it a deliberately bad drawing and asserts the fault is reported, beside a test that a clean route passes [C-D29]. In this
+pack's `tests/test_layout_rules.py` (moved from UNC's `tests/test_flows_drawio.py`, 2026-10-19) these are: a clean route passes; box crossing; diagonal run; shared run; short head; label on another
+arrow and overlapping labels; arc clash (and arc clash on thin arrows); missing layer; untouched component. The real map's Overview and End-to-end pages are then checked by "passes every audit" tests.
 
 When adding an audit:
 
@@ -95,3 +96,7 @@ When the skill's own `tests/` gains these cases (the scripts are being refactore
   look ([export-and-self-review.md](export-and-self-review.md)).
 - They assume orthogonal routes; curved or diagonal edges are reported as `diagonal` and otherwise not checked.
 - Edges routed by draw.io itself (`Page.edge()`) are not recorded and are not audited.
+
+> **Learned 2026-11-02** · flow pages · VERIFIED_PRIMARY · Source: ansible-wifi `roles/smc_change/files/changes/rct-avr-smsc/flow-flows.yaml` (audit `box_crossings` on a skip branch) · Falsifier: an audit that reports stale step text
+> A decision that skips forward to a step in its own lane routes through the boxes between them. When the later step has a truer owner, move it to that lane in the map: here the role judges the
+> proofs, not the device. A drift check and a clean audit prove the drawing matches its map, never that the map matches the code: compare step text with the spec after each change.

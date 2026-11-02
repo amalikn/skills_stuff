@@ -9,10 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261102_1132
+Last rotated: 20261102_1348
 ---
 
 # Changelog
+
+## 20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records
+
+`languages/shell.md`, `languages/python.md`, `references/design-patterns.md` P-49, from ansible-wifi (2026-11-02).
 
 ## 20261102_1132 — Learned: one write frame for many fields
 
@@ -192,9 +196,3 @@ Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_w
   `languages/ansible.md` and `languages/python.md`.
 - `references/safety-and-writes.md`: Learned 2026-10-26 entry given its missing `Source:` field (contract test failed since 0918fc0) and its
   site name removed.
-
-## 20261027_1045 — Ansible: once-per-run play, test precedence, ssh retry backoff, include apply; git -C paths
-
-- `languages/ansible.md`: Learned 2026-10-27 (g) once-per-run play before the serial play with group_by keeps batches dense; (h) parenthesise a filter chain before a Jinja test; (i) ssh retries only
-  rc 255, pauses 2^n-1 capped 30 s, 8 retries ride out ~117 s, per-play `ansible_ssh_retries`; (j) `run_once` on include_tasks needs `apply`, a skipped task still registers.
-- `languages/python.md`: Learned 2026-10-27 `git -C` resolves a relative destination under its directory; resolve paths first.

@@ -360,13 +360,18 @@ adds `/viewstats2`, `/document`, `/iridium-test`, `/iridium-updates` and `/assig
 > - **Replies:** 70 bytes, `7E 42 65` to a write and `7E 42 67` to a read, then status `FF`, delay, timeout, the three numbers, the three bytes, checksum.
 > - The write sequence (two writes, wait 2 s, flush, third write, read the reply) gave the echo and left a read-back identical. `avr_emergency.py --apply` then changed warehouse-rct01's SMSC, with echo and fresh read-back matching and the other numbers untouched (2026-11-02). Survival over an AVR reset was not tested.
 > - **Survey 2026-11-02, the 10 hosts in the change's state folder, live AVR read equal to `stats.json` on every box:** at 11:03 six kept the Pivotel SMSC `+61415011740` (aeroplane-1, bar-barrum,
->   fish-river, gumuluji, jungalina, wungu-qld; bar-barrum and wungu-qld then went to Iridium by hand on `/ec`); corinda, myra-vale and nine-mile have `+61418706700` with emergency `000` and destination unchanged; warehouse-rct01 has all three Iridium numbers.
->   Tool: `avr_emergency.py` in the change folder of `rct-tstik-iridium-update`, `just emergency <host>`: reads by default, changes only named numbers, and needs `--apply` to write.
+> fish-river, gumuluji, jungalina, wungu-qld; bar-barrum and wungu-qld then went to Iridium by hand on `/ec`); corinda, myra-vale and nine-mile have `+61418706700` with emergency `000` and destination
+> unchanged; warehouse-rct01 has all three Iridium numbers. Tool: `avr_emergency.py` in the change folder of `rct-avr-smsc`, `just emergency <host>`: reads by default, changes only named numbers, and
+> needs `--apply` to write.
 > - **`/ec` path** (`ec.blade.php`, `PostHandler::ControlTHEN`, `THENControlRequest`, all read 2026-11-02): same frame layout and checksum, behind the form password. The form shows no stored values. A
->   blank number field becomes 20 NULs and a blank numeric field 255; the AVR keeps the stored value for both (bar-barrum and wungu-qld, AVR 3.07, SMSC alone submitted by hand on
->   2026-11-02, read back after). Numeric fields are decimal (`intval`: 15 and 60, not `0f` and `3c`; `3c` would store 3). It sends the frame twice,
->   reads 69 of the 70 reply bytes and discards them, so it never confirms the write. `handlePost` logs the whole POST with
->   `Log::info(json_encode($input))`, which includes the password, so automate over the serial port, not over HTTP.
+> blank number field becomes 20 NULs and a blank numeric field 255; the AVR keeps the stored value for both (bar-barrum and wungu-qld, AVR 3.07, SMSC alone submitted by hand on 2026-11-02, read back
+> after). Numeric fields are decimal (`intval`: 15 and 60, not `0f` and `3c`; `3c` would store 3). It sends the frame twice, reads 69 of the 70 reply bytes and discards them, so it never confirms the
+> write. `handlePost` logs the whole POST with `Log::info(json_encode($input))`, which includes the password, so automate over the serial port, not over HTTP.
+>
+> - **Operator ruling, final (2026-11-02):** `rct-avr-smsc` sets all three: emergency `000`, SMSC `+61418706700`, destination `+61410004795`; this replaces "SMSC only". Applied on warehouse-rct01 13:11, read back
+> from the AVR. The operator restarted warehouse-rct01 for this test at about 13:30 and the AVR still held all three (AVR power state during the restart not recorded). Survival over a firmware update is untested.
+> - The stats page at `:8080/` shows the numbers and their state rows, from `stats.json`, so it lags the AVR by up to 5 minutes until `update:stats` runs. Facts cost nothing; the page needs a refresh after a write.
+> - Port sharing: nothing locks `/dev/ttyS0`. `/ec` and the self test are invisible to any guard. A write stops cron in a transient unit with a 15-minute timer, as `avr_flash.sh` does (`files/shared/avr_cron_paused.sh`).
 >
 > ```php
 > // app/Services/IOManager.php (rct-tstik 971d8d0) - THENControlRequest
