@@ -20,7 +20,7 @@ from itertools import permutations
 from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 from drawio.mxfile import ARROW_HEAD, Page, label
 
-from .route_costs import NEAR, SPLIT_GAP, _along, _crosses, _overlaps, label_size, label_spot, lane_colour, leaves_off_side, overshoot
+from .route_costs import NEAR, SPLIT_GAP, _along, _crosses, _overlaps, label_size, label_spot, lane_colour, leaves_off_side, overshoot, on_lane_edge, too_close, with_under, joins, ports, valid
 
 #: Costs: a crossed box (or the arrow's own box) is unusable in practice; a run alongside another or over a label, a reused point, a reused side,
 #: a crossing, a bend and an exit off a plain box's right side each make a path worse.
@@ -33,7 +33,8 @@ COST_OVERSHOOT = 150
 # (operator review 2026-10-27, smc_change Apply page: "overlap of 7 and 10 could have been easily avoided").
 COST_SIBLING_CROSS = 400
 #: Shortest first run (leaving a box) and last run (the arrowhead's room, as drawio.audit.HEAD_ROOM thin).
-STUB, HEAD = 12, 22
+#: The price of a run too close to another or to a lane edge (`look.run_spacing`): less than a crossing, which is the worse fault.
+COST_CLOSE = 20
 #: Arc size where a flow arrow crosses another: an unavoidable crossing hops, as on the Overview.
 JUMP = 6
 STYLE = "edgeStyle=none;rounded={rounded};html=1;" + ARROW_HEAD + "jumpStyle=arc;jumpSize=6;strokeColor={colour};"
@@ -103,100 +104,13 @@ def cost(page: Page, path: tuple, ends: tuple, used: dict) -> float:
     own_corner = src in used.get("branchy", ()) and (src, out_side) not in used.get("taken", ())
     sides = ((src, out_side) in used["sides"] and not own_corner) + ((dst, in_side) in used["sides"])
     length = sum(abs(p[0] - q[0]) + abs(p[1] - q[1]) for p, q in segs)
-    return ((boxes + own + shared) * COST_BOX + (along + labels) * COST_ALONG + points * COST_PORT + sides * COST_SIDE + crosses * COST_CROSS
+    spacing = float(getattr(page, "run_spacing", 0))   # `look.run_spacing`: keep arrows apart, and off the corners a decision holds for its own branches
+    close = sum(1 for s in segs for o in others if too_close(s, o, spacing)) if spacing else 0
+    close += sum(1 for s in segs if on_lane_edge(s, getattr(page, "lane_edges", []))) if spacing else 0
+    held = bool(spacing) and dst in used.get("branchy", ()) and in_side != "left"   # worse than sharing the left corner, which an audit allows
+    return (close * COST_CLOSE + held * 2 * COST_BOX + (boxes + own + shared) * COST_BOX + (along + labels) * COST_ALONG + points * COST_PORT + sides * COST_SIDE + crosses * COST_CROSS
             + (len(segs) - 1) * COST_BEND + odd * COST_ODD_EXIT + length / 1000
             + (overshoot(segs, in_side, page.rects[src], page.rects[dst]) + leaves_off_side(out_side, ends, page.rects, used)) * COST_OVERSHOOT)
-
-
-def _ports(rect: tuple, diamond: bool, out: bool) -> list:
-    """A box's connection points for leaving (`out`) or entering, each with its side.
-
-    Args:
-        rect: the box.
-        diamond: whether it is a decision (only its corners are on the outline).
-        out: exits (right, top, bottom) or entries (left, top, bottom).
-
-    Returns:
-        (point, side) pairs; an exit's side also names its direction ("right", "top" = up, "bottom" = down).
-    """
-    x, y, w, h = rect
-    if out:
-        return [((x + w, y + h / 2), "right"), ((x + w / 2, y), "top"), ((x + w / 2, y + h), "bottom")]
-    lefts = [((x, y + h / 2), "left")] if diamond else [((x, y + h * f), "left") for f in (0.5, 0.33, 0.67)]
-    return lefts + [((x + w / 2, y), "top"), ((x + w / 2, y + h), "bottom")]
-
-
-def _joins(p: tuple, out_side: str, q: tuple, in_side: str, corridors: dict) -> list:
-    """Orthogonal polylines from an exit point to an entry point through the corridors.
-
-    Args:
-        p: the exit point.
-        out_side: "right", "top" or "bottom".
-        q: the entry point.
-        in_side: "left", "top" or "bottom".
-        corridors: {"xs": column gap centres, "ys": reserved run heights}.
-
-    Returns:
-        Polylines, unchecked.
-    """
-    xs, ys = corridors["xs"], corridors["ys"]
-    out = []
-    if out_side == "right":
-        if in_side == "left":
-            out += [[p, (x, p[1]), (x, q[1]), q] for x in xs if p[0] < x < q[0]]
-        else:
-            out.append([p, (q[0], p[1]), q])
-            out += [[p, (x, p[1]), (x, y), (q[0], y), q] for x in xs if p[0] < x < q[0] for y in ys]
-    else:
-        mid = (p[1] + q[1]) / 2
-        out.append([p, (p[0], q[1]), q] if in_side == "left" else [p, (p[0], mid), (q[0], mid), q])
-        for y in ys:
-            if in_side == "left":
-                out += [[p, (p[0], y), (x, y), (x, q[1]), q] for x in xs if p[0] < x < q[0]]
-            else:
-                out.append([p, (p[0], y), (q[0], y), q])
-    return out
-
-
-def _direction(a: tuple, b: tuple) -> str:
-    """The direction of a run.
-
-    Args:
-        a: its start.
-        b: its end.
-
-    Returns:
-        "right", "left", "down", "up", or "" for a zero-length or diagonal run.
-    """
-    if abs(a[1] - b[1]) < .5 and abs(a[0] - b[0]) >= .5:
-        return "right" if b[0] > a[0] else "left"
-    if abs(a[0] - b[0]) < .5 and abs(a[1] - b[1]) >= .5:
-        return "down" if b[1] > a[1] else "up"
-    return ""
-
-
-def _valid(pts: list, out_side: str, in_side: str) -> bool:
-    """Whether a polyline leaves and arrives the way its ports face, with room to leave and for the arrowhead, and no diagonal or zero run.
-
-    Args:
-        pts: the polyline (repeated points already dropped).
-        out_side: the exit side.
-        in_side: the entry side.
-
-    Returns:
-        True when usable.
-    """
-    if len(pts) < 2:
-        return False
-    runs = list(zip(pts, pts[1:]))
-    if any(_direction(a, b) == "" for a, b in runs):
-        return False
-    first, last = runs[0], runs[-1]
-    leave = {"right": "right", "top": "up", "bottom": "down"}[out_side]
-    arrive = {"left": "right", "top": "down", "bottom": "up"}[in_side]
-    first_len = abs(first[0][0] - first[1][0]) + abs(first[0][1] - first[1][1])
-    last_len = abs(last[0][0] - last[1][0]) + abs(last[0][1] - last[1][1])
-    return _direction(*first) == leave and _direction(*last) == arrive and first_len >= STUB and last_len >= HEAD
 
 
 def _candidates(page: Page, ends: tuple, diamonds: tuple, corridors: dict, ways: tuple | None) -> list:
@@ -214,14 +128,14 @@ def _candidates(page: Page, ends: tuple, diamonds: tuple, corridors: dict, ways:
     """
     src, dst = ends
     out = []
-    for p, side in _ports(page.rects[src], diamonds[0], True):
+    for p, side in ports(page.rects[src], diamonds[0], True):
         if ways is not None and side not in ways:
             continue
         odd = side != "right" and not diamonds[0]
-        for q, entry in _ports(page.rects[dst], diamonds[1], False):
-            for pts in _joins(p, side, q, entry, corridors):
+        for q, entry in ports(page.rects[dst], diamonds[1], False):
+            for pts in joins(p, side, q, entry, with_under(page, corridors, p, q)):
                 pts = [pt for k, pt in enumerate(pts) if k == 0 or pt != pts[k - 1]]
-                if _valid(pts, side, entry):
+                if valid(pts, side, entry):
                     out.append((pts, side, entry, odd))
     return out
 

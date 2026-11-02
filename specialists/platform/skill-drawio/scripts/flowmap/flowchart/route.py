@@ -11,7 +11,7 @@ from __future__ import annotations
 #: Track pitch in a gap (room for the arrows' hops) and channel spacing for arrows back up.
 TRACK, CHANNEL = 18, 18
 #: The room above a box for an arrowhead, and the height of a row only long arrows pass through.
-HEAD_ROOM, EMPTY_ROW = 30, 56
+HEAD_ROOM, EMPTY_ROW = 44, 56
 #: How far an entry moves along a box's top to clear another arrow.
 NUDGE = 30
 
@@ -42,10 +42,14 @@ def exit_point(chart: object, edge: object) -> tuple[bool, float]:
     """
     c = chart.grid.cols[edge.src]
     if chart.lanes is None:
+        if edge.kind == "main" and edge.index > 1 and c == 0:
+            return True, chart.third_x   # a third way out takes the left corner: two arrows never share an exit (operator, 2026-11-02)
         side = edge.kind == "stop" or edge.index == 1
     else:   # a stop sits straight below its step, so the way on takes the lane's gutter
         side = edge.kind != "stop" and (edge.index == 1 or f"__stop-{edge.src}" in chart.graph.stops)
         rows = chart.grid.rows
+        if edge.index > 1 and edge.kind != "stop" and c > 0 and not _gutter_busy(chart, rows[edge.src], c - 1):
+            return True, chart.cx[c - 1]   # a third way out takes the left corner: the bottom is the first's, and two there leave no room for a label
         level_in = any(e.dst == edge.src and e.kind == "main" and rows[e.src] == rows[e.dst] for e in chart.graph.edges)
         if side and edge.kind == "main" and chart.grid.cols[edge.dst] < c and not level_in and not _gutter_busy(chart, rows[edge.src], c - 1):
             return True, chart.cx[c - 1]   # heading left: out by the left, down the gutter of the lane before, so it crosses nothing of its own
@@ -94,30 +98,32 @@ def plan_gaps(chart: object) -> tuple[dict, dict]:
 
 
 def left_channels(graph: object, grid: object) -> dict:
-    """Arrows that take the left side: within the first column, a side exit or an arrow back up. They leave by the box's left, run down or up a channel
-    left of the column and enter the target's left, so a skip or a retry stays beside the main path and no track or right channel is needed.
+    """Arrows that stay beside the main column: within the first column, a side exit or an arrow back up. Each leaves by one side of its box, runs down or
+    up a channel on that side and enters the target's same side, so a skip or a retry needs no track (operator, 2026-11-02: half left, half right).
 
     Args:
         graph: the chart's graph.
         grid: its grid.
 
     Returns:
-        {(src, dst): channel, 0 nearest the boxes}; arrows whose rows overlap take different channels.
+        {(src, dst): (side, channel, 0 nearest the boxes)}; arrows whose rows overlap take different channels.
     """
     picked = [e for e in graph.edges if e.kind != "stop" and (e.kind == "back" or e.index == 1) and grid.cols[e.src] == 0 == grid.cols[e.dst]]
     sources = {e.src for e in picked}
     picked = [e for e in picked if e.dst not in sources]   # one left side cannot both take an arrow in and send one out: that one stays on the right
     spans = sorted(picked, key=lambda e: abs(grid.rows[e.src] - grid.rows[e.dst]))
-    taken: list[list[tuple]] = []
+    taken: dict = {"left": [], "right": []}
+    busy = {e.src for e in graph.edges if e.kind == "stop" or (e.index == 1 and (e.src, e.dst) not in {(p.src, p.dst) for p in picked})}
     out = {}
     for e in spans:
         lo, hi = sorted((grid.rows[e.src], grid.rows[e.dst]))
-        k = next((i for i, used in enumerate(taken) if all(hi < a or lo > b for a, b in used)), None)
-        if k is None:
-            taken.append([])
-            k = len(taken) - 1
-        taken[k].append((lo, hi))
-        out[(e.src, e.dst)] = k
+        free = {side: next((i for i, used in enumerate(tracks) if all(hi < a or lo > b for a, b in used)), len(tracks)) for side, tracks in taken.items()}
+        # The nearer free channel, so overlapping arrows split left and right; the right needs both boxes' right sides free of stops.
+        side = "right" if free["right"] < free["left"] and not {e.src, e.dst} & busy else "left"
+        if free[side] == len(taken[side]):
+            taken[side].append([])
+        taken[side][free[side]].append((lo, hi))
+        out[(e.src, e.dst)] = (side, free[side])
     return out
 
 

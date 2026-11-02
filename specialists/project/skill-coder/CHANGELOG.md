@@ -16,6 +16,8 @@ Last rotated: 20261102_1434
 
 ## Unreleased
 
+- 20261102 Learned 2026-11-02 in references/testing.md: a closing check without the tests; review text applied by script.
+
 - 20261102 references/engine-composition.md: how a many-language engine interlocks (who does what, the seam table with a check per seam, a parser with no parser, seven moves, build order). Patterns P-50 to P-54 in references/design-patterns.md, and the index brought up to P-54. Learned 2026-11-02 in references/engine-composition.md and references/design-patterns.md.
 
 ## 20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records

@@ -766,6 +766,20 @@
               "oneOf": [{"const": "all"}, {"type": "array", "items": {"type": "string", "minLength": 1}}],
               "description": "The lanes in BPMN symbols: flow ids, family:<id> for a family joined into one chart, or all. Default none."
             },
+            "label_clearance": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Least space between an arrow label and another arrow on a flow page, in px."
+            },
+            "route_under": {
+              "type": "boolean",
+              "description": "Flow pages: offer each arrow a track just below the boxes it passes; the router takes it when it scores cleaner."
+            },
+            "run_spacing": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Flow pages: least space between parallel arrows in px; also keeps arrows off the corners a decision holds for its branches."
+            },
             "lock_base_layer": {
               "type": "boolean",
               "description": "Draw every page's background layer locked, so nothing on it can be selected or moved by accident; default false."

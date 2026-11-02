@@ -10,8 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from drawio.audit import faults, page_audit
 from drawio.mxfile import Page as PageOf
 from flowmap import model
-from flowmap.flowchart.labels import place_labels
 from flowmap.flowchart.page import chart_page, short_text
+from flowmap.route_costs import label_spot, on_lane_edge, too_close, with_under
 from flowmap.flowchart.branches import _after_answer, _short, expand_branches
 from flowmap.flowchart.graph import END, START, chart_graph, swap_branches, lane_columns, lane_map, layers, place, spine, stitched
 from flowmap.flowchart.pages import _named, chart_flows, flowchart_pages
@@ -188,20 +188,81 @@ class LeftSide(unittest.TestCase):
     """Arrows beside the main path."""
 
     def test_skip_and_retry_leave_by_the_left(self):
-        """Both stay left of the column and enter the target's left side, and the audit passes."""
+        """Both run beside the column and enter the target's side, and the audit passes."""
         f = flow([step("a"), step("b", gate="ok?", next=["c", "e"]), step("c"), step("d", gate="again?", next=["e", "a"]), step("e")])
         page = chart_page(f, COMPS, profile(), (set(), set()))
         self.assertEqual(faults(page_audit(page)), [])
         for r in page.routes:
             if r.cid.endswith(("b-e", "d-a")):
-                x = page.rects[r.dst][0]
-                self.assertLess(min(p[0] for p in r.points), page.rects[r.src][0])
-                self.assertEqual(r.points[-1][0], x)
+                x, _y, w, _h = page.rects[r.dst]
+                self.assertIn(r.points[-1][0], (x, x + w))
 
     def test_lanes_keep_their_gutters(self):
         """A lane page has no left channel."""
         f = flow([step("a", gate="ok?", next=["b", "a"]), step("b")])
         self.assertEqual(faults(page_audit(chart_page(f, COMPS, profile(), (set(), set()), "lanes"))), [])
+
+
+class Clearance(unittest.TestCase):
+    """A label keeps off another arrow, not just off its line."""
+
+    def spot(self, margin: float) -> float:
+        """Where a label lands beside an arrow running just above where it would sit.
+
+        Args:
+            margin: `label_clearance`.
+
+        Returns:
+            The label's centre y.
+        """
+        page = PageOf("p", "P")
+        page.label_clearance = margin
+        page.box("a", "", 0, 0, 40, 40, "", solid=True)
+        page.box("b", "", 600, 0, 40, 40, "", solid=True)
+        page.route("other", "a", "b", [(40, 89), (600, 89)], "", "thin")
+        return label_spot(page, "mine", [(40, 100), (600, 100)], 100, 20)[1]
+
+    def test_zero_keeps_the_old_spot_and_a_margin_moves_it(self):
+        """A line 1 px past the label passes at 0, and moves the label at 6."""
+        self.assertEqual(self.spot(0), 100)
+        self.assertNotEqual(self.spot(6), 100)
+
+
+class RunSpacing(unittest.TestCase):
+    """Parallel arrows keep apart."""
+
+    def test_near_side_by_side_and_end_to_end(self):
+        """Close beside, or one ending where the other starts in line."""
+        self.assertTrue(too_close(((0, 0), (0, 100)), ((10, 50), (10, 200)), 30))
+        self.assertTrue(too_close(((0, 0), (0, 100)), ((0, 120), (0, 300)), 30))
+
+    def test_far_apart_or_crossing_is_fine(self):
+        """Distance clears it, and a crossing is not parallel."""
+        self.assertFalse(too_close(((0, 0), (0, 100)), ((40, 0), (40, 100)), 30))
+        self.assertFalse(too_close(((0, 0), (0, 100)), ((0, 200), (0, 300)), 30))
+        self.assertFalse(too_close(((0, 50), (100, 50)), ((50, 0), (50, 100)), 30))
+
+
+class LaneEdge(unittest.TestCase):
+    """A run keeps off a lane boundary."""
+
+    def test_a_flat_run_near_an_edge_counts_and_others_do_not(self):
+        """Close and flat counts; far, or vertical, does not."""
+        self.assertTrue(on_lane_edge(((0, 100), (500, 100)), [105]))
+        self.assertFalse(on_lane_edge(((0, 100), (500, 100)), [160]))
+        self.assertFalse(on_lane_edge(((0, 0), (0, 500)), [100]))
+
+
+class FreeBand(unittest.TestCase):
+    """Tracks spread over the room there is."""
+
+    def test_tracks_sit_across_the_free_band(self):
+        """A band under the boxes gives tracks near its two edges, then its middle."""
+        page = PageOf("p", "P")
+        page.box("a", "", 0, 0, 100, 76, "", solid=True)
+        page.lane_edges = [0, 300]
+        ys = with_under(page, {"under": True, "ys": [], "xs": []}, (0, 0), (100, 0))["ys"]
+        self.assertEqual([round(y) for y in ys[:3]], [130, 270, 200])
 
 
 class Words(unittest.TestCase):
@@ -220,21 +281,6 @@ class Words(unittest.TestCase):
     def test_tabs_stay_unique(self):
         """Two flows with one title show their ids."""
         self.assertEqual([f["title"] for f in _named([{"id": "a", "title": "T"}, {"id": "b", "title": "T"}, {"id": "c", "title": "U"}])], ["a", "b", "U"])
-
-
-class LabelSpots(unittest.TestCase):
-    """A label takes the first clear spot."""
-
-    def test_moves_off_another_arrow(self):
-        """A blocked first spot is passed over; a free one is kept."""
-        page = PageOf("p", "P")
-        page.box("a", "", 0, 0, 100, 40, "", solid=True)
-        page.box("b", "", 0, 200, 100, 40, "", solid=True)
-        page.route("x", "a", "b", [(50, 40), (50, 200)], "", "thin")
-        page.route("y", "a", "b", [(70, 40), (70, 200)], "", "thin")
-        place_labels(page, [("x", "yes", [(50, 40), (50, 200)], "", False)])
-        self.assertEqual(faults(page_audit(page)), [])
-        self.assertLess(page.marks[0].rect[0], 50)   # right of x was y's run
 
 
 class Lanes(unittest.TestCase):

@@ -27,6 +27,7 @@ from .flow_geometry import LANE_HEAD_W, back_arrow, step_edges, col_gap, column_
 from .lanes import draw_lanes
 from .routing import route_flow
 from .uncross import uncross, unshare
+from .step_text import action_clauses, note_lines, step_lines
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
@@ -38,66 +39,10 @@ STEP_H = 92
 NOTE_CHARS, NOTE_LINE_H = 44, 13   # font 10 draws about 12 px a line (measured 2026-10-21); 13 keeps a margin
 #: Step box text budget (200 px at font size 10) and line height.
 STEP_LINE_H = 13   # the characters a line a step box is sized for are drawing.look.step_chars
+#: The room kept under the lanes for an arrow `look.route_under` sends below the lowest box.
+UNDER_ROOM = 28
 #: A flow page header's line height (font 12).
 HEAD_LINE_H = 15
-#: A step note's sections, in reading order: (step key, heading, whether its items are code).
-NOTE_SECTIONS = (("reads", "Reads", False), ("writes", "Writes", False), ("code", "Code", True), ("failures", "Fails", False), ("look", "Look", False))
-
-
-def action_clauses(text: str) -> list[str]:
-    """An action's clauses: split on "; " outside brackets only, so a bracketed aside stays whole (operator review 2026-10-22: "(the operator's
-    click; agents never approve)" was cut into two bullets).
-
-    Args:
-        text: the step's action.
-
-    Returns:
-        The non-empty clauses, stripped.
-    """
-    out, depth, cur, i = [], 0, "", 0
-    while i < len(text):
-        if depth == 0 and text.startswith("; ", i):
-            out, cur, i = out + [cur], "", i + 2
-            continue
-        depth = max(0, depth + (text[i] in "([{") - (text[i] in ")]}"))
-        cur, i = cur + text[i], i + 1
-    return [c.strip() for c in out + [cur] if c.strip()]
-
-
-def step_lines(step: dict, number: int, bullets: bool = True, scale: int = 100) -> list[str]:
-    """A step box's text: the bold title, a blank line, the action, a blank line, the transport in italics, the gate in bold and the status.
-
-    Args:
-        step: the step from the map.
-        number: its position in the flow.
-        bullets: set an action of clauses joined by "; " one clause a line (`drawing.look.action_bullets`).
-        scale: the title's size, percent of the box font (`drawing.look.heading_scale`).
-
-    Returns:
-        Label lines for drawio.mxfile.label().
-    """
-    clauses = action_clauses(step["action"])
-    action = [step["action"]] if not bullets else clauses if len(clauses) == 1 else [f"• {c}" for c in clauses]   # one clause a line: long actions read as a list
-    return ([heading(f"**{number}. {step['id']}**", scale), BLANK] + action + [BLANK, f"*via {' + '.join(step['via'])}*"]
-            + ([f"**GATE: {step['gate']}**"] if step.get("gate") else [])
-            + ([f"*{step['status']['state']} since {step['status']['since']}*"] if step.get("status") else []))
-
-
-def note_lines(step: dict, number: int) -> list[str]:
-    """A step note as sections: the title, then per non-empty section a blank line, a bold heading and one bullet per item (code in monospace).
-
-    Args:
-        step: the step from the map.
-        number: its position in the flow.
-
-    Returns:
-        Label lines for drawio.mxfile.label().
-    """
-    out = [f"**{number}. {step['id']}**"]
-    for key, heading, is_code in NOTE_SECTIONS:
-        if step.get(key):
-            out += [BLANK, f"**{heading}**"] + [f"• `{item}`" if is_code else f"• {item}" for item in step[key]]
-    return out
 
 
 def flow_header_lines(flow: dict, comps: dict[str, dict], number: int | str) -> list[str]:
@@ -225,6 +170,24 @@ def flow_header(page: Page, flow: dict, comps: dict, number: int | str, width: f
     return head_h
 
 
+def _below_lanes(page: Page, profile: Profile, lane_y: list, bottom: float) -> tuple[bool, float]:
+    """What the router needs of the lanes: their edges, and `look.route_under`, by which an arrow may run just below the boxes it passes when that scores
+    cleaner (operator, 2026-11-02), with room kept under the lanes for the lowest.
+
+    Args:
+        page: the page.
+        profile: the drawing profile.
+        lane_y: the lanes' tops.
+        bottom: the last lane's bottom.
+
+    Returns:
+        (whether the track is on, the notes' top).
+    """
+    page.lane_edges = [*lane_y, bottom]
+    under = bool(profile.look.get("route_under"))
+    return under, bottom + GAP + (UNDER_ROOM if under else 0)
+
+
 def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Profile) -> Page:
     """One flow: a header, a lane per component (in order of first use), the steps left to right with numbered arrows, a note per step, and a
     legend of the shapes the page uses (flowmap.shapes).
@@ -240,6 +203,7 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
     """
     fid, steps = flow["id"], flow["steps"]
     page = Page(f"flow-{fid}", (flow.get("tab") or f"{number}. {flow['title']}")[:60])   # `tab` names it outright (operator, 2026-10-26)
+    page.label_clearance, page.run_spacing = profile.look.get("label_clearance", 0), profile.look.get("run_spacing", 0)
     shapes = {s["id"]: (step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) if profile.look["shapes"] else "process")
               for k, s in enumerate(steps)}
     texts, box_w, box_h = size_steps(steps, shapes, profile)
@@ -266,7 +230,7 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
     room = {key: reserve(n, tg) for key, n in plan["count"].items()}
     lanes, lane_y, lane_h = draw_lanes(page, flow, comps, profile, top, box_h, box_w, room, width)
     lefts = column_lefts([box_w[s["id"]] for s in steps], gaps)
-    notes_top = top + sum(lane_h) + GAP
+    under, notes_top = _below_lanes(page, profile, lane_y, top + sum(lane_h))
     note_h = [_step(page, flow, k, comps, profile, (lanes, lane_y, lane_h, box_h, texts, notes_top, shapes, lefts, room, box_w), number) for k in range(len(steps))]
     used = list(dict.fromkeys(list(shapes.values()) + [lane_shape(comps[c], profile.kind_shapes) for c in lanes]))
     shape_legend(page, used, MARGIN, notes_top + max(note_h + [0]) + GAP * 2, fid)
@@ -276,7 +240,7 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
     for cid, src, dst, text, style in edges:   # back arrows first: forward routes and labels then avoid them
         if "back to" in text:
             band = back_arrow(page, (cid, f"{fid}-s-{src}", f"{fid}-s-{dst}", text, style), band, profile.look["back_arrows"])
-    drawn, corridors, reserved = route_flow(page, (fid, steps, edges, shapes), {"xs": xs, "ys": ys}, profile.look)
+    drawn, corridors, reserved = route_flow(page, (fid, steps, edges, shapes), {"xs": xs, "ys": ys, "under": under}, profile.look)
     if profile.look.get("uncross", "on") != "off":   # redraw arrows that cross needlessly (operator review 2026-10-22)
         uncross(page, drawn, corridors, reserved)
     if profile.look.get("unshare", "on") != "off":   # part two arrows merged at one decision corner (operator review 2026-10-27)

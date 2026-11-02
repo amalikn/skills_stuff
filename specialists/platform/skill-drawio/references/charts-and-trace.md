@@ -65,7 +65,8 @@ No new data is needed; better data draws better.
 - In a lane an arrow heading to a lane on the left leaves by the box's left side, so it does not cross the step's own stop (operator, 2026-11-02).
 - A diamond's arrow to the box directly below it goes straight down, whichever branch it is; on a lane page each two-way diamond is drawn both ways and keeps the one
   with fewer crossings, then bends, then length (operator, 2026-11-02).
-- On a plain flowchart an arrow within the main column and any arrow back up leaves by the left and enters the target's left, in a channel beside the column (operator, 2026-11-02); a lane page keeps its gutters.
+- On a plain flowchart an arrow within the main column and any arrow back up runs in a channel beside the column. Arrows that overlap split left and right, each taking the nearer free channel (operator, 2026-11-02); a lane page keeps its gutters.
+- Chart, lane and BPMN arrows carry the step pages' own bold label, on the line.
 
 BPMN pages keep the step pages' colours: tasks and gateways in the actor's colours, shaded lanes, green and red branches, a red stop. BPMN mapping: start and end events, an error end event for a stop, a task for a step, a call activity for a step that runs a flow, an exclusive gateway for a decision, a sequence flow for every arrow.
 Nothing the map does not state is drawn, so no message flows. A gateway keeps its question inside the diamond: BPMN allows an exclusive gateway without its X.
@@ -75,6 +76,12 @@ before the step; step pages ignore the key, so their numbers and End-to-end labe
 
 A very wide step page folds with `layout: {fold: lane, fold_after: 4}` on the flow: a run of more than four steps by one actor snakes back and forth inside that actor's lane, which grows taller, and every lane
 appears once (operator, 2026-11-02). Notes keep to their step's column, stacked under the lanes. Only a flow with no branches folds this way; any other keeps its normal page. `serpentine` and `z` fold the whole flow into rows instead.
+
+`look.label_clearance` (px, default 6) keeps a flow page's arrow labels that far from other arrows: a label stopping 1 px short of a line passes the audit but reads as overlapping. Charts, lanes and BPMN always keep 6 px.
+
+`look.route_under` (on by default) adds, per arrow, a track just below the lowest box between its ends, which can be inside a lane. The router already scores every way out of a diamond, so a long branch takes this track, and its sibling the near exit, whenever that draws cleaner; no map names a route (operator, 2026-11-02: build this into the code, not by hand).
+
+`look.run_spacing` (px, default 40) prices parallel arrows that sit closer than that and long runs that hug a lane boundary, so the router spreads into open space, and keeps arrows off the top and bottom corners a decision holds for its own branches.
 
 ## Read the map before the code
 
@@ -149,5 +156,27 @@ cite a symbol where one exists. Ansible task files have no symbol yet, because a
 
 > **Learned 2026-11-02** · swimlanes · USER_STATED · Source: operator review with a reference image, 2026-11-02 · Falsifier: the operator accepts boxes side by side in a lane
 > A vertical lane holds one column of boxes. A stop goes under its step and the way on takes a gutter beside the column.
+
+> **Learned 2026-11-02** · layout judged by an operator · USER_STATED · Source: operator review of real smc_change pages, 2026-11-02, session record in local-knowledge-ansible `ansible-wifi/evidence/flow-review-20261102/` · Falsifier: the operator reverses a rule
+> Each complaint became a rule in code, never a map edit: no two arrows share an exit or overlap; a run stays off lane edges and from other runs when room exists, and tracks spread over the free band; a label sits on its line, in the one bold style, so move the arrows, not the label; a route clears the boxes it passes, not every lane; a long lane run folds inside that lane, and notes stack by column; diamonds, lanes and sides are chosen by measuring; a crossing is worse than closeness. A rule behind a default-off key is not built in: if a setting fixes a fault, make it the default and rerender every consumer.
+
+```python
+# scripts/flowmap/flowchart/order.py: draw both ways and keep the cleaner, instead of a rule per case
+for nid in graph.steps:
+    out = {e.index: e for e in graph.edges if e.src == nid and e.kind != "stop"}
+    if set(out) != {0, 1}:
+        continue
+    out[0].index, out[1].index = 1, 0
+    now = score(draw())
+    if now < best:
+        best = now
+    else:
+        out[0].index, out[1].index = 0, 1
+```
+
+> **Learned 2026-11-02** · draw.io · VERIFIED_SECONDARY · Source: https://www.drawio.com/doc/faq/custom-links · Falsifier: a documented hover trigger
+> Highlight is a custom-link action, so it runs on a click; nothing documented triggers it on hover. A click can light a whole arrow (`click_isolate` already isolates on click).
+
+Open: chart-php-steps arc clash on `cli~0-close`; plain flowchart spanning and measured swap; `just check` runs no unit tests.
 
 Screenshots: [references/screenshots/20261102-charts-lanes-bpmn/](screenshots/20261102-charts-lanes-bpmn/readme.md).

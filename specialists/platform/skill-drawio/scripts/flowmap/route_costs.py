@@ -12,6 +12,14 @@ from __future__ import annotations
 
 from drawio.audit import crossing, rects_overlap, seg_hits_rect, segments
 
+#: The least first run out of a box, and the least last run into one.
+STUB, HEAD = 12, 22
+#: How far below the lowest box a `look.route_under` track runs, the least step to the next, and how many are on offer.
+UNDER_CLEAR, UNDER_STEP, UNDER_TRACKS = 24, 14, 4
+#: Where tracks sit across a free band: two arrows take the outer two, a third the middle.
+BAND_SHARES = (0.15, 0.85, 0.5)
+#: How close a horizontal run may come to a lane boundary (`look.run_spacing` on).
+EDGE_GAP = 18
 #: Two parallel runs closer than this (px) read as one arrow.
 NEAR = 8
 
@@ -69,6 +77,39 @@ def _along(seg: tuple, other: tuple) -> bool:
     if abs(p[0] - q[0]) < .5 and abs(u[0] - v[0]) < .5 and abs(p[0] - u[0]) < NEAR:
         return max(min(p[1], q[1]), min(u[1], v[1])) < min(max(p[1], q[1]), max(u[1], v[1])) - 2
     return False
+
+def too_close(seg: tuple, other: tuple, gap: float) -> bool:
+    """Whether two parallel runs sit within `gap` of each other, side by side or one ending where the other starts (operator, 2026-11-02: an arrow turned
+    beside another with open space to spare).
+
+    Args:
+        seg: one run.
+        other: another run.
+        gap: the least space between them.
+
+    Returns:
+        True when they are too close.
+    """
+    (p, q), (u, v) = seg, other
+    for across, along in ((1, 0), (0, 1)):   # horizontal runs, then vertical
+        if abs(p[across] - q[across]) < .5 and abs(u[across] - v[across]) < .5 and abs(p[across] - u[across]) < gap:
+            return max(min(p[along], q[along]), min(u[along], v[along])) < min(max(p[along], q[along]), max(u[along], v[along])) + gap
+    return False
+
+
+def on_lane_edge(seg: tuple, edges: list) -> bool:
+    """Whether a horizontal run hugs a lane boundary, where it reads as part of the boundary (operator, 2026-11-02).
+
+    Args:
+        seg: the run.
+        edges: the lanes' boundaries, y.
+
+    Returns:
+        True when it runs within EDGE_GAP of one.
+    """
+    (_x0, y0), (_x1, y1) = seg
+    return abs(y0 - y1) < .5 and any(abs(y0 - y) < EDGE_GAP for y in edges)
+
 
 def _crosses(page: Page, path: tuple) -> int:
     """How many routed arrows' runs a candidate crosses.
@@ -189,6 +230,7 @@ def label_spot(page: Page, cid: str, pts: list, w: float, h: float, split: tuple
     pts = [pt for k, pt in enumerate(pts) if k in (0, len(pts) - 1) or not _straight(pts[k - 1], pt, pts[k + 1])]
     segs = sorted(segments(pts), key=lambda s: -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1])))
     others = [s for r in page.routes if r.cid != cid for s in segments(r.points)]
+    margin = float(getattr(page, "label_clearance", 0))   # `look.label_clearance`: a label stopping 1 px short of a line still reads as on it (operator, 2026-11-02)
     for p, q in segs:
         flat = abs(p[1] - q[1]) < .5
         beside = [(0, 0)] + ([(0, -h / 2 - 3), (0, h / 2 + 3)] if flat else [(w / 2 + 4, 0), (-w / 2 - 4, 0)])   # on the line, then just beside it
@@ -196,8 +238,128 @@ def label_spot(page: Page, cid: str, pts: list, w: float, h: float, split: tuple
             cx, cy = p[0] + (q[0] - p[0]) * f + ox, p[1] + (q[1] - p[1]) * f + oy
             across = split is not None and not flat and (ox, oy) == (0, 0)
             rect = (cx - split[0] - SPLIT_GAP, cy - 11, split[0] + split[1] + 2 * SPLIT_GAP, 22) if across else (cx - w / 2, cy - h / 2, w, h)
-            if (not any(seg_hits_rect(a, b, rect, 0) for a, b in others) and not any(rects_overlap(rect, m.rect) for m in page.marks)
+            near = (rect[0] - margin, rect[1] - margin, rect[2] + 2 * margin, rect[3] + 2 * margin)
+            if (not any(seg_hits_rect(a, b, near, 0) for a, b in others) and not any(rects_overlap(rect, m.rect) for m in page.marks)
                     and not any(rects_overlap(_clear(rect, LABEL_GAP), page.rects[c]) for c in page.solid)):
                 return cx, cy, across
     p, q = segs[0]
     return (p[0] + q[0]) / 2, (p[1] + q[1]) / 2, False
+
+
+def ports(rect: tuple, diamond: bool, out: bool) -> list:
+    """A box's connection points for leaving (`out`) or entering, each with its side.
+
+    Args:
+        rect: the box.
+        diamond: whether it is a decision (only its corners are on the outline).
+        out: exits (right, top, bottom) or entries (left, top, bottom).
+
+    Returns:
+        (point, side) pairs; an exit's side also names its direction ("right", "top" = up, "bottom" = down).
+    """
+    x, y, w, h = rect
+    if out:
+        return [((x + w, y + h / 2), "right"), ((x + w / 2, y), "top"), ((x + w / 2, y + h), "bottom")]
+    lefts = [((x, y + h / 2), "left")] if diamond else [((x, y + h * f), "left") for f in (0.5, 0.33, 0.67)]
+    return lefts + [((x + w / 2, y), "top"), ((x + w / 2, y + h), "bottom")]
+
+
+def joins(p: tuple, out_side: str, q: tuple, in_side: str, corridors: dict) -> list:
+    """Orthogonal polylines from an exit point to an entry point through the corridors.
+
+    Args:
+        p: the exit point.
+        out_side: "right", "top" or "bottom".
+        q: the entry point.
+        in_side: "left", "top" or "bottom".
+        corridors: {"xs": column gap centres, "ys": reserved run heights}.
+
+    Returns:
+        Polylines, unchecked.
+    """
+    xs, ys = corridors["xs"], corridors["ys"]
+    out = []
+    if out_side == "right":
+        if in_side == "left":
+            out += [[p, (x, p[1]), (x, q[1]), q] for x in xs if p[0] < x < q[0]]
+        else:
+            out.append([p, (q[0], p[1]), q])
+            out += [[p, (x, p[1]), (x, y), (q[0], y), q] for x in xs if p[0] < x < q[0] for y in ys]
+    else:
+        mid = (p[1] + q[1]) / 2
+        out.append([p, (p[0], q[1]), q] if in_side == "left" else [p, (p[0], mid), (q[0], mid), q])
+        for y in ys:
+            if in_side == "left":
+                out += [[p, (p[0], y), (x, y), (x, q[1]), q] for x in xs if p[0] < x < q[0]]
+            else:
+                out.append([p, (p[0], y), (q[0], y), q])
+    return out
+
+
+def _direction(a: tuple, b: tuple) -> str:
+    """The direction of a run.
+
+    Args:
+        a: its start.
+        b: its end.
+
+    Returns:
+        "right", "left", "down", "up", or "" for a zero-length or diagonal run.
+    """
+    if abs(a[1] - b[1]) < .5 and abs(a[0] - b[0]) >= .5:
+        return "right" if b[0] > a[0] else "left"
+    if abs(a[0] - b[0]) < .5 and abs(a[1] - b[1]) >= .5:
+        return "down" if b[1] > a[1] else "up"
+    return ""
+
+
+def valid(pts: list, out_side: str, in_side: str) -> bool:
+    """Whether a polyline leaves and arrives the way its ports face, with room to leave and for the arrowhead, and no diagonal or zero run.
+
+    Args:
+        pts: the polyline (repeated points already dropped).
+        out_side: the exit side.
+        in_side: the entry side.
+
+    Returns:
+        True when usable.
+    """
+    if len(pts) < 2:
+        return False
+    runs = list(zip(pts, pts[1:]))
+    if any(_direction(a, b) == "" for a, b in runs):
+        return False
+    first, last = runs[0], runs[-1]
+    leave = {"right": "right", "top": "up", "bottom": "down"}[out_side]
+    arrive = {"left": "right", "top": "down", "bottom": "up"}[in_side]
+    first_len = abs(first[0][0] - first[1][0]) + abs(first[0][1] - first[1][1])
+    last_len = abs(last[0][0] - last[1][0]) + abs(last[0][1] - last[1][1])
+    return _direction(*first) == leave and _direction(*last) == arrive and first_len >= STUB and last_len >= HEAD
+
+
+def with_under(page: Page, corridors: dict, p: tuple, q: tuple) -> dict:
+    """The corridors for one arrow, with `look.route_under`'s tracks: just below the lowest box between its ends, so it clears the boxes it passes and no
+    more (operator, 2026-11-02: below the shapes, not below every lane).
+
+    Args:
+        page: the page.
+        corridors: as for `joins`, with "under" set when the look asks.
+        p: the exit point.
+        q: the entry point.
+
+    Returns:
+        The corridors.
+    """
+    if not corridors.get("under"):
+        return corridors
+    lo, hi = sorted((p[0], q[0]))
+    bottoms = [r[1] + r[3] for r in (page.rects[c] for c in page.solid) if r[0] < hi and r[0] + r[2] > lo]
+    if not bottoms:
+        return corridors
+    step = max(UNDER_STEP, float(getattr(page, "run_spacing", 0)))   # tracks keep the page's spacing; several, so one clear of the lane edges is on offer
+    base = max(bottoms) + UNDER_CLEAR
+    tracks = [base + k * step for k in range(UNDER_TRACKS)]
+    below = [y for y in getattr(page, "lane_edges", []) if y > base + EDGE_GAP]
+    if below:   # spread over the free band, so arrows use the room there is (operator, 2026-11-02)
+        tracks = [base + (below[0] - base) * f for f in BAND_SHARES] + tracks
+    return {**corridors, "ys": [*corridors["ys"], *tracks]}

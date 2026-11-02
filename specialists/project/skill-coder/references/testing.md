@@ -208,3 +208,10 @@ if cf["severity"] == "P0":
 if _opposite_status(ca, cb):
   return row | {"guard": "same-identifier-opposite-status"}
 ```
+
+> **Learned 2026-11-02** · closing checks · VERIFIED_PRIMARY · Source: skill-drawio `just check` passed with two erroring unit tests, 2026-11-02 · Falsifier: a project whose `check` recipe runs its tests
+> A closing check that does not run the unit tests lets a broken test through a green gate. Know what `check` covers, and run the tests in the same gate before a push.
+
+> **Learned 2026-11-02** · applying reviews · VERIFIED_PRIMARY · Source: 105 agent fixes applied by script to a flow map, one a reviewer's to-do note · Falsifier: text applied by script that cannot hold an instruction
+> Review text applied by script lands wherever it was written, instructions included, and a stamp over it claims a review nobody did. Split the fact from the advice in the review's format, scan what was applied, and record who reviewed.
+

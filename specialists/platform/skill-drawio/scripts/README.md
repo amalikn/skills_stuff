@@ -130,6 +130,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowtrace/lockfile.py` | The review lock: per step, what it was reviewed against; findings and accept | `safe` |
 | `scripts/flowtrace/coverage.py` | Code no flow cites, the uncited-step ratchet, step words the code no longer holds | `safe` |
 | `scripts/flowtrace/query.py` | Select steps by flow, file, writes, failure, actor or text | `safe` |
+| `scripts/flowmap/step_text.py` | The words in a flow page's step box and note | `safe` |
 | `scripts/flowmap/lane_fold.py` | A flow page folded inside its lanes: a long run snakes within its lane, which grows taller | `safe` |
 | `scripts/flowmap/flowchart/__init__.py` | Package `flowmap.flowchart` | `safe` |
 | `scripts/flowmap/flowchart/graph.py` | A flowchart's nodes, edges and layered grid; a family's flows chained | `safe` |

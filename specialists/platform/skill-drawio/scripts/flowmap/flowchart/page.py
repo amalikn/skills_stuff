@@ -15,7 +15,6 @@ from __future__ import annotations
 
 from drawio.mxfile import ARROW_HEAD, BLANK, Page, header_height, label, wrapped_lines
 
-from ..flow_geometry import BACK_MARK
 from . import bpmn
 from .lanes import LANE_HEAD, View, draw_lanes
 from .labels import mark_size, place_labels
@@ -33,13 +32,15 @@ BOX_W, BOX_CHARS, LINE_H, BOX_H, DECISION_MAX = 240, 34, 15, 56, 440
 #: The space after a lane's gutter.
 GUTTER_GAP = 16
 TABS = {"chart": "Chart", "lanes": "Lanes", "bpmn": "BPMN"}
+#: More room in the gaps when a diamond has three ways out.
+THREE_WAY_ROOM = 40
 #: The same room on a page turned on its side.
-TURNED_LABEL_ROOM, TURNED_GAP = 56, 36
+TURNED_LABEL_ROOM, TURNED_GAP = 100, 60
 #: Space between columns; in a gap between rows, the room under a box for a label.
-COL_GAP, LABEL_ROOM = 70, 24
+COL_GAP, LABEL_ROOM = 70, 44
 #: Where a step with no `label` is cut, in characters.
 CUT = 64
-JUMP = 6
+JUMP = 4
 EDGE = "edgeStyle=none;rounded=1;html=1;" + ARROW_HEAD + f"jumpStyle=arc;jumpSize={JUMP};"
 COLOURS = {"Yes": "#1b7a3a", "No": "#b3261e", "": "#333333"}
 BACK = EDGE + "dashed=1;strokeColor=#6a3fa0;"
@@ -48,7 +49,6 @@ STOP_BOX = ("rounded=1;absoluteArcSize=1;arcSize=30;whiteSpace=wrap;html=1;fillC
             "verticalAlign=middle;spacingLeft=10;spacingRight=8;")
 END_BOX = ("rounded=1;absoluteArcSize=1;arcSize=30;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;strokeWidth=2;fontSize=11;"
            "fontStyle=1;spacingLeft=10;spacingRight=10;")
-LABEL_MARK = "text;html=1;align=center;verticalAlign=middle;fontSize=10;labelBackgroundColor=#ffffff;"
 
 
 def short_text(step: dict) -> str:
@@ -139,6 +139,7 @@ class Chart:
         self.lanes, self.actors, self.first_col, self.bpmn = None, [], [], mode == "bpmn"
         self.turned = mode != "chart" and not flow.get("_vertical")
         self.label_room = TURNED_LABEL_ROOM if self.turned else LABEL_ROOM   # on a turned page this gap is sideways, and words need more of it
+        self.label_room += THREE_WAY_ROOM if any(e.index > 1 for e in self.graph.edges) else 0   # three labels share a three-way diamond's gap
         if mode != "chart":
             self.lanes, self.actors = lane_map(self.graph)
             self.first_col = lane_columns(len(self.actors))
@@ -190,13 +191,19 @@ class Chart:
         for nid, c in self.grid.cols.items():
             widths[c] = max(widths[c], self.size[nid][0])
         gap = TURNED_GAP if self.turned else max([COL_GAP] + [mark_size(t)[0] + 40 for t in self.labels.values() if t])   # words run across a turned gap, not along it
+        lefts = [v for v in self.left.values() if v[0] == "left"]
+        rights = [v for v in self.left.values() if v[0] == "right"]
         words = [mark_size(self.labels[key])[0] for key in self.left if self.labels[key]]
-        self.left_x = MARGIN + len(set(self.left.values())) * CHANNEL if self.left else MARGIN   # the channels, then room for a label on the way out
-        self.cx, self.col_left, x = {}, {}, self.left_x + (max(words + [0]) + 28 if self.left else 0)
+        room = max(words + [0]) + 28
+        third = any(e.kind == "main" and e.index > 1 and self.grid.cols[e.src] == 0 for e in self.graph.edges) and not self.lanes
+        self.third_x = MARGIN   # the outermost channel, for a third way out of a diamond
+        self.left_x = MARGIN + (len(set(lefts)) + third) * CHANNEL if lefts or third else MARGIN   # the channels, then room for a label on the way out
+        self.right_gap = len(set(rights)) * CHANNEL + room if rights else 0
+        self.cx, self.col_left, x = {}, {}, self.left_x + (room if lefts or third else 0)
         for c in range(last + 1):
             w = widths[c] or 40
             self.col_left[c], self.cx[c] = x - (GUTTER_GAP / 2 if self.lanes else gap / 2), x + w / 2
-            x += w + (GUTTER_GAP if self.lanes and c % 2 else gap)
+            x += w + (GUTTER_GAP if self.lanes and c % 2 else gap) + (self.right_gap if c == 0 else 0)
         self.channel_x, self.lane_end = x, x - gap / 2
 
     def port_in(self, dst: str, incoming: list) -> dict:
@@ -268,8 +275,12 @@ def _edge_points(chart: Chart, ys: dict, e: object, route: tuple) -> list:
     if e.kind == "main" and chart.grid.rows[e.src] == chart.grid.rows[e.dst]:   # a hand-off level with its source runs sideways
         return [(sx + sw, sy + sh / 2), (node_rect(chart, ys, e.dst)[0], sy + sh / 2)]
     if key in chart.left:
-        tx, ty, _tw, th = node_rect(chart, ys, e.dst)
-        lane = chart.left_x - CHANNEL * chart.left[key]
+        tx, ty, tw, th = node_rect(chart, ys, e.dst)
+        side, k = chart.left[key]
+        if side == "right":
+            lane = max(sx + sw, tx + tw) + chart.right_gap - CHANNEL * (k + 1)
+            return [(sx + sw, sy + sh / 2), (lane, sy + sh / 2), (lane, ty + th / 2), (tx + tw, ty + th / 2)]
+        lane = chart.left_x - CHANNEL * k
         return [(sx, sy + sh / 2), (lane, sy + sh / 2), (lane, ty + th / 2), (tx, ty + th / 2)]
     side, x = exit_point(chart, e)
     mid = sy + sh / 2
@@ -320,9 +331,9 @@ def draw_edges(page: View, chart: Chart, ys: dict, route: tuple) -> None:
         page.page.route(cid, f"{fid}-c-{e.src}", f"{fid}-c-{e.dst}", pts, style, "thin", jump=JUMP)
         if e.kind == "back" and not words:
             words = "back"
-        if words or e.kind == "stop":
-            base = BACK_MARK if e.kind == "back" else LABEL_MARK
-            items.append((cid, words or "fails", pts, base + f"fontColor={COLOURS['No'] if e.kind == 'stop' else colour};", e.index > 1))
+        says_itself = e.index > 1 and "-stop" in e.dst   # a third way out into a stop box: the box already says it, and its gap has no room for a label
+        if (words or e.kind == "stop") and not says_itself:
+            items.append((cid, words or "fails", pts, COLOURS["No"] if e.kind == "stop" else "#6a3fa0" if e.kind == "back" else colour))
     place_labels(page.page, items)
 
 
@@ -342,6 +353,7 @@ def chart_page(flow: dict, comps: dict, profile: Profile, page_ids: tuple, mode:
     fid, swimlanes = f"{mode}-{flow['id']}", mode != "chart"   # the mode in every cell id: one flow may be drawn in all three
     chart = Chart({**flow, "id": fid}, comps, profile, page_ids, mode)
     page = Page(fid, f"{TABS[mode]}: {flow['title']}"[:60])
+    page.label_clearance, page.run_spacing = profile.look.get("label_clearance", 0), profile.look.get("run_spacing", 0)
     head = [f"**{flow['title']}** ({TABS[mode].lower()})", BLANK, flow["purpose"], BLANK, f"**Trigger:** {flow['trigger']['kind']}: {flow['trigger']['detail']}",
             BLANK, "[back to Overview]"]
     if swimlanes:

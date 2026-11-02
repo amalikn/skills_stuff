@@ -1,13 +1,14 @@
-"""Tests for how a chart is arranged: measured diamond exits, lane order, sideways hand-offs and exits to the left; flowmap "lane_fold" too."""
+"""Tests for how a chart is arranged: measured diamond exits, lane order, sideways hand-offs and exits to the left; flowmap "lane_fold" and "step_text" too."""
 
 import sys
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from drawio.audit import faults, page_audit
+from drawio.audit import crossing, faults, page_audit, segments
 from flowmap.flowchart.graph import chart_graph, lane_map, layers, place, swap_branches
 from flowmap.flowchart.order import improve_branches, lane_cost, lane_order, score
 from flowmap.flowchart.page import chart_page
@@ -92,6 +93,56 @@ class LaneFoldExit(unittest.TestCase):
         out = next(r for r in page.routes if r.cid.endswith("m3-z"))
         lane = page.rects["f-lane-0"]
         self.assertLessEqual(out.points[1][1], lane[1] + lane[3] - 20)
+
+
+class RouteUnder(unittest.TestCase):
+    """A long branch can run below every box."""
+
+    def page(self, under: bool) -> object:
+        """A decision whose long branch would otherwise cross the arrows between two lanes.
+
+        Args:
+            under: `look.route_under`.
+
+        Returns:
+            The flow page.
+        """
+        steps = [step("a", gate="q", next=["b", "e"], when={"b": "yes", "e": "no"}, writes=["x"]), step("b", actor="d"), step("c"), step("d", actor="d"), step("e")]
+        f = {**flow(steps), "runs_on": "c", "owner": "c", "category": "x"}
+        comps = {k: {**v, "host": "h", "health": "h", "group": "g"} for k, v in Lanes.COMPS.items()}
+        return flow_page(f, comps, 1, replace(profile(), look={**profile().look, "route_under": under}))
+
+    def test_the_router_chooses_it_and_crosses_less(self):
+        """With the track on, room is kept for it, crossings do not rise, and the audit passes."""
+        def crossings(page: object) -> int:
+            runs = [segments(r.points) for r in page.routes]
+            return sum(crossing(s, t) is not None for i, a in enumerate(runs) for b in runs[i + 1:] for s in a for t in b)
+
+        off, on = self.page(False), self.page(True)
+        self.assertEqual(faults(page_audit(on)), [])
+        self.assertLessEqual(crossings(on), crossings(off))
+        notes = lambda page: min(r[1] for c, r in page.rects.items() if "-n-" in c)
+        self.assertGreater(notes(on), notes(off))   # the track has its own room above the notes
+
+
+class BothSides(unittest.TestCase):
+    """Overlapping skips split left and right."""
+
+    def test_two_overlapping_skips_take_a_side_each(self):
+        """Nested spans go one each way, each entering its own side, and the audit passes."""
+        f = flow([step("a", gate="p", next=["b", "e"]), step("b", gate="q", next=["c", "d"]), step("c"), step("d"), step("e")])
+        chart_ = chart_page(f, COMPS, profile(), (set(), set()))
+        self.assertEqual(faults(page_audit(chart_)), [])
+        ends = {r.cid.rsplit("-", 2)[-2]: r for r in chart_.routes}
+        boxes = chart_.rects
+        left = min(p[0] for p in ends["b"].points) < boxes[ends["b"].src][0]
+        right = max(p[0] for p in ends["a"].points) > boxes[ends["a"].src][0] + boxes[ends["a"].src][2]
+        self.assertTrue(left and right)
+
+    def test_a_label_is_bold_and_on_the_page_style(self):
+        """Chart labels use the step pages' label."""
+        f = flow([step("a", gate="p", next=["b", "c"]), step("b"), step("c")])
+        self.assertIn("fontStyle=1", "".join(chart_page(f, COMPS, profile(), (set(), set())).cells))
 
 
 class Order(unittest.TestCase):
@@ -183,7 +234,7 @@ class BranchSwap(unittest.TestCase):
         self.assertEqual(faults(page_audit(page)), [])
         down = next(r for r in page.routes if r.cid.endswith("-stop1"))
         self.assertEqual(down.points[0][0], down.points[-1][0])
-        self.assertTrue(any(m.cid.endswith("-stop1-t") for m in page.marks))
+        self.assertTrue(any(m.cid.endswith("-stop1-lbl") for m in page.marks))
 
     def test_spine_keeps_its_first_arrow(self):
         """When the first target is already straight below, nothing moves."""
