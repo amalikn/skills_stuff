@@ -58,6 +58,8 @@ No new data is needed; better data draws better.
 - **A branch is a step, not a sentence.** "Unless the AVR already holds it" inside an action draws nothing. Write a decision step with `next` and `when` (RULE-010 in ansible-wifi, the same idea).
 - **`failures`** draw as a stop: beside the step on a flowchart, under it in a lane (a lane holds one column of boxes; operator, 2026-11-02), an error end event in BPMN.
 - Any step with more than one way out is a decision on a chart, gate or not.
+- In a lane a plain hand-off to a lane on the right stays level and runs sideways, so a chart spans both ways (operator, 2026-11-02).
+- A diamond's arrow to the box directly below it goes straight down, whichever branch it is, and the other takes the side (operator, 2026-11-02).
 - On a plain flowchart an arrow within the main column and any arrow back up leaves by the left and enters the target's left, in a channel beside the column (operator, 2026-11-02); a lane page keeps its gutters.
 
 BPMN mapping: start and end events, an error end event for a stop, a task for a step, a call activity for a step that runs a flow, an exclusive gateway for a decision, a sequence flow for every arrow.

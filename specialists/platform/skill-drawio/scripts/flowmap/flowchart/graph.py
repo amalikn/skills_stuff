@@ -11,7 +11,6 @@ Imported, not run: `from flowmap.flowchart.graph import chart_graph, place, lane
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 
 from ..model import step_targets
@@ -66,95 +65,6 @@ class Grid:
     rows: dict[str, int]
     cols: dict[str, int]
     chains: dict[tuple[str, str], list[tuple[int, int]]]
-
-
-def _short(words: str) -> str:
-    """An outcome's words on an arrow: up to its first comma, colon or bracket, cut at a word.
-
-    Args:
-        words: the outcome.
-
-    Returns:
-        At most 16 characters.
-    """
-    head = re.split(r"[,:(]", words)[0].strip()
-    return head if len(head) <= 16 else head[:16].rsplit(" ", 1)[0]
-
-
-def _after_answer(words: str) -> str:
-    """An outcome's words in a stop box, without the "no: " the arrow already says.
-
-    Args:
-        words: the outcome.
-
-    Returns:
-        The words after a short answer, else all of them.
-    """
-    head, sep, rest = words.partition(": ")
-    return rest[0].upper() + rest[1:] if sep and len(head) <= 12 and rest else words
-
-
-def _branch_nodes(step: dict, tag: str, on: str, after: str | None) -> list[dict]:
-    """The diamond for one `branches` entry, and a stop for each of its stop outcomes.
-
-    Args:
-        step: the step the branch sits before.
-        tag: the diamond's id.
-        on: where a `run` outcome goes.
-        after: where a `skip` outcome goes; None sends it to the flow's end, as a stop.
-
-    Returns:
-        The new steps, the diamond first; empty when every outcome goes to one place, which decides nothing.
-    """
-    branch, when, stops = step["_branch"], {}, []
-    for k, text in enumerate(branch["outcomes"]):
-        kind, _, words = text.partition(": ")
-        short = _short(words)
-        target = on if kind == "run" else after if kind == "skip" and after else f"{tag}-stop{k}"
-        if target.startswith(f"{tag}-stop"):
-            stops.append({"id": target, "actor": step["actor"], "action": words, "label": _after_answer(words)[:80], "via": step["via"], "shape": "terminator", "next": []})
-        when[target] = f"{when[target]} / {short}" if target in when else short
-    if len(when) < 2:
-        return []
-    ordered = sorted(when, key=lambda t: t != on)   # the way on first: it runs straight down
-    return [{"id": tag, "actor": step["actor"], "action": branch["question"], "label": branch["question"][:80], "via": step["via"], "shape": "decision",
-             "next": ordered, "when": {t: when[t] for t in ordered}}] + stops
-
-
-def expand_branches(flow: dict) -> dict:
-    """A flow with each step's `branches` drawn as diamonds before it, so a chart shows what a step's words only say. An outcome is tagged in the
-    map: `run: ` goes into the step, `skip: ` past it, `stop: ` to a stop. Step pages ignore the key and keep their numbers.
-
-    Args:
-        flow: the flow.
-
-    Returns:
-        A flow with the diamonds as steps, or the flow itself when it has no branches.
-    """
-    steps = flow["steps"]
-    if not any(s.get("branches") for s in steps):
-        return flow
-    out, first = [], {}
-    for k, s in enumerate(steps):
-        after = (step_targets(steps, k) or [None])[0]
-        tail = s["id"]
-        built = []
-        for i, branch in reversed(list(enumerate(s.get("branches", [])))):
-            nodes = _branch_nodes({**s, "_branch": branch}, f"{s['id']}~{i}", tail, after)
-            if nodes:
-                built = nodes + built
-                tail = nodes[0]["id"]
-        first[s["id"]] = tail
-        out += built + [s]
-    redirect = lambda t: first.get(t, t)   # an arrow into a step now enters its first diamond
-    fixed = []
-    for k, s in enumerate(out):
-        if "next" in s:
-            keep = s.get("shape") == "decision" and "~" in s["id"]
-            s = {**s, "next": s["next"] if keep else [redirect(t) for t in s["next"]],
-                 **({"when": {redirect(t): v for t, v in s["when"].items()}} if s.get("when") and not keep else {})}
-        fixed.append(s)
-    return {**flow, "steps": fixed}
 
 
 def is_decision(step: dict, targets: list[str]) -> bool:
@@ -213,6 +123,30 @@ def lane_map(graph: Graph) -> tuple[dict[str, int], list[str]]:
     return lanes | {stop: lanes[sid] for stop, sid in graph.stops.items()}, actors
 
 
+def _beside(graph: Graph, nid: str, rows: dict, lanes: dict, used: set) -> int | None:
+    """The row of a node that can sit level with its parent: a plain hand-off to a lane on the right, with every lane between free, runs sideways instead
+    of stepping down (operator, 2026-11-02: it can span horizontally and vertically wherever it makes sense).
+
+    Args:
+        graph: the graph.
+        nid: the node.
+        rows: the rows so far.
+        lanes: {node id: lane}.
+        used: the (row, lane) cells taken.
+
+    Returns:
+        The parent's row, or None when the node must go below.
+    """
+    into = [e for e in graph.edges if e.dst == nid and e.kind != "stop"]
+    if len(into) != 1 or into[0].kind != "main" or into[0].src not in rows:
+        return None
+    src = into[0].src
+    if sum(1 for e in graph.edges if e.src == src) != 1 or lanes[nid] <= lanes[src]:
+        return None
+    row = rows[src]
+    return None if any((row, k) in used for k in range(lanes[src] + 1, lanes[nid] + 1)) else row
+
+
 def layers(graph: Graph, lanes: dict | None = None) -> dict[str, int]:
     """Layer assignment: each node on the row after its deepest forward parent (longest path); a stop box on its step's row. With lanes, a node
     moves down until its lane is free on that row, so a lane never holds two boxes side by side.
@@ -230,6 +164,11 @@ def layers(graph: Graph, lanes: dict | None = None) -> dict[str, int]:
             continue
         parents = [rows[e.src] for e in graph.edges if e.dst == nid and e.kind == "main" and e.src in rows]
         row = 1 + max(parents, default=0)
+        beside = _beside(graph, nid, rows, lanes, used) if lanes is not None else None
+        if beside is not None:
+            row = beside
+            parent = next(e.src for e in graph.edges if e.dst == nid and e.kind == "main")
+            used.update((row, k) for k in range(lanes[parent] + 1, lanes[nid]))
         while lanes is not None and (row, lanes[nid]) in used:
             row += 1
         rows[nid] = row
@@ -350,6 +289,23 @@ def place(graph: Graph, lanes: dict | None = None, first_col: list[int] | None =
                 cells[row] = _first_free(taken, row, cols[key[0]] if above is None else above, 1)
                 taken.add((row, cells[row]))
     return Grid(rows, cols, {k: sorted(v.items()) for k, v in runs.items()})
+
+
+def swap_branches(graph: Graph, grid: Grid) -> None:
+    """Send a decision's arrow straight down when its target sits below it: the second arrow swaps with the first when it stays in the column and lands
+    sooner, so a stop under a diamond is not reached by a loop round the side (operator, 2026-11-02). Run after the labels are read, which follow the map.
+
+    Args:
+        graph: the graph; its edges' `index` change.
+        grid: the placed chart.
+    """
+    for nid in graph.steps:
+        out = {e.index: e for e in graph.edges if e.src == nid and e.kind != "stop"}
+        first, second = out.get(0), out.get(1)
+        if first is None or second is None or grid.cols[second.dst] != grid.cols[nid] or grid.rows[second.dst] <= grid.rows[nid]:
+            continue
+        if grid.cols[first.dst] != grid.cols[nid] or grid.rows[second.dst] < grid.rows[first.dst]:
+            first.index, second.index = 1, 0
 
 
 def stitched(fid: str, flows: list[dict]) -> dict:

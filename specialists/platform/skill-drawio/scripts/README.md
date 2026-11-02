@@ -134,6 +134,7 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/flowchart/graph.py` | A flowchart's nodes, edges and layered grid; a family's flows chained | `safe` |
 | `scripts/flowmap/flowchart/route.py` | A flowchart's horizontal runs per gap and their tracks | `safe` |
 | `scripts/flowmap/flowchart/pages.py` | Which flowchart and swimlane pages a map asks for; a family chained | `safe` |
+| `scripts/flowmap/flowchart/branches.py` | A step's `branches` expanded into diamonds for chart pages | `safe` |
 | `scripts/flowmap/flowchart/bpmn.py` | BPMN symbols for a lane page, with draw.io's own shapes | `safe` |
 | `scripts/flowmap/flowchart/labels.py` | Place arrow labels at the first clear spot | `safe` |
 | `scripts/flowmap/flowchart/page.py` | The regular flowchart page: symbols, ports, tracks, labels (`look.flowcharts`) | `safe` |

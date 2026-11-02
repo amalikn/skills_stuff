@@ -12,12 +12,13 @@ from drawio.mxfile import Page as PageOf
 from flowmap import model
 from flowmap.flowchart.labels import place_labels
 from flowmap.flowchart.page import chart_page, short_text
-from flowmap.flowchart.graph import END, START, _after_answer, _short, chart_graph, expand_branches, lane_columns, lane_map, layers, place, spine, stitched
+from flowmap.flowchart.branches import _after_answer, _short, expand_branches
+from flowmap.flowchart.graph import END, START, chart_graph, swap_branches, lane_columns, lane_map, layers, place, spine, stitched
 from flowmap.flowchart.pages import _named, chart_flows, flowchart_pages
 from flowmap.pages import named_pages
 from flowmap.profile import Profile
 
-#: The modules under test, for the contract test: "graph", "route", "page", "pages", "bpmn", "labels".
+#: The modules under test, for the contract test: "graph", "route", "page", "pages", "bpmn", "labels", "branches".
 ROOT = Path(__file__).resolve().parents[1] / "examples" / "shop"
 COMPS = {"c": {"id": "c", "name": "Comp", "kind": "service"}}
 
@@ -181,6 +182,53 @@ class Branches(unittest.TestCase):
         """No key, the same object."""
         f = flow([step("a")])
         self.assertIs(expand_branches(f), f)
+
+
+class Sideways(unittest.TestCase):
+    """A plain hand-off to the right runs level."""
+
+    def test_hand_off_stays_on_the_row_and_the_audit_passes(self):
+        """The next actor sits level, and a step back to the left goes below."""
+        f = flow([step("a"), step("b", actor="d"), step("c")])
+        g = chart_graph(f)
+        lanes, _ = lane_map(g)
+        rows = layers(g, lanes)
+        self.assertEqual(rows["a"], rows["b"])
+        self.assertGreater(rows["c"], rows["b"])
+        self.assertEqual(faults(page_audit(chart_page(f, Lanes.COMPS, profile(), (set(), set()), "lanes"))), [])
+
+    def test_a_decision_hands_off_downward(self):
+        """Two ways out need the room below."""
+        g = chart_graph(flow([step("a", gate="q", next=["b", "c"]), step("b", actor="d"), step("c")]))
+        lanes, _ = lane_map(g)
+        self.assertGreater(layers(g, lanes)["b"], layers(g, lanes)["a"])
+
+    def test_a_stop_blocks_the_row(self):
+        """A step with a stop keeps its arrow in the gutter."""
+        g = chart_graph(flow([step("a", failures=["x"]), step("b", actor="d")]))
+        lanes, _ = lane_map(g)
+        self.assertGreater(layers(g, lanes)["b"], layers(g, lanes)["a"])
+
+
+class BranchSwap(unittest.TestCase):
+    """A diamond's arrow to the box below it goes straight down."""
+
+    def test_stop_under_a_diamond_is_reached_straight_down(self):
+        """In a lane the stop sits under the diamond, so its arrow leaves by the bottom and keeps its words."""
+        f = flow([step("a", branches=[{"question": "Fit?", "outcomes": ["run: yes", "stop: no: refused"]}]), step("b", actor="d")])
+        page = chart_page(f, Lanes.COMPS, profile(), (set(), set()), "lanes")
+        self.assertEqual(faults(page_audit(page)), [])
+        down = next(r for r in page.routes if r.cid.endswith("-stop1"))
+        self.assertEqual(down.points[0][0], down.points[-1][0])
+        self.assertTrue(any(m.cid.endswith("-stop1-t") for m in page.marks))
+
+    def test_spine_keeps_its_first_arrow(self):
+        """When the first target is already straight below, nothing moves."""
+        g = chart_graph(flow([step("a", gate="q", next=["b", "c"]), step("b"), step("c")]))
+        grid = place(g)
+        before = [(e.dst, e.index) for e in g.edges]
+        swap_branches(g, grid)
+        self.assertEqual([(e.dst, e.index) for e in g.edges], before)
 
 
 class LeftSide(unittest.TestCase):

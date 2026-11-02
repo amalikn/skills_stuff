@@ -18,7 +18,8 @@ from drawio.mxfile import ARROW_HEAD, BLANK, Page, header_height, label, wrapped
 from ..flow_geometry import BACK_MARK
 from . import bpmn
 from .labels import mark_size, place_labels
-from .graph import END, START, Graph, Grid, chart_graph, expand_branches, is_decision, lane_columns, lane_map, place
+from .branches import expand_branches
+from .graph import END, START, Graph, Grid, chart_graph, is_decision, lane_columns, lane_map, place, swap_branches
 from .route import CHANNEL, TRACK, assign_tracks, exit_point, left_channels, plan_gaps
 from ..model import GAP, MARGIN, comp_style, step_targets
 from ..profile import Profile
@@ -138,6 +139,8 @@ class Chart:
         self.grid: Grid = place(self.graph, self.lanes, self.first_col or None)
         self.targets = {s["id"]: step_targets(flow["steps"], k) for k, s in enumerate(flow["steps"])}
         self.shapes = {sid: step_chart_shape(s, self.targets[sid]) for sid, s in self.graph.steps.items()}
+        self.labels = {(e.src, e.dst): _branch(self.graph, e, self.targets.get(e.src, [])) for e in self.graph.edges}
+        swap_branches(self.graph, self.grid)
         self.left = {} if self.lanes else left_channels(self.graph, self.grid)
         self.text, self.size = {}, {}
         for nid in self.graph.order:
@@ -146,7 +149,6 @@ class Chart:
             self.size[nid] = _size(self.text[nid], shape)
             if self.bpmn and nid not in self.graph.steps:
                 self.size[nid] = (BOX_W, max(bpmn.EVENT, self.size[nid][1] * 2 if nid in self.graph.stops else 0))
-        self.labels = {(e.src, e.dst): _branch(self.graph, e, self.targets.get(e.src, [])) for e in self.graph.edges}
         self._columns()
 
     def _lines(self, nid: str) -> list[str]:
@@ -290,6 +292,8 @@ def _edge_points(chart: Chart, ys: dict, e: object, route: tuple) -> list:
     legs, entries, tracks = route
     key = (e.src, e.dst)
     sx, sy, sw, sh = _node_rect(chart, ys, e.src)
+    if e.kind == "main" and chart.grid.rows[e.src] == chart.grid.rows[e.dst]:   # a hand-off level with its source runs sideways
+        return [(sx + sw, sy + sh / 2), (_node_rect(chart, ys, e.dst)[0], sy + sh / 2)]
     if key in chart.left:
         tx, ty, _tw, th = _node_rect(chart, ys, e.dst)
         lane = chart.left_x - CHANNEL * chart.left[key]

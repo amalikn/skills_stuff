@@ -42,7 +42,7 @@ def plan_gaps(chart: object) -> tuple[dict, dict]:
         (legs, entries): legs is {edge key: [(gap row, x from, x to)]}; entries is {edge key: entry x at the target's top}.
     """
     g, grid = chart.graph, chart.grid
-    forward = [e for e in g.edges if e.kind == "main" and (e.src, e.dst) not in chart.left]
+    forward = [e for e in g.edges if e.kind == "main" and (e.src, e.dst) not in chart.left and grid.rows[e.src] != grid.rows[e.dst]]
     backs = [e for e in g.edges if e.kind == "back" and (e.src, e.dst) not in chart.left]
     arrival = {}
     for e in forward + backs:
