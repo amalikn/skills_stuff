@@ -91,6 +91,22 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > trap 'rc=$?; rm -f "$f"; exit "$rc"' EXIT   # keeps the step's exit code
 > ```
 
+> **Learned 2026-11-02** · POSIX sh, crontab rewrite · VERIFIED_PRIMARY (offline test with stub commands) · Source: ansible-wifi `roles/smc_change/files/tests/test_spec_stats_cron.py`, commit 70bb516 ·
+> Falsifier: a `crontab` that refuses empty input.
+> `crontab -l | sed ... | crontab -` installs an empty crontab when the read fails, even under `set -e`, as a pipeline reports its last command. Write to a file, check the wanted line is in it, then install it:
+>
+> ```sh
+> crontab -l > "$t"
+> sed -i -E "$e" "$t"
+> grep -Fqx "$j" "$t" || exit 1
+> crontab "$t"
+> ```
+
+> **Learned 2026-11-02** · any guard around a scheduled job · VERIFIED_PRIMARY (production log: two runs of one job in the same second) · Source: ansible-wifi `files/changes/rct-avr-smsc/scripts/smsc_prove_page.sh`, commit 70bb516 ·
+> Falsifier: a scheduler that shows the job in the process table before its tick.
+> A guard that stops at the tick plus a process check leaves a gap: the job is not in the process table until the scheduler has started it. Hold off for a few seconds after the tick too, and read the
+> schedule on the box, as a box can differ from what the code deploys.
+
 ## Open items
 
 - Test framework choice and a formatter: UNVERIFIED stubs.

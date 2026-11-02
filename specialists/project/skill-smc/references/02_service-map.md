@@ -436,3 +436,5 @@ device; writes stay serial). The same day `fping` was absent on old-looma-smc01:
 **Raspberry Pi boxes: no agent, by decision (operator, 2026-10-08).** VERIFIED-OBSERVED 2026-10-08: no `snmpd` on 20-mile, adjamarragu (`rct`), areyonga or glen-hill (`wh`); the root is overlayroot,
 so a hand install would not survive a reboot. The operator decided no SNMP on the Pis for now. Details: `07_hardware-overlay.md`, Raspberry Pi SMC identity.
 
+> **Learned 2026-11-02.** `artisan update:stats` is `*/5` by `smc_application`, and that is the standard (operator). Five of 26 rct boxes read held `*/1`, live and in the lower dir. A crontab on an
+> overlay SMC has two copies: `crontab` for live, `/media/root-ro/var/spool/cron/crontabs/root` for the lower dir. Detail: `13_known-issues.md`.

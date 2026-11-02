@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261102_1721 — update:stats cron standard, port guard after cron starts (v0.11.5 -> v0.11.6)
+
+Learned 2026-11-02: `references/13_known-issues.md` (`*/1` boxes, guard gap, `gates.stale` crash), `references/02_service-map.md` (two crontab copies on overlay SMCs), `references/19_smc-change-role.md` (action 8, checked crontab write, trace_sync accept).
+
 ## 20261102_1434 — smc_change flows held to the code (v0.11.4 -> v0.11.5)
 
 `smc_change_flows_check` also audits the layout and runs trace_sync; new recipes `smc_change_trace` and `smc_change_ask` (skill-drawio references/charts-and-trace.md).

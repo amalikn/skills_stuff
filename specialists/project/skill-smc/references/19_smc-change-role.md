@@ -773,3 +773,16 @@ Final same day: bar-barrum-smc01 (resumed at stage 6) and jungalina-smc01 passed
 
 Close of the same day: gumuluji-smc01's `at` job ran end to end (stopped `php -S`, stayed busy 9 x 10 s, rebooted, came back with lower ro), before `tasks/rearm_wait.yml` existed. Seven sites took
 tstik `971d8d04` and V3.07 ahead of the Iridium install; myra-vale was already flashed.
+
+**2026-11-02: stats cron, port guard, failure message (commit 70bb516).** `rct-tstik-iridium-update` action 8 sets `update:stats` to `*/5` live and in the lower dir, with a proof; its undo is a no-op as
+master is `*/5` too, and the target moved, so passed boxes show to-do. A command action has no way to run alone, so a box takes the whole change. `rct-avr-smsc` passed on all ten sites. Read
+`runs/<flavor>/state/` before saying what is left. The action writes through a checked file, as `crontab -l | ... | crontab -` installs an empty crontab when the read fails:
+
+```sh
+crontab -l > "$t"
+sed -i -E "$e" "$t"
+grep -Fqx "$j" "$t" || { rm -f "$t"; echo "no update:stats line in the live crontab"; exit 1; }
+crontab "$t"
+```
+
+Pass new steps to `trace_sync --accept` in calls of their own: a call naming a file and two steps accepted only the steps of the file. The flows recipes are in skill-smc's justfile; run them with `just -f`.

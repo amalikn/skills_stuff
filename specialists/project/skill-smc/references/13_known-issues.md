@@ -1680,3 +1680,24 @@ if not device.startswith(('/', '\\')) and ':/' not in device or fstype == 'none'
 ## 2026-11-01 — `smc_rise_deploy.yml` never enables overlay (INFO)
 
 - It imports stage 0 with `setup_overlay: false`: `Overlay configuration and reboot bypassed`. Run `smc_enable_overlay.yml`. The `Verify if Overlayroot is enabled` error with `...ignoring` is the expected probe on a box with overlay off.
+
+## 2026-11-02 — `update:stats` cron is not `*/5` everywhere; `rct-avr-smsc` page proof collided with it (FIXED in specs; three boxes OPEN)
+
+Ansible sets `*/5` (`roles/smc_application/tasks/main.yml:431-434`, `Tstik Stats Updater`), but a 2026-11-02 read of 30 rct boxes plus wungu-qld found 21 on `*/5`, 5 on `*/1` (wungu-qld, jungalina,
+bauhinia-downs, parkal-springs, tjiwuru) and 5 unreachable through Teleport. The one `*/1` line inspected (tjiwuru) carries the `#Ansible: Tstik Stats Updater` marker, so the entry was edited under the Ansible name and all 95 branches say `*/5`, so a hand edit is likely, not proven. Why they differ is UNVERIFIED. All five also hold `*/1` in the lower dir. The operator ruled `*/5` the standard; `rct-tstik-iridium-update` sets it live and in the lower dir (2026-11-02, commit 70bb516), so a box gets it only when that change runs there: bauhinia-downs, parkal-springs and tjiwuru stay on `*/1` until then. jungalina verified `*/5` live and lower after its run. `smc_prove_page.sh` (`stats_slot: 300`) and `avr_emergency.py` (`SLOT_MINUTES = 5`) assume `*/5`, and the port has no lock.
+
+On wungu-qld (apply 20261102_160644) the proof started update:stats as cron fired at 16:10:01: laravel.log shows two `Running stats update` at 05:10:02 UTC, interleaved replies, then
+`Unable to read the data from AVR`. The AVR read back at target; only the page proof failed. The guard also has a gap on `*/5` boxes: it ends on the slot boundary and pgrep cannot see a cron run
+that has not started, so a proof released by the guard can start with cron. Fixed 2026-11-02: both now hold off for 5 s after each slot start (`stats_start`, `SLOT_START_SECONDS`). Writes are not exposed: they run with cron stopped.
+
+Excerpt, `roles/smc_change/files/changes/rct-avr-smsc/scripts/smsc_prove_page.sh`, commit 70bb516 (local-knowledge-ansible):
+
+```sh
+port_busy() {
+  pgrep -f '^php artisan update:stats' >/dev/null && return 0
+  into_slot=$(($(date +%s) % STATS_SLOT))
+  [ "$into_slot" -lt "$STATS_START" ] || [ "$into_slot" -ge $((STATS_SLOT - SLOT_GUARD)) ]
+}
+```
+
+The same run exposed `verify.yml:79`: `smc_change_after.gates.stale` exists only when the spec sets `stale_maps`, so any failed gate on such a spec crashed the failure message and hid the failed gate; fixed with `gates.stale | default(true)` (70bb516).
