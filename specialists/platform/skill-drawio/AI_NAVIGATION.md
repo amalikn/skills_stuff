@@ -114,6 +114,7 @@ Mirrors `SKILL.md` for agents entering through this router; the project's own ru
 | Task                                                                                    | Read                                   |
 | --------------------------------------------------------------------------------------- | -------------------------------------- |
 | Start a diagram from data; map, schema, renderer, drift check; hand-edited drawings     | [references/data-first-diagrams.md](references/data-first-diagrams.md) |
+| Flowcharts, vertical swimlanes and BPMN from a map; read a map; hold a map to the code  | [references/charts-and-trace.md](references/charts-and-trace.md) |
 | Write or parse the XML: mxfile, root cells, layers, UserObject, links, compressed pages | [references/file-format.md](references/file-format.md) |
 | Place boxes and route arrows: rows, barycentre, channels, tracks, ports, labels, sizing | [references/layout-and-routing.md](references/layout-and-routing.md) |
 | Check a routed drawing; the audits, their thresholds, proving each can fail             | [references/layout-audits.md](references/layout-audits.md) |

@@ -6,13 +6,17 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261102_1132
+Last rotated: 20261102_1434
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261102_1434 — smc_change flows held to the code (v0.11.4 -> v0.11.5)
+
+`smc_change_flows_check` also audits the layout and runs trace_sync; new recipes `smc_change_trace` and `smc_change_ask` (skill-drawio references/charts-and-trace.md).
 
 ## 20261102_1347 — smc_change specs, trackers, shared scripts; AVR numbers ruling (v0.11.3 -> v0.11.4)
 
@@ -186,15 +190,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
   green. Layout table in `scripts/README.md`; rules in `AGENTS.md`; decisions in `ARCHITECTURE.md`; branch-reach pointer in `SKILL.md`.
 - Verified: unit tests (ansible, probes), `just test-deadline`, all justfiles parse, every shell script parses, `metrics/` imports, pack root and
   token resolve, `just ansible_change_reach`, `just local_knowledge_index`. Not run: recipes that need Teleport.
-
-## 20261027_1953 — Staleness audit: branch reach, two checker gaps, version rule (v0.8.8 -> v0.8.9)
-
-- First staleness audit of the pack (report under `docs/audits/`). Three material findings, all one cause: `rise` and `rise-multi` diverged
-  at `e1077c17` (2025-12-09), so July apt fixes and url_capture v2 are not on `rise`. In-place notes in `references/08`, `09`, `13`.
-- `scripts/check_governance.py`: skips the audit's gitignored snapshot when resolving bare names (every audit turned `just check` red);
-  new `check_recipe_interpreter` fails a recipe that runs bare `python3`. Four recipes (`smc_change_compare`, `smc_change_runs`,
-  `smc_inventory_add`, `teleport_sessions`) now use the venv. Both checks proven red, then green.
-- `AGENTS.md` Tier 3: the version is bumped with every CHANGELOG entry, as the checker already required.
-- Tracker item 4: `17583da3` is pushed (`origin/internet-label-rename`, `origin/unc-virtual-smc-malik-rcp01`), not merged; the first branch list
-  had been cut by `head -3`.
-- Open, proposed not decided: `updated_at` format — the version rule says `YYYYMMDD_hhmm`, the manifest has used `YYYY-MM-DD` throughout.

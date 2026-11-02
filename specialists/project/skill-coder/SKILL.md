@@ -47,6 +47,7 @@ commit on its own.
 | --------------------------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------- |
 | Shape a new module, package or service; choose layers; decide whether to build                | [references/design-principles.md](references/design-principles.md) | the language file                                         |
 | Reuse a proven design (resumable work, done ledger, partition before batch, evidence layout) | [references/design-patterns.md](references/design-patterns.md) | the language file's realisation |
+| Compose an engine from several languages; who does what; the seams between them         | [references/engine-composition.md](references/engine-composition.md) | [references/design-patterns.md](references/design-patterns.md) |
 | Size, split, group into packages or name modules and functions; adopt a size budget on        | [references/module-and-function-shape.md](references/module-and-function-shape.md) | `scripts/code_size.py`,                                   |
 |   old code                                                                                    |                                          |   `scripts/ratchet.py`, `scripts/module_groups.py`        |
 | Name files, identifiers, commands and recipes in any language                                 | [references/naming-conventions.md](references/naming-conventions.md) | the language file                                         |

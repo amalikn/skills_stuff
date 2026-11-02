@@ -24,6 +24,10 @@ drawing:
     - {name: Outside services, groups: [Outside services]}
   below: {groups: [Data and secrets]}
   band_title: Data and secrets
+  look:
+    flowcharts: [checkout]   # the same flow as a regular flowchart, in vertical lanes and in BPMN (2026-11-02)
+    swimlanes: [checkout]
+    bpmn: [checkout]
   families:
     - {id: orders, name: Orders, colour: "#1f4e9c", flows: [checkout, refund]}
     - {id: catalogue, name: Catalogue, colour: "#1b7a3a", flows: [image-upload]}

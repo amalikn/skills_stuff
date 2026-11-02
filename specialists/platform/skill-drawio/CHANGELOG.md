@@ -16,6 +16,10 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 20261102 Flowcharts, vertical swimlanes and BPMN from a flow map (`scripts/flowmap/flowchart/`, `look.flowcharts`, `look.swimlanes`, `look.bpmn`, step `label`); a map held to the code
+  (`scripts/flowtrace/`, `trace_sync.py`, `trace_query.py`, `commit_hook.sh`, `trace:` block). Learned 2026-11-02 in references/charts-and-trace.md. Opt-in: consumer_check before and after
+  the engine change is byte-identical on the three consumers that have not adopted a view. `branches` key, label placement and track ordering added after a full review of smc_change's 203 steps. all-scraper feedback: PyPI's bot wall returned the Fastly challenge as a success (fixed there).
+
 - 20261029 Learned 2026-10-29 in references/layout-and-routing.md: wireless topology views per site or sector, radial for PtMP, stored positions, node caps.
 
 - 20261029 Slurp close. `scripts/consumer_check.py` (`just consumer-check`) and `consumers.yaml`: render every consumer (unified-network-controller,

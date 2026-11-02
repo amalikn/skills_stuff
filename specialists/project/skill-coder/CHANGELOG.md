@@ -9,10 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261102_1348
+Last rotated: 20261102_1434
 ---
 
 # Changelog
+
+## Unreleased
+
+- 20261102 references/engine-composition.md: how a many-language engine interlocks (who does what, the seam table with a check per seam, a parser with no parser, seven moves, build order). Patterns P-50 to P-54 in references/design-patterns.md, and the index brought up to P-54. Learned 2026-11-02 in references/engine-composition.md and references/design-patterns.md.
 
 ## 20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records
 
@@ -185,14 +189,3 @@ Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_w
   sandbox validation, signed newer-only config, self-guarding probe, verdict ledger; recovery on immutable parts and clock floor as design
   only). Dead-man revert timer (P-15) found in both projects; P-02 and P-10 gained a second project. Every key line was checked against its
   source before writing (17 of 17 found).
-
-## 20261027_1049 — Design patterns reference: out-of-the-box logic from smc_change, per language
-
-- `references/design-patterns.md` (new, operator 2026-10-27: capture the out-of-the-box logic so projects without SMCs benefit; like
-  skill-nautobot's capability patterns): Learned 2026-10-27 (a-l), twelve patterns from the smc_change engine (generic engine, baseline
-  gates, write-ahead journal with fingerprint, done ledger by target hash, prepare once then partition, detached long step, evidence tree,
-  shared pool, joined plug-in probe, fail-open filters, code freeze under open transactions, plan then apply), each with Ansible and Python
-  realisations. `SKILL.md`: routing row and a write-back contract paragraph making patterns owed by calling projects; pointers from
-  `languages/ansible.md` and `languages/python.md`.
-- `references/safety-and-writes.md`: Learned 2026-10-26 entry given its missing `Source:` field (contract test failed since 0918fc0) and its
-  site name removed.

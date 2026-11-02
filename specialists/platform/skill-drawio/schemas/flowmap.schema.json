@@ -28,6 +28,17 @@
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
       "description": "Date the map was last checked against the code."
     },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How scripts/trace_sync.py holds the map to the code (flowtrace.coverage).",
+      "properties": {
+        "cover": {"type": "array", "items": {"type": "string", "minLength": 1}, "description": "Globs of the files a step or component must cite."},
+        "exempt": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}, "description": "Glob: why no flow needs to cite it."},
+        "uncited_steps": {"type": "integer", "minimum": 0, "description": "Shrink-only: most steps allowed without a code reference."},
+        "known_words": {"type": "array", "items": {"type": "string", "minLength": 1}, "description": "Step words checked and found fine though the covered code does not hold them."}
+      }
+    },
     "components": {
       "type": "array",
       "minItems": 1,
@@ -336,6 +347,25 @@
         "gate": {
           "type": "string",
           "description": "An approval or guard the step waits on."
+        },
+        "branches": {
+          "type": "array",
+          "description": "Decisions a step's words hold, drawn as diamonds before it on chart, lane and BPMN pages; step pages ignore them. An outcome starts run: (into the step), skip: (past it) or stop:.",
+          "items": {
+            "type": "object",
+            "required": ["question", "outcomes"],
+            "additionalProperties": false,
+            "properties": {
+              "question": {"type": "string", "minLength": 1},
+              "outcomes": {"type": "array", "minItems": 2, "items": {"type": "string", "pattern": "^(run|skip|stop): "}}
+            }
+          }
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "A step's words on a flowchart box; the whole step stays in the hover text."
         },
         "failures": {
           "$ref": "#/$defs/text_list"
@@ -721,6 +751,18 @@
             "e2e_loops": {
               "type": "boolean",
               "description": "Draw a step done by the same component as the step before as a loop on that component's box (top or bottom, whichever has more room), labelled x.y or x.y–z; default false (no arrow, named in the next arrow's hover text)."
+            },
+            "flowcharts": {
+              "oneOf": [{"const": "all"}, {"type": "array", "items": {"type": "string", "minLength": 1}}],
+              "description": "Regular flowchart pages (flowmap.flowchart): flow ids, family:<id> for a family joined into one chart, or all. Default none."
+            },
+            "swimlanes": {
+              "oneOf": [{"const": "all"}, {"type": "array", "items": {"type": "string", "minLength": 1}}],
+              "description": "The same chart in vertical lanes, one per actor: flow ids, family:<id> for a family joined into one chart, or all. Default none."
+            },
+            "bpmn": {
+              "oneOf": [{"const": "all"}, {"type": "array", "items": {"type": "string", "minLength": 1}}],
+              "description": "The lanes in BPMN symbols: flow ids, family:<id> for a family joined into one chart, or all. Default none."
             },
             "lock_base_layer": {
               "type": "boolean",

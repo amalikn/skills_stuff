@@ -161,6 +161,12 @@ def reference_problems(data: dict, root: Path) -> list[str]:
         for o in g["options"]:
             problems += [f"option {g['id']}.{o['id']}: step {k + 1} needs text and a known shape" for k, st in enumerate(o["steps"])
                          if isinstance(st, dict) and (not st.get("text") or st.get("shape") not in SHAPES)]
+    look = (data.get("drawing") or {}).get("look", {})
+    families = {fam["id"] for fam in (data.get("drawing") or {}).get("families", [])}
+    for key in ("flowcharts", "swimlanes", "bpmn"):
+        wanted = look.get(key) or []
+        problems += [f"look.{key}: unknown {'family' if w.startswith('family:') else 'flow'} `{w}`" for w in ([] if wanted == "all" else wanted)
+                     if (w.split(":", 1)[1] not in families if w.startswith("family:") else w not in flows)]
     refs = CodeRefs(root)
     problems += _component_problems(data, set(comps), refs)
     for f in data["flows"]:

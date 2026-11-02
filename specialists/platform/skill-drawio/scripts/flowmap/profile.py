@@ -52,6 +52,9 @@ DEFAULT_LOOK = {
     "e2e_tab": "End-to-end",       # End-to-end tab names: "<e2e_tab> flow" and "<e2e_tab>: <family>" (operator asked for "E2E", 2026-10-26)
     "e2e_family_colours": "page",  # family-page flow colours: "page" (restart on each page, no repeats) or "flow" (full-page colour; operator, 2026-10-26)
     "fold": "off",                 # a long flow page in rows: "off", "serpentine" (every second row right to left) or "z" (operator, 2026-10-27)
+    "flowcharts": [],              # regular flowchart pages (flowmap.flowchart): flow ids, `family:<id>` for a family as one chart, or "all" (operator, 2026-11-02)
+    "bpmn": [],                    # the same lanes in BPMN symbols; same values as flowcharts (operator, 2026-11-02)
+    "swimlanes": [],               # the same chart in vertical lanes, one per actor; same values as flowcharts (operator, 2026-11-02)
     "fold_after": 7,               # columns per row when `fold` is on; a flow sets its own with `layout: {fold, fold_after}`
 }
 

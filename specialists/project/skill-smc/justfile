@@ -144,6 +144,16 @@ smc_change_flows:
 smc_change_flows_check:
     @cd {{smc_change_role}} && {{drawio_py}} {{drawio_skill}}/scripts/assemble_flowmap.py --master drawio/parts/master.yaml --out drawio/flows.yaml --command "just smc_change_flows (skill-smc)"
     @{{drawio_py}} {{drawio_skill}}/scripts/render_flowmap.py --root {{smc_change_role}} --map drawio/flows.yaml
+    @{{drawio_py}} {{drawio_skill}}/scripts/render_flowmap.py --root {{smc_change_role}} --map drawio/flows.yaml --audit
+    @{{drawio_py}} {{drawio_skill}}/scripts/trace_sync.py --root {{smc_change_role}} --map drawio/flows.yaml
+
+# Hold the smc_change flows to the code: suspect steps with `--diff`, a review with `--accept <flow/step|flow|file|all> --apply`. Example: just smc_change_trace --diff
+smc_change_trace *ARGS:
+    @{{drawio_py}} {{drawio_skill}}/scripts/trace_sync.py --root {{smc_change_role}} --map drawio/flows.yaml {{ARGS}}
+
+# Ask the smc_change flows what happens (read only). Example: just smc_change_ask --flow smsc, or --file tasks/verify.yml, --writes "run record"
+smc_change_ask *ARGS:
+    @{{drawio_py}} {{drawio_skill}}/scripts/trace_query.py --root {{smc_change_role}} --map drawio/flows.yaml {{ARGS}}
 
 # Run a command on a box through its autossh backdoor when Teleport cannot reach it; checks hostname first. Example: just backdoor_exec darlngunaya "hostname; uptime"
 backdoor_exec target cmd="hostname":

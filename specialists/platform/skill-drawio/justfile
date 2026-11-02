@@ -235,6 +235,14 @@ example-check: _require-venv
     @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml
     @{{py}} scripts/render_flowmap.py --root examples/shop --map flows.yaml --audit
 
+# A map against the code it cites: suspect steps, uncited code, stale words; `--accept <step|flow|file|all> --apply` records a review. Example: just trace-sync --root examples/shop --map flows.yaml
+trace-sync *ARGS: _require-venv
+    @{{py}} scripts/trace_sync.py {{ARGS}}
+
+# Ask a map what happens (read only). Example: just trace-query --root examples/shop --map flows.yaml --writes order
+trace-query *ARGS: _require-venv
+    @{{py}} scripts/trace_query.py {{ARGS}}
+
 # Export pages of a drawing to images for review (writes only the images), e.g. just drawio-export examples/shop/drawio/flows.drawio --out-dir /path --pages 1,2
 [positional-arguments]
 drawio-export *args: _require-venv

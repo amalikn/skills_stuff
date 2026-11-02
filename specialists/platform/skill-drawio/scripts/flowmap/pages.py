@@ -20,6 +20,7 @@ from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_
 from .map_parts import flow_labels, paged_flows
 from .model import option_blocks
 from .options import options_page
+from .flowchart.pages import flowchart_pages
 from .fold import fold_rows, folded_page
 from .flow_geometry import LANE_HEAD_W, back_arrow, step_edges, col_gap, column_lefts, label_gaps, label_widths, plan_runs, reserve, run_ys, step_width
 from .lanes import draw_lanes
@@ -289,7 +290,7 @@ def named_pages(data: dict, profile: Profile) -> list[tuple[int, str, Page]]:
 
     Returns:
         [(rank, name, page)]: the Overview, the decision pages after it when the map has an `options` block, `decision_pages` or
-        `option_pages`, the End-to-end page (then one per family when `look.e2e_family_pages` is on), one page per flow; rank orders audit
+        `option_pages`, the End-to-end page (then one per family when `look.e2e_family_pages` is on), the flowcharts `look.flowcharts` and `look.swimlanes` name, one page per flow; rank orders audit
         lines (Overview 0, End-to-end 1, family 2, decision 3, flow 4).
     """
     comps, labels = {c["id"]: c for c in data["components"]}, flow_labels(data, profile)
@@ -297,6 +298,9 @@ def named_pages(data: dict, profile: Profile) -> list[tuple[int, str, Page]]:
     out = ([(0, "Overview", overview_page(data, profile)), (1, "End-to-end", end_to_end_page(data, profile))]
            + [(2, p.name, p) for p in family_pages(data, profile)]   # family pages only with look.e2e_family_pages
            + [(4, f"Flow {i + 1} ({f['id']})", flow_page(f, comps, labels[f["id"]], profile)) for i, f in enumerate(data["flows"]) if f in paged])
+    charts = [(4, f"Flowchart ({p.page_id})", p) for p in flowchart_pages(data, profile, {f["id"] for f in paged})]
+    first_flow = next((k for k, item in enumerate(out) if item[0] == 4), len(out))
+    out[first_flow:first_flow] = charts   # the chart of a flow reads before its detailed pages (`look.flowcharts`, default none)
     for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: decision pages go right after the Overview, in map order
         out.insert(1 + k, (3, name, options_page(data, profile, block, pid, name)))
     for _rank, _name, page in out:   # the background layer locked on every page: nothing on it moves by accident (operator, 2026-10-26)

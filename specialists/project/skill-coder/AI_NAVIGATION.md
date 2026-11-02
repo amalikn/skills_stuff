@@ -115,6 +115,7 @@ Mirrors `SKILL.md` for agents entering through this router. Core rules first, th
 | ------------------------------------------------------------------------------------------ | ---------------------------------------- | -------------------------------------------- |
 | Shape a new module, package or service; choose layers; decide whether to build             | [references/design-principles.md](references/design-principles.md) | the language file                            |
 | Reuse a proven design: resumable work, done ledger, partition before batch                   | [references/design-patterns.md](references/design-patterns.md) | the language file's realisation             |
+| Compose an engine from several languages; who does what; the seams | [references/engine-composition.md](references/engine-composition.md) |
 | Size, split, group into packages or name modules and functions; adopt a size budget on old code | [references/module-and-function-shape.md](references/module-and-function-shape.md) | `scripts/code_size.py`, `scripts/ratchet.py`, `scripts/module_groups.py` |
 | Name files, identifiers, commands and recipes in any language | [references/naming-conventions.md](references/naming-conventions.md) | the language file |
 | File headers, docstrings, doc comments, comments, lint suppression                         | [references/documentation-and-headers.md](references/documentation-and-headers.md) | `scripts/suppressions.py`, `scaffold.py`     |

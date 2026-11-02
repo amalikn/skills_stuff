@@ -31,6 +31,8 @@ Ansible documentation (check mode and diff mode, tags, strategies and `serial`, 
 `fqcn` and `no-changed-when`, profiles), Molecule documentation. Copies: `../documents/research-sources-20261019/`. The operator's lessons: auto-memory
 `feedback_trace_all_references_before_ansible_change` (2026-07-28).
 
+For a data-driven engine built on a role (a spec language, the template as an interpreter, seams to Python and shell): [engine-composition.md](../references/engine-composition.md).
+
 ## Before any change: trace every reference
 
 Operator directive: understand the complete impact of any change by going through every reference to it in other roles and files. Before editing any identifier (tag, variable, handler, role name, file

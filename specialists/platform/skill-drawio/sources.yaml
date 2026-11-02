@@ -376,3 +376,25 @@ claims:
     evidence: "UNC wc-local/scripts/site_onboarding/asbuilt_read.py _text; UNC tests/test_asbuilt_read.py test_a_compressed_page_gives_its_boxes_as_text_and_its_connections_by_label (now run against scripts/drawio/read.py through UNC's re-export)."
     falsifier: "A label whose words run together or keep markup after this treatment."
     reference: references/reading-drawings.md
+  - id: C-D90
+    statement: "A flow map is held to its code by a review stamp per step: a behaviour change in cited code marks the step suspect until --accept."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [drawio-skill-code-20261019]
+    environment_id: drawio-skill-code-20261019
+    source_type: implementation
+    evidence: "scripts/flowtrace/lockfile.py, fingerprint.py; tests/test_flowtrace.py; smc_change, 203 steps, 2026-11-02."
+    falsifier: "A comment edit raises a finding, or a behaviour edit in a cited symbol raises none."
+    reference: references/charts-and-trace.md
+  - id: C-D91
+    statement: "A vertical swimlane holds one column of boxes; a stop sits under its step."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Operator review, 2026-11-02."
+    falsifier: "The operator accepts boxes side by side in a lane."
+    reference: references/charts-and-trace.md

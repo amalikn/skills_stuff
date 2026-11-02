@@ -39,6 +39,8 @@ Evidence:     VERIFIED_PRIMARY | VERIFIED_SECONDARY | CANDIDATE, with what was o
 
 ## Index
 
+How these fit together in one system, with the seams between them: [engine-composition.md](engine-composition.md).
+
 | ID   | Pattern                                            | Problem in one line                                                               |
 | ---- | -------------------------------------------------- | --------------------------------------------------------------------------------- |
 | P-01 | Generic engine, change as data                     | Many similar changes without a new script each time                               |
@@ -73,6 +75,28 @@ Evidence:     VERIFIED_PRIMARY | VERIFIED_SECONDARY | CANDIDATE, with what was o
 | P-30 | Solve in a canonical frame, then transform the result       | A solver written for one orientation needed in a mirrored one               |
 | P-31 | Append-only event ledger, content IDs, digest-bound approval | Judgements on changing inputs that must survive reruns and edits           |
 | P-32 | Repoint callers after a move                                | Moving shared files that many repos call by path                            |
+| P-33 | Read every source, merge, then write once                   | A silent source overwriting good data                                      |
+| P-34 | Pick a moving leader once per cycle                         | Mixed answers within one pass                                              |
+| P-35 | Place by evidence; keep every sighting in a listed ledger   | One sighting decided as fact                                               |
+| P-36 | Widen a name's scope by renaming in place                   | Recreating an object loses its links                                       |
+| P-37 | A cache proved by a differential assert                     | A fast path that drifts from the slow one                                  |
+| P-38 | An estimate nominates; the real measure decides             | A proxy that optimises the wrong thing                                     |
+| P-39 | Carry a placement over proven edges                         | Guessing what the network already says                                     |
+| P-40 | Hold citations by a check                                   | Cited pages that move or vanish                                            |
+| P-41 | Write into files other sessions are editing                 | Lost edits in shared files                                                 |
+| P-42 | Three outcomes for a lookup                                 | "Not found" that meant "could not look"                                    |
+| P-43 | Fail-closed capture                                         | An error page saved as evidence                                            |
+| P-44 | Classify by a declared list, surface the unclassified       | New items falling through silently                                         |
+| P-45 | A document an automation edits is a contract                | A reformat breaking a machine edit                                         |
+| P-46 | Audience words at the output boundary                       | Internal names reaching a reader                                           |
+| P-47 | Decide per item once from read facts, persist it            | A resume re-judging moved facts                                            |
+| P-48 | One write frame for many fields                             | A write that clobbers fields it did not read                               |
+| P-49 | A tracker is a view rebuilt from the records                | A tracker that drifts from what happened                                   |
+| P-50 | Normalise once at the seam                                  | Every reader learning every shorthand                                      |
+| P-51 | Derive it instead of declaring it                           | Report fields authors forget                                               |
+| P-52 | Check what actually runs, not what is on disk               | Faults that hide at a join                                                 |
+| P-53 | A seam is an environment variable and stdout                | Components tied by shared code or files                                    |
+| P-54 | Documents held to code by review stamps                     | Docs going stale unnoticed                                                 |
 
 ## Patterns
 
@@ -1006,6 +1030,9 @@ def team_text(text: str) -> str:
 # tasks/main.yml: a resume restores the journal's decision (conditions.yml step restore), never a fresh read
 ```
 
+> **Learned 2026-11-02** · P-47 in practice · VERIFIED_PRIMARY · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/main.yml` · Falsifier: a resumed run that acts on the fresh read
+> A resume does read the facts again, because the run does not know it is resuming until after stage 3; the saved decision then replaces that read. What holds is that the saved decision decides, not that no read happens. Say which of the two a design promises.
+
 ### P-48 One write frame for many fields: rebuild it from a read, prove it with a read
 
 > **Learned 2026-11-02** · design pattern, any language (realised in Python) · VERIFIED_PRIMARY (13 offline tests on captured bytes; a change and its reverse on one live device) · `reusable_candidate` ·
@@ -1048,6 +1075,88 @@ if after.payload != wanted.payload:
 real = [r for r in runs if r.get("mode") in STATE_MODES and r.get("result") not in NOT_A_STATE]
 state = real[-1] if real else runs[-1]
 ```
+
+### P-50 Normalise once at the seam
+
+> **Learned 2026-11-02** · design pattern, any language (realised in Ansible and Jinja) · VERIFIED_PRIMARY (`just target-hash` shows a `loop` rewrite leaves the target unchanged) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/templates/spec_actions.j2`, e2f760e · Falsifier: a downstream stage that must still know the sugar form (reusable_candidate)
+
+- **Problem:** a data format gains a convenience (a loop, a default, a shorthand), and every reader of the data must then learn it: numbering, planning, conditions, rollback. The fifth reader gets it wrong.
+- **Solution:** one small step expands the convenience into the plain form, and every reader takes the plain form only. Expose it as a lazy value, so anything scoped per target stays that target's.
+- **Why it works:** the number of forms a reader meets is one, so a new sugar costs one edit.
+- **Reuse:** a config format with includes and shorthand; a compiler front end; an API that accepts two payload shapes and keeps one inside.
+- **Pitfalls:** a cached, eagerly built value freezes the first target's data into all of them (a `set_fact` here would have). Prove the rewrite with a hash of the normal form before and after.
+- **Realised in:** Ansible, excerpt in [engine-composition.md](engine-composition.md#a-parser-with-no-parser).
+
+### P-51 Derive it instead of declaring it
+
+> **Learned 2026-11-02** · design pattern, any language · VERIFIED_PRIMARY (a command action reports its before and after commits with nothing in its spec) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/action_run.yml`, e2f760e · Falsifier: a derived value that disagrees with what ran (reusable_candidate)
+
+- **Problem:** every report needs a field an author must remember to fill, and a forgotten field is silently empty.
+- **Solution:** have the engine find the value from what the change already says. Any absolute path in a command that is a git work tree on the target has its HEAD read before and after; the record shows the commits.
+- **Why it works:** a field that does not exist cannot be wrong or missing, and old specs gain the report for free.
+- **Reuse:** report the files a job touched from its arguments; infer a dependency from an import; size a resource from what the task reads.
+- **Pitfalls:** bound the search (20 paths here, each one costs a call) and let a failed derivation leave the report blank, never fail the change.
+- **Realised in:** Ansible, excerpt below.
+
+```yaml
+# tasks/action_run.yml (e2f760e): the paths come from the command itself, so a spec declares nothing
+smc_change_git_paths: >-
+  {{ ((smc_change_action.cmd | default('') ~ ' ' ~ smc_change_action.check | default('')) | regex_findall('/[A-Za-z0-9._/-]+') | unique | list)[:20]
+     if smc_change_action.type == 'command' else [] }}
+```
+
+### P-52 Check what actually runs, not what is on disk
+
+> **Learned 2026-11-02** · design pattern, any language · VERIFIED_PRIMARY (each check found real faults: unanchored waits added 66 to 79 s per probe) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/lint.sh`, `files/tests/test_spec_pgrep.py`, e2f760e · Falsifier: a fault in the run form that the check passes (reusable_candidate)
+
+- **Problem:** the source a linter sees is not what executes: parts joined into one program use names from another part, shell runs under a different shell from the author's, and shell inside a data file is checked by nobody.
+- **Solution:** give the checker the run form. Lint the joined program, and format each part. Check scripts as the target's shell (`shellcheck -s sh` for dash). Read the data files in a test and assert on the text inside them. A file that cannot be fixed yet goes on a list with its reason, and leaves it when fixed.
+- **Why it works:** the check meets the same thing the machine meets, so no class of fault hides at the join.
+- **Reuse:** SQL inside migrations, templates checked after rendering, a bundle linted after bundling, config checked after variables are filled in.
+- **Pitfalls:** line numbers in the joined program do not match a part. Keep the frozen list short: a list without reasons becomes a place faults live.
+- **Realised in:** shell and Python, excerpt below.
+
+```python
+# files/tests/test_spec_pgrep.py (e2f760e): a test that reads a change's own text
+CHANGES = Path(__file__).resolve().parents[1] / "changes"
+PGREP = re.compile(r"""pgrep\s+(?:-\w+\s+)*-f\w*\s+(['"])(?P<pat>.*?)\1""")
+# Specs frozen while their journals are active: each entry names the reason; remove it when the spec is fixed.
+FROZEN = {"<spec>": "<why it stays for now>"}
+```
+
+### P-53 A seam is an environment variable and stdout
+
+> **Learned 2026-11-02** · design pattern, any language · VERIFIED_PRIMARY (the same seam serves the probe and the facts reader; 7 check types added with no engine edit) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/probe.yml`, `files/facts.py`, e2f760e · Falsifier: a seam that needed a shared library to stay correct (reusable_candidate)
+
+- **Problem:** components in different languages get tied together by shared code or files, so neither can be tested or changed alone, and a target picks up files that need cleaning.
+- **Solution:** pass the program on stdin, its config as JSON in one environment variable, and take one JSON object from stdout. Nothing is installed, nothing is left, and the seam can be printed. See P-09 for joining parts into one program.
+- **Why it works:** every language has these three, a failure is visible as text, and a fake on either side is a few lines.
+- **Reuse:** a CI step running a checker on a build host; a database host check; a container probe; a sidecar with no image rebuild.
+- **Pitfalls:** an environment variable is on the process's command view, so it holds no secret, and it shows up in `pgrep -f` matches (hence the anchored patterns). Keep the output one object: a stray `print` breaks the parse. Size limits apply to very large config.
+- **Realised in:** Ansible and Python, excerpt below.
+
+```yaml
+# tasks/conditions.yml (e2f760e): a program, its config and its answer, nothing written on the box
+- name: Read the spec's facts on the box (read only)
+  ansible.builtin.command:
+    cmd: python3 -
+    stdin: "{{ lookup('ansible.builtin.file', role_path ~ '/files/facts.py') }}"
+  environment:
+    FACTS_CONFIG: "{{ smc_change_spec.facts | default({}) | to_json }}"
+  register: smc_change_facts_raw
+  changed_when: false
+```
+
+### P-54 Documents held to code by review stamps
+
+> **Learned 2026-11-02** · design pattern, any language · VERIFIED_PRIMARY (203 steps: comment edit raised nothing, task edit raised 14, a new helper reported uncovered) · Source: skill-drawio `scripts/flowtrace/`; traceability suspect links (jamb, Jama), snippetdrift · Falsifier: a comment edit raises a finding, or a behaviour edit in a cited symbol raises none (reusable_candidate)
+
+- **Problem:** a document describing code is the best thing to read and the first thing to go stale, and generating it from code loses the why.
+- **Solution:** each claim cites the code it rests on. A lock stores a fingerprint of each cited block with who reviewed it. Any change marks the claim suspect until a person reads the diff and accepts. Code nobody cites is reported too, so the trace runs both ways, and a reader sees a suspect mark in the answer itself.
+- **Why it works:** a machine is good at noticing change and bad at meaning, a person the reverse, so each does its own half. Fingerprinting a symbol's syntax tree keeps false alarms low enough to be believed.
+- **Reuse:** runbooks, architecture notes, API guides, compliance evidence, an agent's instructions pointing at code.
+- **Pitfalls:** a first baseline stamped in bulk proves nothing: a full review of smc_change's 203 stamped steps found 94 with a wrong or stale claim and 98 branches hidden in prose, so review before you trust a baseline. A pass proves someone looked, not that the words are right. Editing the text must not clear a flag, or the flag means nothing. Whole-file citations over-flag: cite a symbol.
+- **Realised in:** Python, `scripts/flowtrace/` in skill-drawio; how to adopt it: its `references/charts-and-trace.md`.
 
 ## Language realisations
 

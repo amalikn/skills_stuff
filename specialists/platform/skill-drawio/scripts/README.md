@@ -1,6 +1,6 @@
 # Script Inventory
 
-skill-drawio's scripts: four front ends at the top of `scripts/`, the engine in two packages (`drawio/`, `flowmap/`), two small map helpers and
+skill-drawio's scripts: six front ends at the top of `scripts/`, the engine in three packages (`drawio/`, `flowmap/`, `flowtrace/`), two small map helpers and
 the pack's governance checker.
 
 ## Contents
@@ -86,6 +86,8 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `just palette-check` | `scripts/palette_check.py`: each colour's contrast on white and CIEDE2000 to its nearest; `--suggest N` picks more farthest-first | a palette (default `DISTINCT`), colours to avoid | Console, exit status | `safe` | Yes | Before adding or changing a line colour |
 | `just consumer-check` | `scripts/consumer_check.py`: render every consumer in `consumers.yaml` to a scratch folder, timed; `--compare BEFORE` cmp each (exit 3 when one differs); `--engine DIR` renders with another checkout; `--look K=V` what a look key would draw | `consumers.yaml`, a scratch folder | Drawings in `--out` only | `modifies-files` (scratch only) | Yes | Proving an engine change on every consumer |
 | `just layout-quality` | `scripts/layout_quality.py`: per page of a drawing, arrows, crossings, shared runs, bends, length, arrows through boxes, overlapping labelled boxes; `--compare BEFORE` exits 3 when a page got worse | a .drawio file (or two versions) | Console, JSON with `--json` | `safe` | Yes | Quality baseline, and before and after a routing or placement change |
+| `just trace-sync`      | `scripts/trace_sync.py`: steps whose cited code changed since their review, uncited code, stale words; `--accept ... --apply` records a review | a map | Console or `--json`; the lock with `--apply` | `safe` (`modifies-files` with `--apply`) | Yes | In a project's check, and when a suspect is reviewed |
+| `just trace-query`     | `scripts/trace_query.py`: a flow, the steps citing a file, what writes or fails, each step with its review state | a map | Console or `--json` | `safe` | Yes | Before reading the code |
 | `just flow-quality`   | `scripts/flow_quality.py`: every flow page's audit faults, arrow crossings and shared starts | a map, its schema | Console, exit status | `safe` | Yes | After a routing change, before showing a drawing |
 | `just assemble-flowmap` | `scripts/assemble_flowmap.py`: build flows.yaml from its parts | parts/master.yaml | flows.yaml with `--write` | `safe` (`modifies-files` with `--write`) | Yes | After editing a part |
 | `just split-flowmap`  | `scripts/split_flowmap.py`: split a map into parts, proved identical | A map | Parts and master with `--apply` | `safe` (`modifies-files` with `--apply`) | Yes | A map grown past a few hundred lines |
@@ -107,6 +109,9 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/consumer_check.py` | Front end: render every consumer (`consumers.yaml`) to scratch with this or another engine, optional look keys; compare two renders byte for byte; never a consumer's own drawing | `modifies-files` (scratch only) |
 | `scripts/layout_quality.py` | Front end: layout measures per page of a drawing (crossings, shared runs, bends, length, arrows through boxes, overlaps); `--compare` exits 3 when a page got worse | `safe` |
 | `scripts/palette_check.py` | Front end: measure a palette (contrast on white, CIEDE2000 to nearest) and suggest farthest-first additions; exit 1 below 4.5:1 | `safe` |
+| `scripts/trace_sync.py` | Front end: hold a map to the code it cites (suspect steps, coverage, stale words); `--accept` with `--apply` records a review | `safe` (`modifies-files` with `--apply`) |
+| `scripts/trace_query.py` | Front end: answer questions from a map, each step with its review state | `safe` |
+| `scripts/commit_hook.sh` | Git pre-commit body: run a project's check when a commit touches its watched folder | `safe` |
 | `scripts/flow_quality.py` | Front end: per flow page, layout-audit faults, arrow crossings and arrows sharing a start point; exit 1 on any | `safe` |
 | `scripts/assemble_flowmap.py` | Front end: build the complete flows.yaml from parts/master.yaml and its parts (banner, no pointers); drift check, `--write` to build; refuses a stray part | `safe` (`modifies-files` with `--write`) |
 | `scripts/split_flowmap.py` | Front end: split a map into `#@include` parts (component groups, flow sections or families, options), proved to load the same; plan, then `--apply` | `safe` (`modifies-files` with `--apply`) |
@@ -120,6 +125,18 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/drawio/route.py` | Tracks, port spreading, interval tracks, crossing counts, label spots, untwist | `safe` |
 | `scripts/drawio/read.py` | Read drawings: page codec, cells, group offsets, line paths, nearest-line label matching | `safe` |
 | `scripts/drawio/export.py` | Find the desktop binary, build the export argv, run it under a timeout | `modifies-files` (images only) |
+| `scripts/flowtrace/__init__.py` | Package `flowtrace`: keep a map true to the code | `safe` |
+| `scripts/flowtrace/fingerprint.py` | Fingerprint a `path[:symbol]` reference, ignoring what cannot change behaviour | `safe` |
+| `scripts/flowtrace/lockfile.py` | The review lock: per step, what it was reviewed against; findings and accept | `safe` |
+| `scripts/flowtrace/coverage.py` | Code no flow cites, the uncited-step ratchet, step words the code no longer holds | `safe` |
+| `scripts/flowtrace/query.py` | Select steps by flow, file, writes, failure, actor or text | `safe` |
+| `scripts/flowmap/flowchart/__init__.py` | Package `flowmap.flowchart` | `safe` |
+| `scripts/flowmap/flowchart/graph.py` | A flowchart's nodes, edges and layered grid; a family's flows chained | `safe` |
+| `scripts/flowmap/flowchart/route.py` | A flowchart's horizontal runs per gap and their tracks | `safe` |
+| `scripts/flowmap/flowchart/pages.py` | Which flowchart and swimlane pages a map asks for; a family chained | `safe` |
+| `scripts/flowmap/flowchart/bpmn.py` | BPMN symbols for a lane page, with draw.io's own shapes | `safe` |
+| `scripts/flowmap/flowchart/labels.py` | Place arrow labels at the first clear spot | `safe` |
+| `scripts/flowmap/flowchart/page.py` | The regular flowchart page: symbols, ports, tracks, labels (`look.flowcharts`) | `safe` |
 | `scripts/flowmap/__init__.py` | Package `flowmap`: data-first flow maps | `safe` |
 | `scripts/flowmap/profile.py` | `Profile`: a project's paths, kind colours, tiers and families; `from_drawing()` defaults | `safe` |
 | `scripts/flowmap/model.py` | Load and validate a map (PyYAML at the edge), cross-references, the map's questions | `safe` |
