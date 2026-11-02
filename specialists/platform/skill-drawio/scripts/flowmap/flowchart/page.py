@@ -271,7 +271,7 @@ def draw_nodes(page: Page, chart: Chart, ys: dict) -> list[str]:
         else:
             s, shape = chart.graph.steps[nid], chart.shapes[nid]
             actor = chart.comps[s["actor"]]
-            style = bpmn.step_style(shape) if chart.bpmn else comp_style(actor["kind"], chart.profile, "fontSize=11;" + SHAPES[shape][0])
+            style = bpmn.step_style(shape, *chart.profile.style(actor["kind"])) if chart.bpmn else comp_style(actor["kind"], chart.profile, "fontSize=11;" + SHAPES[shape][0])
             charts, flows = chart.page_ids
             link = f"data:page/id,chart-{s['flow']}" if s.get("flow") in charts else f"data:page/id,flow-{s['flow']}" if s.get("flow") in flows else ""
             page.box(f"{fid}-c-{nid}", text, x, y, w, h, style, link=link, tooltip=step_tip(s, str(n), actor["name"]), solid=True)
@@ -307,7 +307,7 @@ def _edge_points(chart: Chart, ys: dict, e: object, route: tuple) -> list:
         return [(x, sy + sh), (x, dy + dh / 2 - bpmn.EVENT / 2 if chart.bpmn else dy)]   # a BPMN stop is a circle centred in its cell
     if e.kind == "stop":
         return [(sx + sw, mid), (_node_rect(chart, ys, e.dst)[0], mid)]
-    pts = [(sx + sw, mid), (x, mid)] if side else [(x, sy + sh)]
+    pts = [(sx + sw if x > sx else sx, mid), (x, mid)] if side else [(x, sy + sh)]
     for gap, a, b in legs[key]:
         y = ys["track"][gap] + tracks[(key, gap, a)] * TRACK
         pts += [(a, y), (b, y)]
@@ -345,7 +345,7 @@ def draw_edges(page: Page, chart: Chart, ys: dict, route: tuple) -> None:
         cid = f"{fid}-ce-{e.src}-{e.dst}"
         colour = COLOURS.get(words, COLOURS[""])
         style = BACK if e.kind == "back" else STOP_EDGE if e.kind == "stop" else EDGE + f"strokeColor={colour};"
-        style = EDGE + "strokeColor=#000000;" if chart.bpmn else style   # BPMN: every arrow in a pool is a sequence flow
+        style = EDGE + f"strokeColor={COLOURS['No'] if e.kind == 'stop' else colour};" if chart.bpmn else style   # BPMN: all sequence flows, so all solid
         page.route(cid, f"{fid}-c-{e.src}", f"{fid}-c-{e.dst}", pts, style, "thin", jump=JUMP)
         if e.kind == "back" and not words:
             words = "back"

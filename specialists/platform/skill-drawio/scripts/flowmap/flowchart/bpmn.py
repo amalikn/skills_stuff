@@ -17,6 +17,8 @@ from drawio.mxfile import Page, label
 EVENT, EVENT_TEXT = 36, 110
 EVENT_STYLE = ("shape=mxgraph.bpmn.shape;html=1;perimeter=ellipsePerimeter;labelBackgroundColor=none;strokeColor=#000000;strokeWidth=2;fillColor=#ffffff;"
                "outline={outline};symbol={symbol};")
+#: An error end event in the step pages' red.
+ERROR = EVENT_STYLE.replace("strokeColor=#000000", "strokeColor=#b85450").replace("fillColor=#ffffff", "fillColor=#f8cecc")
 OUTLINE = {"start": ("standard", "general"), "end": ("end", "general"), "error": ("end", "error")}
 TEXT = "text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontSize=10;labelBackgroundColor=none;spacingLeft=2;"
 TASK = "rounded=1;arcSize=14;whiteSpace=wrap;html=1;fontSize=11;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;"
@@ -25,16 +27,19 @@ STEP_STYLES = {"decision": "rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor
 LEGEND = (("start", "Start event"), ("end", "End event"), ("error", "Error end event"))
 
 
-def step_style(shape: str) -> str:
-    """A step's BPMN style.
+def step_style(shape: str, fill: str = "#ffffff", stroke: str = "#000000") -> str:
+    """A step's BPMN style, in its actor's colours as on the step pages (operator, 2026-11-02), a stop in red.
 
     Args:
         shape: its flowmap.shapes key.
+        fill: the actor kind's fill.
+        stroke: the actor kind's stroke.
 
     Returns:
         A gateway, a call activity, else a task.
     """
-    return STEP_STYLES.get(shape, TASK)
+    style = STEP_STYLES.get(shape, TASK)
+    return style if shape == "terminator" else style.replace("fillColor=#ffffff", f"fillColor={fill}").replace("strokeColor=#000000", f"strokeColor={stroke}")
 
 
 def event(page: Page, cid: str, kind: str, rect: tuple, lines: list[str]) -> None:
@@ -51,7 +56,7 @@ def event(page: Page, cid: str, kind: str, rect: tuple, lines: list[str]) -> Non
     outline, symbol = OUTLINE[kind]
     left = x + w / 2 - EVENT / 2
     top = y + h / 2 - EVENT / 2
-    page.box(cid, "", left, top, EVENT, EVENT, EVENT_STYLE.format(outline=outline, symbol=symbol), solid=True)
+    page.box(cid, "", left, top, EVENT, EVENT, (ERROR if kind == "error" else EVENT_STYLE).format(outline=outline, symbol=symbol), solid=True)
     page.box(f"{cid}-text", label(*lines), left + EVENT + 4, y, EVENT_TEXT, h, TEXT)   # beside the circle, in the half of the cell to its right
 
 

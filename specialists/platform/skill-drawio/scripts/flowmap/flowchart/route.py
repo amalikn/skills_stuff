@@ -14,6 +14,20 @@ TRACK, CHANNEL = 18, 18
 NUDGE = 30
 
 
+def _gutter_busy(chart: object, row: int, col: int) -> bool:
+    """Whether a long arrow already passes through a cell.
+
+    Args:
+        chart: the flowmap.flowchart.page.Chart.
+        row: the cell's row.
+        col: its column.
+
+    Returns:
+        True when a chain holds the cell.
+    """
+    return any((row, col) in cells for cells in chart.grid.chains.values())
+
+
 def exit_point(chart: object, edge: object) -> tuple[bool, float]:
     """How an arrow leaves its node: the second arrow and a stop leave by the side, through the cell reserved beside it.
 
@@ -29,6 +43,10 @@ def exit_point(chart: object, edge: object) -> tuple[bool, float]:
         side = edge.kind == "stop" or edge.index == 1
     else:   # a stop sits straight below its step, so the way on takes the lane's gutter
         side = edge.kind != "stop" and (edge.index == 1 or f"__stop-{edge.src}" in chart.graph.stops)
+        rows = chart.grid.rows
+        level_in = any(e.dst == edge.src and e.kind == "main" and rows[e.src] == rows[e.dst] for e in chart.graph.edges)
+        if side and edge.kind == "main" and chart.grid.cols[edge.dst] < c and not level_in and not _gutter_busy(chart, rows[edge.src], c - 1):
+            return True, chart.cx[c - 1]   # heading left: out by the left, down the gutter of the lane before, so it crosses nothing of its own
     return side, chart.cx[c + 1 if side else c]
 
 

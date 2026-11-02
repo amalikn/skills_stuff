@@ -14,6 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..model import step_targets
+from .order import lane_order
 
 START, END = "__start", "__end"
 
@@ -106,7 +107,8 @@ def chart_graph(flow: dict) -> Graph:
 
 
 def lane_map(graph: Graph) -> tuple[dict[str, int], list[str]]:
-    """Swimlanes: each node's lane, one per actor in order of first use; the start and end sit with the step next to them, a stop with its step.
+    """Swimlanes: each node's lane, one per actor in the order that keeps hand-offs short (flowmap.flowchart.order); the start and end sit with the step
+    next to them, a stop with its step.
 
     Args:
         graph: the graph.
@@ -114,7 +116,8 @@ def lane_map(graph: Graph) -> tuple[dict[str, int], list[str]]:
     Returns:
         ({node id: lane index}, [actor id per lane]).
     """
-    actors = list(dict.fromkeys(s["actor"] for s in graph.steps.values()))
+    actors = lane_order(list(dict.fromkeys(s["actor"] for s in graph.steps.values())),
+                        [(graph.steps[e.src]["actor"], graph.steps[e.dst]["actor"]) for e in graph.edges if e.src in graph.steps and e.dst in graph.steps])
     lanes = {sid: actors.index(s["actor"]) for sid, s in graph.steps.items()}
     lanes[START] = lanes[next(iter(graph.steps))]
     for e in graph.edges:

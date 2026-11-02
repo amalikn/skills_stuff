@@ -59,11 +59,13 @@ No new data is needed; better data draws better.
 - **`failures`** draw as a stop: beside the step on a flowchart, under it in a lane (a lane holds one column of boxes; operator, 2026-11-02), an error end event in BPMN.
 - Any step with more than one way out is a decision on a chart, gate or not.
 - In a lane a plain hand-off to a lane on the right stays level and runs sideways, so a chart spans both ways (operator, 2026-11-02).
+- Lane columns are ordered for the shortest hand-offs, then the fewest arrows heading left, with the starting actor leftmost (operator, 2026-11-02).
+- In a lane an arrow heading to a lane on the left leaves by the box's left side, so it does not cross the step's own stop (operator, 2026-11-02).
 - A diamond's arrow to the box directly below it goes straight down, whichever branch it is; on a lane page each two-way diamond is drawn both ways and keeps the one
   with fewer crossings, then bends, then length (operator, 2026-11-02).
 - On a plain flowchart an arrow within the main column and any arrow back up leaves by the left and enters the target's left, in a channel beside the column (operator, 2026-11-02); a lane page keeps its gutters.
 
-BPMN mapping: start and end events, an error end event for a stop, a task for a step, a call activity for a step that runs a flow, an exclusive gateway for a decision, a sequence flow for every arrow.
+BPMN pages keep the step pages' colours: tasks and gateways in the actor's colours, shaded lanes, green and red branches, a red stop. BPMN mapping: start and end events, an error end event for a stop, a task for a step, a call activity for a step that runs a flow, an exclusive gateway for a decision, a sequence flow for every arrow.
 Nothing the map does not state is drawn, so no message flows. A gateway keeps its question inside the diamond: BPMN allows an exclusive gateway without its X.
 
 A step's `branches` key holds decisions its words only state, each with a `question` and tagged `outcomes` (`run: ` into the step, `skip: ` past it, `stop: ` to a stop). Charts, lanes and BPMN draw a diamond
