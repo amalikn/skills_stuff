@@ -1701,3 +1701,9 @@ port_busy() {
 ```
 
 The same run exposed `verify.yml:79`: `smc_change_after.gates.stale` exists only when the spec sets `stale_maps`, so any failed gate on such a spec crashed the failure message and hid the failed gate; fixed with `gates.stale | default(true)` (70bb516).
+
+## 2026-11-02 — a host absent from the inventory is ignored by `-l` with a warning, and the run still exits 0 (INFO)
+
+`warehouse-rct01` is in `inventories/rct/stage`, not `prod`. A `-l` list of ten hosts on `rct/prod` ran nine and no failure said so: count the recap against the list, and read the warning
+`Could not match supplied host pattern`. A `-l` of that host alone stops with "no hosts to target". The ten sites of the rct-tstik rollout span both inventories.
+

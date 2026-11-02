@@ -786,3 +786,28 @@ crontab "$t"
 ```
 
 Pass new steps to `trace_sync --accept` in calls of their own: a call naming a file and two steps accepted only the steps of the file. The flows recipes are in skill-smc's justfile; run them with `just -f`.
+
+**2026-11-02: per-SMC close, queue time, nothing-changed path.** A serial run's wait used to land in stage 1 and `elapsed_seconds` (bar-barrum 512 s for 246 s of work): `main.yml` now restarts the clocks at
+the SMC's turn and records `queue_seconds`; `tracker.py` leaves stage 1 out, which corrects old rows too. `record.yml` prints `host_summary.j2` and rebuilds the trackers at each final record, so a stopped
+run keeps them. Rebuilds queue with `throttle: 1` and a `flock` on the runs folder, and read the records only with the lock held. `outcome.yml` skips restart and soak on a fresh apply where every action said
+ALREADY or SKIPPED; a resume and `smc_change_force` keep the full pass, as a resume says ALREADY for work whose restart may never have run. Backup still runs, as it comes before the actions.
+
+**2026-11-02: skip, probe or force (operator design).** Default: a stored state with the same `target` and `checks` skips the host. A moved hash, or `-e smc_change_probe=true`, reaches the probe; a `probe_first: true` spec
+stops there when every proof holds (`in_place: true`, outcome `already in place`), and any other spec runs in full. The flag is refused without `probe_first`. `-e smc_change_force=true` runs every step. Each non-transient
+action names its proof in `proved_by`. Correction: `just target-hash` said `rct-avr-smsc` was unchanged after the 2026-11-02 guard fix, yet its passed boxes became to-do, because the tool compared unrendered text. It now counts
+`vars:` and `scripts/` as a move. Copied file content is not in the target at all. Excerpt, `tasks/in_place.yml`:
+
+```yaml
+smc_change_in_place: >-
+  {{ smc_change_mode in ['apply', 'check']
+     and smc_change_spec.probe_first | default(false) | bool
+     and not smc_change_resuming | default(false) | bool
+     and not smc_change_force | default(false) | bool
+     and smc_change_before.proves | default({}) | length > 0
+     and smc_change_before.proves | default({}) | dict2items | map(attribute='value') | rejectattr('ok') | list | length == 0
+     and smc_change_before.stale | default([]) | length == 0 }}
+```
+
+Measured: warehouse-rct01 stopped in place in 39 s at 2026-11-02 17:55 (a full pass was about 245 s), no action, no journal, state stored with both hashes, tracker `already in place`. Timing a nothing-changed run needs a batch of its own: a `serial` batch moves in lockstep, so all five hosts of the 17:40 run showed 267 s, one of which changed its cron.
+
+A state without `checks` is obsolete on a `probe_first` spec and matches on any other (operator, 2026-11-02: the JSON is matched against the YAML, and a state that cannot show it read the current proofs is obsolete). An in-place run keeps the state's last `actions` and adds `in_place` and `proved`.

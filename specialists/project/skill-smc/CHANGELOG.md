@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)
+
+Learned 2026-11-02: `references/19_smc-change-role.md` (per-SMC summary and tracker, queue time, nothing-changed path, `probe_first`, `smc_change_probe`, `checks` hash, `target-hash` correction, 39 s in-place stop), `references/13_known-issues.md` (a `-l` host absent from the inventory).
+
 ## 20261102_1721 — update:stats cron standard, port guard after cron starts (v0.11.5 -> v0.11.6)
 
 Learned 2026-11-02: `references/13_known-issues.md` (`*/1` boxes, guard gap, `gates.stale` crash), `references/02_service-map.md` (two crontab copies on overlay SMCs), `references/19_smc-change-role.md` (action 8, checked crontab write, trace_sync accept).

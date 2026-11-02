@@ -97,6 +97,10 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 |                     |   its root                                                                                                             |   (USER_STATED)                                       |
 | Module and function | Core defaults (400 and 60)                                                                                             | No change                                             |
 
+> **Learned 2026-11-02** · Python, rebuild-from-source writers · VERIFIED_PRIMARY (negative test: fails with the lock removed) · Source: ansible-wifi `roles/smc_change/files/tests/test_tracker.py` · Falsifier: a platform where `flock` on a folder fails.
+> An atomic file swap stops a torn file, not a lost update: a rebuild that read earlier can replace a newer one. Take the lock before the read. `flock` on the folder leaves no lock file and dies with its holder.
+> A race test by timing passed with the lock removed, so prove it deterministically: inside the read, assert a second non-blocking `flock` fails.
+
 ## Open items
 
 - Type-checker recommendation and settings: UNVERIFIED stub; add with a fetched source.
