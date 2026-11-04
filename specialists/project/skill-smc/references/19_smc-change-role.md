@@ -930,3 +930,5 @@ read back `ro`). Fix there: `just flash rct/prod the-crossing-smc01 -e smc_chang
 **Also:** every action task is named `Action <n>/<total> - ...` (`smc_change_actions | default([]) | length`); the in-process chain is archived
 (`plans/smc-change-chain/archive-20261104/`), `smc_rise_deploy.yml` uses two imports again; the include of one change inside another is planned
 (`plans/smc-change-include-plan-20261104_1745.md`); skill-smc `smc_change_trace` passes quoted arguments whole (`--by "name"`).
+
+**Iridium sites are flashed in advance (operator, 2026-11-04).** Sites are configured before the technician swaps the Thuraya hardware for Iridium: `smc_bases_iridium: true` is set ahead and now means planned for Iridium, then rct-tstik-iridium-update flashes AVR 3.07 (`just flash`) and rct-avr-smsc sets the numbers. The Thuraya board SIM loss from 3.07 (Chris Blair, 2026-10-28) is accepted: Thuraya is not really working. Spec comments that say the flash must never reach a Thuraya site are to be reworded.
