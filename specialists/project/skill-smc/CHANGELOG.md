@@ -20,6 +20,9 @@ Learned 2026-11-04: `references/19_smc-change-role.md` (`smc_changes` chain in o
 `vars/main.yml` read-through, HELD gate in apply and rollback, `variables_files` with grouped `smc_change_vars`, both rct changes in the scripts and
 variables form, `smc_bases_tstik_avr_version`, check-mode chain on alkngarrija-smc01). Also `references/01_overview.md`: `tsh --proxy=<domain> ssh`
 when a plain `tsh ssh` is denied (operator-confirmed 2026-11-03, written by that day's session and committed here).
+Later the same day: flows brought up to date (0 steps to review), quiet unused chain slots, first real apply on the rewritten role.
+Then: chains moved to `smc_change_chain.yml`; `smc_change.yml` runs one change with no slots (operator decision).
+Then: the in-process chain withdrawn and archived (operator decision); reference 19 notes it at the top of the section.
 
 ## 20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)
 

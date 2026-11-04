@@ -814,9 +814,11 @@ A state without `checks` is obsolete on a `probe_first` spec and matches on any 
 
 ## Chained changes, per-change state, named value files (2026-11-04)
 
+**Withdrawn the same day (operator, 2026-11-04: "chaining different changes is not going to be straightforward").** The chain playbooks and the state-dict role are archived in local-knowledge-ansible `plans/smc-change-chain/archive-20261104/` as a reference; `smc_change.yml` is back to one change with its three inline plays, and the role goes back to plain `set_fact` state through `plans/smc-change-chain/restore-plain-role-20261104.patch` once the active journals close (RULE-007). Kept: `variables_files`, the scripts form of both rct changes, `smc_bases_tstik_avr_version`, the templates. The replacement idea is an include of one change inside another's actions (`plans/smc-change-include-plan-20261104_1745.md`, proposed). Below is the record of what was built.
+
 **Chain several changes in one run (operator, 2026-11-04: "chaining different changes ... in the order in which the changes are specified").**
-`-e '{"smc_changes": ["rct-tstik-iridium-update", "rct-avr-smsc"]}'` (or `smc_changes:` in an import's vars, as `smc_rise_deploy.yml` now does)
-runs up to five changes in one `ansible-playbook` process, in the order written. `playbooks/smc_change.yml` is a front of five fixed
+`smc_change_chain.yml -e '{"smc_changes": ["rct-tstik-iridium-update", "rct-avr-smsc"]}'` (or `smc_changes:` in an import's vars, as `smc_rise_deploy.yml` now does; `smc_change.yml` runs one change and shows no slots, operator 2026-11-04)
+runs up to five changes in one `ansible-playbook` process, in the order written. `playbooks/smc_change_chain.yml` (symlinked, git-excluded) is a front of five fixed
 `import_playbook: smc_change_run.yml` slots (Ansible cannot loop an import); `smc_change_run.yml` holds the old three plays, symlinked into the
 ansible-wifi root and git-excluded like `smc_change.yml`. A slot the chain does not reach gets `hosts: smc_change_no_slot_<n>` and runs nothing.
 Each change keeps its own records, state, journal and tracker under `files/changes/<name>/`. In apply and rollback a later change runs only where the
@@ -879,6 +881,8 @@ Targets moved, so passed SMCs are re-run: rct-tstik-iridium-update (`probe_first
 
 Proven: check-mode chain on alkngarrija-smc01 2026-11-04 15:45 (81 s): both changes in order, each record in its own folder, the new scripts ran under the
 SMC's dash with every value (the four failing proofs were real: no loader, master build, `/viewstats2` 404). `just test` 124 tests, `test_chain_gate` (HELD
-on apply, none on check), `test_load_spec_vars`, controller tests as before; `test_journal` fails as it did before (missing fixture record). Not proven:
-a chain in apply mode on a real SMC. Flow map re-rendered with 0 coverage problems; 178 steps marked for review because the codemod touched the files they
-cite.
+on apply, none on check), `test_load_spec_vars`, controller tests as before; `test_journal` fails as it did before (missing fixture record). Not proven: a chain in apply mode on a real SMC. First real apply on the rewritten role, single change: the-crossing-smc01 passed
+`rct-tstik-iridium-update` 2026-11-04 16:21 (299 s). Flows: tracker steps cite `smc_change_run.yml`; 145 steps touched only by the write rewrite accepted on
+the `verify_codemod.py` proof (`trace_sync.py --accept <files> --apply`), the other 40 read and accepted; `smc_change_flows_check` passes. Unused chain slots
+use the host pattern `smc_bases:!smc_bases` (Ansible warns about an unknown group, not an empty one) and templated play names ("Change N of the chain: not
+used"). New `change-variables-template.yml` beside `change-spec-template.yml`.
