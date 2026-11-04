@@ -940,3 +940,22 @@ rct-tstik-iridium-update import (2026-11-04 20:40, operator), so the deploy flas
 lists written with long site names miss four SMCs, because `-l` skips a name it cannot find and the run still passes (brubrunganjal-kitty-wells ->
 brubrunganjal, goojarr-goonyool-two-moons -> goojarr-goonyool, gurrbalgun-urmarr -> gurrbalgun, rollah-oompanaguba -> rollah). Runbook:
 local-knowledge-ansible `plans/iridium-flash-batches-runbook-20261104_2023.md`.
+
+**Rise deploy chain proven on shelfo-crossing-smc01 (2026-11-04 20:50-21:01).** One `smc_rise_deploy.yml -l shelfo-crossing-smc01` run: the
+rct-tstik-iridium-update import passed in 8 min (record `conditions.cond.flash_wanted = True`, so a `vars:` key on `import_playbook` reaches the
+spec; `avr_version` 2.14 -> 3.07, the 3.04/3.06 firmware copies SKIPPED by their `avr_at_*` conditions), then rct-avr-smsc passed in 3 min (SMSC
++61415011740 -> +61418706700; emergency 000 and destination +61410004795 already right). Read a run's outcome from
+`runs/rct/records/<host>-<spec>-apply-<stamp>.json` (`result`, `gates`, `actions`, `conditions.facts`, `facts_after`):
+
+```python
+# how the canary was read (session one-off); keys as written by roles/smc_change, rise e763c1aa
+d = json.load(open(record))
+print(d["result"], d["gates"])                  # "passed", every gate true
+print(d["conditions"]["cond"]["flash_wanted"])  # True only with rct_avr_flash and smc_bases_iridium
+print(d["conditions"]["facts"]["avr_version"], d["facts_after"]["avr_version"])
+```
+
+**A deploy with the Iridium flag missing skips the chain silently.** Both imports carry `when: *rct_iridium` (`... smc_bases_iridium == true`);
+with the flag false the Prepare play prints no task, the Apply play says "skipping: no hosts matched", and the deploy goes on into its other plays.
+On 2026-11-04 the 24 host_vars files on disk lost the flag at 20:31:53 (cause unknown; not git, not the agent) and the first canary did exactly
+this. Before a deploy: `ansible-inventory -i inventories/rct/prod --host <host> | grep smc_bases_iridium`.

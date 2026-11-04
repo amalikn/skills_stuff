@@ -6,13 +6,20 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261104_1604
+Last rotated: 20261104_2134
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261104_2130 — Iridium batches 1-3 marked; rise deploy flashes; smc_mark_iridium.py (v0.11.9 -> v0.12.0)
+
+Learned 2026-11-04: `references/19_smc-change-role.md` (25 rct SMCs flagged on rise and master; `smc_rise_deploy.yml` passes `rct_avr_flash:
+true`, proven on shelfo-crossing-smc01: AVR 2.14 -> 3.07, SMSC set; long site names miss four SMCs in `-l`; a host_vars file reverted on disk makes
+the deploy skip both smc_change imports silently). New `scripts/ansible/smc_mark_iridium.py` with `test_smc_mark_iridium.py` (3 tests) and
+`just smc_mark_iridium` / `just test_smc_mark_iridium`. Reference 18: `playbooks/smc_change_multiple.yml` (the two Iridium imports alone).
 
 ## 20261104_1900 — smc_change self-repair, every-goal success rule, applies_when (v0.11.8 -> v0.11.9)
 
@@ -188,13 +195,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
   latlon role and Teleport lat/lon labels.
 - `references/02_service-map.md`: how tstik is served (`php -S` from cron, not Apache), the iridium routes, the self test, tracked `config.json`.
 - Source: local-knowledge-ansible ansible-wifi change record `rct-tstik-iridium-update-20261028_1221.md`.
-
-## 20261027_2015 — Slurp close: governed-file adoption, sibling write-backs (v0.9.0 -> v0.9.1)
-
-- skill-ai-it `adopt_governed_files.py --apply`: recipes `roles`, `govern`, `budget`, `changelog-entry`, `move-sections`, `outline`, `section`; file roles
-  in `check`; front matter on `README.md`, `AGENTS.md`, `AI_NAVIGATION.md`, `ARCHITECTURE.md`, `CHANGELOG.md`, `SCRATCHPAD.md`; `scripts/role-check-baseline.json`
-  (kept at `scripts/` with the other baselines; `check_scripts_layout` allows it).
-- Write-backs: skill-staleness-audit (`inverse_sweep.py` `(+ .txt)` twins, two tool hazards), skill-coder (Learned: cherry-pick simulation with
-  `git merge-tree`; read branch lists whole), skill-cambium (paths to `scripts/access/teleport-tunnel.sh`).
-- Incident: a `grep` printing ansible-wifi `group_vars` content was blocked by the ansible-vars-guard hook (19:39); rerun with file names only.
-- Open, not decided: `updated_at` format; dropping tracker items 5 and 10 (SCRATCHPAD Open items).
