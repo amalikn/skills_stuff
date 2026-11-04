@@ -130,6 +130,11 @@ local_knowledge_index days="14":
 smc_inventory_add *args: _require-venv
     @{{py}} scripts/ansible/smc_inventory_add.py {{args}}
 
+# Mark SMCs as Iridium (smc_bases_iridium: true) in an ansible-wifi checkout. Plan only unless args include --apply.
+# Example: just smc_mark_iridium --repo /Volumes/Data/_ansible/ansible-wifi --flavor rct host-a,host-b
+smc_mark_iridium *args:
+    @python3 scripts/ansible/smc_mark_iridium.py {{args}}
+
 # smc_change flow map: assemble roles/smc_change/drawio/flows.yaml from drawio/parts/master.yaml (role parts, plus the flow parts in each
 # files/changes/<change>/ folder), then
 # render drawio/flows.drawio with skill-drawio (writes both), or check both for drift.

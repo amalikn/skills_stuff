@@ -932,3 +932,10 @@ read back `ro`). Fix there: `just flash rct/prod the-crossing-smc01 -e smc_chang
 (`plans/smc-change-include-plan-20261104_1745.md`); skill-smc `smc_change_trace` passes quoted arguments whole (`--by "name"`).
 
 **Iridium sites are flashed in advance (operator, 2026-11-04).** Sites are configured before the technician swaps the Thuraya hardware for Iridium: `smc_bases_iridium: true` is set ahead and now means planned for Iridium, then rct-tstik-iridium-update flashes AVR 3.07 (`just flash`) and rct-avr-smsc sets the numbers. The Thuraya board SIM loss from 3.07 (Chris Blair, 2026-10-28) is accepted: Thuraya is not really working. Spec comments that say the flash must never reach a Thuraya site are to be reworded.
+
+**Batches 1-3 marked on rise and master (2026-11-04 20:23).** 25 rct SMCs carry `smc_bases_iridium: true` on both branches (rise `6f869a12`, master
+`9cbe85ee`, unpushed), set with `scripts/ansible/smc_mark_iridium.py` (`just smc_mark_iridium`). `smc_rise_deploy.yml` passes no `rct_avr_flash`, so a
+site still on AVR 2.14 gets the direct `smc_change.yml -e rct_avr_flash=true` runs first, or the deploy's rct-avr-smsc import fails there. Batch
+lists written with long site names miss four SMCs, because `-l` skips a name it cannot find and the run still passes (brubrunganjal-kitty-wells ->
+brubrunganjal, goojarr-goonyool-two-moons -> goojarr-goonyool, gurrbalgun-urmarr -> gurrbalgun, rollah-oompanaguba -> rollah). Runbook:
+local-knowledge-ansible `plans/iridium-flash-batches-runbook-20261104_2023.md`.
