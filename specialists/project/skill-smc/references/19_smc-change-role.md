@@ -811,3 +811,74 @@ smc_change_in_place: >-
 Measured: warehouse-rct01 stopped in place in 39 s at 2026-11-02 17:55 (a full pass was about 245 s), no action, no journal, state stored with both hashes, tracker `already in place`. Timing a nothing-changed run needs a batch of its own: a `serial` batch moves in lockstep, so all five hosts of the 17:40 run showed 267 s, one of which changed its cron.
 
 A state without `checks` is obsolete on a `probe_first` spec and matches on any other (operator, 2026-11-02: the JSON is matched against the YAML, and a state that cannot show it read the current proofs is obsolete). An in-place run keeps the state's last `actions` and adds `in_place` and `proved`.
+
+## Chained changes, per-change state, named value files (2026-11-04)
+
+**Chain several changes in one run (operator, 2026-11-04: "chaining different changes ... in the order in which the changes are specified").**
+`-e '{"smc_changes": ["rct-tstik-iridium-update", "rct-avr-smsc"]}'` (or `smc_changes:` in an import's vars, as `smc_rise_deploy.yml` now does)
+runs up to five changes in one `ansible-playbook` process, in the order written. `playbooks/smc_change.yml` is a front of five fixed
+`import_playbook: smc_change_run.yml` slots (Ansible cannot loop an import); `smc_change_run.yml` holds the old three plays, symlinked into the
+ansible-wifi root and git-excluded like `smc_change.yml`. A slot the chain does not reach gets `hosts: smc_change_no_slot_<n>` and runs nothing.
+Each change keeps its own records, state, journal and tracker under `files/changes/<name>/`. In apply and rollback a later change runs only where the
+change before passed in this run (`smc_change_chain_passed`, set by `tasks/state.yml` on a passed write and by `tasks/pending.yml` for a done host);
+the rest are grouped `smc_change_held_<slot>` and listed HELD. Check, assess and verify run every change everywhere. `-e smc_change=` with
+`smc_changes`, or a list on `smc_change`, is refused (extra vars beat the slot vars). `just chain` (`scripts/smc_change_chain.py`, one process per
+change) still works.
+
+Why it needed a role rewrite: Ansible cannot unset a `set_fact` or a register (`meta: clear_facts` clears only the fact cache, VERIFIED_PRIMARY,
+ansible-core 2.21.5), so the second change of a run read the first one's 105 facts. All role state now lives in two dicts that
+`tasks/prepare.yml` empties when a change starts; `vars/main.yml` (role vars, above inventory and play vars) reads each old name from them, so every
+read, `is defined` and `| default()` is unchanged. Only the 108 writes were rewritten, by `plans/smc-change-chain/codemod.py`, and
+`plans/smc-change-chain/verify_codemod.py` proved every task identical except where it writes (108 tasks, 0 differences). Excerpts (local-knowledge-ansible
+working tree, uncommitted at write time):
+
+```yaml
+# roles/smc_change/vars/main.yml (one line per state name)
+smc_change_backup_path: "{{ smc_change_s['backup_path'] }}"
+smc_change_tsh_nodes: "{{ smc_change_run['tsh_nodes'] }}"
+
+# roles/smc_change/tasks/prepare.yml, first task
+- name: Start this spec with empty state
+  ansible.builtin.set_fact:
+    smc_change_s: {}
+    smc_change_run: {}
+
+# every state write, e.g. tasks/state.yml
+- name: Name the state file
+  ansible.builtin.set_fact:
+    smc_change_s: "{{ smc_change_s | combine(smc_change_set) }}"
+  vars:
+    smc_change_set:
+      state_file: "{{ smc_change_runs_dir }}/state/{{ inventory_hostname }}.json"
+```
+
+Traps met on the way, each fixed: `run_once` with `combine` copies the first host's whole dict to every host, so the one run-wide write after the
+hosts differ (`tsh_nodes`) has its own dict, `smc_change_run`; `hostvars[h].smc_change_x` does not see role vars, so `pending.yml` reads
+`hostvars[h].smc_change_s.x`; `query('varnames')` lists every read-through name, so `journal.yml` tests the key in `smc_change_s`; `default(omit)` inside
+the merged dict stored the omit placeholder, so the journal restore builds its dict from the keys present; three registers read in other files
+(`backup_on_box`, `backup_files`, `rearm_job`) are registered under `smc_change_reg_*` and copied into `smc_change_s`. Guard:
+`files/tests/test_state_namespace.py` fails on a bare `set_fact`, a key without its read-through line, an unused line, or a register of a state name.
+
+**Named value files (operator, 2026-11-04: "so that it gives control").** A spec lists the files holding its values: `variables_files: [variables.yml]`,
+beside the spec; they load together with `include_vars` (lazy, per host) as `smc_change_vars.<group>.<name>`. A missing file, a value in two files, or
+`variables_files` with a `vars:` block is refused before any SMC is touched; a spec naming none loads `files/no_variables.yml`, so a chained change never
+reads the last one's values. A `set_fact` merge would resolve the spec's Jinja at once (`dict has no attribute 'vars'`), which is why it is `include_vars`.
+Values are grouped (`avr`, `flash`, `stats`, `tstik`, `crontab`, `backup`; `env.steps.<group>` as shell variables), and each step names only the groups its
+script needs; `files/tests/test_spec_step_values.py` proves every step sets every `: "${NAME:?}"` its script requires (it caught `SELF_TEST_TIMEOUT`, unset,
+which would have failed the self test proof on every SMC). The AVR version both changes use is inventory: `smc_bases_tstik_avr_version: "3.07"` in
+`inventories/rct/group_vars/smc_bases.yml`.
+
+**rct-tstik-iridium-update in the rct-avr-smsc form.** Thirteen scripts in `scripts/` (POSIX sh, no values), plus `avr_flash.sh`, `py_avrloader_v2.py` and the
+vendor `py_avrloader.py` moved there. `avr_flash.sh` now takes every value from its environment, passed with `systemd-run --setenv` (a unit gets no caller
+environment); a rollback of an older run uses that run's saved copy, which ignores them. Values that follow `-e rct_avr_flash` (`env.flags`) go only to the
+fact and the proofs, never to an action, so the target is the same with and without the flag (checked: `9bb0af5f8664` both ways). The undo now keeps a tree
+already at the master commit (same script as the clone) instead of always cloning again.
+
+Targets moved, so passed SMCs are re-run: rct-tstik-iridium-update (`probe_first`) probes once and stops where every proof holds; rct-avr-smsc (no
+`probe_first`) runs its full pass, where the write's check reads the AVR, says ALREADY and writes nothing, and restart and soak are skipped.
+
+Proven: check-mode chain on alkngarrija-smc01 2026-11-04 15:45 (81 s): both changes in order, each record in its own folder, the new scripts ran under the
+SMC's dash with every value (the four failing proofs were real: no loader, master build, `/viewstats2` 404). `just test` 124 tests, `test_chain_gate` (HELD
+on apply, none on check), `test_load_spec_vars`, controller tests as before; `test_journal` fails as it did before (missing fixture record). Not proven:
+a chain in apply mode on a real SMC. Flow map re-rendered with 0 coverage problems; 178 steps marked for review because the codemod touched the files they
+cite.

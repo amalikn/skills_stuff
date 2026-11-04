@@ -16,6 +16,10 @@ Last rotated: 20261102_1434
 
 ## Unreleased
 
+- 20261104 Backfilled: Learned 2026-10-27 in languages/python.md, `git -C <dir>` reads relative paths after changing directory (a relative destination lands under <dir>); written without its CHANGELOG line.
+- 20261104 Backfilled: Learned 2026-10-26 in references/safety-and-writes.md, an interrupted transaction finishes only on a completed marker and a repeated cleanup keeps the backup manifest; and process matching from automation kills or waits on itself (anchor pgrep -f); written without their CHANGELOG lines.
+- 20261104 Backfilled: Learned 2026-10-26 in languages/ansible.md, (e) until/retries do not retry an unreachable host (use async + poll 0 and an await), (f) run_once applies the first host's result to the whole batch; written that day without its CHANGELOG line.
+- 20261104 Learned 2026-11-04 in references/design-patterns.md: P-55 state a run can empty (one dict per run, old names read through role vars).
 - 20261102 Learned 2026-11-02 in languages/python.md: lock before the read in a rebuild writer; prove it without timing.
 
 - 20261102 Learned 2026-11-02 in languages/shell.md: crontab rewrite through a checked file; a guard around a scheduled job covers just after the tick too.

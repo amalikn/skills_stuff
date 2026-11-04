@@ -6,13 +6,20 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261102_1434
+Last rotated: 20261104_1604
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261104_1600 — smc_change chaining, per-change state, named value files (v0.11.7 -> v0.11.8)
+
+Learned 2026-11-04: `references/19_smc-change-role.md` (`smc_changes` chain in one run, five slots of `smc_change_run.yml`, per-change state dicts and
+`vars/main.yml` read-through, HELD gate in apply and rollback, `variables_files` with grouped `smc_change_vars`, both rct changes in the scripts and
+variables form, `smc_bases_tstik_avr_version`, check-mode chain on alkngarrija-smc01). Also `references/01_overview.md`: `tsh --proxy=<domain> ssh`
+when a plain `tsh ssh` is denied (operator-confirmed 2026-11-03, written by that day's session and committed here).
 
 ## 20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)
 
@@ -183,18 +190,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
   `git merge-tree`; read branch lists whole), skill-cambium (paths to `scripts/access/teleport-tunnel.sh`).
 - Incident: a `grep` printing ansible-wifi `group_vars` content was blocked by the ansible-vars-guard hook (19:39); rerun with file names only.
 - Open, not decided: `updated_at` format; dropping tracker items 5 and 10 (SCRATCHPAD Open items).
-
-## 20261027_2012 — scripts/ arranged into job folders; layout and catalogue checks (v0.8.9 -> v0.9.0)
-
-- 43 scripts moved (`git mv`) into `scripts/ansible|access|probes|capture|fleet|metrics|routing|switch/`; tests beside their script; the two
-  sub-justfiles and the governance files stay at `scripts/` (operator, 2026-10-27). Pack-root and `.graylog-token` paths now resolve two levels
-  up; `fleet-health.justfile` calls `./<folder>/<script>`. 102 path references in live files updated; CHANGELOG, `docs/history/`, `docs/audits/`
-  and the investigation template `routing-diagnostics.justfile` left as written.
-- Callers in other repos updated, no shims (operator choice): unified-network-controller `site_onboarding/identify_candidates.py`,
-  `site_cables.py`, `docs/flows/parts/flows-native-platform-flows.yaml` (+ re-assembled `flows.yaml`); skill-cambium `scripts/README.md`,
-  `references/site-addressing.yaml`; ansible-wifi root-governance `AGENTS.md` and the fleet-hardware-audit README; smc-resiliency `SCRATCHPAD.md`;
-  enterprise-strategy `asterisk-probe-20261022/run1.sh`. Dated reports keep the old paths.
-- `check_governance.py`: the scripts catalogue walks `**/*` (subfolder files were invisible to it); new `check_scripts_layout`. Both proven red, then
-  green. Layout table in `scripts/README.md`; rules in `AGENTS.md`; decisions in `ARCHITECTURE.md`; branch-reach pointer in `SKILL.md`.
-- Verified: unit tests (ansible, probes), `just test-deadline`, all justfiles parse, every shell script parses, `metrics/` imports, pack root and
-  token resolve, `just ansible_change_reach`, `just local_knowledge_index`. Not run: recipes that need Teleport.

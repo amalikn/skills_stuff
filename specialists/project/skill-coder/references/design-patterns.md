@@ -1035,7 +1035,7 @@ def team_text(text: str) -> str:
 
 ### P-48 One write frame for many fields: rebuild it from a read, prove it with a read
 
-> **Learned 2026-11-02** · design pattern, any language (realised in Python) · VERIFIED_PRIMARY (13 offline tests on captured bytes; a change and its reverse on one live device) · `reusable_candidate` ·
+> **Learned 2026-11-02** · design pattern, any language (realised in Python) · VERIFIED_PRIMARY (13 offline tests on captured bytes; a change and its reverse on one live device; `reusable_candidate`) ·
 > Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/changes/rct-tstik-iridium-update/avr_emergency.py` · Falsifier: a device whose other fields change after such a write
 
 - **Problem:** a device has one write command that sets every field, and the job is to change one. A hand-typed frame carries one target's values to every target, and its checksum goes stale.
@@ -1059,7 +1059,7 @@ if after.payload != wanted.payload:
 
 ### P-49 A tracker is a view rebuilt from the records, never a file appended to
 
-> **Learned 2026-11-02** · design pattern, any language (realised in Python) · VERIFIED_PRIMARY (10 offline tests; five real changes, 581 records, 0.45 s) · `reusable_candidate` · Source: local-knowledge-ansible
+> **Learned 2026-11-02** · design pattern, any language (realised in Python) · VERIFIED_PRIMARY (10 offline tests; five real changes, 581 records, 0.45 s; `reusable_candidate`) · Source: local-knowledge-ansible
 > `ansible-wifi/roles/smc_change/files/tracker.py` · Falsifier: a tracker row that differs from its record after a rebuild
 
 - **Problem:** people need a status sheet per change, across many runs and parallel hosts. An appended file races between hosts, drifts from the records and has no past runs.
@@ -1157,6 +1157,45 @@ FROZEN = {"<spec>": "<why it stays for now>"}
 - **Reuse:** runbooks, architecture notes, API guides, compliance evidence, an agent's instructions pointing at code.
 - **Pitfalls:** a first baseline stamped in bulk proves nothing: an agent review of smc_change's 203 stamped steps found 94 with a wrong or stale claim and 98 branches hidden in prose, so review before you trust a baseline, and record who reviewed: a stamp saying "full review" over agent text applied by script claims more than happened, and a script applying review text pasted one reviewer's to-do note into a step. A pass proves someone looked, not that the words are right. Editing the text must not clear a flag, or the flag means nothing. Whole-file citations over-flag: cite a symbol.
 - **Realised in:** Python, `scripts/flowtrace/` in skill-drawio; how to adopt it: its `references/charts-and-trace.md`.
+
+### P-55 State a run can empty: one dict per run, old names read through
+
+> **Learned 2026-11-04** · design pattern, Ansible (any engine whose variables cannot be unset) · VERIFIED_PRIMARY (smc_change chains specs in one
+> ansible-playbook run; 108 writes rewritten, a structural verifier found 0 differences, 124 tests and a real check run pass) · Source: ansible-wifi
+> local-knowledge `roles/smc_change/vars/main.yml`, `tasks/prepare.yml`, `files/tests/test_state_namespace.py` (uncommitted at write time) ·
+> Falsifier: a second spec in the same run reads a fact the first spec set. `reusable_candidate` until a second project uses it.
+
+- **Problem:** a role written for one run per process sets facts freely; running it again in the same process (a chain, a loop of imports) reads the last
+  run's facts, because Ansible has no way to unset a `set_fact` or a register, and `meta: clear_facts` clears only gathered facts.
+- **Solution:** every write goes into one dict (`smc_change_s: "{{ smc_change_s | combine(smc_change_set) }}"`, the old expressions moved verbatim under
+  task `vars: smc_change_set:`), emptied as the first task of each run. Role `vars/main.yml` keeps each old name readable as
+  `old_name: "{{ dict['key'] }}"`, so reads, `is defined` and `| default()` need no edit: a missing key is undefined. A test fails on any bare `set_fact`.
+- **Why it works:** emptying one variable is the only reset Ansible offers, and the read-through keeps the change to the writes alone, which a codemod can
+  make and a parser can prove (same expressions, same other keys, no duplicate keys). Task vars are resolved inside the `set_fact`, so they still see the
+  old values, as the original `set_fact` did.
+- **Reuse:** any role imported several times in one playbook; per-item state in a loop over includes; a test playbook running a role twice.
+- **Pitfalls:** `run_once` with `combine` copies the first host's dict to all, so state written run-wide after the hosts differ needs its own dict;
+  `hostvars[h].old_name` does not see role vars (read `hostvars[h].dict.key`); `query('varnames')` now lists every read-through name; `default(omit)` inside
+  the merged dict stores the placeholder; a register cannot go into the dict (register under another name and copy it); role vars outrank play vars, so a
+  test that seeded an old name as a play var seeds the dict instead.
+- **Realised in:** Ansible, excerpt below.
+
+```yaml
+# roles/smc_change/vars/main.yml: the old names read through
+smc_change_backup_path: "{{ smc_change_s['backup_path'] }}"
+# roles/smc_change/tasks/prepare.yml: first task of each run
+- name: Start this spec with empty state
+  ansible.builtin.set_fact:
+    smc_change_s: {}
+    smc_change_run: {}
+# every write
+- name: Name the state file
+  ansible.builtin.set_fact:
+    smc_change_s: "{{ smc_change_s | combine(smc_change_set) }}"
+  vars:
+    smc_change_set:
+      state_file: "{{ smc_change_runs_dir }}/state/{{ inventory_hostname }}.json"
+```
 
 ## Language realisations
 
