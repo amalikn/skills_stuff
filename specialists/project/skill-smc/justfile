@@ -148,8 +148,10 @@ smc_change_flows_check:
     @{{drawio_py}} {{drawio_skill}}/scripts/trace_sync.py --root {{smc_change_role}} --map drawio/flows.yaml
 
 # Hold the smc_change flows to the code: suspect steps with `--diff`, a review with `--accept <flow/step|flow|file|all> --apply`. Example: just smc_change_trace --diff
+# Arguments pass through whole, so a quoted --by "name" or several --accept targets survive (2026-11-04: the unquoted form split them).
+[positional-arguments]
 smc_change_trace *ARGS:
-    @{{drawio_py}} {{drawio_skill}}/scripts/trace_sync.py --root {{smc_change_role}} --map drawio/flows.yaml {{ARGS}}
+    @{{drawio_py}} {{drawio_skill}}/scripts/trace_sync.py --root {{smc_change_role}} --map drawio/flows.yaml "$@"
 
 # Ask the smc_change flows what happens (read only). Example: just smc_change_ask --flow smsc, or --file tasks/verify.yml, --writes "run record"
 smc_change_ask *ARGS:

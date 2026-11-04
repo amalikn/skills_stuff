@@ -354,3 +354,9 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > {%- if r.value -%}{%- set _ = commits.update({name[8:]: r.value}) -%}{%- endif -%}
 > {%- set now = (c.commits | default({})).get(i | string, '') -%}
 > ```
+
+
+> **Learned 2026-11-04 (h)** · ansible-core 2.21.5, test playbooks · VERIFIED_PRIMARY (local-knowledge-ansible smc_change test_guard_goals.yml failed, then passed; 3ebbe56) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/tests/test_guard_goals.yml` · Falsifier: a second play on the same host that does not see a fact the first play set
+> Facts set in one play stay on that host for every later play of the run, so test cases written as plays on one host leak into each other (a refusal
+> fact from case 1 failed case 2). Give each case its own host (`-i case1,case2,case3, -c local`, `hosts: case1`). Also: an `assert` list item with
+> `: ` inside a plain scalar (`- x == 'a: b'`) parses as a mapping and fails with "Conditional expressions must be strings"; quote the whole item.

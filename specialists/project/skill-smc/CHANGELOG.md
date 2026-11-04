@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261104_1900 — smc_change self-repair, every-goal success rule, applies_when (v0.11.8 -> v0.11.9)
+
+Learned 2026-11-04: `references/19_smc-change-role.md` (cut-off runs repair themselves, lower dir guard, a change passes only when every action's goal holds, `applies_when`, the-crossing-smc01 and scrubby-bore-smc01 cases); `smc_change_trace` passes quoted arguments whole.
+
 ## 20261104_1600 — smc_change chaining, per-change state, named value files (v0.11.7 -> v0.11.8)
 
 Learned 2026-11-04: `references/19_smc-change-role.md` (`smc_changes` chain in one run, five slots of `smc_change_run.yml`, per-change state dicts and

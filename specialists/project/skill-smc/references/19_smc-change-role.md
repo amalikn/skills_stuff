@@ -886,3 +886,47 @@ on apply, none on check), `test_load_spec_vars`, controller tests as before; `te
 the `verify_codemod.py` proof (`trace_sync.py --accept <files> --apply`), the other 40 read and accepted; `smc_change_flows_check` passes. Unused chain slots
 use the host pattern `smc_bases:!smc_bases` (Ansible warns about an unknown group, not an empty one) and templated play names ("Change N of the chain: not
 used"). New `change-variables-template.yml` beside `change-spec-template.yml`.
+
+## Self-repair of cut-off runs, success means every goal, applies_when (2026-11-04 evening)
+
+Built after the chain was withdrawn and the plain role restored (local-knowledge-ansible `52de414`, then `3ebbe56`). Operator rulings, all 2026-11-04.
+
+**A run cut off before it changed anything repairs itself.** scrubby-bore-smc01: an rct-tstik-iridium-update apply was cut off at stage 5 (16:18),
+its inventory gained `smc_bases_iridium: true` at 16:48, the resume was refused `needs_repair` (spec fingerprint changed) and the lower dir stayed `rw`
+until a hand repair. `files/recovery.py` `untouched()` accepted only all-`apt_pin` specs; now stage 5 (no action has run) counts as untouched for any
+spec, and stage 6 counts when every non-transient action's `proved_by` proof reads as in the journal's before-probe (the journal is written at stage
+boundaries only, so it cannot say which actions ran). `abandoned_clean` then fetches the old backup to
+`runs/<flavor>/backups/<host>-<start>-abandoned/`, removes it from the SMC, closes the lower dir and sets the journal aside. Excerpt
+(`files/recovery.py`, `3ebbe56`):
+
+```python
+if phase == 5 and actions:
+  return True
+...
+named = [a.get("proved_by") for a in actions or [] if not a.get("transient")]
+if not named or not all(named):
+  return False
+was, now = by_name(before.get("proves")), by_name(current.get("proves"))
+return all(n in was and n in now and was[n] == now[n] for n in named)
+```
+
+**Lower dir guard.** `tasks/lower_guard.yml`: when stage 5 opens the lower dir, a transient `systemd-run --on-active=60min` unit
+(`smc-change-lower-guard`, `smc_change_lower_guard_minutes`) remounts it read-only if the run never closes it; re-armed at every stage, stopped at the
+close; remount only, never a reboot (operator chose 60 over 30 minutes). Tested against stand-ins (`files/tests/test_lower_guard.yml`); not yet seen
+firing on a real cut-off.
+
+**A change passes only when every action's goal holds** (operator: "if not all the actions have been performed, a change should not be deemed
+successful"). `tasks/guard.yml` refuses, before any change, an SMC where an action its conditions skip names a proof that does not already hold;
+transient actions and actions without `proved_by` are not judged; a goal unmet after the change fails its proof gate (`gates_failed`, the "incomplete"
+of the plan). `applies_when: <condition>` false records the SMC `not_applicable` (rct-avr-smsc: `iridium_site`). For rct-tstik-iridium-update the
+goals are the iridium commit, AVR 3.07 and update:stats on */5 (with the loader): the `avr_version` fact is read on every SMC, the proof "AVR at 3.07"
+is unconditional, and before the loader is on the SMC it reads stats.json (padded). Seen on alkngarrija-smc01 (check): rct-avr-smsc
+`not_applicable`; the iridium proof "stats.json: AVR version=2.14, not 3.07", so an apply without the flash would be refused, not passed.
+
+**Why it was needed.** the-crossing-smc01 passed rct-tstik-iridium-update twice with the flash skipped (16:21, and 17:46 without `-e rct_avr_flash=true`),
+then rct-avr-smsc failed at its write twice (17:28, 17:53: "AVR on '2.14', not one of: 3.07 3.7"), writing nothing (its version check runs first; lower dir
+read back `ro`). Fix there: `just flash rct/prod the-crossing-smc01 -e smc_change_probe=true`, then resume rct-avr-smsc.
+
+**Also:** every action task is named `Action <n>/<total> - ...` (`smc_change_actions | default([]) | length`); the in-process chain is archived
+(`plans/smc-change-chain/archive-20261104/`), `smc_rise_deploy.yml` uses two imports again; the include of one change inside another is planned
+(`plans/smc-change-include-plan-20261104_1745.md`); skill-smc `smc_change_trace` passes quoted arguments whole (`--by "name"`).
