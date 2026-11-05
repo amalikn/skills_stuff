@@ -178,8 +178,9 @@ class PackageContract(unittest.TestCase):
                 self.assertTrue((ROOT / rel).is_file(), f"{c['id']}: {rel} is missing")
 
     def test_write_back_entries_logged(self) -> None:
-        """Every Learned or Disputed entry has a CHANGELOG line naming its file and date."""
-        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        """Every Learned or Disputed entry has a CHANGELOG line naming its file and date, in CHANGELOG.md or a rotated docs/history file."""
+        logs = [ROOT / "CHANGELOG.md", *sorted((ROOT / "docs" / "history").glob("changelog-*.md"))]
+        changelog = "\n".join(p.read_text(encoding="utf-8") for p in logs)
         for path in sorted([*(ROOT / "references").glob("*.md"), *(ROOT / "languages").glob("*.md")]):
             for _kind, date in learned_entries(path.read_text(encoding="utf-8")):
                 self.assertTrue([ln for ln in changelog.splitlines() if date in ln and path.name in ln], f"{path.name} {date} not logged")

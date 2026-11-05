@@ -465,6 +465,22 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   it.
 - **Teleport online filter (live since 2026-10-27 13:24)**: `tsh ls --proxy=<proxy> --format=json flavor=<inventory folder>,env=<inventory file>` once per run; the `flavor` and `env` labels match the
   inventory folder and file (rct prod 290, rct stage 1; rcp prod 17 of 21 in inventory, the four `generic-*` hosts not in Teleport). Label form and `--query 'labels.flavor == "rct"'` return the same.
+- **Teleport login gate (2026-11-05)**: an expired `tsh` login made every SMC fail "Check the host answers" with `Connection closed by UNKNOWN port 65535` (10 rct SMCs).
+  Now the first play of `smc_change.yml` and of `smc_change_multiple.yml` includes `tasks/tsh_login.yml` (`any_errors_fatal`), which runs `files/tsh_login.py` once on the
+  controller: it reads `tsh status --format=json` (tsh 12 exits 1 when the active profile has expired but still prints the JSON: `active` plus `profiles[]`, each with `profile_url` and
+  `valid_until`) and stops the run, naming `tsh login --proxy=<proxy>`, when a proxy of the targeted SMCs (from `ansible_host` after the first label) has no profile, an expired one or under
+  `smc_change_tsh_min_minutes` (30) left. Checked at each `smc_change.yml` start only, not during a run: before a long serial run log in afresh or raise the minutes. A run_once failure is reported on
+  the first host only; the recap lists no others and no later play starts. Proven on alkngarrija/aeroplane-1 (check mode, both logins expired) and by `files/tests/test_tsh_login.py`.
+
+  ```python
+  # roles/smc_change/files/tsh_login.py (local-knowledge-ansible, uncommitted 2026-11-05)
+  profiles = ([doc["active"]] if doc.get("active") else []) + (doc.get("profiles") or [])
+  for prof in profiles:
+    host = urllib.parse.urlsplit(prof.get("profile_url", "")).hostname
+    if host and prof.get("valid_until"):
+      found[host] = parse_time(prof["valid_until"])
+  ```
+
 - **Run-once preparation (live since 2026-10-27 13:24; 9 probe-join lines per SMC gone)**: `tasks/prepare.yml` does spec load and check, plan banner, fingerprint, probe program and folders once per
   run in the first play; `tasks/probe_cfg.yml` keeps the per-SMC HTTP resolution.
 - **Captive portal render is part of the PHP verification**: the spec's `http` checks `portal` (home) and `portal-terms` (`/index.php/wifi/terms`) at the SMC's portal FQDN must redirect, or answer 200

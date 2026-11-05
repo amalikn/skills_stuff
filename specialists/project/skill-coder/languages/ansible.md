@@ -360,3 +360,20 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 > Facts set in one play stay on that host for every later play of the run, so test cases written as plays on one host leak into each other (a refusal
 > fact from case 1 failed case 2). Give each case its own host (`-i case1,case2,case3, -c local`, `hosts: case1`). Also: an `assert` list item with
 > `: ` inside a plain scalar (`- x == 'a: b'`) parses as a mapping and fails with "Conditional expressions must be strings"; quote the whole item.
+
+>  **Learned 2026-11-05 (i)** · ansible-core 2.21.5, a gate as a run_once task · VERIFIED_PRIMARY (prod rct inventory, check mode, two and three hosts:
+>  recap `failed=1` on the first host, `ok=1 failed=0` on the other, no later play) · Source: local-knowledge-ansible
+>  `ansible-wifi/roles/smc_change/tasks/tsh_login.yml`, `playbooks/smc_change.yml` first play (uncommitted 2026-11-05) · Falsifier: a recap in which
+>  every host of the play shows failed=1 after one run_once assert fails
+>  A `run_once` assert that fails marks only the first host failed; the other hosts stay `ok`. A run-wide gate therefore needs `any_errors_fatal: true`
+>  on its play, so the failure ends the run instead of leaving later plays to the other hosts.
+>
+>  ```yaml
+>  - name: Check the Teleport logins this run needs
+>    hosts: smc_bases
+>    gather_facts: false
+>    any_errors_fatal: true            # the run_once failure inside ends the whole run
+>    tasks:
+>      - name: Check the Teleport logins this run needs
+>        ansible.builtin.include_role: {name: smc_change, tasks_from: tsh_login.yml}   # run_once command + assert
+>  ```

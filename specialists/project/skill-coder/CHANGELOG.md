@@ -9,13 +9,15 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261102_1434
+Last rotated: 20261105_1156
 ---
 
 # Changelog
 
 ## Unreleased
 
+- 20261105 tests/test_package_contract.py: write-back entries count as logged in rotated docs/history/changelog-*.md too (budget rotation had failed the test).
+- 20261105 Learned 2026-11-05 in languages/ansible.md: (i) a failed run_once assert fails only the first host; a run-wide gate needs any_errors_fatal.
 - 20261104 Learned 2026-11-04 in languages/ansible.md: (h) facts persist across plays per host, so one host per test case; quote assert items holding ': '.
 - 20261104 Backfilled: Learned 2026-10-27 in languages/python.md, `git -C <dir>` reads relative paths after changing directory (a relative destination lands under <dir>); written without its CHANGELOG line.
 - 20261104 Backfilled: Learned 2026-10-26 in references/safety-and-writes.md, an interrupted transaction finishes only on a completed marker and a repeated cleanup keeps the backup manifest; and process matching from automation kills or waits on itself (anchor pgrep -f); written without their CHANGELOG lines.
@@ -191,12 +193,3 @@ Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_w
 ## 20261027_1213 — Ansible: to_json in debug output is escaped twice
 
 - `languages/ansible.md`: Learned 2026-10-27 (k) - `to_json` inside a `debug` message list is escaped twice; write operator lines as words.
-
-## 20261027_1115 — Design patterns harvested from unified-network-controller and smc-resiliency (P-13 to P-29)
-
-- `references/design-patterns.md`: Learned 2026-10-27 (m)-(z) and three more: P-13 to P-29 harvested from unified-network-controller
-  (capability table, rollback classes and end states, ownership axes, neutral contract by two consumers, stale-lock proof, class rules with
-  deny-wins exceptions, ranked-evidence evals, migration ratchet) and smc-resiliency (fallback chain, destroy-what-changed, scratch build and
-  sandbox validation, signed newer-only config, self-guarding probe, verdict ledger; recovery on immutable parts and clock floor as design
-  only). Dead-man revert timer (P-15) found in both projects; P-02 and P-10 gained a second project. Every key line was checked against its
-  source before writing (17 of 17 found).

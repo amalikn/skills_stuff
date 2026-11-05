@@ -6,13 +6,21 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261104_2134
+Last rotated: 20261105_1155
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261105_1155 — smc_change Teleport login gate (v0.12.0 -> v0.12.1)
+
+`references/19_smc-change-role.md`: new "Teleport login gate" entry. smc_change.yml and smc_change_multiple.yml now include
+`roles/smc_change/tasks/tsh_login.yml` in their first play (`any_errors_fatal`), which runs `files/tsh_login.py` on `tsh status --format=json` and stops the
+run before any SMC when a target proxy's login is missing, expired or has under `smc_change_tsh_min_minutes` (30) left. Found when expired logins made 10
+rct SMCs unreachable at "Check the host answers". tsh 12 exits 1 on an expired active profile but still prints the JSON. Checked at each run start only;
+a per-batch re-check is proposed, not decided. Flow parts updated, 16 trace steps accepted as an agent review. manifest 0.12.0 -> 0.12.1.
 
 ## 20261104_2130 — Iridium batches 1-3 marked; rise deploy flashes; smc_mark_iridium.py (v0.11.9 -> v0.12.0)
 
@@ -183,15 +191,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
 - `references/06_failure-modes.md`: Learned entry: rct-tstik and the AVR loader collide on `/dev/ttyS0` (warehouse-rct01 test: tstik run 0/24 good
   while overlapped, 24/24 before and after); tstik re-runs stty 19200 and flushes before every send; pause tstik cron for a flash; frame format.
 - `references/02_service-map.md`: deploy reference names `roles/smc_application/tasks/main.yml` instead of a person.
-
-## 20261028_1224 — rct-tstik iridium change: self-persisting command, symlinked copy sources, AVR flash (v0.9.1 -> v0.9.2)
-
-- `references/19_smc-change-role.md`: new section for the smc_change spec `rct-tstik-iridium-update` (canary aeroplane-1-smc01 passed 8/8 gates, 592 s): spec values naming inventory vars, a command
-  action that persists itself into the lower dir (no chroot, no reboot) with a `proves` check of both HEADs, copy sources served by a directory symlink that leaves the RULE-007 fingerprint unchanged,
-  copy rollback cannot remove a file that did not exist (patch in ansible-wifi `plans/`), checks false before the change go in `proves`, check mode can still act.
-- `references/06_failure-modes.md`: Learned entry on the AVR firmware flash (one "Protocol Error" at block 13, passed on retry; serial contention with cron's `update:stats` suspected, UNVERIFIED), the
-  vendor loader's exit 0 everywhere, endless retry and 19500 baud, and `py_avrloader_v2.py` exit codes and two-digit minor version; hand copies on an overlay SMC vanish at reboot.
-- `references/01_overview.md`: Tstik open question answered: Iridium keeps `rct-tstik` on `release/iridium` (1318c7b) with AVR firmware V3.07; `smc_bases_iridium: true` also switches portal branch,
-  latlon role and Teleport lat/lon labels.
-- `references/02_service-map.md`: how tstik is served (`php -S` from cron, not Apache), the iridium routes, the self test, tracked `config.json`.
-- Source: local-knowledge-ansible ansible-wifi change record `rct-tstik-iridium-update-20261028_1221.md`.
