@@ -36,6 +36,10 @@ Last rotated: 20261103_1745
 - [20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above](#20261022_1646--target-map-reference-summary-is-one-short-line-a-missed-stage-heading-folds-its-checklist-into-the-stage-above)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
+## Unreleased
+
+- references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range moves in move_sections.py.
+
 ## 20261105_2047 — adopt_governed_files: check recipe matched by exact name
 
 The six `^check\b` patterns in `scripts/adoption/adopt_governed_files.py` also matched `check-links:` and `check-contracts:` (a hyphen is a word boundary). In Continuum (2026-11-05) a `check-links`

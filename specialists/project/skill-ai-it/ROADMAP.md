@@ -136,6 +136,10 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Ideas
 
+- **Move lines, not only sections (2026-11-05, ansible-wifi AGENTS.md split).** `move_sections.py` moves whole headed sections; a flat rule list
+  (191 lines under no heading) had to be split by line ranges with a one-off script that proved each non-blank line landed in exactly one
+  destination. Add `--lines A-B[,C-D]` with the same no-line-lost audit, and a `--keep-summary` mode that leaves a one-line pointer per moved
+  rule (the rule added to references/governed-file-roles.md the same day).
 - **`repoint_paths.py` skips dated sections inside living files (2026-10-27).** It skips history files whole, but rewrote dated session lines in
   SCRATCHPAD.md (`### YYYYMMDD_hhmm` blocks), caught by `audit_rotations.py`. Skip lines under a dated heading, with a test.
 - **Navigation writers plan by default (2026-10-27, skill-coder write gates).** `upgrade_navigation_control_layer.py` and `migrate_legacy_blocks.py`

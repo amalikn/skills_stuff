@@ -46,6 +46,10 @@ Three rules make the tiers work:
 - **Summarise up, link down.** A tier 1 or 2 file states the conclusion and links the detail; it never copies it. Nothing is deleted to save tokens: rotation, trim and `move_sections.py` move text
   verbatim and leave a pointer, so the agent can always reach it.
 - **One fact, one home.** A fact restated in two root files is paid for twice and drifts; the second file links to the first.
+- **A rule that leaves AGENTS.md leaves a one-line summary behind** (2026-11-05, ansible-wifi). Area files are read only when an agent judges the
+  task needs them, and many rules exist because an agent skipped a step; so AGENTS.md keeps each moved rule as one line and the area file holds
+  the why and the detail. A tighter tier-1 budget goes in the file's own front matter (`Budget: 130 lines, 12 KB`), which the freshness check
+  enforces. ansible-wifi went from 22.6 KB to 9.2 KB this way (about 3,300 tokens less per request) with every rule still visible.
 - **Every file can be judged unopened.** Front matter's Summary is what `just docs` shows, so an agent decides from one line whether to open it.
 
 ## The files
