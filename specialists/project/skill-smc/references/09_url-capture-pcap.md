@@ -3,6 +3,20 @@
 ## Contents
 
 - [10. url_capture v2 — Python Streaming Service](#10-url_capture-v2--python-streaming-service)
+  - [Why the Rewrite](#why-the-rewrite)
+  - [What Replaced It](#what-replaced-it)
+  - [Architecture](#architecture)
+  - [Key Design Decisions](#key-design-decisions)
+  - [Remote Storage Layout](#remote-storage-layout)
+  - [Ansible Role Changes (smc_url_capture)](#ansible-role-changes-smc_url_capture)
+  - [systemd Service](#systemd-service)
+  - [Verification (on SMC node after deploy)](#verification-on-smc-node-after-deploy)
+  - [Ansible verification](#ansible-verification)
+  - [Fetching pcaps (smc_get_pcapv7.yml)](#fetching-pcaps-smc_get_pcapv7yml)
+  - [Learned 2026-11-05 — v7 fetch timeouts, and the resumable v8 (`smc_get_pcapv8.yml`)](#learned-2026-11-05--v7-fetch-timeouts-and-the-resumable-v8-smc_get_pcapv8yml)
+  - [Rollout Policy](#rollout-policy)
+  - [Fleet Deployment Lessons (2026-05-18)](#fleet-deployment-lessons-2026-05-18)
+  - [PIN/Session Enforcement Degraded While Content Filtering Still Works (`nbn_accelerate` / `rcp`)](#pinsession-enforcement-degraded-while-content-filtering-still-works-nbn_accelerate--rcp)
 - [Learned 2026-10-29 — "URL capture" captures DNS queries only](#learned-2026-10-29--url-capture-captures-dns-queries-only)
 
 - Why url_capture was rewritten
@@ -250,6 +264,60 @@ ansible-playbook -i inventories/cw/prod ../ansible-malik/smc_get_pcapv7.yml \
 ansible-playbook -i inventories/apn/prod ../ansible-malik/smc_get_pcapv7.yml \
   -l apn-teleport01,localhost, --tags process_files
 ```
+
+### Learned 2026-11-05 — v7 fetch timeouts, and the resumable v8 (`smc_get_pcapv8.yml`)
+
+VERIFIED-OBSERVED (rcp 202610 on apn-teleport01, operator's ansible-apn VM) · Source: `ansible-malik/smc_get_pcapv8.yml` (working tree, not yet committed at this entry) · Falsifier: a v7 fetch of
+> 2 h that completes, or a v8 re-run that rebuilds tars already staged.
+
+**Why v7 failed.** rcp 202610 was 17 tars, 10.75 GB. v7's rsync runs as `async: 7200, poll: 0`; async is the hard limit (the status task's `retries: 300 × delay: 60` never mattered). At ~1.2 MB/s one
+stream (reference 03, Learned 2026-11-05) the transfer needed ~2.5 h, so Ansible killed rsync at 7,200 s (`Timeout exceeded`, attempt 121). The cleanup task never ran, so the tars stayed in
+`/tmp/url_capture/<YYYYMMDD_HHMM>/` (11 GB in a 94%-full root). A re-run of v7 would have wiped `/tmp/url_capture` first and rebuilt every tar.
+
+**v8 = v7 with a resumable fetch (process step unchanged):**
+1. Picks the staging dir automatically: `resume_dir` if given, else the dir under `staging_root` (`/tmp/url_capture`) holding the newest `*-bridge_501-<YYYYMM>-monthly.tar.gz[.partial]` (v7 timestamp
+   dirs count), else a new `/tmp/url_capture/<flavor>-<YYYYMM>`. Other months' dirs are never picked.
+2. No wipe of `/tmp/url_capture` at the start; only the chosen dir is deleted, at the end.
+3. Tars are written as `<name>.partial` and renamed when tar exits 0; `creates:` skips a finished tar (`-e rebuild_tars=true` forces a rebuild, e.g. after fetching a month still being captured).
+4. rsync: `-a --partial --inplace --exclude='*.partial'`, size+mtime quick check (no `--checksum`), retried `rsync_attempts` (5) times inside one async job of `rsync_async_timeout` (21600 s).
+5. Every expected tar is stat'ed on both sides; the staging dir is deleted only if all sizes match.
+
+```yaml
+# ansible-malik/smc_get_pcapv8.yml (2026-11-05): staging dir choice
+zipped_files_dir: >-
+  {{
+    resume_dir if (resume_dir | default('') | length > 0)
+    else ((earlier_tars.files | sort(attribute='mtime') | last).path | dirname) if (earlier_tars.files | length > 0)
+    else (staging_root ~ '/' ~ flavor ~ '-' ~ one_month_prior)
+  }}
+# tar per site: complete or absent, never half-written under the final name
+shell: >
+  tar --use-compress-program=pigz -cf {{ tar_part | quote }} -C {{ (url_capture_path ~ '/' ~ site_name) | quote }}
+  {{ item.value | map('quote') | join(' ') }} && mv -f {{ tar_part | quote }} {{ tar_final | quote }}
+args:
+  creates: "{{ omit if (rebuild_tars | bool) else tar_final }}"
+```
+
+**The capture store is EFS; the `find` module is slow on it.** `/home/sslurlcapture/urlcapture_storage` on apn-teleport01 is NFS 4.1 through efs-utils (`127.0.0.1:/`, `amazon-efs-mount-watchdog`).
+`find: recurse: yes, depth: 2` still lists and stats every entry inside each depth-2 dir before discarding it: one NFS `getattr` per capture file (stack `nfs4_proc_getattr` / `rpc_wait_bit_killable`,
+process in state `D`), minutes per task across ~2,274 site/day dirs; v7 has two such tasks (month dirs, day dirs). GNU find with `-maxdepth 2` never opens those dirs: 1.65 s for 202610 (2 month dirs,
+527 day dirs, 17 sites). v8 uses:
+
+```yaml
+# ansible-malik/smc_get_pcapv8.yml (2026-11-05): one pruned scan instead of two find-module calls
+- name: Find YYYYMM and YYYYMMDD capture dirs for requested month at depth 2
+  shell: >
+    find {{ url_capture_path | quote }} -mindepth 2 -maxdepth 2 -type d
+    \( -name {{ one_month_prior | quote }} -o -name '{{ one_month_prior }}[0-9][0-9]' \) -print
+  register: capture_dir_scan
+  changed_when: false
+```
+Its output is reshaped into v7's `found_month_dirs` / `found_day_dirs` (`{files: [{path}]}`), so the tasks after it are unchanged. Mock-tested locally (resume, new dir, override, rsync retry, rsync
+fails, rsync copies nothing, rebuild, decoy dirs); first real run 2026-11-05 resumed `/tmp/url_capture/20261105_1218` (17 tars reused, rsync started). Not active until promoted over v6.
+
+**A fetched file's timestamp is not its arrival time** (step 5 of the v7 flow above) holds for v8 too.
+
+**Resume a failed fetch:** run the same fetch command again; nothing to pass.
 
 ### Rollout Policy
 

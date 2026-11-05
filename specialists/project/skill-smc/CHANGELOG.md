@@ -6,13 +6,22 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261105_1155
+Last rotated: 20261105_1634
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261105_1634 — v8 resumable PCAP fetch, EFS find, Teleport path loss probe (v0.12.1 -> v0.12.2)
+
+`references/09_url-capture-pcap.md`: Learned 2026-11-05, v7 fetch timeouts and the resumable `ansible-malik/smc_get_pcapv8.yml` (newest staging dir reused automatically, `.partial` tars, resumable
+retried rsync with a 6 h async limit, size check before the staging dir is deleted) and the slow `find` module on the EFS-backed capture store (one `find -maxdepth 2`: 1.65 s). Also commits the
+earlier session's v7 fetch-timestamp paragraph (step 5). `references/03_communication-flows.md`: Learned 2026-11-05, one TCP stream from an AWS Teleport host to the activ8me home line caps at ~1.2
+MB/s because of ~0.25% packet loss on the access leg (AAPT first hop), not Teleport, EC2 or the VM; BBR on the sender gave 10.4 MB/s (test route removed); apn-teleport01 facts (root disk 94%, 383 GB
+of Teleport logs, Teleport 13.4.24). New `scripts/probes/teleport_path_throughput.sh` with `just teleport_path_throughput` (catalogued in `scripts/README.md`), smoke-run on apn-teleport01 (1 min, `-s
+8 -p 3 -n 300`). manifest 0.12.1 -> 0.12.2.
 
 ## 20261105_1155 — smc_change Teleport login gate (v0.12.0 -> v0.12.1)
 
@@ -185,9 +194,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
 - `references/19_smc-change-role.md`: automated AVR flash in a transient systemd unit (warehouse-rct01 3.06 -> 3.07, 269 s), probe self-match
   through PROBE_CONFIG on the command line (anchor `pgrep -f` at `^php`; probe 155 s -> 31 s), two-part repair of a failed run whose spec
   changed (journal and record to superseded/), reviewed `resume_safe` per action.
-
-## 20261028_1242 — AVR serial collision verified on warehouse-rct01 (v0.9.2 -> v0.9.3)
-
-- `references/06_failure-modes.md`: Learned entry: rct-tstik and the AVR loader collide on `/dev/ttyS0` (warehouse-rct01 test: tstik run 0/24 good
-  while overlapped, 24/24 before and after); tstik re-runs stty 19200 and flushes before every send; pause tstik cron for a flash; frame format.
-- `references/02_service-map.md`: deploy reference names `roles/smc_application/tasks/main.yml` instead of a person.

@@ -16,6 +16,7 @@ Last rotated: 20261105_1156
 
 ## Unreleased
 
+- languages/ansible.md: Learned 2026-11-05 (j), find with depth still reads every depth-N dir (slow on NFS/EFS; use GNU find -maxdepth); async is the hard limit, not retries x delay; extra vars beat set_fact, so tests must pass inputs, not outputs.
 - languages/shell.md: Learned 2026-11-05, a delimiter inside a sed replacement turns the rest into flags (w writes stray files).
 - languages/ansible.md: Learned 2026-11-05 (ii), strategy free drops run_once, any_errors_fatal and max_fail_percentage and refuses pause; YAML reads 20261105_120000 as an int.
 - 20261105 tests/test_package_contract.py: write-back entries count as logged in rotated docs/history/changelog-*.md too (budget rotation had failed the test).

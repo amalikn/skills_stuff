@@ -873,3 +873,40 @@ log shipping while the sidecars still look healthy (13_known-issues.md, 2026-10-
 
 ---
 
+
+> **Learned 2026-11-05** · Bulk transfers from Teleport hosts to the operator's home line · VERIFIED-OBSERVED (read-only measurements from the operator's Mac and the ansible-apn VM; one approved,
+> reverted BBR route test) · Source: skill-smc `scripts/probes/teleport_path_throughput.sh` (this commit) · Falsifier: a single cubic stream from an AWS Teleport host to that line well above
+> ~1.3 MB/s, or 1400-byte pings to its first hop past the router with no loss
+
+**One TCP stream tops out near 1.2 MB/s (~10 Mbit/s); the cause is packet loss on the home access leg, not Teleport, EC2 or the VM.** Found when a v7 PCAP fetch timed out (reference 09).
+
+| Test (one stream unless noted, 15-20 s)                                   | Result                                                         |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| VM vs Mac, same Teleport path                                             | 1.2 vs 1.26 MB/s: VM ruled out                                 |
+| via proxy :443 / node :3022 direct / plain OpenSSH :22 (no Teleport)       | 1.26 / 1.20 / 1.24-1.34 MB/s: Teleport ruled out               |
+| apn-teleport01, cw-teleport01 (2b), apn-jenkins01 (2a)                     | 1.27 / 1.67 / 1.16 MB/s: not one instance                      |
+| 4 streams at once                                                          | 4.25 MB/s total: a per-connection cap                         |
+| ENA `*_allowance_exceeded`, `tx_drops` during a transfer                   | no change: no instance-side drops                              |
+| server `ss -ti` on the flow                                                | cubic, cwnd 15-33, ~0.25% segments resent, `reord_seen` 1      |
+| smooth 0.6 MB/s vs bursty 0.6 MB/s                                         | 0.20% vs 0.25% loss: random loss, not burst/shaper drops       |
+| 2,000-3,000 pings, 1400 B: router / first hop past it / AWS / AARNet      | 0.0% / 0.2-0.3% / 0.6% / 0.4%: loss starts past the router     |
+| first hop past the router, 56 B vs 1400 B, 3,000 each                      | 0 vs 6 lost: size-dependent (bit errors), sample small         |
+| BBR for that IP only (`ip route add <ip>/32 via <gw> dev eth0 congctl bbr`) | 10.4-10.7 MB/s (8x); route deleted after, default stays cubic |
+
+The home line is activ8me (`*.pool.activ8me.net.au`); its first hop is AAPT/PowerTel (`203.111.96.125`), then APN core (`116.250.x`), where AWS and AARNet paths split. Cubic at ~27 ms RTT with ~0.25%
+random loss settles near MSS/RTT × 1.22/√p ≈ 1.3 MB/s. Wi-Fi was clean (-39 dBm, MCS 9, 0% to the router). Which element of the access leg is faulty (NBN line, NTD, AAPT handover) is not verified.
+
+**Work-arounds:** parallel streams (per-site rsync), or BBR on the **sender** (congestion control is the sender's; nothing on the Mac helps). apn-teleport01 runs kernel 6.5.0-1023-aws with `cubic` and
+`fq_codel`; `tcp_bbr` is available (loaded since 2026-11-05, unused). A fleet-wide BBR default is proposed, not decided.
+
+**apn-teleport01 itself (2026-11-05):** proxy, auth and node on one m5.2xlarge (8 vCPU, load ~0.1, ap-southeast-2a, `13.54.242.59`); the node registers as `teleport.apn.au:3022`, so a node session never
+leaves the box. Teleport 13.4.24 (tsh flags a patch: ≥ 13.4.26; operator's tsh 12.4.34). Session recording `mode: node`; exec output is not recorded in bulk (records < 1 KB per session). **Root disk 94%
+(30 GB free):** `/var/lib/teleport/log` 383 GB (`records/` 244 GB, audit events 139 GB), `/var/log/syslog*` 32 GB: no retention. A HUP reload on 2026-10-19 left the 2026-08-21 parent process holding 52
+connections (normal drain, long-lived tunnels). cw-teleport01 is an m5.xlarge in ap-southeast-2b on the same kernel.
+
+```bash
+# skill-smc scripts/probes/teleport_path_throughput.sh (2026-11-05): loss per flow from the server's own counters, over 4 s
+ss -tin state established dst "$MYIP"   # segs_out and retrans:<cur>/<total> per flow, twice, 4 s apart
+# loss % = delta(total retrans) / delta(segs_out); every flow to the same client shows the path's loss
+```
+Run: `just teleport_path_throughput apn-teleport01.teleport.apn.au -s 15 -p 4` (about 4 min at defaults). No visual surface.
