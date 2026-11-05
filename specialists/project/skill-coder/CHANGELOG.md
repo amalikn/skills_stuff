@@ -9,13 +9,15 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261105_1156
+Last rotated: 20261105_2139
 ---
 
 # Changelog
 
 ## Unreleased
 
+- references/version-control-and-review.md: shared-index sweep confirmed 2026-11-05; Learned 2026-11-05, rerun tracked-only checks after the first commit and before the push (Continuum).
+- languages/python.md: Learned 2026-11-05, `\b` matches at a hyphen; anchor names with `(?=[ \t:])` (skill-ai-it).
 - references/version-control-and-review.md: Learned 2026-11-05, testing the exported index catches a file a local exclude kept out of git (skill-knowledge-curator fixture).
 - references/design-patterns.md: P-56 trust a model verdict only after known controls, in words that cannot be read backwards; P-57 group by each item's most widely shared key, not single-link chaining (Learned 2026-11-05, skill-knowledge-curator).
 - languages/shell.md: Learned 2026-11-05 (ii), remote half on stdin rather than a quoted string or declare -f; parallel checks with a line per host.
@@ -196,7 +198,3 @@ Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_w
 - `languages/ansible.md` Learned 2026-10-27 (l) `include_tasks` loads when reached, so editing task files changes a running play; (m)
   `serial` batches run in lockstep, so stage-marker timers measure the batch, not the host.
 - `languages/shell.md` Learned 2026-10-27: bash 3.2 `set -u` with an empty array; use `${arr[@]+"${arr[@]}"}` (verified on /bin/bash 3.2.57).
-
-## 20261027_1213 — Ansible: to_json in debug output is escaped twice
-
-- `languages/ansible.md`: Learned 2026-10-27 (k) - `to_json` inside a `debug` message list is escaped twice; write operator lines as words.

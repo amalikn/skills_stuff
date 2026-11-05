@@ -166,3 +166,13 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 
 > Design patterns realised in Python (resumable journal, done ledger, partition before batch, plug-in probe, plan then apply) are in [../references/design-patterns.md](../references/design-patterns.md), table "Language realisations";
 > entries here record the Python behaviour they rely on.
+
+> **Learned 2026-11-05** · regex over task-runner and config names · VERIFIED_PRIMARY · Source: skills_stuff skill-ai-it `d40e972`, `scripts/adoption/adopt_governed_files.py` · Falsifier: `re.search(r"^check\b", "check-links:\n", re.M)` returning None
+> `\b` treats a hyphen as a word boundary, so `^check\b` also matches `check-links:` and `check-contracts:`; a recipe above `check` was read as the
+> check recipe and the fix aimed at the wrong body. Anchor a name on what may follow it: `^check(?=[ \t:])`.
+>
+> ```python
+> # skill-ai-it adopt_governed_files.py, d40e972
+> m = re.search(r"^check(?=[ \t:])[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
+> ```
+

@@ -35,6 +35,9 @@ Summary: >-
 > session's commit then found nothing to commit. Commit by pathspec, which commits exactly the named paths whatever else is staged, and check
 > the result with `git show --stat HEAD` before pushing. A new file needs `git add -N` (intent to add) first so the pathspec can name it.
 > Never amend or split the other session's commit; record where the work landed.
+> Confirmed 2026-11-05 (skills_stuff `e248189`, undone with `git reset --soft HEAD~1` before any push, recommitted as `d40e972` by pathspec): the
+> same sweep happened twice in one evening, once by this rule's reader skipping it and once by a third session (`0379df3`). The rule held both times
+> it was followed.
 >
 > ```bash
 > # smc-resiliency, 2026-10-20 (after the race)
@@ -174,4 +177,14 @@ Adapted from a governed project's definition of done (unified-network-controller
 PYTHONPATH=.:wc-local/scripts "$PY" -m unittest -q tests.test_structure_confirmation tests.test_topology tests.test_colocation \
   && just commit-project -m "..." --apply   # the gate checks governance only
 ```
+
+> **Learned 2026-11-05** · checks that read only tracked files · VERIFIED_PRIMARY · Source: tools_stuff continuum `53da28e` (pushed red) then `7557b62` (Continuum CHANGELOG 20261105_2131) · Falsifier: a freshness or catalog check that reports an untracked new file before its first commit
+> A check built on `git ls-files` or `git log` sees new files only after they are committed, so it can pass before the commit and fail after it. After the first commit of new files, run the
+> check again and read its exit code before pushing; never put the post-commit check and the push in one command.
+>
+> ```bash
+> # continuum, 2026-11-05 (after the red push)
+> git commit -q -m "..." -- continuum && (cd continuum && just check >/dev/null 2>&1); rc=$?
+> [ $rc -eq 0 ] && git push -q origin HEAD
+> ```
 
