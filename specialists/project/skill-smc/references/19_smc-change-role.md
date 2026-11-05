@@ -481,7 +481,7 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
       found[host] = parse_time(prof["valid_until"])
   ```
 
-- **Facts carry over between two smc_change imports in one run (2026-11-05; not fixed)**: `smc_change_multiple.yml` (and `smc_rise_deploy.yml`)
+- **Facts carry over between two smc_change imports in one run (2026-11-05; fix in the held patch, operator chose A)**: `smc_change_multiple.yml` (and `smc_rise_deploy.yml`)
   import `smc_change.yml` twice in one `ansible-playbook` process, and host facts outlive an import. The role sets several flags only when they hold,
   and tests them with `is defined`, so a value from the first change counts for the second:
   - `smc_change_done_why` (`tasks/pending.yml`) and `smc_change_already` (`tasks/state.yml`): an SMC already done for rct-tstik-iridium-update when
@@ -490,8 +490,11 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   - `smc_change_unreachable` (`tasks/record.yml`): an SMC unreachable in the first import is recorded "unreachable" in the second, whatever happened.
     banana-well-smc01 and gumbarnun-smc01's SMSC records say unreachable, but action 3 exited non-zero (most likely the AVR still on 2.14).
   - also tested with `is defined`: `smc_change_refused`, `smc_change_failure`, `smc_change_offline_why`, `smc_change_backup_path`.
-  Workaround: run a second change for an SMC with `smc_change.yml -e smc_change=<name>` in its own process, or one process per change. Fix options
-  are with the operator: reset these per-change flags at each import's start and test them by value, or run each change in its own process.
+  Groups carry over too: `group_by` cannot remove a host, so a host the first change had to do stayed in `smc_change_todo` and was run again by
+  the second. `ansible.builtin.meta: clear_facts` does not clear `set_fact` values (tested). Fix (held patch `plans/smc-change-free-timeouts-20261105/`):
+  `load_spec.yml` resets about 30 per-change facts at each prepare, readers test by value, and the groups are per change
+  (`smc_change_todo_<change>`; a play's `hosts:` can be templated from `import_playbook` vars, tested). Until it is live, run a second change for an
+  SMC in its own process (`smc_change.yml -e smc_change=<name>`).
 
 - **Slow serial batches, strategy free and action time limits (2026-11-05; patch held, not live)**: an rct serial-10 run of
   `smc_change_multiple.yml` took 87 min for batch 1. Per-SMC system logs (garimba-smc01) showed its own work was quick: AVR flash 73 s
