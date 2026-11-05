@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261105_1758 — URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)
+
+`references/09_url-capture-pcap.md`: Learned 2026-11-05 (b), what the v2 DNS capture holds (queries only, IPv4 only, a new tcpdump per 5-minute chunk, no drop count), one measured day (mornington 1.8 M queries, 2.3% to outside resolvers), measured smaller formats (3-6x records, 27-59x daily), the pcapfix cost for 202610 (154,097 files, 143 corrupt incl. 47 v2 chunks; parallel 6.4x faster), macOS tcpdump cannot read a pcap from stdin, and the proposed lossless-records plan (not decided).
+
 ## 20261105_1634 — v8 resumable PCAP fetch, EFS find, Teleport path loss probe (v0.12.1 -> v0.12.2)
 
 `references/09_url-capture-pcap.md`: Learned 2026-11-05, v7 fetch timeouts and the resumable `ansible-malik/smc_get_pcapv8.yml` (newest staging dir reused automatically, `.partial` tars, resumable

@@ -18,6 +18,7 @@
   - [Fleet Deployment Lessons (2026-05-18)](#fleet-deployment-lessons-2026-05-18)
   - [PIN/Session Enforcement Degraded While Content Filtering Still Works (`nbn_accelerate` / `rcp`)](#pinsession-enforcement-degraded-while-content-filtering-still-works-nbn_accelerate--rcp)
 - [Learned 2026-10-29 — "URL capture" captures DNS queries only](#learned-2026-10-29--url-capture-captures-dns-queries-only)
+- [Learned 2026-11-05 (b) — what the DNS capture holds, its gaps, and the pcapfix cost](#learned-2026-11-05-b--what-the-dns-capture-holds-its-gaps-and-the-pcapfix-cost)
 
 - Why url_capture was rewritten
 - Replacement architecture
@@ -313,7 +314,8 @@ process in state `D`), minutes per task across ~2,274 site/day dirs; v7 has two 
   changed_when: false
 ```
 Its output is reshaped into v7's `found_month_dirs` / `found_day_dirs` (`{files: [{path}]}`), so the tasks after it are unchanged. Mock-tested locally (resume, new dir, override, rsync retry, rsync
-fails, rsync copies nothing, rebuild, decoy dirs); first real run 2026-11-05 resumed `/tmp/url_capture/20261105_1218` (17 tars reused) and passed at 17:04: size check, staging dir deleted, 17 tars (10 GB) gzip-valid. Promotion over v6 approved by the operator (2026-11-05) once `--tags process_files` passes for 202610; until then v6 stays active.
+fails, rsync copies nothing, rebuild, decoy dirs); first real run 2026-11-05 resumed `/tmp/url_capture/20261105_1218` (17 tars reused) and passed at 17:04: size check, staging dir deleted, 17 tars (10
+GB) gzip-valid. Promotion over v6 approved by the operator (2026-11-05) once `--tags process_files` passes for 202610; until then v6 stays active.
 
 **A fetched file's timestamp is not its arrival time** (step 5 of the v7 flow above) holds for v8 too.
 
@@ -414,3 +416,28 @@ screen -dmS "tcpdump-$int-screen-since-$spawntime" tcpdump -i $int "dst port 53"
 - Per-application or "top applications per site" reporting is not derivable: the SMC exports interface byte and rate counters on the backhaul, with no flow export or classification. ARP or MAC counts
   are not a connected-devices metric either. Source: apn `docs/wifi-metrics-coverage.xlsx` rows URL Capture, Backhaul Top Applications and Devices Connected (apn 5cba35f).
 - DNS query logs of end users are personal information: a design that keeps them needs a privacy basis.
+
+## Learned 2026-11-05 (b) — what the DNS capture holds, its gaps, and the pcapfix cost
+
+VERIFIED-CODE and VERIFIED-OBSERVED (APN/rcp and CW nbn_accelerate 202610 on the operator's Mac; one day per site measured, scratch copies deleted) · Source: ansible-wifi `rise-multi` `c19a61fa`
+`roles/smc_url_capture/files/url_capture_manager.py` (line 29, lines 160-185); dns_query `scripts/dns2pdv12.py` · Falsifier: an IPv6 DNS query in a v2 chunk, or a month with no corrupt v2 chunk
+
+- **v2 capture command:** `timeout 300 tcpdump -i bridge_501 "ip and (udp or tcp) and dst port 53 and not src port 53" -p -s 1500 -n -U -w <chunk>` (or `dumpcap ... -a duration:` with `--capture-tool
+  dumpcap`). It holds client **queries only** (no answers), **IPv4 only** (`ip` excludes IPv6; 0 IPv6 packets in a sampled chunk), full Ethernet frames (client source MAC present; destination is the
+  bridge MAC). A **new tcpdump per 5-minute chunk** leaves a short gap 288 times a day; v2 dropped v1's `-B 8192` and records no kernel drop count.
+- **One day, 2026-10-10:** mornington 1,797,566 queries, 662 MACs, 23,735 domains, 68 MB pcap.gz; umoona 4,613 queries, 30 MACs, 325 KB. Mornington: 97.7% of queries to the SMC resolver, **2.3%
+  straight to outside resolvers** (resolver logs would miss them), 85% A, 14% AAAA, 0.4% PTR/`.local`; one MAC sent 17.6% of queries (NAT router or busy device, unknown).
+- **Smaller formats, measured:** 5-field records (time, MAC, IP, type, name) gzipped 3.2-6.3x smaller than pcap.gz; daily (domain, MAC, count) 27-59x smaller. The report (`dns2pdv12.py`) needs only
+  domains and distinct source MACs.
+- **pcapfix cost:** process step for 202610 (rcp + nbn_accelerate) ran pcapfix on **154,097** pcaps (55 GB): ~10 ms per file, ~25 min serial; **143 corrupt** (96 legacy v1 files, **47 v2 chunks**,
+  0.03% of v2), so v2 chunks still need checking. Parallel: 2,000 chunks 9.7 s serial vs 1.5 s with `xargs -P 12`.
+- **macOS tcpdump 4.99.1 (Apple 161) cannot read a pcap from stdin** (`tcpdump: unknown file format` on `gzip -dc f | tcpdump -r -`); decompress to a file first.
+- **Proposal, not decided:** convert each chunk on the Teleport host into lossless per-query JSONL records (monthly Parquet) and fetch those instead of PCAPs: local-knowledge-ansible
+  `ansible-wifi/plans/url-capture-dns-records-plan-20261105_1747.md`.
+
+```python
+# url_capture_manager.py (rise-multi c19a61fa), capture per chunk
+DEFAULT_BPF = "ip and (udp or tcp) and dst port 53 and not src port 53"
+cmd = ["timeout", str(duration_seconds), "tcpdump", "-i", args.iface, args.bpf, "-p", "-s", "1500", "-n", "-U", "-w", str(out_pcap)]
+```
+No visual surface.
