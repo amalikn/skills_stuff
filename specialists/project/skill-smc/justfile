@@ -109,6 +109,15 @@ apt_lock_probe proxy +nodes:
 smc_change_compare before after: _require-venv
     @{{py}} scripts/ansible/smc_change_compare_records.py "{{before}}" "{{after}}"
 
+# Site-link loss survey: per named SMC, loss and RTT to its default gateway (the satellite first hop) and WAN load, grouped by gateway /24.
+# Read-only, all SMCs at once. Example: just smc_gateway_loss goojarr-goonyool gurrbalgun garimba   (-c pings, -t seconds per SMC)
+smc_gateway_loss *ARGS:
+    @scripts/probes/smc_gateway_loss.sh {{ARGS}}
+
+# Offline test of smc_gateway_loss.sh with a stand-in tsh; <5 s.
+smc_gateway_loss_test: _require-venv
+    @{{py}} -m unittest scripts/probes/test_smc_gateway_loss.py
+
 # Role facts that can carry over between two runs of a role in one process (set under a condition, read with is defined/default). Read-only.
 # Example: just role_stale_facts /Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/roles/smc_change --reset-file tasks/load_spec.yml
 role_stale_facts role *ARGS: _require-venv

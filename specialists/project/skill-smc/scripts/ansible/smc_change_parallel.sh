@@ -92,18 +92,34 @@ dupes=$(printf '%s\n' "${smcs[@]}" | sort | uniq -d)
 [ -z "$dupes" ] || { echo "named twice: $dupes" >&2; exit 2; }
 [ -n "$logdir" ] || logdir=/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/evidence/smc-change-parallel-$(date '+%Y%m%d_%H%M')
 
-# Decide each SMC before starting any, so the plan and the run see the same list.
+# Decide each SMC before starting any, so the plan and the run see the same list. The Teleport checks run at once, each line printed as it lands.
+echo "CHECK    ${#smcs[@]} SMC(s) over Teleport, at once (up to ${check_seconds}s)"
+checks=$(mktemp -d) || exit 2
+for smc in "${smcs[@]}"; do
+  (
+    if running=$(already_running "$smc"); then
+      echo "busy $(printf '%s' "$running" | head -n 1 | cut -c1-80)" >"$checks/$smc"
+    elif answers "$smc"; then
+      echo "ok" >"$checks/$smc"
+    else
+      echo "dark" >"$checks/$smc"
+    fi
+    echo "         $smc: $(cut -d' ' -f1 "$checks/$smc")"
+  ) &
+done
+wait
 start=()
 skipped=()
 for smc in "${smcs[@]}"; do
-  if running=$(already_running "$smc"); then
-    skipped+=("$smc: another ansible-playbook targets it ($(printf '%s' "$running" | head -n 1 | cut -c1-80))")
-  elif ! answers "$smc"; then
-    skipped+=("$smc: no answer over Teleport in ${check_seconds}s (check its backdoor before calling it down)")
-  else
-    start+=("$smc")
-  fi
+  verdict=$(cat "$checks/$smc")
+  case "$verdict" in
+    ok) start+=("$smc") ;;
+    busy*) skipped+=("$smc: another ansible-playbook targets it (${verdict#busy })") ;;
+    *) skipped+=("$smc: no answer over Teleport in ${check_seconds}s (check its backdoor before calling it down)") ;;
+  esac
+  rm -f "$checks/$smc"
 done
+rmdir "$checks"
 
 echo "PLAYBOOK $playbook  INVENTORY $inventory  LOGS $logdir"
 for smc in "${start[@]+"${start[@]}"}"; do
@@ -128,6 +144,21 @@ for smc in "${start[@]}"; do
 done
 echo "watch:   for f in $logdir/*.log; do echo \"\$(basename \"\$f\"): \$(grep 'TASK \\[' \"\$f\" | tail -1)\"; done"
 echo "stop one: kill <pid> (pids.txt); Ctrl-C stops all"
+
+# A status line a minute while any run goes: each SMC's latest stage (smc_change prints STAGE n/11) or its last task.
+ticks=0
+while pgrep -f "^([^ ]+ )?([^ ]+/)?ansible-playbook .*-l ($(IFS='|'; echo "${start[*]}"))( |$)" >/dev/null; do
+  sleep 5
+  ticks=$((ticks + 1))
+  [ $((ticks % 12)) -eq 0 ] || continue
+  line="STATUS   $(date '+%H:%M')"
+  for smc in "${start[@]}"; do
+    stage=$(grep -oE 'STAGE [0-9]+/11 [A-Z]+' "$logdir/$smc.log" | tail -n 1)
+    grep -qE "^$smc +:" "$logdir/$smc.log" && stage="finished"
+    line="$line  $smc: ${stage:-starting}"
+  done
+  echo "$line"
+done
 
 rc=0
 for i in "${!pids[@]}"; do

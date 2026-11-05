@@ -645,3 +645,9 @@ public function sendData($data, $length = 0)
 > kusi-block, midgelmaya, naja-naja, shovellers-block, mooloowa), malupirti-smc01 V3.06 (offline), every other RCT SMC V2.14. tstik's Stats
 > page and the vendor loader print 3.07 as "3.7". The smc_change spec flashes only with `-e rct_avr_flash=true` and only where that SMC's inventory sets `smc_bases_iridium: true` (a batch never reaches a Thuraya site); set the flag before a flash run, since without it the flash is skipped and the run still passes (the AVR gate line says "flash skipped"), so confirm the AVR version: flash a site after its
 > Iridium equipment is in. Firmware files V2.14Test, V3.04, V3.06, V3.07: change folder `firmwares/`. `FirmwareV2.14Test.enc` is the build the fleet's V2.14 AVRs run (Chris Blair, 2026-10-28), so the spec's AVR rollback restores it.
+
+- **Site-link loss at a few rct sites, not Sky Muster-wide (2026-11-05)**: `scripts/probes/smc_gateway_loss.sh` across 20 rct SMCs found 16 with 0 %
+  loss to their gateway (the satellite first hop, RTT 570-630 ms). gurrbalgun showed 25 %, gumbarnun 10 % and banana-well 5 %, and goojarr-goonyool
+  did not answer (`smc_link_health.sh` earlier: 27 % at the first hop, 40 % to the proxy, 4,947 backdoor ssh restarts). Each site has its own
+  gateway /24, so a shared-upstream fault would show as many sites at once; here it was four. Effect: their smc_change clones of rct-tstik ran at
+  3-4 KB/s, and Teleport dropped their sessions mid-run. Before a change on such a site, run the survey; raise a persistent one with the link provider.
