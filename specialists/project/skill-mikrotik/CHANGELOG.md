@@ -6,10 +6,16 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_2012
+Last rotated: 20261105_1950
 ---
 
 # Changelog
+
+## 20261105_1948 — Packet capture and DNS visibility in 08 (v0.1.33 -> v0.1.34)
+
+`references/08_routeros-platform-features.md` new section: `/tool sniffer` TZSP streaming and its file limit without rotation, hardware offload hiding
+packets, mangle `sniff-tzsp`, DNS server DoH settings, and what that means for DNS capture if a router replaces an SMC (best-effort stream, no buffer).
+Source: help.mikrotik.com pages read 2026-11-05 for the ansible-wifi URL-capture plan, section 12. Unverified points are marked. manifest 0.1.33 -> 0.1.34.
 
 ## 20261029_2012 — Harvest write-back: what the switch needs from the SMC; Netinstall recovery limits (v0.1.32 -> v0.1.33)
 
@@ -179,17 +185,3 @@ VERIFIED-OBSERVED 2026-10-08 from unified-network-controller work over Teleport 
   `gps` block per type (operator: check every vendor's devices for GPS): neither gives coordinates.
 - `references/07_equipment-and-snmp.md` SNMP section and known issue 14 rewritten from the results (gauge temperature in whole degrees, PoE state only,
   sysObjectID not a model key, AP radio at 2.4 GHz).
-
-## 20261007_1849 — Pinned runtime, SNMP tools, known issue 14 findings (v0.1.11 -> v0.1.12)
-
-- Runtime isolation (operator): `.mise.toml` (Python 3.14), `requirements.txt` (stdlib only), venv in the working-cache peer
-  `/Volumes/Data/_ai/_skills/skills-working-cache/skill-mikrotik/.venv` (`just bootstrap`, `just runtimes`); every recipe goes through `{{py}}` and
-  `_require-venv`; `scripts/mikrotik-exec.sh` and `scripts/mikrotik-fleet-survey.sh` take Python from `MT_PY`. `scripts/check_governance.py` now fails on shebang-run
-  recipes and inline interpreters (from skill-ai-it).
-- `justfile`: `exec`, `snmp` and `snmp-community` use positional arguments, so a multi-word RouterOS command reaches the script whole (it was split into
-  words and refused by the read-only guard).
-- `scripts/snmp_via_smc.py` (new): SNMP v2c get/walk/set from the SMC with no net-snmp, community from KeePass on stdin. Tested only against a unit with
-  SNMP off (clean timeout).
-- `scripts/mikrotik-snmp-community.py` (new): enable/remove/show a community, value redacted. Not yet run on a device: the session's permission check
-  refused remote writes.
-- `references/05_known-issues.md` item 14: default `public` community on both units, no `snmp-set` in RouterOS 7.8, SMC has Python but no net-snmp.

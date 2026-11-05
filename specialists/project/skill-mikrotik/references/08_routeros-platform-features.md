@@ -5,8 +5,8 @@ Status: current
 Authority: >-
   MikroTik documentation and product pages read 2026-10-22 (manual.mikrotik.com, mikrotik.com, upgrade.mikrotik.com); vendor pages stay authoritative.
   Nothing here was tried on a device.
-Scope: Containers, device-mode, Netinstall, remote access and candidate models, for any project weighing a MikroTik router in place of an SMC
-Last reviewed: 2026-10-22
+Scope: Containers, device-mode, Netinstall, remote access, packet capture and candidate models, for any project weighing a MikroTik router in place of an SMC
+Last reviewed: 2026-11-05
 Summary: >-
   What RouterOS 7 offers natively for running applications (containers), installing and resetting (Netinstall, device-mode), reaching the router and the
   devices behind it over CGNAT and satellite, and which current models can carry containers. Written back from enterprise-strategy's RouterOS future study.
@@ -14,10 +14,9 @@ Summary: >-
 
 # RouterOS platform features for a router-as-site-box evaluation
 
-Written back 2026-10-22 from enterprise-strategy's [RouterOS future
-study](/Volumes/Data/_ai/_project/project_stuff/apn/enterprise-strategy/workstreams/redefine-baseline/routeros-smc-replacement-future-study-20261022_1323.md), which keeps copies of every page cited
-here under its `sources/routeros-smc-replacement-future-study-20261022_1323/` folder. The installed fleet (RB450Gx4 and Metal 52 ac on RouterOS 7.8) is described in `01_overview.md` and
-`07_equipment-and-snmp.md`; this file covers features the fleet does not use today. Labels: `VERIFIED-DOC` (vendor documentation, read 2026-10-22), `VERIFIED-SECONDARY`, `UNVERIFIED`.
+Written back 2026-10-22 from enterprise-strategy's [RouterOS future study](/Volumes/Data/_ai/_project/project_stuff/apn/enterprise-strategy/workstreams/redefine-baseline/routeros-smc-replacement-future-study-20261022_1323.md), which keeps copies of every page cited here under its `sources/routeros-smc-replacement-future-study-20261022_1323/` folder.
+The installed fleet (RB450Gx4 and Metal 52 ac on RouterOS 7.8) is described in `01_overview.md` and `07_equipment-and-snmp.md`; this file covers features the fleet does not use today. Labels:
+`VERIFIED-DOC` (vendor documentation, read 2026-10-22), `VERIFIED-SECONDARY`, `UNVERIFIED`.
 
 ## Contents
 
@@ -25,6 +24,7 @@ here under its `sources/routeros-smc-replacement-future-study-20261022_1323/` fo
 - [Containers and device-mode](#containers-and-device-mode)
 - [Netinstall](#netinstall)
 - [Remote access](#remote-access)
+- [Packet capture and DNS visibility](#packet-capture-and-dns-visibility)
 - [Models that can carry containers](#models-that-can-carry-containers)
 - [Asterisk in a container](#asterisk-in-a-container)
 
@@ -49,10 +49,9 @@ here under its `sources/routeros-smc-replacement-future-study-20261022_1323/` fo
 - Conventional Netinstall needs a host on the target's **same layer-2 segment** and the target in Etherboot; it reformats system storage, with documented retention options. `VERIFIED-DOC`
 - A RouterOS **Netinstall package** (documented from 7.24beta1) lets a second MikroTik act as the install server, still on the same layer-2 segment. `VERIFIED-DOC`
 - Configure scripts become persistent custom defaults used after later resets; Mode scripts run once; scripts are limited to 120 s (7.22). `VERIFIED-DOC`
-- Netinstall's configuration retention does not keep all user files or containers. A controller across the WAN cannot reimage a router through that
-  router's broken data plane: remote recovery at a site needs an independently reachable local executor or recovery router on the same layer 2, cached
-  packages and a proven way to force Etherboot. `VERIFIED-DOC` (Netinstall page); the recovery conclusion is the study's inference. Source:
-  enterprise-strategy `routeros-smc-replacement-future-study-20261022_1323.md`, Provisioning and Netinstall (apn 5cba35f).
+- Netinstall's configuration retention does not keep all user files or containers. A controller across the WAN cannot reimage a router through that router's broken data plane: remote recovery at a
+  site needs an independently reachable local executor or recovery router on the same layer 2, cached packages and a proven way to force Etherboot. `VERIFIED-DOC` (Netinstall page); the recovery
+  conclusion is the study's inference. Source: enterprise-strategy `routeros-smc-replacement-future-study-20261022_1323.md`, Provisioning and Netinstall (apn 5cba35f).
 
 ## Remote access
 
@@ -74,6 +73,23 @@ here under its `sources/routeros-smc-replacement-future-study-20261022_1323/` fo
 - There is no official Tailscale package; claims of one "since 7.11" are called a hallucination on the MikroTik forum (23 Sep 2026). Tailscale is a community container image. `VERIFIED-SECONDARY`. A
   Teleport agent in a container is undocumented. `UNVERIFIED`
 - Router logins can go through RADIUS (`/user/aaa`) for per-person attribution; whether that matches Teleport's audit is untested.
+
+## Packet capture and DNS visibility
+
+Read 2026-11-05 on help.mikrotik.com (Packet Sniffer, Mangle, DNS pages, updated 2025-08 to 2026-03) for the ansible-wifi URL-capture plan, section 12 "RouterOS v7 site variant"
+(`local-knowledge-ansible/ansible-wifi/plans/url-capture-dns-records-plan-20261105_1747.md`). Nothing here was tried on a device.
+
+- `/tool sniffer` streams to a TZSP receiver: `streaming-enabled`, `streaming-server`, `streaming-port` (default 37008); `filter-stream=yes` (default) ignores packets bound for the stream server.
+  `VERIFIED-DOC`
+- Saving to a file: `file-name`, `file-limit` (default 1000 KiB); "Sniffer will stop when a limit is reached", so there is no rotation. Unsaved packets stay available for 10 minutes. `VERIFIED-DOC`
+- Packets handled by a hardware-offloaded bridge are not visible to the sniffer (flooded broadcast, multicast and unknown unicast may be). The sniffer sees rx before the firewall and tx after it.
+  `VERIFIED-DOC`
+- Mangle `action=sniff-tzsp` sends a copy of each packet a rule matches to a TZSP receiver, then passes it on (like `passthrough`); `sniff-pc` sends to a RouterOS CALEA server. So a rule matching
+  destination port 53 streams only DNS. `VERIFIED-DOC`. Whether the TZSP copy carries a capture timestamp, and whether bridged traffic needs `use-ip-firewall=yes` to reach mangle: `UNVERIFIED`.
+- The DNS server has upstream DoH settings (`use-doh-server`, `verify-doh-cert`, `doh-max-server-connections`, `doh-max-concurrent-queries`, `doh-timeout`). Whether its query log carries the client
+  MAC: not found in the docs (`UNVERIFIED`).
+- Consequence for a router replacing an SMC: DNS capture becomes a best-effort UDP stream with no buffer on the router (an uplink outage loses queries), unless a container runs tcpdump (see the
+  container rules above; on the installed RB450Gx4 fleet that means an upgrade from 7.8 and a physical device-mode step).
 
 ## Models that can carry containers
 
