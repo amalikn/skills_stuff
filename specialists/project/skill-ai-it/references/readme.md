@@ -17,7 +17,7 @@ Last reviewed: 2026-10-10
 - [files-records.md](files-records.md) (192 lines) Always-created files: SCRATCHPAD, CHANGELOG, markdownlint.
 - [files-support.md](files-support.md) (198 lines) Conditional support files.
 - [finishing.md](finishing.md) (153 lines) Finishing: parent update, conventions, quality check, audit format.
-- [generation-policy.md](generation-policy.md) (160 lines) Generation policy and optional tools.
+- [generation-policy.md](generation-policy.md) (166 lines) Generation policy and optional tools.
 - [governed-file-roles.md](governed-file-roles.md) (140 lines) What each governed root file is for, and the role check.
 - [governance-checker.md](governance-checker.md) (73 lines) Governance coherence checker.
 - [managed-blocks.md](managed-blocks.md) (69 lines) Managed block pattern.

@@ -59,8 +59,7 @@ Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget
 
 ### Markdown quality rules
 
-Apply these rules to every markdown file created or updated by this skill. Authority:
-[`/Volumes/Data/_ai/governance/categories/markdown-guide.md`](/Volumes/Data/_ai/governance/categories/markdown-guide.md).
+Apply these rules to every markdown file created or updated by this skill. Authority: [`/Volumes/Data/_ai/governance/categories/markdown-guide.md`](/Volumes/Data/_ai/governance/categories/markdown-guide.md).
 
 #### Naming
 
@@ -116,7 +115,11 @@ After `archcore init` (or when `.archcore/` already exists in `bootstrap` or `re
 - On `refresh`: re-scan and update `ARCHCORE_PROMOTION_CANDIDATES.md`; do not overwrite existing `.archcore/` content.
 - On `audit`: report what candidates would be surfaced; do not write the file.
 - On `promote`: read `ARCHCORE_PROMOTION_CANDIDATES.md`; write or propose `.archcore/` content files with provenance headers and `status: proposed`; write or update `.archcore/index.guide.md` as the
-  index; carry any still-relevant *never promote* reasoning into that index; then **delete `ARCHCORE_PROMOTION_CANDIDATES.md`**.
+  index; carry any still-relevant *never promote* reasoning into that index; then **delete `ARCHCORE_PROMOTION_CANDIDATES.md`**. Front matter (Continuum, 2026-11-05): quote string values (`title:
+  "Epoch timing: fence first"`), since an unquoted colon makes `archcore status` reject the file; give every `proposed` document a `Last reviewed: YYYYMMDD_hhmm`, or `doc_freshness.py` fails it as
+  soon as it is tracked (it passes before the commit). ADRs that record curator decisions are rendered from the ledger with skill-knowledge-curator `scripts/decisions_to_adrs.py` (plan, then
+  `--apply`), never paraphrased by hand; keep the groups file in the project. Remove the candidates file's name from the checker's governed list and from README, ROADMAP, ARCHITECTURE, AI_NAVIGATION,
+  context-map and repomix in the same pass; then run `just check` after the commit.
 
 #### The candidates file is transient — promote deletes it
 
@@ -141,7 +144,10 @@ mentions in `CHANGELOG.md` do not fail path resolution once the file is gone —
 
 ### Graphify initialization and refresh
 
-**Disabled (operator, 2026-10-10).** Do not run `graphify update .` in any mode, and do not add Graphify recipes or hooks to a project. Measured that day: 0 `graphify query`/`path`/`explain` calls in 30 days of agent sessions against thousands of rebuilds, and most `graphify-out/` folders behind their project ([assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/reports/knowledge-tooling/okf-adoption-assessment-20261010_1700.md), section 5). The 25 existing `graphify-out/` folders were deleted the same day (operator); tracked ones through `git rm`, so history keeps them. Project recipes and `templates/context_preflight.sh` skip it unless `GRAPHIFY_ENABLED=1` is set. Re-enable only on the operator's decision, by removing this paragraph and the gates. The rules below are kept for that day.
+**Disabled (operator, 2026-10-10).** Do not run `graphify update .` in any mode, and do not add Graphify recipes or hooks to a project. Measured that day: 0 `graphify query`/`path`/`explain` calls in
+30 days of agent sessions against thousands of rebuilds, and most `graphify-out/` folders behind their project ([assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/reports/knowledge-tooling/okf-adoption-assessment-20261010_1700.md), section 5). The 25 existing `graphify-out/` folders were deleted the same
+day (operator); tracked ones through `git rm`, so history keeps them. Project recipes and `templates/context_preflight.sh` skip it unless `GRAPHIFY_ENABLED=1` is set. Re-enable only on the operator's
+decision, by removing this paragraph and the gates. The rules below are kept for that day.
 
 When enabled: run `graphify update .` whenever the `graphify` CLI is available, in all active modes (`bootstrap`, `navigation-add`, `refresh`).
 

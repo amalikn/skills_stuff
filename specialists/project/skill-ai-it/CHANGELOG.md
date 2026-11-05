@@ -9,13 +9,15 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261103_1745
+Last rotated: 20261105_2141
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [Unreleased](#unreleased)
+- [20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs](#20261105_2139--promote-quoted-front-matter-last-reviewed-decisions_to_adrs)
 - [20261105_2047 — adopt_governed_files: check recipe matched by exact name](#20261105_2047--adopt_governed_files-check-recipe-matched-by-exact-name)
 - [20261105_1725 — agents_chain check: AGENTS.md chains for Claude Code and Codex](#20261105_1725--agents_chain-check-agentsmd-chains-for-claude-code-and-codex)
 - [20261103_1741 — mirror_skills: one client's skills linked into another](#20261103_1741--mirror_skills-one-clients-skills-linked-into-another)
@@ -32,13 +34,18 @@ Last rotated: 20261103_1745
 - [20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check](#20261022_1749--slurp-tracker-linking-documented-incident-a-commit-made-on-a-failed-check)
 - [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
 - [20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings](#20261022_1741--anchor_links-promoted-plan_timeline-links-ids-to-their-headings)
-- [20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too](#20261022_1632--table_wrap-shared-hook-compatible-wrapper-target-map-embeds-wrap-too)
 - [20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above](#20261022_1646--target-map-reference-summary-is-one-short-line-a-missed-stage-heading-folds-its-checklist-into-the-stage-above)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
 
-- references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range moves in move_sections.py.
+- references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
+  moves in move_sections.py.
+
+## 20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs
+
+references/generation-policy.md, promote step: quote front-matter values (an unquoted colon fails `archcore status`), give each proposed document `Last reviewed` (tracked-only freshness check), render
+decision ADRs with skill-knowledge-curator `decisions_to_adrs.py`, and clear the candidates file from every reference in the same pass. Found in the Continuum promotion, 2026-11-05.
 
 ## 20261105_2047 — adopt_governed_files: check recipe matched by exact name
 
@@ -166,13 +173,6 @@ Operator, 2026-10-22, on unified-network-controller's plan tracker: "there shoul
 - `scripts/plan_timeline.py`: a column may declare `link_ids: {page, heading}`; plain ids in its cells link to the first heading of `page` matching `heading` with the id filled in (`Step {id}` finds
   "Step 2 — ...", not "Step 21"). Unknown ids stay text; a cell that already holds a link is left as written, so hand-linked data keeps rendering byte for byte.
 - Tests: `tests/test_anchor_links.py` (slugs, repeats, HTML anchors, skips, exit code) and three `LinkIds` cases; 201 pass.
-
-## 20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too
-
-Operator, 2026-10-22 (unified-network-controller): "add stages to plan-tracker from target-map like smc resiliency". The table wrapper moved to `scripts/table_wrap.py` and is shared: `target_map.py`
-now wraps an embedded summary table too (`embed[].wrap_width`, default 200, 0 for one line per row; schema field added). The wrapper writes the table to a temporary file: table-reflow reads stdin with
-readFileSync, which failed with EAGAIN on a pipe for unified-network-controller's 14-row summary. Tests: an embed test pins `wrap_width: 0`, a new one checks the default wraps and reads current (194
-pass). unified-network-controller: render 0.44 s; the markdown hook leaves the page unchanged.
 
 ## 20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above
 
