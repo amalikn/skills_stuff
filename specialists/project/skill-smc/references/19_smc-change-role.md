@@ -481,6 +481,21 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
       found[host] = parse_time(prof["valid_until"])
   ```
 
+- **Change `bitbucket-ssh-hostname` (built 2026-11-05, check-mode canary on alkngarrija-smc01; not applied)**: Bitbucket answers SSH only as
+  `ssh.bitbucket.org` from 2026-11-12 (its own banner). The SMCs' key already works there (`git ls-remote` from garimba-smc01), and the new name
+  serves the same three host keys the fleet trusts for `bitbucket.org` (ED25519 `SHA256:ybgmFkzw...`, ECDSA `SHA256:FC73VB6C...`, RSA
+  `SHA256:46OSHA1R...`). What the SMCs lack is a known_hosts line for the new name. The spec appends those three lines (fixed values in
+  `variables.yml`, never scanned at run time) live and through the chroot in the lower dir; its check and proof are the same script. The
+  `bitbucket.org` lines stay. Its flow pages are family `bitbucket`, and `just trust <hosts>` counts both names' lines. The repo URLs
+  (`git@bitbucket.org:` in ansible-wifi) are a separate change. Test: `files/tests/test_bitbucket_known_hosts.py`.
+
+  ```sh
+  # files/changes/bitbucket-ssh-hostname/scripts/kh_add.sh (local-knowledge-ansible, 2026-11-05)
+  if ! printf '%s\n' "$have" | grep -qxF "$type $key"; then
+    printf '%s %s %s\n' "$KH_HOST" "$type" "$key" >>"$KH_FILE"
+  fi
+  ```
+
 - **Under strategy free (live 2026-11-05)**:
   - Each SMC writes its record, state and tracker row when it finishes its change, not at the end of its batch.
   - In `smc_change_multiple.yml` the second change starts only after the first import has finished for every SMC (imports are sequential plays). For
