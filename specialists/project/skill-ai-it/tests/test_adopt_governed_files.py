@@ -144,6 +144,16 @@ class AdoptTest(unittest.TestCase):
             self.assertEqual(adopt.main(["--project-root", tmp, "--apply"]), 0)
             self.assertEqual(first, {p: (root / p).read_text() for p in first})
 
+    def test_hyphenated_check_recipes_are_not_the_check_recipe(self):
+        """2026-11-05: `check-links:` above `check:` made the roles gate look missing, and the fix would have edited check-links."""
+        text = 'py := "python3"\n\ncheck-links:\n    @{{py}} links.py\n\ncheck:\n    @{{py}} x.py doc_freshness.py role_check.py\n'
+        self.assertTrue(adopt.roles_in_check(text))
+        self.assertNotIn("roles in check", adopt.justfile_gaps(text))
+        bare = 'py := "python3"\n\ncheck-links:\n    @{{py}} links.py\n\ncheck:\n    @{{py}} doc_freshness.py\n'
+        fixed = adopt.add_roles_to_check(bare)
+        self.assertIn("check-links:\n    @{{py}} links.py\n\n", fixed)
+        self.assertRegex(fixed, r"check:\n    @\{\{py\}\} doc_freshness.py\n.*role_check.py")
+
     def test_header_growth_does_not_fail_the_budget_ratchet(self):
         """cambium-swap, 2026-10-14: fencing an over-budget AGENTS.md added two lines and failed `just check` until adoption re-recorded its size."""
         import json

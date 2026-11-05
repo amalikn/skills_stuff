@@ -182,7 +182,7 @@ def justfile_gaps(text: str, roadmap: bool = False) -> list[str]:
         gaps.append("rotate does not trim ROADMAP")
     if not re.search(r"^ai_it\s*:=", text, re.M):
         gaps.append("ai_it variable")
-    if not re.search(r"^check\b", text, re.M):
+    if not re.search(r"^check(?=[ \t:])", text, re.M):
         gaps.append("check recipe (nothing gates freshness)")  # smc-file-writing-analysis had none, so its adoption gated nothing (2026-10-10)
     elif "doc_freshness.py" not in text:
         gaps.append("freshness in check")
@@ -209,13 +209,13 @@ def fix_justfile(text: str, roadmap: bool = False) -> str:
         m = re.search(r"^py\s*:=.*$", text, re.M)
         line = f'ai_it := "{SKILL}"'
         text = text[:m.end()] + "\n" + line + text[m.end():] if m else line + "\n" + text
-    if re.search(r"^check\b", text, re.M) and "doc_freshness.py" not in text:
-        m = re.search(r"^check\b[^\n]*\n((?:[ \t]+[^\n]*\n)+)", text, re.M)
+    if re.search(r"^check(?=[ \t:])", text, re.M) and "doc_freshness.py" not in text:
+        m = re.search(r"^check(?=[ \t:])[^\n]*\n((?:[ \t]+[^\n]*\n)+)", text, re.M)
         if m:
             indent = re.match(r"[ \t]+", m.group(1)).group(0)
             py = "{{py}}" if "py :=" in text else "python3"
             text = text[:m.end()] + f'{indent}@{py} "{{{{ai_it}}}}/scripts/checks/doc_freshness.py" --project-root . --check\n' + text[m.end():]
-    if not re.search(r"^check\b", text, re.M):
+    if not re.search(r"^check(?=[ \t:])", text, re.M):
         py = "{{py}}" if "py :=" in text else "python3"
         text = text.rstrip("\n") + ("\n\n# Governance gate: document freshness (fails only on a finding the baseline does not excuse). Read-only.\n"
                                      f'check:\n    @{py} "{{{{ai_it}}}}/scripts/checks/doc_freshness.py" --project-root . --check\n')
@@ -506,7 +506,7 @@ def roles_in_check(text: str) -> bool:
     Returns:
         True when it does.
     """
-    m = re.search(r"^check\b[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
+    m = re.search(r"^check(?=[ \t:])[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
     return bool(m) and "role_check.py" in m.group(1)
 
 
@@ -519,7 +519,7 @@ def add_roles_to_check(text: str) -> str:
     Returns:
         The updated justfile.
     """
-    m = re.search(r"^check\b[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
+    m = re.search(r"^check(?=[ \t:])[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
     if not m or "role_check.py" in m.group(1):
         return text
     fresh = next((ln for ln in m.group(1).splitlines() if "doc_freshness.py" in ln), None)
