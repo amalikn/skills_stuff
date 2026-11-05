@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kc/verify-verdict",
+  "title": "Verifier verdict (kc verify --file input): whether an open conflict survives an attempt to refute it; a proposal only",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["conflict_id", "verdict", "reason"],
+  "properties": {
+    "conflict_id": {"type": "string", "minLength": 1},
+    "verdict": {"enum": ["conflict", "not-conflict", "uncertain"]},
+    "kind": {
+      "anyOf": [
+        {"enum": ["time-evolution", "superseded-history", "different-scope", "equivalent", "proposal-vs-observation", "extraction-error", "other"]},
+        {"type": "null"}
+      ]
+    },
+    "quote": {"type": ["string", "null"]},
+    "reason": {"type": "string", "minLength": 3}
+  }
+}

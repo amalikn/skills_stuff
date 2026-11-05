@@ -47,9 +47,20 @@ PROVENANCE_SCOPE_KEYS = ("source", "author", "document", "file")
 # Tool folders whose Markdown is never project knowledge, so an exclusion here is not worth a warning (P15).
 QUIET_EXCLUDES = (".git", ".kc", "node_modules", ".venv", "__pycache__", ".remember", ".code-context-notes")
 PROMOTION_GATES = ("no_open_p0_p1", "operator_decision", "governing_files", "evidence_verified")
+# Conflict statuses that leave the review queue without a decision. documented-evolution is history kept and queryable, not noise
+# (research report 5; operator, 2026-11-05).
+CLEARED_STATUSES = ("dismissed", "documented-evolution")
+# Triage rules whose cleared conflicts are history rather than noise.
+EVOLUTION_RULES = ("superseded-section", "sequential-steps")
+# kc verify (research B4): what a verifier may answer, and why a pair is not a conflict. Mirror schemas/verify-verdict.schema.json.
+VERIFY_VERDICTS = ("conflict", "not-conflict", "uncertain")
+VERIFY_KINDS = ("time-evolution", "superseded-history", "different-scope", "equivalent", "proposal-vs-observation", "extraction-error", "other")
+# Kinds whose confirmed clearance is documented evolution; the rest are dismissed as noise.
+VERIFY_EVOLUTION_KINDS = ("time-evolution", "superseded-history")
 
 GIT_TIMEOUT_S = 10
 NLI_TIMEOUT_S = 120
+LLM_TIMEOUT_S = 300
 
 DEFAULT_CONFIG = {
   "schema_version": 1,
@@ -76,6 +87,17 @@ DEFAULT_CONFIG = {
     "multi_valued_predicates": ["must", "must not", "is tested by", "has open question", "has risk", "is out of scope", "serves"],
   },
   "worksheet": {"max_sections": 25, "max_chars": 12000, "max_vocabulary": 200},
+  # kc roots (research B3): an identifier names a cause only while it sits on at most this share of live claims (never fewer than the floor).
+  "roots": {"max_token_share": 0.25, "token_floor": 5, "min_token_len": 4},
+  # kc verify (research B4). The model arm is off unless --model names one on the allowlist; the endpoint must be loopback unless
+  # allow_remote is set, so claims never leave the machine by default (v2 offline_only, model_allowlist).
+  "verify": {
+    "batch_size": 20,
+    "endpoint": "http://127.0.0.1:18000/v1",
+    "allow_remote": False,
+    "model_allowlist": ["Qwen3.6-35B-A3B-4bit-DWQ"],
+    "max_tokens": 400,
+  },
 }
 
 

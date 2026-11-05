@@ -16,6 +16,7 @@ Last rotated: 20261105_1156
 
 ## Unreleased
 
+- references/design-patterns.md: P-56 trust a model verdict only after known controls, in words that cannot be read backwards; P-57 group by each item's most widely shared key, not single-link chaining (Learned 2026-11-05, skill-knowledge-curator).
 - languages/shell.md: Learned 2026-11-05 (ii), remote half on stdin rather than a quoted string or declare -f; parallel checks with a line per host.
 - languages/ansible.md: Learned 2026-11-05 (iii), facts and group_by groups outlive import_playbook; reset per run, test by value, name groups per run.
 - languages/ansible.md: Learned 2026-11-05 (j), find with depth still reads every depth-N dir (slow on NFS/EFS; use GNU find -maxdepth); async is the hard limit, not retries x delay; extra vars beat set_fact, so tests must pass inputs, not outputs.

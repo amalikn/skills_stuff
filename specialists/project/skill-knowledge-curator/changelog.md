@@ -4,73 +4,135 @@ Category: changelog
 Status: current
 Authority: local-supplement
 Scope: Changes to the skill-knowledge-curator pack
-Last reviewed: 2026-10-27
-Summary: Dated record of changes to the Knowledge Curator pack.
+Last reviewed: 2026-11-05
+Summary: Dated record of changes to the Knowledge Curator pack, one heading per day, newest first, so the wiki page lists Recent changes.
 Kind: log
 Budget: 200 lines, 25 KB
 ---
 
 # Changelog
 
-## Unreleased
+## Contents
+
+- [2026-11-05 — kc roots, kc verify on a local model, documented-evolution](#2026-11-05--kc-roots-kc-verify-on-a-local-model-documented-evolution)
+- [2026-11-02 — external research reports, mcp-data cause confirmed](#2026-11-02--external-research-reports-mcp-data-cause-confirmed)
+- [2026-11-01 — Continuum fixes, gate 0 attempts, triage](#2026-11-01--continuum-fixes-gate-0-attempts-triage)
+- [2026-10-30 — Continuum full-run pilot, external verification on the roadmap](#2026-10-30--continuum-full-run-pilot-external-verification-on-the-roadmap)
+- [2026-10-29 — harvest write-back: tense is an existence claim](#2026-10-29--harvest-write-back-tense-is-an-existence-claim)
+- [2026-10-27 — pack created, v1 kernel, v2 staged roadmap](#2026-10-27--pack-created-v1-kernel-v2-staged-roadmap)
+
+---
+
+## 2026-11-05 — kc roots, kc verify on a local model, documented-evolution
+
+- 2026-11-05 20:36 (feature, operator request): `kc roots` (research B3, `roots.py`): open conflicts grouped by the rare identifier both claims name, each joining its most widely shared token (no
+  chaining), document names dropped, a shared claim only a `near` hint; `review` opens with Root causes; one `kc decide` line per member. MCP pilot: 96 conflicts to 45 groups, 23 of 24 real in one;
+  Continuum 0.23 s.
+- 2026-11-05 20:36 (feature, operator request): `kc verify` (B4, `verify.py`, `llm.py`, `commands_verify.py`, `schemas/verify-verdict.schema.json`): agent `--export`/`--file`, local model `--model` on
+  oMLX (allowlist, loopback only, key from `KC_LLM_API_KEY`, two control pairs first), verbatim-quote check, proposals only; `--confirm` clears guarded (P0, opposite status, different-scope without
+  recorded scopes) and `triage --undo` reverses; `--score`. `just verify-omlx`.
+- 2026-11-05 20:36 (learned): two oMLX runs on the MCP pilot: prompt v1 refuted 75 of 96 and kept 41.7% of real conflicts; v2 kept 83.3%, cleared 41% of noise; with guards confirm clears 4, none real.
+  Safe, adds little here. `references/evaluation.md`.
+- 2026-11-05 20:36 (decision, operator): triage history rules clear as `documented-evolution` (research report 5); V7 and V8 confirmed; oMLX instead of Ollama for the model arm. `docs/catalog.md`.
+- 2026-11-05 20:36 (docs, operator request): this changelog moved from dated bullets under Unreleased to one dated heading per day, bodies unchanged, so the wiki page lists Recent changes (settles the
+  2026-10-27 proposal).
+- 2026-11-05 20:36 (write-back): skill-coder `references/design-patterns.md` P-56 (controls before trusting a model verdict) and P-57 (group by most widely shared key).
+
+## 2026-11-02 — external research reports, mcp-data cause confirmed
 
 - 2026-11-02 00:16 (learned): `mcp-data` cause confirmed in project_stuff `ea698f0`; samples are not independent. `references/evaluation.md`, `docs/research/readme.md`.
 - 2026-11-02 00:15 (docs, operator request): fifth external research report in `docs/research/`, verbatim; index updated with what it raises against our measures.
 - 2026-11-02 00:02 (close): session record extended; skill-eval-manager write-back on briefing outside researchers.
 - 2026-11-02 00:00 (docs, operator request): `docs/research/`: four external research reports kept verbatim, with an index of disagreements and next steps. Unverified; for a later chat.
-- 2026-11-01 23:53 (learned, operator request): third attempt failed: precision 37.5% against 70%, clears 92.5% right against 95%, recall 51.1% after triage; triage stays a proposal; P29, v2 stage 1, slurp Step 4b not started. Round three added 59 conflicts for 2 labels. `references/evaluation.md`, `references/conflicts-and-review.md`.
-- 2026-11-01 23:49 (feature, operator request): research build items B0-B2: `kc sample`, `kc status-map`, `kc triage` (gates `superseded-section`, `disjoint-scope`, `sequential-steps`, `byte-copy`, `plan-vs-state`; guard for a gone path still named elsewhere; reversible with `--undo`); recall no longer counts dismissed pairs. 120 tests. Research report in `skills-data/skill-knowledge-curator/research-20261101/`.
-- 2026-11-01 23:36 (rule, operator): triage: report real conflicts, resolve evidence-backed ones reversibly, question the rest, dismiss noise with a reason using intelligent tools; automatic decisions stay proposals until 95% right on 40+ samples. Narrows INV-007. `AGENTS.md`. Not built yet.
-- 2026-11-01 23:32 (rule, operator): kc's aim is knowledge without noise; build scripts on purpose-built tools and models, local first. `AGENTS.md`. Precision measured at 27.5% against the 70% mark. `references/evaluation.md`.
+
+## 2026-11-01 — Continuum fixes, gate 0 attempts, triage
+
+- 2026-11-01 23:53 (learned, operator request): third attempt failed: precision 37.5% against 70%, clears 92.5% right against 95%, recall 51.1% after triage; triage stays a proposal; P29, v2 stage 1,
+  slurp Step 4b not started. Round three added 59 conflicts for 2 labels. `references/evaluation.md`, `references/conflicts-and-review.md`.
+- 2026-11-01 23:49 (feature, operator request): research build items B0-B2: `kc sample`, `kc status-map`, `kc triage` (gates `superseded-section`, `disjoint-scope`, `sequential-steps`, `byte-copy`,
+  `plan-vs-state`; guard for a gone path still named elsewhere; reversible with `--undo`); recall no longer counts dismissed pairs. 120 tests. Research report in
+  `skills-data/skill-knowledge-curator/research-20261101/`.
+- 2026-11-01 23:36 (rule, operator): triage: report real conflicts, resolve evidence-backed ones reversibly, question the rest, dismiss noise with a reason using intelligent tools; automatic decisions
+  stay proposals until 95% right on 40+ samples. Narrows INV-007. `AGENTS.md`. Not built yet.
+- 2026-11-01 23:32 (rule, operator): kc's aim is knowledge without noise; build scripts on purpose-built tools and models, local first. `AGENTS.md`. Precision measured at 27.5% against the 70% mark.
+  `references/evaluation.md`.
 - 2026-11-01 23:28 (feature): P30 `relate` warnings, P31 `time-evolution` `basis: dated-order`, P32 byte copies in reading views. 104 tests.
-- 2026-11-01 23:25 (decision, operator): third gate attempt fixed before measuring: precision at least 70% as well as recall; on failure stop and accept the limit; slurp Step 4b off by default. Audit README warning committed (project_stuff `d22119c`).
-- 2026-11-01 23:15 (learned, operator request): `kc topics --by-file`; second relate route on the MCP pilot, 62.2% against the 80% mark, within-file 87.5%, cross-file 25%; stopped by operator rule, mark kept. 100 tests. `references/evaluation.md`.
-- 2026-11-01 23:07 (feature): `scripts/restate_byte_copies.py`, `just restate-copies`; `kc topics`; `references/workflow.md` gains the parallel, consolidate and relate procedure. 99 tests. Whole-chat record: `docs/session-record-20261101_2307.md`, including incidents (OPA refusal, patch aborts, corrected claims, the premature gate pass).
-- 2026-11-01 23:04 (learned, operator request): gate 0 failed: blind labelled set of 54, recall 44.4% of 45 after aliases and a relate agent, all three P0 labels missed; P29, v2 stage 1 and slurp Step 4b not started. Findings P30-P32. `references/evaluation.md`.
-- 2026-11-01 22:32 (feature, operator request): `kc aliases` (consolidation for comparison only, new `.kc/aliases.jsonl`, revocable) and `kc recall` (labelled recall harness); new schemas `alias-input`, `gold-conflict`; 96 tests.
+- 2026-11-01 23:25 (decision, operator): third gate attempt fixed before measuring: precision at least 70% as well as recall; on failure stop and accept the limit; slurp Step 4b off by default. Audit
+  README warning committed (project_stuff `d22119c`).
+- 2026-11-01 23:15 (learned, operator request): `kc topics --by-file`; second relate route on the MCP pilot, 62.2% against the 80% mark, within-file 87.5%, cross-file 25%; stopped by operator rule,
+  mark kept. 100 tests. `references/evaluation.md`.
+- 2026-11-01 23:07 (feature): `scripts/restate_byte_copies.py`, `just restate-copies`; `kc topics`; `references/workflow.md` gains the parallel, consolidate and relate procedure. 99 tests. Whole-chat
+  record: `docs/session-record-20261101_2307.md`, including incidents (OPA refusal, patch aborts, corrected claims, the premature gate pass).
+- 2026-11-01 23:04 (learned, operator request): gate 0 failed: blind labelled set of 54, recall 44.4% of 45 after aliases and a relate agent, all three P0 labels missed; P29, v2 stage 1 and slurp Step
+  4b not started. Findings P30-P32. `references/evaluation.md`.
+- 2026-11-01 22:32 (feature, operator request): `kc aliases` (consolidation for comparison only, new `.kc/aliases.jsonl`, revocable) and `kc recall` (labelled recall harness); new schemas
+  `alias-input`, `gold-conflict`; 96 tests.
 - 2026-11-01 22:30 (decision, operator): gate 0 pass mark fixed before measuring: 80% of labelled MCP conflicts reach review, all P0 and P1. `references/evaluation.md`.
 - 2026-11-01 22:30 (learned, Continuum): `scripts/ledger_diff.py`, `just ledger-diff`: end-state diff of two ledgers for rehearsing decision sequences; 4 tests.
-- 2026-11-01 22:11 (feature, operator request): P28 subject-word groups in `kc decision-points`; gate 0 reopened by the operator; floor 15 from a measured sweep, recall about 12%. 86 tests. `references/evaluation.md`.
-- 2026-11-01 22:08 (learned, operator request): MCP audit pilot in `references/evaluation.md`: 382 claims, 607,527 agent tokens; cases E, F pass, cross-agent recall fails (P28, P29), which undercuts the gate 0 probe.
-- 2026-11-01 21:50 (feature, operator request): P25 multi-valued predicates and `kc group-review`, P18 `kc drift` and claim warnings, P21 `stale_conflicts` in `report`, `validate` and review cards; new modules `drift.py`, `stale.py`. 82 tests. On Continuum: review prompts 1,158 to 607 claims, `candidates` 1.9 s, within budget. `references/evaluation.md`.
-- 2026-11-01 21:44 (fix, Continuum report): P27, `decide` keeps a successor set elsewhere (`kept_successors`); `kc amend --set-successor` repairs a link; new module `amendments.py`. 71 tests. `references/evaluation.md`.
-- 2026-11-01 21:41 (fix, Continuum report): P26, `decide` no longer silently revives a claim superseded elsewhere (`--override-supersession`, recorded); `validate` warns on past revivals, exactly two on Continuum. 69 tests. `references/evaluation.md`, `references/feature-inventory.md` P25 refined from Continuum's predicate counts.
-- 2026-11-01 21:05 (docs, Continuum session): `references/conflicts-and-review.md` says a scratch `amend` needs a real copy of the sources. Continuum ran `render_claim_registers.py` after amend and a `claim-batch` dry run against this kernel: both pass; `--apply` not run.
-- 2026-11-01 20:56 (feature, operator request): Continuum fixes built, each test failing first (24 new tests, 66 total): `settled` false on any open conflict (P20); `kc vocabulary`, `kc sections`, `kc decision-points`, `kc amend`; `worksheet --path` and vocabulary, `claims --coverage`, `sections_closed` and warnings, `candidates --limit`, cross-source ranking and `same-topic-cross-source`, `validate --strict`; provenance scope keys ignored; `archive` off the default exclusions; `HISTORICAL`/`SUPERSEDED` need a basis; `CORRECTED` reuses identical wording; review cards take more than two claims. `references/` updated; new module `worksheet.py`. `candidates` 5.2 s to 2.2 s, still over its 2 s budget.
+- 2026-11-01 22:11 (feature, operator request): P28 subject-word groups in `kc decision-points`; gate 0 reopened by the operator; floor 15 from a measured sweep, recall about 12%. 86 tests.
+  `references/evaluation.md`.
+- 2026-11-01 22:08 (learned, operator request): MCP audit pilot in `references/evaluation.md`: 382 claims, 607,527 agent tokens; cases E, F pass, cross-agent recall fails (P28, P29), which undercuts
+  the gate 0 probe.
+- 2026-11-01 21:50 (feature, operator request): P25 multi-valued predicates and `kc group-review`, P18 `kc drift` and claim warnings, P21 `stale_conflicts` in `report`, `validate` and review cards;
+  new modules `drift.py`, `stale.py`. 82 tests. On Continuum: review prompts 1,158 to 607 claims, `candidates` 1.9 s, within budget. `references/evaluation.md`.
+- 2026-11-01 21:44 (fix, Continuum report): P27, `decide` keeps a successor set elsewhere (`kept_successors`); `kc amend --set-successor` repairs a link; new module `amendments.py`. 71 tests.
+  `references/evaluation.md`.
+- 2026-11-01 21:41 (fix, Continuum report): P26, `decide` no longer silently revives a claim superseded elsewhere (`--override-supersession`, recorded); `validate` warns on past revivals, exactly two
+  on Continuum. 69 tests. `references/evaluation.md`, `references/feature-inventory.md` P25 refined from Continuum's predicate counts.
+- 2026-11-01 21:05 (docs, Continuum session): `references/conflicts-and-review.md` says a scratch `amend` needs a real copy of the sources. Continuum ran `render_claim_registers.py` after amend and a
+  `claim-batch` dry run against this kernel: both pass; `--apply` not run.
+- 2026-11-01 20:56 (feature, operator request): Continuum fixes built, each test failing first (24 new tests, 66 total): `settled` false on any open conflict (P20); `kc vocabulary`, `kc sections`, `kc
+  decision-points`, `kc amend`; `worksheet --path` and vocabulary, `claims --coverage`, `sections_closed` and warnings, `candidates --limit`, cross-source ranking and `same-topic-cross-source`,
+  `validate --strict`; provenance scope keys ignored; `archive` off the default exclusions; `HISTORICAL`/`SUPERSEDED` need a basis; `CORRECTED` reuses identical wording; review cards take more than
+  two claims. `references/` updated; new module `worksheet.py`. `candidates` 5.2 s to 2.2 s, still over its 2 s budget.
 - 2026-11-01 20:56 (decision, operator): gate 0 redefined and passed on the Continuum rerun; MCP cases A-F optional. `references/evaluation.md`, findings P20-P24 added.
 - 2026-11-01 20:56 (docs, operator request): `SKILL.md` workflow diagram redrawn as three stages with who acts at each step.
 - 2026-11-01 20:37 (learned): `references/evaluation.md` P19, `decide` cannot supersede claims outside the conflict.
 - 2026-11-01 01:31 (learned): `references/evaluation.md` P18, claim text can be lossy against a verified excerpt.
-- 2026-11-01 01:10 (learned, Continuum closeout): `references/evaluation.md` findings P14-P17 and `references/feature-inventory.md` fixes (CORRECTED duplicates, archive default, agent tooling gaps, authored-page coverage). Totals on that corpus: 45 sources, 3,495 claims, 100 conflicts, 33 decided.
-- 2026-10-30 19:34 (learned, Continuum full run): `references/evaluation.md` records the full extraction run (904 sections, 3,491 claims, 3.86 per section, about 1.66M agent tokens) and findings P12 (provenance in scope hides cross-source conflicts) and P13 (18,129 candidate pairs in 5.2 s; decision-point grouping as the review unit); `references/feature-inventory.md` gains fixes P12-P13.
-- 2026-10-30 18:43 (learned, first real-corpus pilot, operator request): `references/evaluation.md` gains "Pilot on the Continuum corpus" (measured run, probe showing cross-source conflict recall depends on agent predicate wording, findings P1-P11 with evidence and code excerpt at `cdce4fa`); `references/feature-inventory.md` gains "Fixes from the Continuum pilot". Kernel steps all ran; nothing built yet.
-- 2026-10-30 18:32 (docs, operator request): `references/workflow.md` External verification names `tools_stuff/continuum/scripts/check_links.py` as the reference implementation for `kc links`, with its design points (GET not HEAD, timeouts and one retry, per-host limits, citing path:line, outcome classes, all-scraper for blocked) and measured run.
-- 2026-10-30 18:31 (docs, operator request "tell skill-kc about all-scraper"): `SKILL.md` Related skills names all-scraper as the fetcher for blocked upstream pages; `references/workflow.md` gains "External verification (not yet in the kernel)": the interim manual pass, verdict vocabulary and capture rule.
-- 2026-10-30 18:30 (roadmap): `references/feature-inventory.md` Deferred gains external verification (`kc links` plus an external-fact verification record and gate). The curator verifies excerpts against local sources, not links or upstream truth; the operator asked for both. First run on the Continuum research corpus (44 sources, 904 sections), which is also this pack's first real-corpus pilot.
-- 2026-10-29 20:14 (learned, harvest write-back): `references/claim-model-and-taxonomy.md` Learned 2026-10-29 (tense is an existence claim, re-add
-  source totals) and (b) (measure provenance figures from the artefact); `references/authority-and-promotion.md` Learned 2026-10-29 (search-only
-  versus citable stores); `references/conflicts-and-review.md` Learned 2026-10-29 (resolve machine-readable amendments before citing);
-  `references/evaluation.md` Learned 2026-10-29 (harvested and model-proposed lookup entries are candidates, test negation);
-  `references/workflow.md` Learned 2026-10-29 (hash the body, not the header) and (b) (killable tracks, promote shared facts at the second
-  consumer). From the 2026-10-29 harvest of a cloud-repatriation design programme and personal research projects; no project content.
-- 2026-10-27 20:39 (operational): the skill-ai-it session repointed this `justfile` to `scripts/checks/doc_freshness.py` and `role_check.py`; `just check`
-  passes again. Left uncommitted with this slurp's lines (no commit asked).
-- 2026-10-27 20:38 (incident): the commit of the two lines below was not made: `just check` exited 2 because skill-ai-it `scripts/doc_freshness.py` was moved to
-  `scripts/checks/` by another session (uncommitted) while this justfile names the old path; the pack's own ruff and 42 tests passed. Not bypassed; options in SCRATCHPAD.
+- 2026-11-01 01:10 (learned, Continuum closeout): `references/evaluation.md` findings P14-P17 and `references/feature-inventory.md` fixes (CORRECTED duplicates, archive default, agent tooling gaps,
+  authored-page coverage). Totals on that corpus: 45 sources, 3,495 claims, 100 conflicts, 33 decided.
+
+## 2026-10-30 — Continuum full-run pilot, external verification on the roadmap
+
+- 2026-10-30 19:34 (learned, Continuum full run): `references/evaluation.md` records the full extraction run (904 sections, 3,491 claims, 3.86 per section, about 1.66M agent tokens) and findings P12
+  (provenance in scope hides cross-source conflicts) and P13 (18,129 candidate pairs in 5.2 s; decision-point grouping as the review unit); `references/feature-inventory.md` gains fixes P12-P13.
+- 2026-10-30 18:43 (learned, first real-corpus pilot, operator request): `references/evaluation.md` gains "Pilot on the Continuum corpus" (measured run, probe showing cross-source conflict recall
+  depends on agent predicate wording, findings P1-P11 with evidence and code excerpt at `cdce4fa`); `references/feature-inventory.md` gains "Fixes from the Continuum pilot". Kernel steps all ran;
+  nothing built yet.
+- 2026-10-30 18:32 (docs, operator request): `references/workflow.md` External verification names `tools_stuff/continuum/scripts/check_links.py` as the reference implementation for `kc links`, with
+  its design points (GET not HEAD, timeouts and one retry, per-host limits, citing path:line, outcome classes, all-scraper for blocked) and measured run.
+- 2026-10-30 18:31 (docs, operator request "tell skill-kc about all-scraper"): `SKILL.md` Related skills names all-scraper as the fetcher for blocked upstream pages; `references/workflow.md` gains
+  "External verification (not yet in the kernel)": the interim manual pass, verdict vocabulary and capture rule.
+- 2026-10-30 18:30 (roadmap): `references/feature-inventory.md` Deferred gains external verification (`kc links` plus an external-fact verification record and gate). The curator verifies excerpts
+  against local sources, not links or upstream truth; the operator asked for both. First run on the Continuum research corpus (44 sources, 904 sections), which is also this pack's first real-corpus
+  pilot.
+
+## 2026-10-29 — harvest write-back: tense is an existence claim
+
+- 2026-10-29 20:14 (learned, harvest write-back): `references/claim-model-and-taxonomy.md` Learned 2026-10-29 (tense is an existence claim, re-add source totals) and (b) (measure provenance figures
+  from the artefact); `references/authority-and-promotion.md` Learned 2026-10-29 (search-only versus citable stores); `references/conflicts-and-review.md` Learned 2026-10-29 (resolve machine-readable
+  amendments before citing); `references/evaluation.md` Learned 2026-10-29 (harvested and model-proposed lookup entries are candidates, test negation); `references/workflow.md` Learned 2026-10-29
+  (hash the body, not the header) and (b) (killable tracks, promote shared facts at the second consumer). From the 2026-10-29 harvest of a cloud-repatriation design programme and personal research
+  projects; no project content.
+
+## 2026-10-27 — pack created, v1 kernel, v2 staged roadmap
+
+- 2026-10-27 20:39 (operational): the skill-ai-it session repointed this `justfile` to `scripts/checks/doc_freshness.py` and `role_check.py`; `just check` passes again. Left uncommitted with this
+  slurp's lines (no commit asked).
+- 2026-10-27 20:38 (incident): the commit of the two lines below was not made: `just check` exited 2 because skill-ai-it `scripts/doc_freshness.py` was moved to `scripts/checks/` by another session
+  (uncommitted) while this justfile names the old path; the pack's own ruff and 42 tests passed. Not bypassed; options in SCRATCHPAD.
 - 2026-10-27 (proposed, not decided): this changelog's dated bullets give the wiki page no Recent changes (the generator reads dated headings).
-- 2026-10-27 20:32 (fix, wiki_stuff `45423a3`): `project_page.py` now accepts annotated `## Current state` headings (`— KEEP`, comment, date);
-  this pack's wiki page shows its Current state. Open item closed.
-- 2026-10-27 20:21 (docs): `references/feature-inventory.md` gains the v2 staged roadmap (gate 0 = real-corpus pilot; stages 1 gap matrix, 2 deterministic
-  additions, 3 semantic and optional model adapter, 4a code and Mermaid, 4b draw.io and ASCII, 4c PDF and Office, 5 federation within one portfolio,
-  6 slurp Step 4b, 7 optional engines), each stage with its `V2-T` exit tests; the v1 "rejected" line now says which two items v2 narrows.
-- 2026-10-27 (decisions, operator): v2 is a staged roadmap on top of v1; all four new source types adopted; federation within one portfolio only;
-  v1 schema and libraries kept with a v2 mapping; optional model adapter in `kc`; promotion and proposal paths both kept; slurp hook is a conditional
-  Step 4b; run envelope, `offline_only` and model allowlist added. Detail: `docs/catalog.md`, v2 section.
-- 2026-10-27 (incident): the catalog first listed V7 (test-ID namespace) and V8 (layout) under operator answers; both were agent defaults, never
-  asked. Relabelled as defaults the operator may override. The markdown hook cannot wrap inside a long link label and left a 283-character
-  line in feature-inventory.md; fixed by shorter labels.
-- 2026-10-27 (finding): the wiki project page renders no Current state, because wiki_stuff `project_page.py` matches the heading exactly and this
-  SCRATCHPAD marks it `— KEEP`; left open in SCRATCHPAD.
+- 2026-10-27 20:32 (fix, wiki_stuff `45423a3`): `project_page.py` now accepts annotated `## Current state` headings (`— KEEP`, comment, date); this pack's wiki page shows its Current state. Open item
+  closed.
+- 2026-10-27 20:21 (docs): `references/feature-inventory.md` gains the v2 staged roadmap (gate 0 = real-corpus pilot; stages 1 gap matrix, 2 deterministic additions, 3 semantic and optional model
+  adapter, 4a code and Mermaid, 4b draw.io and ASCII, 4c PDF and Office, 5 federation within one portfolio, 6 slurp Step 4b, 7 optional engines), each stage with its `V2-T` exit tests; the v1
+  "rejected" line now says which two items v2 narrows.
+- 2026-10-27 (decisions, operator): v2 is a staged roadmap on top of v1; all four new source types adopted; federation within one portfolio only; v1 schema and libraries kept with a v2 mapping;
+  optional model adapter in `kc`; promotion and proposal paths both kept; slurp hook is a conditional Step 4b; run envelope, `offline_only` and model allowlist added. Detail: `docs/catalog.md`, v2
+  section.
+- 2026-10-27 (incident): the catalog first listed V7 (test-ID namespace) and V8 (layout) under operator answers; both were agent defaults, never asked. Relabelled as defaults the operator may
+  override. The markdown hook cannot wrap inside a long link label and left a 283-character line in feature-inventory.md; fixed by shorter labels.
+- 2026-10-27 (finding): the wiki project page renders no Current state, because wiki_stuff `project_page.py` matches the heading exactly and this SCRATCHPAD marks it `— KEEP`; left open in SCRATCHPAD.
 - 2026-10-27 20:15 (docs): v2 spec moved from the pack root to `docs/knowledge-curator-foss-implementation-spec-v2.md` (front matter and Contents added, text verbatim); `docs/catalog.md` gains its
   row, conflicts V1-V9 against the built v1, and two rounds of operator answers. Nothing built.
 - 2026-10-27 (operational): venv built at `skills-working-cache/skill-knowledge-curator/.venv` (Python 3.14.5, mise) with the pinned requirements; read-only `kc inventory` (no --apply) over

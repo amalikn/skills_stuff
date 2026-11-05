@@ -10,18 +10,20 @@ deterministic kernel that checks and records it (references/workflow.md).
 Usage:
   python scripts/knowledge_curator.py <command> --project <dir> [options]   (or `just kc <command> <dir> ...`)
   commands: init, inventory, worksheet, sections, vocabulary, coverage, claims, candidates, decision-points, relate, review,
-            decide, amend, group-review, aliases, status-map, triage, sample, topics, recall, drift, render, promote,
+            decide, amend, group-review, aliases, status-map, triage, roots, verify, sample, topics, recall, drift, render, promote,
             archive-plan, query, intake, validate, report
   Example: python scripts/knowledge_curator.py inventory --project tests/fixtures/pilot
 
 Inputs:
   --project DIR      project root; ledgers live in DIR/.kc/
-  --file FILE        claims or relations input (.json or .jsonl), checked against schemas/
+  --file FILE        claims, relations or verdicts input (.json or .jsonl), checked against schemas/
   --payload FILE     intake payload (schemas/intake-payload.schema.json)
   KC_ACTOR           name recorded on decisions and promotions (default project-owner)
+  KC_LLM_API_KEY     key for the local model server used by verify --model (never printed); KC_LLM_BASE_URL overrides the endpoint
 
-Safety: read-only by default. With --apply: init writes .kc/config.yaml; inventory, claims, relate, decide, amend, group-review,
-aliases, triage and promote append to
+Safety: read-only by default. verify --model sends claim text to a loopback model server (remote only when the project config allows).
+With --apply: init writes .kc/config.yaml; inventory, claims, relate, decide, amend, group-review,
+aliases, triage, verify and promote append to
 .kc/*.jsonl; render writes knowledge/ pages (never a promoted page) and .kc/proposals/; review and archive-plan write a report
 under .kc/. Nothing ever edits, moves or deletes a source document or a governing file, commits or pushes.
 
@@ -65,7 +67,18 @@ def _add_reading_options(sub) -> None:
   sub.choices["worksheet"].add_argument("--batch", type=int, default=1)
   sub.choices["recall"].add_argument("--labels", required=True, help="gold conflicts, JSON array (schemas/gold-conflict.schema.json)")
   sub.choices["topics"].add_argument("--by-file", action="store_true", help="claims under each cited file, in line order")
-  sub.choices["triage"].add_argument("--undo", help="reopen what this run_id dismissed")
+  sub.choices["triage"].add_argument("--undo", help="reopen what this run_id cleared (triage or verify --confirm)")
+  sub.choices["roots"].add_argument("--limit", type=int, help="return only the first N groups; counts still cover all")
+  ve = sub.choices["verify"]
+  mode = ve.add_mutually_exclusive_group()
+  mode.add_argument("--export", action="store_true", help="tasks for an agent; --apply writes .kc/verify/batch-NN.json")
+  mode.add_argument("--file", help="agent verdicts, JSON array (schemas/verify-verdict.schema.json)")
+  mode.add_argument("--model", help="answer with this allowlisted local model (KC_LLM_API_KEY, KC_LLM_BASE_URL)")
+  mode.add_argument("--confirm", help="operator bulk-confirms this verify run_id: clear its not-conflict pairs")
+  mode.add_argument("--score", help="judge labels JSON [{conflict_id, verdict: real|noise}]: compare with the verify notes")
+  ve.add_argument("--batch-size", type=int)
+  ve.add_argument("--limit", type=int, help="with --model: answer only the first N tasks")
+  ve.add_argument("--verifier", default="agent", help="with --file: name of the agent or model that answered")
   sa = sub.choices["sample"]
   sa.add_argument("--size", type=int, default=40)
   sa.add_argument("--seed", type=int, default=20261101)
@@ -142,6 +155,7 @@ def build_parser() -> Parser:
       "group-review",
       "aliases",
       "triage",
+      "verify",
       "sample",
       "render",
       "promote",

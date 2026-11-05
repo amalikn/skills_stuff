@@ -3,6 +3,8 @@
 Imported, not run. Safety: read-only.
 """
 
+from collections import Counter
+
 from . import claims as claims_mod
 from . import stale
 from .state import State
@@ -34,6 +36,8 @@ def build(st: State) -> dict:
       "open_by_severity": dict(sorted(sev.items())),
       "resolved": sum(c["status"] == "resolved" for c in st.conflicts.values()),
       "dismissed": sum(c["status"] == "dismissed" for c in st.conflicts.values()),
+      "documented_evolution": sum(c["status"] == "documented-evolution" for c in st.conflicts.values()),
+      "verify_pending": dict(sorted(Counter(c["verify"]["verdict"] for c in st.open_conflicts() if c.get("verify")).items())),
     },
     "stale_conflicts": stale.stale_conflicts(st),
     "decisions": len(st.decisions),

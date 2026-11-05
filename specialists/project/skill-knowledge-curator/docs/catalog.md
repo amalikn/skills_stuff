@@ -4,7 +4,7 @@ Category: catalog
 Status: current
 Authority: local-supplement; operator decisions 2026-10-27 (naming, C1, C2, C4-C6, promotion, folder, slurp timing); conflict analysis of the source documents
 Scope: Source documents under docs/ for skill-knowledge-curator, the operator decisions, how each v1 conflict was settled, and the open v2 conflicts
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-05
 Summary: >-
   Index of the three operator-supplied design documents for skill-knowledge-curator (alias skill-kc), the operator decisions, where each of the
   twelve v1 conflicts is settled in references/, and the open conflicts between the v2 spec and the built v1.
@@ -36,6 +36,21 @@ Knowledge Curator (alias skill-kc): evidence-linked classification, deduplicatio
   note (a project may drop it).
 - Archival: plan only in v1. Storage: append-only JSONL ledgers plus rendered Markdown views. Dependencies: the full design stack (NLI optional install).
 - Project folder `.kc/`. skill-slurp-chat Step 4b is wired only after the pilot passes.
+
+## Decisions (operator, 2026-11-05)
+
+Asked in one round before building research B3 and B4:
+
+- **Scope:** build `kc roots` (B3) and `kc verify` (B4) with a local model arm on oMLX, not Ollama. This narrows V5's "default local Ollama": the adapter speaks the
+  OpenAI-compatible API, so oMLX, LM Studio and Ollama's `/v1` all work, and the default endpoint is oMLX (`127.0.0.1:18000`). Model: `Qwen3.6-35B-A3B-4bit-DWQ`, already
+  installed, so nothing was downloaded (31 GiB free on the system volume).
+- **Triage verb:** research report 5's point accepted. History rules clear as `documented-evolution`, kept and queryable; noise rules stay `dismissed`.
+- **Corpus:** measure on fixtures and the existing MCP pilot labels and Continuum; a new corpus waits until the operator names one.
+- **V7 and V8:** the `V2-T` test-ID namespace and the v1 layout are confirmed (they were agent defaults).
+- **Housekeeping:** push skills_stuff; dated changelog headings so the wiki shows Recent changes; the `mcp-data` warning confirmed and the audit reports corrected.
+
+Agent defaults inside that scope, open to override: verdict words `conflict`, `not-conflict`, `uncertain` ("refuted" read backwards in the first model trial); two
+control pairs before every model run; a shared claim is a hint, never a group join; loopback-only endpoint unless `verify.allow_remote`.
 
 ## Source documents
 
@@ -132,7 +147,7 @@ Answers (operator, 2026-10-27, round 1):
   INV-015 is narrowed, not dropped.
 - V3/V4 schema and libraries: keep v1 (two-axis model C3, jsonschema, RapidFuzz); add optional subject/predicate/object fields and a v2-to-v1 kind and status
   mapping; embeddings behind an optional install, as NLI is.
-- V7 test IDs and V8 layout: agent defaults, not asked (the operator may override): v2 tests cited as `V2-T01` to `V2-T18`; v1 layout stands, as v2
+- V7 test IDs and V8 layout: agent defaults, confirmed by the operator 2026-11-05: v2 tests cited as `V2-T01` to `V2-T18`; v1 layout stands, as v2
   section 9 defers to existing conventions.
 
 Answers (operator, 2026-10-27, round 2):

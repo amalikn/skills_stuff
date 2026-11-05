@@ -1,4 +1,4 @@
-"""Seeded samples of conflicts as blind cards, and precision with a Wilson interval (research B0).
+"""Seeded samples of conflicts as blind cards, precision with a Wilson interval (research B0), and kc verify notes scored against labels (B4).
 
 Imported, not run. Small samples only support intervals, never a per-finding noise probability, so this reports intervals. Safety: reads state.
 """
@@ -6,8 +6,10 @@ Imported, not run. Small samples only support intervals, never a per-finding noi
 import json
 import math
 import random
+from collections import Counter
 from pathlib import Path
 
+from .errors import InputError
 from .state import State
 
 Z_95 = 1.959964
@@ -72,3 +74,44 @@ def score(path: Path) -> dict:
   noise = sum(r["verdict"] == "noise" for r in rows)
   total = real + noise
   return {"real": real, "noise": noise, "unclear": len(rows) - total, "precision": round(real / total, 3) if total else 0.0, "interval": wilson(real, total)}
+
+
+def verify_score(st: State, labels: Path) -> dict:
+  """Compare the latest verify notes with labelled verdicts (judge files: [{conflict_id, verdict: real | noise}]).
+
+  Args:
+    st: current state.
+    labels: labels file.
+
+  Returns:
+    {"labelled", "matrix", "real_lost", "noise_cleared", "kept_precision", "by_kind"}.
+
+  Raises:
+    InputError: the labels file is not a JSON array.
+  """
+  rows = json.loads(labels.read_text(encoding="utf-8"))
+  if not isinstance(rows, list):
+    raise InputError(f"{labels}: expected a JSON array")
+  matrix, by_kind, lost = Counter(), Counter(), []
+  for r in rows:
+    note = st.conflicts.get(r["conflict_id"], {}).get("verify")
+    if not note:
+      continue
+    matrix[f"{r['verdict']}->{note['verdict']}"] += 1
+    if note["verdict"] == "not-conflict":
+      by_kind[f"{note['kind']}:{r['verdict']}"] += 1
+      if r["verdict"] == "real":
+        lost.append(r["conflict_id"])
+  real = sum(v for k, v in matrix.items() if k.startswith("real->"))
+  noise = sum(v for k, v in matrix.items() if k.startswith("noise->"))
+  kept_real = real - len(lost)
+  kept = kept_real + noise - matrix["noise->not-conflict"]
+  return {
+    "labelled": real + noise,
+    "matrix": dict(sorted(matrix.items())),
+    "real_lost": sorted(lost),
+    "real_recall_kept": round(kept_real / real, 3) if real else None,
+    "noise_cleared": round(matrix["noise->not-conflict"] / noise, 3) if noise else None,
+    "kept_precision": round(kept_real / kept, 3) if kept else None,
+    "by_kind": dict(sorted(by_kind.items())),
+  }

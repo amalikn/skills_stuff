@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement; both source documents, operator decisions 2026-10-27, enhancements added in the first build
 Scope: Every feature from the three source documents and the enhancements added beyond them, with disposition (built, deferred, rejected) and invariant coverage
-Last reviewed: 2026-11-01
+Last reviewed: 2026-11-05
 Summary: >-
   What exists now, what was added beyond the documents and why, what is deferred and on what trigger, the v2 staged roadmap (stages 1-7, nothing
   built), and where each design invariant is enforced.
@@ -139,7 +139,9 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | P30 | `relate` warns when a conflict opens on a claim no longer live, in the ledger or earlier in the batch |
 | P31 | `time-evolution` with `basis: dated-order` needs no excerpt, supersedes nothing and opens a `time-evolution-proposed` conflict recommending the later claim |
 | P32 | `kc topics` cites one path per byte group and lists `byte_copies`; `--by-file` repeats no claim |
-| P33 | Built as `kc triage`, `kc status-map`, `kc sample`; proposals until a blind sample is 95% right (92.5% so far). Next by the research: B3 `kc roots`, then B4 `kc verify` |
+| P33 | Built as `kc triage`, `kc status-map`, `kc sample`; proposals until a blind sample is 95% right (92.5% so far). History rules clear as `documented-evolution` (2026-11-05, research report 5) |
+| B3  | Built 2026-11-05 as `kc roots` (`roots.py`): cause groups over rare shared identifiers, no chaining, shared claim a hint only; `review` lists Root causes; one `kc decide` line per member |
+| B4  | Built 2026-11-05 as `kc verify` (`verify.py`, `llm.py`): agent export and import, local model on oMLX (allowlist, loopback, control pairs), quote check, bulk `--confirm` undone by `triage --undo`, `--score` |
 | P24 | Port with P17: conformance into `claims`, verification into the external-fact record |
 
 ## Invariants and where they are enforced
@@ -152,7 +154,7 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | INV-004 one disposition                  | Fold keeps the last disposition event per claim                              |
 | INV-005 evidence                         | `claims` intake refusal; `validate`                                          |
 | INV-006 conflict blocking                | `State.effective`; render's Not settled; promotion gate                      |
-| INV-007 human authority                  | Only `decide` resolves conflicts; only explicit answers. Narrowing agreed, not built: evidence-backed, reversible automatic resolution, proposals until 95% right on 40+ samples (AGENTS.md, Triage) |
+| INV-007 human authority                  | Only `decide` resolves conflicts; only explicit answers. Clearing is the operator's bulk confirmation (`triage --apply`, `verify --confirm`), reversible; automatic only after 95% right on 40+ samples (AGENTS.md, Triage) |
 | INV-008 no newest-wins                   | Claim IDs include the object; candidates pair same-key claims                |
 | INV-009 no loss by dedupe                | Restatements merge evidence; DUPLICATE keeps its evidence and link           |
 | INV-010 safe archive                     | Plan only, rehearsal, referrers                                              |

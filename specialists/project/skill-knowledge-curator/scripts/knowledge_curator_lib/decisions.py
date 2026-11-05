@@ -9,7 +9,7 @@ records for ledger.append.
 import datetime as dt
 from dataclasses import dataclass, field
 
-from . import ids, stale
+from . import ids, roots, stale
 from .errors import InputError, SourceChanged
 from .evidence import Reader, recheck
 from .state import State
@@ -76,6 +76,10 @@ def _card(st: State, cf: dict) -> list[str]:
   why = stale.reasons(st, cf)
   if why:
     lines.append("**Stale:** " + "; ".join(why))
+  note = cf.get("verify")
+  if note:
+    said = f"{note['verdict']}" + (f" ({note['kind']})" if note.get("kind") else "") + f", {note['verifier'].get('model') or note['verifier']['mode']}"
+    lines.append(f"**Verifier (proposal only):** {said}: {note.get('reason', '')}" + (f' Quote: "{note["quote"]}"' if note.get("quote") else ""))
   lines.append(f"**Recommendation:** current = {labels.get(rec, '?')} (`{rec}`)" if rec else "**Recommendation:** none; evidence does not settle it.")
   cid = cf["conflict_id"]
   lines += [
@@ -103,6 +107,11 @@ def review_markdown(st: State) -> str:
   """
   open_cf = st.open_conflicts()
   out = ["# Review queue", "", f"Project `{st.cfg['project_id']}`: {len(open_cf)} open conflict(s). Unanswered items stay REVIEW_REQUIRED.", ""]
+  shared = [g for g in roots.group(st, open_cf)["groups"] if g["size"] > 1]
+  if shared:
+    out += ["## Root causes", "", "Conflicts sharing one cause; read the cause once. Each member is still decided on its own (`kc roots`).", ""]
+    out += [f"- `{g['token']}` · {g['severity']} · {g['size']} conflicts: {', '.join(g['members'])}" for g in shared]
+    out.append("")
   topics: dict[str, list[dict]] = {}
   for cf in open_cf:
     topics.setdefault(cf["topic_key"], []).append(cf)

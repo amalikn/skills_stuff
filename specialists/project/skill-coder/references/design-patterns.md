@@ -1197,6 +1197,61 @@ smc_change_backup_path: "{{ smc_change_s['backup_path'] }}"
       state_file: "{{ smc_change_runs_dir }}/state/{{ inventory_hostname }}.json"
 ```
 
+### P-56 Trust a model's verdict only after it answers known controls, in words that cannot be read backwards
+
+> **Learned 2026-11-05** · design pattern, any language calling a model for a judgement · VERIFIED_PRIMARY (first oMLX call answered "refuted" for a
+> clear conflict while its reason said they conflict; with unambiguous words and two controls the run passed both and recorded every verdict) · Source:
+> skills_stuff skill-knowledge-curator `scripts/knowledge_curator_lib/verify.py`, `llm.py`, `tests/test_roots_verify.py` (uncommitted at write time) ·
+> Falsifier: a model passes both controls and then inverts verdicts on real items at a rate a labelled set shows. `reusable_candidate` until a second project uses it.
+
+- **Problem:** a model asked to label items can read the label words the other way round ("refuted" = the claim is refuted, or the conflict is), fail
+  silently, or return prose; a run that trusts it can clear real findings in bulk.
+- **Solution:** (1) verdict words that name the outcome itself (`conflict`, `not-conflict`, `uncertain`), refusing the ambiguous one in the input schema;
+  (2) every run first answers fixed control items with known answers and stops before recording anything if one is wrong; (3) a negative verdict must quote
+  words of the item's own evidence or it is downgraded; (4) any failed call or off-vocabulary word is recorded as the safe answer (`uncertain`), never the
+  convenient one; (5) the verdict is a proposal a person confirms in bulk, reversibly.
+- **Why it works:** the controls catch a model or prompt that inverts the scale at the cost of two calls; the quote rule turns an unverifiable opinion into a
+  checkable citation; the safe default means an outage costs review time, not missed findings.
+- **Reuse:** any LLM judge, classifier or verifier over records: duplicate detection, ticket triage, log labelling, document checks.
+- **Pitfalls:** controls prove the scale, not accuracy on hard items (measure that on a labelled set); keep controls out of the scored set; a fallback that
+  returns "no problem" on an exception (seen in an outside report) hides every error.
+- **Realised in:** Python, excerpt below.
+
+```python
+# scripts/knowledge_curator_lib/verify.py: controls before any task
+for control in CONTROLS:
+  got, used = llm.chat_json(base, model, INSTRUCTIONS, _prompt(_control_task(control)), cfg["max_tokens"])
+  if got.get("verdict") != control["expected"]:
+    raise InputError(f"control pair answered {got.get('verdict')!r}, expected {control['expected']!r}: verdicts from {model} are not trusted")
+# a failed call is uncertain, never "no conflict"
+except llm.ModelError as err:
+  verdicts.append({"conflict_id": task["conflict_id"], "verdict": "uncertain", "kind": None, "quote": None, "reason": f"model error: {err}"})
+```
+
+### P-57 Group by each item's most widely shared key, not by single-link chaining
+
+> **Learned 2026-11-05** · design pattern, any language · VERIFIED_PRIMARY (MCP pilot, 96 open conflicts: chaining merged two causes into one 57-member
+> group; primary-key grouping gave 42 on one cause and 6 on another, 23 of 24 judged-real conflicts in the first) · Source: skills_stuff skill-knowledge-curator
+> `scripts/knowledge_curator_lib/roots.py` (uncommitted at write time) · Falsifier: a corpus where one item's top key is a generic term that pulls unrelated
+> items together. `reusable_candidate` until a second project uses it.
+
+- **Problem:** grouping findings by shared tokens with union-find (connected components) chains: one item naming two causes merges both groups, and the
+  largest group swallows its neighbours.
+- **Solution:** give each item one home, its key with the widest spread among items (ties to the shorter key), after dropping keys that are too common or only
+  name a container (a document, a folder). Items with no key stand alone; a weaker link (a shared record) is reported as a hint, never a join.
+- **Why it works:** an item's most-shared key is the cause it has in common with the most others, so it goes where a reviewer would put it, and no single
+  bridging item can merge two groups.
+- **Reuse:** clustering alerts by host or service, incidents by component, review findings by file or identifier, duplicate tickets.
+- **Pitfalls:** a frequency cap that is a share of a tiny corpus drops every key (keep a floor); measure purity by reading the members, since a joiner
+  through a shared record was wrong 6 times in 8 on the pilot.
+- **Realised in:** Python, excerpt below.
+
+```python
+# scripts/knowledge_curator_lib/roots.py
+spread = Counter(t for ts in keys.values() for t in ts)
+home = {cid: max(ts, key=lambda t: (spread[t], -len(t), t)) for cid, ts in keys.items() if ts}
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

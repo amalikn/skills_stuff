@@ -33,6 +33,7 @@ from . import (
 )
 from .command_support import Noop, now, reject
 from .commands_review import cmd_aliases, cmd_amend, cmd_decide, cmd_group_review, cmd_sample, cmd_triage
+from .commands_verify import cmd_roots, cmd_verify
 from .errors import ConflictBlocker, InputError, ReviewNeeded, SourceChanged, ValidationFailed
 
 
@@ -262,6 +263,8 @@ COMMANDS = {
   "aliases": cmd_aliases,
   "status-map": lambda root, a: {"files": status_map.files(state.load(root))},
   "triage": cmd_triage,
+  "roots": cmd_roots,
+  "verify": cmd_verify,
   "sample": cmd_sample,
   "recall": lambda root, a: recall.score(state.load(root), Path(a.labels)),
   "group-review": cmd_group_review,

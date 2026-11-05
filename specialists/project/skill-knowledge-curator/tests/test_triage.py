@@ -233,13 +233,24 @@ class ApplyTest(TriageCase, unittest.TestCase):
     self.assertEqual(self.state().conflicts[cf]["status"], "open")
     run = self.run_triage("--apply")["run_id"]
     st = self.state()
-    self.assertEqual(st.conflicts[cf]["status"], "dismissed")
+    self.assertEqual(st.conflicts[cf]["status"], "documented-evolution")
     self.assertEqual(st.conflicts[cf]["triage"]["rule"], "superseded-section")
     self.assertNotIn(cf, [c["conflict_id"] for c in st.open_conflicts()])
     self.assertEqual((self.root / ".kc" / "claims.jsonl").read_bytes(), claims)
-    self.assertGreaterEqual(self.kc("report")[1]["conflicts"]["dismissed"], 1)
+    self.assertGreaterEqual(self.kc("report")[1]["conflicts"]["documented_evolution"], 1)
     self.run_triage("--undo", run, "--apply")
     self.assertEqual(self.state().conflicts[cf]["status"], "open")
+
+  def test_noise_rule_dismisses_and_history_rule_documents(self):
+    """Disjoint scope is noise (dismissed); a superseded section is history (documented-evolution), research report 5."""
+    self.pipeline("related")
+    p1, p2 = self.docs(["# A", "", "Lab uses Caddy."], ["# B", "", "Prod uses Traefik."])
+    left = (p1, 3, "Lab uses Caddy.", "gateway", "is", "Caddy", "g.g")
+    right = (p2, 3, "Prod uses Traefik.", "gateway", "is", "Traefik", "g.g")
+    self.ingest([make_claim(*left, scope={"environment": "lab"}), make_claim(*right, scope={"environment": "prod"})], "--apply")
+    cf = self.conflict(self.claim_for(left[2]), self.claim_for(right[2]))
+    self.run_triage("--apply")
+    self.assertEqual(self.state().conflicts[cf]["status"], "dismissed")
 
   def test_dismissed_pair_does_not_count_as_reached(self):
     """A label whose pair was dismissed no longer reaches review."""

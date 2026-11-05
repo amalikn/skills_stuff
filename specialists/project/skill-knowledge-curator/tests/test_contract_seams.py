@@ -26,6 +26,9 @@ class ContractTest(unittest.TestCase):
     self.assertEqual(tuple(rel["severity"]["enum"]), settings.SEVERITIES)
     sec = schema.load("section-status-input")["properties"]
     self.assertEqual(tuple(sec["status"]["enum"]), settings.SECTION_STATUSES)
+    ver = schema.load("verify-verdict")["properties"]
+    self.assertEqual(tuple(ver["verdict"]["enum"]), settings.VERIFY_VERDICTS)
+    self.assertEqual(tuple(ver["kind"]["anyOf"][0]["enum"]), settings.VERIFY_KINDS)
 
   def test_schemas_are_valid_draft_2020_12(self):
     """Every schema file is itself a valid Draft 2020-12 schema."""

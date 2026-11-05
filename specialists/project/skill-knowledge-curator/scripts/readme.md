@@ -4,7 +4,7 @@ Category: catalog
 Status: current
 Authority: local-supplement; measured 2026-10-27
 Scope: The kc front end and the knowledge_curator_lib modules: inputs, outputs, safety labels, exit codes and runtime
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-05
 Summary: >-
   One front end (knowledge_curator.py, alias kc) over a layered library; read-only unless --apply; ledger.py is the only writer; seams isolate
   markdown-it-py, jsonschema, RapidFuzz, PyYAML and the optional sentence-transformers.
@@ -38,6 +38,8 @@ Summary: >-
 | `recall`       | `--labels` (schemas/gold-conflict.schema.json)       | -                                                               | read-only; scores labelled conflicts against review        |
 | `status-map`   | -                                                    | -                                                               | read-only; each status cites its line                      |
 | `triage`       | `--undo RUN`                                         | `.kc/conflicts.jsonl`                                           | dismisses noise with rule and run; P0 never clears         |
+| `roots`        | `--limit N`                                          | -                                                               | read-only; groups conflicts by shared identifier, one `kc decide` line per member |
+| `verify`       | `--export`, `--file`, `--model`, `--confirm RUN`, `--score`, `--limit`, `--batch-size` | `.kc/conflicts.jsonl` (verify notes; `--confirm` clears), `.kc/verify/batch-NN.json` | proposals only; quotes checked; `--model` loopback and allowlisted, two control pairs first |
 | `sample`       | `--size`, `--seed`, `--status`, `--exclude`, `--score` | `.kc/reports/sample-<seed>.json`                              | blind cards; Wilson interval                               |
 | `drift`        | `--path GLOB`                                        | -                                                               | read-only; advisory, flags and never refuses               |
 | `relate`       | `--file`                                             | `.kc/relations.jsonl`, `conflicts.jsonl`, `claims.jsonl`        | whole batch refused on any error                           |
@@ -81,18 +83,20 @@ earlier one.
 | `amendments.py`                                               | `kc amend`: add a claim to a conflict, repair a successor                            |
 | `drift.py`, `stale.py`                                        | Claim text against cited lines; open conflicts overtaken elsewhere                   |
 | `aliases.py`, `recall.py`                                     | Consolidation aliases for comparison; labelled recall harness                        |
-| `status_map.py`, `triage.py`, `sampling.py`                   | What a document says of itself; noise gates; blind cards and intervals               |
+| `status_map.py`, `triage.py`, `sampling.py`                   | What a document says of itself; noise gates; blind cards, intervals, verify scoring  |
+| `roots.py`, `verify.py`                                       | Cause groups (research B3); refuting verifier: tasks, quote check, model run, confirm (B4); `sampling.verify_score` scores it |
+| `llm.py`                                                      | Optional seam: one chat call to a loopback OpenAI-compatible server (stdlib urllib)  |
 | `render.py`                                                   | Deterministic pages and index.json; secret scan                                      |
 | `promote.py`                                                  | Gates and promotion records                                                          |
 | `archive_plan.py`                                             | Candidates, referrers, restore rehearsal                                             |
 | `query.py`, `intake.py`, `validate.py`, `report.py`           | Retrieval, caller intake, gates, status                                              |
-| `commands.py`, `commands_review.py`, `command_support.py`      | One function per subcommand (keeps the front end small)                              |
+| `commands.py`, `commands_review.py`, `commands_verify.py`, `command_support.py` | One function per subcommand (keeps the front end small)                              |
 
 ## Exit codes and runtime
 
 Exit codes: 0 ok, 1 bad input, 2 review needed, 3 validation failed, 4 conflict blocker, 5 source changed, 6 I/O, lock or restore failure.
 
-Budget: under 2 s per kernel command on a 50-document project. Measured 2026-10-27 (M2 Max, Python 3.14.5): test suite 1.1-1.8 s; `inventory` dry run over 24 files and 213 sections 0.14 s. Promoted
+Budget: under 2 s per kernel command on a 50-document project; `verify --model` is bounded by the model (measured in references/evaluation.md). Measured 2026-10-27 (M2 Max, Python 3.14.5): test suite 1.1-1.8 s; `inventory` dry run over 24 files and 213 sections 0.14 s. Promoted
 from this session: every script here is reusable across projects by design; no one-off scripts were kept.
 
 ## Governance recipes (skill-ai-it)

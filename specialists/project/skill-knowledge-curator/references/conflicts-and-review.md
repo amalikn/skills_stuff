@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement; design doc section 7 (adjudication core); handoff authority-and-conflicts contract; schemas/relation-input.schema.json
 Scope: Candidate generation, pair classification, what may be decided automatically, severity, review cards, decision actions and records, answering with unresolved knowledge
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-05
 Summary: >-
   Candidates come from FTS5 blocking plus RapidFuzz and deterministic signals; the agent classifies each pair; only duplicates and evidenced supersessions
   are automatic; every true or uncertain conflict becomes a review card the operator answers with one of five actions, recorded append-only.
@@ -20,6 +20,11 @@ Summary: >-
 - [Severity](#severity)
 - [Review card and actions](#review-card-and-actions)
 - [Decision record](#decision-record)
+- [Amending a conflict](#amending-a-conflict)
+- [Review prompts](#review-prompts)
+- [Triage](#triage)
+- [Root causes](#root-causes)
+- [Refuting verifier](#refuting-verifier)
 - [Answering while unresolved](#answering-while-unresolved)
 
 ## Pipeline
@@ -65,12 +70,10 @@ Before recommending, the agent checks (design 7.2):
 A higher step number, a longer text, a more confident tone or more copies decide nothing (INV-008; ten copies of one file are one independent source).
 
 > **Learned 2026-10-29** · amendments and binding records · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal corpus project) · Source:
-> project_stuff/me corpus project `ARCHITECTURE.md` (layers), `scripts/record_index.py` · Falsifier: a query over an amended document
-> alone that returned the corrected answer without resolving its amending records
-> Make amendment links machine-readable (an `Amends:` header on each decision record) and resolve them before citing any document: an
-> accepted decision record outranks the policy text it amends until that text is updated, and a query that reads only the amended document
-> still gets the pre-correction answer. A small index that prints which records bind a given document answers questions 3 and 6 above
-> mechanically.
+> project_stuff/me corpus project `ARCHITECTURE.md` (layers), `scripts/record_index.py` · Falsifier: a query over an amended document alone that returned the corrected answer without resolving its
+> amending records Make amendment links machine-readable (an `Amends:` header on each decision record) and resolve them before citing any document: an accepted decision record outranks the policy text
+> it amends until that text is updated, and a query that reads only the amended document still gets the pre-correction answer. A small index that prints which records bind a given document answers
+> questions 3 and 6 above mechanically.
 
 
 ## Severity
@@ -110,30 +113,59 @@ decision naming the old one; nothing is overwritten (INV-016). Identity comes fr
 
 ## Amending a conflict
 
-A ruling can cover a claim the conflict did not list. `kc amend <cf> --add-claim <id> --supersede --reason ... --apply` adds it to a decided conflict and supersedes it under the ruling;
-`--keep` lists it and leaves its disposition, on an open or decided conflict. Each records an `AMEND` decision naming the previous one. Record it only from the operator's own ruling.
-Identical `CORRECTED` wording on a second conflict reuses the first operator claim.
+A ruling can cover a claim the conflict did not list. `kc amend <cf> --add-claim <id> --supersede --reason ... --apply` adds it to a decided conflict and supersedes it under the ruling; `--keep` lists
+it and leaves its disposition, on an open or decided conflict. Each records an `AMEND` decision naming the previous one. Record it only from the operator's own ruling. Identical `CORRECTED` wording on
+a second conflict reuses the first operator claim.
 
-`decide` refuses to make a claim current when another conflict or relation superseded it. If the operator means that, `--override-supersession` revives it and the decision records the override; `validate` warns
-on any revival with no override. A claim already superseded elsewhere keeps its successor (`kept_successors` on the decision); `kc amend <cf> --set-successor <claim> --successor <id> --reason ...` repairs a
-wrong link.
+`decide` refuses to make a claim current when another conflict or relation superseded it. If the operator means that, `--override-supersession` revives it and the decision records the override;
+`validate` warns on any revival with no override. A claim already superseded elsewhere keeps its successor (`kept_successors` on the decision); `kc amend <cf> --set-successor <claim> --successor <id>
+--reason ...` repairs a wrong link.
 
-Trying `amend` on a scratch copy needs a real copy of the sources, because it re-checks the claim's evidence: missing sources exit 5, and a symlink to the live tree exits 1 (path escapes the project root).
+Trying `amend` on a scratch copy needs a real copy of the sources, because it re-checks the claim's evidence: missing sources exit 5, and a symlink to the live tree exits 1 (path escapes the project
+root).
 
 ## Review prompts
 
-`candidates.multi_valued_predicates` lists predicates that hold many values, so a differing object alone is no signal; negation and numbers still pair them, so they stay in conflict detection. Set it in
-`.kc/config.yaml`; the list replaces the default. When a coordinator reads a decision point whole, `kc group-review <group_id> --reason ... --apply` records it as classified; a later claim reopens only its
-own pairs. `decision-points` also returns `word_groups`: claims from different sources sharing a rare subject word, whatever their topic, for agents who worked apart. They share a word, not a question, so read them
-after key groups; `candidates.subject_word_floor` and `subject_word_share` set the rarity limit, and `group-review` clears them too. `review` marks a card **Stale** when a member or the recommendation is no longer live, and `kc report` lists these as `stale_conflicts`.
+`candidates.multi_valued_predicates` lists predicates that hold many values, so a differing object alone is no signal; negation and numbers still pair them, so they stay in conflict detection. Set it
+in `.kc/config.yaml`; the list replaces the default. When a coordinator reads a decision point whole, `kc group-review <group_id> --reason ... --apply` records it as classified; a later claim reopens
+only its own pairs. `decision-points` also returns `word_groups`: claims from different sources sharing a rare subject word, whatever their topic, for agents who worked apart. They share a word, not a
+question, so read them after key groups; `candidates.subject_word_floor` and `subject_word_share` set the rarity limit, and `group-review` clears them too. `review` marks a card **Stale** when a
+member or the recommendation is no longer live, and `kc report` lists these as `stale_conflicts`.
 
 ## Triage
 
-`kc triage` sorts open conflicts into noise (a named gate fired, with its proof), proposed and needs_human, and P0 never clears. A path called gone that the other side still names goes to a person whatever the banners say. A banner clears a value only when a later source speaks to it. `--apply` records
-`dismissed` with rule and run; `--undo <run>` reopens. Until a blind sample of at least 40 clears is 95% right, it is the operator's bulk confirmation, never automatic. Measured: 92.5%. Audit with `kc sample --status dismissed`.
+`kc triage` sorts open conflicts into noise (a named gate fired, with its proof), proposed and needs_human, and P0 never clears. A path called gone that the other side still names goes to a person
+whatever the banners say. A banner clears a value only when a later source speaks to it. `--apply` records the clearance with rule and run; `--undo <run>` reopens. History rules (`superseded-section`,
+`sequential-steps`) record `documented-evolution`: the disagreement is real history, kept and queryable, not noise (research report 5; operator, 2026-11-05). The other rules record `dismissed`. Both
+leave the queue, count as cleared in `recall`, and show apart in `kc report`. Until a blind sample of at least 40 clears is 95% right, it is the operator's bulk confirmation, never automatic.
+Measured: 92.5%. Audit with `kc sample --status dismissed` (or `--status documented-evolution`).
+
+## Root causes
+
+`kc roots` groups open conflicts by cause, so a shared cause is read once (research B3). A conflict's cause tokens are identifiers (paths, names with a hyphen, dot, underscore or digit) that both
+claims name, or that its question or topic names and one claim does. Tokens on more than `roots.max_token_share` of live claims (never fewer than `roots.token_floor`) and document names (file stems, a
+numbered head such as `step12`) are dropped. Each conflict joins the group of its most widely shared token, so one bridging conflict cannot chain two causes together. A conflict with no token stands
+alone, with a `near` hint when it shares a claim with a group: on the MCP pilot most such joins had another cause. Grouping never changes a status. Each group lists one explicit `kc decide` line per
+member, and a person answers each, which keeps INV-007. `review` opens with a **Root causes** list of the groups with more than one member.
+
+## Refuting verifier
+
+`kc verify` tries to show an open conflict is not one before a person reads it (research B4). The verdict words are `conflict`, `not-conflict` (with a kind: `time-evolution`, `superseded-history`,
+`different-scope`, `equivalent`, `proposal-vs-observation`, `extraction-error`, `other`) and `uncertain`. "Refuted" is refused because a model read it backwards in the first trial. A `not-conflict`
+must quote words of the pair's own claims or excerpts, or it is downgraded to `uncertain`.
+
+- **Agent mode:** `--export` prints tasks (claims, excerpts, document status, root group, instructions); `--export --apply` writes `.kc/verify/batch-NN.json`. The agent answers in
+  [schemas/verify-verdict.schema.json](../schemas/verify-verdict.schema.json), then `--file verdicts.json [--verifier name] --apply`.
+- **Local model:** `--model <id> [--limit N] --apply` asks an OpenAI-compatible server (oMLX by default, `verify.endpoint`) through `llm.py`, standard library only. The model must be on
+  `verify.model_allowlist`, and the endpoint must be loopback unless `verify.allow_remote` is set. The key comes from `KC_LLM_API_KEY` and is never printed. Every run first answers two control pairs
+  (one conflict, one dated replacement) and stops if either is wrong. A failed call or an off-vocabulary word is recorded `uncertain`, never "no conflict".
+- **Proposal only:** verdicts add a `verify` note to the conflict, which stays open, and the card shows it as **Verifier (proposal only)**. `--confirm <run> --apply` is the operator's bulk
+  confirmation. It clears that run's `not-conflict` pairs: `time-evolution` and `superseded-history` as `documented-evolution`, the rest as `dismissed`, each with rule `verify:<kind>`. P0 and
+  same-identifier-opposite-status pairs are kept. `kc triage --undo <confirm run> --apply` reverses it. `--score labels.json` compares the notes with judge labels: real conflicts lost, noise cleared,
+  precision of what is kept.
 
 ## Answering while unresolved
 
-`kc query <text>` returns `settled: false` and the open conflict for a disputed claim, at any severity, and `unreviewed_pairs` for cross-source pairs nobody has classified (a prompt to look,
-not a dispute). An agent answers: "Not settled: A says X, B says Y; conflict cf-... awaits a decision", never one side as fact
-(design 7.9). Superseded and historical claims appear only with `--history`, marked as such (INV-013).
+`kc query <text>` returns `settled: false` and the open conflict for a disputed claim, at any severity, and `unreviewed_pairs` for cross-source pairs nobody has classified (a prompt to look, not a
+dispute). An agent answers: "Not settled: A says X, B says Y; conflict cf-... awaits a decision", never one side as fact (design 7.9). Superseded and historical claims appear only with `--history`,
+marked as such (INV-013).

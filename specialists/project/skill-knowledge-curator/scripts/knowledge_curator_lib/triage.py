@@ -1,13 +1,14 @@
 """Noise triage: named gates sort open conflicts into noise, proposed and needs_human (research B2; AGENTS.md, Triage).
 
-Imported, not run. Noise needs a rule that fires with cited proof; anything else goes to a person, and P0 always does. A dismissal is an
-append-only conflict event naming its rule and run, and can be undone; the conflict's relation and claims stay. Rule outcomes are not
+Imported, not run. Noise needs a rule that fires with cited proof; anything else goes to a person, and P0 always does. A clearance is an
+append-only conflict event naming its rule and run, and can be undone; the conflict's relation and claims stay. History rules
+(superseded-section, sequential-steps) clear as documented-evolution, kept and queryable; the rest as dismissed (operator, 2026-11-05). Rule outcomes are not
 yet audited, so gates are measured on a fresh sample (references/evaluation.md). Safety: returns records for ledger.append.
 """
 
 import re
 
-from . import ids, status_map
+from . import ids, settings, status_map
 from .candidates import compared, overlaps, situation, source_ids
 from .decision_points import byte_copies
 from .state import State
@@ -48,7 +49,7 @@ def _gone_paths(text: str) -> set[str]:
   return {p.rstrip("/").rsplit("/", 1)[-1].lower() for p in _PATH.findall(text)} if _GONE.search(text) else set()
 
 
-def _opposite_status(a: dict, b: dict) -> bool:
+def opposite_status(a: dict, b: dict) -> bool:
   """Whether a path called gone on one side is named on the other in anything but a gone statement: real whatever the banners say.
 
   Args:
@@ -158,7 +159,7 @@ def evaluate(st: State, cf: dict, status: dict, index: dict) -> dict:
   ca, cb = st.claims[a], st.claims[b]
   if cf["severity"] == "P0":
     return row | {"guard": "p0"}
-  if _opposite_status(ca, cb):
+  if opposite_status(ca, cb):
     return row | {"guard": "same-identifier-opposite-status"}
   if cf.get("conflict_type") == "time-evolution-proposed":
     return row | {"outcome": "proposed", "rule": "dated-order"}
@@ -197,7 +198,8 @@ def plan(st: State, now: str) -> dict:
   events = []
   for row in (r for r in rows if r["outcome"] == "noise"):
     triage = {"rule": row["rule"], "version": RULES_VERSION, "signals": row["signals"], "run_id": run_id, "at": now}
-    events.append({**st.conflicts[row["conflict_id"]], "status": "dismissed", "triage": triage})
+    status = "documented-evolution" if row["rule"] in settings.EVOLUTION_RULES else "dismissed"
+    events.append({**st.conflicts[row["conflict_id"]], "status": status, "triage": triage})
   counts: dict[str, int] = {}
   for row in rows:
     key = row["outcome"] if row["outcome"] == "needs_human" else f"{row['outcome']}:{row['rule']}"
@@ -215,5 +217,5 @@ def undo(st: State, run_id: str) -> list[dict]:
   Returns:
     Conflict records.
   """
-  hit = [c for c in st.conflicts.values() if c["status"] == "dismissed" and c.get("triage", {}).get("run_id") == run_id]
+  hit = [c for c in st.conflicts.values() if c["status"] in settings.CLEARED_STATUSES and c.get("triage", {}).get("run_id") == run_id]
   return [{**c, "status": "open", "triage": {**c["triage"], "undone": True}} for c in hit]

@@ -8,7 +8,7 @@ from collections import Counter
 from itertools import combinations
 from pathlib import Path
 
-from . import candidates, claims, decision_points, schema
+from . import candidates, claims, decision_points, schema, settings
 from .errors import InputError
 from .state import State
 
@@ -82,7 +82,7 @@ def score(st: State, path: Path) -> dict:
   if bad:
     raise InputError("labels rejected:\n  " + "\n  ".join(bad))
   reached = {frozenset(p["claims"]) for p in candidates.pairs(st)["pairs"]} | candidates.classified(st) | decision_points.review_pairs(st)
-  dismissed = {frozenset(p) for c in st.conflicts.values() if c["status"] == "dismissed" for p in combinations(c["claims"], 2)}
+  dismissed = {frozenset(p) for c in st.conflicts.values() if c["status"] in settings.CLEARED_STATUSES for p in combinations(c["claims"], 2)}
   live = {frozenset(p) for c in st.open_conflicts() for p in combinations(c["claims"], 2)}
   reached = (reached - dismissed) | live
   rows = [{"id": r["id"], "kind": r["kind"], "severity": r["severity"], "status": status(r, st, reached, dismissed)} for r in labels if not r.get("excluded")]

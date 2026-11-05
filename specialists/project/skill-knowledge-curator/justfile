@@ -39,6 +39,13 @@ _require-venv:
 kc command project *ARGS: _require-venv
     @{{py}} scripts/knowledge_curator.py "$1" --project "$2" "${@:3}"
 
+# Safety: sends claim text to the loopback oMLX server only; the key is read from ~/.omlx/settings.json into KC_LLM_API_KEY unless set, never printed.
+# kc verify with the local oMLX model: just verify-omlx /path/to/project [--limit N] [--apply]. Verify notes are recorded only with --apply.
+[positional-arguments]
+verify-omlx project *ARGS: _require-venv
+    @KC_LLM_API_KEY="${KC_LLM_API_KEY:-$({{py}} -c 'import json,pathlib; print(json.loads((pathlib.Path.home()/".omlx/settings.json").read_text())["auth"]["api_key"])')}" \
+      {{py}} scripts/knowledge_curator.py verify --project "$1" --model Qwen3.6-35B-A3B-4bit-DWQ "${@:2}"
+
 # Diff two projects' folded ledgers: rehearse decisions on a scratch copy, compare before applying (read-only; exit 1 = they differ).
 ledger-diff before after: _require-venv
     @{{py}} scripts/ledger_diff.py "{{before}}" "{{after}}"
