@@ -25,6 +25,8 @@ Budget: 200 lines, 25 KB
 
 ## 2026-11-05 — kc roots, kc verify on a local model, documented-evolution
 
+- 2026-11-05 21:39 (script, Continuum): `scripts/decisions_to_adrs.py` (`just decisions-to-adrs`), promoted from the Continuum Archcore promotion: ADRs from decision chains,
+  plan by default, accepted ADRs never overwritten; 4 tests, one shown red with the chain disabled.
 - 2026-11-05 21:01 (fix, Continuum): `citation_audit.py` no longer crashes on a claim with no evidence (operator-authored `kc decide CORRECTED` claims); found auditing all 71
   Continuum pages (6,911 citations, 0 wrong ids); test case added.
 - 2026-11-05 20:55 (incident): this session's staged close (llm_probe, verify score, fixture AGENTS.md, skill-coder and skill-slurp-chat write-backs) was committed by a peer

@@ -56,6 +56,8 @@ Summary: >-
 
 `citation_audit.py audit|excerpts|review` (`just citation-audit`) audits every claim id cited on given pages against the ledger: id exists, latest disposition, keyword overlap, and a triage hint (SUPPORTED-BY-SCRIPT, REVIEW, WRONG-ID, SUPERSEDED-CANDIDATE); `excerpts` confirms each cited excerpt is still at its source lines (exit 1 if not) and draws a seeded sample for a person; `review` prints the flagged rows. Read-only on the project, standard library, 0.13 s for 884 citations (Continuum, 2026-11-05). The hint reads one line, so tables of positions and wrapped prose also flag; a person reads every flagged row.
 
+`decisions_to_adrs.py` (`just decisions-to-adrs`) renders Archcore ADRs from a groups file of decision ids: each id is followed through `previous_decision_id` to its latest refinement, identical amendments fold into one row, and the Decision table is the ledger's words verbatim. Plan by default, `--apply` writes; an ADR no longer `status: proposed` is skipped, never overwritten; a rerun reports unchanged. 0.08 s for 26 ADRs over 55 decisions (Continuum, 2026-11-05). Exit 1 on an unknown id or missing page.
+
 `decision_sheet.py` (`just decision-sheet`) turns a saved `kc review` queue into a tick-box Markdown sheet: one question per open conflict, one box per `kc decide` action with its claim id, an Other box and a Notes line; optional `--recs` JSON marks one option `(Recommended)` with a reason and lists "why now" questions first. Exit 1 when a position has no unique claim id. Read-only on the project; writes `--out`.
 
 `restate_byte_copies.py <project>` (`just restate-copies`) prints the claim and context records that bring byte-identical files level, for `kc claims --file`; read-only.

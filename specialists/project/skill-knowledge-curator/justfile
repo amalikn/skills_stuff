@@ -66,6 +66,11 @@ restate-copies project: _require-venv
 citation-audit *ARGS: _require-venv
     @{{py}} scripts/citation_audit.py "$@"
 
+# Archcore ADRs from operator decisions: just decisions-to-adrs --project <p> --groups groups.json [--tag name] [--stamp YYYYMMDD_hhmm] [--apply] (plan by default).
+[positional-arguments]
+decisions-to-adrs *ARGS: _require-venv
+    @{{py}} scripts/decisions_to_adrs.py "$@"
+
 # Tick-box decision sheet from a saved kc review queue: just decision-sheet --project <p> --review review.md --out sheet.md [--recs recs.json] (read-only on the project).
 [positional-arguments]
 decision-sheet *ARGS: _require-venv
