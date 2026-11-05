@@ -189,6 +189,10 @@ roles-fleet:
 skills-registry root *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/survey/skills_registry.py" --project-root "{{root}}" {{args}}
 
+# Mirror ~/.claude/skills into ~/.continue/skills as symlinks to canonical skill folders; plan only unless --apply (add --prune to drop stale links)
+mirror-skills *args: _require-venv
+	@{{py}} "{{skill_dir}}/scripts/install/mirror_skills.py" {{args}}
+
 # How often agents touch a file, folder or command in recent Claude transcripts (keep or retire a navigation aid on evidence)
 agent-usage *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/survey/agent_usage.py" {{args}}
@@ -260,6 +264,10 @@ target-map project *ARGS: _require-venv
 # A project's anchor links: every link to a `#heading` lands on a heading that exists. Read-only: `just anchor-links ../some-project --check`
 anchor-links project *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/checks/anchor_links.py" --project-root "{{project}}" {{ARGS}}
+
+# Which AGENTS.md files Claude Code (@ imports) and Codex (project root markers, byte limit) load for a folder, and Codex trust spread. Read-only. Example: just agents-chain /Volumes/Data/_ansible/ansible-malik --check
+agents-chain path *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/checks/agents_chain.py" --path "{{path}}" {{ARGS}}
 
 # A project's plan timeline: validate its docs/trackers/plan-timeline.yaml and report drift for today; `--write` renders the block. Plan by default
 plan-timeline project *ARGS: _require-venv

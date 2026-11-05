@@ -313,7 +313,7 @@ process in state `D`), minutes per task across ~2,274 site/day dirs; v7 has two 
   changed_when: false
 ```
 Its output is reshaped into v7's `found_month_dirs` / `found_day_dirs` (`{files: [{path}]}`), so the tasks after it are unchanged. Mock-tested locally (resume, new dir, override, rsync retry, rsync
-fails, rsync copies nothing, rebuild, decoy dirs); first real run 2026-11-05 resumed `/tmp/url_capture/20261105_1218` (17 tars reused) and passed at 17:04: size check, staging dir deleted, 17 tars (10 GB) gzip-valid. Not active until promoted over v6.
+fails, rsync copies nothing, rebuild, decoy dirs); first real run 2026-11-05 resumed `/tmp/url_capture/20261105_1218` (17 tars reused) and passed at 17:04: size check, staging dir deleted, 17 tars (10 GB) gzip-valid. Promotion over v6 approved by the operator (2026-11-05) once `--tags process_files` passes for 202610; until then v6 stays active.
 
 **A fetched file's timestamp is not its arrival time** (step 5 of the v7 flow above) holds for v8 too.
 

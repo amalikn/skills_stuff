@@ -21,7 +21,7 @@ retried rsync with a 6 h async limit, size check before the staging dir is delet
 earlier session's v7 fetch-timestamp paragraph (step 5). `references/03_communication-flows.md`: Learned 2026-11-05, one TCP stream from an AWS Teleport host to the activ8me home line caps at ~1.2
 MB/s because of ~0.25% packet loss on the access leg (AAPT first hop), not Teleport, EC2 or the VM; BBR on the sender gave 10.4 MB/s (test route removed); apn-teleport01 facts (root disk 94%, 383 GB
 of Teleport logs, Teleport 13.4.24). New `scripts/probes/teleport_path_throughput.sh` with `just teleport_path_throughput` (catalogued in `scripts/README.md`), smoke-run on apn-teleport01 (1 min, `-s
-8 -p 3 -n 300`). manifest 0.12.1 -> 0.12.2. Same day 17:04: the first real v8 run passed (17 tars, 10 GB, size-checked, gzip-valid); ref 09 updated (cfca2a5).
+8 -p 3 -n 300`). manifest 0.12.1 -> 0.12.2. Same day 17:04: the first real v8 run passed (17 tars, 10 GB, size-checked, gzip-valid); ref 09 updated (cfca2a5). Later: ref 03 apn-teleport01 disk 93% after cleanup; ref 09 promotion approved pending process_files; SKILL.md names the _ansible skills registry as a caller.
 
 ## 20261105_1155 — smc_change Teleport login gate (v0.12.0 -> v0.12.1)
 

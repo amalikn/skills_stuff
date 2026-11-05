@@ -13,7 +13,7 @@ Last reviewed: 2026-10-10
 - [files-ai-navigation.md](files-ai-navigation.md) (31 lines) Conditional file: AI_NAVIGATION.md.
 - [files-architecture-conventions-roadmap.md](files-architecture-conventions-roadmap.md) (188 lines) Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP, SETUP.
 - [files-context-map.md](files-context-map.md) (319 lines) Conditional file: context-map.yaml.
-- [files-readme-agents-claude.md](files-readme-agents-claude.md) (131 lines) Always-created files: README, AGENTS, CLAUDE.
+- [files-readme-agents-claude.md](files-readme-agents-claude.md) (162 lines) Always-created files: README, AGENTS, CLAUDE; AGENTS.md chains for Claude Code vs Codex.
 - [files-records.md](files-records.md) (192 lines) Always-created files: SCRATCHPAD, CHANGELOG, markdownlint.
 - [files-support.md](files-support.md) (198 lines) Conditional support files.
 - [finishing.md](finishing.md) (153 lines) Finishing: parent update, conventions, quality check, audit format.

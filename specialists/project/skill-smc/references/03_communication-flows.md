@@ -901,7 +901,7 @@ random loss settles near MSS/RTT × 1.22/√p ≈ 1.3 MB/s. Wi-Fi was clean (-39
 
 **apn-teleport01 itself (2026-11-05):** proxy, auth and node on one m5.2xlarge (8 vCPU, load ~0.1, ap-southeast-2a, `13.54.242.59`); the node registers as `teleport.apn.au:3022`, so a node session never
 leaves the box. Teleport 13.4.24 (tsh flags a patch: ≥ 13.4.26; operator's tsh 12.4.34). Session recording `mode: node`; exec output is not recorded in bulk (records < 1 KB per session). **Root disk 94%
-(30 GB free):** `/var/lib/teleport/log` 383 GB (`records/` 244 GB, audit events 139 GB), `/var/log/syslog*` 32 GB: no retention. A HUP reload on 2026-10-19 left the 2026-08-21 parent process holding 52
+(30 GB free):** `/var/lib/teleport/log` 383 GB (`records/` 244 GB, audit events 139 GB), `/var/log/syslog*` 32 GB: no retention. After the v8 fetch deleted its 11 GB staging dir (2026-11-05 17:04): 93%, 39 GB free. A HUP reload on 2026-10-19 left the 2026-08-21 parent process holding 52
 connections (normal drain, long-lived tunnels). cw-teleport01 is an m5.xlarge in ap-southeast-2b on the same kernel.
 
 ```bash

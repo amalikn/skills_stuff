@@ -37,6 +37,10 @@ Invoke for any of:
 - Working on a central backend the SMC fleet depends on, even when the task looks like plain AWS/DNS/cert work: Graylog (`gl.aws.apn.au`, its ALB, ACM cert, CAA), Teleport, Prometheus/Grafana. A
   failure there is an SMC fleet incident (example: the 2026-09-12 cert expiry silently stopped all SMC log shipping).
 
+
+Callers: the Ansible workspace registry `/Volumes/Data/_ansible/skills.md` (2026-11-05) routes SMC, PCAP/URL-capture and Teleport work in `ansible-wifi`, `ansible-malik` and
+`local-knowledge-ansible` here first; each of those repos also carries an inline skills block for Codex.
+
 ## Standing Write-Back Contract (applies no matter which project invoked this skill)
 
 This skill is the **shared, cross-project source of truth** for SMC/ansible-wifi infrastructure knowledge — not something scoped to whichever project happens to be open. If, while doing SMC-related

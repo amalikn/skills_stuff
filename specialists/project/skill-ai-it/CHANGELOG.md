@@ -9,13 +9,15 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_2015
+Last rotated: 20261103_1745
 ---
 
 # Changelog — skill-ai-it
 
 ## Contents
 
+- [20261105_1725 — agents_chain check: AGENTS.md chains for Claude Code and Codex](#20261105_1725--agents_chain-check-agentsmd-chains-for-claude-code-and-codex)
+- [20261103_1741 — mirror_skills: one client's skills linked into another](#20261103_1741--mirror_skills-one-clients-skills-linked-into-another)
 - [20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class](#20261029_2015--pitfalls-one-route-for-cross-project-messages-route-facts-by-class)
 - [20261027_2055 — Slurp close: callers-check, write-backs, coherence](#20261027_2055--slurp-close-callers-check-write-backs-coherence)
 - [20261027_2048 — Scripts in family folders; callers repointed; skill-coder gates in check](#20261027_2048--scripts-in-family-folders-callers-repointed-skill-coder-gates-in-check)
@@ -30,9 +32,19 @@ Last rotated: 20261029_2015
 - [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
 - [20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings](#20261022_1741--anchor_links-promoted-plan_timeline-links-ids-to-their-headings)
 - [20261022_1632 — table_wrap: shared hook-compatible wrapper; target-map embeds wrap too](#20261022_1632--table_wrap-shared-hook-compatible-wrapper-target-map-embeds-wrap-too)
-- [20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables](#20261022_1623--plan_timeline-the-timeline-table-wraps-like-the-pages-other-tables)
 - [20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above](#20261022_1646--target-map-reference-summary-is-one-short-line-a-missed-stage-heading-folds-its-checklist-into-the-stage-above)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
+
+## 20261105_1725 — agents_chain check: AGENTS.md chains for Claude Code and Codex
+
+New `scripts/checks/agents_chain.py` (+ `tests/test_agents_chain.py`, 6 tests; recipe `just agents-chain <folder>`; catalogued in `scripts/README.md`): which AGENTS.md files Claude Code (`@` imports) and Codex (project-root markers, `project_doc_max_bytes`) load for a folder, with missing imports, cycles, a cut file, files Codex cannot see and Codex trust spread. `references/files-readme-agents-claude.md`: Learned 2026-11-05, AGENTS.md chains across folders, Claude Code vs Codex (inline block plus `.codex-root` marker; trust follows the project root; never a marker in a trusted folder holding untrusted repos). Smoke-run on three real folders, 0.05-0.42 s.
+
+## 20261103_1741 — mirror_skills: one client's skills linked into another
+
+- `scripts/install/mirror_skills.py` (new, catalogued, `just mirror-skills`) with `tests/test_mirror_skills.py`: links each skill in a source install
+  folder to its resolved canonical folder in a target folder; plan by default, `--apply` writes, `--prune` drops stale links, real folders are
+  never touched. First use: 128 skills linked from ~/.claude/skills into ~/.continue/skills for Continue 2.0.0 (vibeshell left as a real folder).
+- Continue 2.0.0 follows a symlinked skill folder: its walker skips only entries whose VS Code type is exactly SymbolicLink (a broken link).
 
 ## 20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class
 
@@ -165,14 +177,6 @@ Operator, 2026-10-22 (unified-network-controller): "add stages to plan-tracker f
 per row; schema field added). The wrapper writes the table to a temporary file: table-reflow reads stdin with readFileSync, which failed with
 EAGAIN on a pipe for unified-network-controller's 14-row summary. Tests: an embed test pins `wrap_width: 0`, a new one checks the default wraps
 and reads current (194 pass). unified-network-controller: render 0.44 s; the markdown hook leaves the page unchanged.
-
-## 20261022_1623 — plan_timeline: the Timeline table wraps like the page's other tables
-
-Operator, 2026-10-22 (unified-network-controller): "why cant the timeline table be wrapped.. update the code to do it". `scripts/plan_timeline.py`
-now passes the Timeline table through the markdown hook's own table formatter (table-reflow on a temporary file, `--width N --measure-rendered`) via
-`wrap_table`; a data file's `wrap_width` sets N (default 200, 0 keeps one line per row); without Node or the tool (`TABLE_REFLOW_CLI`) the
-table stays unwrapped. Measured on unified-network-controller: render 0.34 s, the hook's formatter leaves the rendered block unchanged, the page
-check reads current. Tests `WrapTable` (193 pass). Learned 2026-10-22 in `references/target-map-and-timeline.md`.
 
 ## 20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above
 
