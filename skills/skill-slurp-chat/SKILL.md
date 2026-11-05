@@ -142,7 +142,8 @@ one day (2026-10-13: platform work done without invoking skill-nautobot; a skill
    surface not live yet is marked "screenshot pending" and caught at the next slurp. The skill's own contract states the same.
 4. **Committed.** `just writeback-status <skill> ...` (this skill's justfile; exit 1 = a dirty skill) or `git status` in the skills repo for every engaged skill. A write-back that is not committed is not done: commit it (and push
    it when the session commits and pushes) as part of the write-back; the operator's "commit and push is single-repo scoped" limits the request,
-   not the skill contracts. Run the skill's own tests first.
+   not the skill contracts. Run the skill's own tests first. skills_stuff is shared by live sessions: commit with a pathspec
+   (`git commit -F - -- <paths>`), never `git add` then `git commit`, which also takes files another session staged (2026-11-05: undone by a soft reset).
 4b. **Tools too** (operator, 2026-10-14). A tool from `tools_stuff` used this session (all-scraper first: the fallback for agent-blocked
    fetches) owes its problems back the same way: fixed in the tool, or an open item in its ROADMAP per its AGENTS.md "Feedback write-back".
 5. **Backlog.** Also check the window since the last slurp of each earlier session in the same project (its change log), not only this one:
