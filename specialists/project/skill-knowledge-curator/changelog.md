@@ -25,6 +25,9 @@ Budget: 200 lines, 25 KB
 
 ## 2026-11-05 — kc roots, kc verify on a local model, documented-evolution
 
+- 2026-11-05 20:55 (incident): this session's staged close (llm_probe, verify score, fixture AGENTS.md, skill-coder and skill-slurp-chat write-backs) was committed by a peer
+  skill-smc session's `git commit` as part of `0379df3`; content is exactly what was staged and tested. Not rewritten (live sessions); this close commits through a private index.
+  Session record: `docs/session-record-20261105_2050.md`.
 - 2026-11-05 20:50 (decision, operator): new kc corpus is unified-network-controller; dry-run inventory 890 files, 19,281 sections, 6.9 s, nothing written; measurement starts on a slice. `docs/catalog.md`.
 - 2026-11-05 20:50 (incidents): the OPA gate refused a recursive delete of a scratch copy (a fresh folder was used) and, later, a command whose text named one; the context-mode hook blocked
   `curl` (urllib used); a `noqa` was written in `verify.py` and removed before any check; a live Continuum session edited this pack during the close, so only this session's lines were staged.
