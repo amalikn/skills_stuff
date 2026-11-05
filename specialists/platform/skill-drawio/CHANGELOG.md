@@ -16,6 +16,8 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- references/layout-audits.md: Learned 2026-11-06, an edge across the notes band passes `--audit` (box_crossings skips note cards); screenshots 20261106-notes-band-crossing; ROADMAP items for that audit and for banners on paths with `--` (smc-resiliency).
+
 - Clicks: a box lights its arrows on End-to-end and step pages, a step arrow lights alone; `look.e2e_band_search` swaps band boxes; End-to-end labels take the colour beneath them; `scripts/flowmap/legend.py` split out (references/visual-style.md, references/layout-and-routing.md, 2026-11-02).
 
 - 20261102 Slurp close. Learned 2026-11-02 in references/charts-and-trace.md: the layout rules, hover limits. Left, right and third exits; bold labels on charts; `fold: lane`; lane order; session record in local-knowledge-ansible evidence/flow-review-20261102. Open: chart-php-steps arc clash.

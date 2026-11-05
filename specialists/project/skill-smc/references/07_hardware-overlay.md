@@ -1092,6 +1092,28 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 >
 > Screenshot: not applicable (no visual surface).
 
+> **Learned 2026-11-06** · Pi clock with no RTC on the 24.04 image · VERIFIED_PRIMARY (lab VM) · Source: smc-resiliency S2 report section 8 (T0 to T2,
+> commit 1dc80235 in the apn repo), spike VM `smc-pi-spike01` (Ubuntu 24.04 arm64, systemd 255.4-1ubuntu8.18, chrony 4.5-1ubuntu4.2) booted with
+> `efi=noruntime module_blacklist=rtc_pl031` so it has no RTC, as a Pi · Falsifier: a 24.04 Pi with no `/usr/lib/clock-epoch` booting later than
+> its systemd package's build date, or chrony with a gateway server by address failing to step a day-sized error without DNS.
+> - With no RTC and no time source, systemd lifts the clock only to its own build time ("System time before build time, advancing clock."): on that
+>   VM 2026-10-12, 24 days behind; an image freezes that date, so a box a year into the field boots a year behind.
+> - systemd 255 reads `/usr/lib/clock-epoch` (string in `libsystemd-shared-255.so`) and advances the clock to its mtime: touched to the release's
+>   build time, every boot starts at or after the release (T1: 2026-11-04 13:00 UTC, 22.5 h behind).
+> - chrony with `server <gateway address> iburst prefer` and `makestep 1 -1` stepped 80,985 s 16.3 s after kernel start with the public pools and
+>   DNS blocked (T2). Installing chrony on 24.04 removes systemd-timesyncd.
+> - Restarting chrony on every config change (a restart list) drops sync for a moment; with no floor, a clock health check fails until it resyncs.
+>
+> Code (smc-resiliency `spike/onbox/smcbox/health.py`, commit 1dc80235):
+>
+> ```python
+> synced = "Leap status     : Normal" in tracking
+> floor = os.stat(floor_path).st_mtime if floor_path.exists() else 0.0
+> ok = synced or (floor > 0 and now >= floor)
+> ```
+>
+> Screenshot: not applicable (no visual surface).
+
 > **Learned 2026-10-22** · Ubuntu 24.04 site config rendered into a confext · VERIFIED_PRIMARY · Source: smc-resiliency S2 report section 6 (S2-8 to S2-15), spike VM `smc-pi-spike01` (Ubuntu 24.04 arm64, systemd 255), code `spike/onbox/smcbox/site.py` (uncommitted at writing; smc-resiliency commit pending) · Falsifier: `dhcpd -t -cf /run/...` passing under the stock AppArmor profile, or systemd-confext.service enabled on a stock 24.04 install
 > Rendering an SMC's site config into `/run` and merging it as a confext on 24.04 needs four things the stock image does not give:
 > - **dhcpd's AppArmor profile** only lets `dhcpd` read under `/etc/dhcp`, so `dhcpd -t -cf <rendered file>` fails; run the syntax check in a

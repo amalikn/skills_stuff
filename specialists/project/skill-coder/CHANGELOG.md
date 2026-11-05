@@ -9,13 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261105_2139
+Last rotated: 20261106_1030
 ---
 
 # Changelog
 
 ## Unreleased
 
+- references/design-patterns.md: P-58 Hold changes while blind; recover alone only by trials that undo themselves (Learned 2026-11-06, apn smc-resiliency 1dc80235).
 - references/version-control-and-review.md: shared-index sweep confirmed 2026-11-05; Learned 2026-11-05, rerun tracked-only checks after the first commit and before the push (Continuum).
 - languages/python.md: Learned 2026-11-05, `\b` matches at a hyphen; anchor names with `(?=[ \t:])` (skill-ai-it).
 - references/version-control-and-review.md: Learned 2026-11-05, testing the exported index catches a file a local exclude kept out of git (skill-knowledge-curator fixture).
@@ -192,9 +193,3 @@ Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_w
   comments and run-time patterns skipped. Tests in `tests/test_quality_helpers.py`; recipe `just process-match`; catalogued; `[process_match]` code-map section.
 - `references/safety-and-writes.md` Learned 2026-10-28: anchor process patterns at the program and check them (four self-matches in ansible-wifi smc_change).
 - `SKILL.md`: standing rule for anchored process patterns; tools table row.
-
-## 20261027_1501 — Ansible include_tasks and lockstep batches, bash 3.2 empty arrays
-
-- `languages/ansible.md` Learned 2026-10-27 (l) `include_tasks` loads when reached, so editing task files changes a running play; (m)
-  `serial` batches run in lockstep, so stage-marker timers measure the batch, not the host.
-- `languages/shell.md` Learned 2026-10-27: bash 3.2 `set -u` with an empty array; use `${arr[@]+"${arr[@]}"}` (verified on /bin/bash 3.2.57).

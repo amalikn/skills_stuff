@@ -36,6 +36,16 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 - [ ] **Archcore flow-map spec and adoption guide** — unblocked by the second project; write them (see `.archcore/index.guide.md`).
 - [ ] **C-D16 on the current app** — re-check "static export draws orthogonal edges through boxes" on draw.io desktop 32.5.5 (checked only on 32.4.1; `compatibility.yaml`).
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (3.11 is not installed, so the declared floor is untested).
+- [ ] **Audit and route around the notes band on step pages** (found 2026-11-06, smc-resiliency flow `vm-render`): an edge to a far branch
+  target runs across the note cards below the lanes and `--audit` reports clean; add the note cards to `box_crossings` (or a `note_crossings` audit),
+  prove it fails on the repro in `references/screenshots/20261106-notes-band-crossing/`, then route such edges above the notes. Done when the repro
+  audits red before the router change and the page renders without a crossing after it.
+- [ ] **SCRATCHPAD's "Open items tracker: this file" is read as a path** (seen 2026-11-06 and at 87f5356): `just rotate --apply` moves open items into a
+  tracked file named `this`. Point the header at a real tracker (or the skill-ai-it rotate tool should treat "this file" as SCRATCHPAD itself). Done when
+  a rotation leaves no file named `this`.
+- [ ] **Banner breaks on a path containing `--`** (found 2026-11-06): `render_flowmap.py --write` raises "banner part contains '--', illegal in an XML
+  comment" when the map or output path holds `--` (Claude scratchpad paths do); escape or replace `--` in banner parts. Done when a map under such a path
+  renders and the drift check still matches.
 - [ ] **E2E dependency connector picks the nearest actor, not the writer** (found 2026-10-26, smc-resiliency flow 14 `box-operation`): a store the flow's
   steps write (`writes:` on the agent's steps) is joined by its dashed line to UNC, the nearest actor, rather than to the component that writes it; prefer the
   actor whose steps name the store in `reads`/`writes`. Screenshot: smc-resiliency drawing page 11 (E2E: On-box operations).
@@ -43,9 +53,6 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
   skill-nautobot's (verbatim captures are exempt by design).
 
 ## Completed
-
-- [x] **Fold long flow pages** (built 2026-10-27): `look.fold` serpentine/z, `fold_after`, per-flow `layout`; `scripts/flowmap/fold.py`, `fold_turns.py`;
-  consumers byte-identical with fold off; CHANGELOG 20261027.
 
 Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).
 

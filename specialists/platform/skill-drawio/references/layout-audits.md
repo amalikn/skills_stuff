@@ -97,6 +97,13 @@ When the skill's own `tests/` gains these cases (the scripts are being refactore
 - They assume orthogonal routes; curved or diagonal edges are reported as `diagonal` and otherwise not checked.
 - Edges routed by draw.io itself (`Page.edge()`) are not recorded and are not audited.
 
+> **Learned 2026-11-06** · flow pages, the notes band · VERIFIED_PRIMARY · Source: smc-resiliency flow `vm-render` (apn 1dc80235), repro rendered with
+> `render_flowmap.py --write` then `--audit` · Falsifier: `--audit` reporting a fault on [the repro](screenshots/20261106-notes-band-crossing/readme.md)
+> A decision whose branch target is many columns away routes its edge under the lanes and across the note cards, through their text, and `--audit`
+> still prints "clean": `box_crossings` checks solid boxes, and the note cards below the lanes are not among them. Until the engine audits (and routes
+> around) the notes band, look at every step page's notes row in the export. In a map, list a decision's branch target next to the decision when the
+> flow allows; that fixed this page, but it is a map workaround, not the engine fix (ROADMAP).
+
 > **Learned 2026-11-02** · flow pages · VERIFIED_PRIMARY · Source: ansible-wifi `roles/smc_change/files/changes/rct-avr-smsc/flow-flows.yaml` (audit `box_crossings` on a skip branch) · Falsifier: an audit that reports stale step text
 > A decision that skips forward to a step in its own lane routes through the boxes between them. When the later step has a truer owner, move it to that lane in the map: here the role judges the
 > proofs, not the device. A drift check and a clean audit prove the drawing matches its map, never that the map matches the code: compare step text with the spec after each change.

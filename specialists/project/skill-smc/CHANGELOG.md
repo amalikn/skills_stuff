@@ -6,13 +6,19 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261105_1634
+Last rotated: 20261106_1029
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261106_1029 — Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)
+
+`references/07_hardware-overlay.md`: Learned 2026-11-06, a 24.04 box with no RTC boots at systemd's build date unless `/usr/lib/clock-epoch` sets a floor
+(systemd 255 reads it); chrony with the gateway by address steps a 22.5 h error 16.3 s after boot without DNS (smc-resiliency S2 report section 8, apn
+1dc80235). manifest 0.12.3 -> 0.12.4.
 
 ## 20261105_1758 — URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)
 
@@ -192,9 +198,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
 
 - `references/06_failure-modes.md`: AVR V3.07 on a Thuraya control board loses the board SIM (Chris Blair); fleet AVR state (27 V3.07, malupirti V3.06, rest V2.14);
   flash only after Iridium is installed (`rct_avr_flash`).
-
-## 20261028_1315 — Automated AVR flash, probe self-match, resume_safe (v0.9.3 -> v0.9.4)
-
-- `references/19_smc-change-role.md`: automated AVR flash in a transient systemd unit (warehouse-rct01 3.06 -> 3.07, 269 s), probe self-match
-  through PROBE_CONFIG on the command line (anchor `pgrep -f` at `^php`; probe 155 s -> 31 s), two-part repair of a failed run whose spec
-  changed (journal and record to superseded/), reviewed `resume_safe` per action.

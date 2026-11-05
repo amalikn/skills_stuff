@@ -97,6 +97,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-52 | Check what actually runs, not what is on disk               | Faults that hide at a join                                                 |
 | P-53 | A seam is an environment variable and stdout                | Components tied by shared code or files                                    |
 | P-54 | Documents held to code by review stamps                     | Docs going stale unnoticed                                                 |
+| P-58 | Hold changes while blind; recover by self-undoing trials    | A device that cannot tell its own bad change from an outage                |
 
 ## Patterns
 
@@ -1250,6 +1251,49 @@ except llm.ModelError as err:
 # scripts/knowledge_curator_lib/roots.py
 spread = Counter(t for ts in keys.values() for t in ts)
 home = {cid: max(ts, key=lambda t: (spread[t], -len(t), t)) for cid, ts in keys.items() if ts}
+```
+
+### P-58 Hold changes while blind; recover alone only by trials that undo themselves
+
+> **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (eight lab cases on a VM: a change sent during an outage held and judged
+> later; a box cut off by an approved bad change back on its own with no fix sent; a trial during a real outage undone; a plain outage never trialled)
+> · Source: apn smc-resiliency `spike/onbox/smcbox/hold.py`, `trial.py`, `siteops.py` (commit 1dc80235; S2 report section 7) · Falsifier: a device that
+> keeps a change it could not judge, or one whose own recovery attempt leaves it worse than before. `reusable_candidate` until a second project uses it.
+
+- **Problem:** a remote device judges a change by whether it can still reach home. While the link is down it cannot tell its own bad change from an
+  outage, so it either keeps a bad change unjudged or rolls back good ones; and once a bad change cuts it off, no fix can be delivered.
+- **Solution:** (1) record reach just before a change; a change that arrives while reach fails is **held**, not applied, until reach passes, except a
+  return to the last known-good content (recognised by a hash of its values, never a label) or an explicitly approved override. (2) Keep the held item
+  **off** the slot that holds the known-good version. (3) After a long loss of reach under a version that is not known-good, try the known-good version
+  as a **trial** judged on reach alone: keep it if reach returns, otherwise put back what was there; at most one trial per wait. (4) Version numbers
+  never go down and the version left behind is rejected, so it cannot be replayed.
+- **Why it works:** every step the device takes alone is reversible, so it never needs to know whether it is blind or broken; an outage costs one short
+  trial per wait, a cut-off is undone without help, and a hold makes "applied but never judged" impossible.
+- **Reuse:** remote config pushes to routers or CPE over a single uplink, kiosk or vehicle software over intermittent links, a service that changes its
+  own network or credentials, feature flags judged by an external health probe.
+- **Pitfalls:** a held item written to the spare slot overwrote the known-good one and blocked the trial (move held items to separate storage); never
+  start the wait from a central fault (the control plane down for the whole fleet would make every device trial at once): require local evidence and
+  add jitter; a judge that waits on a service restarted by the change (a time daemon) fails until it resyncs.
+- **Realised in:** Python, excerpt below. Related: P-15 (dead-man revert timer), P-22 (fallback chain skipping rejected versions), P-28.
+
+```python
+# spike/onbox/smcbox/hold.py (apn smc-resiliency, 1dc80235)
+def decide(before: dict, doc: dict, known_good: str) -> str:
+    if all(before.values()):
+        return APPLY                      # reach passed before: judged as usual
+    if known_good and vars_hash(doc) == known_good:
+        return RETURN                     # same values as the last set that passed every reach line
+    if doc.get("hold_override") is True:
+        return OVERRIDE                   # approved by a person in the controller
+    return HOLD                           # kept off the slots until reach passes
+
+def trial_due(state, other_hash, now, wait_s) -> str:
+    if not state.get("reach_lost_since"): return "reach not lost"
+    if state.get("committed_hash") == state.get("known_good"): return "an outage, nothing to try"
+    if other_hash != state.get("known_good"): return "the other slot does not hold the known-good set"
+    if now - state["reach_lost_since"] < wait_s: return "waiting for the controller"
+    if state.get("last_trial") and now - state["last_trial"] < wait_s: return "a trial ran recently"
+    return ""
 ```
 
 ## Language realisations
