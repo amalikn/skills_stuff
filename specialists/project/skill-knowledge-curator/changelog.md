@@ -31,6 +31,8 @@ Budget: 200 lines, 25 KB
 - 2026-11-05 20:45 (script, slurp): `scripts/llm_probe.py`, `just llm-probe`, promoted from the oMLX probe (list models, time the controls); `kc verify --score` now shows what each
   run's `--confirm` would clear by label (replaces a scratch simulation); 3 tests. Fix: `tests/fixtures/pilot/AGENTS.md` was never tracked (`.git/info/exclude` hides `AGENTS.md`), so a
   fresh clone failed `test_counts_duplicates_and_rerun`; force-added, found by testing the staged tree alone. skill-slurp-chat close; local-llm README gains the oMLX facts (uncommitted, tools_stuff).
+- 2026-11-05 20:43 (learned, Continuum): `scripts/citation_audit.py` (`just citation-audit`: audit, excerpts, review) and `scripts/decision_sheet.py` (`just decision-sheet`), promoted from
+  the Continuum P0 pass; 7 tests. Findings P34-P36 in `references/evaluation.md`; tick-box decision sheet and recommendation rule in `references/conflicts-and-review.md`.
 - 2026-11-05 20:36 (feature, operator request): `kc roots` (research B3, `roots.py`): open conflicts grouped by the rare identifier both claims name, each joining its most widely shared token (no
   chaining), document names dropped, a shared claim only a `near` hint; `review` opens with Root causes; one `kc decide` line per member. MCP pilot: 96 conflicts to 45 groups, 23 of 24 real in one;
   Continuum 0.23 s.

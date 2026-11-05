@@ -355,6 +355,18 @@ quote) hold every real conflict back, and so leave almost nothing to clear. The 
 as a reading aid on the card; bulk confirm stays the operator's choice per run. Next measure: a new corpus with its own blind labels (MCP labels are used up), then an agent arm (`--export`) against
 the model arm.
 
+## Continuum P0 pass (2026-11-05)
+
+A full citation audit of seven handoff, fencing and contract pages (884 citations; `scripts/citation_audit.py`, 0.26 s) found 871 supported, 9 partial, 4 superseded claims shown as current, no wrong
+id; all 632 evidence excerpts still at their lines. Two new conflicts were registered through `kc relate` and a 44-question decision sheet was built (`scripts/decision_sheet.py`).
+
+- P34: a conflict record's `status` stays `open` after `kc decide`; the open set is the review queue, which folds `decisions.jsonl`. A reader of `conflicts.jsonl` alone over-counts: Continuum showed
+  49 "open" P2 records against 39 in the queue. Read the queue, or fold decisions, before counting.
+- P35: `arch-coverage`-style checks prove ids exist and open conflicts are cited, not that a page's status words match the decided state; all four superseded-as-current findings were of that kind.
+  `citation_audit.py` `SUPERSEDED-CANDIDATE` caught every one. Candidate input for `kc links`.
+- P36: P18 again: stored excerpts narrower than their line range (cl-5a349e547fd0 keeps step 1 of a ten-step list at mv:281-290; cl-01a180a3ad18, cl-ddb213d5e584 keep one endpoint of 5 to 8). The page
+  holds against the source, the stored evidence alone does not.
+
 ## Release gate
 
 All deterministic items pass, the real-corpus pilot gives useful evidence-backed retrieval reviewed by the operator, semantic targets are measured (or exceptions accepted), and no high-severity

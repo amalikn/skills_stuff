@@ -54,6 +54,10 @@ Summary: >-
 | `validate`     | `--strict`                                           | -                                                               | read-only; exit 3 or 5 on errors                           |
 | `report`       | -                                                    | -                                                               | read-only                                                  |
 
+`citation_audit.py audit|excerpts|review` (`just citation-audit`) audits every claim id cited on given pages against the ledger: id exists, latest disposition, keyword overlap, and a triage hint (SUPPORTED-BY-SCRIPT, REVIEW, WRONG-ID, SUPERSEDED-CANDIDATE); `excerpts` confirms each cited excerpt is still at its source lines (exit 1 if not) and draws a seeded sample for a person; `review` prints the flagged rows. Read-only on the project, standard library, 0.13 s for 884 citations (Continuum, 2026-11-05). The hint reads one line, so tables of positions and wrapped prose also flag; a person reads every flagged row.
+
+`decision_sheet.py` (`just decision-sheet`) turns a saved `kc review` queue into a tick-box Markdown sheet: one question per open conflict, one box per `kc decide` action with its claim id, an Other box and a Notes line; optional `--recs` JSON marks one option `(Recommended)` with a reason and lists "why now" questions first. Exit 1 when a position has no unique claim id. Read-only on the project; writes `--out`.
+
 `restate_byte_copies.py <project>` (`just restate-copies`) prints the claim and context records that bring byte-identical files level, for `kc claims --file`; read-only.
 
 `llm_probe.py [--base URL] [--model ID]` (`just llm-probe [ID]`) lists a local OpenAI-compatible server's models and times the two kc verify control pairs on one; read-only,

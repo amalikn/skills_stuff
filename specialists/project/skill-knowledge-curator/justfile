@@ -61,6 +61,16 @@ ledger-diff before after: _require-venv
 restate-copies project: _require-venv
     @{{py}} scripts/restate_byte_copies.py "{{project}}"
 
+# Citation audit of pages against a project's ledger: just citation-audit audit --root <p> --out rows.json <page.md>...; then excerpts, review (read-only on the project).
+[positional-arguments]
+citation-audit *ARGS: _require-venv
+    @{{py}} scripts/citation_audit.py "$@"
+
+# Tick-box decision sheet from a saved kc review queue: just decision-sheet --project <p> --review review.md --out sheet.md [--recs recs.json] (read-only on the project).
+[positional-arguments]
+decision-sheet *ARGS: _require-venv
+    @{{py}} scripts/decision_sheet.py "$@"
+
 # Run the unit and end-to-end tests (read-only; temporary copies only).
 test: _require-venv
     @{{py}} -m unittest discover -s tests
