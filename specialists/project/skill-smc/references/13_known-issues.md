@@ -1712,3 +1712,9 @@ The same run exposed `verify.yml:79`: `smc_change_after.gates.stale` exists only
   The SMC repos (rct-tstik, the portal) are cloned from `git@bitbucket.org:...`, and the smc_change rct-tstik-iridium-update spec uses the same
   values. ansible-wifi: 31 lines in 7 files: the smc_bases group variables of rcp, rct, wh, nbn_wh and nbn_accelerate, the apn jenkins group variables, and
   `roles/smc_application/tasks/main.yml`. After the move the host name changes, and so does the SMCs' known_hosts entry for it. Not yet changed (operator decision).
+  Scope found on 2026-11-05: besides the 31 `git@bitbucket.org:` lines, Jenkins clones ansible-wifi through `ssh://bitbucket.org/...` in
+  `roles/jenkins_core/templates/` (26 active lines on rise), and both `smc_application` and `jenkins_core` add a known_hosts entry for
+  `bitbucket.org` only. Both halves are needed: the SMCs must trust the new name (`bitbucket-ssh-hostname`) and every address must use it.
+  Fix branches prepared, not merged: `fix/bitbucket-ssh-hostname-rise`, `fix/bitbucket-ssh-hostname-master`. Count all forms with
+  `git grep -lE '(git@|ssh://)bitbucket\.org'` (skip collections/).
+
