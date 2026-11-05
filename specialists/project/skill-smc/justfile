@@ -109,6 +109,15 @@ apt_lock_probe proxy +nodes:
 smc_change_compare before after: _require-venv
     @{{py}} scripts/ansible/smc_change_compare_records.py "{{before}}" "{{after}}"
 
+# One ansible-playbook per SMC, all at once (plan unless --apply), so a stalled SMC never holds the others; nohup, a log per SMC.
+# Example: just smc_change_parallel --apply gumbarnun gurrbalgun banana-well   (CHANGES SMCs with --apply; refuses an SMC already being run)
+smc_change_parallel *ARGS:
+    @scripts/ansible/smc_change_parallel.sh {{ARGS}}
+
+# Offline test of smc_change_parallel.sh with stand-in ansible-playbook and tsh; <10 s, temp folders only.
+smc_change_parallel_test: _require-venv
+    @{{py}} -m unittest scripts/ansible/test_smc_change_parallel.py
+
 # One line per smc_change run record of a change: result, phase 6-9 seconds, reboot (boot_id changed), lower-dir holders or failure.
 # Example: just smc_change_runs php-cve-2026-109618   (MODE=all lists check/assess/verify runs too; HOST filters by file name)
 smc_change_runs change MODE="apply" HOST="": _require-venv

@@ -28,7 +28,7 @@ up from its own folder; tests sit beside the script they test.
 
 | Folder | For | Files |
 |---|---|---|
-| `ansible/` | ansible-wifi repo work: change reach, smc_change records, inventory adds, lint gates, local-knowledge index | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_inventory_add.py](ansible/smc_inventory_add.py), [smc_mark_iridium.py](ansible/smc_mark_iridium.py), [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh) |
+| `ansible/` | ansible-wifi repo work: change reach, smc_change records, inventory adds, lint gates, local-knowledge index | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_change_parallel.sh](ansible/smc_change_parallel.sh), [test_smc_change_parallel.py](ansible/test_smc_change_parallel.py), [smc_inventory_add.py](ansible/smc_inventory_add.py), [smc_mark_iridium.py](ansible/smc_mark_iridium.py), [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh) |
 | `access/` | getting onto a box: Teleport tunnel and sessions, the autossh backdoor | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [teleport_sessions.py](access/teleport_sessions.py) |
 | `probes/` | read-only probes of named boxes over Teleport | [ata_settings_read.py](probes/ata_settings_read.py), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_identity_probe.sh](probes/pi_identity_probe.sh), [site_device_probe.sh](probes/site_device_probe.sh), [x86_resiliency_probe.sh](probes/x86_resiliency_probe.sh), [smc_link_health.sh](probes/smc_link_health.sh), [test_smc_link_health.py](probes/test_smc_link_health.py), [overlay-usage-breakdown.sh](probes/overlay-usage-breakdown.sh), [dns_capture_top.sh](probes/dns_capture_top.sh) |, [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh) |
 | `capture/` | evidence capture from boxes and pin-activation diagnosis | [collect-smc-evidence.sh](capture/collect-smc-evidence.sh), [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh), [test_with_deadline.sh](capture/test_with_deadline.sh), [tstik-capture.sh](capture/tstik-capture.sh), [audit-pin-activation.sh](capture/audit-pin-activation.sh), [correlate-pin-activation.sh](capture/correlate-pin-activation.sh), [pin-funnel-hourly.sh](capture/pin-funnel-hourly.sh), [pin-fleet-check.sh](capture/pin-fleet-check.sh) |
@@ -524,6 +524,16 @@ against `apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (5047
 | -------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
 | `backdoor-watch.sh`  | bastion via `tsh` (`ss`, auth logs), ansible-wifi        | **read-only**, `external-network` | Never touches the SMC box or ansible-wifi; history writes one temp file on the     |
 |                      |   inventories (read-only)                               |                                 |   bastion and removes it                                                          |
+
+### `smc_change_parallel.sh`
+
+Runs one `ansible-playbook -f 1 -l <smc>` per named SMC, all at once (default `smc_change_multiple.yml`, `inventories/rct/prod`), so a slow
+or stalled SMC never holds the others: each SMC has its own controller run. Plan by default; `--apply` starts them. **Safety: CHANGES SMCs with
+`--apply`** (whatever the playbook does). It refuses an SMC another `ansible-playbook` on this machine already targets (one controller per SMC),
+skips one Teleport does not answer for within `-t` seconds, and starts each run under `nohup` with a log and PID per SMC under
+`-o <dir>` (default local-knowledge `evidence/smc-change-parallel-<stamp>`). Extra playbook arguments go after `--`. Exit 0 all passed, 1 a run
+failed or an SMC was skipped, 2 bad usage, 3 nothing to start. Recipes: `just smc_change_parallel ...`, `just smc_change_parallel_test`. Built
+2026-11-05 for the rct iridium resumes.
 
 ### `smc_change_compare_records.py`
 

@@ -481,6 +481,18 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
       found[host] = parse_time(prof["valid_until"])
   ```
 
+- **Facts carry over between two smc_change imports in one run (2026-11-05; not fixed)**: `smc_change_multiple.yml` (and `smc_rise_deploy.yml`)
+  import `smc_change.yml` twice in one `ansible-playbook` process, and host facts outlive an import. The role sets several flags only when they hold,
+  and tests them with `is defined`, so a value from the first change counts for the second:
+  - `smc_change_done_why` (`tasks/pending.yml`) and `smc_change_already` (`tasks/state.yml`): an SMC already done for rct-tstik-iridium-update when
+    the run started was "ALREADY DONE" for rct-avr-smsc too, citing the iridium record. map-smc01 never got its SMSC change (runs at 14:45 and 16:45).
+    It is the only SMC left that way: iridium passed on 32, SMSC on 31.
+  - `smc_change_unreachable` (`tasks/record.yml`): an SMC unreachable in the first import is recorded "unreachable" in the second, whatever happened.
+    banana-well-smc01 and gumbarnun-smc01's SMSC records say unreachable, but action 3 exited non-zero (most likely the AVR still on 2.14).
+  - also tested with `is defined`: `smc_change_refused`, `smc_change_failure`, `smc_change_offline_why`, `smc_change_backup_path`.
+  Workaround: run a second change for an SMC with `smc_change.yml -e smc_change=<name>` in its own process, or one process per change. Fix options
+  are with the operator: reset these per-change flags at each import's start and test them by value, or run each change in its own process.
+
 - **Slow serial batches, strategy free and action time limits (2026-11-05; patch held, not live)**: an rct serial-10 run of
   `smc_change_multiple.yml` took 87 min for batch 1. Per-SMC system logs (garimba-smc01) showed its own work was quick: AVR flash 73 s
   (systemd unit 12:24:53-12:26:06), rct-tstik clone 32 s. It then sat idle 35 min, because under the default `linear` strategy every SMC waits
