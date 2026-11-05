@@ -16,6 +16,8 @@ Last rotated: 20261105_1156
 
 ## Unreleased
 
+- languages/shell.md: Learned 2026-11-05, a delimiter inside a sed replacement turns the rest into flags (w writes stray files).
+- languages/ansible.md: Learned 2026-11-05 (ii), strategy free drops run_once, any_errors_fatal and max_fail_percentage and refuses pause; YAML reads 20261105_120000 as an int.
 - 20261105 tests/test_package_contract.py: write-back entries count as logged in rotated docs/history/changelog-*.md too (budget rotation had failed the test).
 - 20261105 Learned 2026-11-05 in languages/ansible.md: (i) a failed run_once assert fails only the first host; a run-wide gate needs any_errors_fatal.
 - 20261104 Learned 2026-11-04 in languages/ansible.md: (h) facts persist across plays per host, so one host per test case; quote assert items holding ': '.

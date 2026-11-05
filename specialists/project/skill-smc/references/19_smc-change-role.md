@@ -481,6 +481,37 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
       found[host] = parse_time(prof["valid_until"])
   ```
 
+- **Slow serial batches, strategy free and action time limits (2026-11-05; patch held, not live)**: an rct serial-10 run of
+  `smc_change_multiple.yml` took 87 min for batch 1. Per-SMC system logs (garimba-smc01) showed its own work was quick: AVR flash 73 s
+  (systemd unit 12:24:53-12:26:06), rct-tstik clone 32 s. It then sat idle 35 min, because under the default `linear` strategy every SMC waits
+  for the slowest at each task. goojarr-goonyool-smc01's clone (`git clone` with no time limit, over ssh) stalled 12:37-13:12 and failed; the
+  tree there stayed at 2024-09-26. Each step also ran in two rounds: forks 5 (ansible.cfg) with serial 10. Records, state and tracker are written
+  per SMC at stage 11, but under linear that means at the end of each batch. The fix is a patch with runbook in local-knowledge
+  `plans/smc-change-free-timeouts-20261105/`, held because active journals freeze the role code (RULE-007): `strategy: free` on the change play, a
+  per-SMC tsh login check (`tsh_login.yml` host scope), a fail gate (`tasks/fail_gate.yml`), and time limits on command and copy actions (action
+  `timeout:`, then spec `action_timeout:`, then `smc_change_action_timeout_seconds` 1800; a command runs under `timeout(1)` on the SMC). Found
+  while building it on ansible-core 2.21:
+  - under `free`, `run_once` and `any_errors_fatal` are not supported (warnings), and `pause` is refused outright (it bypasses the host loop), so the
+    soak and re-arm waits became controller `wait_for`
+  - `max_fail_percentage` is ignored under `free`: with serial 2, one failed host and P=0, linear stopped the run but free ran the next batch. The fail
+    gate reads this run's records and holds SMCs not yet started instead.
+  - `timeout` has to stay out of `smc_change_target`, or adding a limit re-runs every passed SMC
+  - the SMSC change ran on SMCs whose AVR update had not passed (banana-well, gumbarnun, AVR 2.14). `smc_change_multiple.yml` now holds those
+    back by reading the iridium state file. This part is live.
+  - a cut-off resume on goojarr read `avr_version=3.07` live but restored the journal's 2.14 conditions; the flash action's own check reads the AVR,
+    so it says ALREADY, not a second flash
+  - the "gap" in URL-capture fetch file times is rsync `-a` keeping source mtimes (reference 09)
+
+  ```yaml
+  # roles/smc_change/tasks/actions/command.yml (held patch, 2026-11-05)
+  - name: Action ... - Run the spec's cmd
+    ansible.builtin.command:
+      argv: [timeout, --kill-after=30, "{{ smc_change_action_limit }}", /bin/sh, -c, "{{ smc_change_action.cmd }}"]
+    register: smc_change_cmd_run
+    failed_when: false
+    timeout: "{{ smc_change_action_limit | int + 90 }}"   # controller backstop if SSH itself hangs
+  ```
+
 - **Run-once preparation (live since 2026-10-27 13:24; 9 probe-join lines per SMC gone)**: `tasks/prepare.yml` does spec load and check, plan banner, fingerprint, probe program and folders once per
   run in the first play; `tasks/probe_cfg.yml` keeps the per-SMC HTTP resolution.
 - **Captive portal render is part of the PHP verification**: the spec's `http` checks `portal` (home) and `portal-terms` (`/index.php/wifi/terms`) at the SMC's portal FQDN must redirect, or answer 200

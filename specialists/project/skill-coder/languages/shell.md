@@ -202,3 +202,9 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > exiting at the first match) · Source: ansible-wifi `roles/smc_application/tasks/ubuntu-php-cve-2026-109618.yml` review, commit fb6ae80b · Falsifier: `set -o pipefail; yes | grep -q y` returning 0
 > `grep -q` (and `head`) exits at the first match; the writer then dies of SIGPIPE (141), and with `pipefail` the pipeline fails on a match: a check that passes turns into a failure. Adding `pipefail`
 > because a linter asks is wrong there. Drop the pipe (`grep -q X <<<"$(cmd)"`, or capture first: `out=$(cmd); grep -q X <<<"$out"`), or keep `pipefail` only where every stage reads all its input.
+
+>  **Learned 2026-11-05** · BSD and GNU sed, `s` with a custom delimiter · VERIFIED_PRIMARY (macOS sed wrote two stray files into a role folder) ·
+>  Source: this session's edit of an Ansible test fixture · Falsifier: a replacement holding the delimiter changes only the text
+>  In `s#old#new#`, a `#` inside the replacement (a YAML comment, say) ends the replacement early. sed then reads the rest as flags, and
+>  `w <file>` writes the matched lines to a file named after the rest of the comment, in the current folder. Pick a delimiter that cannot occur in
+>  the text, or make the edit in Python with an exact-match assert, and run `git status` afterwards to catch stray files.

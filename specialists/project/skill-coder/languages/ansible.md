@@ -377,3 +377,17 @@ Why: a tag added to fix one bug once made a destructive wipe-and-re-clone reacha
 >      - name: Check the Teleport logins this run needs
 >        ansible.builtin.include_role: {name: smc_change, tasks_from: tsh_login.yml}   # run_once command + assert
 >  ```
+
+>  **Learned 2026-11-05 (ii)** · ansible-core 2.21.5, `strategy: free` with `serial` · VERIFIED_PRIMARY (four local dummy hosts, serial 2, and a
+>  check-mode run on two production hosts) · Source: local-knowledge-ansible plans/smc-change-free-timeouts-20261105 · Falsifier: under free, a
+>  failed host with `max_fail_percentage: 0` stops the next batch, or `pause` runs per host
+>  Under `free`, Ansible warns that `run_once` and `any_errors_fatal` are not supported, and it refuses `ansible.builtin.pause` outright ("bypasses
+>  the host loop"). It also ignores `max_fail_percentage`: with one failed host, linear stopped the run but free started the next batch. Before
+>  switching a play to free, grep its tasks for `pause`, `run_once`, `any_errors_fatal` and cross-host reads. Use `ansible.builtin.wait_for:
+>  {timeout: N}` delegated to localhost for a wait, and rebuild any first-failure stop as a gate that reads the run's own results before each host
+>  starts. Also: YAML 1.1 reads an unquoted `20261105_120000` as the integer 20261105120000 (underscores are digit separators), so quote stamps.
+>  ```yaml
+>  - name: Let client traffic reach the changed box   # was ansible.builtin.pause, refused under strategy free
+>    ansible.builtin.wait_for: {timeout: "{{ soak_left | int }}"}
+>    delegate_to: localhost
+>  ```
