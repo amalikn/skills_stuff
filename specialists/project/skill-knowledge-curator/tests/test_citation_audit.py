@@ -18,6 +18,7 @@ citation_audit = importlib.import_module("citation_audit")
 OK = "cl-aaaaaaaaaaaa"
 OLD = "cl-bbbbbbbbbbbb"
 MISSING = "cl-cccccccccccc"
+DECIDED = "cl-dddddddddddd"
 
 
 def claim(cid: str, text: str, excerpt: str, line: int) -> dict:
@@ -55,12 +56,14 @@ class CitationAuditTest(unittest.TestCase):
       claim(OK, "Handoff fences the source before activation.", "Handoff fences the source before activation.", 1),
       claim(OLD, "Workflow engine uses a journal first.", "The old journal is used first.", 2),
       {"record": "disposition", "claim_id": OLD, "disposition": "SUPERSEDED", "successor": OK},
+      {"record": "claim", "claim_id": DECIDED, "claim_text": "Operator decision: fence first.", "evidence": []},
     ]
     (self.root / ".kc").mkdir()
     (self.root / ".kc/claims.jsonl").write_text("".join(json.dumps(r) + "\n" for r in records))
     (self.root / "page.md").write_text(
       f"The handoff fences the source before activation [{OK}].\nThe engine uses a journal first [{OLD}].\nUnknown [{MISSING}].\n"
       f"Historical: the journal was superseded [{OLD}].\n"
+      f"Operator decision: fence first [{DECIDED}].\n"
     )
     self.rows = self.root / "rows.json"
 
@@ -78,7 +81,7 @@ class CitationAuditTest(unittest.TestCase):
 
   def test_verdicts(self):
     """Supported, superseded-as-current, wrong id, and a superseded claim marked historical."""
-    self.assertEqual(self.verdicts(), ["SUPPORTED-BY-SCRIPT", "SUPERSEDED-CANDIDATE", "WRONG-ID", "REVIEW"])
+    self.assertEqual(self.verdicts(), ["SUPPORTED-BY-SCRIPT", "SUPERSEDED-CANDIDATE", "WRONG-ID", "REVIEW", "SUPPORTED-BY-SCRIPT"])
 
   def test_excerpts_pass_then_fail_when_source_moves(self):
     """A source edit that moves an excerpt off its lines makes `excerpts` exit 1."""

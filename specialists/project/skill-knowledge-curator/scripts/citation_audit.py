@@ -115,15 +115,15 @@ def audit_page(page: str, root: Path, claims: dict, disp: dict) -> list[dict]:
         row.update(verdict="WRONG-ID", overlap=0.0)
         rows.append(row)
         continue
-      ev = claim["evidence"][0]
-      claim_words = words(claim["claim_text"] + " " + " ".join(e.get("excerpt", "") for e in claim["evidence"]))
+      ev = (claim.get("evidence") or [{}])[0]  # operator-authored decision claims (kc decide CORRECTED) carry no evidence
+      claim_words = words(claim["claim_text"] + " " + " ".join(e.get("excerpt", "") for e in claim.get("evidence") or []))
       hits = cite_words & claim_words
       overlap = round(len(hits) / max(1, min(len(claim_words), 12)), 2)
       state = disp.get(cid, {}).get("disposition", "CURRENT")
       row.update(
         claim=claim["claim_text"],
         excerpt=ev.get("excerpt", ""),
-        src=f"{ev['path']}:{ev['line_start']}",
+        src=f"{ev['path']}:{ev['line_start']}" if ev else "operator decision",
         disposition=state,
         successor=disp.get(cid, {}).get("successor"),
         overlap=overlap,
@@ -159,7 +159,7 @@ def missing_excerpts(root: Path, rows: list[dict], claims: dict) -> tuple[int, l
   """
   cache, bad, checked = {}, [], 0
   for cid in sorted({r["id"] for r in rows if r["id"] in claims}):
-    for ev in claims[cid]["evidence"]:
+    for ev in claims[cid].get("evidence") or []:
       path = root / ev["path"]
       if path not in cache:
         cache[path] = path.read_text(encoding="utf-8").splitlines() if path.exists() else None

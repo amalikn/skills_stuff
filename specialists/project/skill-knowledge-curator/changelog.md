@@ -25,6 +25,8 @@ Budget: 200 lines, 25 KB
 
 ## 2026-11-05 — kc roots, kc verify on a local model, documented-evolution
 
+- 2026-11-05 21:01 (fix, Continuum): `citation_audit.py` no longer crashes on a claim with no evidence (operator-authored `kc decide CORRECTED` claims); found auditing all 71
+  Continuum pages (6,911 citations, 0 wrong ids); test case added.
 - 2026-11-05 20:55 (incident): this session's staged close (llm_probe, verify score, fixture AGENTS.md, skill-coder and skill-slurp-chat write-backs) was committed by a peer
   skill-smc session's `git commit` as part of `0379df3`; content is exactly what was staged and tested. Not rewritten (live sessions); this close commits through a private index.
   Session record: `docs/session-record-20261105_2050.md`.
