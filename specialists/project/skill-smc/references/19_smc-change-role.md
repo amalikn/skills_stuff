@@ -481,7 +481,19 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
       found[host] = parse_time(prof["valid_until"])
   ```
 
-- **Facts carry over between two smc_change imports in one run (2026-11-05; fix in the held patch, operator chose A)**: `smc_change_multiple.yml` (and `smc_rise_deploy.yml`)
+- **Under strategy free (live 2026-11-05)**:
+  - Each SMC writes its record, state and tracker row when it finishes its change, not at the end of its batch.
+  - In `smc_change_multiple.yml` the second change starts only after the first import has finished for every SMC (imports are sequential plays). For
+    full per-SMC independence, run one process per SMC (`scripts/ansible/smc_change_parallel.sh`).
+  - A failed SMC no longer stops the others already in its batch; the fail gate holds only SMCs not yet started. Give a new or untested change a
+    small first batch (`-e smc_change_serial=1` or 2).
+  - Killing a controller run leaves its remote command running on the SMC: the clones went on after both runs were stopped. Stop it on the SMC
+    with an anchored `pkill -f "^git clone ..."`.
+- **Applied 2026-11-05 17:40 with six journals still active** (operator: "Apply now, supersede"). They were moved to `journal/superseded/` on the controller,
+  with on-SMC backups left in place. An SMC whose newest apply record is unreachable, refused, already_done or passed and that has no journal restarts fresh
+  (`files/recovery.py` `legacy_failed`), which is safe here because every action of both specs checks first. Spec limits: one `action_timeout:` per change,
+  `timeout:` only on the slow steps (rct-tstik-iridium-update: 300, with the flash and clone at 600).
+- **Facts carry over between two smc_change imports in one run (2026-11-05; fixed, live since 17:40, operator chose A)**: `smc_change_multiple.yml` (and `smc_rise_deploy.yml`)
   import `smc_change.yml` twice in one `ansible-playbook` process, and host facts outlive an import. The role sets several flags only when they hold,
   and tests them with `is defined`, so a value from the first change counts for the second:
   - `smc_change_done_why` (`tasks/pending.yml`) and `smc_change_already` (`tasks/state.yml`): an SMC already done for rct-tstik-iridium-update when
@@ -496,7 +508,7 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   (`smc_change_todo_<change>`; a play's `hosts:` can be templated from `import_playbook` vars, tested). Until it is live, run a second change for an
   SMC in its own process (`smc_change.yml -e smc_change=<name>`).
 
-- **Slow serial batches, strategy free and action time limits (2026-11-05; patch held, not live)**: an rct serial-10 run of
+- **Slow serial batches, strategy free and action time limits (2026-11-05; live since 17:40)**: an rct serial-10 run of
   `smc_change_multiple.yml` took 87 min for batch 1. Per-SMC system logs (garimba-smc01) showed its own work was quick: AVR flash 73 s
   (systemd unit 12:24:53-12:26:06), rct-tstik clone 32 s. It then sat idle 35 min, because under the default `linear` strategy every SMC waits
   for the slowest at each task. goojarr-goonyool-smc01's clone (`git clone` with no time limit, over ssh) stalled 12:37-13:12 and failed; the

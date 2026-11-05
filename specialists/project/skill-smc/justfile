@@ -109,6 +109,15 @@ apt_lock_probe proxy +nodes:
 smc_change_compare before after: _require-venv
     @{{py}} scripts/ansible/smc_change_compare_records.py "{{before}}" "{{after}}"
 
+# Role facts that can carry over between two runs of a role in one process (set under a condition, read with is defined/default). Read-only.
+# Example: just role_stale_facts /Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/roles/smc_change --reset-file tasks/load_spec.yml
+role_stale_facts role *ARGS: _require-venv
+    @{{py}} scripts/ansible/role_stale_facts.py "{{role}}" {{ARGS}}
+
+# Offline test of role_stale_facts.py on a fixture role; <2 s.
+role_stale_facts_test: _require-venv
+    @{{py}} -m unittest scripts/ansible/test_role_stale_facts.py
+
 # One ansible-playbook per SMC, all at once (plan unless --apply), so a stalled SMC never holds the others; nohup, a log per SMC.
 # Example: just smc_change_parallel --apply gumbarnun gurrbalgun banana-well   (CHANGES SMCs with --apply; refuses an SMC already being run)
 smc_change_parallel *ARGS:

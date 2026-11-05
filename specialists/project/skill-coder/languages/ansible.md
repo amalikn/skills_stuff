@@ -418,3 +418,12 @@ Three traps met building a resumable fetch playbook:
    (`Timeout exceeded`); the 5 h of polling never applied. Size `async` from the work (bytes ÷ measured rate, plus margin) and derive `retries` from it: `retries: "{{ (async_s | int // 60) + 5 }}"`.
 3. **Extra vars beat `set_fact`, so a test that passes a fact with `-e` skips the logic that sets it.** The first mock test passed `zipped_files_dir` as an extra var and stayed green while the task
    choosing it was never exercised. Pass the inputs of the logic under test, never its outputs.
+
+>  **Learned 2026-11-05 (iii)** · ansible-core 2.21.5, one role imported twice with `import_playbook` in one run · VERIFIED_PRIMARY (dummy hosts;
+>  a production run where the second change skipped a host as done, citing the first change's record) · Source: local-knowledge-ansible
+>  plans/smc-change-free-timeouts-20261105 · Falsifier: a `set_fact` from the first import is undefined in the second
+>  Host facts (`set_fact`, registered results) and `group_by` groups outlive an `import_playbook`. A role that sets a flag only when it holds, and
+>  tests it with `is defined`, inherits the first run's value in the second; a host also stays in a group the first run put it in. Ansible
+>  cannot unset a fact or remove a host from a group, and `meta: clear_facts` leaves `set_fact` values (tested). So reset each per-run flag at
+>  the run's start to a value its readers treat as "not set" (`''` or `{}` tested by length, `~` by `is none`), and name groups per run
+>  (`todo_{{ change }}`): a play's `hosts:` can be templated from `import_playbook` vars (tested).
