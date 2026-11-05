@@ -1707,3 +1707,8 @@ The same run exposed `verify.yml:79`: `smc_change_after.gates.stale` exists only
 `warehouse-rct01` is in `inventories/rct/stage`, not `prod`. A `-l` list of ten hosts on `rct/prod` ran nine and no failure said so: count the recap against the list, and read the warning
 `Could not match supplied host pattern`. A `-l` of that host alone stops with "no hosts to target". The ten sites of the rct-tstik rollout span both inventories.
 
+- **Bitbucket SSH host change, 2026-11-12 (seen 2026-11-05; VERIFIED_PRIMARY: Bitbucket's own SSH banner)**: a clone on gurrbalgun-smc01 printed
+  "Starting November 12, 2026, Bitbucket is moving SSH traffic to ssh.bitbucket.org. Change your host name now to avoid connection disruptions."
+  The SMC repos (rct-tstik, the portal) are cloned from `git@bitbucket.org:...`, and the smc_change rct-tstik-iridium-update spec uses the same
+  values. ansible-wifi: 31 lines in 7 files: the smc_bases group variables of rcp, rct, wh, nbn_wh and nbn_accelerate, the apn jenkins group variables, and
+  `roles/smc_application/tasks/main.yml`. After the move the host name changes, and so does the SMCs' known_hosts entry for it. Not yet changed (operator decision).
