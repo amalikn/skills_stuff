@@ -61,6 +61,7 @@ VERIFY_EVOLUTION_KINDS = ("time-evolution", "superseded-history")
 GIT_TIMEOUT_S = 10
 NLI_TIMEOUT_S = 120
 LLM_TIMEOUT_S = 300
+LLM_LIST_TIMEOUT_S = 10
 
 DEFAULT_CONFIG = {
   "schema_version": 1,

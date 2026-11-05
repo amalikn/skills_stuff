@@ -90,6 +90,12 @@ Summary: >-
 > git diff --cached --binary | git -C /scratch/wt apply --index && (cd /scratch/wt && just test && just check)
 > ```
 
+> **Learned 2026-11-05** · git, local excludes · VERIFIED_PRIMARY · Source: skills_stuff skill-knowledge-curator `tests/fixtures/pilot/AGENTS.md` (untracked since cdce4fa, force-added
+> 2026-11-05) · Falsifier: a test export from `git checkout-index -a --prefix=<dir>/` that holds a file `git ls-files` does not list
+> The staged-tree test above also catches what was never committed: `.git/info/exclude` held `AGENTS.md` (meant for repo-local guidance), so a test fixture named
+> `AGENTS.md` had lived only on this disk for nine days and every fresh clone failed one test. Export the index (`git checkout-index -a --prefix=<dir>/`) and test there
+> before a push; a fixture a local exclude hides is added with `git add -f`, and a pattern meant for real guidance files is anchored (`/AGENTS.md`) or scoped.
+
 ## Gate on the exit code
 
 Gate a commit, push or deploy on the validation command's own exit code, never through a pipe or a `;`:

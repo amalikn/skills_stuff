@@ -68,6 +68,39 @@ def parse_object(text: str) -> dict:
   return obj
 
 
+def _headers() -> dict:
+  """Request headers, with the bearer key when KC_LLM_API_KEY is set.
+
+  Returns:
+    Header dict (the key is never logged).
+  """
+  headers = {"Content-Type": "application/json"}
+  key = os.environ.get("KC_LLM_API_KEY")
+  if key:
+    headers["Authorization"] = f"Bearer {key}"
+  return headers
+
+
+def list_models(base: str) -> list[str]:
+  """Model IDs the server serves.
+
+  Args:
+    base: endpoint base URL (…/v1).
+
+  Returns:
+    IDs in server order.
+
+  Raises:
+    ModelError: transport error, timeout, HTTP error (401 without a key) or an unexpected body.
+  """
+  req = urllib.request.Request(f"{base}/models", headers=_headers())
+  try:
+    with urllib.request.urlopen(req, timeout=settings.LLM_LIST_TIMEOUT_S) as resp:
+      return [m["id"] for m in json.load(resp)["data"]]
+  except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError, KeyError, TypeError) as err:
+    raise ModelError(f"model list failed: {type(err).__name__}: {getattr(err, 'reason', err)}") from err
+
+
 def chat_json(base: str, model: str, system: str, user: str, max_tokens: int) -> tuple[dict, dict]:
   """One deterministic chat call that must answer with a JSON object.
 
@@ -92,11 +125,7 @@ def chat_json(base: str, model: str, system: str, user: str, max_tokens: int) ->
     "response_format": {"type": "json_object"},
     "chat_template_kwargs": {"enable_thinking": False},
   }
-  headers = {"Content-Type": "application/json"}
-  key = os.environ.get("KC_LLM_API_KEY")
-  if key:
-    headers["Authorization"] = f"Bearer {key}"
-  req = urllib.request.Request(f"{base}/chat/completions", data=json.dumps(body).encode(), headers=headers)
+  req = urllib.request.Request(f"{base}/chat/completions", data=json.dumps(body).encode(), headers=_headers())
   try:
     with urllib.request.urlopen(req, timeout=settings.LLM_TIMEOUT_S) as resp:
       out = json.load(resp)

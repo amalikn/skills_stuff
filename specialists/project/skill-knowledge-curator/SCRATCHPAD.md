@@ -62,8 +62,10 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
-0. Operator names a new corpus; label it blind (an agent that never sees kc output), then measure roots purity, verify by kind (agent arm against the oMLX arm) and confirm safety there.
-1. Review the project_stuff audit corrections and commit them there (not done by this session).
+0. New corpus: unified-network-controller (operator, 2026-11-05); 890 files, 19,281 sections, too big whole. Pick one slice of about 50 files, label it blind (an agent that never
+   sees kc output), then measure roots purity, verify by kind (agent arm against the oMLX arm) and confirm safety there. Work on a scratch copy; UNC is a live apn project.
+1. Review the project_stuff audit corrections and commit them there (not done by this session). The local-llm README oMLX entry in tools_stuff is uncommitted too (folder untracked).
+   The Continuum session's citation_audit and decision_sheet work in this pack is its own to commit.
 2. Held: P29, v2 stage 1, slurp Step 4b; research B5 (`kc resolve`) needs an adjudicated set first.
 
 ## Memory pointers — KEEP

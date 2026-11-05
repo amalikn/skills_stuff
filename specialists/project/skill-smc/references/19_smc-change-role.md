@@ -481,6 +481,16 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
       found[host] = parse_time(prof["valid_until"])
   ```
 
+- **Auditing a rollout (2026-11-05)**:
+  - Count from the inventory flag, not the batch list. 43 rct sites carry `smc_bases_iridium: true`, while the batches named 25; six marked
+    sites had never been run by either change.
+  - For each site, both changes' `runs/<flavor>/state/<host>.json` must say passed apply, with no active journal; `tracker.py --change-dir
+    <change> --check` confirms the trackers.
+  - For sites never run, a check-mode pass of a `probe_first` spec is the cheap read-only answer: its record's before-probe lists every proof
+    true or false (six sites: AVR already 3.07, loader, tstik commit and SMSC still to do).
+  - Survey the links of the same list with `scripts/probes/smc_gateway_loss.sh` (`-s` adds download speed); check the backdoor of any SMC that
+    gives no answer before calling it dark.
+
 - **Change `bitbucket-ssh-hostname` (built 2026-11-05, check-mode canary on alkngarrija-smc01; not applied)**: Bitbucket answers SSH only as
   `ssh.bitbucket.org` from 2026-11-12 (its own banner). The SMCs' key already works there (`git ls-remote` from garimba-smc01), and the new name
   serves the same three host keys the fleet trusts for `bitbucket.org` (ED25519 `SHA256:ybgmFkzw...`, ECDSA `SHA256:FC73VB6C...`, RSA

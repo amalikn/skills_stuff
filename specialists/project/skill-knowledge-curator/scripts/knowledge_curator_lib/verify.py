@@ -195,6 +195,18 @@ def _prompt(task: dict) -> str:
   return json.dumps({k: task[k] for k in ("question", "claims") if k in task} | {"root": task.get("root")}, ensure_ascii=False, indent=1)
 
 
+def control_prompt(control: dict) -> str:
+  """The user prompt for one control pair, as a model run sends it.
+
+  Args:
+    control: one of CONTROLS.
+
+  Returns:
+    Prompt text.
+  """
+  return _prompt(_control_task(control))
+
+
 def _control_task(control: dict) -> dict:
   """A control pair shaped like a task.
 
@@ -226,7 +238,7 @@ def _check_controls(base: str, model: str, max_tokens: int, usage: Counter) -> l
   controls = []
   for control in CONTROLS:
     try:
-      got, used = llm.chat_json(base, model, INSTRUCTIONS, _prompt(_control_task(control)), max_tokens)
+      got, used = llm.chat_json(base, model, INSTRUCTIONS, control_prompt(control), max_tokens)
     except llm.ModelError as err:
       raise InputError(f"control pair failed to run: {err}") from err
     usage.update({k: v or 0 for k, v in used.items()})

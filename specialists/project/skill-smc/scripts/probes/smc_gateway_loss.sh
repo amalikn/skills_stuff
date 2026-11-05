@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Is the site link (satellite, Sky Muster Plus on rct) losing packets, and is it one site or many? Read-only survey of named SMCs over Teleport.
 #
-# usage: smc_gateway_loss.sh [-c <pings>] [-t <sec>] <smc> [<smc> ...]
+# usage: smc_gateway_loss.sh [-c <pings>] [-t <sec>] [-s] <smc> [<smc> ...]
 #        smc_gateway_loss.sh [options] - < names.txt          # one SMC per line
 #   e.g. smc_gateway_loss.sh goojarr-goonyool gurrbalgun garimba
-# Options: -c pings to the gateway (default 20, 0.3 s apart), -t seconds per SMC for the whole probe (default 90).
+# Options: -c pings to the gateway (default 20, 0.3 s apart), -t seconds per SMC for the whole probe (default 90; give -s 240),
+#          -s also measure download speed: a 5 MB Cloudflare file and bitbucket.org over HTTPS (KB/s, to /dev/null), slow link vs slow destination.
 # A name without "-smcNN" or "-rctNN" gets "-smc01". Per SMC, from the box: its default gateway (the first hop: the satellite NTD/router side),
 # packet loss and average RTT to it, and the WAN's rx/tx over 5 s. Loss already at the first hop with the WAN nearly idle is the site link,
 # not Teleport, the SMC or load (skill-smc references/06_failure-modes.md). The last lines group SMCs by gateway /24, so loss that follows a
@@ -16,6 +17,7 @@ set -u
 
 pings=20
 per_smc=90
+speed=""
 
 usage() {
   # Print the header comment as help.
@@ -36,10 +38,11 @@ host_name() {
   esac
 }
 
-while getopts 'c:t:h' opt; do
+while getopts 'c:t:sh' opt; do
   case "$opt" in
     c) pings=$OPTARG ;;
     t) per_smc=$OPTARG ;;
+    s) speed=speed ;;
     h) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
   esac
@@ -61,12 +64,12 @@ remote="$(dirname "$0")/smc_gateway_loss_remote.sh"
 tmp=$(mktemp -d) || exit 2
 trap 'rm -f "$tmp"/*.out "$tmp"/table.txt; rmdir "$tmp"' EXIT
 for smc in "${names[@]}"; do
-  ( timeout "$per_smc" tsh ssh "root@$smc" "sh -s $pings" <"$remote" 2>/dev/null | grep '^gw=' | tail -n 1 >"$tmp/$smc.out" ) &
+  ( timeout "$per_smc" tsh ssh "root@$smc" "sh -s $pings $speed" <"$remote" 2>/dev/null | grep '^gw=' | tail -n 1 >"$tmp/$smc.out" ) &
 done
 wait
 
 rc=0
-printf '%-26s %-16s %7s %8s %9s %9s\n' SMC GATEWAY LOSS% RTT_MS WAN_RX_KB WAN_TX_KB >"$tmp/table.txt"
+printf '%-26s %-16s %7s %8s %9s %9s %8s %8s\n' SMC GATEWAY LOSS% RTT_MS WAN_RX_KB WAN_TX_KB DL_KB/s BB_KB/s >"$tmp/table.txt"
 for smc in "${names[@]}"; do
   line=$(cat "$tmp/$smc.out" 2>/dev/null)
   if [ -z "$line" ]; then
@@ -75,7 +78,7 @@ for smc in "${names[@]}"; do
     continue
   fi
   printf '%s\n' "$line" | tr ' ' '\n' \
-    | awk -F= -v smc="$smc" '{v[$1]=$2} END {printf "%-26s %-16s %7s %8s %9s %9s\n", smc, v["gw"], v["loss"], v["rtt"], v["rx"], v["tx"]}' >>"$tmp/table.txt"
+    | awk -F= -v smc="$smc" '{v[$1]=$2} END {printf "%-26s %-16s %7s %8s %9s %9s %8s %8s\n", smc, v["gw"], v["loss"], v["rtt"], v["rx"], v["tx"], (v["dl"] == "" ? "-" : v["dl"]), (v["bb"] == "" ? "-" : v["bb"])}' >>"$tmp/table.txt"
 done
 cat "$tmp/table.txt"
 echo

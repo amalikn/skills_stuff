@@ -530,7 +530,8 @@ against `apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (5047
 Is the site link (Sky Muster Plus on rct) losing packets, and at one site or many? For each named SMC, all at once over Teleport: the default gateway
 (the first hop), loss and average RTT over `-c` pings (default 20), and WAN rx/tx over 5 s. Then a summary per gateway /24: loss that follows a
 shared upstream shows as one bad group, a single bad site stands alone. The SMC side is `smc_gateway_loss_remote.sh`, sent on stdin to `sh -s`.
-**Safety: read-only.** Exit 0 all answered, 1 some gave no answer (check the backdoor), 2 bad usage. Recipes: `just smc_gateway_loss ...`,
+`-s` adds download speed, a 5 MB Cloudflare file and bitbucket.org over HTTPS (KB/s, to /dev/null), which separates a slow site link from a
+slow destination; give it `-t 240`. **Safety: read-only.** Exit 0 all answered, 1 some gave no answer (check the backdoor), 2 bad usage. Recipes: `just smc_gateway_loss ...`,
 `just smc_gateway_loss_test`. 2026-11-05: 16 of 20 rct SMCs 0 %; gurrbalgun 25 %, gumbarnun 10 %, banana-well 5 %, goojarr-goonyool no answer.
 Not a Sky Muster-wide fault, four sites. `smc_link_health.sh` reads one SMC in depth.
 

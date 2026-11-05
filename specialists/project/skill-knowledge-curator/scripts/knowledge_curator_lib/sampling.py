@@ -9,6 +9,7 @@ import random
 from collections import Counter
 from pathlib import Path
 
+from . import verify
 from .errors import InputError
 from .state import State
 
@@ -114,4 +115,28 @@ def verify_score(st: State, labels: Path) -> dict:
     "noise_cleared": round(matrix["noise->not-conflict"] / noise, 3) if noise else None,
     "kept_precision": round(kept_real / kept, 3) if kept else None,
     "by_kind": dict(sorted(by_kind.items())),
+    "confirm": _confirm_outcomes(st, {r["conflict_id"]: r["verdict"] for r in rows}),
   }
+
+
+def _confirm_outcomes(st: State, labels: dict[str, str]) -> dict:
+  """What `kc verify --confirm` would clear for each verify run, by label, with all guards applied (nothing is written).
+
+  Args:
+    st: current state.
+    labels: conflict_id -> real | noise.
+
+  Returns:
+    run_id -> {"would_clear": {label: n}, "real_cleared": [ids], "clears_right": share of labelled clears that were noise}.
+  """
+  out = {}
+  for run in sorted({c["verify"]["run_id"] for c in st.open_conflicts() if c.get("verify")}):
+    cleared = [e["conflict_id"] for e in verify.confirm(st, run, "score")["events"]]
+    seen = Counter(labels.get(c, "unlabelled") for c in cleared)
+    judged = seen["real"] + seen["noise"]
+    out[run] = {
+      "would_clear": dict(sorted(seen.items())),
+      "real_cleared": sorted(c for c in cleared if labels.get(c) == "real"),
+      "clears_right": round(seen["noise"] / judged, 3) if judged else None,
+    }
+  return out

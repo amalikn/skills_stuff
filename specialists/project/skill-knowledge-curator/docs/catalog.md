@@ -49,6 +49,9 @@ Asked in one round before building research B3 and B4:
 - **V7 and V8:** the `V2-T` test-ID namespace and the v1 layout are confirmed (they were agent defaults).
 - **Housekeeping:** push skills_stuff; dated changelog headings so the wiki shows Recent changes; the `mcp-data` warning confirmed and the audit reports corrected.
 
+- **New corpus (later the same day):** unified-network-controller (operator, 2026-11-05: "you can use unified-network-controller"). A read-only `kc inventory` dry run found 890
+  Markdown files and 19,281 sections (about 21 times Continuum), so measurement starts on one slice the operator or the next session picks, labelled blind first.
+
 Agent defaults inside that scope, open to override: verdict words `conflict`, `not-conflict`, `uncertain` ("refuted" read backwards in the first model trial); two
 control pairs before every model run; a shared claim is a hint, never a group join; loopback-only endpoint unless `verify.allow_remote`.
 

@@ -6,6 +6,9 @@ references/evaluation.md.
 Run: python -m unittest discover -s tests (or `just test`). Safety: files only, under temporary copies; no network.
 """
 
+import contextlib
+import importlib
+import io
 import json
 import unittest
 from unittest import mock
@@ -185,6 +188,9 @@ class ConfirmTest(Case, unittest.TestCase):
     out = self.kc("verify", "--score", str(labels))[1]
     self.assertEqual(out["real_lost"], [cf])
     self.assertEqual(out["real_recall_kept"], 0.0)
+    run = next(iter(out["confirm"]))
+    self.assertEqual(out["confirm"][run]["real_cleared"], [cf])
+    self.assertEqual(out["confirm"][run]["clears_right"], 0.0)
 
 
 class ModelSeamTest(Case, unittest.TestCase):
@@ -233,6 +239,48 @@ class ModelSeamTest(Case, unittest.TestCase):
     llm = lib("llm")
     with self.assertRaises(llm.ModelError):
       llm.parse_object("no json here")
+
+
+class ProbeTest(unittest.TestCase):
+  """scripts/llm_probe.py: list models, time the controls, refuse a remote endpoint."""
+
+  def run_probe(self, *argv: str) -> tuple[int, dict | None]:
+    """Run the probe's main with a fake server.
+
+    Args:
+      *argv: probe arguments.
+
+    Returns:
+      (exit code, parsed JSON or None).
+    """
+    probe = importlib.import_module("llm_probe")
+    llm = lib("llm")
+    answers = iter([{"verdict": "conflict"}, {"verdict": "conflict"}])
+    out = io.StringIO()
+    with (
+      mock.patch.object(llm, "list_models", return_value=["m-1"]),
+      mock.patch.object(llm, "chat_json", side_effect=lambda *a, **k: (next(answers), {"prompt_tokens": 2, "completion_tokens": 1})),
+      contextlib.redirect_stdout(out),
+      contextlib.redirect_stderr(io.StringIO()),
+    ):
+      code = probe.main(list(argv))
+    return code, json.loads(out.getvalue()) if out.getvalue() else None
+
+  def test_lists_models_without_a_model(self):
+    """No --model: list only, exit 0, no chat call."""
+    code, out = self.run_probe()
+    self.assertEqual((code, out["models"], out["passed"]), (0, ["m-1"], None))
+
+  def test_wrong_control_exits_3(self):
+    """A model answering conflict to the dated replacement fails the second control."""
+    code, out = self.run_probe("--model", "m-1")
+    self.assertEqual(code, 3)
+    self.assertEqual([c["got"] for c in out["controls"]], ["conflict", "conflict"])
+
+  def test_remote_endpoint_refused(self):
+    """A non-loopback base needs --allow-remote."""
+    code, out = self.run_probe("--base", "https://api.example.com/v1")
+    self.assertEqual((code, out), (1, None))
 
 
 if __name__ == "__main__":

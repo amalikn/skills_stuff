@@ -56,6 +56,9 @@ Summary: >-
 
 `restate_byte_copies.py <project>` (`just restate-copies`) prints the claim and context records that bring byte-identical files level, for `kc claims --file`; read-only.
 
+`llm_probe.py [--base URL] [--model ID]` (`just llm-probe [ID]`) lists a local OpenAI-compatible server's models and times the two kc verify control pairs on one; read-only,
+sends only the control texts, loopback unless `--allow-remote`. Exit 0 pass, 3 a control wrong, 6 server failed. `kc verify --score` also reports what `--confirm` would clear per run.
+
 `ledger_diff.py <before> <after>` (`just ledger-diff`) compares two projects' folded ledgers: claim dispositions, successors, conflict status and members. Read-only, standard library. Exit 0
 match, 1 differ, 2 missing ledger. Rehearse a decision sequence on a scratch copy with real sources, then diff against live before `--apply`; a single dry run cannot show a later step undoing an
 earlier one.
