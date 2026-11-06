@@ -546,3 +546,10 @@ p.setAttribute("width", "9"); p.setAttribute("height", "9"); p.setAttribute("pat
 stroke.setAttribute("stroke", OVERLAP_INK[key]); stroke.setAttribute("stroke-width", "2");   // lines only, no backing
 ```
 
+> **Learned 2026-11-06** · flow colours on a family page · VERIFIED_PRIMARY · Source: smc-resiliency main map, page "E2E: Tech stack", flows 17
+> (deliver) and 18 (run), skill-drawio palette with `e2e_family_colours: flow`, export 2026-11-06 · Falsifier: two adjacent palette entries a
+> reviewer cannot confuse at 0.6 scale
+> Two flows of one family drew in close olive shades and were hard to tell apart on the family page; the per-flow colour is taken from the palette in
+> order, so neighbours in a family can be near each other. Candidate (engine work, not changed): pick a family's flow colours to maximise their
+> distance from each other, not by palette order. Screenshot: smc-resiliency docs/flows/drawio/smc-resiliency-flows.drawio page 12 (lab map).
+
