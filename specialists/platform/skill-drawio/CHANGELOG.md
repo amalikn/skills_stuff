@@ -16,7 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
-- scripts/flowmap/shapes.py: a decision diamond is twice its text's height (was 1.45x): a block at half the width fits only when w/W + h/H <= 1, so its corners reached the edges (operator, 2026-11-06); example re-rendered.
+- scripts/flowmap/shapes.py: cloud step boxes centre their text with wider margins (0.72 width, 1.35 height): text stays inside the outline; every consumer re-rendered; references/visual-style.md Learned 2026-11-06 (text in a cloud step box) (2026-11-06).
 - scripts/flowmap/profile.py, shapes.py: `step_chars` default 46 -> 38 and predefined-process width factor 0.88 -> 0.75 (slanted shapes 0.95 -> 0.88): step boxes no longer overflow; every consumer re-rendered; references/visual-style.md Learned 2026-11-06 (step box text budget), screenshots 20261106-step-box-sizing-and-legend-links (2026-11-06).
 - scripts/flowmap/colours.py, schemas/flowmap.schema.json: a flow's `colour` pins its End-to-end colour; the spread works around it; tests/test_flow_colours.py (2026-11-06).
 - scripts/palette_check.py: `--map FILE` lists a map's closest touching flow pairs under palette order and the spread (`map_pairs`; promoted from the 2026-11-06 session's ad hoc measurement); tests/test_palette_check.py (2026-11-06).

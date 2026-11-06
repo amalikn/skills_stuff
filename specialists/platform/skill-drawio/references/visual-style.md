@@ -595,3 +595,10 @@ stroke.setAttribute("stroke", OVERLAP_INK[key]); stroke.setAttribute("stroke-wid
 > ```
 >
 > Screenshots: [references/screenshots/20261106-step-box-sizing-and-legend-links/](screenshots/20261106-step-box-sizing-and-legend-links/readme.md).
+
+> **Learned 2026-11-06** · text in a cloud step box · VERIFIED_PRIMARY · Source: `scripts/flowmap/shapes.py` `SHAPES["external"]`; smc-resiliency
+> "16. Tech stack / Build" step 1 exported with draw.io 32.5.5 · Falsifier: a cloud step whose text crosses its outline at these settings
+> Left-aligned text in a cloud ran past the outline where it bulges in, and a wrapped word landed on the next line in the export. The cloud now
+> centres its text, keeps 30 and 28 px clear at the sides and 26 at the top, and its width and height factors are 0.72 and 1.35. Every consumer
+> re-rendered; audits clean. Same review: folding (`layout: {fold: serpentine, fold_after: N}`) reads best on pages with many steps and few lanes;
+> with one lane per step (smc-resiliency stack-build, 9 lanes) each folded row is still a staircase, narrower but taller.
