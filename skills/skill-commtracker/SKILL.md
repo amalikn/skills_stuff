@@ -362,6 +362,12 @@ Claude reads the JSON and performs Steps 4–7 (body cleaning decisions, CID sub
 > `cid:image001.png@...`) and are returned with `is_signature: false`; the body shows them only as alt text after the sign-off ("[Logo Description automatically generated]"). Judge them from the body:
 > an image placed only in the signature block is not kept in the tracker, even when the JSON marks it substantive.
 
+> **Learned 2026-11-06** · extract.py signature detection, Outlook web/new Outlook replies · VERIFIED_PRIMARY (observed) · Source: `scripts/extract.py`
+> `is_signature_image` on an internal reply (two `image.png` parts, 14 and 24 KB, UUID Content-IDs such as `cid:5aac2c6f-...`) · Falsifier: such a part returned with
+> `is_signature: true` Signature logos in replies from Outlook web or new Outlook are named `image.png` with a UUID Content-ID, not a UUID filename, so they
+> pass as substantive. Do not add a Content-ID rule: a screenshot pasted into the body gets the same shape. Judge from the body as above: a `[cid:...]` that
+> sits only in the signature block is not kept.
+
 ### reconcile.py — use for Step 2 reconciliation runs
 
 ```bash
