@@ -1048,3 +1048,38 @@ print(d["conditions"]["facts"]["avr_version"], d["facts_after"]["avr_version"])
 **A deploy with the Iridium flag missing skips the chain silently.** Both imports carry `when: *rct_iridium` (`... smc_bases_iridium == true`); with the flag false the Prepare play prints no task, the
 Apply play says "skipping: no hosts matched", and the deploy goes on into its other plays. On 2026-11-04 the 24 host_vars files on disk lost the flag at 20:31:53 (cause unknown; not git, not the
 agent) and the first canary did exactly this. Before a deploy: `ansible-inventory -i inventories/rct/prod --host <host> | grep smc_bases_iridium`.
+
+## Export to a company role: a spec as a plain task file (2026-11-06)
+
+> **Learned 2026-11-06** · smc_change export · VERIFIED_PRIMARY (18 offline tests; rct-avr-smsc and rct-tstik-iridium-update exported into a scratch copy
+> of smc_application: ansible-lint production profile 0 failures, `--syntax-check` passes; no live run yet) · Source: local-knowledge-ansible
+> `ansible-wifi/roles/smc_change/files/export_tasks.py`, `export_render.py`, design `plans/smc-change-export-design-20261106_1335.md` (commit 7056782)
+> · Falsifier: an exported file that fails on an SMC where the smc_change run of the same spec passes, or that still references the role.
+
+smc_change is the operator's own test tool; the company repo must not depend on it (operator, 2026-11-06), yet `smc_rise_deploy.yml` imports
+`smc_change.yml` for the two AVR changes today. `just export_change <change> <role>` (plan; `--apply` writes into ansible-wifi, uncommitted) writes
+`roles/<role>/tasks/<change>.yml`, `<change>-rollback.yml` and `roles/<role>/files/<change>/` (variables.yml, scripts/, copied and shared files).
+`just export_check <change> <role>` lints a scratch copy (about 4 s); `just export_drift` says when a spec or the company copy moved since the export.
+
+- **Regenerated only on the operator's word**; the agent reminds the operator when `export_drift` shows a moved spec. A company file edited by hand
+  is kept (the export refuses and names it) unless `--overwrite-edits`.
+- **What it carries**: applies_to (flavor as `inventory_dir | basename`, arch by `uname -m`), applies_when and conditions (a fact condition reads the
+  registered fact and is false when the fact failed), facts before and after, `copy` (loops expanded as `templates/spec_actions.j2`, transient copies
+  removed after verify passes) and `command` (check, then cmd only when it fails, under `timeout --kill-after=30`; no re-check, as the role), a backup
+  folder `<smc_change_backup_dir>/<change>-<stamp>` with `paths.tgz`, which the AVR scripts look up by glob, restart (services, and restart.yml's
+  stop-and-relaunch shell for processes), verify (`services_active` and `commands` before and after, `logs`, `proves`) and a rollback file (undo last
+  first with `SMC_CHANGE_BACKUP`).
+- **What it leaves out**: probe, guard, journal, records, soak, reboot, overlay (the play's first task owns it, operator 2026-11-06), and the fail
+  gate: **the importing play sets `max_fail_percentage: 0` and a small `serial`** (side-agent note, 2026-11-06). `apt_pin`, `ini`, `ssh`, `ecdsa`,
+  `template` and verify `http`, `same_as_before`, `stale_maps`, `report_only` are refused until a spec that needs them is exported.
+- **Values still naming smc_change ideas** are carried and listed for the operator: `/var/backups/smc_change`, `/run/smc-change-*`, `LOWER_DIR`
+  (the scripts skip their lower-dir step when nothing is mounted there, the overlay-off case).
+- **Not proven live**: next step is `--check` then apply of an exported file on the canary alkngarrija-smc01, against smc_change's own verify.
+
+```python
+# files/export_tasks.py rewrite() (local-knowledge-ansible, 7056782): engine names to the export's own
+("{{ role_path }}/files/changes/" + change, "{{ " + var + "_dir }}"),
+("role_path ~ '/files/changes/" + change, var + "_dir ~ '"),
+("smc_change_vars.", var + "."),
+```
+

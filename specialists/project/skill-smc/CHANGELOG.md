@@ -14,6 +14,12 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261106_1545 — smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 -> v0.12.6)
+
+`references/19_smc-change-role.md`: new section, Export to a company role (Learned 2026-11-06, local-knowledge-ansible 7056782): `just export_change`,
+`export_check`, `export_drift`; what is carried and left out, the play's own fail gate; and the tracker entry for resumed runs (c7cb38b, written
+2026-11-06 earlier, committed 613c1c1). manifest 0.12.5 -> 0.12.6.
+
 ## 20261106_1300 — WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 -> v0.12.5)
 
 `references/03_communication-flows.md`: Learned 2026-11-06, rcp routing confirmed on two boxes (per-leg tables and `from` rules by the dhclient hook,

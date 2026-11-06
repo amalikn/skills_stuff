@@ -98,6 +98,8 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-53 | A seam is an environment variable and stdout                | Components tied by shared code or files                                    |
 | P-54 | Documents held to code by review stamps                     | Docs going stale unnoticed                                                 |
 | P-58 | Hold changes while blind; recover by self-undoing trials    | A device that cannot tell its own bad change from an outage                |
+| P-59 | Export a spec to plain code, with provenance and an edit guard | Hand-copying a change from an engine into a repo that must not depend on it |
+| P-60 | Order resumed records by attempt, not by transaction start  | A resume sorted before attempts that ran ahead of it                        |
 
 ## Patterns
 
@@ -1346,4 +1348,73 @@ for cand in candidates(current)[1:]:          # proxy-ranked, current first
     n = real_cost(cand)                       # the real thing (here: route and count)
     if n < best_n:
         best, best_n = cand, n
+```
+
+### P-59 Export a spec to plain code, with provenance and an edit guard
+
+> **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (18 offline tests; two real specs exported, ansible-lint production profile
+> and `--syntax-check` pass) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/export_tasks.py`, `export_render.py` (commit 7056782)
+> · Falsifier: an exported file that still needs the engine to run, or a regenerate that overwrote a hand edit without being told to.
+> `reusable_candidate` until a second project uses it.
+
+- **Problem:** changes are proven with a personal or test engine (P-01, change as data), but the place they must end up (a company repo, another team)
+  may not depend on that engine. Copying by hand drifts, and a generator that silently overwrites loses the other side's edits.
+- **Solution:** (1) map each spec key to plain code from what the engine *does* with it (read its code, not an old hand copy); (2) rewrite the engine's
+  names to the export's own (`engine_vars.` to `<change>.`, engine paths to the export's folder); (3) **refuse** to write while any engine name is left
+  in the output, and refuse spec features not yet mapped, naming them; (4) plan by default, write on `--apply`; (5) record a sha256 of every source
+  and every written file; a drift check reports "source changed" and "target edited", and a regenerate refuses to overwrite a target whose hash is
+  neither the last export nor the new one, until told to; (6) state in the output's header what the engine gave that the plain code does not.
+- **Why it works:** the refusal makes "no dependency" a checked property, not a hope; the two hashes tell the three cases apart (in step, source
+  moved, target hand-edited) without a diff; regenerating only on request keeps the other side in control.
+- **Reuse:** a DSL or spec compiled to Terraform, SQL migrations, CI pipeline files or Kubernetes manifests handed to another team; scaffolding a
+  vendor's config from an internal model; any generator whose output people may edit.
+- **Pitfalls:** the engine's safety that lives above a single change (a batch fail gate) cannot be carried in a file and must be named for the caller
+  (here: the play must set `max_fail_percentage: 0` and `serial`); helper scripts often depend on the engine's runtime layout (a backup folder they look
+  up by glob), so the export recreates that layout; output formatting to pass the target's linter may change values, so the dump is read back and
+  compared with the data, and a mismatch refuses the export. Related: P-01, P-12 (plan, print, then apply).
+- **Realised in:** Python, excerpt below.
+
+```python
+# ansible-wifi/roles/smc_change/files/export_tasks.py (local-knowledge-ansible, 7056782)
+FORBIDDEN = re.compile(r"smc_change_[A-Za-z]\w*|files/changes/|roles/smc_change|smc_change\.yml")
+left = sorted({m for rel, data in out.items() if rel.endswith(".yml") for m in FORBIDDEN.findall(code_lines(data.decode()))})
+if left:
+  raise export_render.Refused(f"the output still needs smc_change: {', '.join(left)}")
+
+def hand_edited(repo, record, outputs):
+  edited = []
+  for rel, data in outputs.items():
+    path = repo / rel
+    if path.is_file():
+      now = sha(path.read_bytes())
+      if now != sha(data) and now != (record.get("written") or {}).get(rel):
+        edited.append(rel)          # neither the last export nor this one: kept unless --overwrite-edits
+  return edited
+
+body = yaml.dump(data, Dumper=IndentDumper, sort_keys=False, width=DUMP_WIDTH)
+if yaml.safe_load(body) != data:    # folding for the linter must not change a command
+  raise export_render.Refused("the task file does not read back as written (YAML folding)")
+```
+
+### P-60 Order resumed records by attempt, not by transaction start
+
+> **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (a regression test that fails on the old order; the fixed tracker moved two
+> sites from `failed` to `passed` and 38 `last_run` values) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/tracker.py`
+> (commit c7cb38b) · Falsifier: a summary whose "latest" row is not the newest attempt. `reusable_candidate` until a second project uses it.
+
+- **Problem:** a resumable job writes one record per attempt but carries the *transaction's* start time in each, so a reader that sorts by `start`
+  places a late resume before attempts that ran in between, and "latest state" picks an older failed attempt.
+- **Solution:** keep both stamps in every record (`start` for the transaction, `attempt_start` for this attempt, falling back to `start` on old
+  records); order runs, and take "last run", by `attempt_start`; keep "state since" on the transaction start.
+- **Why it works:** each question gets its own clock: when did this change begin on the target, and which attempt is newest.
+- **Reuse:** retried CI jobs, resumable migrations, sagas, any summary built from per-attempt rows of a long transaction.
+- **Pitfalls:** tests built only from fresh runs (attempt equals start) pass the bug; add a fixture with an old `start`, a newer `attempt_start` and
+  another run between them. Related: P-03 (write-ahead journal), P-04 (done ledger).
+- **Realised in:** Python.
+
+```python
+# ansible-wifi/roles/smc_change/files/tracker.py (local-knowledge-ansible, c7cb38b)
+"attempt_start": record.get("attempt_start") or record.get("start", ""),
+return sorted(rows, key=lambda row: (str(row.get("attempt_start") or row.get("start", "")), str(row.get("host", ""))))
+"last_run": last.get("attempt_start") or last.get("start", ""),
 ```

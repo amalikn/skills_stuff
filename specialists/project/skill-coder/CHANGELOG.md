@@ -16,6 +16,8 @@ Last rotated: 20261106_1030
 
 ## Unreleased
 
+- references/design-patterns.md: P-59 export a spec to plain code with provenance hashes and a hand-edit guard; P-60 order resumed records by attempt (Learned 2026-11-06, local-knowledge-ansible 7056782, c7cb38b)
+- languages/ansible.md: Learned 2026-11-06 (k), lint-clean generated task YAML (one template at a name's end, joined templates, fold then read back)
 - references/efficiency-and-measurement.md: Learned 2026-11-06, a per-check budget inside a suite, a render keyed by its inputs, profile with workers off (apn unified-network-controller).
 - references/testing.md: Learned 2026-11-06, prove the instrument before trusting what it measures; languages/shell.md: Learned 2026-11-06, never edit a script while it runs (apn smc-resiliency S3).
 - languages/javascript-typescript.md: Learned 2026-11-06, Playwright: real clicks on canvas, includeHidden for filtered rows, charset, skip guard (apn unified-network-controller d49d2043).
