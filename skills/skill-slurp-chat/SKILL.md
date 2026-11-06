@@ -262,4 +262,5 @@ companion rules, the Step 6b result, and the last memory-keeper and project-cont
 | "It is in memory and this project's change log"  | Each item also lands in the record of the repo that owns it: a skill's ROADMAP or SCRATCHPAD, `governance/change-log.md` |
 | "The question I asked was not answered"           | An unanswered question is an undecided proposal: SCRATCHPAD Open items                         |
 | "Other repos' trackers are not this slurp's job" | Work that makes another repo's ROADMAP item true is a status change there (Step 6)              |
+| "Freshness fails; set Last reviewed and it passes" | Only after a full re-read against sources: an impact check is not a review. Review it (or delegate) with a dated note, or say only an impact check was done and ask (2026-11-06: ten dates set that way, reviewed for real the same evening) |
 | "It is in the commit message"                    | A commit message is not the record: a refused commit, a re-dated file or a retried push goes in the CHANGELOG too (2026-10-21: two incidents found only in commit messages) |
