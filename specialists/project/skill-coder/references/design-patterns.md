@@ -1296,6 +1296,31 @@ def trial_due(state, other_hash, now, wait_s) -> str:
     return ""
 ```
 
+
+> **Learned 2026-11-06 (second use)** · design pattern, any language · VERIFIED_PRIMARY (live on a Nautobot/OpenWISP controller host: alarm runs
+> evaluated mid-collector-run held 4 alarms, cleared 0; before the fix they sent "Cleared" for uplink alarms that came back 8 minutes later) ·
+> Source: apn unified-network-controller `wc-local/scripts/alarming/engine.py` `HELD_ON_ERROR`, `HELD_WHILE_RUNNING` (commits d49d2043, 5c563f8b) ·
+> Falsifier: an alarm cleared, with a recovery notice sent, while the input that proves it was unreadable or half written. With this second project the
+> pattern is no longer a `reusable_candidate`.
+
+- **The same rule on the reading side:** an evaluator that clears what it no longer sees must not clear while blind. When an input could not be read
+  (timeout, reset, bad answer) or is the partial record of a run still in progress, the alarms that input alone proves are **held**, not cleared, and a
+  later good read decides them. Map each input to the classes it proves; never hold everything (a stale-run alarm must still raise).
+- **Pitfall seen:** fixing a crash exposed this. Before, the evaluations that would have cleared wrongly crashed first, so the flap only appeared once
+  they ran to the end. After making a failing job succeed, look at what its success now does.
+
+```python
+# wc-local/scripts/alarming/engine.py (apn unified-network-controller, 5c563f8b)
+held = {HELD_ON_ERROR[e] for e in inputs.errors if e in HELD_ON_ERROR}
+if inputs.run is not None and inputs.run.ended_at() is None:
+    held |= HELD_WHILE_RUNNING            # partial run record: no uplink rows, no end time yet
+for key in sorted(set(active) - set(alarms)):
+    if active[key].cls in held:
+        outcome.held.append(key)          # unread proves nothing gone
+        continue
+    record = active.pop(key)              # a good read says it is gone: clear and notify
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

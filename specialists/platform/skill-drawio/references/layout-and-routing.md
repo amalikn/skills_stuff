@@ -28,6 +28,7 @@ are quoted as found that day. Claim IDs refer to [sources.yaml](../sources.yaml)
 - [Untwisting close hops](#untwisting-close-hops)
 - [Label placement](#label-placement)
 - [Text-fit sizing](#text-fit-sizing)
+- [Wrapping rows by measured size](#wrapping-rows-by-measured-size)
 - [Constants at a glance](#constants-at-a-glance)
 
 ## Why the generator routes
@@ -205,6 +206,33 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 - A box's height is its wrapped line count times the line height plus padding, with a minimum (`E2E_MIN_H` 60). A group is only as tall as its content; a row is as tall as its tallest box.
 - `soft_breaks()` gives tokens of `LONG_TOKEN` (24) characters or more a zero-width space after each `/ _ . : -`, so a long code path can wrap inside its shape instead of overflowing it. Shorter words
   are unchanged.
+
+## Wrapping rows by measured size
+
+> **Learned 2026-11-06** · layered layout, any engine (seen with ELK layered in Cytoscape) · VERIFIED_PRIMARY · Source: apn
+> unified-network-controller `static/unc_ownership/topology_layout.js` `measuredRows` (commit d49d2043; seven folded fixture sites, the widest from 2.5
+> to 2.8 wide-to-tall to 1.45 to 1.93, 0 layout faults, slowest layout 0.7 s) · Falsifier: a layered engine whose drawn layer width matches the sum of
+> its box widths. `reusable_candidate` until a second project uses it.
+
+Wrap a top-down layout into rows by the sizes the first pass drew, not by node counts. A layered engine spreads a layer far past its boxes to
+straighten fan-out (1,280 px of boxes drawn 10,261 px wide), so a count-based wrap still comes out as a long strip. Take the first pass's layers (by
+y), measure each box, scale a row's span by the pass's own spread, deal boxes into rows under a width cap, and re-run up to three passes while the
+aspect ratio moves toward the target. Gate it with a test on the ratio (0.75 to 2.2 here), not on a picture. The flow-map engine's own row search is
+the same idea for draw.io pages. Screenshots: `screenshots/20261106-measured-row-wrap/`.
+
+```javascript
+// topology_layout.js measuredRows (apn unified-network-controller d49d2043), excerpt
+kids.slice().sort(function (a, b) { return a.y - b.y || a.x - b.x; }).forEach(function (c) {
+  if (!layers.length || c.y >= bottom) { layers.push([]); }          // a new layer below everything so far
+  layers[layers.length - 1].push(c); bottom = Math.max(bottom, c.y + c.height);
+});
+function deal(cap) {                                                  // rows under a width cap, layer order kept
+  layers.forEach(function (l) { var row = [];
+    l.forEach(function (c) { if (row.length && span(row) + GAP_X + c.width > cap) { rows.push(row); row = []; } row.push(c); });
+    if (row.length) { rows.push(row); } });
+  var width = spread * Math.max.apply(null, rows.map(span));          // the engine's own spread, measured
+}
+```
 
 ## Constants at a glance
 

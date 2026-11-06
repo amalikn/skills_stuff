@@ -32,6 +32,7 @@ from .step_text import action_clauses, note_lines, step_lines
 from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
 from .overview import overview_page
 from .profile import Profile
+from . import render_cache
 from .tips import flow_arrow_tip, step_tags, step_tip
 
 #: Flow page geometry: lane heading width, least lane height, step column width, step box width and least height.
@@ -295,15 +296,17 @@ def render(data: dict, profile: Profile, built: list[tuple[int, str, Page]] | No
     return mxfile([page for _rank, _name, page in built], profile.host, banner(profile.generator, profile.map, profile.command, profile.check))
 
 
-def evaluate(root: Path, profile: Profile) -> Outcome:
+def evaluate(root: Path, profile: Profile, need_text: bool = True) -> Outcome:
     """Validate the map and compare the rendered drawing with the file on disk (what a project's drift check calls).
 
     Args:
         root: the repository root.
         profile: the project's drawing profile.
+        need_text: False when only problems and drift are wanted (a drift check): a render key seen before then answers drift from the
+            recorded hash without drawing again (flowmap.render_cache), and the outcome carries no text or pages.
 
     Returns:
-        The outcome: problems, the rendered text and its pages, and whether the file on disk is stale.
+        The outcome: problems, the rendered text and its pages (unless served from the cache), and whether the file on disk is stale.
     """
     data, problems = load(root, profile)
     # The banner is an XML comment, where "--" is illegal: draw.io then refuses the whole file ("Export failed").
@@ -311,10 +314,16 @@ def evaluate(root: Path, profile: Profile) -> Outcome:
                  for k, v in (("command", profile.command), ("check", profile.check)) if "--" in v]
     if problems or data is None:
         return Outcome(problems=problems)
-    built = named_pages(data, profile)
-    text = render(data, profile, built)
     out = root / profile.output
     current = out.read_text(encoding="utf-8") if out.is_file() else None
+    k = render_cache.key(data, profile)
+    if not need_text:
+        known = render_cache.lookup(k)
+        if known is not None:
+            return Outcome(drift=current is None or render_cache.text_hash(current) != known)
+    built = named_pages(data, profile)
+    text = render(data, profile, built)
+    render_cache.record(k, text)
     return Outcome(text=text, drift=current != text, pages=built)
 
 

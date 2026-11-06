@@ -22,9 +22,9 @@ Imported, not run: `from flowmap.crossing_search import port_and_tracks` with th
 from __future__ import annotations
 
 from copy import deepcopy
-from itertools import combinations
 
 from drawio.route import count_crossings
+
 
 
 def swap_cells(placed: tuple, swaps: tuple) -> tuple:
@@ -40,32 +40,6 @@ def swap_cells(placed: tuple, swaps: tuple) -> tuple:
     for a, b in swaps:
         placed[0][a], placed[0][b] = placed[0][b], placed[0][a]
     return placed
-
-
-def band_search(best: object, build: object, look: dict) -> object:
-    """Swap two boxes in the band below the columns while the page's real routes cross less (operator, 2026-11-02: "Swapping change spec and
-    run trackers would have eliminated an overlap"): each band box is placed alone, nearest its neighbours, so a pair is never weighed
-    together. Every candidate is a full layout, so the pairs are tried once, and again only after a gain.
-
-    Args:
-        best: the page laid out so far.
-        build: a callable from a tuple of band swaps to a page.
-        look: the look settings (`e2e_band_search: false` turns this off).
-
-    Returns:
-        The page with the fewest crossings; `best` itself when no swap gains.
-    """
-    if not look.get("e2e_band_search", True):
-        return best
-    swaps, gained = (), True
-    band = [cid for cid, (_c, r) in best.cell.items() if r >= best.band]
-    while gained and best._crossings(set(best.segs)):
-        gained = False
-        for pair in combinations(band, 2):
-            trial = build((*swaps, pair))
-            if trial._crossings(set(trial.segs)) < best._crossings(set(best.segs)):
-                best, swaps, gained = trial, (*swaps, pair), True
-    return best
 
 
 def link_tracks(grid: object, cids: tuple[str, str]) -> dict[int, dict[str, int]]:

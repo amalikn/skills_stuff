@@ -14,6 +14,8 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261106 Learned 2026-11-06 in `references/app-development.md`: read a plugin view read-only with RequestFactory, not Client.force_login.
+- 20261106 Learned 2026-11-06 in `references/apps-jobs-validation.md`: periodic app work as a ScheduledJob (CELERY_BEAT_SCHEDULE refused by NautobotDatabaseScheduler); Golden Config compliance by GraphQL (6.6 s vs 34.5 s); code excerpt.
 - 20261029 Learned 2026-10-29 in `references/authority-and-modeling.md`: ownership and applicability are separate axes; per-type capabilities, verified on hardware.
 - 20261029 Learned 2026-10-29 in `references/staged-onboarding.md`: a Staged-to-Active gate as a CustomValidator that also covers creation (code excerpt).
 - 20261029 Learned 2026-10-29 in `references/data-model.md` (section 11): an internet uplink as a native Circuit; the Provider from ASN or CPE identity.

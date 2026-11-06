@@ -518,3 +518,21 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 > page.tags[cid] = (*page.tags[cid], own, node_tag(a), node_tag(b))
 > page.links[cid] = isolate_link(i, FLOW_DIMMED, own, dim)
 > ```
+
+> **Learned 2026-11-06** · overlap shading on maps and drawings · VERIFIED_PRIMARY · Source: apn unified-network-controller
+> `static/unc_ownership/topology_map.js` (d49d2043; one 47-AP site: 539 pairwise overlaps stay readable with lines, a tinted backing went solid black
+> over the pins) · Falsifier: stacked line hatches hiding what is under them. `reusable_candidate`.
+> **Mark an overlap with lines only, on one shared grid.** Draw each pairwise intersection with a line hatch whose pattern is anchored to the page
+> (`patternUnits="userSpaceOnUse"`) plus a thin solid outline: aligned lines stacked many times look the same as once, so co-located sectors never go
+> solid. Any fill or tint sums with each stack. Give each area a colour never shared with one it can overlap (8 fixed colours per base, 4:1 or
+> better), and choose the hatch ink per base (black on a street map, white on satellite). The topology counterpart of `click_isolate`: click a node
+> to keep only its shortest path to the core bright (Cytoscape `dijkstra` then `pathTo`). Screenshot pending: a sample-instance coverage view (the
+> live previews show a real site).
+
+```javascript
+// topology_map.js (apn unified-network-controller d49d2043)
+p.setAttribute("id", "unc-overlap-hatch-" + key); p.setAttribute("patternUnits", "userSpaceOnUse");
+p.setAttribute("width", "9"); p.setAttribute("height", "9"); p.setAttribute("patternTransform", "rotate(45)");
+stroke.setAttribute("stroke", OVERLAP_INK[key]); stroke.setAttribute("stroke-width", "2");   // lines only, no backing
+```
+

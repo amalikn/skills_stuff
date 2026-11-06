@@ -576,3 +576,10 @@ check`, then `nautobot-server test my_app`. Each file's content is the block in 
 >
 > No visual surface.
 
+> **Learned 2026-11-06** · Nautobot 3.2.3 app views · VERIFIED_PRIMARY (used read-only on a live host to read a plugin view's map data for previews) ·
+> Source: apn unified-network-controller topology preview harness, `just unc01::nb-shell` (d49d2043) · Falsifier: `RequestFactory` with `request.user`
+> set failing a view that `Client.force_login` renders. `reusable_candidate`.
+> **Read a plugin view's rendered data read-only with `RequestFactory`.** Build the request with `django.test.RequestFactory().get(url)`, set
+> `request.user` to an existing user, and call the view; `Client.force_login` writes a session row, which a read-only shell on production should not.
+> Screenshot: not applicable (no page change).
+

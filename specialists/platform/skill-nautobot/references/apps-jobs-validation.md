@@ -202,3 +202,32 @@ version before changing call sites. Read [upgrade and troubleshooting](upgrade-a
 > approval workflow definition matches (a `dryrun` run is exempt and executes); the work runs after `POST /api/extras/approval-workflow-stages/<id>/approve/`
 > by a member of the stage's approver group (or a superuser). Automation that both submits and approves defeats the approval's purpose: keep the
 > approve step with a person (agent tooling was refused for it on 2026-10-19).
+
+> **Learned 2026-11-06 (a)** · Nautobot 3.2.3 · VERIFIED_PRIMARY (beat log on a live 3.2.3 host: `Cannot add entry ... 'PeriodicTask' object has no
+> attribute 'celery_kwargs'`; after the change, JobResults every 5 minutes, all SUCCESS) · Source: apn unified-network-controller
+> `unc_ownership/jobs.py` `ReconcileOnboardingExecutions`, `infra/apn-unc01/env/ssot_openwisp_setup.py` `part_schedule` (commit d49d2043) · Falsifier: an
+> app's `CELERY_BEAT_SCHEDULE` entry that runs under `NautobotDatabaseScheduler`.
+> **An app's periodic work belongs in a ScheduledJob, not `CELERY_BEAT_SCHEDULE`.** Nautobot's beat runs `NautobotDatabaseScheduler`, which builds its
+> entries from its own ScheduledJob model and refuses a settings entry, while the beat heartbeat healthcheck stays green, so nothing shows it never ran.
+> Wrap the task in a Job (`hidden = True`, `has_sensitive_variables = False`, or it cannot be scheduled), enable it, and create the schedule idempotently with
+> `ScheduledJob.create_schedule(job, user, name=..., interval="custom", crontab=..., job_kwargs=...)`; check it ran by its newest JobResult, not by beat.
+> Every interval makes a JobResult (every minute is 1,440 a day; 5 minutes was enough here).
+
+```python
+# infra/apn-unc01/env/ssot_openwisp_setup.py SCHEDULE_CODE (run in nbshell; apn unified-network-controller d49d2043)
+sj = ScheduledJob.objects.filter(name=NAME).first()
+ok = sj is not None and sj.user_id == user.pk and sj.crontab == CRON and sj.kwargs == want and sj.enabled and sj.job_model_id == job.pk
+if APPLY and not ok:
+    if sj is None:
+        sj = ScheduledJob.create_schedule(job, user, name=NAME, interval="custom", crontab=CRON, job_kwargs=want)
+last = JobResult.objects.filter(job_model=job).order_by("-date_created").values_list("date_created", flat=True).first()
+```
+
+> **Learned 2026-11-06 (b)** · Nautobot 3.2.3, Golden Config 3.0.7 · VERIFIED_PRIMARY (timed read-only on a live host, 788 non-compliant rows) · Source:
+> apn unified-network-controller `wc-local/scripts/alarming/sources.py` `COMPLIANCE_QUERY` (d49d2043) · Falsifier: the REST listing at depth=1 answering
+> as fast as GraphQL on the same data.
+> **Read Golden Config compliance by GraphQL, not REST depth=1.** `GET /api/plugins/golden-config/config-compliance/?compliance=false&depth=1&limit=500`
+> took 34.5 s (11.2 s at depth=0, 2.8 s for 200 rows); `query { config_compliances(compliance: false) { device { id name } rule { feature { name }
+> platform { name } } } }` took 6.6 s for all 788. Keep ComplianceRule's display (`"<platform> - <feature>"`) if keys depend on it. A read that times out
+> after connecting raises a bare `TimeoutError`, not `URLError`: catch `OSError` subclasses too. Screenshot: not applicable (no page).
+

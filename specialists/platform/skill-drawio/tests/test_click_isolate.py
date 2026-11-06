@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
 from test_e2e_family import _diagrams, _map, _render  # the shared map helpers
 
-crossing_search, e2e, isolate, pages, profile, step_labels = (importlib.import_module(f"flowmap.{n}")
-                                                              for n in ("crossing_search", "e2e", "isolate", "pages", "profile", "step_labels"))
+band_pool, e2e, isolate, pages, profile, step_labels = (importlib.import_module(f"flowmap.{n}")
+                                                        for n in ("band_pool", "e2e", "isolate", "pages", "profile", "step_labels"))
 
 
 class ClickIsolate(unittest.TestCase):
@@ -186,9 +186,9 @@ class BandSearch(unittest.TestCase):
         base = e2e.EndToEnd(data, prof)
         band = [c for c, (_col, r) in base.cell.items() if r >= base.band]
         build = lambda swaps=(): e2e.EndToEnd(data, prof, None, swaps)
-        kept = crossing_search.band_search(base, build, prof.look)
+        kept = band_pool.band_search(base, build, prof.look)
         self.assertLessEqual(kept._crossings(set(kept.segs)), base._crossings(set(base.segs)))
-        self.assertIs(crossing_search.band_search(base, build, {"e2e_band_search": False}), base)
+        self.assertIs(band_pool.band_search(base, build, {"e2e_band_search": False}), base)
         if len(band) > 1:
             swapped = e2e.EndToEnd(data, prof, None, ((band[0], band[1]),))
             self.assertEqual(swapped.cell[band[0]], base.cell[band[1]])

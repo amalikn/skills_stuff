@@ -22,7 +22,8 @@ from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, fit_height, person_badge
 from .profile import Profile
 from .loops import draw_loops, plan_loops
-from .crossing_search import band_search, improve, swapper
+from .band_pool import band_search
+from .crossing_search import improve, swapper
 from .legend import draw_legend
 from .isolate import BOX_TAG, E2E_DIMMED, dim_level, group_tag, isolate_link, neighbour_tags, node_tag
 from .tips import comp_tags, comp_tip

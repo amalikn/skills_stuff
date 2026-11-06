@@ -16,6 +16,13 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- scripts/flowmap/band_pool.py (new, moved out of crossing_search.py): band_search's trials scored in forked workers, a chunk at a time, keeping
+  exactly the one-at-a-time result; unified-network-controller's render 183 -> 112 s, byte-identical (2026-11-06; profile: band_search was 200 of
+  250 s, one full layout per pair). `SKILL_DRAWIO_WORKERS` sets the width; a round times out after 900 s.
+- scripts/flowmap/render_cache.py (new): `pages.evaluate(need_text=False)` answers drift from the drawing hash recorded for the same render key
+  (map, profile, engine source, Python), kept per machine outside the repos; a seen key's drift check 110 -> 0.3 s; a changed or missing drawing is
+  still drift. `SKILL_DRAWIO_CACHE` sets the folder, `off` disables. Tests: tests/test_band_search_pool.py.
+- references/layout-and-routing.md (Wrapping rows by measured size) and references/visual-style.md (overlap hatch on a shared grid, click to trace a path): Learned 2026-11-06, apn unified-network-controller d49d2043; screenshots 20261106-measured-row-wrap.
 - references/layout-audits.md: Learned 2026-11-06, an edge across the notes band passes `--audit` (box_crossings skips note cards); screenshots 20261106-notes-band-crossing; ROADMAP items for that audit and for banners on paths with `--` (smc-resiliency).
 
 - Clicks: a box lights its arrows on End-to-end and step pages, a step arrow lights alone; `look.e2e_band_search` swaps band boxes; End-to-end labels take the colour beneath them; `scripts/flowmap/legend.py` split out (references/visual-style.md, references/layout-and-routing.md, 2026-11-02).

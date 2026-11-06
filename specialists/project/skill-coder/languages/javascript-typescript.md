@@ -50,6 +50,20 @@ The Google TypeScript Style Guide, the TypeScript `tsconfig` reference (`strict`
 | Module and function | Core defaults           | No change                                                        |
 | Line length         | The formatter's setting | Do not hand-format                                               |
 
+## Learned
+
+> **Learned 2026-11-06** · JavaScript, Playwright browser tests · VERIFIED_PRIMARY (Edge with playwright-core: a synthetic canvas tap crashed the
+> renderer in about half the runs; real mouse clicks passed 8 of 8; a hidden-by-filter checkbox timed out a role locator) · Source: apn
+> unified-network-controller `tests/test_topology_elk.py`, `tests/test_coverage_comparison.py` (d49d2043) · Falsifier: a synthetic `cy.emit('tap')`
+> stable over many runs.
+
+- Drive a canvas library (Cytoscape) with real mouse clicks at a node's rendered position, not a synthetic `emit('tap')`: the synthetic event with no
+  position crashed Chromium's renderer in about half the runs.
+- `getByRole` skips hidden elements by default: to assert the state of a row a search filter hid, pass `includeHidden: true`, or the locator waits
+  out its timeout.
+- Serve test scripts with a charset (`text/javascript; charset=utf-8`): a "·" in hover text came out garbled without it.
+- A browser test that needs a browser module skips without it (`skipUnless(os.environ.get(...))`), so the plain suite does not crash on `require(undefined)`.
+
 ## Open items
 
 - Formatter, test runner and module-format (ESM versus CommonJS) guidance: UNVERIFIED stubs.
