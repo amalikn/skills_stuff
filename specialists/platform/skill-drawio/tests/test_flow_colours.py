@@ -68,6 +68,13 @@ class FlowColours(unittest.TestCase):
         flows = [_flow("a", "x")]
         self.assertEqual(colours.spread_colours(flows, OLIVES), {"a": OLIVES[0]})
 
+    def test_a_pinned_colour_is_kept_and_not_reused(self) -> None:
+        """A flow with `colour` keeps it even when it is close to a neighbour's, and no other flow is given that colour."""
+        flows = [dict(_flow("a", "x"), colour="#857700"), _flow("b", "x"), _flow("c", "x")]
+        got = colours.spread_colours(flows, OLIVES)
+        self.assertEqual(got["a"], "#857700")
+        self.assertNotIn("#857700", (got["b"], got["c"]))
+
     def test_moved_maths_still_measures(self) -> None:
         """The green and olive bar is still 13.1 apart, and palette_check uses the same function."""
         self.assertAlmostEqual(colour_math.de2000("#1b7a3a", "#4d6b00"), 13.1, delta=0.1)

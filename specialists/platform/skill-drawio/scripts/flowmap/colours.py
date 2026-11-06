@@ -6,6 +6,9 @@ went to flow n in palette order. Each pair is now weighed by how much the two fl
 the numbering, which sit side by side in the legend), and colours are swapped between flows (or with an unused palette colour) while that
 lowers the shortfall below SPREAD_TARGET. Deterministic: the start is palette order and moves are tried in a fixed order.
 
+Colours can move when the map changes (a new flow or a step moved to another box changes which flows touch), so a flow whose colour readers
+have learned keeps it with `colour: "#rrggbb"` in the map: it is never moved and the others spread around it (side-agent note, 2026-11-06).
+
 Imported, not run: `from flowmap.colours import spread_colours` with the skill's scripts/ on sys.path. Stdlib only. Runtime: a 31-flow map
 settles in well under a second (measured in tests/test_flow_colours.py).
 """
@@ -59,11 +62,15 @@ def spread_colours(flows: list, palette: tuple) -> dict:
     Args:
         flows: the flows to colour, in drawing order.
         palette: the colours to use (flowmap.profile.DISTINCT); with more flows than colours, colours repeat and the cost keeps repeats apart.
+            A flow with its own `colour` keeps it, and that colour is not given to another flow.
 
     Returns:
         {flow id: colour}.
     """
-    cols = [palette[i % len(palette)] for i in range(len(flows))]
+    pinned = {i for i, f in enumerate(flows) if f.get("colour")}
+    free = [c for c in palette if c not in {f["colour"] for f in flows if f.get("colour")}] or list(palette)
+    order = iter(range(len(flows)))
+    cols = [f["colour"] if i in pinned else free[next(order) % len(free)] for i, f in enumerate(flows)]
     pairs = touches(flows)
     cache: dict = {}
 
@@ -87,9 +94,9 @@ def spread_colours(flows: list, palette: tuple) -> dict:
         if best == 0:
             break
         improved = False
-        for i in range(len(cols)):
-            spare = [c for c in palette if c not in cols]
-            for move in [("swap", j) for j in range(len(cols)) if j != i] + [("take", c) for c in spare]:
+        for i in (k for k in range(len(cols)) if k not in pinned):
+            spare = [c for c in free if c not in cols]
+            for move in [("swap", j) for j in range(len(cols)) if j != i and j not in pinned] + [("take", c) for c in spare]:
                 trial = list(cols)
                 if move[0] == "swap":
                     trial[i], trial[move[1]] = trial[move[1]], trial[i]

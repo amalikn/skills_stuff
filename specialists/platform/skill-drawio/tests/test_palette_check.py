@@ -41,6 +41,13 @@ class PaletteCheck(unittest.TestCase):
         self.assertGreater(dist, 13.1)
         self.assertGreaterEqual(palette_check.contrast(colour), 4.5)
 
+    def test_map_pairs_spread_beats_order_on_a_close_pair(self) -> None:
+        """Two flows sharing a box get mustard and bronze in palette order; the spread's closest touching pair is farther apart."""
+        flows = [{"id": "a", "steps": [{"actor": "x"}]}, {"id": "b", "steps": [{"actor": "x"}]}]
+        got = palette_check.map_pairs(flows, ["#857700", "#574b19", "#1f4e9c"])
+        self.assertEqual(got["order"][0][1:], (1, 2))
+        self.assertGreater(got["spread"][0][0], got["order"][0][0])
+
 
 if __name__ == "__main__":
     unittest.main()

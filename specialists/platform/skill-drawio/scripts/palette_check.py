@@ -11,8 +11,9 @@ Usage:
     palette_check.py                                  # measure DISTINCT, avoiding the thin grey #4b5563
     palette_check.py --suggest 5                      # also print five farthest-first additions
     palette_check.py --palette "#1f4e9c,#1b7a3a" --avoid "#4b5563"
+    palette_check.py --map docs/flows/flows.yaml      # a map's touching flow pairs: palette order against flowmap.colours' spread (needs PyYAML)
 Exit: 0 when every colour is at least 4.5:1 on white, 1 when one is not, 2 on bad arguments.
-Runtime: measuring 0.07 s; --suggest 10 1.8 s (measured 2026-10-23, the default palette).
+Runtime: measuring 0.07 s; --suggest 10 1.8 s (measured 2026-10-23, the default palette); --map 0.1 s for 19 flows, 0.5 s for 32 (2026-11-06).
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ import re
 import sys
 
 from flowmap.colour_math import contrast, de2000   # moved to the package 2026-11-06
+from flowmap.colours import spread_colours, touches
 from flowmap.profile import DISTINCT
 
 #: The oldest Python this script runs on (stdlib only).
@@ -107,6 +109,43 @@ def _colours(text: str) -> list[str]:
     return out
 
 
+def map_pairs(flows: list, palette: list[str], worst: int = 5) -> dict:
+    """The closest touching flow pairs of a map under palette order and under flowmap.colours' spread (2026-11-06, the 17 and 18 olive check).
+
+    Args:
+        flows: the map's flows, in drawing order (each with `id` and `steps`).
+        palette: the line colours.
+        worst: how many of the closest pairs to list per assignment.
+
+    Returns:
+        {"order"|"spread": [(distance, flow number, flow number), ...] closest first}; flow numbers count from 1.
+    """
+    pairs = touches(flows)
+    spread = spread_colours(flows, tuple(palette))
+    cols = {"order": [palette[i % len(palette)] for i in range(len(flows))], "spread": [spread[f["id"]] for f in flows]}
+    return {k: sorted((round(de2000(c[i], c[j]), 1), i + 1, j + 1) for (i, j) in pairs)[:worst] for k, c in cols.items()}
+
+
+def _load_flows(path: str) -> list:
+    """A map's flows, read with PyYAML (imported here: the rest of this script is stdlib only).
+
+    Args:
+        path: the flow map file.
+
+    Returns:
+        Its `flows` list.
+
+    Raises:
+        SystemExit: PyYAML is missing (exit 2).
+    """
+    try:
+        import yaml
+    except ImportError:
+        sys.exit("--map needs PyYAML: run with the project's or the pack's venv")
+    with open(path, encoding="utf-8") as fh:
+        return yaml.safe_load(fh).get("flows", [])
+
+
 def main(argv: list[str] | None = None) -> int:
     """Print the measurement (and suggestions) and return the exit status.
 
@@ -120,6 +159,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--palette", type=_colours, default=list(DISTINCT), help="comma-separated #rrggbb; default flowmap.profile.DISTINCT")
     ap.add_argument("--avoid", type=_colours, default=[THIN_GREY], help="colours to keep away from; default the thin grey")
     ap.add_argument("--suggest", type=int, default=0, help="also pick this many farthest-first additions")
+    ap.add_argument("--map", help="also list a flow map's closest touching flow pairs, palette order against the spread")
     args = ap.parse_args(argv)
     rows = measure(args.palette, args.avoid)
     for i, (c, ratio, dist, near) in enumerate(rows, 1):
@@ -127,6 +167,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"closest pair: {min(r[2] for r in rows):.1f} CIEDE2000; lowest contrast {min(r[1] for r in rows):.2f}:1")
     for c, dist, near in suggest(args.palette, args.avoid, args.suggest):
         print(f"+ {c}  {contrast(c):5.2f}:1  nearest {near} at {dist:4.1f}")
+    if args.map:
+        for kind, rows_ in map_pairs(_load_flows(args.map), args.palette).items():
+            print(f"{args.map} {kind}: " + ", ".join(f"{a}-{b} at {d}" for d, a, b in rows_))
     return 1 if any(r[1] < MIN_CONTRAST for r in rows) else 0
 
 

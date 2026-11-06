@@ -220,6 +220,11 @@
             }
           }
         },
+        "colour": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "description": "Pin this flow's End-to-end colour (#rrggbb); the other flows' colours are spread around it (flowmap.colours, 2026-11-06)."
+        },
         "tab": {
           "type": "string",
           "minLength": 1,

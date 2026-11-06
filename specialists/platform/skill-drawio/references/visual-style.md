@@ -577,5 +577,21 @@ stroke.setAttribute("stroke", OVERLAP_INK[key]); stroke.setAttribute("stroke-wid
 >             cols, best, improved = trial, cost, True
 > ```
 >
-> Screenshot: smc-resiliency `docs/flows/drawio/smc-resiliency-flows.drawio` pages "E2E: Tech stack" and "17. Tech stack / Deliver" (lab map),
-> exported to the session scratchpad; not committed to references/screenshots (no redaction needed, pending a copy).
+> Screenshot: [references/screenshots/20261106-step-box-sizing-and-legend-links/p12-legend.png](screenshots/20261106-step-box-sizing-and-legend-links/p12-legend.png)
+> (smc-resiliency "E2E: Tech stack" legend). A flow may pin its colour with `colour: "#rrggbb"` (schema, `spread_colours`): colours otherwise
+> move when the map changes which flows touch (side-agent note, 2026-11-06), so a colour readers have learned is pinned.
+
+> **Learned 2026-11-06** · step box text budget · VERIFIED_PRIMARY · Source: `scripts/flowmap/profile.py` `step_chars`, `scripts/flowmap/shapes.py`
+> `SHAPES`; UNC "32. Tech stack" page exported with draw.io 32.5.5 · Falsifier: a step box exported at the default whose last line falls outside it
+> At `step_chars` 46 (since 2026-11-02) step boxes ran short and the "via" line fell out of them (operator review 2026-11-06: "some boxes are
+> overflowing text"). Read off the render: a 220 px process box holds about 38 characters a line at font 10 (lines of 37 fit, 42 wrapped), and a
+> predefined-process box holds about 31, because draw.io insets its label by the side bars as well as by the style's spacing. Default back to 38;
+> width factor 0.75 for predefined-process and 0.88 for the slanted shapes (18 px spacing each side). Every consumer re-rendered; audits clean.
+>
+> ```python
+> # scripts/flowmap/pages.py (skill-drawio), the estimate these numbers feed
+> chars = int(look["step_chars"] * box_w[sid] / look["step_width"] * wf)
+> box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * STEP_LINE_H) * hf)
+> ```
+>
+> Screenshots: [references/screenshots/20261106-step-box-sizing-and-legend-links/](screenshots/20261106-step-box-sizing-and-legend-links/readme.md).

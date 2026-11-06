@@ -16,6 +16,9 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- scripts/flowmap/profile.py, shapes.py: `step_chars` default 46 -> 38 and predefined-process width factor 0.88 -> 0.75 (slanted shapes 0.95 -> 0.88): step boxes no longer overflow; every consumer re-rendered; references/visual-style.md Learned 2026-11-06 (step box text budget), screenshots 20261106-step-box-sizing-and-legend-links (2026-11-06).
+- scripts/flowmap/colours.py, schemas/flowmap.schema.json: a flow's `colour` pins its End-to-end colour; the spread works around it; tests/test_flow_colours.py (2026-11-06).
+- scripts/palette_check.py: `--map FILE` lists a map's closest touching flow pairs under palette order and the spread (`map_pairs`; promoted from the 2026-11-06 session's ad hoc measurement); tests/test_palette_check.py (2026-11-06).
 - scripts/flowmap/colours.py (new), colour_math.py (new, CIEDE2000 moved from palette_check.py), profile.py (`flow_colours`), tips.py, legend.py, e2e_grid.py: End-to-end flow colours spread so flows sharing a box differ (on by default; every consumer re-rendered), and each per-flow legend row links to its step page; tests/test_flow_colours.py, test_e2e_family.py; references/visual-style.md Learned 2026-11-06 (flow colours spread by distance) (2026-11-06).
 - references/visual-style.md: Learned 2026-11-06, close flow colours on a family page (smc-resiliency Tech stack, flows 17 and 18); candidate, engine not changed
 - scripts/flowmap/fold.py, profile.py, schemas/flowmap.schema.json: `look.fold_lanes` (default `used`): a folded row draws only its own lanes; tests/test_fold.py FoldLanesTests; references/visual-style.md Learned 2026-11-06 with screenshots 20261106-fold-lanes; every consumer byte-identical.
