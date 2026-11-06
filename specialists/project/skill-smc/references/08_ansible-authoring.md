@@ -2149,3 +2149,29 @@ that is not installed carries the same risk.
 > ```
 >
 > No visual surface.
+
+### `smc_bases.yml` against Ubuntu 24.04 and an image build (2026-11-06)
+
+> **Learned 2026-11-06** · ansible-wifi 074f9312 on Ubuntu 24.04.3 arm64 (smc-resiliency S3 step 8) · VERIFIED_PRIMARY · Source: `spike/build/run_roles.sh`
+> runs `roles-chroot-d` and `roles-buildvm-d` (malik-rct01's stage variables, stub secrets, ansible 14.5.0 core 2.21.5, netaddr 1.3.0) ·
+> Falsifier: the same commit running these roles clean on 24.04 with the inventory unchanged
+> - The rct inventory pins `ansible_python_interpreter=/usr/bin/python3.10` (22.04); on 24.04 (python3.12) every module fails until it is overridden.
+>   The pin belongs per OS, not per flavour.
+> - The controller needs `netaddr`, or `vars_plugins/topology_vars.py` is skipped with only a warning ("cannot load: No module named 'netaddr'").
+> - `ansible.posix` (`selinux` in `smc_system`) is not in bare ansible-core: use the `ansible` package as the operator's Mac does (14.5.0).
+> - `smc_setup` assumes `/etc/apt/sources.list` ("Disable cdrom deb" fails on a root with deb822 sources or none, as in a mkosi root).
+> - `smc_sshd` asks for service `sshd`; 24.04 names it `ssh` ("Could not find the requested service sshd"). Its two package tasks retry
+>   `retries: 60, delay: 60`: a failing install waits up to an hour each, silently; a build needs a short cap.
+> - `smc_network` adds a kernel argument and reboots ("Reboot to apply kernel arg"), rewrites netplan (`99-manual.yaml`) and runs
+>   `convert-networkd-leases.py`, which failed on a fresh VM: a runtime-render role, never in an image build.
+> - `smc_autossh` and `smc_system` ran clean on the build VM (autossh is per-site bootstrap; system is build).
+> Role classes for the read-only image (build, runtime-render, bootstrap/identity, legacy) are kept in smc-resiliency's S3 report 4.2.
+>
+> ```yaml
+> # ansible-wifi roles/smc_sshd/tasks/main.yml at 074f9312 (lines 8-10, the shape of both package tasks)
+>   until: package_installation is succeeded
+>   retries: 60
+>   delay: 60
+> ```
+>
+> No visual surface.

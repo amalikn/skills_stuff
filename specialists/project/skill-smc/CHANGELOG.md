@@ -14,6 +14,11 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)
+
+`references/08_ansible-authoring.md`: Learned 2026-11-06 (smc-resiliency S3 step 8): python3.10 pin, netaddr and ansible.posix on the controller,
+`smc_setup` sources.list, `smc_sshd` service name and 60 x 60 s retries, `smc_network` reboot and netplan. manifest 0.12.7 -> 0.12.8.
+
 ## 20261106_1605 — Parallels linked clone shares the source's address; Parallels lab behaviour (v0.12.6 -> v0.12.7)
 
 `references/11_vagrant-lab.md` 12.7: Learned 2026-11-06 (smc-resiliency SM clone): a linked clone keeps the machine-id, so DHCP hands it the
