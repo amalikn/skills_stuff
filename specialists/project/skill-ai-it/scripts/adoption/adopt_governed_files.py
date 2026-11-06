@@ -424,6 +424,28 @@ def header_gaps(root: pathlib.Path) -> list[str]:
     return gaps
 
 
+def over_budget_warning(name: str, text: str, budget: str) -> None:
+    """Say how to trim a file that gets a budget it is already over (operator, 2026-11-06: keep the ratchet, warn and route).
+
+    The freshness ratchet records the file's size today, so it can shrink but not grow: the next added line fails `just check`.
+
+    Args:
+        name: the file name.
+        text: its contents before the header is written.
+        budget: the budget being written, e.g. "150 lines, 12 KB".
+
+    Returns:
+        None; prints a warning when the file is over.
+    """
+    lines = re.search(r"(\d+)\s*lines", budget)
+    kb = re.search(r"(\d+)\s*KB", budget)
+    nlines, nbytes = text.count("\n"), len(text.encode("utf-8"))
+    if (lines and nlines > int(lines.group(1))) or (kb and nbytes > int(kb.group(1)) * 1024):
+        print(f"WARNING {name}: {nlines} lines, {nbytes // 1024} KB, over its new budget ({budget}). Its size today is the ceiling: the next added "
+              f"line fails `just check`. Trim it first: move each rule's detail to its own small file (.archcore/rules/<slug>.rule.md) and keep one "
+              f"line and a link per rule here (smc-resiliency AGENTS.md, 2026-11-06).")
+
+
 def fix_header(root: pathlib.Path, name: str) -> None:
     """Give a root file `---` front matter: fence a legacy block (moving it above an `@` import), complete a partial one, or write a new one.
 
@@ -474,6 +496,7 @@ def fix_header(root: pathlib.Path, name: str) -> None:
         new["Review by"] = (dt.date.today() + dt.timedelta(days=30)).isoformat()
     if name in FILE_BUDGETS and "Budget" not in new:
         new["Budget"] = FILE_BUDGETS[name]
+        over_budget_warning(name, text, FILE_BUDGETS[name])
     head = "\n".join(f"{k}: {fm_value(v)}" for k, v in new.items())
     p.write_text("---\n" + head + "\n---\n\n" + ("\n".join(imports) + "\n\n" if imports else "") + body, encoding="utf-8")
 
