@@ -19,7 +19,7 @@ from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BAND_HEAD, E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_SP, E2E_TIER_HEAD, E2EGrid, Link, e2e_box_lines, e2e_text_height
 from .step_labels import ground_at, label_setup, label_spot, step_label, total_words
-from .map_parts import flow_numbers, narrowed, shared_part
+from .map_parts import flow_numbers, narrowed, paged_flows, shared_part
 from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, fit_height, person_badge
 from .profile import Profile
@@ -51,6 +51,7 @@ class EndToEnd(E2EGrid):
             numbers: {flow id: its number in the whole map} for a part; default the flows' order.
         """
         super().__init__(data, profile, numbers, band_swaps)
+        self.paged = {f["id"] for f in paged_flows(data, profile)}   # flows with a step page, linked from the legend (2026-11-06)
         self.title = "**End-to-end flow: every component, every flow**"
         self.label_font, self.step_total, self.n_steps, self.label_w, self.label_h = label_setup(self.links, data, self.number, profile)
         self._improve()

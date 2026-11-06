@@ -170,6 +170,8 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/flowmap/routing.py` | Flow page forward arrows: candidate orthogonal paths scored against what is drawn (boxes, adjacent runs, reused ports, crossings), the cheapest drawn; decision branch labels | `safe` |
 | `scripts/flowmap/route_costs.py` | Flow page route costs: an arrow overshooting into a box on the right's top or bottom, or leaving a source's top or bottom toward it (both should turn in the gap) | `safe` |
 | `scripts/flowmap/uncross.py` | Flow page uncrossing pass: two forward arrows that cross are redrawn in the other order, kept only when the page has fewer crossings (`drawing.look.uncross`) | `safe` |
+| `scripts/flowmap/colours.py` | End-to-end flow colours spread by measured distance: flows sharing a box or numbered side by side get colours far apart (swaps from palette order while the CIEDE2000 shortfall falls) | `safe` |
+| `scripts/flowmap/colour_math.py` | Colour maths: WCAG contrast on white and CIEDE2000 distance (moved from `palette_check.py`, 2026-11-06) | `safe` |
 | `scripts/flowmap/tips.py` | Hover texts (components, steps, End-to-end arrows and connectors), draw.io tags, End-to-end colour and layer groups (`look.e2e_layers`) | `safe` |
 | `scripts/flowmap/pages.py` | Flow pages, `render`, `evaluate`, `write_drawing`, `flow_list`; `evaluate(need_text=False)` answers drift from the render cache | `safe` (`write_drawing` writes the drawing) |
 | `scripts/flowmap/render_cache.py` | Drift without a redraw: the drawing hash per render key (map, profile, engine source, Python), kept per machine outside the repos (`SKILL_DRAWIO_CACHE`, `off` disables) | `modifies-files` (the cache folder only) |

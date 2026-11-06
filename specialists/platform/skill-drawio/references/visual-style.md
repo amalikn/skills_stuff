@@ -553,3 +553,29 @@ stroke.setAttribute("stroke", OVERLAP_INK[key]); stroke.setAttribute("stroke-wid
 > order, so neighbours in a family can be near each other. Candidate (engine work, not changed): pick a family's flow colours to maximise their
 > distance from each other, not by palette order. Screenshot: smc-resiliency docs/flows/drawio/smc-resiliency-flows.drawio page 12 (lab map).
 
+
+> **Learned 2026-11-06** · flow colours spread by distance; legend links to step pages · VERIFIED_PRIMARY · Source: `scripts/flowmap/colours.py`
+> `spread_colours`, `scripts/flowmap/legend.py` `draw_legend`; tests/test_flow_colours.py, test_e2e_family.py `test_legend_rows_link_to_step_pages` ·
+> Falsifier: two flows that share a box drawn closer than palette order would draw them
+> Follows the candidate above, now built and on by default (operator, 2026-11-06: "On for all, re-render UNC"). Each pair of flows is weighed by
+> the boxes both act in, plus 1 for neighbours in the numbering; colours start in palette order and are swapped between flows, or with an unused
+> palette colour, while the summed squared shortfall below CIEDE2000 40 falls. The whole map is coloured once in `Profile.from_drawing`
+> (`flow_colours`), so the full page and family pages agree. Measured: smc-resiliency flows 17 and 18 went from 17.9 to 49.3 apart (0.02 s, 19 flows);
+> UNC's 32 flows settle in 0.36 s, its worst touching pair other than unavoidable repeats rose from 0.0 to 13.1. The CIEDE2000 maths moved to
+> `flowmap/colour_math.py` (a package module had imported the `palette_check.py` front end; the IDE could not resolve it, and it was a cycle).
+> Second fix from the same review: a family's End-to-end page said "flows 16, 17, 18, 19" but linked to none of their step pages, so the
+> operator could not find them. A click on a legend row isolates the flow, so each per-flow row now ends in a "step page ›" box of its own.
+>
+> ```python
+> # scripts/flowmap/colours.py (skill-drawio, after 91bba4d)
+> def _cost(cols, pairs, dist):
+>     return sum(w * max(0.0, SPREAD_TARGET - dist(cols[i], cols[j])) ** 2 for (i, j), w in pairs.items())
+> ...
+>     for move in [("swap", j) for j in range(len(cols)) if j != i] + [("take", c) for c in spare]:
+>         ...
+>         if cost < best - 1e-9:
+>             cols, best, improved = trial, cost, True
+> ```
+>
+> Screenshot: smc-resiliency `docs/flows/drawio/smc-resiliency-flows.drawio` pages "E2E: Tech stack" and "17. Tech stack / Deliver" (lab map),
+> exported to the session scratchpad; not committed to references/screenshots (no redaction needed, pending a copy).

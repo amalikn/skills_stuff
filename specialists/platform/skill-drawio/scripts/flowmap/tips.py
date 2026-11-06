@@ -19,6 +19,7 @@ import re
 from drawio.cell import tag
 from drawio.mxfile import label
 
+from .colours import spread_colours
 from .model import flow_extras, flow_family, status_text
 from .profile import DISTINCT, Profile
 
@@ -138,8 +139,8 @@ def e2e_groups(data: dict, profile: Profile, numbers: dict | None = None) -> tup
         data: the validated map, or one family's part of it.
         profile: the project's drawing profile.
         numbers: {flow id: its number in the whole map} when data is a part; a part names each flow by that number, takes colours in its
-            own order (so no colour repeats on its page; with `look.e2e_family_colours` "flow", the colour at that number, as on the full
-            page) and leaves out families with no flow on it.
+            own spread (so no colour repeats on its page; with `look.e2e_family_colours` "flow", the flow's colour on the full page) and
+            leaves out families with no flow on it. Colours are spread by flowmap.colours, so flows sharing a box differ (2026-11-06).
 
     Returns:
         (groups as (id, legend and layer name, colour, flow titles), {flow id: group id}).
@@ -148,8 +149,10 @@ def e2e_groups(data: dict, profile: Profile, numbers: dict | None = None) -> tup
     if profile.look.get("e2e_layers", "family") == "flow":
         num = numbers or {f["id"]: i for i, f in enumerate(flows, 1)}
         whole = numbers and profile.look.get("e2e_family_colours", "page") == "flow"   # a part keeps each flow's full-page colour
-        groups = tuple((f["id"], f"{num[f['id']]}. {f['title']}", DISTINCT[((num[f["id"]] if whole else i) - 1) % len(DISTINCT)], (f["title"],))
-                       for i, f in enumerate(flows, 1))
+        mapped = profile.flow_colours
+        col = ({f["id"]: mapped[f["id"]] for f in flows} if (whole or not numbers) and all(f["id"] in mapped for f in flows)
+               else spread_colours(flows, DISTINCT))   # a family page in "page" mode, or a profile built in code: spread its own flows
+        groups = tuple((f["id"], f"{num[f['id']]}. {f['title']}", col[f["id"]], (f["title"],)) for f in flows)
         return groups, {f["id"]: f["id"] for f in flows}
     of = {f["id"]: flow_family(f, profile) for f in flows}
     groups = tuple((fam, name, col, tuple(f["title"] for f in flows if of[f["id"]] == fam)) for fam, name, col, _ids in profile.families)

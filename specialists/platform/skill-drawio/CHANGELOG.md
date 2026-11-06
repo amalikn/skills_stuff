@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- scripts/flowmap/colours.py (new), colour_math.py (new, CIEDE2000 moved from palette_check.py), profile.py (`flow_colours`), tips.py, legend.py, e2e_grid.py: End-to-end flow colours spread so flows sharing a box differ (on by default; every consumer re-rendered), and each per-flow legend row links to its step page; tests/test_flow_colours.py, test_e2e_family.py; references/visual-style.md Learned 2026-11-06 (flow colours spread by distance) (2026-11-06).
 - references/visual-style.md: Learned 2026-11-06, close flow colours on a family page (smc-resiliency Tech stack, flows 17 and 18); candidate, engine not changed
 - scripts/flowmap/fold.py, profile.py, schemas/flowmap.schema.json: `look.fold_lanes` (default `used`): a folded row draws only its own lanes; tests/test_fold.py FoldLanesTests; references/visual-style.md Learned 2026-11-06 with screenshots 20261106-fold-lanes; every consumer byte-identical.
 - scripts/flowmap/e2e.py, crossing_search.py: End-to-end crossing count compares only links whose boxes share a grid cell (`CELL` 1000, `SKILL_DRAWIO_CELL`); every consumer byte-identical; unified-network-controller 85 -> 75 s, smc-resiliency 15.6 -> 12.2 s (2026-11-06). references/layout-and-routing.md: another session's 2026-11-06 entry brought to the entry format (no date suffix; evidence UNVERIFIED until its author confirms; wording kept).

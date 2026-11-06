@@ -107,9 +107,20 @@ class FamilyPages(unittest.TestCase):
                 groups.update({g[0]: g[2] for g in got})
             return groups
         data = _map(e2e_family_pages=True, e2e_layers="flow", e2e_family_colours="flow")
-        full = {f["id"]: profile.DISTINCT[(i - 1) % len(profile.DISTINCT)] for i, f in enumerate(data["flows"], 1)}
+        full = profile.Profile.from_drawing(data, "flows.yaml", "s.json", "g").flow_colours   # the full page's spread colours (2026-11-06)
         self.assertEqual(colours(data), full)
         self.assertNotEqual(colours(_map(e2e_family_pages=True, e2e_layers="flow")), full)
+
+    def test_legend_rows_link_to_step_pages(self) -> None:
+        """With one colour per flow, each End-to-end legend row has a box linking to that flow's step page (operator, 2026-11-06)."""
+        text = _render(_map(e2e_family_pages=True, e2e_layers="flow"))
+        data = _map(e2e_family_pages=True, e2e_layers="flow")
+        for d in _diagrams(text):
+            if d.get("id", "").startswith("end-to-end"):
+                links = {u.get("link") for u in d.iter("UserObject") if (u.get("id") or "").endswith("-p")}
+                shown = {f"data:page/id,flow-{f['id']}" for f in data["flows"] if f"e2e-leg-{f['id']}-p" in text or f"-leg-{f['id']}-p" in text}
+                self.assertTrue(links, d.get("id"))
+                self.assertLessEqual(links, shown, d.get("id"))
 
     def test_audits_clean_and_unused_tiers_dropped(self) -> None:
         """Every family page passes the layout audits; a family that touches two tiers draws two columns."""

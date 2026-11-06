@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .colours import spread_colours
 from .shapes import DEFAULT_IO_VIAS
 
 #: The drawing's look, settable per map under `drawing.look` (operator, 2026-10-21: aesthetics belong in the engine and in the YAML, never by
@@ -108,6 +109,8 @@ class Profile:
         kind_shapes: {component kind: flow page shape} from `drawing.kind_shapes` (flowmap.shapes.DEFAULT_KIND_SHAPES fills the rest).
         io_vias: transports that cross a network, lower case, from `drawing.io_vias` (default flowmap.shapes.DEFAULT_IO_VIAS).
         look: the drawing's look, DEFAULT_LOOK overlaid with `drawing.look`.
+        flow_colours: {flow id: colour} for the whole map, spread so flows sharing a box differ (flowmap.colours; operator, 2026-11-06);
+            empty for a profile built in code, where the pages spread their own flows.
     """
 
     map: str
@@ -136,6 +139,7 @@ class Profile:
     kind_shapes: dict = field(default_factory=dict)
     io_vias: tuple = DEFAULT_IO_VIAS
     look: dict = field(default_factory=lambda: dict(DEFAULT_LOOK))
+    flow_colours: dict = field(default_factory=dict)
 
     def style(self, kind: str) -> tuple[str, str]:
         """A kind's (fill, stroke).
@@ -192,7 +196,7 @@ class Profile:
                    no_e2e_pages=frozenset(f["id"] for f in d.get("families") or () if f.get("own_page") and f.get("e2e_page") is False),
                    band_title=d.get("band_title", "Stores and secrets"),
                    kind_shapes=dict(d.get("kind_shapes") or {}), io_vias=tuple(v.lower() for v in d.get("io_vias", DEFAULT_IO_VIAS)),
-                   look={**DEFAULT_LOOK, **(d.get("look") or {})})
+                   look={**DEFAULT_LOOK, **(d.get("look") or {})}, flow_colours=spread_colours(flows, DISTINCT) if flows else {})
 
 def layout_columns(spec: str) -> int:
     """Columns for a `group_layout` value.

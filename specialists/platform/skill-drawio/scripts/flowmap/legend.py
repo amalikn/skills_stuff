@@ -12,6 +12,9 @@ from .isolate import E2E_DIMMED, LEGEND_TAG, dim_level, group_tag, isolate_link
 from .shapes import component_shapes_used, shape_legend
 from .step_labels import legend_fit, legend_text
 
+#: Width of the link box at the end of a legend row that opens the flow's step page.
+STEP_LINK_W = 90
+
 
 def draw_legend(self: object, page: Page, right: float) -> None:
     """The family legend under the grid: a swatch and the family's flows per family, then how to read an arrow.
@@ -36,8 +39,13 @@ def draw_legend(self: object, page: Page, right: float) -> None:
         iso = {} if dim is None else {"tags": (gtag, LEGEND_TAG), "link": isolate_link(i, E2E_DIMMED, gtag, dim)}
         page.box(f"e2e-leg-{fam}-s", "", MARGIN, ly + 10, 40, 3, f"rounded=0;html=1;fillColor={col};strokeColor=none;", layer=leg, **iso)
         text = f"**{name}**{count[titles[0]]}" if per_flow else f"**{name}:** " + "; ".join(t + count[t] for t in titles)
-        page.box(f"e2e-leg-{fam}-t", label(text), MARGIN + 50, ly, right - MARGIN - 50, 24,
+        step_link = per_flow and fam in self.paged   # a click on the row isolates the flow, so its step page gets a link box of its own
+        page.box(f"e2e-leg-{fam}-t", label(text), MARGIN + 50, ly, right - MARGIN - 50 - (STEP_LINK_W + 10 if step_link else 0), 24,
                  "text;html=1;align=left;verticalAlign=middle;fontSize=12;", layer=leg, **iso)
+        if step_link:   # operator, 2026-11-06: "I can't find a step by step diagram" from a family's End-to-end page
+            page.box(f"e2e-leg-{fam}-p", label("step page ›"), right - STEP_LINK_W, ly + 2, STEP_LINK_W, 20,
+                     f"rounded=1;html=1;fillColor=#ffffff;strokeColor={col};fontColor={col};fontSize=11;align=center;verticalAlign=middle;",
+                     layer=leg, link=f"data:page/id,flow-{fam}", tooltip="Open this flow's step-by-step page")
     ly = y + 34 + len(self.groups) * 28 + 6
     text = legend_text(self.step_total, bool(self.loops), dim is not None)
     wrap, h = legend_fit(text, right - MARGIN)
