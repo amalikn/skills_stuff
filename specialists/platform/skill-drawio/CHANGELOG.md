@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- references/layout-and-routing.md: Learned 2026-11-06 (c), E2E column order for a one-flow chain and cloud text inset (smc-resiliency tech-stack map; screenshots 20261106-stack-map); candidates, engine not changed
 - scripts/profile_render.py (new) and `just profile-render`: profile one render in memory, band trials in process by default (cProfile sees only its own process); tests/test_profile_render.py. references/data-first-diagrams.md: Learned 2026-11-06, cached drift checks and profiling first.
 - scripts/flowmap/band_pool.py (new, moved out of crossing_search.py): band_search's trials scored in forked workers, a chunk at a time, keeping
   exactly the one-at-a-time result; unified-network-controller's render 183 -> 112 s, byte-identical (2026-11-06; profile: band_search was 200 of

@@ -436,3 +436,10 @@ Three traps met building a resumable fetch playbook:
 > stay over the line limit: join them as `{{ (a) ~ (b) }}` (parentheses keep `if/else` and filters bound; same rendered text, tested under Jinja).
 > Dump with a width (here 120), then `safe_load` the dump and compare with the data: a fold that changed a value refuses the write.
 
+> **Learned 2026-11-06 (l)** · extra vars with spaces · VERIFIED_PRIMARY · Source: apn smc-resiliency `spike/build/run_roles.sh`, ansible-core 2.21.5,
+> 2026-11-06 · Falsifier: `-e key='a b'` reaching the play as one value
+> `-e ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'` is split at the spaces, and ssh got a bare `-o`
+> ("argument -o: expected one argument", then "A worker was found in a dead state"). Pass such a value as JSON:
+> `-e '{"ansible_ssh_common_args": "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"}'`. Also: an inventory that pins
+> `ansible_python_interpreter=/usr/bin/python3.10` (Ubuntu 22.04) fails every module on 24.04 (python3.12); pin the interpreter per OS.
+

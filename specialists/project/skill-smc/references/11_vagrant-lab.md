@@ -212,3 +212,22 @@ an hour of silence, not an error.
 > end
 > # provisioner report: for t in systemd-sysext systemd-confext systemd-dissect /usr/lib/systemd/systemd-sysupdate; do ...; done
 > ```
+
+> **Learned 2026-11-06** · Parallels linked clone of a Vagrant VM · VERIFIED_PRIMARY · Source: smc-resiliency SM clone `smc-pi-sm01` of `smc-pi-spike01`
+> (`prlctl clone --linked`, `prlctl set --device-set net0 --mac auto`); `vagrant ssh smc-pi-spike01` then printed the clone's `/boot` marker · Falsifier:
+> a clone with a new MAC that takes its own DHCP address while its machine-id is unchanged
+> A linked clone keeps the source's `/etc/machine-id`. systemd-networkd's DHCP client identifier comes from it, so the Parallels shared network
+> gave the clone the source's address (10.211.55.32) even with a new MAC, and `vagrant ssh <source>` and `vagrant upload` reached the clone
+> instead, without an error. Symptoms seen first: a stale package after an upload, a test server that "listened" yet refused connections, an
+> upload that vanished. Give a clone no shared network (disconnect net0 and net1) or a new machine-id before it boots; guard every lab driver
+> with a marker only the clone carries. Other Parallels facts from the same day: Parallels clones only a stopped VM (not running, not
+> suspended); `prlctl exec` ends every process the command started when it returns, even `setsid -f` (use a `systemd-run` unit or a
+> `vagrant ssh` session that stays open), and reports any non-zero exit as "Invalid argument"; `prlctl exec "VAR=x cmd"` fails (no shell:
+> use `bash -c`); a linked clone's disk stored 0.8 GB of changes after a day of setup. Restarting a VM turns NIC offloads back on (lab fault S3-6 returns until shaping runs again).
+>
+> ```bash
+> # smc-resiliency spike/vm/s3/s3_case.sh (2026-11-06): every remote command refuses to run on the SM clone
+> on() { (cd "$VD" && timeout "$2" vagrant ssh "$1" -c "sudo bash -c $(printf %q "test ! -e /boot/smc-ramcow-installed || { echo \"refused: reached the SM clone, not the intended VM\" >&2; exit 97; }; $3")" "${SSH_OPTS[@]}"); }
+> # spike/vm/sm/setup_sm.sh: the clone keeps no shared network once set up
+> timeout 60 prlctl set "$VM" --device-set net0 --disconnect
+> ```

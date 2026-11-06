@@ -134,6 +134,7 @@ class AdoptTest(unittest.TestCase):
             agents = (root / "AGENTS.md").read_text()
             self.assertTrue(agents.startswith("---\nTitle: P Agent Policy\n"))
             self.assertIn("\n---\n\n@../AGENTS.md\n\n# AGENTS.md", agents)
+            self.assertIn("Budget: 150 lines, 12 KB", agents)   # read whole on every request (operator, 2026-11-06)
             readme = (root / "README.md").read_text()
             self.assertIn("Summary: What this project does, in one paragraph.", readme)
             self.assertIn("Budget: 200 lines, 25 KB", readme)

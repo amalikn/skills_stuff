@@ -14,6 +14,12 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261106_1605 — Parallels linked clone shares the source's address; Parallels lab behaviour (v0.12.6 -> v0.12.7)
+
+`references/11_vagrant-lab.md` 12.7: Learned 2026-11-06 (smc-resiliency SM clone): a linked clone keeps the machine-id, so DHCP hands it the
+source's address and `vagrant ssh <source>` silently reaches the clone; clone only a stopped VM; `prlctl exec` ends what it started and has no
+shell; a restart turns NIC offloads back on. manifest 0.12.6 -> 0.12.7.
+
 ## 20261106_1545 — smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 -> v0.12.6)
 
 `references/19_smc-change-role.md`: new section, Export to a company role (Learned 2026-11-06, local-knowledge-ansible 7056782): `just export_change`,

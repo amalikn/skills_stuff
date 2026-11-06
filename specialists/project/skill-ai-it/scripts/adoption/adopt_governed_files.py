@@ -335,6 +335,9 @@ HEADED = {
     "CONVENTIONS.md": ("conventions", "canonical", "Naming, style and anti-patterns for this project."),
     "SETUP.md": ("setup", "canonical", "Prerequisites, pinned versions, bootstrap, environment variable names and first run."),
 }
+# Files read whole on every request get an explicit size budget in their front matter (operator, 2026-11-06: "add budget to the governance
+# files"); doc_freshness enforces any `Budget: N lines, M KB` header, and grandfather_sizes keeps a file already over from failing at once.
+FILE_BUDGETS = {"README.md": "200 lines, 25 KB", "AGENTS.md": "150 lines, 12 KB", "AI_NAVIGATION.md": "150 lines, 12 KB"}
 RECORD_SCOPE = {"log": "Dated changes to this project", "state": "Working state between sessions", "roadmap": "Current phase and open milestones"}
 
 
@@ -416,8 +419,8 @@ def header_gaps(root: pathlib.Path) -> list[str]:
             text = p.read_text(encoding="utf-8")
             if not has_header(text):
                 gaps.append(f"{name}: front matter")
-            elif name == "README.md" and not re.search(r"(?m)^Budget:", text.split("\n---", 1)[0]):
-                gaps.append("README.md: Budget key")
+            elif name in FILE_BUDGETS and not re.search(r"(?m)^Budget:", text.split("\n---", 1)[0]):
+                gaps.append(f"{name}: Budget key")
     return gaps
 
 
@@ -425,7 +428,7 @@ def fix_header(root: pathlib.Path, name: str) -> None:
     """Give a root file `---` front matter: fence a legacy block (moving it above an `@` import), complete a partial one, or write a new one.
 
     The new header's Title is the first heading, its Summary the first paragraph; `Last reviewed` is the last commit and `Review by` 30 days on,
-    so the file is read before it counts as reviewed. README also gets `Budget: 200 lines, 25 KB` (it is read whole).
+    so the file is read before it counts as reviewed. A file in FILE_BUDGETS (README, AGENTS.md, AI_NAVIGATION.md: read whole) also gets its `Budget`.
 
     Args:
         root: the project root.
@@ -469,8 +472,8 @@ def fix_header(root: pathlib.Path, name: str) -> None:
     new |= {k: v for k, v in keys.items() if k not in new}
     if "Last reviewed" not in keys and "Review by" not in keys:
         new["Review by"] = (dt.date.today() + dt.timedelta(days=30)).isoformat()
-    if name == "README.md" and "Budget" not in new:
-        new["Budget"] = "200 lines, 25 KB"
+    if name in FILE_BUDGETS and "Budget" not in new:
+        new["Budget"] = FILE_BUDGETS[name]
     head = "\n".join(f"{k}: {fm_value(v)}" for k, v in new.items())
     p.write_text("---\n" + head + "\n---\n\n" + ("\n".join(imports) + "\n\n" if imports else "") + body, encoding="utf-8")
 

@@ -224,3 +224,11 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 >  own. When a script checks many hosts before acting, run the checks at once and print a line per host as each lands: one at a time with no
 >  output (30 s timeout each), the operator read it as stalled and stopped it before anything ran.
 
+> **Learned 2026-11-06** · editing a script a job is running · VERIFIED_PRIMARY · Source: apn smc-resiliency S3 batch, `spike/vm/s3/s3_case.sh`
+> edited while a background batch executed it, 2026-11-06 · Falsifier: bash reading a whole script before running it
+> Bash reads a script as it runs, by byte offset. Editing a script while a job executes it can make the job run a mix of old and new lines
+> (this one survived by luck: the edit landed after the running command). Edit a copy and swap it in between runs, or wait for the job; a batch
+> that calls the script anew per case is safe between cases, never during one. Also from that session: `prlctl exec <vm> "VAR=x cmd"` runs no
+> shell (wrap it in `bash -c`), and a helper that derives an argument from a remote command (`$(prlctl exec ... | sed ...)`) must refuse an
+> empty result: an empty slot name made a "wipe" print its usage and the next case ran on an unwiped slot.
+

@@ -156,6 +156,23 @@ check: _require-venv
 > time (delay, then rate, then loss) and check each against theory (a 1 MiB fetch at 700 ms takes a few round trips, not minutes); (3) only then
 > measure the thing under test, and record the instrument's own fixes beside the results.
 
+> **Learned 2026-11-06 (b)** · timed cases with an injected fault · VERIFIED_PRIMARY · Source: apn smc-resiliency `spike/vm/s3/s3_case.sh`
+> and `shape_link.sh` (verify mode), technical audit F10, 2026-11-06 · Falsifier: a driver that times a case on an unverified link, or counts a
+> fault that fired after the work ended, and is still right
+> **A result counts only when its setup is read back and its fault overlapped the work.** Read the applied set-up back on every end before
+> timing (here: qdisc rate, delay and loss, MTU, offloads, no leftover cut table); record when the fault fired against the work's own start and
+> end, cancel a fault still waiting when the work ends, and mark the case INVALID instead of logging a valid-looking line. It fired the same
+> day: a power cut scheduled at 120 s met an install that ended at 25 s, and the line said INVALID instead of "survived a power cut".
+>
+> ```bash
+> # smc-resiliency spike/vm/s3/s3_case.sh (2026-11-06)
+> if ! V=$(verify_link "$P"); then echo "... INVALID instrument: $V" | tee -a "$LOG"; shape off; exit 3; fi
+> (sleep "$KILL_AT"; date +%s > "$FIRED"; prlctl stop "$BOX" --kill) & WPID=$!
+> T0=$(date +%s); OUTTXT=$(on "$BOX" 7200 "$RUN ..."); RC=$?; T1=$(date +%s)
+> if [ -s "$FIRED" ] && [ "$(cat "$FIRED")" -lt "$T1" ]; then OVERLAP=" fault_at=$(( $(cat "$FIRED") - T0 ))s"
+> else kill "$WPID" 2>/dev/null; OVERLAP=" INVALID: install ended before the fault fired"; fi
+> ```
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with

@@ -60,16 +60,35 @@ def size(path: pathlib.Path) -> tuple[int, int]:
     return data.count(b"\n"), len(data)
 
 
-def over(lines_bytes: tuple[int, int]) -> bool:
-    """Whether a size is over the budget.
+def file_budget(path: pathlib.Path) -> tuple[int, int]:
+    """The budget a file states in its front matter (`Budget: 150 lines, 12 KB`), else the default.
+
+    Args:
+        path: the file.
+
+    Returns:
+        (maximum lines, maximum bytes); a part not stated keeps the default.
+    """
+    text = path.read_text(encoding="utf-8", errors="replace")
+    head = text[4:].split("\n---", 1)[0] if text.startswith("---\n") else ""
+    m = re.search(r"(?m)^Budget:\s*(.*)$", head)
+    value = m.group(1) if m else ""
+    lines = re.search(r"(\d+)\s*lines", value, re.I)
+    kb = re.search(r"(\d+)\s*KB", value, re.I)
+    return (int(lines.group(1)) if lines else BUDGET[0], int(kb.group(1)) * 1024 if kb else BUDGET[1])
+
+
+def over(lines_bytes: tuple[int, int], budget: tuple[int, int] = BUDGET) -> bool:
+    """Whether a size is over a budget.
 
     Args:
         lines_bytes: (lines, bytes).
+        budget: (maximum lines, maximum bytes); the default when not given.
 
     Returns:
         True when either is over.
     """
-    return lines_bytes[0] > BUDGET[0] or lines_bytes[1] > BUDGET[1]
+    return lines_bytes[0] > budget[0] or lines_bytes[1] > budget[1]
 
 
 def sections(text: str) -> list[tuple[str, int]]:
@@ -298,9 +317,10 @@ def main(argv: list[str] | None = None) -> int:
         print(run(["roadmap_trim.py", "--project-root", str(root)] + (["--apply"] if args.apply else []))[1])
     for name in REPORT_ONLY:
         p = root / name
-        if p.is_file() and over(size(p)):
+        if p.is_file() and over(size(p), file_budget(p)):
             top = sorted(sections(p.read_text()), key=lambda x: -x[1])[:4]
-            print(f"{name}: {size(p)[0]} lines, {size(p)[1] // 1024} KB: OVER; largest sections: " + ", ".join(f"{h[3:]} ({n})" for h, n in top)
+            b = file_budget(p)
+            print(f"{name}: {size(p)[0]} lines, {size(p)[1] // 1024} KB: OVER its budget ({b[0]} lines, {b[1] // 1024} KB); largest sections: " + ", ".join(f"{h[3:]} ({n})" for h, n in top)
                   + ". Rules stay; move reference with move_sections.py.")
             text = p.read_text()
             if ("skill-ai-it:navigation" in text and "skill-ai-it-version: 2026-10-10-compact" not in text
