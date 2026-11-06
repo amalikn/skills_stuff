@@ -281,6 +281,7 @@ def improve(grid: object) -> None:
     """
     grid.pts, grid.segs, grid.bbox, grid.spans, grid.span_keys = {}, {}, {}, {}, {}
     grid.shape, grid.shape_ids, grid.pair_memo = {}, {}, {}   # e2e._crossings' memo: crossings per pair of distinct polylines
+    grid.bucket, grid.cells_of = {}, {}   # e2e's spatial index of the link boxes, kept by _refresh
     every = {link.cid for link in grid.links}
     grid._refresh(every)
     start = deepcopy((grid.vslot, grid.gslot, grid.pools))

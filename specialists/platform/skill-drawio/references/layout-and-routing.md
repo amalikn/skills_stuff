@@ -234,9 +234,9 @@ function deal(cap) {                                                  // rows un
 }
 ```
 
-> **Learned 2026-11-06 (c)** · E2E column order and cloud text · reusable_candidate · Source: smc-resiliency `docs/flows/stack/` map, rendered with
+> **Learned 2026-11-06** · E2E column order and cloud text · VERIFIED_PRIMARY · Source: smc-resiliency `docs/flows/stack/` map, rendered with
 > this pack 2026-11-06; screenshots in [references/screenshots/20261106-stack-map/](screenshots/20261106-stack-map/readme.md) · Falsifier: a chain
-> drawn top to bottom by the current ordering, or a cloud whose text keeps a margin at every length
+> drawn top to bottom by the current ordering, or a cloud whose text keeps a margin at every length. `reusable_candidate`.
 > Two looks a reviewer would flag, not caught by the audit (no overlap): (1) when one flow is a chain through a column (here nine build tools),
 > barycentre ordering pulls a box toward a neighbour in another tier (the bundle box, linked to the release store), so the chain zig-zags and one
 > arrow runs back up the column; a column whose boxes are steps of one flow could keep step order. (2) step text inside a `cloud` shape reaches the

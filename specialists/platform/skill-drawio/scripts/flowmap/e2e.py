@@ -10,6 +10,8 @@ Imported, not run: `from flowmap.e2e import end_to_end_page` with the skill's sc
 
 from __future__ import annotations
 
+import os
+
 from dataclasses import replace
 
 from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, header_height, label
@@ -31,6 +33,10 @@ from .tips import comp_tags, comp_tip
 
 #: The fills behind the End-to-end grid: a tier's column stripe and the band below the columns.
 STRIPE_FILL, BAND_FILL = "#f4f6f9", "#fbf8ee"
+#: Side, in drawing units, of the square cells the link boxes are indexed by in _crossings: two links whose boxes share no cell cannot cross, so
+#: only links sharing a cell are compared (the count is the same as comparing every link; 2026-11-06, the local search's hot loop). Measured on
+#: unified-network-controller's map, every consumer byte-identical: none 85 s, 150 160 s (cell upkeep dominates), 400 85 s, 1000 75 s, 2000 73 s.
+CELL = int(os.environ.get("SKILL_DRAWIO_CELL", 1000))
 
 
 class EndToEnd(E2EGrid):
@@ -108,12 +114,14 @@ class EndToEnd(E2EGrid):
             The count.
         """
         n = 0
-        memo, shape = self.pair_memo, self.shape
+        memo, shape, segs, bucket = self.pair_memo, self.shape, self.segs, self.bucket
         for a in cids:
-            sa, (ax0, ay0, ax1, ay1), ka = self.segs[a], self.bbox[a], shape[a]
-            for b, sb in self.segs.items():
+            sa, (ax0, ay0, ax1, ay1), ka = segs[a], self.bbox[a], shape[a]
+            near = set().union(*(bucket[c] for c in self.cells_of[a]))   # links sharing a grid cell: every other one has a box apart
+            for b in near:
                 if b == a or (b in cids and b < a):
                     continue
+                sb = segs[b]
                 bx0, by0, bx1, by1 = self.bbox[b]
                 if bx0 > ax1 or ax0 > bx1 or by0 > ay1 or ay0 > by1:   # boxes apart: no crossing (keeps the search fast)
                     continue
@@ -134,7 +142,13 @@ class EndToEnd(E2EGrid):
             self.pts[cid] = self.points(self.by[cid])
             self.segs[cid] = oriented(self.pts[cid])
             xs, ys = [x for x, _y in self.pts[cid]], [y for _x, y in self.pts[cid]]
-            self.bbox[cid] = (min(xs), min(ys), max(xs), max(ys))
+            self.bbox[cid] = box = (min(xs), min(ys), max(xs), max(ys))
+            for c in self.cells_of.pop(cid, ()):   # the spatial index _crossings reads (2026-11-06): drop the old cells, add the new
+                self.bucket[c].discard(cid)
+            cells = [(i, j) for i in range(int(box[0] // CELL), int(box[2] // CELL) + 1) for j in range(int(box[1] // CELL), int(box[3] // CELL) + 1)]
+            for c in cells:
+                self.bucket.setdefault(c, set()).add(cid)
+            self.cells_of[cid] = cells
             self.shape[cid] = self.shape_ids.setdefault(tuple(self.pts[cid]), len(self.shape_ids))   # one id per distinct polyline
             for key in self.span_keys.pop(cid, ()):   # the vertical runs _runs_ok reads, kept with the polylines (2026-10-29: 2.6 s on UNC)
                 del self.spans[key]

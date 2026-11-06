@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing and running skill-drawio, both as a pack under development and from a calling project
-Last reviewed: 2026-11-02
+Last reviewed: 2026-11-06
 Summary: >-
   A working setup needs mise, just, Python 3.11 or later with PyYAML for flow maps, and draw.io desktop only for exporting pages to images; the pack's
   own venv lives in the skills working cache.
@@ -54,7 +54,9 @@ front ends with its own interpreter (it needs PyYAML for maps), from the project
 
 ## Environment
 
-No secrets. One optional variable: `BROWSER_PY`, an interpreter with Playwright for `just viewer-click` (default `python3` on `PATH`). The draw.io binary is found on `PATH` (`drawio`, `draw.io`), then in the usual install paths (`scripts/drawio/export.py` `CANDIDATES`: the macOS app bundle,
+No secrets. Optional variables: `BROWSER_PY`, an interpreter with Playwright for `just viewer-click` (default `python3` on `PATH`);
+`SKILL_DRAWIO_WORKERS`, band-search worker processes (default the cores less one, at most 8; 1 runs them in process); `SKILL_DRAWIO_CACHE`, the
+render-cache folder (default `~/.cache/skill-drawio`; `off` disables); `SKILL_DRAWIO_CELL`, the crossing index's cell size (default 1000). `just profile-render` profiles a slow render. The draw.io binary is found on `PATH` (`drawio`, `draw.io`), then in the usual install paths (`scripts/drawio/export.py` `CANDIDATES`: the macOS app bundle,
 `/usr/bin/drawio`, `/opt/drawio/drawio`, the Windows default); `--binary` overrides it.
 
 ## First run
