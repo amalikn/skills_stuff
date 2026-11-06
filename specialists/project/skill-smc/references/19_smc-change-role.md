@@ -1065,8 +1065,7 @@ smc_change is the operator's own test tool; the company repo must not depend on 
   is kept (the export refuses and names it) unless `--overwrite-edits`.
 - **What it carries**: applies_to (flavor as `inventory_dir | basename`, arch by `uname -m`), applies_when and conditions (a fact condition reads the
   registered fact and is false when the fact failed), facts before and after, `copy` (loops expanded as `templates/spec_actions.j2`, transient copies
-  removed after verify passes) and `command` (check, then cmd only when it fails, under `timeout --kill-after=30`; no re-check, as the role), a backup
-  folder `<smc_change_backup_dir>/<change>-<stamp>` with `paths.tgz`, which the AVR scripts look up by glob, restart (services, and restart.yml's
+  removed after verify passes) and `command` (check, then cmd only when it fails, under `timeout --kill-after=30`; no re-check, as the role), a backup folder `<smc_change_backup_dir>/<change>-<stamp>` with `paths.tgz`, made only when an action will change something (each command's check and each kept copy in check mode, read first), so the rollback's newest backup is always the last run that changed the SMC (side-agent note, 2026-11-06: a no-op rerun's backup would hold the new values; local-knowledge-ansible 567a61d), which the AVR scripts look up by glob, restart (services, and restart.yml's
   stop-and-relaunch shell for processes), verify (`services_active` and `commands` before and after, `logs`, `proves`) and a rollback file (undo last
   first with `SMC_CHANGE_BACKUP`).
 - **What it leaves out**: probe, guard, journal, records, soak, reboot, overlay (the play's first task owns it, operator 2026-11-06), and the fail

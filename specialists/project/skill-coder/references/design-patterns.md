@@ -1371,7 +1371,8 @@ for cand in candidates(current)[1:]:          # proxy-ranked, current first
 - **Pitfalls:** the engine's safety that lives above a single change (a batch fail gate) cannot be carried in a file and must be named for the caller
   (here: the play must set `max_fail_percentage: 0` and `serial`); helper scripts often depend on the engine's runtime layout (a backup folder they look
   up by glob), so the export recreates that layout; output formatting to pass the target's linter may change values, so the dump is read back and
-  compared with the data, and a mismatch refuses the export. Related: P-01, P-12 (plan, print, then apply).
+  compared with the data, and a mismatch refuses the export; a rollback that takes the newest backup breaks once a no-op rerun writes a
+  backup of the new values, so make the backup only when a read-only pre-check says an action will change something (567a61d). Related: P-01, P-12 (plan, print, then apply).
 - **Realised in:** Python, excerpt below.
 
 ```python

@@ -109,6 +109,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 ## Audit and preflight
 
 - [ ] (2026-11-05) `budget_plan.py --apply` audit reports `LOST` SCRATCHPAD lines (85 in local-knowledge ansible-wifi-root-governance, 6 in skill-smc) and exits 1, yet every line of the committed SCRATCHPAD and CHANGELOG is still in the files or `docs/history/` (checked line by line, whitespace-normalised); skill-smc's SCRATCHPAD was not even changed. The audit seems to compare against an older baseline: find what it compares and stop the false fail.
+  Recurred 2026-11-06 15:55 (ansible-wifi-root-governance, same 85): the only changed old line was the front-matter `Last rotated`; every other line of the committed SCRATCHPAD was found in SCRATCHPAD.md or `docs/**` (whitespace-normalised). Exit 1 again; `just check` passed.
 - [ ] **`upgrade_navigation_control_layer.py` writes without `--apply`** (found 2026-10-21, unified-network-controller): it writes unless
   `--dry-run` is given, against the write-gate rule (skill-coder `safety-and-writes`), and `budget_plan.py` tells the user to run it bare when AGENTS.md
   is over budget. It failed early there only because PyYAML was missing. Give it `--apply` (plan by default) and print the plan command in the budget hint.
