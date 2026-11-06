@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- scripts/flowmap/fold.py, profile.py, schemas/flowmap.schema.json: `look.fold_lanes` (default `used`): a folded row draws only its own lanes; tests/test_fold.py FoldLanesTests; references/visual-style.md Learned 2026-11-06 with screenshots 20261106-fold-lanes; every consumer byte-identical.
 - scripts/flowmap/e2e.py, crossing_search.py: End-to-end crossing count compares only links whose boxes share a grid cell (`CELL` 1000, `SKILL_DRAWIO_CELL`); every consumer byte-identical; unified-network-controller 85 -> 75 s, smc-resiliency 15.6 -> 12.2 s (2026-11-06). references/layout-and-routing.md: another session's 2026-11-06 entry brought to the entry format (no date suffix; evidence UNVERIFIED until its author confirms; wording kept).
 - references/layout-and-routing.md: Learned 2026-11-06 (c), E2E column order for a one-flow chain and cloud text inset (smc-resiliency tech-stack map; screenshots 20261106-stack-map); candidates, engine not changed
 - scripts/profile_render.py (new) and `just profile-render`: profile one render in memory, band trials in process by default (cProfile sees only its own process); tests/test_profile_render.py. references/data-first-diagrams.md: Learned 2026-11-06, cached drift checks and profiling first.

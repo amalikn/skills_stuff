@@ -655,6 +655,14 @@
               "minimum": 2,
               "description": "Columns per row on a folded flow page (default 7)."
             },
+            "fold_lanes": {
+              "type": "string",
+              "enum": [
+                "used",
+                "all"
+              ],
+              "description": "Lanes of a folded row: used (default: only the lanes its steps use, in the flow's order) or all (every lane of the flow in every row)."
+            },
             "last_row_align": {
               "type": "string",
               "enum": [

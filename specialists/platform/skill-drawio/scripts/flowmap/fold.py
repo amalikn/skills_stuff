@@ -255,9 +255,15 @@ def _place(page: Page, ctx: tuple, sized: tuple, plan: tuple, at: tuple) -> list
     """
     rows, row_gaps, style, tracks, leaving, lanes, width, geo, draw_step = plan
     top, merged = at
+    flow, _comps, _number, profile = ctx
+    every = merged or profile.look.get("fold_lanes", "used") == "all"
     placed = []
     for r, ks in enumerate(rows):
-        row = _row(page, ctx, sized, (r, ks, style == "serpentine" and r % 2 == 1, row_gaps[r], top, lanes, width, geo, draw_step,
+        # A row draws only the lanes its own steps use, in the flow's lane order (operator, 2026-11-06: "what is the point of creating those
+        # extra swim lanes which don't have even an entry and repeating them" for every row); `look.fold_lanes: all` keeps every lane per row.
+        used = {flow["steps"][k]["actor"] for k in ks}
+        mine = lanes if every else [a for a in lanes if a in used]
+        row = _row(page, ctx, sized, (r, ks, style == "serpentine" and r % 2 == 1, row_gaps[r], top, mine, width, geo, draw_step,
                                        leaving.get(r, 0), merged))
         placed.append(row)
         top = row["notes_bottom"] + 2 * GAP + TRACK * tracks.get(r, 0)

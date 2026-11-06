@@ -53,6 +53,48 @@ def _page(data: dict, **look: object) -> object:
     return pages.flow_page(data["flows"][0], comps, 1, prof)
 
 
+def _one_per_lane(n: int = 6) -> dict:
+    """A map whose one flow has n steps, each by its own component (one step per lane).
+
+    Args:
+        n: the number of steps.
+
+    Returns:
+        The map.
+    """
+    data = TestMap._minimal()
+    base = data["components"][0]
+    data["components"] = [{k2: v for k2, v in dict(base, id=f"c{k}", name=f"C{k}").items() if k2 != "depends_on"} for k in range(n)]
+    data["flows"][0].update(runs_on="c0", owner="c1")
+    data["flows"][0]["steps"] = [{"id": f"s{k}", "actor": f"c{k}", "action": "x", "via": ["API"]} for k in range(n)]
+    return data
+
+
+class FoldLanesTests(unittest.TestCase):
+    """A folded row draws only the lanes its steps use (operator, 2026-11-06); `fold_lanes: all` keeps every lane in every row."""
+
+    def _lanes(self, page: object) -> int:
+        """Count the lane bands drawn on a page.
+
+        Args:
+            page: a flow page.
+
+        Returns:
+            The number of lane cells.
+        """
+        import re
+        return len(re.findall(r'id="[^"]*-lane-\d+"', "\n".join(page.cells)))
+
+    def test_rows_draw_only_their_lanes(self) -> None:
+        """Six steps, one per lane, in rows of three: two rows of three lanes, not two of six; `all` keeps the old twelve."""
+        data = _one_per_lane()
+        used = _page(data, fold="z", fold_after=3)
+        every = _page(data, fold="z", fold_after=3, fold_lanes="all")
+        self.assertEqual(self._lanes(used), 6)
+        self.assertEqual(self._lanes(every), 12)
+        self.assertEqual(audit.faults(audit.page_audit(used)), [])
+
+
 class FoldRowsTests(unittest.TestCase):
     def test_rows_off_short_and_long(self) -> None:
         """Off or a flow that fits draws one row; otherwise rows of fold_after steps, the last part-filled; a flow's layout wins."""

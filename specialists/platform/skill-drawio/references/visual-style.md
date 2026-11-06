@@ -183,6 +183,16 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
   narrow ... look at the end of the swim lanes and the gap that you have given on the other pages"). A step other than the row's last drops at once towards a later row, never out to the row's end and
   back; of a decision's branches into later rows the nearest takes the leading corner and the rest drop from the bottom corner (operator review 2026-10-27 of a z fold). Known limit: two gutters of
   different rows can land a few px apart on a crowded page, and the audit then reports an arc clash; try another `fold_after` with `render_flowmap.py --audit --look fold_after=N`.
+
+> **Learned 2026-11-06** · folded flow pages · VERIFIED_PRIMARY · Source: `scripts/flowmap/fold.py` `_place` (`look.fold_lanes`) and
+> `tests/test_fold.py` `FoldLanesTests` (a 20-step, one-step-per-lane flow: 11,793 to 4,593 px tall; every consumer byte-identical) ·
+> Falsifier: a folded row that needs a lane none of its steps use.
+
+A folded row draws only the lanes its own steps use, in the flow's lane order (`look.fold_lanes: used`, the default; `all` keeps every lane
+in every row). Drawing every lane in every row left a one-step-per-lane flow mostly empty, its full lane list repeated per row (operator,
+2026-11-06: "what is the point of creating those extra swim lanes which don't have even an entry"). One lane for the whole flow keeps its
+single lane. Each row of such a flow is still a short staircase: for it, a flowchart or a layered stack reads better than lanes. Screenshots:
+`screenshots/20261106-fold-lanes/`.
 - `look.click_isolate` (true, or the opacity of the rest) makes one click show a colour alone and a second click show everything: on the End-to-end pages a step arrow, its label, a dashed connector or
   a legend row (other rows dim too); on the Overview a thick arrow, its count, a dot, a thin arrow or a legend row. A click on another colour switches in one click; there is no "Show all" button.
   Nothing is saved: the file never counts as changed. The clickable layers are locked (the editor runs a link on a click only there). `look.lock_base_layer` locks every page's background layer;

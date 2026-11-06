@@ -60,6 +60,7 @@ DEFAULT_LOOK = {
     "route_under": True,           # flow pages: arrows may also run just below the boxes they pass; the router takes that when it scores cleaner (operator, 2026-11-02)
     "run_spacing": 40,             # flow pages: least space between parallel arrows in px, and keeps long runs off lane edges (operator, 2026-11-02)
     "fold_after": 7,               # columns per row when `fold` is on; a flow sets its own with `layout: {fold, fold_after}`
+    "fold_lanes": "used",          # a folded row draws only the lanes its steps use ("used") or every lane of the flow ("all"; operator, 2026-11-06)
 }
 
 #: Thick arrow and family colours: distinct hues, each at least 4.5:1 on white (blue, green, red, purple, teal, olive, magenta, orange,
