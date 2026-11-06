@@ -63,6 +63,7 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 | ---------------------------- | -------------------------------------------------------------------------------------------- |
 | `scripts/render_flowmap.py`  | Validate a flow map and render it (`--write`), report drift, list flows, or audit the layout |
 | `scripts/drawio_export.py`   | Export pages (counted from 1) and layers to PNG/SVG with the desktop app, under a timeout    |
+| `scripts/profile_render.py`  | Profile one render (load, render, heaviest functions); writes nothing                        |
 | `scripts/drawio_read.py`     | Print an existing drawing's boxes and connections (compressed pages decoded); read-only      |
 | `scripts/trace_sync.py`      | Hold a map to the code: suspect steps, uncited code, stale words; `--accept` records a review |
 | `scripts/trace_query.py`     | Ask a map what happens: a flow, the steps citing a file, what writes or fails                 |

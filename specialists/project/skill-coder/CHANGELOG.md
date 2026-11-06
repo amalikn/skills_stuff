@@ -16,6 +16,7 @@ Last rotated: 20261106_1030
 
 ## Unreleased
 
+- references/efficiency-and-measurement.md: Learned 2026-11-06, a per-check budget inside a suite, a render keyed by its inputs, profile with workers off (apn unified-network-controller).
 - references/testing.md: Learned 2026-11-06, prove the instrument before trusting what it measures; languages/shell.md: Learned 2026-11-06, never edit a script while it runs (apn smc-resiliency S3).
 - languages/javascript-typescript.md: Learned 2026-11-06, Playwright: real clicks on canvas, includeHidden for filtered rows, charset, skip guard (apn unified-network-controller d49d2043).
 - references/design-patterns.md: P-58 second use (an evaluator holds what an unread or half-written input proves; Learned 2026-11-06, apn unified-network-controller 5c563f8b); no longer a candidate.

@@ -41,3 +41,25 @@ the project's staleness or monitoring warning. Why: when measurement is built in
 ## Check suites count
 
 A governance check suite has a budget too (the skill-ai-it doctrine sets 10 seconds, with a `--timings` view per family). Why: a slow check gets skipped.
+
+> **Learned 2026-11-06** · check suites, any language · VERIFIED_PRIMARY · Source: apn unified-network-controller
+> `scripts/govcheck/checks/flows.py` `FLOW_CHECK_BUDGET_S`, skill-drawio `scripts/flowmap/render_cache.py` (skills_stuff 1a11ce2; 3 min to 11 s) ·
+> Falsifier: a suite whose slowest single check stays flat as its input and the tool it calls change.
+
+A suite budget does not protect one expensive check inside it: a drift check that re-rendered a generated drawing grew from 2.3 s to 183 s in
+eleven days while the suite had no per-check number, and every commit paid it. Give each check that calls a heavy tool its own budget, printed
+with the measured time when passed. When the work is a pure function of its inputs, key it by a hash of every input (the data in order, the
+settings, the tool's own source, the interpreter version) and answer from the recorded output hash when the key was seen; a changed or missing
+output is still a failure. Profile before fixing: `cProfile` sees only its own process, so profile with the worker pool off, or the table shows
+the parent waiting in `connection.recv` instead of the work.
+
+```python
+# skill-drawio scripts/flowmap/pages.py evaluate (skills_stuff 1a11ce2)
+k = render_cache.key(data, profile)            # data, profile, engine source, Python version
+if not need_text:
+    known = render_cache.lookup(k)
+    if known is not None:                      # seen before: compare hashes, do not render
+        return Outcome(drift=current is None or render_cache.text_hash(current) != known)
+text = render(data, profile, built)
+render_cache.record(k, text)
+```

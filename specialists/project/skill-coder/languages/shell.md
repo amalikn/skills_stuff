@@ -107,9 +107,9 @@ they are POSIX. UNVERIFIED which target shells support `pipefail`; check the tar
 > A guard that stops at the tick plus a process check leaves a gap: the job is not in the process table until the scheduler has started it. Hold off for a few seconds after the tick too, and read the
 > schedule on the box, as a box can differ from what the code deploys.
 
-> **Learned 2026-11-06** · bash, scripts that run long · VERIFIED_SECONDARY (bash reads a script file as it executes; behaviour known from
-> the bash manual's reading of input in chunks, observed risk in apn smc-resiliency S3 when a measured run lasted an hour) · Falsifier: a bash
-> version that reads the whole file before running it
+> **Learned 2026-11-06** · bash, scripts that run long · VERIFIED_SECONDARY · Source: the bash manual's reading of input in chunks (bash reads a
+> script file as it executes); observed risk in apn smc-resiliency S3 when a measured run lasted an hour · Falsifier: a bash version that reads the
+> whole file before running it
 > **Never edit a script while it runs.** bash reads the file as it goes, so an edit to a running script (a long measured run, a slow
 > rollout) can make it execute half-old, half-new lines. Edit after it ends, or run long jobs from a copy (`cp x.sh /tmp/x.$$.sh && bash
 > /tmp/x.$$.sh`), or wrap the body in a function called on the last line so the whole file is parsed first.

@@ -190,6 +190,14 @@ of step [C-D02]:
 The drift check renders the map in memory and compares the text with the committed file. Wire it into the project's `just check` so it runs before every commit. A failed check means either the map
 changed without a render (run the render) or someone edited the drawing (move the edit into the map, then render).
 
+> **Learned 2026-11-06** · drift checks with this engine · VERIFIED_PRIMARY · Source: `scripts/flowmap/render_cache.py`, `scripts/flowmap/pages.py`
+> `evaluate(need_text=False)` (skills_stuff 1a11ce2) · Falsifier: a cached drift answer that differs from a full render of the same inputs.
+
+A drift check that only needs the answer passes `need_text=False`: when the map, profile, engine source and Python are unchanged since a render
+on this machine, the file on disk is compared with the recorded hash instead of rendering again (unified-network-controller: 110 s to 0.3 s). A
+changed or missing drawing is still drift. `--write` and `--audit` always render. When a render gets slow, `just profile-render --map <map>`
+names the function before anything is changed.
+
 ## Hand-edited drawings are source
 
 When an operator edits a drawing in draw.io, the file becomes the source and is never regenerated [C-D03]. In enterprise-strategy on 2026-10-12, a solution diagram was generated, redrawn twice on

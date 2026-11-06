@@ -197,6 +197,11 @@ test-matrix:
 render-flowmap *args: _require-venv
     @{{py}} scripts/render_flowmap.py "$@"
 
+# [read-only] Profile one render of a map (where the time goes, by function; writes nothing): just profile-render --map docs/flows/flows.yaml [--sort tottime] [--top 15] [--workers 1]
+[positional-arguments]
+profile-render *args: _require-venv
+    @{{py}} scripts/profile_render.py "$@"
+
 # [read-only] Count crossing arrows on one page, to compare a consumer's drawing before and after an engine change: just count-crossings FILE --page 1 --prefix ov-d-
 # Or every page of two versions (crossings and shared runs; exit 3 when a page got worse): just count-crossings AFTER --compare BEFORE
 [positional-arguments]

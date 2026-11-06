@@ -1297,9 +1297,9 @@ def trial_due(state, other_hash, now, wait_s) -> str:
 ```
 
 
-> **Learned 2026-11-06 (second use)** · design pattern, any language · VERIFIED_PRIMARY (live on a Nautobot/OpenWISP controller host: alarm runs
-> evaluated mid-collector-run held 4 alarms, cleared 0; before the fix they sent "Cleared" for uplink alarms that came back 8 minutes later) ·
-> Source: apn unified-network-controller `wc-local/scripts/alarming/engine.py` `HELD_ON_ERROR`, `HELD_WHILE_RUNNING` (commits d49d2043, 5c563f8b) ·
+> **Learned 2026-11-06** · design pattern P-58, second use, any language · VERIFIED_PRIMARY · Source: apn unified-network-controller
+> `wc-local/scripts/alarming/engine.py` `HELD_ON_ERROR`, `HELD_WHILE_RUNNING` (commits d49d2043, 5c563f8b; live on a controller host, alarm runs
+> evaluated mid-collector-run held 4 alarms and cleared 0, where before they sent "Cleared" for uplink alarms that came back 8 minutes later) ·
 > Falsifier: an alarm cleared, with a recovery notice sent, while the input that proves it was unreadable or half written. With this second project the
 > pattern is no longer a `reusable_candidate`.
 
