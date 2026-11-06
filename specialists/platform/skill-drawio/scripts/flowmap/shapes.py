@@ -19,7 +19,9 @@ SHAPES = {
     "terminator": ("rounded=1;absoluteArcSize=1;arcSize=36;spacingLeft=14;spacingRight=12;spacingTop=8;", 0.92, 1.05,
                    "Terminator: where a flow starts or ends"),   # a fixed corner radius, so a tall box keeps straight sides (2026-10-21)
     "process": ("rounded=0;", 1.0, 1.0, "Process: a step that does work"),
-    "decision": ("rhombus;align=center;verticalAlign=middle;spacingLeft=72;spacingRight=72;spacingTop=0;", 0.5, 1.45,
+    # A text block w wide and h tall fits inside a W x H diamond only when w/W + h/H <= 1: at half the width (0.5) the diamond needs twice
+    # the text's height; 1.45 let the block's corners reach the edges (operator, 2026-11-06, on a UNC onboarding gate).
+    "decision": ("rhombus;align=center;verticalAlign=middle;spacingLeft=72;spacingRight=72;spacingTop=0;", 0.5, 2.0,
                  "Decision: a gate that picks the next step"),
     "manual-operation": ("shape=trapezoid;perimeter=trapezoidPerimeter;flipV=1;fixedSize=1;size=12;spacingLeft=18;spacingRight=18;", 0.88, 1.0,
                          "Manual operation: a person acts"),
@@ -32,7 +34,8 @@ SHAPES = {
     "document": ("shape=document;boundedLbl=1;size=0.15;", 1.0, 1.2, "Document: a file or record written"),
     "data-io": ("shape=parallelogram;perimeter=parallelogramPerimeter;fixedSize=1;size=10;spacingLeft=16;spacingRight=16;", 0.88, 1.0,
                 "Data in or out: data crossing a link"),
-    "external": ("ellipse;shape=cloud;spacingLeft=16;spacingRight=16;spacingTop=10;", 0.8, 1.2, "External system: outside the box"),
+    "external": ("ellipse;shape=cloud;align=center;spacingLeft=30;spacingRight=28;spacingTop=26;", 0.72, 1.35,   # the outline bulges in at the corners: text
+                 "External system: outside the box"),                                               # past it at 16 px (operator review 2026-11-06)
     "person": ("rounded=0;", 1.0, 1.0, "Person: who starts or approves (the figure marks the box)"),
 }
 #: Shapes with slanted sides: an arrow end is pinned to the box edge, not projected onto the outline (projection slid arrow ends along the
