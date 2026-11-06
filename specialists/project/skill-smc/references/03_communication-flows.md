@@ -396,6 +396,31 @@ gl.aws.apn.au  Route 53 alias A (zone aws.apn.au Z06674973R861WSOMMI9V) -> apn-g
 Established 2026-07-29 from ansible-wifi source during the APN routing-issue investigation (`local-knowledge-ansible/ansible-wifi/issues/apn/routing-issue/`). All source-verified unless marked
 otherwise. **Not yet confirmed on a live box.**
 
+> **Learned 2026-11-06** · rcp WAN routing confirmed live · VERIFIED_PRIMARY · Source: read-only `ip rule`, `ip route show table main default` and
+> per-table defaults on bidyadanga-smc01 (6 legs) and warburton-smc01 (10 legs plus `vlan621`), smc-resiliency S3 (apn 2026-11-06);
+> ansible-wifi `roles/smc_application/templates/dhclient-enter-hooks.j2` (`add_default_gateway`); portal
+> `/var/www/html/wifi/application/classes/model/wifi/gateway.php` on bidyadanga · Falsifier: an rcp box whose main table holds a single-path
+> default for an `internet` leg, or an `internet` leg without its own table and `from` rule
+> - Each `internet` leg has its own routing table named after the interface, holding its default and subnet, and a rule
+>   `from <its address> lookup <it>` (the dhclient hook). The main table holds one multipath default over all legs, written by the portal's
+>   `kohana status:gateway` (`gateway.php`: `ip route replace default scope global nexthop via <gw> dev <leg> weight 1 ...`, gateways read
+>   from each leg's table). The box's own traffic is spread across legs by flow hash: one ping to an outside host measures one leg.
+> - A `starlink`-role leg (`vlan621`, the Sky Muster backup per the inversion above) gets a plain main-table default with metric 100 and no
+>   table of its own: warburton's `vlan621` measured 760 ms to the Teleport proxy while its ten `internet` (Starlink) legs measured 60 to 68 ms.
+> - The hook deletes only the rule for the new address, so rules for old addresses pile up (warburton: `from 206.214.239.194 lookup vlan528`,
+>   address no longer on the box).
+> - `scripts/probes/smc_link_health.sh` measures every leg since 2026-11-06 (each from its own address; no-table legs bound to the device; stale
+>   rules reported).
+>
+> ```sh
+> # roles/smc_application/templates/dhclient-enter-hooks.j2 (ansible-wifi)
+> ip route replace default via ${router} dev ${interface} src ${new_ip_address} ${metric} table ${interface}
+> ip rule delete from ${new_ip_address}
+> ip rule add from ${new_ip_address} table ${interface}
+> ```
+>
+> Screenshot: not applicable (no visual surface).
+
 > **The `internet` / `starlink` role labels mean the opposite of what they say (operator-confirmed 2026-07-29).** Originally `internet` = Skymuster Plus primaries (the nbn satellite product; note the
 > spelling — **Skymuster**, not "Skymaster") and `starlink` = Starlink backup, which is what the `internetNN` / `starlinkNN` interface keys encode. Starlink was later promoted to primary and simply
 > inherited the existing `internet` label; the `starlink` label stayed on what is now the **single SMP backup link per site — `vlan621`**, with `vlan631` as its switch02 counterpart. Nothing was
@@ -798,6 +823,15 @@ counterpart:
 
 RISE dashboards exist **only** on `mcp-grafana-apn` because RISE is deployed to `rct`/`wh` flavors only (confirmed via the `flavor=~"rct|wh"` gate in the "Pending sites" panel query) — `rcp` (x86
 non-RISE) and the NBN Accelerate cluster (`nbn_accelerate`/`nbn_wh`) run no RISE metrics at all, which is why they're absent from `mcp-grafana-nbn`.
+
+> **Learned 2026-11-06** · bringing up the APN Grafana tunnel · VERIFIED_PRIMARY · Source: smc-resiliency session 2026-11-06 (`ss -ltnp` on
+> apn-prometheus01: grafana on 3000, prometheus on 9090; `lsof` on the Mac) · Falsifier: `mcp-grafana-apn` answering with no tunnel, or Grafana
+> on another host or port
+> `mcp-grafana-apn` reaches `http://127.0.0.1:53000`, a Teleport port-forward to Grafana on `apn-prometheus01` (a node in the apn cluster, not a
+> Teleport app): `tsh ssh -N -L 53000:localhost:3000 root@apn-prometheus01` (keep it running; `lsof -nP -iTCP:53000 -sTCP:LISTEN` checks it).
+> `scripts/metrics/smc_prom.py` uses the same URL. The NBN cluster's 63000 forward is not yet recorded.
+>
+> Screenshot: not applicable (no visual surface).
 
 ### Graylog REST API Access (via Teleport App, no MCP)
 

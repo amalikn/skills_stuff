@@ -6,13 +6,21 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261106_1029
+Last rotated: 20261106_1255
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261106_1300 — WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 -> v0.12.5)
+
+`references/03_communication-flows.md`: Learned 2026-11-06, rcp routing confirmed on two boxes (per-leg tables and `from` rules by the dhclient hook,
+main-table multipath default by the portal's `gateway.php`, `starlink`-role legs without a table, stale rules); Learned 2026-11-06, the APN Grafana
+tunnel (`tsh ssh -N -L 53000:localhost:3000 root@apn-prometheus01`). `references/01_overview.md`: Learned 2026-11-06, measured round trips and the
+speedtest medians. `scripts/probes/smc_link_health.sh` measures every WAN leg, binds no-table legs to their device and reports stale rules (live on
+warburton-smc01); `scripts/README.md` updated. From smc-resiliency S3. manifest 0.12.4 -> 0.12.5.
 
 ## 20261106_1029 — Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)
 
@@ -186,15 +194,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
 - scripts/capture/pin-funnel-hourly.sh (`just pin_funnel`) and pin-fleet-check.sh (`just pin_fleet_check`), catalogued (c3e856b, 4b61a2d).
 - references/19: runtime budget counts the wait for earlier batches (stage 1 clock not reset per batch); read real time as elapsed minus SPEC.
 - manifest 0.9.6 -> 0.9.7.
-
-## 20261028_1516 — rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6)
-
-- `scripts/probes/rct_avr_probe.sh` (new, read-only): RCT AVR firmware per SMC from tstik stats.json (AVRVersion, TiniVer, age), rct-tstik HEAD,
-  loader, overlay; `QUERY=1` asks the AVR (one version request, after waiting for update:stats). Test `probes/test_rct_avr_probe.py`, recipe
-  `just rct_avr_probe`, catalogue row. Smoke: warehouse-rct01, mooloowa-smc01, gilroyd-smc01 in 12 s.
-- `RUNBOOK.md`: routing row for RCT tstik AVR firmware (06_failure-modes AVR entries, the probe).
-
-## 20261028_1442 — AVR V3.07 vs Thuraya, fleet AVR state (v0.9.4 -> v0.9.5)
-
-- `references/06_failure-modes.md`: AVR V3.07 on a Thuraya control board loses the board SIM (Chris Blair); fleet AVR state (27 V3.07, malupirti V3.06, rest V2.14);
-  flash only after Iridium is installed (`rct_avr_flash`).

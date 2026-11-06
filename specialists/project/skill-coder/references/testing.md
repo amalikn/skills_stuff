@@ -146,6 +146,16 @@ check: _require-venv
     @{{py}} -I scripts/check_architecture_coverage.py
 ```
 
+> **Learned 2026-11-06** · testing, measurements in a lab · VERIFIED_PRIMARY · Source: apn smc-resiliency S3 report finding S3-6
+> (`spike/vm/s3/shape_link.sh`, docs/pi/pi-spike-s3-delivery-20261106_1044.md) · Falsifier: a lab where the unshaped baseline and the
+> one-element steps agree with theory but a shaped result is still wrong
+> **Prove the instrument before trusting what it measures.** A lab that imitated a satellite link (delay, rate, loss with tc netem) gave
+> plausible slow downloads; three runs were explained by loss, then by HTTP/1.1, before a step test showed the lab itself was broken: 0.9 MB/s
+> unshaped between two VMs and 3 KB/s with delay alone (segmentation offloads building frames the virtual network dropped). All three runs were
+> void. Before any measured run: (1) run the unshaped baseline and compare it with what the hardware should give; (2) add one element at a
+> time (delay, then rate, then loss) and check each against theory (a 1 MiB fetch at 700 ms takes a few round trips, not minutes); (3) only then
+> measure the thing under test, and record the instrument's own fixes beside the results.
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with

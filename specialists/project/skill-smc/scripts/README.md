@@ -682,7 +682,7 @@ Read-only, over Teleport: is a Teleport-agent, backdoor or slow-run problem the 
 loss and RTT to the first hop and to the controller's Teleport proxy, Teleport warn/error lines per 10 minutes over the last hour with the
 most frequent kinds, the session-upload backlog, each autossh unit's restart count and the WAN rate over 10 s. Loss at the first hop with
 an idle WAN is the site link (a gateway may rate-limit pings to itself: trust it when the proxy path loses too). Recipe:
-`just smc_link_health banana-well-smc01 [--proxy teleport.communitywifi.net.au] [--pings 30]`; about 1 minute. Origin: banana-well-smc01,
+`just smc_link_health banana-well-smc01 [--proxy teleport.communitywifi.net.au] [--pings 30]`; about 20 s per WAN leg with 20 pings. Since 2026-11-06 every leg is measured (rcp boxes route each leg through its own table; one ping to the proxy measured whichever leg the flow hash picked), legs with no table are bound to their device, and stale `from` rules are reported. Origin: banana-well-smc01,
 2026-10-27 (`../references/03_communication-flows.md`). Smoke-run on banana-well-smc01 the same day.
 
 ### `x86_resiliency_probe.sh`

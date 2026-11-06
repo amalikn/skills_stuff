@@ -296,6 +296,13 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 - **Central hosting.** Prometheus and Graylog run in AWS Sydney (ap-southeast-2) and are managed by Malik. Eclipse is hosted in SY3, is high availability and is monitored by the NOC. RADIUS and
   802.1X are not used anywhere.
 - **Satellite round trip.** Depends on the link: Sky Muster Plus 600–800 ms; Starlink under 100 ms. Operator figures, not a measurement.
+  > **Learned 2026-11-06** · link figures measured · VERIFIED_PRIMARY · Source: `just smc_link_health <host> --pings 600` (read-only) and the
+  > speedtest exporter's 30-day medians (`quantile_over_time(0.5, speedtest_download_bits_per_second[30d])`, apn Prometheus), smc-resiliency
+  > S3 · Falsifier: a month of speedtests at Sky Muster sites with a median far from 48 Mbit/s
+  > Round trip to the Teleport proxy: bidyadanga (Sky Muster) 543 / 700 / 2447 ms min/avg/max, 3 of 600 pings lost (0.5 %); warburton
+  > Starlink legs 56 / 64 / 100 ms, 0 of 600. Speedtests (about 720 a site in 30 days): Sky Muster sites (ping 560 to 700 ms, about 300 sites)
+  > median 48 Mbit/s down, 5 up; four Starlink sites (ping 24 to 33 ms) 45 to 297 down, 5 to 57 up. Many sites' 10th percentile is 0
+  > (failed tests). Speedtests use parallel connections, so one TCP stream at 700 ms gets less.
 - **MQTT.** The IoT devices behind mosquitto monitor the UPS and the battery boxes; `apn-mqtt-client` collects the data, and Rob is its main user.
   Security: `roles/smc_mqtt/tasks/main.yml` writes the `APN_IOT` broker password as a literal value (not a variable) into `/etc/mosquitto/mosquitto.passwd` with mode 0644, on
   HEAD, `big_push` and `master` (checked 2026-10-06). Rotate it and move it to the secrets store.
