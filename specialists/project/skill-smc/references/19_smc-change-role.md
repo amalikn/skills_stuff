@@ -37,6 +37,8 @@ Summary: >-
 - [Runtime budget counts the wait for earlier batches (2026-10-28)](#runtime-budget-counts-the-wait-for-earlier-batches-2026-10-28)
 - [apt_pin installs a missing package: install_missing (2026-10-30)](#apt_pin-installs-a-missing-package-install_missing-2026-10-30)
 - [Facts, conditions, when and loop (2026-10-30)](#facts-conditions-when-and-loop-2026-10-30)
+- [Chained changes, per-change state, named value files (2026-11-04)](#chained-changes-per-change-state-named-value-files-2026-11-04)
+- [Self-repair of cut-off runs, success means every goal, applies_when (2026-11-04 evening)](#self-repair-of-cut-off-runs-success-means-every-goal-applies_when-2026-11-04-evening)
 
 ## When to use it
 
@@ -465,12 +467,12 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   it.
 - **Teleport online filter (live since 2026-10-27 13:24)**: `tsh ls --proxy=<proxy> --format=json flavor=<inventory folder>,env=<inventory file>` once per run; the `flavor` and `env` labels match the
   inventory folder and file (rct prod 290, rct stage 1; rcp prod 17 of 21 in inventory, the four `generic-*` hosts not in Teleport). Label form and `--query 'labels.flavor == "rct"'` return the same.
-- **Teleport login gate (2026-11-05)**: an expired `tsh` login made every SMC fail "Check the host answers" with `Connection closed by UNKNOWN port 65535` (10 rct SMCs).
-  Now the first play of `smc_change.yml` and of `smc_change_multiple.yml` includes `tasks/tsh_login.yml` (`any_errors_fatal`), which runs `files/tsh_login.py` once on the
-  controller: it reads `tsh status --format=json` (tsh 12 exits 1 when the active profile has expired but still prints the JSON: `active` plus `profiles[]`, each with `profile_url` and
-  `valid_until`) and stops the run, naming `tsh login --proxy=<proxy>`, when a proxy of the targeted SMCs (from `ansible_host` after the first label) has no profile, an expired one or under
-  `smc_change_tsh_min_minutes` (30) left. Checked at each `smc_change.yml` start only, not during a run: before a long serial run log in afresh or raise the minutes. A run_once failure is reported on
-  the first host only; the recap lists no others and no later play starts. Proven on alkngarrija/aeroplane-1 (check mode, both logins expired) and by `files/tests/test_tsh_login.py`.
+- **Teleport login gate (2026-11-05)**: an expired `tsh` login made every SMC fail "Check the host answers" with `Connection closed by UNKNOWN port 65535` (10 rct SMCs). Now the first play of
+  `smc_change.yml` and of `smc_change_multiple.yml` includes `tasks/tsh_login.yml` (`any_errors_fatal`), which runs `files/tsh_login.py` once on the controller: it reads `tsh status --format=json`
+  (tsh 12 exits 1 when the active profile has expired but still prints the JSON: `active` plus `profiles[]`, each with `profile_url` and `valid_until`) and stops the run, naming `tsh login
+  --proxy=<proxy>`, when a proxy of the targeted SMCs (from `ansible_host` after the first label) has no profile, an expired one or under `smc_change_tsh_min_minutes` (30) left. Checked at each
+  `smc_change.yml` start only, not during a run: before a long serial run log in afresh or raise the minutes. A run_once failure is reported on the first host only; the recap lists no others and no
+  later play starts. Proven on alkngarrija/aeroplane-1 (check mode, both logins expired) and by `files/tests/test_tsh_login.py`.
 
   ```python
   # roles/smc_change/files/tsh_login.py (local-knowledge-ansible, uncommitted 2026-11-05)
@@ -482,22 +484,17 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   ```
 
 - **Auditing a rollout (2026-11-05)**:
-  - Count from the inventory flag, not the batch list. 43 rct sites carry `smc_bases_iridium: true`, while the batches named 25; six marked
-    sites had never been run by either change.
-  - For each site, both changes' `runs/<flavor>/state/<host>.json` must say passed apply, with no active journal; `tracker.py --change-dir
-    <change> --check` confirms the trackers.
-  - For sites never run, a check-mode pass of a `probe_first` spec is the cheap read-only answer: its record's before-probe lists every proof
-    true or false (six sites: AVR already 3.07, loader, tstik commit and SMSC still to do).
-  - Survey the links of the same list with `scripts/probes/smc_gateway_loss.sh` (`-s` adds download speed); check the backdoor of any SMC that
-    gives no answer before calling it dark.
+  - Count from the inventory flag, not the batch list. 43 rct sites carry `smc_bases_iridium: true`, while the batches named 25; six marked sites had never been run by either change.
+  - For each site, both changes' `runs/<flavor>/state/<host>.json` must say passed apply, with no active journal; `tracker.py --change-dir <change> --check` confirms the trackers.
+  - For sites never run, a check-mode pass of a `probe_first` spec is the cheap read-only answer: its record's before-probe lists every proof true or false (six sites: AVR already 3.07, loader, tstik
+    commit and SMSC still to do).
+  - Survey the links of the same list with `scripts/probes/smc_gateway_loss.sh` (`-s` adds download speed); check the backdoor of any SMC that gives no answer before calling it dark.
 
-- **Change `bitbucket-ssh-hostname` (built 2026-11-05, check-mode canary on alkngarrija-smc01; not applied)**: Bitbucket answers SSH only as
-  `ssh.bitbucket.org` from 2026-11-12 (its own banner). The SMCs' key already works there (`git ls-remote` from garimba-smc01), and the new name
-  serves the same three host keys the fleet trusts for `bitbucket.org` (ED25519 `SHA256:ybgmFkzw...`, ECDSA `SHA256:FC73VB6C...`, RSA
-  `SHA256:46OSHA1R...`). What the SMCs lack is a known_hosts line for the new name. The spec appends those three lines (fixed values in
-  `variables.yml`, never scanned at run time) live and through the chroot in the lower dir; its check and proof are the same script. The
-  `bitbucket.org` lines stay. Its flow pages are family `bitbucket`, and `just trust <hosts>` counts both names' lines. The repo URLs
-  (`git@bitbucket.org:` in ansible-wifi) are a separate change. Test: `files/tests/test_bitbucket_known_hosts.py`.
+- **Change `bitbucket-ssh-hostname` (built 2026-11-05, check-mode canary on alkngarrija-smc01; not applied)**: Bitbucket answers SSH only as `ssh.bitbucket.org` from 2026-11-12 (its own banner). The
+  SMCs' key already works there (`git ls-remote` from garimba-smc01), and the new name serves the same three host keys the fleet trusts for `bitbucket.org` (ED25519 `SHA256:ybgmFkzw...`, ECDSA
+  `SHA256:FC73VB6C...`, RSA `SHA256:46OSHA1R...`). What the SMCs lack is a known_hosts line for the new name. The spec appends those three lines (fixed values in `variables.yml`, never scanned at run
+  time) live and through the chroot in the lower dir; its check and proof are the same script. The `bitbucket.org` lines stay. Its flow pages are family `bitbucket`, and `just trust <hosts>` counts
+  both names' lines. The repo URLs (`git@bitbucket.org:` in ansible-wifi) are a separate change. Test: `files/tests/test_bitbucket_known_hosts.py`.
 
   ```sh
   # files/changes/bitbucket-ssh-hostname/scripts/kh_add.sh (local-knowledge-ansible, 2026-11-05)
@@ -508,50 +505,39 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
 
 - **Under strategy free (live 2026-11-05)**:
   - Each SMC writes its record, state and tracker row when it finishes its change, not at the end of its batch.
-  - In `smc_change_multiple.yml` the second change starts only after the first import has finished for every SMC (imports are sequential plays). For
-    full per-SMC independence, run one process per SMC (`scripts/ansible/smc_change_parallel.sh`).
-  - A failed SMC no longer stops the others already in its batch; the fail gate holds only SMCs not yet started. Give a new or untested change a
-    small first batch (`-e smc_change_serial=1` or 2).
-  - Killing a controller run leaves its remote command running on the SMC: the clones went on after both runs were stopped. Stop it on the SMC
-    with an anchored `pkill -f "^git clone ..."`.
-- **Applied 2026-11-05 17:40 with six journals still active** (operator: "Apply now, supersede"). They were moved to `journal/superseded/` on the controller,
-  with on-SMC backups left in place. An SMC whose newest apply record is unreachable, refused, already_done or passed and that has no journal restarts fresh
-  (`files/recovery.py` `legacy_failed`), which is safe here because every action of both specs checks first. Spec limits: one `action_timeout:` per change,
-  `timeout:` only on the slow steps (rct-tstik-iridium-update: 300, with the flash and clone at 600).
-- **Facts carry over between two smc_change imports in one run (2026-11-05; fixed, live since 17:40, operator chose A)**: `smc_change_multiple.yml` (and `smc_rise_deploy.yml`)
-  import `smc_change.yml` twice in one `ansible-playbook` process, and host facts outlive an import. The role sets several flags only when they hold,
-  and tests them with `is defined`, so a value from the first change counts for the second:
-  - `smc_change_done_why` (`tasks/pending.yml`) and `smc_change_already` (`tasks/state.yml`): an SMC already done for rct-tstik-iridium-update when
-    the run started was "ALREADY DONE" for rct-avr-smsc too, citing the iridium record. map-smc01 never got its SMSC change (runs at 14:45 and 16:45).
-    It is the only SMC left that way: iridium passed on 32, SMSC on 31.
-  - `smc_change_unreachable` (`tasks/record.yml`): an SMC unreachable in the first import is recorded "unreachable" in the second, whatever happened.
-    banana-well-smc01 and gumbarnun-smc01's SMSC records say unreachable, but action 3 exited non-zero (most likely the AVR still on 2.14).
+  - In `smc_change_multiple.yml` the second change starts only after the first import has finished for every SMC (imports are sequential plays). For full per-SMC independence, run one process per SMC
+    (`scripts/ansible/smc_change_parallel.sh`).
+  - A failed SMC no longer stops the others already in its batch; the fail gate holds only SMCs not yet started. Give a new or untested change a small first batch (`-e smc_change_serial=1` or 2).
+  - Killing a controller run leaves its remote command running on the SMC: the clones went on after both runs were stopped. Stop it on the SMC with an anchored `pkill -f "^git clone ..."`.
+- **Applied 2026-11-05 17:40 with six journals still active** (operator: "Apply now, supersede"). They were moved to `journal/superseded/` on the controller, with on-SMC backups left in place. An SMC
+  whose newest apply record is unreachable, refused, already_done or passed and that has no journal restarts fresh (`files/recovery.py` `legacy_failed`), which is safe here because every action of
+  both specs checks first. Spec limits: one `action_timeout:` per change, `timeout:` only on the slow steps (rct-tstik-iridium-update: 300, with the flash and clone at 600).
+- **Facts carry over between two smc_change imports in one run (2026-11-05; fixed, live since 17:40, operator chose A)**: `smc_change_multiple.yml` (and `smc_rise_deploy.yml`) import `smc_change.yml`
+  twice in one `ansible-playbook` process, and host facts outlive an import. The role sets several flags only when they hold, and tests them with `is defined`, so a value from the first change counts
+  for the second:
+  - `smc_change_done_why` (`tasks/pending.yml`) and `smc_change_already` (`tasks/state.yml`): an SMC already done for rct-tstik-iridium-update when the run started was "ALREADY DONE" for rct-avr-smsc
+    too, citing the iridium record. map-smc01 never got its SMSC change (runs at 14:45 and 16:45). It is the only SMC left that way: iridium passed on 32, SMSC on 31.
+  - `smc_change_unreachable` (`tasks/record.yml`): an SMC unreachable in the first import is recorded "unreachable" in the second, whatever happened. banana-well-smc01 and gumbarnun-smc01's SMSC
+    records say unreachable, but action 3 exited non-zero (most likely the AVR still on 2.14).
   - also tested with `is defined`: `smc_change_refused`, `smc_change_failure`, `smc_change_offline_why`, `smc_change_backup_path`.
-  Groups carry over too: `group_by` cannot remove a host, so a host the first change had to do stayed in `smc_change_todo` and was run again by
-  the second. `ansible.builtin.meta: clear_facts` does not clear `set_fact` values (tested). Fix (held patch `plans/smc-change-free-timeouts-20261105/`):
-  `load_spec.yml` resets about 30 per-change facts at each prepare, readers test by value, and the groups are per change
-  (`smc_change_todo_<change>`; a play's `hosts:` can be templated from `import_playbook` vars, tested). Until it is live, run a second change for an
-  SMC in its own process (`smc_change.yml -e smc_change=<name>`).
+Groups carry over too: `group_by` cannot remove a host, so a host the first change had to do stayed in `smc_change_todo` and was run again by the second. `ansible.builtin.meta: clear_facts` does not
+clear `set_fact` values (tested). Fix (held patch `plans/smc-change-free-timeouts-20261105/`): `load_spec.yml` resets about 30 per-change facts at each prepare, readers test by value, and the groups
+are per change (`smc_change_todo_<change>`; a play's `hosts:` can be templated from `import_playbook` vars, tested). Until it is live, run a second change for an SMC in its own process
+(`smc_change.yml -e smc_change=<name>`).
 
-- **Slow serial batches, strategy free and action time limits (2026-11-05; live since 17:40)**: an rct serial-10 run of
-  `smc_change_multiple.yml` took 87 min for batch 1. Per-SMC system logs (garimba-smc01) showed its own work was quick: AVR flash 73 s
-  (systemd unit 12:24:53-12:26:06), rct-tstik clone 32 s. It then sat idle 35 min, because under the default `linear` strategy every SMC waits
-  for the slowest at each task. goojarr-goonyool-smc01's clone (`git clone` with no time limit, over ssh) stalled 12:37-13:12 and failed; the
-  tree there stayed at 2024-09-26. Each step also ran in two rounds: forks 5 (ansible.cfg) with serial 10. Records, state and tracker are written
-  per SMC at stage 11, but under linear that means at the end of each batch. The fix is a patch with runbook in local-knowledge
-  `plans/smc-change-free-timeouts-20261105/`, held because active journals freeze the role code (RULE-007): `strategy: free` on the change play, a
-  per-SMC tsh login check (`tsh_login.yml` host scope), a fail gate (`tasks/fail_gate.yml`), and time limits on command and copy actions (action
-  `timeout:`, then spec `action_timeout:`, then `smc_change_action_timeout_seconds` 1800; a command runs under `timeout(1)` on the SMC). Found
-  while building it on ansible-core 2.21:
-  - under `free`, `run_once` and `any_errors_fatal` are not supported (warnings), and `pause` is refused outright (it bypasses the host loop), so the
-    soak and re-arm waits became controller `wait_for`
-  - `max_fail_percentage` is ignored under `free`: with serial 2, one failed host and P=0, linear stopped the run but free ran the next batch. The fail
-    gate reads this run's records and holds SMCs not yet started instead.
+- **Slow serial batches, strategy free and action time limits (2026-11-05; live since 17:40)**: an rct serial-10 run of `smc_change_multiple.yml` took 87 min for batch 1. Per-SMC system logs
+  (garimba-smc01) showed its own work was quick: AVR flash 73 s (systemd unit 12:24:53-12:26:06), rct-tstik clone 32 s. It then sat idle 35 min, because under the default `linear` strategy every SMC
+  waits for the slowest at each task. goojarr-goonyool-smc01's clone (`git clone` with no time limit, over ssh) stalled 12:37-13:12 and failed; the tree there stayed at 2024-09-26. Each step also ran
+  in two rounds: forks 5 (ansible.cfg) with serial 10. Records, state and tracker are written per SMC at stage 11, but under linear that means at the end of each batch. The fix is a patch with runbook
+  in local-knowledge `plans/smc-change-free-timeouts-20261105/`, held because active journals freeze the role code (RULE-007): `strategy: free` on the change play, a per-SMC tsh login check
+  (`tsh_login.yml` host scope), a fail gate (`tasks/fail_gate.yml`), and time limits on command and copy actions (action `timeout:`, then spec `action_timeout:`, then
+  `smc_change_action_timeout_seconds` 1800; a command runs under `timeout(1)` on the SMC). Found while building it on ansible-core 2.21:
+  - under `free`, `run_once` and `any_errors_fatal` are not supported (warnings), and `pause` is refused outright (it bypasses the host loop), so the soak and re-arm waits became controller `wait_for`
+  - `max_fail_percentage` is ignored under `free`: with serial 2, one failed host and P=0, linear stopped the run but free ran the next batch. The fail gate reads this run's records and holds SMCs not
+    yet started instead.
   - `timeout` has to stay out of `smc_change_target`, or adding a limit re-runs every passed SMC
-  - the SMSC change ran on SMCs whose AVR update had not passed (banana-well, gumbarnun, AVR 2.14). `smc_change_multiple.yml` now holds those
-    back by reading the iridium state file. This part is live.
-  - a cut-off resume on goojarr read `avr_version=3.07` live but restored the journal's 2.14 conditions; the flash action's own check reads the AVR,
-    so it says ALREADY, not a second flash
+  - the SMSC change ran on SMCs whose AVR update had not passed (banana-well, gumbarnun, AVR 2.14). `smc_change_multiple.yml` now holds those back by reading the iridium state file. This part is live.
+  - a cut-off resume on goojarr read `avr_version=3.07` live but restored the journal's 2.14 conditions; the flash action's own check reads the AVR, so it says ALREADY, not a second flash
   - the "gap" in URL-capture fetch file times is rsync `-a` keeping source mtimes (reference 09)
 
   ```yaml
@@ -711,6 +697,17 @@ Source: change record `rct-tstik-iridium-update-20261028_1221.md` sections 2.2 a
 - **Trackers:** `files/tracker.py` rebuilds `runs/tracker.csv` (every run) and `<change>/tracker-summary.csv` (each site's latest real apply or rollback) from the records after every run, for every
   spec; `just tracker` by hand. An `outcome` column says what the actions did (changed, partly skipped, already done, skipped), as `passed` can mean every action was skipped; records older than action
   logging leave it blank. Files under `files/changes/` are outside the role fingerprint.
+- **A resumed run keeps the first attempt's `start` (2026-11-06).** Journal and record carry two stamps: `start` is the transaction (the first attempt on that SMC), `attempt_start` is this attempt and
+  names the record file. The tracker orders runs and takes `last_run` from `attempt_start` (falling back to `start` on older records); `state_start` stays the transaction start, so
+  `state_start`/`state_end` can span days. Before the fix (local-knowledge-ansible, `files/tracker.py`, commit c7cb38b, 2026-11-06) runs sorted by `start`, so a resume sorted before attempts that ran
+  ahead of it: gurrbalgun-smc01 showed `last_run` a day old, and php-cve-2026-109618 showed adjamarragu-smc01 and alice-well-smc01 `failed` although their latest attempt passed. Test:
+  `test_resumed_run_orders_by_its_attempt_not_its_first_start`.
+
+  ```python
+  # files/tracker.py, row_of() and read_rows()
+  "attempt_start": record.get("attempt_start") or record.get("start", ""),
+  return sorted(rows, key=lambda row: (str(row.get("attempt_start") or row.get("start", "")), str(row.get("host", ""))))
+  ```
 - **`abandoned_clean` is `apt_pin`-only** (`untouched()` in `files/recovery.py`): a `copy` or `command` spec edited after a failed run stays `needs_repair`, and `assess` can never report that class
   (it needs mode apply). Repair: journal and failed record to `superseded/`, backup copied off and removed. A failure at stages 1-4 needs no repair. So edit a spec before a run, or roll a failure back
   first.
@@ -873,8 +870,8 @@ Final same day: bar-barrum-smc01 (resumed at stage 6) and jungalina-smc01 passed
 Close of the same day: gumuluji-smc01's `at` job ran end to end (stopped `php -S`, stayed busy 9 x 10 s, rebooted, came back with lower ro), before `tasks/rearm_wait.yml` existed. Seven sites took
 tstik `971d8d04` and V3.07 ahead of the Iridium install; myra-vale was already flashed.
 
-**2026-11-02: stats cron, port guard, failure message (commit 70bb516).** `rct-tstik-iridium-update` action 8 sets `update:stats` to `*/5` live and in the lower dir, with a proof; its undo is a no-op as
-master is `*/5` too, and the target moved, so passed boxes show to-do. A command action has no way to run alone, so a box takes the whole change. `rct-avr-smsc` passed on all ten sites. Read
+**2026-11-02: stats cron, port guard, failure message (commit 70bb516).** `rct-tstik-iridium-update` action 8 sets `update:stats` to `*/5` live and in the lower dir, with a proof; its undo is a no-op
+as master is `*/5` too, and the target moved, so passed boxes show to-do. A command action has no way to run alone, so a box takes the whole change. `rct-avr-smsc` passed on all ten sites. Read
 `runs/<flavor>/state/` before saying what is left. The action writes through a checked file, as `crontab -l | ... | crontab -` installs an empty crontab when the read fails:
 
 ```sh
@@ -884,17 +881,20 @@ grep -Fqx "$j" "$t" || { rm -f "$t"; echo "no update:stats line in the live cron
 crontab "$t"
 ```
 
-Pass new steps to `trace_sync --accept` in calls of their own: a call naming a file and two steps accepted only the steps of the file. The flows recipes are in skill-smc's justfile; run them with `just -f`.
+Pass new steps to `trace_sync --accept` in calls of their own: a call naming a file and two steps accepted only the steps of the file. The flows recipes are in skill-smc's justfile; run them with
+`just -f`.
 
-**2026-11-02: per-SMC close, queue time, nothing-changed path.** A serial run's wait used to land in stage 1 and `elapsed_seconds` (bar-barrum 512 s for 246 s of work): `main.yml` now restarts the clocks at
-the SMC's turn and records `queue_seconds`; `tracker.py` leaves stage 1 out, which corrects old rows too. `record.yml` prints `host_summary.j2` and rebuilds the trackers at each final record, so a stopped
-run keeps them. Rebuilds queue with `throttle: 1` and a `flock` on the runs folder, and read the records only with the lock held. `outcome.yml` skips restart and soak on a fresh apply where every action said
-ALREADY or SKIPPED; a resume and `smc_change_force` keep the full pass, as a resume says ALREADY for work whose restart may never have run. Backup still runs, as it comes before the actions.
+**2026-11-02: per-SMC close, queue time, nothing-changed path.** A serial run's wait used to land in stage 1 and `elapsed_seconds` (bar-barrum 512 s for 246 s of work): `main.yml` now restarts the
+clocks at the SMC's turn and records `queue_seconds`; `tracker.py` leaves stage 1 out, which corrects old rows too. `record.yml` prints `host_summary.j2` and rebuilds the trackers at each final
+record, so a stopped run keeps them. Rebuilds queue with `throttle: 1` and a `flock` on the runs folder, and read the records only with the lock held. `outcome.yml` skips restart and soak on a fresh
+apply where every action said ALREADY or SKIPPED; a resume and `smc_change_force` keep the full pass, as a resume says ALREADY for work whose restart may never have run. Backup still runs, as it comes
+before the actions.
 
-**2026-11-02: skip, probe or force (operator design).** Default: a stored state with the same `target` and `checks` skips the host. A moved hash, or `-e smc_change_probe=true`, reaches the probe; a `probe_first: true` spec
-stops there when every proof holds (`in_place: true`, outcome `already in place`), and any other spec runs in full. The flag is refused without `probe_first`. `-e smc_change_force=true` runs every step. Each non-transient
-action names its proof in `proved_by`. Correction: `just target-hash` said `rct-avr-smsc` was unchanged after the 2026-11-02 guard fix, yet its passed boxes became to-do, because the tool compared unrendered text. It now counts
-`vars:` and `scripts/` as a move. Copied file content is not in the target at all. Excerpt, `tasks/in_place.yml`:
+**2026-11-02: skip, probe or force (operator design).** Default: a stored state with the same `target` and `checks` skips the host. A moved hash, or `-e smc_change_probe=true`, reaches the probe; a
+`probe_first: true` spec stops there when every proof holds (`in_place: true`, outcome `already in place`), and any other spec runs in full. The flag is refused without `probe_first`. `-e
+smc_change_force=true` runs every step. Each non-transient action names its proof in `proved_by`. Correction: `just target-hash` said `rct-avr-smsc` was unchanged after the 2026-11-02 guard fix, yet
+its passed boxes became to-do, because the tool compared unrendered text. It now counts `vars:` and `scripts/` as a move. Copied file content is not in the target at all. Excerpt,
+`tasks/in_place.yml`:
 
 ```yaml
 smc_change_in_place: >-
@@ -907,31 +907,32 @@ smc_change_in_place: >-
      and smc_change_before.stale | default([]) | length == 0 }}
 ```
 
-Measured: warehouse-rct01 stopped in place in 39 s at 2026-11-02 17:55 (a full pass was about 245 s), no action, no journal, state stored with both hashes, tracker `already in place`. Timing a nothing-changed run needs a batch of its own: a `serial` batch moves in lockstep, so all five hosts of the 17:40 run showed 267 s, one of which changed its cron.
+Measured: warehouse-rct01 stopped in place in 39 s at 2026-11-02 17:55 (a full pass was about 245 s), no action, no journal, state stored with both hashes, tracker `already in place`. Timing a
+nothing-changed run needs a batch of its own: a `serial` batch moves in lockstep, so all five hosts of the 17:40 run showed 267 s, one of which changed its cron.
 
-A state without `checks` is obsolete on a `probe_first` spec and matches on any other (operator, 2026-11-02: the JSON is matched against the YAML, and a state that cannot show it read the current proofs is obsolete). An in-place run keeps the state's last `actions` and adds `in_place` and `proved`.
+A state without `checks` is obsolete on a `probe_first` spec and matches on any other (operator, 2026-11-02: the JSON is matched against the YAML, and a state that cannot show it read the current
+proofs is obsolete). An in-place run keeps the state's last `actions` and adds `in_place` and `proved`.
 
 ## Chained changes, per-change state, named value files (2026-11-04)
 
-**Withdrawn the same day (operator, 2026-11-04: "chaining different changes is not going to be straightforward").** The chain playbooks and the state-dict role are archived in local-knowledge-ansible `plans/smc-change-chain/archive-20261104/` as a reference; `smc_change.yml` is back to one change with its three inline plays, and the role goes back to plain `set_fact` state through `plans/smc-change-chain/restore-plain-role-20261104.patch` once the active journals close (RULE-007). Kept: `variables_files`, the scripts form of both rct changes, `smc_bases_tstik_avr_version`, the templates. The replacement idea is an include of one change inside another's actions (`plans/smc-change-include-plan-20261104_1745.md`, proposed). Below is the record of what was built.
+**Withdrawn the same day (operator, 2026-11-04: "chaining different changes is not going to be straightforward").** The chain playbooks and the state-dict role are archived in local-knowledge-ansible
+`plans/smc-change-chain/archive-20261104/` as a reference; `smc_change.yml` is back to one change with its three inline plays, and the role goes back to plain `set_fact` state through
+`plans/smc-change-chain/restore-plain-role-20261104.patch` once the active journals close (RULE-007). Kept: `variables_files`, the scripts form of both rct changes, `smc_bases_tstik_avr_version`, the
+templates. The replacement idea is an include of one change inside another's actions (`plans/smc-change-include-plan-20261104_1745.md`, proposed). Below is the record of what was built.
 
-**Chain several changes in one run (operator, 2026-11-04: "chaining different changes ... in the order in which the changes are specified").**
-`smc_change_chain.yml -e '{"smc_changes": ["rct-tstik-iridium-update", "rct-avr-smsc"]}'` (or `smc_changes:` in an import's vars, as `smc_rise_deploy.yml` now does; `smc_change.yml` runs one change and shows no slots, operator 2026-11-04)
-runs up to five changes in one `ansible-playbook` process, in the order written. `playbooks/smc_change_chain.yml` (symlinked, git-excluded) is a front of five fixed
-`import_playbook: smc_change_run.yml` slots (Ansible cannot loop an import); `smc_change_run.yml` holds the old three plays, symlinked into the
-ansible-wifi root and git-excluded like `smc_change.yml`. A slot the chain does not reach gets `hosts: smc_change_no_slot_<n>` and runs nothing.
-Each change keeps its own records, state, journal and tracker under `files/changes/<name>/`. In apply and rollback a later change runs only where the
-change before passed in this run (`smc_change_chain_passed`, set by `tasks/state.yml` on a passed write and by `tasks/pending.yml` for a done host);
-the rest are grouped `smc_change_held_<slot>` and listed HELD. Check, assess and verify run every change everywhere. `-e smc_change=` with
-`smc_changes`, or a list on `smc_change`, is refused (extra vars beat the slot vars). `just chain` (`scripts/smc_change_chain.py`, one process per
-change) still works.
+**Chain several changes in one run (operator, 2026-11-04: "chaining different changes ... in the order in which the changes are specified").** `smc_change_chain.yml -e '{"smc_changes":
+["rct-tstik-iridium-update", "rct-avr-smsc"]}'` (or `smc_changes:` in an import's vars, as `smc_rise_deploy.yml` now does; `smc_change.yml` runs one change and shows no slots, operator 2026-11-04)
+runs up to five changes in one `ansible-playbook` process, in the order written. `playbooks/smc_change_chain.yml` (symlinked, git-excluded) is a front of five fixed `import_playbook:
+smc_change_run.yml` slots (Ansible cannot loop an import); `smc_change_run.yml` holds the old three plays, symlinked into the ansible-wifi root and git-excluded like `smc_change.yml`. A slot the chain
+does not reach gets `hosts: smc_change_no_slot_<n>` and runs nothing. Each change keeps its own records, state, journal and tracker under `files/changes/<name>/`. In apply and rollback a later change
+runs only where the change before passed in this run (`smc_change_chain_passed`, set by `tasks/state.yml` on a passed write and by `tasks/pending.yml` for a done host); the rest are grouped
+`smc_change_held_<slot>` and listed HELD. Check, assess and verify run every change everywhere. `-e smc_change=` with `smc_changes`, or a list on `smc_change`, is refused (extra vars beat the slot
+vars). `just chain` (`scripts/smc_change_chain.py`, one process per change) still works.
 
-Why it needed a role rewrite: Ansible cannot unset a `set_fact` or a register (`meta: clear_facts` clears only the fact cache, VERIFIED_PRIMARY,
-ansible-core 2.21.5), so the second change of a run read the first one's 105 facts. All role state now lives in two dicts that
-`tasks/prepare.yml` empties when a change starts; `vars/main.yml` (role vars, above inventory and play vars) reads each old name from them, so every
-read, `is defined` and `| default()` is unchanged. Only the 108 writes were rewritten, by `plans/smc-change-chain/codemod.py`, and
-`plans/smc-change-chain/verify_codemod.py` proved every task identical except where it writes (108 tasks, 0 differences). Excerpts (local-knowledge-ansible
-working tree, uncommitted at write time):
+Why it needed a role rewrite: Ansible cannot unset a `set_fact` or a register (`meta: clear_facts` clears only the fact cache, VERIFIED_PRIMARY, ansible-core 2.21.5), so the second change of a run
+read the first one's 105 facts. All role state now lives in two dicts that `tasks/prepare.yml` empties when a change starts; `vars/main.yml` (role vars, above inventory and play vars) reads each old
+name from them, so every read, `is defined` and `| default()` is unchanged. Only the 108 writes were rewritten, by `plans/smc-change-chain/codemod.py`, and `plans/smc-change-chain/verify_codemod.py`
+proved every task identical except where it writes (108 tasks, 0 differences). Excerpts (local-knowledge-ansible working tree, uncommitted at write time):
 
 ```yaml
 # roles/smc_change/vars/main.yml (one line per state name)
@@ -953,50 +954,43 @@ smc_change_tsh_nodes: "{{ smc_change_run['tsh_nodes'] }}"
       state_file: "{{ smc_change_runs_dir }}/state/{{ inventory_hostname }}.json"
 ```
 
-Traps met on the way, each fixed: `run_once` with `combine` copies the first host's whole dict to every host, so the one run-wide write after the
-hosts differ (`tsh_nodes`) has its own dict, `smc_change_run`; `hostvars[h].smc_change_x` does not see role vars, so `pending.yml` reads
-`hostvars[h].smc_change_s.x`; `query('varnames')` lists every read-through name, so `journal.yml` tests the key in `smc_change_s`; `default(omit)` inside
-the merged dict stored the omit placeholder, so the journal restore builds its dict from the keys present; three registers read in other files
-(`backup_on_box`, `backup_files`, `rearm_job`) are registered under `smc_change_reg_*` and copied into `smc_change_s`. Guard:
-`files/tests/test_state_namespace.py` fails on a bare `set_fact`, a key without its read-through line, an unused line, or a register of a state name.
+Traps met on the way, each fixed: `run_once` with `combine` copies the first host's whole dict to every host, so the one run-wide write after the hosts differ (`tsh_nodes`) has its own dict,
+`smc_change_run`; `hostvars[h].smc_change_x` does not see role vars, so `pending.yml` reads `hostvars[h].smc_change_s.x`; `query('varnames')` lists every read-through name, so `journal.yml` tests the
+key in `smc_change_s`; `default(omit)` inside the merged dict stored the omit placeholder, so the journal restore builds its dict from the keys present; three registers read in other files
+(`backup_on_box`, `backup_files`, `rearm_job`) are registered under `smc_change_reg_*` and copied into `smc_change_s`. Guard: `files/tests/test_state_namespace.py` fails on a bare `set_fact`, a key
+without its read-through line, an unused line, or a register of a state name.
 
-**Named value files (operator, 2026-11-04: "so that it gives control").** A spec lists the files holding its values: `variables_files: [variables.yml]`,
-beside the spec; they load together with `include_vars` (lazy, per host) as `smc_change_vars.<group>.<name>`. A missing file, a value in two files, or
-`variables_files` with a `vars:` block is refused before any SMC is touched; a spec naming none loads `files/no_variables.yml`, so a chained change never
-reads the last one's values. A `set_fact` merge would resolve the spec's Jinja at once (`dict has no attribute 'vars'`), which is why it is `include_vars`.
-Values are grouped (`avr`, `flash`, `stats`, `tstik`, `crontab`, `backup`; `env.steps.<group>` as shell variables), and each step names only the groups its
-script needs; `files/tests/test_spec_step_values.py` proves every step sets every `: "${NAME:?}"` its script requires (it caught `SELF_TEST_TIMEOUT`, unset,
-which would have failed the self test proof on every SMC). The AVR version both changes use is inventory: `smc_bases_tstik_avr_version: "3.07"` in
-`inventories/rct/group_vars/smc_bases.yml`.
+**Named value files (operator, 2026-11-04: "so that it gives control").** A spec lists the files holding its values: `variables_files: [variables.yml]`, beside the spec; they load together with
+`include_vars` (lazy, per host) as `smc_change_vars.<group>.<name>`. A missing file, a value in two files, or `variables_files` with a `vars:` block is refused before any SMC is touched; a spec naming
+none loads `files/no_variables.yml`, so a chained change never reads the last one's values. A `set_fact` merge would resolve the spec's Jinja at once (`dict has no attribute 'vars'`), which is why it
+is `include_vars`. Values are grouped (`avr`, `flash`, `stats`, `tstik`, `crontab`, `backup`; `env.steps.<group>` as shell variables), and each step names only the groups its script needs;
+`files/tests/test_spec_step_values.py` proves every step sets every `: "${NAME:?}"` its script requires (it caught `SELF_TEST_TIMEOUT`, unset, which would have failed the self test proof on every
+SMC). The AVR version both changes use is inventory: `smc_bases_tstik_avr_version: "3.07"` in `inventories/rct/group_vars/smc_bases.yml`.
 
-**rct-tstik-iridium-update in the rct-avr-smsc form.** Thirteen scripts in `scripts/` (POSIX sh, no values), plus `avr_flash.sh`, `py_avrloader_v2.py` and the
-vendor `py_avrloader.py` moved there. `avr_flash.sh` now takes every value from its environment, passed with `systemd-run --setenv` (a unit gets no caller
-environment); a rollback of an older run uses that run's saved copy, which ignores them. Values that follow `-e rct_avr_flash` (`env.flags`) go only to the
-fact and the proofs, never to an action, so the target is the same with and without the flag (checked: `9bb0af5f8664` both ways). The undo now keeps a tree
-already at the master commit (same script as the clone) instead of always cloning again.
+**rct-tstik-iridium-update in the rct-avr-smsc form.** Thirteen scripts in `scripts/` (POSIX sh, no values), plus `avr_flash.sh`, `py_avrloader_v2.py` and the vendor `py_avrloader.py` moved there.
+`avr_flash.sh` now takes every value from its environment, passed with `systemd-run --setenv` (a unit gets no caller environment); a rollback of an older run uses that run's saved copy, which ignores
+them. Values that follow `-e rct_avr_flash` (`env.flags`) go only to the fact and the proofs, never to an action, so the target is the same with and without the flag (checked: `9bb0af5f8664` both
+ways). The undo now keeps a tree already at the master commit (same script as the clone) instead of always cloning again.
 
-Targets moved, so passed SMCs are re-run: rct-tstik-iridium-update (`probe_first`) probes once and stops where every proof holds; rct-avr-smsc (no
-`probe_first`) runs its full pass, where the write's check reads the AVR, says ALREADY and writes nothing, and restart and soak are skipped.
+Targets moved, so passed SMCs are re-run: rct-tstik-iridium-update (`probe_first`) probes once and stops where every proof holds; rct-avr-smsc (no `probe_first`) runs its full pass, where the write's
+check reads the AVR, says ALREADY and writes nothing, and restart and soak are skipped.
 
-Proven: check-mode chain on alkngarrija-smc01 2026-11-04 15:45 (81 s): both changes in order, each record in its own folder, the new scripts ran under the
-SMC's dash with every value (the four failing proofs were real: no loader, master build, `/viewstats2` 404). `just test` 124 tests, `test_chain_gate` (HELD
-on apply, none on check), `test_load_spec_vars`, controller tests as before; `test_journal` fails as it did before (missing fixture record). Not proven: a chain in apply mode on a real SMC. First real apply on the rewritten role, single change: the-crossing-smc01 passed
-`rct-tstik-iridium-update` 2026-11-04 16:21 (299 s). Flows: tracker steps cite `smc_change_run.yml`; 145 steps touched only by the write rewrite accepted on
-the `verify_codemod.py` proof (`trace_sync.py --accept <files> --apply`), the other 40 read and accepted; `smc_change_flows_check` passes. Unused chain slots
-use the host pattern `smc_bases:!smc_bases` (Ansible warns about an unknown group, not an empty one) and templated play names ("Change N of the chain: not
-used"). New `change-variables-template.yml` beside `change-spec-template.yml`.
+Proven: check-mode chain on alkngarrija-smc01 2026-11-04 15:45 (81 s): both changes in order, each record in its own folder, the new scripts ran under the SMC's dash with every value (the four failing
+proofs were real: no loader, master build, `/viewstats2` 404). `just test` 124 tests, `test_chain_gate` (HELD on apply, none on check), `test_load_spec_vars`, controller tests as before;
+`test_journal` fails as it did before (missing fixture record). Not proven: a chain in apply mode on a real SMC. First real apply on the rewritten role, single change: the-crossing-smc01 passed
+`rct-tstik-iridium-update` 2026-11-04 16:21 (299 s). Flows: tracker steps cite `smc_change_run.yml`; 145 steps touched only by the write rewrite accepted on the `verify_codemod.py` proof
+(`trace_sync.py --accept <files> --apply`), the other 40 read and accepted; `smc_change_flows_check` passes. Unused chain slots use the host pattern `smc_bases:!smc_bases` (Ansible warns about an
+unknown group, not an empty one) and templated play names ("Change N of the chain: not used"). New `change-variables-template.yml` beside `change-spec-template.yml`.
 
 ## Self-repair of cut-off runs, success means every goal, applies_when (2026-11-04 evening)
 
 Built after the chain was withdrawn and the plain role restored (local-knowledge-ansible `52de414`, then `3ebbe56`). Operator rulings, all 2026-11-04.
 
-**A run cut off before it changed anything repairs itself.** scrubby-bore-smc01: an rct-tstik-iridium-update apply was cut off at stage 5 (16:18),
-its inventory gained `smc_bases_iridium: true` at 16:48, the resume was refused `needs_repair` (spec fingerprint changed) and the lower dir stayed `rw`
-until a hand repair. `files/recovery.py` `untouched()` accepted only all-`apt_pin` specs; now stage 5 (no action has run) counts as untouched for any
-spec, and stage 6 counts when every non-transient action's `proved_by` proof reads as in the journal's before-probe (the journal is written at stage
-boundaries only, so it cannot say which actions ran). `abandoned_clean` then fetches the old backup to
-`runs/<flavor>/backups/<host>-<start>-abandoned/`, removes it from the SMC, closes the lower dir and sets the journal aside. Excerpt
-(`files/recovery.py`, `3ebbe56`):
+**A run cut off before it changed anything repairs itself.** scrubby-bore-smc01: an rct-tstik-iridium-update apply was cut off at stage 5 (16:18), its inventory gained `smc_bases_iridium: true` at
+16:48, the resume was refused `needs_repair` (spec fingerprint changed) and the lower dir stayed `rw` until a hand repair. `files/recovery.py` `untouched()` accepted only all-`apt_pin` specs; now
+stage 5 (no action has run) counts as untouched for any spec, and stage 6 counts when every non-transient action's `proved_by` proof reads as in the journal's before-probe (the journal is written at
+stage boundaries only, so it cannot say which actions ran). `abandoned_clean` then fetches the old backup to `runs/<flavor>/backups/<host>-<start>-abandoned/`, removes it from the SMC, closes the
+lower dir and sets the journal aside. Excerpt (`files/recovery.py`, `3ebbe56`):
 
 ```python
 if phase == 5 and actions:
@@ -1009,41 +1003,38 @@ was, now = by_name(before.get("proves")), by_name(current.get("proves"))
 return all(n in was and n in now and was[n] == now[n] for n in named)
 ```
 
-**Lower dir guard.** `tasks/lower_guard.yml`: when stage 5 opens the lower dir, a transient `systemd-run --on-active=60min` unit
-(`smc-change-lower-guard`, `smc_change_lower_guard_minutes`) remounts it read-only if the run never closes it; re-armed at every stage, stopped at the
-close; remount only, never a reboot (operator chose 60 over 30 minutes). Tested against stand-ins (`files/tests/test_lower_guard.yml`); not yet seen
-firing on a real cut-off.
+**Lower dir guard.** `tasks/lower_guard.yml`: when stage 5 opens the lower dir, a transient `systemd-run --on-active=60min` unit (`smc-change-lower-guard`, `smc_change_lower_guard_minutes`) remounts
+it read-only if the run never closes it; re-armed at every stage, stopped at the close; remount only, never a reboot (operator chose 60 over 30 minutes). Tested against stand-ins
+(`files/tests/test_lower_guard.yml`); not yet seen firing on a real cut-off.
 
-**A change passes only when every action's goal holds** (operator: "if not all the actions have been performed, a change should not be deemed
-successful"). `tasks/guard.yml` refuses, before any change, an SMC where an action its conditions skip names a proof that does not already hold;
-transient actions and actions without `proved_by` are not judged; a goal unmet after the change fails its proof gate (`gates_failed`, the "incomplete"
-of the plan). `applies_when: <condition>` false records the SMC `not_applicable` (rct-avr-smsc: `iridium_site`). For rct-tstik-iridium-update the
-goals are the iridium commit, AVR 3.07 and update:stats on */5 (with the loader): the `avr_version` fact is read on every SMC, the proof "AVR at 3.07"
-is unconditional, and before the loader is on the SMC it reads stats.json (padded). Seen on alkngarrija-smc01 (check): rct-avr-smsc
-`not_applicable`; the iridium proof "stats.json: AVR version=2.14, not 3.07", so an apply without the flash would be refused, not passed.
+**A change passes only when every action's goal holds** (operator: "if not all the actions have been performed, a change should not be deemed successful"). `tasks/guard.yml` refuses, before any
+change, an SMC where an action its conditions skip names a proof that does not already hold; transient actions and actions without `proved_by` are not judged; a goal unmet after the change fails its
+proof gate (`gates_failed`, the "incomplete" of the plan). `applies_when: <condition>` false records the SMC `not_applicable` (rct-avr-smsc: `iridium_site`). For rct-tstik-iridium-update the goals are
+the iridium commit, AVR 3.07 and update:stats on */5 (with the loader): the `avr_version` fact is read on every SMC, the proof "AVR at 3.07" is unconditional, and before the loader is on the SMC it
+reads stats.json (padded). Seen on alkngarrija-smc01 (check): rct-avr-smsc `not_applicable`; the iridium proof "stats.json: AVR version=2.14, not 3.07", so an apply without the flash would be refused,
+not passed.
 
-**Why it was needed.** the-crossing-smc01 passed rct-tstik-iridium-update twice with the flash skipped (16:21, and 17:46 without `-e rct_avr_flash=true`),
-then rct-avr-smsc failed at its write twice (17:28, 17:53: "AVR on '2.14', not one of: 3.07 3.7"), writing nothing (its version check runs first; lower dir
-read back `ro`). Fix there: `just flash rct/prod the-crossing-smc01 -e smc_change_probe=true`, then resume rct-avr-smsc.
+**Why it was needed.** the-crossing-smc01 passed rct-tstik-iridium-update twice with the flash skipped (16:21, and 17:46 without `-e rct_avr_flash=true`), then rct-avr-smsc failed at its write twice
+(17:28, 17:53: "AVR on '2.14', not one of: 3.07 3.7"), writing nothing (its version check runs first; lower dir read back `ro`). Fix there: `just flash rct/prod the-crossing-smc01 -e
+smc_change_probe=true`, then resume rct-avr-smsc.
 
-**Also:** every action task is named `Action <n>/<total> - ...` (`smc_change_actions | default([]) | length`); the in-process chain is archived
-(`plans/smc-change-chain/archive-20261104/`), `smc_rise_deploy.yml` uses two imports again; the include of one change inside another is planned
-(`plans/smc-change-include-plan-20261104_1745.md`); skill-smc `smc_change_trace` passes quoted arguments whole (`--by "name"`).
+**Also:** every action task is named `Action <n>/<total> - ...` (`smc_change_actions | default([]) | length`); the in-process chain is archived (`plans/smc-change-chain/archive-20261104/`),
+`smc_rise_deploy.yml` uses two imports again; the include of one change inside another is planned (`plans/smc-change-include-plan-20261104_1745.md`); skill-smc `smc_change_trace` passes quoted
+arguments whole (`--by "name"`).
 
-**Iridium sites are flashed in advance (operator, 2026-11-04).** Sites are configured before the technician swaps the Thuraya hardware for Iridium: `smc_bases_iridium: true` is set ahead and now means planned for Iridium, then rct-tstik-iridium-update flashes AVR 3.07 (`just flash`) and rct-avr-smsc sets the numbers. The Thuraya board SIM loss from 3.07 (Chris Blair, 2026-10-28) is accepted: Thuraya is not really working. Spec comments that say the flash must never reach a Thuraya site are to be reworded.
+**Iridium sites are flashed in advance (operator, 2026-11-04).** Sites are configured before the technician swaps the Thuraya hardware for Iridium: `smc_bases_iridium: true` is set ahead and now means
+planned for Iridium, then rct-tstik-iridium-update flashes AVR 3.07 (`just flash`) and rct-avr-smsc sets the numbers. The Thuraya board SIM loss from 3.07 (Chris Blair, 2026-10-28) is accepted:
+Thuraya is not really working. Spec comments that say the flash must never reach a Thuraya site are to be reworded.
 
-**Batches 1-3 marked on rise and master (2026-11-04 20:23).** 25 rct SMCs carry `smc_bases_iridium: true` on both branches (rise `6f869a12`, master
-`9cbe85ee`, unpushed), set with `scripts/ansible/smc_mark_iridium.py` (`just smc_mark_iridium`). `smc_rise_deploy.yml` sets `rct_avr_flash: true` on its
-rct-tstik-iridium-update import (2026-11-04 20:40, operator), so the deploy flashes AVR 3.07 before rct-avr-smsc; the flash still runs only where
-`smc_bases_iridium` is true. Batch
-lists written with long site names miss four SMCs, because `-l` skips a name it cannot find and the run still passes (brubrunganjal-kitty-wells ->
-brubrunganjal, goojarr-goonyool-two-moons -> goojarr-goonyool, gurrbalgun-urmarr -> gurrbalgun, rollah-oompanaguba -> rollah). Runbook:
+**Batches 1-3 marked on rise and master (2026-11-04 20:23).** 25 rct SMCs carry `smc_bases_iridium: true` on both branches (rise `6f869a12`, master `9cbe85ee`, unpushed), set with
+`scripts/ansible/smc_mark_iridium.py` (`just smc_mark_iridium`). `smc_rise_deploy.yml` sets `rct_avr_flash: true` on its rct-tstik-iridium-update import (2026-11-04 20:40, operator), so the deploy
+flashes AVR 3.07 before rct-avr-smsc; the flash still runs only where `smc_bases_iridium` is true. Batch lists written with long site names miss four SMCs, because `-l` skips a name it cannot find and
+the run still passes (brubrunganjal-kitty-wells -> brubrunganjal, goojarr-goonyool-two-moons -> goojarr-goonyool, gurrbalgun-urmarr -> gurrbalgun, rollah-oompanaguba -> rollah). Runbook:
 local-knowledge-ansible `plans/iridium-flash-batches-runbook-20261104_2023.md`.
 
-**Rise deploy chain proven on shelfo-crossing-smc01 (2026-11-04 20:50-21:01).** One `smc_rise_deploy.yml -l shelfo-crossing-smc01` run: the
-rct-tstik-iridium-update import passed in 8 min (record `conditions.cond.flash_wanted = True`, so a `vars:` key on `import_playbook` reaches the
-spec; `avr_version` 2.14 -> 3.07, the 3.04/3.06 firmware copies SKIPPED by their `avr_at_*` conditions), then rct-avr-smsc passed in 3 min (SMSC
-+61415011740 -> +61418706700; emergency 000 and destination +61410004795 already right). Read a run's outcome from
+**Rise deploy chain proven on shelfo-crossing-smc01 (2026-11-04 20:50-21:01).** One `smc_rise_deploy.yml -l shelfo-crossing-smc01` run: the rct-tstik-iridium-update import passed in 8 min (record
+`conditions.cond.flash_wanted = True`, so a `vars:` key on `import_playbook` reaches the spec; `avr_version` 2.14 -> 3.07, the 3.04/3.06 firmware copies SKIPPED by their `avr_at_*` conditions), then
+rct-avr-smsc passed in 3 min (SMSC +61415011740 -> +61418706700; emergency 000 and destination +61410004795 already right). Read a run's outcome from
 `runs/rct/records/<host>-<spec>-apply-<stamp>.json` (`result`, `gates`, `actions`, `conditions.facts`, `facts_after`):
 
 ```python
@@ -1054,7 +1045,6 @@ print(d["conditions"]["cond"]["flash_wanted"])  # True only with rct_avr_flash a
 print(d["conditions"]["facts"]["avr_version"], d["facts_after"]["avr_version"])
 ```
 
-**A deploy with the Iridium flag missing skips the chain silently.** Both imports carry `when: *rct_iridium` (`... smc_bases_iridium == true`);
-with the flag false the Prepare play prints no task, the Apply play says "skipping: no hosts matched", and the deploy goes on into its other plays.
-On 2026-11-04 the 24 host_vars files on disk lost the flag at 20:31:53 (cause unknown; not git, not the agent) and the first canary did exactly
-this. Before a deploy: `ansible-inventory -i inventories/rct/prod --host <host> | grep smc_bases_iridium`.
+**A deploy with the Iridium flag missing skips the chain silently.** Both imports carry `when: *rct_iridium` (`... smc_bases_iridium == true`); with the flag false the Prepare play prints no task, the
+Apply play says "skipping: no hosts matched", and the deploy goes on into its other plays. On 2026-11-04 the 24 host_vars files on disk lost the flag at 20:31:53 (cause unknown; not git, not the
+agent) and the first canary did exactly this. Before a deploy: `ansible-inventory -i inventories/rct/prod --host <host> | grep smc_bases_iridium`.
