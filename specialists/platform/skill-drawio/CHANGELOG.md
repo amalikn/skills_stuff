@@ -16,6 +16,8 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- scripts/flowmap/pages.py, flowchart/graph.py, flowchart/pages.py, flowchart/page.py, step_text.py, profile.py, schemas: `look.step_pages` (a family chained on one folded step page before its first flow page), family `chain: all`, `look.chart_tab`, refusal ends stop a chain (`main_path`), chained steps keep their names; tests in test_e2e_family.py and test_flowchart.py; references/charts-and-trace.md Learned 2026-11-06 (one step page for a family) (2026-11-06).
+- SKILL.md: the consumer-check rule names each consumer's own flows recipe, not `just flows` (the runner check failed on it) (2026-11-06).
 - scripts/flowmap/shapes.py: cloud step boxes centre their text with wider margins (0.72 width, 1.35 height): text stays inside the outline; every consumer re-rendered; references/visual-style.md Learned 2026-11-06 (text in a cloud step box) (2026-11-06).
 - scripts/flowmap/profile.py, shapes.py: `step_chars` default 46 -> 38 and predefined-process width factor 0.88 -> 0.75 (slanted shapes 0.95 -> 0.88): step boxes no longer overflow; every consumer re-rendered; references/visual-style.md Learned 2026-11-06 (step box text budget), screenshots 20261106-step-box-sizing-and-legend-links (2026-11-06).
 - scripts/flowmap/colours.py, schemas/flowmap.schema.json: a flow's `colour` pins its End-to-end colour; the spread works around it; tests/test_flow_colours.py (2026-11-06).

@@ -352,9 +352,10 @@ def chart_page(flow: dict, comps: dict, profile: Profile, page_ids: tuple, mode:
     """
     fid, swimlanes = f"{mode}-{flow['id']}", mode != "chart"   # the mode in every cell id: one flow may be drawn in all three
     chart = Chart({**flow, "id": fid}, comps, profile, page_ids, mode)
-    page = Page(fid, f"{TABS[mode]}: {flow['title']}"[:60])
+    tab = profile.look.get("chart_tab", TABS["chart"]) if mode == "chart" else TABS[mode]   # `look.chart_tab` names chart tabs (2026-11-06)
+    page = Page(fid, f"{tab}: {flow['title']}"[:60])
     page.label_clearance, page.run_spacing = profile.look.get("label_clearance", 0), profile.look.get("run_spacing", 0)
-    head = [f"**{flow['title']}** ({TABS[mode].lower()})", BLANK, flow["purpose"], BLANK, f"**Trigger:** {flow['trigger']['kind']}: {flow['trigger']['detail']}",
+    head = [f"**{flow['title']}** ({tab.lower()})", BLANK, flow["purpose"], BLANK, f"**Trigger:** {flow['trigger']['kind']}: {flow['trigger']['detail']}",
             BLANK, "[back to Overview]"]
     if swimlanes:
         improve_branches(chart.graph, lambda: _polylines(chart))

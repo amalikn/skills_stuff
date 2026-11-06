@@ -311,8 +311,26 @@ def swap_branches(graph: Graph, grid: Grid) -> None:
             first.index, second.index = 1, 0
 
 
+def main_path(steps: list[dict]) -> set[str]:
+    """The steps on a flow's main path: from its first step, always the first way out, until a step has none or one repeats.
+
+    Args:
+        steps: the flow's steps in order.
+
+    Returns:
+        Their ids. A refusal or fallback reached only through a gate's other way is not on it.
+    """
+    index = {s["id"]: k for k, s in enumerate(steps)}
+    seen, k = set(), 0 if steps else None
+    while k is not None and steps[k]["id"] not in seen:
+        seen.add(steps[k]["id"])
+        targets = step_targets(steps, k)
+        k = index.get(targets[0]) if targets else None
+    return seen
+
+
 def stitched(fid: str, flows: list[dict]) -> dict:
-    """Several flows as one (a change's flows, a family), each flow's last steps leading to the next flow's first.
+    """Several flows as one (a change's flows, a family), the end of each flow's main path leading to the next flow's first step.
 
     Args:
         fid: the id of the joined flow.
@@ -323,11 +341,14 @@ def stitched(fid: str, flows: list[dict]) -> dict:
     """
     steps = []
     for n, f in enumerate(flows):
-        ids = [s["id"] for s in f["steps"]]
+        ids, main = [s["id"] for s in f["steps"]], main_path(f["steps"])
         for k, s in enumerate(f["steps"]):
             targets = [f"{f['id']}.{t}" for t in step_targets(f["steps"], k)]
-            if not targets and n + 1 < len(flows) and s.get("shape") != "terminator":
+            # Only the end of the main path leads on: a refusal reached through a gate's other way ends there (operator review 2026-11-06:
+            # a rejected build ran on into the approval).
+            if not targets and n + 1 < len(flows) and s.get("shape") != "terminator" and s["id"] in main:
                 targets = [f"{flows[n + 1]['id']}.{flows[n + 1]['steps'][0]['id']}"]
             when = {f"{f['id']}.{t}": v for t, v in s.get("when", {}).items() if t in ids}
-            steps.append({**s, "id": f"{f['id']}.{s['id']}", "next": targets, **({"when": when} if when else {})})
+            steps.append({**s, "id": f"{f['id']}.{s['id']}", "label": s.get("label", s["id"]), "flow_of": f["id"], "next": targets,
+                          **({"when": when} if when else {})})   # label: the step's own name for its box (2026-11-06)
     return {**flows[0], "id": fid, "steps": steps}

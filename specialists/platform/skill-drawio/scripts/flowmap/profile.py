@@ -52,9 +52,11 @@ DEFAULT_LOOK = {
     "e2e_row_search": False,       # E2E: swap boxes inside a column to cut crossings the grid implies, after barycentre (operator, 2026-10-28)
     "e2e_loops": False,            # a step done by the same box as the step before is a loop on that box's top or bottom (operator, 2026-10-26)
     "lock_base_layer": False,      # every page's background layer ("1") drawn locked (operator, 2026-10-26)
+    "chart_tab": "Chart",          # flowchart page tab names: "<chart_tab>: <title>" (operator, 2026-11-06: "Step by step" for a chained family)
     "e2e_tab": "End-to-end",       # End-to-end tab names: "<e2e_tab> flow" and "<e2e_tab>: <family>" (operator asked for "E2E", 2026-10-26)
     "e2e_family_colours": "page",  # family-page flow colours: "page" (restart on each page, no repeats) or "flow" (full-page colour; operator, 2026-10-26)
     "fold": "off",                 # a long flow page in rows: "off", "serpentine" (every second row right to left) or "z" (operator, 2026-10-27)
+    "step_pages": [],              # one step page per entry, folded serpentine: `family:<id>` chains the family (as flowcharts) (operator, 2026-11-06)
     "flowcharts": [],              # regular flowchart pages (flowmap.flowchart): flow ids, `family:<id>` for a family as one chart, or "all" (operator, 2026-11-02)
     "bpmn": [],                    # the same lanes in BPMN symbols; same values as flowcharts (operator, 2026-11-02)
     "swimlanes": [],               # the same chart in vertical lanes, one per actor; same values as flowcharts (operator, 2026-11-02)
@@ -104,6 +106,8 @@ class Profile:
             from 1 on their own (operator, 2026-10-26).
         family_prefix: {own family id: the word before its flow numbers on tabs and the index, `prefix` else the family name}.
         no_flow_pages: families with `flow_pages: false`: no page per flow and no index row, only their End-to-end page (operator, 2026-10-26).
+        chain_all: families with `chain: all`: a family chart joins every flow in map order, not only those triggered `after` the one before
+            (operator, 2026-11-06: one step-by-step page for the smc-resiliency tech stack).
         no_e2e_pages: `own_page` families with `e2e_page: false`: no End-to-end page of their own, only their flow pages (operator,
             2026-10-26: one step-by-step page for a change, telling the change itself).
         band_title: the heading of the band below the columns.
@@ -136,6 +140,7 @@ class Profile:
     family_prefix: dict = field(default_factory=dict)
     no_flow_pages: frozenset = frozenset()
     no_e2e_pages: frozenset = frozenset()
+    chain_all: frozenset = frozenset()
     band_title: str = "Stores and secrets"
     kind_shapes: dict = field(default_factory=dict)
     io_vias: tuple = DEFAULT_IO_VIAS
@@ -194,6 +199,7 @@ class Profile:
                    family_by_category=by_cat, own_families=frozenset(f["id"] for f in d.get("families") or () if f.get("own_page")),
                    family_prefix={f["id"]: f.get("prefix", f["name"]) for f in d.get("families") or () if f.get("own_page")},
                    no_flow_pages=frozenset(f["id"] for f in d.get("families") or () if f.get("flow_pages") is False),
+                   chain_all=frozenset(f["id"] for f in d.get("families") or () if f.get("chain") == "all"),
                    no_e2e_pages=frozenset(f["id"] for f in d.get("families") or () if f.get("own_page") and f.get("e2e_page") is False),
                    band_title=d.get("band_title", "Stores and secrets"),
                    kind_shapes=dict(d.get("kind_shapes") or {}), io_vias=tuple(v.lower() for v in d.get("io_vias", DEFAULT_IO_VIAS)),

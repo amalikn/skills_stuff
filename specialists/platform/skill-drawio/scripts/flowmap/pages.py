@@ -20,7 +20,7 @@ from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_
 from .map_parts import flow_labels, paged_flows
 from .model import option_blocks
 from .options import options_page
-from .flowchart.pages import flowchart_pages
+from .flowchart.pages import chart_flows, flowchart_pages
 from .isolate import dim_level, step_isolation
 from .fold import fold_rows, fold_setting, folded_page
 from .lane_fold import foldable, lane_fold_page
@@ -253,6 +253,29 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
     return page
 
 
+def _chained(joined: dict, data: dict, labels: dict, profile: Profile) -> tuple[dict, str]:
+    """A `look.step_pages` entry as one flow for flow_page(): folded serpentine, its header naming the flows it joins (operator, 2026-11-06).
+
+    Args:
+        joined: the stitched flow from flowchart.pages.chart_flows (steps carry `flow_of`).
+        data: the validated map.
+        labels: {flow id: its number or label}.
+        profile: the drawing profile (`look.chart_tab` names the tab).
+
+    Returns:
+        (the flow to draw, its number for the header: the first and last joined flows' labels).
+    """
+    members = list(dict.fromkeys(s.get("flow_of", joined["id"]) for s in joined["steps"]))
+    title = {f["id"]: f["title"] for f in data["flows"]}
+    names = "; ".join(f"{labels.get(m, m)}. {title.get(m, m)}" for m in members)
+    flow = {k: v for k, v in joined.items() if k not in ("status", "budget", "dependencies", "docs")}
+    flow.update(id=f"steps-{joined['id']}", tab=f"{profile.look.get('chart_tab', 'Chart')}: {joined['title']}", layout={"fold": "serpentine"},
+                category="step by step", purpose=f"Joined in map order: {names}. Each flow's own page keeps its trigger, status and budget.",
+                trigger={"kind": "per flow", "detail": "see each flow's page"})
+    first, last = labels.get(members[0], members[0]), labels.get(members[-1], members[-1])
+    return flow, (f"{first} to {last}" if first != last else str(first))
+
+
 def named_pages(data: dict, profile: Profile) -> list[tuple[int, str, Page]]:
     """Every page of the drawing in file order, each with its audit rank and the name an audit line starts with (2026-10-29: one build serves
     the file and its audit, so the audit reads the pages drawn, flow pages with their family labels included).
@@ -273,6 +296,10 @@ def named_pages(data: dict, profile: Profile) -> list[tuple[int, str, Page]]:
            + [(4, f"Flow {i + 1} ({f['id']})", flow_page(f, comps, labels[f["id"]], profile)) for i, f in enumerate(data["flows"]) if f in paged])
     charts = [(4, f"Flowchart ({p.page_id})", p) for p in flowchart_pages(data, profile, {f["id"] for f in paged})]
     first_flow = next((k for k, item in enumerate(out) if item[0] == 4), len(out))
+    for f in chart_flows(data, profile, "step_pages"):   # a joined family's step page goes just before its first flow's page (operator, 2026-11-06)
+        at = next((k for k, item in enumerate(out) if item[2].page_id == f"flow-{f['steps'][0].get('flow_of', f['id'])}"), len(out))
+        flow, number = _chained(f, data, labels, profile)
+        out.insert(at, (4, f"Steps ({f['id']})", flow_page(flow, comps, number, profile)))
     out[first_flow:first_flow] = charts   # the chart of a flow reads before its detailed pages (`look.flowcharts`, default none)
     for k, (pid, name, block) in enumerate(option_blocks(data)):   # optional: decision pages go right after the Overview, in map order
         out.insert(1 + k, (3, name, options_page(data, profile, block, pid, name)))

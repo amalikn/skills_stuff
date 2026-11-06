@@ -42,7 +42,8 @@ def chart_flows(data: dict, profile: Profile, key: str = "flowcharts") -> list[d
         # The chain starts at the first flow a command starts (a symptom flow comes before it), and a flow joins only when it follows the one before:
         # a rollback has a command of its own, and never runs after the proof.
         first = next((k for k, f in enumerate(members) if f["trigger"]["kind"] == "command"), 0)
-        chain = members[first:first + 1] + [f for f in members[first + 1:] if f["trigger"]["kind"] == "after"]
+        chain = (members if family in profile.chain_all   # `chain: all`: every flow of the family, in map order (2026-11-06)
+                 else members[first:first + 1] + [f for f in members[first + 1:] if f["trigger"]["kind"] == "after"])
         out.append({**stitched(family, chain), "title": title, **upright})
     return out
 

@@ -122,6 +122,18 @@ class FamilyPages(unittest.TestCase):
                 self.assertTrue(links, d.get("id"))
                 self.assertLessEqual(links, shown, d.get("id"))
 
+    def test_step_page_joins_a_family_before_its_first_flow(self) -> None:
+        """`look.step_pages: [family:<id>]` draws one folded step page, placed just before the family's first flow page, steps by their own names."""
+        data = _map()
+        fam = data["drawing"]["families"][0]
+        text = _render(_map(step_pages=[f"family:{fam['id']}"], chain_all=True))
+        ids = [d.get("id") for d in _diagrams(text)]
+        first = next(f["id"] for f in data["flows"] if f["id"] in fam["flows"])
+        self.assertIn(f"flow-steps-{fam['id']}", ids)
+        self.assertEqual(ids.index(f"flow-steps-{fam['id']}") + 1, ids.index(f"flow-{first}"))
+        self.assertNotIn(f"{first}.", "".join(c.get("value") or c.get("label") or "" for d in _diagrams(text)
+                                             if d.get("id") == f"flow-steps-{fam['id']}" for c in d.iter() if c.tag in ("mxCell", "UserObject")))
+
     def test_audits_clean_and_unused_tiers_dropped(self) -> None:
         """Every family page passes the layout audits; a family that touches two tiers draws two columns."""
         data = _map(e2e_family_pages=True)

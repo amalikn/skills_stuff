@@ -566,6 +566,7 @@
                   "$ref": "#/$defs/id"
                 }
               },
+              "chain": {"type": "string", "enum": ["after", "all"], "description": "A family chart joins flows triggered after the one before (default) or all of them in map order (2026-11-06)."},
               "own_page": {
                 "type": "boolean",
                 "description": "Draw this family's flows only on its own End-to-end page (drawn even with look.e2e_family_pages off), leave them off the full one, and number them from 1 with colours of their own; for example one change's flows (operator, 2026-10-26)."
@@ -771,6 +772,7 @@
               "type": "boolean",
               "description": "Draw a step done by the same component as the step before as a loop on that component's box (top or bottom, whichever has more room), labelled x.y or x.y–z; default false (no arrow, named in the next arrow's hover text)."
             },
+            "step_pages": {"type": "array", "items": {"type": "string", "minLength": 1}, "description": "Step pages folded serpentine: flow ids or family:<id> chained (2026-11-06)."},
             "flowcharts": {
               "oneOf": [{"const": "all"}, {"type": "array", "items": {"type": "string", "minLength": 1}}],
               "description": "Regular flowchart pages (flowmap.flowchart): flow ids, family:<id> for a family joined into one chart, or all. Default none."
@@ -801,6 +803,7 @@
               "type": "boolean",
               "description": "Draw every page's background layer locked, so nothing on it can be selected or moved by accident; default false."
             },
+            "chart_tab": {"type": "string", "minLength": 1, "maxLength": 30, "description": "Flowchart page tab prefix, default Chart (2026-11-06)."},
             "e2e_tab": {
               "type": "string",
               "description": "End-to-end tab names: '<e2e_tab> flow' for the full page and '<e2e_tab>: <family>' for family pages; default End-to-end."

@@ -97,7 +97,7 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
   code by `trace_sync.py` in the project's flow check; read it with `trace_query.py` before reading the code.
 - A refactor of the engine must leave every consumer's drawing byte-identical; prove it with the before and after files.
 - An engine change that alters drawings on purpose runs `just consumer-check` before the push, lists the consumers that change, and tells each
-  one (its hub or session) to run `just flows`, since its `just check` drifts until then (2026-11-06: taller diamonds pushed without it).
+  one (its hub or session) to run its own flows recipe, since its `just check` drifts until then (2026-11-06: taller diamonds pushed without it).
 
 ## Standing rules
 

@@ -180,3 +180,29 @@ for nid in graph.steps:
 Open: chart-php-steps arc clash on `cli~0-close`; plain flowchart spanning and measured swap; `just check` runs no unit tests.
 
 Screenshots: [references/screenshots/20261102-charts-lanes-bpmn/](screenshots/20261102-charts-lanes-bpmn/readme.md).
+
+> **Learned 2026-11-06** · one step page for a family · VERIFIED_PRIMARY · Source: `scripts/flowmap/pages.py` `_chained`, `named_pages`;
+> `scripts/flowmap/flowchart/graph.py` `main_path`, `stitched`; tests `test_step_page_joins_a_family_before_its_first_flow`,
+> `test_a_refusal_end_does_not_lead_into_the_next_flow`, `test_chart_tab_names_the_page` · Falsifier: a joined page whose refusal end leads into
+> the next flow, or that lands away from its family's first flow page
+> Operator, 2026-11-06 (smc-resiliency Tech stack): "why not one tech stack step by step", then "I want serpent diagram for tech stack" and "move
+> the diagram after the Box page". A flowchart page cannot fold, so `look.step_pages: [family:<id>]` draws the family's flows chained on one step
+> page (lanes), folded serpentine, placed just before the family's first flow page, its tab `<look.chart_tab>: <family name>` and its header
+> naming the joined flows ("16 to 19"); each flow keeps its own page. A family whose flows each have their own trigger joins with `chain: all`
+> (default: only flows triggered `after` the one before). Only the end of a flow's main path (first way out from its first step) leads on: a
+> refusal reached through a gate's other way ends there; before this a rejected build ran on into the approval. Chained steps keep their own
+> name (`label`) in their boxes.
+>
+> ```python
+> # scripts/flowmap/flowchart/graph.py (skill-drawio, after b498288)
+> def main_path(steps):
+>     index = {s["id"]: k for k, s in enumerate(steps)}
+>     seen, k = set(), 0 if steps else None
+>     while k is not None and steps[k]["id"] not in seen:
+>         seen.add(steps[k]["id"])
+>         targets = step_targets(steps, k)
+>         k = index.get(targets[0]) if targets else None
+>     return seen
+> ```
+>
+> Screenshot pending: smc-resiliency page "Step by step: Tech stack" (the permission classifier refused committing screenshots this session).

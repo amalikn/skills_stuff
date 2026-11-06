@@ -45,7 +45,7 @@ def step_lines(step: dict, number: int, bullets: bool = True, scale: int = 100) 
     """
     clauses = action_clauses(step["action"])
     action = [step["action"]] if not bullets else clauses if len(clauses) == 1 else [f"• {c}" for c in clauses]   # one clause a line: long actions read as a list
-    return ([heading(f"**{number}. {step['id']}**", scale), BLANK] + action + [BLANK, f"*via {' + '.join(step['via'])}*"]
+    return ([heading(f"**{number}. {step.get('label', step['id'])}**", scale), BLANK] + action + [BLANK, f"*via {' + '.join(step['via'])}*"]
             + ([f"**GATE: {step['gate']}**"] if step.get("gate") else [])
             + ([f"*{step['status']['state']} since {step['status']['since']}*"] if step.get("status") else []))
 
@@ -60,7 +60,7 @@ def note_lines(step: dict, number: int) -> list[str]:
     Returns:
         Label lines for drawio.mxfile.label().
     """
-    out = [f"**{number}. {step['id']}**"]
+    out = [f"**{number}. {step.get('label', step['id'])}**"]
     for key, heading, is_code in NOTE_SECTIONS:
         if step.get(key):
             out += [BLANK, f"**{heading}**"] + [f"• `{item}`" if is_code else f"• {item}" for item in step[key]]

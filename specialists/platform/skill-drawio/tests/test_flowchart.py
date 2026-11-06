@@ -278,6 +278,21 @@ class Words(unittest.TestCase):
         self.assertEqual(_after_answer("no: refused, the host fails"), "Refused, the host fails")
         self.assertEqual(_after_answer("needs_repair, or resume off: refused"), "needs_repair, or resume off: refused")
 
+    def test_chart_tab_names_the_page(self):
+        """`look.chart_tab` replaces "Chart" in a flowchart page's tab; the default stays "Chart" (2026-11-06)."""
+        f = flow([step("a"), step("b")])
+        self.assertTrue(chart_page(f, COMPS, profile(), (set(), set())).name.startswith("Chart: "))
+        named = replace(profile(), look={**profile().look, "chart_tab": "Step by step"})
+        self.assertTrue(chart_page(f, COMPS, named, (set(), set())).name.startswith("Step by step: "))
+
+    def test_a_refusal_end_does_not_lead_into_the_next_flow(self):
+        """Stitched flows: the main path's end leads on, a step reached only through a gate's other way ends (2026-11-06)."""
+        one = {"id": "f1", "steps": [step("a", gate="ok?", next=["b", "no"]), step("b", next=[]), step("no", next=[])]}
+        two = {"id": "f2", "steps": [step("c")]}
+        got = {s["id"]: s["next"] for s in stitched("fam", [one, two])["steps"]}
+        self.assertEqual(got["f1.b"], ["f2.c"])
+        self.assertEqual(got["f1.no"], [])
+
     def test_tabs_stay_unique(self):
         """Two flows with one title show their ids."""
         self.assertEqual([f["title"] for f in _named([{"id": "a", "title": "T"}, {"id": "b", "title": "T"}, {"id": "c", "title": "U"}])], ["a", "b", "U"])
