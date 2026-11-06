@@ -63,6 +63,9 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   SCRATCHPAD it printed `85 line(s) lost, e.g. '**Newest thread (2026-10-07, 13:36) ...'` and exited 1, but that line was not in SCRATCHPAD at
   HEAD (it is in `docs/history/scratchpad-20261023_1739.md`); a line-by-line check against HEAD found only the lines the session closed on
   purpose. The audit's baseline looks stale (an older snapshot, not the file before this run). Not diagnosed; the rotation itself was correct.
+  Again 2026-11-06 (enterprise-strategy, `just budget --apply`): `50 line(s) lost, e.g. 'Agent working memory for Enterprise Strategy.'`, a line still
+  present in SCRATCHPAD after the run; of 18 lines deleted against HEAD, 14 were found in the file or `docs/history/` and the other 4 were edits made on purpose
+  (one task dropped by mistake was restored). Same stale-baseline shape.
 
 ## Archcore
 
