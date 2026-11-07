@@ -152,5 +152,22 @@ class CrowdedLabelTests(unittest.TestCase):
         self.assertGreater(self._overlaps(page), 0)
 
 
+class RouteProbeTests(unittest.TestCase):
+    """scripts/route_probe.py ("route_probe") reports the router's choices on the commissioning fixture."""
+
+    def test_probe_names_the_straight_arrow_or_the_trials(self) -> None:
+        """With the default look it lists 3 -> 4 drawn straight first; with straight_first off it lists the gate's corner trials instead."""
+        import yaml
+        rp = importlib.import_module("route_probe")
+        data = yaml.safe_load(FIXTURE.read_text())
+        comps = {c["id"]: c for c in data["components"]}
+        lines, _page = rp.probe(data["flows"][0], comps, TestMap._profile(data))
+        self.assertTrue(any("straight first" in x and "register-probe-old" in x for x in lines), lines)
+        data["drawing"] = {"look": {"straight_first": "off"}}
+        lines, _page = rp.probe(data["flows"][0], comps, TestMap._profile(data))
+        self.assertTrue(any("('right', 'bottom')" in x for x in lines), lines)
+        self.assertFalse(any("straight first" in x for x in lines))
+
+
 if __name__ == "__main__":
     unittest.main()

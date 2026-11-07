@@ -101,3 +101,6 @@ https://vis.khoury.northeastern.edu/pubs/Wilson2024EvaluatingExtendingSpeedup/ ,
   release page) crosses the step notes: grow the lowest lane vertically so the arrow's run stays inside it, above the notes; (2) two flows'
   arrows share one corridor on an E2E page (State file to /data/confexts), "thought already addressed": unshare them; (3) a back button on
   each step page to its family's E2E page, like the `step page ›` button.
+- [ ] **2026-11-07 (label on a run near a lane edge):** smc-resiliency commission-gps, `6 Yes` sits just under its line because the run is 10 px
+  below the lane edge and a label centred on it would cross the edge (route_costs.label_spot keeps labels off lane edges since d92937f). Keep
+  runs that carry a label at least half a label's height from a lane edge (the room reserved for runs), so the label sits on its line.

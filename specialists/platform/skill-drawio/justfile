@@ -229,6 +229,10 @@ palette-check *args: _require-venv
 flow-quality *args: _require-venv
     @{{py}} scripts/flow_quality.py "$@"
 
+# Why a flow page's arrows went where they did: straight-first picks, each decision's corner trials with costs, then every route (read-only)
+route-probe *args: _require-venv
+    @{{py}} scripts/route_probe.py "$@"
+
 # Assemble the example map from examples/shop/parts/ and render examples/shop/drawio/flows.drawio (modifies those two generated files only)
 example: _require-venv
     @{{py}} scripts/assemble_flowmap.py --master examples/shop/parts/master.yaml --out examples/shop/flows.yaml --command "just example" --write
