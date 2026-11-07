@@ -120,3 +120,18 @@ agent: enabled=0,...
 > efibootmgr -q -c -d "$DISK" -p "$ESP_PART" -L "$boot" -l "\\EFI\\smc\\$boot\\vmlinuz.efi" -u "root=PARTUUID=$uuid rw rauc.slot=$boot ..."
 > [ -n "$order" ] && efibootmgr -q -o "$order"
 > ```
+
+> **Learned 2026-11-08** · q35 VM on PVE 9.2.26, Ubuntu 24.04 guest (kernel 6.8.0-147) · VERIFIED_PRIMARY · Source: smc-resiliency
+> `docs/overview/smc-lab-test-record-20261107_1931.md` section 14 · Falsifier: a q35 guest where `modprobe iTCO_wdt` gives no /dev/watchdog0
+> A q35 machine emulates the ICH9 chipset, whose TCO timer the guest's `iTCO_wdt` drives (`identity="iTCO_wdt"`), so the guest gets a watchdog
+> without the `i6300esb` device. Ubuntu's deny-list stops alias loading and systemd-modules-load, not an explicit `modprobe <name>`; with
+> `RuntimeWatchdogSec=30` a crash with `kernel.panic=0` reset the VM by itself in 91.1 s. Excerpt (smc-resiliency `lab/payloads/x1_watchdog.sh`, d1a7d894):
+>
+> ```sh
+> for m in $DRIVERS; do   # iTCO_wdt first, then the Super I/O drivers, then i6300esb
+>   modinfo -n "$m" >/dev/null 2>&1 || continue
+>   if timeout 30 modprobe "$m" 2>/dev/null && [ -e /sys/class/watchdog/watchdog0 ]; then bound=$m; break; fi
+> done
+> printf '[Manager]\nRuntimeWatchdogSec=%s\n' "$SEC" >/run/systemd/system.conf.d/90-smc-x1.conf
+> timeout 60 systemctl daemon-reexec
+> ```

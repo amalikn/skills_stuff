@@ -242,3 +242,19 @@ if _opposite_status(ca, cb):
 > **Learned 2026-11-02** · applying reviews · VERIFIED_PRIMARY · Source: 105 agent fixes applied by script to a flow map, one a reviewer's to-do note · Falsifier: text applied by script that cannot hold an instruction
 > Review text applied by script lands wherever it was written, instructions included, and a stamp over it claims a review nobody did. Split the fact from the advice in the review's format, scan what was applied, and record who reviewed.
 
+> **Learned 2026-11-08** · core (a test that injects a fault) · VERIFIED_PRIMARY · Source: smc-resiliency `lab/logic/e2e.py` `link`, commit d1a7d894 · Falsifier: a fault-injection step whose effect is read back and still passes a case it never ran
+> A case that cuts a link, kills a process or fills a disk passes for the wrong reason when the injection fails quietly: on 2026-11-07 the cut's
+> ssh timed out, the code ignored its exit, and the "held while the uplink is down" case judged a link that was never cut. Read the injected state
+> back and stop the case when it is not what was asked; retry only the transport's own failure (ssh exit 255), never a wrong state:
+>
+> ```python
+> for _ in range(3):  # ssh's own failure (255) is retried; a wrong state is not
+>   rc, out = t.client.run(f"ip link set {t.client_if} {want} && ip -br link show {t.client_if}", root=True, timeout=60)
+>   if rc != 255:
+>     break
+>   time.sleep(5)
+> state = out.split()[1] if rc == 0 and len(out.split()) > 1 else ""
+> if rc or (state == "UP") != up:
+>   raise LabError(f"{t.name}: client {t.client_if} not {want} (rc {rc}: {out.strip()[:120]})")
+> ```
+

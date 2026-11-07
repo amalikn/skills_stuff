@@ -16,6 +16,7 @@ Last rotated: 20261107_1732
 
 ## Unreleased
 
+- 2026-11-08 write-back from smc-resiliency: references/testing.md (read an injected fault back before judging the case; retry only the transport's failure)
 - 2026-11-07 (b) write-back from smc-resiliency: languages/python.md (default-argument binding, wrapper recursion, stale cache), references/design-patterns.md (JWS with openssl, P-59 view hash)
 
 - scripts/scaffold.py: Python skeletons now two-space (they printed four, against the pack's own rule; found by skill-vagrant's build agent, 2026-11-07); tests/test_language_split.py (new)

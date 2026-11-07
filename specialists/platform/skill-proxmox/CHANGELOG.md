@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 2026-11-08 write-back from smc-resiliency X1: references/qemu-vms.md (iTCO_wdt on q35 without i6300esb; explicit modprobe past the deny-list; a crash reset in 91.1 s)
 - 2026-11-07 (c) write-back from smc-resiliency X2: references/qemu-vms.md (OVMF entry deletion, watchdog driver), references/opentofu-bpg-provider.md (watchdog block, boot_order)
 
 - 2026-11-07 (b) write-back from smc-resiliency's lab package: per-VMID ACL on 9.2, IPAM bind on start, isolated bridge; Vagrant transport
