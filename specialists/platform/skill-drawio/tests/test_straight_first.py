@@ -114,5 +114,43 @@ class DiamondLabelTests(unittest.TestCase):
                 self.assertFalse(any(y < e < y + h for e in edges), m.cid)
 
 
+class CrowdedLabelTests(unittest.TestCase):
+    """Two End-to-end runs 24 px apart, as on smc-resiliency's full page (2026-11-07): labels placed in drawing order land on each other;
+    flowmap.step_labels.place_labels ("step_labels") places the arrow with less room first and both fit."""
+
+    #: The two arrows as rendered: one with a 136 px run, one with an 88 px run beside it, flat ends shorter than a label.
+    PTS = {"long": [(1776, 3436), (1834, 3436), (1834, 3300), (1776, 3300)], "short": [(1776, 3412), (1810, 3412), (1810, 3324), (1776, 3324)]}
+
+    @staticmethod
+    def _overlaps(page: object) -> int:
+        """How many label pairs on a page overlap.
+
+        Args:
+            page: the page.
+
+        Returns:
+            The count.
+        """
+        marks = page.marks
+        return sum(1 for i, m in enumerate(marks) for n in marks[i + 1:] if costs.rects_overlap(m.rect, n.rect))
+
+    def test_place_labels_clears_the_pair(self) -> None:
+        """place_labels leaves no two labels overlapping."""
+        mxfile, labels = importlib.import_module("drawio.mxfile"), importlib.import_module("flowmap.step_labels")
+        page = mxfile.Page("p", "P")
+        labels.place_labels(page, {"long": ("1.1", "#000000", "1"), "short": ("2.1", "#000000", "1")}, self.PTS, (44, 18, 12), [])
+        self.assertEqual(len(page.marks), 2)
+        self.assertEqual(self._overlaps(page), 0)
+
+    def test_drawing_order_alone_overlaps(self) -> None:
+        """Placing each label in drawing order with label_spot, as before, overlaps: the test above can fail."""
+        mxfile, labels = importlib.import_module("drawio.mxfile"), importlib.import_module("flowmap.step_labels")
+        page = mxfile.Page("p", "P")
+        for cid in ("long", "short"):
+            cx, cy = labels.label_spot(cid, self.PTS, page, 44, 18)
+            page.mark(f"{cid}-l", cid, cx, cy, 44, 18, "text;", owner=cid)
+        self.assertGreater(self._overlaps(page), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

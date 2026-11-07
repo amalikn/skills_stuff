@@ -18,7 +18,7 @@ from drawio.mxfile import ARROW_HEAD, BLANK, HEADER_STYLE, Page, header_height, 
 from drawio.route import count_crossings, oriented
 
 from .e2e_grid import E2E_BAND_HEAD, E2E_BOX_PAD, E2E_BW, E2E_JUMP, E2E_SP, E2E_TIER_HEAD, E2EGrid, Link, e2e_box_lines, e2e_text_height
-from .step_labels import ground_at, label_setup, label_spot, step_label, total_words
+from .step_labels import ground_at, label_setup, place_labels, step_label, total_words
 from .map_parts import flow_numbers, narrowed, paged_flows, shared_part
 from .model import MARGIN, comp_style, status_style
 from .shapes import component_shape, fit_height, person_badge
@@ -303,12 +303,9 @@ class EndToEnd(E2EGrid):
                            f"edgeStyle=none;rounded=1;html=1;strokeColor={colour[fam]};strokeWidth=2;{ARROW_HEAD}endSize=6;"
                            f"jumpStyle=arc;jumpSize={E2E_JUMP};", klass="thick", layer=f"e2e-L-{fam}", jump=E2E_JUMP)
         draw_loops(self, page, colour, dim)   # before the arrow labels, which then keep clear of loops and their labels
-        for link in self.links:
-            if link.klass == "thick":
-                cx, cy = label_spot(link.cid, {**self.pts, **{lp.cid: lp.pts for lp in self.loops}}, page, self.label_w, self.label_h)
-                page.mark(f"{link.cid}-l", step_label(link.text, self.n_steps[link.text.split('.')[0]], self.step_total), cx, cy, self.label_w, self.label_h,
-                          f"text;html=1;align=center;verticalAlign=middle;fontSize={self.label_font:g};fontColor={colour[link.family]};labelBackgroundColor={ground_at(self.grounds, cx, cy)};"
-                          "spacing=0;", owner=link.cid, layer=f"e2e-L-{link.family}")
+        texts = {x.cid: (step_label(x.text, self.n_steps[x.text.split('.')[0]], self.step_total), colour[x.family], f"e2e-L-{x.family}")
+                 for x in self.links if x.klass == "thick"}
+        place_labels(page, texts, {**self.pts, **{lp.cid: lp.pts for lp in self.loops}}, (self.label_w, self.label_h, self.label_font), self.grounds)
 
     def page(self, page_id: str = "end-to-end", name: str = "") -> Page:
         """Draw the page: frame, boxes, arrows and labels per family, and the legend.

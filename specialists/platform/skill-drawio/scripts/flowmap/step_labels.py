@@ -172,9 +172,54 @@ def label_spot(cid: str, pts: dict, page: Page, label_w: float, label_h: float) 
                 if any(rects_overlap(rect, m.rect) for m in page.marks) or any(rects_overlap(rect, page.rects[b]) for b in page.solid):
                     continue
                 return (cx, cy)
+    # No spot clear of every line: the one over the fewest other lines that still meets no label and no box, since a label on its
+    # background over a line reads and two labels on each other do not (operator review 2026-11-07, smc-resiliency: two runs 24 px apart
+    # left both labels at their runs' middles, one on the other).
+    best = None
+    for p1, p2 in segs:
+        for cx, cy in label_spots(p1, p2, w, True):
+            rect = (cx - w / 2, cy - h / 2, w, h)
+            if any(rects_overlap(rect, m.rect) for m in page.marks) or any(rects_overlap(rect, page.rects[b]) for b in page.solid):
+                continue
+            hits = sum(1 for o, line in pts.items() if o != cid for u, v in segments(line) if seg_hits_rect(u, v, rect, 0))
+            if best is None or hits < best[0]:
+                best = (hits, (cx, cy))
+    if best is not None:
+        return best[1]
     p1, p2 = segs[0]
     return ((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
 
+
+
+def place_labels(page: Page, texts: dict, pts: dict, size: tuple[float, float, float], grounds: list) -> None:
+    """Place and draw every step arrow's label in turn (label_spot); when two labels then overlap, take this pass's labels up and place them
+    again with the overlapping arrows first, fewest run pixels first, so the arrow with the least room chooses before one with more (operator
+    review 2026-11-07, smc-resiliency: two runs 24 px apart, both labels at their middles). A page with no overlap is drawn as before.
+
+    Args:
+        page: the page so far (boxes, arrows, loops).
+        texts: {link id: (label text, colour, layer)} in drawing order.
+        pts: {link id: its polyline}, loops included.
+        size: (label width, label height, font size).
+        grounds: the page's background areas (ground_at), for each label's background colour.
+    """
+    w, h, font = size
+    mark, cids = (len(page.cells), len(page.marks), len(page.solid), set(page.rects)), list(texts)
+    for attempt in range(2):
+        for cid in cids:
+            cx, cy = label_spot(cid, pts, page, w, h)
+            text, colour, layer = texts[cid]
+            page.mark(f"{cid}-l", text, cx, cy, w, h, f"text;html=1;align=center;verticalAlign=middle;fontSize={font:g};fontColor={colour};"
+                      f"labelBackgroundColor={ground_at(grounds, cx, cy)};spacing=0;", owner=cid, layer=layer)
+        mine = page.marks[mark[1]:]
+        clash = {o for i, m in enumerate(mine) for n in mine[i + 1:] if rects_overlap(m.rect, n.rect) for o in (m.owner, n.owner)}
+        if not clash or attempt:
+            return
+        del page.cells[mark[0]:], page.marks[mark[1]:], page.solid[mark[2]:]
+        for cid in set(page.rects) - mark[3]:
+            page.rects.pop(cid, None), page.cell_style.pop(cid, None)
+        room = {c: sum(abs(a[0] - b[0]) + abs(a[1] - b[1]) for a, b in segments(pts[c])) for c in cids}
+        cids = sorted((c for c in cids if c in clash), key=lambda c: (room[c], cids.index(c))) + [c for c in cids if c not in clash]
 
 #: Average width of a 12 pt legend character in px, conservative for the bold spans (sizes the wrapped legend text box).
 LEGEND_CHAR_W = 6.5

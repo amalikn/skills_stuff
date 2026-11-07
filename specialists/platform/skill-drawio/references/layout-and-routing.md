@@ -212,6 +212,21 @@ A label that belongs to an arrow (a count, a `flow.step` number) goes on that ar
 
 Overview counts are 18 pt bold in the arrow's colour on a white label background; End-to-end step labels are `E2E_LABEL_W` x `E2E_LABEL_H` (38 x 16) and bold.
 
+> **Learned 2026-11-07** · End-to-end crowded labels · VERIFIED_PRIMARY · Source: `scripts/flowmap/step_labels.py` (`place_labels`, `label_spot`);
+> `tests/test_straight_first.py` CrowdedLabelTests · Falsifier: two End-to-end labels overlapping after a render whose audit is clean otherwise
+> Two runs 24 px apart in one channel (smc-resiliency's full page, after the left channel moved its columns) left no spot clear of the other
+> line for either 44 px label, so both fell back to their runs' middles, one on the other (label_overlaps). Labels are still placed in
+> drawing order; when two then overlap, the pass is taken up and redone with the clashing arrows first, the one with the fewest run pixels first,
+> and a label with no clear spot takes the one over the fewest other lines that meets no label or box. Code (skills_stuff after 8d0dcaa):
+>
+> ```python
+> clash = {o for i, m in enumerate(mine) for n in mine[i + 1:] if rects_overlap(m.rect, n.rect) for o in (m.owner, n.owner)}
+> if not clash or attempt:
+>     return
+> ...
+> cids = sorted((c for c in cids if c in clash), key=lambda c: (room[c], cids.index(c))) + [c for c in cids if c not in clash]
+> ```
+
 > **Learned 2026-11-07** · flow page labels by a diamond's outline, off lane edges · VERIFIED_PRIMARY · Source: `scripts/flowmap/route_costs.py`
 > (`near_box`, `label_spot`); `tests/test_straight_first.py` DiamondLabelTests · Falsifier: a branch label straddling a lane edge, or pushed off a
 > run that passes a diamond's empty corner
