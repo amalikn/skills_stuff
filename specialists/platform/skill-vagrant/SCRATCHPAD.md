@@ -12,6 +12,7 @@ Agent working memory for skill-vagrant. Use for: draft plans, terminal output, i
 
 ## Open items
 
+- [ ] `just check` fails (seen 2026-11-08 from smc-resiliency's slurp): files with no header summary (AI_NAVIGATION, .ai-context and others), as in skill-proxmox: pack adoption work, write each summary from its file.
 - [ ] Operator review of the four `.archcore/` documents (all `proposed`) — index [.archcore/index.guide.md](.archcore/index.guide.md).
 - [ ] Keep the pinned box before the registry closes (2026-12-31): `vagrant box repackage bento/ubuntu-24.04 parallels 202510.26.0`, stored outside the repo with its sha256 (operator's call where).
 - [ ] Test on the arm64 lab whether `apt-get update --snapshot <id>` works against `ports.ubuntu.com` (UNVERIFIED in `references/tool-choice-and-lab-symmetry.md`).

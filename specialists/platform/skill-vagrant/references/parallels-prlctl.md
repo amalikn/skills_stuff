@@ -94,3 +94,22 @@ reference p.10 and [parallels-cli-utility.md]). Changing a Parallels network cha
 > put() { base64 < "$1" | timeout 60 prlctl exec "$VM" "bash -c 'base64 -d > $2 && chmod $3 $2'"; }
 > ```
 > After a reset or reboot Parallels Tools take tens of seconds to accept sessions: wait with `until timeout 8 prlctl exec "$VM" true; do sleep 3; done`.
+
+> **Learned 2026-11-08** · Parallels Desktop on macOS, Ubuntu 24.04 arm64 guest · VERIFIED_PRIMARY · Source: smc-resiliency `lab/adapters/transports.py` `PrlctlTransport`, commit 065b9a8f · Falsifier: `prlctl exec <vm> bash -c 'echo a b'` printing `a b` with the command given as separate arguments
+> `prlctl exec` joins its arguments into one command line, so `prlctl exec vm bash -c "cmd with words"` passed as separate argv entries runs
+> `bash -c cmd`: the rest became bash's positional arguments and a payload ran as an empty shell, silently, exit 0. Pass one quoted string.
+> Tools refuse sessions now and then, most right after a boot (`PrlJob_GetRetCode: Invalid argument`, `PrlJob_GetResult: Invalid argument`,
+> exit 255): retry a few times. Files go over stdin (a long command line fails to open a session). A linked clone keeps the source's static
+> hostname and machine-id, so it is told apart by its Parallels name only:
+>
+> ```python
+> for _ in range(3):  # Tools refuses a session now and then, most right after a boot
+>   rc, out = _call(["prlctl", "exec", self.name, "bash -c " + shlex.quote(cmd)], timeout)  # prlctl joins its arguments into one line
+>   if not (rc == 255 and out.lstrip().startswith("Prl")):
+>     return rc, out
+>   time.sleep(3)
+> ```
+>
+> Also on such a guest, when /etc is a read-only merge: `lvextend` fails with `Cannot archive volume group metadata ... to read-only filesystem`
+> (rc 5) after printing that the size changed; `--config 'backup { archive = 0 backup = 0 }'` makes the one change.
+

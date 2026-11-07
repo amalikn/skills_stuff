@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 2026-11-08 write-back from smc-resiliency S1V: references/parallels-prlctl.md (prlctl exec joins arguments; Tools refusals; stdin uploads; lvextend with a read-only /etc)
 - 2026-11-07 (b) write-back from smc-resiliency's lab package: Vagrant transport behind a shared contract (references/operations-cookbook.md)
 
 - 2026-11-07 write-back from smc-resiliency: references/parallels-prlctl.md, references/clones-snapshots-and-identity.md, references/tool-choice-and-lab-symmetry.md (Learned 2026-11-07).

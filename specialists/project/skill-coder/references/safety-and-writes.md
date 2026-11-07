@@ -169,3 +169,17 @@ def classify(cmdline, held):
 > Deleting entries from a fetch cache does not express a filter: to the next run without the narrowing flag an absent id reads as
 > "not fetched yet", so it fetches them again and silently undoes the pruning. Record exclusions explicitly (an exclusion list the fetcher
 > reads), and keep the cache a cache.
+
+> **Learned 2026-11-08** · core (crash-safe writes on FAT) · VERIFIED_PRIMARY · Source: smc-resiliency `docs/overview/smc-lab-test-record-20261107_1931.md` section 15, `spike/release/rauc/tryboot_backend.sh` `write`, commit 065b9a8f · Falsifier: a vfat file rewritten in a loop by write, fsync, rename that is never found empty after a power cut
+> Write to a temporary file, fsync it, rename it over the old one and fsync the folder is crash-safe on ext4 and xfs, not on FAT (vfat, the
+> EFI system partition, a Pi's boot partition): FAT has no atomic rename. A power cut while a selection file was rewritten in a loop left it at 0
+> bytes: the directory entry reached the disk, the data did not. A file a firmware must read on a FAT partition needs another plan (a fixed-length
+> overwrite in place, two copies the reader can choose between, or a repair at boot), and the cut itself is the test:
+>
+> ```sh
+> printf '[all]\n...# smc-boot: committed=%s ...\n' ... >"$tmp"
+> sync "$tmp" 2>/dev/null || sync
+> mv "$tmp" "$SELECTION"     # on vfat this is not atomic
+> sync "$(dirname "$SELECTION")" 2>/dev/null || sync
+> ```
+
