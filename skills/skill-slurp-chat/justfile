@@ -8,6 +8,10 @@ default:
 writeback-status +SKILLS:
   python3 -I {{justfile_directory()}}/scripts/writeback_status.py {{SKILLS}}
 
+# Commit named paths through a private index (shared repo with live sessions): just private-commit <repo> <msg-file> <path>... [--apply]. Dry run by default.
+private-commit repo msg +PATHS:
+  python3 -I {{justfile_directory()}}/scripts/private_commit.py --repo {{repo}} --message-file {{msg}} {{PATHS}}
+
 # Offline tests for the scripts (temporary git repo; no network).
 test:
-  cd {{justfile_directory()}}/scripts && python3 -m unittest test_transcript_passes test_writeback_status
+  cd {{justfile_directory()}}/scripts && python3 -m unittest test_transcript_passes test_writeback_status test_private_commit
