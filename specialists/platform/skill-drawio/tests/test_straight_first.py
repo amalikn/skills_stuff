@@ -205,5 +205,33 @@ class BackButtonTests(unittest.TestCase):
         self.assertEqual(self._button(self._page({"back_button": "off"})), "")
 
 
+class NoteAuditTests(unittest.TestCase):
+    """drawio.audit.page_audit ("audit") counts a note card as a box no arrow may cross, though the router does not (ROADMAP 2026-11-06)."""
+
+    def test_an_arrow_across_a_note_is_a_box_crossing(self) -> None:
+        """An arrow through a note card is reported; the same page without the note is clean."""
+        mxfile, audit = importlib.import_module("drawio.mxfile"), importlib.import_module("drawio.audit")
+
+        def page(with_note: bool) -> object:
+            """Two boxes joined by an arrow that runs down through the gap where a note may sit.
+
+            Args:
+              with_note: draw the note card in the arrow's way.
+
+            Returns:
+              The page.
+            """
+            pg = mxfile.Page("p", "P")
+            pg.box("a", "A", 0, 0, 100, 40, "rounded=1;", solid=True)
+            pg.box("b", "B", 300, 0, 100, 40, "rounded=1;", solid=True)
+            if with_note:
+                pg.box("p-n-a", "note", 150, 100, 100, 60, "shape=note;whiteSpace=wrap;")
+            pg.route("e", "a", "b", [(50, 40), (50, 130), (350, 130), (350, 40)], "edgeStyle=none;")
+            return pg
+
+        self.assertIn("e x p-n-a", audit.page_audit(page(True))["box_crossings"])
+        self.assertEqual(audit.page_audit(page(False))["box_crossings"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

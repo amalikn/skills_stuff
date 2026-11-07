@@ -20,3 +20,4 @@ Taken 2026-11-07 from smc-resiliency's `docs/flows/flows.yaml` (lab and spike fl
 | [after-commission-gates.png](after-commission-gates.png) | the same crop                             | 3 -> 4 and 4 -> 5 run straight across; 3 -> 5 leaves 3's bottom, 4 -> 6 its top; labels on their lines                    |
 | [before-testing-e2e.png](before-testing-e2e.png) | E2E: Testing and verification (page 14)   | links inside the Lab column share the gap to "On the SMC" with every cross-column arrow                                   |
 | [after-testing-e2e.png](after-testing-e2e.png) | the same page                             | the Lab column's in-column links run in a channel on its left; the middle gap holds only cross-column arrows              |
+| [after-vagrant-e2e-corridor.png](after-vagrant-e2e-corridor.png) | E2E: Vagrant VM (page 8), after the left channel | the State file and /data/confexts connectors each have their own run; no shared corridor |

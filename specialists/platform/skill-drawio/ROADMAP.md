@@ -36,7 +36,7 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 - [ ] **Archcore flow-map spec and adoption guide** — unblocked by the second project; write them (see `.archcore/index.guide.md`).
 - [ ] **C-D16 on the current app** — re-check "static export draws orthogonal edges through boxes" on draw.io desktop 32.5.5 (checked only on 32.4.1; `compatibility.yaml`).
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (3.11 is not installed, so the declared floor is untested).
-- [ ] **Audit and route around the notes band on step pages** (found 2026-11-06, smc-resiliency flow `vm-render`): an edge to a far branch
+- [x] **Audit and route around the notes band on step pages** (found 2026-11-06, smc-resiliency flow `vm-render`; audit done 2026-11-07: page_audit counts note cards as boxes, NoteAuditTests proves it fails; no consumer crosses a note today, so routing was left as it is, since making notes router obstacles moved smc-change from 44 to 49 crossings): an edge to a far branch
   target runs across the note cards below the lanes and `--audit` reports clean; add the note cards to `box_crossings` (or a `note_crossings` audit),
   prove it fails on the repro in `references/screenshots/20261106-notes-band-crossing/`, then route such edges above the notes. Done when the repro
   audits red before the router change and the page renders without a crossing after it.
@@ -97,7 +97,7 @@ Sources: https://uspto.report/patent/grant/4953106 , https://eclipse.dev/elk/blo
 https://www.adaptagrams.org/documentation/libavoid.html , https://www.doi.org/10.1007/978-3-642-11805-0_22 ,
 https://vis.khoury.northeastern.edu/pubs/Wilson2024EvaluatingExtendingSpeedup/ , https://google-melange.com/archive/gsoc/2013/orgs/ogdf/projects/pawel_schmidt.html
 
-- [ ] **2026-11-07 operator review (smc-resiliency step pages):** (1) an arrow that runs below the lanes (a branch back, e.g. `6 No` on the
+- [x] **2026-11-07 operator review (smc-resiliency step pages):** done 2026-11-07: (1) no arrow crosses a note card on any consumer (0 measured on smc-resiliency, unc, smc-change) and the audit now counts note cards (page_audit); (2) the State file and /data/confexts connectors no longer share a corridor once the first column's links run on its left (screenshot after-vagrant-e2e-corridor.png); (3) the `‹ E2E page` button (look back_button). The request was: (1) an arrow that runs below the lanes (a branch back, e.g. `6 No` on the
   release page) crosses the step notes: grow the lowest lane vertically so the arrow's run stays inside it, above the notes; (2) two flows'
   arrows share one corridor on an E2E page (State file to /data/confexts), "thought already addressed": unshare them; (3) a back button on
   each step page to its family's E2E page, like the `step page ›` button.
