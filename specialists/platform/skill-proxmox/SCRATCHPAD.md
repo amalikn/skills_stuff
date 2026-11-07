@@ -17,7 +17,10 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 ## Open items
 
 - [ ] Operator review: accept or change the six proposed `.archcore/` documents (memory channel `proxmox`, independent pack, search order, checker in tests, version of record, live-probe plan).
-- [ ] Commit (operator): pack folder, the registry rows and the install symlinks are uncommitted.
+- [x] Commit: pack folder, registry rows and install symlinks committed in skills_stuff bd1691d (2026-11-07).
+- [ ] `just check` fails (seen 2026-11-07 22:45 from smc-resiliency's slurp): 21 files with no header summary (references, AI_NAVIGATION,
+  SCRATCHPAD, .ai-context), AI_NAVIGATION.md over its 200-line budget (322), six `.archcore/` documents with no Last reviewed date. Pack
+  adoption work: write each summary from its file, split AI_NAVIGATION, date the archcore documents after the operator review above.
 - [ ] Live probes on a disposable node for the `UNVERIFIED` items: `pvesh set /cluster/sdn` apply form, live restore from PBS, hook-script phase names, the task list's errors filter, the disks list endpoint,
   Ubuntu cloud image without qemu-guest-agent.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill).
