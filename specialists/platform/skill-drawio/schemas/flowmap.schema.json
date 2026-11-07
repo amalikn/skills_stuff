@@ -707,6 +707,11 @@
               "enum": ["on", "off"],
               "description": "Flow pages: an arrow to the very next step that can run straight from its source's right side into the target's left is drawn first, so a decision's other branches route around it (operator review 2026-11-07)."
             },
+            "back_button": {
+              "type": "string",
+              "enum": ["on", "off"],
+              "description": "Flow pages: a `‹ E2E page` button beside the header links to the flow's family End-to-end page, or the full one (operator review 2026-11-07)."
+            },
             "e2e_left_channel": {
               "type": "string",
               "enum": ["on", "off"],

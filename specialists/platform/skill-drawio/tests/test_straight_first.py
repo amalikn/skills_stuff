@@ -169,5 +169,41 @@ class RouteProbeTests(unittest.TestCase):
         self.assertFalse(any("straight first" in x for x in lines))
 
 
+class BackButtonTests(unittest.TestCase):
+    """A step page links back to its End-to-end page (flowmap.e2e_family.back_target and back_button, "e2e_family")."""
+
+    def _page(self, look: dict) -> object:
+        """Render the commissioning fixture's step page.
+
+        Args:
+            look: look keys.
+
+        Returns:
+            The page.
+        """
+        import yaml
+        data = yaml.safe_load(FIXTURE.read_text())
+        data["drawing"] = {"look": look}
+        return pages.flow_page(data["flows"][0], {c["id"]: c for c in data["components"]}, 1, TestMap._profile(data))
+
+    @staticmethod
+    def _button(page: object) -> str:
+        """The back button's cell XML, or "" when the page has none.
+
+        Args:
+            page: the page.
+
+        Returns:
+            The cell.
+        """
+        return next((c for c in page.cells if 'id="flow-commission-gps-back"' in c), "")
+
+    def test_button_links_to_the_family_page_or_the_full_one(self) -> None:
+        """With family pages the button opens the family's page; without, the full End-to-end page; off draws none."""
+        self.assertIn("data:page/id,end-to-end-", self._button(self._page({"e2e_family_pages": True})))
+        self.assertIn('data:page/id,end-to-end"', self._button(self._page({})))
+        self.assertEqual(self._button(self._page({"back_button": "off"})), "")
+
+
 if __name__ == "__main__":
     unittest.main()

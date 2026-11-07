@@ -17,7 +17,7 @@ Imported, not run: `from flowmap.e2e_family import family_pages` with the skill'
 
 from __future__ import annotations
 
-from drawio.mxfile import Page
+from drawio.mxfile import Page, label
 
 from .e2e import routed_e2e
 from .map_parts import flow_numbers, flows_part, narrowed
@@ -80,3 +80,33 @@ def family_pages(data: dict, profile: Profile) -> list[Page]:
     every = profile.look.get("e2e_family_pages")
     return [family_page(data, profile, fam, name, part) for fam, name, part in family_parts(data, profile)
             if (every or fam in profile.own_families) and fam not in profile.no_e2e_pages]
+
+
+def back_target(flow: dict, profile: Profile) -> str:
+    """The End-to-end page a flow's step page links back to: its family's page when one is drawn, else the full page.
+
+    Args:
+        flow: the flow from the map.
+        profile: the drawing profile (families, `look.e2e_family_pages`).
+
+    Returns:
+        The page id.
+    """
+    fam = flow_family(flow, profile)
+    drawn = (profile.look.get("e2e_family_pages") or fam in profile.own_families) and fam not in profile.no_e2e_pages
+    return f"end-to-end-{fam}" if drawn else "end-to-end"
+
+
+def back_button(page: Page, x: float, y: float) -> None:
+    """Draw the `‹ E2E page` button beside a step page's header, the mirror of the legend's `step page ›` (operator review 2026-11-07).
+
+    Args:
+        page: the step page; `page.back_link` names the target page (back_target), unset draws nothing.
+        x: the button's left edge.
+        y: its top.
+    """
+    target = getattr(page, "back_link", "")
+    if target:
+        page.box(f"{page.page_id}-back", label("‹ E2E page"), x, y, 100, 22,
+                 "rounded=1;html=1;fillColor=#ffffff;strokeColor=#666666;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;",
+                 link=f"data:page/id,{target}", tooltip="Back to this flow's End-to-end page")

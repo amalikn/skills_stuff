@@ -15,7 +15,7 @@ from pathlib import Path
 from drawio.mxfile import BLANK, Page, banner, heading, label, mxfile, wrapped_lines
 
 from .e2e import end_to_end_page
-from .e2e_family import family_pages
+from .e2e_family import back_button, back_target, family_pages
 from .model import GAP, MARGIN, Outcome, comp_style, load, status_style, status_text
 from .map_parts import flow_labels, paged_flows
 from .model import option_blocks
@@ -174,6 +174,7 @@ def flow_header(page: Page, flow: dict, comps: dict, number: int | str, width: f
     page.box(f"{flow['id']}-head", label(*header), MARGIN, MARGIN, head_w, head_h,
              "rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=12;",
              link="data:page/id,overview")
+    back_button(page, MARGIN + head_w + 10, MARGIN)   # `‹ E2E page`, when flow_page set page.back_link (look.back_button)
     return head_h
 
 
@@ -211,8 +212,8 @@ def flow_page(flow: dict, comps: dict[str, dict], number: int | str, profile: Pr
     fid, steps = flow["id"], flow["steps"]
     page = Page(f"flow-{fid}", (flow.get("tab") or f"{number}. {flow['title']}")[:60])   # `tab` names it outright (operator, 2026-10-26)
     page.label_clearance, page.run_spacing = profile.look.get("label_clearance", 0), profile.look.get("run_spacing", 0)
-    shapes = {s["id"]: (step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) if profile.look["shapes"] else "process")
-              for k, s in enumerate(steps)}
+    page.back_link = back_target(flow, profile) if profile.look.get("back_button", "on") != "off" else ""
+    shapes = {s["id"]: (step_shape(steps, k, comps, profile.kind_shapes, profile.io_vias) if profile.look["shapes"] else "process") for k, s in enumerate(steps)}
     texts, box_w, box_h = size_steps(steps, shapes, profile)
     edges = step_edges(steps, fid)
     order = {s["id"]: k for k, s in enumerate(steps)}
