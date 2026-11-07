@@ -1448,3 +1448,10 @@ if yaml.safe_load(body) != data:    # folding for the linter must not change a c
 return sorted(rows, key=lambda row: (str(row.get("attempt_start") or row.get("start", "")), str(row.get("host", ""))))
 "last_run": last.get("attempt_start") or last.get("start", ""),
 ```
+
+> **Learned 2026-11-07 (c)** · JWS without a crypto library; P-59 refinement · VERIFIED_PRIMARY · Source: smc-resiliency `spike/onbox/smcbox/jws.py`
+> (`sign`, tested byte for byte against RFC 8037 appendix A.4), `scripts/interfaces.py` (`view_state`) · Falsifier: a signature that differs
+> from the RFC vector, or a drift check that cannot tell a hand edit from a source change
+> A box with only the standard library signs compact JWS (alg EdDSA) by building `base64url(header).base64url(payload)` itself and signing it
+> with `openssl pkeyutl -sign -rawin`; the RFC's test vector is the independent check. A generated view (P-59) carries `sources-sha256` and
+> `view-sha256` in its banner, so the drift check tells "the source changed" from "someone edited the view".

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 2026-11-07 (c) write-back from smc-resiliency X2: references/qemu-vms.md (OVMF entry deletion, watchdog driver), references/opentofu-bpg-provider.md (watchdog block, boot_order)
+
 - 2026-11-07 (b) write-back from smc-resiliency's lab package: per-VMID ACL on 9.2, IPAM bind on start, isolated bridge; Vagrant transport
 
 - 2026-11-07 write-back from smc-resiliency: references/upgrade-and-troubleshooting.md, references/networking-and-sdn.md (Learned 2026-11-07).

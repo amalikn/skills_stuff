@@ -128,3 +128,8 @@ and IDs 900 to 909.
 > Under `~> 0.118` the provider resolved to 0.120.0 (recorded in the lock file, which the project commits; still untracked on 2026-11-07). A plan and apply for one q35/OVMF VM with `import_from`
 > took about 12 s (reported by the coordinating session, not re-measured here) against a single lab node with a
 > pool-scoped token and no SSH block.
+
+> **Learned 2026-11-07 (b)** · bpg/proxmox 0.120.0 · VERIFIED_PRIMARY · Source: smc-resiliency `lab/infra/proxmox/tofu/main.tf` (X2) · Falsifier:
+> adding the watchdog block in place without a VM reboot
+> A `watchdog` block (`enabled = true; model = "i6300esb"; action = "reset"`) added in place to a running VM made the provider reboot it; pin
+> `boot_order = ["scsi0", "net0"]` too, since OVMF rewrites BootOrder from Proxmox's `boot: order=` on every boot.

@@ -182,3 +182,10 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > `select = ["E","F","W","I","B","UP","D"]` and `[lint.pydocstyle] convention = "google"`: the new package passed with one finding (a
 > two-line docstring summary, D205), and the older spike code stayed untouched. Tests that import a package that is not installed use
 > `importlib.import_module` after the `sys.path` line, never `# noqa: E402`.
+
+> **Learned 2026-11-07 (b)** · Python 3.14, unittest.mock · VERIFIED_PRIMARY · Source: smc-resiliency `lab/standin/server.py` (S4 contract work) ·
+> Falsifier: `mock.patch.object(module, "CONST", ...)` reaching a function whose default is `CONST`
+> A default argument that names a module constant is bound when the module is imported, so patching the constant later does not reach it (a
+> loopback test failed "signature does not verify"). Write `key: Path | None = None` and use `key or CA_KEY` inside. Also: a search-and-replace
+> that routes calls through a new wrapper rewrites the wrapper's own call too (infinite recursion; smc-resiliency `lab/logic/bootstate.py`
+> `run_noted`): test a path through the wrapper; a cache keyed only on a name served stale content: key it on the content's hash or signature.

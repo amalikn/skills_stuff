@@ -16,6 +16,8 @@ Last rotated: 20261107_1732
 
 ## Unreleased
 
+- 2026-11-07 (b) write-back from smc-resiliency: languages/python.md (default-argument binding, wrapper recursion, stale cache), references/design-patterns.md (JWS with openssl, P-59 view hash)
+
 - scripts/scaffold.py: Python skeletons now two-space (they printed four, against the pack's own rule; found by skill-vagrant's build agent, 2026-11-07); tests/test_language_split.py (new)
 - scripts/language_split.py (new), languages/readme.md (When a language file splits): ansible.md and shell.md split into ansible/ and shell/ topic files (operator, 2026-11-07); `just check` holds every language file to 200 lines
 - languages/hcl.md (new, Learned 2026-11-07), languages/python.md, shell.md, yaml-json-toml.md: Learned 2026-11-07 from smc-resiliency's lab package and linters

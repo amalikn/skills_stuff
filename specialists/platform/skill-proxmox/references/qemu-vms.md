@@ -104,3 +104,19 @@ agent: enabled=0,...
 > Boot enabled
 > The bpg provider's `efi_disk { type = "4m", pre_enrolled_keys = false }` becomes `efidisk0: ...,efitype=4m,pre-enrolled-keys=0`, so Secure Boot is off and unsigned UKIs boot. The installed OVMF was
 > 4.2025.05-2 while the no-subscription repository already offered 4.2026.08-1: state the **installed** firmware version when citing OVMF behaviour, not the repository's.
+
+> **Learned 2026-11-07 (b)** · OVMF 4.2026.08-1 (PVE 9.2.26), RAUC efi backend · VERIFIED_PRIMARY · Source: smc-resiliency
+> `docs/x86/x86-spike-x2-ab-boot-20261107_1847.md` findings X2-2, X2-5, X2-6 · Falsifier: an entry in BootOrder kept with its file missing
+> OVMF deletes a boot entry that is in BootOrder when its file is missing or not a loadable image: recreate a slot's entry before arming a
+> trial. The Ubuntu cloud kernel ships no watchdog driver (i6300esb, iTCO_wdt are in linux-modules-extra), and Ubuntu's deny-list also stops
+> systemd-modules-load (`Module 'i6300esb' is deny-listed (by kmod)`), so a virtual watchdog never fires without a deliberate load path.
+>
+> The recreate step, as RAUC's pre-install handler runs it (smc-resiliency `lab/payloads/x2_setup.sh`, commit 61abf479; the new entry is kept out
+> of BootOrder, RAUC adds it at the commit):
+>
+> ```sh
+> efibootmgr | grep -qE "^Boot[0-9A-F]{4}\*? $boot([[:space:]]|$)" && continue
+> order=$(efibootmgr | sed -nE 's/^BootOrder: //p')
+> efibootmgr -q -c -d "$DISK" -p "$ESP_PART" -L "$boot" -l "\\EFI\\smc\\$boot\\vmlinuz.efi" -u "root=PARTUUID=$uuid rw rauc.slot=$boot ..."
+> [ -n "$order" ] && efibootmgr -q -o "$order"
+> ```
