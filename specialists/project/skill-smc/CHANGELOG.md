@@ -6,13 +6,18 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261106_1255
+Last rotated: 20261108_0156
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261108_0155 — Pi 4 serial console (smc-resiliency S1 bench) (v0.12.8 -> v0.12.9)
+
+`references/07_hardware-overlay.md`: Learned 2026-11-08: the primary UART pins, `BOOT_UART`, `uart_2ndstage`, `enable_uart` with
+`console=serial0`, and the lab's console recorder (Raspberry Pi documentation, VERIFIED_PRIMARY).
 
 ## 20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)
 
@@ -193,21 +198,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
   `auth_pass` redacted), `<site>-smcNN` hosts kept as given, `--proxy` / `SMC_TSH_PROXY` on every tsh call. Catalogue: `scripts/README.md`.
 - Learned 2026-10-29 in `references/01_overview.md` (VRRP): aurukun's keepalived source build, VIPs per VLAN, `google_ping` weight -30, no
   DHCP failover (each box leases its own clients). Found for unified-network-controller's multi-SMC model.
-
-## 20261028_2046 — stuck apt_info.py holds the apt lists lock; apt_lock_probe.sh (v0.9.7 -> v0.9.8)
-
-- references/13: 2026-10-28 entry: node_exporter apt_info.py hung 11-120 days holding /var/lib/apt/lists/lock on 3 rct SMCs; smc_change
-  apt_pin workaround (excerpt); root fix `4889af8` on local rise-multi only.
-- scripts/probes/apt_lock_probe.sh (`just apt_lock_probe`), catalogued: lock owner by path (lslocks), dpkg and archives lock holders,
-  apt_info.py ages, newest list. Fleet run: 5 more stuck apt_info.py (references/13).
-- references/13: 2026-10-28 overlay left read-write mid-change: needs_repair repair, hidden first failure, `at` re-arm, tmpfs /var/log,
-  unbound interface-automatic on a REDIRECT box.
-- manifest 0.9.7 -> 0.9.8.
-
-## 20261028_1559 — PIN funnel and fleet check, runtime budget clock (v0.9.6 -> v0.9.7)
-
-- references/14 §14.9: change-or-upstream triage for a PIN drop after a change (Galiwinku squid fail-open 2026-10-28, not PHP); PIN =
-  auto-generated on T&C acceptance (operator).
-- scripts/capture/pin-funnel-hourly.sh (`just pin_funnel`) and pin-fleet-check.sh (`just pin_fleet_check`), catalogued (c3e856b, 4b61a2d).
-- references/19: runtime budget counts the wait for earlier batches (stage 1 clock not reset per batch); read real time as elapsed minus SPEC.
-- manifest 0.9.6 -> 0.9.7.

@@ -1154,3 +1154,16 @@ echo eeprom_version=$(vcgencmd bootloader_version 2>/dev/null | tr "\n" " ")
 echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" | tr "\n" ";")
 ```
 
+> **Learned 2026-11-08** · Pi 4B SMC (rct, wh, nbn_wh) serial console · VERIFIED_PRIMARY · Source: Raspberry Pi documentation (config_txt/boot.adoc `enable_uart`, `uart_2ndstage`; raspberry-pi/eeprom-bootloader.adoc `BOOT_UART`; configuration/interfaces.adoc primary UART), read 2026-11-08 via context7 `/raspberrypi/documentation`; smc-resiliency `lab/adapters/console.py`, commit 60ce8b3a · Falsifier: a Pi 4 whose bootloader prints nothing on GPIO 14 with BOOT_UART=1
+> A Pi 4's primary UART is GPIO 14 (TX, pin 8) and GPIO 15 (RX, pin 10), 115200 8N1; use a 3.3 V adapter only. Three switches show the three boot
+> stages: `BOOT_UART=1` in the EEPROM config (the bootloader: partition and tryboot choices), `uart_2ndstage=1` in config.txt (start.elf), and
+> `enable_uart=1` with `console=serial0,115200` and no `quiet` in cmdline.txt (the kernel). The fleet canaries read `BOOT_UART=0` (above), so turning it
+> on is an EEPROM change: operator consent first. smc-resiliency records the console on the Mac with `just lab console <target> --apply`:
+>
+> ```python
+> attrs[0], attrs[1], attrs[3] = 0, 0, 0  # no input or output processing, raw
+> attrs[2] = termios.CS8 | termios.CREAD | termios.CLOCAL
+> attrs[4] = attrs[5] = SPEEDS[baud]
+> termios.tcsetattr(self.fd, termios.TCSANOW, attrs)
+> ```
+

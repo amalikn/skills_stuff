@@ -258,3 +258,9 @@ if _opposite_status(ca, cb):
 >   raise LabError(f"{t.name}: client {t.client_if} not {want} (rc {rc}: {out.strip()[:120]})")
 > ```
 
+> **Learned 2026-11-08 (b)** · Python, a test of bytes on the wire · VERIFIED_PRIMARY · Source: smc-resiliency `lab/tests/test_lab.py` ConsoleTests, commit 60ce8b3a · Falsifier: `Path.read_text()` returning `\r\n` unchanged
+> `Path.read_text()` opens in universal-newline mode and turns `\r\n` into `\n`, so a test that a recorder dropped carriage returns passed with the
+> strip removed (the mutation stayed green). Read bytes (`read_bytes().decode()`) when the test is about line endings. A pseudo-terminal used as a
+> serial stand-in must be raw (`tty.setraw`) before the far end writes, or its line discipline turns `\r` into `\n` itself. A serial port needs no
+> pyserial: `os.open` plus `termios` (raw, CS8, CREAD, CLOCAL, the speed constant) and `select` read it.
+
