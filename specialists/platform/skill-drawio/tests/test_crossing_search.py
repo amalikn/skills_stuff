@@ -11,6 +11,7 @@ import importlib
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 import yaml
 
@@ -157,18 +158,58 @@ class RowMoves(unittest.TestCase):
 
 
 class InColumnLinks(unittest.TestCase):
-    """A link between two boxes in one column always uses the channel on that column's right, the last column's too (operator, 2026-10-26)."""
+    """A link between two boxes in one column uses a channel on the page's free side: the last column's on its right (operator, 2026-10-26),
+    the first column's on its left (operator review 2026-11-07: "use the free area on the left side"); middle columns use their right."""
 
-    def test_in_column_links_go_right(self) -> None:
-        """On the example and the row fixture every in-column link leaves and enters by the right side, through its own column's channel."""
+    @staticmethod
+    def _inside(path: Path, look: dict) -> tuple:
+        """Lay out a map's End-to-end page and list its in-column links.
+
+        Args:
+            path: the map.
+            look: look keys added to its drawing block.
+
+        Returns:
+            (the grid, its in-column links).
+        """
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        data["drawing"] = {**data.get("drawing", {}), "look": {**data.get("drawing", {}).get("look", {}), **look}}
+        grid = _grid(data, True)
+        return grid, [x for x in grid.links if grid.cell[x.src][0] == grid.cell[x.dst][0]]
+
+    def test_in_column_links_take_the_outer_side(self) -> None:
+        """On the example and the row fixture a first-column link runs in the left channel by the boxes' left sides; every other by its
+        column's right; the left channel lies before the first column."""
+        seen_first = False
         for path in (EXAMPLE, ROW_FIXTURE):
-            grid = _grid(yaml.safe_load(path.read_text(encoding="utf-8")), True)
-            inside = [x for x in grid.links if grid.cell[x.src][0] == grid.cell[x.dst][0]]
+            grid, inside = self._inside(path, {})
             for link in inside:
                 col = grid.cell[link.src][0]
-                self.assertEqual((link.exit[0], link.exit[2], link.entry[2]), (col, "R", "R"), link.cid)
+                want = (grid.left_ch, "L", "L") if col == 0 and grid.ncol > 1 else (col, "R", "R")
+                seen_first |= col == 0 and grid.ncol > 1
+                self.assertEqual((link.exit[0], link.exit[2], link.entry[2]), want, link.cid)
+            for link in (x for x in inside if grid.cell[x.src][0] == 0 and grid.ncol > 1):   # its vertical run is left of the first column
+                self.assertLess(grid.points(link)[1][0], grid.col_x[0], link.cid)
             if any(grid.cell[x.src][0] == grid.ncol - 1 for x in inside):
-                self.assertEqual(grid.nch, grid.ncol)
+                self.assertTrue(grid.right_outer)
+        self.assertTrue(seen_first, "no first-column link: the test could not fail")
+
+    def test_outer_channels_count(self) -> None:
+        """flowmap.side_channels ("side_channels"): three columns with links inside the first and last get two inner, one right and one left
+        channel; with the look off, no left one; a one-column page keeps its one channel."""
+        oc = importlib.import_module("flowmap.side_channels").outer_channels
+        cell, links = {"a": (0, 0), "b": (0, 1), "c": (2, 0), "d": (2, 1)}, [SimpleNamespace(src="a", dst="b"), SimpleNamespace(src="c", dst="d")]
+        self.assertEqual(oc(3, cell, links, {}), (4, True, 3))
+        self.assertEqual(oc(3, cell, links, {"e2e_left_channel": "off"}), (3, True, None))
+        self.assertEqual(oc(1, {"a": (0, 0), "b": (0, 1)}, links[:1], {}), (1, True, None))
+
+    def test_left_channel_off_keeps_the_right(self) -> None:
+        """With `e2e_left_channel: off` first-column links use the channel on their right again, so the test above can fail."""
+        for path in (EXAMPLE, ROW_FIXTURE):
+            grid, inside = self._inside(path, {"e2e_left_channel": "off"})
+            self.assertIsNone(grid.left_ch)
+            for link in inside:
+                self.assertEqual((link.exit[2], link.entry[2]), ("R", "R"), link.cid)
 
 
 if __name__ == "__main__":

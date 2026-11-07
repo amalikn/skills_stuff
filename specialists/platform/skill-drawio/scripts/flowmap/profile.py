@@ -24,6 +24,9 @@ DEFAULT_LOOK = {
     "decision_width": 380,         # a decision's width, in its wider column, so a diamond grows sideways
     "decision_aspect": 0.6,        # a decision widens from the step width until no taller than this times its width (short text: small)
     "decision_max_width": 560,     # a long decision may widen past decision_width up to this, so it stays a diamond, not a tall kite
+    "decision_fit": "inscribed",   # a diamond's text fills the half-width, half-height rectangle a rhombus holds; "widen": the 2026-10-27 rule
+    "decision_min_width": 160,     # the narrowest diamond under decision_fit inscribed (operator review 2026-11-07: diamonds "extra large")
+    "store_insets": "on",          # a store step's text kept off the cylinder's rims (operator review 2026-11-07); "off" for the old cylinder
     "step_chars": 38,              # characters a line a step box is sized for, at step_width and font 10 (46 overflowed: a rendered process box holds
                                    # about 38, measured on UNC's Tech stack page, operator review 2026-11-06)
     "back_arrows": "short-first",  # return arrows: "short-first" (along the source's lane when clear) or "below-lanes" (always the band)
@@ -37,6 +40,8 @@ DEFAULT_LOOK = {
     "arrow_corners": "rounded",    # flow-page arrows turn with rounded corners as on the Overview; "square" for sharp corners
     "max_aspect": 0.8,             # a step box taller than this times its width is widened instead (long text: wider, not tall and narrow)
     "uncross": "on",               # redraw two flow arrows that cross in the other order, kept when crossings drop (operator review 2026-10-22); "off"
+    "straight_first": "on",        # an arrow to the very next step that can run straight across is drawn first (operator review 2026-11-07); "off"
+    "e2e_left_channel": "on",      # End-to-end: the first column's in-column links take a channel on its left, as the last's take one on its right (2026-11-07)
     "branch_order": "longest",     # a decision's branches route at their longest branch's turn (2026-10-26); "first": at their shortest's
     "e2e_layers": "family",        # End-to-end colours and layers per "family", or per "flow" (each x of x.y its own; operator, 2026-10-23)
     "connector_width": 1.25,       # End-to-end dashed connector stroke width; 2 matches the step arrows (operator asked for bold, 2026-10-23)

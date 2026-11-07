@@ -96,3 +96,8 @@ the E2E column search still scores a grid estimate. UNC's own schema copy lacks 
 Sources: https://uspto.report/patent/grant/4953106 , https://eclipse.dev/elk/blog/posts/2025/25-08-21-layered.html ,
 https://www.adaptagrams.org/documentation/libavoid.html , https://www.doi.org/10.1007/978-3-642-11805-0_22 ,
 https://vis.khoury.northeastern.edu/pubs/Wilson2024EvaluatingExtendingSpeedup/ , https://google-melange.com/archive/gsoc/2013/orgs/ogdf/projects/pawel_schmidt.html
+
+- [ ] **2026-11-07 operator review (smc-resiliency step pages):** (1) an arrow that runs below the lanes (a branch back, e.g. `6 No` on the
+  release page) crosses the step notes: grow the lowest lane vertically so the arrow's run stays inside it, above the notes; (2) two flows'
+  arrows share one corridor on an E2E page (State file to /data/confexts), "thought already addressed": unshare them; (3) a back button on
+  each step page to its family's E2E page, like the `step page ›` button.

@@ -225,19 +225,84 @@ def route_branches(page: Page, branches: list, corridors: dict, used: dict) -> N
     """
     best, best_total = None, None
     for ways in permutations(("right", "top", "bottom"), len(branches)):
-        mark = (len(page.routes), len(page.cells), len(page.marks), dict(page.rects), {k: set(v) for k, v in used.items()})
+        mark = _mark(page, used)
         total = sum(route_forward(page, edge, (True, diamond), corridors, used, (way,), True) for (edge, diamond), way in zip(branches, ways))
         mine = page.routes[mark[0]:]
         total += COST_SIBLING_CROSS * sum(1 for i, a in enumerate(mine) for b in mine[i + 1:]
                                           for s in segments(a.points) for o in segments(b.points) if crossing(s, o) is not None)
-        del page.routes[mark[0]:], page.cells[mark[1]:], page.marks[mark[2]:]
-        page.rects.clear(), page.rects.update(mark[3])
-        for key in used:
-            used[key].clear(), used[key].update(mark[4][key])
+        _undo(page, used, mark)
         if best_total is None or total < best_total:
             best, best_total = ways, total
     for (edge, diamond), way in zip(branches, best):
         route_forward(page, edge, (True, diamond), corridors, used, (way,))
+
+
+def _mark(page: Page, used: dict) -> tuple:
+    """What routing changes on a page and in `used`, so a trial can be undone.
+
+    Args:
+        page: the page.
+        used: points and sides already taken.
+
+    Returns:
+        (routes, cells, marks counts, rects copy, used copy).
+    """
+    return len(page.routes), len(page.cells), len(page.marks), dict(page.rects), {k: set(v) for k, v in used.items()}
+
+
+def _undo(page: Page, used: dict, mark: tuple) -> None:
+    """Put a page and `used` back as `_mark` found them.
+
+    Args:
+        page: the page.
+        used: points and sides, changed in place.
+        mark: what `_mark` returned.
+    """
+    del page.routes[mark[0]:], page.cells[mark[1]:], page.marks[mark[2]:]
+    page.rects.clear(), page.rects.update(mark[3])
+    for key in used:
+        used[key].clear(), used[key].update(mark[4][key])
+
+
+def straight(points: list) -> bool:
+    """Whether an arrow is one straight run: every point on one horizontal or one vertical line.
+
+    Args:
+        points: the arrow's polyline.
+
+    Returns:
+        True for a run with no bend.
+    """
+    return len({round(p[1]) for p in points}) == 1 or len({round(p[0]) for p in points}) == 1
+
+
+def straight_first(page: Page, ctx: tuple, forward: list, shapes: dict, corridors: dict, used: dict) -> dict:
+    """Draw first each arrow to the very next step that can go straight across, out of its source's right side into the target's left, so a
+    decision's other branches route around it (operator review 2026-11-07, commission-gps: "4 on the right of 3, not on the top; 5 at the
+    bottom of 3, not on the right"). A run that bends, or costs a reused side or more, is undone and routed with the rest.
+
+    Args:
+        page: the page (steps drawn as solid boxes).
+        ctx: (flow id, steps by id, step order, look), as for `_edge_of`.
+        forward: the forward edges from `step_edges`, in routing order.
+        shapes: step shapes by step id.
+        corridors: as for `route_forward`.
+        used: points and sides already taken; the drawn arrows' are added.
+
+    Returns:
+        cell id -> (edge, diamonds) for each arrow drawn straight.
+    """
+    order, drawn = ctx[2], {}
+    for cid, src, dst, _text, _style in forward:
+        if order[dst] != order[src] + 1:
+            continue
+        edge, diamonds = _edge_of(ctx, cid, src, dst), (shapes[src] == "decision", shapes[dst] == "decision")
+        mark = _mark(page, used)
+        if route_forward(page, edge, diamonds, corridors, used, ("right",), True) < COST_SIDE and straight(page.routes[-1].points):
+            drawn[cid] = (edge, diamonds)
+        else:
+            _undo(page, used, mark)
+    return drawn
 
 
 def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> tuple:
@@ -272,12 +337,13 @@ def route_flow(page: Page, flow: tuple, corridors: dict, look: dict) -> tuple:
             used["sides"].update({(f"{fid}-s-{s['id']}", "top"), (f"{fid}-s-{s['id']}", "bottom")})
             used["branchy"].add(f"{fid}-s-{s['id']}")
     reserved = set(used["sides"])
-    done: set = set()
-    drawn: dict = {}   # cell id -> (edge, diamonds), for the uncrossing pass
+    # cell id -> (edge, diamonds), for the uncrossing pass; straight arrows to the next step first (`look.straight_first`, on by default)
+    drawn: dict = straight_first(page, (fid, by_id, order, look), forward, shapes, corridors, used) if look.get("straight_first", "on") != "off" else {}
+    done: set = set(drawn)
     for cid, src, dst, _text, _style in forward:
         if cid in done:
             continue
-        group = [e for e in forward if e[1] == src] if shapes[src] == "decision" else []
+        group = [e for e in forward if e[1] == src and e[0] not in done] if shapes[src] == "decision" else []
         if 1 < len(group) <= 3:   # a decision's branches are routed together (best corner per branch)
             branch = [(_edge_of((fid, by_id, order, look), c, s, d), shapes[d] == "decision") for c, s, d, _t, _st in group]
             route_branches(page, branch, corridors, used)

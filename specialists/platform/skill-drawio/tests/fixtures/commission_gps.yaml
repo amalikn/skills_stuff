@@ -1,0 +1,126 @@
+# Fixture: smc-resiliency's commission-gps flow (docs/flows/parts/flows-pi.yaml, 2026-11-07), real text so box sizes match the page the
+# operator reviewed: 3 -> 4 must run straight out of 3's right, 3 -> 5 leave 3's bottom (tests/test_straight_first.py).
+schema_version: 1
+title: commission-gps fixture
+updated: '2026-11-07'
+components:
+- id: technician
+  name: Site technician
+  kind: person
+  group: Outside the box
+  host: on site at commissioning
+  health: n/a
+- id: setup-menu
+  name: Setup menu (Eclipse, moving to the Wi-Fi dashboard)
+  kind: external
+  group: Outside the box
+  host: dev team's service; writes the box's GPS files when a site is chosen
+  health: technician can choose a site and submit
+- id: gps-files
+  name: GPS files (tstiklatlon)
+  kind: store
+  group: Storage on the box
+  host: /var/local/tstiklatlon (lat and lon); a pre-commissioning reading, may be lost after commissioning
+  health: lat and lon present until the site is registered
+- id: unc
+  name: UNC (Nautobot)
+  kind: external
+  group: Outside the box
+  host: apn-unc01
+  health: registration answers; site list with GPS current
+- id: activate
+  name: Activation step (`smcbox activate`)
+  kind: service
+  group: On the SMC
+  host: spike/onbox/smcbox on the VM (S2, 2026-10-20); the OS image later, after sysupdate delivers a site image
+  health: last_result in the state file names what was kept or reverted and why
+flows:
+- id: commission-gps
+  title: 'Commissioning: site and GPS, registered once in UNC'
+  category: commissioning
+  purpose: The technician picks the site; the box's GPS files are written; UNC registers the SMC, refusing a second SMC on a site that already has one online, and becomes the GPS source.
+  trigger:
+    kind: manual
+    detail: technician commissioning a site (Pi or x86)
+  runs_on: setup-menu
+  owner: technician
+  steps:
+  - id: choose-site
+    actor: technician
+    action: Opens the setup menu (dev team; Eclipse now, the Wi-Fi dashboard later), chooses the site and submits.
+    via:
+    - HTTPS
+    reads:
+    - the setup menu's site list
+    failures:
+    - site missing from the list
+    - so commissioning stops until the dev team adds it
+  - id: write-gps
+    actor: setup-menu
+    action: Writes the site's latitude and longitude into the box's GPS files.
+    via:
+    - HTTPS
+    writes:
+    - /var/local/tstiklatlon
+    failures:
+    - box not reachable from the setup menu
+    - so the GPS files stay empty and UNC flags the missing position
+  - id: register
+    actor: unc
+    action: The SMC registers; UNC checks its site list (every site with its GPS position) for an SMC already online on that site.
+    via:
+    - API
+    reads:
+    - UNC site list with each site's GPS position
+    - the SMC's reported position and hardware ID
+    failures:
+    - reported position far from the site's
+    - so the registration is held for review instead of recorded
+    gate: no other SMC registered on this site, and the reported GPS position matches the site's
+    next:
+    - record
+    - probe-old
+  - id: probe-old
+    actor: unc
+    action: 'A registered SMC exists: UNC first tries to log in to it over Teleport (tsh), since the entry may be stale; an answer means it is really online.'
+    via:
+    - SSH
+    reads:
+    - Teleport node list (`tsh ls`) for the registered SMC
+    failures:
+    - Teleport itself unreachable
+    - so nothing is decided and the registration waits rather than refusing
+    gate: the old SMC answers a login
+    next:
+    - refuse
+    - record
+  - id: record
+    actor: unc
+    action: Records the SMC on the site (a stale old entry is retired first, with its reason kept); the site's GPS position is held by UNC (proposed, the Location's latitude and longitude).
+    via:
+    - API
+    writes:
+    - the SMC device on the site
+    - a stale entry retired with its reason
+    - the Location's latitude and longitude (proposed)
+    next:
+    - fetch
+  - id: refuse
+    actor: unc
+    action: Refuses only when the old SMC answered, and raises an alarm; the technician sees why (site already served, or position mismatch).
+    via:
+    - API
+    writes:
+    - an alarm on the site naming both SMCs
+    next: []
+  - id: fetch
+    actor: activate
+    action: From then on the box takes its GPS position from UNC with the site's variable set; the local file is not needed.
+    via:
+    - API
+    reads:
+    - the site's variable set from UNC
+    - GPS position included
+    failures:
+    - UNC unreachable
+    - so the committed identity slot's values are used

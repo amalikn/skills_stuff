@@ -702,6 +702,16 @@
                 "off"
               ]
             },
+            "straight_first": {
+              "type": "string",
+              "enum": ["on", "off"],
+              "description": "Flow pages: an arrow to the very next step that can run straight from its source's right side into the target's left is drawn first, so a decision's other branches route around it (operator review 2026-11-07)."
+            },
+            "e2e_left_channel": {
+              "type": "string",
+              "enum": ["on", "off"],
+              "description": "End-to-end: links inside the first column run in a channel on its left, the page's free side, as the last column's run on its right (operator review 2026-11-07)."
+            },
             "decision_aspect": {
               "type": "number",
               "exclusiveMinimum": 0,
@@ -711,6 +721,27 @@
               "type": "integer",
               "minimum": 1,
               "description": "Flow pages: the widest a long decision may grow past decision_width to keep its aspect (default 560)."
+            },
+            "decision_fit": {
+              "type": "string",
+              "enum": [
+                "inscribed",
+                "widen"
+              ],
+              "description": "Flow pages and flowcharts: \"inscribed\" (default) sizes a diamond so its text fills the centred half-width, half-height rectangle a rhombus holds, from decision_min_width wider until decision_aspect, up to decision_max_width; \"widen\" is the 2026-10-27 rule (fixed 72 px insets)."
+            },
+            "decision_min_width": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Flow pages and flowcharts: the narrowest diamond under decision_fit inscribed (default 160)."
+            },
+            "store_insets": {
+              "type": "string",
+              "enum": [
+                "on",
+                "off"
+              ],
+              "description": "Flow pages: a step drawn as a store gets 14 px label insets top and bottom and 34 px more height, so its text stays on the cylinder's flat body (default on)."
             },
             "unshare": {
               "type": "string",

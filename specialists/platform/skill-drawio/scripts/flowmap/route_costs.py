@@ -170,6 +170,26 @@ def _clear(rect: tuple, gap: float) -> tuple:
     return rect[0] - gap, rect[1] - gap, rect[2] + 2 * gap, rect[3] + 2 * gap
 
 
+def near_box(rect: tuple, page: Page, cid: str) -> bool:
+    """Whether a label's rectangle comes within LABEL_GAP of a box: a decision by its diamond outline, not the rectangle around it, so a label
+    on a run just past a diamond's corner stays on its line (operator review 2026-11-07: "why is the text above the arrow, not on it?").
+
+    Args:
+        rect: the label's rectangle.
+        page: the page (box rectangles and styles).
+        cid: the box's cell id.
+
+    Returns:
+        True when the grown label meets the box.
+    """
+    grown, (x, y, w, h) = _clear(rect, LABEL_GAP), page.rects[cid]
+    if "rhombus" not in page.cell_style.get(cid, "") or not w or not h:
+        return rects_overlap(grown, (x, y, w, h))
+    cx, cy = x + w / 2, y + h / 2   # |dx|/(w/2) + |dy|/(h/2) <= 1 inside; its least value over the rectangle is at the point nearest the centre
+    nx, ny = min(max(cx, grown[0]), grown[0] + grown[2]), min(max(cy, grown[1]), grown[1] + grown[3])
+    return abs(nx - cx) / (w / 2) + abs(ny - cy) / (h / 2) < 1
+
+
 def lane_colour(page: Page, x: float, y: float) -> str:
     """The colour a lane shows at a point (its fill over the white page at the lane's opacity), for a label background that hides the line
     behind the text without showing a white box on a tinted lane (operator, 2026-10-27: "remove white background from arrow text").
@@ -230,6 +250,8 @@ def label_spot(page: Page, cid: str, pts: list, w: float, h: float, split: tuple
     pts = [pt for k, pt in enumerate(pts) if k in (0, len(pts) - 1) or not _straight(pts[k - 1], pt, pts[k + 1])]
     segs = sorted(segments(pts), key=lambda s: -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1])))
     others = [s for r in page.routes if r.cid != cid for s in segments(r.points)]
+    # A lane edge is a line too: a label pushed onto it reads as sitting between two lanes (operator review 2026-11-07, commission-gps).
+    others += [((-1e6, y), (1e6, y)) for y in getattr(page, "lane_edges", [])]
     margin = float(getattr(page, "label_clearance", 0))   # `look.label_clearance`: a label stopping 1 px short of a line still reads as on it (operator, 2026-11-02)
     for p, q in segs:
         flat = abs(p[1] - q[1]) < .5
@@ -240,7 +262,7 @@ def label_spot(page: Page, cid: str, pts: list, w: float, h: float, split: tuple
             rect = (cx - split[0] - SPLIT_GAP, cy - 11, split[0] + split[1] + 2 * SPLIT_GAP, 22) if across else (cx - w / 2, cy - h / 2, w, h)
             near = (rect[0] - margin, rect[1] - margin, rect[2] + 2 * margin, rect[3] + 2 * margin)
             if (not any(seg_hits_rect(a, b, near, 0) for a, b in others) and not any(rects_overlap(rect, m.rect) for m in page.marks)
-                    and not any(rects_overlap(_clear(rect, LABEL_GAP), page.rects[c]) for c in page.solid)):
+                    and not any(near_box(rect, page, c) for c in page.solid)):
                 return cx, cy, across
     p, q = segs[0]
     return (p[0] + q[0]) / 2, (p[1] + q[1]) / 2, False

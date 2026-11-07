@@ -17,6 +17,7 @@ from drawio.cell import tag
 from drawio.mxfile import heading, wrapped_lines
 from drawio.route import interval_tracks
 
+from .side_channels import outer_channels
 from .model import MARGIN, e2e_tier, flow_extras, flow_family
 from .profile import Profile
 from .shapes import fit_height
@@ -114,15 +115,10 @@ class E2EGrid:
         self.loop_reserve: dict[int, tuple[float, float]] = {}   # {gap: (room at its top, at its bottom)} kept clear for loops (flowmap.loops)
         self.comps = {c["id"]: c for c in data["components"]}
         self.ncol = len(profile.tiers)
-        # Channels sit between columns; a one-column page keeps one on its right, so links inside the column still have a track (2026-10-19).
-        self.nch = max(self.ncol - 1, 1)
         self.cell, self.band = swap_cells(self._place(), band_swaps)
         self.groups, self.group_of = e2e_groups(data, profile, numbers)
         self.links = self._links()
-        # Links inside one column always use the channel on its right, the last column's too (operator, 2026-10-26): on its left they
-        # shared the channel with every arrow coming in from the column before while its right side stayed empty.
-        if self.ncol > 1 and any(self.cell[x.src][0] == self.cell[x.dst][0] == self.ncol - 1 for x in self.links):
-            self.nch = self.ncol
+        self.nch, self.right_outer, self.left_ch = outer_channels(self.ncol, self.cell, self.links, profile.look)   # flowmap.side_channels
         for link in self.links:
             self._plan(link)
         self._size()
@@ -245,7 +241,8 @@ class E2EGrid:
         """
         (cs, rs), (ct, rt) = self.cell[link.src], self.cell[link.dst]
         if cs == ct:
-            ch, sd = cs, "R"   # __init__ gave the last column a right-hand channel when it has in-column links
+            # __init__ gave the last column a right-hand channel and the first a left-hand one when they have in-column links
+            ch, sd = (self.left_ch, "L") if cs == 0 and self.left_ch is not None else (cs, "R")
             link.exit, link.entry = (ch, rs, sd), (ch, rt, sd)
         elif cs < ct:
             link.exit, link.entry = (cs, rs, "R"), (ct - 1, rt, "L")
@@ -397,4 +394,5 @@ class E2EGrid:
                 self.vruns.setdefault((ch, got[key]), []).append(key)
         self.vslot = {ch: list(range(n)) for ch, n in count.items()}
         self.ch_w = [max(E2E_MIN_CH, 2 * E2E_EDGE + (count.get(ch, 1) - 1) * E2E_SP) for ch in range(self.nch)]
-        self.col_x = [MARGIN + sum(E2E_BW + w for w in self.ch_w[:c]) for c in range(self.ncol)]
+        lead = self.ch_w[self.left_ch] if self.left_ch is not None else 0   # the left channel's width, before the first column
+        self.col_x = [MARGIN + lead + sum(E2E_BW + w for w in self.ch_w[:c]) for c in range(self.ncol)]

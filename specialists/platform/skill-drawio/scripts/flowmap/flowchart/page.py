@@ -24,7 +24,7 @@ from .order import improve_branches
 from .route import CHANNEL, TRACK, assign_tracks, exit_point, left_channels, node_rect, plan_gaps, row_spans
 from ..model import GAP, MARGIN, comp_style, step_targets
 from ..profile import Profile
-from ..shapes import SHAPES, shape_legend
+from ..shapes import SHAPES, diamond_inset, diamond_size, inscribed, shape_legend
 from ..tips import step_tip
 
 #: Box width, characters a line at that width (font 11), line height, least box height and the widest a decision grows to.
@@ -79,16 +79,20 @@ def step_chart_shape(step: dict, targets: list[str]) -> str:
     return step.get("shape") or ("predefined-process" if step.get("flow") else "process")
 
 
-def _size(lines: list[str], shape: str) -> tuple[int, int]:
-    """A box's size for its text; a diamond widens until it is no taller than 0.6 of its width.
+def _size(lines: list[str], shape: str, look: dict) -> tuple[int, int]:
+    """A box's size for its text; a diamond fits its text's inscribed rectangle (shapes.diamond_size), or with `look.decision_fit` "widen"
+    widens until it is no taller than 0.6 of its width.
 
     Args:
         lines: the label lines.
         shape: the flowmap.shapes key.
+        look: the drawing's look.
 
     Returns:
         (width, height).
     """
+    if shape == "decision" and inscribed(look):
+        return diamond_size(lines, (BOX_W - 4) / BOX_CHARS, LINE_H, look)
     _style, wf, hf = SHAPES[shape][:3]
     w = BOX_W
     while True:
@@ -153,7 +157,7 @@ class Chart:
         for nid in self.graph.order:
             self.text[nid] = self._lines(nid)
             shape = self.shapes.get(nid, "process" if nid in self.graph.stops else "terminator")
-            self.size[nid] = _size(self.text[nid], shape)
+            self.size[nid] = _size(self.text[nid], shape, {**profile.look, "decision_fit": "widen"} if self.bpmn else profile.look)   # BPMN keeps its gateway
             if self.bpmn and nid not in self.graph.steps:
                 self.size[nid] = (BOX_W, max(bpmn.EVENT, self.size[nid][1] * 2 if nid in self.graph.stops else 0))
                 if self.turned:
@@ -249,7 +253,8 @@ def draw_nodes(page: View, chart: Chart, ys: dict) -> list[str]:
         else:
             s, shape = chart.graph.steps[nid], chart.shapes[nid]
             actor = chart.comps[s["actor"]]
-            style = bpmn.step_style(shape, *chart.profile.style(actor["kind"])) if chart.bpmn else comp_style(actor["kind"], chart.profile, "fontSize=11;" + SHAPES[shape][0])
+            style = bpmn.step_style(shape, *chart.profile.style(actor["kind"])) if chart.bpmn else comp_style(actor["kind"], chart.profile, "fontSize=11;" + SHAPES[shape][0]
+                                                                                                                + (diamond_inset(rect[2]) if shape == "decision" and inscribed(chart.profile.look) else ""))
             charts, flows = chart.page_ids
             link = f"data:page/id,chart-{s['flow']}" if s.get("flow") in charts else f"data:page/id,flow-{s['flow']}" if s.get("flow") in flows else ""
             page.box(f"{fid}-c-{nid}", text, rect, style, link=link, tooltip=step_tip(s, str(n), actor["name"]), solid=True)

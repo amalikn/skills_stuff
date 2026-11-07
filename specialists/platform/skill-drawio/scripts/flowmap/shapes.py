@@ -11,7 +11,7 @@ Imported, not run: `from flowmap.shapes import step_shape, lane_shape` with the 
 
 from __future__ import annotations
 
-from drawio.mxfile import Page, label
+from drawio.mxfile import Page, label, wrapped_lines
 
 #: Each shape: (style fragment, text-width factor, height factor, legend text). The style replaces the box's rectangle; the factors shrink the
 #: characters per line and grow the height where the outline eats into the text area (a diamond most).
@@ -141,6 +141,89 @@ FIT = {
     "external": ("align=center;verticalAlign=middle;spacingLeft=34;spacingRight=34;spacingTop=10;spacingBottom=10;", 1.6, 24),
     "stored-data": ("verticalAlign=middle;spacingTop=16;spacingBottom=2;", 1.0, 30),
 }
+
+
+#: A step drawn as a store keeps its text on the cylinder's flat body: draw.io's boundedLbl only clears the top rim, so the label crowded the
+#: rim and the last line (the italic via) sat on the bottom curve (operator review 2026-11-07, step "5. write"). (style, extra px of height);
+#: `look.store_insets` "off" draws the 2026-10-21 cylinder.
+STEP_FIT = {"stored-data": ("spacingTop=14;spacingBottom=14;", 34)}
+
+
+def step_fit(shape: str, look: dict) -> tuple[str, int]:
+    """The extra label inset and height a step box of this shape needs on a flow page so its text stays inside the outline's flat part.
+
+    Args:
+        shape: the step's SHAPES key.
+        look: the drawing's look.
+
+    Returns:
+        (style fragment, extra height in px); ("", 0) for a shape that needs none or when `look.store_insets` is "off".
+    """
+    if look.get("store_insets", "on") == "off":
+        return "", 0
+    return STEP_FIT.get(shape, ("", 0))
+
+
+#: Smallest diamond, so a one-line question still reads as a diamond with its title (`look.decision_min_width` overrides it).
+DECISION_MIN_W = 160
+#: A diamond's characters are estimated this much narrower than a box's: step_chars is a left-aligned box's safe budget (about 5.4 px a
+#: character at font 10) while a centred diamond label rendered at about 4.4 (draw.io 32.6.1, smc-resiliency X2 page, 2026-11-07); the full
+#: box budget made the text block a third shorter than the diamond was sized for, so every diamond was oversized.
+DIAMOND_CHAR_FILL = 0.85
+#: Room above and below a diamond's text block (px each side, before doubling).
+DIAMOND_PAD = 4
+
+
+def diamond_size(lines: list[str], px_per_char: float, line_h: float, look: dict) -> tuple[int, int]:
+    """A decision diamond sized to hold its full text and no more (operator review 2026-11-07: "all diamonds are almost extra large").
+
+    A W x H rhombus holds a centred w x h rectangle when w/W + h/H <= 1; the largest such rectangle is W/2 x H/2. So the text is wrapped at
+    half the width (diamond_inset sets draw.io's label to exactly that) and the diamond is twice the text block's height. It starts at
+    `look.decision_min_width` and widens in 20 px steps until its height is at most `look.decision_aspect` times its width, up to
+    `look.decision_max_width`: wider rather than taller.
+
+    Args:
+        lines: the label lines (markers such as ** allowed).
+        px_per_char: the width one character takes at the box's font (the box budget; DIAMOND_CHAR_FILL narrows it for a centred label).
+        line_h: the height of one line.
+        look: the drawing's look.
+
+    Returns:
+        (width, height).
+    """
+    w, aspect = int(look.get("decision_min_width", DECISION_MIN_W)), float(look.get("decision_aspect", 0.6))
+    widest = max(w, int(look.get("decision_max_width", 560)))
+    while True:
+        chars = max(8, int((w / 2 - 4) / (px_per_char * DIAMOND_CHAR_FILL)))
+        h = round(2 * (sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * line_h + 2 * DIAMOND_PAD))
+        if h <= aspect * w or w >= widest:
+            return w, h
+        w += 20
+
+
+def inscribed(look: dict) -> bool:
+    """Whether diamonds are sized to their text's inscribed rectangle (`look.decision_fit`: "inscribed", the default, or "widen", the
+    2026-10-27 rule that sized a diamond like a box with fixed 72 px insets).
+
+    Args:
+        look: the drawing's look.
+
+    Returns:
+        True unless the map sets decision_fit to "widen".
+    """
+    return look.get("decision_fit", "inscribed") != "widen"
+
+
+def diamond_inset(width: float) -> str:
+    """The label inset that makes draw.io wrap a diamond's text at half its width: the inscribed rectangle diamond_size sized it for.
+
+    Args:
+        width: the diamond's width.
+
+    Returns:
+        A style fragment that overrides the shape's fixed spacing (draw.io takes the last value of a repeated key).
+    """
+    return f"spacingLeft={width / 4:g};spacingRight={width / 4:g};spacingTop=0;spacingBottom=0;"
 
 
 def fit_height(comp: dict, profile, height: float) -> float:

@@ -602,3 +602,47 @@ stroke.setAttribute("stroke", OVERLAP_INK[key]); stroke.setAttribute("stroke-wid
 > centres its text, keeps 30 and 28 px clear at the sides and 26 at the top, and its width and height factors are 0.72 and 1.35. Every consumer
 > re-rendered; audits clean. Same review: folding (`layout: {fold: serpentine, fold_after: N}`) reads best on pages with many steps and few lanes;
 > with one lane per step (smc-resiliency stack-build, 9 lanes) each folded row is still a staircase, narrower but taller.
+
+> **Learned 2026-11-07** · decision diamonds fit their text · VERIFIED_PRIMARY · Source: `scripts/flowmap/shapes.py` `diamond_size`,
+> `diamond_inset`, look keys `decision_fit` (default `inscribed`) and `decision_min_width` (160); `scripts/flowmap/pages.py` `size_steps`,
+> `scripts/flowmap/flowchart/page.py` `_size`; uncommitted on skills_stuff bd1691d; smc-resiliency pages 25, 26, 27 exported with draw.io 32.6.1 ·
+> Falsifier: a diamond exported at these settings whose text crosses its outline, or whose text block fills well under half its width and height
+> Operator review 2026-11-07: "all diamonds are almost extra large"; correction the same day: "I didn't ask you to decrease the text within
+> diamond, I asked you to handle the diamond properly" (a cap on the diamond's text was reverted: it shows its full action again). Two faults
+> made every diamond too big. The fixed 72 px insets let draw.io wrap the label far wider than the half width it was sized for, so the text ran
+> long and flat into the corners while the height was sized for many short lines; and the box budget (`step_chars`, about 5.4 px a character,
+> safe for a left-aligned box) overestimated a centred label (about 4.4 px read off the export). Rule: a W x H rhombus holds a centred w x h
+> rectangle when w/W + h/H <= 1, the largest being W/2 x H/2. The label is inset W/4 each side, the text wrapped at that half width (characters
+> at 0.85 of the box budget, `DIAMOND_CHAR_FILL`), the diamond twice the block's height (plus 4 px each side), starting at 160 px and widening
+> in 20 px steps until its height is at most `decision_aspect` (0.6) times its width, up to `decision_max_width` (560): wider, not taller.
+> smc-resiliency: X2 trial 560 x 436 -> 560 x 334, S4 bootstrap-off 520 x 280 -> 440 x 256, E2E e7 440 x 254 -> 400 x 230; all 35 diamonds
+> smaller or equal. BPMN gateways keep the old rule; `decision_fit: widen` draws the 2026-10-27 rule (layout-and-routing.md).
+>
+> ```python
+> # scripts/flowmap/shapes.py (skill-drawio) diamond_size: the text fills the inscribed half-width, half-height rectangle
+> while True:
+>     chars = max(8, int((w / 2 - 4) / (px_per_char * DIAMOND_CHAR_FILL)))
+>     h = round(2 * (sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * line_h + 2 * DIAMOND_PAD))
+>     if h <= aspect * w or w >= widest:
+>         return w, h
+>     w += 20
+> # diamond_inset(width): draw.io takes the last value of a repeated style key, so this overrides the shape's 72 px
+> return f"spacingLeft={width / 4:g};spacingRight={width / 4:g};spacingTop=0;spacingBottom=0;"
+> ```
+>
+> Screenshots: [references/screenshots/20261107-compact-diamonds-and-store-text/](screenshots/20261107-compact-diamonds-and-store-text/readme.md).
+
+> **Learned 2026-11-07** · text inside a store step · VERIFIED_PRIMARY · Source: `scripts/flowmap/shapes.py` `STEP_FIT`, `step_fit`, look key
+> `store_insets` (default `on`); `scripts/flowmap/pages.py` `size_steps`, `_step`; uncommitted on skills_stuff bd1691d; smc-resiliency page 19
+> ("5. write") exported with draw.io 32.6.1 · Falsifier: a store step exported at these settings whose first line touches the top rim or whose last line sits on the bottom curve
+> A step drawn as a cylinder (`shape=cylinder3;boundedLbl=1;size=10`) had its title against the curved top and its italic via line on the bottom
+> curve (operator review 2026-11-07, step "5. write"): boundedLbl clears only part of the rims and the box was sized like a rectangle (x1.1). A
+> store step now gets `spacingTop=14;spacingBottom=14;` and 34 px more height, so the text sits on the flat body: "5. write" 220 x 111 -> 220 x 145.
+> Overview and End-to-end store boxes keep their own fit (`FIT`).
+>
+> ```python
+> # scripts/flowmap/shapes.py (skill-drawio)
+> STEP_FIT = {"stored-data": ("spacingTop=14;spacingBottom=14;", 34)}
+> # scripts/flowmap/pages.py size_steps: the rim allowance is added to the text height
+> box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(...)) * STEP_LINE_H) * hf) + step_fit(shapes[sid], look)[1]
+> ```

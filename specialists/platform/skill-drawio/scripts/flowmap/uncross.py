@@ -12,7 +12,7 @@ from drawio.audit import crossing, segments
 from drawio.mxfile import Page
 
 from .route_costs import _along
-from .routing import route_forward
+from .routing import route_forward, straight
 
 
 def _side(pt: tuple, rect: tuple) -> str:
@@ -190,19 +190,21 @@ def _redraw_pair(page: Page, pair: tuple, drawn: dict, corridors: dict, held: tu
     best = None
     for k, (side_a, side_b, pick) in enumerate(trials):
         _restore(page, bare)
-        spent = 0.0
+        spent = []
         fewest = pick is not False
         for cid, side, rank in ((b, side_b, pick if fewest else 0), (a, side_a, 0)):   # the other order: last time's second arrow first
             edge, flags = drawn[cid]
-            spent = max(spent, route_forward(page, edge, flags, corridors, _used(page, reserved, diamonds), (side,), k > 0, fewest, rank))
-        if spent >= 1e6:   # a side the arrow cannot leave by: nothing drawn, not a result
+            spent.append(route_forward(page, edge, flags, corridors, _used(page, reserved, diamonds), (side,), k > 0, fewest, rank))
+        if max(spent) >= 1e6:   # a side the arrow cannot leave by: nothing drawn, not a result
             continue
         after = _crossings(page)
         if after < count and _alongside(page) > along:   # the pair is clear but now runs along a third arrow: let that one step aside
             _step_aside(page, pair, drawn, corridors, held)
             after = _crossings(page)
-        if after < count and len(_shared_corners(page, drawn, diamonds)) <= shared and _alongside(page) <= along and (best is None or after < best[0]):
-            best = (after, _snapshot(page))
+        # Equal crossings go to the cheaper pair of routes, not the first tried, so a branch keeps the corner the router's costs prefer
+        # (operator review 2026-11-07, commission-gps: 5 should leave 3's bottom; top came first in EXITS order and won the tie).
+        if after < count and len(_shared_corners(page, drawn, diamonds)) <= shared and _alongside(page) <= along and (best is None or (after, sum(spent)) < best[0]):
+            best = ((after, sum(spent)), _snapshot(page))
             if k == 0:   # the same sides already help: keep the old repair's choice
                 break
     _restore(page, best[1] if best else snap)
@@ -223,7 +225,9 @@ def _step_aside(page: Page, pair: tuple, drawn: dict, corridors: dict, held: tup
     """
     reserved, diamonds = held
     mine = [s for r in page.routes if r.cid in pair for s in segments(r.points)]
-    others = [r.cid for r in page.routes if r.cid in drawn and r.cid not in pair
+    # A straight arrow (one run, box to the box beside it) never steps aside: a repair that needs its corner is no repair (operator review
+    # 2026-11-07, commission-gps: 4 to the step beside 3 was pushed out of 3's top so 5 could take the right corner).
+    others = [r.cid for r in page.routes if r.cid in drawn and r.cid not in pair and not straight(r.points)
               and any(_along(s, t) for s in segments(r.points) for t in mine)]
     for cid in others:
         _take_up(page, cid)

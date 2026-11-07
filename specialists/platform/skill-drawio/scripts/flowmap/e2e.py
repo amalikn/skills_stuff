@@ -68,7 +68,7 @@ class EndToEnd(E2EGrid):
             The x.
         """
         n = len(self.vslot[ch])
-        left = self.col_x[ch] + E2E_BW
+        left = self.col_x[0] - self.ch_w[ch] if ch == self.left_ch else self.col_x[ch] + E2E_BW   # the left channel sits before column 0
         return left + (self.ch_w[ch] - (n - 1) * E2E_SP) / 2 + self.vslot[ch][self.vtrack[key]] * E2E_SP
 
     def _side_x(self, comp: str, sd: str) -> float:
@@ -321,7 +321,7 @@ class EndToEnd(E2EGrid):
             The page.
         """
         page = Page(page_id, name or f"{self.profile.look.get('e2e_tab', 'End-to-end')} flow")
-        right = self.col_x[-1] + E2E_BW + (self.ch_w[-1] if self.nch >= self.ncol else 0)   # a one-column page draws its channel too
+        right = self.col_x[-1] + E2E_BW + (self.ch_w[self.ncol - 1] if self.right_outer else 0)   # a one-column page draws its channel too
         self._frame(page, right)
         dim = dim_level(self.profile.look)
         near = neighbour_tags([(x.src, x.dst) for x in self.links])

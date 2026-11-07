@@ -29,7 +29,7 @@ from .lanes import draw_lanes
 from .routing import route_flow
 from .uncross import uncross, unshare
 from .step_text import action_clauses, note_lines, step_lines
-from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, fit_height, lane_shape, shape_legend, step_shape
+from .shapes import FIT, PERSON_ICON, SHAPES, SLANTED, diamond_inset, diamond_size, fit_height, inscribed, lane_shape, shape_legend, step_fit, step_shape
 from .overview import overview_page
 from .profile import Profile
 from . import render_cache
@@ -99,10 +99,13 @@ def size_steps(steps: list[dict], shapes: dict, profile: Profile) -> tuple[dict,
     for sid, lines in texts.items():   # the outline eats into the text area: fewer characters a line, a taller box
         _style, wf, hf = SHAPES[shapes[sid]][:3]
         decision = shapes[sid] == "decision"
+        if decision and inscribed(look):   # the diamond fits its text's inscribed rectangle exactly (operator review 2026-11-07)
+            box_w[sid], box_h[sid] = diamond_size(lines, (look["step_width"] - 14) / look["step_chars"], STEP_LINE_H, look)
+            continue
         aspect = float(look.get("decision_aspect", 0.6) if decision else look.get("max_aspect", 0.8))
         while True:
             chars = int(look["step_chars"] * box_w[sid] / look["step_width"] * wf)
-            box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * STEP_LINE_H) * hf)
+            box_h[sid] = round(max(STEP_H, 20 + sum(wrapped_lines(x.replace("*", ""), chars) for x in lines) * STEP_LINE_H) * hf) + step_fit(shapes[sid], look)[1]
             if box_h[sid] <= aspect * box_w[sid] or box_w[sid] >= (widest_decision if decision else widest):
                 break
             box_w[sid] += 20
@@ -137,7 +140,8 @@ def _step(page: Page, flow: dict, k: int, comps: dict, profile: Profile, where: 
     cid = f"{fid}-s-{s['id']}"
     page.box(cid, label(*texts[s["id"]]), x, y, w, h,
              comp_style(comps[s["actor"]]["kind"], profile, "fontSize=10;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=6;"
-                        + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]), tooltip=tip, tags=(*step_tags(s, shapes[s["id"]]), *page.tags.get(cid, ())),
+                        + ("strokeWidth=2;" if gate else "") + SHAPES[shapes[s["id"]]][0]
+                        + (diamond_inset(w) if shapes[s["id"]] == "decision" and inscribed(profile.look) else step_fit(shapes[s["id"]], profile.look)[0])), tooltip=tip, tags=(*step_tags(s, shapes[s["id"]]), *page.tags.get(cid, ())),
              link=f"data:page/id,flow-{s['flow']}" if s.get("flow") else page.links.get(cid, ""), solid=True)   # an obstacle for the router and the audit
     note = note_lines(s, k + 1)
     if len(note) == 1 and profile.look.get("empty_notes", "hide") == "hide":   # nothing under the title: no note (operator review, 2026-10-21)

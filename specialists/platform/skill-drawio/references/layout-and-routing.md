@@ -95,6 +95,22 @@ channel) or y (horizontal channel) [C-D24].
 > in-column links, as a one-column page already did. Measured (right channel alone): etc-hosts 15 -> 8, shop example 11 -> 8; PHP 22, UNC
 > 3,689 unchanged (no in-column links in their last column).
 
+> **Learned 2026-11-07** · End-to-end in-column links of the first column on its left · VERIFIED_PRIMARY · Source: `scripts/flowmap/side_channels.py`
+> (`outer_channels`), `e2e_grid.py` (`_plan`, `_channels`), `e2e.py` (`_track_x`); `tests/test_crossing_search.py` InColumnLinks · Falsifier: a
+> first-column in-column link leaving or entering a box's right side with `look.e2e_left_channel` on
+> The 2026-10-26 rule gave the last column a channel on its right; the first column's in-column links still shared the channel to the next
+> column with every cross-column arrow, while the page's left side stayed empty (smc-resiliency Testing E2E page; operator: "the same logic
+> should be applied to the left side of the left column ... make use of the available free area on the left side"). The first column now gets
+> a channel on its left when it has in-column links; it takes the last channel index (never -1, which would read the right channel), and the
+> columns shift right by its width. `look.e2e_left_channel: off` keeps the old way. Code (skills_stuff after bd1691d):
+>
+> ```python
+> nch = ncol if ncol > 1 and ncol - 1 in inside else max(ncol - 1, 1)
+> right_outer = nch >= ncol
+> if ncol > 1 and 0 in inside and look.get("e2e_left_channel", "on") != "off":
+>     return nch + 1, right_outer, nch
+> ```
+
 > **Learned 2026-10-26** · End-to-end row moves · VERIFIED_PRIMARY · Source: `scripts/flowmap/crossing_search.py` (`row_free`, `row_move`,
 > `_set_kinds`), `scripts/flowmap/e2e_grid.py` (`_size`, `_verticals`, `_corridors`), `scripts/flowmap/e2e.py` (`points`, `_runs_ok`);
 > `tests/test_crossing_search.py` RowMoves (fixture `tests/fixtures/row_move.yaml`); screenshot `references/screenshots/20261026-row-moves/`
@@ -195,6 +211,39 @@ A label that belongs to an arrow (a count, a `flow.step` number) goes on that ar
 - If nothing is clear, fall back to the longest run's middle and let the label audit report it, rather than hiding the failure.
 
 Overview counts are 18 pt bold in the arrow's colour on a white label background; End-to-end step labels are `E2E_LABEL_W` x `E2E_LABEL_H` (38 x 16) and bold.
+
+> **Learned 2026-11-07** · flow page labels by a diamond's outline, off lane edges · VERIFIED_PRIMARY · Source: `scripts/flowmap/route_costs.py`
+> (`near_box`, `label_spot`); `tests/test_straight_first.py` DiamondLabelTests · Falsifier: a branch label straddling a lane edge, or pushed off a
+> run that passes a diamond's empty corner
+> A label on a run just above a diamond's top point was judged against the diamond's bounding rectangle, whose corners are empty, so it moved
+> above the line and sat on the lane edge, which the label check did not see (operator: "why is the text for the arrow ... above the arrow?").
+> A decision is now tested by its outline (inside when |dx|/(w/2) + |dy|/(h/2) < 1 at the label's point nearest the centre), and lane edges
+> count as lines a label keeps clear of. Code (skills_stuff after bd1691d):
+>
+> ```python
+> cx, cy = x + w / 2, y + h / 2
+> nx, ny = min(max(cx, grown[0]), grown[0] + grown[2]), min(max(cy, grown[1]), grown[1] + grown[3])
+> return abs(nx - cx) / (w / 2) + abs(ny - cy) / (h / 2) < 1
+> ```
+
+> **Learned 2026-11-07** · flow page straight arrows first · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`straight_first`,
+> `route_flow`), `uncross.py` (`_step_aside`, `_redraw_pair`); `tests/test_straight_first.py`, fixture `commission_gps.yaml` · Falsifier: an
+> arrow to the very next step, same height, drawn out of its source's top or bottom
+> On commission-gps, gate 3's branch to step 4 (beside it) left 3's top and 3 -> 5 left its right (operator: "4 on the right of 3 and not on the
+> top, 5 at the bottom of 3 and not on the right"). The router had drawn exactly that; the uncross pass then traded it: a trial moved 5 onto 3's
+> right corner and `_step_aside` pushed the straight 4 off it, and equal-crossing trials kept the first tried (top before bottom). Three
+> changes: each arrow to the very next step that runs straight across is drawn first and pinned (`look.straight_first`, on); `_step_aside`
+> never moves a straight arrow; equal crossings go to the cheaper pair of routes. Code (skills_stuff after bd1691d):
+>
+> ```python
+> if order[dst] != order[src] + 1:
+>     continue
+> mark = _mark(page, used)
+> if route_forward(page, edge, diamonds, corridors, used, ("right",), True) < COST_SIDE and straight(page.routes[-1].points):
+>     drawn[cid] = (edge, diamonds)
+> else:
+>     _undo(page, used, mark)
+> ```
 
 ## Text-fit sizing
 
@@ -510,6 +559,8 @@ function deal(cap) {                                                  // rows un
 > A fixed 380 px made a short question a flat sliver ("box 2 unnecessarily elongated horizontally") and a long one a tall kite
 > ("disproportionately elongated vertically"). A decision starts at the step width and widens in 20 px steps until its height is at most
 > 0.6 times its width, up to 560 px.
+>
+> Superseded 2026-11-07 for flow pages and flowcharts by visual-style.md Learned 2026-11-07 (decision diamonds fit their text); `decision_fit: widen` keeps this rule.
 
 > **Learned 2026-10-27** · flow-page arrow labels · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`branch_label`, `label_size`,
 > `LABEL`, `route_forward`), `scripts/flowmap/route_costs.py` (`label_spot`, `lane_colour`, `SPLIT_GAP`), skills_stuff 93c0205, 7871fd3,

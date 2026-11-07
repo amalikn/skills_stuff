@@ -139,13 +139,14 @@ class FlowRouterTests(unittest.TestCase):
     def test_uncross_redraws_a_crossing_pair(self) -> None:
         """Three arrows into one box, one coming down from a lane above (smc-resiliency fw-x86, operator review 2026-10-22): with `uncross` the
         page has no crossing; with it switched off the greedy order leaves one, so the test can fail."""
-        data = dict(_firmware(), drawing={"look": {"branch_order": "first"}})   # the order that left the crossing for uncross to clear
+        # The order that left the crossing for uncross to clear; straight_first off, since it now avoids this crossing before uncross runs
+        data = dict(_firmware(), drawing={"look": {"branch_order": "first", "straight_first": "off"}})
         comps = {c["id"]: c for c in data["components"]}
         fq = importlib.import_module("flow_quality")
         page = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(data))
         self.assertEqual(audit.faults(audit.page_audit(page)), [])
         self.assertEqual(fq.page_quality(page)["crossings"], 0)
-        greedy = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(dict(data, drawing={"look": {"uncross": "off", "branch_order": "first"}})))
+        greedy = pages.flow_page(data["flows"][0], comps, 1, TestMap._profile(dict(data, drawing={"look": {"uncross": "off", "branch_order": "first", "straight_first": "off"}})))
         self.assertGreater(fq.page_quality(greedy)["crossings"], 0)
 
     def test_branches_route_at_their_longest_turn(self) -> None:
