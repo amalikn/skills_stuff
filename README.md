@@ -17,25 +17,31 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 
 ## Specialist Packs — Project
 
-| Pack                   | Path                                    | Status                                                                                                                            |
-| ---------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `skill-ai-it`          | `specialists/project/skill-ai-it/`      | Stable — just-only task runner; mise fully removed                                                                                |
-| `skill-smc`            | `specialists/project/skill-smc/`        | Active                                                                                                                            |
-| `skill-cambium`        | `specialists/project/skill-cambium/`    | Active — bootstrapped 2026-09-17, cross-referenced with `skill-smc`                                                               |
-| `skill-mx02-migration` | `specialists/project/\`                 | Active                                                                                                                            |
-|                        |   `skill-mx02-migration/`               |                                                                                                                                   |
-| `skill-coder`          | `specialists/project/skill-coder/`      | 0.1.0 — language-agnostic programming practice with per-language overrides and stdlib checkers; installed 2026-10-19, not yet the |
-|                        |                                         |   default (global routing pending)                                                                                                |
-| `skill-goal-guard`     | `specialists/project/skill-goal-guard/` | 0.1.0-pre — GoalGuard (alias skill-gg): MVP scope gate and portfolio focus; rules consolidated, v0.1 prototype CLI, Vikunja 2.7.1 local; not installed (2026-10-27) |
-| `skill-knowledge-curator` | `specialists/project/skill-knowledge-curator/` | 0.1.0-pre — Knowledge Curator (alias skill-kc): evidence-linked claims, conflict review, derived/promoted knowledge pages, archive plans; v1 kernel `kc`, 42 tests; installed 2026-10-27 |
+| Pack                      | Path                                           | Status                                                                                                                  |
+| ------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `skill-ai-it`             | `specialists/project/skill-ai-it/`             | Stable — just-only task runner; mise fully removed                                                                      |
+| `skill-smc`               | `specialists/project/skill-smc/`               | Active                                                                                                                  |
+| `skill-cambium`           | `specialists/project/skill-cambium/`           | Active — bootstrapped 2026-09-17, cross-referenced with `skill-smc`                                                     |
+| `skill-mx02-migration`    | `specialists/project/skill-mx02-migration/`    | Active                                                                                                                  |
+| `skill-coder`             | `specialists/project/skill-coder/`             | 0.1.0 — language-agnostic programming practice with per-language overrides and stdlib checkers; installed 2026-10-19,   |
+|                           |                                                |   not yet the default (global routing pending)                                                                          |
+| `skill-goal-guard`        | `specialists/project/skill-goal-guard/`        | 0.1.0-pre — GoalGuard (alias skill-gg): MVP scope gate and portfolio focus; rules consolidated, v0.1 prototype CLI,     |
+|                           |                                                |   Vikunja 2.7.1 local; not installed (2026-10-27)                                                                       |
+| `skill-knowledge-curator` | `specialists/project/skill-knowledge-curator/` | 0.1.0-pre — Knowledge Curator (alias skill-kc): evidence-linked claims, conflict review, derived/promoted knowledge     |
+|                           |                                                |   pages, archive plans; v1 kernel `kc`, 42 tests; installed 2026-10-27                                                  |
 
 ## Specialist Packs — Platform
 
-| Pack             | Path                                   | Status                                                                                                     |
-| ---------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `skill-nautobot` | `specialists/platform/skill-nautobot/` | 0.4.0 — operate, model, extend, integrate and recover Nautobot 3.2.3, with tested helpers                  |
-| `skill-openwisp` | `specialists/platform/skill-openwisp/` | 0.4.0 — configuration, monitoring, RADIUS, firmware and recovery for OpenWISP 26.09.0, with tested helpers |
-| `skill-drawio`   | `specialists/platform/skill-drawio/`   | 0.1.0 — data-first draw.io diagrams (YAML map to drawing, layout audits), file format, export and reading; installed (Claude, Codex, Hermes `diagramming`) |
+| Pack             | Path                                   | Status                                                                                                                                   |
+| ---------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `skill-nautobot` | `specialists/platform/skill-nautobot/` | 0.4.0 — operate, model, extend, integrate and recover Nautobot 3.2.3, with tested helpers                                                |
+| `skill-openwisp` | `specialists/platform/skill-openwisp/` | 0.4.0 — configuration, monitoring, RADIUS, firmware and recovery for OpenWISP 26.09.0, with tested helpers                               |
+| `skill-drawio`   | `specialists/platform/skill-drawio/`   | 0.1.0 — data-first draw.io diagrams (YAML map to drawing, layout audits), file format, export and reading; installed (Claude, Codex,     |
+|                  |                                        |   Hermes `diagramming`)                                                                                                                  |
+| `skill-proxmox`  | `specialists/platform/skill-proxmox/`  | 0.1.0 — Proxmox VE 9.x platform and OpenTofu with bpg/proxmox: access control and API tokens, storage, SDN, OVMF VMs, upgrades; tested   |
+|                  |                                        |   read-only helpers; installed (Claude, `~/.agents`) 2026-11-07                                                                          |
+| `skill-vagrant`  | `specialists/platform/skill-vagrant/`  | 0.1.0 — Vagrant with the Parallels provider on Apple silicon: box pins, Vagrantfiles, networks, linked clones and machine-id, prlctl,    |
+|                  |                                        |   lab guards, licensing; tested read-only helpers; installed (Claude, `~/.agents`, Codex, Hermes `domain`) 2026-11-07                    |
 
 ## Current Focus
 - Project specialist coverage now includes:
@@ -63,8 +69,7 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 `rag-tools`.
 
 `skill-eval-manager` defines, validates, records and reports evaluation suites over operational systems. It deliberately does not execute an eval — observations come from the consuming project's tools
-or an operator. Project entry: [skills/skill-eval-manager/README.md](skills/skill-eval-manager/README.md). AI navigation:
-[skills/skill-eval-manager/AI_NAVIGATION.md](skills/skill-eval-manager/AI_NAVIGATION.md).
+or an operator. Project entry: [skills/skill-eval-manager/README.md](skills/skill-eval-manager/README.md). AI navigation: [skills/skill-eval-manager/AI_NAVIGATION.md](skills/skill-eval-manager/AI_NAVIGATION.md).
 
 ## Governance
 - Repo-local guidance: [AGENTS.md](/Volumes/Data/_ai/_skills/skills_stuff/AGENTS.md)

@@ -77,3 +77,8 @@ YAML 1.2.2 specification, yamllint rules documentation, RFC 8259 (JSON), TOML 1.
 > reads: [tsh/tbot status, OpenWISP health (`docker exec`, 120 s), "`nbshell` guard (180 s)"]
 > ```
 
+> **Learned 2026-11-07** · taplo 0.10.0 · VERIFIED_PRIMARY · Source: smc-resiliency `.taplo.toml` (2026-11-07) · Falsifier: taplo linting
+> a TOML file outside `include`
+> `.taplo.toml` with `include = ["lab/**/*.toml"]` scopes taplo to new files; it logs INFO lines on every run, so a recipe sets
+> `RUST_LOG=warn`. A YAML value with `key: value` inside it must be quoted in a flow map (a draw.io flow step with "`retry_rejected: true`"
+> broke the render: "mapping values are not allowed here").

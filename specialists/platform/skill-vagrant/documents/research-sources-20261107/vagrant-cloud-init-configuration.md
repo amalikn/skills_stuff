@@ -1,0 +1,60 @@
+<!-- capture: verbatim third-party text, not authored here -->
+**Canonical URL**: https://developer.hashicorp.com/vagrant/docs/cloud-init/configuration
+**Retrieved**: 2026-11-07 15:52 AEDT
+**HTTP status**: fetched ok by all-scraper fetch --markdown (path: mcp-fetch(ok))
+
+---
+
+Contents of https://developer.hashicorp.com/vagrant/docs/cloud-init/configuration:
+# Vagrant Cloud-Init Configuration \| Vagrant \| HashiCorp Developer
+
+Vagrant cloud-init has several options that allow users to define a config to be
+used with cloud-init.
+
+For more detailed information about these config values and how to use cloud-init,
+please read the [official documentation for cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html).
+
+It should be noted that Vagrant will not validate the correctness of the `cloud-init`
+config provided, only that a cloud-init config has been provided through `path`
+or directly `inline` in a Vagrantfile.
+
+* [`content_type`](/vagrant/docs/cloud-init/configuration#content_type) (string) - Required argument that defines the Content-Type of the
+  given cloud\_init config. Vagrant only supports the following options for `content_type`:
+
+  + [`"text/cloud-boothook"`](/vagrant/docs/cloud-init/configuration#text-cloud-boothook)
+  + [`"text/cloud-config"`](/vagrant/docs/cloud-init/configuration#text-cloud-config)
+  + [`"text/cloud-config-archive"`](/vagrant/docs/cloud-init/configuration#text-cloud-config-archive)
+  + [`"text/jinja2"`](/vagrant/docs/cloud-init/configuration#text-jinja2)
+  + [`"text/part-handler"`](/vagrant/docs/cloud-init/configuration#text-part-handler)
+  + [`"text/upstart-job"`](/vagrant/docs/cloud-init/configuration#text-upstart-job)
+  + [`"text/x-include-once-url"`](/vagrant/docs/cloud-init/configuration#text-x-include-once-url)
+  + [`"text/x-include-url"`](/vagrant/docs/cloud-init/configuration#text-x-include-url)
+  + [`"text/x-shellscript"`](/vagrant/docs/cloud-init/configuration#text-x-shellscript)
+* [`path`](/vagrant/docs/cloud-init/configuration#path) (string) - Path to a file on the host machine that contains
+  cloud-init user data. This will be added to the multipart user-data file along
+  with its `content_type`. Incompatible with the `inline` option.
+* [`inline`](/vagrant/docs/cloud-init/configuration#inline) (string) - Inline cloud-init user data. This will be added to the
+  multipart user-data file along with its `content_type`. Incompatible with `path`
+  option.
+
+Examples of how to define these options can be found in the
+[usage documentation](/vagrant/docs/cloud-init/configuration).
+
+### cloud\_init Type
+
+When defining a config for cloud\_init, you can optionally define a `type` for the config:
+
+```
+config.vm.cloud_init :user_data, content_type: "text/cloud-config", path: "config.cfg"
+
+config.vm.cloud_init :user_data do |cloud_init|
+  cloud_init.content_type = "text/cloud-config"
+  cloud_init.path = "config.cfg"
+end
+```
+
+However, this is not a requirement. Leaving off `type` will default to `:user_data`.
+
+* [`type`](/vagrant/docs/cloud-init/configuration#type) (Symbol) - This is an optional config that defines the type of
+  cloud-init config. Currently, the only supported `type` is `:user_data`. If a type
+  is not defined, it will default to `:user_data`.

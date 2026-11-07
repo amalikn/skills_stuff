@@ -10,12 +10,15 @@ Budget: 200 lines, 25 KB
 Keep: KEEP-marked items only
 Open items tracker: this file, Open items
 Summary: Transient working state for skill-coder; durable facts move to references, sources.yaml or CHANGELOG.
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261107_1723
 ---
 
 # Scratchpad
 
 ## Open items
 
+- Older open items are tracked in [this](this).
 - KEEP design-patterns.md follow-ups (2026-10-27): (1) all twelve patterns are `reusable_candidate`: when a second project uses one, cite it and
   raise the evidence (falsifiers are in each header); (2) P-05 is CANDIDATE until ansible-wifi applies `plans/smc-change-resume-20261027_1038/
   prepare-once.patch` and its canary passes; (3) harvest patterns from other projects (operator: "all the out of the box thinking"):
@@ -30,18 +33,6 @@ Summary: Transient working state for skill-coder; durable facts move to referenc
      ("Use before writing, changing, reviewing or refactoring code in any project"; narrowed to invoke-by-name until activation, operator 2026-10-19);
   4. `/Volumes/Data/_ai/governance/categories/coding-guide.md` links skill-coder as its detailed pack (check `/Volumes/Data/_ai/governance/sync-map.yaml`). Later, separately: skill-ai-it's code checks
      call skill-coder's helpers (one source per rule).
-- Test status 2026-10-19: mechanical green (35 tests, check 391); helpers characterised on unified-network-controller and canaried on ansible-wifi (shell heredoc and `${#` bugs found and fixed with
-  regression tests); 8 of 8 sampled VERIFIED_PRIMARY claims matched their captures. Behaviour (C-S02, C-S04, C-S17; sonnet, fresh contexts, with and without the skill): all three with-skill runs
-  routed to the scenario's first reference and met every Decide point; each added pack-specific practice the baseline lacked (writer-held gate, non-admin writer, outcome read-back, moved-paths and
-  register, owning-skill check, canary then hand-over, exit-code gating). Caveat: the baseline is not clean, as subagents inherit the global CLAUDE.md and auto-memory index. One gap found and fixed:
-  `languages/ansible.md` had no tag-rename transition rule (the run contradicted itself on an alias); step 6 added.
 
-- Next actions (20261019_1812): skill-drawio built to this pack's rules (its `just self-check` runs these helpers); commit this pack's package rule, write-back
-  mechanism and python Learned entry when the operator approves; activation when the operator says so; `mise install python@3.11` then
-  `just test-matrix` to prove the floor by a run.
-- `write_gates.py` found 0 writers in skill-drawio although `render_flowmap.py --write` and `yaml_list_patch.py --apply` write files: its patterns look for
-  remote and database writes, not `write_text`. Decide whether local file writes count (a renderer's `--write` is the skill's own exception).
 - Done 2026-10-20: unified-network-controller adopted `code-map.toml` (layers, write gates, module statuses). Open: its check scans Python only; `write_gates.py`
   also flags its shell backup runner (the config-backup shell script). Baselines (`--write-baseline`) not yet adopted there.
-- Ansible and YAML: `code_size.py` measures no `.yml` files yet; decide a module limit for task files once `languages/ansible.md` has a source.
-- Shell limits (100/200) are UNVERIFIED until the Google Shell Style Guide capture is in `documents/`.

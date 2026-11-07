@@ -1,0 +1,7 @@
+# Where each `> **Learned` block of languages/shell.md goes when scripts/language_split.py splits it (first match wins).
+[topics]
+learned-format-and-lint = ["shfmt", "shellcheck", "editorconfig"]
+learned-processes-and-timeouts = ["timeout", "setpgid", "pgrep", "pkill", "background", "setsid", "process group", "kill"]
+learned-remote = ["ssh", "prlctl", "vagrant", "tsh", "scp"]
+learned-safety = ["guard", "refuse", "--apply", "rm ", "running job"]
+learned-quoting = ["quote", "printf %q", "heredoc", "word split"]

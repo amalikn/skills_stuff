@@ -18,3 +18,5 @@ Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by
 - [changelog-20261105_1156.md](changelog-20261105_1156.md) 1 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
 - [changelog-20261105_2139.md](changelog-20261105_2139.md) 1 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
 - [changelog-20261106_1030.md](changelog-20261106_1030.md) 1 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
+- [changelog-20261107_1723.md](changelog-20261107_1723.md) 1 entries from `CHANGELOG.md`, 2026-10-28 to 2026-10-28.
+- [changelog-20261107_1732.md](changelog-20261107_1732.md) 1 entries from `CHANGELOG.md`, 2026-10-28 to 2026-10-28.

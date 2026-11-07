@@ -1323,6 +1323,35 @@ for key in sorted(set(active) - set(alarms)):
     record = active.pop(key)              # a good read says it is gone: clear and notify
 ```
 
+### P-61 One test logic for every target: a contract, adapters, and a profile chosen by what the box reports
+
+> **Learned 2026-11-07** · design pattern, Python · VERIFIED_PRIMARY (the same eight end-to-end cases passed on an arm64 Vagrant VM and an
+> x86 Proxmox VM through different adapters; a read-only probe picked each VM's profile from DMI) · Source: apn smc-resiliency `lab/`
+> (protocol.py, registry.py, adapters/, logic/; 2026-11-07), after unified-network-controller `adapters/protocol.py` and `registry.py` ·
+> Falsifier: a new platform that needs a change in the logic, not only a new adapter or profile. `reusable_candidate` until a second project uses it.
+
+- **Problem:** a test rig grows one script per platform (a Vagrant driver, a Proxmox driver, a bench-box driver), each repeating the cases;
+  a new hardware model or vendor means copying a script, and physical boxes get no tests at all.
+- **Solution:** a contract module (`Target`, `Profile`, a `Transport` with run and put, a `Power` with reboot and reset); one adapter class
+  per way in (vagrant, ssh, teleport) and per way to restart (guest, hypervisor API, manual for a bench box); a data file of targets and
+  hardware profiles; the logic (cases, a hardware probe) speaks only the contract. A profile is picked by what the box itself reports (DMI
+  vendor and product, or the device-tree model), most specific rule winning, and an unknown model gets "none: qualify it", never a guess.
+- **Why it works:** the cases are the asset and never change per platform; a new model is a data entry, a new access path one class; the
+  probe that checks a lab VM is the same read that qualifies a new physical model.
+- **Reuse elsewhere:** any fleet with several device generations (routers, kiosks, edge boxes); a non-Linux platform (RouterOS) is one more
+  transport and its own probe facts.
+- **Pitfalls:** a hypervisor's disk can look like a physical kind (Parallels shows an ATA SSD), so classify by the DMI vendor first; keep
+  set-up scripts (install, provision) as payloads the logic copies and runs, so they are not standalone tools beside the package.
+
+```python
+# lab/registry.py: profile by what the box reports, the most specific match wins
+best, best_n = None, 0
+for name, p in doc.get("profiles", {}).items():
+  rule = p.get("match", {})
+  if rule and all(str(reported.get(k, "")).strip().lower().startswith(str(v).lower()) for k, v in rule.items()) and len(rule) > best_n:
+    best, best_n = name, len(rule)
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

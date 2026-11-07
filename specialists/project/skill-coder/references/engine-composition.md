@@ -188,3 +188,12 @@ ignorant gets a framework and still has the per-change scripts, now hidden insid
 > **Learned 2026-11-02** · engine design, any language · VERIFIED_PRIMARY · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change` e2f760e, arc42 section 8 (docs.arc42.org/section-8), Fowler "Writing Software Patterns" · Falsifier: a project that reuses the engine's parts and finds the seam table does not describe how they fit
 > A pattern catalogue records pieces and loses how they interlock. A system built from many languages is captured as: a who-does-what table, a seam table with the check for each seam, a walk of one
 > run, and links to the patterns for each piece. Fowler's advice holds: why as well as how, a name worth keeping, and code examples that show rather than define.
+
+> **Learned 2026-11-07** · language per environment on a device · VERIFIED_PRIMARY (spike: initramfs hooks in POSIX sh, the on-box agent in
+> Python, boot entries as config) / proposal (the compiled watcher) · Source: apn smc-resiliency `.archcore/rules/language-per-environment.rule.md`
+> · Falsifier: an initramfs or firmware stage that runs the after-boot language
+> On a device the stages pick the language, not the author: firmware and boot loader take config only; the initramfs takes POSIX sh (no
+> Python, no libraries); early boot is systemd units; after boot the agent is Python with the standard library; a short sh does the risky
+> write; a watcher that must act when memory is exhausted is a case for a small static compiled binary (Go or Rust) that locks itself in
+> memory, since an interpreter that pages in or forks can stall under the pressure it watches (a 30 s shell poll missed a filling RAM
+> copy-on-write; 5 s plus a rate projection caught it).

@@ -170,6 +170,18 @@ main "$$@"
 ''')
 
 
+def two_space(text: str) -> str:
+    """Re-indent a four-space template to the pack's two-space rule (operator, 2026-10-23), leading spaces only.
+
+    Args:
+        text: generated Python.
+
+    Returns:
+        The same code with each leading run of spaces halved.
+    """
+    return re.sub(r"(?m)^( +)", lambda m: " " * (len(m.group(1)) // 2), text)
+
+
 def python_files(name: str, summary: str, writes: bool, run: str) -> dict[str, str]:
     """The Python module and its test.
 
@@ -188,7 +200,7 @@ def python_files(name: str, summary: str, writes: bool, run: str) -> dict[str, s
         apply_func=PY_APPLY_FUNC if writes else "",
         apply_arg='    ap.add_argument("--apply", action="store_true", help="make the changes; without it, print the plan")\n' if writes else "",
         apply_call="    if args.apply:\n        print(f\"changed {apply(lines)}\")\n" if writes else "")
-    return {f"{name}.py": module, f"test_{name}.py": PY_TEST.substitute(name=name)}
+    return {f"{name}.py": two_space(module), f"test_{name}.py": two_space(PY_TEST.substitute(name=name))}
 
 
 def shell_files(name: str, summary: str, writes: bool, run: str) -> dict[str, str]:

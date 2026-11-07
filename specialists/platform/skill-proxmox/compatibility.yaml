@@ -1,0 +1,51 @@
+# Environments this skill was verified against: product, version, components and when observed.
+environments:
+  - id: pve-docs-9-current-20261107
+    product: Proxmox VE documentation
+    product_version: "9.x (current docs, fetched 2026-11-07)"
+    components: [admin guide chapters, man pages, wiki, release notes 9.0 to 9.2]
+    observed_at: "2026-11-07"
+    evidence_locator: "documents/research-sources-20261107: pve.proxmox.com pve-docs chapters, man pages and wiki pages captured verbatim"
+    validation_layer: official_documented
+    result: pass
+  - id: pve-9-1-5-lab-20261107
+    product: Proxmox VE
+    product_version: 9.1.5
+    components: [pve-manager 9.1.5, proxmox-ve 9.1.0, kernel 6.17.9-1-pve, pve-qemu-kvm 10.1 (the -6 build), pve-edk2-firmware 4.2025.05-2, libpve-storage-perl 9.1.0]
+    observed_at: "2026-11-07"
+    evidence_locator: "Single lab node, read-only over SSH: pveversion -v, pvesh GETs (version, storage, acl, users, roles, sdn, apt/update, tasks), qm config; host withheld"
+    validation_layer: observed_install
+    result: pass
+  - id: pve-9-1-5-lab-token-api-20261107
+    product: Proxmox VE API with a privilege-separated token
+    product_version: 9.1.5
+    components: [qmcreate, resize, qmstart, import_from, efidisk, SDN.Use on localnetwork and a simple zone]
+    observed_at: "2026-11-07"
+    evidence_locator: "Lab node task log for the lab VM: qmcreate, resize and qmstart by the pool-scoped token; config read back with qm config"
+    validation_layer: api_accepted
+    result: pass
+    test_id: P-S01
+  - id: bpg-proxmox-0-120-0
+    product: bpg/proxmox provider documentation
+    product_version: 0.120.0
+    components: [provider auth, ssh block, vm resource, download_file, CHANGELOG 0.111 to 0.120]
+    observed_at: "2026-11-07"
+    evidence_locator: "documents/research-sources-20261107: GitHub main docs and CHANGELOG; latest release v0.120.0 (2026-11-02); context7 /bpg/terraform-provider-proxmox"
+    validation_layer: official_documented
+    result: pass
+  - id: smc-resiliency-x86-lab-20261107
+    product: smc-resiliency x86 lab (worked example)
+    product_version: "spike/x86 uncommitted on 2026-11-07"
+    components: [pve_lab_setup.sh, x86_lab.sh, tofu/*.tf, .terraform.lock.hcl]
+    observed_at: "2026-11-07"
+    evidence_locator: "smc-resiliency spike/x86 read 2026-11-07 (re-read after the zone ACL and MAC changes); a project implementation, not generic product behaviour"
+    validation_layer: implementation_inspected
+    result: pass
+  - id: edk2-master-20261107
+    product: edk2 OVMF source
+    product_version: "master, captured 2026-11-07"
+    components: [BdsEntry.c, QemuBootOrderLib.c, BdsPlatform.c]
+    observed_at: "2026-11-07"
+    evidence_locator: "documents/research-sources-20261107 edk2-*.c.txt; Proxmox's packaged OVMF not diffed against master"
+    validation_layer: official_documented
+    result: pass

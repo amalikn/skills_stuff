@@ -1,0 +1,82 @@
+Contents of https://opentofu.org/docs/language/settings/backends/local/:
+# Backend Type: local \| OpenTofu
+
+**Kind: Enhanced**
+
+The local backend stores state on the local filesystem, locks that
+state using system APIs, and performs operations locally.
+
+Code Block
+
+```
+terraform {  
+  backend "local" {  
+    path = "relative/path/to/terraform.tfstate"  
+  }  
+}
+```
+
+Code Block
+
+```
+data "terraform_remote_state" "foo" {  
+  backend = "local"  
+  
+  config = {  
+    path = "${path.module}/../../terraform.tfstate"  
+  }  
+}
+```
+
+The following configuration options are supported:
+
+* `path` - (Optional) The path to the `tfstate` file. This defaults to
+  "terraform.tfstate" relative to the root module by default.
+* `workspace_dir` - (Optional) The path to non-default workspaces.
+
+For configurations that include a `backend "local"` block or that default to
+the local backend by not specifying a backend at all, most commands that either
+read or write state snapshots from the backend accept the following
+additional arguments:
+
+* `-state=FILENAME` - overrides the state filename when *reading* the prior
+  state snapshot.
+* `-state-out=FILENAME` - overrides the state filename when *writing* new state
+  snapshots.
+
+  If you use `-state` without also using `-state-out` then OpenTofu will
+  use the `-state` filename for both `-state` and `-state-out`, which means
+  OpenTofu will overwrite the input file if it creates a new state snapshot.
+* `-backup=FILENAME` - overrides the default filename that the local backend
+  would normally choose dynamically to create backup files when it writes new
+  state.
+
+  If you use `-state` without also using `-backup` then OpenTofu will use
+  the `-state` filename as a filename prefix for generating a backup filename.
+  You can use `-backup=-` (that is, set the filename to just the ASCII
+  dash character) to disable the creation of backup files altogether.
+
+These three options are preserved for backward-compatibility with earlier
+workflows that predated the introduction of built-in remote state, where
+users would write wrapper scripts that fetch prior state before running
+OpenTofu and then save the new state after OpenTofu exits, in which case
+the three arguments would typically all be paths within a temporary
+directory used just for one operation.
+
+Because these old workflows predate the introduction of the possibility of
+[multiple workspaces](/docs/language/state/workspaces/), setting them
+overrides OpenTofu's usual behavior of selecting a different state filename
+based on the selected workspace. If you use all three of these options then
+the selected workspace has no effect on which filenames OpenTofu will select
+for state files, and so you'll need to select different filenames yourself if
+you wish to keep workspace state files distinct from one another.
+
+These three options have no effect for configurations that have a different
+backend type selected.
+
+We do not recommend using these options in new systems, even if you are running
+OpenTofu in automation. Instead,
+[select a different backend which supports remote state](/docs/language/settings/backends/configuration/) and configure it
+within your root module, which ensures that everyone working on your
+configuration will automatically retrieve and store state in the correct shared
+location without any special command line options.

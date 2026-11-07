@@ -1,0 +1,8 @@
+bug_id,"product","component","assigned_to","bug_status","resolution","short_desc","changeddate"
+6519,"pve","Qemu","bugs","NEW"," ---","document and/or provide tool for how to migrate away from legacy EFI images","2025-08-21 23:33:45"
+2599,"pve","Qemu","d.csapak","ASSIGNED"," ---","OVMF Cold boot screen resolution not applied","2020-05-27 15:41:20"
+3227,"pve","Storage","f.gruenbichler","ASSIGNED"," ---","Can't move (EFI) disk of running VM when size is not aligned to target storage's granularity","2026-02-23 21:39:01"
+6608,"pve","Qemu","d.kral","PATCH AVAILABLE"," ---","Passthrough broken Failed to set vIOMMU: aw-bits 48 > host aw-bits 39","2026-05-26 19:13:53"
+7291,"pve","Kernel","bugs","MORE INFO NEEDED"," ---","unable to boot VM after 6.8.12-18-pve kernel upgrade","2026-02-16 10:16:12"
+7341,"pve","Qemu","bugs","MORE INFO NEEDED"," ---","EFI disk is lost in the .conf file during cloning or migrating","2026-02-24 22:53:42"
+4774,"pve","Qemu","bugs","UNDECIDED"," ---","Enrol custom secure boot keys in efidisk","2024-11-21 10:56:09"

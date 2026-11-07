@@ -1,0 +1,288 @@
+# Claims this skill makes, each with its kind, evidence status, lifecycle and source. Captures live in documents/research-sources-20261107.
+claims:
+  - id: V-C01
+    statement: "Without box_version Vagrant uses the latest box version satisfying '>= 0', so an unpinned box moves to newer images on recreation."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-docs-2-4-9]
+    environment_id: vagrant-docs-2-4-9
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vagrant-machine-settings.md (config.vm.box_version); research-sources-20261107/vagrant-box-versioning.md (constraints, ~>)."
+    reference: references/boxes-and-pinning.md
+    test: V-S01
+  - id: V-C02
+    statement: "config.vm.box_architecture defaults to :auto, which fetches the host architecture's box."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-docs-2-4-9]
+    environment_id: vagrant-docs-2-4-9
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vagrant-machine-settings.md (config.vm.box_architecture)."
+    reference: references/boxes-and-pinning.md
+    test: V-S01
+  - id: V-C03
+    statement: "HCP Vagrant stopped new box creation on 2026-10-01, ends support on 2026-11-02 and ends operations on 2026-12-31, while the Vagrant CLI remains available."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [hashicorp-licensing-2026-11]
+    environment_id: hashicorp-licensing-2026-11
+    source_type: official_documentation
+    evidence: "research-sources-20261107/hcp-vagrant-eol.md; banner also on research-sources-20261107/vagrant-hcp-box-registry.md."
+    reference: references/boxes-and-pinning.md
+    test: V-S13
+  - id: V-C04
+    statement: "vagrant box repackage NAME PROVIDER VERSION writes an installed box to the current directory for redistribution."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-docs-2-4-9]
+    environment_id: vagrant-docs-2-4-9
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vagrant-cli-box.md (box repackage)."
+    reference: references/boxes-and-pinning.md
+    test: V-S13
+  - id: V-C05
+    statement: "Since vagrant-parallels 2.0.0 a new machine is a linked clone of the box image, and deleting the box breaks its linked clones."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-parallels-docs]
+    environment_id: vagrant-parallels-docs
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vp-configuration.md (Full Clone vs Linked Clone); research-sources-20261107/vp-changelog-github.md (2.0.0 breaking change)."
+    reference: references/clones-snapshots-and-identity.md
+    test: V-S02
+  - id: V-C06
+    statement: "vagrant-parallels customize runs at pre-boot by default, so it repeats on every boot; post-import runs once after cloning."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-parallels-docs]
+    environment_id: vagrant-parallels-docs
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vp-configuration.md (Customization with prlctl, supported events)."
+    reference: references/vagrantfile-and-provisioning.md
+    test: V-S05
+  - id: V-C07
+    statement: "Provisioners run outside in, and run 'always' or 'never' changes when they run."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-docs-2-4-9]
+    environment_id: vagrant-docs-2-4-9
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vagrant-provisioning-basic.md."
+    reference: references/vagrantfile-and-provisioning.md
+    test: V-S05
+  - id: V-C08
+    statement: "The Parallels provider puts adapter 0 on Shared networking and maps private_network to Host-Only and public_network to Bridged."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-parallels-docs]
+    environment_id: vagrant-parallels-docs
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vp-networking.md, vp-private-network.md, vp-public-network.md."
+    reference: references/networking-and-synced-folders.md
+    test: V-S06
+  - id: V-C09
+    statement: "auto_config false makes Vagrant create a private network adapter without configuring it in the guest."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-docs-2-4-9]
+    environment_id: vagrant-docs-2-4-9
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vagrant-private-network.md (Disable Auto-Configuration)."
+    reference: references/networking-and-synced-folders.md
+    test: V-S06
+  - id: V-C10
+    statement: "systemd-networkd's default DHCP DUID is derived from /etc/machine-id, so VMs sharing a machine-id share a DHCP identity whatever their MACs."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-parallels-docs]
+    environment_id: vagrant-parallels-docs
+    source_type: official_documentation
+    evidence: "research-sources-20261107/networkd-conf-man.md (DUIDType=vendor default); research-sources-20261107/systemd-network-man.md (ClientIdentifier=duid); seen in research-sources-20261107/vp-issue-441.md and vp-issue-1562.md."
+    reference: references/clones-snapshots-and-identity.md
+    test: V-S02
+  - id: V-C11
+    statement: "Several bento Ubuntu box versions shipped a fixed machine-id, giving every VM from them one DHCP lease."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-parallels-docs]
+    environment_id: vagrant-parallels-docs
+    source_type: vendor_issue_tracker
+    evidence: "research-sources-20261107/vp-issue-1421.md, vp-issue-1473.md, vp-issue-1562.md (chef/bento issues); research-sources-20261107/vp-issue-441.md (vagrant-parallels)."
+    reference: references/boxes-and-pinning.md
+    test: V-S01
+  - id: V-C12
+    statement: "A prlctl linked clone of a lab VM kept the source's machine-id, took its DHCP address on the shared network, and vagrant ssh to the source reached the clone."
+    kind: worked_example
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "smc-resiliency docs/pi/pi-spike-s3-delivery-20261106_1044.md (Linked clone collision) and AGENTS.md Working rules (2026-11-06)."
+    reference: references/clones-snapshots-and-identity.md
+    test: V-S02
+  - id: V-C13
+    statement: "prlctl exec runs a command in the guest through Parallels Tools with bash -c on Linux, and prlctl capture writes the screen to a PNG."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [parallels-cli-reference-20]
+    environment_id: parallels-cli-reference-20
+    source_type: official_documentation
+    evidence: "research-sources-20261107/parallels-desktop-v20-command-line-reference.pdf pp.19 and 21."
+    reference: references/parallels-prlctl.md
+    test: V-S04
+  - id: V-C14
+    statement: "After a reset prlctl exec fails with 'Unable to open new session' or 'PrlJob_GetResult: Invalid argument' until Parallels Tools run again, and it hangs on a wedged guest."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Operator lab learnings 2026-11-07 relayed in the skill-vagrant brief; not in the CLI reference."
+    reference: references/parallels-prlctl.md
+    test: V-S04
+  - id: V-C15
+    statement: "prlctl reset is a hard shutdown then start, restart is graceful, and stop uses Parallels Tools or ACPI unless --kill is given."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [parallels-cli-reference-20]
+    environment_id: parallels-cli-reference-20
+    source_type: official_documentation
+    evidence: "research-sources-20261107/parallels-desktop-v20-command-line-reference.pdf p.20."
+    reference: references/operations-cookbook.md
+    test: V-S09
+  - id: V-C16
+    statement: "The Parallels CLI and the vagrant-parallels provider need the Pro, Business or Enterprise edition; Enterprise was accepted from vagrant-parallels 2.4.3."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-parallels-docs]
+    environment_id: vagrant-parallels-docs
+    source_type: official_documentation
+    evidence: "research-sources-20261107/parallels-cli-utility.md; research-sources-20261107/vp-installation.md; research-sources-20261107/vp-issue-485.md; research-sources-20261107/vp-changelog-github.md (2.4.3)."
+    reference: references/licensing-and-editions.md
+    test: V-S08
+  - id: V-C17
+    statement: "Vagrant up to 2.3.7 is MIT, 2.4.0 to 2.4.9 are BUSL 1.1, and main returned to MIT on 2026-11-02 without a release yet."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [hashicorp-licensing-2026-11]
+    environment_id: hashicorp-licensing-2026-11
+    source_type: official_documentation
+    evidence: "research-sources-20261107/vagrant-license-v2.3.7-github.md, vagrant-license-v2.4.9-github.md, vagrant-license-revert-commit-github.md, vagrant-license-github.md."
+    reference: references/licensing-and-editions.md
+    test: V-S08
+  - id: V-C18
+    statement: "Under HashiCorp's BSL all non-production use and all production use other than hosting or embedding to compete with HashiCorp's paid version are permitted."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [hashicorp-licensing-2026-11]
+    environment_id: hashicorp-licensing-2026-11
+    source_type: official_documentation
+    evidence: "research-sources-20261107/hashicorp-license-faq.md FAQ 8 (last updated 2023-10-17)."
+    reference: references/licensing-and-editions.md
+    test: V-S08
+  - id: V-C19
+    statement: "OpenTofu's registry lists the community bmatcuk/vagrant provider (drives a Vagrantfile) and the Parallels-maintained parallels/parallels-desktop provider v0.7.6."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [registries-2026-11-07]
+    environment_id: registries-2026-11-07
+    source_type: official_documentation
+    evidence: "research-sources-20261107/opentofu-search-vagrant.md, opentofu-search-parallels.md, opentofu-parallels-desktop.md, tf-vagrant-provider-readme.md."
+    reference: references/tool-choice-and-lab-symmetry.md
+    test: V-S07
+  - id: V-C20
+    statement: "Keep Vagrant for local VMs and OpenTofu for Proxmox, and keep the two labs comparable by one apt snapshot date rather than matching base images."
+    kind: tested_pattern
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Operator 2026-11-07 (skill-vagrant brief)."
+    reference: references/tool-choice-and-lab-symmetry.md
+    test: V-S07
+  - id: V-C21
+    statement: "The Ubuntu snapshot service serves the archive at any UTC time after 2023-03-01 and apt on 24.04 takes --snapshot or a deb822 Snapshot line without other setup."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [registries-2026-11-07]
+    environment_id: registries-2026-11-07
+    source_type: official_documentation
+    evidence: "research-sources-20261107/ubuntu-snapshot-docs.md; research-sources-20261107/ubuntu-snapshot-service.md."
+    reference: references/tool-choice-and-lab-symmetry.md
+    test: V-S07
+  - id: V-C22
+    statement: "A lab driver refuses the wrong VM by testing an in-guest marker in the same remote command and exiting with a distinct code."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [smc-resiliency-lab-inspected]
+    environment_id: smc-resiliency-lab-inspected
+    source_type: implementation
+    evidence: "smc-resiliency spike/to_vm.sh @ 4e436e8d (on_vm, /boot/smc-ramcow-installed, exit 97)."
+    reference: references/lab-safety-and-guards.md
+    test: V-S03
+  - id: V-C23
+    statement: "A project keeps a byte-identical copy of its canonical lab Vagrantfile and a check that fails on a missing or different copy."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [smc-resiliency-lab-inspected]
+    environment_id: smc-resiliency-lab-inspected
+    source_type: implementation
+    evidence: "smc-resiliency scripts/govcheck/checks/paths.py @ a124c13a (check_vagrant_copies); operator rule 2026-10-21 in apn/AGENTS.md."
+    reference: references/lab-safety-and-guards.md
+    test: V-S11
+  - id: V-C24
+    statement: "vagrant-parallels 2.4.4 mounts shared folders with prl_fsd when present, fixing 'prl_fs not available' after Parallels Desktop 20.2."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [vagrant-parallels-docs]
+    environment_id: vagrant-parallels-docs
+    source_type: vendor_issue_tracker
+    evidence: "research-sources-20261107/vp-issue-483.md; research-sources-20261107/vp-changelog-github.md (2.4.4)."
+    reference: references/upgrade-and-troubleshooting.md
+    test: V-S10
+  - id: V-C25
+    statement: "The observed lab Mac runs Vagrant 2.4.9, vagrant-parallels 2.4.9 and prlctl 27.1.0 with a pro edition licence, and bento/ubuntu-24.04 202510.26.0 boots Ubuntu 24.04.3 with kernel 6.8.0-86."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [lab-mac-2026-11-07]
+    environment_id: lab-mac-2026-11-07
+    source_type: observed_install
+    evidence: "Read-only version commands on 2026-11-07; guest release and kernel USER_STATED in the brief."
+    reference: references/operations-cookbook.md
+    test: V-S09
+  - id: V-C26
+    statement: "Every write-back carries a dated Learned entry in the focused reference and a CHANGELOG line naming that file and date."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Operator write-back contract shared with skill-nautobot (2026-10-05, evidence rule 2026-10-20)."
+    reference: references/evolution-and-write-back.md
+    test: V-S12

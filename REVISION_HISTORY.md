@@ -7,21 +7,32 @@ Change log for the `skills_stuff` parent repository.
 - Submodules must contain their own `REVISION_HISTORY.md`.
 - Pushes should use controlled workflows so rollback points are explicit.
 
+## 2026-11-07
+- Added the platform specialist `skill-proxmox` 0.1.0 under `specialists/platform/` (operator: "create and setup skill-proxmox like skill-nautobot"): sixteen references, claim and environment ledgers,
+  sixteen scenarios, offline package contract, three stdlib-only read-only helpers with tests, 51 verbatim source captures, the skill-ai-it governance layer; symlinked into `~/.claude/skills` and
+  `~/.agents/skills` as skill-nautobot is.
+- Added the platform specialist `skill-vagrant` 0.1.0 under `specialists/platform/` (operator: "create skill-proxmox and skill-vagrant based on the learnings"; "do online research to add more
+  knowledge"): eleven references, claims V-C01 to V-C26, scenarios V-S01 to V-S14, offline package contract, three stdlib-only read-only helpers (lab inventory, Vagrantfile lint, copy check) with
+  tests, 95 verbatim source captures, the skill-ai-it governance layer; symlinked into `~/.claude/skills`, `~/.agents/skills`, `~/.codex/skills` and `~/.hermes/skills/domain`.
+
 ## 2026-10-23
-- Fix skill-commtracker `toc.py`: the Contents now lists all four entry types (Email, Teams, Call, Meeting) in file order, where Meeting and Call entries were silently dropped; a blank
-  line is kept before `---`; anchors keep double hyphens for ` + ` and ` — ` and suffix repeated slugs; the block also ends at the next heading so a missing `---` cannot swallow the file.
-  `--update` now refuses (exit 2) a Contents with fewer entries unless `--allow-shrink`. Five offline tests in `tests/test_toc.py` fail on the old code and pass (11 of 11 in the pack);
-  a 16-entry tracker copy regenerates byte-identical to its hand-fixed Contents with every anchor resolving, in 0.04 s.
-- skill-commtracker SKILL.md: Teams chats with several turns are one block per turn (no `---` between turns, no blank line after the label, lines
-  joined by `\` hard breaks), the format the operator asked for on 2026-10-23 ("a lot of extra gap").
+- Fix skill-commtracker `toc.py`: the Contents now lists all four entry types (Email, Teams, Call, Meeting) in file order, where Meeting and Call entries were silently dropped; a blank line is kept
+  before `---`; anchors keep double hyphens for ` + ` and ` — ` and suffix repeated slugs; the block also ends at the next heading so a missing `---` cannot swallow the file. `--update` now refuses
+  (exit 2) a Contents with fewer entries unless `--allow-shrink`. Five offline tests in `tests/test_toc.py` fail on the old code and pass (11 of 11 in the pack); a 16-entry tracker copy regenerates
+  byte-identical to its hand-fixed Contents with every anchor resolving, in 0.04 s.
+- skill-commtracker SKILL.md: Teams chats with several turns are one block per turn (no `---` between turns, no blank line after the label, lines joined by `\` hard breaks), the format the operator
+  asked for on 2026-10-23 ("a lot of extra gap").
 
 ## 2026-10-16
-- Extend skill-slurp-chat's existing helper for explicit Codex rollout JSONL: preserve repeated user turns, ignore mirrored messages, inventory tool names without arguments, and retain
-  compaction/time filters. Five offline tests pass; the real UNC rollout smoke matches 36 messages, 388 tool envelopes and three compactions in 0.103 s against a ten-second budget.
+- Extend skill-slurp-chat's existing helper for explicit Codex rollout JSONL: preserve repeated user turns, ignore mirrored messages, inventory tool names without arguments, and retain compaction/time
+  filters. Five offline tests pass; the real UNC rollout smoke matches 36 messages, 388 tool envelopes and three compactions in 0.103 s against a ten-second budget.
 
 ## 2026-10-05
-- Released `skill-nautobot` and `skill-openwisp` 0.4.0 after an independent assessment: eight new verified references (app development, data model, integrations, recovery; configuration management, connections and firmware, RADIUS, deployment and recovery), Orient sections, tested stdlib-only helpers in `scripts/`, and measured fleet lessons from the UNC capture corpus. `skill-cambium` 0.6.29 and `skill-smc` 0.1.82 record the corpus's device facts.
-- Released `skill-nautobot` and `skill-openwisp` 0.3.0: version-matched operations cookbooks with summary tables, a standing write-back contract enforced by the contract test, promoted OpenWISP evidence, new trap scenarios and a paired fresh-context evaluation (4 of 4 pass with the skill, controls partial).
+- Released `skill-nautobot` and `skill-openwisp` 0.4.0 after an independent assessment: eight new verified references (app development, data model, integrations, recovery; configuration management,
+  connections and firmware, RADIUS, deployment and recovery), Orient sections, tested stdlib-only helpers in `scripts/`, and measured fleet lessons from the UNC capture corpus. `skill-cambium` 0.6.29
+  and `skill-smc` 0.1.82 record the corpus's device facts.
+- Released `skill-nautobot` and `skill-openwisp` 0.3.0: version-matched operations cookbooks with summary tables, a standing write-back contract enforced by the contract test, promoted OpenWISP
+  evidence, new trap scenarios and a paired fresh-context evaluation (4 of 4 pass with the skill, controls partial).
 - `skill-cambium` 0.6.28 and `skill-smc` 0.1.81 route platform questions to the two platform packs.
 
 ## 2026-10-01
@@ -45,13 +56,15 @@ Change log for the `skills_stuff` parent repository.
 ## 2026-03-29
 - Added top-level repository documentation for the expanded specialist and export layout.
 - Added repo-local governance index material under `governance/`.
-- Added new canonical project specialists and matching Codex export adapters for generator tracing, impact assessment, repo governance, repo knowledge capture, repo local guidance, and safe change validation.
+- Added new canonical project specialists and matching Codex export adapters for generator tracing, impact assessment, repo governance, repo knowledge capture, repo local guidance, and safe change
+  validation.
 | 2026-03-28T23:48:26.796690+00:00 | main | origin | `f1c31bf70930` | skills_stuff: publish new project specialists and codex exports |
 | 2026-03-28T23:56:10.309731+00:00 | main | origin | `7447d4bbe01e` | docs(revision): record published skills_stuff checkpoint |
 | 2026-03-29T00:12:51.388575+00:00 | main | origin | `d96f9ac7f92b` | skills_stuff: record follow-up parent publish checkpoint |
 
 ## 2026-05-24
-- Created `skills/skill-project-wiki-rag-bridge/` — reusable multi-project bridge skill (48 files): SKILL.md, README, CHANGELOG, 14 templates, 10 numbered prompts, 4 schemas, 6 checklists, 7 docs, 2 example projects (Vocus + generic). Governs wiki setup → domain creation → RAG tools validation → project bridge → policy validation → indexing → retrieval validation → troubleshooting.
+- Created `skills/skill-project-wiki-rag-bridge/` — reusable multi-project bridge skill (48 files): SKILL.md, README, CHANGELOG, 14 templates, 10 numbered prompts, 4 schemas, 6 checklists, 7 docs, 2
+  example projects (Vocus + generic). Governs wiki setup → domain creation → RAG tools validation → project bridge → policy validation → indexing → retrieval validation → troubleshooting.
 - Updated `README.md` to add "Reusable Skills — skills/" section with table entry for `skill-project-wiki-rag-bridge`.
 - Updated `AGENTS.md` Regular Skills table to register `skill-project-wiki-rag-bridge` and `skill-slurp-chat`.
 - Created `_wiki/CLAUDE.md` governance wrapper (thin `@AGENTS.md` import, fixes missing entrypoint for wiki vault).

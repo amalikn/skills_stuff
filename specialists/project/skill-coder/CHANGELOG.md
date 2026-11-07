@@ -9,13 +9,18 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261106_1030
+Last rotated: 20261107_1732
 ---
 
 # Changelog
 
 ## Unreleased
 
+- scripts/scaffold.py: Python skeletons now two-space (they printed four, against the pack's own rule; found by skill-vagrant's build agent, 2026-11-07); tests/test_language_split.py (new)
+- scripts/language_split.py (new), languages/readme.md (When a language file splits): ansible.md and shell.md split into ansible/ and shell/ topic files (operator, 2026-11-07); `just check` holds every language file to 200 lines
+- languages/hcl.md (new, Learned 2026-11-07), languages/python.md, shell.md, yaml-json-toml.md: Learned 2026-11-07 from smc-resiliency's lab package and linters
+- references/design-patterns.md: Learned 2026-11-07, logic over adapters for a test rig, profile chosen by what the box reports
+- references/engine-composition.md: Learned 2026-11-07, the language per boot environment
 - references/testing.md: Learned 2026-11-06 (b), a timed case counts only with its setup read back and its fault overlapping the work (smc-resiliency s3_case.sh)
 - languages/shell.md: Learned 2026-11-06, editing a script a running job executes; prlctl exec has no shell; refuse an empty derived argument
 - languages/ansible.md: Learned 2026-11-06 (l), extra vars with spaces go as JSON; the interpreter pin is per OS
@@ -188,17 +193,3 @@ references/safety-and-writes.md: pin a copy from the commit when a deploy needs 
 
 `references/safety-and-writes.md`: Learned 2026-10-28 "freeing a lock another process holds": decide by the locks the holder has (end a refresh,
 never a writer), never delete lock files, owner by device and inode. From the ansible-wifi apt lock guard (plans/apt-lock-guard-20261028_2055).
-
-## 20261028_1942 — cpuprofile_summary helper
-
-Added `scripts/cpuprofile_summary.py` (recipe `just cpuprofile-summary`, tests `tests/test_cpuprofile_summary.py`): reads V8 .cpuprofile files and
-prints self time per extension, the hottest functions and the hottest stacks of the busiest (or `--ext`) extension. Read-only, stdlib only. Promoted
-from the ansible-wifi session of 2026-10-28, where VS Code's Git view went stale because Foam pinned the extension host; the summary traced it to
-Foam's orphans/placeholders refresh. Pre-existing, not from this change: `test_write_back_entries_logged` fails on a 2026-10-27 entry.
-
-## 20261028_1311 — process_match.py: unanchored pgrep/pkill -f patterns become a check
-
-- `scripts/process_match.py` (new): reports `pgrep -f` / `pkill -f` literal patterns not anchored with `^` in shell, YAML, Python and Jinja;
-  comments and run-time patterns skipped. Tests in `tests/test_quality_helpers.py`; recipe `just process-match`; catalogued; `[process_match]` code-map section.
-- `references/safety-and-writes.md` Learned 2026-10-28: anchor process patterns at the program and check them (four self-matches in ansible-wifi smc_change).
-- `SKILL.md`: standing rule for anchored process patterns; tools table row.

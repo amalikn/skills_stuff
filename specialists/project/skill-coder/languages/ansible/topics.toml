@@ -1,0 +1,7 @@
+# Where each `> **Learned` block of languages/ansible.md goes when scripts/language_split.py splits it (first match wins).
+[topics]
+learned-templating = ["jinja", "template", "set_fact", "filter", "templating"]
+learned-execution = ["serial", "strategy", "batch", "run_once", "include_tasks", "import_tasks", "handler", "loop"]
+learned-connections = ["ssh", "teleport", "tsh", "connection", "become", "interpreter"]
+learned-lint-and-tests = ["ansible-lint", "lint", "test playbook", "check mode", "--check", "--syntax"]
+learned-tooling = ["hook", "stdin", "extra vars", "refactor", "inventory", "tag"]

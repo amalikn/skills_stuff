@@ -1,0 +1,38 @@
+Verbatim excerpt read 2026-11-07 (read-only, sed -n 728,760p) from /usr/share/perl5/PVE/API2/Storage/Status.pm on a Proxmox VE 9.1.5 lab node,
+package libpve-storage-perl 9.1.0; plus grep of PVE/AccessControl.pm for Sys.AccessNetwork. Host name and address withheld.
+
+    },
+});
+
+__PACKAGE__->register_method({
+    name => 'download_url',
+    path => '{storage}/download-url',
+    method => 'POST',
+    description => "Download templates, ISO images, OVAs and VM images by using an URL.",
+    proxyto => 'node',
+    permissions => {
+        description =>
+            'Requires allocation access on the storage and as this allows one to probe'
+            . ' the (local!) host network indirectly it also requires one of Sys.Modify on / (for'
+            . ' backwards compatibility) or the newer Sys.AccessNetwork privilege on the node.',
+        check => [
+            'and',
+            ['perm', '/storage/{storage}', ['Datastore.AllocateTemplate']],
+            [
+                'or',
+                ['perm', '/', ['Sys.Audit', 'Sys.Modify']],
+                ['perm', '/nodes/{node}', ['Sys.AccessNetwork']],
+            ],
+        ],
+    },
+    protected => 1,
+    parameters => {
+        additionalProperties => 0,
+        properties => {
+            node => get_standard_option('pve-node'),
+            storage => get_standard_option('pve-storage-id'),
+            url => {
+                description => "The URL to download the file from.",
+                type => 'string',
+Version: 9.1.0
+1087:            'Sys.AccessNetwork', # for, e.g., downloading ISOs from any URL

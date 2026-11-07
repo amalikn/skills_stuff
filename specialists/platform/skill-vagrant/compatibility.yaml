@@ -1,0 +1,66 @@
+# Environments this skill was verified against: product, version, components and when observed.
+environments:
+  - id: vagrant-docs-2-4-9
+    product: Vagrant documentation
+    product_version: 2.4.9
+    components: [Vagrantfile, boxes, multi-machine, networking, synced folders, provisioning, triggers, cloud-init, CLI, environment variables]
+    observed_at: "2026-11-07"
+    evidence_locator: "developer.hashicorp.com/vagrant/docs pages captured verbatim in documents/research-sources-20261107 (served from web-unified-docs content/vagrant/v2.4.9)"
+    validation_layer: official_documented
+    result: pass
+  - id: vagrant-parallels-docs
+    product: vagrant-parallels documentation and issue tracker
+    product_version: "docs site 2025; CHANGELOG to 2.4.6; releases to 2.4.10"
+    components: [configuration, linked clones, customize events, networking, editions, issues]
+    observed_at: "2026-11-07"
+    evidence_locator: "parallels.github.io/vagrant-parallels/docs and github.com/Parallels/vagrant-parallels issues and CHANGELOG, captured verbatim"
+    validation_layer: official_documented
+    result: pass
+  - id: parallels-cli-reference-20
+    product: Parallels Desktop Command-Line Reference
+    product_version: "20"
+    components: [prlctl, prlsrvctl]
+    observed_at: "2026-11-07"
+    evidence_locator: "download.parallels.com Parallels Desktop v20 Command-Line Reference PDF (no v26 or v27 PDF published at that path); docs.parallels.com developer guide"
+    validation_layer: official_documented
+    result: pass
+  - id: lab-mac-2026-11-07
+    product: Vagrant
+    product_version: 2.4.9
+    components: ["vagrant-parallels 2.4.9", "prlctl 27.1.0 (58756)", "Parallels Desktop pro edition, licence active", "bento/ubuntu-24.04 202510.26.0 arm64 (Ubuntu 24.04.3, kernel 6.8.0-86)", macOS Apple silicon]
+    observed_at: "2026-11-07"
+    evidence_locator: "read-only vagrant --version, vagrant plugin list, prlctl --version, prlsrvctl info --license --json (edition and status only), vagrant box list, prlctl list -a -i -j on the operator's Mac; guest release and kernel USER_STATED"
+    validation_layer: observed_install
+    result: pass
+  - id: smc-resiliency-lab-inspected
+    product: smc-resiliency Pi spike lab
+    product_version: "vagrant_stuff 8591b72; smc-resiliency 4e436e8d, 2402b961, a124c13a"
+    components: [Vagrantfile, to_vm.sh, setup_sm.sh, check_vagrant_copies]
+    observed_at: "2026-11-07"
+    evidence_locator: "source inspected read-only; a project worked example, not generic product behaviour"
+    validation_layer: implementation_inspected
+    result: pass
+  - id: hashicorp-licensing-2026-11
+    product: Vagrant licence and HCP Vagrant
+    product_version: "v2.3.7 MIT; v2.4.0 to v2.4.9 BUSL 1.1; main MIT since 2026-11-02"
+    components: [LICENSE, license FAQ, HCP Vagrant end of life]
+    observed_at: "2026-11-07"
+    evidence_locator: "github.com/hashicorp/vagrant LICENSE at tags and commit ab4fc5e3db; hashicorp.com license FAQ; developer.hashicorp.com hcp-vagrant-eol"
+    validation_layer: official_documented
+    result: pass
+  - id: registries-2026-11-07
+    product: Box and provider registries
+    product_version: "bento/ubuntu-24.04 current 202510.26.0; OpenTofu bmatcuk/vagrant v4.1.0; parallels/parallels-desktop v0.7.6"
+    components: [vagrantcloud API v2, OpenTofu registry search, Ubuntu snapshot service]
+    observed_at: "2026-11-07"
+    evidence_locator: "API and page captures in documents/research-sources-20261107"
+    validation_layer: official_documented
+    result: pass
+  - id: helpers-offline-contract
+    product: skill-vagrant helpers
+    product_version: "pack 0.1.0"
+    components: [vagrant_lab_inventory, vagrantfile_lint, vagrant_copy_check, check_governance]
+    observed_at: "2026-11-07"
+    evidence_locator: "tests/test_helpers.py with faked commands; read-only runs of the inventory and lint on the lab Mac"
+    validation_layer: offline_contract
+    result: pass

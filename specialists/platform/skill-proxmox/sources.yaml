@@ -1,0 +1,233 @@
+# Claims this skill makes, each with its kind, evidence status, lifecycle and source.
+claims:
+  - id: P-C01
+    statement: "A privilege-separated API token's effective rights are the intersection of its user's and its own ACLs, so the ACL must be granted to both."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "pveum chapter, API Tokens and Inheritance (documents/research-sources-20261107/pve-admin-chapter-pveum.md); separated privileges is the default; verified 2026-11-07."
+    reference: references/access-control.md
+    test: P-S01
+  - id: P-C02
+    statement: "A pool-scoped role of seventeen VM, datastore, pool and SDN.Use privileges plus Sys.Audit on /nodes lets a privilege-separated token create, resize and start an OVMF VM with an imported disk."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-9-1-5-lab-token-api-20261107, smc-resiliency-x86-lab-20261107]
+    environment_id: pve-9-1-5-lab-token-api-20261107
+    source_type: implementation_and_test
+    evidence: "Lab task log: qmcreate, resize, qmstart by the token; ACLs read with pvesh get /access/acl; role list in smc-resiliency spike/x86/pve_lab_setup.sh (uncommitted); 2026-11-07."
+    reference: references/access-control.md
+    test: P-S01
+  - id: P-C03
+    statement: "The storage content type import is not enabled by default and must be added before import_from or download_file with content_type import can use the storage."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [bpg-proxmox-0-120-0, pve-docs-9-current-20261107]
+    environment_id: bpg-proxmox-0-120-0
+    source_type: official_documentation
+    evidence: "bpg download_file page note; pvesm chapter content type list includes import; verified 2026-11-07."
+    reference: references/storage.md
+    test: P-S06
+  - id: P-C04
+    statement: "On Proxmox VE 9.1.5 the download-url API needs Datastore.AllocateTemplate on the storage and either Sys.Audit plus Sys.Modify on / or Sys.AccessNetwork on the node."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-9-1-5-lab-20261107, bpg-proxmox-0-120-0]
+    environment_id: pve-9-1-5-lab-20261107
+    source_type: observed_install
+    evidence: "Installed PVE/API2/Storage/Status.pm download_url permissions (libpve-storage-perl 9.1.0), captured verbatim; bpg docs name only Sys.Audit and Sys.Modify; 2026-11-07."
+    reference: references/storage.md
+    test: P-S02
+  - id: P-C05
+    statement: "The bpg/proxmox provider needs its ssh block only for snippet and some file uploads, source_file.path disk imports and container idmap, not for import_from or download_file."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [bpg-proxmox-0-120-0]
+    environment_id: bpg-proxmox-0-120-0
+    source_type: official_documentation
+    evidence: "Provider index, SSH Connection table (documents/research-sources-20261107/bpg-provider-index.md); context7 agrees; 2026-11-07."
+    reference: references/opentofu-bpg-provider.md
+    test: P-S02
+  - id: P-C06
+    statement: "Updates on Proxmox VE are installed with apt full-upgrade, never apt upgrade, because only full-upgrade may remove packages to satisfy dependencies."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "System Software Updates wiki warning (documents/research-sources-20261107/pve-wiki-system-software-updates.md); 2026-11-07."
+    reference: references/upgrade-and-troubleshooting.md
+    test: P-S03
+  - id: P-C07
+    statement: "OVMF rewrites BootOrder on every boot from the QEMU boot order and deletes HD() boot options that match no listed device, while honouring BootNext as a one-shot."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [edk2-master-20261107]
+    environment_id: edk2-master-20261107
+    source_type: official_documentation
+    evidence: "edk2 master QemuBootOrderLib.c, BdsPlatform.c and BdsEntry.c captured verbatim; packaged OVMF not diffed; 2026-11-07."
+    reference: references/qemu-vms.md
+    test: P-S04
+  - id: P-C08
+    statement: "A VM needs an EFI disk for OVMF to keep EFI variables such as the boot order, and pre-enrolled-keys=1 turns Secure Boot on."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "qm chapter BIOS and UEFI; qm.conf efidisk0 pre-enrolled-keys; 2026-11-07."
+    reference: references/qemu-vms.md
+    test: P-S04
+  - id: P-C09
+    statement: "SDN.Use on /sdn/zones/localnetwork lets a token attach guests to plain host bridges, and a guest on an SDN VNet needs SDN.Use on that zone as well."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-9-1-5-lab-token-api-20261107, pve-docs-9-current-20261107]
+    environment_id: pve-9-1-5-lab-token-api-20261107
+    source_type: implementation_and_test
+    evidence: "Lab ACLs on /sdn/zones/localnetwork and /sdn/zones/<zone> for user and token; VM created by the token with net0 on the bridge, later on the VNet; pveum privilege list; bpg index notes; 2026-11-07."
+    reference: references/networking-and-sdn.md
+    test: P-S07
+  - id: P-C10
+    statement: "A simple SDN zone with dnsmasq DHCP and PVE IPAM answers only guest MACs that IPAM allocated on its VNet, recording the binding in the zone's ethers file."
+    kind: tested_pattern
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-9-1-5-lab-20261107, pve-docs-9-current-20261107]
+    environment_id: pve-9-1-5-lab-20261107
+    source_type: observed_install
+    evidence: "Lab: pvesh get /cluster/sdn/zones, /vnets, /subnets; /etc/dnsmasq.d/<zone>/ethers written when the VM joined the VNet; coordinator's tcpdump on vmbr0; SDN chapter DHCP IPAM; 2026-11-07."
+    reference: references/networking-and-sdn.md
+    test: P-S13
+  - id: P-C11
+    statement: "HA needs at least three nodes for reliable quorum and shared or replicated storage, and replication can lose data since the last sync."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "HA chapter Requirements; pvesr chapter note; pvecm QDevice; 2026-11-07."
+    reference: references/ha-and-replication.md
+    test: P-S08
+  - id: P-C12
+    statement: "A single successful observation is a candidate until a second environment, the official documentation or the installed source agrees."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Shared platform-pack write-back policy (skill-nautobot N-C12 equivalent); USER_STATED."
+    reference: references/evolution-and-write-back.md
+    test: P-S14
+  - id: P-C13
+    statement: "pmxcfs at /etc/pve is a database-backed file system replicated by Corosync that becomes read-only when the node loses quorum."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "pmxcfs chapter (documents/research-sources-20261107/pve-admin-chapter-pmxcfs.html); 2026-11-07."
+    reference: references/architecture-and-cluster.md
+    test: P-S15
+  - id: P-C14
+    statement: "Proxmox VE 9.0 removed VM.Monitor, added VM.Replicate and made creating a privileged container need Sys.Modify in most cases."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "Roadmap, Proxmox VE 9.0 Known Issues and Breaking Changes (documents/research-sources-20261107/pve-wiki-roadmap.html); 2026-11-07."
+    reference: references/lxc-containers.md
+    test: P-S12
+  - id: P-C15
+    statement: "Snapshot-mode backups are the recommended mode for running VMs, and protected backups are ignored by pruning."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "vzdump chapter Backup Modes and Backup Retention; 2026-11-07."
+    reference: references/backup-and-restore.md
+    test: P-S09
+  - id: P-C16
+    statement: "The node's generated certificate files and the cluster CA must not be replaced; a trusted certificate goes in pveproxy-ssl.pem or comes from ACME."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "Certificate Management wiki warning and options; 2026-11-07."
+    reference: references/security-certificates-firewall.md
+    test: P-S11
+  - id: P-C17
+    statement: "GET /nodes/{node}/apt/update returns pending updates from the cached package lists without refreshing them, and PVE refreshes the lists daily."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-9-1-5-lab-20261107, pve-docs-9-current-20261107]
+    environment_id: pve-9-1-5-lab-20261107
+    source_type: observed_install
+    evidence: "Lab GET returned 294 entries while pve-daily-update last ran hours earlier; sysadmin chapter: daily update check; refresh is the POST (pvesh usage); 2026-11-07."
+    reference: references/monitoring-and-metrics.md
+    test: P-S10
+  - id: P-C18
+    statement: "A request that changes a running system needs authorization, a printed plan and an explicit apply, and an HTTP 200 on a POST only means the task started."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Operator write-safety rule (skill-coder: read by default, --apply for writes); task UPID model in the API wiki; USER_STATED."
+    reference: references/api-and-cli.md
+    test: P-S05
+  - id: P-C19
+    statement: "Proxmox VE native capabilities and Proxmox products come before supported seams, external FOSS or new components."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    lifecycle: current
+    applies_to: []
+    environment_id: null
+    source_type: user_policy
+    evidence: "Capability search order shared with skill-nautobot (USER_STATED 2026-10-01)."
+    reference: references/capability-extension.md
+    test: P-S13
+  - id: P-C20
+    statement: "Without a guest agent, a VNet guest's address is found from the zone's dnsmasq binding and lease on the node, and its console from the serial0 socket."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-9-1-5-lab-20261107]
+    environment_id: pve-9-1-5-lab-20261107
+    source_type: observed_install
+    evidence: "Lab: /etc/dnsmasq.d/<zone>/ethers and /var/lib/misc/dnsmasq.<zone>.leases present, /var/run/qemu-server/<vmid>.serial0 present; socat read reported by the coordinating session; 2026-11-07."
+    reference: references/qemu-vms.md
+    test: P-S16
+  - id: P-C21
+    statement: "On Proxmox VE 9.1.5 the qm, pveum, pvesh and pvesm commands in the operations cookbook match the installed help and the 9.x manual pages."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-9-1-5-lab-20261107, pve-docs-9-current-20261107]
+    environment_id: pve-9-1-5-lab-20261107
+    source_type: observed_install
+    evidence: "qm help (pending, guest cmd, terminal, cloudinit update), pct help create, pvesh usage on the lab node; pveum(1), pvesh(1) captures; 2026-11-07."
+    reference: references/operations-cookbook.md
+    test: P-S10

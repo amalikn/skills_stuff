@@ -74,6 +74,7 @@ commit on its own.
 | JavaScript and TypeScript       | [languages/javascript-typescript.md](languages/javascript-typescript.md) |
 | Go                              | [languages/go.md](languages/go.md) |
 | Rust                            | [languages/rust.md](languages/rust.md) |
+| HCL (OpenTofu, Terraform)       | [languages/hcl.md](languages/hcl.md) |
 | SQL                             | [languages/sql.md](languages/sql.md) |
 | YAML, JSON, TOML                | [languages/yaml-json-toml.md](languages/yaml-json-toml.md) |
 | Ansible                         | [languages/ansible.md](languages/ansible.md) |
@@ -98,6 +99,7 @@ inputs, outputs and safety labels.
 | `scripts/suppressions.py`  | Inline linter suppressions (`noqa`, `type: ignore`, `shellcheck disable`, `eslint-disable`, ...) |
 | `scripts/group_timeouts.py` | Timed subprocess calls (ssh, a shell) whose children outlive the timeout             |
 | `scripts/process_match.py`  | `pgrep -f` / `pkill -f` patterns not anchored with `^` (they can match their own caller) |
+| `scripts/language_split.py` | Language files over 200 lines or 25 KB; splits one into `languages/<lang>/` topic files (writes only with `--apply`) |
 | `scripts/scaffold.py`       | Prints a new script and its test skeleton that meet these rules (writes nothing)     |
 
 ## How the override layer works

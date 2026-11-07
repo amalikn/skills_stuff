@@ -176,3 +176,9 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > m = re.search(r"^check(?=[ \t:])[^\n]*\n((?:[ \t]+[^\n]*\n?)+)", text, re.M)
 > ```
 
+> **Learned 2026-11-07** · ruff 0.17.4 · VERIFIED_PRIMARY · Source: smc-resiliency `ruff.toml`, `lab/` (2026-11-07) · Falsifier: ruff
+> checking a file outside `include` when it is passed by name with `force-exclude = true`
+> New code only, by folder: `include = ["lab/**/*.py"]` with `force-exclude = true`, `indent-width = 2`, `line-length = 160`,
+> `select = ["E","F","W","I","B","UP","D"]` and `[lint.pydocstyle] convention = "google"`: the new package passed with one finding (a
+> two-line docstring summary, D205), and the older spike code stayed untouched. Tests that import a package that is not installed use
+> `importlib.import_module` after the `sys.path` line, never `# noqa: E402`.
