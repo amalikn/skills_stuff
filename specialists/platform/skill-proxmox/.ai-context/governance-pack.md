@@ -395,6 +395,13 @@ writes. Pass 3: 2 sub-agents.
 | 21  | Slurp close in detail, write back, scripts, flows, commit and push, slurp         | this record; rows below                                                                                    |
 |     |   close again                                                                     |                                                                                                            |
 
+## After the first close
+
+| # | Item | Destination |
+|---|---|---|
+| 22 | Commits of the first close: skills_stuff 7159792, scripts_stuff fc42b49, tools_stuff ca5c4f7, governance 899e724, project_stuff 5633069, wiki_stuff d4647d8 | this record; push handed to the operator |
+| 23 | Side-agent note: sessions started before the rule still follow the old "keep AGENTS.md out of Git" instruction and likely restored skills_stuff's exclude once | tracking check rerun (ten clones, only the 4 known local-knowledge-ansible files); seven pre-rule live sessions named in the closeout; restart or notify is the operator's call (follow-up below) |
+
 ## Sub-agents
 
 | Agent | Task                               | Report                                                                    | Destination                                                                 |
@@ -430,6 +437,8 @@ writes. Pass 3: 2 sub-agents.
 - local-knowledge-ansible: another session's uncommitted capture work (`ansible-wifi/history/current/.agents/*`, a snapshots archive) — its owner.
 - skill-ai-it: adoption could take an unindented legacy-header continuation (pitfall recorded, no fix made).
 - A Bash permission rule for `git push` if agents should push.
+- Sessions started before the rule (smc-resiliency, unified-network-controller, scripts-stuff, ansible-wifi, skill-knowledge-curator,
+  enterprise-strategy, skill-vagrant on 2026-11-09): restart them or send them the rule; rerun `make governance-git-tracking` after they finish.
 
 ## Flows
 
