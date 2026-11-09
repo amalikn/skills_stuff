@@ -24,9 +24,10 @@ learned at APN is also findable as a pattern.
 
 ## Estate in one paragraph
 
-An Australian ISP serving remote and regional communities: subscriber access over nbn, Opticomm (owned by Uniti Group) and an aggregator's backhaul, and geostationary satellite to remote sites; at
-each remote site a Raspberry-Pi-class site box (SMC) in the user's path with MikroTik and Cambium equipment behind it; central services on Proxmox; fleet intent in Nautobot and telemetry in OpenWISP
-and Prometheus/Grafana under the unified-network-controller project; access through Teleport; a voice platform on Asterisk with carrier SIP trunks.
+An Australian ISP serving remote and regional communities: subscriber access over nbn, Opticomm (owned by Uniti Group) and an aggregator's backhaul, and satellite to remote sites (geostationary Sky
+Muster at most, LEO Starlink on recent x86 sites); at each remote site one site box (SMC, Raspberry Pi or x86) in the user's path with MikroTik and Cambium equipment behind it; central services on
+Proxmox; fleet intent in Nautobot and telemetry in OpenWISP and Prometheus/Grafana under the unified-network-controller project; access through Teleport; a voice platform on Asterisk with carrier SIP
+trunks.
 
 ## Files
 
@@ -36,7 +37,10 @@ and Prometheus/Grafana under the unified-network-controller project; access thro
   Feeds remote-site-fleet, network-services, security-and-segmentation, routing-and-switching.
 - [oss-bss-and-fleet-data.md](oss-bss-and-fleet-data.md): OSS/BSS data, billing reconciliation flows, fleet source of truth and telemetry.
   Feeds the systems references service-provider-systems and fleet-management.
-- [site-boxes-and-platforms.md](site-boxes-and-platforms.md): site-box resilience and flash wear, central platforms, colocation and cloud exit, AI platform.
+- [site-backhaul.md](site-backhaul.md): site backhaul: Sky Muster, Starlink and nbn legs, measured link profiles, round trips and MTU, carrier NAT,
+  the emergency modem swap, what is measured. Feeds wan-and-remote-access, remote-site-fleet, australian-access-networks.
+- [site-boxes-and-platforms.md](site-boxes-and-platforms.md): site-box resilience and flash wear, site-box platforms, image design decisions, identity, controller
+  role and lab results (items 27 to 39, 2026-11-10), central platforms, colocation and cloud exit, AI platform.
   Feeds the systems references edge-appliances, storage-and-data, migration-and-hybrid, ai-inference-platforms.
 
 ## Source projects

@@ -4,10 +4,11 @@ Category: operator-context
 Status: current
 Authority: internal
 Scope: One operator's site-box fleet, colocation, platform and AI work plus the operator's personal AI platform projects; not general guidance
-Last reviewed: 2026-10-29
+Last reviewed: 2026-11-10
 Summary: >-
   Operator-specific lessons behind the systems-architect references: site-box images, flash wear, hangs and power, telemetry spool, colocation power, Ceph and
-  platform choice, resolver tuning and local AI measurements. Each item gives the fact, why it matters, an evidence path and the general section it applies to.
+  platform choice, resolver tuning and local AI measurements; items 27 to 39 (2026-11-10) add the site-box platforms, image design decisions, identity, controller
+  role and lab results. Each item gives the fact, why it matters, an evidence path and the general section it applies to.
   No site, community, customer or people names, addresses, credentials or prices.
 ---
 
@@ -24,6 +25,10 @@ Summary: >-
 - [Storage and platform choice](#storage-and-platform-choice)
 - [Resolver receive path](#resolver-receive-path)
 - [Local AI platforms](#local-ai-platforms)
+- [Site-box platforms in detail](#site-box-platforms-in-detail)
+- [Site-box image design state](#site-box-image-design-state)
+- [Site-box identity and management](#site-box-identity-and-management)
+- [Site-box lab proof](#site-box-lab-proof)
 - [Withheld evidence paths](#withheld-evidence-paths)
 
 ## How to read this file
@@ -185,6 +190,105 @@ Summary: >-
     - Why: check vendor speed claims with bandwidth / bytes per token.
     - Evidence: `APN/ai-strategy/07-decisions/adr/` (ADR-005)
     - Applies: [Serving engines and hardware](../../../skill-systems-architect/references/ai-inference-platforms.md#serving-engines-and-hardware)
+
+## Site-box platforms in detail
+
+Added 2026-11-10 from the smc-resiliency records (state at apn 8295a792). `SMC` means `APN/smc-resiliency`; `UNC` means `APN/unified-network-controller`.
+
+27. Pi flavours (`rct`, `wh`, `nbn_wh`) run a Raspberry Pi 4 Model B from an SD card with no real-time clock; the fleet bootloader is 2023-01-11 on six canaries read; cards read live on five Pis
+    were 62 GB with card name `AFNI0` and `manfid` 0x000000. Two sources disagree and are both kept: skill-smc 07 says 8 GB RAM and "Swissbit industrial microSD"; the lab profile `pi4` says 4 GB
+    ("RAM per board UNVERIFIED") and the Pi design calls the card unbranded.
+    - Why: no RTC means a time floor from the release build stamp; the bootloader the fleet runs, not the newest, is the one a boot change must be proved on.
+    - Evidence: `SMC/docs/pi/pi-immutable-smc-image-design-20261014_0850.md` (sections 4, 7, 9.1); `SMC/lab/targets.toml` (profile `pi4`); `SMC/docs/trackers/plan-tracker.md` (S0 row);
+      `SMC-SKILL/references/07_hardware-overlay.md` (section 7)
+    - Applies: [Decision rules](../../../skill-systems-architect/references/edge-appliances.md#decision-rules)
+28. x86 flavours (`rcp`, `nbn_accelerate`) run AAEON BOXER-6404 (4 cores, 7 GB, one 60 GB CFast, LVM root with no free space) or BOXER-6641 (6 cores, 15 GB, two 119 GB SSDs fitted); UEFI; no
+    watchdog loaded on either; Ubuntu 22.04, systemd 249, kernels drifting from 5.15.0-79 to -133. Every x86 watchdog driver on disk is on Ubuntu's deny-list, so `modules-load.d` will not load
+    it; an explicit `modprobe iTCO_wdt` bound on a lab VM and a crash reset itself in 91.1 s (BOXER runs still to do). Counts disagree: 47 x86 boxes by model including non-site boxes (skill-smc
+    07, 2026-10-22), 34 x86 Devices in Nautobot (UNC `ARCHITECTURE.md`), "36 remote boxes" (UNC D12.2).
+    - Why: an image that names no model must still load a named watchdog driver; size every layout against the smallest disk in service (the CFast capacity gate, decided 20261021_1155).
+    - Evidence: `SMC/docs/x86/x86-smc-resiliency-plan-20261014_1436.md` (sections 3, 6.2, 6.7); `SMC/docs/overview/smc-lab-test-record-20261107_1931.md` (section 14);
+      `SMC-SKILL/references/07_hardware-overlay.md` (Whole x86 fleet by model)
+    - Applies: [Hangs, watchdogs and power](../../../skill-systems-architect/references/edge-appliances.md#hangs-watchdogs-and-power)
+
+## Site-box image design state
+
+The design as a whole is still a proposal proved stage by stage (S0 to S6 and SM on the Pi, X0 to X7 and XQ on x86); items below marked decided carry the operator's stamp from `SMC/SCRATCHPAD.md`
+Recent decisions or `SMC/docs/history/`.
+
+29. Rescue layout decided (operator, 20261105_2052): Layout 2, production A/B, recovery A/B and a factory R0, plus identity A/B/R, on one medium: 15 partitions on the Pi (boot p2 to p6, roots p7 to
+    p11, identity p12 to p14, writable p15); the x86 plan proposes the same layers on its one disk (10 partitions, about 21 GB of the 60 GB CFast), not decided. The Pi firmware's `PARTITION_WALK`
+    checks partitions 1 to 8, which covers the boot partitions; the 15-partition boot path is still to be proved on the bench (R1, R30).
+    - Why: the only layout meeting the plan's rescue tests while a recovery slot is rewritten; its risk sits in firmware, so it is proved before it is built in number.
+    - Evidence: `SMC/docs/pi/pi-immutable-smc-image-design-20261014_0850.md` (4.1); `SMC/docs/x86/x86-smc-resiliency-plan-20261014_1436.md` (6.2); `SMC/CHANGELOG.md` (20261109_2134)
+    - Applies: [Image layout and updates](../../../skill-systems-architect/references/edge-appliances.md#image-layout-and-updates)
+30. Decided since 2026-10-29: root filesystem erofs only, every writer given a home, a RAM dm-snapshot rejected after measuring (R28, 20261107_1617); x86 boot selection by RAUC's `efi` backend
+    (`BootNext` trial, `BootOrder` commit) with `grub` the fallback (C8, 20261107_1617); x86 kernels in a folder per slot on one shared ESP, written before the trial is armed (20261107_2105);
+    the health check judges units before against after, so a unit already failed never reverts a change (20261107_2338). Still open: the Pi's RAUC custom backend or U-Boot (S1), whether a
+    release trial waits for reach during an outage (S6), the reach ladder for losing the controller (proposed).
+    - Why: each was settled by a lab finding (three good sets reverted over a unit that needs the internet; root-write measurement), which is the pattern to copy.
+    - Evidence: `SMC/SCRATCHPAD.md` (Recent decisions 20261107_1617, 20261107_2105, 20261107_2338); `SMC/docs/pi/pi-immutable-smc-image-design-20261014_0850.md` (9.1, 9.2, 9.4)
+    - Applies: [Image layout and updates](../../../skill-systems-architect/references/edge-appliances.md#image-layout-and-updates)
+31. A disposable writable area recovers in a decided order (operator, 20261105_2052, 20261105_2053, 20261105_2059): a bad area fails a release trial; on a committed release the box repairs in place
+    at once and alarms; a second repair within 7 days waits 24 hours for the controller; if the controller stays away the box switches to the other production set; both sets failing boots
+    recovery, then R0. The repair counter lives on the boot control partition, because the area cannot count itself.
+    - Why: repair first keeps the box's way home (Teleport's data directory lives on the area); the controller decides before the box switches on its own.
+    - Evidence: `SMC/docs/pi/pi-immutable-smc-image-design-20261014_0850.md` (4.2, 4.3)
+    - Applies: [Lifecycle and recovery](../../../skill-systems-architect/references/fleet-management.md#lifecycle-and-recovery)
+32. Time: the Pi has no RTC, so the image build stamps `/usr/lib/clock-epoch` with the release build time (systemd advances the clock to it at boot), chrony takes the controller or gateway by
+    address as first source, and the health check's clock line passes on a synchronised source or, offline, at or after the floor (R25, decided 20261105_2052).
+    - Why: a box never runs earlier than its release, and time arrives before DNS.
+    - Evidence: `SMC/docs/pi/pi-immutable-smc-image-design-20261014_0850.md` (9.1)
+    - Applies: [Telemetry spool and time](../../../skill-systems-architect/references/edge-appliances.md#telemetry-spool-and-time)
+
+## Site-box identity and management
+
+33. Identity is read-only A/B plus a factory copy R. The device key pair is made by the factory station at issuance and remade at every reset (20261022_1407, 20261022_1426); secrets travel sealed
+    to the box with `age` to a separate X25519 key, are decrypted at boot into a tmpfs credentials directory and read by services with `LoadCredential=` (R32 mechanism, decided 20261107_2047);
+    the storage ID (SD CID or disk serial) is the controller's lookup key, never authentication, with the lowest burned-in MAC as fallback (CD10, decided in UNC 2026-10-22); a box joins a
+    bootstrap Teleport identity, then a production one. The Teleport join method is open.
+    - Why: a box rebuilt while the controller is away still serves its site; a cloned card cannot release secrets.
+    - Evidence: `SMC/docs/recovery/identity-partition-and-data-recovery-20261014_1455.md` (sections 2, 6, 7); `SMC/SCRATCHPAD.md` (20261107_2047)
+    - Applies: [Identity trust chain](../../../skill-systems-architect/references/security-and-service-identity.md#identity-trust-chain)
+34. The controller's role is recorded in UNC's options register D12, decided for P0 only (ansible-wifi roles on Ubuntu 22.04, no remote A/B conversion of deployed boxes); the read-only images are
+    D12.5 (proposed) and D12.6 (direction chosen 2026-10-14, mechanism not adopted); smc-resiliency's items are candidates CD1 to CD21, of which only CD10 is decided. The SMC to UNC contract
+    (U1 to U14, JWS-signed) has ten interfaces proved on the box against a lab-only stand-in, U9, U12 and U13 proposed; v0.2 went to UNC 20261107 and a 0.3.0 issue binding was proposed
+    20261109. The register's D12.6 text still predates C8 and R28.
+    - Why: the box design runs ahead of the controller; read the register for what UNC has accepted, and the box project for what it proposes.
+    - Evidence: `UNC/docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` (D12); `SMC/docs/overview/smc-unc-interface-control-20261107_2025.md`; `SMC/SCRATCHPAD.md` (outbox)
+    - Applies: [Source of truth and field ownership](../../../skill-systems-architect/references/fleet-management.md#source-of-truth-and-field-ownership)
+35. Imaging is built for the controller to reuse on any device and medium (decided 20261109_2134): the builder makes an image file only, the layout is data per platform, and a separate flash step
+    checks its target, writes only when applied, reads the medium back against the image hash and records the medium ID with that hash.
+    - Why: the read-back record is the identity binding the controller needs at issuance.
+    - Evidence: `SMC/.archcore/rules/imaging-reusable-for-unc.rule.md`
+    - Applies: [Supply and configuration chain](../../../skill-systems-architect/references/provisioning-and-lifecycle.md#supply-and-configuration-chain)
+
+## Site-box lab proof
+
+36. Lab rigs: arm64 Parallels VMs through Vagrant for the Pi's OS, agent and config; x86 VMs with OVMF on a Proxmox node built from scratch by OpenTofu with a least-privilege token; a bench Pi 4 on
+    a serial console; a BOXER-6641 at the bench from 2026-11-10. One lab package of logic over transport and power adapters runs the same cases on every rig, and every test is recorded verbatim
+    with raw logs and images archived off the repository.
+    - Why: a VM proves logic only: OVMF rewrites `BootOrder` itself, and the arm64 VM stands in for Pi tryboot with UEFI `BootNext`, so firmware claims wait for hardware.
+    - Evidence: `SMC/lab/README.md`; `SMC/.archcore/rules/lab-is-one-package.rule.md`; `SMC/docs/overview/smc-lab-test-record-20261107_1931.md` (section 1)
+    - Applies: [Failure modes and tests](../../../skill-systems-architect/references/edge-appliances.md#failure-modes-and-tests)
+37. Results to 2026-11-09: site-config cases E1 to E7 8 of 8 on both VMs; claim cases C1 to C9 9 of 9 against the stand-in; x86 A/B (X2) good trial, broken kernel, panic and power cut pass, a hang
+    recovered only by the lab's reset; arm64 A/B logic (S1V) 8 of 8 after the commit fix; bench Pi (S1, bootloader 2026-01-09) reads the selection file on GPT, trials B and returns, commits a good
+    trial and rejects after the retry bound. Still to run: bootloader 2023-01-11, Layout 2, a hang through the Pi watchdog, broken kernel, power cut, and both on a BOXER.
+    - Why: a hang test passed by a lab reset proves nothing about the watchdog; record which recovery actually acted.
+    - Evidence: `SMC/docs/overview/smc-lab-test-record-20261107_1931.md` (sections 2, 11, 13, 15 to 19); `SMC/SCRATCHPAD.md` (Next actions 20261109_2316)
+    - Applies: [What each probe does not prove](../../../skill-systems-architect/references/observability-and-incident.md#what-each-probe-does-not-prove)
+38. Two lab traps: a power cut during write, sync and rename on the vfat boot partition left a 0-byte selection file (the rename reached the disk, the data did not), answered by a fixed-length
+    in-place write and a boot-time repair from the running slot (20261108_0128); Ubuntu 24.04.5's packaged Pi firmware could not boot a non-first GPT boot partition and flash-kernel copies it
+    back on kernel updates, so the image ships and pins newer firmware. Open for the R1.2 review: nothing resets a Pi that freezes before Linux starts.
+    - Why: rename is not atomic on FAT; firmware outside the OS is part of the image.
+    - Evidence: `SMC/docs/overview/smc-lab-test-record-20261107_1931.md` (sections 15, 19); `SMC/SCRATCHPAD.md` (open item 20261109_2316)
+    - Applies: [Image layout and updates](../../../skill-systems-architect/references/edge-appliances.md#image-layout-and-updates)
+39. Sources that disagree, recorded 2026-11-10 and not resolved here: the Pi design still marks S1 parked while the trackers show it running; the target map shows X0 not started while the x86 plan
+    records it done in part; skill-smc 01 still says the A/B mechanism is undecided with no x86 plan; this note's sister systems reference (edge-appliances, Learned 2026-11-10) reports both Pi
+    bootloaders tested while the committed record shows only 2026-01-09.
+    - Why: read the owning project's tracker and SCRATCHPAD before quoting a design's stage text.
+    - Evidence: `SMC/target-map.yaml`; `SMC/docs/trackers/plan-tracker.md`; `SMC-SKILL/references/01_overview.md` (section 2)
+    - Applies: [Evidence labels and layers](../../../skill-systems-architect/references/architecture-method.md#evidence-labels-and-layers)
 
 ## Withheld evidence paths
 

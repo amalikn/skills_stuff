@@ -81,6 +81,18 @@ ONE MEDIUM, A/B LAYOUT (one SD card, eMMC or disk)
   rolling out updates to edge devices [HB].
 - Raspberry Pi firmware: `tryboot_a_b=1` in `autoboot.txt` makes the tryboot switch at the partition level, so a one-shot reboot boots the other slot once and a later reboot returns to the committed
   one (VERIFIED_PRIMARY [RPI-CFG], checked 2026-10-29).
+
+  > **Learned 2026-11-10** · Pi 4 A/B on a GPT card, Ubuntu 24.04.5 · VERIFIED_PRIMARY (bench Pi 4 serial console, bootloaders 2026-01-09 and
+  > 2023-01-11, ten trial boots) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 19 (apn a1457e86 and later) ·
+  > Falsifier: a distribution's packaged firmware booting a non-first GPT boot partition, or a firmware update leaving the shipped files alone.
+  > - The boot firmware outside the OS (Pi start4.elf and fixup4.dat) is part of the image: the distribution's packaged copy (Feb 2024) chose the
+  >   right partition and then could not open its files on GPT partition 2, so the box froze with no reset; a current upstream release booted.
+  >   Ship and pin the firmware in the image, and hold or replace the packages that write it back (Ubuntu's flash-kernel copies its own on every
+  >   kernel update). A firmware updater on the box (rpi-eeprom-update) is masked so the tested bootloader stays the one in the field.
+  > - Prove the boot chain on every bootloader version the fleet runs, not only the newest: the same cases (normal boot, one-shot trial,
+  >   commit, panic, retry bound, hang) passed on both versions here, and the older bootloader also read the padded selection file on GPT.
+  > - A selection file the firmware reads is fixed-length and overwritten in place, and the image ships it at that length (crash-safe on FAT,
+  >   where rename is not); a boot-time check repairs a missing or torn file from the running slot.
 - One disk with no second-disk fallback: move rollback into the image layout. A writable root edited in place cannot be its own known-good copy.
 - Anti-rollback: accept only a manifest with a higher monotonic number than the last accepted; a downgrade is a new, higher-numbered manifest that carries the older release. Upgrade and rollback are
   then one path ([TUF] describes rollback attacks).
@@ -157,6 +169,15 @@ DURABLE JOB STATE ON THE BOX: controller reconciles, never presumes
 
 - Update rollback does not fix a kernel or SoC lockup; a hardware watchdog does. With `RuntimeWatchdogSec=` set, systemd programs and pings `/dev/watchdog0` (or the configured device) [SYSC]. Prove it
   on a spare: a forced hang reboots the box and a healthy box never does.
+
+  > **Learned 2026-11-10** · systemd hardware watchdog on a Pi-class box · VERIFIED_PRIMARY (bench Pi 4: reset 14 to 22 s after PID 1 froze, back
+  > on the committed slot) · Source: smc-resiliency spike/out/s1-pi4-bench.log, test record section 19 · Falsifier: a SIGSTOP to PID 1 stopping
+  > systemd, or a firmware-stage failure resetting by itself.
+  > - Force the test hang by crashing PID 1 (`kill -SEGV 1`: systemd's crash handler freezes and stops feeding the watchdog). `kill -STOP 1` does
+  >   nothing (the kernel does not deliver SIGSTOP to init), so a test built on it passes a box that would never reset.
+  > - The watchdog is armed by systemd, so it covers hangs after systemd starts. A failure in the firmware stage or the initramfs, or a broken
+  >   trial kernel, leaves the box frozen until power is cycled: either something arms a watchdog earlier, or that failure costs a site visit.
+  >   Ask it as a design question before relying on A/B fallback alone.
 - Raspberry Pi (BCM2835 family) watchdog: a 20-bit register counted in 1/65536 s ticks, so the maximum timeout is about 15-16 s; keep the systemd timeout inside it (VERIFIED_PRIMARY [WDT], driver
   source, checked 2026-10-29). Identify each x86 model's watchdog driver separately.
 - Give the single site box an independent power-cycle path as well; software health checks cannot fix a hang.

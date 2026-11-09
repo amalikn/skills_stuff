@@ -12,6 +12,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- 20261110_0025: v2.3.0: write-back from smc-resiliency S1 (bench Pi 4) and the APN operator context extended (see CHANGELOG 20261110_0025); not pushed until the operator's closeout push.
+
 - v2.2.0: research-deepened, source-checked references on one backbone; 21 references, 19 templates with filled examples, 11 helpers;
   local source store (519 items) and sources.json ledger; APN operator context in operator/apn/ (index plus four files).
 - Evals: skill 22/22 against a baseline, and 22/22 against a fair baseline given the specialist registry (12.71 vs 9.75).

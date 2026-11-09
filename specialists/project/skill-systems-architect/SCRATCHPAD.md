@@ -12,6 +12,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- 20261110_0025: v2.3.0: write-back from smc-resiliency S1 (bench Pi 4) and the APN operator context extended (see CHANGELOG 20261110_0025); not pushed until the operator's closeout push.
+
 - v2.2.0: research-deepened references on one backbone, incl. databases-and-ha, ai-inference-platforms, edge-appliances,
   fleet-management, service-provider-systems; 8 helpers incl. quorum, ceph, restore, eol; filled examples; reads APN context from
   ../skill-network-architect/operator/apn/.

@@ -8,7 +8,7 @@ description: >-
   (skill-smc, skill-cambium, skill-mikrotik), diagram layout (skill-drawio) or code (skill-coder); collaborates with skill-systems-architect on hosts,
   storage and recovery.
 metadata:
-  version: "2.2.0"
+  version: "2.3.0"
   reviewed: "2026-10-29"
   scope: "Vendor-neutral domain architecture"
 ---

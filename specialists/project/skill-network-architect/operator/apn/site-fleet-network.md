@@ -21,6 +21,7 @@ Summary: >-
 - [Discovery and identity](#discovery-and-identity)
 - [Site services, WAN and power](#site-services-wan-and-power)
 - [Controller exit and onboarding](#controller-exit-and-onboarding)
+- [Site devices](#site-devices)
 - [Datacenter switching and resolvers](#datacenter-switching-and-resolvers)
 - [Withheld evidence paths](#withheld-evidence-paths)
 
@@ -61,6 +62,32 @@ Summary: >-
    - Evidence: `APN/smc-squid-redesign/` (plan file, lines ~101-148)
    - Applies: [Placing services by link RTT](../../references/remote-site-fleet.md#placing-services-by-link-rtt)
 
+43. Five site-box flavours in two Ansible clusters, each cluster with its own central inventory and its own Teleport cluster: three Raspberry Pi flavours (`rct` about 300 sites, `wh` 24, `nbn_wh` 2;
+    read-only root on `rct` and `wh` only) and two x86 (`rcp` 18 production sites with VoIP on the box, `nbn_accelerate` about 20). Role conditionals key off hardware class or exact flavour, never the
+    cluster. A wrong flavour guess is a silent failure, and one node name can exist on both clusters as two boxes. (Added 2026-11-10.)
+   - Why: the flavour decides the image, the access path and which services a site has; site and box counts differ by source (item 62).
+   - Evidence: `SMC-SKILL/references/01_overview.md` (cluster comparison; section 2, USER_STATED operator 2026-10-06 and 2026-11-04);
+     `APN/enterprise-strategy/requirements/component-inventory-20261006_1321.md` (SMC estate table)
+   - Applies: [Site shapes and the one-box rule](../../references/remote-site-fleet.md#site-shapes-and-the-one-box-rule)
+44. Fixed VLAN pattern on every site: 500 management and 501 clients bridged on the box (502 too on x86); 521 to 538 standalone uplink VLANs on x86; 621 and 631 carry the `starlink`-role leg. A Pi has
+    one wired port that is both the trunk to the site switch and, untagged, the internet (default route from the switch VLAN carrying the Sky Muster terminal); its 521 reaches only the modem's own
+    subnet. An inventory that picks uplinks by role misses the real Pi uplink; read the interface holding the default route. (Added 2026-11-10.)
+   - Why: designs, discovery and uplink models must follow the interface that carries the default route, not a label.
+   - Evidence: `SMC-SKILL/references/02_service-map.md` (Live-verified network layout, x86 layout); `SMC-SKILL/references/03_communication-flows.md` (rct Site Addressing, Learned 2026-10-20,
+     VERIFIED-OBSERVED)
+   - Applies: [Site dependencies on the box](../../references/remote-site-fleet.md#site-dependencies-on-the-box)
+45. x86 cabling convention: ports 1 and 2 go straight to a carrier terminal, ports 3 and 4 are trunks to switch 1 and switch 2, and the uplink VLANs are split between the two trunks. A switch carrying
+    several carrier circuits as access VLANs fails them together; a direct port does not. Interface names and port order differ by model, so nothing may assume them. (Added 2026-11-10.)
+   - Why: "several circuits failed at once" means first checking whether they share a switch trunk.
+   - Evidence: `SMC-SKILL/references/02_service-map.md` (Physical port order, USER_STATED operator 2026-09-24); `SMC-SKILL/references/01_overview.md` (WAN Uplink Topology Pattern);
+     `APN/unified-network-controller/docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` D12 IC2
+   - Applies: [Failure domains](../../references/physical-and-campus.md#failure-domains)
+46. The captive portal is required on every product and fails closed when its central back end is unreachable (no new access); content filtering is required at all community sites; RADIUS and 802.1X
+    are used nowhere (portal PIN plus connection marking). (Added 2026-11-10.)
+   - Why: the portal back end is a hard central dependency for new sessions at every site.
+   - Evidence: `SMC-SKILL/references/01_overview.md` section 2 (USER_STATED operator 2026-10-06); `APN/enterprise-strategy/requirements/component-inventory-20261006_1321.md` (notes)
+   - Applies: [Placing services by link RTT](../../references/remote-site-fleet.md#placing-services-by-link-rtt)
+
 ## Management and access
 
 7. A central collector reaches devices through each site box over Teleport, with edge execution as the fallback; constraints are a numbered register (no inbound to sites, overlapping IP space,
@@ -94,6 +121,23 @@ Summary: >-
     - Evidence: `APN/AGENTS.md` (skill-smc and skill-mikrotik rules)
     - Applies: [Management behind carrier NAT](../../references/remote-site-fleet.md#management-behind-carrier-nat)
 
+47. The backdoor in detail: an always-on autossh reverse tunnel from the box's sshd to a per-cluster bastion on port 50000 plus the site's unique ID, independent of the Teleport agent. It survives
+    a hung agent, not a hung kernel, has no session recording, and a listening port does not prove the right box answered (a box imaged from a generic build can carry the image's ID; read the host
+    name first). Operator rule: never call a box unreachable before checking it. `Disputed`: retirement is undecided (operator 2026-10-06) against "slated to retire" in item 12. (Added 2026-11-10.)
+   - Evidence: `SMC-SKILL/references/03_communication-flows.md` (Backdoor SSH Access, Learned 2026-10-22); `SMC-SKILL/references/01_overview.md` section 2
+   - Applies: [Zero-trust access to remote fleets](../../references/security-and-segmentation.md#zero-trust-access-to-remote-fleets)
+48. The two Teleport clusters are independent roots: every command names its proxy; the subordinate-cluster flag fails with a transport error that two sessions read as a fleet outage. Devices are
+    reached only through the box (port-forward or ProxyJump, nothing installed on the box), and device host keys collide across sites, so known-hosts are kept per site. (Added 2026-11-10.)
+   - Why: a flag mistake looks like an outage; a shared known-hosts file looks like an attack.
+   - Evidence: `SMC-SKILL/references/01_overview.md` (Remote Access, incident 2026-09-18, operator rule 2026-09-29)
+   - Applies: [Management behind carrier NAT](../../references/remote-site-fleet.md#management-behind-carrier-nat)
+49. Teleport is a monitoring dependency since D2 (decided 2026-09-21): an outage or a failed bot renewal darkens every site at once, and a still-valid 12-hour certificate hides a broken renewal for
+    hours. On 2026-11-05 the bastion kept session records and audit events with no retention (root disk 94 %), and ran Teleport 13.4 while the bot and operator clients were 12.4. (Added 2026-11-10.)
+   - Why: one central host and its disk are a single point of failure for all site access and monitoring; alert on renewal failure and disk, not on SSH failure.
+   - Evidence: `APN/unified-network-controller/docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` D2 inherited constraints; `SMC-SKILL/references/03_communication-flows.md`
+     (bastion read 2026-11-05)
+   - Applies: [Zero-trust access to remote fleets](../../references/security-and-segmentation.md#zero-trust-access-to-remote-fleets)
+
 ## Telemetry over satellite
 
 14. A fresh Teleport session to one site costs 6.9-8.0 s; each unit read 33-52 s; the largest site (306 units) hit its 900 s limit every cycle and read about 90 units.
@@ -120,6 +164,13 @@ Summary: >-
 21. The site role named "URL capture" records DNS queries (port 53), not URLs; backhaul telemetry has bytes but no application classification.
     - Evidence: `APN/docs/wifi-metrics-coverage.xlsx` (rows URL Capture, Backhaul Top Applications, Devices Connected)
     - Applies: [Probes, alert routing and outages that are not connectivity](../../references/observability-troubleshooting.md#probes-alert-routing-and-outages-that-are-not-connectivity)
+
+50. More exact than item 14: a working SSH read through Teleport takes 7 to 9 s (a 6 s deadline failed healthy boxes; rule: 10 s an attempt, two attempts, deadlines on `tsh status` and `tsh ls`), and
+    a
+    per-unit read costs about 7.4 s at a Sky Muster site against 3.2 s at a terrestrial one, so stages batch per site and reuse one connection. Link profiles: [site-backhaul.md](site-backhaul.md).
+    (Added 2026-11-10.)
+   - Evidence: `SMC-SKILL/references/01_overview.md` (Learned 2026-10-16 and 2026-10-29, VERIFIED_PRIMARY in source)
+   - Applies: [Polling over GEO and on-box readers](../../references/remote-site-fleet.md#polling-over-geo-and-on-box-readers)
 
 ## Discovery and identity
 
@@ -172,6 +223,36 @@ Summary: >-
     - Evidence: `SMC-SKILL/references/06_failure-modes.md` (lines ~349-365); `APN/smc-resiliency/docs/recovery/smc-hang-recovery-options-20261006_1214.md` (option F)
     - Applies: [Probes, alert routing and outages that are not connectivity](../../references/observability-troubleshooting.md#probes-alert-routing-and-outages-that-are-not-connectivity)
 
+51. Multi-WAN routing as built (read live on two boxes 2026-11-06): each `internet` leg has its own routing table and a `from` rule (a dhclient hook); the main table has one multipath default written
+    by
+    the portal's gateway-status job; the `starlink`-role leg gets a plain metric-100 default and no table; stale `from` rules pile up. The labels are inverted: Starlink became primary under the
+    `internet` label, and `starlink` now marks the single Sky Muster backup. UNC models every uplink as role Internet plus a Circuit whose provider comes from the far side (decided 2026-09-27 and
+    2026-10-08, lab only). (Added 2026-11-10.)
+   - Why: one ping from the box measures one leg; a label never says which carrier a leg uses.
+   - Evidence: `SMC-SKILL/references/03_communication-flows.md` (WAN Uplink Addressing, Learned 2026-11-06); `APN/unified-network-controller/ARCHITECTURE.md` (WAN uplinks)
+   - Applies: [ECMP hashing pitfalls](../../references/routing-and-switching.md#ecmp-hashing-pitfalls)
+52. Ingress shaping on Starlink legs is a hand-installed per-site TBF and ifb script outside Ansible (rates differ per site; Sky Muster backup and carrier-managed legs unshaped); the QoS role is gated
+    to the Pi flavour only. A fleet QoS and fair-use design is open (D19, raised 2026-10-26). (Added 2026-11-10.)
+   - Why: a rebuild loses the shaping silently; fair use over satellite has no design yet.
+   - Evidence: `SMC-SKILL/references/03_communication-flows.md` (Manual TBF/ifb Ingress Shaping);
+     `APN/unified-network-controller/docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` D19
+   - Applies: [Redundancy and CGNAT](../../references/wan-and-remote-access.md#redundancy-and-cgnat)
+53. Two DNS paths on one box: client DNS goes to unbound, then stubby, whose single upstream is DNS over TLS through an autossh local forward to the Teleport bastion (no failover; bind9 with RPZ on
+    the low-touch group instead); the box's own lookups go straight to public resolvers. The tunnel is unmonitored and its retirement undecided. (Added 2026-11-10.)
+   - Why: the bastion is also the client DNS upstream for most sites; the effect of losing it on clients is UNVERIFIED (inferred from the single upstream).
+   - Evidence: `SMC-SKILL/references/02_service-map.md` (Core Networking); `APN/enterprise-strategy/architecture/current-state-architecture-20261006_1321.md`
+   - Applies: [Dependency order](../../references/network-services.md#dependency-order)
+54. Reach checks in use: UNC's uplink check every 15 minutes sends pings and a DNS query out of each leg and raises `uplink_down`; a per-leg round-trip probe binds to each leg's address. For a dark
+    VLAN, an RX counter of exactly zero rules out firewall and routing, and a sibling VLAN on the same parent passing traffic clears the cable and NIC. (Added 2026-11-10.)
+   - Evidence: `SMC-SKILL/references/03_communication-flows.md` (WAN-Path Diagnostic Techniques, Recurrence 2026-10-13, Learned 2026-11-06)
+   - Applies: [Probes, alert routing and outages that are not connectivity](../../references/observability-troubleshooting.md#probes-alert-routing-and-outages-that-are-not-connectivity)
+55. Proposed, not decided: the reach ladder for the new images. The box checks path (uplink, gateway, public anchor), then the controller's endpoint (TCP and TLS), then its service (authenticated
+    heartbeat); only a failure local to the box starts a timer toward a self-undoing trial; a central fault (controller, Teleport, public DNS) never starts a fleet-wide action, and an outage never
+    reverts a version. Principle USER_STATED by the operator 2026-11-05. (Added 2026-11-10.)
+   - Why: a whole fleet acting on a central outage at the same hour is a larger incident than the outage.
+   - Evidence: `APN/smc-resiliency/docs/pi/pi-immutable-smc-image-design-20261014_0850.md` section 9.4
+   - Applies: [Site dependencies on the box](../../references/remote-site-fleet.md#site-dependencies-on-the-box)
+
 ## Controller exit and onboarding
 
 36. Factory-default units reach the vendor controller through site DHCP option 43, and on some sites a DHCP-lease hook registers them; replacing the controller changes both. Required test: a
@@ -188,6 +269,50 @@ Summary: >-
 39. Field cost is a named driver: rising field prices, unreported weekend truck rolls, low-touch installs over two days on site; remote-resolution target 90% (a target, not firm).
     - Evidence: `APN/enterprise-strategy/docs/program-brief-20261006_1055.md` (sections 2 and 8)
     - Applies: [Onboarding and controller exit](../../references/remote-site-fleet.md#onboarding-and-controller-exit)
+
+56. Update to item 37: the operator recorded on 2026-11-05 and 2026-11-06 that the vendor console continues after the product-line sale; the 13 Nov exit target is withdrawn and site-box resiliency
+    has priority over controller work. The vendor's ePMP, Enterprise Wi-Fi and console lines went to one buyer (production resuming is a vendor claim, UNVERIFIED), PMP, PTP and 60 GHz to another.
+    (Added 2026-11-10.)
+   - Evidence: `APN/unified-network-controller/docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` section 1 (Currency note 2026-11-06);
+     `APN/enterprise-strategy/requirements/component-inventory-20261006_1321.md` section A
+   - Applies: [Onboarding and controller exit](../../references/remote-site-fleet.md#onboarding-and-controller-exit)
+57. Proposed site-box to controller contract (draft v0.2, contract 0.3.0 on 2026-11-09): fourteen interfaces, most proved on the box side in the lab against a stand-in, events, Teleport identity and
+    per-layer versions proposed; the box only pulls over outbound HTTPS; every request is a compact JWS (EdDSA) bound to its endpoint with a one-time nonce; the release store must serve HTTP/2 with
+    range requests; time comes from the controller or the site gateway by address. Nothing is agreed until the controller answers and the operator records it in D12. (Added 2026-11-10.)
+   - Why: the transport (Teleport or an overlay) is not trusted; the message is.
+   - Evidence: `APN/smc-resiliency/docs/interfaces/unc/interfaces.yaml`, `readme.md` there
+   - Applies: [Management behind carrier NAT](../../references/remote-site-fleet.md#management-behind-carrier-nat)
+58. Proposed (operator 2026-10-22): a site fingerprint to notice a box carried to another site: switch identity over LLDP or MNDP, AP and ATA MACs from leases, the uplink gateway MAC, public address
+    and ASN, and on Starlink the dish position. The controller judges; the box changes nothing on a mismatch. A Sky Muster terminal offers nothing readable. (Added 2026-11-10.)
+   - Evidence: `APN/smc-resiliency/docs/pi/pi-immutable-smc-image-design-20261014_0850.md` section 10
+   - Applies: [Discovery evidence ranking](../../references/remote-site-fleet.md#discovery-evidence-ranking)
+
+## Site devices
+
+59. On the Pi flavour the site switch is a MikroTik RB450Gx4 (294 of 297 reached, RouterOS 7.8): ether1 the box trunk, ether2 the satellite terminal, ether3 a second WAN, ether4 the phone UI, ether5
+    the
+    one AP (a MikroTik Metal 52 ac). It sits in both the user and WAN paths on a solar bus of about 24 V; every surveyed switch carries identical port MACs (cloned config); the box's app
+    power-cycles it after about 11 minutes of failed pings. (Added 2026-11-10.)
+   - Why: never key inventory on these MACs; capture the switch log before a power-cycle; check switch uptime against box uptime before blaming the satellite.
+   - Evidence: `APN/enterprise-strategy/requirements/component-inventory-20261006_1321.md` A07, B02 (VERIFIED-OBSERVED 2026-10-07);
+     `/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-mikrotik/SKILL.md`
+   - Applies: [Failure domains](../../references/physical-and-campus.md#failure-domains)
+60. x86 sites run two TP-Link SG2428P switches (both online at some sites, one on standby at others) with a guessable read-write SNMP v2c community; the controller onboards them through the same sweep
+    as radios and parses their configs with netutils' `linux` parser (decided 2026-09-30). (Added 2026-11-10.)
+   - Evidence: `APN/enterprise-strategy/requirements/component-inventory-20261006_1321.md` B01; `SMC-SKILL/references/16_tplink-site-switches.md`; `APN/unified-network-controller/ARCHITECTURE.md`
+     (Site switches)
+   - Applies: [Port and wireless access control](../../references/security-and-segmentation.md#port-and-wireless-access-control)
+61. RouterOS as the site box is a parked, unscheduled study, not adopted and no dependency of the controller or site-box projects (operator 2026-10-22). Candidates: the installed RB450Gx4 for Pi sites
+    (containers need RouterOS 7.4 or later; the fleet runs 7.8), RB5009 for the small x86 class, CCR2004-16G-2S+PC for the large; container support is not parity, and Netinstall needs Layer 2
+    adjacency, so a broken remote router cannot reinstall itself. (Added 2026-11-10.)
+   - Evidence: `APN/enterprise-strategy/workstreams/redefine-baseline/routeros-smc-replacement-future-study-20261022_1323.md` (Executive summary, Candidate models)
+   - Applies: [Paper-first feasibility](../../references/remote-site-fleet.md#paper-first-feasibility)
+62. `Disputed` (counts): x86 site boxes are 47 by model (28 small, 19 large, read 2026-10-22), 18 `rcp` production sites plus about 20 `nbn_accelerate` sites by the operator and skill-smc, 34 x86
+    Devices in Nautobot, and 36 sites in the controller register, whose environment table also describes the site box as x86 Ubuntu or Debian (corrected to Ubuntu 22.04 in its D12 IC1) and omits the
+    Pi fleet. Units and dates differ; re-count from the inventory before using a figure. (Added 2026-11-10.)
+   - Evidence: `APN/enterprise-strategy/workstreams/redefine-baseline/routeros-smc-replacement-future-study-20261022_1323.md` (Candidate models); `SMC-SKILL/references/01_overview.md` section 2;
+     `APN/unified-network-controller/ARCHITECTURE.md` (Components); `APN/unified-network-controller/docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` section 1
+   - Applies: [Site shapes and the one-box rule](../../references/remote-site-fleet.md#site-shapes-and-the-one-box-rule)
 
 ## Datacenter switching and resolvers
 

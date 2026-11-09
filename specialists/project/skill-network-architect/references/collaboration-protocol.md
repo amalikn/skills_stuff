@@ -83,8 +83,20 @@ Either architect may use any specialist; the split above is the usual one, not a
 | skill-smc      | SMC discovery, operations, ansible-wifi report meaning | site architecture, report anomalies, migration impact        |
 | skill-cambium  | radio and AP facts per model and firmware              | RF and backhaul design, capacity, resilience                 |
 | skill-mikrotik | RouterOS facts and supported operations                | VLAN and routing design, MTU, recovery effects               |
+| skill-proxmox  | Proxmox VE facts: nodes, storage, SDN, VMs, API tokens | cluster, storage and HA design, failure domains, sizing      |
+| skill-vagrant  | lab VM facts: boxes, providers, clones, machine-id     | lab topology, what a lab result proves for production        |
 
 ## Decision rules
+
+Overlap (one fact, one home; operator question 2026-11-10):
+- A product, model or version fact lives in its platform or equipment pack (skill-smc, skill-cambium, skill-mikrotik, skill-proxmox, skill-vagrant,
+  skill-nautobot, skill-openwisp). The architect packs hold the vendor-neutral rule, method or decision table it teaches, and link the pack's entry
+  instead of copying it.
+- One finding often yields two write-backs: the specific fact to the pack, the generic lesson to the architect, each citing the other.
+- A project fact (site, address, credential, customer) stays in the project. The shared `operator/apn/` folder (skill-network-architect, read by both architects) summarises APN-specific design for
+  orientation and points at the project file that owns each fact; when they differ, the project file wins and the summary is corrected.
+- Where an architect page and a pack disagree on a product fact, the pack is the source; record a `Disputed` entry in the architect page until the
+  pack's evidence is re-checked.
 
 Handoff:
 - Fill the handoff envelope: request ID, sender, recipient, coordinator, mode, objective, scope, exclusions, authorisation.

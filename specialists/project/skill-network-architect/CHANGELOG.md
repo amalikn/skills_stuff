@@ -11,6 +11,16 @@ Kind: log
 
 # Changelog
 
+## 20261110_0025 — APN operator context extended; collaboration protocol: proxmox and vagrant rows, one fact one home (v2.2.0 -> v2.3.0)
+
+- operator/apn/site-fleet-network.md items 43 to 62 (site patterns, reach checks and ladder, DNS paths, backdoor, Teleport, cnMaestro, the SMC to
+  UNC contract, site devices) and new operator/apn/site-backhaul.md (12 items: Sky Muster, Starlink, Iridium and Thuraya swaps, latency and
+  measured link profiles); README index and estate paragraph corrected (Sky Muster and Starlink; Pi or x86 boxes). Source disagreements recorded,
+  not resolved (counts, latency, backdoor retirement, Teleport versions).
+- operator/apn/site-boxes-and-platforms.md items 27 to 39 (for skill-systems-architect, which reads this folder by path).
+- references/collaboration-protocol.md (shared): skill-proxmox and skill-vagrant rows; an "Overlap" rule (product facts in the platform pack, the
+  vendor-neutral lesson in the architect, project facts in the project, the operator folder summarises and points; the pack wins on a product fact).
+
 ## 20261029_2029 — Session closeout: incidents and operational events (2026-10-29)
 
 - Incident: a concurrent session's commit b6f399f (skill-slurp-chat and skill-coder) swept in this session's staged files (215 files, v2.2.0

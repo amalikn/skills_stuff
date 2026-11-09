@@ -11,6 +11,16 @@ Kind: log
 
 # Changelog
 
+## 20261110_0025 — Linux and resiliency write-back from smc-resiliency S1; APN read from the shared folder (v2.2.0 -> v2.3.0)
+
+- references/edge-appliances.md: Learned 2026-11-10 entries beside "Image layout and updates" (boot firmware is part of the image: a distribution's
+  packaged Pi firmware could not boot GPT partition 2; prove the chain on every fleet bootloader; a fixed-length selection file overwritten in place)
+  and "Hangs, watchdogs and power" (force the test hang by crashing PID 1, not SIGSTOP; the systemd watchdog does not cover firmware or initramfs
+  failures). Evidence: smc-resiliency lab test record 19, bench transcript.
+- APN: new items 27 to 39 in the shared ../skill-network-architect/operator/apn/site-boxes-and-platforms.md (resiliency design state, decisions,
+  S1, S1V, X1, X2 results, lab rigs, UNC lifecycle role, source disagreements); no copy in this pack (operator, 2026-11-10: architects learn APN
+  specifics; one home per fact).
+
 ## 20261029_2024 — Knowledge harvest from the APN and personal projects; APN operator context (v2.1.0 -> v2.2.0)
 
 - Project harvest (operator, 2026-10-29): new references service-provider-systems (OSS/BSS, AVC keys, three-source reconciliation, money
