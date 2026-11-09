@@ -77,3 +77,16 @@ plan. Rebase/retire a core patch only if the project actually has one; supported
 >     "name": "machine writers", "object_types": cts, "actions": spec["actions"], "enabled": True, "groups": [group]}, ...)
 > ```
 
+> **Learned 2026-11-09** · Nautobot permissions, narrowing a writer · VERIFIED_PRIMARY (code and tests; not yet applied on a live instance) · Source: unified-network-controller
+> commit 1a41cb1a (`nautobot/catalog/access.yaml` `writers.exclude_object_types`, `secret_writer`; `seed_nautobot_catalog.py` `writer_object_types()`) · Falsifier: the
+> exposure check after the apply still lists AUTHORING for the writer group.
+> Keep the app-wide grant but subtract the template-authoring models as data, and give the one model a writer truly needs (Secrets, for vault references)
+> to that user alone in a separate permission, so the always-running token holds no template right and the residual one sits on a single token until
+> the upgrade. Check each excluded model against the writers' code first: here only admin-run catalog phases created Job Buttons and Computed Fields.
+>
+> ```python
+> def writer_object_types(content_types, apps, excluded):
+>     skip = set(excluded)
+>     return sorted(n for c in content_types if c["app_label"] in apps and (n := f"{c['app_label']}.{c['model']}") not in skip)
+> ```
+

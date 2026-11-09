@@ -140,6 +140,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Ideas
 
+- **Target-map change-log rule matches a target ID mentioned in passing** (2026-11-09, unified-network-controller): an entry saying "the upgrade after U1.4 (Fri 20 Nov)" counted as U1 work and failed the commit gate until the review date moved; the entry was reworded instead. Option: count an entry only when the ID heads it or is tagged (`Target: U1`), or ignore an ID used as a date anchor.
 - **Freshness for generated docs dated by their data** (proposed 2026-11-09, unified-network-controller; not decided): a generated file whose `Last reviewed` is set from its newest input (topology scorecards: newest discovery run) goes overdue with nothing a person can review; the operator baselined two on 2026-11-09. Option: judge `Authority: generated` files by their own drift check instead of a review interval. Needs the operator's decision; it changes the check for every project.
 - **Move lines, not only sections (2026-11-05, ansible-wifi AGENTS.md split).** `move_sections.py` moves whole headed sections; a flat rule list
   (191 lines under no heading) had to be split by line ranges with a one-off script that proved each non-blank line landed in exactly one

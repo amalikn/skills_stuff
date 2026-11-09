@@ -39,6 +39,7 @@ Last rotated: 20261105_2141
 
 ## Unreleased
 
+- ROADMAP idea (2026-11-09, unified-network-controller): the target-map change-log rule counts a target ID mentioned only as a date anchor as work on that target
 - 2026-11-09 write-back from skill-vagrant refresh: references/pitfalls.md (govern skips code-map; quoted Summary; wrapped CHANGELOG lines; GOVERN_ALLOW_DIRTY refused; CATALOGS per research folder)
 - 2026-11-09 write-back from skill-proxmox refresh: references/pitfalls.md (unindented legacy-header continuation lost on adoption; docs/history and docs/trackers need CONDITIONAL_PATHS; govern baselines are a ratchet; accepted archcore leaves the review clock; candidates file owed)
 - scripts/markdown/table_add_column.py (+ tests/test_table_add_column.py, `just table-add-column`): add a column to markdown tables keyed by the first cell; wrapped continuation rows merged to one line per row; a missing key refused unless `--default`; a `|` in a value escaped (an unescaped one split cells even inside backticks, and the markdown hook then mangled the row: found 2026-11-09 in unified-network-controller's audit verdict column); plan without `--apply`. Promoted from that session's one-off. Also observed: `doc_freshness.py --write-baseline` drops resolved entries as it adds new ones; a generated doc whose Last reviewed comes from its data (topology scorecards) can only be baselined or regenerated from a new run (exemption for `Authority: generated` proposed, not decided: ROADMAP)
