@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-09 read-only lab probes for the doc-only sections (operator: "Read-only probes now") blocked: the lab node was unreachable from this network (port 22 timed out, no lab route); probe set recorded in SCRATCHPAD open items; no Learned entry until they run.
 - 2026-11-09 skill-ai-it promote (operator: "promote and accept all"): candidates surfaced from AGENTS.md, SKILL.md and the references and accepted: `.archcore/adr/bpg-provider-not-telmate.adr.md`, `.archcore/rules/live-node-writes.rule.md`, `.archcore/rules/project-boundary.rule.md`; contract-enforced and upstream rules left unpromoted (index table).
 - 2026-11-09 `.archcore/rules/dated-latest-claims.rule.md` accepted (operator, promoted from the candidates file); `ARCHCORE_PROMOTION_CANDIDATES.md` removed (queue empty) and dropped from the Repomix include.
 - 2026-11-09 AGENTS.md trimmed (operator: "Trim AGENTS.md · 3k tokens per request"): 148 to 70 lines, 12.6 to 5.7 KB; scope, search order, version and memory

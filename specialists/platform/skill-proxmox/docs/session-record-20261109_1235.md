@@ -56,6 +56,10 @@ writes. Pass 3: 2 sub-agents.
 | 25 | Workspace files: governance repo + symlinks | 26 files in governance/workspace/ (ca2401c, 6d99339); mirror check in governance_git_tracking.py (8d892b0) |
 | 26 | dated-latest-claims: promote; then "skill-ai-it promote and accept all" | four `.archcore/` documents accepted (dd0b695) |
 | 27 | Allow push to my GitHub (side-agent caveat: rules match text, not remote) | path-scoped allow rules for 8 repos, deny for 3 company clones, broad rule removed; pushed governance, skills_stuff, scripts_stuff |
+| 28 | Peer message from skill-vagrant: it restored the skills_stuff excludes at 12:00 for its 80effd6; skill-ai-it AGENTS.md now past review | incident cause confirmed in this record and scripts_stuff CHANGELOG (db5efef); review left open |
+| 29 | Answers: skill-ai-it review left to its owner; read-only probes now; local-knowledge-ansible left to ansible-wifi; fix the adoption bug with a test | 4 record_decision; adoption fix 1aa6e7f (2 tests, red on old code); probes blocked, probe set in SCRATCHPAD (c843e72) |
+| 30 | Side-agent note: removing the broad push rule left other GitHub clones uncovered | allow rules for all 64 github.com/amalikn clones, deny for all 9 activ8me clones (settings backup ...1250b); memory and governance change-log (a5cdb23) |
+| 31 | Slurp close in detail (third close) | this row; memory-keeper `session.closeout.20261109.skill-proxmox` updated |
 
 ## Sub-agents
 

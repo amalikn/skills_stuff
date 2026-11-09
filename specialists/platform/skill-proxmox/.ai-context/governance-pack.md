@@ -533,6 +533,10 @@ writes. Pass 3: 2 sub-agents.
 | 25 | Workspace files: governance repo + symlinks | 26 files in governance/workspace/ (ca2401c, 6d99339); mirror check in governance_git_tracking.py (8d892b0) |
 | 26 | dated-latest-claims: promote; then "skill-ai-it promote and accept all" | four `.archcore/` documents accepted (dd0b695) |
 | 27 | Allow push to my GitHub (side-agent caveat: rules match text, not remote) | path-scoped allow rules for 8 repos, deny for 3 company clones, broad rule removed; pushed governance, skills_stuff, scripts_stuff |
+| 28 | Peer message from skill-vagrant: it restored the skills_stuff excludes at 12:00 for its 80effd6; skill-ai-it AGENTS.md now past review | incident cause confirmed in this record and scripts_stuff CHANGELOG (db5efef); review left open |
+| 29 | Answers: skill-ai-it review left to its owner; read-only probes now; local-knowledge-ansible left to ansible-wifi; fix the adoption bug with a test | 4 record_decision; adoption fix 1aa6e7f (2 tests, red on old code); probes blocked, probe set in SCRATCHPAD (c843e72) |
+| 30 | Side-agent note: removing the broad push rule left other GitHub clones uncovered | allow rules for all 64 github.com/amalikn clones, deny for all 9 activ8me clones (settings backup ...1250b); memory and governance change-log (a5cdb23) |
+| 31 | Slurp close in detail (third close) | this row; memory-keeper `session.closeout.20261109.skill-proxmox` updated |
 
 ## Sub-agents
 
@@ -4011,6 +4015,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-09 read-only lab probes for the doc-only sections (operator: "Read-only probes now") blocked: the lab node was unreachable from this network (port 22 timed out, no lab route); probe set recorded in SCRATCHPAD open items; no Learned entry until they run.
 - 2026-11-09 skill-ai-it promote (operator: "promote and accept all"): candidates surfaced from AGENTS.md, SKILL.md and the references and accepted: `.archcore/adr/bpg-provider-not-telmate.adr.md`, `.archcore/rules/live-node-writes.rule.md`, `.archcore/rules/project-boundary.rule.md`; contract-enforced and upstream rules left unpromoted (index table).
 - 2026-11-09 `.archcore/rules/dated-latest-claims.rule.md` accepted (operator, promoted from the candidates file); `ARCHCORE_PROMOTION_CANDIDATES.md` removed (queue empty) and dropped from the Repomix include.
 - 2026-11-09 AGENTS.md trimmed (operator: "Trim AGENTS.md · 3k tokens per request"): 148 to 70 lines, 12.6 to 5.7 KB; scope, search order, version and memory
@@ -5155,6 +5160,10 @@ done; `.archcore/` accepted; AGENTS.md trimmed and tracked in Git.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill), scenarios P-S01 to P-S20.
 - [ ] Re-verify the cookbook when the lab node moves to 9.2 (pending in its update queue).
 - [ ] Live probe on a three-node lab cluster for the 2026-11-09 doc-only sections (Ceph, migration, mappings, notifications, node removal): accepted plan step 3.
+  Read-only probes on the 9.1.5 lab node (operator, 2026-11-09: "Read-only probes now") were blocked: the node was unreachable from this Mac's network
+  (no lab route; port 22 timed out). Probe set, all GETs/help/status: `pvesh get /cluster/notifications/endpoints/{sendmail,smtp,gotify,webhook}`,
+  `/cluster/notifications/matchers`, `/cluster/mapping/{pci,usb,dir}`, `/access/tfa`; `qm help migrate`, `qm help remote-migrate`, `pveceph status`,
+  `pveceph help pool create`, `pvecm help delnode`; `dpkg-query -W virtiofsd ceph-common`; `ls /usr/share/pve-manager/templates/default/`.
 - [x] Archcore rule `dated-latest-claims` promoted and accepted (operator, 2026-11-09).
 - [ ] Still baselined: AI_NAVIGATION.md 9 lines over its 150-line budget (the routing table is a checked rule); `.ai-context/` (generated, no header).
 
