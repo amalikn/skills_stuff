@@ -104,6 +104,19 @@ ONE MEDIUM, A/B LAYOUT (one SD card, eMMC or disk)
 - Firmware settings are desired state: boot order, watchdog, power-on after AC loss, Secure Boot. Report them beside the firmware version.
 - Convert existing boxes at a planned visit; a remote conversion that bricks a box costs the visit anyway.
 
+  > **Learned 2026-11-10** · converting deployed single-root boxes to A/B in place · VERIFIED_PRIMARY for the measurements (read-only, six
+  > deployed Pis), design otherwise (operator scope 20261110) · Source: smc-resiliency SCRATCHPAD open items 20261110_0132, 0145, 0155, 0159 ·
+  > Falsifier: an ext4 root shrink that survives a power cut mid-move on the bench.
+  > - Pilot on a bench box built like the fleet, never on a deployed one. Carve the partitions first, in a one-shot boot into a RAM maintenance
+  >   system (a firmware one-shot such as Pi tryboot returns to the old system on any failure), then copy the image only into the new partitions
+  >   from the running old system, then trial-boot the new slot; the old system stays bootable until commit, and remote access must never drop.
+  > - A root filling the disk must be shrunk offline first, and the shrink moves every block above the new end: ext4 spreads data across the
+  >   whole disk, so measure it read-only first (dumpe2fs block-group free counts per candidate size) and keep the old root as large as the new
+  >   layout allows (here: 25 GiB moves 0.8 to 2.7 GiB, 8 GiB up to 4.4 GiB). Pull power mid-shrink on the bench before trusting it.
+  > - Slot sizes are fixed at the first image (growing them means this conversion again): size root slots at about twice a measured release.
+  > - Keep writes low by design (read-only root, every writer given a home) and measure wear in the field: SMART on SSD and CFast; written sectors
+  >   from /sys/block/<dev>/stat on SD cards, which have no SMART; alarm on growth.
+
 ## Pull-based jobs over poor links
 
 Push configuration management over SSH loses the session when the link drops; a terminal multiplexer keeps a shell, not the controller's TCP session. Decouple transport from execution.

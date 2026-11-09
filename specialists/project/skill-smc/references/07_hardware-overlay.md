@@ -1209,3 +1209,12 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 >   (`Updating bootloader EEPROM ... BOOT-EEPROM: UPDATED`), and the config embedded with `rpi-eeprom-config --config ... --out` survived the
 >   downgrade. The image is `pieeprom-2023-01-11.bin` in github.com/raspberrypi/rpi-eeprom firmware-2711/old/critical (same bytes in old/stable).
 
+> **Learned 2026-11-10** · deployed Pi fleet, rct and wh (read-only survey of 3 rct and 3 wh boxes over Teleport) · VERIFIED_PRIMARY · Source:
+> smc-resiliency SCRATCHPAD open item 20261110_0145, raw on malik1tb lab-evidence/20261110/fleet-survey · Falsifier: a deployed Pi with GPT or a
+> second root partition.
+> - All six: Pi 4B rev 1.5, 7.8 GB RAM; Ubuntu 22.04.1, kernel 5.15.0-1078-raspi; card `AFNI0` 62,277,025,792 bytes, MBR: p1 FAT `system-boot`
+>   256 MB, p2 ext4 `writable` 57.7 GB filling the card; `/` is overlayroot (lower `/media/root-ro`, upper in RAM, about 3.9 GB); the root holds
+>   5.6 to 6.9 GB; bootloader 2023-01-11 with `BOOT_UART=0`, no `autoboot.txt`.
+> - The ext4 root spreads blocks up to the card's end (dumpe2fs group counts): 0.6 to 1.4 GiB of data sits above 35 GiB and 1.3 to 4.4 GiB above
+>   8 GiB; rct boxes hold two to three times more high up than wh. A shrink of a deployed root moves that much data.
+

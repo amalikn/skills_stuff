@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261110_0202 — Converting deployed single-root boxes in place; slot sizing; field wear metrics (v2.3.1 -> v2.3.2)
+
+- references/edge-appliances.md: Learned 2026-11-10 beside "Convert existing boxes at a planned visit" (bench pilot, carve before copy, shrink exposure measured read-only, slots sized at twice a measured release, wear measured in the field).
+
 ## 20261110_0030 — Flash-step guards for removable media (v2.3.0 -> v2.3.1)
 
 - references/provisioning-and-lifecycle.md: Learned 2026-11-10 before "Rollout waves": build apart from flash, layout as data, and a flash

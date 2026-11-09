@@ -6,13 +6,17 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261110_0031
+Last rotated: 20261110_0202
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)
+
+`references/07_hardware-overlay.md`: Learned 2026-11-10: 22.04.1, MBR 62 GB, overlayroot, 5.6-6.9 GB used, bootloader 2023-01-11, and how far the ext4 root's blocks spread (read-only, Teleport).
 
 ## 20261110_0031 — Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)
 
@@ -189,10 +193,3 @@ tables; an uplink plan drafted while one is down leaves it out (unified-network-
 ## 20261029_1257 — FDB and VIP placement evidence; TL- model prefix on old SG2428P firmware (v0.10.1 -> v0.10.2)
 
 Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tplink-site-switches.md` (b).
-
-## 20261029_1215 — ssh_handshake_probe: what SSH a device behind an SMC offers, no login (v0.10.0 -> v0.10.1)
-
-- `scripts/switch/ssh_handshake_probe.py` (+ `test_ssh_handshake_probe.py`, recipe `just ssh_handshake_probe <proxy> <node> <ip>...`): one tsh
-  session, `ssh -vv` with no authentication per address; prints banner, kex, host key, cipher/MAC and auth methods, so an `IPSSH-6.6.0` switch is
-  told from a `TPSSH` one before a login. Smoke run 2026-10-29 on aurukun-smc01 (10.255.1.2 IPSSH, 10.255.3.1 TPSSH): 19 s. Promoted from a
-  unified-network-controller session's ad hoc probe.
