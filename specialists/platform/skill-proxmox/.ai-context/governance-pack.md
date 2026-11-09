@@ -529,6 +529,10 @@ writes. Pass 3: 2 sub-agents.
 |---|---|---|
 | 22 | Commits of the first close: skills_stuff 7159792, scripts_stuff fc42b49, tools_stuff ca5c4f7, governance 899e724, project_stuff 5633069, wiki_stuff d4647d8 | this record; push handed to the operator |
 | 23 | Side-agent note: sessions started before the rule still follow the old "keep AGENTS.md out of Git" instruction and likely restored skills_stuff's exclude once | tracking check rerun (ten clones, only the 4 known local-knowledge-ansible files); seven pre-rule live sessions named in the closeout; restart or notify is the operator's call (follow-up below) |
+| 24 | Pre-rule sessions: message them | seven sessions messaged; record_decision |
+| 25 | Workspace files: governance repo + symlinks | 26 files in governance/workspace/ (ca2401c, 6d99339); mirror check in governance_git_tracking.py (8d892b0) |
+| 26 | dated-latest-claims: promote; then "skill-ai-it promote and accept all" | four `.archcore/` documents accepted (dd0b695) |
+| 27 | Allow push to my GitHub (side-agent caveat: rules match text, not remote) | path-scoped allow rules for 8 repos, deny for 3 company clones, broad rule removed; pushed governance, skills_stuff, scripts_stuff |
 
 ## Sub-agents
 
@@ -559,12 +563,9 @@ writes. Pass 3: 2 sub-agents.
 
 ## Follow-ups (owner: operator unless stated)
 
-- Where to version workspace governance files outside any Git repo (`/Volumes/Data`, `_ai`, `_skills`, `_ansible` AGENTS.md and CLAUDE.md).
-- Promote or reject `dated-latest-claims`.
 - Lab runs for the doc-only sections and the UNVERIFIED items (SCRATCHPAD open items).
 - local-knowledge-ansible: another session's uncommitted capture work (`ansible-wifi/history/current/.agents/*`, a snapshots archive) — its owner.
 - skill-ai-it: adoption could take an unindented legacy-header continuation (pitfall recorded, no fix made).
-- A Bash permission rule for `git push` if agents should push.
 - Sessions started before the rule (smc-resiliency, unified-network-controller, scripts-stuff, ansible-wifi, skill-knowledge-curator,
   enterprise-strategy, skill-vagrant on 2026-11-09): restart them or send them the rule; rerun `make governance-git-tracking` after they finish.
 
