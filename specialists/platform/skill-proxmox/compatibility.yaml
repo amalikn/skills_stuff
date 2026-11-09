@@ -49,3 +49,11 @@ environments:
     evidence_locator: "documents/research-sources-20261107 edk2-*.c.txt; Proxmox's packaged OVMF not diffed against master"
     validation_layer: official_documented
     result: pass
+  - id: pve-docs-9-current-20261109
+    product: Proxmox VE, Proxmox Backup Server and Proxmox Datacenter Manager documentation
+    product_version: "PVE 9.x (9.2 and 9.2 arm64), PBS 4.2, PDM 1.1 (current docs, fetched 2026-11-09)"
+    components: [pveceph chapter, notifications chapter, PVE Roadmap, PBS Roadmap, PDM roadmap, bpg/proxmox latest release]
+    observed_at: "2026-11-09"
+    evidence_locator: "documents/research-sources-20261109: pages fetched with curl and kept verbatim"
+    validation_layer: official_documented
+    result: pass

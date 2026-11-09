@@ -1,3 +1,15 @@
+---
+Title: skill-proxmox
+Category: readme
+Status: current
+Authority: canonical
+Scope: Root README.md of skill-proxmox
+Last reviewed: 2026-11-07
+Summary: "Canonical, cross-project platform pack for Proxmox VE 9.x: nodes and clusters, storage, networking and SDN, VMs and containers, access control and API tokens, the API and CLIs, backups,..."
+Review by: 2026-12-09
+Budget: 200 lines, 25 KB
+---
+
 # skill-proxmox
 
 Canonical, cross-project platform pack for Proxmox VE 9.x: nodes and clusters, storage, networking and SDN, VMs and containers, access control and API tokens, the API and CLIs, backups, HA, upgrades,

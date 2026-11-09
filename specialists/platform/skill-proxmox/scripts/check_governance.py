@@ -97,6 +97,8 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
     "graphify-out/GRAPH_REPORT.md",  # Graphify disabled, graphify-out/ deleted (operator, 2026-10-10); still named by the navigation block or history
     "graphify-out/graph.json",  # Graphify disabled, graphify-out/ deleted (operator, 2026-10-10); still named by the navigation block or history
     # Named by the generic skill-ai-it navigation block; this pack does not have them.
+    "docs/history",                     # created by `just rotate --apply` the first time a record passes its budget; named by the navigation block
+    "docs/trackers",                    # named by the skill-ai-it compact navigation block; this pack keeps open items in SCRATCHPAD.md
     "Taskfile.yml",                     # this pack uses just
     "Makefile",
     "package.json",                     # no Node toolchain

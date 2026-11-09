@@ -1,3 +1,13 @@
+---
+Title: Proxmox VE scenarios
+Category: test-guide
+Status: current
+Authority: canonical
+Scope: skill-proxmox tests/scenarios.md
+Last reviewed: 2026-11-07
+Summary: Scenario bank for skill-proxmox evaluation: each prompt with its expected first reference, decision points and prohibited conclusions.
+---
+
 # Proxmox VE scenarios
 
 Each scenario passes only when the expected first reference, decision points and prohibited conclusions are met.
@@ -82,3 +92,25 @@ Prohibit remounting or editing the pmxcfs database by hand.
 
 Prompt: The lab VM has no guest agent; find its address. Trigger: yes. First reference: `qemu-vms.md`, then `networking-and-sdn.md`. On a VNet with PVE IPAM, the dnsmasq `ethers` binding and lease;
 serial console through the socket. Prohibit relying on `ip neigh` on `vmbr0` for a VNet guest.
+
+## P-S17 — Sizing a hyperconverged Ceph pool
+
+Prompt: Plan Ceph on a new three-node cluster for VM disks. Trigger: yes. First reference: `storage.md`, then `architecture-and-cluster.md`. pveceph install, init with a dedicated network, a monitor
+and manager per node, OSDs spread evenly, a replicated pool with the defaults (size 3, min_size 2) added as `rbd` storage. Prohibit `min_size 1` and Ceph traffic on the Corosync link.
+
+## P-S18 — Alerting on failed backups and fencing
+
+Prompt: Make sure someone hears about failed backups and fenced nodes. Trigger: yes. First reference: `monitoring-and-metrics.md`. A target (smtp or webhook) with its secret in
+`/etc/pve/priv/notifications.cfg`, a matcher with `match-field exact:type=vzdump` and `match-severity error`, a second for `fencing` and `replication`. Prohibit editing the default templates in
+`/usr/share/pve-manager/templates/default/` (use the override directory).
+
+## P-S19 — Live-migrating a VM with a passed-through device
+
+Prompt: Live-migrate a VM that has a GPU passed through and a virtiofs share. Trigger: yes. First reference: `qemu-vms.md`. Passthrough and virtiofs both block live migration; offline migration
+with a resource mapping present on the target, `Mapping.Use` on the mapping. Prohibit claiming live migration between x86 and arm64 nodes.
+
+## P-S20 — Removing a node and checking current releases
+
+Prompt: Retire one node of a cluster and tell me which Proxmox releases are current. Trigger: yes. First reference: `architecture-and-cluster.md`, then `upgrade-and-troubleshooting.md`. Guests and
+replication jobs off first, power off for good, `pvecm delnode`, clean `/etc/pve/nodes/<node>`, keys and HA rules; releases from the dated ledger with its fetch date. Prohibit powering the removed
+node back on with its old configuration, and stating "latest" without the date it was checked.

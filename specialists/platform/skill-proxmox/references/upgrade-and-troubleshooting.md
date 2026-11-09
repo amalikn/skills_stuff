@@ -1,3 +1,13 @@
+---
+Title: Upgrade and troubleshooting
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/upgrade-and-troubleshooting.md
+Last reviewed: 2026-11-07
+Summary: Package repositories, minor updates, the 8-to-9 upgrade, what changed in 9.0 to 9.2 (including arm64), known issues, and triage.
+---
+
 # Upgrade and troubleshooting
 
 Package repositories, minor updates, the 8-to-9 major upgrade, what changed in 9.0, 9.1 and 9.2, known issues, and triage. Sources: [Package
@@ -28,6 +38,17 @@ Repositories](../documents/research-sources-20261107/pve-wiki-package-repositori
 - Read the configuration with `pvesh get /nodes/<node>/apt/repositories`: each file's format and each entry's `Enabled`.
 
 ## Minor updates
+
+```text
+  GET  /nodes/<node>/apt/update   read the cached list (daily pveupdate refreshes it)     read
+  POST /nodes/<node>/apt/update   refresh the list = apt update                           write
+     |
+     +-- minor (9.1 -> 9.2): read known issues -> one node: apt full-upgrade -> check guests
+     |                       -> reboot for a new kernel -> the other nodes      (never apt upgrade)
+     |
+     +-- major (8 -> 9):     latest 8.4 -> pve8to9 --full, fix FAILs -> repos bookworm -> trixie
+                             -> apt dist-upgrade -> pve8to9 again -> reboot     (Ceph on Squid first)
+```
 
 - "To install updates use the web-based GUI or `apt update` then `apt full-upgrade`". **Never `apt upgrade`**: Proxmox VE is a rolling release on Debian and `apt upgrade` "may result in a partially
   upgraded or broken package state", because only `full-upgrade` may remove packages to satisfy dependencies. `VERIFIED_PRIMARY` (System Software Updates).
@@ -60,6 +81,8 @@ Repositories](../documents/research-sources-20261107/pve-wiki-package-repositori
 | 9.2     | 2026-05-21 | Debian 13.5,     | CRS dynamic load balancing; `disarm-ha` / `arm-ha`; SDN WireGuard and BGP fabrics, route maps; custom CPU models in the GUI; Ceph Tentacle option. Known:  |
 |         |            |   kernel 7.0,    |   upgrade can stall if HA is disarmed mid-migration; Windows + host CPU + VBS freezes on Intel (fixed by machine version 11.0+pve2); installer kernel      |
 |         |            |   QEMU 11.0      |   and `megaraid_sas`                                                                                                                                       |
+| 9.2     | 2026-08-05 | arm64 build,     | First non-x86 release: NVIDIA Grace and Vera official, other UEFI+ACPI ARMv9-A best effort; no SeaBIOS, AMD SEV or GVT-g; live migration only within one       |
+| (arm64) |            |   Debian 13.6    |   architecture; later releases cover both architectures ([architecture-and-cluster.md](architecture-and-cluster.md#arm64-hosts))                                  |
 
 `VERIFIED_PRIMARY` (Roadmap release notes, captured 2026-11-07).
 

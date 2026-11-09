@@ -66,10 +66,12 @@ references/
   upgrade-and-troubleshooting.md
 scripts/
   check_governance.py
+  doc-freshness-baseline.json
   pve_node_report.py
   pve_ssh.py
   pve_token_audit.py
   README.md
+  role-check-baseline.json
 tests/
   eval-procedure.md
   scenarios.md
@@ -324,6 +326,16 @@ Run `/skill-ai-it refresh`; it re-scans the governance files and writes a new `A
 
 ## File: references/access-control.md
 ````markdown
+---
+Title: Access control
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/access-control.md
+Last reviewed: 2026-11-07
+Summary: Users, realms, roles, privileges, ACLs, pools, two-factor authentication and privilege-separated API tokens, with the least-privilege pattern for automation and the token audit.
+---
+
 # Access control
 
 Users, realms, groups, roles, privileges, ACLs, pools and API tokens, and the least-privilege pattern for automation. Sources: [pveum
@@ -338,6 +350,7 @@ check](../documents/research-sources-20261107/pve-9.1.5-installed-storage-downlo
 - [Privileges that matter](#privileges-that-matter)
 - [Least-privilege pattern for automation](#least-privilege-pattern-for-automation)
 - [Worked example: an OpenTofu identity](#worked-example-an-opentofu-identity)
+- [Two-factor authentication](#two-factor-authentication)
 - [Audit](#audit)
 
 ## Model
@@ -364,6 +377,18 @@ check](../documents/research-sources-20261107/pve-9.1.5-installed-storage-downlo
 - A token user needs no password: create it with `pveum user add name@pve` and no `--password`, so it cannot log in to the GUI. `VERIFIED_SECONDARY` (follows from the pve realm; observed in the lab).
 - Some operations are root-only even for an Administrator token (container bind mounts, privileged-container features, `arch`, device passthrough without a mapping). `VERIFIED_SECONDARY` (bpg provider
   index).
+
+```text
+  privilege-separated token (default)            full-privilege token (--privsep 0)
+
+  user ACL on <path> --+                          user ACL on <path> ---> token rights
+   (the ceiling)       |-- intersection --> token rights      (identical to the user)
+  token ACL on <path> -+
+
+  user: PVEVMAdmin on /pool/lab   token: PVEVMAdmin on /pool/lab   -> PVEVMAdmin
+  user: PVEVMAdmin on /pool/lab   token: (none)                    -> nothing
+  user: (none)                    token: PVEVMAdmin on /pool/lab   -> nothing (audit: token-acl-without-user)
+```
 
 ## Privileges that matter
 
@@ -440,6 +465,12 @@ The root step also adds `import` to `local` and downloads the pinned cloud image
 > `download-url` (the provider's `download_file`) accepts `Sys.AccessNetwork` on `/nodes/{node}` as an alternative to `Sys.Audit` + `Sys.Modify` on `/`; the bpg docs and the pveum privilege list do
 > not mention it yet. It still lets the caller make the node fetch any URL, so the pattern keeps downloads in a root step.
 
+## Two-factor authentication
+
+A realm can enforce TOTP or YubiKey OTP for all its users; users can also add their own TOTP, WebAuthn keys and single-use recovery keys (U2F is legacy, replaced by WebAuthn once configured).
+API tokens bypass TFA by design, which is one more reason to scope them tightly. `VERIFIED_PRIMARY` for the factor list ([pveum chapter](../documents/research-sources-20261107/pve-admin-chapter-pveum.md),
+Two-Factor Authentication); the token remark is `VERIFIED_SECONDARY` (the chapter calls token access "stateless", with no login step for a second factor).
+
 ## Audit
 
 `just token_audit --host <node>` (read-only) flags: tokens with `privsep=0`; grants on `/` whose role holds a dangerous privilege (except `root@pam`); dangerous privileges on a token anywhere; token
@@ -449,10 +480,27 @@ ACLs with no matching user ACL; tokens that never expire. Exit 1 on any high fin
 > rule is the pveum intersection rule
 > On the lab node two older automation identities (an MCP server user and a first OpenTofu user) each had `PVEAdmin` on `/` and a token with `privsep=0`: four high findings beside the clean
 > pool-scoped identity. A token made for a quick start tends to stay; audit before adding a new one.
+
+> **Learned 2026-11-07** · PVE 9.2.26 · VERIFIED_PRIMARY · Source: smc-resiliency `lab/infra/proxmox/pve_lab_setup.sh` (per-VMID ACL loop), node task log
+> `qmcreate:902 ... 403 Permission check failed (/vms/902, VM.Config.Options)` · Falsifier: a privilege-separated token with the role only on
+> `/pool/<pool>` creating a VM with `pool_id` on 9.2
+> A pool ACL does not cover a VM while it is being created: the create checks `/vms/<vmid>` before the VM joins the pool (9.1.5 created VM 901
+> with the pool ACL alone; after the upgrade to 9.2.26 VM 902 failed). Grant the role on `/vms/<id>` for each ID in the lab's range
+> (`pveum acl modify /vms/900 ... /vms/909 --roles <role> --users <user> --tokens '<user>!<token>'`), which keeps the token to that range.
 ````
 
 ## File: references/api-and-cli.md
 ````markdown
+---
+Title: API and CLI
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/api-and-cli.md
+Last reviewed: 2026-11-07
+Summary: The REST API as the one interface, authentication with tickets and tokens, the pvesh, pveum, qm, pct and pvesm CLIs, tasks, and safe readers and writers.
+---
+
 # API and CLIs
 
 The REST API is the one interface; the GUI, `pvesh`, `pveum`, `qm`, `pct` and `pvesm` all sit on it. Sources: [API wiki](../documents/research-sources-20261107/pve-wiki-api.md),
@@ -517,6 +565,16 @@ The REST API is the one interface; the GUI, `pvesh`, `pveum`, `qm`, `pct` and `p
 
 ## File: references/architecture-and-cluster.md
 ````markdown
+---
+Title: Architecture and cluster
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/architecture-and-cluster.md
+Last reviewed: 2026-11-07
+Summary: Node stack, pmxcfs and /etc/pve, Corosync clusters and quorum, QDevice, removing a node, arm64 hosts, and design rules for node identity.
+---
+
 # Architecture and cluster
 
 A Proxmox VE node is Debian plus the PVE stack (pve-manager, qemu-server, pve-container, pve-storage, pve-cluster). Several nodes form a cluster over Corosync and share configuration through pmxcfs at
@@ -527,23 +585,38 @@ A Proxmox VE node is Debian plus the PVE stack (pve-manager, qemu-server, pve-co
 - [Node](#node)
 - [pmxcfs and /etc/pve](#pmxcfs-and-etcpve)
 - [Cluster and quorum](#cluster-and-quorum)
+- [Removing a node](#removing-a-node)
+- [arm64 hosts](#arm64-hosts)
 - [Design rules](#design-rules)
 
 ## Node
 
 - The release follows Debian: PVE 9.x runs on Debian 13 trixie. `VERIFIED_PRIMARY` ([Upgrade from 8 to 9](../documents/research-sources-20261107/pve-wiki-upgrade-from-8-to-9.md)).
-- Release dates: 9.1 on 19 November 2025, 9.2 on 21 May 2026. `VERIFIED_PRIMARY` ([Roadmap](../documents/research-sources-20261107/pve-wiki-roadmap.md)). A node on 9.1.x with the no-subscription
-  repository sees the 9.2 packages as ordinary pending updates (see
+- Release dates: 9.1 on 19 November 2025, 9.2 on 21 May 2026. `VERIFIED_PRIMARY` ([Roadmap](../documents/research-sources-20261107/pve-wiki-roadmap.html)). A node on 9.1.x with the no-subscription repository sees the 9.2 packages as ordinary pending updates (see
   the Learned entry below).
 - The web UI and API listen on TCP 8006 over HTTPS (`pveproxy`). `VERIFIED_PRIMARY` ([API wiki](../documents/research-sources-20261107/pve-wiki-api.md)).
 
 ## pmxcfs and /etc/pve
 
+```text
+  node1                      node2                      node3
+  +----------------------+   +----------------------+   +----------------------+
+  | pveproxy :8006 (API) |   | pveproxy :8006 (API) |   | pveproxy :8006 (API) |
+  | qemu-server  pct     |   | qemu-server  pct     |   | qemu-server  pct     |
+  | pmxcfs -> /etc/pve   |   | pmxcfs -> /etc/pve   |   | pmxcfs -> /etc/pve   |
+  |   (SQLite on disk)   |   |   (SQLite on disk)   |   |   (SQLite on disk)   |
+  +----------+-----------+   +----------+-----------+   +----------+-----------+
+             |                          |                          |
+             +---------- Corosync: own low-latency link ----------+
+                  (keep storage and migration traffic off it)
+
+  quorum lost on a node -> its /etc/pve turns read-only; running guests keep running
+```
+
 - pmxcfs is "a database-driven file system for storing configuration files, replicated in real time to all cluster nodes using corosync"; data lives in an SQLite database on disk, the file system size
   limit is 128 MiB, and `/etc/pve` becomes **read-only when a node loses quorum**. `VERIFIED_PRIMARY` (pmxcfs chapter).
 - What lives there: `storage.cfg`, `user.cfg` (users, groups, ACLs, tokens without secrets), `domains.cfg` (realms), `priv/` (secrets, root-only), `nodes/<name>/` (per-node config,
-  `qemu-server/<vmid>.conf`, `lxc/<vmid>.conf`, certificates), `firewall/`, `sdn/`, `status.cfg` (external metric servers), `vzdump.cron`. `VERIFIED_PRIMARY` (pmxcfs file table;
-  [network](../documents/research-sources-20261107/pve-wiki-network-configuration.md) for `sdn/`).
+  `qemu-server/<vmid>.conf`, `lxc/<vmid>.conf`, certificates), `firewall/`, `sdn/`, `status.cfg` (external metric servers), `vzdump.cron`. `VERIFIED_PRIMARY` (pmxcfs file table; [network](../documents/research-sources-20261107/pve-wiki-network-configuration.md) for `sdn/`).
 - `/etc/pve/local` is a symlink to this node's `nodes/<name>/`. `VERIFIED_PRIMARY` ([Certificate Management](../documents/research-sources-20261107/pve-wiki-certificate-management.md)).
 - Consequence for tooling: read config through the API or `pvesh` rather than parsing `/etc/pve` files where an endpoint exists; the file formats are internal and the API applies permissions.
 
@@ -556,6 +629,23 @@ A Proxmox VE node is Debian plus the PVE stack (pve-manager, qemu-server, pve-co
   read-only; the guest-level effect is `VERIFIED_SECONDARY` (follows from it).
 - A single node is a cluster of one for the API: `GET /cluster/status` returns one `node` row and no `cluster` row (observed, see below).
 
+## Removing a node
+
+A **write** with no undo; read the whole pvecm procedure first. `VERIFIED_PRIMARY` ([pvecm chapter](../documents/research-sources-20261107/pve-admin-chapter-pvecm.md), Remove a Cluster Node).
+
+1. Before: move every guest off the node, back up its local data, and delete every replication job that involves it (a job left behind becomes irremovable; migrating a replicated guest off the node
+   reverses the job's direction toward it). Remove a QDevice first if one is configured. With Ceph, destroy the node's OSDs, monitor and manager while the remaining cluster has room.
+2. Power the node off and make sure it cannot come back on the cluster network with its current configuration; a returning node can break the cluster.
+3. On a remaining node: `pvecm delnode <node>`, then `pvecm nodes` to confirm. An error `could not kill node (error = cs_err_not_exist)` is Corosync failing to kill an offline node and can be ignored.
+4. Clean up: `/etc/pve/nodes/<node>/` (recover what you need, then remove), the node's key in `/etc/pve/priv/authorized_keys`, and the node in any HA rule. A node rejoining with the same name or
+   address runs `pvecm updatecerts` once to refresh its fingerprint cluster-wide.
+
+## arm64 hosts
+
+Proxmox VE 9.2 for arm64 was released on 2026-08-05: official for NVIDIA Grace and Vera, best effort on other UEFI ARMv9-A or newer hardware. Hosts must boot UEFI and describe hardware through ACPI,
+so device-tree boards such as the Raspberry Pi are not supported. It shares code base, repositories and lifecycle with x86-64; SeaBIOS for VMs, AMD SEV and Intel GVT-g are unavailable, and live
+migration works only between nodes of the same architecture. `VERIFIED_PRIMARY` ([Roadmap](../documents/research-sources-20261109/pve-wiki-roadmap.html), "Proxmox VE 9.2 for 64-bit ARM"). Running it nested in a Parallels arm64 VM on a Mac is untested here (`UNVERIFIED`); the Mac's own arm64 VMs stay with `skill-vagrant`.
+
 ## Design rules
 
 - Treat a node's identity (name, address) as fixed once clustered; renaming a clustered node is a documented multi-step procedure, not an edit.
@@ -563,13 +653,23 @@ A Proxmox VE node is Debian plus the PVE stack (pve-manager, qemu-server, pve-co
 - A lab single node and a production cluster differ in quorum behaviour; do not carry a lab result about `/etc/pve` writes to a cluster without checking quorum.
 
 > **Learned 2026-11-07 (a)** · Proxmox VE 9.1.5 · VERIFIED_PRIMARY · Source: lab node read-only (`pvesh get /cluster/status`, `/nodes/localhost/version`, `/nodes/localhost/apt/versions`) ·
-> Falsifier: a single-node 9.x install whose `/cluster/status` carries a `cluster` row
-> On a standalone node `GET /cluster/status` returns only a `node` row (no `quorate` field, `online: 1`). `localhost` is accepted as the node name in API paths. A 9.1.5 node on the no-subscription
-> repository listed `proxmox-ve 9.2.0` and `pve-manager 9.2.26` as ordinary pending updates: a minor release arrives through `apt full-upgrade`, not a separate upgrade procedure.
+> Falsifier: a single-node 9.x install whose `/cluster/status` carries a `cluster` row On a standalone node `GET /cluster/status` returns only a `node` row (no `quorate` field, `online: 1`).
+> `localhost` is accepted as the node name in API paths. A 9.1.5 node on the no-subscription repository listed `proxmox-ve 9.2.0` and `pve-manager 9.2.26` as ordinary pending updates: a minor release
+> arrives through `apt full-upgrade`, not a separate upgrade procedure.
 ````
 
 ## File: references/backup-and-restore.md
 ````markdown
+---
+Title: Backup and restore
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/backup-and-restore.md
+Last reviewed: 2026-11-07
+Summary: vzdump modes and targets, Proxmox Backup Server 4.x (S3 datastores, encrypted sync), prune-backups retention, restores, and what a backup is not.
+---
+
 # Backup and restore
 
 vzdump backups to a storage or to Proxmox Backup Server (PBS), retention, and restores. Sources: [vzdump chapter](../documents/research-sources-20261107/pve-admin-chapter-vzdump.md), [PBS
@@ -601,6 +701,23 @@ storage](../documents/research-sources-20261107/pve-wiki-storage-pbs.md), [Roadm
   inaccessible"). `VERIFIED_PRIMARY` (PBS storage).
 - Jobs are cluster-wide (Datacenter → Backup, stored in pmxcfs); a job runs on each node for that node's guests.
 - `maxfiles` was removed in 9.0; use `prune-backups`. `VERIFIED_PRIMARY` (Roadmap, 9.0 breaking changes).
+- **PBS 4.x** (on Debian 13): 4.0 (2025-08-06) added S3-compatible object stores as a datastore backend as a technology preview; 4.2 (2026-04-29) made S3 datastores officially supported,
+  with request and traffic counters and notification thresholds, added server-side encryption for push sync jobs (decryption on pull), parallel group sync (`worker-threads`), and moving
+  groups and namespaces inside a datastore. `VERIFIED_PRIMARY` ([PBS Roadmap](../documents/research-sources-20261109/pbs-wiki-roadmap.html), fetched 2026-11-09). An S3 datastore is a PBS
+  feature; Proxmox VE still sees it as a `pbs` storage.
+
+```text
+  vzdump job (cluster-wide; each node backs up its own guests)
+  mode snapshot | suspend | stop   [+ fleecing on a fast local thin storage]
+     |
+     +--> dir / NFS / CIFS storage (backup content)
+     |      dump/vzdump-*.vma.zst | .tar.zst      full archive every run
+     |
+     +--> pbs storage --> PBS datastore: chunked, incremental, deduplicated,
+                            |               optional client-side encryption (keep the key apart)
+                            |   backend: local disk | S3 object store (supported from PBS 4.2)
+                            +--> sync job push/pull to a second PBS (4.2: encrypt on push)
+```
 
 ## Retention
 
@@ -626,6 +743,16 @@ through the UI, CLI or API. `VERIFIED_PRIMARY`
 
 ## File: references/capability-extension.md
 ````markdown
+---
+Title: Capability extension
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/capability-extension.md
+Last reviewed: 2026-11-07
+Summary: Search order before building around Proxmox VE: core, Proxmox products (PBS, Datacenter Manager), the bpg provider, supported seams, then FOSS; common needs and where each is met.
+---
+
 # Capability extension
 
 What to reach for before building something around Proxmox VE, in order. Sources: the admin guide chapters and the bpg provider docs in
@@ -663,7 +790,7 @@ JavaScript on a node: an update overwrites it silently.
 |   and offsite                |                                                                     |                                                                                                 |
 | Metrics                      | External metric server (InfluxDB, Graphite, OpenTelemetry)          | Prometheus via an exporter                                                                      |
 | Run code on guest events     | Hook scripts in `snippets`                                          | Runs as root on the node: review like code                                                      |
-| Many clusters in one view    | Proxmox Datacenter Manager                                          | Capability depends on its release; check before relying on it (`UNVERIFIED` here)               |
+| Many clusters in one view    | Proxmox Datacenter Manager (1.0 on 2025-12-04, 1.1 on 2026-05-28) | Remotes for PVE and PBS, cross-cluster guest migration, Ceph status of remotes, automated-install answer files, subscription registry (1.1). `VERIFIED_PRIMARY` ([PDM roadmap](../documents/research-sources-20261109/pdm-docs-roadmap.html)) |
 | Inventory of record          | The source-of-truth system (for example Nautobot) reads PVE through | Proxmox is the actual state, not the intent ([skill-nautobot](../../skill-nautobot/SKILL.md))   |
 |                              |   the API                                                           |                                                                                                 |
 
@@ -680,6 +807,16 @@ JavaScript on a node: an update overwrites it silently.
 
 ## File: references/evolution-and-write-back.md
 ````markdown
+---
+Title: Evolution and write-back
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/evolution-and-write-back.md
+Last reviewed: 2026-11-07
+Summary: The standing write-back contract: Learned entry format, evidence with every entry, release reconciliation, promoting a project script, and the project layer.
+---
+
 # Evolution and write-back
 
 ## Standing write-back contract
@@ -755,6 +892,16 @@ token identities, VMID ranges and approval rules); check its `AGENTS.md` for it 
 
 ## File: references/ha-and-replication.md
 ````markdown
+---
+Title: HA and replication
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/ha-and-replication.md
+Last reviewed: 2026-11-07
+Summary: ha-manager requirements, managing resources, 9.x placement rules, fencing and maintenance mode, and ZFS storage replication with pvesr.
+---
+
 # HA and replication
 
 High availability with `ha-manager`, placement rules, fencing, the load balancer, and ZFS storage replication. Sources: [HA
@@ -807,6 +954,16 @@ ha-manager remove vm:100
 
 ## File: references/lxc-containers.md
 ````markdown
+---
+Title: LXC containers
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/lxc-containers.md
+Last reviewed: 2026-11-07
+Summary: pct containers from pveam and OCI templates, privileged versus unprivileged, automation limits, and when to choose a VM instead.
+---
+
 # LXC containers
 
 System containers managed by `pct`, from templates fetched with `pveam`. Sources: [Roadmap](../documents/research-sources-20261107/pve-wiki-roadmap.html), [pct
@@ -850,6 +1007,16 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 
 ## File: references/monitoring-and-metrics.md
 ````markdown
+---
+Title: Monitoring and metrics
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/monitoring-and-metrics.md
+Last reviewed: 2026-11-07
+Summary: Health reads, external metric servers, the notification system (targets, matchers, events, templates), and the pack's read-only node report.
+---
+
 # Monitoring and metrics
 
 What to read for node health, where PVE pushes metrics, and the pack's read-only node report. Sources: [External Metric
@@ -860,6 +1027,7 @@ Server](../documents/research-sources-20261107/pve-wiki-external-metric-server.m
 
 - [Health reads](#health-reads)
 - [External metric servers](#external-metric-servers)
+- [Notifications](#notifications)
 - [The node report](#the-node-report)
 
 ## Health reads
@@ -884,6 +1052,40 @@ Paths `VERIFIED_PRIMARY` by use on 9.1.5 for status, version, cluster status, st
 - Prometheus is not a built-in target: a third-party exporter that reads the API is the usual route; give it a token with `PVEAuditor` (read-only) on `/`, privilege-separated. The exporter choice is
   project-specific. `UNVERIFIED` for any particular exporter.
 
+## Notifications
+
+```text
+  event (type / severity / fields)     matcher (notifications.cfg)                    target
+  vzdump / error / hostname, job-id -> backup-failures                           -> smtp: ops mailbox
+                                         match-field exact:type=vzdump
+                                         match-severity error      (mode all)
+  fencing / error / hostname        -+
+                                     +-> cluster-alarms                          -> webhook: chat room
+  replication / error / job-id      -+     match-field exact:type=replication,fencing  -> gotify: on-call
+  package-updates / info            -> default (no rules: matches everything)    -> sendmail: root@pam
+  (matcher and target names are examples; one matcher may notify several targets)
+```
+
+Proxmox VE emits notification events and routes them through **matchers** to **targets**. Configuration lives in `/etc/pve/notifications.cfg`, with secrets (SMTP passwords, Gotify tokens,
+webhook secrets) in `/etc/pve/priv/notifications.cfg`. All `VERIFIED_PRIMARY` ([notifications chapter](../documents/research-sources-20261109/pve-admin-chapter-notifications.html), fetched 2026-11-09).
+
+- **Targets**: `sendmail` (the system MTA), `smtp` (direct to a relay), `gotify`, `webhook` (HTTP request with Handlebars templating of URL, headers and body, secrets through the
+  `secrets` namespace). Mail targets take `mailto` addresses and `mailto-user` users (the user's configured e-mail).
+- **Matchers**: `match-severity`, `match-field` (for example `exact:type=vzdump`) and `match-calendar`, combined with `mode all|any` and `invert-match`; a matcher with no rule matches
+  everything. One target can serve several matchers.
+- **Events**, with their `type` and severity. Route `fencing` and `replication` somewhere a person reads; they are the cluster's own alarms.
+
+  | Event                          | `type`            | Severity      | Extra fields      |
+  | ------------------------------ | ----------------- | ------------- | ----------------- |
+  | System updates available       | `package-updates` | info          | hostname          |
+  | Cluster node fenced            | `fencing`         | error         | hostname          |
+  | Storage replication job failed | `replication`     | error         | hostname, job-id  |
+  | Backup succeeded / failed      | `vzdump`          | info / error  | hostname, job-id  |
+  | Mail for root                  | `system-mail`     | unknown       | hostname          |
+
+- **Templates**: defaults in `/usr/share/pve-manager/templates/default/`; override per type in `/etc/pve/notification-templates/default/` (`<type>-subject.txt.hbs`,
+  `<type>-body.txt.hbs`, `<type>-body.html.hbs`); a missing or broken override falls back to the default.
+
 ## The node report
 
 `just node_report --host <node>` (read-only, one SSH round trip, about 15 s on the lab node) prints version, kernel, uptime, memory and root fill, quorum rows, pending updates with the PVE-stack
@@ -899,6 +1101,16 @@ audit. It never runs `apt update`; `--refresh --apply` asks PVE to refresh the l
 
 ## File: references/networking-and-sdn.md
 ````markdown
+---
+Title: Networking and SDN
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/networking-and-sdn.md
+Last reviewed: 2026-11-07
+Summary: ifupdown2 Linux bridges, VLAN-aware bridges, SDN zones and VNets, DHCP with PVE IPAM, and the SDN.Use permissions guests need on networks.
+---
+
 # Networking and SDN
 
 Host networking is Debian `ifupdown2` with Linux bridges (`vmbrN`); SDN adds cluster-wide zones and VNets on top. Sources: [Network
@@ -920,6 +1132,16 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pveum.md).
 - Bridges are named `vmbr0` to `vmbr4094`. A default install has `vmbr0` bridged to the first NIC, carrying the management address. `VERIFIED_PRIMARY`.
 - Changing the bridge that carries the management address over SSH or the API can cut you off. Keep console access (IPMI, the physical console) before a host network write.
 
+```text
+  guest net0: bridge=vmbr0,tag=20      guest net0: bridge=<vnet>        guest net0: bridge=<vnet>
+             |                                   |                                |
+             v                                   v                                v
+  vmbr0  (VLAN-aware Linux bridge)  <---  VLAN zone VNet (tag in VNet)    Simple zone VNet
+             |                             uses vmbr0 on each node        isolated bridge, no NIC,
+             v                                                            local to each node
+  eno1  (physical NIC, trunk to the switch)                               (NAT or routed)
+```
+
 ## VLANs for guests
 
 - **VLAN-aware bridge**: set `bridge-vlan-aware yes` and `bridge-vids 2-4094` on the bridge; each guest NIC then carries `tag=<vid>`, handled transparently by the bridge. The "traditional" alternative
@@ -937,6 +1159,15 @@ iface vmbr0 inet manual
 ```
 
 ## SDN zones and VNets
+| Zone   | How it isolates                              | Spans nodes                  | Needs                                             |
+| ------ | -------------------------------------------- | ---------------------------- | ------------------------------------------------- |
+| Simple | Isolated bridge, no physical port            | No (traffic local per node)  | NAT or routing for outside access                 |
+| VLAN   | VLAN tag set in the VNet                     | Yes, over an existing bridge | The same bridge configured on every node          |
+| QinQ   | Outer service VLAN (zone) + inner tag (VNet) | Yes                          | Switches that support stacked VLANs               |
+| VXLAN  | L2 frames in UDP (port 4789) overlay         | Yes, over a routed underlay  | UDP reachability between all peers                |
+| EVPN   | Routed L3 with BGP, anycast gateway, VRFs    | Yes, even across clusters    | A BGP controller; the FRRouting stack             |
+
+`VERIFIED_PRIMARY` ([SDN chapter](../documents/research-sources-20261107/pve-admin-chapter-pvesdn.md), Zones).
 
 - Zone types: **Simple** (an isolated bridge, local to each node, for NAT or routed setups), **VLAN** (tags on an existing bridge, connects nodes), **QinQ**, **VXLAN**, **EVPN**. A VNet is a virtual
   network in a zone; after applying, each node has a local interface with the VNet's name that guests attach to. `VERIFIED_PRIMARY` (SDN chapter, Zones and VNets).
@@ -981,10 +1212,33 @@ iface vmbr0 inet manual
 > simple zone (`dhcp: dnsmasq`, `ipam: pve`, a /28 subnet with the gateway on the node and a DHCP range) made PVE IPAM allocate an
 > address and write the MAC binding to `/etc/dnsmasq.d/<zone>/ethers`; the lease appeared in `/var/lib/misc/dnsmasq.<zone>.leases`.
 > The OpenTofu token also needed `SDN.Use` on `/sdn/zones/<zone>`, granted to user and token like `localnetwork`.
+
+> **Learned 2026-11-07** · SDN DHCP · VERIFIED_PRIMARY · Source: smc-resiliency spike/x86/x86_lab.sh (`ip` action), commit 26ada6fb · Falsifier: a vnet guest that appears in `ip neigh show dev vmbr0`
+> A guest on an SDN vnet never shows in the uplink bridge's neighbour table; read its address from the zone's dnsmasq leases on the node instead:
+> ```bash
+> awk -v m="$mac" 'tolower($2)==m{print $3; exit}' /var/lib/misc/dnsmasq.dhcp.leases
+> ```
+
+> **Learned 2026-11-07** · SDN IPAM, isolated bridge · VERIFIED_PRIMARY · Source: `/etc/dnsmasq.d/<zone>/ethers` before and after stopping VMs;
+> smc-resiliency `pve_lab_setup.sh` (vmbr9 step) · Falsifier: a stopped VM's MAC still listed in `ethers`
+> PVE IPAM binds a VM's MAC when the VM starts and drops the binding when it stops: with ten VMs stopped, `ethers` listed only the two running,
+> and a new VM was given an address a stopped VM had held. Count the subnet for the most VMs that run at once. A lab trunk between two VMs
+> needs no SDN: an isolated Linux bridge (`bridge-ports none`, no address, added to `/etc/network/interfaces` with a backup, `ifreload -a`)
+> carries tagged VLANs between guests and nothing leaves the node; the token's `SDN.Use` on `/sdn/zones/localnetwork` covers it.
 ````
 
 ## File: references/opentofu-bpg-provider.md
 ````markdown
+---
+Title: OpenTofu with bpg/proxmox
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/opentofu-bpg-provider.md
+Last reviewed: 2026-11-07
+Summary: OpenTofu with the bpg/proxmox provider: versions, token authentication, when the ssh block is needed, import_from versus download_file, a UEFI VM resource, lock file and state.
+---
+
 # OpenTofu with the bpg/proxmox provider
 
 Infrastructure as code for Proxmox VE with OpenTofu (or Terraform) and the `bpg/proxmox` provider. The Telmate provider is **not used** (operator policy). Sources: [provider
@@ -1023,6 +1277,17 @@ backend](../documents/research-sources-20261107/opentofu-backend-local.md); cont
   index, Operations restricted to root@pam).
 
 ## When the ssh block is needed
+
+```text
+  tofu plan / apply (bpg/proxmox)
+     |
+     +-- HTTPS :8006, API token ---------> VMs and containers, storage, networks, pools, users,
+     |   (always)                          ACLs, import_from disks, download_file
+     |
+     +-- SSH to the node (only for) -----> proxmox_virtual_environment_file uploads (snippets),
+         ssh { username = ... } with        disk import via source_file.path, container idmap
+         a token; non-root needs sudo
+```
 
 SSH is **only** needed to upload snippets and certain file types (`proxmox_virtual_environment_file`), to import disks via `source_file.path`, and for container `idmap`. It is **not** needed to create
 or change VMs and containers, manage storage, networks, pools or users, import disks with `import_from`, or download files with `download_file`. `VERIFIED_PRIMARY` (provider index, SSH Connection).
@@ -1115,10 +1380,25 @@ and IDs 900 to 909.
 > Under `~> 0.118` the provider resolved to 0.120.0 (recorded in the lock file, which the project commits; still untracked on 2026-11-07). A plan and apply for one q35/OVMF VM with `import_from`
 > took about 12 s (reported by the coordinating session, not re-measured here) against a single lab node with a
 > pool-scoped token and no SSH block.
+
+> **Learned 2026-11-07 (b)** · bpg/proxmox 0.120.0 · VERIFIED_PRIMARY · Source: smc-resiliency `lab/infra/proxmox/tofu/main.tf` (X2) · Falsifier:
+> adding the watchdog block in place without a VM reboot
+> A `watchdog` block (`enabled = true; model = "i6300esb"; action = "reset"`) added in place to a running VM made the provider reboot it; pin
+> `boot_order = ["scsi0", "net0"]` too, since OVMF rewrites BootOrder from Proxmox's `boot: order=` on every boot.
 ````
 
 ## File: references/operations-cookbook.md
 ````markdown
+---
+Title: Operations cookbook
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/operations-cookbook.md
+Last reviewed: 2026-11-07
+Summary: Exact, verified syntax for common tasks: orienting on a node, pvesh API calls, users and tokens, storage, VMs, containers and updates, each marked read or write.
+---
+
 # Operations cookbook
 
 Verified against: Proxmox VE 9.1.5 (lab node, read-only, 2026-11-07) and the current 9.x documentation fetched 2026-11-07.
@@ -1241,6 +1521,16 @@ apt update && apt full-upgrade                               # write; never `apt
 
 ## File: references/qemu-vms.md
 ````markdown
+---
+Title: QEMU VMs
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/qemu-vms.md
+Last reviewed: 2026-11-07
+Summary: VM definition: q35, CPU, OVMF and the EFI disk, boot order, disks and import, cloud-init, guest agent, serial console, templates, clones, migration, resource mappings and virtiofs.
+---
+
 # QEMU VMs
 
 VM definition, firmware, disks, cloud-init, guest agent, serial console, templates and clones. Sources: [qm chapter](../documents/research-sources-20261107/pve-admin-chapter-qm.html),
@@ -1258,6 +1548,8 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
 - [Cloud-init](#cloud-init)
 - [Guest agent and serial console](#guest-agent-and-serial-console)
 - [Templates and clones](#templates-and-clones)
+- [Migration](#migration)
+- [Resource mappings and virtiofs](#resource-mappings-and-virtiofs)
 - [Worked example config](#worked-example-config)
 
 ## Machine and CPU
@@ -1278,6 +1570,21 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
   certificates enrolled before booting media signed only with them. `VERIFIED_PRIMARY` (qm chapter).
 
 ## Boot order and what OVMF does with it
+
+```text
+  qm config:  boot: order=scsi0;scsi1;net0
+                   |  QEMU passes it as fw_cfg "bootorder"
+                   v
+  OVMF, on EVERY boot (SetBootOrderFromQemu)
+    1. Boot#### options matching scsi0, scsi1, net0  -> first, in that order
+    2. other active options                           -> kept after them
+    3. HD() options on a disk not in the list         -> pruned, Boot#### deleted
+                   |
+                   v
+  BootNext set? -- yes --> cache it, delete the variable, boot it once
+       |                   (next reset falls back to BootOrder)
+       no --> boot BootOrder[0]
+```
 
 - `boot: order=scsi0;net0` sets the device order QEMU passes to the firmware. `VERIFIED_PRIMARY` (qm chapter, Device Boot Order).
 - **OVMF rewrites `BootOrder` on every boot** from that list (QEMU's `bootorder` fw_cfg): matching boot options first in that order, other active options kept after them, and `HD()` options that match
@@ -1325,6 +1632,45 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
 - `qm template <vmid>` turns a VM into a read-only template. A **linked clone** shares the template's base disk (fast, needs the same storage, the template cannot be deleted while clones exist); a
   **full clone** copies everything. `VERIFIED_PRIMARY` (qm chapter, Copies and Clones).
 
+## Migration
+
+```text
+  source node                                         target node
+  running VM                                          new QEMU, started --incoming, vCPUs paused
+     |-- 1. disks: shared already, or local disks copied first ------------>|
+     |-- 2. memory, pass 1 ------------------------------------------------>|
+     |-- 3. pages dirtied meanwhile, resent; repeat until the rest is tiny ->|
+     |-- 4. pause; last pages + device state (+ conntrack, best effort) --->|-- resume (pause < 1 s)
+  old QEMU stops
+
+  | Blocks online migration                | Does not block it              |
+  | passed-through PCI or USB device       | local disks (they are copied)  |
+  | target on older PVE packages           | different nodes, same vendor   |
+  | different CPU architecture (x86/arm64) |                                |
+```
+
+`qm migrate <vmid> <target>` moves a VM inside one cluster. All `VERIFIED_PRIMARY` ([qm chapter](../documents/research-sources-20261107/pve-admin-chapter-qm.html), Migration); a migration is a **write**.
+
+- **Online** (`--online`, the GUI default for a running VM): QEMU starts paused on the target, memory is copied in dirty-page passes, and the switch-over pause is well under a second. Needs: no
+  local resource that cannot move (passed-through PCI or USB devices block it; local disks do not, they are copied), both hosts in the same cluster with a reliable link, target packages at the
+  same or a newer version, CPUs of the same vendor with similar capabilities, and the same CPU architecture (no x86 to arm64).
+- **Conntrack state migration** copies the VM's connection-tracking entries to the target so a stateful firewall does not drop live connections; best effort only, and host SNAT setups will
+  most likely break it.
+- **Offline**: works with local resources as long as every disk sits on a storage defined on both hosts; passthrough configuration may need adapting on the target.
+- Across clusters, use Proxmox Datacenter Manager's remote migration ([capability-extension.md](capability-extension.md)); the qm chapter's migration section covers only intra-cluster moves.
+
+## Resource mappings and virtiofs
+
+Cluster-wide **resource mappings** give a host device or directory one name per cluster, with a per-node entry, so a guest refers to the mapping instead of a node-specific address and can be
+placed or migrated where the mapping exists. Types: `/cluster/mapping/pci`, `/cluster/mapping/usb`, `/cluster/mapping/dir` (virtiofs). Guests use `hostpci<n>: mapping=<id>`,
+`usb<n>: mapping=<id>` or `virtiofs<n>: dirid=<id>`. Assigning one needs `Mapping.Use` on `/mapping/<type>/<name>`; `Mapping.Modify` creates and edits, `Mapping.Audit` lists.
+`VERIFIED_PRIMARY` ([qm chapter](../documents/research-sources-20261107/pve-admin-chapter-qm.html), Resource Mapping and Virtiofs; [qm.conf(5)](../documents/research-sources-20261107/pve-qm-conf-man5.md)).
+
+- **virtiofs** shares a host directory with a VM: `apt install virtiofsd` on the host, `pvesh create /cluster/mapping/dir --id <dirid> --map node=<node>,path=<path>`, then
+  `qm set <vmid> -virtiofs0 dirid=<dirid>,cache=always` (**writes**). In a Linux guest (kernel 5.4 or later): `mount -t virtiofs <dirid> <mountpoint>`.
+- virtiofs limits: no memory hotplug, and live migration, snapshots and hibernate are unavailable for a VM with a virtiofs device; a crashed `virtiofsd` hangs the guest mount until the VM
+  stops; do not expose ACLs to Windows guests (the device disappears).
+
 ## Worked example config
 
 The smc-resiliency x86 lab (`spike/x86/tofu/main.tf`, uncommitted on 2026-11-07) creates this VM through OpenTofu; `qm config` on the lab node read back (2026-11-07, keys and IDs trimmed):
@@ -1347,10 +1693,51 @@ agent: enabled=0,...
 > Boot enabled
 > The bpg provider's `efi_disk { type = "4m", pre_enrolled_keys = false }` becomes `efidisk0: ...,efitype=4m,pre-enrolled-keys=0`, so Secure Boot is off and unsigned UKIs boot. The installed OVMF was
 > 4.2025.05-2 while the no-subscription repository already offered 4.2026.08-1: state the **installed** firmware version when citing OVMF behaviour, not the repository's.
+
+> **Learned 2026-11-07 (b)** · OVMF 4.2026.08-1 (PVE 9.2.26), RAUC efi backend · VERIFIED_PRIMARY · Source: smc-resiliency
+> `docs/x86/x86-spike-x2-ab-boot-20261107_1847.md` findings X2-2, X2-5, X2-6 · Falsifier: an entry in BootOrder kept with its file missing
+> OVMF deletes a boot entry that is in BootOrder when its file is missing or not a loadable image: recreate a slot's entry before arming a
+> trial. The Ubuntu cloud kernel ships no watchdog driver (i6300esb, iTCO_wdt are in linux-modules-extra), and Ubuntu's deny-list also stops
+> systemd-modules-load (`Module 'i6300esb' is deny-listed (by kmod)`), so a virtual watchdog never fires without a deliberate load path.
+>
+> The recreate step, as RAUC's pre-install handler runs it (smc-resiliency `lab/payloads/x2_setup.sh`, commit 61abf479; the new entry is kept out
+> of BootOrder, RAUC adds it at the commit):
+>
+> ```sh
+> efibootmgr | grep -qE "^Boot[0-9A-F]{4}\*? $boot([[:space:]]|$)" && continue
+> order=$(efibootmgr | sed -nE 's/^BootOrder: //p')
+> efibootmgr -q -c -d "$DISK" -p "$ESP_PART" -L "$boot" -l "\\EFI\\smc\\$boot\\vmlinuz.efi" -u "root=PARTUUID=$uuid rw rauc.slot=$boot ..."
+> [ -n "$order" ] && efibootmgr -q -o "$order"
+> ```
+
+> **Learned 2026-11-08** · q35 VM on PVE 9.2.26, Ubuntu 24.04 guest (kernel 6.8.0-147) · VERIFIED_PRIMARY · Source: smc-resiliency
+> `docs/overview/smc-lab-test-record-20261107_1931.md` section 14 · Falsifier: a q35 guest where `modprobe iTCO_wdt` gives no /dev/watchdog0
+> A q35 machine emulates the ICH9 chipset, whose TCO timer the guest's `iTCO_wdt` drives (`identity="iTCO_wdt"`), so the guest gets a watchdog
+> without the `i6300esb` device. Ubuntu's deny-list stops alias loading and systemd-modules-load, not an explicit `modprobe <name>`; with
+> `RuntimeWatchdogSec=30` a crash with `kernel.panic=0` reset the VM by itself in 91.1 s. Excerpt (smc-resiliency `lab/payloads/x1_watchdog.sh`, d1a7d894):
+>
+> ```sh
+> for m in $DRIVERS; do   # iTCO_wdt first, then the Super I/O drivers, then i6300esb
+>   modinfo -n "$m" >/dev/null 2>&1 || continue
+>   if timeout 30 modprobe "$m" 2>/dev/null && [ -e /sys/class/watchdog/watchdog0 ]; then bound=$m; break; fi
+> done
+> printf '[Manager]\nRuntimeWatchdogSec=%s\n' "$SEC" >/run/systemd/system.conf.d/90-smc-x1.conf
+> timeout 60 systemctl daemon-reexec
+> ```
 ````
 
 ## File: references/security-certificates-firewall.md
 ````markdown
+---
+Title: Security, certificates and firewall
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/security-certificates-firewall.md
+Last reviewed: 2026-11-07
+Summary: Node certificates and ACME, the PVE firewall and its nftables backend, and a hardening checklist.
+---
+
 # Security, certificates and firewall
 
 Node certificates and ACME, the PVE firewall, and hardening basics. Sources: [Certificate Management](../documents/research-sources-20261107/pve-wiki-certificate-management.md), [firewall
@@ -1392,16 +1779,26 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pve-firewall.m
 
 ## File: references/storage.md
 ````markdown
+---
+Title: Storage
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/storage.md
+Last reviewed: 2026-11-07
+Summary: Storage types and content types in storage.cfg, the import content type, hyperconverged Ceph with pveceph, and how to choose a storage.
+---
+
 # Storage
 
-Storage is defined cluster-wide in `/etc/pve/storage.cfg` and addressed as `<storage-id>:<volume>`. Sources: [pvesm chapter](../documents/research-sources-20261107/pve-admin-chapter-pvesm.md),
-[PBS storage](../documents/research-sources-20261107/pve-wiki-storage-pbs.md).
+Storage is defined cluster-wide in `/etc/pve/storage.cfg` and addressed as `<storage-id>:<volume>`. Sources: [pvesm chapter](../documents/research-sources-20261107/pve-admin-chapter-pvesm.md), [PBS storage](../documents/research-sources-20261107/pve-wiki-storage-pbs.md).
 
 ## Contents
 
 - [Types](#types)
 - [Content types](#content-types)
 - [The import content type](#the-import-content-type)
+- [Hyperconverged Ceph](#hyperconverged-ceph)
 - [Choosing](#choosing)
 
 ## Types
@@ -1434,19 +1831,44 @@ be imported from this storage"). Not every type supports every content. On a dir
 
 ## The import content type
 
-- `import` is **not enabled by default**; add it before OpenTofu's `import_from` or `download_file` with `content_type = "import"` can use the storage. `VERIFIED_PRIMARY` ([bpg
-  download_file](../documents/research-sources-20261107/bpg-provider-virtual_environment_download_file.md)).
-- A disk is imported with `qm set <vmid> --scsi0 <target>:0,import-from=<source>` where the source is a path or a volume (`local:import/<file>.qcow2`). `VERIFIED_PRIMARY` ([qm
-  chapter](../documents/research-sources-20261107/pve-admin-chapter-qm.html), cloud-init
+- `import` is **not enabled by default**; add it before OpenTofu's `import_from` or `download_file` with `content_type = "import"` can use the storage. `VERIFIED_PRIMARY` ([bpg download_file](../documents/research-sources-20261107/bpg-provider-virtual_environment_download_file.md)).
+- A disk is imported with `qm set <vmid> --scsi0 <target>:0,import-from=<source>` where the source is a path or a volume (`local:import/<file>.qcow2`). `VERIFIED_PRIMARY` ([qm chapter](../documents/research-sources-20261107/pve-admin-chapter-qm.html), cloud-init
   example).
-- Who may put a file there matters: `POST /nodes/{node}/storage/{storage}/download-url` (the provider's `download_file`) needs
-  `Datastore.AllocateTemplate` on the storage **and** either `Sys.Audit` + `Sys.Modify` on `/` or the newer `Sys.AccessNetwork` on
-  `/nodes/{node}`. `VERIFIED_PRIMARY` for 9.1.5 from the installed API source
-  ([excerpt](../documents/research-sources-20261107/pve-9.1.5-installed-storage-download-url-permissions.txt)); the bpg page names only
-  `Sys.Audit` and `Sys.Modify` ([bpg download_file](../documents/research-sources-20261107/bpg-provider-virtual_environment_download_file.md)),
-  and the pveum chapter's privilege list does not yet name `Sys.AccessNetwork`. Either way the right lets the token make the node
-  fetch any URL (probing the host's network), so a pool-scoped automation token is better kept without it: a root-run step places
-  the file and the token only imports it ([access-control.md](access-control.md#worked-example-an-opentofu-identity)).
+- Who may put a file there matters: `POST /nodes/{node}/storage/{storage}/download-url` (the provider's `download_file`) needs `Datastore.AllocateTemplate` on the storage **and** either `Sys.Audit` +
+  `Sys.Modify` on `/` or the newer `Sys.AccessNetwork` on `/nodes/{node}`. `VERIFIED_PRIMARY` for 9.1.5 from the installed API source ([excerpt](../documents/research-sources-20261107/pve-9.1.5-installed-storage-download-url-permissions.txt)); the bpg page names only `Sys.Audit` and `Sys.Modify`
+  ([bpg download_file](../documents/research-sources-20261107/bpg-provider-virtual_environment_download_file.md)), and the pveum chapter's privilege list does not yet name `Sys.AccessNetwork`. Either way the right lets the token make the node fetch any URL (probing the host's network), so a
+  pool-scoped automation token is better kept without it: a root-run step places the file and the token only imports it ([access-control.md](access-control.md#worked-example-an-opentofu-identity)).
+
+## Hyperconverged Ceph
+
+Proxmox VE runs Ceph on the cluster nodes themselves and manages it with `pveceph` (or the GUI wizard, which the chapter recommends). Source: [pveceph chapter](../documents/research-sources-20261109/pve-admin-chapter-pveceph.html), fetched 2026-11-09. All
+`VERIFIED_PRIMARY`; every command below is a **write**.
+
+| Step               | Command (run on)                                                   | Effect                                                                             |
+| ------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Packages           | `pveceph install` (each node)                                      | Adds `/etc/apt/sources.list.d/ceph.sources`, installs Ceph                         |
+| Initial config     | `pveceph init --network <ceph-cidr>` (one node)                    | Writes `/etc/pve/ceph.conf` (shared by pmxcfs), symlinked at `/etc/ceph/ceph.conf` |
+| Monitors, managers | `pveceph mon create`, `pveceph mgr create`                         | One per node that should carry them                                                |
+| OSDs               | `pveceph osd create /dev/sdX [-db_dev /dev/sdY -wal_dev /dev/sdZ]` | Disk must be wiped of earlier ZFS/OSD traces first                                 |
+| Pool               | `pveceph pool create <name> --add_storages`                        | Defaults: 128 PGs, `size` 3, `min_size` 2; also adds the `rbd` storage             |
+| Erasure-coded pool | `pveceph pool create <name> --erasure-coding k=2,m=1`              | Creates data and metadata pools; `min_size` defaults to k (m = 1) or k + 1         |
+| CephFS             | `pveceph fs create --pg_num 128 --add-storage`                     | Needs metadata servers; adds the `cephfs` storage                                  |
+
+- Size: at least three nodes and at least 12 OSDs, spread evenly. Never set `min_size 1` on a replicated pool: I/O with one replica left risks data loss, incomplete PGs or unfound objects.
+- Releases: Proxmox VE 9.x offers Ceph Squid (19.2) and Tentacle (20.2, the option added in 9.2); the chapter's FastEC erasure-coding I/O path is Tentacle-only. Check `ceph versions` before applying a
+  version-specific procedure.
+- Removing a node that carries OSDs: see [architecture-and-cluster.md](architecture-and-cluster.md#removing-a-node); destroying an OSD starts a rebalance, so check free space first.
+
+```text
+  node1             node2             node3           (>= 3 nodes, >= 12 OSDs, spread evenly)
+  mon  mgr          mon  mgr          mon  mgr
+  OSD OSD OSD OSD   OSD OSD OSD OSD   OSD OSD OSD OSD
+        |                 |                 |
+        +----- Ceph network (pveceph init --network <cidr>) -----+
+                          |
+        replicated pool: size 3, min_size 2, 128 PGs  --> rbd storage    (VM disks, CT volumes)
+        CephFS (pveceph mds create; fs create)        --> cephfs storage (ISOs, CT templates, backups, snippets)
+```
 
 ## Choosing
 
@@ -1455,14 +1877,24 @@ be imported from this storage"). Not every type supports every content. On a dir
 - Backups go to a `pbs` storage when a Proxmox Backup Server exists (deduplicated, incremental) or to a `backup`-content storage ([backup-and-restore.md](backup-and-restore.md)).
 
 > **Learned 2026-11-07 (b)** · Proxmox VE 9.1.5 · VERIFIED_PRIMARY · Source: lab node read-only (`pvesh get /storage`, `/nodes/localhost/storage`) and the smc-resiliency x86 lab setup script
-> (uncommitted on 2026-11-07) · Falsifier: a 9.x node where `pvesm set local --content ...,import` leaves the other types in place when they are omitted
-> The worked example adds `import` with the full list (`pvesm set local --content images,snippets,backup,rootdir,iso,vztmpl,import`), guarded by a check of `storage.cfg` so a rerun changes nothing.
-> After it, the API lists `import` among `local`'s content and OpenTofu imports `local:import/<file>.qcow2` with no SSH block. The same lab showed `local-lvm` (thin) at 90.6 % used while the directory
-> storage was at 43 %: thin-pool fill is the first storage risk on a single-disk lab.
+> (uncommitted on 2026-11-07) · Falsifier: a 9.x node where `pvesm set local --content ...,import` leaves the other types in place when they are omitted The worked example adds `import` with the full
+> list (`pvesm set local --content images,snippets,backup,rootdir,iso,vztmpl,import`), guarded by a check of `storage.cfg` so a rerun changes nothing. After it, the API lists `import` among `local`'s
+> content and OpenTofu imports `local:import/<file>.qcow2` with no SSH block. The same lab showed `local-lvm` (thin) at 90.6 % used while the directory storage was at 43 %: thin-pool fill is the first
+> storage risk on a single-disk lab.
 ````
 
 ## File: references/upgrade-and-troubleshooting.md
 ````markdown
+---
+Title: Upgrade and troubleshooting
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/upgrade-and-troubleshooting.md
+Last reviewed: 2026-11-07
+Summary: Package repositories, minor updates, the 8-to-9 upgrade, what changed in 9.0 to 9.2 (including arm64), known issues, and triage.
+---
+
 # Upgrade and troubleshooting
 
 Package repositories, minor updates, the 8-to-9 major upgrade, what changed in 9.0, 9.1 and 9.2, known issues, and triage. Sources: [Package
@@ -1493,6 +1925,17 @@ Repositories](../documents/research-sources-20261107/pve-wiki-package-repositori
 - Read the configuration with `pvesh get /nodes/<node>/apt/repositories`: each file's format and each entry's `Enabled`.
 
 ## Minor updates
+
+```text
+  GET  /nodes/<node>/apt/update   read the cached list (daily pveupdate refreshes it)     read
+  POST /nodes/<node>/apt/update   refresh the list = apt update                           write
+     |
+     +-- minor (9.1 -> 9.2): read known issues -> one node: apt full-upgrade -> check guests
+     |                       -> reboot for a new kernel -> the other nodes      (never apt upgrade)
+     |
+     +-- major (8 -> 9):     latest 8.4 -> pve8to9 --full, fix FAILs -> repos bookworm -> trixie
+                             -> apt dist-upgrade -> pve8to9 again -> reboot     (Ceph on Squid first)
+```
 
 - "To install updates use the web-based GUI or `apt update` then `apt full-upgrade`". **Never `apt upgrade`**: Proxmox VE is a rolling release on Debian and `apt upgrade` "may result in a partially
   upgraded or broken package state", because only `full-upgrade` may remove packages to satisfy dependencies. `VERIFIED_PRIMARY` (System Software Updates).
@@ -1525,6 +1968,8 @@ Repositories](../documents/research-sources-20261107/pve-wiki-package-repositori
 | 9.2     | 2026-05-21 | Debian 13.5,     | CRS dynamic load balancing; `disarm-ha` / `arm-ha`; SDN WireGuard and BGP fabrics, route maps; custom CPU models in the GUI; Ceph Tentacle option. Known:  |
 |         |            |   kernel 7.0,    |   upgrade can stall if HA is disarmed mid-migration; Windows + host CPU + VBS freezes on Intel (fixed by machine version 11.0+pve2); installer kernel      |
 |         |            |   QEMU 11.0      |   and `megaraid_sas`                                                                                                                                       |
+| 9.2     | 2026-08-05 | arm64 build,     | First non-x86 release: NVIDIA Grace and Vera official, other UEFI+ACPI ARMv9-A best effort; no SeaBIOS, AMD SEV or GVT-g; live migration only within one       |
+| (arm64) |            |   Debian 13.6    |   architecture; later releases cover both architectures ([architecture-and-cluster.md](architecture-and-cluster.md#arm64-hosts))                                  |
 
 `VERIFIED_PRIMARY` (Roadmap release notes, captured 2026-11-07).
 
@@ -1558,6 +2003,9 @@ Open Proxmox bugzilla entries found on 2026-11-07 (status as captured; check the
 > A 9.1.5 node on pve-no-subscription had about 290 pending updates (289 by `apt list --upgradable`, 294 by the API): `pve-manager` 9.1.5 to 9.2.26, `pve-qemu-kvm` 10.1 to 11.1,
 > `pve-edk2-firmware-ovmf` 4.2025.05 to 4.2026.08 and kernel 6.17.9 to 6.17.13; the enterprise stanza was present but disabled, and the no-subscription entry was in the legacy `.list` format. A node
 > left on a point release for months carries the next release in its queue: read that release's known issues before `apt full-upgrade`.
+
+> **Learned 2026-11-07** · upgrade · VERIFIED_PRIMARY · Source: smc-resiliency SCRATCHPAD 20261107_1617, lab node log `/root/upgrade-20261107.log` · Falsifier: a 9.1 to 9.2 `apt full-upgrade` that keeps the 6.17 kernel as default
+> A 9.1.5 to 9.2.26 upgrade (289 packages) ran unattended with `DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold full-upgrade` under `nohup`, exit 0, then a reboot brought the node up on kernel 7.0.14 (the 9.2 default kernel moved from 6.17 to 7.0), no failed units, SDN vnets and their dnsmasq back by themselves. Stop or shut down guests first. Before it, tidy the repositories: keep `pve-enterprise.sources` with `Enabled: false`, move `*.disabled` duplicates and an empty `ceph-no-subscription.list` to a backup folder, and write the no-subscription repo as deb822 `proxmox.sources`.
 ````
 
 ## File: scripts/check_governance.py
@@ -1661,6 +2109,8 @@ CONDITIONAL_PATHS: frozenset[str] = frozenset({
     "graphify-out/GRAPH_REPORT.md",  # Graphify disabled, graphify-out/ deleted (operator, 2026-10-10); still named by the navigation block or history
     "graphify-out/graph.json",  # Graphify disabled, graphify-out/ deleted (operator, 2026-10-10); still named by the navigation block or history
     # Named by the generic skill-ai-it navigation block; this pack does not have them.
+    "docs/history",                     # created by `just rotate --apply` the first time a record passes its budget; named by the navigation block
+    "docs/trackers",                    # named by the skill-ai-it compact navigation block; this pack keeps open items in SCRATCHPAD.md
     "Taskfile.yml",                     # this pack uses just
     "Makefile",
     "package.json",                     # no Node toolchain
@@ -2113,6 +2563,20 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+````
+
+## File: scripts/doc-freshness-baseline.json
+````json
+{
+  "no-header:.ai-context/governance-pack.md": "2026-11-09",
+  "over-budget:AI_NAVIGATION.md": "lines=159 bytes=10430 AI_NAVIGATION.md: over its budget of 150 lines, 12 KB",
+  "review-due:.archcore/adr/governance-checker-in-test-suite.adr.md": "2026-11-09",
+  "review-due:.archcore/adr/independent-platform-pack.adr.md": "2026-11-09",
+  "review-due:.archcore/plans/live-probes-then-client-matrix.plan.md": "2026-11-09",
+  "review-due:.archcore/rules/capability-search-order.rule.md": "2026-11-09",
+  "review-due:.archcore/rules/changelog-version-of-record.rule.md": "2026-11-09",
+  "review-due:.archcore/rules/memory-channel-name.rule.md": "2026-11-09"
+}
 ````
 
 ## File: scripts/pve_node_report.py
@@ -2741,7 +3205,7 @@ rather than silently falling back to the host interpreter. The one sanctioned ex
 **Do not invoke these scripts with a bare `python3`.** It resolves to whatever the host has on `PATH`, which works until the host changes and then fails in a way that reads like a code bug.
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 
 ## Execution Policy
 
@@ -2772,29 +3236,29 @@ rather than silently falling back to the host interpreter. The one sanctioned ex
 
 ## Task Inventory
 
-Everything below `## Task Inventory` lives outside the managed block and is maintained by hand — `nav_upgrade` never touches it.
+Everything below `## Task Inventory` lives outside the managed block and is maintained by hand — `nav-upgrade` never touches it.
 
 | Task / Script | Purpose | Inputs | Outputs | Safety | Idempotent | When to use |
 |---|---|---|---|---|---|---|
 | `just bootstrap` | Build the working-cache venv from the mise pin; install `requirements.txt` | `.mise.toml`, `requirements.txt` | venv under the working-cache peer | `modifies-files` (outside the repo) | Yes | First run, or when `just runtimes` reports MISSING |
 | `just runtimes` | Print the interpreter the recipes will actually use | — | Console output | `safe` | Yes | Before trusting any Python recipe |
 | `just inventory` | List tasks and this inventory | `justfile`, `scripts/README.md` | Console output | `safe` | Yes | First check before running pack automation |
-| `just audit_scripts` | Show script/catalog drift | `scripts/`, `scripts/README.md` | Console output | `safe` | Yes | During refresh/audit |
+| `just audit-scripts` | Show script/catalog drift | `scripts/`, `scripts/README.md` | Console output | `safe` | Yes | During refresh/audit |
 | `just helpers` | List the helpers this pack ships | `scripts/*.py` | Console output | `safe` | Yes | Before importing a helper |
 | `just test` | Offline package contract + helper tests (includes the governance checker) | `tests/`, every pack file | Console output, exit status | `safe` | Yes | Before claiming any change complete |
 | `just check` | Governance coherence checks alone | `scripts/check_governance.py`, governance surfaces | Console output, exit status | `safe` | Yes | After adding, moving or renaming any file |
-| `just preflight` | runtimes + audit_scripts + test + check + coder_checks + lint_md | Pack files | Console output | `safe` | Yes | Before commit or handoff |
-| `just lint_md` | Markdown lint against `.markdownlint-cli2.jsonc` | `**/*.md` | Console output | `safe` | Yes | Before commit |
+| `just preflight` | runtimes + audit-scripts + test + check + coder_checks + lint-md | Pack files | Console output | `safe` | Yes | Before commit or handoff |
+| `just lint-md` | Markdown lint against `.markdownlint-cli2.jsonc` | `**/*.md` | Console output | `safe` | Yes | Before commit |
 | `just context-pack` | Regenerate `.ai-context/governance-pack.md` with Repomix | `repomix.config.json` | `.ai-context/governance-pack.md` | `modifies-files` | Yes | After governance or routing changes |
 | `just graph` | Refresh `graphify-out/` (code graph, AST only, no LLM) | Pack source files | `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.json`, `graphify-out/graph.html` | `modifies-files` | Yes | After adding or changing helpers or tests |
-| `just nav_upgrade_dry_run` | Preview the skill-ai-it navigation-layer upgrade | skill-ai-it upgrader | Console output | `safe` | Yes | Before `just nav_upgrade` |
-| `just nav_upgrade` | Apply the navigation-layer upgrade | skill-ai-it upgrader | File changes | `review-required` · `modifies-files` | Yes | After reviewing the dry run |
-| `just nav_validate` | Validate the navigation layer | skill-ai-it validator | Console output | `safe` | Yes | After an upgrade or periodically |
-| `just nav_check_diff` | Confirm only expected governance files changed | git diff | Console output | `safe` | Yes | After an upgrade |
+| `just nav-upgrade-dry-run` | Preview the skill-ai-it navigation-layer upgrade | skill-ai-it upgrader | Console output | `safe` | Yes | Before `just nav-upgrade` |
+| `just nav-upgrade` | Apply the navigation-layer upgrade | skill-ai-it upgrader | File changes | `review-required` · `modifies-files` | Yes | After reviewing the dry run |
+| `just nav-validate` | Validate the navigation layer | skill-ai-it validator | Console output | `safe` | Yes | After an upgrade or periodically |
+| `just nav-check-diff` | Confirm only expected governance files changed | git diff | Console output | `safe` | Yes | After an upgrade |
 | `just node_report` | Read-only health and inventory report of one node: version, kernel, quorum, pending updates (PVE stack listed, when the list was refreshed), repositories, storage use, guests, pools, identities, access audit | `--host` (SSH key auth, default user root) or `--from-dir <folder>`; `--json`; `--storage-warn` | Console or JSON; exit 0 clean, 1 warnings, 2 read error | `safe` · `requires-credentials` (SSH key); `--refresh --apply` is `review-required` · `modifies-state` (PVE's apt update) | Yes | Before OpenTofu, upgrade or audit work on a node; about 15 s per node |
 | `just token_audit` | Least-privilege audit of users, API tokens and ACLs | `--host` or `--from-dir <folder>` (users.json, acl.json, roles.json); `--allow-user`; `--json` | Findings; exit 0 none high, 1 high, 2 read error | `safe` · `requires-credentials` (SSH key) | Yes | Before adding a token, and in any node audit |
 | `just coder_checks` | skill-coder's script checks on this pack: headers, write gates, call timeouts | `scripts/`, `tests/` | Console output | `safe` | Yes | After changing a script |
-| `just nav_selftest` | Self-test the skill-ai-it block builders (not this pack) | skill-ai-it templates | Console output | `safe` | Yes | After skill-ai-it templates change |
+| `just nav-selftest` | Self-test the skill-ai-it block builders (not this pack) | skill-ai-it templates | Console output | `safe` | Yes | After skill-ai-it templates change |
 
 ## Raw Script Inventory
 
@@ -2825,10 +3289,42 @@ Everything below `## Task Inventory` lives outside the managed block and is main
   until that is done.
 - Helpers are generic product rules. Node names, addresses and lab inventories stay in the engaging project; pass them on the command line.
 - New helpers use two-space indentation (skill-coder); `check_governance.py` is generated by skill-ai-it and keeps four.
+
+## Governance recipes (skill-ai-it)
+
+- `just govern`: governance up to the current skill-ai-it standard (adoption, record budgets with `just check`, role findings); content fixes are `/skill-ai-it refresh`. `modifies-files`.
+- `just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.
+- `just stale`: stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only; `safe`.
+- `just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.
+- `just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.
+- `just history-show <stamp>`: print one rotated entry. Read-only; `safe`.
+- `just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries and done ROADMAP items to docs/history, verified. Plan by default; `modifies-files`.
+- `just budget [--apply]`: bring governed files within budget (normalise, rotate, move reference sections, audit, check). Plan by default; `modifies-files`.
+- `just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.
+- `just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.
+- `just outline <file.md>`: each heading with its line range, to read one section instead of the file. Read-only; `safe`.
+- `just section <file.md> "<title>"`: print one section (exact title, `Parent > Child`, `#anchor`, `~text`). Read-only; `safe`.
+````
+
+## File: scripts/role-check-baseline.json
+````json
+{
+ "readme-quick-start:README.md": "README.md: no quick start heading and no SETUP.md link"
+}
 ````
 
 ## File: tests/eval-procedure.md
 ````markdown
+---
+Title: Evaluation procedure
+Category: test-guide
+Status: current
+Authority: canonical
+Scope: skill-proxmox tests/eval-procedure.md
+Last reviewed: 2026-11-07
+Summary: How to run and grade the client evaluation matrix for skill-proxmox: invocation modes, what to record, and the pass, partial and fail rubric.
+---
+
 # Evaluation procedure
 
 Use a fresh credential-free client context. Run explicit invocation, implicit realistic task, unrelated negative control and the mixed lifecycle task from `scenarios.md`; record client/version,
@@ -2856,6 +3352,16 @@ record which of these decision points was directly observable; a polished generi
 
 ## File: tests/scenarios.md
 ````markdown
+---
+Title: Proxmox VE scenarios
+Category: test-guide
+Status: current
+Authority: canonical
+Scope: skill-proxmox tests/scenarios.md
+Last reviewed: 2026-11-07
+Summary: Scenario bank for skill-proxmox evaluation: each prompt with its expected first reference, decision points and prohibited conclusions.
+---
+
 # Proxmox VE scenarios
 
 Each scenario passes only when the expected first reference, decision points and prohibited conclusions are met.
@@ -2940,19 +3446,45 @@ Prohibit remounting or editing the pmxcfs database by hand.
 
 Prompt: The lab VM has no guest agent; find its address. Trigger: yes. First reference: `qemu-vms.md`, then `networking-and-sdn.md`. On a VNet with PVE IPAM, the dnsmasq `ethers` binding and lease;
 serial console through the socket. Prohibit relying on `ip neigh` on `vmbr0` for a VNet guest.
+
+## P-S17 — Sizing a hyperconverged Ceph pool
+
+Prompt: Plan Ceph on a new three-node cluster for VM disks. Trigger: yes. First reference: `storage.md`, then `architecture-and-cluster.md`. pveceph install, init with a dedicated network, a monitor
+and manager per node, OSDs spread evenly, a replicated pool with the defaults (size 3, min_size 2) added as `rbd` storage. Prohibit `min_size 1` and Ceph traffic on the Corosync link.
+
+## P-S18 — Alerting on failed backups and fencing
+
+Prompt: Make sure someone hears about failed backups and fenced nodes. Trigger: yes. First reference: `monitoring-and-metrics.md`. A target (smtp or webhook) with its secret in
+`/etc/pve/priv/notifications.cfg`, a matcher with `match-field exact:type=vzdump` and `match-severity error`, a second for `fencing` and `replication`. Prohibit editing the default templates in
+`/usr/share/pve-manager/templates/default/` (use the override directory).
+
+## P-S19 — Live-migrating a VM with a passed-through device
+
+Prompt: Live-migrate a VM that has a GPU passed through and a virtiofs share. Trigger: yes. First reference: `qemu-vms.md`. Passthrough and virtiofs both block live migration; offline migration
+with a resource mapping present on the target, `Mapping.Use` on the mapping. Prohibit claiming live migration between x86 and arm64 nodes.
+
+## P-S20 — Removing a node and checking current releases
+
+Prompt: Retire one node of a cluster and tell me which Proxmox releases are current. Trigger: yes. First reference: `architecture-and-cluster.md`, then `upgrade-and-troubleshooting.md`. Guests and
+replication jobs off first, power off for good, `pvecm delnode`, clean `/etc/pve/nodes/<node>`, keys and HA rules; releases from the dated ledger with its fetch date. Prohibit powering the removed
+node back on with its old configuration, and stating "latest" without the date it was checked.
 ````
 
 ## File: AGENTS.md
 ````markdown
-@../../../AGENTS.md
-
+---
 Title: skill-proxmox Agent Policy
 Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-proxmox platform pack — canonical, cross-project source of reusable Proxmox VE and bpg/proxmox knowledge
 Last reviewed: 20261107_1531
-Summary: Agent guidance for maintaining and using skill-proxmox: artifact roles, the package contract, the write-back obligation, the boundary with
+Summary: "Agent guidance for maintaining and using skill-proxmox: artifact roles, the package contract, the write-back obligation, the boundary with"
+Budget: 150 lines, 12 KB
+---
+
+@../../../AGENTS.md
+
 workload and source-of-truth skills, and the gates to run before calling work complete.
 
 # AGENTS.md
@@ -3022,32 +3554,17 @@ write-back contract and [references/evolution-and-write-back.md](references/evol
 an engaging project must check for unpromoted Proxmox knowledge; a closeout without that check is incomplete.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 
 ## AI navigation and context preflight
 
-Before answering, planning, editing, or creating files in this project:
+Before answering, planning or editing, read [AI_NAVIGATION.md](AI_NAVIGATION.md) first: it routes everything else (read order, source priority, task routing, scripts, checks, compaction recovery).
+Read [context-map.yaml](context-map.yaml) only when changing routing or companion files.
 
-1. Read [AI_NAVIGATION.md](AI_NAVIGATION.md).
-2. Read [context-map.yaml](context-map.yaml).
-3. Read recent entries in [CHANGELOG.md](CHANGELOG.md).
-4. Load relevant `.archcore/` context if present.
-5. Load relevant `memory-bank/` files if present.
-6. Consult generated context when available:
-   - `graphify-out/GRAPH_REPORT.md`
-   - `.ai-context/governance-pack.md`
-7. Before making durable changes, inspect companion-file rules in `context-map.yaml update_rules`. Update all companion files when changing source files.
-8. If sources conflict, stop and report the conflict instead of guessing.
-9. Do not treat `SCRATCHPAD.md` as durable truth unless content is marked `KEEP` or promoted into `.archcore/`, ROADMAP, or memory-bank.
-10. Do not treat Graphify (`graphify-out/`) or Repomix (`.ai-context/`) output as canonical truth. These are generated support artifacts only, always rebuildable.
-11. Before running scripts or automation, inspect `justfile`, `scripts/README.md`, `Taskfile.yml`, `Makefile`, and `package.json` when present. Prefer `just --list` and `just <task>` when a `justfile`
-    exists.
-12. Treat uncataloged scripts as `unknown` safety until inspected.
-13. When adding, modifying, or removing scripts or tasks, update `scripts/README.md` to reflect the change — purpose, inputs, outputs, safety label, and idempotency.
-14. Run defined audit/check commands before completing work. Where `scripts/check_governance.py` exists, that includes it — and when it fails, fix the project, not the check.
-    Adding a new artifact class, generated output, or a constant restated across files requires extending its registries in the same pass.
-15. After making changes, update `CHANGELOG.md` for all durable governance/navigation changes.
-16. Preserve user-authored content outside managed sections. Do not rewrite custom project notes.
+- Sources disagree: stop and report, never guess. `SCRATCHPAD.md` is not durable truth unless marked `KEEP`; generated output never is.
+- Run catalogued tasks only (`just --list`, `scripts/README.md`); an uncatalogued script is unknown safety. A new or changed script updates `scripts/README.md`.
+- Before calling work done: `just check` (fix the project, not the check), and a `CHANGELOG.md` entry for any governance or navigation change.
+- Preserve user content outside managed blocks.
 
 <!-- END MANAGED: skill-ai-it:navigation -->
 
@@ -3106,6 +3623,18 @@ here use two-space indentation as skill-coder requires, the copied governance ch
 
 ## File: AI_NAVIGATION.md
 ````markdown
+---
+Title: AI Navigation — skill-proxmox
+Category: navigation
+Status: current
+Authority: local-supplement
+Scope: Root AI_NAVIGATION.md of skill-proxmox
+Last reviewed: 2026-11-07
+Summary: This file is a router, not the full knowledge store.
+Review by: 2026-12-09
+Budget: 150 lines, 12 KB
+---
+
 # AI Navigation — skill-proxmox
 
 Purpose: this file is the project context entrypoint for AI agents. It tells agents where project truth lives, what to read first, what is authoritative, what is temporary, and what must be updated
@@ -3141,276 +3670,101 @@ This file is a router, not the full knowledge store.
 - [Pack artifacts](#pack-artifacts)
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
-<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 
 ## Mandatory read order
 
-Before answering, planning, editing, or creating files in this project, read in this order:
-
-1. `AGENTS.md`
-2. `AI_NAVIGATION.md`
-3. `context-map.yaml`
-4. `CHANGELOG.md`
-5. Relevant `.archcore/` documents, if present
-6. Relevant `memory-bank/` files, if present
-7. Relevant project docs/code based on the task
-
-If available, also consult:
-
-- `graphify-out/GRAPH_REPORT.md`
-- `.ai-context/governance-pack.md`
+`AGENTS.md`, then this file, then `context-map.yaml`, then the newest `CHANGELOG.md` entries, then relevant `.archcore/` and `memory-bank/` files if present, then the docs and code the task needs.
+Triage before opening: `just docs <folder>` (one header line per file); `just stale` lists stale docs.
 
 ## Source priority
 
-When sources conflict, use this priority:
-
-1. `.archcore/` accepted ADRs, rules, specs, guides, and plans
-2. `AGENTS.md` / `CLAUDE.md`
-3. `AI_NAVIGATION.md`
-4. `context-map.yaml`
-5. `CHANGELOG.md`
-6. `ARCHITECTURE.md` / `architecture.md`
-7. `ROADMAP.md` / `roadmap.md`
-8. `memory-bank/activeContext.md`
-9. `memory-bank/progress.md`
-10. `SCRATCHPAD.md` / `scratchpad.md`
-11. old notes, drafts, archived files
-
-`SCRATCHPAD.md` is temporary unless promoted into Archcore, roadmap, memory-bank, or explicitly marked `KEEP`.
+`.archcore/` accepted documents, then `AGENTS.md` / `CLAUDE.md`, this file, `context-map.yaml`, `CHANGELOG.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `memory-bank/`, `SCRATCHPAD.md`, then drafts and
+archives. `SCRATCHPAD.md` is transient unless marked `KEEP` or promoted.
 
 ## Project context files
 
-| File / Path | Role | Authority |
-|---|---|---|
-| `AGENTS.md` | Universal agent instruction file | High |
-| `CLAUDE.md` | Claude-specific bootstrap file | High |
-| `AI_NAVIGATION.md` | Human-readable AI routing file | High |
-| `context-map.yaml` | Machine-readable routing map | High |
-| `CHANGELOG.md` | Durable project/governance change history | Medium-high |
-| `.archcore/adr/` | Architecture decisions | Highest |
-| `.archcore/rules/` | Durable project/agent rules | Highest |
-| `.archcore/specs/` | Technical/design contracts | Highest |
-| `.archcore/guides/` | Operational guides | High |
-| `.archcore/plans/` | Approved implementation plans | High |
-| `ARCHCORE_PROMOTION_CANDIDATES.md` | Generated list of Archcore promotion candidates from governance markdown. Read before running promote mode. | Generated support |
-| `ARCHITECTURE.md` / `architecture.md` | Human-readable architecture overview | Medium-high |
-| `ROADMAP.md` / `roadmap.md` | Human-readable roadmap | Medium-high |
-| `memory-bank/activeContext.md` | Current working context | Medium |
-| `memory-bank/progress.md` | Progress and current state | Medium |
-| `memory-bank/decisionLog.md` | Decision notes before promotion | Medium |
-| `SCRATCHPAD.md` / `scratchpad.md` | Temporary notes | Low |
-| `docs/` | Supporting documentation | Depends on file |
-| `graphify-out/` | Generated navigation graph | Generated support |
-| `.ai-context/governance-pack.md` | Generated deterministic context pack | Generated support |
+High: `AGENTS.md`, `CLAUDE.md`, this file, `context-map.yaml`; highest when present: `.archcore/`. Medium-high: `CHANGELOG.md`, `ARCHITECTURE.md`, `ROADMAP.md`. Medium: `memory-bank/`. Low:
+`SCRATCHPAD.md`. On need only: `docs/history/` (rotated records, `just history <term>`) and `docs/trackers/` (open items). Generated, never truth: `.ai-context/`. Full table:
+[reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/read-order-and-sources.md#project-context-files).
 
 ## Task routing
 
-### Architecture/design questions
-
-Read:
-
-1. `.archcore/adr/`
-2. `.archcore/specs/`
-3. `ARCHITECTURE.md` / `architecture.md`
-4. `docs/**/*.md`
-
-Do not answer from scratchpad alone.
-
-### Planning/status questions
-
-Read:
-
-1. `.archcore/plans/`
-2. `ROADMAP.md` / `roadmap.md`
-3. `CHANGELOG.md`
-4. `memory-bank/progress.md`
-5. `memory-bank/activeContext.md`
-6. `SCRATCHPAD.md` / `scratchpad.md`
-
-Report uncertainty if these disagree.
-
-### Agent/governance questions
-
-Read:
-
-1. `AGENTS.md`
-2. `CLAUDE.md`
-3. `AI_NAVIGATION.md`
-4. `context-map.yaml`
-5. `CHANGELOG.md`
-6. `.archcore/rules/`
-
-### Implementation/code questions
-
-Read:
-
-1. `AGENTS.md`
-2. `context-map.yaml`
-3. Relevant `.archcore/specs/`
-4. Relevant source files
-5. Relevant tests
-6. `graphify-out/GRAPH_REPORT.md`, if present
-
-Use code navigation tools where available.
+| Question               | Read first                                                                                               |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- |
+| Architecture or design | `.archcore/adr/`, `.archcore/specs/`, `ARCHITECTURE.md`, `docs/`; never answer from the scratchpad alone |
+| Planning or status     | `.archcore/plans/`, `ROADMAP.md`, `CHANGELOG.md`, `memory-bank/`; say so when they disagree              |
+| Agents or governance   | `AGENTS.md`, `CLAUDE.md`, this file, `context-map.yaml`, `.archcore/rules/`                              |
+| Implementation or code | `AGENTS.md`, `context-map.yaml`, `.archcore/specs/`, the source and its tests                            |
+| Documentation          | `.archcore/`, `README.md`, `CHANGELOG.md`, `docs/`; leave companions consistent                          |
 
 ## Script and Task Navigation
 
-For script, task, or automation questions, read in this order:
-
-1. Existing canonical task runner if documented
-2. `justfile`
-3. `scripts/README.md`
-4. `Taskfile.yml`
-5. `Makefile`
-6. `package.json`
-7. Raw scripts under `scripts/` after inspection
-
-Prefer `just --list` and `just <task>` when a `justfile` exists.
-
-Do not run uncataloged scripts blindly. Treat uncataloged scripts as `unknown safety` until inspected.
-
-If the catalog is stale, propose an update to `scripts/README.md` or the relevant task runner.
-
-If a task is marked `destructive`, `review-required`, or `unknown`, stop and request review before execution.
-
-### Documentation updates
-
-Before updating docs, check:
-
-1. `.archcore/`
-2. `README.md`
-3. `CHANGELOG.md`
-4. `ARCHITECTURE.md` / `architecture.md`
-5. `ROADMAP.md` / `roadmap.md`
-6. `memory-bank/`
-7. `docs/`
-
-After updates, ensure related files are not left inconsistent.
+`just --list` first, then `scripts/README.md`, then any other runner. Never run an uncatalogued script, or one marked `destructive`, `review-required` or `unknown`, without review; propose a catalogue
+update when it is stale.
 
 ## Governance coherence checks
 
-If `scripts/check_governance.py` exists, run it before claiming any durable change is complete, and after any change that adds, moves, renames, or retires a file. It turns this project's governance
-claims into assertions and exits non-zero on failure.
-
-When it fails, fix the project — not the check. Broadening an ignore-list or exempting the failing file converts a real finding into a permanent blind spot.
-
-The check count is a coverage signal, not a score, and is expected to rise as the project acquires structure. Adding a new class of artifact, a generated output, or a constant restated across files
-requires extending the checker's registries in the same pass.
+Run `just check` (or `scripts/check_governance.py`) before calling a durable change done and after adding, moving or retiring a file. When it fails, fix the project, not the check; a new artifact
+class, generated output or restated constant extends the checker's registries in the same pass.
 
 ## Companion consistency
 
-When changing governance files, update these companion files together:
-
-| File | Companion files |
-|---|---|
-| `AGENTS.md` | `AI_NAVIGATION.md`, `context-map.yaml`, `scripts/README.md` |
-| `AI_NAVIGATION.md` | `context-map.yaml` |
-| `context-map.yaml` | `AI_NAVIGATION.md` |
-| `scripts/README.md` | `AGENTS.md`, `context-map.yaml` |
-| New script added | `scripts/README.md`, `AGENTS.md`, `justfile`, `scripts/check_governance.py` |
-| New artifact class, generated output, or restated constant | `scripts/check_governance.py` registries |
+`AGENTS.md` goes with this file, `context-map.yaml` and `scripts/README.md`; a new script goes with `scripts/README.md`, `justfile` and the checker. `context-map.yaml` `update_rules` is authoritative
+for this project.
 
 ## Drift handling
 
-If files disagree:
-
-1. Stop.
-2. Identify the conflicting files.
-3. State which source has higher authority.
-4. Propose the smallest correction.
-5. Do not silently merge conflicting assumptions.
+When files disagree: stop, name them, say which has higher authority, propose the smallest correction. Never merge conflicting assumptions silently.
 
 ## Update rules
 
-| Change type | Update |
-|---|---|
-| New durable decision | Add/propose `.archcore/adr/` |
-| New agent/project rule | Add/propose `.archcore/rules/` |
-| New architecture contract | Add/propose `.archcore/specs/` |
-| New operating procedure | Add/propose `.archcore/guides/` |
-| New implementation plan | Add/propose `.archcore/plans/` |
-| Progress change | Update `memory-bank/progress.md` |
-| Current working state changed | Update `memory-bank/activeContext.md` |
-| Temporary note | Add to `SCRATCHPAD.md` only if not durable |
-| Context routing changed | Update `AI_NAVIGATION.md` and `context-map.yaml` |
-| Governance or navigation files changed | Append `CHANGELOG.md` |
+Decision: `.archcore/adr/`. Rule: `.archcore/rules/` or `AGENTS.md`. Routing: this file and `context-map.yaml`. Any governance or navigation change: `CHANGELOG.md`. Records over budget: `just budget
+--apply`. Full table: [reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/change-rules.md#update-rules).
 
 ## Generated context
 
-Generated files are useful but not authoritative by themselves.
-
-| Generated file | Purpose |
-|---|---|
-| `graphify-out/GRAPH_REPORT.md` | Relationship/navigation overview |
-| `graphify-out/graph.json` | Machine-readable graph |
-| `.ai-context/governance-pack.md` | Deterministic context bundle |
-| `.ai-context/repo-pack.md` | Larger project/repo context bundle |
-
-Regenerate these after large documentation, architecture, or source changes.
+`.ai-context/` packs help navigation and are never a source of truth; regenerate after large changes with `repomix --config repomix.config.json`.
 
 ## Context compaction recovery
 
-After context compaction, rebuild agent context in this order:
-
-1. **Read `AI_NAVIGATION.md`** first — this file is the navigation map.
-2. **Load `.archcore/`** — durable project truth (ADRs, rules, specs, guides, plans).
-3. **Regenerate `graphify-out/`**: `graphify update .`
-4. **Regenerate `.ai-context/`**: `repomix --config repomix.config.json`
-5. **Verify `SCRATCHPAD.md`** — if empty, populate from memory-keeper / mcp-project-context.
-6. **Verify `CHANGELOG.md`** is current.
-7. **Verify `AI_NAVIGATION.md` and `context-map.yaml` companion consistency.**
-
-Label recovered entries: `Context recovered via skill-ai-it context-recovery procedure`.
+Re-read this file, `.archcore/` and the newest `CHANGELOG.md` entries; check `SCRATCHPAD.md` against the memory backends; confirm companions agree. Steps:
+[reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/recovery-and-audit.md#context-compaction-recovery).
 
 ## Audit procedure
 
-To verify project context coherence, run these checks:
-
-1. Confirm `AGENTS.md` points to `AI_NAVIGATION.md`.
-2. Confirm `AI_NAVIGATION.md` points to `context-map.yaml`.
-3. Confirm `CHANGELOG.md` exists and recent governance/navigation changes are recorded.
-4. Confirm `context-map.yaml` has routing for architecture, planning, governance, implementation, documentation, and scripts.
-5. Confirm `.archcore/` is either present and routed, or absent and treated as optional.
-6. Confirm generated context paths (`graphify-out/`, `.ai-context/`) are excluded from source-of-truth decisions.
-7. Confirm `SCRATCHPAD.md` is marked transient.
-8. Confirm repeat-run managed blocks exist where needed.
-9. Confirm companion files in `context-map.yaml update_rules` were updated when source files changed.
-10. Confirm drift/conflict policy says stop-and-report.
+`just check` and `just stale` cover the mechanical part; the ten manual checks are in the
+[reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/recovery-and-audit.md#audit-procedure).
 
 ## Agent answer contract
 
-When answering from project context:
-
-1. Prefer cited file paths.
-2. Do not invent project state.
-3. Say “not found in project context” if unsupported.
-4. Distinguish confirmed facts from assumptions.
-5. Ask only when required; otherwise proceed with stated assumptions.
+Cite file paths; never invent project state; say "not found in project context" when unsupported; separate confirmed facts from assumptions; ask only when required, otherwise proceed with stated
+assumptions.
 
 <!-- END MANAGED: skill-ai-it:navigation -->
 
 ## Pack domain routing
 
-Project-authored, outside the managed block. Mirrors the routing table in [SKILL.md](SKILL.md); the governance checker fails when a reference file is missing from either.
+Project-authored (outside the managed block); mirrors [SKILL.md](SKILL.md). The checker fails when a reference is missing from either.
 Ordinary tasks load one reference. What runs inside a guest belongs to that workload's skill; the inventory of record belongs to the source-of-truth skill
 (for example [skill-nautobot](../skill-nautobot/SKILL.md)).
 
 | Task | Read first |
 |---|---|
 | Exact syntax: pvesh, pveum, qm, pct, pvesm, API paths | [references/operations-cookbook.md](references/operations-cookbook.md) |
-| Nodes, clusters, Corosync, quorum, pmxcfs and /etc/pve | [references/architecture-and-cluster.md](references/architecture-and-cluster.md) |
-| Storage types, content types, the import content type | [references/storage.md](references/storage.md) |
+| Nodes, clusters, Corosync, quorum, pmxcfs, node removal, arm64 | [references/architecture-and-cluster.md](references/architecture-and-cluster.md) |
+| Storage types, content types, import, hyperconverged Ceph | [references/storage.md](references/storage.md) |
 | Bridges, VLAN-aware bridges, SDN zones, VNets, DHCP and IPAM | [references/networking-and-sdn.md](references/networking-and-sdn.md) |
-| VMs: q35, OVMF, EFI disk, boot order, cloud-init, agent, serial, import, clones | [references/qemu-vms.md](references/qemu-vms.md) |
+| VMs: q35, OVMF, boot order, cloud-init, agent, serial, clones, migration, mappings | [references/qemu-vms.md](references/qemu-vms.md) |
 | LXC containers, privileged and unprivileged, templates | [references/lxc-containers.md](references/lxc-containers.md) |
-| Users, realms, roles, privileges, ACLs, pools, API tokens | [references/access-control.md](references/access-control.md) |
+| Users, realms, roles, privileges, ACLs, pools, API tokens, 2FA | [references/access-control.md](references/access-control.md) |
 | REST API, authentication, tasks, safe readers and writers | [references/api-and-cli.md](references/api-and-cli.md) |
 | OpenTofu with bpg/proxmox: auth, ssh block, import, state | [references/opentofu-bpg-provider.md](references/opentofu-bpg-provider.md) |
-| vzdump, PBS, retention and restore | [references/backup-and-restore.md](references/backup-and-restore.md) |
+| vzdump, PBS 4.x (S3), retention and restore | [references/backup-and-restore.md](references/backup-and-restore.md) |
 | HA, placement rules, fencing, storage replication | [references/ha-and-replication.md](references/ha-and-replication.md) |
 | Repositories, updates, 8-to-9 upgrade, 9.x changes, triage | [references/upgrade-and-troubleshooting.md](references/upgrade-and-troubleshooting.md) |
 | Certificates, ACME, firewall, hardening | [references/security-certificates-firewall.md](references/security-certificates-firewall.md) |
-| Health reads, metric servers, the node report | [references/monitoring-and-metrics.md](references/monitoring-and-metrics.md) |
+| Health reads, metrics, notifications, node report | [references/monitoring-and-metrics.md](references/monitoring-and-metrics.md) |
 | Missing capability: native, Proxmox products, seams, FOSS | [references/capability-extension.md](references/capability-extension.md) |
 | Reusable learning capture and engagement closeout | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
 
@@ -3432,9 +3786,28 @@ Ordinary tasks load one reference. What runs inside a guest belongs to that work
 
 ## File: CHANGELOG.md
 ````markdown
+---
+Title: Changelog
+Category: change-log
+Status: current
+Summary: Newest entries only; older ones rotate to docs/history.
+Authority: record
+Scope: Dated changes to this project
+Kind: log
+Budget: 200 lines, 25 KB
+Last reviewed: 2026-11-08
+---
+
 # Changelog
 
 ## Unreleased
+
+- 2026-11-08 write-back from smc-resiliency X1: references/qemu-vms.md (iTCO_wdt on q35 without i6300esb; explicit modprobe past the deny-list; a crash reset in 91.1 s)
+- 2026-11-07 (c) write-back from smc-resiliency X2: references/qemu-vms.md (OVMF entry deletion, watchdog driver), references/opentofu-bpg-provider.md (watchdog block, boot_order)
+
+- 2026-11-07 (b) write-back from smc-resiliency's lab package: per-VMID ACL on 9.2, IPAM bind on start, isolated bridge; Vagrant transport
+
+- 2026-11-07 write-back from smc-resiliency: references/upgrade-and-troubleshooting.md, references/networking-and-sdn.md (Learned 2026-11-07).
 
 - 20261107 Pack created (operator, 2026-11-07: "create and setup skill-proxmox like skill-nautobot ... with the same detail and logic"); not committed.
 
@@ -3457,6 +3830,18 @@ docs, edk2 sources, one installed-source excerpt). Lab facts read only, on one P
 - 20261107 Learned 2026-11-07 (i) in `references/opentofu-bpg-provider.md`: `~> 0.118` resolved to 0.120.0; one-VM apply time.
 - 20261107 Learned 2026-11-07 (k) in `references/upgrade-and-troubleshooting.md`: a 9.1.5 node's pending 9.2 stack and repository state.
 - 20261107 Learned 2026-11-07 (l) in `references/monitoring-and-metrics.md`: node report runtime and budget.
+
+## 20261109_1125 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-10-14-compact-v2`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, justfile, scripts/README.md
 ````
 
 ## File: CLAUDE.md
@@ -3521,13 +3906,21 @@ environments:
     evidence_locator: "documents/research-sources-20261107 edk2-*.c.txt; Proxmox's packaged OVMF not diffed against master"
     validation_layer: official_documented
     result: pass
+  - id: pve-docs-9-current-20261109
+    product: Proxmox VE, Proxmox Backup Server and Proxmox Datacenter Manager documentation
+    product_version: "PVE 9.x (9.2 and 9.2 arm64), PBS 4.2, PDM 1.1 (current docs, fetched 2026-11-09)"
+    components: [pveceph chapter, notifications chapter, PVE Roadmap, PBS Roadmap, PDM roadmap, bpg/proxmox latest release]
+    observed_at: "2026-11-09"
+    evidence_locator: "documents/research-sources-20261109: pages fetched with curl and kept verbatim"
+    validation_layer: official_documented
+    result: pass
 ````
 
 ## File: context-map.yaml
 ````yaml
 # Machine-readable context map: this project's governance files, routing, update rules and generated outputs (skill-ai-it).
 version: 1
-skill_ai_it_version: "2026-10-07-snake-case-recipes-v1"
+skill_ai_it_version: "2026-10-14-compact-v2"
 
 project:
   name: "skill-proxmox"
@@ -4048,7 +4441,7 @@ inventory:
     @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
 
 # Audit script/task inventory for obvious drift
-audit_scripts:
+audit-scripts:
     @echo "== just recipes =="
     @just --list || true
     @echo
@@ -4067,6 +4460,7 @@ audit_scripts:
 check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
@@ -4125,37 +4519,89 @@ graph:
     @if [ "${GRAPHIFY_ENABLED:-0}" = 1 ]; then graphify update .; else echo "graphify disabled (operator, 2026-10-10); set GRAPHIFY_ENABLED=1 to run"; fi
 
 # Run safe local preflight checks
-preflight: runtimes audit_scripts test check coder_checks lint_md
+preflight: runtimes audit-scripts test check coder_checks lint-md
 
 # Lint Markdown files when markdownlint-cli2 is available
-lint_md:
+lint-md:
     @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
     @markdownlint-cli2 '**/*.md'
 
 # The navigation-control scripts live in the skill package, NOT in this project. Override on the
-# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav_validate
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
 skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 
 # Upgrade navigation control layer (dry-run preview)
-nav_upgrade_dry_run: _require-venv
+nav-upgrade-dry-run: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root . --dry-run
 
 # Upgrade navigation control layer (apply changes) — review the dry-run first
-nav_upgrade: _require-venv
+nav-upgrade: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root .
 
 # Validate navigation control layer
-nav_validate: _require-venv
+nav-validate: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/validate_navigation_control_layer.py" --project-root .
 
 # Check only expected files changed after upgrade (requires a git repo)
-nav_check_diff: _require-venv
+nav-check-diff: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/check_expected_diff.py" --project-root .
 
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
-# package's templates change, before trusting nav_upgrade to rewrite this project's blocks.
-nav_selftest: _require-venv
+# package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
+nav-selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/selftest_blocks.py"
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root .
+
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/checks/govern_guard.py" --project-root "$root" || exit 1; fi
+    if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
+      nav="$(mktemp)"
+      {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
+      elif grep -q "would" "$nav"; then
+        {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+      fi
+      rm -f "$nav"
+    fi
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_code_map.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
+# Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
+budget *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root . {{ARGS}}
+
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/add_changelog_entry.py" --project-root . "$@"
+
+# Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
+move-sections *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"
 ````
 
 ## File: Justfile
@@ -4231,7 +4677,7 @@ inventory:
     @test -f scripts/README.md && sed -n '1,220p' scripts/README.md || true
 
 # Audit script/task inventory for obvious drift
-audit_scripts:
+audit-scripts:
     @echo "== just recipes =="
     @just --list || true
     @echo
@@ -4250,6 +4696,7 @@ audit_scripts:
 check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
@@ -4308,41 +4755,105 @@ graph:
     @if [ "${GRAPHIFY_ENABLED:-0}" = 1 ]; then graphify update .; else echo "graphify disabled (operator, 2026-10-10); set GRAPHIFY_ENABLED=1 to run"; fi
 
 # Run safe local preflight checks
-preflight: runtimes audit_scripts test check coder_checks lint_md
+preflight: runtimes audit-scripts test check coder_checks lint-md
 
 # Lint Markdown files when markdownlint-cli2 is available
-lint_md:
+lint-md:
     @command -v markdownlint-cli2 >/dev/null || { echo 'markdownlint-cli2 not installed; skipped'; exit 0; }
     @markdownlint-cli2 '**/*.md'
 
 # The navigation-control scripts live in the skill package, NOT in this project. Override on the
-# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav_validate
+# command line if the skill lives elsewhere:  just skill_dir=/path/to/skill-ai-it nav-validate
 skill_dir := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
 
 # Upgrade navigation control layer (dry-run preview)
-nav_upgrade_dry_run: _require-venv
+nav-upgrade-dry-run: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root . --dry-run
 
 # Upgrade navigation control layer (apply changes) — review the dry-run first
-nav_upgrade: _require-venv
+nav-upgrade: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root .
 
 # Validate navigation control layer
-nav_validate: _require-venv
+nav-validate: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/validate_navigation_control_layer.py" --project-root .
 
 # Check only expected files changed after upgrade (requires a git repo)
-nav_check_diff: _require-venv
+nav-check-diff: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/check_expected_diff.py" --project-root .
 
 # Self-test the SKILL PACKAGE's managed-block builders (not this project). Run it after the skill
-# package's templates change, before trusting nav_upgrade to rewrite this project's blocks.
-nav_selftest: _require-venv
+# package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
+nav-selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/selftest_blocks.py"
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root .
+
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/checks/govern_guard.py" --project-root "$root" || exit 1; fi
+    if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
+      nav="$(mktemp)"
+      {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
+      elif grep -q "would" "$nav"; then
+        {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+      fi
+      rm -f "$nav"
+    fi
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_code_map.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
+# Bring governed files within budget: normalise, rotate, move non-working-state sections out, audit, check. Plan by default; `--apply` to do it
+budget *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root . {{ARGS}}
+
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/add_changelog_entry.py" --project-root . "$@"
+
+# Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
+move-sections *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"
 ````
 
 ## File: README.md
 ````markdown
+---
+Title: skill-proxmox
+Category: readme
+Status: current
+Authority: canonical
+Scope: Root README.md of skill-proxmox
+Last reviewed: 2026-11-07
+Summary: "Canonical, cross-project platform pack for Proxmox VE 9.x: nodes and clusters, storage, networking and SDN, VMs and containers, access control and API tokens, the API and CLIs, backups,..."
+Review by: 2026-12-09
+Budget: 200 lines, 25 KB
+---
+
 # skill-proxmox
 
 Canonical, cross-project platform pack for Proxmox VE 9.x: nodes and clusters, storage, networking and SDN, VMs and containers, access control and API tokens, the API and CLIs, backups, HA, upgrades,
@@ -4383,6 +4894,20 @@ engaging project. Its structure mirrors [skill-nautobot](../skill-nautobot/READM
 
 ## File: SCRATCHPAD.md
 ````markdown
+---
+Title: Scratchpad
+Category: working-state
+Status: current
+Summary: Current working state; older entries rotate to docs/history, older open items to docs/trackers.
+Authority: working-state
+Scope: Working state between sessions
+Kind: state
+Budget: 200 lines, 25 KB
+Last reviewed: 2026-11-07
+Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
+Open items tracker: docs/trackers/open-items-20261109_1125.md
+---
+
 # SCRATCHPAD
 
 Agent working memory for skill-proxmox. Use for: draft plans, terminal output, intermediate analysis, refactor outlines. Cleared between sessions unless content is explicitly marked KEEP.
@@ -4402,7 +4927,10 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 ## Open items
 
 - [ ] Operator review: accept or change the six proposed `.archcore/` documents (memory channel `proxmox`, independent pack, search order, checker in tests, version of record, live-probe plan).
-- [ ] Commit (operator): pack folder, the registry rows and the install symlinks are uncommitted.
+- [x] Commit: pack folder, registry rows and install symlinks committed in skills_stuff bd1691d (2026-11-07).
+- [ ] `just check` fails (seen 2026-11-07 22:45 from smc-resiliency's slurp): 21 files with no header summary (references, AI_NAVIGATION,
+  SCRATCHPAD, .ai-context), AI_NAVIGATION.md over its 200-line budget (322), six `.archcore/` documents with no Last reviewed date. Pack
+  adoption work: write each summary from its file, split AI_NAVIGATION, date the archcore documents after the operator review above.
 - [ ] Live probes on a disposable node for the `UNVERIFIED` items: `pvesh set /cluster/sdn` apply form, live restore from PBS, hook-script phase names, the task list's errors filter, the disks list endpoint,
   Ubuntu cloud image without qemu-guest-agent.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill).
@@ -4436,11 +4964,11 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 name: skill-proxmox
 description: >-
   Design, operate, automate and troubleshoot Proxmox VE 9.x: nodes, clusters, Corosync and pmxcfs (/etc/pve); storage (dir, LVM-thin,
-  ZFS, Ceph, PBS; content types including import); Linux bridges, VLAN-aware bridges, SDN zones, VNets and DHCP/IPAM; QEMU VMs (q35, OVMF
-  and the EFI disk, Secure Boot keys, boot order, cloud-init, guest agent, serial console, disk import, templates and clones); LXC;
+  ZFS, hyperconverged Ceph with pveceph, PBS 4.x; content types including import); Linux bridges, VLAN-aware bridges, SDN zones, VNets and DHCP/IPAM; QEMU VMs (q35, OVMF
+  and the EFI disk, Secure Boot keys, boot order, cloud-init, guest agent, serial console, disk import, templates and clones, migration, PCI/USB/directory resource mappings and virtiofs); LXC;
   pools, users, realms, roles, privileges, ACLs and privilege-separated API tokens; the REST API and pvesh, pveum, qm, pct and pvesm;
   OpenTofu with the bpg/proxmox provider; vzdump and PBS backups; HA; upgrades (repositories, apt full-upgrade, pve8to9);
-  certificates, firewall and metrics. Use for Proxmox VE work; not for the guest OS inside a VM or for device-specific facts.
+  certificates, firewall, metrics and notifications; arm64 hosts; Proxmox Datacenter Manager. Use for Proxmox VE work; not for the guest OS inside a VM or for device-specific facts.
 ---
 
 # Proxmox VE
@@ -4462,6 +4990,10 @@ description: >-
 
 Use this skill for the virtualisation platform: how a Proxmox VE node or cluster is built, configured, automated, secured, upgraded and diagnosed, and how OpenTofu drives it through the bpg/proxmox
 provider. It does not hold the guest operating system's knowledge (what runs inside a VM belongs to that workload's skill or project), site or customer specifics, or a project's lab inventory.
+
+Sibling skills (hand off, do not duplicate): `skill-vagrant` for local Parallels VMs on the Mac, the arm64 half of a lab whose x86 half runs here
+(lab symmetry lives in its [tool-choice-and-lab-symmetry.md](../skill-vagrant/references/tool-choice-and-lab-symmetry.md)); `skill-coder` before writing or changing any script, OpenTofu module or
+recipe this skill describes; `skill-drawio` for a project's lab flow pages; the workload's own skill (for example `skill-smc`) for what runs inside a VM.
 
 ## Read, write, and evidence boundaries
 
@@ -4492,19 +5024,19 @@ goes to that workload's skill; the inventory of record goes to the source-of-tru
 | Task                                                                            | Read first                                   |
 | ------------------------------------------------------------------------------- | -------------------------------------------- |
 | Exact syntax: pvesh, pveum, qm, pct, pvesm, API paths                           | [references/operations-cookbook.md](references/operations-cookbook.md) |
-| Nodes, clusters, Corosync, quorum, pmxcfs and /etc/pve                          | [references/architecture-and-cluster.md](references/architecture-and-cluster.md) |
-| Storage types, content types, the import content type                           | [references/storage.md](references/storage.md) |
+| Nodes, clusters, Corosync, quorum, pmxcfs, node removal, arm64                  | [references/architecture-and-cluster.md](references/architecture-and-cluster.md) |
+| Storage types, content types, import, hyperconverged Ceph                       | [references/storage.md](references/storage.md) |
 | Bridges, VLAN-aware bridges, SDN zones, VNets, DHCP and IPAM                    | [references/networking-and-sdn.md](references/networking-and-sdn.md) |
-| VMs: q35, OVMF, EFI disk, boot order, cloud-init, agent, serial, import, clones | [references/qemu-vms.md](references/qemu-vms.md) |
+| VMs: q35, OVMF, boot order, cloud-init, agent, serial, clones, migration, mappings | [references/qemu-vms.md](references/qemu-vms.md) |
 | LXC containers, privileged and unprivileged, templates                          | [references/lxc-containers.md](references/lxc-containers.md) |
-| Users, realms, roles, privileges, ACLs, pools, API tokens                       | [references/access-control.md](references/access-control.md) |
+| Users, realms, roles, privileges, ACLs, pools, API tokens, 2FA                  | [references/access-control.md](references/access-control.md) |
 | REST API, authentication, tasks, safe readers and writers                       | [references/api-and-cli.md](references/api-and-cli.md) |
 | OpenTofu with bpg/proxmox: auth, ssh block, import, state                       | [references/opentofu-bpg-provider.md](references/opentofu-bpg-provider.md) |
-| vzdump, PBS, retention and restore                                              | [references/backup-and-restore.md](references/backup-and-restore.md) |
+| vzdump, PBS 4.x (S3), retention and restore                                     | [references/backup-and-restore.md](references/backup-and-restore.md) |
 | HA, placement rules, fencing, storage replication                               | [references/ha-and-replication.md](references/ha-and-replication.md) |
 | Repositories, updates, 8-to-9 upgrade, 9.x changes, triage                      | [references/upgrade-and-troubleshooting.md](references/upgrade-and-troubleshooting.md) |
 | Certificates, ACME, firewall, hardening                                         | [references/security-certificates-firewall.md](references/security-certificates-firewall.md) |
-| Health reads, metric servers, the node report                                   | [references/monitoring-and-metrics.md](references/monitoring-and-metrics.md) |
+| Health reads, metrics, notifications, node report                               | [references/monitoring-and-metrics.md](references/monitoring-and-metrics.md) |
 | Missing capability: native, Proxmox products, seams, FOSS                       | [references/capability-extension.md](references/capability-extension.md) |
 | Reusable learning capture and engagement closeout                               | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
 
@@ -4782,4 +5314,70 @@ claims:
     evidence: "qm help (pending, guest cmd, terminal, cloudinit update), pct help create, pvesh usage on the lab node; pveum(1), pvesh(1) captures; 2026-11-07."
     reference: references/operations-cookbook.md
     test: P-S10
+  - id: P-C22
+    statement: "A pveceph replicated pool defaults to 128 PGs, size 3 and min_size 2; min_size 1 must not be used, and the chapter recommends at least three nodes and twelve OSDs."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261109]
+    environment_id: pve-docs-9-current-20261109
+    source_type: official_documentation
+    evidence: "pveceph chapter, Create and Edit Pools and Create OSDs (documents/research-sources-20261109/pve-admin-chapter-pveceph.html); 2026-11-09."
+    reference: references/storage.md
+    test: P-S17
+  - id: P-C23
+    statement: "Notifications route events through matchers (match-severity, match-field, match-calendar; mode all or any) to sendmail, smtp, gotify or webhook targets, configured in /etc/pve/notifications.cfg with secrets in /etc/pve/priv/notifications.cfg."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261109]
+    environment_id: pve-docs-9-current-20261109
+    source_type: official_documentation
+    evidence: "Notifications chapter, targets, matcher options and event table (documents/research-sources-20261109/pve-admin-chapter-notifications.html); 2026-11-09."
+    reference: references/monitoring-and-metrics.md
+    test: P-S18
+  - id: P-C24
+    statement: "Online migration is blocked by passed-through PCI or USB devices but not by local disks, needs target packages at the same or a newer version, and works only between hosts of the same CPU architecture."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "qm chapter, Migration and Online Migration Requirements (documents/research-sources-20261107/pve-admin-chapter-qm.html); read 2026-11-09."
+    reference: references/qemu-vms.md
+    test: P-S19
+  - id: P-C25
+    statement: "Assigning a cluster resource mapping (PCI, USB or virtiofs directory) to a VM needs Mapping.Use on /mapping/<type>/<name>; a VM with a virtiofs device cannot live-migrate, snapshot or hibernate."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "qm chapter, Resource Mapping and Virtiofs (documents/research-sources-20261107/pve-admin-chapter-qm.html); read 2026-11-09."
+    reference: references/qemu-vms.md
+    test: P-S19
+  - id: P-C26
+    statement: "Before pvecm delnode, a node's guests and replication jobs must be gone and the node powered off for good; afterwards its /etc/pve/nodes directory, authorized key and HA rule entries are cleaned up by hand."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "pvecm chapter, Remove a Cluster Node (documents/research-sources-20261107/pve-admin-chapter-pvecm.md); read 2026-11-09."
+    reference: references/architecture-and-cluster.md
+    test: P-S20
+  - id: P-C27
+    statement: "As of 2026-11-09 the latest releases are Proxmox VE 9.2 (x86-64 2026-05-21, arm64 2026-08-05), PBS 4.2 with S3 datastores officially supported, PDM 1.1, and bpg/proxmox 0.120.0."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261109]
+    environment_id: pve-docs-9-current-20261109
+    source_type: official_documentation
+    evidence: "PVE Roadmap release history, PBS Roadmap 4.2 highlights, PDM roadmap, GitHub releases/latest JSON (documents/research-sources-20261109/); 2026-11-09."
+    reference: references/upgrade-and-troubleshooting.md
+    test: P-S20
 ````

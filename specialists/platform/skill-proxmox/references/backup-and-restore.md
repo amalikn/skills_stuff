@@ -1,3 +1,13 @@
+---
+Title: Backup and restore
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/backup-and-restore.md
+Last reviewed: 2026-11-07
+Summary: vzdump modes and targets, Proxmox Backup Server 4.x (S3 datastores, encrypted sync), prune-backups retention, restores, and what a backup is not.
+---
+
 # Backup and restore
 
 vzdump backups to a storage or to Proxmox Backup Server (PBS), retention, and restores. Sources: [vzdump chapter](../documents/research-sources-20261107/pve-admin-chapter-vzdump.md), [PBS
@@ -29,6 +39,23 @@ storage](../documents/research-sources-20261107/pve-wiki-storage-pbs.md), [Roadm
   inaccessible"). `VERIFIED_PRIMARY` (PBS storage).
 - Jobs are cluster-wide (Datacenter → Backup, stored in pmxcfs); a job runs on each node for that node's guests.
 - `maxfiles` was removed in 9.0; use `prune-backups`. `VERIFIED_PRIMARY` (Roadmap, 9.0 breaking changes).
+- **PBS 4.x** (on Debian 13): 4.0 (2025-08-06) added S3-compatible object stores as a datastore backend as a technology preview; 4.2 (2026-04-29) made S3 datastores officially supported,
+  with request and traffic counters and notification thresholds, added server-side encryption for push sync jobs (decryption on pull), parallel group sync (`worker-threads`), and moving
+  groups and namespaces inside a datastore. `VERIFIED_PRIMARY` ([PBS Roadmap](../documents/research-sources-20261109/pbs-wiki-roadmap.html), fetched 2026-11-09). An S3 datastore is a PBS
+  feature; Proxmox VE still sees it as a `pbs` storage.
+
+```text
+  vzdump job (cluster-wide; each node backs up its own guests)
+  mode snapshot | suspend | stop   [+ fleecing on a fast local thin storage]
+     |
+     +--> dir / NFS / CIFS storage (backup content)
+     |      dump/vzdump-*.vma.zst | .tar.zst      full archive every run
+     |
+     +--> pbs storage --> PBS datastore: chunked, incremental, deduplicated,
+                            |               optional client-side encryption (keep the key apart)
+                            |   backend: local disk | S3 object store (supported from PBS 4.2)
+                            +--> sync job push/pull to a second PBS (4.2: encrypt on push)
+```
 
 ## Retention
 

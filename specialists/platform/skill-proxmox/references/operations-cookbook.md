@@ -1,3 +1,13 @@
+---
+Title: Operations cookbook
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/operations-cookbook.md
+Last reviewed: 2026-11-07
+Summary: Exact, verified syntax for common tasks: orienting on a node, pvesh API calls, users and tokens, storage, VMs, containers and updates, each marked read or write.
+---
+
 # Operations cookbook
 
 Verified against: Proxmox VE 9.1.5 (lab node, read-only, 2026-11-07) and the current 9.x documentation fetched 2026-11-07.

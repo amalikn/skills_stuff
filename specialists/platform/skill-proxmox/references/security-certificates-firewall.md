@@ -1,3 +1,13 @@
+---
+Title: Security, certificates and firewall
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/security-certificates-firewall.md
+Last reviewed: 2026-11-07
+Summary: Node certificates and ACME, the PVE firewall and its nftables backend, and a hardening checklist.
+---
+
 # Security, certificates and firewall
 
 Node certificates and ACME, the PVE firewall, and hardening basics. Sources: [Certificate Management](../documents/research-sources-20261107/pve-wiki-certificate-management.md), [firewall

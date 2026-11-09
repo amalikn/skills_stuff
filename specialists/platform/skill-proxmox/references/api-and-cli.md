@@ -1,3 +1,13 @@
+---
+Title: API and CLI
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/api-and-cli.md
+Last reviewed: 2026-11-07
+Summary: The REST API as the one interface, authentication with tickets and tokens, the pvesh, pveum, qm, pct and pvesm CLIs, tasks, and safe readers and writers.
+---
+
 # API and CLIs
 
 The REST API is the one interface; the GUI, `pvesh`, `pveum`, `qm`, `pct` and `pvesm` all sit on it. Sources: [API wiki](../documents/research-sources-20261107/pve-wiki-api.md),

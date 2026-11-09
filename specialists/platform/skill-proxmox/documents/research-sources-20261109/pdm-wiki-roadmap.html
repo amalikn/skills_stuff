@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html class="client-nojs" lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>Proxmox Datacenter Manager Roadmap - Proxmox VE</title>
+<script>(function(){var className="client-js";var cookie=document.cookie.match(/(?:^|; )wikidb_mw_mwclientpreferences=([^;]+)/);if(cookie){cookie[1].split('%2C').forEach(function(pref){className=className.replace(new RegExp('(^| )'+pref.replace(/-clientpref-\w+$|[^\w-]+/g,'')+'-clientpref-\\w+( |$)'),'$1'+pref+'$2');});}document.documentElement.className=className;}());RLCONF={"wgBreakFrames":false,"wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgRequestId":"930f918a807c07f96f1ad837","wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"Proxmox_Datacenter_Manager_Roadmap","wgTitle":"Proxmox Datacenter Manager Roadmap","wgCurRevisionId":12523,"wgRevisionId":12523,"wgArticleId":1898,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["Proxmox Datacenter Manager"],"wgPageViewLanguage":"en","wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgRelevantPageName":"Proxmox_Datacenter_Manager_Roadmap","wgRelevantArticleId":1898,"wgIsProbablyEditable":false,"wgRelevantPageIsProbablyEditable":false,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgCiteReferencePreviewsActive":true,"wgVisualEditor":{"pageLanguageCode":"en","pageLanguageDir":"ltr","pageVariantFallbacks":"en"},"wgEditSubmitButtonLabelPublish":false};
+RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.options":"loading","skins.vector.styles.legacy":"ready","ext.visualEditor.desktopArticleTarget.noscript":"ready","ext.CookieWarning.styles":"ready","oojs-ui-core.styles":"ready","oojs-ui.styles.indicators":"ready","mediawiki.widgets.styles":"ready","oojs-ui-core.icons":"ready"};RLPAGEMODULES=["mediawiki.page.media","site","mediawiki.page.ready","mediawiki.toc","skins.vector.legacy.js","ext.visualEditor.desktopArticleTarget.init","ext.visualEditor.targetLoader","ext.CookieWarning"];</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.loader.impl(function(){return["user.options@12s5i",function($,jQuery,require,module){mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+}];});});</script>
+<link rel="stylesheet" href="/mediawiki/load.php?lang=en&amp;modules=ext.CookieWarning.styles%7Cext.visualEditor.desktopArticleTarget.noscript%7Cmediawiki.widgets.styles%7Coojs-ui-core.icons%2Cstyles%7Coojs-ui.styles.indicators%7Cskins.vector.styles.legacy&amp;only=styles&amp;skin=vector">
+<script async="" src="/mediawiki/load.php?lang=en&amp;modules=startup&amp;only=scripts&amp;raw=1&amp;skin=vector"></script>
+<meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="/mediawiki/load.php?lang=en&amp;modules=site.styles&amp;only=styles&amp;skin=vector">
+<meta name="generator" content="MediaWiki 1.43.9">
+<meta name="robots" content="max-image-preview:standard">
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport" content="width=1120">
+<link rel="search" type="application/opensearchdescription+xml" href="/mediawiki/rest.php/v1/search" title="Proxmox VE (en)">
+<link rel="EditURI" type="application/rsd+xml" href="https://pve.proxmox.com/mediawiki/api.php?action=rsd">
+<link rel="alternate" type="application/atom+xml" title="Proxmox VE Atom feed" href="/mediawiki/index.php?title=Special:RecentChanges&amp;feed=atom">
+</head>
+<body class="skin-vector-legacy mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject page-Proxmox_Datacenter_Manager_Roadmap rootpage-Proxmox_Datacenter_Manager_Roadmap skin-vector action-view"><div id="mw-page-base" class="noprint"></div>
+<div id="mw-head-base" class="noprint"></div>
+<div id="content" class="mw-body" role="main">
+	<a id="top"></a>
+	<div id="siteNotice"></div>
+	<div class="mw-indicators">
+	</div>
+	<h1 id="firstHeading" class="firstHeading mw-first-heading"><span class="mw-page-title-main">Proxmox Datacenter Manager Roadmap</span></h1>
+	<div id="bodyContent" class="vector-body">
+		<div id="siteSub" class="noprint">From Proxmox VE</div>
+		<div id="contentSub"><div id="mw-content-subtitle"></div></div>
+		<div id="contentSub2"></div>
+		
+		<div id="jump-to-nav"></div>
+		<a class="mw-jump-link" href="#mw-head">Jump to navigation</a>
+		<a class="mw-jump-link" href="#searchInput">Jump to search</a>
+		<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><div class="warn-box">This roadmap is outdated. With the release of Proxmox Datacenter Manager 1.0 the roadmap and release notes are now available as part of its documentation: <a rel="nofollow" class="external free" href="https://pdm.proxmox.com/docs/roadmap.html">https://pdm.proxmox.com/docs/roadmap.html</a></div>
+<div id="toc" class="toc" role="navigation" aria-labelledby="mw-toc-heading"><input type="checkbox" role="button" id="toctogglecheckbox" class="toctogglecheckbox" style="display:none" /><div class="toctitle" lang="en" dir="ltr"><h2 id="mw-toc-heading">Contents</h2><span class="toctogglespan"><label class="toctogglelabel" for="toctogglecheckbox"></label></span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Overview"><span class="tocnumber">1</span> <span class="toctext">Overview</span></a></li>
+<li class="toclevel-1 tocsection-2"><a href="#Roadmap"><span class="tocnumber">2</span> <span class="toctext">Roadmap</span></a></li>
+<li class="toclevel-1 tocsection-3"><a href="#Proxmox_Datacenter_Manager_0.9_BETA"><span class="tocnumber">3</span> <span class="toctext">Proxmox Datacenter Manager 0.9 BETA</span></a>
+<ul>
+<li class="toclevel-2 tocsection-4"><a href="#Features_(Highlights)"><span class="tocnumber">3.1</span> <span class="toctext">Features (Highlights)</span></a></li>
+<li class="toclevel-2 tocsection-5"><a href="#Changelog_Overview"><span class="tocnumber">3.2</span> <span class="toctext">Changelog Overview</span></a>
+<ul>
+<li class="toclevel-3 tocsection-6"><a href="#Enhancements_in_the_Web_Interface_(GUI)"><span class="tocnumber">3.2.1</span> <span class="toctext">Enhancements in the Web Interface (GUI)</span></a></li>
+<li class="toclevel-3 tocsection-7"><a href="#Remotes_Management"><span class="tocnumber">3.2.2</span> <span class="toctext">Remotes Management</span></a></li>
+<li class="toclevel-3 tocsection-8"><a href="#Backend_Improvements"><span class="tocnumber">3.2.3</span> <span class="toctext">Backend Improvements</span></a></li>
+<li class="toclevel-3 tocsection-9"><a href="#Command_Line_Interface_Enhancements"><span class="tocnumber">3.2.4</span> <span class="toctext">Command Line Interface Enhancements</span></a></li>
+<li class="toclevel-3 tocsection-10"><a href="#Miscellaneous_Improvements"><span class="tocnumber">3.2.5</span> <span class="toctext">Miscellaneous Improvements</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-11"><a href="#Known_Issues_&amp;_Breaking_Changes"><span class="tocnumber">3.3</span> <span class="toctext">Known Issues &amp; Breaking Changes</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-12"><a href="#Proxmox_Datacenter_Manager_0.1_ALPHA"><span class="tocnumber">4</span> <span class="toctext">Proxmox Datacenter Manager 0.1 ALPHA</span></a>
+<ul>
+<li class="toclevel-2 tocsection-13"><a href="#Features_(Highlights)_2"><span class="tocnumber">4.1</span> <span class="toctext">Features (Highlights)</span></a></li>
+<li class="toclevel-2 tocsection-14"><a href="#Changelog_Overview_2"><span class="tocnumber">4.2</span> <span class="toctext">Changelog Overview</span></a></li>
+<li class="toclevel-2 tocsection-15"><a href="#Known_Issues_&amp;_Breaking_Changes_2"><span class="tocnumber">4.3</span> <span class="toctext">Known Issues &amp; Breaking Changes</span></a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+<h2><span class="mw-headline" id="Overview">Overview</span></h2>
+<p>This article provides release notes and a high-level roadmap overview for Proxmox Datacenter Manager.
+</p>
+<figure class="mw-default-size" typeof="mw:File/Thumb"><a href="/wiki/File:Pdm-alpha-0.1.7-ui.png" class="mw-file-description"><img src="/mediawiki/images/thumb/7/76/Pdm-alpha-0.1.7-ui.png/300px-Pdm-alpha-0.1.7-ui.png" decoding="async" width="300" height="169" class="mw-file-element" srcset="/mediawiki/images/thumb/7/76/Pdm-alpha-0.1.7-ui.png/450px-Pdm-alpha-0.1.7-ui.png 1.5x, /mediawiki/images/thumb/7/76/Pdm-alpha-0.1.7-ui.png/600px-Pdm-alpha-0.1.7-ui.png 2x" /></a><figcaption></figcaption></figure>
+<p>The Proxmox Datacenter Manager project has been developed with the objective of providing a centralized overview of all your individual nodes and clusters.
+It also enables basic management like migrations of virtual guests without any cluster network requirements.
+</p><p>Due to the current beta in-development status of the Proxmox Datacenter Manager, the specific feature list planned for the first stable 1.0 release is not yet final. This roadmap includes points that quite probably will only make it in after the first 1.0 release.
+Further, the roadmap consists not only of specific features that are planned. It includes more general concepts we want to evaluate and pain points that one currently faces when managing big and/or physically distributed Proxmox VE and Proxmox Backup Server setups.
+</p>
+<h2><span class="mw-headline" id="Roadmap">Roadmap</span></h2>
+<ul><li>Improve the overview of the health state (subscription, valid APT repositories, pending updates, backups done …) of all nodes and resources.</li>
+<li>Better organization of resources, including over multiple remotes, for example with (hierarchical) groups or resource pools.</li></ul>
+<dl><dd>Finding a specific set of virtual machines, nodes, … is key on large setups, and this will be an important area of work for the final 1.0.</dd></dl>
+<ul><li>Simplify adding remotes by implementing a remote-join information endpoint where key information can be copied from to give the PDM all initial information required for connecting to a remote while upholding high guarantees for trust and safety.</li></ul>
+<dl><dd>Somewhat similar in principle to how the "Join Information" API and UI simplified the process for Proxmox VE clusters, but independent of that as PDM doesn't interface with cluster communication and works on single nodes too.</dd></dl>
+<ul><li>Management of some core configurations.
+<ul><li>Node updates.</li>
+<li>Backup jobs and their status.</li>
+<li>Firewall (potentially only done later with SDN integration).</li>
+<li>Very basic management of the most important virtual guest resources and settings.</li></ul></li></ul>
+<dl><dd>Proxmox Datacenter Manager provides a link to the target resource, allowing one to quickly open the fully featured user interface for any complex configurations.</dd></dl>
+<ul><li>First-class SDN integration, for example for setting up EVPN between different clusters. Probably the most important feature in the long run.
+<ul><li>stretching EVPN VNets across clusters</li>
+<li>support for multiple VRFs across clusters</li>
+<li>automatic configuration of RT Import / Export</li></ul></li>
+<li>Off-site replication copies of guest for manual recovery on DC failure (not HA!)</li>
+<li>Evaluate if an active-standby like architecture for the Proxmox Datacenter Manager makes sense, to have a native method to avoid a single point of failure.
+<dl><dd>User can just use two Proxmox Datacenter Manager instances for now, metrics collection is doubled, but besides that, it's not much extra overhead.</dd></dl></li>
+<li>Integration of other projects like Proxmox Backup Server and Proxmox Mail Gateway.</li>
+<li>Caching/Tracking of remote tasks.</li>
+<li>Bulk actions like start/stop/(remote-)migrations of virtual guests.</li>
+<li>More complex search/filter syntax.</li>
+<li>Improve ACL schema/handling.</li>
+<li>Improve and polish error messages and handling.</li>
+<li>Add notification system
+<ul><li>Standard system, updates, ... notifications.</li>
+<li>Evaluate if PDM can act as notification target for remotes.</li></ul></li>
+<li>Improvements on the UI side
+<ul><li>Show more information and make things like RRD time frames configurable</li>
+<li>Show/allow more options for migrations</li>
+<li>Console for remote resources (nodes/guests)</li>
+<li>Handling MFA for the initial "Probe Remote" connection.</li>
+<li>Evaluate a Pool-View where the hierarchical resource pools from all remotes are merged.</li>
+<li>Evaluate a way for limited views that certain users can be assigned too, for example showing only details of the virtual guests but not their nodes.</li>
+<li>Implement different views for remotes like pool or tag.</li>
+<li>Add a 'Quick Add' Copy-/Pasteable text (like PVE cluster-join)</li></ul></li></ul>
+<h2><span class="mw-headline" id="Proxmox_Datacenter_Manager_0.9_BETA">Proxmox Datacenter Manager 0.9 BETA</span></h2>
+<p>Released 11. September 2025: <a rel="nofollow" class="external text" href="https://enterprise.proxmox.com/iso">ISO Download</a>.
+</p>
+<ul><li>Based on Debian Trixie (13)</li>
+<li>Latest 6.14.11-1 Kernel as stable default</li>
+<li>ZFS 2.3.4</li></ul>
+<h3><span id="Features_.28Highlights.29"></span><span class="mw-headline" id="Features_(Highlights)">Features (Highlights)</span></h3>
+<ul><li>New release based on the great Debian Trixie.</li>
+<li>Seamless upgrade from Proxmox Datacenter Manager Alpha, see <a href="/wiki/Proxmox_Datacenter_Manager_Upgrade_from_Alpha_to_Beta" class="mw-redirect" title="Proxmox Datacenter Manager Upgrade from Alpha to Beta">Proxmox Datacenter Manager Upgrade from Alpha to Beta</a>.</li>
+<li>EVPN configuration for Software-Defined Networking between clusters.
+<dl><dd>A new panel provides an overview of the state of all EVPN zones across all remotes.</dd>
+<dd>Create EVPN Zones and VNets across multiple remotes from a single interface.</dd>
+<dd>A more detailed explanation of Proxmox Datacenter Manager's SDN capabilities can be found in the <a href="/wiki/Proxmox_Datacenter_Manager_Beta_Documentation#SDN_Integration" title="Proxmox Datacenter Manager Beta Documentation">documentation</a>.</dd></dl></li>
+<li>Improved search functionality to find resources quicker.
+<dl><dd>Allows filtering by resource type (remote, virtual machine, container…), status (stopped, running…) and much more.</dd>
+<dd>The query syntax is inspired by Elasticsearch and GitHub's query language.</dd>
+<dd>Please refer to the <a href="/wiki/Proxmox_Datacenter_Manager_Beta_Documentation#Search_Syntax" title="Proxmox Datacenter Manager Beta Documentation"> documentation</a> for a more thorough explanation of the syntax.</dd></dl></li>
+<li>More efficient metric collection logic.
+<dl><dd>Metrics are now collected concurrently.</dd></dl></li>
+<li>Integrate privilege management in the access control UI.
+<dl><dd>Allow managing the permissions of Proxmox Datacenter Manager users.</dd></dl></li></ul>
+<h3><span class="mw-headline" id="Changelog_Overview">Changelog Overview</span></h3>
+<h4><span id="Enhancements_in_the_Web_Interface_.28GUI.29"></span><span class="mw-headline" id="Enhancements_in_the_Web_Interface_(GUI)">Enhancements in the Web Interface (GUI)</span></h4>
+<ul><li>Add a time frame selector for RRD graphs to allow users to select the displayed time frame.</li>
+<li>Display new metrics such as Pressure Stall Information (PSI) for Proxmox VE 9 hosts.</li>
+<li>Improve the remote URL list of a remote by adding a placeholder, clear trigger and clearer column headers.</li>
+<li>Enhancements to the Proxmox VE remote setup wizard.
+<dl><dd>Probe hosts for fingerprint settings, to verify a provided fingerprint or to enable trust on first use (TOFU).</dd>
+<dd>Try matching the provided host against the host list that was queried from the remote to avoid duplicates.</dd>
+<dd>Reset later pages when previous pages have been changed, as they need to be revisited.</dd></dl></li>
+<li>Make the “remote loading” icon nicer.</li>
+<li>Correctly show a “cube” icon for container guests.</li>
+<li>Add a panel that allows adding and editing permissions.</li>
+<li>Move the node overview to a tab and add a tab that displays available updates.</li>
+<li>Add a button linking the user to a remote's upgrade page.</li>
+<li>Add descriptions for Software Defined Networking tasks.</li>
+<li>Provide an EVPN overview panel for displaying EVPN Zones and Vnets.</li>
+<li>Add a view for showing EVPN VRF instances across all remotes.</li>
+<li>Allow creating EVPN VNets.</li>
+<li>Open the search panel when clicking different panels in the dashboard and pre-fill it with appropriate filters.</li>
+<li>Add a clear trigger to the search bar.</li>
+<li>Provide a search icon in the guest panel for better discoverability of the search function.</li>
+<li>Include a summary of all tasks in the dashboard.</li>
+<li>Render status icons with a shadow instead of a solid background for a cleaner look.</li>
+<li>Enhance the reloading logic for the dashboard.</li>
+<li>Show tasks from the last 48 hours in the dashboard's task summary.</li>
+<li>Close the search box if a user navigated to an entry.</li>
+<li>Display a list of storages and their status in the resource tree of a Proxmox VE remote.</li>
+<li>Change the warning and critical thresholds to 90% and 97.5% respectively.</li>
+<li>Don't show a start or shutdown button for templates (<a rel="nofollow" class="external text" href="https://bugzilla.proxmox.com/show_bug.cgi?id=6782">issue 6782</a>).</li>
+<li>The dashboard now includes a panel showing the SDN status report.</li>
+<li>Show an overview of all SDN zones and their status as a tree.
+<dl><dd>The EVPN section is now moved below the SDN menu to mimic Proxmox VE's menu structure.</dd></dl></li>
+<li>Route to correct panels when navigating between components.</li>
+<li>Allow filtering tasks in the task list by remote.</li>
+<li>Show the remote tasks when selecting the root node of the resource tree for a Proxmox VE remote.</li>
+<li>Allow navigating to an SDN zone and SDN panel of a remote from the zone tree overview.</li>
+<li>Show failed tasks only in task summary.</li>
+<li>Add support for initial translations:
+<ul><li>Arabic</li>
+<li>Bulgarian</li>
+<li>Catalan</li>
+<li>Chinese (Simplified)</li>
+<li>Chinese (Traditional)</li>
+<li>Croatian</li>
+<li>Czech</li>
+<li>Danish</li>
+<li>Dutch</li>
+<li>Euskera (Basque)</li>
+<li>French</li>
+<li>Georgian</li>
+<li>German</li>
+<li>Hebrew</li>
+<li>Italian</li>
+<li>Japanese</li>
+<li>Korean</li>
+<li>Norwegian (Bokmal)</li>
+<li>Norwegian (Nynorsk)</li>
+<li>Persian (Farsi)</li>
+<li>Polish</li>
+<li>Portuguese (Brazil)</li>
+<li>Russian</li>
+<li>Slovenian</li>
+<li>Spanish</li>
+<li>Swedish</li>
+<li>Turkish</li>
+<li>Ukrainian</li></ul></li></ul>
+<h4><span class="mw-headline" id="Remotes_Management">Remotes Management</span></h4>
+<ul><li>Enable Proxmox Backup Server Integration, CLI only for now.</li>
+<li>Enable connection tracking when live migrating VMs on remotes.
+<dl><dd>Whether connection tracking actually persists after migration also depends on the environment and especially on whether third party firewalls are used.</dd></dl></li>
+<li>Enable trust on first use (TOFU) prompts when adding remotes.</li>
+<li>Include templates in status counts.</li>
+<li>Add an API endpoint that allows querying updates and changelogs from remotes.</li>
+<li>Add the API infrastructure for the initial Software Defined Networking integration.</li></ul>
+<h4><span class="mw-headline" id="Backend_Improvements">Backend Improvements</span></h4>
+<ul><li>Improve robustness of incoming connection handling.</li>
+<li>Improve size requirements and performance for remote tasks cache.</li>
+<li>More intelligently query remote tasks.</li>
+<li>Fix an issue where the ACME configuration would not be constructed properly for the default account.</li>
+<li>Collect metrics from remotes concurrently to improve performance.</li>
+<li>Persist metric collection state after a run to allow reusing it after a daemon restart.
+<dl><dd>This should allow more efficient metric collection runs after restarts.</dd></dl></li>
+<li>Metrics that should have been collected already, but were not due to collection timing changes, will now be collected.</li>
+<li>Keep track of the time it took to collect metrics from each single remote and all remotes together.
+<dl><dd>This provides better insights into the performance of metric collection runs.</dd></dl></li>
+<li>Add an API endpoint to trigger metric collection.</li>
+<li>Trigger immediate metric collection when a remote is added.</li>
+<li>When a metric collection task is delayed skip it instead of triggering it quicker.</li>
+<li>Add a more complex filter and search syntax inspired by Elasticsearch and GitHub query language.</li>
+<li>When querying the remote task list treat a limit of “0” as unbounded and return the entire list.</li>
+<li>Allow filtering remote tasks by remote.</li>
+<li>Add an API endpoint that allows querying remote task statistics.</li>
+<li>Add API endpoints for querying Proxmox VE storage's RRD data and status.</li>
+<li>Add a <code>resource-type</code> parameter to the resources API endpoints.
+<dl><dd>This allows more efficient filtering when querying the API for tasks and resource statuses.</dd></dl></li>
+<li>Don't match templates when searching by remote.</li>
+<li>Improve search when searching by remotes.
+<dl><dd>For example, searching for all VMs of a specific remote is now possible.</dd></dl></li>
+<li>When encountering an error, return the root cause not the top level error when fetching remotes.
+<dl><dd>This makes the reported error messages more specific.</dd></dl></li></ul>
+<h4><span class="mw-headline" id="Command_Line_Interface_Enhancements">Command Line Interface Enhancements</span></h4>
+<ul><li>Allow query the status and RRD data from remotes via <code>proxmox-datacenter-manager-client</code>.</li>
+<li>Add an upgrade checking script (<code>pdmAtoB</code>) to make upgrades more seamless.</li>
+<li>The utility <code>proxmox-datacenter-manager-admin</code> can now display the currently running version.</li></ul>
+<h4><span class="mw-headline" id="Miscellaneous_Improvements">Miscellaneous Improvements</span></h4>
+<ul><li>Log an error when a task to query remote tasks fails instead of cancelling all tasks.</li>
+<li>Fix the order filters are applied when requesting a filtered task list.</li>
+<li>Use the new deb822 format for package repositories.</li>
+<li>Add a CLI command to allow querying the metric collection status and triggering a metric collection run.</li>
+<li>Handle a missing journal file error more gracefully when querying the task list.</li></ul>
+<h3><span id="Known_Issues_.26_Breaking_Changes"></span><span class="mw-headline" id="Known_Issues_&amp;_Breaking_Changes">Known Issues &amp; Breaking Changes</span></h3>
+<ul><li>The API endpoint for listing realms was changed from a <code>POST</code> to a <code>GET</code> request.</li></ul>
+<h2><span class="mw-headline" id="Proxmox_Datacenter_Manager_0.1_ALPHA">Proxmox Datacenter Manager 0.1 ALPHA</span></h2>
+<p>Released 19. December 2024: <a rel="nofollow" class="external text" href="https://enterprise.proxmox.com/iso">ISO Download</a>, <a rel="nofollow" class="external text" href="https://forum.proxmox.com/threads/proxmox-datacenter-manager-first-alpha-release.159323/">Forum Announcement</a>.
+</p>
+<ul><li>Based on Debian Bookworm (12.8)</li>
+<li>Latest 6.8.12-5 Kernel as stable default</li>
+<li>Newer 6.11 Kernel as opt-in</li>
+<li>ZFS: 2.2.6 (with compatibility patches for Kernel 6.11)</li></ul>
+<h3><span id="Features_.28Highlights.29_2"></span><span class="mw-headline" id="Features_(Highlights)_2">Features (Highlights)</span></h3>
+<ul><li>Connect to and view any number of independent nodes or clusters ("Datacenters")</li>
+<li>View the basic resource usage of all nodes and their guests.
+<dl><dd>Saves and caches the list of resources (mainly guests and storage) and their usage metrics to provide a quick overview of all resources and the last-seen state for offline/unresponsive ones.</dd></dl></li>
+<li>Basic management of the resources: shutdown, reboot, start, …
+<dl><dd>For more complex management tasks, it provides a direct link to the full web interface of Proxmox VE/Proxmox Backup Server/…</dd></dl></li>
+<li>Remote migration of virtual guests between different datacenters.</li>
+<li>Support for the standard Proxmox feature set including complex Multi-Factor Authentication or ACME/Let's Encrypt from the beginning.</li></ul>
+<h3><span class="mw-headline" id="Changelog_Overview_2">Changelog Overview</span></h3>
+<p>Not applicable for the first alpha release.
+</p>
+<div id="0.1-known-issues"></div>
+<h3><span id="Known_Issues_.26_Breaking_Changes_2"></span><span class="mw-headline" id="Known_Issues_&amp;_Breaking_Changes_2">Known Issues &amp; Breaking Changes</span></h3>
+<p>This is an alpha release, there might be lots of stuff that is broken, gets reworked and fixed somewhat frequently.
+</p>
+<!-- 
+NewPP limit report
+Cached time: 20261109001159
+Cache expiry: 86400
+Reduced expiry: false
+Complications: [show‐toc]
+CPU time usage: 0.007 seconds
+Real time usage: 0.007 seconds
+Preprocessor visited node count: 51/1000000
+Post‐expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Highest expansion depth: 2/100
+Expensive parser function count: 0/100
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 0/5000000 bytes
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%    0.000      1 -total
+-->
+
+<!-- Saved in parser cache with key wikidb-mw_:pcache:idhash:1898-0!canonical and timestamp 20261109001159 and revision id 12523. Rendering was triggered because: page-view
+ -->
+</div>
+<div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://pve.proxmox.com/mediawiki/index.php?title=Proxmox_Datacenter_Manager_Roadmap&amp;oldid=12523">https://pve.proxmox.com/mediawiki/index.php?title=Proxmox_Datacenter_Manager_Roadmap&amp;oldid=12523</a>"</div></div>
+		<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/wiki/Special:Categories" title="Special:Categories">Category</a>: <ul><li><a href="/wiki/Category:Proxmox_Datacenter_Manager" title="Category:Proxmox Datacenter Manager">Proxmox Datacenter Manager</a></li></ul></div></div>
+	</div>
+</div>
+<div id='mw-data-after-content'>
+	<div class="mw-cookiewarning-container"><div class="mw-cookiewarning-text"><span>Cookies help us deliver our services. By using our services, you agree to our use of cookies.</span></div><form method="POST"><div class='oo-ui-layout oo-ui-horizontalLayout'><span class='oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-progressive oo-ui-buttonWidget'><a role='button' tabindex='0' href='https://www.proxmox.com/en/privacy-policy' rel='nofollow' class='oo-ui-buttonElement-button'><span class='oo-ui-iconElement-icon oo-ui-iconElement-noIcon oo-ui-image-progressive'></span><span class='oo-ui-labelElement-label'>More information</span><span class='oo-ui-indicatorElement-indicator oo-ui-indicatorElement-noIndicator oo-ui-image-progressive'></span></a></span><span class='oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-buttonInputWidget'><button type='submit' tabindex='0' name='disablecookiewarning' value='OK' class='oo-ui-inputWidget-input oo-ui-buttonElement-button'><span class='oo-ui-iconElement-icon oo-ui-iconElement-noIcon oo-ui-image-invert'></span><span class='oo-ui-labelElement-label'>OK</span><span class='oo-ui-indicatorElement-indicator oo-ui-indicatorElement-noIndicator oo-ui-image-invert'></span></button></span></div></form></div>
+</div>
+
+<div id="mw-navigation">
+	<h2>Navigation menu</h2>
+	<div id="mw-head">
+		
+<nav id="p-personal" class="mw-portlet mw-portlet-personal vector-user-menu-legacy vector-menu" aria-labelledby="p-personal-label"  >
+	<h3
+		id="p-personal-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Personal tools</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="pt-login" class="mw-list-item"><a href="/mediawiki/index.php?title=Special:UserLogin&amp;returnto=Proxmox+Datacenter+Manager+Roadmap" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o"><span>Log in</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+		<div id="left-navigation">
+			
+<nav id="p-namespaces" class="mw-portlet mw-portlet-namespaces vector-menu-tabs vector-menu-tabs-legacy vector-menu" aria-labelledby="p-namespaces-label"  >
+	<h3
+		id="p-namespaces-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Namespaces</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="ca-nstab-main" class="selected mw-list-item"><a href="/wiki/Proxmox_Datacenter_Manager_Roadmap" title="View the content page [c]" accesskey="c"><span>Page</span></a></li><li id="ca-talk" class="new mw-list-item"><a href="/mediawiki/index.php?title=Talk:Proxmox_Datacenter_Manager_Roadmap&amp;action=edit&amp;redlink=1" rel="discussion" class="new" title="Discussion about the content page (page does not exist) [t]" accesskey="t"><span>Discussion</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+			
+<nav id="p-variants" class="mw-portlet mw-portlet-variants emptyPortlet vector-menu-dropdown vector-menu" aria-labelledby="p-variants-label"  >
+	<input type="checkbox"
+		id="p-variants-checkbox"
+		role="button"
+		aria-haspopup="true"
+		data-event-name="ui.dropdown-p-variants"
+		class="vector-menu-checkbox"
+		aria-labelledby="p-variants-label"
+	>
+	<label
+		id="p-variants-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">English</span>
+	</label>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</nav>
+
+		</div>
+		<div id="right-navigation">
+			
+<nav id="p-views" class="mw-portlet mw-portlet-views vector-menu-tabs vector-menu-tabs-legacy vector-menu" aria-labelledby="p-views-label"  >
+	<h3
+		id="p-views-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Views</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="ca-view" class="selected mw-list-item"><a href="/wiki/Proxmox_Datacenter_Manager_Roadmap"><span>Read</span></a></li><li id="ca-viewsource" class="mw-list-item"><a href="/mediawiki/index.php?title=Proxmox_Datacenter_Manager_Roadmap&amp;action=edit" title="This page is protected.&#10;You can view its source [e]" accesskey="e"><span>View source</span></a></li><li id="ca-history" class="mw-list-item"><a href="/mediawiki/index.php?title=Proxmox_Datacenter_Manager_Roadmap&amp;action=history" title="Past revisions of this page [h]" accesskey="h"><span>View history</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+			
+<nav id="p-cactions" class="mw-portlet mw-portlet-cactions emptyPortlet vector-menu-dropdown vector-menu" aria-labelledby="p-cactions-label"  title="More options" >
+	<input type="checkbox"
+		id="p-cactions-checkbox"
+		role="button"
+		aria-haspopup="true"
+		data-event-name="ui.dropdown-p-cactions"
+		class="vector-menu-checkbox"
+		aria-labelledby="p-cactions-label"
+	>
+	<label
+		id="p-cactions-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">More</span>
+	</label>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</nav>
+
+			
+<div id="p-search" role="search" class="vector-search-box-vue  vector-search-box-show-thumbnail vector-search-box-auto-expand-width vector-search-box">
+	<h3 >Search</h3>
+	<form action="/mediawiki/index.php" id="searchform" class="vector-search-box-form">
+		<div id="simpleSearch"
+			class="vector-search-box-inner"
+			 data-search-loc="header-navigation">
+			<input class="vector-search-box-input"
+				 type="search" name="search" placeholder="Search Proxmox VE" aria-label="Search Proxmox VE" autocapitalize="sentences" title="Search Proxmox VE [f]" accesskey="f" id="searchInput"
+			>
+			<input type="hidden" name="title" value="Special:Search">
+			<input id="mw-searchButton"
+				 class="searchButton mw-fallbackSearchButton" type="submit" name="fulltext" title="Search the pages for this text" value="Search">
+			<input id="searchButton"
+				 class="searchButton" type="submit" name="go" title="Go to a page with this exact name if it exists" value="Go">
+		</div>
+	</form>
+</div>
+
+		</div>
+	</div>
+	
+<div id="mw-panel" class="vector-legacy-sidebar">
+	<div id="p-logo" role="banner">
+		<a class="mw-wiki-logo" href="/wiki/Main_Page"
+			title="Visit the main page"></a>
+	</div>
+	
+<nav id="p-navigation" class="mw-portlet mw-portlet-navigation vector-menu-portal portal vector-menu" aria-labelledby="p-navigation-label"  >
+	<h3
+		id="p-navigation-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Navigation</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-Proxmox-VE" class="mw-list-item"><a href="/wiki/Main_Page"><span>Proxmox VE</span></a></li><li id="n-Documentation-(current)" class="mw-list-item"><a href="https://pve.proxmox.com/pve-docs/" rel="nofollow"><span>Documentation (current)</span></a></li><li id="n-Documentation-(8.x)" class="mw-list-item"><a href="https://pve.proxmox.com/pve-docs-8/" rel="nofollow"><span>Documentation (8.x)</span></a></li><li id="n-Downloads" class="mw-list-item"><a href="/wiki/Downloads"><span>Downloads</span></a></li><li id="n-Installation" class="mw-list-item"><a href="/wiki/Installation"><span>Installation</span></a></li><li id="n-Get-support" class="mw-list-item"><a href="/wiki/Get_support"><span>Get support</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+	
+<nav id="p-Sites" class="mw-portlet mw-portlet-Sites vector-menu-portal portal vector-menu" aria-labelledby="p-Sites-label"  >
+	<h3
+		id="p-Sites-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Sites</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-proxmox.com" class="mw-list-item"><a href="https://www.proxmox.com" rel="nofollow"><span>proxmox.com</span></a></li><li id="n-Support-forum" class="mw-list-item"><a href="https://forum.proxmox.com" rel="nofollow"><span>Support forum</span></a></li><li id="n-Bugtracker" class="mw-list-item"><a href="https://bugzilla.proxmox.com" rel="nofollow"><span>Bugtracker</span></a></li><li id="n-Source-code" class="mw-list-item"><a href="https://git.proxmox.com" rel="nofollow"><span>Source code</span></a></li><li id="n-FAQ" class="mw-list-item"><a href="https://pve.proxmox.com/wiki/FAQ" rel="nofollow"><span>FAQ</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+<nav id="p-tb" class="mw-portlet mw-portlet-tb vector-menu-portal portal vector-menu" aria-labelledby="p-tb-label"  >
+	<h3
+		id="p-tb-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Tools</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="t-whatlinkshere" class="mw-list-item"><a href="/wiki/Special:WhatLinksHere/Proxmox_Datacenter_Manager_Roadmap" title="A list of all wiki pages that link here [j]" accesskey="j"><span>What links here</span></a></li><li id="t-recentchangeslinked" class="mw-list-item"><a href="/wiki/Special:RecentChangesLinked/Proxmox_Datacenter_Manager_Roadmap" rel="nofollow" title="Recent changes in pages linked from this page [k]" accesskey="k"><span>Related changes</span></a></li><li id="t-specialpages" class="mw-list-item"><a href="/wiki/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q"><span>Special pages</span></a></li><li id="t-print" class="mw-list-item"><a href="javascript:print();" rel="alternate" title="Printable version of this page [p]" accesskey="p"><span>Printable version</span></a></li><li id="t-permalink" class="mw-list-item"><a href="/mediawiki/index.php?title=Proxmox_Datacenter_Manager_Roadmap&amp;oldid=12523" title="Permanent link to this revision of this page"><span>Permanent link</span></a></li><li id="t-info" class="mw-list-item"><a href="/mediawiki/index.php?title=Proxmox_Datacenter_Manager_Roadmap&amp;action=info" title="More information about this page"><span>Page information</span></a></li><li id="t-cite" class="mw-list-item"><a href="/mediawiki/index.php?title=Special:CiteThisPage&amp;page=Proxmox_Datacenter_Manager_Roadmap&amp;id=12523&amp;wpFormIdentifier=titleform" title="Information on how to cite this page"><span>Cite this page</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+	
+</div>
+
+</div>
+
+<footer id="footer" class="mw-footer" >
+	<ul id="footer-info">
+	<li id="footer-info-lastmod"> This page was last edited on 19 March 2026, at 10:20.</li>
+</ul>
+
+	<ul id="footer-places">
+	<li id="footer-places-privacy"><a href="/wiki/Proxmox_VE:Privacy_policy">Privacy policy</a></li>
+	<li id="footer-places-about"><a href="/wiki/Proxmox_VE:About">About Proxmox VE</a></li>
+	<li id="footer-places-disclaimers"><a href="/wiki/Proxmox_VE:General_disclaimer">Disclaimers</a></li>
+</ul>
+
+	<ul id="footer-icons" class="noprint">
+	<li id="footer-poweredbyico"><a href="https://www.mediawiki.org/" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><img src="/mediawiki/resources/assets/poweredby_mediawiki.svg" alt="Powered by MediaWiki" width="88" height="31" loading="lazy"></a><a href="https://www.proxmox.com/" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><img src="/resources/assets/Proxmox-logo-wordmark-black-235x28.png" alt="Proxmox Server Solution GmbH" height="28" width="235" loading="lazy"></a></li>
+	<li id="footer-debianico"><a href="https://www.debian.org/" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><img src="/mediawiki/resources/assets/debian/poweredby_debian_1x.png" alt="Powered by Debian" srcset="/mediawiki/resources/assets/debian/poweredby_debian_1_5x.png 1.5x, /mediawiki/resources/assets/debian/poweredby_debian_2x.png 2x" width="88" height="31" loading="lazy"></a></li>
+</ul>
+
+</footer>
+
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgBackendResponseTime":24,"wgPageParseReport":{"limitreport":{"cputime":"0.007","walltime":"0.007","ppvisitednodes":{"value":51,"limit":1000000},"postexpandincludesize":{"value":0,"limit":2097152},"templateargumentsize":{"value":0,"limit":2097152},"expansiondepth":{"value":2,"limit":100},"expensivefunctioncount":{"value":0,"limit":100},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":0,"limit":5000000},"timingprofile":["100.00%    0.000      1 -total"]},"cachereport":{"timestamp":"20261109001159","ttl":86400,"transientcontent":false}}});});</script>
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u = (("https:" == document.location.protocol) ? "https" : "http") + "://"+"piwik.proxmox.com/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "1"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+
+<!-- Matomo Image Tracker -->
+<noscript><img src="https://piwik.proxmox.com/piwik.php?idsite=1&rec=1" style="border:0" alt="" /></noscript>
+<!-- End Matomo -->
+</body>
+</html>

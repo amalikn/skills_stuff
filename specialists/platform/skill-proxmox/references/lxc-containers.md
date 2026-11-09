@@ -1,3 +1,13 @@
+---
+Title: LXC containers
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/lxc-containers.md
+Last reviewed: 2026-11-07
+Summary: pct containers from pveam and OCI templates, privileged versus unprivileged, automation limits, and when to choose a VM instead.
+---
+
 # LXC containers
 
 System containers managed by `pct`, from templates fetched with `pveam`. Sources: [Roadmap](../documents/research-sources-20261107/pve-wiki-roadmap.html), [pct

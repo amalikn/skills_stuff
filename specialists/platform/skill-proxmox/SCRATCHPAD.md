@@ -1,3 +1,17 @@
+---
+Title: Scratchpad
+Category: working-state
+Status: current
+Summary: Current working state; older entries rotate to docs/history, older open items to docs/trackers.
+Authority: working-state
+Scope: Working state between sessions
+Kind: state
+Budget: 200 lines, 25 KB
+Last reviewed: 2026-11-07
+Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
+Open items tracker: docs/trackers/open-items-20261109_1125.md
+---
+
 # SCRATCHPAD
 
 Agent working memory for skill-proxmox. Use for: draft plans, terminal output, intermediate analysis, refactor outlines. Cleared between sessions unless content is explicitly marked KEEP.
@@ -18,13 +32,13 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 
 - [ ] Operator review: accept or change the six proposed `.archcore/` documents (memory channel `proxmox`, independent pack, search order, checker in tests, version of record, live-probe plan).
 - [x] Commit: pack folder, registry rows and install symlinks committed in skills_stuff bd1691d (2026-11-07).
-- [ ] `just check` fails (seen 2026-11-07 22:45 from smc-resiliency's slurp): 21 files with no header summary (references, AI_NAVIGATION,
-  SCRATCHPAD, .ai-context), AI_NAVIGATION.md over its 200-line budget (322), six `.archcore/` documents with no Last reviewed date. Pack
-  adoption work: write each summary from its file, split AI_NAVIGATION, date the archcore documents after the operator review above.
+- [x] `just check` passes (2026-11-09 refresh): summaries written, AI_NAVIGATION 322 to 159 lines. Still baselined: the six `.archcore/` dates (wait for the operator review
+  above; not bumped), AI_NAVIGATION 9 lines over 150 (its routing table is a checked rule), `.ai-context/` (generated, no header).
 - [ ] Live probes on a disposable node for the `UNVERIFIED` items: `pvesh set /cluster/sdn` apply form, live restore from PBS, hook-script phase names, the task list's errors filter, the disks list endpoint,
   Ubuntu cloud image without qemu-guest-agent.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill).
 - [ ] Re-verify the cookbook when the lab node moves to 9.2 (pending in its update queue).
+- [ ] Live probe on a cluster for the 2026-11-09 doc-only sections (Ceph, migration, mappings, notifications): today they rest on the docs, with no lab run.
 
 ---
 

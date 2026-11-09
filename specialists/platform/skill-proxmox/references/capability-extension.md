@@ -1,3 +1,13 @@
+---
+Title: Capability extension
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/capability-extension.md
+Last reviewed: 2026-11-07
+Summary: Search order before building around Proxmox VE: core, Proxmox products (PBS, Datacenter Manager), the bpg provider, supported seams, then FOSS; common needs and where each is met.
+---
+
 # Capability extension
 
 What to reach for before building something around Proxmox VE, in order. Sources: the admin guide chapters and the bpg provider docs in
@@ -35,7 +45,7 @@ JavaScript on a node: an update overwrites it silently.
 |   and offsite                |                                                                     |                                                                                                 |
 | Metrics                      | External metric server (InfluxDB, Graphite, OpenTelemetry)          | Prometheus via an exporter                                                                      |
 | Run code on guest events     | Hook scripts in `snippets`                                          | Runs as root on the node: review like code                                                      |
-| Many clusters in one view    | Proxmox Datacenter Manager                                          | Capability depends on its release; check before relying on it (`UNVERIFIED` here)               |
+| Many clusters in one view    | Proxmox Datacenter Manager (1.0 on 2025-12-04, 1.1 on 2026-05-28) | Remotes for PVE and PBS, cross-cluster guest migration, Ceph status of remotes, automated-install answer files, subscription registry (1.1). `VERIFIED_PRIMARY` ([PDM roadmap](../documents/research-sources-20261109/pdm-docs-roadmap.html)) |
 | Inventory of record          | The source-of-truth system (for example Nautobot) reads PVE through | Proxmox is the actual state, not the intent ([skill-nautobot](../../skill-nautobot/SKILL.md))   |
 |                              |   the API                                                           |                                                                                                 |
 

@@ -1,3 +1,13 @@
+---
+Title: Networking and SDN
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/networking-and-sdn.md
+Last reviewed: 2026-11-07
+Summary: ifupdown2 Linux bridges, VLAN-aware bridges, SDN zones and VNets, DHCP with PVE IPAM, and the SDN.Use permissions guests need on networks.
+---
+
 # Networking and SDN
 
 Host networking is Debian `ifupdown2` with Linux bridges (`vmbrN`); SDN adds cluster-wide zones and VNets on top. Sources: [Network
@@ -19,6 +29,16 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pveum.md).
 - Bridges are named `vmbr0` to `vmbr4094`. A default install has `vmbr0` bridged to the first NIC, carrying the management address. `VERIFIED_PRIMARY`.
 - Changing the bridge that carries the management address over SSH or the API can cut you off. Keep console access (IPMI, the physical console) before a host network write.
 
+```text
+  guest net0: bridge=vmbr0,tag=20      guest net0: bridge=<vnet>        guest net0: bridge=<vnet>
+             |                                   |                                |
+             v                                   v                                v
+  vmbr0  (VLAN-aware Linux bridge)  <---  VLAN zone VNet (tag in VNet)    Simple zone VNet
+             |                             uses vmbr0 on each node        isolated bridge, no NIC,
+             v                                                            local to each node
+  eno1  (physical NIC, trunk to the switch)                               (NAT or routed)
+```
+
 ## VLANs for guests
 
 - **VLAN-aware bridge**: set `bridge-vlan-aware yes` and `bridge-vids 2-4094` on the bridge; each guest NIC then carries `tag=<vid>`, handled transparently by the bridge. The "traditional" alternative
@@ -36,6 +56,15 @@ iface vmbr0 inet manual
 ```
 
 ## SDN zones and VNets
+| Zone   | How it isolates                              | Spans nodes                  | Needs                                             |
+| ------ | -------------------------------------------- | ---------------------------- | ------------------------------------------------- |
+| Simple | Isolated bridge, no physical port            | No (traffic local per node)  | NAT or routing for outside access                 |
+| VLAN   | VLAN tag set in the VNet                     | Yes, over an existing bridge | The same bridge configured on every node          |
+| QinQ   | Outer service VLAN (zone) + inner tag (VNet) | Yes                          | Switches that support stacked VLANs               |
+| VXLAN  | L2 frames in UDP (port 4789) overlay         | Yes, over a routed underlay  | UDP reachability between all peers                |
+| EVPN   | Routed L3 with BGP, anycast gateway, VRFs    | Yes, even across clusters    | A BGP controller; the FRRouting stack             |
+
+`VERIFIED_PRIMARY` ([SDN chapter](../documents/research-sources-20261107/pve-admin-chapter-pvesdn.md), Zones).
 
 - Zone types: **Simple** (an isolated bridge, local to each node, for NAT or routed setups), **VLAN** (tags on an existing bridge, connects nodes), **QinQ**, **VXLAN**, **EVPN**. A VNet is a virtual
   network in a zone; after applying, each node has a local interface with the VNet's name that guests attach to. `VERIFIED_PRIMARY` (SDN chapter, Zones and VNets).

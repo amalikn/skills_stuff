@@ -1,3 +1,13 @@
+---
+Title: Access control
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/access-control.md
+Last reviewed: 2026-11-07
+Summary: Users, realms, roles, privileges, ACLs, pools, two-factor authentication and privilege-separated API tokens, with the least-privilege pattern for automation and the token audit.
+---
+
 # Access control
 
 Users, realms, groups, roles, privileges, ACLs, pools and API tokens, and the least-privilege pattern for automation. Sources: [pveum
@@ -12,6 +22,7 @@ check](../documents/research-sources-20261107/pve-9.1.5-installed-storage-downlo
 - [Privileges that matter](#privileges-that-matter)
 - [Least-privilege pattern for automation](#least-privilege-pattern-for-automation)
 - [Worked example: an OpenTofu identity](#worked-example-an-opentofu-identity)
+- [Two-factor authentication](#two-factor-authentication)
 - [Audit](#audit)
 
 ## Model
@@ -38,6 +49,18 @@ check](../documents/research-sources-20261107/pve-9.1.5-installed-storage-downlo
 - A token user needs no password: create it with `pveum user add name@pve` and no `--password`, so it cannot log in to the GUI. `VERIFIED_SECONDARY` (follows from the pve realm; observed in the lab).
 - Some operations are root-only even for an Administrator token (container bind mounts, privileged-container features, `arch`, device passthrough without a mapping). `VERIFIED_SECONDARY` (bpg provider
   index).
+
+```text
+  privilege-separated token (default)            full-privilege token (--privsep 0)
+
+  user ACL on <path> --+                          user ACL on <path> ---> token rights
+   (the ceiling)       |-- intersection --> token rights      (identical to the user)
+  token ACL on <path> -+
+
+  user: PVEVMAdmin on /pool/lab   token: PVEVMAdmin on /pool/lab   -> PVEVMAdmin
+  user: PVEVMAdmin on /pool/lab   token: (none)                    -> nothing
+  user: (none)                    token: PVEVMAdmin on /pool/lab   -> nothing (audit: token-acl-without-user)
+```
 
 ## Privileges that matter
 
@@ -113,6 +136,12 @@ The root step also adds `import` to `local` and downloads the pinned cloud image
 > documents/research-sources-20261107) · Falsifier: a 9.1 node that refuses download-url to a token holding Datastore.AllocateTemplate on the storage and Sys.AccessNetwork on the node
 > `download-url` (the provider's `download_file`) accepts `Sys.AccessNetwork` on `/nodes/{node}` as an alternative to `Sys.Audit` + `Sys.Modify` on `/`; the bpg docs and the pveum privilege list do
 > not mention it yet. It still lets the caller make the node fetch any URL, so the pattern keeps downloads in a root step.
+
+## Two-factor authentication
+
+A realm can enforce TOTP or YubiKey OTP for all its users; users can also add their own TOTP, WebAuthn keys and single-use recovery keys (U2F is legacy, replaced by WebAuthn once configured).
+API tokens bypass TFA by design, which is one more reason to scope them tightly. `VERIFIED_PRIMARY` for the factor list ([pveum chapter](../documents/research-sources-20261107/pve-admin-chapter-pveum.md),
+Two-Factor Authentication); the token remark is `VERIFIED_SECONDARY` (the chapter calls token access "stateless", with no login step for a second factor).
 
 ## Audit
 

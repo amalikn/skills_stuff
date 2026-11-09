@@ -1,3 +1,13 @@
+---
+Title: HA and replication
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/ha-and-replication.md
+Last reviewed: 2026-11-07
+Summary: ha-manager requirements, managing resources, 9.x placement rules, fencing and maintenance mode, and ZFS storage replication with pvesr.
+---
+
 # HA and replication
 
 High availability with `ha-manager`, placement rules, fencing, the load balancer, and ZFS storage replication. Sources: [HA

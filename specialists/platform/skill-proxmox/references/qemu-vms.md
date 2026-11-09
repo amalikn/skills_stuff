@@ -1,3 +1,13 @@
+---
+Title: QEMU VMs
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/qemu-vms.md
+Last reviewed: 2026-11-07
+Summary: VM definition: q35, CPU, OVMF and the EFI disk, boot order, disks and import, cloud-init, guest agent, serial console, templates, clones, migration, resource mappings and virtiofs.
+---
+
 # QEMU VMs
 
 VM definition, firmware, disks, cloud-init, guest agent, serial console, templates and clones. Sources: [qm chapter](../documents/research-sources-20261107/pve-admin-chapter-qm.html),
@@ -15,6 +25,8 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
 - [Cloud-init](#cloud-init)
 - [Guest agent and serial console](#guest-agent-and-serial-console)
 - [Templates and clones](#templates-and-clones)
+- [Migration](#migration)
+- [Resource mappings and virtiofs](#resource-mappings-and-virtiofs)
 - [Worked example config](#worked-example-config)
 
 ## Machine and CPU
@@ -35,6 +47,21 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
   certificates enrolled before booting media signed only with them. `VERIFIED_PRIMARY` (qm chapter).
 
 ## Boot order and what OVMF does with it
+
+```text
+  qm config:  boot: order=scsi0;scsi1;net0
+                   |  QEMU passes it as fw_cfg "bootorder"
+                   v
+  OVMF, on EVERY boot (SetBootOrderFromQemu)
+    1. Boot#### options matching scsi0, scsi1, net0  -> first, in that order
+    2. other active options                           -> kept after them
+    3. HD() options on a disk not in the list         -> pruned, Boot#### deleted
+                   |
+                   v
+  BootNext set? -- yes --> cache it, delete the variable, boot it once
+       |                   (next reset falls back to BootOrder)
+       no --> boot BootOrder[0]
+```
 
 - `boot: order=scsi0;net0` sets the device order QEMU passes to the firmware. `VERIFIED_PRIMARY` (qm chapter, Device Boot Order).
 - **OVMF rewrites `BootOrder` on every boot** from that list (QEMU's `bootorder` fw_cfg): matching boot options first in that order, other active options kept after them, and `HD()` options that match
@@ -81,6 +108,45 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
 
 - `qm template <vmid>` turns a VM into a read-only template. A **linked clone** shares the template's base disk (fast, needs the same storage, the template cannot be deleted while clones exist); a
   **full clone** copies everything. `VERIFIED_PRIMARY` (qm chapter, Copies and Clones).
+
+## Migration
+
+```text
+  source node                                         target node
+  running VM                                          new QEMU, started --incoming, vCPUs paused
+     |-- 1. disks: shared already, or local disks copied first ------------>|
+     |-- 2. memory, pass 1 ------------------------------------------------>|
+     |-- 3. pages dirtied meanwhile, resent; repeat until the rest is tiny ->|
+     |-- 4. pause; last pages + device state (+ conntrack, best effort) --->|-- resume (pause < 1 s)
+  old QEMU stops
+
+  | Blocks online migration                | Does not block it              |
+  | passed-through PCI or USB device       | local disks (they are copied)  |
+  | target on older PVE packages           | different nodes, same vendor   |
+  | different CPU architecture (x86/arm64) |                                |
+```
+
+`qm migrate <vmid> <target>` moves a VM inside one cluster. All `VERIFIED_PRIMARY` ([qm chapter](../documents/research-sources-20261107/pve-admin-chapter-qm.html), Migration); a migration is a **write**.
+
+- **Online** (`--online`, the GUI default for a running VM): QEMU starts paused on the target, memory is copied in dirty-page passes, and the switch-over pause is well under a second. Needs: no
+  local resource that cannot move (passed-through PCI or USB devices block it; local disks do not, they are copied), both hosts in the same cluster with a reliable link, target packages at the
+  same or a newer version, CPUs of the same vendor with similar capabilities, and the same CPU architecture (no x86 to arm64).
+- **Conntrack state migration** copies the VM's connection-tracking entries to the target so a stateful firewall does not drop live connections; best effort only, and host SNAT setups will
+  most likely break it.
+- **Offline**: works with local resources as long as every disk sits on a storage defined on both hosts; passthrough configuration may need adapting on the target.
+- Across clusters, use Proxmox Datacenter Manager's remote migration ([capability-extension.md](capability-extension.md)); the qm chapter's migration section covers only intra-cluster moves.
+
+## Resource mappings and virtiofs
+
+Cluster-wide **resource mappings** give a host device or directory one name per cluster, with a per-node entry, so a guest refers to the mapping instead of a node-specific address and can be
+placed or migrated where the mapping exists. Types: `/cluster/mapping/pci`, `/cluster/mapping/usb`, `/cluster/mapping/dir` (virtiofs). Guests use `hostpci<n>: mapping=<id>`,
+`usb<n>: mapping=<id>` or `virtiofs<n>: dirid=<id>`. Assigning one needs `Mapping.Use` on `/mapping/<type>/<name>`; `Mapping.Modify` creates and edits, `Mapping.Audit` lists.
+`VERIFIED_PRIMARY` ([qm chapter](../documents/research-sources-20261107/pve-admin-chapter-qm.html), Resource Mapping and Virtiofs; [qm.conf(5)](../documents/research-sources-20261107/pve-qm-conf-man5.md)).
+
+- **virtiofs** shares a host directory with a VM: `apt install virtiofsd` on the host, `pvesh create /cluster/mapping/dir --id <dirid> --map node=<node>,path=<path>`, then
+  `qm set <vmid> -virtiofs0 dirid=<dirid>,cache=always` (**writes**). In a Linux guest (kernel 5.4 or later): `mount -t virtiofs <dirid> <mountpoint>`.
+- virtiofs limits: no memory hotplug, and live migration, snapshots and hibernate are unavailable for a VM with a virtiofs device; a crashed `virtiofsd` hangs the guest mount until the VM
+  stops; do not expose ACLs to Windows guests (the device disappears).
 
 ## Worked example config
 

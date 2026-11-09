@@ -33,7 +33,7 @@ rather than silently falling back to the host interpreter. The one sanctioned ex
 **Do not invoke these scripts with a bare `python3`.** It resolves to whatever the host has on `PATH`, which works until the host changes and then fails in a way that reads like a code bug.
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
-<!-- skill-ai-it-version: 2026-10-07-snake-case-recipes-v1 -->
+<!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 
 ## Execution Policy
 
@@ -64,29 +64,29 @@ rather than silently falling back to the host interpreter. The one sanctioned ex
 
 ## Task Inventory
 
-Everything below `## Task Inventory` lives outside the managed block and is maintained by hand — `nav_upgrade` never touches it.
+Everything below `## Task Inventory` lives outside the managed block and is maintained by hand — `nav-upgrade` never touches it.
 
 | Task / Script | Purpose | Inputs | Outputs | Safety | Idempotent | When to use |
 |---|---|---|---|---|---|---|
 | `just bootstrap` | Build the working-cache venv from the mise pin; install `requirements.txt` | `.mise.toml`, `requirements.txt` | venv under the working-cache peer | `modifies-files` (outside the repo) | Yes | First run, or when `just runtimes` reports MISSING |
 | `just runtimes` | Print the interpreter the recipes will actually use | — | Console output | `safe` | Yes | Before trusting any Python recipe |
 | `just inventory` | List tasks and this inventory | `justfile`, `scripts/README.md` | Console output | `safe` | Yes | First check before running pack automation |
-| `just audit_scripts` | Show script/catalog drift | `scripts/`, `scripts/README.md` | Console output | `safe` | Yes | During refresh/audit |
+| `just audit-scripts` | Show script/catalog drift | `scripts/`, `scripts/README.md` | Console output | `safe` | Yes | During refresh/audit |
 | `just helpers` | List the helpers this pack ships | `scripts/*.py` | Console output | `safe` | Yes | Before importing a helper |
 | `just test` | Offline package contract + helper tests (includes the governance checker) | `tests/`, every pack file | Console output, exit status | `safe` | Yes | Before claiming any change complete |
 | `just check` | Governance coherence checks alone | `scripts/check_governance.py`, governance surfaces | Console output, exit status | `safe` | Yes | After adding, moving or renaming any file |
-| `just preflight` | runtimes + audit_scripts + test + check + coder_checks + lint_md | Pack files | Console output | `safe` | Yes | Before commit or handoff |
-| `just lint_md` | Markdown lint against `.markdownlint-cli2.jsonc` | `**/*.md` | Console output | `safe` | Yes | Before commit |
+| `just preflight` | runtimes + audit-scripts + test + check + coder_checks + lint-md | Pack files | Console output | `safe` | Yes | Before commit or handoff |
+| `just lint-md` | Markdown lint against `.markdownlint-cli2.jsonc` | `**/*.md` | Console output | `safe` | Yes | Before commit |
 | `just context-pack` | Regenerate `.ai-context/governance-pack.md` with Repomix | `repomix.config.json` | `.ai-context/governance-pack.md` | `modifies-files` | Yes | After governance or routing changes |
 | `just graph` | Refresh `graphify-out/` (code graph, AST only, no LLM) | Pack source files | `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.json`, `graphify-out/graph.html` | `modifies-files` | Yes | After adding or changing helpers or tests |
-| `just nav_upgrade_dry_run` | Preview the skill-ai-it navigation-layer upgrade | skill-ai-it upgrader | Console output | `safe` | Yes | Before `just nav_upgrade` |
-| `just nav_upgrade` | Apply the navigation-layer upgrade | skill-ai-it upgrader | File changes | `review-required` · `modifies-files` | Yes | After reviewing the dry run |
-| `just nav_validate` | Validate the navigation layer | skill-ai-it validator | Console output | `safe` | Yes | After an upgrade or periodically |
-| `just nav_check_diff` | Confirm only expected governance files changed | git diff | Console output | `safe` | Yes | After an upgrade |
+| `just nav-upgrade-dry-run` | Preview the skill-ai-it navigation-layer upgrade | skill-ai-it upgrader | Console output | `safe` | Yes | Before `just nav-upgrade` |
+| `just nav-upgrade` | Apply the navigation-layer upgrade | skill-ai-it upgrader | File changes | `review-required` · `modifies-files` | Yes | After reviewing the dry run |
+| `just nav-validate` | Validate the navigation layer | skill-ai-it validator | Console output | `safe` | Yes | After an upgrade or periodically |
+| `just nav-check-diff` | Confirm only expected governance files changed | git diff | Console output | `safe` | Yes | After an upgrade |
 | `just node_report` | Read-only health and inventory report of one node: version, kernel, quorum, pending updates (PVE stack listed, when the list was refreshed), repositories, storage use, guests, pools, identities, access audit | `--host` (SSH key auth, default user root) or `--from-dir <folder>`; `--json`; `--storage-warn` | Console or JSON; exit 0 clean, 1 warnings, 2 read error | `safe` · `requires-credentials` (SSH key); `--refresh --apply` is `review-required` · `modifies-state` (PVE's apt update) | Yes | Before OpenTofu, upgrade or audit work on a node; about 15 s per node |
 | `just token_audit` | Least-privilege audit of users, API tokens and ACLs | `--host` or `--from-dir <folder>` (users.json, acl.json, roles.json); `--allow-user`; `--json` | Findings; exit 0 none high, 1 high, 2 read error | `safe` · `requires-credentials` (SSH key) | Yes | Before adding a token, and in any node audit |
 | `just coder_checks` | skill-coder's script checks on this pack: headers, write gates, call timeouts | `scripts/`, `tests/` | Console output | `safe` | Yes | After changing a script |
-| `just nav_selftest` | Self-test the skill-ai-it block builders (not this pack) | skill-ai-it templates | Console output | `safe` | Yes | After skill-ai-it templates change |
+| `just nav-selftest` | Self-test the skill-ai-it block builders (not this pack) | skill-ai-it templates | Console output | `safe` | Yes | After skill-ai-it templates change |
 
 ## Raw Script Inventory
 
@@ -117,3 +117,18 @@ Everything below `## Task Inventory` lives outside the managed block and is main
   until that is done.
 - Helpers are generic product rules. Node names, addresses and lab inventories stay in the engaging project; pass them on the command line.
 - New helpers use two-space indentation (skill-coder); `check_governance.py` is generated by skill-ai-it and keeps four.
+
+## Governance recipes (skill-ai-it)
+
+- `just govern`: governance up to the current skill-ai-it standard (adoption, record budgets with `just check`, role findings); content fixes are `/skill-ai-it refresh`. `modifies-files`.
+- `just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.
+- `just stale`: stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only; `safe`.
+- `just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.
+- `just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.
+- `just history-show <stamp>`: print one rotated entry. Read-only; `safe`.
+- `just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries and done ROADMAP items to docs/history, verified. Plan by default; `modifies-files`.
+- `just budget [--apply]`: bring governed files within budget (normalise, rotate, move reference sections, audit, check). Plan by default; `modifies-files`.
+- `just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.
+- `just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.
+- `just outline <file.md>`: each heading with its line range, to read one section instead of the file. Read-only; `safe`.
+- `just section <file.md> "<title>"`: print one section (exact title, `Parent > Child`, `#anchor`, `~text`). Read-only; `safe`.

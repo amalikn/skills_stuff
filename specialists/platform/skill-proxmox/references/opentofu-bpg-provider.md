@@ -1,3 +1,13 @@
+---
+Title: OpenTofu with bpg/proxmox
+Category: reference
+Status: current
+Authority: canonical
+Scope: skill-proxmox references/opentofu-bpg-provider.md
+Last reviewed: 2026-11-07
+Summary: OpenTofu with the bpg/proxmox provider: versions, token authentication, when the ssh block is needed, import_from versus download_file, a UEFI VM resource, lock file and state.
+---
+
 # OpenTofu with the bpg/proxmox provider
 
 Infrastructure as code for Proxmox VE with OpenTofu (or Terraform) and the `bpg/proxmox` provider. The Telmate provider is **not used** (operator policy). Sources: [provider
@@ -36,6 +46,17 @@ backend](../documents/research-sources-20261107/opentofu-backend-local.md); cont
   index, Operations restricted to root@pam).
 
 ## When the ssh block is needed
+
+```text
+  tofu plan / apply (bpg/proxmox)
+     |
+     +-- HTTPS :8006, API token ---------> VMs and containers, storage, networks, pools, users,
+     |   (always)                          ACLs, import_from disks, download_file
+     |
+     +-- SSH to the node (only for) -----> proxmox_virtual_environment_file uploads (snippets),
+         ssh { username = ... } with        disk import via source_file.path, container idmap
+         a token; non-root needs sudo
+```
 
 SSH is **only** needed to upload snippets and certain file types (`proxmox_virtual_environment_file`), to import disks via `source_file.path`, and for container `idmap`. It is **not** needed to create
 or change VMs and containers, manage storage, networks, pools or users, import disks with `import_from`, or download files with `download_file`. `VERIFIED_PRIMARY` (provider index, SSH Connection).

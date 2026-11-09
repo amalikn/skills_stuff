@@ -1,7 +1,21 @@
+---
+Title: Changelog
+Category: change-log
+Status: current
+Summary: Newest entries only; older ones rotate to docs/history.
+Authority: record
+Scope: Dated changes to this project
+Kind: log
+Budget: 200 lines, 25 KB
+Last reviewed: 2026-11-08
+---
+
 # Changelog
 
 ## Unreleased
 
+- 2026-11-09 gap review with online research (operator: "confirm the skill is defined properly ... do online research and fill in"): new sections for hyperconverged Ceph (references/storage.md), node removal and arm64 hosts (references/architecture-and-cluster.md), migration, resource mappings and virtiofs (references/qemu-vms.md), notifications (references/monitoring-and-metrics.md), two-factor authentication (references/access-control.md), PBS 4.x and S3 datastores (references/backup-and-restore.md), PDM 1.0/1.1 (references/capability-extension.md), the 9.2 arm64 release row (references/upgrade-and-troubleshooting.md); ASCII diagrams and tables in nine references (operator: "add ASCII diagrams and tables"); claims P-C22 to P-C27, scenarios P-S17 to P-S20, environment pve-docs-9-current-20261109; seven captures in documents/research-sources-20261109/; bpg/proxmox re-checked, still 0.120.0.
+- 2026-11-09 skill-ai-it refresh: govern (navigation block upgraded, AI_NAVIGATION 322 to 159 lines, adoption recipes and record keys), front matter with summaries on 16 references and 2 test documents (doc-freshness baseline 26 to 8), docs/history and docs/trackers registered as conditional paths in the checker, code-map.toml with each module's status, context pack regenerated.
 - 2026-11-08 write-back from smc-resiliency X1: references/qemu-vms.md (iTCO_wdt on q35 without i6300esb; explicit modprobe past the deny-list; a crash reset in 91.1 s)
 - 2026-11-07 (c) write-back from smc-resiliency X2: references/qemu-vms.md (OVMF entry deletion, watchdog driver), references/opentofu-bpg-provider.md (watchdog block, boot_order)
 
@@ -30,3 +44,15 @@ docs, edk2 sources, one installed-source excerpt). Lab facts read only, on one P
 - 20261107 Learned 2026-11-07 (i) in `references/opentofu-bpg-provider.md`: `~> 0.118` resolved to 0.120.0; one-VM apply time.
 - 20261107 Learned 2026-11-07 (k) in `references/upgrade-and-troubleshooting.md`: a 9.1.5 node's pending 9.2 stack and repository state.
 - 20261107 Learned 2026-11-07 (l) in `references/monitoring-and-metrics.md`: node report runtime and budget.
+
+## 20261109_1125 — deterministic navigation-control upgrade
+
+<!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->
+
+- Applied `skill-ai-it` deterministic navigation-control upgrade.
+- Upgraded managed navigation/scripts blocks to version `2026-10-14-compact-v2`.
+- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
+- Preserved user-authored content outside managed blocks.
+- Generated outputs remain support-only; no `.archcore/` promotion was performed.
+
+Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, justfile, scripts/README.md

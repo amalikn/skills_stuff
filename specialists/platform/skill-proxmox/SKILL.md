@@ -2,11 +2,11 @@
 name: skill-proxmox
 description: >-
   Design, operate, automate and troubleshoot Proxmox VE 9.x: nodes, clusters, Corosync and pmxcfs (/etc/pve); storage (dir, LVM-thin,
-  ZFS, Ceph, PBS; content types including import); Linux bridges, VLAN-aware bridges, SDN zones, VNets and DHCP/IPAM; QEMU VMs (q35, OVMF
-  and the EFI disk, Secure Boot keys, boot order, cloud-init, guest agent, serial console, disk import, templates and clones); LXC;
+  ZFS, hyperconverged Ceph with pveceph, PBS 4.x; content types including import); Linux bridges, VLAN-aware bridges, SDN zones, VNets and DHCP/IPAM; QEMU VMs (q35, OVMF
+  and the EFI disk, Secure Boot keys, boot order, cloud-init, guest agent, serial console, disk import, templates and clones, migration, PCI/USB/directory resource mappings and virtiofs); LXC;
   pools, users, realms, roles, privileges, ACLs and privilege-separated API tokens; the REST API and pvesh, pveum, qm, pct and pvesm;
   OpenTofu with the bpg/proxmox provider; vzdump and PBS backups; HA; upgrades (repositories, apt full-upgrade, pve8to9);
-  certificates, firewall and metrics. Use for Proxmox VE work; not for the guest OS inside a VM or for device-specific facts.
+  certificates, firewall, metrics and notifications; arm64 hosts; Proxmox Datacenter Manager. Use for Proxmox VE work; not for the guest OS inside a VM or for device-specific facts.
 ---
 
 # Proxmox VE
@@ -62,19 +62,19 @@ goes to that workload's skill; the inventory of record goes to the source-of-tru
 | Task                                                                            | Read first                                   |
 | ------------------------------------------------------------------------------- | -------------------------------------------- |
 | Exact syntax: pvesh, pveum, qm, pct, pvesm, API paths                           | [references/operations-cookbook.md](references/operations-cookbook.md) |
-| Nodes, clusters, Corosync, quorum, pmxcfs and /etc/pve                          | [references/architecture-and-cluster.md](references/architecture-and-cluster.md) |
-| Storage types, content types, the import content type                           | [references/storage.md](references/storage.md) |
+| Nodes, clusters, Corosync, quorum, pmxcfs, node removal, arm64                  | [references/architecture-and-cluster.md](references/architecture-and-cluster.md) |
+| Storage types, content types, import, hyperconverged Ceph                       | [references/storage.md](references/storage.md) |
 | Bridges, VLAN-aware bridges, SDN zones, VNets, DHCP and IPAM                    | [references/networking-and-sdn.md](references/networking-and-sdn.md) |
-| VMs: q35, OVMF, EFI disk, boot order, cloud-init, agent, serial, import, clones | [references/qemu-vms.md](references/qemu-vms.md) |
+| VMs: q35, OVMF, boot order, cloud-init, agent, serial, clones, migration, mappings | [references/qemu-vms.md](references/qemu-vms.md) |
 | LXC containers, privileged and unprivileged, templates                          | [references/lxc-containers.md](references/lxc-containers.md) |
-| Users, realms, roles, privileges, ACLs, pools, API tokens                       | [references/access-control.md](references/access-control.md) |
+| Users, realms, roles, privileges, ACLs, pools, API tokens, 2FA                  | [references/access-control.md](references/access-control.md) |
 | REST API, authentication, tasks, safe readers and writers                       | [references/api-and-cli.md](references/api-and-cli.md) |
 | OpenTofu with bpg/proxmox: auth, ssh block, import, state                       | [references/opentofu-bpg-provider.md](references/opentofu-bpg-provider.md) |
-| vzdump, PBS, retention and restore                                              | [references/backup-and-restore.md](references/backup-and-restore.md) |
+| vzdump, PBS 4.x (S3), retention and restore                                     | [references/backup-and-restore.md](references/backup-and-restore.md) |
 | HA, placement rules, fencing, storage replication                               | [references/ha-and-replication.md](references/ha-and-replication.md) |
 | Repositories, updates, 8-to-9 upgrade, 9.x changes, triage                      | [references/upgrade-and-troubleshooting.md](references/upgrade-and-troubleshooting.md) |
 | Certificates, ACME, firewall, hardening                                         | [references/security-certificates-firewall.md](references/security-certificates-firewall.md) |
-| Health reads, metric servers, the node report                                   | [references/monitoring-and-metrics.md](references/monitoring-and-metrics.md) |
+| Health reads, metrics, notifications, node report                               | [references/monitoring-and-metrics.md](references/monitoring-and-metrics.md) |
 | Missing capability: native, Proxmox products, seams, FOSS                       | [references/capability-extension.md](references/capability-extension.md) |
 | Reusable learning capture and engagement closeout                               | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
 

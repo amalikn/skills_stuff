@@ -231,3 +231,69 @@ claims:
     evidence: "qm help (pending, guest cmd, terminal, cloudinit update), pct help create, pvesh usage on the lab node; pveum(1), pvesh(1) captures; 2026-11-07."
     reference: references/operations-cookbook.md
     test: P-S10
+  - id: P-C22
+    statement: "A pveceph replicated pool defaults to 128 PGs, size 3 and min_size 2; min_size 1 must not be used, and the chapter recommends at least three nodes and twelve OSDs."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261109]
+    environment_id: pve-docs-9-current-20261109
+    source_type: official_documentation
+    evidence: "pveceph chapter, Create and Edit Pools and Create OSDs (documents/research-sources-20261109/pve-admin-chapter-pveceph.html); 2026-11-09."
+    reference: references/storage.md
+    test: P-S17
+  - id: P-C23
+    statement: "Notifications route events through matchers (match-severity, match-field, match-calendar; mode all or any) to sendmail, smtp, gotify or webhook targets, configured in /etc/pve/notifications.cfg with secrets in /etc/pve/priv/notifications.cfg."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261109]
+    environment_id: pve-docs-9-current-20261109
+    source_type: official_documentation
+    evidence: "Notifications chapter, targets, matcher options and event table (documents/research-sources-20261109/pve-admin-chapter-notifications.html); 2026-11-09."
+    reference: references/monitoring-and-metrics.md
+    test: P-S18
+  - id: P-C24
+    statement: "Online migration is blocked by passed-through PCI or USB devices but not by local disks, needs target packages at the same or a newer version, and works only between hosts of the same CPU architecture."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "qm chapter, Migration and Online Migration Requirements (documents/research-sources-20261107/pve-admin-chapter-qm.html); read 2026-11-09."
+    reference: references/qemu-vms.md
+    test: P-S19
+  - id: P-C25
+    statement: "Assigning a cluster resource mapping (PCI, USB or virtiofs directory) to a VM needs Mapping.Use on /mapping/<type>/<name>; a VM with a virtiofs device cannot live-migrate, snapshot or hibernate."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "qm chapter, Resource Mapping and Virtiofs (documents/research-sources-20261107/pve-admin-chapter-qm.html); read 2026-11-09."
+    reference: references/qemu-vms.md
+    test: P-S19
+  - id: P-C26
+    statement: "Before pvecm delnode, a node's guests and replication jobs must be gone and the node powered off for good; afterwards its /etc/pve/nodes directory, authorized key and HA rule entries are cleaned up by hand."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261107]
+    environment_id: pve-docs-9-current-20261107
+    source_type: official_documentation
+    evidence: "pvecm chapter, Remove a Cluster Node (documents/research-sources-20261107/pve-admin-chapter-pvecm.md); read 2026-11-09."
+    reference: references/architecture-and-cluster.md
+    test: P-S20
+  - id: P-C27
+    statement: "As of 2026-11-09 the latest releases are Proxmox VE 9.2 (x86-64 2026-05-21, arm64 2026-08-05), PBS 4.2 with S3 datastores officially supported, PDM 1.1, and bpg/proxmox 0.120.0."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [pve-docs-9-current-20261109]
+    environment_id: pve-docs-9-current-20261109
+    source_type: official_documentation
+    evidence: "PVE Roadmap release history, PBS Roadmap 4.2 highlights, PDM roadmap, GitHub releases/latest JSON (documents/research-sources-20261109/); 2026-11-09."
+    reference: references/upgrade-and-troubleshooting.md
+    test: P-S20
