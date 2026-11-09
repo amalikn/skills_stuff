@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-09 second slurp close: commits 528db87, 8ede37f (tools_stuff), 2845c17 (wiki_stuff) pushed, vagrant_stuff 35f6247 pushed; docs/session-record-20261109_1244.md Second close section.
 - 2026-11-09 references/boxes-and-pinning.md (c): registry download URLs, archive pass-1 numbers, boxes already gone, qemu/libvirt sources.
 - 2026-11-09 operational: VirtualBox 7.2.10 to 7.2.22 and `vagrant plugin update` (vagrant-parallels 2.4.10, vagrant-qemu 0.7.0) run by the operator.
 - 2026-11-09 operational: box archive on the external storage disk (operator choice): pass 1 saved 13 files (34 min, all ok); pass 2 (50 more: Ubuntu 24.04/26.04, Debian, qemu/libvirt builds, Rocky, Alma, CentOS Stream 10, Fedora, FreeBSD, Alpine, Cumulus VX 5.10, VyOS, Windows Server 2025) running at this entry; MikroTik CHR 7.25.1 images saved; a metadata.json per box name restores with the version (tested).

@@ -92,3 +92,15 @@ commands, 41 file writes. Pass 3: 4 sub-agents.
 | scratchpad `archive_boxes.py`, `verify_boxes.py` | not promoted: they download from a registry that closes on 2026-12-31; the procedure is in references/boxes-and-pinning.md                      |
 | scratchpad `clone_identity_test.sh`              | not promoted: it clones and resets VMs (a write the pack's rule keeps out of its helpers); the procedure is in clones-snapshots-and-identity.md |
 | scratchpad `add_front_matter.py`                 | not needed: a one-off edit with per-file summaries                                                                                              |
+
+## Second close
+
+Items after the first close, from the same transcript walk:
+
+| Item | Destination |
+| --- | --- |
+| Commits and pushes: skills_stuff 528db87 (flows, code map, record, write-backs), tools_stuff 8ede37f (all-scraper ROADMAP), wiki_stuff 2845c17 (project page), vagrant_stuff 35f6247 pushed | CHANGELOG second-close line; memory-keeper closeout key |
+| Reply to the skill-proxmox session acknowledging the governance-tracking rule and naming skill-ai-it's AGENTS.md review | this record; SCRATCHPAD open item |
+| Write-back status: skill-vagrant, skill-coder, skill-ai-it, skill-drawio clean; d96baa0 (another session's skill-coder commit) left for that session to push | this record |
+| Checkpoints: memory-keeper slurp-20261109-skill-vagrant (89409d66), project-context dcafe2b5 | memory pointers in SCRATCHPAD |
+| Archive pass 2 and the verifier were still running at the second close | SCRATCHPAD open item |
