@@ -101,3 +101,13 @@ or Data Integrity Failures; A09 Security Logging and Alerting Failures; A10 Mish
 >   return 1
 > }
 > ```
+
+> **Learned 2026-11-09** · disposable config for a CLI that has a cloud default · VERIFIED_PRIMARY (twice on one day: a disposable Cline CLI data dir
+> without a complete provider entry sent its first request, system prompt included, to api.openai.com; the 401 reply named OpenAI) · Source: tools_stuff
+> `cline/scripts/prompt_cost.py` (`disposable_settings`, the HTTPS_PROXY guard) · Falsifier: a CLI that refuses to start when its provider entry is incomplete
+> A CLI pointed at a local endpoint through a hand-made config can silently fall back to its vendor's default URL when the entry is missing a field it
+> requires (here `updatedAt` and `tokenSource`), so local-only data leaves the machine. When you point a tool at a local endpoint for a test: copy
+> the real entry's shape (not its secrets), put only a dummy key in it, refuse a non-local base URL in code, route HTTPS to a dead proxy
+> (`HTTPS_PROXY=http://127.0.0.1:9`, `NO_PROXY=127.0.0.1,localhost`; whether a given runtime honours it is to be verified), and check the
+> output for the vendor's host name.
+

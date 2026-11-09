@@ -9,13 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261109_1222
+Last rotated: 20261109_2227
 ---
 
 # Changelog
 
 ## Unreleased
 
+- 2026-11-09 (d) write-back from tools_stuff cline (benchmark and prompt-cost tools): references/design-patterns.md P-63 (agent benchmark: known answers in a throwaway copy, a watch on real repos and their submodules), references/security.md (a disposable CLI config can fall back to a cloud default URL; guard egress)
 - 2026-11-09 (c) write-back from smc-resiliency (follow-up audit fixes): references/testing.md (an end state needs its cause on record; test a shell function cut out of its script; printf %q fakes), references/security.md (pin a release tarball to its GitHub asset digest; check a cached tool's executable, not a marker), languages/python.md (legacy files outside ruff include lose F821), references/design-patterns.md P-62 (bind a multi-part answer with one signature)
 - 2026-11-09 (b) write-back from skill-vagrant: references/errors-and-timeouts.md (a streamed download can end short without an error; check Content-Length)
 - 2026-11-09 write-back from skill-vagrant: references/efficiency-and-measurement.md (a pipe filter holds a long job's progress lines)
@@ -194,7 +195,3 @@ references/design-patterns.md: proxy ranks candidates, the real computation choo
 ## 20261028_2237 — Learned: shared justfile recipes and the editor
 
 references/configuration-and-literals.md: an imported recipe file defines no variables (justfile_directory, source_directory); the VS Code just extension does not follow import for names but flags duplicates (ansible-wifi change.just, 2026-10-28).
-
-## 20261028_2229 — Learned: a symlinked source ships whatever is checked out
-
-references/safety-and-writes.md: pin a copy from the commit when a deploy needs a specific version; a link only when the target cannot vary by branch (ansible-wifi apt-info-no-update, 2026-10-28).

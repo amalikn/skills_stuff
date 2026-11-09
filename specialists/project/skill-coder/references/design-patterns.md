@@ -100,6 +100,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-58 | Hold changes while blind; recover by self-undoing trials    | A device that cannot tell its own bad change from an outage                |
 | P-59 | Export a spec to plain code, with provenance and an edit guard | Hand-copying a change from an engine into a repo that must not depend on it |
 | P-60 | Order resumed records by attempt, not by transaction start  | A resume sorted before attempts that ran ahead of it                        |
+| P-63 | Agent benchmark: known answers in a throwaway copy, a watch on real repos | Choosing a model or config for an agent by impression, or letting the run touch live work |
 
 ## Patterns
 
@@ -1485,3 +1486,42 @@ return sorted(rows, key=lambda row: (str(row.get("attempt_start") or row.get("st
 > A box with only the standard library signs compact JWS (alg EdDSA) by building `base64url(header).base64url(payload)` itself and signing it
 > with `openssl pkeyutl -sign -rawin`; the RFC's test vector is the independent check. A generated view (P-59) carries `sources-sha256` and
 > `view-sha256` in its banner, so the drift check tells "the source changed" from "someone edited the view".
+
+### P-63 Agent benchmark: known answers in a throwaway copy, a watch on real repos
+
+> **Learned 2026-11-09** · design pattern, any language driving an agent CLI · VERIFIED_PRIMARY (baseline 3/5, tuned 12/15, Qwen3.8-27B 8-bit 15/15; the submodule
+> blind spot found by a concurrent edit the watch missed, then a negative test) · Source: tools_stuff `cline/scripts/bench.py` (`prepare`, `watched_repos`, `repo_state`,
+> `run_task`), `cline/bench/tasks.toml` · Falsifier: a task that passes with a wrong answer, or a real-repo edit during a run that the watch does not report
+> Pattern P-63, written generically below. `reusable_candidate` until a second project uses it.
+
+- **Problem:** a model, prompt or tool profile for a coding agent is chosen on impression from one task, and an agent run "in a copy" can still reach
+  and edit the live repositories through its shell.
+- **Solution:** a small task file of **known-answer** tasks drawn from real failures (a misread flag, a claim made without searching, an invented
+  timing, a duplicated finding, a failing unit test to fix). Each task runs headless in a **throwaway copy** (`git archive` of HEAD, or a fixture folder
+  with a private git snapshot so "files that must not change" can be checked). Scoring is by fixed checks only: regexes the answer must and must not
+  contain, "no number without the command that produced it", a post command (`unittest`), unchanged files. Around each task, snapshot every real
+  repo **and, recursively, every submodule in it** (porcelain status set plus a hash of `git diff`) and fail the task when they differ. Run each task
+  `--repeat N` (3 or more before choosing), scale timeouts per model (`--timeout-scale`) and label a timeout as time, not skill.
+- **Why it works:** known answers make the score independent of the judge; the copy keeps the task's own edits away from live work; the watch catches the
+  agent leaving the copy; repeats separate luck from skill.
+- **Reuse:** comparing local and cloud models for an agent, tuning a tool profile or rules, regression-checking an agent harness upgrade.
+- **Pitfalls:** a parent repo shows a dirty submodule as one unchanging ` M <path>` line and its diff as a constant `-dirty`, so a watch on the parent
+  alone misses every edit inside a submodule (2026-11-09: an edit in a submodule mid-run passed unseen; fixed with `git submodule foreach --recursive`,
+  22 repos, about 4 s a snapshot). Another session writing during a run trips the watch: read the paths before blaming the model. Tasks taken from
+  one project's history can leak their answers through that project's records: copy HEAD from before the fix, or use a fixture.
+- **Realised in:** Python (stdlib, `tomllib`, subprocess with timeouts).
+
+```python
+# tools_stuff cline/scripts/bench.py (20261109; watched_repos added after the blind spot)
+def watched_repos() -> list[Path]:
+  repos = []
+  for repo in REAL_REPOS:
+    if not (repo / ".git").exists():
+      continue
+    repos.append(repo)
+    out = sh(["git", "-C", str(repo), "submodule", "foreach", "--quiet", "--recursive", "echo $displaypath"], repo).stdout
+    repos += [repo / line.strip() for line in out.splitlines() if line.strip() and (repo / line.strip() / ".git").exists()]
+  return repos
+# per task: before = repo_state(); run the agent in the copy; touched = repo_changes(before, repo_state()); fails += touched
+```
+
