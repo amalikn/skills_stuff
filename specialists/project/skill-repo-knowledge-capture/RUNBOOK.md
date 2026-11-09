@@ -1,5 +1,10 @@
 # RUNBOOK
 
+> **Superseded in part (operator, 2026-11-09):** governance files (`AGENTS.md`, `CLAUDE.md`, `.agents/` and the rest listed in governance
+> `categories/repo-structure-guide.md`, Git tracking) are always tracked in a clone of the operator's GitHub and never excluded there. In a company
+> clone (Bitbucket `activ8me`) they are never committed: they stay in `.git/info/exclude` and are versioned in the operator's GitHub companion repo.
+> Any other exclusion is confirmed with the operator first. Where this skill says otherwise, that rule wins.
+
 ## Use When
 Use this specialist when the user explicitly wants to preserve or version local repo knowledge such as `.serena/`, `.smart-coding-cache/`, `AGENTS.md`, `.agents/`, or local `.vscode/` overrides without contaminating the production repository.
 

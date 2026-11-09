@@ -79,9 +79,18 @@ case "$command" in
     touch "$exclude_file"
     grep -qxF '.serena/' "$exclude_file" || printf '%s\n' '.serena/' >> "$exclude_file"
     grep -qxF '.smart-coding-cache/' "$exclude_file" || printf '%s\n' '.smart-coding-cache/' >> "$exclude_file"
-    grep -qxF 'AGENTS.md' "$exclude_file" || printf '%s\n' 'AGENTS.md' >> "$exclude_file"
-    grep -qxF '.agents/' "$exclude_file" || printf '%s\n' '.agents/' >> "$exclude_file"
     grep -qxF '.vscode/' "$exclude_file" || printf '%s\n' '.vscode/' >> "$exclude_file"
+    # AI governance files (operator, 2026-11-09; governance categories/repo-structure-guide.md, Git tracking): tracked in a clone of the
+    # operator's GitHub, never excluded there; excluded in any other clone (a company remote), whose copies live in the GitHub companion repo.
+    origin_url="$(git -C "$repo_root" remote get-url origin 2>/dev/null || true)"
+    if [[ "$origin_url" =~ github\.com[:/]amalikn/ ]]; then
+      printf 'governance files: tracked (operator GitHub remote), not excluded\n'
+    else
+      for gov in AGENTS.md CLAUDE.md .agents/; do
+        grep -qxF "$gov" "$exclude_file" || printf '%s\n' "$gov" >> "$exclude_file"
+      done
+      printf 'governance files: excluded (remote %s is not the operator GitHub)\n' "${origin_url:-none}"
+    fi
     printf 'exclude_file=%s\n' "$exclude_file"
     ;;
 

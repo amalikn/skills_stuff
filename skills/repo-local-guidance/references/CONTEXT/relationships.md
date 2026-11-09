@@ -1,4 +1,4 @@
 # Relationships
 
-- Complements `skill-repo-bootstrap-and-governance` by handling the local-only thin-root guidance pattern.
-- Complements `skill-repo-knowledge-capture` by defining what local repo guidance should be captured and restored.
+- Complements `skill-repo-bootstrap-and-governance` by handling the thin-root guidance pattern.
+- Complements `skill-repo-knowledge-capture`, whose `setup` excludes governance files only in a clone whose remote is not the operator's GitHub.

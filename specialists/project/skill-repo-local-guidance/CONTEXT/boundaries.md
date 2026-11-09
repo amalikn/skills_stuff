@@ -1,4 +1,4 @@
 # Boundaries
 
-- In scope: thin root `AGENTS.md`, `.agents/` support docs, `.git/info/exclude` local-only ignore setup, and repo-local guidance maintenance.
-- Out of scope: replacing the global `~/.codex/AGENTS.md` or forcing repo-local guidance into tracked repo files.
+- In scope: thin root `AGENTS.md`, `.agents/` support docs, deciding where they are versioned from the clone's remote, companion-repo symlinks for company clones.
+- Out of scope: replacing the global `~/.agents/AGENTS.md`; any exclusion not confirmed by the operator.
