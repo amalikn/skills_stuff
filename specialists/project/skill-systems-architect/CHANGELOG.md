@@ -11,6 +11,11 @@ Kind: log
 
 # Changelog
 
+## 20261110_0030 — Flash-step guards for removable media (v2.3.0 -> v2.3.1)
+
+- references/provisioning-and-lifecycle.md: Learned 2026-11-10 before "Rollout waves": build apart from flash, layout as data, and a flash
+  step that refuses by disk content and a size range because a USB SSD reports removable like an SD card (smc-resiliency lab/logic/flash.py).
+
 ## 20261110_0025 — Linux and resiliency write-back from smc-resiliency S1; APN read from the shared folder (v2.2.0 -> v2.3.0)
 
 - references/edge-appliances.md: Learned 2026-11-10 entries beside "Image layout and updates" (boot firmware is part of the image: a distribution's

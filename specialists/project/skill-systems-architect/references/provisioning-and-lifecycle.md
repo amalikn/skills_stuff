@@ -91,6 +91,16 @@ Legend: --> build step   loop = observed state returns as a diff for review
 - Access-layer enrollment means an SSH CA host certificate or an access-proxy join token with a short TTL.
 - Time sync must come before anything that needs TLS or Kerberos.
 
+> **Learned 2026-11-10** · imaging and flashing removable media from a workstation · VERIFIED_PRIMARY (macOS diskutil on a 988 GB USB APFS
+> drive: Removable, RemovableMedia and Ejectable all true, Internal false) · Source: smc-resiliency lab/logic/flash.py and its test (apn, after
+> a1457e86) · Falsifier: a USB SSD reporting non-removable on the same OS.
+> - Build and flash are separate steps; the layout (table, sizes, filesystems, roles, boot-choice method) is data per platform, read by one
+>   builder, so a new medium (SD, CFast, SSD) or platform is a new layout file, not a new script.
+> - A flash step cannot trust the disk's removable or external flags: a USB SSD reports them exactly like an SD card. Refuse by what is on the
+>   disk (any partition holding the workstation's own filesystems) and by a size range from the layout (a maximum as well as a minimum), and
+>   prove the refusal with a plan-only run against a real wrong disk, not only fakes. Read the medium back against the image hash and record the
+>   medium ID with the image hash: that record is what a controller binds a box's identity to.
+
 ## Rollout waves
 
 | Wave       | Scope                                      | Stop if                              |

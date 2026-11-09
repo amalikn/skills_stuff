@@ -315,3 +315,8 @@ if _opposite_status(ca, cb):
 > inode numbers across mounts. FAT has no inodes; Linux makes them up at mount, so an inode compared across a reboot proves nothing. Compare
 > size and inode before and after one write within one boot.
 
+> **Learned 2026-11-10** · tests of a safety guard built on an external tool's output · VERIFIED_PRIMARY (smc-resiliency lab/logic/flash.py:
+> fakes with guessed diskutil keys passed; a plan-only run against a real 988 GB APFS USB drive was not refused) · Source: smc-resiliency
+> lab/tests/test_lab.py FlashTargetTests · Falsifier: a guard whose fakes were copied from real output missing the same case. Build the fake from
+> the tool's real output for the case that must be refused, and smoke the refusal against a real wrong target in plan mode before trusting it.
+
