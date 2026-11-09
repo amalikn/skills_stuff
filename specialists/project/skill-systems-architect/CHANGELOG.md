@@ -11,6 +11,12 @@ Kind: log
 
 # Changelog
 
+## 20261110_0525 — Measured Qwen3.8-27B on oMLX; prefill-peak rule; prefix-cache blocks on hybrid models (v2.3.2 -> v2.3.3)
+
+- references/ai-inference-platforms.md: three Learned entries before "Fair comparisons" (measured weights, prefill, MTP accept and an agentic
+  benchmark ranking on M2 Max 64 GB; prefill peak set by per-step attention memory and the engine's prefill policy, headroom check and one model
+  resident at a time; 4096-token prefix-cache blocks on hybrid Gated DeltaNet models). Source: tools_stuff cline session record, commit d88d77b.
+
 ## 20261110_0202 — Converting deployed single-root boxes in place; slot sizing; field wear metrics (v2.3.1 -> v2.3.2)
 
 - references/edge-appliances.md: Learned 2026-11-10 beside "Convert existing boxes at a planned visit" (bench pilot, carve before copy, shrink exposure measured read-only, slots sized at twice a measured release, wear measured in the field).

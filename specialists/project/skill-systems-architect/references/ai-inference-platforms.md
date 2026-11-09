@@ -184,6 +184,33 @@ Memory pressure first. On unified memory the GPU shares RAM with every app and c
 - Container VMs and virtual machines on the same laptop can hold tens of GB. Budget RAM per model including server overhead; two
   large models at once did not fit in 64 GB.
 
+> **Learned 2026-11-10** · Apple silicon, oMLX 0.7.3, hybrid-attention 27B model, agentic coding · VERIFIED_PRIMARY (that machine) · Source: tools_stuff
+> `cline/docs/cline-omlx-tuning-session-record-20261109_2228.md` (commit d88d77b), `~/.omlx/logs/server.log` · Falsifier: a clean rerun (no swap,
+> no other sessions) that reverses the 4-bit MTP vs 8-bit ranking.
+> Qwen3.8-27B on oMLX 0.7.3, M2 Max 64 GB (400 GB/s; one-token decode ceilings about 14 tok/s at 8-bit, 24 tok/s at 4-bit): loaded weights 28.37 GB
+> (8-bit, MTP head kept) and 16.56 GB (4-bit); cold prefill about 67 tok/s (15,890 tokens in about 236 s, so a cold agent prompt waits about
+> 4 minutes and the prefix cache is load-bearing); multi-token prediction (MTP) accepted 85.7% of drafts at 2.43 tokens per verify step, which is
+> how decode can pass the one-token ceiling. Agentic benchmark (5 known-answer tasks x 3, Cline CLI): 4-bit MTP 14/15 right with the shortest
+> median task time (246 s) of five models; 8-bit without MTP 15/15 at 525 s; 8-bit MTP 13/15 including one fabricated figure; a 4-bit without
+> MTP 13/15 at 727 s. Swap sat near full throughout, so treat times as a ranking, not a rate. Judge local agent models on answer checks
+> (a fabricated number is a fail) as well as speed.
+
+> **Learned 2026-11-10** · inference engines with a prefill memory guard, hybrid (linear plus full) attention models · VERIFIED_PRIMARY · Source:
+> oMLX 0.7.3 `server.log` and `scheduler.prefill_priority` in `~/.omlx/settings.json` · Falsifier: a prefill peak that tracks the KV-cache
+> arithmetic rather than the per-step attention working set.
+> On hybrid attention models the prefill peak is set by the per-step attention working memory, not the KV cache: oMLX refused a 15.9k prompt with
+> "Prefill would require ~43.59 GB peak (current 32.94 GB + KV+SDPA 10.65 GB) but the prefill limit is 41.76 GB" while the KV arithmetic was far
+> smaller. Whether a prompt is admitted is therefore an engine policy question: oMLX `prefill_priority` "speed" keeps full prefill steps and
+> refuses what does not fit (HTTP 400, the client reports "context window exceeded"); "context" (the default) shrinks steps so the prompt
+> completes. `chunked_prefill` only interleaves prefill with decode for concurrency and does not lower the peak. Before a benchmark, check
+> headroom (loaded model plus a cold prompt's peak against the limit) and stop the suite on the first server refusal instead of scoring it.
+> Never have two large models resident at once on a 64 GB machine; unload one and confirm it is gone before loading the next.
+
+> **Learned 2026-11-09** · prefix (SSD) caches on hybrid Gated DeltaNet models · VERIFIED_PRIMARY · Source: oMLX 0.7.3
+> `_enlarge_block_size_for_arrays_cache` · Falsifier: a hybrid model served with the paged default block size and full state reuse.
+> oMLX stores prefix-cache blocks of 4096 tokens for hybrid Gated DeltaNet models (the paged default is 256): the recurrent state is snapshotted per
+> block, so larger blocks mean fewer snapshots but coarser reuse. A shared prefix shorter than one block is not reused.
+
 Fair comparisons. Compare engines only with one harness, the same model, quantisation, prompt and output length, and the same
 memory state. A smaller model that runs slower than a larger one on the same engine means the test is broken (memory pressure,
 short outputs, a different day or a UI timer), not that the engine is slow. A cross-engine "2.7-3.4x faster" claim built from a
