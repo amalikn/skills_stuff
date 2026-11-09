@@ -28,7 +28,7 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Only files matching these patterns are included: AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, README.md, ARCHITECTURE.md, architecture.md, CONVENTIONS.md, ROADMAP.md, roadmap.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, sources.yaml, compatibility.yaml, references/**/*.md, tests/*.md, context-map.yaml, scripts/README.md, scripts/**, justfile, Justfile, Taskfile.yml, Makefile, package.json, memory-bank/**/*.md, .archcore/**/*.md, ARCHCORE_PROMOTION_CANDIDATES.md, docs/**/*.md
+- Only files matching these patterns are included: AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, README.md, ARCHITECTURE.md, architecture.md, CONVENTIONS.md, ROADMAP.md, roadmap.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, sources.yaml, compatibility.yaml, references/**/*.md, tests/*.md, context-map.yaml, scripts/README.md, scripts/**, justfile, Justfile, Taskfile.yml, Makefile, package.json, memory-bank/**/*.md, .archcore/**/*.md, docs/**/*.md
 - Files matching these patterns are excluded: node_modules/**, .git/**, dist/**, build/**, cache/**, runtime/**, __pycache__/**, .venv/**, graphify-out/**, .ai-context/**
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
@@ -38,6 +38,7 @@ The content is organized as follows:
 ````
 .archcore/
   adr/
+    bpg-provider-not-telmate.adr.md
     governance-checker-in-test-suite.adr.md
     independent-platform-pack.adr.md
   plans/
@@ -45,7 +46,10 @@ The content is organized as follows:
   rules/
     capability-search-order.rule.md
     changelog-version-of-record.rule.md
+    dated-latest-claims.rule.md
+    live-node-writes.rule.md
     memory-channel-name.rule.md
+    project-boundary.rule.md
   index.guide.md
 docs/
   session-record-20261109_1235.md
@@ -79,7 +83,6 @@ tests/
   scenarios.md
 AGENTS.md
 AI_NAVIGATION.md
-ARCHCORE_PROMOTION_CANDIDATES.md
 CHANGELOG.md
 CLAUDE.md
 compatibility.yaml
@@ -93,6 +96,38 @@ sources.yaml
 ````
 
 # Files
+
+## File: .archcore/adr/bpg-provider-not-telmate.adr.md
+````markdown
+---
+title: OpenTofu drives Proxmox VE through the bpg/proxmox provider, never Telmate
+type: adr
+status: accepted
+tags: [opentofu, provider]
+created: 2026-11-09
+---
+
+# ADR: bpg/proxmox, not Telmate
+
+Status: accepted (operator, 2026-11-09: "promote and accept all"; the policy itself predates the pack and is stated in `SKILL.md` and `references/opentofu-bpg-provider.md` as operator policy).
+
+## Context
+
+Two community OpenTofu/Terraform providers drive Proxmox VE: `bpg/proxmox` and `Telmate/proxmox`. The pack's worked examples, captures (`documents/research-sources-20261107/bpg-provider-*`) and claims
+(P-C03 and others) all rest on bpg/proxmox 0.120.0.
+
+## Decision
+
+Every OpenTofu configuration this pack describes uses `bpg/proxmox`. The Telmate provider is not used, not documented and not offered as an alternative.
+
+## Consequences
+
+- Provider facts live in `references/opentofu-bpg-provider.md` and are checked against the version in the project's lock file.
+- A project found on Telmate is a migration task for that project, not a second supported path here.
+- The operator's reason for the policy is not recorded in the pack; if it is needed later, ask and add it here.
+
+Confidence: high for the decision (operator policy, stated twice in the pack); low for the rationale, which is not written down.
+````
 
 ## File: .archcore/adr/governance-checker-in-test-suite.adr.md
 ````markdown
@@ -269,6 +304,65 @@ The package contract forbids a manifest JSON file, so there is no second metadat
   checker itself are exempt. `Governance.test_a_restated_version_fails_the_gate` proves it can fail.
 ````
 
+## File: .archcore/rules/dated-latest-claims.rule.md
+````markdown
+---
+title: Latest-version claims carry the date they were checked
+type: rule
+status: accepted
+tags: [evidence, versioning]
+created: 2026-11-09
+---
+
+# Rule: Latest-version claims carry the date they were checked
+
+Status: accepted (operator, 2026-11-09; promoted from ARCHCORE_PROMOTION_CANDIDATES.md).
+
+## Rule
+
+Any statement that a Proxmox VE, PBS, PDM or bpg/proxmox release is "latest", "current" or "newest" names the date it was checked and the capture behind it (a file under
+`documents/research-sources-<YYYYMMDD>/` or a dated `compatibility.yaml` row). An undated "latest" is wrong the day a new release ships and gives the next reader no way to tell.
+
+## Why
+
+Releases move under the pack: 9.2 for arm64 (2026-08-05), PBS 4.2 (2026-04-29) and PDM 1.1 (2026-05-28) all shipped after earlier text was written. Claim P-C27 and the 2026-11-09 Key anchors already
+follow the form ("latest ... checked 2026-11-09").
+
+## Enforcement
+
+Scenario P-S20 prohibits stating "latest" without the date it was checked. No automated check yet.
+````
+
+## File: .archcore/rules/live-node-writes.rule.md
+````markdown
+---
+title: Writes to a live node need the engaging project's authorization, a plan and --apply
+type: rule
+status: accepted
+tags: [safety, writes]
+created: 2026-11-09
+---
+
+# Rule: Writes to a live node need authorization, a plan and --apply
+
+Status: accepted (operator, 2026-11-09: "promote and accept all"; promoted from `AGENTS.md` Working rules and `SKILL.md` Read, write, and evidence boundaries).
+
+## Rule
+
+Reading a node (API GETs, `pvesh get`, `qm config`, `pveversion`) is fine where the engaging project allows read-only access. Every write needs that project's authorization, prints its plan first and
+runs only with `--apply`: a `pvesh create|set|delete`, `qm set`, `pct set`, `pveum`, `apt update` (a write, it refreshes the package lists), `apt full-upgrade`, a node network change (it can cut off
+access) and an OpenTofu apply. Skill use never authorizes a write by itself.
+
+## Why
+
+A node is shared infrastructure owned by the engaging project; a write from a skill session can stop guests, cut off management access or change what other automation sees.
+
+## Enforcement
+
+The pack's helpers read by default and gate their one write (`pve_node_report.py --refresh --apply`); skill-coder's `write_gates` check covers `scripts/`. Commands typed by an agent are covered by
+this rule and the engaging project's own approval rules, which outrank it.
+````
+
 ## File: .archcore/rules/memory-channel-name.rule.md
 ````markdown
 ---
@@ -295,6 +389,36 @@ None automated. memory-keeper truncates channels to 20 characters and normalises
 On 2026-11-09 memory-keeper had no `proxmox` channel yet: the first write creates it; read it back to confirm the name survived.
 ````
 
+## File: .archcore/rules/project-boundary.rule.md
+````markdown
+---
+title: Project facts stay in the engaging project; project rules outrank the pack
+type: rule
+status: accepted
+tags: [boundary, redaction]
+created: 2026-11-09
+---
+
+# Rule: Project facts stay in the engaging project
+
+Status: accepted (operator, 2026-11-09: "promote and accept all"; promoted from `SKILL.md` Project boundary and `AGENTS.md` Working rules).
+
+## Rule
+
+Node names, addresses, VMID ranges, pools, token identities, password-manager entries and lab inventories belong to the engaging project, never to this pack. A worked case cited here (for example
+smc-resiliency's x86 lab) is an example, not stock behaviour. A project's own Proxmox conventions (pools, token identities, VMID ranges, approval rules) outrank this pack: read its `AGENTS.md` before
+any write.
+
+## Why
+
+The pack is cross-project and shareable; a project fact copied into it goes stale, leaks a site detail and misleads the next project.
+
+## Enforcement
+
+`tests/test_package_contract.py` scans every `.md`, `.yaml` and `.txt` file (generated ones included) for credentials, private addresses and production domains; facts that are not secrets (a node
+name, a VMID range) rely on this rule.
+````
+
 ## File: .archcore/index.guide.md
 ````markdown
 ---
@@ -304,7 +428,7 @@ tags: [index]
 ---
 
 Durable index of everything in `.archcore/` for skill-proxmox. Written at creation on 2026-11-07, mirroring skill-nautobot's six documents;
-reviewed, corrected and accepted by the operator on 2026-11-09.
+reviewed, corrected and accepted by the operator on 2026-11-09; four more promoted and accepted the same day (operator: "promote and accept all").
 
 Accepted documents are durable decisions and outrank `AGENTS.md` prose where they differ. Supersede an accepted document in place with a
 dated note naming its replacement rather than deleting it.
@@ -315,6 +439,7 @@ dated note naming its replacement rather than deleting it.
 |---|---|
 | [independent-platform-pack.adr.md](adr/independent-platform-pack.adr.md) | accepted 2026-11-09 |
 | [governance-checker-in-test-suite.adr.md](adr/governance-checker-in-test-suite.adr.md) | accepted 2026-11-09 |
+| [bpg-provider-not-telmate.adr.md](adr/bpg-provider-not-telmate.adr.md) | accepted 2026-11-09 (promote) |
 
 ## rules/
 
@@ -323,6 +448,9 @@ dated note naming its replacement rather than deleting it.
 | [capability-search-order.rule.md](rules/capability-search-order.rule.md) | accepted 2026-11-09 |
 | [changelog-version-of-record.rule.md](rules/changelog-version-of-record.rule.md) | accepted 2026-11-09 |
 | [memory-channel-name.rule.md](rules/memory-channel-name.rule.md) | accepted 2026-11-09 |
+| [dated-latest-claims.rule.md](rules/dated-latest-claims.rule.md) | accepted 2026-11-09 (promoted from the candidates file) |
+| [live-node-writes.rule.md](rules/live-node-writes.rule.md) | accepted 2026-11-09 (promote) |
+| [project-boundary.rule.md](rules/project-boundary.rule.md) | accepted 2026-11-09 (promote) |
 
 ## plans/
 
@@ -341,7 +469,7 @@ dated note naming its replacement rather than deleting it.
 
 ## Proposing another
 
-Candidates wait in `ARCHCORE_PROMOTION_CANDIDATES.md` at the pack root until the operator promotes or rejects each one; `/skill-ai-it refresh`
+Candidates wait in `ARCHCORE_PROMOTION_CANDIDATES.md` at the pack root (absent while the queue is empty) until the operator promotes or rejects each one; `/skill-ai-it refresh`
 re-scans and updates it. Check the table above first so a rejected area is not re-proposed.
 ````
 
@@ -3649,7 +3777,7 @@ Budget: 150 lines, 12 KB
 
 - **Entry:** [SKILL.md](SKILL.md) is the activation surface (role and non-goals, routing, write-back contract) and must route every file in `references/`; [AI_NAVIGATION.md](AI_NAVIGATION.md) mirrors its routing table. Load only the
   reference the task needs.
-- **Decisions:** [.archcore/index.guide.md](.archcore/index.guide.md) (pack boundary, capability search order, version of record, memory channel `proxmox`, live-probe plan) outranks this file.
+- **Decisions:** [.archcore/index.guide.md](.archcore/index.guide.md) (pack boundary, bpg not Telmate, search order, version of record, dated latest claims, live-node writes, project boundary, memory channel `proxmox`, live-probe plan) outranks this file.
 - **Evidence:** claims in [sources.yaml](sources.yaml), environments in [compatibility.yaml](compatibility.yaml); a lab observation is not a production guarantee. Version of record: Proxmox VE 9.1.5 (lab, observed 2026-11-07).
 - **Captures:** `documents/research-sources-<YYYYMMDD>/` holds verbatim pages, indexed in its `readme.md` and with sha256 in [documents/readme.md](documents/readme.md), both rows in the same pass. Captures are exempt from
   the redaction scan except for private keys.
@@ -3863,62 +3991,6 @@ Ordinary tasks load one reference. What runs inside a guest belongs to that work
 | [.archcore/index.guide.md](.archcore/index.guide.md) | Index of durable ADRs, rules and plans, and what is never promoted | `scripts/check_governance.py` (both directions) |
 ````
 
-## File: ARCHCORE_PROMOTION_CANDIDATES.md
-````markdown
----
-Title: Archcore promotion candidates — skill-proxmox
-Category: working-state
-Status: draft
-Authority: working-state
-Scope: Queue of candidate .archcore/ documents for skill-proxmox awaiting the operator's promote or reject
-Last reviewed: 2026-11-09
-Summary: Candidates surfaced by the 2026-11-09 skill-ai-it refresh and archcore review; nothing here is a decision until promoted.
----
-
-# Archcore Promotion Candidates
-
-Generated by `skill-ai-it` on 2026-11-09 (refresh and archcore review). Review each candidate, then run `/skill-ai-it promote` to authorize writing Archcore
-content; promote deletes this file once the queue is empty. Sources inspected: `README.md`, `AGENTS.md`, `SCRATCHPAD.md`, plus the claim and scenario ledgers
-named below. Already accepted or deliberately never promoted: see [.archcore/index.guide.md](.archcore/index.guide.md).
-
-## adr candidates
-
-| Source file | Excerpt | Confidence | Notes |
-|---|---|---|---|
-| — | none | — | The two pack-shaping decisions are already accepted ADRs |
-
-## rules candidates
-
-| Source file | Excerpt | Confidence | Notes |
-|---|---|---|---|
-| `tests/scenarios.md` (P-S20), `sources.yaml` (P-C27) | "Prohibit ... stating 'latest' without the date it was checked." | high | Proposed rule `dated-latest-claims`: any "latest" or "current" release claim carries the date it was checked and the capture behind it. Enforcement today is the scenario only |
-
-## specs candidates
-
-| Source file | Excerpt | Confidence | Notes |
-|---|---|---|---|
-| — | none | — | Ledger schemas stay executable in the contract test (never promoted) |
-
-## guides candidates
-
-| Source file | Excerpt | Confidence | Notes |
-|---|---|---|---|
-| — | none | — | Write-back procedure stays in `references/evolution-and-write-back.md` (never promoted) |
-
-## plans candidates
-
-| Source file | Excerpt | Confidence | Notes |
-|---|---|---|---|
-| — | none | — | Live probes and the client matrix are the accepted plan, extended 2026-11-09 |
-
-## Considered and not proposed
-
-| Source file | Excerpt | Reason |
-|---|---|---|
-| `SCRATCHPAD.md` (Recent decisions) | "New helpers use two-space indentation (skill-coder rule); the copied governance checker keeps four." | Governed upstream by skill-coder; restating it here would duplicate policy |
-| `AGENTS.md` | Verbatim captures indexed with sha256, exempt from the redaction scan except private keys | Enforced by the contract test; already in the index's never-promoted table |
-````
-
 ## File: CHANGELOG.md
 ````markdown
 ---
@@ -3937,6 +4009,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-09 skill-ai-it promote (operator: "promote and accept all"): candidates surfaced from AGENTS.md, SKILL.md and the references and accepted: `.archcore/adr/bpg-provider-not-telmate.adr.md`, `.archcore/rules/live-node-writes.rule.md`, `.archcore/rules/project-boundary.rule.md`; contract-enforced and upstream rules left unpromoted (index table).
+- 2026-11-09 `.archcore/rules/dated-latest-claims.rule.md` accepted (operator, promoted from the candidates file); `ARCHCORE_PROMOTION_CANDIDATES.md` removed (queue empty) and dropped from the Repomix include.
 - 2026-11-09 AGENTS.md trimmed (operator: "Trim AGENTS.md · 3k tokens per request"): 148 to 70 lines, 12.6 to 5.7 KB; scope, search order, version and memory
   rules linked to SKILL.md and `.archcore/` instead of restated; the generic governance-checks block replaced by one paragraph and a link to the skill-ai-it
   pattern; front matter repaired (the adoption pass had cut Summary mid-sentence). AGENTS.md was hidden by skills_stuff's `.git/info/exclude` until the <!-- path:example -->
@@ -5015,7 +5089,7 @@ engaging project. Its structure mirrors [skill-nautobot](../skill-nautobot/READM
 - [documents/](documents/) — verbatim source captures. Index: [documents/readme.md](documents/readme.md); per-date folder index: [documents/research-sources-20261107/readme.md](documents/research-sources-20261107/readme.md)
 - [scripts/](scripts/) — tested stdlib-only helpers and the governance checker. Index: [scripts/README.md](scripts/README.md)
 - [tests/](tests/) — offline package contract, helper tests, scenarios, evaluation procedure
-- [.archcore/](.archcore/) — durable decisions, rules and plans (6 documents, accepted 2026-11-09). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
+- [.archcore/](.archcore/) — durable decisions, rules and plans (10 documents, accepted 2026-11-09). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
 
 ## Key files
 
@@ -5079,7 +5153,7 @@ done; `.archcore/` accepted; AGENTS.md trimmed and tracked in Git.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill), scenarios P-S01 to P-S20.
 - [ ] Re-verify the cookbook when the lab node moves to 9.2 (pending in its update queue).
 - [ ] Live probe on a three-node lab cluster for the 2026-11-09 doc-only sections (Ceph, migration, mappings, notifications, node removal): accepted plan step 3.
-- [ ] Proposed, not decided: archcore rule `dated-latest-claims` ([ARCHCORE_PROMOTION_CANDIDATES.md](ARCHCORE_PROMOTION_CANDIDATES.md)); promote or reject.
+- [x] Archcore rule `dated-latest-claims` promoted and accepted (operator, 2026-11-09).
 - [ ] Still baselined: AI_NAVIGATION.md 9 lines over its 150-line budget (the routing table is a checked rule); `.ai-context/` (generated, no header).
 
 ---

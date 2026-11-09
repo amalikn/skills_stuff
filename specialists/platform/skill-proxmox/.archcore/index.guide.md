@@ -5,7 +5,7 @@ tags: [index]
 ---
 
 Durable index of everything in `.archcore/` for skill-proxmox. Written at creation on 2026-11-07, mirroring skill-nautobot's six documents;
-reviewed, corrected and accepted by the operator on 2026-11-09.
+reviewed, corrected and accepted by the operator on 2026-11-09; four more promoted and accepted the same day (operator: "promote and accept all").
 
 Accepted documents are durable decisions and outrank `AGENTS.md` prose where they differ. Supersede an accepted document in place with a
 dated note naming its replacement rather than deleting it.
@@ -16,6 +16,7 @@ dated note naming its replacement rather than deleting it.
 |---|---|
 | [independent-platform-pack.adr.md](adr/independent-platform-pack.adr.md) | accepted 2026-11-09 |
 | [governance-checker-in-test-suite.adr.md](adr/governance-checker-in-test-suite.adr.md) | accepted 2026-11-09 |
+| [bpg-provider-not-telmate.adr.md](adr/bpg-provider-not-telmate.adr.md) | accepted 2026-11-09 (promote) |
 
 ## rules/
 
@@ -24,6 +25,9 @@ dated note naming its replacement rather than deleting it.
 | [capability-search-order.rule.md](rules/capability-search-order.rule.md) | accepted 2026-11-09 |
 | [changelog-version-of-record.rule.md](rules/changelog-version-of-record.rule.md) | accepted 2026-11-09 |
 | [memory-channel-name.rule.md](rules/memory-channel-name.rule.md) | accepted 2026-11-09 |
+| [dated-latest-claims.rule.md](rules/dated-latest-claims.rule.md) | accepted 2026-11-09 (promoted from the candidates file) |
+| [live-node-writes.rule.md](rules/live-node-writes.rule.md) | accepted 2026-11-09 (promote) |
+| [project-boundary.rule.md](rules/project-boundary.rule.md) | accepted 2026-11-09 (promote) |
 
 ## plans/
 
@@ -42,5 +46,5 @@ dated note naming its replacement rather than deleting it.
 
 ## Proposing another
 
-Candidates wait in `ARCHCORE_PROMOTION_CANDIDATES.md` at the pack root until the operator promotes or rejects each one; `/skill-ai-it refresh`
+Candidates wait in `ARCHCORE_PROMOTION_CANDIDATES.md` at the pack root (absent while the queue is empty) until the operator promotes or rejects each one; `/skill-ai-it refresh`
 re-scans and updates it. Check the table above first so a rejected area is not re-proposed.

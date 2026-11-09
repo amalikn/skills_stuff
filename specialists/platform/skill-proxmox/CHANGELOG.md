@@ -14,6 +14,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-09 skill-ai-it promote (operator: "promote and accept all"): candidates surfaced from AGENTS.md, SKILL.md and the references and accepted: `.archcore/adr/bpg-provider-not-telmate.adr.md`, `.archcore/rules/live-node-writes.rule.md`, `.archcore/rules/project-boundary.rule.md`; contract-enforced and upstream rules left unpromoted (index table).
+- 2026-11-09 `.archcore/rules/dated-latest-claims.rule.md` accepted (operator, promoted from the candidates file); `ARCHCORE_PROMOTION_CANDIDATES.md` removed (queue empty) and dropped from the Repomix include.
 - 2026-11-09 AGENTS.md trimmed (operator: "Trim AGENTS.md · 3k tokens per request"): 148 to 70 lines, 12.6 to 5.7 KB; scope, search order, version and memory
   rules linked to SKILL.md and `.archcore/` instead of restated; the generic governance-checks block replaced by one paragraph and a link to the skill-ai-it
   pattern; front matter repaired (the adoption pass had cut Summary mid-sentence). AGENTS.md was hidden by skills_stuff's `.git/info/exclude` until the <!-- path:example -->

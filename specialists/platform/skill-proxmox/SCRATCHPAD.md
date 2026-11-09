@@ -38,7 +38,7 @@ done; `.archcore/` accepted; AGENTS.md trimmed and tracked in Git.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill), scenarios P-S01 to P-S20.
 - [ ] Re-verify the cookbook when the lab node moves to 9.2 (pending in its update queue).
 - [ ] Live probe on a three-node lab cluster for the 2026-11-09 doc-only sections (Ceph, migration, mappings, notifications, node removal): accepted plan step 3.
-- [ ] Proposed, not decided: archcore rule `dated-latest-claims` ([ARCHCORE_PROMOTION_CANDIDATES.md](ARCHCORE_PROMOTION_CANDIDATES.md)); promote or reject.
+- [x] Archcore rule `dated-latest-claims` promoted and accepted (operator, 2026-11-09).
 - [ ] Still baselined: AI_NAVIGATION.md 9 lines over its 150-line budget (the routing table is a checked rule); `.ai-context/` (generated, no header).
 
 ---
