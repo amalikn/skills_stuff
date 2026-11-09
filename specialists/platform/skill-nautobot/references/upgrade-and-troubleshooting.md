@@ -83,6 +83,9 @@ plan. Rebase/retire a core patch only if the project actually has one; supported
 > Keep the app-wide grant but subtract the template-authoring models as data, and give the one model a writer truly needs (Secrets, for vault references)
 > to that user alone in a separate permission, so the always-running token holds no template right and the residual one sits on a single token until
 > the upgrade. Check each excluded model against the writers' code first: here only admin-run catalog phases created Job Buttons and Computed Fields.
+> Removing a model from a grant removes **view** too: check every reader as well (REST, `include=computed_fields`, GraphQL, Jobs run as the account); a
+> REST read under a narrowed token returns an empty list or 403, not an error the caller notices. Here every reader ran as admin, through the ORM shell, or
+> as the importer that kept Secrets.
 >
 > ```python
 > def writer_object_types(content_types, apps, excluded):

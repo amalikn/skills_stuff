@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261109 `references/upgrade-and-troubleshooting.md` narrowing entry: removing a model from a grant removes view too; check readers (REST, include=computed_fields, GraphQL, Jobs), not only writers
 - 20261109 Learned 2026-11-09 (second) in `references/upgrade-and-troubleshooting.md`: narrowing a writer grant by subtracting template-authoring models and a per-user grant for the one needed (Secrets); not yet applied live
 - 20261109 scripts/nautobot_template_exposure.py (tests in tests/test_helpers.py `TemplateExposure`): read-only advisory exposure check, stdlib `--query` snippet plus `--report` (who can author templates, constrained cable view, templates naming user/request); smoke-run on one 3.2.3 deployment, where an app-wide `extras` grant gave the machine-writer group Custom Link, Job Button and Secret authoring. Learned 2026-11-09 appended to references/upgrade-and-troubleshooting.md
 - 20261109 Learned 2026-11-09 in `references/upgrade-and-troubleshooting.md` (new section Security advisories against the pinned version): 3.2.3 is inside GHSA-2v7j-x3g6-qj94, GHSA-8f2w-54mq-66gg (<3.2.5) and GHSA-m6h7-g92h-9p44 (<3.2.6); triage and token-rotation guidance (from unified-network-controller's audit follow-up)
