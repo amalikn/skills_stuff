@@ -79,7 +79,7 @@ writes. Pass 3: 2 sub-agents.
 ## Incidents
 
 - Company clones un-excluded before reading `_ansible/AGENTS.md`; restored from backups, nothing committed there.
-- skills_stuff exclude file restored from the 11:59 backup at 12:00 by something else (likely policy_guard's old remediation text); guard inverted.
+- skills_stuff exclude file restored at 12:00 by the skill-vagrant session, to pass the old commit guard for its 80effd6 (confirmed by that session; recorded in its CHANGELOG); guard inverted.
 - OPA hook refused a scratch recursive delete and, later, a heredoc whose prose named one; auto mode refused `git push` and one read-only listing.
 - First memory-recall agent used a stale copy (above).
 - A version regex missed a sentence-final token; caught by its own fail test before release (skill-coder Learned 2026-11-09).
@@ -97,3 +97,4 @@ writes. Pass 3: 2 sub-agents.
 No drawio flow map cites the code this session changed: all 96 flow and map YAML files under `_ai` and `_ansible` were searched for policy_guard, repo_knowledge_capture, check_governance.py,
 skill-proxmox, repo-local-guidance, `.git/info/exclude` and MEMORY.md; the only hits were context maps and `governance/sync-map.yaml`, whose policy_guard entry is still accurate. No flow update
 needed.
+- skill-ai-it AGENTS.md is past its review date now that it is tracked (Last reviewed 2026-05-22; reported by the skill-vagrant session): needs a real review, not a date change.
