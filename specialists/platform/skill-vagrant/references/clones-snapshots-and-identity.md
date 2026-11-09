@@ -1,3 +1,14 @@
+---
+Title: Clones, snapshots and identity
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Vagrant linked clones vs prlctl lab clones, what a copy shares (machine-id, host keys), how to keep a clone off the source's network or give it a new identity, snapshots.
+---
+
 # Clones, snapshots and identity
 
 A copy of a VM is cheap under Parallels and dangerous when it keeps the original's identity. This file covers the two kinds of linked clone a lab meets, what a copy shares with its source, and
@@ -19,6 +30,13 @@ snapshots. Captures named `[file]` are in [documents/research-sources-20261107/]
    is registered, cloned and unregistered during `up`, so `prlctl list -i` shows no `Parent VM` for these machines ([vp-issue-522.md] log; observed 2026-11-07).
 2. **A lab clone of a lab VM.** `prlctl clone <vm> --name <new> --linked` makes a linked clone of an existing VM (optionally from a snapshot, `-i <snapid>`); `--regenerate-src-uuid` regenerates the
    source ID and the SMBIOS product ID (VERIFIED_PRIMARY, CLI reference p.17). Its `Parent VM` names the source. The source must stay: the clone's disk holds only its changes.
+
+```text
+ box image  (~/.vagrant.d/boxes/<name>/<version>/parallels)     `vagrant box remove`/`prune` breaks everything below
+   └─ snapshot ── linked clone: Vagrant machine "lab-a"          kind 1; no Parent VM shown (image unregistered after up)
+                    └─ prlctl clone --linked: "lab-a-copy"       kind 2; Parent VM = lab-a, so lab-a must stay
+                         └─ snapshots of lab-a-copy              rollback inside a session, never a backup
+```
 
 ## Cloning a lab VM with prlctl
 
@@ -58,6 +76,16 @@ A new MAC alone does not help: the DUID does not use the MAC unless `DUIDType=li
 SSH host keys (so `known_hosts` cannot tell the copies apart), the Vagrant insecure-key replacement in `~/.ssh/authorized_keys`, any service identity under `/etc` or `/var/lib` (a device key, a
 registration token), and the hostname. A copy used for a different test renames itself and regenerates what the test depends on, or stays off every network the source uses.
 
+| What                                    | Copied by a clone                                     | Effect when two copies meet          | What to do                                             |
+| --------------------------------------- | ----------------------------------------------------- | ------------------------------------ | ------------------------------------------------------ |
+| `/etc/machine-id`                       | yes                                                   | one DHCP lease for both              | no shared network, or empty it and reboot (above)      |
+| MAC address                             | yes, unless `--mac auto`                              | none on its own (DUID wins)          | `prlctl set <clone> --device-set netN --mac auto`      |
+| SSH host keys                           | yes                                                   | `known_hosts` cannot tell them apart | regenerate before the clone meets the source's network |
+| `~/.ssh/authorized_keys` (Vagrant key)  | yes                                                   | the same key logs in to both         | expected; the guard, not the key, tells them apart     |
+| hostname                                | yes                                                   | identical prompts and logs           | rename it in the clone                                 |
+| service identities (`/etc`, `/var/lib`) | yes                                                   | duplicate registrations              | regenerate what the test depends on                    |
+| Parallels name and UUID                 | no (new name; `--regenerate-src-uuid` for the source) | the only reliable difference         | key guards and drivers on it                           |
+
 ## Snapshots
 
 - `vagrant snapshot save|restore|list|delete <machine> <name>`, or `push`/`pop` as a stack; do not mix `push`/`pop` with `save`/`restore`; not every provider supports snapshots (VERIFIED_PRIMARY,
@@ -85,4 +113,18 @@ On 2026-11-06 the clone still received the spike VM's address on the shared netw
 clone's shared adapter and added a guard to its driver ([lab-safety-and-guards.md](lab-safety-and-guards.md#refuse-the-wrong-vm)).
 
 > **Learned 2026-11-07** · copy-on-write root · VERIFIED_PRIMARY · Source: smc-resiliency docs/pi/pi-spike-sm-root-writes-20261107_1602.md · Falsifier: a runtime install on a dm-snapshot root that survives a reboot
-> On a lab clone whose root is a RAM copy-on-write, anything installed at run time (a fixed watcher script) is gone after the reboot; reinstall after each boot or install into the origin. `dmsetup status` of a snapshot counts 512-byte sectors.
+> On a lab clone whose root is a RAM copy-on-write, anything installed at run time (a fixed watcher script) is gone after the reboot; reinstall after each boot or install into the origin. `dmsetup
+> status` of a snapshot counts 512-byte sectors.
+
+> **Learned 2026-11-09** · Parallels 27 linked clone, Ubuntu 24.04 arm64 · VERIFIED_PRIMARY (lab run) · Source: skill-vagrant scratch lab (skills-runtime/skill-vagrant/scratch-lab, bento/ubuntu-24.04 202510.26.0, Parallels 27, vagrant-parallels 2.4.10), 2026-11-09 · Falsifier: a clone whose emptied machine-id comes back unchanged after a reboot, or keeps the source's lease
+> Reproduced and settled on throwaway VMs. A `prlctl clone --linked` of a stopped Vagrant machine, given a new MAC with `--mac auto`, booted with
+> the source's machine-id and the **same DHCP address** on the Shared network. In the clone, `truncate -s 0 /etc/machine-id` and a reboot: systemd
+> logged "Installed transient /etc/machine-id file" and `systemd-machine-id-commit.service` wrote a new ID, and the clone took a **new** lease.
+> `/var/lib/dbus/machine-id` is a link to `/etc/machine-id` in this box, so nothing else needs clearing. Two fresh machines from bento/ubuntu-24.04
+> 202510.26.0 get different machine-ids (the old bento fixed-ID regression is not in this version). Choice 2 under "Machine-id" is now tested.
+>
+> ```bash
+> # scratchpad clone_identity_test.sh (one-off), the reset step
+> timeout 30 prlctl exec "$B" "truncate -s 0 /etc/machine-id"
+> timeout 120 prlctl restart "$B"     # then wait for Tools; machine-id and eth0 address both differ from the source
+> ```

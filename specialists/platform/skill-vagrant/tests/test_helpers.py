@@ -56,6 +56,8 @@ VMS = [
     "Hardware": {"net0": {"type": "shared", "state": "disconnected"}},
   },
 ]
+VBOX_VMS = '"vbox-lab" {11111111-2222-3333-4444-555555555555}\n"other" {aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee}\nnoise line\n'
+VBOX_RUNNING = '"vbox-lab" {11111111-2222-3333-4444-555555555555}\n'
 LAB_VAGRANTFILE = """Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202510.26.0"
@@ -74,7 +76,7 @@ end
 
 
 def fake_runner(home: str, fail: str | None = None):
-  """A command runner that answers the four commands the inventory runs.
+  """A command runner that answers the commands the inventory runs (vagrant, prlctl, VBoxManage, prlsrvctl).
 
   Args:
     home: the machine-home to report.
@@ -93,6 +95,10 @@ def fake_runner(home: str, fail: str | None = None):
       return BOX_LIST
     if argv[:2] == ["prlctl", "list"]:
       return json.dumps(VMS)
+    if argv[:3] == ["VBoxManage", "list", "vms"]:
+      return VBOX_VMS
+    if argv[:3] == ["VBoxManage", "list", "runningvms"]:
+      return VBOX_RUNNING
     if argv[0] == "prlsrvctl":
       return json.dumps({"edition": "pro", "status": "ACTIVE", "serial": "SECRET-SHOULD-NOT-PRINT"})
     raise AssertionError(argv)
@@ -142,7 +148,7 @@ class Inventory(unittest.TestCase):
     self.assertEqual(inv["machines"][0]["vm_uuids"], {"lab-a": "u-a"})
     self.assertEqual(inv["pins"], [{"box": "bento/ubuntu-24.04", "pin": "202510.26.0", "installed": True, "latest": "202601.01.0"}])
     text = "\n".join(inventory.report(inv))
-    self.assertIn("lab-a->lab-a", text)
+    self.assertIn("lab-a (parallels)->lab-a", text)
     self.assertIn("lab-a-clone | running | lab-a", text)
     self.assertNotIn("SECRET", text + json.dumps(inv))
 
@@ -155,8 +161,32 @@ class Inventory(unittest.TestCase):
   def test_failed_required_command_exits_1(self):
     err = io.StringIO()
     with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
-      self.assertEqual(inventory.main(["--no-edition"], run=fake_runner(self.home, fail="prlctl")), 1)
-    self.assertIn("prlctl failed", err.getvalue())
+      self.assertEqual(inventory.main(["--no-edition"], run=fake_runner(self.home, fail="vagrant")), 1)
+    self.assertIn("vagrant failed", err.getvalue())
+
+  def test_missing_hypervisor_cli_is_unavailable_not_an_error(self):
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+      self.assertEqual(inventory.main(["--no-edition"], run=fake_runner(self.home, fail="prlctl")), 0)
+    self.assertIn("parallels unavailable: prlctl failed", out.getvalue())
+    self.assertIn("vbox-lab | running", out.getvalue())
+
+  def test_vbox_listing_parses_names_uuids_and_running(self):
+    vms = inventory.parse_vbox_vms(VBOX_VMS, VBOX_RUNNING)
+    self.assertEqual([(v["name"], v["state"]) for v in vms], [("vbox-lab", "running"), ("other", "not running")])
+
+  def test_machine_ids_for_virtualbox_and_qemu_providers(self):
+    for provider, vm_id in (("virtualbox", "11111111-2222-3333-4444-555555555555"), ("qemu", "q-123")):
+      idf = Path(self.home) / f".vagrant/machines/lab-{provider}/{provider}/id"
+      idf.parent.mkdir(parents=True)
+      idf.write_text(vm_id)
+    (Path(self.home) / ".vagrant/machines/lab-x/docker/id").parent.mkdir(parents=True)
+    (Path(self.home) / ".vagrant/machines/lab-x/docker/id").write_text("ignored")
+    inv = inventory.collect(fake_runner(self.home), want_latest=False, want_edition=False)
+    self.assertEqual(inv["machines"][0]["vm_providers"], {"lab-a": "parallels", "lab-qemu": "qemu", "lab-virtualbox": "virtualbox"})
+    text = "\n".join(inventory.report(inv))
+    self.assertIn("lab-virtualbox (virtualbox)->vbox-lab", text)
+    self.assertIn("lab-qemu (qemu)->qemu id q-123", text)
 
   def test_edition_unreadable_is_unknown(self):
     self.assertEqual(inventory.edition(fake_runner(self.home, fail="prlsrvctl")), "unknown")

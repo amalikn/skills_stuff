@@ -4,27 +4,28 @@ status: accepted
 tags: [index]
 ---
 
-Durable index of everything in `.archcore/` for skill-vagrant. Written at creation on 2026-11-07. Every document below is `proposed` until the operator accepts it; supersede an accepted
+Durable index of everything in `.archcore/` for skill-vagrant. Written at creation on 2026-11-07; reviewed 2026-11-09 (scope widened to every provider, plan status, new rule). All documents below were accepted by the operator on 2026-11-09; supersede an accepted
 document in place with a dated note naming its replacement rather than deleting it.
 
 ## adr/
 
 | Document | Status |
 |---|---|
-| [independent-platform-pack.adr.md](adr/independent-platform-pack.adr.md) | proposed |
+| [independent-platform-pack.adr.md](adr/independent-platform-pack.adr.md) | accepted |
 
 ## rules/
 
 | Document | Status |
 |---|---|
-| [lab-writes-stay-in-the-project.rule.md](rules/lab-writes-stay-in-the-project.rule.md) | proposed |
-| [memory-channel-name.rule.md](rules/memory-channel-name.rule.md) | proposed |
+| [lab-writes-stay-in-the-project.rule.md](rules/lab-writes-stay-in-the-project.rule.md) | accepted |
+| [memory-channel-name.rule.md](rules/memory-channel-name.rule.md) | accepted |
+| [name-the-provider.rule.md](rules/name-the-provider.rule.md) | accepted |
 
 ## plans/
 
 | Document | Status |
 |---|---|
-| [keep-the-pinned-box-before-registry-eol.plan.md](plans/keep-the-pinned-box-before-registry-eol.plan.md) | proposed |
+| [keep-the-pinned-box-before-registry-eol.plan.md](plans/keep-the-pinned-box-before-registry-eol.plan.md) | accepted |
 
 ## Never promoted, and why
 

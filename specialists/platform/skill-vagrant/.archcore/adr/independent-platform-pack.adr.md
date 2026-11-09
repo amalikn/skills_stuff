@@ -1,14 +1,15 @@
 ---
 title: Independent Vagrant platform pack
 type: adr
-status: proposed
-tags: [pack-boundary, vagrant]
+status: accepted
+tags: [pack-boundary, provider]
 created: 2026-11-07
+Last reviewed: 2026-11-09
 ---
 
 # ADR: Independent Vagrant platform pack
 
-Status: proposed (2026-11-07), awaiting the operator.
+Status: accepted 2026-11-09 by the operator (proposed 2026-11-07).
 
 ## Context
 
@@ -27,3 +28,11 @@ operator asked for "skill-proxmox and skill-vagrant based on the learnings", bui
 - Every engagement owes a write-back here (`references/evolution-and-write-back.md`).
 
 Confidence: high on the operator's request; boundaries proposed by the building agent.
+
+## Amendment 2026-11-09: every provider the operator uses
+
+Operator, 2026-11-09: "Vagrant is not only limited to parallels but I also use qemu and virtualbox". The pack covers Vagrant labs on the Mac with
+any of the installed providers: Parallels (the default and the deepest coverage), VirtualBox, vagrant-qemu, and vagrant-libvirt driving a remote
+Linux host. Provider-specific knowledge lives in `references/providers-and-choice.md`, `references/virtualbox.md` and
+`references/qemu-and-libvirt.md`; the rest of the references stay provider-neutral where they can and say so where they are Parallels-only.
+The boundary with skill-proxmox is unchanged: a Proxmox node is not a vagrant-libvirt target here.

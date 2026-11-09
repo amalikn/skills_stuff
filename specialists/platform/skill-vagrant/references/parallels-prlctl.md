@@ -1,3 +1,14 @@
+---
+Title: Parallels prlctl
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: prlctl and prlsrvctl for a lab: editions with a CLI, JSON inventory, exec without the network and its quoting, exec after a reset, console capture, power commands, Parallels Tools.
+---
+
 # Parallels prlctl
 
 `prlctl` manages VMs and `prlsrvctl` manages Parallels Desktop itself. Vagrant's provider drives both; a lab uses them directly to reach a guest without the network, to see its console, and to
@@ -32,6 +43,14 @@ timeout 30 prlctl list -a -i -j     # one JSON array: Name, ID, State, Parent VM
 unregisters the box image after cloning: "Registering VM image from the base box ... Creating new virtual machine as a linked clone of the box image... Unregistering the box VM image",
 [vp-issue-522.md] log), `GuestTools.state` (`installed`, `outdated`, `not_installed`), and each adapter's `type` and `state` (`disconnected` when unplugged). `vagrant_lab_inventory.py` reads exactly
 this.
+
+Three ways into a guest, by what each needs:
+
+| Path                       | Guest network | Parallels Tools | Runs as                          | Use when                                        |
+| -------------------------- | ------------- | --------------- | -------------------------------- | ----------------------------------------------- |
+| `vagrant ssh <m> -c '...'` | yes (`eth0`)  | no              | the `vagrant` user, `sudo`       | the normal path                                 |
+| `prlctl exec <vm> "..."`   | no            | yes             | root on a Linux guest (observed) | a test cut the network; file uploads over stdin |
+| `prlctl capture <vm>`      | no            | no              | nothing runs (a screen PNG)      | nothing else answers                            |
 
 ## exec: a command without the network
 
@@ -96,11 +115,10 @@ reference p.10 and [parallels-cli-utility.md]). Changing a Parallels network cha
 > After a reset or reboot Parallels Tools take tens of seconds to accept sessions: wait with `until timeout 8 prlctl exec "$VM" true; do sleep 3; done`.
 
 > **Learned 2026-11-08** · Parallels Desktop on macOS, Ubuntu 24.04 arm64 guest · VERIFIED_PRIMARY · Source: smc-resiliency `lab/adapters/transports.py` `PrlctlTransport`, commit 065b9a8f · Falsifier: `prlctl exec <vm> bash -c 'echo a b'` printing `a b` with the command given as separate arguments
-> `prlctl exec` joins its arguments into one command line, so `prlctl exec vm bash -c "cmd with words"` passed as separate argv entries runs
-> `bash -c cmd`: the rest became bash's positional arguments and a payload ran as an empty shell, silently, exit 0. Pass one quoted string.
-> Tools refuse sessions now and then, most right after a boot (`PrlJob_GetRetCode: Invalid argument`, `PrlJob_GetResult: Invalid argument`,
-> exit 255): retry a few times. Files go over stdin (a long command line fails to open a session). A linked clone keeps the source's static
-> hostname and machine-id, so it is told apart by its Parallels name only:
+> `prlctl exec` joins its arguments into one command line, so `prlctl exec vm bash -c "cmd with words"` passed as separate argv entries runs `bash -c cmd`: the rest became bash's positional arguments
+> and a payload ran as an empty shell, silently, exit 0. Pass one quoted string. Tools refuse sessions now and then, most right after a boot (`PrlJob_GetRetCode: Invalid argument`, `PrlJob_GetResult:
+> Invalid argument`, exit 255): retry a few times. Files go over stdin (a long command line fails to open a session). A linked clone keeps the source's static hostname and machine-id, so it is told
+> apart by its Parallels name only:
 >
 > ```python
 > for _ in range(3):  # Tools refuses a session now and then, most right after a boot
@@ -110,6 +128,6 @@ reference p.10 and [parallels-cli-utility.md]). Changing a Parallels network cha
 >   time.sleep(3)
 > ```
 >
-> Also on such a guest, when /etc is a read-only merge: `lvextend` fails with `Cannot archive volume group metadata ... to read-only filesystem`
-> (rc 5) after printing that the size changed; `--config 'backup { archive = 0 backup = 0 }'` makes the one change.
+> Also on such a guest, when /etc is a read-only merge: `lvextend` fails with `Cannot archive volume group metadata ... to read-only filesystem` (rc 5) after printing that the size changed; `--config
+> 'backup { archive = 0 backup = 0 }'` makes the one change.
 

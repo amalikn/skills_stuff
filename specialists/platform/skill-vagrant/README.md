@@ -1,3 +1,15 @@
+---
+Title: skill-vagrant
+Category: readme
+Status: current
+Authority: canonical
+Scope: Root README.md of skill-vagrant
+Last reviewed: 2026-11-07
+Summary: "Canonical, cross-project platform pack for local lab VMs with Vagrant and the Parallels provider on macOS Apple silicon: boxes and pins, Vagrantfiles, networks, linked clones and..."
+Review by: 2026-12-09
+Budget: 200 lines, 25 KB
+---
+
 # skill-vagrant
 
 Canonical, cross-project platform pack for local lab VMs with Vagrant and the Parallels provider on macOS Apple silicon: boxes and pins, Vagrantfiles, networks, linked clones and machine-id, prlctl,

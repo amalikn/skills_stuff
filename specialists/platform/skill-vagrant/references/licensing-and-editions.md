@@ -1,3 +1,14 @@
+---
+Title: Licensing and editions
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Vagrant licence by version (MIT, BUSL 1.1 for 2.4.0 to 2.4.9, MIT on main since 2026-11-02), what BUSL allowed, the registry vs the CLI, and the Parallels editions that have a CLI.
+---
+
 # Licensing and editions
 
 What licence the Vagrant you run is under, what that allows, and which Parallels Desktop edition the lab needs. This is a technical summary of the primary texts, not legal advice; a commercial
@@ -45,7 +56,11 @@ The HCP Vagrant Box Registry (where `bento/...` boxes are downloaded from) is a 
 
 ## vagrant-parallels
 
-The provider plugin is open source under the MIT licence (VERIFIED_PRIMARY, [vp-readme-github.md]). Latest release v2.4.10 on 2026-10-28; the lab Mac runs 2.4.9 (observed 2026-11-07).
+The provider plugin is open source under the MIT licence (VERIFIED_PRIMARY, [vp-readme-github.md]). Latest release v2.4.10 on 2026-10-28; the lab Mac ran 2.4.9 (observed 2026-11-07) and runs 2.4.10 since 2026-11-09 (`vagrant plugin update`, operator).
+
+> **Learned 2026-11-09** · Vagrant releases · VERIFIED_PRIMARY · Source: `gh release list -R hashicorp/vagrant` on 2026-11-09 · Falsifier: a Vagrant release tag after v2.4.9 dated on or before 2026-11-09
+> On 2026-11-09 there is still no Vagrant release after v2.4.9. The newest entry is the pre-release `2.4.10.dev+000834-2757db88` (2026-06-01), which is older than the MIT revert on `main`
+> (2026-11-02). Every installable release is therefore still BUSL 1.1. Check the LICENSE file at the next tag before calling a release MIT.
 
 ## Parallels Desktop editions
 

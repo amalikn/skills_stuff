@@ -1,14 +1,15 @@
 ---
 title: Memory channel is exactly vagrant
 type: rule
-status: proposed
+status: accepted
 tags: [memory]
 created: 2026-11-07
+Last reviewed: 2026-11-09
 ---
 
 # Rule: Memory channel is exactly `vagrant`
 
-Status: proposed (2026-11-07), awaiting the operator; mirrors skill-nautobot's `nautobot` rule.
+Status: accepted 2026-11-09 by the operator (proposed 2026-11-07).
 
 ## Rule
 

@@ -92,7 +92,7 @@ Everything below `## Task Inventory` lives outside the managed block and is main
 
 | Script | Purpose | Inputs | Outputs | Safety | Idempotent | When to use |
 |---|---|---|---|---|---|---|
-| `scripts/vagrant_lab_inventory.py` | Read-only inventory engine: parses `vagrant global-status --machine-readable`, `vagrant box list --machine-readable` and `prlctl list -a -i -j`, joins each environment's `.vagrant/machines/*/parallels/id` to its VM, reads box pins from the Vagrantfile, reads only `edition`/`status` from `prlsrvctl info --license --json`; the command runner is injected (faked in tests). Every call has a deadline (60 s; registry 20 s) | none (CLI flags above) | Tables or JSON | `safe` · `external-network` (`--latest`) | Yes | Via `just inventory-lab`, or import `collect()` |
+| `scripts/vagrant_lab_inventory.py` | Read-only inventory engine: parses `vagrant global-status --machine-readable`, `vagrant box list --machine-readable` `prlctl list -a -i -j` and `VBoxManage list vms`/`runningvms` (a missing hypervisor CLI is reported unavailable, not an error), joins each environment's `.vagrant/machines/*/<provider>/id` (parallels, virtualbox, qemu, libvirt) to its VM, reads box pins from the Vagrantfile, reads only `edition`/`status` from `prlsrvctl info --license --json`; the command runner is injected (faked in tests). Every call has a deadline (60 s; registry 20 s) | none (CLI flags above) | Tables or JSON | `safe` · `external-network` (`--latest`) | Yes | Via `just inventory-lab`, or import `collect()` |
 | `scripts/vagrantfile_lint.py` | Text lint of Vagrantfiles: rules box-unpinned, box-range, box-computed, provider-missing, vm-name-missing, customize-device, secret; evaluates no Ruby | Vagrantfile paths | Findings | `safe` | Yes | Via `just lint-vagrantfile`, or import `lint_text()` |
 | `scripts/vagrant_copy_check.py` | Copy check: a project copy of a canonical Vagrantfile is present and byte-identical (sha256 prefixes on a mismatch); a missing canonical is skipped unless `--require-canonical`. Generic form of smc-resiliency `check_vagrant_copies` | `<copy>=<canonical>` pairs | One line per pair | `safe` | Yes | Via `just copy-check`, or import `compare()` |
 | `scripts/check_governance.py` | Governance coherence checker: path references resolve, catalogs complete in both directions, named recipes exist, no implicit interpreter | Governance surfaces, `references/`, `scripts/`, `justfile` | Console output, exit status | `safe` | Yes | Via `just check` or `just test` |
@@ -117,3 +117,16 @@ Everything below `## Task Inventory` lives outside the managed block and is main
   until that is done.
 - Helpers are generic Vagrant and Parallels rules. VM names, lab addresses and stages stay in the engaging project.
 - No helper starts, stops, resets, clones or changes a VM. A future helper that does gets a plan by default, `--apply`, a fixed lab VM name and a deadline on every call ([lab-safety-and-guards.md](../references/lab-safety-and-guards.md)).
+
+## Governance recipes (skill-ai-it)
+
+- `just govern`: governance up to the current skill-ai-it standard (adoption, record budgets with `just check`, role findings); content fixes are `/skill-ai-it refresh`. `modifies-files`.
+- `just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.
+- `just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.
+- `just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.
+- `just history-show <stamp>`: print one rotated entry. Read-only; `safe`.
+- `just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries and done ROADMAP items to docs/history, verified. Plan by default; `modifies-files`.
+- `just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.
+- `just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.
+- `just outline <file.md>`: each heading with its line range, to read one section instead of the file. Read-only; `safe`.
+- `just section <file.md> "<title>"`: print one section (exact title, `Parent > Child`, `#anchor`, `~text`). Read-only; `safe`.

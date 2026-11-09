@@ -44,6 +44,7 @@ The content is organized as follows:
   rules/
     lab-writes-stay-in-the-project.rule.md
     memory-channel-name.rule.md
+    name-the-provider.rule.md
   index.guide.md
 references/
   boxes-and-pinning.md
@@ -54,12 +55,17 @@ references/
   networking-and-synced-folders.md
   operations-cookbook.md
   parallels-prlctl.md
+  providers-and-choice.md
+  qemu-and-libvirt.md
   tool-choice-and-lab-symmetry.md
   upgrade-and-troubleshooting.md
   vagrantfile-and-provisioning.md
+  virtualbox.md
 scripts/
   check_governance.py
+  doc-freshness-baseline.json
   README.md
+  role-check-baseline.json
   vagrant_copy_check.py
   vagrant_lab_inventory.py
   vagrantfile_lint.py
@@ -88,8 +94,9 @@ sources.yaml
 title: Independent Vagrant platform pack
 type: adr
 status: proposed
-tags: [pack-boundary, vagrant]
+tags: [pack-boundary, provider]
 created: 2026-11-07
+Last reviewed: 2026-11-09
 ---
 
 # ADR: Independent Vagrant platform pack
@@ -113,6 +120,14 @@ operator asked for "skill-proxmox and skill-vagrant based on the learnings", bui
 - Every engagement owes a write-back here (`references/evolution-and-write-back.md`).
 
 Confidence: high on the operator's request; boundaries proposed by the building agent.
+
+## Amendment 2026-11-09: every provider the operator uses
+
+Operator, 2026-11-09: "Vagrant is not only limited to parallels but I also use qemu and virtualbox". The pack covers Vagrant labs on the Mac with
+any of the installed providers: Parallels (the default and the deepest coverage), VirtualBox, vagrant-qemu, and vagrant-libvirt driving a remote
+Linux host. Provider-specific knowledge lives in `references/providers-and-choice.md`, `references/virtualbox.md` and
+`references/qemu-and-libvirt.md`; the rest of the references stay provider-neutral where they can and say so where they are Parallels-only.
+The boundary with skill-proxmox is unchanged: a Proxmox node is not a vagrant-libvirt target here.
 ````
 
 ## File: .archcore/plans/keep-the-pinned-box-before-registry-eol.plan.md
@@ -121,8 +136,9 @@ Confidence: high on the operator's request; boundaries proposed by the building 
 title: Keep the pinned box before the box registry closes
 type: plan
 status: proposed
-tags: [boxes, registry]
+tags: [boxes, registry, provider]
 created: 2026-11-07
+Last reviewed: 2026-11-09
 ---
 
 # Plan: Keep the pinned box before the box registry closes
@@ -137,7 +153,9 @@ cannot be rebuilt from the pin after that unless the box is kept or rehosted.
 ## Steps
 
 1. Operator chooses a storage place outside any git repo (the box is about 3.5 GB).
-2. `vagrant box repackage bento/ubuntu-24.04 parallels 202510.26.0` in that place; record the file's sha256 beside it.
+2. `vagrant box repackage bento/ubuntu-24.04 parallels 202510.26.0` and `vagrant box repackage bento/ubuntu-24.04 virtualbox 202510.26.0` in
+   that place (both are installed, observed 2026-11-09); record each file's sha256 beside it. Other boxes a lab still rebuilds from (see
+   `vagrant box list`) follow the same step.
 3. Record the location and hash in the engaging project (smc-resiliency) and a Learned entry in `references/boxes-and-pinning.md`.
 4. Test the restore on a scratch name (`vagrant box add --name lab/ubuntu-24.04-202510.26.0 <file>`) without touching the running lab.
 5. Watch for where bento publishes after 2026-12-31 and update the reference.
@@ -145,6 +163,12 @@ cannot be rebuilt from the pin after that unless the box is kept or rehosted.
 ## Done when
 
 The file, its hash and a tested restore command are recorded; no running VM was touched.
+
+## Status 2026-11-09
+
+52 days to end of operations. bento has not announced a new home: RFC chef/bento#1699 (GitLab package registry plus a `metadata.json` on GitLab
+Pages) is still open (`documents/research-sources-20261109/bento-issue-1699.md`). The VirtualBox build of the same box version is installed too,
+so step 2 now covers two providers. Still waiting on the operator's storage location (step 1).
 ````
 
 ## File: .archcore/rules/lab-writes-stay-in-the-project.rule.md
@@ -153,8 +177,9 @@ The file, its hash and a tested restore command are recorded; no running VM was 
 title: VM writes stay in the engaging project
 type: rule
 status: proposed
-tags: [safety]
+tags: [safety, provider]
 created: 2026-11-07
+Last reviewed: 2026-11-09
 ---
 
 # Rule: VM writes stay in the engaging project
@@ -163,7 +188,8 @@ Status: proposed (2026-11-07), awaiting the operator.
 
 ## Rule
 
-This pack's helpers and its own sessions run read-only `vagrant` and `prlctl` commands only (status, list, box list, global-status, capture). Starting, stopping, resetting, cloning,
+This pack's helpers and its own sessions run read-only commands only: `vagrant` (status, box list, global-status, plugin list, serial-config),
+`prlctl` (list, capture), `VBoxManage` (list, showvminfo, `controlvm ... screenshotpng`, list extpacks) and `virsh` (list, dominfo). Starting, stopping, resetting, cloning,
 snapshotting, reprovisioning or destroying a VM is done by the engaging project's tooling, behind its plan/`--apply` gate, with a fixed lab VM name and a deadline on every call.
 
 ## Why
@@ -174,6 +200,8 @@ pack said: "Do not start, stop, reset or change any VM; read-only vagrant/prlctl
 ## Enforcement
 
 `tests/test_package_contract.py` requires a timeout on every subprocess call in `scripts/`; `scripts/README.md` labels each helper; a helper that writes would need a new rule here first.
+
+Amended 2026-11-09: the read-only list now names every provider's CLI (scope widened in the ADR the same day).
 ````
 
 ## File: .archcore/rules/memory-channel-name.rule.md
@@ -184,6 +212,7 @@ type: rule
 status: proposed
 tags: [memory]
 created: 2026-11-07
+Last reviewed: 2026-11-09
 ---
 
 # Rule: Memory channel is exactly `vagrant`
@@ -203,6 +232,38 @@ One channel per platform pack makes recall for Vagrant work one query across pro
 None automated. memory-keeper truncates channels to 20 characters and normalises underscores to hyphens; `vagrant` is unaffected by either.
 ````
 
+## File: .archcore/rules/name-the-provider.rule.md
+````markdown
+---
+title: A lab names its provider
+type: rule
+status: proposed
+tags: [provider, safety]
+created: 2026-11-09
+Last reviewed: 2026-11-09
+---
+
+# Rule: A lab names its provider
+
+Status: proposed (2026-11-09), awaiting the operator.
+
+## Rule
+
+A lab's Vagrantfile has exactly one `config.vm.provider` block for the provider it runs on, or its driver passes `--provider=<name>` on every
+`vagrant up`. A Vagrantfile meant for several providers puts its preferred provider's block first and says so in its header.
+
+## Why
+
+Four providers are installed on the lab Mac (2026-11-09). Without `--provider`, Vagrant takes `VAGRANT_DEFAULT_PROVIDER`, then the first usable
+provider block in file order, then plugin priority (`references/providers-and-choice.md`, claim V-C27), so the same file can come up on a
+different hypervisor on another Mac or after a plugin install, with other networks, other guest agents and another VM name space.
+
+## Enforcement
+
+`vagrantfile_lint.py --provider <name>` fails a file with no block for that provider. Not enforced: a file with blocks for several providers in an
+unintended order (candidate check).
+````
+
 ## File: .archcore/index.guide.md
 ````markdown
 ---
@@ -211,7 +272,7 @@ status: accepted
 tags: [index]
 ---
 
-Durable index of everything in `.archcore/` for skill-vagrant. Written at creation on 2026-11-07. Every document below is `proposed` until the operator accepts it; supersede an accepted
+Durable index of everything in `.archcore/` for skill-vagrant. Written at creation on 2026-11-07; reviewed 2026-11-09 (scope widened to every provider, plan status, new rule). Every document below is `proposed` until the operator accepts it; supersede an accepted
 document in place with a dated note naming its replacement rather than deleting it.
 
 ## adr/
@@ -226,6 +287,7 @@ document in place with a dated note naming its replacement rather than deleting 
 |---|---|
 | [lab-writes-stay-in-the-project.rule.md](rules/lab-writes-stay-in-the-project.rule.md) | proposed |
 | [memory-channel-name.rule.md](rules/memory-channel-name.rule.md) | proposed |
+| [name-the-provider.rule.md](rules/name-the-provider.rule.md) | proposed |
 
 ## plans/
 
@@ -244,6 +306,17 @@ document in place with a dated note naming its replacement rather than deleting 
 
 ## File: references/boxes-and-pinning.md
 ````markdown
+---
+Title: Boxes and pinning
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Pin an exact box version and arm64 architecture, bento history (fixed machine-ids), the HCP Vagrant registry closing on 2026-12-31 and keeping the pinned box, safe box removal.
+---
+
 # Boxes and pinning
 
 A box is the base image a Vagrant machine is cloned from. A lab that must give the same result next month pins the exact box version, and records why that version.
@@ -285,6 +358,11 @@ architecture (VERIFIED_PRIMARY, [vagrant-machine-settings.md]). On an Apple sili
 `bento/ubuntu-24.04` publishes one version with several architectures per provider (VERIFIED_PRIMARY, registry API on 2026-11-07: version 202510.26.0 has `parallels` for `arm64` and `amd64`,
 [bento-ubuntu-2404-api.md]).
 
+> **Learned 2026-11-09** · Parallels Desktop 27 on Apple silicon · VERIFIED_PRIMARY · Source: documents/research-sources-20261109/parallels-27-x86-emulation-create-vm.md · Falsifier: a bento amd64 Parallels box that boots under emulation with Parallels Tools running and answers `vagrant ssh`
+> An `amd64` Parallels box is not a lab path on Apple silicon. Parallels' x86_64 emulation (`prlctl create <vm> -d <distro> --cpu-type x86`) supports direct installs of Windows 10 and Windows Server
+> only, and Parallels warns that Linux guests bring "many challenges, including, but not limited to, Parallels Tools for Linux failing to install". Without Tools, `prlctl exec`, graceful stop and
+> shared folders fail (see [parallels-prlctl.md](parallels-prlctl.md#parallels-tools)). Use the `arm64` build of the box; an x86 test belongs on the Proxmox lab.
+
 ## Update checks
 
 `config.vm.box_check_update` (default true) checks for a newer box on every `vagrant up` and only tells the user; `VAGRANT_BOX_UPDATE_CHECK_DISABLE` turns the check off globally and does not affect
@@ -305,28 +383,37 @@ The guest's point release and kernel come with the box: bento/ubuntu-24.04 20251
 
 ## The box registry
 
-The public box catalog is the HCP Vagrant Box Registry (formerly Vagrant Cloud) (VERIFIED_PRIMARY, [vagrant-hcp-box-registry.md], [vagrant-box-catalog.md]).
-Its v2 API answers `GET https://vagrantcloud.com/api/v2/box/<user>/<name>` with every version, its status and its providers and architectures (observed
-2026-11-07, [bento-ubuntu-2404-api.md]); `vagrant_lab_inventory.py --latest` reads it to compare a pin with the newest release. Box versions are
-`unreleased`, `active` or `revoked` ([vagrant-box-versioning-cloud.md]).
+The public box catalog is the HCP Vagrant Box Registry (formerly Vagrant Cloud) (VERIFIED_PRIMARY, [vagrant-hcp-box-registry.md], [vagrant-box-catalog.md]). Its v2 API answers `GET
+https://vagrantcloud.com/api/v2/box/<user>/<name>` with every version, its status and its providers and architectures (observed 2026-11-07, [bento-ubuntu-2404-api.md]); `vagrant_lab_inventory.py
+--latest` reads it to compare a pin with the newest release. Box versions are `unreleased`, `active` or `revoked` ([vagrant-box-versioning-cloud.md]).
 
-**The registry is being shut down.** HashiCorp's notice (VERIFIED_PRIMARY, [hcp-vagrant-eol.md], also on every Vagrant Cloud docs page): no new boxes
-from 2026-10-01, end of support and maintenance 2026-11-02, end of operations 2026-12-31, "all deployments will be decommissioned". The Vagrant CLI
-stays; boxes must be hosted by their owners. Consequences for a lab:
+**The registry is being shut down.** HashiCorp's notice (VERIFIED_PRIMARY, [hcp-vagrant-eol.md], also on every Vagrant Cloud docs page): no new boxes from 2026-10-01, end of support and maintenance
+2026-11-02, end of operations 2026-12-31, "all deployments will be decommissioned". The Vagrant CLI stays; boxes must be hosted by their owners. Consequences for a lab:
 
-- A pin such as `bento/ubuntu-24.04` `202510.26.0` resolves only while the registry (or a replacement location bento announces) serves it. Where bento
-  will publish after 2026-12-31 is UNVERIFIED (its README still points to Vagrant Cloud, [bento-readme-github.md]).
-- Keep the pinned box locally now: `vagrant box repackage NAME PROVIDER VERSION` writes the installed box to the current directory "so you can
-  redistribute it" (VERIFIED_PRIMARY, [vagrant-cli-box.md]); store it outside the repo (it is gigabytes) with its sha256, and record where.
-- Rebuild path: `vagrant box add <name> <file-or-url>` with a box metadata file for versioned self-hosting, or build the box with bento's Packer
-  templates.
+- A pin such as `bento/ubuntu-24.04` `202510.26.0` resolves only while the registry (or a replacement location bento announces) serves it. Where bento will publish after 2026-12-31 is UNVERIFIED (its
+  README still points to Vagrant Cloud, [bento-readme-github.md]).
+- Keep the pinned box locally now: `vagrant box repackage NAME PROVIDER VERSION` writes the installed box to the current directory "so you can redistribute it" (VERIFIED_PRIMARY,
+  [vagrant-cli-box.md]); store it outside the repo (it is gigabytes) with its sha256, and record where.
+- Rebuild path: `vagrant box add <name> <file-or-url>` with a box metadata file for versioned self-hosting, or build the box with bento's Packer templates.
+
+> **Learned 2026-11-09** · bento after HCP Vagrant end of life · VERIFIED_PRIMARY · Source: documents/research-sources-20261109/bento-issue-1699.md; `gh release list -R chef/bento` on 2026-11-09 (latest v5.1.0, 2026-06-04) · Falsifier: a bento README, release or closed issue that names a post-2026-12-31 box location
+> Seven weeks before the registry ends operations, bento has not announced where its boxes will live. The only proposal is RFC chef/bento#1699 (opened 2026-09-08, still open): box files in GitLab's
+> generic package registry and a `metadata.json` catalog on GitLab Pages, so `vagrant box add <metadata-url>` keeps versions working. A comment on it suggests a registry serving the Vagrant Cloud API,
+> reached by `VAGRANT_SERVER_URL` or `config.vm.box_url`, so box names and `vagrant box update` keep working; that comes from a third party and is UNVERIFIED here (`VAGRANT_SERVER_URL` is not on the
+> captured environment-variable page). Until bento decides, the only safe plan is a local copy of the pinned box (`.archcore/plans/keep-the-pinned-box-before-registry-eol.plan.md`).
+
+```text
+ 2026-10-01          2026-11-02            2026-11-09                    2026-12-31
+ no new boxes ────── end of support ────── bento: no new home yet ────── end of operations: registry boxes gone
+                                            (RFC chef/bento#1699 open)    a pin then rebuilds only from a local
+                                                                          `vagrant box repackage` copy
+```
 
 ## Removing boxes
 
-With vagrant-parallels, a new machine is a linked clone of the box image by default; "the box deletion will make all its linked clones not working"
-(VERIFIED_PRIMARY, [vp-configuration.md]). Before `vagrant box remove` or `vagrant box prune`, list which machines were created from that box version
-(`vagrant_lab_inventory.py` joins machine homes to their Vagrantfile pins). `vagrant box prune --dry-run` prints what it would remove; `--force
---keep-active-boxes` keeps boxes in use (VERIFIED_PRIMARY, [vagrant-cli-box.md]). With the registry closing, a pruned version may not be downloadable
+With vagrant-parallels, a new machine is a linked clone of the box image by default; "the box deletion will make all its linked clones not working" (VERIFIED_PRIMARY, [vp-configuration.md]). Before
+`vagrant box remove` or `vagrant box prune`, list which machines were created from that box version (`vagrant_lab_inventory.py` joins machine homes to their Vagrantfile pins). `vagrant box prune
+--dry-run` prints what it would remove; `--force --keep-active-boxes` keeps boxes in use (VERIFIED_PRIMARY, [vagrant-cli-box.md]). With the registry closing, a pruned version may not be downloadable
 again.
 
 ## Worked example
@@ -343,6 +430,17 @@ Vagrant.configure("2") do |config|
 
 ## File: references/clones-snapshots-and-identity.md
 ````markdown
+---
+Title: Clones, snapshots and identity
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Vagrant linked clones vs prlctl lab clones, what a copy shares (machine-id, host keys), how to keep a clone off the source's network or give it a new identity, snapshots.
+---
+
 # Clones, snapshots and identity
 
 A copy of a VM is cheap under Parallels and dangerous when it keeps the original's identity. This file covers the two kinds of linked clone a lab meets, what a copy shares with its source, and
@@ -364,6 +462,13 @@ snapshots. Captures named `[file]` are in [documents/research-sources-20261107/]
    is registered, cloned and unregistered during `up`, so `prlctl list -i` shows no `Parent VM` for these machines ([vp-issue-522.md] log; observed 2026-11-07).
 2. **A lab clone of a lab VM.** `prlctl clone <vm> --name <new> --linked` makes a linked clone of an existing VM (optionally from a snapshot, `-i <snapid>`); `--regenerate-src-uuid` regenerates the
    source ID and the SMBIOS product ID (VERIFIED_PRIMARY, CLI reference p.17). Its `Parent VM` names the source. The source must stay: the clone's disk holds only its changes.
+
+```text
+ box image  (~/.vagrant.d/boxes/<name>/<version>/parallels)     `vagrant box remove`/`prune` breaks everything below
+   └─ snapshot ── linked clone: Vagrant machine "lab-a"          kind 1; no Parent VM shown (image unregistered after up)
+                    └─ prlctl clone --linked: "lab-a-copy"       kind 2; Parent VM = lab-a, so lab-a must stay
+                         └─ snapshots of lab-a-copy              rollback inside a session, never a backup
+```
 
 ## Cloning a lab VM with prlctl
 
@@ -403,6 +508,16 @@ A new MAC alone does not help: the DUID does not use the MAC unless `DUIDType=li
 SSH host keys (so `known_hosts` cannot tell the copies apart), the Vagrant insecure-key replacement in `~/.ssh/authorized_keys`, any service identity under `/etc` or `/var/lib` (a device key, a
 registration token), and the hostname. A copy used for a different test renames itself and regenerates what the test depends on, or stays off every network the source uses.
 
+| What                                    | Copied by a clone                                     | Effect when two copies meet          | What to do                                             |
+| --------------------------------------- | ----------------------------------------------------- | ------------------------------------ | ------------------------------------------------------ |
+| `/etc/machine-id`                       | yes                                                   | one DHCP lease for both              | no shared network, or empty it and reboot (above)      |
+| MAC address                             | yes, unless `--mac auto`                              | none on its own (DUID wins)          | `prlctl set <clone> --device-set netN --mac auto`      |
+| SSH host keys                           | yes                                                   | `known_hosts` cannot tell them apart | regenerate before the clone meets the source's network |
+| `~/.ssh/authorized_keys` (Vagrant key)  | yes                                                   | the same key logs in to both         | expected; the guard, not the key, tells them apart     |
+| hostname                                | yes                                                   | identical prompts and logs           | rename it in the clone                                 |
+| service identities (`/etc`, `/var/lib`) | yes                                                   | duplicate registrations              | regenerate what the test depends on                    |
+| Parallels name and UUID                 | no (new name; `--regenerate-src-uuid` for the source) | the only reliable difference         | key guards and drivers on it                           |
+
 ## Snapshots
 
 - `vagrant snapshot save|restore|list|delete <machine> <name>`, or `push`/`pop` as a stack; do not mix `push`/`pop` with `save`/`restore`; not every provider supports snapshots (VERIFIED_PRIMARY,
@@ -428,10 +543,25 @@ timeout 60 prlctl set "$VM" --device-set net0 --mac auto >/dev/null && timeout 6
 
 On 2026-11-06 the clone still received the spike VM's address on the shared network, because it kept the machine-id; `vagrant ssh smc-pi-spike01` then reached the clone. The project disconnected the
 clone's shared adapter and added a guard to its driver ([lab-safety-and-guards.md](lab-safety-and-guards.md#refuse-the-wrong-vm)).
+
+> **Learned 2026-11-07** · copy-on-write root · VERIFIED_PRIMARY · Source: smc-resiliency docs/pi/pi-spike-sm-root-writes-20261107_1602.md · Falsifier: a runtime install on a dm-snapshot root that survives a reboot
+> On a lab clone whose root is a RAM copy-on-write, anything installed at run time (a fixed watcher script) is gone after the reboot; reinstall after each boot or install into the origin. `dmsetup
+> status` of a snapshot counts 512-byte sectors.
 ````
 
 ## File: references/evolution-and-write-back.md
 ````markdown
+---
+Title: Evolution and write-back
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: The standing write-back contract: engagement classes, the Learned and Disputed entry format, evidence with every entry, research captures, release reconciliation and script promotion.
+---
+
 # Evolution and write-back
 
 ## Standing write-back contract
@@ -500,6 +630,17 @@ that line and `compatibility.yaml`. A single success is a candidate, not a rule:
 
 ## File: references/lab-safety-and-guards.md
 ````markdown
+---
+Title: Lab safety and guards
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Rules for lab drivers: plan by default and --apply, an in-guest wrong-VM marker, deadlines and keepalives, quoting once, hash what arrived, disk fill, host guards, Vagrantfile copy checks.
+---
+
 # Lab safety and guards
 
 Rules for scripts that drive lab VMs from the Mac. They follow skill-coder (plan by default, `--apply` for writes, a deadline on every call) and add what a VM lab needs: proof that the command reached
@@ -533,6 +674,17 @@ on_vm() { (cd "$VD" && vagrant ssh "$VM" -c "sudo bash -c $(printf %q "test ! -e
 
 The check runs in the guest, in the same shell as the command, so no race between "check" and "do" remains; a distinct exit code (97) lets callers tell a refusal from a failed command. Better still,
 give each VM an identity file written at creation (`/etc/lab-role` with the VM name) and compare it with the name the script means.
+
+```text
+ driver.sh [--apply]                      VM name fixed in the script, never an argument
+   ├─ no --apply ─► print the plan, exit 0
+   └─ --apply
+        ├─ host guards: free disk ≥ 8 GiB?  name matches?  ─► else refuse, exit non-zero
+        └─ timeout N vagrant ssh <vm> -c "<marker test>; <command>" -- -o ConnectTimeout=15 ...
+              one shell, inside the guest:
+              ├─ marker says "wrong VM" ─► exit 97 (refused; nothing ran)
+              └─ marker OK ───────────► run the command ─► its own exit code
+```
 
 ## A deadline on every call
 
@@ -601,6 +753,17 @@ differs, and says which. The direction of a fix is always canonical to copy; a c
 
 ## File: references/licensing-and-editions.md
 ````markdown
+---
+Title: Licensing and editions
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Vagrant licence by version (MIT, BUSL 1.1 for 2.4.0 to 2.4.9, MIT on main since 2026-11-02), what BUSL allowed, the registry vs the CLI, and the Parallels editions that have a CLI.
+---
+
 # Licensing and editions
 
 What licence the Vagrant you run is under, what that allows, and which Parallels Desktop edition the lab needs. This is a technical summary of the primary texts, not legal advice; a commercial
@@ -648,7 +811,11 @@ The HCP Vagrant Box Registry (where `bento/...` boxes are downloaded from) is a 
 
 ## vagrant-parallels
 
-The provider plugin is open source under the MIT licence (VERIFIED_PRIMARY, [vp-readme-github.md]). Latest release v2.4.10 on 2026-10-28; the lab Mac runs 2.4.9 (observed 2026-11-07).
+The provider plugin is open source under the MIT licence (VERIFIED_PRIMARY, [vp-readme-github.md]). Latest release v2.4.10 on 2026-10-28; the lab Mac ran 2.4.9 (observed 2026-11-07) and runs 2.4.10 since 2026-11-09 (`vagrant plugin update`, operator).
+
+> **Learned 2026-11-09** · Vagrant releases · VERIFIED_PRIMARY · Source: `gh release list -R hashicorp/vagrant` on 2026-11-09 · Falsifier: a Vagrant release tag after v2.4.9 dated on or before 2026-11-09
+> On 2026-11-09 there is still no Vagrant release after v2.4.9. The newest entry is the pre-release `2.4.10.dev+000834-2757db88` (2026-06-01), which is older than the MIT revert on `main`
+> (2026-11-02). Every installable release is therefore still BUSL 1.1. Check the LICENSE file at the next tag before calling a release MIT.
 
 ## Parallels Desktop editions
 
@@ -667,6 +834,17 @@ licence key in its configuration ([tool-choice-and-lab-symmetry.md](tool-choice-
 
 ## File: references/networking-and-synced-folders.md
 ````markdown
+---
+Title: Networking and synced folders
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: How Vagrant networks map to Parallels Shared, Host-Only and Bridged; a second adapter the lab owns; one DHCP lease for two VMs (machine-id DUID); synced folder failures by version.
+---
+
 # Networking and synced folders
 
 How Vagrant network declarations map to Parallels networks, how a lab adds a second adapter it controls, why two VMs can receive one DHCP address, and how host folders reach the guest. Captures named
@@ -688,6 +866,16 @@ The Parallels provider configures the VM's first adapter as Shared networking (N
 needed for that (VERIFIED_PRIMARY, [vp-networking.md]). In the guest it is `eth0` (bento Ubuntu). Leave it alone: it is Vagrant's SSH path. If a test cuts it anyway, `prlctl exec` still reaches the
 guest through Parallels Tools (worked example header, `vagrant_stuff/smc-pi-spike01/Vagrantfile` @ 8591b72: "If a spike test cuts eth0 anyway, `prlctl exec smc-pi-spike01 <cmd>` still reaches the VM
 (verified 2026-10-20)").
+
+```text
+ Mac host
+ ├─ Parallels "Shared" network (NAT + Parallels DHCP)       ← Vagrant's SSH path; leave it alone
+ │     eth0 ── VM lab-a                eth0 ── VM lab-b
+ ├─ Host-Only "vagrant-vnetN" (one per private subnet)      ← the lab's own wire (auto_config: false)
+ │     eth1 ── VM lab-a                eth1 ── VM lab-b
+ ├─ Bridged to en0 (public_network)                         ← reaches the real LAN; avoid in a lab
+ └─ Parallels Tools channel (no guest network at all)       ← prlctl exec, graceful stop, shared folders
+```
 
 ## Mapping Vagrant networks to Parallels
 
@@ -724,6 +912,14 @@ shipped a fixed machine-id (vagrant-parallels issue 441 on an M2 with Parallels 
 clone --linked` of a running lab VM (smc-resiliency 2026-11-06: "the SM clone of the spike VM kept its machine-id, so DHCP gave it the spike VM's address and `vagrant ssh smc-pi-spike01` reached the
 clone"; USER_STATED, project record). Effects: `vagrant ssh` reaches the wrong VM, or connections flap between two VMs. Checks and fixes are in [clones-snapshots-and-identity.md](clones-snapshots-and-identity.md#machine-id).
 
+```text
+ /etc/machine-id  (identical in the source and its clone)
+   └─► systemd-networkd DUID      DUIDType=vendor hashes the machine-id
+         └─► DHCP client id       ClientIdentifier=duid (default), not the MAC
+               └─► Parallels DHCP sees ONE client → ONE lease → both VMs get the same address
+                     └─► `vagrant ssh <source>` can land on the clone
+```
+
 ## Unplugging an adapter
 
 `prlctl set <vm> --device-set net1 --disconnect` unplugs an adapter, also on a running VM; `--device-set <net> --mac auto` gives it a new MAC (VERIFIED_PRIMARY, CLI reference p.34). A clone that must
@@ -744,6 +940,14 @@ not change the DHCP identity.
 - `vagrant upload` of a directory into a folder that already exists can leave stale files; upload to a new path per run and move it into place (smc-resiliency `spike/to_vm.sh` @ 4e436e8d: "a new
   folder per run: vagrant upload of this folder delivered stale files (2026-11-06)"; USER_STATED).
 
+> **Learned 2026-11-09** · vagrant-parallels 2.4.9 and 2.4.10, Ubuntu 24.04 and later guests · VERIFIED_PRIMARY (the report and the fix; reach UNVERIFIED) · Source: documents/research-sources-20261109/vp-issue-526.md, vp-pr-525.md, vp-pr-523.md; documents/research-sources-20261107/vp-releases-github.md (v2.4.10), vp-issue-527.md · Falsifier: `findmnt /vagrant` on the lab's bento 24.04 guest under 2.4.9 showing a `prl_fsd` FUSE mount that works
+> vagrant-parallels up to 2.4.9 passes the FUSE option `big_writes` to `prl_fsd`. libfuse3 removed that option, so the issue reports that on guests that ship fusermount3 ("Ubuntu 24.04+") the mount
+> fails with ``fuse: unknown option(s): `-o big_writes'`` and `vagrant up`/`reload` stop at the shared-folder step (issue 526). PR 525 passes it on libfuse2 guests only; it shipped in 2.4.10 on
+> 2026-10-28 (issue 527). Whether every 24.04 guest is hit is UNVERIFIED: the worked example keeps the default `/vagrant` (its Vagrantfile has no `synced_folder` line, `vagrant_stuff` @ 8591b72) on
+> bento/ubuntu-24.04 with 2.4.9 and comes up, so the mount path may depend on whether Parallels Tools use `prl_fsd` or the `prl_fs` module. If `up` stops with that message, update the plugin to 2.4.10
+> (`vagrant plugin update vagrant-parallels`) or disable the folder. PR 523 (merged 2026-06-12) adds an AppArmor override for FUSE 3 mounts for the Ubuntu 26.04 case (issue 522); which release first
+> carries it is UNVERIFIED, because the vendor says its GitHub release notes are "mostly not used" (issue 527).
+
 ## Addresses in reusable text
 
 Parallels' Shared and Host-Only networks use private ranges chosen by Parallels Desktop (`prlsrvctl net list` shows them); this pack's contract test forbids private addresses in authored files, so
@@ -752,6 +956,17 @@ read them from the host rather than from here. Project files keep their lab addr
 
 ## File: references/operations-cookbook.md
 ````markdown
+---
+Title: Operations cookbook
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Exact vagrant, prlctl and prlsrvctl syntax for lab sessions with a deadline on every call and writes marked; verified against Vagrant 2.4.9, vagrant-parallels 2.4.9, prlctl 27.1.0.
+---
+
 # Operations cookbook
 
 Verified against: Vagrant 2.4.9, vagrant-parallels 2.4.9, prlctl 27.1.0 (Parallels Desktop), macOS on Apple silicon, 2026-11-07
@@ -873,10 +1088,27 @@ Adapter types are `shared`, `bridged` and `host-only`; `--mac auto` generates on
 | Pinned box present       | `vagrant box list`                                               | no               |
 | Newer box published      | `vagrant box outdated --global`                                  | no               |
 | Unplug an adapter        | `prlctl set <vm> --device-set netN --disconnect`                 | yes              |
+
+> **Learned 2026-11-07** · logic over adapters · VERIFIED_PRIMARY · Source: smc-resiliency `lab/adapters/transports.py` (VagrantTransport), `lab/logic/e2e.py`;
+> the same cases passed on the Vagrant VM and a Proxmox VM · Falsifier: a Vagrant-only case that cannot run through an ssh transport
+> Drive a Vagrant lab from a test package through one transport class (`vagrant ssh <machine> -c "sudo bash -c '<cmd>'"` and
+> `vagrant upload <src> <dst> <machine>`, run from the Vagrantfile's folder, each call with a timeout), so the same cases run on a
+> Proxmox or bench box through ssh; keep a wrong-VM guard (a marker file the clone carries) in the box-side command, not in the transport.
 ````
 
 ## File: references/parallels-prlctl.md
 ````markdown
+---
+Title: Parallels prlctl
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: prlctl and prlsrvctl for a lab: editions with a CLI, JSON inventory, exec without the network and its quoting, exec after a reset, console capture, power commands, Parallels Tools.
+---
+
 # Parallels prlctl
 
 `prlctl` manages VMs and `prlsrvctl` manages Parallels Desktop itself. Vagrant's provider drives both; a lab uses them directly to reach a guest without the network, to see its console, and to
@@ -911,6 +1143,14 @@ timeout 30 prlctl list -a -i -j     # one JSON array: Name, ID, State, Parent VM
 unregisters the box image after cloning: "Registering VM image from the base box ... Creating new virtual machine as a linked clone of the box image... Unregistering the box VM image",
 [vp-issue-522.md] log), `GuestTools.state` (`installed`, `outdated`, `not_installed`), and each adapter's `type` and `state` (`disconnected` when unplugged). `vagrant_lab_inventory.py` reads exactly
 this.
+
+Three ways into a guest, by what each needs:
+
+| Path                       | Guest network | Parallels Tools | Runs as                          | Use when                                        |
+| -------------------------- | ------------- | --------------- | -------------------------------- | ----------------------------------------------- |
+| `vagrant ssh <m> -c '...'` | yes (`eth0`)  | no              | the `vagrant` user, `sudo`       | the normal path                                 |
+| `prlctl exec <vm> "..."`   | no            | yes             | root on a Linux guest (observed) | a test cut the network; file uploads over stdin |
+| `prlctl capture <vm>`      | no            | no              | nothing runs (a screen PNG)      | nothing else answers                            |
 
 ## exec: a command without the network
 
@@ -966,10 +1206,330 @@ every lab VM on 2026-11-07 (observed); update them deliberately, not as a side e
 
 `prlsrvctl info` (host, version, licence), `prlsrvctl net list` / `net info <id>` / `net set <id>` with `--type <bridged | host-only | shared>` for the virtual networks (VERIFIED_PRIMARY, CLI
 reference p.10 and [parallels-cli-utility.md]). Changing a Parallels network changes every VM on it: a write that needs the operator.
+
+> **Learned 2026-11-07** · prlctl exec · VERIFIED_PRIMARY · Source: smc-resiliency spike/vm/sm/setup_sm.sh (`put`, `verity`), commit a41842e9 · Falsifier: a 10 KB script passed inline to `prlctl exec` that arrives intact
+> A long inline argument to `prlctl exec` fails ("Unable to open new session") or arrives cut while short commands work; stream files over stdin instead and check the hash on the guest:
+> ```bash
+> put() { base64 < "$1" | timeout 60 prlctl exec "$VM" "bash -c 'base64 -d > $2 && chmod $3 $2'"; }
+> ```
+> After a reset or reboot Parallels Tools take tens of seconds to accept sessions: wait with `until timeout 8 prlctl exec "$VM" true; do sleep 3; done`.
+
+> **Learned 2026-11-08** · Parallels Desktop on macOS, Ubuntu 24.04 arm64 guest · VERIFIED_PRIMARY · Source: smc-resiliency `lab/adapters/transports.py` `PrlctlTransport`, commit 065b9a8f · Falsifier: `prlctl exec <vm> bash -c 'echo a b'` printing `a b` with the command given as separate arguments
+> `prlctl exec` joins its arguments into one command line, so `prlctl exec vm bash -c "cmd with words"` passed as separate argv entries runs `bash -c cmd`: the rest became bash's positional arguments
+> and a payload ran as an empty shell, silently, exit 0. Pass one quoted string. Tools refuse sessions now and then, most right after a boot (`PrlJob_GetRetCode: Invalid argument`, `PrlJob_GetResult:
+> Invalid argument`, exit 255): retry a few times. Files go over stdin (a long command line fails to open a session). A linked clone keeps the source's static hostname and machine-id, so it is told
+> apart by its Parallels name only:
+>
+> ```python
+> for _ in range(3):  # Tools refuses a session now and then, most right after a boot
+>   rc, out = _call(["prlctl", "exec", self.name, "bash -c " + shlex.quote(cmd)], timeout)  # prlctl joins its arguments into one line
+>   if not (rc == 255 and out.lstrip().startswith("Prl")):
+>     return rc, out
+>   time.sleep(3)
+> ```
+>
+> Also on such a guest, when /etc is a read-only merge: `lvextend` fails with `Cannot archive volume group metadata ... to read-only filesystem` (rc 5) after printing that the size changed; `--config
+> 'backup { archive = 0 backup = 0 }'` makes the one change.
+````
+
+## File: references/providers-and-choice.md
+````markdown
+---
+Title: Providers and choice
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: Vagrant providers on macOS Apple silicon (Parallels, VirtualBox, QEMU, libvirt) and how a lab picks one
+Last reviewed: 2026-11-09
+Summary: >-
+  Which Vagrant provider fits a lab on an Apple silicon Mac, what each needs and lacks, how Vagrant picks a provider, how one Vagrantfile serves
+  several, and the exec, console and power commands of each side by side.
+---
+
+# Providers and choice
+
+Vagrant drives a hypervisor through a provider. This Mac has four installed (observed 2026-11-09, `vagrant plugin list` and the tools' version commands; [compatibility.yaml](../compatibility.yaml) `lab-mac-2026-11-09`).
+Captures named `[file]` are in [documents/research-sources-20261109/](../documents/research-sources-20261109/readme.md) unless another folder is named.
+
+## Contents
+
+- [The four providers](#the-four-providers)
+- [Pick a provider](#pick-a-provider)
+- [How Vagrant chooses](#how-vagrant-chooses)
+- [One Vagrantfile, several providers](#one-vagrantfile-several-providers)
+- [The same task on each provider](#the-same-task-on-each-provider)
+- [What changes per provider](#what-changes-per-provider)
+
+## The four providers
+
+| Provider (plugin)               | Observed here         | Hypervisor and host                                     | Licence                                    | Detail              |
+| ------------------------------- | --------------------- | ------------------------------------------------------- | ------------------------------------------ | ------------------- |
+| `parallels` (vagrant-parallels) | 2.4.10 (latest)        | Parallels Desktop 27 on this Mac                        | plugin MIT; Parallels Pro/Business licence | [parallels-prlctl.md](parallels-prlctl.md) |
+| `virtualbox` (built in)         | VirtualBox 7.2.22     | VirtualBox on this Mac; arm64 guests only               | GPLv3 base; Extension Pack PUEL            | [virtualbox.md](virtualbox.md) |
+| `qemu` (vagrant-qemu)           | 0.7.0 (latest)        | QEMU 11.1.3 from Homebrew, hvf acceleration on this Mac | plugin MIT; QEMU GPLv2                     | [qemu-and-libvirt.md](qemu-and-libvirt.md) |
+| `libvirt` (vagrant-libvirt)     | 0.12.2 (latest, 2023) | libvirtd + QEMU/KVM on a **Linux** host, reached by URI | plugin MIT                                 | [qemu-and-libvirt.md](qemu-and-libvirt.md) |
+
+Licences: vagrant-parallels MIT ([vp-readme-github.md], 2026-11-07 folder); VirtualBox [virtualbox-licensing-faq.md]; vagrant-qemu and vagrant-libvirt MIT per their repositories (UNVERIFIED here: the
+LICENSE files were not captured); QEMU GPLv2 (UNVERIFIED here).
+
+```text
+                    ┌────────────── Vagrant 2.4.9 (one CLI, one Vagrantfile) ──────────────┐
+                    │                   │                     │                          │
+             vagrant-parallels     built-in virtualbox    vagrant-qemu              vagrant-libvirt
+                    │                   │                     │                          │ qemu+ssh://
+             prlctl / prlsrvctl      VBoxManage          qemu-system-aarch64         virsh / libvirtd
+                    │                   │                 (hvf, no daemon)               │
+             Parallels Desktop       VirtualBox 7.2           │                     Linux host: KVM
+             ── on this Mac ─────────────────────────────────┘                     ── elsewhere ──
+```
+
+## Pick a provider
+
+```text
+ Need an x86_64 guest that runs at normal speed?
+   └─ yes ─► not on this Mac: Proxmox (skill-proxmox) or vagrant-libvirt on a Linux KVM host
+   └─ no (arm64 guest)
+        ├─ need prlctl exec / console capture / linked clones, and a Parallels licence exists ─► parallels (default here)
+        ├─ need a free GUI hypervisor, internal networks, or a box only built for VirtualBox ─► virtualbox
+        ├─ need no hypervisor licence or daemon, a raw qcow2/libvirt box, or serial-console work ─► qemu
+        └─ the VM must run on a Linux server, not the Mac ─► libvirt (remote URI)
+```
+
+x86_64 guests under emulation exist on all three local hypervisors but are slow and limited: Parallels supports only Windows installs and warns that Linux guests may lack Tools
+([parallels-27-x86-emulation-create-vm.md]); vagrant-qemu runs a non-host architecture with TCG and `cpu = "max"` ([vq-readme-github.md], example 7 and "Compatible with"); VirtualBox on an Arm host
+virtualizes Arm guests ([virtualbox-changelog-7.1.md], 7.1.0 "macOS/Arm host: Arm virtualization for Linux and BSD VMs").
+
+## How Vagrant chooses
+
+Vagrant picks the provider in this order (VERIFIED_PRIMARY, [vagrant-providers-basic_usage.md]):
+
+1. `vagrant up --provider=<name>`; afterwards Vagrant remembers the provider of a created machine, so `halt`, `destroy` and the rest need no flag.
+2. `VAGRANT_DEFAULT_PROVIDER` ([vagrant-providers-default.md]; without it the documented default is VirtualBox).
+3. The `config.vm.provider` blocks in the Vagrantfile, in order: the first one that is usable on this host.
+4. Installed provider plugins by their own priority (a better-known system outranks a worse one).
+
+With four providers installed, rules 3 and 4 make a bare `vagrant up` depend on the file and the installed plugins. A lab names its provider: either `--provider` in its driver, or a single
+`config.vm.provider` block, or an empty `config.vm.provider "<first choice>"` line at the top to fix the order ([vagrant-providers-basic_usage.md]). `vagrant global-status` shows each machine's
+provider; one Vagrant directory cannot hold the same machine under two providers at once.
+
+## One Vagrantfile, several providers
+
+A box is published per provider and architecture: the same name and version can carry `parallels` and `virtualbox` builds (`bento/ubuntu-24.04` 202510.26.0 is installed here for both, arm64; observed
+2026-11-09 `vagrant box list`). Provider blocks hold only provider settings, and a provider override can change the box:
+
+```ruby
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_version = "202510.26.0"
+  config.vm.provider "parallels" do |p|        # first block: preferred when usable
+    p.name = "lab-a"; p.memory = 4096; p.cpus = 4
+  end
+  config.vm.provider "virtualbox" do |vb, override|
+    vb.name = "lab-a"; vb.memory = 4096; vb.cpus = 4
+  end
+  config.vm.provider "qemu" do |qe, override|
+    override.vm.box = "<a libvirt-format arm64 box>"   # vagrant-qemu imports libvirt boxes
+    qe.memory = "4G"; qe.smp = "4"
+  end
+end
+```
+
+`vagrantfile_lint.py --provider <name>` checks the block for the provider the lab runs. Network declarations that only one provider understands (`virtualbox__intnet`, `libvirt__*`, a Parallels
+`customize` with `prlctl` arguments) go inside that provider's block or are guarded, or the other providers ignore them or fail.
+
+## The same task on each provider
+
+| Task                      | Parallels                              | VirtualBox                                              | QEMU (vagrant-qemu)                                     | libvirt (remote)                         |
+| ------------------------- | -------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------- |
+| List VMs | `prlctl list -a -i -j` | `VBoxManage list vms`; `showvminfo <vm> --machinereadable` | `vagrant status`; | `virsh -c <uri> list --all` |
+|   (read-only) |  |  |   `.vagrant/machines/<m>/qemu/id` |  |
+| Command | `prlctl exec <vm> "<cmd>"` (Tools) | `VBoxManage guestcontrol <vm> run --username <u> --exe <path>` | serial console: | `virsh -c <uri> console <domain>` |
+|   without |  |   (Guest Additions) |   `vagrant serial-config <m>`, |  |
+|   network |  |  |   then `nc -U <socket>` (0.7.0) |  |
+| Console | `prlctl capture <vm> --file x.png` | `VBoxManage controlvm <vm> screenshotpng x.png` | none; read the serial console | `virsh -c <uri> screenshot <domain> x.ppm` |
+|   picture |  |  |  |  |
+| Graceful stop | `prlctl stop <vm>` | `VBoxManage controlvm <vm> acpipowerbutton` | `vagrant halt <m>` | `virsh -c <uri> shutdown <domain>` |
+| Hard reset | `prlctl reset <vm>` | `VBoxManage controlvm <vm> reset` | `vagrant halt -f` then `up` | `virsh -c <uri> reset <domain>` |
+| Snapshot | `vagrant snapshot` | `vagrant snapshot` or `VBoxManage snapshot <vm> take` | not listed as a | `vagrant snapshot`; `snapshot_pool_name` |
+|  |   or `prlctl snapshot` |  |   feature ([vq-readme-github.md]) |   sets |
+|  |  |  |  |   where ([vl-configuration-github.md]) |
+
+Sources: Parallels rows [parallels-prlctl.md](parallels-prlctl.md); VirtualBox rows from the 7.2.10 help (captured before the 7.2.22 upgrade the same day) ([virtualbox-7.2.10-vboxmanage-help.txt]); QEMU rows [vq-readme-github.md] ("Basic operation: up, ssh, halt,
+destroy, package"; Debug section); libvirt rows are standard `virsh` subcommands, UNVERIFIED here (no virsh manual captured). Every one of them gets a `timeout` like the Parallels commands
+([lab-safety-and-guards.md](lab-safety-and-guards.md#a-deadline-on-every-call)).
+
+## What changes per provider
+
+| Concern               | Parallels                             | VirtualBox                                             | QEMU (vagrant-qemu)                        | libvirt                        |
+| --------------------- | ------------------------------------- | ------------------------------------------------------ | ------------------------------------------ | ------------------------------ |
+| Default first adapter | Shared (NAT + DHCP)                   | NAT                                                    | user-mode NAT, SSH forwarded to            | the management network on      |
+|                       |                                       |                                                        |   `ssh_port` (50022)                       |   the host                     |
+| `private_network`     | host-only `vagrant-vnetN`             | host-only *network* on macOS, allowed range only       | only with `advanced_network = true`        | libvirt network on the         |
+|                       |                                       |                                                        |   (vmnet, socket)                          |   Linux host                   |
+| Synced folder default | Parallels Shared Folders (Tools)      | `vboxsf` (Guest Additions)                             | SMB, rsync; VirtioFS experimental on       | NFS or rsync (UNVERIFIED here) |
+|                       |                                       |                                                        |   macOS (0.7.0)                            |                                |
+| Linked clones         | default since vagrant-parallels 2.0.0 | `vb.linked_clone = true` (off: a full import by        | qcow2 overlay on the box                   | backing image on the           |
+|                       |                                       |   default, [vagrant-vbox-configuration.md])            |   image (UNVERIFIED)                       |   host (UNVERIFIED)            |
+| Guest agent needed    | Parallels Tools                       | Guest Additions                                        | none (cloud-init for                       | none                           |
+|                       |                                       |                                                        |   `advanced_network` addresses)            |                                |
+| Disk size             | `prlctl set --device-set hdd0 --size` | `config.vm.disk ... primary: true`                     | `config.vm.disk ... primary: true`         | domain option                  |
+|                       |                                       |   ([vagrant-disks-usage.md], 2026-11-07 folder)        |   grows (0.7.0)                            |   `machine_virtual_size`       |
+|                       |                                       |                                                        |                                            |   in GB ([vl-configuration-github.md]) |
+
+Most of this pack's other references were written for Parallels; their rules (pin the box, name the machine, deadline every call, refuse the wrong VM, keep the Vagrantfile copy) hold on every
+provider. The machine-id rule holds too: a cloned disk carries its `/etc/machine-id` whatever the hypervisor ([clones-snapshots-and-identity.md](clones-snapshots-and-identity.md#machine-id)).
+````
+
+## File: references/qemu-and-libvirt.md
+````markdown
+---
+Title: QEMU and libvirt
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: the vagrant-qemu provider on macOS Apple silicon and the vagrant-libvirt provider against a Linux libvirt host
+Last reviewed: 2026-11-09
+Summary: >-
+  vagrant-qemu on an Apple silicon Mac (defaults, boxes, networking modes and their root needs, synced folders, disks, serial console, the macOS 27
+  port-check fix in 0.6.4) and vagrant-libvirt driven from the Mac against a remote Linux KVM host over qemu+ssh.
+---
+
+# QEMU and libvirt
+
+Two providers run QEMU. **vagrant-qemu** starts `qemu-system-*` directly on the Mac, no daemon and no hypervisor licence. **vagrant-libvirt** asks a libvirt daemon to run QEMU/KVM, which in practice
+means a Linux host. Observed on this Mac 2026-11-09: QEMU 11.1.3 (Homebrew), vagrant-qemu 0.7.0 (latest, 2026-10-15; updated from 0.6.3 that day), vagrant-libvirt 0.12.2 (latest, 2023-06-24). Captures named `[file]` are in
+[documents/research-sources-20261109/](../documents/research-sources-20261109/readme.md).
+
+## Contents
+
+- [vagrant-qemu: what it is](#vagrant-qemu-what-it-is)
+- [Versions that matter on this Mac](#versions-that-matter-on-this-mac)
+- [Provider block and defaults](#provider-block-and-defaults)
+- [Networking modes](#networking-modes)
+- [Synced folders, disks and boxes](#synced-folders-disks-and-boxes)
+- [Serial console instead of exec](#serial-console-instead-of-exec)
+- [vagrant-libvirt against a Linux host](#vagrant-libvirt-against-a-linux-host)
+
+## vagrant-qemu: what it is
+
+The plugin imports a libvirt-format box or a bare qcow2 image, starts QEMU without a GUI and drives it through `up`, `ssh`, `halt`, `destroy` and `package`; provisioners, forwarded ports, cloud-init
+and `config.vm.disk` work; synced folders work through SMB, rsync or VirtioFS (VERIFIED_PRIMARY, [vq-readme-github.md], Features). Snapshots are not in its feature list, so `vagrant snapshot` is not a
+rollback on this provider (UNVERIFIED: not tested). It was "test[ed] with Apple Silicon / M1 and CentOS / Ubuntu aarch64 image" ([vq-readme-github.md]).
+
+```text
+ vagrant up --provider=qemu
+   └─ vagrant-qemu: qemu-img creates the machine disk from the box's qcow2 image
+        └─ qemu-system-aarch64 -machine virt,accel=hvf -cpu host ...   (daemonised, pidfile)
+             ├─ user-mode NAT: host 127.0.0.1:<ssh_port 50022> ─► guest :22   ← vagrant ssh
+             ├─ serial  ─► ~/.vagrant.d/tmp/vagrant-qemu/<id>/qemu_socket_serial
+             └─ optional second NIC (advanced_network): vmnet / socket_vmnet / socket
+```
+
+## Versions that matter on this Mac
+
+| Version            | Change                                                                                                                     | Matters because                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 0.6.4 (2026-10-09) | Fixes `vagrant up` failing with `ForwardPortCollision` ("The forwarded port to 50022 is already in use") **on macOS 27** even | this Mac runs macOS 27 (Darwin 27.2); it had 0.6.3 until 2026-11-09 |
+|                    |   when nothing listens: a non-blocking connect to a closed local port reports success on the retry there                   |                                                    |
+| 0.6.4              | Quotes MACs in the generated cloud-init `network-config`; about 1.3% of generated MACs were read as base-60 integers       | an `advanced_network` VM could boot unreachable    |
+| 0.7.0 (2026-10-15) | VirtioFS synced folders (`type: "qemu_virtiofs"`, experimental on macOS); `vagrant serial-config`; packaging a machine as  | serial console and folders without SMB             |
+|                    |   a box                                                                                                                    |                                                    |
+| 0.7.0              | `config.vm.disk :disk, primary: true, size:` grows the boot disk instead of attaching a blank one; never shrinks           | an older Vagrantfile's extra blank disk is dropped |
+| 0.7.0              | `vagrant halt` bounded; on macOS 27 a `control_port` connect to localhost could pick `::1`, so halt never reached QEMU     | halts that took both timeouts                      |
+| 0.7.0              | A boot that passes `config.vm.boot_timeout` (300 s) now fails instead of finishing in the background                       | slow emulated boots need `boot_timeout = 600`      |
+
+All VERIFIED_PRIMARY from [vq-changelog-github.md]. Upgrade with `vagrant plugin update vagrant-qemu` (a host change; read the 0.7.0 behaviour changes first). The macOS 27 port-check bug was not
+reproduced on this Mac (UNVERIFIED here; the falsifier is a `vagrant up --provider=qemu` with 0.6.3 that succeeds; the Mac has 0.7.0 since 2026-11-09).
+
+## Provider block and defaults
+
+```ruby
+config.vm.provider "qemu" do |qe|
+  qe.memory = "4G"            # default 4G
+  qe.smp = "4"                # default 2
+  # qe.arch / qe.machine / qe.cpu: auto from the host; on Apple silicon "aarch64", "virt,highmem=on,accel=hvf", "host"
+  # qe.ssh_port = 50022        # default; ssh_auto_correct = true for several machines
+  # qe.qemu_dir = "/opt/homebrew/share/qemu"   # firmware (edk2-aarch64-code.fd); default from HOMEBREW_PREFIX
+end
+```
+
+Defaults are those of the 0.7.0 README ([vq-readme-github.md], Options). A non-host architecture switches to TCG emulation: the README's x86_64 example sets `arch = "x86_64"`, `machine = "q35"`, `cpu
+= "max"` and `net_device = "virtio-net-pci"`; AlmaLinux 9 x86_64 needs `cpu = "max"` ([vq-changelog-github.md], 0.7.0). Several machines in one file need distinct `ssh_port` values or
+`ssh_auto_correct`.
+
+## Networking modes
+
+Without `advanced_network = true` there is one user-mode NIC and a `private_network` line is ignored with a warning. With it, a second NIC (VERIFIED_PRIMARY, [vq-readme-github.md], Platform support):
+
+| macOS `net_mode`                       | Host ↔ VM | VM ↔ VM     | Root              | Needs                                |
+| -------------------------------------- | --------- | ----------- | ----------------- | ------------------------------------ |
+| `:vmnet_shared` / `_host` / `_bridged` | yes       | yes         | `sudo vagrant up` | nothing (QEMU 7.0+)                  |
+| `:socket_vmnet`                        | yes       | yes         | no                | the `socket_vmnet` daemon (Homebrew) |
+| `:socket` (`listen=` / `connect=`)     | no        | exactly two | no                | `vagrant up --no-parallel`           |
+
+- Running under `sudo` makes QEMU's files and any box downloaded then root-owned; add boxes as yourself first, or use `:socket_vmnet`.
+- `socket` multicast (`mcast=`) does not work on macOS (`EADDRNOTAVAIL`); `listen`/`connect` is point-to-point, one pair only.
+- The static address of a `private_network` reaches the guest through cloud-init: a box without cloud-init silently keeps no address.
+
+For a lab wire between two VMs on the Mac, `:socket_vmnet` is the one mode with no root and more than two VMs.
+
+## Synced folders, disks and boxes
+
+- Synced folders: SMB (macOS file sharing), rsync, or VirtioFS. On macOS VirtioFS "is experimental and needs a QEMU built with vhost-user and a macOS `virtiofsd` port" from a community tap
+  ([vq-changelog-github.md], 0.7.0). A lab disables `/vagrant` and uses `vagrant upload` unless it needs a share.
+- Disk: from 0.7.0, `config.vm.disk :disk, primary: true, size: "100GB"` grows the virtual disk; growing the partition and filesystem in the guest is still the guest's job ([vq-readme-github.md],
+  Features).
+- Boxes: libvirt-format boxes (a `box.img` qcow2) import directly; a Parallels or VMware box needs the plugin wiki's conversion; libvirt box v2 is experimental ([vq-readme-github.md]). A box's
+  architecture must match `qe.arch`.
+
+## Serial console instead of exec
+
+vagrant-qemu has no guest agent channel like `prlctl exec`. The out-of-band path is the serial console: `vagrant serial-config [<m>] [--json]` (0.7.0) prints its Unix socket or TCP port, and `nc -U
+<socket>` connects; `echo 03 | xxd -r -p | nc -U <socket>` sends Ctrl-C (VERIFIED_PRIMARY, [vq-readme-github.md], Debug). The guest must run a getty on its serial console. Give `nc` a deadline
+(`timeout 30`) like any other call.
+
+## vagrant-libvirt against a Linux host
+
+vagrant-libvirt manages "QEMU or KVM type virtual machines" through libvirtd; its install guide expects QEMU and libvirt from the Linux distribution, Vagrant from the distribution packages, and names
+Vagrant 2.0 to 2.2 as tested ([vl-installation-github.md], VERIFIED_PRIMARY). From a Mac it is used remotely: the connection options build a libvirt URI, `connect_via_ssh` "is absolutely needed to
+access Libvirt on remote host" or Vagrant cannot learn the VM's address, and `uri` overrides them all ([vl-configuration-github.md], Connection Options).
+
+```ruby
+# vagrant_stuff/mikrotik-qemu01/Vagrantfile (untracked working copy, read 2026-11-09; user and host redacted)
+config.vm.box = "ktogias/mikrotik"
+config.vm.box_version = "7.13"
+config.vm.provider :libvirt do |libvirt|
+  libvirt.uri = "qemu+ssh://<user>@<linux-host>/system"
+  libvirt.cpus = 2
+  libvirt.memory = 2048
+  libvirt.nested = true
+end
+config.vm.network "public_network", bridge: "br0", dev: "br0"   # a bridge on the Linux host
+```
+
+- `public_network` uses macvtap on the Linux host (kernel 2.6.24 or later) ([vl-configuration-github.md]).
+- The disk size is `machine_virtual_size` in GB; snapshots land in `snapshot_pool_name` when set ([vl-configuration-github.md]).
+- The plugin's last release is 0.12.2 (2023-06-24) and the installed Vagrant 2.4.9 is newer than its tested range: treat a plugin load failure after a Vagrant upgrade as expected and check `vagrant
+  plugin list` first (UNVERIFIED that 0.12.2 loads on 2.4.9 for every command; it is installed here).
+- A libvirt VM lives on the Linux host, so the Mac-side guards (disk space, VM name) must test that host, and its writes follow [lab-safety-and-guards.md](lab-safety-and-guards.md). A Proxmox node is not a libvirt target for
+  this plugin; Proxmox work is skill-proxmox.
 ````
 
 ## File: references/tool-choice-and-lab-symmetry.md
 ````markdown
+---
+Title: Tool choice and lab symmetry
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Vagrant for local VMs and OpenTofu for Proxmox, the two OpenTofu providers that touch Vagrant or Parallels, and matching an arm64 lab to an x86 lab by package set and apt snapshot.
+---
+
 # Tool choice and lab symmetry
 
 When to describe a lab VM with Vagrant and when with OpenTofu, and how an arm64 Vagrant lab and an x86 Proxmox lab are kept comparable. Captures named `[file]` are in
@@ -1032,10 +1592,24 @@ apt-get update --snapshot "$SNAP" && apt-get install -y --snapshot "$SNAP" <pack
 
 Whether the snapshot service covers `ports.ubuntu.com` (where arm64 packages come from) is UNVERIFIED: the captured documentation shows only `archive.ubuntu.com` and `security.ubuntu.com` examples.
 Test it on the arm64 lab (`apt-get update --snapshot <id>` and read which URLs answer) before relying on it, and record the result here.
+
+> **Learned 2026-11-07** · lab symmetry · VERIFIED_PRIMARY · Source: smc-resiliency spike/vm/lab/apt_snapshot_pin.sh, run on the arm64 Vagrant VM and the x86 Proxmox VM · Falsifier: `apt-get update` against `https://snapshot.ubuntu.com/ubuntu/<id>` failing for arm64 noble
+> snapshot.ubuntu.com serves arm64 noble under the same `/ubuntu/<id>` path as amd64 (no ubuntu-ports path needed): pinning both lab VMs to `20261105T000000Z` and running `full-upgrade` gave both kernel 6.8.0-147 and the same package versions. This resolves the UNVERIFIED ports.ubuntu.com claim. On a box whose /etc is a merged confext (read-only overlay), unmerge first and merge after.
 ````
 
 ## File: references/upgrade-and-troubleshooting.md
 ````markdown
+---
+Title: Upgrade and troubleshooting
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Upgrade order for Parallels Desktop, vagrant-parallels and Vagrant, a symptom-to-cause triage table with sources, and the steps for a wedged guest starting with a console capture.
+---
+
 # Upgrade and troubleshooting
 
 Upgrade order for the three moving parts (Parallels Desktop, Vagrant, vagrant-parallels) and a triage table for the failures a lab meets. Captures named `[file]` are in
@@ -1058,6 +1632,11 @@ Upgrade order for the three moving parts (Parallels Desktop, Vagrant, vagrant-pa
 
 ## Upgrade order
 
+```text
+ record versions ─► keep the pinned box ─► Parallels Desktop ─► vagrant-parallels ─► Vagrant
+   ─► `vagrant up` ONE machine ─► check Tools state, shared folders, `prlctl exec` ─► the rest
+```
+
 Parallels Desktop first (it carries the CLI and Tools), then `vagrant plugin update vagrant-parallels`, then Vagrant itself; if plugins fail to load after a Vagrant upgrade, `vagrant plugin repair` is
 the command for it (UNVERIFIED: not in the captured docs); the order is a recommendation, UNVERIFIED as a vendor statement. Then: `vagrant up` one machine, check Tools state, shared folders and
 `prlctl exec`, and only then the rest. Parallels Tools in existing guests stay at their old version until updated (`update_guest_tools` or the Parallels menu); `outdated` Tools kept working for exec
@@ -1065,32 +1644,45 @@ and shutdown in the lab (observed 2026-11-07).
 
 ## Triage table
 
-| Symptom                                                            | Likely cause                                    | Check                                        | Source                         |
-| ------------------------------------------------------------------ | ----------------------------------------------- | -------------------------------------------- | ------------------------------ |
-| "Vagrant has detected that you have an edition of Parallels        | Standard edition, or Enterprise with            | `prlsrvctl info --license --json` (edition   | [vp-issue-485.md]              |
-|   Desktop for Mac installed that is not supported"                 |   vagrant-parallels before 2.4.3                |   only), `vagrant plugin list`               |                                |
-| Two VMs, one IP; `vagrant ssh` reaches the wrong VM                | same `/etc/machine-id` (box regression or       | `cat /etc/machine-id` on                     | [vp-issue-441.md],             |
-|                                                                    |   a clone)                                      |   both; `prlctl list -a -f`                  |   [vp-issue-1562.md]           |
-| "Vagrant was unable to mount Parallels Desktop shared folders      | Parallels 20.2 moved to `prl_fsd`; plugin       | `vagrant plugin list`; Tools state           | [vp-issue-483.md]              |
-|   ... prl_fs"                                                      |   before 2.4.4                                  |                                              |                                |
-| Shared folder fails on an Ubuntu 26.04 guest | AppArmor blocks `prl_fsd`/`fusermount3` | `journalctl -k -g apparmor` in the guest | [vp-issue-522.md] |
-| Static private IP lands on a new interface (Fedora 36+)            | Vagrant's network configuration for that guest  | `ip addr` in the guest                       | [vp-issue-462.md]              |
-| Error with more than four networks on Apple silicon                | Parallels limit on M-series (reported)          | count `vm.network` lines                     | [vp-issue-410.md]              |
-| `prlctl exec`: "Unable to open new session", "PrlJob_GetResult:    | Tools not running yet after a reset or reboot   | retry with a deadline; `prlctl capture`      | USER_STATED, lab 2026-11-07    |
-|   Invalid argument"                                                |                                                 |                                              |                                |
-| `prlctl exec` hangs                                                | guest wedged (panic, emergency shell,           | `prlctl capture <vm> --file x.png`           | USER_STATED, lab 2026-11-07    |
-|                                                                    |   full disk)                                    |                                              |                                |
-| `timeout: invalid time interval`                                   | a wrapper wrote `timeout 30"cmd"` (one word)    | the wrapper's quoting                        | USER_STATED, lab 2026-11-07    |
-| `vagrant global-status` lists a machine that is gone               | it reads a cache                                | `vagrant global-status --prune`              | [vagrant-cli-global-status.md] |
-| A linked clone stopped working after `vagrant box remove`/`prune`  | the clone's disk depends on the box image       | `vagrant box list`; restore the box from a   | [vp-configuration.md]          |
-|                                                                    |                                                 |   repackaged file                            |                                |
-| A second disk appears on every boot                                | a `customize` adding a device                   | `vagrantfile_lint.py`                        | [vp-configuration.md]          |
-|                                                                    |   without `post-import`                         |                                              |                                |
-| `vagrant up` waits with "Host unreachable. Retrying..." after a macOS upgrade (Sequoia 15.5) | macOS Local Network privacy denies the terminal app access to the VM network | System Settings, Privacy & Security, Local Network: allow the terminal and editor | [vp-issue-510.md] (reporter's fix, VERIFIED_SECONDARY) |
-| Files missing or stale after `vagrant upload` of a folder          | upload into an existing directory               | upload to a fresh path per run               | USER_STATED,                   |
-|                                                                    |                                                 |                                              |   smc-resiliency 2026-11-06    |
+| Symptom                                                            | Likely cause                               | Check                                         | Source                             |
+| ------------------------------------------------------------------ | ------------------------------------------ | --------------------------------------------- | ---------------------------------- |
+| "Vagrant has detected that you have an edition of Parallels        | Standard edition, or Enterprise with       | `prlsrvctl info --license --json` (edition    | [vp-issue-485.md]                  |
+|   Desktop for Mac installed that is not supported"                 |   vagrant-parallels before 2.4.3           |   only), `vagrant plugin list`                |                                    |
+| Two VMs, one IP; `vagrant ssh` reaches the wrong VM                | same `/etc/machine-id` (box regression or  | `cat /etc/machine-id` on                      | [vp-issue-441.md],                 |
+|                                                                    |   a clone)                                 |   both; `prlctl list -a -f`                   |   [vp-issue-1562.md]               |
+| "Vagrant was unable to mount Parallels Desktop shared folders      | Parallels 20.2 moved to `prl_fsd`; plugin  | `vagrant plugin list`; Tools state            | [vp-issue-483.md]                  |
+|   ... prl_fs"                                                      |   before 2.4.4                             |                                               |                                    |
+| Shared folder fails on an Ubuntu 26.04 guest                       | AppArmor blocks `prl_fsd`/`fusermount3`    | `journalctl -k -g apparmor` in the guest      | [vp-issue-522.md]                  |
+| `fuse: unknown option(s): -o big_writes` on `up` or `reload`       | vagrant-parallels 2.4.9 or earlier on a    | `vagrant plugin list`; update to 2.4.10       | [vp-issue-526.md]                  |
+|   (Ubuntu 24.04 and later)                                         |   libfuse3 guest                           |                                               |   (2026-11-09 folder)              |
+| Static private IP lands on a new interface (Fedora 36+)            | Vagrant's network configuration for        | `ip addr` in the guest                        | [vp-issue-462.md]                  |
+|                                                                    |   that guest                               |                                               |                                    |
+| Error with more than four networks on Apple silicon                | Parallels limit on M-series (reported)     | count `vm.network` lines                      | [vp-issue-410.md]                  |
+| `prlctl exec`: "Unable to open new session", "PrlJob_GetResult:    | Tools not running yet after a reset        | retry with a deadline; `prlctl capture`       | USER_STATED, lab 2026-11-07        |
+|   Invalid argument"                                                |   or reboot                                |                                               |                                    |
+| `prlctl exec` hangs                                                | guest wedged (panic, emergency shell,      | `prlctl capture <vm> --file x.png`            | USER_STATED, lab 2026-11-07        |
+|                                                                    |   full disk)                               |                                               |                                    |
+| `timeout: invalid time interval`                                   | a wrapper wrote `timeout 30"cmd"`          | the wrapper's quoting                         | USER_STATED, lab 2026-11-07        |
+|                                                                    |   (one word)                               |                                               |                                    |
+| `vagrant global-status` lists a machine that is gone               | it reads a cache                           | `vagrant global-status --prune`               | [vagrant-cli-global-status.md]     |
+| A linked clone stopped working after `vagrant box remove`/`prune`  | the clone's disk depends on the box image  | `vagrant box list`; restore the box from a    | [vp-configuration.md]              |
+|                                                                    |                                            |   repackaged file                             |                                    |
+| A second disk appears on every boot                                | a `customize` adding a device              | `vagrantfile_lint.py`                         | [vp-configuration.md]              |
+|                                                                    |   without `post-import`                    |                                               |                                    |
+| `vagrant up` waits with "Host unreachable. Retrying..." after a    | macOS Local Network privacy denies the     | System Settings, Privacy & Security, Local    | [vp-issue-510.md] (reporter's      |
+|   macOS upgrade (Sequoia 15.5)                                     |   terminal app access to the VM network    |   Network: allow the terminal and editor      |   fix, VERIFIED_SECONDARY)         |
+| Files missing or stale after `vagrant upload` of a folder          | upload into an existing directory          | upload to a fresh path per run                | USER_STATED,                       |
+|                                                                    |                                            |                                               |   smc-resiliency 2026-11-06        |
 
 ## A wedged guest
+
+```text
+ prlctl exec / vagrant ssh hangs
+   └─ timeout 30 prlctl capture <vm> --file x.png     read-only; needs neither network nor Tools
+        ├─ login prompt ................. guest is up; Tools or network are not ─► retry `prlctl exec <vm> true` with a deadline
+        ├─ panic / emergency / initramfs / GRUB ... boot failed ─► keep the PNG; then reset or roll back (writes)
+        └─ blank ........................ `prlctl status <vm>`: suspended ─► `prlctl start`, or `stop --drop-state`
+```
 
 1. `prlctl capture <vm> --file <png>` and look at it: that decides everything else.
 2. A login prompt: the guest is up; Tools or the network are not. Wait and retry `prlctl exec <vm> true` with a deadline; check `prlctl list -i` for `GuestTools.state`.
@@ -1101,6 +1693,17 @@ and shutdown in the lab (observed 2026-11-07).
 
 ## File: references/vagrantfile-and-provisioning.md
 ````markdown
+---
+Title: Vagrantfile and provisioning
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Vagrantfile load order, multi-machine, the Parallels provider block, customize events (post-import vs every boot), provisioners, triggers, cloud-init, disk size, linting.
+---
+
 # Vagrantfile and provisioning
 
 How a Vagrantfile is read, how several machines share one, what the Parallels provider block does and when each provisioner, customize step and trigger runs. Captures named `[file]` are in
@@ -1114,6 +1717,7 @@ How a Vagrantfile is read, how several machines share one, what the Parallels pr
 - [Customize events: what runs on every boot](#customize-events-what-runs-on-every-boot)
 - [Provisioners](#provisioners)
 - [Triggers](#triggers)
+- [What runs when](#what-runs-when)
 - [cloud-init](#cloud-init)
 - [Plugins and environment variables](#plugins-and-environment-variables)
 - [Lint before up](#lint-before-up)
@@ -1148,6 +1752,12 @@ end
 All of these are vagrant-parallels options (VERIFIED_PRIMARY, [vp-configuration.md]). Set `p.name`: without it the VM is named after the folder plus a timestamp, and every `prlctl` command and guard
 has to look the name up. When the Parallels provider is installed it has a higher priority than the built-in providers, so `vagrant up` picks it; `--provider=parallels` makes that explicit
 (VERIFIED_PRIMARY, [vp-usage.md]).
+
+> **Learned 2026-11-09** · vagrant-parallels 2.4.x, prlctl · VERIFIED_PRIMARY · Source: documents/research-sources-20261109/vp-issue-360.md; documents/research-sources-20261107/vagrant-disks-usage.md, parallels-desktop-v20-command-line-reference.pdf (Virtual hard disk, printed p.30) · Falsifier: a vagrant-parallels release note or doc page that supports `config.vm.disk` or a disk size option
+> vagrant-parallels has no disk-size option. Its maintainer said on 2026-08-06 that resizing is "not supported by the plugin nor do we have plans" (issue 360, open since 2020). Vagrant's own
+> `config.vm.disk` examples are written for the VirtualBox provider only. On Parallels the disk grows outside the Vagrantfile: with the VM stopped, `prlctl set <vm> --device-set hdd0 --size <MB>` (a
+> write; the size is in megabytes), then grow the partition and filesystem in the guest (`growpart`, then `resize2fs`, or `lvextend -r` on LVM). Whether `--size` works on a vagrant-parallels linked
+> clone, whose disk sits on the box's snapshot, is UNVERIFIED: try it on a scratch machine first. A full clone (`linked_clone = false`) avoids that question.
 
 ## Customize events: what runs on every boot
 
@@ -1184,6 +1794,27 @@ second virtual disk for the identity partition (S6) is added when S6 starts, not
 `only_on` limits to named machines; `on_error`, `exit_codes`, `abort`, `warn`, `info` shape failure handling (VERIFIED_PRIMARY, [vagrant-triggers-configuration.md], [vagrant-triggers-usage.md]). Use a
 trigger for host-side bookkeeping a lab needs on every `up` or `destroy` (record the box version, refuse to destroy a machine holding unsaved results). Keep it short and deadline-bound: a hanging
 trigger hangs `vagrant up`.
+
+## What runs when
+
+One `vagrant up` of a new machine, in order (event names from [vp-configuration.md]; the last three steps in the order `vagrant up` prints them):
+
+```text
+ import box ─► linked clone ─► customize post-import ─► customize pre-boot ─► boot
+   ─► customize post-boot ─► wait for SSH ─► customize post-comm
+   ─► hostname, network interfaces ─► synced folders ─► provisioners (outside in) ─► after-triggers
+```
+
+| Step                                   | first `up`                              | later `up` (halted VM) | `reload` | `reload --provision` | `provision` |
+| -------------------------------------- | --------------------------------------- | ---------------------- | -------- | -------------------- | ----------- |
+| `customize` at `post-import`           | yes                                     | no                     | no       | no                   | no          |
+| `customize` with no event (`pre-boot`) | yes                                     | yes                    | yes      | yes                  | no          |
+| `customize` at `post-boot`/`post-comm` | yes                                     | yes                    | yes      | yes                  | no          |
+| provisioner (default: once)            | yes                                     | no                     | no       | yes                  | yes         |
+| provisioner `run: "always"`            | yes                                     | yes                    | yes      | yes                  | yes         |
+| provisioner `run: "never"`             | only when named with `--provision-with` |                        |          |                      |             |
+
+A `vagrant up` of a machine that is already running boots nothing and runs none of these.
 
 ## cloud-init
 
@@ -1223,6 +1854,148 @@ config.vm.define vagrant_name, primary: true do |smc|
 end
 config.vm.define client_name, autostart: false do |client|
 ```
+````
+
+## File: references/virtualbox.md
+````markdown
+---
+Title: VirtualBox
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: Vagrant's built-in VirtualBox provider on macOS Apple silicon (VirtualBox 7.1 and 7.2)
+Last reviewed: 2026-11-09
+Summary: >-
+  VirtualBox under Vagrant on an Apple silicon Mac: which versions run arm64 guests, Vagrant's support by version, provider options, macOS
+  host-only networks and their allowed range, internal networks, VBoxManage equivalents of prlctl, and the Extension Pack licence.
+---
+
+# VirtualBox
+
+VirtualBox is Vagrant's built-in, documented default provider ([vagrant-providers-default.md]). On this Mac it runs beside Parallels: VirtualBox 7.2.22 (upgraded from 7.2.10 that day) with the Oracle Extension Pack 7.2.10, arm64
+bento boxes for it, and one lab (observed 2026-11-09). Captures named `[file]` are in [documents/research-sources-20261109/](../documents/research-sources-20261109/readme.md) unless another folder is named.
+
+## Contents
+
+- [Apple silicon support](#apple-silicon-support)
+- [Vagrant support by version](#vagrant-support-by-version)
+- [Provider block](#provider-block)
+- [Networking on a macOS host](#networking-on-a-macos-host)
+- [VBoxManage for a lab](#vboxmanage-for-a-lab)
+- [Licence: base package and Extension Pack](#licence-base-package-and-extension-pack)
+- [Worked example](#worked-example)
+
+## Apple silicon support
+
+| Version             | What it changed on an Arm Mac                                                            | Source                                       |
+| ------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------- |
+| 7.1.0 (2024-09-09)  | "macOS/Arm host: Arm virtualization for Linux and BSD VMs"                               | [virtualbox-changelog-7.1.md]                |
+| 7.1.x               | macOS/Arm UI loses its BETA label; Arm Guest Additions upgrade from the Devices menu     | [virtualbox-changelog-7.1.md]                |
+| 7.1.6               | the floor bento states for its arm64 VirtualBox boxes ("Virtualbox 7.1.6+ required")     | [bento-readme-github.md] (2026-11-07 folder) |
+| 7.2.0               | the saved state of Arm VMs from 7.1 is incompatible: shut such VMs down before upgrading | [virtualbox-changelog-7.2.md]                |
+| 7.2.22 (2026-10-20) | latest release; this Mac runs it since 2026-11-09                               | [virtualbox-changelog-7.2.md]                |
+
+All VERIFIED_PRIMARY. The guest must be arm64: VirtualBox on an Arm host virtualizes Arm guests, so an amd64 box is not a lab path here (as with Parallels, [boxes-and-pinning.md](boxes-and-pinning.md#architecture-on-apple-silicon)). Before a 7.1 to 7.2
+upgrade, `vagrant halt` every machine that is `saved` (`vagrant suspend` leaves one in that state) and delete snapshots that carry a saved state, or they will not restore.
+
+## Vagrant support by version
+
+Vagrant checks the installed VirtualBox version and refuses one it does not know. Support was added in (VERIFIED_PRIMARY, [vagrant-changelog-main-github.md]): VirtualBox 7.0 in Vagrant 2.3.2
+(GH-12947), 7.1 in **2.4.2** (2024-11-01, GH-13513), 7.2 in **2.4.9** (2025-08-21, GH-13709). So VirtualBox 7.2 needs Vagrant 2.4.9, the latest release; upgrading VirtualBox to a new minor line before
+Vagrant supports it stops every VirtualBox lab. On macOS, Vagrant 2.3.3 added VirtualBox 7 "hostonlynets" for `private_network` (GH-12983, [vagrant-pr-12983.md]).
+
+## Provider block
+
+```ruby
+config.vm.provider "virtualbox" do |vb|
+  vb.name = "lab-a"                 # the VirtualBox VM name; default <folder>_<timestamp>
+  vb.memory = 4096                  # MiB
+  vb.cpus = 4
+  vb.gui = false                    # headless
+  # vb.linked_clone = true          # differencing disk on a master VM imported once; default is a full import
+  # vb.check_guest_additions = false
+  # vb.default_nic_type = "virtio"
+  vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]   # runs in the order written
+end
+```
+
+Options and their defaults: [vagrant-vbox-configuration.md] (VERIFIED_PRIMARY). `customize` runs `VBoxManage` with `:id` replaced, in the order given, before boot. As with Parallels, a `customize`
+that adds something (`storageattach` of a new disk) is wrong on every boot; a primary disk is grown with `config.vm.disk :disk, size: "<N>GB", primary: true`, which Vagrant's disk docs show for
+VirtualBox and which cannot shrink a disk ([vagrant-disks-usage.md], 2026-11-07 folder).
+
+## Networking on a macOS host
+
+```text
+ Mac host (VirtualBox 7.x)
+ ├─ NAT (adapter 1, default) ─────────── per-VM NAT; Vagrant's SSH path via a forwarded port
+ ├─ host-only NETWORK (not adapter) ──── host gets the lowest address of the range; VMs and host share it
+ │     only inside the allowed range, unless /etc/vbox/networks.conf adds one
+ ├─ internal network "name" ──────────── VM to VM only, no host, no DHCP unless configured
+ └─ bridged to en0 ───────────────────── the real LAN
+```
+
+- "Hosts running recent macOS versions do not support host-only adapters. These adapters are replaced by host-only networks, which define a network mask and an IP address range, where the host network
+  interface receives the lowest address in the range" (VERIFIED_PRIMARY, [virtualbox-manual-networking.md]). Vagrant 2.3.3 and later create these for `private_network` on macOS
+  ([vagrant-pr-12983.md]).
+- On Linux, macOS and Solaris, VirtualBox allows host-only addresses only in its default range (a /21; the exact range is in [virtualbox-manual-networking.md]) and IPv6 link-local only; other ranges
+  are enabled in `/etc/vbox/networks.conf`. The host-only interface limit on Linux and macOS is 128 (VERIFIED_PRIMARY, same capture). A `private_network` address outside the range fails at `vagrant
+  up`, and Vagrant validates the range itself since 2.2.19 (GH-12564, [vagrant-changelog-main-github.md]). Editing `networks.conf` is a host change for the operator, not a lab script.
+- `virtualbox__intnet: "<name>"` on a `private_network` makes it an internal network; the double underscore marks a VirtualBox-only option that other providers ignore ([vagrant-vbox-networking.md]).
+  Two machines with the same name share the wire, with no host on it: the VirtualBox equivalent of the Parallels host-only wire used for a site trunk.
+- `name: "<host-only network>"` picks which host-only network an interface uses ([vagrant-vbox-networking.md]).
+
+## VBoxManage for a lab
+
+From the 7.2.10 help, captured before the same-day upgrade to 7.2.22 ([virtualbox-7.2.10-vboxmanage-help.txt], VERIFIED_PRIMARY). Every call gets a `timeout`.
+
+| Need                    | Command                                                                                            | Writes           |
+| ----------------------- | -------------------------------------------------------------------------------------------------- | ---------------- |
+| What exists             | `VBoxManage list vms`; `VBoxManage list runningvms`                                                | no               |
+| One VM as key=value     | `VBoxManage showvminfo <vm> --machinereadable`                                                     | no               |
+| Console picture         | `VBoxManage controlvm <vm> screenshotpng <file.png>`                                               | no (a local PNG) |
+| Command without network | `VBoxManage guestcontrol <vm> run --username <u> --passwordfile <f> --exe /bin/bash -- -c '<cmd>'` | guest            |
+| Graceful stop           | `VBoxManage controlvm <vm> acpipowerbutton`                                                        | yes              |
+| Cold reset              | `VBoxManage controlvm <vm> reset` ("the state of the VM is not saved")                             | yes              |
+| Power off               | `VBoxManage controlvm <vm> poweroff` ("data might be lost")                                        | yes              |
+| Snapshot                | `VBoxManage snapshot <vm> take <name>`; `list`; `restore <name>`                                   | yes              |
+| Extension Pack in use   | `VBoxManage list extpacks`                                                                         | no               |
+
+`guestcontrol` needs the Guest Additions running and a guest account and password, unlike `prlctl exec`, which runs as root through Parallels Tools; prefer `vagrant ssh` and keep the password in a
+file outside the repo, never on the command line. `screenshotpng` plays the role of `prlctl capture` for a wedged guest.
+
+## Licence: base package and Extension Pack
+
+| Part                             | Licence                                                                                                                           | Source (VERIFIED_PRIMARY)     |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| VirtualBox base package          | GPLv3; "perpetual and cannot be taken back unless you violate the license"                                                        | [virtualbox-licensing-faq.md] |
+| Oracle VirtualBox Extension Pack | PUEL: free for personal and educational use; "expressly exclude any use of the product for commercial purposes or to operate or   | [virtualbox-licensing-faq.md] |
+|                                  |   run a business"; an Enterprise licence is sold for that; no trial                                                               |                               |
+
+Vagrant does not need the Extension Pack; the base package runs the provider. This Mac has Extension Pack 7.2.22 installed (observed 2026-11-09, `VBoxManage list extpacks`: "Oracle Cloud
+Infrastructure integration, PXE ROM"). Whether its use here is personal or business is the operator's call, not this pack's; a lab that needs neither feature can run without it. This is a summary of
+Oracle's FAQ, not legal advice.
+
+## Worked example
+
+`vagrant_stuff/family-friendly-vsmc01/Vagrantfile` (untracked working copy, read 2026-11-09; addresses redacted): a bento/ubuntu-22.04 SMC machine with two internal networks for its LAN segments and
+promiscuous NICs, and a desktop client VM on the same internal network.
+
+```ruby
+c.vm.network "private_network", ip: "<lab-a>", auto_config: false, virtualbox__intnet: "smc01_lan"   # eth4: segment for the client VM
+c.vm.provider "virtualbox" do |vb|
+  vb.name = vagrant_name
+  vb.memory = 2048
+  vb.cpus = 1
+  vb.customize ["modifyvm", :id, "--nic1", "nat"]
+  vb.customize ["modifyvm", :id, "--natnet1", "<private /24>"]       # moves the NAT range off a clash
+  vb.customize ["modifyvm", :id, "--nicpromisc4", "allow-all"]
+  vb.customize ["modifyvm", :id, "--nicpromisc5", "allow-all"]
+end
+```
+
+The box is pinned only for the client (`cloudicio/ubuntu-desktop` 24.04.1); the SMC machine's `bento/ubuntu-22.04` has no `box_version`, which `vagrantfile_lint.py --provider virtualbox` reports. The
+file is not in git yet, which breaks the project-copy rule ([lab-safety-and-guards.md](lab-safety-and-guards.md#keep-a-project-copy-of-the-canonical-vagrantfile)).
 ````
 
 ## File: scripts/check_governance.py
@@ -1784,6 +2557,31 @@ if __name__ == "__main__":
     sys.exit(main())
 ````
 
+## File: scripts/doc-freshness-baseline.json
+````json
+{
+ "no-header:.ai-context/governance-pack.md": "2026-11-09",
+ "no-header:references/boxes-and-pinning.md": "2026-11-09",
+ "no-header:references/clones-snapshots-and-identity.md": "2026-11-09",
+ "no-header:references/evolution-and-write-back.md": "2026-11-09",
+ "no-header:references/lab-safety-and-guards.md": "2026-11-09",
+ "no-header:references/licensing-and-editions.md": "2026-11-09",
+ "no-header:references/networking-and-synced-folders.md": "2026-11-09",
+ "no-header:references/operations-cookbook.md": "2026-11-09",
+ "no-header:references/parallels-prlctl.md": "2026-11-09",
+ "no-header:references/tool-choice-and-lab-symmetry.md": "2026-11-09",
+ "no-header:references/upgrade-and-troubleshooting.md": "2026-11-09",
+ "no-header:references/vagrantfile-and-provisioning.md": "2026-11-09",
+ "no-header:tests/eval-procedure.md": "2026-11-09",
+ "no-header:tests/scenarios.md": "2026-11-09",
+ "over-budget:AI_NAVIGATION.md": "lines=154 bytes=10079 AI_NAVIGATION.md: over its budget of 150 lines, 12 KB",
+ "review-due:.archcore/adr/independent-platform-pack.adr.md": "2026-11-09",
+ "review-due:.archcore/plans/keep-the-pinned-box-before-registry-eol.plan.md": "2026-11-09",
+ "review-due:.archcore/rules/lab-writes-stay-in-the-project.rule.md": "2026-11-09",
+ "review-due:.archcore/rules/memory-channel-name.rule.md": "2026-11-09"
+}
+````
+
 ## File: scripts/README.md
 ````markdown
 # Script Inventory — skill-vagrant
@@ -1905,6 +2703,26 @@ Everything below `## Task Inventory` lives outside the managed block and is main
   until that is done.
 - Helpers are generic Vagrant and Parallels rules. VM names, lab addresses and stages stay in the engaging project.
 - No helper starts, stops, resets, clones or changes a VM. A future helper that does gets a plan by default, `--apply`, a fixed lab VM name and a deadline on every call ([lab-safety-and-guards.md](../references/lab-safety-and-guards.md)).
+
+## Governance recipes (skill-ai-it)
+
+- `just govern`: governance up to the current skill-ai-it standard (adoption, record budgets with `just check`, role findings); content fixes are `/skill-ai-it refresh`. `modifies-files`.
+- `just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.
+- `just docs [folder]`: one header line per file, to triage before opening. Read-only; `safe`.
+- `just history <term>`: search rotated CHANGELOG (or SCRATCHPAD) entries in docs/history. Read-only; `safe`.
+- `just history-show <stamp>`: print one rotated entry. Read-only; `safe`.
+- `just rotate [--apply]`: move old CHANGELOG/SCRATCHPAD entries and done ROADMAP items to docs/history, verified. Plan by default; `modifies-files`.
+- `just changelog-entry --title ... --body-file ...`: add a CHANGELOG entry in this project's style, with its Contents line. Plan by default; `modifies-files`.
+- `just move-sections ...`: move named sections verbatim to an on-need reference doc. Plan by default; `modifies-files`.
+- `just outline <file.md>`: each heading with its line range, to read one section instead of the file. Read-only; `safe`.
+- `just section <file.md> "<title>"`: print one section (exact title, `Parent > Child`, `#anchor`, `~text`). Read-only; `safe`.
+````
+
+## File: scripts/role-check-baseline.json
+````json
+{
+ "readme-quick-start:README.md": "README.md: no quick start heading and no SETUP.md link"
+}
 ````
 
 ## File: scripts/vagrant_copy_check.py
@@ -2543,6 +3361,17 @@ if __name__ == "__main__":
 
 ## File: tests/eval-procedure.md
 ````markdown
+---
+Title: Evaluation procedure
+Category: evaluation
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant evaluation
+Last reviewed: 2026-11-09
+Summary: How to run a with- and without-skill evaluation of skill-vagrant in fresh contexts, the grading scale and the knowledge-value rubric; read-only VM commands only.
+---
+
 # Evaluation procedure
 
 Use a fresh credential-free client context. Run explicit invocation, an implicit realistic task, the unrelated negative control (V-S14) and a mixed task from `scenarios.md`; record client/version,
@@ -2564,6 +3393,17 @@ stop short of legal advice.
 
 ## File: tests/scenarios.md
 ````markdown
+---
+Title: Vagrant scenarios
+Category: evaluation
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant evaluation
+Last reviewed: 2026-11-09
+Summary: Evaluation scenarios V-S01 to V-S14: prompt, trigger, first reference, required decisions and prohibited conclusions for each claim the pack makes.
+---
+
 # Vagrant scenarios
 
 Each scenario passes only when the expected first reference, decision points and prohibited conclusions are met. Lab names and addresses in prompts are placeholders.
@@ -2637,19 +3477,46 @@ local hosting. Prohibit "the CLI is deprecated".
 ## V-S14 — Negative control
 
 Prompt: Resize a Proxmox VM's disk with OpenTofu. Trigger: no (skill-proxmox). First reference: none here. Prohibit loading this pack as primary.
+
+## V-S15 — Which provider came up
+
+Prompt: `vagrant up` in a new lab folder started a VirtualBox VM, but the lab was meant for Parallels. Why, and how is it fixed for good? Trigger: yes.
+First reference: `providers-and-choice.md`. Name the selection order (`--provider`, `VAGRANT_DEFAULT_PROVIDER`, the `config.vm.provider` order, plugin
+priority) and fix it in the Vagrantfile or the driver. Prohibit "uninstall VirtualBox".
+
+## V-S16 — VirtualBox private network on a Mac
+
+Prompt: A VirtualBox `private_network` with a lab address fails at `vagrant up` on an Apple silicon Mac. Trigger: yes. First reference: `virtualbox.md`.
+Name macOS host-only networks, the allowed range and `/etc/vbox/networks.conf` as an operator host change, or an internal network for a VM-only wire;
+check the VirtualBox and Vagrant versions (7.2 needs 2.4.9). Prohibit an amd64 box as a fix.
+
+## V-S17 — VirtualBox licence
+
+Prompt: Is VirtualBox free to use for this company's lab? Trigger: yes. First reference: `virtualbox.md`. Separate the GPLv3 base package from the PUEL
+Extension Pack, say Vagrant needs only the base, and leave the business-use decision to the operator. Prohibit "all of VirtualBox is free for business".
+
+## V-S18 — QEMU on macOS 27
+
+Prompt: `vagrant up --provider=qemu` says port 50022 is already in use, but nothing listens on it. Trigger: yes. First reference: `qemu-and-libvirt.md`.
+Name the vagrant-qemu 0.6.4 fix for macOS 27 and the plugin update; for a second NIC name `advanced_network` and its modes. Prohibit killing processes
+on the port.
 ````
 
 ## File: AGENTS.md
 ````markdown
-@../../../AGENTS.md
-
+---
 Title: skill-vagrant Agent Policy
 Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-vagrant platform pack — canonical, cross-project source of reusable Vagrant and Parallels lab knowledge
 Last reviewed: 20261107_1700
-Summary: Agent guidance for maintaining and using skill-vagrant: artifact roles, the package contract, the write-back obligation, the boundary with skill-proxmox, and the gates to run before
+Summary: "Agent guidance for maintaining and using skill-vagrant: artifact roles, the package contract, the write-back obligation, the boundary with skill-proxmox, and the gates to run before"
+Budget: 150 lines, 12 KB
+---
+
+@../../../AGENTS.md
+
 calling work complete.
 
 # AGENTS.md
@@ -2781,12 +3648,22 @@ Invoke `skill-coder` before adding or changing any script in this pack (operator
 
 ## File: AI_NAVIGATION.md
 ````markdown
+---
+Title: AI Navigation — skill-vagrant
+Category: navigation
+Status: current
+Authority: local-supplement
+Scope: Root AI_NAVIGATION.md of skill-vagrant
+Last reviewed: 2026-11-09
+Summary: "Router for agents working on skill-vagrant: read order, source priority, task and domain routing to the eleven references, checks, and pack artifacts."
+Review by: 2026-12-09
+Budget: 150 lines, 12 KB
+---
+
 # AI Navigation — skill-vagrant
 
 Purpose: this file is the project context entrypoint for AI agents. It tells agents where project truth lives, what to read first, what is authoritative, what is temporary, and what must be updated
-after work.
-
-This file is a router, not the full knowledge store.
+after work. It is a router, not the full knowledge store.
 
 <!-- This Contents block sits OUTSIDE the managed markers on purpose: it indexes the whole file,
      including any project-authored sections below the END marker, and the upgrader regenerates
@@ -2798,12 +3675,7 @@ This file is a router, not the full knowledge store.
 - [Source priority](#source-priority)
 - [Project context files](#project-context-files)
 - [Task routing](#task-routing)
-  - [Architecture/design questions](#architecturedesign-questions)
-  - [Planning/status questions](#planningstatus-questions)
-  - [Agent/governance questions](#agentgovernance-questions)
-  - [Implementation/code questions](#implementationcode-questions)
 - [Script and Task Navigation](#script-and-task-navigation)
-  - [Documentation updates](#documentation-updates)
 - [Governance coherence checks](#governance-coherence-checks)
 - [Companion consistency](#companion-consistency)
 - [Drift handling](#drift-handling)
@@ -2831,8 +3703,7 @@ archives. `SCRATCHPAD.md` is transient unless marked `KEEP` or promoted.
 ## Project context files
 
 High: `AGENTS.md`, `CLAUDE.md`, this file, `context-map.yaml`; highest when present: `.archcore/`. Medium-high: `CHANGELOG.md`, `ARCHITECTURE.md`, `ROADMAP.md`. Medium: `memory-bank/`. Low:
-`SCRATCHPAD.md`. On need only: `docs/history/` (rotated records, `just history <term>`) and `docs/trackers/` (open items). Generated, never truth: `.ai-context/`. Full table:
-[reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/read-order-and-sources.md#project-context-files).
+`SCRATCHPAD.md`. On need only: `docs/history/` (rotated records, `just history <term>`) and `docs/trackers/` (open items). Generated, never truth: `.ai-context/`. Full table: [reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/read-order-and-sources.md#project-context-files).
 
 ## Task routing
 
@@ -2874,13 +3745,11 @@ Decision: `.archcore/adr/`. Rule: `.archcore/rules/` or `AGENTS.md`. Routing: th
 
 ## Context compaction recovery
 
-Re-read this file, `.archcore/` and the newest `CHANGELOG.md` entries; check `SCRATCHPAD.md` against the memory backends; confirm companions agree. Steps:
-[reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/recovery-and-audit.md#context-compaction-recovery).
+Re-read this file, `.archcore/` and the newest `CHANGELOG.md` entries; check `SCRATCHPAD.md` against the memory backends; confirm companions agree. Steps: [reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/recovery-and-audit.md#context-compaction-recovery).
 
 ## Audit procedure
 
-`just check` and `just stale` cover the mechanical part; the ten manual checks are in the
-[reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/recovery-and-audit.md#audit-procedure).
+`just check` and `just stale` cover the mechanical part; the ten manual checks are in the [reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/recovery-and-audit.md#audit-procedure).
 
 ## Agent answer contract
 
@@ -2891,45 +3760,79 @@ assumptions.
 
 ## Pack domain routing
 
-Project-authored, outside the managed block. Mirrors the routing table in [SKILL.md](SKILL.md); the governance checker fails when a reference file is missing from either.
-Ordinary tasks load one reference. A Proxmox VM or OpenTofu task starts in [skill-proxmox](../skill-proxmox/SKILL.md); what runs inside the guest starts in that domain's skill.
+Project-authored, outside the managed block. Mirrors the routing table in [SKILL.md](SKILL.md); the governance checker fails when a reference file is missing from either. Ordinary tasks load one reference; three cover VirtualBox, QEMU and libvirt beside Parallels. A Proxmox VM or OpenTofu task starts in [skill-proxmox](../skill-proxmox/SKILL.md); what runs inside the guest starts in that domain's skill.
 
-| Task | Read first |
-|---|---|
-| Exact syntax: vagrant CLI, prlctl, prlsrvctl, machine-readable | [references/operations-cookbook.md](references/operations-cookbook.md) |
-| Boxes, versions, constraints, bento builds, the box registry | [references/boxes-and-pinning.md](references/boxes-and-pinning.md) |
-| Vagrantfile shape, multi-machine, provider block, provisioners | [references/vagrantfile-and-provisioning.md](references/vagrantfile-and-provisioning.md) |
+| Task                                                             | Read first                                  |
+| ---------------------------------------------------------------- | ------------------------------------------- |
+| Which provider, selection order, multi-provider Vagrantfile, the same task per provider | [references/providers-and-choice.md](references/providers-and-choice.md) |
+| VirtualBox: Apple silicon versions, macOS host-only networks, internal networks, VBoxManage, Extension Pack | [references/virtualbox.md](references/virtualbox.md) |
+| vagrant-qemu (macOS 27 fix, vmnet/socket modes, serial console) and vagrant-libvirt on a Linux host | [references/qemu-and-libvirt.md](references/qemu-and-libvirt.md) |
+| Exact syntax: vagrant CLI, prlctl, prlsrvctl, machine-readable   | [references/operations-cookbook.md](references/operations-cookbook.md) |
+| Boxes, versions, constraints, bento builds, the box registry     | [references/boxes-and-pinning.md](references/boxes-and-pinning.md) |
+| Vagrantfile shape, multi-machine, provider block, provisioners   | [references/vagrantfile-and-provisioning.md](references/vagrantfile-and-provisioning.md) |
 | Shared, host-only, bridged, second adapter, DHCP, synced folders | [references/networking-and-synced-folders.md](references/networking-and-synced-folders.md) |
-| prlctl exec, capture, reset, Parallels Tools, editions | [references/parallels-prlctl.md](references/parallels-prlctl.md) |
-| Linked clones, machine-id, snapshots, identity of a copy | [references/clones-snapshots-and-identity.md](references/clones-snapshots-and-identity.md) |
-| Wrong-VM guards, deadlines, quoting, write gates, copies | [references/lab-safety-and-guards.md](references/lab-safety-and-guards.md) |
-| Vagrant or OpenTofu, symmetry with an x86 Proxmox lab | [references/tool-choice-and-lab-symmetry.md](references/tool-choice-and-lab-symmetry.md) |
-| Vagrant licence (MIT, BUSL, MIT again), Parallels editions | [references/licensing-and-editions.md](references/licensing-and-editions.md) |
-| Upgrades, broken shared folders, wedged guests, triage | [references/upgrade-and-troubleshooting.md](references/upgrade-and-troubleshooting.md) |
-| Reusable learning capture and engagement closeout | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
+| prlctl exec, capture, reset, Parallels Tools, editions           | [references/parallels-prlctl.md](references/parallels-prlctl.md) |
+| Linked clones, machine-id, snapshots, identity of a copy         | [references/clones-snapshots-and-identity.md](references/clones-snapshots-and-identity.md) |
+| Wrong-VM guards, deadlines, quoting, write gates, copies         | [references/lab-safety-and-guards.md](references/lab-safety-and-guards.md) |
+| Vagrant or OpenTofu, symmetry with an x86 Proxmox lab            | [references/tool-choice-and-lab-symmetry.md](references/tool-choice-and-lab-symmetry.md) |
+| Vagrant licence (MIT, BUSL, MIT again), Parallels editions       | [references/licensing-and-editions.md](references/licensing-and-editions.md) |
+| Upgrades, broken shared folders, wedged guests, triage           | [references/upgrade-and-troubleshooting.md](references/upgrade-and-troubleshooting.md) |
+| Reusable learning capture and engagement closeout                | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
 
 ## Pack artifacts
 
-| Artifact | Role | Enforced by |
-|---|---|---|
-| [SKILL.md](SKILL.md) | Activation surface: role, boundaries, orient-first commands, routing, write-back contract | `tests/test_package_contract.py` |
-| `references/` | Content source, one focused file per domain; each carries dated Learned entries | Contract test + `scripts/check_governance.py` |
-| [sources.yaml](sources.yaml) | Claim ledger (V-Cnn): statement, evidence rung, source type, reference, scenario | Contract test schema |
-| [compatibility.yaml](compatibility.yaml) | Environment ledger: product version, validation layer, result | Contract test schema |
-| [documents/readme.md](documents/readme.md) | Index of the dated research-source folders | Contract test |
-| [documents/research-sources-20261107/readme.md](documents/research-sources-20261107/readme.md) | Verbatim captures with URL, retrieval time and sha256 | Contract test (both directions + hash + provenance header) |
-| [tests/scenarios.md](tests/scenarios.md) | Evaluation scenarios (V-Snn) each claim links to | Contract test |
-| [tests/eval-procedure.md](tests/eval-procedure.md) | How to run a with/without-skill evaluation | — |
-| [scripts/README.md](scripts/README.md) | Helper and recipe catalog | `scripts/check_governance.py` |
-| [CHANGELOG.md](CHANGELOG.md) | Release history; `## Unreleased` collects write-back lines | Contract test |
-| [.archcore/index.guide.md](.archcore/index.guide.md) | Index of durable ADRs, rules and plans, and what is never promoted | `scripts/check_governance.py` (both directions) |
+| Artifact                                      | Role                                                                                      | Enforced by                                              |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [SKILL.md](SKILL.md)                          | Activation surface: role, boundaries, orient-first commands, routing, write-back contract | `tests/test_package_contract.py`                         |
+| `references/`                                 | Content source, one focused file per domain; each carries dated Learned entries           | Contract test + `scripts/check_governance.py`            |
+| [sources.yaml](sources.yaml)                  | Claim ledger (V-Cnn): statement, evidence rung, source type, reference, scenario          | Contract test schema                                     |
+| [compatibility.yaml](compatibility.yaml)      | Environment ledger: product version, validation layer, result                             | Contract test schema                                     |
+| [documents/readme.md](documents/readme.md)    | Index of the dated research-source folders                                                | Contract test                                            |
+| [documents/research-sources-20261107/readme.md](documents/research-sources-20261107/readme.md) | Verbatim captures with URL, retrieval time and sha256                                     | Contract test (both directions + hash +                  |
+|                                               |                                                                                           |   provenance header)                                     |
+| [tests/scenarios.md](tests/scenarios.md)      | Evaluation scenarios (V-Snn) each claim links to                                          | Contract test                                            |
+| [tests/eval-procedure.md](tests/eval-procedure.md) | How to run a with/without-skill evaluation                                                | —                                                        |
+| [scripts/README.md](scripts/README.md)        | Helper and recipe catalog                                                                 | `scripts/check_governance.py`                            |
+| [CHANGELOG.md](CHANGELOG.md)                  | Release history; `## Unreleased` collects write-back lines                                | Contract test                                            |
+| [.archcore/index.guide.md](.archcore/index.guide.md) | Index of durable ADRs, rules and plans, and what is never promoted                        | `scripts/check_governance.py` (both directions)          |
 ````
 
 ## File: CHANGELOG.md
 ````markdown
+---
+Title: Changelog
+Category: change-log
+Status: current
+Summary: Newest entries only; older ones rotate to docs/history.
+Authority: record
+Scope: Dated changes to this project
+Kind: log
+Budget: 200 lines, 25 KB
+Last reviewed: 2026-11-08
+---
+
 # Changelog
 
 ## Unreleased
+
+- 2026-11-09 review and online research (operator: "confirm if the skill is defined properly ... do online research"); captures in `documents/research-sources-20261109/`.
+- 2026-11-09 references/networking-and-synced-folders.md: vagrant-parallels 2.4.10 drops `big_writes` on libfuse3 guests (issue 526).
+- 2026-11-09 references/boxes-and-pinning.md: no post-EOL home for bento yet (RFC 1699); amd64 boxes are not a lab path.
+- 2026-11-09 references/vagrantfile-and-provisioning.md: no disk-size option in vagrant-parallels; `prlctl set --device-set hdd0 --size`.
+- 2026-11-09 references/licensing-and-editions.md: no Vagrant release after v2.4.9; the Mac runs vagrant-parallels 2.4.10.
+- 2026-11-09 references/upgrade-and-troubleshooting.md: `big_writes` triage row; upgrade-order and wedged-guest diagrams.
+- 2026-11-09 scope widened to every provider the operator uses (operator: "Vagrant is not only limited to parallels but I also use qemu and
+  virtualbox"): new references/providers-and-choice.md, references/virtualbox.md, references/qemu-and-libvirt.md; SKILL.md description, stack
+  diagram, orient-first and routing; claims V-C27 to V-C35, scenarios V-S15 to V-S18, environments lab-mac-2026-11-09 and provider-docs-2026-11-09.
+- 2026-11-09 diagrams and tables (operator: "add ASCII diagrams and tables"): network topology and DHCP identity, clone chain and copy-identity table,
+  what-runs-when matrix, guard flow, registry timeline, ways into a guest.
+- 2026-11-09 governance: skill-ai-it refresh (`just govern`); front matter on every reference and test document; `Last reviewed` on the `.archcore/`
+  documents; AI_NAVIGATION.md within its 150-line budget; doc-freshness findings fixed, not baselined.
+
+- 2026-11-08 write-back from smc-resiliency S1V: references/parallels-prlctl.md (prlctl exec joins arguments; Tools refusals; stdin uploads; lvextend with a read-only /etc)
+- 2026-11-07 (b) write-back from smc-resiliency's lab package: Vagrant transport behind a shared contract (references/operations-cookbook.md)
+
+- 2026-11-07 write-back from smc-resiliency: references/parallels-prlctl.md, references/clones-snapshots-and-identity.md, references/tool-choice-and-lab-symmetry.md (Learned 2026-11-07).
 
 - 20261107 Disputed 2026-11-07 in `references/tool-choice-and-lab-symmetry.md`: a Parallels-maintained OpenTofu provider (parallels/parallels-desktop v0.7.6) exists, against the 2026-11-07 statement
   that none does; the recommendation (Vagrant for local VMs) stands.
@@ -3042,6 +3945,22 @@ environments:
     observed_at: "2026-11-07"
     evidence_locator: "tests/test_helpers.py with faked commands; read-only runs of the inventory and lint on the lab Mac"
     validation_layer: offline_contract
+    result: pass
+  - id: lab-mac-2026-11-09
+    product: Vagrant providers on the lab Mac
+    product_version: "Vagrant 2.4.9; macOS 27 (Darwin 27.2)"
+    components: ["vagrant-parallels 2.4.9, updated to 2.4.10 the same day", "VirtualBox 7.2.10, upgraded to 7.2.22 the same day, Extension Pack 7.2.22", "vagrant-qemu 0.6.3, updated to 0.7.0 the same day", "QEMU 11.1.3 (Homebrew)", "vagrant-libvirt 0.12.2", "bento/ubuntu-24.04 202510.26.0 for parallels and virtualbox, arm64"]
+    observed_at: "2026-11-09"
+    evidence_locator: "read-only vagrant plugin list, VBoxManage --version and list extpacks, qemu-system-aarch64 --version, vagrant box list, vagrant global-status on the operator's Mac"
+    validation_layer: observed_install
+    result: pass
+  - id: provider-docs-2026-11-09
+    product: VirtualBox, vagrant-qemu, vagrant-libvirt and Vagrant provider documentation
+    product_version: "VirtualBox 7.1 and 7.2 changelogs to 7.2.22; vagrant-qemu README and CHANGELOG to 0.7.0; vagrant-libvirt docs main; Vagrant CHANGELOG main"
+    components: [Apple silicon support, host-only networks, Extension Pack licence, VBoxManage help, vagrant-qemu options and networking, libvirt connection options, provider selection]
+    observed_at: "2026-11-09"
+    evidence_locator: "verbatim captures in documents/research-sources-20261109"
+    validation_layer: official_documented
     result: pass
 ````
 
@@ -3463,6 +4382,12 @@ pack:
   memory_channel: "vagrant"
   counterpart_skill: "../skill-proxmox"
   references:
+    - path: "references/providers-and-choice.md"
+      task: "Which provider, selection order, multi-provider Vagrantfile, the same task per provider"
+    - path: "references/virtualbox.md"
+      task: "VirtualBox: Apple silicon versions, macOS host-only networks, internal networks, VBoxManage, Extension Pack"
+    - path: "references/qemu-and-libvirt.md"
+      task: "vagrant-qemu (macOS 27 fix, vmnet/socket modes, serial console) and vagrant-libvirt on a Linux host"
     - path: "references/operations-cookbook.md"
       task: "Exact syntax: vagrant CLI, prlctl, prlsrvctl, machine-readable"
     - path: "references/boxes-and-pinning.md"
@@ -3578,6 +4503,7 @@ audit-scripts:
 check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
@@ -3670,6 +4596,54 @@ nav-check-diff: _require-venv
 # package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
 nav-selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/selftest_blocks.py"
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root .
+
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/checks/govern_guard.py" --project-root "$root" || exit 1; fi
+    if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
+      nav="$(mktemp)"
+      {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
+      elif grep -q "would" "$nav"; then
+        {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+      fi
+      rm -f "$nav"
+    fi
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_code_map.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/add_changelog_entry.py" --project-root . "$@"
+
+# Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
+move-sections *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"
 ````
 
 ## File: Justfile
@@ -3763,6 +4737,7 @@ audit-scripts:
 check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
@@ -3855,10 +4830,70 @@ nav-check-diff: _require-venv
 # package's templates change, before trusting nav-upgrade to rewrite this project's blocks.
 nav-selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/selftest_blocks.py"
+
+# Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
+roles: _require-venv
+    @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root .
+
+# One-step governance to the current skill-ai-it standard: adoption, budgets + check, role findings; content fixes: /skill-ai-it refresh. Modifies files
+govern: _require-venv
+    #!/usr/bin/env bash
+    # Runtime budget: under 60 s on a governed project (measured 2026-10-14 in CHANGELOG); each step prints its own result.
+    root="$(cd "." && pwd)" || exit 2
+    start=$(date +%s)
+    if [ "${GOVERN_ALLOW_DIRTY:-}" != "1" ]; then {{py}} "{{ai_it}}/scripts/checks/govern_guard.py" --project-root "$root" || exit 1; fi
+    if grep -q "skill-ai-it-version" "$root/AI_NAVIGATION.md" 2>/dev/null; then
+      nav="$(mktemp)"
+      {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" --dry-run >"$nav" 2>&1
+      if grep -qiE "REFUSED|re-serialised|legacy-layout|proposed" "$nav"; then echo "navigation blocks: upgrade needs review, run /skill-ai-it refresh"
+      elif grep -q "would" "$nav"; then
+        {{py}} "{{ai_it}}/scripts/navigation/upgrade_navigation_control_layer.py" --project-root "$root" | grep -E "^Changed files" || true
+      fi
+      rm -f "$nav"
+    fi
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_governed_files.py" --project-root "$root" --apply || exit 1
+    {{py}} "{{ai_it}}/scripts/adoption/adopt_code_map.py" --project-root "$root" --apply || exit 1
+    log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
+    {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root"
+    echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
+    exit $rc
+
+# Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
+[positional-arguments]
+changelog-entry *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/add_changelog_entry.py" --project-root . "$@"
+
+# Move durable reference sections (anchors, procedures) out of a governed file into an on-need doc: plan by default, `--apply` to write
+[positional-arguments]
+move-sections *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/move_sections.py" --project-root . "$@"
+
+# Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
+[positional-arguments]
+outline *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . outline "$@"
+
+# Print one section by title, `Parent > Child` path or #anchor (exact by default, `~text` for a substring): `just section docs/x.md "Stage 1"`. Read-only
+[positional-arguments]
+section *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"
 ````
 
 ## File: README.md
 ````markdown
+---
+Title: skill-vagrant
+Category: readme
+Status: current
+Authority: canonical
+Scope: Root README.md of skill-vagrant
+Last reviewed: 2026-11-07
+Summary: "Canonical, cross-project platform pack for local lab VMs with Vagrant and the Parallels provider on macOS Apple silicon: boxes and pins, Vagrantfiles, networks, linked clones and..."
+Review by: 2026-12-09
+Budget: 200 lines, 25 KB
+---
+
 # skill-vagrant
 
 Canonical, cross-project platform pack for local lab VMs with Vagrant and the Parallels provider on macOS Apple silicon: boxes and pins, Vagrantfiles, networks, linked clones and machine-id, prlctl,
@@ -3899,6 +4934,20 @@ the engaging project. The counterpart pack for the x86 lab is [skill-proxmox](..
 
 ## File: SCRATCHPAD.md
 ````markdown
+---
+Title: Scratchpad
+Category: working-state
+Status: current
+Summary: Current working state; older entries rotate to docs/history, older open items to docs/trackers.
+Authority: working-state
+Scope: Working state between sessions
+Kind: state
+Budget: 200 lines, 25 KB
+Last reviewed: 2026-11-08
+Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
+Open items tracker: docs/trackers/open-items-20261109_1123.md
+---
+
 # SCRATCHPAD
 
 Agent working memory for skill-vagrant. Use for: draft plans, terminal output, intermediate analysis, refactor outlines. Cleared between sessions unless content is explicitly marked KEEP.
@@ -3913,6 +4962,7 @@ Agent working memory for skill-vagrant. Use for: draft plans, terminal output, i
 
 ## Open items
 
+- [ ] `just check` fails (seen 2026-11-08 from smc-resiliency's slurp): files with no header summary (AI_NAVIGATION, .ai-context and others), as in skill-proxmox: pack adoption work, write each summary from its file.
 - [ ] Operator review of the four `.archcore/` documents (all `proposed`) — index [.archcore/index.guide.md](.archcore/index.guide.md).
 - [ ] Keep the pinned box before the registry closes (2026-12-31): `vagrant box repackage bento/ubuntu-24.04 parallels 202510.26.0`, stored outside the repo with its sha256 (operator's call where).
 - [ ] Test on the arm64 lab whether `apt-get update --snapshot <id>` works against `ports.ubuntu.com` (UNVERIFIED in `references/tool-choice-and-lab-symmetry.md`).
@@ -3937,11 +4987,13 @@ Agent working memory for skill-vagrant. Use for: draft plans, terminal output, i
 ---
 name: skill-vagrant
 description: >-
-  Build, pin, run and troubleshoot local Vagrant labs on macOS Apple silicon with the Parallels provider (vagrant-parallels): boxes and version pinning
-  (bento arm64), multi-machine Vagrantfiles, provider customize events, private and second networks (Parallels shared, host-only, bridged), synced
-  folders, provisioners, triggers and cloud-init, `vagrant ssh -c` with SSH options, linked clones and their shared machine-id, prlctl exec, capture,
-  reset and snapshots, guards that refuse the wrong VM, project copies of a canonical Vagrantfile, Vagrant versus OpenTofu, licensing and editions.
-  Use for Vagrant or Parallels lab VM work; not for Proxmox or OpenTofu (skill-proxmox) and not for what runs inside the guest (that project's skill).
+  Build, pin, run and troubleshoot local Vagrant labs on macOS Apple silicon with any of the operator's providers: Parallels (vagrant-parallels,
+  the default), VirtualBox 7.1/7.2, QEMU (vagrant-qemu) and libvirt (vagrant-libvirt against a Linux KVM host). Covers provider choice and
+  selection order, boxes and version pinning (bento arm64), multi-machine and multi-provider Vagrantfiles, customize events, networks per provider
+  (Parallels shared and host-only, VirtualBox host-only networks and internal networks, QEMU vmnet and socket modes), synced folders, provisioners,
+  triggers and cloud-init, `vagrant ssh -c`, prlctl and VBoxManage exec, console capture and power, serial consoles, linked clones and their shared
+  machine-id, snapshots, wrong-VM guards, project copies of a canonical Vagrantfile, Vagrant versus OpenTofu, licensing and editions. Use for any
+  Vagrant lab VM work; not for Proxmox or OpenTofu (skill-proxmox) and not for what runs inside the guest (that project's skill).
 ---
 
 # Vagrant
@@ -3962,8 +5014,26 @@ description: >-
 
 ## Role and non-goals
 
-Use Vagrant for disposable, reproducible local lab VMs on a Mac: arm64 Ubuntu guests under Parallels Desktop, described by a Vagrantfile kept in source control. Do not use it as a server or fleet
+Use Vagrant for disposable, reproducible local lab VMs on a Mac: arm64 guests described by a Vagrantfile kept in source control, under Parallels
+Desktop by default, or VirtualBox, QEMU, or libvirt on a Linux host ([references/providers-and-choice.md](references/providers-and-choice.md)). Do not use it as a server or fleet
 platform (Proxmox with OpenTofu is the x86 lab: skill-proxmox), and do not describe a project's lab layout as product behaviour.
+
+```text
+ macOS host (Apple silicon)                                              owner of the knowledge
+   Vagrantfile (project copy == vagrant_stuff canonical)                 this pack + the project
+     │ vagrant up / ssh / provision / snapshot
+   Vagrant 2.4.x ── provider ─┬─► vagrant-parallels ─► prlctl ─► Parallels Desktop   (default)
+                              ├─► virtualbox (built in) ─► VBoxManage ─► VirtualBox 7.2
+                              ├─► vagrant-qemu ─► qemu-system-aarch64 (hvf, no daemon)
+                              └─► vagrant-libvirt ─► qemu+ssh ─► libvirtd on a Linux host
+   out of band: prlctl exec / capture, VBoxManage screenshotpng, the QEMU serial socket
+     └─ VM: arm64 box + its agent (Parallels Tools, Guest Additions)
+          └─ what the guest runs (SMC image, services)                  the workload's skill
+ x86 lab VMs on a Proxmox node (OpenTofu)                                skill-proxmox
+```
+
+Sibling skills (hand off, do not duplicate): `skill-proxmox` for the x86 lab node, its tokens, SDN and OpenTofu; `skill-coder` before writing or changing a Vagrantfile helper, lab driver or recipe;
+`skill-drawio` for a project's lab flow pages; the workload's own skill (for example `skill-smc`) for what runs inside the guest.
 
 ## Read, write, and evidence boundaries
 
@@ -3977,9 +5047,10 @@ private addresses in reusable guidance.
 On an unfamiliar Mac, establish the tool versions, the provider and edition, and what exists before reading anything else: the provider, the box format and the CLI flags change between releases.
 
 ```bash
-vagrant --version; vagrant plugin list; prlctl --version
+vagrant --version; vagrant plugin list; prlctl --version; VBoxManage --version; qemu-system-aarch64 --version | head -1
 prlsrvctl info --license --json | grep -E '"(edition|status)"'      # Pro, Business or Enterprise is needed for the CLI and the provider
-vagrant global-status --machine-readable                             # a cache: --prune to drop stale rows
+vagrant global-status --machine-readable                             # a cache, with each machine's provider; --prune drops stale rows
+echo "${VAGRANT_DEFAULT_PROVIDER:-unset}"                            # decides a bare `vagrant up` (providers-and-choice.md)
 vagrant box list --machine-readable; prlctl list -a -i -j            # boxes, and every VM with state, Parent VM and Tools state
 ```
 
@@ -3988,11 +5059,14 @@ vagrant box list --machine-readable; prlctl list -a -i -j            # boxes, an
 
 ## Route the task
 
-Choose the primary skill by the object **being changed**: a Vagrantfile, box, Parallels VM, network adapter or lab guard starts here; a Proxmox VM or OpenTofu plan starts in `skill-proxmox`; what the
+Choose the primary skill by the object **being changed**: a Vagrantfile, box, lab VM (any provider), network adapter or lab guard starts here; a Proxmox VM or OpenTofu plan starts in `skill-proxmox`; what the
 guest runs (an SMC image, a Nautobot install) starts in that domain's skill. Ordinary tasks load one reference.
 
 | Task                                                             | Read first                                  |
 | ---------------------------------------------------------------- | ------------------------------------------- |
+| Which provider, selection order, multi-provider Vagrantfile, the same task per provider | [references/providers-and-choice.md](references/providers-and-choice.md) |
+| VirtualBox: Apple silicon versions, macOS host-only networks, internal networks, VBoxManage, Extension Pack | [references/virtualbox.md](references/virtualbox.md) |
+| vagrant-qemu (macOS 27 fix, vmnet/socket modes, serial console) and vagrant-libvirt on a Linux host | [references/qemu-and-libvirt.md](references/qemu-and-libvirt.md) |
 | Exact syntax: vagrant CLI, prlctl, prlsrvctl, machine-readable   | [references/operations-cookbook.md](references/operations-cookbook.md) |
 | Boxes, versions, constraints, bento builds, the box registry     | [references/boxes-and-pinning.md](references/boxes-and-pinning.md) |
 | Vagrantfile shape, multi-machine, provider block, provisioners   | [references/vagrantfile-and-provisioning.md](references/vagrantfile-and-provisioning.md) |
@@ -4337,4 +5411,103 @@ claims:
     evidence: "Operator write-back contract shared with skill-nautobot (2026-10-05, evidence rule 2026-10-20)."
     reference: references/evolution-and-write-back.md
     test: V-S12
+  - id: V-C27
+    statement: "Vagrant picks a provider by --provider, then VAGRANT_DEFAULT_PROVIDER, then the first usable config.vm.provider block in file order, then installed plugins by priority."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vagrant-providers-basic_usage.md; research-sources-20261109/vagrant-providers-default.md."
+    reference: references/providers-and-choice.md
+    test: V-S15
+  - id: V-C28
+    statement: "VirtualBox virtualizes Arm Linux and BSD guests on a macOS Arm host from 7.1.0; bento's arm64 VirtualBox boxes need 7.1.6 or later; Arm saved states from 7.1 do not restore on 7.2."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/virtualbox-changelog-7.1.md; research-sources-20261109/virtualbox-changelog-7.2.md; research-sources-20261107/bento-readme-github.md."
+    reference: references/virtualbox.md
+    test: V-S16
+  - id: V-C29
+    statement: "Vagrant supports VirtualBox 7.1 from 2.4.2 and 7.2 from 2.4.9, and uses VirtualBox host-only networks for private_network on macOS from 2.3.3."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vagrant-changelog-main-github.md (GH-13513, GH-13709); research-sources-20261109/vagrant-pr-12983.md."
+    reference: references/virtualbox.md
+    test: V-S16
+  - id: V-C30
+    statement: "On macOS, VirtualBox has host-only networks, not host-only adapters; host-only addresses are limited to VirtualBox's default range unless /etc/vbox/networks.conf allows more."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/virtualbox-manual-networking.md."
+    reference: references/virtualbox.md
+    test: V-S16
+  - id: V-C31
+    statement: "The VirtualBox base package is GPLv3; the Oracle Extension Pack is under the PUEL, which excludes business use without a paid licence, and Vagrant does not need it."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/virtualbox-licensing-faq.md."
+    reference: references/virtualbox.md
+    test: V-S17
+  - id: V-C32
+    statement: "vagrant-qemu 0.6.4 fixes a false ForwardPortCollision on macOS 27; 0.7.0 adds VirtioFS folders, vagrant serial-config and growing the primary disk."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vq-changelog-github.md (0.6.4, 0.7.0)."
+    reference: references/qemu-and-libvirt.md
+    test: V-S18
+  - id: V-C33
+    statement: "vagrant-qemu ignores private_network unless advanced_network is set; on macOS vmnet needs sudo, socket_vmnet avoids root, and socket listen/connect links exactly two VMs."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vq-readme-github.md (Platform support and notes)."
+    reference: references/qemu-and-libvirt.md
+    test: V-S18
+  - id: V-C34
+    statement: "vagrant-libvirt reaches a remote libvirtd through a connection URI and needs connect_via_ssh (or a qemu+ssh uri) to learn a remote VM's address."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vl-configuration-github.md (Connection Options)."
+    reference: references/qemu-and-libvirt.md
+    test: V-S18
+  - id: V-C35
+    statement: "The lab Mac runs four Vagrant providers: vagrant-parallels 2.4.10, VirtualBox 7.2.22, vagrant-qemu 0.7.0 (all updated on 2026-11-09) with QEMU 11.1.3, and vagrant-libvirt 0.12.2."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [lab-mac-2026-11-09]
+    environment_id: lab-mac-2026-11-09
+    source_type: observed_install
+    evidence: "Read-only version commands on 2026-11-09."
+    reference: references/providers-and-choice.md
+    test: V-S15
 ````

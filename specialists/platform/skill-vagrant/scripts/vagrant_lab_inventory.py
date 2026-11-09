@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only inventory of a local Vagrant and Parallels lab: machines, VMs, linked clones, Tools state, boxes and pins.
+"""Read-only inventory of a local Vagrant lab: machines, Parallels and VirtualBox VMs, linked clones, Tools state, boxes and pins.
 
 Why: a lab session starts by knowing what exists, which VM is a linked clone of which, and whether each box pin is installed and current;
 `vagrant global-status` is a cache and names no machines, `prlctl list` knows nothing about Vagrantfiles. Promoted from the 2026-11-07
@@ -11,9 +11,11 @@ Usage:
     --latest      also ask the public box registry for each pinned box's newest version (network, 20 s per box)
     --no-edition  skip `prlsrvctl info --license --json` (only `edition` and `status` are ever read from it)
 
-Safety: read-only. It runs `vagrant global-status --machine-readable`, `vagrant box list --machine-readable`, `prlctl list -a -i -j` and
-`prlsrvctl info --license --json`, each under a deadline, reads Vagrantfiles and `.vagrant/machines/*/parallels/id` files, and changes no VM.
-Runtime budget: 5 s without --latest on a 20-VM lab (measured 2026-11-07: about 1.5 s).
+Safety: read-only. It runs `vagrant global-status --machine-readable`, `vagrant box list --machine-readable`, `prlctl list -a -i -j`,
+`VBoxManage list vms`, `VBoxManage list runningvms` and `prlsrvctl info --license --json`, each under a deadline, reads Vagrantfiles and
+`.vagrant/machines/*/<provider>/id` files (parallels, virtualbox, qemu, libvirt), and changes no VM. The vagrant commands are required; a
+hypervisor CLI that is missing or fails is reported as unavailable (2026-11-09: one Mac runs four providers, not every Mac runs all).
+Runtime budget: 5 s without --latest on a 20-VM lab (measured 2026-11-07: about 1.5 s; 2026-11-09 with VirtualBox listed: 2 s).
 Exit: 0 report printed; 1 a required command failed; 2 bad arguments.
 """
 
@@ -36,6 +38,9 @@ HTTP_TIMEOUT_S = 20
 #: Box registry API; {name} is "<user>/<box>".
 REGISTRY_URL = "https://vagrantcloud.com/api/v2/box/{name}"
 
+#: Provider folders under .vagrant/machines/<name>/ whose `id` file names the VM.
+PROVIDERS = ("parallels", "virtualbox", "qemu", "libvirt")
+
 Runner = Callable[[list[str]], str]
 
 
@@ -53,6 +58,7 @@ class Machine:
   state: str
   names: list[str] = field(default_factory=list)
   vm_uuids: dict[str, str] = field(default_factory=dict)
+  vm_providers: dict[str, str] = field(default_factory=dict)
   boxes: list[tuple[str, str]] = field(default_factory=list)
 
 
@@ -179,6 +185,42 @@ def parse_vms(text: str) -> list[dict[str, object]]:
   return vms
 
 
+def parse_vbox_vms(listing: str, running: str) -> list[dict[str, object]]:
+  """VirtualBox VMs from `VBoxManage list vms` and `VBoxManage list runningvms`: name, uuid and running or not.
+
+  Args:
+    listing: output of `VBoxManage list vms` (lines `"name" {uuid}`).
+    running: output of `VBoxManage list runningvms`, same shape.
+
+  Returns:
+    One dict per VM, in listing order; lines of another shape are skipped.
+  """
+  line = re.compile(r'^"(?P<name>.*)" \{(?P<uuid>[0-9a-fA-F-]+)\}\s*$')
+  up = {m.group("uuid") for m in map(line.match, running.splitlines()) if m}
+  vms = []
+  for found in map(line.match, listing.splitlines()):
+    if found:
+      uuid = found.group("uuid")
+      vms.append({"name": found.group("name"), "uuid": uuid, "state": "running" if uuid in up else "not running"})
+  return vms
+
+
+def optional(run: Runner, argv: list[str]) -> tuple[str, str]:
+  """Run a hypervisor CLI that may be absent on this Mac.
+
+  Args:
+    run: the command runner.
+    argv: the read-only command.
+
+  Returns:
+    (output, "ok"), or ("", "unavailable: <reason>") when the command is missing or fails.
+  """
+  try:
+    return run(argv), "ok"
+  except InventoryError as exc:
+    return "", f"unavailable: {str(exc)[:120]}"
+
+
 def vagrantfile_boxes(text: str) -> list[tuple[str, str]]:
   """(box, box_version) pairs written as literals in a Vagrantfile; a missing version is "" and a computed one "?".
 
@@ -207,7 +249,7 @@ def vagrantfile_boxes(text: str) -> list[tuple[str, str]]:
 
 
 def attach_homes(machines: list[Machine]) -> None:
-  """Fill each machine's Vagrantfile box pins and its Parallels VM ids from its home folder (read-only).
+  """Fill each machine's Vagrantfile box pins and its provider VM ids from its home folder (read-only).
 
   Args:
     machines: rows from parse_global_status; changed in place.
@@ -220,10 +262,14 @@ def attach_homes(machines: list[Machine]) -> None:
     vagrantfile = home / "Vagrantfile"
     if vagrantfile.is_file():
       m.boxes = vagrantfile_boxes(vagrantfile.read_text(encoding="utf-8", errors="replace"))
-    for id_file in sorted(home.glob(".vagrant/machines/*/parallels/id")):
+    for id_file in sorted(home.glob(".vagrant/machines/*/*/id")):
+      provider = id_file.parent.name
+      if provider not in PROVIDERS:
+        continue
       name = id_file.parent.parent.name
       m.names.append(name)
       m.vm_uuids[name] = id_file.read_text(encoding="utf-8").strip().strip("{}")
+      m.vm_providers[name] = provider
 
 
 def latest_version(name: str, fetch: Callable[[str], bytes] | None = None) -> str:
@@ -275,15 +321,19 @@ def collect(run: Runner, want_latest: bool, want_edition: bool, fetch: Callable[
     fetch: optional URL fetcher passed to latest_version.
 
   Returns:
-    A dict with machines, vms, boxes, pins and edition.
+    A dict with machines, vms (Parallels), vbox_vms, hypervisors (CLI status), boxes, pins and edition.
 
   Raises:
-    InventoryError: when a required command fails.
+    InventoryError: when a required vagrant command fails.
   """
   machines = parse_global_status(run(["vagrant", "global-status", "--machine-readable"]))
   attach_homes(machines)
   boxes = parse_box_list(run(["vagrant", "box", "list", "--machine-readable"]))
-  vms = parse_vms(run(["prlctl", "list", "-a", "-i", "-j"]))
+  prl_out, prl_status = optional(run, ["prlctl", "list", "-a", "-i", "-j"])
+  vms = parse_vms(prl_out) if prl_out else []
+  vbox_out, vbox_status = optional(run, ["VBoxManage", "list", "vms"])
+  running_out, _ = optional(run, ["VBoxManage", "list", "runningvms"]) if vbox_out else ("", "")
+  vbox_vms = parse_vbox_vms(vbox_out, running_out)
   installed = {(b.get("name"), b.get("version")) for b in boxes}
   pins = []
   newest: dict[str, str] = {}
@@ -299,9 +349,28 @@ def collect(run: Runner, want_latest: bool, want_edition: bool, fetch: Callable[
     "edition": edition(run) if want_edition else "skipped",
     "machines": [asdict(m) for m in machines],
     "vms": vms,
+    "vbox_vms": vbox_vms,
+    "hypervisors": {"parallels": prl_status, "virtualbox": vbox_status},
     "boxes": boxes,
     "pins": pins,
   }
+
+
+def vm_name(provider: str, vm_id: str, by_uuid: dict[str, dict[str, object]]) -> str:
+  """The hypervisor's name for a Vagrant machine's VM id.
+
+  Args:
+    provider: the provider folder the id came from.
+    vm_id: the id from `.vagrant/machines/<m>/<provider>/id`.
+    by_uuid: Parallels and VirtualBox VMs by uuid.
+
+  Returns:
+    The VM name; "not registered" for a listed provider without that VM; "qemu id <id>" or "libvirt id <id>" for providers
+    this script does not list.
+  """
+  if provider in ("qemu", "libvirt"):
+    return f"{provider} id {vm_id}"
+  return str(by_uuid.get(vm_id, {}).get("name", "not registered"))
 
 
 def report(inv: dict[str, object]) -> list[str]:
@@ -313,12 +382,16 @@ def report(inv: dict[str, object]) -> list[str]:
   Returns:
     Output lines.
   """
-  by_uuid = {vm["uuid"]: vm for vm in inv["vms"]}
-  lines = [f"Parallels edition/status: {inv['edition']}", "", "VMS (prlctl): name | state | linked clone of | tools | adapters"]
+  by_uuid = {vm["uuid"]: vm for vm in [*inv["vms"], *inv["vbox_vms"]]}
+  status = ", ".join(f"{k} {v}" for k, v in inv["hypervisors"].items())
+  lines = [f"Hypervisor CLIs: {status}", f"Parallels edition/status: {inv['edition']}", "", "VMS (prlctl): name | state | linked clone of | tools | adapters"]
   for vm in sorted(inv["vms"], key=lambda v: v["name"]):
     nets = " ".join(f"{k}={v}" for k, v in sorted(vm["nets"].items())) or "-"
     lines.append(f"  {vm['name']} | {vm['state']} | {vm['parent'] or '-'} | {vm['tools'] or '-'} | {nets}")
-  lines += ["", "VAGRANT ENVIRONMENTS (global-status cache, one row per folder): home | states | machines -> Parallels VM | box pins"]
+  lines += ["", "VMS (VBoxManage): name | state"]
+  for vm in sorted(inv["vbox_vms"], key=lambda v: v["name"]):
+    lines.append(f"  {vm['name']} | {vm['state']}")
+  lines += ["", "VAGRANT ENVIRONMENTS (global-status cache, one row per folder): home | states | machine (provider) -> VM | box pins"]
   seen: dict[str, list[str]] = {}
   for m in inv["machines"]:
     seen.setdefault(m["home"], []).append(m["state"])
@@ -326,7 +399,7 @@ def report(inv: dict[str, object]) -> list[str]:
     if m["home"] not in seen:
       continue
     states = ",".join(seen.pop(m["home"]))
-    named = ", ".join(f"{n}->{by_uuid.get(u, {}).get('name', 'not registered')}" for n, u in m["vm_uuids"].items()) or "-"
+    named = ", ".join(f"{n} ({m['vm_providers'].get(n, '?')})->{vm_name(m['vm_providers'].get(n, ''), u, by_uuid)}" for n, u in m["vm_uuids"].items()) or "-"
     pins = ", ".join(f"{b}@{v or 'UNPINNED'}" for b, v in m["boxes"]) or "-"
     lines.append(f"  {m['home']} | {states} | {named} | {pins}")
   lines += ["", "BOX PINS: box | pinned | installed | latest"]

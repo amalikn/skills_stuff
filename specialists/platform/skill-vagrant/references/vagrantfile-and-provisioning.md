@@ -1,3 +1,14 @@
+---
+Title: Vagrantfile and provisioning
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Vagrantfile load order, multi-machine, the Parallels provider block, customize events (post-import vs every boot), provisioners, triggers, cloud-init, disk size, linting.
+---
+
 # Vagrantfile and provisioning
 
 How a Vagrantfile is read, how several machines share one, what the Parallels provider block does and when each provisioner, customize step and trigger runs. Captures named `[file]` are in
@@ -11,6 +22,7 @@ How a Vagrantfile is read, how several machines share one, what the Parallels pr
 - [Customize events: what runs on every boot](#customize-events-what-runs-on-every-boot)
 - [Provisioners](#provisioners)
 - [Triggers](#triggers)
+- [What runs when](#what-runs-when)
 - [cloud-init](#cloud-init)
 - [Plugins and environment variables](#plugins-and-environment-variables)
 - [Lint before up](#lint-before-up)
@@ -45,6 +57,12 @@ end
 All of these are vagrant-parallels options (VERIFIED_PRIMARY, [vp-configuration.md]). Set `p.name`: without it the VM is named after the folder plus a timestamp, and every `prlctl` command and guard
 has to look the name up. When the Parallels provider is installed it has a higher priority than the built-in providers, so `vagrant up` picks it; `--provider=parallels` makes that explicit
 (VERIFIED_PRIMARY, [vp-usage.md]).
+
+> **Learned 2026-11-09** · vagrant-parallels 2.4.x, prlctl · VERIFIED_PRIMARY · Source: documents/research-sources-20261109/vp-issue-360.md; documents/research-sources-20261107/vagrant-disks-usage.md, parallels-desktop-v20-command-line-reference.pdf (Virtual hard disk, printed p.30) · Falsifier: a vagrant-parallels release note or doc page that supports `config.vm.disk` or a disk size option
+> vagrant-parallels has no disk-size option. Its maintainer said on 2026-08-06 that resizing is "not supported by the plugin nor do we have plans" (issue 360, open since 2020). Vagrant's own
+> `config.vm.disk` examples are written for the VirtualBox provider only. On Parallels the disk grows outside the Vagrantfile: with the VM stopped, `prlctl set <vm> --device-set hdd0 --size <MB>` (a
+> write; the size is in megabytes), then grow the partition and filesystem in the guest (`growpart`, then `resize2fs`, or `lvextend -r` on LVM). Whether `--size` works on a vagrant-parallels linked
+> clone, whose disk sits on the box's snapshot, is UNVERIFIED: try it on a scratch machine first. A full clone (`linked_clone = false`) avoids that question.
 
 ## Customize events: what runs on every boot
 
@@ -82,11 +100,38 @@ second virtual disk for the identity partition (S6) is added when S6 starts, not
 trigger for host-side bookkeeping a lab needs on every `up` or `destroy` (record the box version, refuse to destroy a machine holding unsaved results). Keep it short and deadline-bound: a hanging
 trigger hangs `vagrant up`.
 
+## What runs when
+
+One `vagrant up` of a new machine, in order (event names from [vp-configuration.md]; the last three steps in the order `vagrant up` prints them):
+
+```text
+ import box ─► linked clone ─► customize post-import ─► customize pre-boot ─► boot
+   ─► customize post-boot ─► wait for SSH ─► customize post-comm
+   ─► hostname, network interfaces ─► synced folders ─► provisioners (outside in) ─► after-triggers
+```
+
+| Step                                   | first `up`                              | later `up` (halted VM) | `reload` | `reload --provision` | `provision` |
+| -------------------------------------- | --------------------------------------- | ---------------------- | -------- | -------------------- | ----------- |
+| `customize` at `post-import`           | yes                                     | no                     | no       | no                   | no          |
+| `customize` with no event (`pre-boot`) | yes                                     | yes                    | yes      | yes                  | no          |
+| `customize` at `post-boot`/`post-comm` | yes                                     | yes                    | yes      | yes                  | no          |
+| provisioner (default: once)            | yes                                     | no                     | no       | yes                  | yes         |
+| provisioner `run: "always"`            | yes                                     | yes                    | yes      | yes                  | yes         |
+| provisioner `run: "never"`             | only when named with `--provision-with` |                        |          |                      |             |
+
+A `vagrant up` of a machine that is already running boots nothing and runs none of these.
+
 ## cloud-init
 
 `config.vm.cloud_init` attaches user data (`text/cloud-config`, `text/x-shellscript` and the other listed content types; the only `type` is `:user_data`) from a `path` or `inline` (VERIFIED_PRIMARY,
 [vagrant-cloud-init-configuration.md], [vagrant-cloud-init-usage.md]). HashiCorp's examples use the VirtualBox provider; whether vagrant-parallels 2.4.9 delivers cloud-init data is UNVERIFIED (no
 statement in its docs; bento issue 1655 reports "cloud init not working" on a bento box, [vp-issue-1655.md]). For Parallels labs, shell provisioners are the proven path.
+
+> **Learned 2026-11-09** · vagrant-parallels 2.4.10, bento/ubuntu-24.04 202510.26.0 · VERIFIED_PRIMARY (lab run) · Source: skill-vagrant scratch lab (skills-runtime/skill-vagrant/scratch-lab, bento/ubuntu-24.04 202510.26.0, Parallels 27, vagrant-parallels 2.4.10), 2026-11-09; vagrant-parallels 2.4.10 gem source (no cloud-init code) · Falsifier: a vagrant-parallels release that attaches a NoCloud seed for `config.vm.cloud_init`
+> `config.vm.cloud_init` does nothing under vagrant-parallels: with `VAGRANT_EXPERIMENTAL=cloud_init,disks`, `vagrant up` exited 0 and printed no
+> cloud-init step, `cdrom0` stayed empty, and the user-data file was never written. The plugin's source has no cloud-init code, and the bento box
+> ships cloud-init itself `disabled` (`cloud-init status`). On Parallels, configure the guest with shell provisioners; cloud-init belongs to
+> providers that attach a seed (vagrant-qemu with `advanced_network`, [qemu-and-libvirt.md](qemu-and-libvirt.md)).
 
 ## Plugins and environment variables
 

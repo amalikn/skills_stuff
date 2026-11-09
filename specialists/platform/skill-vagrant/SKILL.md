@@ -1,11 +1,13 @@
 ---
 name: skill-vagrant
 description: >-
-  Build, pin, run and troubleshoot local Vagrant labs on macOS Apple silicon with the Parallels provider (vagrant-parallels): boxes and version pinning
-  (bento arm64), multi-machine Vagrantfiles, provider customize events, private and second networks (Parallels shared, host-only, bridged), synced
-  folders, provisioners, triggers and cloud-init, `vagrant ssh -c` with SSH options, linked clones and their shared machine-id, prlctl exec, capture,
-  reset and snapshots, guards that refuse the wrong VM, project copies of a canonical Vagrantfile, Vagrant versus OpenTofu, licensing and editions.
-  Use for Vagrant or Parallels lab VM work; not for Proxmox or OpenTofu (skill-proxmox) and not for what runs inside the guest (that project's skill).
+  Build, pin, run and troubleshoot local Vagrant labs on macOS Apple silicon with any of the operator's providers: Parallels (vagrant-parallels,
+  the default), VirtualBox 7.1/7.2, QEMU (vagrant-qemu) and libvirt (vagrant-libvirt against a Linux KVM host). Covers provider choice and
+  selection order, boxes and version pinning (bento arm64), multi-machine and multi-provider Vagrantfiles, customize events, networks per provider
+  (Parallels shared and host-only, VirtualBox host-only networks and internal networks, QEMU vmnet and socket modes), synced folders, provisioners,
+  triggers and cloud-init, `vagrant ssh -c`, prlctl and VBoxManage exec, console capture and power, serial consoles, linked clones and their shared
+  machine-id, snapshots, wrong-VM guards, project copies of a canonical Vagrantfile, Vagrant versus OpenTofu, licensing and editions. Use for any
+  Vagrant lab VM work; not for Proxmox or OpenTofu (skill-proxmox) and not for what runs inside the guest (that project's skill).
 ---
 
 # Vagrant
@@ -26,12 +28,26 @@ description: >-
 
 ## Role and non-goals
 
-Use Vagrant for disposable, reproducible local lab VMs on a Mac: arm64 Ubuntu guests under Parallels Desktop, described by a Vagrantfile kept in source control. Do not use it as a server or fleet
+Use Vagrant for disposable, reproducible local lab VMs on a Mac: arm64 guests described by a Vagrantfile kept in source control, under Parallels
+Desktop by default, or VirtualBox, QEMU, or libvirt on a Linux host ([references/providers-and-choice.md](references/providers-and-choice.md)). Do not use it as a server or fleet
 platform (Proxmox with OpenTofu is the x86 lab: skill-proxmox), and do not describe a project's lab layout as product behaviour.
 
-Sibling skills (hand off, do not duplicate): `skill-proxmox` for the x86 lab node, its tokens, SDN and OpenTofu; `skill-coder` before writing or
-changing a Vagrantfile helper, lab driver or recipe; `skill-drawio` for a project's lab flow pages; the workload's own skill (for example `skill-smc`)
-for what runs inside the guest.
+```text
+ macOS host (Apple silicon)                                              owner of the knowledge
+   Vagrantfile (project copy == vagrant_stuff canonical)                 this pack + the project
+     │ vagrant up / ssh / provision / snapshot
+   Vagrant 2.4.x ── provider ─┬─► vagrant-parallels ─► prlctl ─► Parallels Desktop   (default)
+                              ├─► virtualbox (built in) ─► VBoxManage ─► VirtualBox 7.2
+                              ├─► vagrant-qemu ─► qemu-system-aarch64 (hvf, no daemon)
+                              └─► vagrant-libvirt ─► qemu+ssh ─► libvirtd on a Linux host
+   out of band: prlctl exec / capture, VBoxManage screenshotpng, the QEMU serial socket
+     └─ VM: arm64 box + its agent (Parallels Tools, Guest Additions)
+          └─ what the guest runs (SMC image, services)                  the workload's skill
+ x86 lab VMs on a Proxmox node (OpenTofu)                                skill-proxmox
+```
+
+Sibling skills (hand off, do not duplicate): `skill-proxmox` for the x86 lab node, its tokens, SDN and OpenTofu; `skill-coder` before writing or changing a Vagrantfile helper, lab driver or recipe;
+`skill-drawio` for a project's lab flow pages; the workload's own skill (for example `skill-smc`) for what runs inside the guest.
 
 ## Read, write, and evidence boundaries
 
@@ -45,9 +61,10 @@ private addresses in reusable guidance.
 On an unfamiliar Mac, establish the tool versions, the provider and edition, and what exists before reading anything else: the provider, the box format and the CLI flags change between releases.
 
 ```bash
-vagrant --version; vagrant plugin list; prlctl --version
+vagrant --version; vagrant plugin list; prlctl --version; VBoxManage --version; qemu-system-aarch64 --version | head -1
 prlsrvctl info --license --json | grep -E '"(edition|status)"'      # Pro, Business or Enterprise is needed for the CLI and the provider
-vagrant global-status --machine-readable                             # a cache: --prune to drop stale rows
+vagrant global-status --machine-readable                             # a cache, with each machine's provider; --prune drops stale rows
+echo "${VAGRANT_DEFAULT_PROVIDER:-unset}"                            # decides a bare `vagrant up` (providers-and-choice.md)
 vagrant box list --machine-readable; prlctl list -a -i -j            # boxes, and every VM with state, Parent VM and Tools state
 ```
 
@@ -56,11 +73,14 @@ vagrant box list --machine-readable; prlctl list -a -i -j            # boxes, an
 
 ## Route the task
 
-Choose the primary skill by the object **being changed**: a Vagrantfile, box, Parallels VM, network adapter or lab guard starts here; a Proxmox VM or OpenTofu plan starts in `skill-proxmox`; what the
+Choose the primary skill by the object **being changed**: a Vagrantfile, box, lab VM (any provider), network adapter or lab guard starts here; a Proxmox VM or OpenTofu plan starts in `skill-proxmox`; what the
 guest runs (an SMC image, a Nautobot install) starts in that domain's skill. Ordinary tasks load one reference.
 
 | Task                                                             | Read first                                  |
 | ---------------------------------------------------------------- | ------------------------------------------- |
+| Which provider, selection order, multi-provider Vagrantfile, the same task per provider | [references/providers-and-choice.md](references/providers-and-choice.md) |
+| VirtualBox: Apple silicon versions, macOS host-only networks, internal networks, VBoxManage, Extension Pack | [references/virtualbox.md](references/virtualbox.md) |
+| vagrant-qemu (macOS 27 fix, vmnet/socket modes, serial console) and vagrant-libvirt on a Linux host | [references/qemu-and-libvirt.md](references/qemu-and-libvirt.md) |
 | Exact syntax: vagrant CLI, prlctl, prlsrvctl, machine-readable   | [references/operations-cookbook.md](references/operations-cookbook.md) |
 | Boxes, versions, constraints, bento builds, the box registry     | [references/boxes-and-pinning.md](references/boxes-and-pinning.md) |
 | Vagrantfile shape, multi-machine, provider block, provisioners   | [references/vagrantfile-and-provisioning.md](references/vagrantfile-and-provisioning.md) |
@@ -75,8 +95,7 @@ guest runs (an SMC image, a Nautobot install) starts in that domain's skill. Ord
 
 ## Verify version-sensitive facts
 
-Before asserting a flag, a Vagrantfile key, a provider option or a licence term, read the version-matched source and record it in [sources.yaml](sources.yaml); the verbatim captures are under
-`documents/research-sources-20261107/` ([index](documents/research-sources-20261107/readme.md)). Use [compatibility.yaml](compatibility.yaml) only for its stated environment and evidence rung; an observed install is not behavioural proof. Record unknowns as unknown
+Before asserting a flag, a Vagrantfile key, a provider option or a licence term, read the version-matched source and record it in [sources.yaml](sources.yaml); the verbatim captures are in the dated folders listed in [documents/readme.md](documents/readme.md) (2026-11-07: Vagrant, Parallels, bento, licences; 2026-11-09: VirtualBox, QEMU, libvirt, provider selection). Use [compatibility.yaml](compatibility.yaml) only for its stated environment and evidence rung; an observed install is not behavioural proof. Record unknowns as unknown
 rather than extrapolating a supported version range.
 
 ## Search before building

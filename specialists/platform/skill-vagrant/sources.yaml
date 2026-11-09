@@ -286,3 +286,102 @@ claims:
     evidence: "Operator write-back contract shared with skill-nautobot (2026-10-05, evidence rule 2026-10-20)."
     reference: references/evolution-and-write-back.md
     test: V-S12
+  - id: V-C27
+    statement: "Vagrant picks a provider by --provider, then VAGRANT_DEFAULT_PROVIDER, then the first usable config.vm.provider block in file order, then installed plugins by priority."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vagrant-providers-basic_usage.md; research-sources-20261109/vagrant-providers-default.md."
+    reference: references/providers-and-choice.md
+    test: V-S15
+  - id: V-C28
+    statement: "VirtualBox virtualizes Arm Linux and BSD guests on a macOS Arm host from 7.1.0; bento's arm64 VirtualBox boxes need 7.1.6 or later; Arm saved states from 7.1 do not restore on 7.2."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/virtualbox-changelog-7.1.md; research-sources-20261109/virtualbox-changelog-7.2.md; research-sources-20261107/bento-readme-github.md."
+    reference: references/virtualbox.md
+    test: V-S16
+  - id: V-C29
+    statement: "Vagrant supports VirtualBox 7.1 from 2.4.2 and 7.2 from 2.4.9, and uses VirtualBox host-only networks for private_network on macOS from 2.3.3."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vagrant-changelog-main-github.md (GH-13513, GH-13709); research-sources-20261109/vagrant-pr-12983.md."
+    reference: references/virtualbox.md
+    test: V-S16
+  - id: V-C30
+    statement: "On macOS, VirtualBox has host-only networks, not host-only adapters; host-only addresses are limited to VirtualBox's default range unless /etc/vbox/networks.conf allows more."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/virtualbox-manual-networking.md."
+    reference: references/virtualbox.md
+    test: V-S16
+  - id: V-C31
+    statement: "The VirtualBox base package is GPLv3; the Oracle Extension Pack is under the PUEL, which excludes business use without a paid licence, and Vagrant does not need it."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/virtualbox-licensing-faq.md."
+    reference: references/virtualbox.md
+    test: V-S17
+  - id: V-C32
+    statement: "vagrant-qemu 0.6.4 fixes a false ForwardPortCollision on macOS 27; 0.7.0 adds VirtioFS folders, vagrant serial-config and growing the primary disk."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vq-changelog-github.md (0.6.4, 0.7.0)."
+    reference: references/qemu-and-libvirt.md
+    test: V-S18
+  - id: V-C33
+    statement: "vagrant-qemu ignores private_network unless advanced_network is set; on macOS vmnet needs sudo, socket_vmnet avoids root, and socket listen/connect links exactly two VMs."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vq-readme-github.md (Platform support and notes)."
+    reference: references/qemu-and-libvirt.md
+    test: V-S18
+  - id: V-C34
+    statement: "vagrant-libvirt reaches a remote libvirtd through a connection URI and needs connect_via_ssh (or a qemu+ssh uri) to learn a remote VM's address."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [provider-docs-2026-11-09]
+    environment_id: provider-docs-2026-11-09
+    source_type: official_documentation
+    evidence: "research-sources-20261109/vl-configuration-github.md (Connection Options)."
+    reference: references/qemu-and-libvirt.md
+    test: V-S18
+  - id: V-C35
+    statement: "The lab Mac runs four Vagrant providers: vagrant-parallels 2.4.10, VirtualBox 7.2.22, vagrant-qemu 0.7.0 (all updated on 2026-11-09) with QEMU 11.1.3, and vagrant-libvirt 0.12.2."
+    kind: worked_example
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    applies_to: [lab-mac-2026-11-09]
+    environment_id: lab-mac-2026-11-09
+    source_type: observed_install
+    evidence: "Read-only version commands on 2026-11-09."
+    reference: references/providers-and-choice.md
+    test: V-S15

@@ -1,3 +1,14 @@
+---
+Title: Lab safety and guards
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Rules for lab drivers: plan by default and --apply, an in-guest wrong-VM marker, deadlines and keepalives, quoting once, hash what arrived, disk fill, host guards, Vagrantfile copy checks.
+---
+
 # Lab safety and guards
 
 Rules for scripts that drive lab VMs from the Mac. They follow skill-coder (plan by default, `--apply` for writes, a deadline on every call) and add what a VM lab needs: proof that the command reached
@@ -31,6 +42,17 @@ on_vm() { (cd "$VD" && vagrant ssh "$VM" -c "sudo bash -c $(printf %q "test ! -e
 
 The check runs in the guest, in the same shell as the command, so no race between "check" and "do" remains; a distinct exit code (97) lets callers tell a refusal from a failed command. Better still,
 give each VM an identity file written at creation (`/etc/lab-role` with the VM name) and compare it with the name the script means.
+
+```text
+ driver.sh [--apply]                      VM name fixed in the script, never an argument
+   ├─ no --apply ─► print the plan, exit 0
+   └─ --apply
+        ├─ host guards: free disk ≥ 8 GiB?  name matches?  ─► else refuse, exit non-zero
+        └─ timeout N vagrant ssh <vm> -c "<marker test>; <command>" -- -o ConnectTimeout=15 ...
+              one shell, inside the guest:
+              ├─ marker says "wrong VM" ─► exit 97 (refused; nothing ran)
+              └─ marker OK ───────────► run the command ─► its own exit code
+```
 
 ## A deadline on every call
 

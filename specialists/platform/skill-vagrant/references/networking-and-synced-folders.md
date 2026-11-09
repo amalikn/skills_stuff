@@ -1,3 +1,14 @@
+---
+Title: Networking and synced folders
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: How Vagrant networks map to Parallels Shared, Host-Only and Bridged; a second adapter the lab owns; one DHCP lease for two VMs (machine-id DUID); synced folder failures by version.
+---
+
 # Networking and synced folders
 
 How Vagrant network declarations map to Parallels networks, how a lab adds a second adapter it controls, why two VMs can receive one DHCP address, and how host folders reach the guest. Captures named
@@ -19,6 +30,16 @@ The Parallels provider configures the VM's first adapter as Shared networking (N
 needed for that (VERIFIED_PRIMARY, [vp-networking.md]). In the guest it is `eth0` (bento Ubuntu). Leave it alone: it is Vagrant's SSH path. If a test cuts it anyway, `prlctl exec` still reaches the
 guest through Parallels Tools (worked example header, `vagrant_stuff/smc-pi-spike01/Vagrantfile` @ 8591b72: "If a spike test cuts eth0 anyway, `prlctl exec smc-pi-spike01 <cmd>` still reaches the VM
 (verified 2026-10-20)").
+
+```text
+ Mac host
+ ├─ Parallels "Shared" network (NAT + Parallels DHCP)       ← Vagrant's SSH path; leave it alone
+ │     eth0 ── VM lab-a                eth0 ── VM lab-b
+ ├─ Host-Only "vagrant-vnetN" (one per private subnet)      ← the lab's own wire (auto_config: false)
+ │     eth1 ── VM lab-a                eth1 ── VM lab-b
+ ├─ Bridged to en0 (public_network)                         ← reaches the real LAN; avoid in a lab
+ └─ Parallels Tools channel (no guest network at all)       ← prlctl exec, graceful stop, shared folders
+```
 
 ## Mapping Vagrant networks to Parallels
 
@@ -55,6 +76,14 @@ shipped a fixed machine-id (vagrant-parallels issue 441 on an M2 with Parallels 
 clone --linked` of a running lab VM (smc-resiliency 2026-11-06: "the SM clone of the spike VM kept its machine-id, so DHCP gave it the spike VM's address and `vagrant ssh smc-pi-spike01` reached the
 clone"; USER_STATED, project record). Effects: `vagrant ssh` reaches the wrong VM, or connections flap between two VMs. Checks and fixes are in [clones-snapshots-and-identity.md](clones-snapshots-and-identity.md#machine-id).
 
+```text
+ /etc/machine-id  (identical in the source and its clone)
+   └─► systemd-networkd DUID      DUIDType=vendor hashes the machine-id
+         └─► DHCP client id       ClientIdentifier=duid (default), not the MAC
+               └─► Parallels DHCP sees ONE client → ONE lease → both VMs get the same address
+                     └─► `vagrant ssh <source>` can land on the clone
+```
+
 ## Unplugging an adapter
 
 `prlctl set <vm> --device-set net1 --disconnect` unplugs an adapter, also on a running VM; `--device-set <net> --mac auto` gives it a new MAC (VERIFIED_PRIMARY, CLI reference p.34). A clone that must
@@ -74,6 +103,19 @@ not change the DHCP identity.
   mounts.
 - `vagrant upload` of a directory into a folder that already exists can leave stale files; upload to a new path per run and move it into place (smc-resiliency `spike/to_vm.sh` @ 4e436e8d: "a new
   folder per run: vagrant upload of this folder delivered stale files (2026-11-06)"; USER_STATED).
+
+> **Learned 2026-11-09** · vagrant-parallels 2.4.9 and 2.4.10, Ubuntu 24.04 and later guests · VERIFIED_PRIMARY (the report and the fix; reach UNVERIFIED) · Source: documents/research-sources-20261109/vp-issue-526.md, vp-pr-525.md, vp-pr-523.md; documents/research-sources-20261107/vp-releases-github.md (v2.4.10), vp-issue-527.md · Falsifier: `findmnt /vagrant` on the lab's bento 24.04 guest under 2.4.9 showing a `prl_fsd` FUSE mount that works
+> vagrant-parallels up to 2.4.9 passes the FUSE option `big_writes` to `prl_fsd`. libfuse3 removed that option, so the issue reports that on guests that ship fusermount3 ("Ubuntu 24.04+") the mount
+> fails with ``fuse: unknown option(s): `-o big_writes'`` and `vagrant up`/`reload` stop at the shared-folder step (issue 526). PR 525 passes it on libfuse2 guests only; it shipped in 2.4.10 on
+> 2026-10-28 (issue 527). Whether every 24.04 guest is hit is UNVERIFIED: the worked example keeps the default `/vagrant` (its Vagrantfile has no `synced_folder` line, `vagrant_stuff` @ 8591b72) on
+> bento/ubuntu-24.04 with 2.4.9 and comes up, so the mount path may depend on whether Parallels Tools use `prl_fsd` or the `prl_fs` module. If `up` stops with that message, update the plugin to 2.4.10
+> (`vagrant plugin update vagrant-parallels`) or disable the folder. PR 523 (merged 2026-06-12) adds an AppArmor override for FUSE 3 mounts for the Ubuntu 26.04 case (issue 522); which release first
+> carries it is UNVERIFIED, because the vendor says its GitHub release notes are "mostly not used" (issue 527).
+
+> **Learned 2026-11-09 (b)** · vagrant-parallels 2.4.10, Ubuntu 24.04 arm64 · VERIFIED_PRIMARY (lab run) · Source: skill-vagrant scratch lab (skills-runtime/skill-vagrant/scratch-lab, bento/ubuntu-24.04 202510.26.0, Parallels 27, vagrant-parallels 2.4.10), 2026-11-09; read-only `prlctl exec smc-pi-spike01 findmnt` the same day · Falsifier: `findmnt /vagrant` on a 2.4.10 machine from this box showing no mount after a clean `vagrant up`
+> With vagrant-parallels 2.4.10 the default `/vagrant` mounts as `fuse.prl_fsd` on a bento 24.04 guest (and `/media/psf/vagrant` beside it). The
+> long-running spike VM, brought up under 2.4.9 on the same box, has fuse3 3.14 and `prl_fsd` installed, no `prl_fs` module, and **no** `/vagrant`
+> mount: consistent with issue 526 hitting the `prl_fsd` path on 24.04. Reload such a machine after the plugin update if it needs the share.
 
 ## Addresses in reusable text
 

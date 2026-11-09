@@ -1,3 +1,14 @@
+---
+Title: Evolution and write-back
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: The standing write-back contract: engagement classes, the Learned and Disputed entry format, evidence with every entry, research captures, release reconciliation and script promotion.
+---
+
 # Evolution and write-back
 
 ## Standing write-back contract

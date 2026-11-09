@@ -414,6 +414,12 @@ pack:
   memory_channel: "vagrant"
   counterpart_skill: "../skill-proxmox"
   references:
+    - path: "references/providers-and-choice.md"
+      task: "Which provider, selection order, multi-provider Vagrantfile, the same task per provider"
+    - path: "references/virtualbox.md"
+      task: "VirtualBox: Apple silicon versions, macOS host-only networks, internal networks, VBoxManage, Extension Pack"
+    - path: "references/qemu-and-libvirt.md"
+      task: "vagrant-qemu (macOS 27 fix, vmnet/socket modes, serial console) and vagrant-libvirt on a Linux host"
     - path: "references/operations-cookbook.md"
       task: "Exact syntax: vagrant CLI, prlctl, prlsrvctl, machine-readable"
     - path: "references/boxes-and-pinning.md"

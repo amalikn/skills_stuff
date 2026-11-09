@@ -4,7 +4,7 @@ Category: source-index
 Status: current
 Authority: Index of verbatim source captures
 Scope: Local evidence copies used to maintain version-sensitive skill-vagrant guidance
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-09
 Summary: Routes to the dated research-source folders; each folder has its own readme with one row per capture and its sha256.
 ---
 
@@ -16,3 +16,6 @@ Evidence copies, not a second routing layer: the references carry the guidance a
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [research-sources-20261107/](research-sources-20261107/readme.md) | Vagrant 2.4.9 docs, vagrant-parallels docs, CHANGELOG and issues, the Parallels Desktop 20 Command-Line Reference, bento, HashiCorp licence texts and FAQ, HCP Vagrant  |
 |                            |   end of life, OpenTofu registry entries, the Ubuntu snapshot service, systemd machine-id and DHCP DUID pages                                                           |
+| [research-sources-20261109/](research-sources-20261109/readme.md) | 2026-11-09 review: bento's hosting RFC after HCP Vagrant, vagrant-parallels 2.4.10 shared-folder fix (issue 526, PRs 523 and 525), disk size (issue 360), Parallels 27  |
+|                            |   x86_64 emulation; VirtualBox 7.1/7.2 changelogs, manual, licence FAQ and VBoxManage help; vagrant-qemu and vagrant-libvirt docs; Vagrant provider selection           |
+|                            |   and CHANGELOG                                                                                                                                                         |

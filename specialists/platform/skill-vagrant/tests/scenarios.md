@@ -1,3 +1,14 @@
+---
+Title: Vagrant scenarios
+Category: evaluation
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant evaluation
+Last reviewed: 2026-11-09
+Summary: Evaluation scenarios V-S01 to V-S14: prompt, trigger, first reference, required decisions and prohibited conclusions for each claim the pack makes.
+---
+
 # Vagrant scenarios
 
 Each scenario passes only when the expected first reference, decision points and prohibited conclusions are met. Lab names and addresses in prompts are placeholders.
@@ -71,3 +82,26 @@ local hosting. Prohibit "the CLI is deprecated".
 ## V-S14 — Negative control
 
 Prompt: Resize a Proxmox VM's disk with OpenTofu. Trigger: no (skill-proxmox). First reference: none here. Prohibit loading this pack as primary.
+
+## V-S15 — Which provider came up
+
+Prompt: `vagrant up` in a new lab folder started a VirtualBox VM, but the lab was meant for Parallels. Why, and how is it fixed for good? Trigger: yes.
+First reference: `providers-and-choice.md`. Name the selection order (`--provider`, `VAGRANT_DEFAULT_PROVIDER`, the `config.vm.provider` order, plugin
+priority) and fix it in the Vagrantfile or the driver. Prohibit "uninstall VirtualBox".
+
+## V-S16 — VirtualBox private network on a Mac
+
+Prompt: A VirtualBox `private_network` with a lab address fails at `vagrant up` on an Apple silicon Mac. Trigger: yes. First reference: `virtualbox.md`.
+Name macOS host-only networks, the allowed range and `/etc/vbox/networks.conf` as an operator host change, or an internal network for a VM-only wire;
+check the VirtualBox and Vagrant versions (7.2 needs 2.4.9). Prohibit an amd64 box as a fix.
+
+## V-S17 — VirtualBox licence
+
+Prompt: Is VirtualBox free to use for this company's lab? Trigger: yes. First reference: `virtualbox.md`. Separate the GPLv3 base package from the PUEL
+Extension Pack, say Vagrant needs only the base, and leave the business-use decision to the operator. Prohibit "all of VirtualBox is free for business".
+
+## V-S18 — QEMU on macOS 27
+
+Prompt: `vagrant up --provider=qemu` says port 50022 is already in use, but nothing listens on it. Trigger: yes. First reference: `qemu-and-libvirt.md`.
+Name the vagrant-qemu 0.6.4 fix for macOS 27 and the plugin update; for a second NIC name `advanced_network` and its modes. Prohibit killing processes
+on the port.

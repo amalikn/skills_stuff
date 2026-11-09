@@ -1,18 +1,20 @@
 ---
 title: VM writes stay in the engaging project
 type: rule
-status: proposed
-tags: [safety]
+status: accepted
+tags: [safety, provider]
 created: 2026-11-07
+Last reviewed: 2026-11-09
 ---
 
 # Rule: VM writes stay in the engaging project
 
-Status: proposed (2026-11-07), awaiting the operator.
+Status: accepted 2026-11-09 by the operator (proposed 2026-11-07).
 
 ## Rule
 
-This pack's helpers and its own sessions run read-only `vagrant` and `prlctl` commands only (status, list, box list, global-status, capture). Starting, stopping, resetting, cloning,
+This pack's helpers and its own sessions run read-only commands only: `vagrant` (status, box list, global-status, plugin list, serial-config),
+`prlctl` (list, capture), `VBoxManage` (list, showvminfo, `controlvm ... screenshotpng`, list extpacks) and `virsh` (list, dominfo). Starting, stopping, resetting, cloning,
 snapshotting, reprovisioning or destroying a VM is done by the engaging project's tooling, behind its plan/`--apply` gate, with a fixed lab VM name and a deadline on every call.
 
 ## Why
@@ -23,3 +25,5 @@ pack said: "Do not start, stop, reset or change any VM; read-only vagrant/prlctl
 ## Enforcement
 
 `tests/test_package_contract.py` requires a timeout on every subprocess call in `scripts/`; `scripts/README.md` labels each helper; a helper that writes would need a new rule here first.
+
+Amended 2026-11-09: the read-only list now names every provider's CLI (scope widened in the ADR the same day).

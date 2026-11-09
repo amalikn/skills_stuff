@@ -1,3 +1,14 @@
+---
+Title: Tool choice and lab symmetry
+Category: reference
+Status: current
+Authority: >-
+  skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
+Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
+Last reviewed: 2026-11-09
+Summary: Vagrant for local VMs and OpenTofu for Proxmox, the two OpenTofu providers that touch Vagrant or Parallels, and matching an arm64 lab to an x86 lab by package set and apt snapshot.
+---
+
 # Tool choice and lab symmetry
 
 When to describe a lab VM with Vagrant and when with OpenTofu, and how an arm64 Vagrant lab and an x86 Proxmox lab are kept comparable. Captures named `[file]` are in
