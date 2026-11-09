@@ -44,7 +44,7 @@ Derive the channel from the active repo (e.g. `ansible-wifi`). Never `claude-mai
 ## Step 2 — Read existing state (mandatory before any write)
 ```
 context_get(channel="<channel>", includeMetadata=true, sort="created_desc", limit=20)
-get_project_context(projectId="<id>", channel="<channel>", section="notes", sort="created_desc")
+get_project_context(projectId="<id>", channel="<channel>", section="notes", sort="created_desc", limit=20, detail="full")
 ```
 Extract the newest memory-keeper and project-context timestamps and the topics each already covers. memory-keeper stores local time, so a `createdAfter` filter in UTC can return nothing: list by
 `sort` instead. Also note the newest change-log entry's stamp.

@@ -28,7 +28,7 @@ Always create (or update if exists). Populated from live memory systems — not 
 | Source                | Tool                                    | Query strategy                                 |
 | --------------------- | --------------------------------------- | ---------------------------------------------- |
 | `memory-keeper`       | `context_search`                        | project name, folder name, channel name        |
-| `mcp-project-context` | `list_projects` + `get_project_context` | match project name; use project ID             |
+| `mcp-project-context` | `list_projects(query=<name>)` + `get_project_context` | match project name; use project ID (brief by default; `detail="full"` for all notes) |
 | `claude-mem`          | `search`                                | project name, key participants, topic keywords |
 
 **Step 2 — Synthesize results** into the SCRATCHPAD structure below. SCRATCHPAD owns current state, anchors, open items, and session summaries (2–3 bullets per session — not full detail). Deep session
