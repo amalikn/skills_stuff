@@ -1082,3 +1082,35 @@ smc_change is the operator's own test tool; the company repo must not depend on 
 ("smc_change_vars.", var + "."),
 ```
 
+
+## A rollback over a failed-verify apply, and the Jinja line break in a value file (2026-11-09)
+
+- **A rollback may take over an apply stopped after its actions (`rollback_over_apply`).** bitbucket-ssh-hostname on the rct canary failed at 9/11 VERIFY; the
+  rollback its failure message names was refused (`needs_repair: Resume must use the original transaction mode`), so the SMC could not be undone through the
+  role. Now a rollback over an apply journal at phase 7-10 sets that journal aside (`journal/superseded/`) and restores the apply's backup, which
+  `rollback_locate.yml` finds by itself; the apply-only `abandoned_clean` tasks that fetch and remove a backup do not run. On changed code or spec the rollback
+  would run today's `undo` on the old backup, so it is refused unless `-e smc_change_rollback_drifted=true` (default false; operator, 2026-11-09). Proved live:
+  refused without the flag, passed with it, SMC back to its original known_hosts, live and lower dir. Phases 5-6 still need the operator.
+
+  ```python
+  # files/recovery.py, local-knowledge-ansible 9e1af74
+  if data.get("mode") == "rollback" and journal.get("mode") == "apply" and journal.get("phase") in (7, 8, 9, 10):
+    if drifted and not data.get("rollback_drifted"):
+      result["reasons"] = [...]  # needs_repair, names the flag
+      return result
+    result.update(classification="rollback_over_apply", can_start=True, supersede_journal=True)
+  ```
+
+- **A line break in a value file is a real line break, never `'\n'` inside Jinja in a YAML `|` block.** variables.yml built `KH_KEYS` with
+  `{{ '\n' if not loop.last }}`; under ansible-core 2.21.6 that reached the SMC as a literal backslash-n, so `kh_add.sh` wrote one 5-field line
+  (`ssh-ed25519 <key>\necdsa... \nssh-rsa ...`) and the proof failed. The role's own `'\n'` uses sit in double-quoted YAML, where YAML turns
+  them into newlines first, so they are fine. A test that feeds a script hand-built values cannot see this: `test_bitbucket_known_hosts.py` now
+  renders the spec through ansible-core (fails on the old file, passes on the fix). Fix (d392dcb):
+
+  ```yaml
+  KH_KEYS='{% for k in smc_change_vars.kh['keys'] %}{{ k.type }} {{ k.key }}
+  {% endfor %}'
+  ```
+
+- **bitbucket-ssh-hostname canary passed** (alkngarrija-smc01, 2026-11-09 13:22): three 3-field `ssh.bitbucket.org` lines live and in the lower dir;
+  `ssh -o StrictHostKeyChecking=yes -T git@ssh.bitbucket.org` from the SMC authenticates. Fleet batches handed to the operator.
