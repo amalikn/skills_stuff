@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.3 (2026-11-09)
+- Changed: `setup` excludes AI governance files (`AGENTS.md`, `CLAUDE.md`, `.agents/`) only when the clone's origin is not the operator's GitHub; in an
+  operator clone it leaves them tracked and says so (operator rule 2026-11-09). Tested on a GitHub and a Bitbucket temp clone; a rerun adds nothing.
+
 ## 0.1.2 (2026-10-28)
 - Fixed: `snapshot` copied artifacts with `cp -R`, which on macOS copies a symlink as a symlink. In ansible-wifi `.agents`, `AGENTS.md`, `.serena` and `.smart-coding-cache` are symlinks into the
   knowledge base, so snapshots held links back to the live tree, not data (no backup value), and each one gave file-indexing editors another alias of the live docs (Foam pinned the VS Code extension

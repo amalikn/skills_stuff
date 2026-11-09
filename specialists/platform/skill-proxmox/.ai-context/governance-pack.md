@@ -47,6 +47,8 @@ The content is organized as follows:
     changelog-version-of-record.rule.md
     memory-channel-name.rule.md
   index.guide.md
+docs/
+  session-record-20261109_1235.md
 references/
   access-control.md
   api-and-cli.md
@@ -341,6 +343,99 @@ dated note naming its replacement rather than deleting it.
 
 Candidates wait in `ARCHCORE_PROMOTION_CANDIDATES.md` at the pack root until the operator promotes or rejects each one; `/skill-ai-it refresh`
 re-scans and updates it. Check the table above first so a rejected area is not re-proposed.
+````
+
+## File: docs/session-record-20261109_1235.md
+````markdown
+---
+Title: Session record 2026-11-09 — skill-proxmox gap review, refresh, archcore, Git-tracking rule, memory split
+Category: report
+Status: current
+Authority: record
+Scope: Whole-chat closeout record of the 2026-11-09 skill-proxmox session (session 212eaf51), including the cross-repo governance work it started
+Last reviewed: 2026-11-09
+Summary: >-
+  Every operator message and answer with its destination, both sub-agents, side effects outside the repositories, incidents and follow-ups of the
+  2026-11-09 session; built from the raw session log (skill-slurp-chat passes: 30 user lines, 209 side effects, 2 agents).
+---
+
+# Session record 2026-11-09
+
+Source: the raw session log through skill-slurp-chat's pass script, not a summary. Pass 1: 11 typed messages, 9 mid-turn messages, 10 question answers. Pass 2: 191 shell commands, 18 file
+writes. Pass 3: 2 sub-agents.
+
+## Operator messages and answers
+
+| #   | Message (short)                                                                   | Destination                                                                                                |
+| --- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 1   | Is the skill defined properly; research online and fill gaps; run skill-ai-it     | references (7 sections), sources.yaml P-C22..27, CHANGELOG 2026-11-09; refresh entry; project_stuff        |
+|     |   refresh; register it in project_stuff AGENTS.md                                 |   AGENTS.md (commit 3104b47)                                                                               |
+| 2   | Side-agent note: govern baselined 26 findings                                     | summaries written on 18 files, baseline 26 to 2 (CHANGELOG refresh line)                                   |
+| 3   | Add ASCII diagrams and tables wherever needed, for any document                   | 11 diagrams, 2 tables in nine references (CHANGELOG gap-review line)                                       |
+| 4   | yes: add to skills_stuff AGENTS.md and commit                                     | skills_stuff AGENTS.md bullet; commit 9cbd227                                                              |
+| 5   | Review archcore: up to date, optimisation?                                        | review findings, `.archcore/` rewritten                                                                    |
+| 6   | Answers: accept after fixes; add version check; write candidates file; leave tags | `.archcore/` accepted, `check_version_restated`, `ARCHCORE_PROMOTION_CANDIDATES.md`; record_decision x3    |
+| 7   | "I have read archcore and they are fine"                                          | acceptance recorded in index.guide.md and decisions                                                        |
+| 8   | Trim AGENTS.md (3k tokens per request)                                            | AGENTS.md 148 to 70 lines (CHANGELOG 2026-11-09)                                                           |
+| 9   | yes: commit both packs                                                            | bd2a566                                                                                                    |
+| 10  | Never exclude AGENTS.md from Git for any repo                                     | global rule (below); memory feedback_governance_files_always_tracked                                       |
+| 11  | Make it a global governance rule; any other exclusion confirmed first             | `~/.agents/AGENTS.md`, governance `categories/repo-structure-guide.md` (8578fdc), governance change-log    |
+| 12  | Commit GitHub repos: yes; Bitbucket: never, always GitHub;                        | five repos committed; company exception in rule; local-knowledge-ansible 25c68b0; repo-local-guidance      |
+|     |   rewrite repo-local-guidance                                                     |   0.2.0 (95bf5f2)                                                                                          |
+| 13  | Side-agent note: sweep was too narrow                                             | full sweep of every governance name and ignore source; skills.md exclusions removed; policy_guard          |
+|     |                                                                                   |   inverted (98a00c1)                                                                                       |
+| 14  | ask questions                                                                     | AskUserQuestion round (rows 15-18)                                                                         |
+| 15  | tools_stuff 29 files: review list, then commit all                                | tools_stuff 59eef27; record_decision                                                                       |
+| 16  | `.code-context-notes/`: keep excluded                                             | record_decision; tool skips it                                                                             |
+| 17  | Push all seven                                                                    | auto mode refused; commands handed over; operator pushed ("push done"), verified 0 ahead                   |
+| 18  | Memory index: call other references like governance files; then Hybrid            | `index_project.md`, `index_reference.md`; record_decision                                                  |
+| 19  | Take a dated backup of MEMORY.md                                                  | `MEMORY.md.bak-20261109_1216`                                                                              |
+| 20  | Random checks that MEMORY.md works                                                | structural check 0 findings, 8 random samples, blind recall 10/10 (memory                                  |
+|     |                                                                                   |   key memory.index-hybrid-split-20261109)                                                                  |
+| 21  | Slurp close in detail, write back, scripts, flows, commit and push, slurp         | this record; rows below                                                                                    |
+|     |   close again                                                                     |                                                                                                            |
+
+## Sub-agents
+
+| Agent | Task                               | Report                                                                    | Destination                                                                 |
+| ----- | ---------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 1     | Blind recall test of MEMORY.md     | answered from its session-start copy; found no entry for the new rule;    | discarded as invalid; finding saved as reference                            |
+|       |                                    |   called the index flat                                                   |   memory `reference_subagent_memory_snapshot.md`                            |
+| 2     | Same test, told to Read the file   | 10/10 correct, quoted the current file; noted Reference pointer gave      | trigger phrases added to the Reference pointer line                         |
+|       |   from disk                        |   titles only                                                             |                                                                             |
+
+## Side effects outside the repositories
+
+- `~/.agents/AGENTS.md` edited (Git-tracking rule), `~/.codex/AGENTS.md` rebuilt by `governance/scripts/sync-codex-agents.sh` (backups `AGENTS.md.bak-20261109_1157*`).
+- `~/.codex/skills/repo-local-guidance`, `repo-knowledge-capture`, `repo-bootstrap-and-governance`: installed copies updated (disabled installs).
+- `.git/info/exclude` edited in eight clones with dated backups; three company clones restored from those backups.
+- ansible-noc and sidekick: AGENTS.md and CLAUDE.md moved to `local-knowledge-ansible/<repo>/<repo>-root-governance/` and symlinked back.
+- `/Volumes/Data/_ansible/AGENTS.md` (not in Git) table and rule paragraph updated.
+- Claude auto-memory: index split, two category files, one new feedback and one new reference memory, two fixes, a backup.
+- Seven primary pages fetched with curl into `documents/research-sources-20261109/`.
+
+## Incidents
+
+- Company clones un-excluded before reading `_ansible/AGENTS.md`; restored from backups, nothing committed there.
+- skills_stuff exclude file restored from the 11:59 backup at 12:00 by something else (likely policy_guard's old remediation text); guard inverted.
+- OPA hook refused a scratch recursive delete and, later, a heredoc whose prose named one; auto mode refused `git push` and one read-only listing.
+- First memory-recall agent used a stale copy (above).
+- A version regex missed a sentence-final token; caught by its own fail test before release (skill-coder Learned 2026-11-09).
+
+## Follow-ups (owner: operator unless stated)
+
+- Where to version workspace governance files outside any Git repo (`/Volumes/Data`, `_ai`, `_skills`, `_ansible` AGENTS.md and CLAUDE.md).
+- Promote or reject `dated-latest-claims`.
+- Lab runs for the doc-only sections and the UNVERIFIED items (SCRATCHPAD open items).
+- local-knowledge-ansible: another session's uncommitted capture work (`ansible-wifi/history/current/.agents/*`, a snapshots archive) — its owner.
+- skill-ai-it: adoption could take an unindented legacy-header continuation (pitfall recorded, no fix made).
+- A Bash permission rule for `git push` if agents should push.
+
+## Flows
+
+No drawio flow map cites the code this session changed: all 96 flow and map YAML files under `_ai` and `_ansible` were searched for policy_guard, repo_knowledge_capture, check_governance.py,
+skill-proxmox, repo-local-guidance, `.git/info/exclude` and MEMORY.md; the only hits were context maps and `governance/sync-map.yaml`, whose policy_guard entry is still accurate. No flow update
+needed.
 ````
 
 ## File: references/access-control.md
@@ -3530,88 +3625,53 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-proxmox platform pack — canonical, cross-project source of reusable Proxmox VE and bpg/proxmox knowledge
-Last reviewed: 20261107_1531
-Summary: "Agent guidance for maintaining and using skill-proxmox: artifact roles, the package contract, the write-back obligation, the boundary with"
+Last reviewed: 2026-11-09
+Summary: >-
+  Agent guidance for maintaining and using skill-proxmox: artifact roles, the package contract, the write-back obligation, and the gates to
+  run before calling work complete; scope and decisions are linked, not restated.
 Budget: 150 lines, 12 KB
 ---
 
 @../../../AGENTS.md
 
-workload and source-of-truth skills, and the gates to run before calling work complete.
-
 # AGENTS.md
-
-## Contents
-
-- [Working rules](#working-rules)
-- [Package contract](#package-contract)
-- [Cross-project write-back trigger](#cross-project-write-back-trigger)
-- [AI navigation and context preflight](#ai-navigation-and-context-preflight)
-- [Governance coherence checks](#governance-coherence-checks)
-- [Canonical governance linkage](#canonical-governance-linkage)
-- [Code changes](#code-changes)
-
----
 
 ## Working rules
 
-- [SKILL.md](SKILL.md) is the agent-facing activation surface: role, boundaries, orient-first commands, task routing and the standing write-back contract. It must route every file in `references/`.
-- `references/` is the content source. Load only the reference the task needs; [AI_NAVIGATION.md](AI_NAVIGATION.md) mirrors the routing table.
-- Scope: the Proxmox VE 9.x platform (nodes, clusters, storage, networking and SDN, VMs, LXC, access control, API and CLIs, backups, HA, upgrades, certificates,
-  firewall, metrics) and OpenTofu with the bpg/proxmox provider. Not the guest OS inside a VM (that workload's skill) and not the inventory of record
-  ([skill-nautobot](../skill-nautobot/SKILL.md) reads Proxmox as actual state). The Telmate provider is not used.
-- Evidence discipline: every reusable claim lives in [sources.yaml](sources.yaml) with an evidence rung, source type, reference and scenario; environment facts live in
-  [compatibility.yaml](compatibility.yaml). A lab observation is not a production guarantee. Version of record for this pack: Proxmox VE 9.1.5 (lab, observed 2026-11-07).
-- `documents/research-sources-<YYYYMMDD>/` holds verbatim captures of the official pages, man pages, provider docs and issue lists the claims rest on, indexed
-  in its `readme.md`; [documents/readme.md](documents/readme.md) lists every capture with its sha256. Adding or replacing one needs both rows in the same pass.
-  Captures are exempt from the redaction scan except for private keys: third-party pages carry example addresses that cannot be edited out.
-- `scripts/` holds tested, stdlib-only helpers only. A new helper needs tests in `tests/test_helpers.py` and an entry in [scripts/README.md](scripts/README.md) in the same pass.
-  Helpers read by default; any write needs `--apply` and prints its plan first (skill-coder).
-- Live reads of a node are fine where the engaging project allows read-only access; never run `apt update`, a `pvesh create|set|delete`, `qm set` or an OpenTofu
-  apply against a node from this pack without the engaging project's authorization.
-- Capability search order (USER_STATED 2026-10-01, shared with skill-nautobot): Proxmox VE core → Proxmox products and the bpg/proxmox provider → supported seams →
-  other FOSS → from scratch. Never patch PVE's own files on a node.
-- Project worked cases (for example smc-resiliency's x86 lab) are examples, not stock behaviour. Node names, addresses, VMIDs and password-manager entries stay in the engaging project.
-- Never write a credential, private address, production domain or path to unredacted field data into any pack file outside the verbatim captures — the contract
-  test scans every `.md`/`.yaml`/`.txt` file, generated ones included.
-- Durable decisions, rules and plans live in `.archcore/`, indexed by [.archcore/index.guide.md](.archcore/index.guide.md); they outrank this file's prose where they differ.
-- memory-keeper channel for this pack is `proxmox` in both memory backends (accepted 2026-11-09, see `.archcore/rules/memory-channel-name.rule.md`).
-- The package version lives only in the [CHANGELOG.md](CHANGELOG.md) release heading. Do not restate it in other governance files.
-- Time-bound notes use `<slug>-YYYYMMDD_hhmm.md`. <!-- path:example -->
-- Triage before opening: `just docs <folder>` gives one header line per file; run `just stale` before editing. Old CHANGELOG and SCRATCHPAD
-  entries are not read by default: `just history <term>` or `just history-show <stamp>` when a live entry cites one. Rotation
-  (`just rotate --apply`) creates their folder, `docs/history/`, the first time either record passes its budget. <!-- path:example -->
+- **Entry:** [SKILL.md](SKILL.md) is the activation surface (role and non-goals, routing, write-back contract) and must route every file in `references/`; [AI_NAVIGATION.md](AI_NAVIGATION.md) mirrors its routing table. Load only the
+  reference the task needs.
+- **Decisions:** [.archcore/index.guide.md](.archcore/index.guide.md) (pack boundary, capability search order, version of record, memory channel `proxmox`, live-probe plan) outranks this file.
+- **Evidence:** claims in [sources.yaml](sources.yaml), environments in [compatibility.yaml](compatibility.yaml); a lab observation is not a production guarantee. Version of record: Proxmox VE 9.1.5 (lab, observed 2026-11-07).
+- **Captures:** `documents/research-sources-<YYYYMMDD>/` holds verbatim pages, indexed in its `readme.md` and with sha256 in [documents/readme.md](documents/readme.md), both rows in the same pass. Captures are exempt from
+  the redaction scan except for private keys.
+- **Helpers:** `scripts/` is tested and stdlib-only; a new helper needs a test in `tests/test_helpers.py` and an entry in [scripts/README.md](scripts/README.md). Reads by default; a write prints its plan and needs
+  `--apply`. Invoke `skill-coder` first (operator, 2026-10-20): new scripts use two spaces, the copied checker keeps four; the session owes it a write-back.
+- **Live nodes:** reads are fine where the engaging project allows them; no `apt update`, `pvesh create|set|delete`, `qm set` or OpenTofu apply without that project's authorization.
+- **Project facts** (node names, addresses, VMIDs, password-manager entries) stay in the engaging project; worked cases such as smc-resiliency's x86 lab are examples.
+- **Redaction:** no credential, private address, production domain or unredacted field-data path in any pack file outside the captures; the contract scans every `.md`, `.yaml` and `.txt`, generated
+  ones included.
+- **Records:** time-bound notes use `<slug>-YYYYMMDD_hhmm.md`. Triage with `just docs <folder>` and `just stale` before editing; old entries via `just history <term>` or `just history-show <stamp>`;
+  `just rotate --apply` creates `docs/history/` the first time a record passes its budget. <!-- path:example -->
 
 ## Package contract
 
-`tests/test_package_contract.py` is the pack's own executable contract and outranks generic skill-ai-it conventions where they differ:
+`tests/test_package_contract.py` is executable and outranks generic skill-ai-it conventions. No manifest JSON, RUNBOOK or agents directory; every capture hashed; every reference routed in `SKILL.md`;
+ledgers in schema; every Learned or Disputed entry has a CHANGELOG line naming the file and date (write-back is always two edits); no unsafe text, generated `.ai-context/` included (regenerate, then
+re-run). `just test` runs the contract, the helper tests and the governance checker; run it before claiming any change complete.
 
-| Rule | Consequence |
-|---|---|
-| A manifest JSON file, a RUNBOOK file and an agents directory are forbidden | Do not add the skill-cambium/skill-smc metadata files here |
-| Every capture under `documents/` is indexed with its sha256 | Recompute the hash when a capture is refreshed |
-| Every required reference is named in `SKILL.md` | Routing changes start in `SKILL.md` |
-| Claims and environments follow a fixed schema and evidence ladder | Edit `sources.yaml`/`compatibility.yaml` only in schema |
-| Every Learned/Disputed entry in a reference has a CHANGELOG line naming the file and date | Write-back is two edits, always |
-| Every helper in `scripts/` is tested and stdlib-only | Includes `scripts/check_governance.py`, tested by running it |
-| No unsafe text anywhere in the pack | Applies to generated `.ai-context/` too — regenerate, then re-run `just test` |
+## Cross-project write-back
 
-Run `just test` (contract + helpers + governance checker) before claiming any change complete.
-
-## Cross-project write-back trigger
-
-Any project that invokes this skill and learns reusable Proxmox VE or bpg/proxmox knowledge writes it back here before the session closes, per the `SKILL.md` standing
-write-back contract and [references/evolution-and-write-back.md](references/evolution-and-write-back.md): a dated Learned entry in the focused reference plus one CHANGELOG line under
-`## Unreleased`, read back after writing. If this source is not writable from the engaging task, leave the entry in the engaging project as a candidate. Session-closeout skills run in
-an engaging project must check for unpromoted Proxmox knowledge; a closeout without that check is incomplete.
+A project that invokes this skill and learns reusable Proxmox VE or bpg/proxmox knowledge writes it back before the session closes ([SKILL.md](SKILL.md), Standing write-back contract;
+[references/evolution-and-write-back.md](references/evolution-and-write-back.md)). If this source is not writable, the entry waits in the project as a candidate; a closeout in an engaging project that does not check for unpromoted Proxmox
+knowledge is incomplete.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
 <!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
 
 ## AI navigation and context preflight
 
-Before answering, planning or editing, read [AI_NAVIGATION.md](AI_NAVIGATION.md) first: it routes everything else (read order, source priority, task routing, scripts, checks, compaction recovery).
-Read [context-map.yaml](context-map.yaml) only when changing routing or companion files.
+Before answering, planning or editing, read [AI_NAVIGATION.md](AI_NAVIGATION.md) first: it routes everything else (read order, source priority, task routing, scripts, checks, compaction recovery). Read [context-map.yaml](context-map.yaml)
+only when changing routing or companion files.
 
 - Sources disagree: stop and report, never guess. `SCRATCHPAD.md` is not durable truth unless marked `KEEP`; generated output never is.
 - Run catalogued tasks only (`just --list`, `scripts/README.md`); an uncatalogued script is unknown safety. A new or changed script updates `scripts/README.md`.
@@ -3620,57 +3680,15 @@ Read [context-map.yaml](context-map.yaml) only when changing routing or companio
 
 <!-- END MANAGED: skill-ai-it:navigation -->
 
-<!-- managed:skill-ai-it:governance-checks — regenerated by skill-ai-it. Edit the surrounding file freely; edits inside this block may be replaced. -->
+## Governance checks
 
-## Governance coherence checks
+[`scripts/check_governance.py`](scripts/check_governance.py) turns this pack's governance claims into assertions; `just check` gates on it and `just test` runs it. When a check fails, fix the project, not the check. A new check
+must be able to fail (break a copy of the pack and watch it go red). Text matching does not verify behaviour. Do not enforce history: mark past counts `<!-- count:asat -->`. When to extend it (new
+artifact class, generated output, restated constant, retired check): [governance-checks pattern](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/governance-checks.md).
 
-This project's governance claims are executable. [`scripts/check_governance.py`](scripts/check_governance.py) turns them into assertions and ``just check`` gates on them. It is stdlib-only
-and exits non-zero on any failure.
+## Linkage
 
-**Run it before claiming any durable change is complete**, and after any change that adds, moves, renames, or retires a file. It is cheap and it is the only thing standing between this project's
-documents and silent decay.
-
-### The checker grows with the project
-
-The check count is a coverage signal, not a score. It is expected to rise as the project acquires structure. Extend it on these triggers:
-
-| Change made | Required checker update |
-|---|---|
-| Add a document to a cataloged folder | None — the coverage check fails until the index links it. That is the intended workflow, not an error to route around |
-| Add a script or task | Catalog it in `scripts/README.md` and the task runner; coverage fails until then |
-| Add a new **class** of artifact (new folder, new document type) | Add a `CATALOGS` entry, plus a contract check if the class has a declared filename or frontmatter form |
-| Add a generated artifact | Add a `DERIVED` entry; add a provenance check too if the generator can stamp its source into the output |
-| State a threshold, rate, deadline, or canonical path in a new file | Register the file in `CONSTANT_SURFACES`; the sync check fails until it is registered |
-| Change a constant's value | Update the owning rule first, then every registered surface, in one pass — the sync check verifies the pass was complete |
-| Rename or move a file | Nothing — path resolution catches every stale reference automatically |
-| Retire a check | Record why in `CHANGELOG.md`. A silently deleted check is indistinguishable from one that never existed |
-
-### Rules that are not negotiable
-
-- **When a check fails, fix the project, not the check.** Broadening an ignore-list to silence a true positive, or exempting the file that failed, converts a real finding into a permanent blind spot
-  that the next agent has no way to discover.
-- **A new check must be able to fail.** Prove it by breaking the project deliberately and watching it go red. A check that scans an empty set is an assumption wearing a test's clothes.
-- **Text matching does not verify behavior.** Grepping for a threshold's characters does not prove the surrounding logic implements it — a script's output can state a rule its code no longer applies.
-  Where a check must verify behavior, execute the behavior and assert on the result.
-- **Do not enforce history.** Counts and states recorded as past facts are evidence, not live claims. Mark those lines `<!-- count:asat -->` rather than editing the record to satisfy the checker.
-
-Doctrine, the seven check families, and the artifact-to-check inference table: [the governance-checks
-pattern](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/governance-checks.md).
-
-<!-- /managed:skill-ai-it:governance-checks -->
-
-## Canonical governance linkage
-
-- Parent guidance: [../../../AGENTS.md](../../../AGENTS.md)
-- Related pack: [../skill-nautobot/SKILL.md](../skill-nautobot/SKILL.md) (the structure this pack mirrors)
-- skill-ai-it (bootstrap source): [/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/SKILL.md](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/SKILL.md)
-- Cross-repo governance root: [/Volumes/Data/_ai/governance/README.md](/Volumes/Data/_ai/governance/README.md)
-
-## Code changes
-
-Invoke `skill-coder` before adding or changing any script in this pack (operator, 2026-10-20; the skills_stuff root rule; new scripts
-here use two-space indentation as skill-coder requires, the copied governance checker keeps its generated four): its rules apply
-(purpose header, docstrings, `--apply` for writes, timeouts, tests, measured runtime) and the session owes it a write-back.
+Parent [../../../AGENTS.md](../../../AGENTS.md); structure mirrors [skill-nautobot](../skill-nautobot/SKILL.md); bootstrap source [skill-ai-it](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/SKILL.md); cross-repo governance [README](/Volumes/Data/_ai/governance/README.md).
 ````
 
 ## File: AI_NAVIGATION.md
@@ -3910,6 +3928,13 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-09 AGENTS.md trimmed (operator: "Trim AGENTS.md · 3k tokens per request"): 148 to 70 lines, 12.6 to 5.7 KB; scope, search order, version and memory
+  rules linked to SKILL.md and `.archcore/` instead of restated; the generic governance-checks block replaced by one paragraph and a link to the skill-ai-it
+  pattern; front matter repaired (the adoption pass had cut Summary mid-sentence). AGENTS.md was hidden by skills_stuff's `.git/info/exclude` until the <!-- path:example -->
+  operator's Git-tracking rule (2026-11-09); first committed in skills_stuff 95bf5f2.
+- 2026-11-09 incidents: a scratch-folder recursive delete was refused by the OPA hook (rerun in a fresh dated folder); `git push` and one read-only listing
+  were refused by the auto-mode classifier (the operator pushed by hand); the first blind memory-recall test read the session-start copy of MEMORY.md, not
+  the file on disk, and was discarded.
 - 2026-11-09 archcore review (operator: "see if it is all up to date and if it needs more optimization"): the six `.archcore/` documents corrected (version rule enforcement wording, plan steps for the 2026-11-09 doc-only sections and the 9.2 cookbook re-run, memory rule names both backends, pack ADR names the skill-vagrant boundary, checker ADR names the new test) and accepted (operator, 2026-11-09); index updated; `ARCHCORE_PROMOTION_CANDIDATES.md` written (one candidate: dated-latest-claims) and added to the Repomix include; doc-freshness baseline 8 to 2. New governance check `check_version_restated` with `Governance.test_a_restated_version_fails_the_gate` (it caught a missed sentence-final version before release).
 - 2026-11-09 gap review with online research (operator: "confirm the skill is defined properly ... do online research and fill in"): new sections for hyperconverged Ceph (references/storage.md), node removal and arm64 hosts (references/architecture-and-cluster.md), migration, resource mappings and virtiofs (references/qemu-vms.md), notifications (references/monitoring-and-metrics.md), two-factor authentication (references/access-control.md), PBS 4.x and S3 datastores (references/backup-and-restore.md), PDM 1.0/1.1 (references/capability-extension.md), the 9.2 arm64 release row (references/upgrade-and-troubleshooting.md); ASCII diagrams and tables in nine references (operator: "add ASCII diagrams and tables"); claims P-C22 to P-C27, scenarios P-S17 to P-S20, environment pve-docs-9-current-20261109; seven captures in documents/research-sources-20261109/; bpg/proxmox re-checked, still 0.120.0.
 - 2026-11-09 skill-ai-it refresh: govern (navigation block upgraded, AI_NAVIGATION 322 to 159 lines, adoption recipes and record keys), front matter with summaries on 16 references and 2 test documents (doc-freshness baseline 26 to 8), docs/history and docs/trackers registered as conditional paths in the checker, code-map.toml with each module's status, context pack regenerated.
@@ -5014,7 +5039,7 @@ Authority: working-state
 Scope: Working state between sessions
 Kind: state
 Budget: 200 lines, 25 KB
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-09
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261109_1125.md
 ---
@@ -5025,26 +5050,28 @@ Agent working memory for skill-proxmox. Use for: draft plans, terminal output, i
 
 ---
 
-<!-- KEEP: populated 2026-11-07 at creation -->
+<!-- KEEP: populated 2026-11-07 at creation; updated 2026-11-09 slurp close -->
 
 ## Current state
 
-**Phase:** first release (heading in [CHANGELOG.md](CHANGELOG.md)), created 2026-11-07 to skill-nautobot's structure; uncommitted, awaiting operator review.
+**Phase:** first release plus Unreleased write-backs (heading in [CHANGELOG.md](CHANGELOG.md)); committed and pushed (skills_stuff bd2a566, 95bf5f2).
 
-Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the smc-resiliency x86 lab (read-only on one 9.1.5 node) and 51 verbatim captures of primary sources.
+Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the smc-resiliency x86 lab (read-only on one 9.1.5 node) and 58 verbatim captures of primary sources.
+
+2026-11-09: gap review filled Ceph, node removal, arm64 hosts, migration, resource mappings and virtiofs, notifications, 2FA, PBS 4.x and PDM 1.x from the docs (no lab run yet); skill-ai-it refresh
+done; `.archcore/` accepted; AGENTS.md trimmed and tracked in Git.
 
 ---
 
 ## Open items
 
-- [x] Operator review: the six `.archcore/` documents corrected and accepted (operator, 2026-11-09); their review-date findings left the baseline.
-- [x] Commit: pack folder, registry rows and install symlinks committed in skills_stuff bd1691d (2026-11-07).
-- [x] `just check` passes (2026-11-09 refresh): summaries written, AI_NAVIGATION 322 to 159 lines. Still baselined: AI_NAVIGATION 9 lines over 150 (its routing table is a checked rule), `.ai-context/` (generated, no header).
-- [ ] Live probes on a disposable node for the `UNVERIFIED` items: `pvesh set /cluster/sdn` apply form, live restore from PBS, hook-script phase names, the task list's errors filter, the disks list endpoint,
-  Ubuntu cloud image without qemu-guest-agent.
-- [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill).
+- [ ] Live probes on a disposable node for the `UNVERIFIED` items: `pvesh set /cluster/sdn` apply form, live restore from PBS, hook-script phase names, the task list's errors filter, the disks list
+  endpoint, Ubuntu cloud image without qemu-guest-agent.
+- [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill), scenarios P-S01 to P-S20.
 - [ ] Re-verify the cookbook when the lab node moves to 9.2 (pending in its update queue).
-- [ ] Live probe on a cluster for the 2026-11-09 doc-only sections (Ceph, migration, mappings, notifications): today they rest on the docs, with no lab run.
+- [ ] Live probe on a three-node lab cluster for the 2026-11-09 doc-only sections (Ceph, migration, mappings, notifications, node removal): accepted plan step 3.
+- [ ] Proposed, not decided: archcore rule `dated-latest-claims` ([ARCHCORE_PROMOTION_CANDIDATES.md](ARCHCORE_PROMOTION_CANDIDATES.md)); promote or reject.
+- [ ] Still baselined: AI_NAVIGATION.md 9 lines over its 150-line budget (the routing table is a checked rule); `.ai-context/` (generated, no header).
 
 ---
 
@@ -5053,19 +5080,41 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 | Item             | Detail                                                                                                                |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Install          | `~/.claude/skills/skill-proxmox` and `~/.agents/skills/skill-proxmox` are symlinks to this folder (as skill-nautobot) |
-| Observed version | Proxmox VE 9.1.5 (lab; see `compatibility.yaml`)                                                                      |
-| Provider         | bpg/proxmox 0.120.0 (latest on 2026-11-07)                                                                            |
+| Observed version | Proxmox VE 9.1.5 (lab; see `compatibility.yaml`); latest 9.2 (x86 2026-05-21, arm64 2026-08-05), checked 2026-11-09   |
+| Provider         | bpg/proxmox 0.120.0 (still latest on 2026-11-09)                                                                      |
 | Memory channel   | `proxmox`, both backends (accepted)                                                                                   |
-| Origin project   | smc-resiliency (its spike/x86 folder: the x86 lab)                                                                       |
+| Origin project   | smc-resiliency (its spike/x86 folder: the x86 lab)                                                                    |
 | Gate             | `just test` then `just check`                                                                                         |
+| Registered in    | project_stuff and skills_stuff AGENTS.md, "Shared tools and skills" (2026-11-09)                                      |
 
 ---
 
 ## Recent decisions
 
-- 2026-11-07 — Pack mirrors skill-nautobot (operator). Sources kept as verbatim captures under `documents/research-sources-20261107/` with sha256 in `documents/readme.md`; captures exempt from the
-  redaction scan except private keys.
-- 2026-11-07 — New helpers use two-space indentation (skill-coder rule); the copied governance checker keeps four.
+- 2026-11-09 — Six `.archcore/` documents corrected and accepted (operator); version-of-record rule enforced by `check_version_restated`; candidates file written, tags left.
+- 2026-11-09 — AGENTS.md trimmed to one line plus a link per rule (operator); governance files are tracked in Git on the operator's GitHub (global rule).
+- 2026-11-07 — Pack mirrors skill-nautobot (operator). Sources kept as verbatim captures with sha256 in `documents/readme.md`; captures exempt from the redaction scan except private keys.
+
+---
+
+## Session history
+
+- 2026-11-09 — Gap review with online research, ASCII diagrams, skill-ai-it refresh, archcore review and acceptance, AGENTS.md trim; global Git-tracking rule and memory-index split done from this
+  session. Record: [docs/session-record-20261109_1235.md](docs/session-record-20261109_1235.md).
+- 2026-11-07 — Pack created from the smc-resiliency x86 lab and 51 captures; write-backs from smc-resiliency X1 and X2.
+
+---
+
+## Next actions
+
+- Run the lab probes above when a disposable node or a three-node lab cluster is available; record each as a Learned or Disputed entry plus a CHANGELOG line.
+
+---
+
+## Memory pointers
+
+- memory-keeper channel `proxmox`: `skill-proxmox.gap-review-20261109`, `skill-proxmox.refresh-archcore-20261109`, `session.closeout.20261109.skill-proxmox`; channel `global-governance`:
+  `governance.git-tracking-rule-20261109`, `memory.index-hybrid-split-20261109`. project-context: skills_stuff (channel `proxmox`), global-governance-policy.
 ````
 
 ## File: SKILL.md

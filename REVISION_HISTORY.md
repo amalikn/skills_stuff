@@ -68,3 +68,8 @@ Change log for the `skills_stuff` parent repository.
 - Updated `README.md` to add "Reusable Skills — skills/" section with table entry for `skill-project-wiki-rag-bridge`.
 - Updated `AGENTS.md` Regular Skills table to register `skill-project-wiki-rag-bridge` and `skill-slurp-chat`.
 - Created `_wiki/CLAUDE.md` governance wrapper (thin `@AGENTS.md` import, fixes missing entrypoint for wiki vault).
+
+## 2026-11-09
+- Governance files tracked (operator rule): the `.git/info/exclude` lines `AGENTS.md`, `.agents/`, `skills.md` removed; 22 AGENTS.md, `.agents/` and
+  skills.md files committed (95bf5f2). repo-local-guidance 0.2.0 rewrite; repo-knowledge-capture 0.1.3. skill-proxmox gap review, refresh and archcore
+  acceptance (9cbd227, bd2a566).

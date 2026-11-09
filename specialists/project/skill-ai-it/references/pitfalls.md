@@ -125,3 +125,21 @@ and fleet facts belong to the domain skill pack; site facts and decisions belong
 domain pack before answering, write a confirmed device fact back to the pack's references in the same session, and have projects cite the
 pack rather than restate it. The pack's write-back contract binds once its domain is touched, invoked or not; the hook above enforces the
 invocation half.
+
+**A refresh on a pack built by hand (learned 2026-11-09, skill-proxmox refresh; evidence: skill-proxmox commits 9cbd227, bd2a566).**
+- A legacy bare header whose `Summary:` value was hard-wrapped onto an *unindented* next line loses that tail: `adopt_governed_files.py` takes only
+  indented lines as a folded continuation, so the second line stayed in the body below the `@` import and the fenced Summary ended mid-sentence.
+  Read the new front matter back after adoption; an unindented continuation is the sign.
+  ```python
+  # scripts/adoption/adopt_governed_files.py (legacy-header branch)
+  while j < len(lines) and (re.match(r"[A-Z][\w ]*: ", lines[j]) or (keys and re.match(r"[ \t]+\S", lines[j]))):
+  ```
+- The compact navigation block (2026-10-14-compact-v2) names `docs/history/` and `docs/trackers/`, which a pack without rotated records lacks;
+  the checker's path check fails until each project registers them in `CONDITIONAL_PATHS` with a reason (skill-vagrant had; skill-proxmox did not).
+- `govern` baselines every finding the project already had (26 there, mostly missing header summaries). Write the summaries and drop the
+  resolved baseline entries; the baseline is a ratchet, not a fix.
+- `doc_freshness.py` puts only `current`, `draft` and `proposed` documents on a review clock: six `proposed` `.archcore/` documents cleared when
+  the operator accepted them, not by adding dates.
+- A refresh with `.archcore/` present owes `ARCHCORE_PROMOTION_CANDIDATES.md` or a stated reason (finishing.md checklist); it was skipped
+  in the first pass and written in the second.
+
