@@ -38,6 +38,10 @@ done; `.archcore/` accepted; AGENTS.md trimmed and tracked in Git.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill), scenarios P-S01 to P-S20.
 - [ ] Re-verify the cookbook when the lab node moves to 9.2 (pending in its update queue).
 - [ ] Live probe on a three-node lab cluster for the 2026-11-09 doc-only sections (Ceph, migration, mappings, notifications, node removal): accepted plan step 3.
+  Read-only probes on the 9.1.5 lab node (operator, 2026-11-09: "Read-only probes now") were blocked: the node was unreachable from this Mac's network
+  (no lab route; port 22 timed out). Probe set, all GETs/help/status: `pvesh get /cluster/notifications/endpoints/{sendmail,smtp,gotify,webhook}`,
+  `/cluster/notifications/matchers`, `/cluster/mapping/{pci,usb,dir}`, `/access/tfa`; `qm help migrate`, `qm help remote-migrate`, `pveceph status`,
+  `pveceph help pool create`, `pvecm help delnode`; `dpkg-query -W virtiofsd ceph-common`; `ls /usr/share/pve-manager/templates/default/`.
 - [x] Archcore rule `dated-latest-claims` promoted and accepted (operator, 2026-11-09).
 - [ ] Still baselined: AI_NAVIGATION.md 9 lines over its 150-line budget (the routing table is a checked rule); `.ai-context/` (generated, no header).
 
