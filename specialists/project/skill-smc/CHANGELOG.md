@@ -6,13 +6,18 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261109_2301
+Last rotated: 20261110_0031
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261110_0031 — Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)
+
+`references/07_hardware-overlay.md`: Learned 2026-11-10: 2023-01-11 reads autoboot.txt on GPT and runs the full tryboot chain; an EEPROM
+update staged on the selected boot partition is applied; where the 2023 image is (VERIFIED_PRIMARY, bench console).
 
 ## 20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)
 
@@ -191,9 +196,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
   session, `ssh -vv` with no authentication per address; prints banner, kex, host key, cipher/MAC and auth methods, so an `IPSSH-6.6.0` switch is
   told from a `TPSSH` one before a login. Smoke run 2026-10-29 on aurukun-smc01 (10.255.1.2 IPSSH, 10.255.3.1 TPSSH): 19 s. Promoted from a
   unified-network-controller session's ad hoc probe.
-
-## 20261029_1058 — TP-Link switches on IPSSH firmware: legacy SSH fallbacks (v0.9.9 -> v0.10.0)
-
-- `scripts/switch/tplink_cli_driver.py` and `tplink-switch.sh` append `ssh-dss`, `hmac-md5`, `diffie-hellman-group1-sha1` and `aes128-cbc` as
-  fallbacks: SG2428P firmware 4.0.1 (`IPSSH-6.6.0`) offers nothing else, and three aurukun switches could not be read. Learned 2026-10-29 in
-  `references/16_tplink-site-switches.md`.

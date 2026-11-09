@@ -1200,3 +1200,12 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > done
 > chroot "$root" apt-mark hold linux-firmware-raspi flash-kernel linux-raspi linux-image-raspi linux-headers-raspi >/dev/null
 > ```
+
+> **Learned 2026-11-10** · Pi 4B, the fleet bootloader 2023-01-11 (version 8ba17717) · VERIFIED_PRIMARY (bench Pi 4 serial console) · Source:
+> smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 20 · Falsifier: a 2023-01-11 box not reading autoboot.txt on GPT.
+> - The fleet's bootloader reads a 256-byte autoboot.txt on p1 of a GPT card and runs the same chain as 2026-01-09: one-shot tryboot to the other
+>   slot, back after a plain reboot, commit, panic fallback, and a watchdog reset of a hung trial back to the committed slot.
+> - An EEPROM update staged by `rpi-eeprom-update -f` on the selected boot partition (p3, chosen by autoboot.txt) was applied by the bootloader
+>   (`Updating bootloader EEPROM ... BOOT-EEPROM: UPDATED`), and the config embedded with `rpi-eeprom-config --config ... --out` survived the
+>   downgrade. The image is `pieeprom-2023-01-11.bin` in github.com/raspberrypi/rpi-eeprom firmware-2711/old/critical (same bytes in old/stable).
+
