@@ -129,7 +129,8 @@ invocation half.
 **A refresh on a pack built by hand (learned 2026-11-09, skill-proxmox refresh; evidence: skill-proxmox commits 9cbd227, bd2a566).**
 - A legacy bare header whose `Summary:` value was hard-wrapped onto an *unindented* next line loses that tail: `adopt_governed_files.py` takes only
   indented lines as a folded continuation, so the second line stayed in the body below the `@` import and the fenced Summary ended mid-sentence.
-  Read the new front matter back after adoption; an unindented continuation is the sign.
+  Fixed 2026-11-09 (`wrapped_continuation`: an unindented line right after a header line of 100+ characters joins its value;
+  tests `test_unindented_wrapped_value_stays_inside_the_fence`, `test_prose_under_a_short_header_line_is_not_swallowed`). Still read the new front matter back.
   ```python
   # scripts/adoption/adopt_governed_files.py (legacy-header branch)
   while j < len(lines) and (re.match(r"[A-Z][\w ]*: ", lines[j]) or (keys and re.match(r"[ \t]+\S", lines[j]))):

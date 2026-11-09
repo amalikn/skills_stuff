@@ -341,6 +341,29 @@ FILE_BUDGETS = {"README.md": "200 lines, 25 KB", "AGENTS.md": "150 lines, 12 KB"
 RECORD_SCOPE = {"log": "Dated changes to this project", "state": "Working state between sessions", "roadmap": "Current phase and open milestones"}
 
 
+#: A header line this long was probably hard-wrapped by the markdown hook; shorter lines end their value.
+WRAPPED_MIN = 100
+
+
+def wrapped_continuation(previous: str, line: str) -> bool:
+    """Whether an unindented line continues the legacy-header value above it (a value hard-wrapped without indentation).
+
+    The skill-proxmox AGENTS.md of 2026-11-07 had `Summary: ... the boundary with` and its tail on the next, unindented line; the tail stayed
+    in the body below the import. Only a long previous line counts, so prose right under a short header line is never swallowed.
+
+    Args:
+        previous: the line before, already part of the header.
+        line: the candidate line.
+
+    Returns:
+        True when the line is non-blank, not a heading, import, fence or new key, and the previous line is at least WRAPPED_MIN long.
+    """
+    s = line.strip()
+    if not s or s.startswith(("#", "@", "---")) or re.match(r"[A-Z][\w ]*: ", line):
+        return False
+    return len(previous) >= WRAPPED_MIN
+
+
 def fm_value(value: str) -> str:
     """A front-matter value as valid YAML: double-quoted when plain style would break (smc-resiliency README, 2026-10-14: `Scope: ... apn: what`).
 
@@ -476,9 +499,12 @@ def fix_header(root: pathlib.Path, name: str) -> None:
             imports += [lines[i]] if lines[i].startswith("@") else []
             i += 1
         j = i
-        while j < len(lines) and (re.match(r"[A-Z][\w ]*: ", lines[j]) or (keys and re.match(r"[ \t]+\S", lines[j]))):
+        while j < len(lines) and (re.match(r"[A-Z][\w ]*: ", lines[j]) or (keys and re.match(r"[ \t]+\S", lines[j]))
+                                  or (keys and wrapped_continuation(lines[j - 1], lines[j]))):
             if lines[j][0] in " \t":
                 keys[list(keys)[-1]] += "\n" + lines[j]  # a folded value's continuation; it stayed outside the fence (UNC AGENTS.md, 2026-10-14)
+            elif not re.match(r"[A-Z][\w ]*: ", lines[j]):
+                keys[list(keys)[-1]] += " " + lines[j].strip()  # a plain value hard-wrapped without indent (skill-proxmox AGENTS.md, 2026-11-09)
             else:
                 k, v = lines[j].split(": ", 1)
                 keys[k] = v

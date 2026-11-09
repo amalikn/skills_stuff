@@ -212,6 +212,26 @@ class AdoptTest(unittest.TestCase):
             self.assertIn("Summary: >- First line\n  second line.\n", text.split("\n---\n", 1)[0])
             self.assertIn("\n---\n\n@../AGENTS.md\n\n# AGENTS.md\n", text)
 
+    def test_unindented_wrapped_value_stays_inside_the_fence(self):
+        # 2026-11-09: skill-proxmox AGENTS.md had its Summary hard-wrapped onto an unindented line; the tail landed below the import.
+        long_line = "Summary: Agent guidance for maintaining and using skill-proxmox: artifact roles, the package contract, the write-back obligation, the boundary with"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text("@../AGENTS.md\n\nTitle: Policy\n" + long_line + "\nworkload and source-of-truth skills, and the gates.\n\n# AGENTS.md\n\nRules.\n")
+            adopt.fix_header(root, "AGENTS.md")
+            head, body = (root / "AGENTS.md").read_text().split("\n---\n", 1)
+            self.assertIn("the boundary with workload and source-of-truth skills, and the gates.", head)
+            self.assertNotIn("workload and source-of-truth", body)
+
+    def test_prose_under_a_short_header_line_is_not_swallowed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text("Title: Policy\nStatus: current\nRead the rules first.\n\n# AGENTS.md\n\nRules.\n")
+            adopt.fix_header(root, "AGENTS.md")
+            head, body = (root / "AGENTS.md").read_text().split("\n---\n", 1)
+            self.assertNotIn("Read the rules first.", head)
+            self.assertIn("Read the rules first.", body)
+
     def test_future_deadline_is_not_the_review_date(self):
         # 2026-10-14: enterprise-strategy SCRATCHPAD got its 25 Oct deadline as Last reviewed; only dates up to today count.
         with tempfile.TemporaryDirectory() as tmp:
