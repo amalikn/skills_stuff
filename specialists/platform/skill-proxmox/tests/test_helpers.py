@@ -11,6 +11,7 @@ import contextlib
 import importlib
 import io
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -231,6 +232,18 @@ class Governance(unittest.TestCase):
       result = self._run(copy)
     self.assertEqual(result.returncode, 1, result.stdout)
     self.assertIn("does-not-exist.md", result.stdout)
+
+  def test_a_restated_version_fails_the_gate(self):
+    """The version-of-record rule is enforced: a pack file restating the CHANGELOG release version turns the gate red."""
+    version = re.search(r"^## (\d+\.\d+\.\d+) — ", (self.PACK / "CHANGELOG.md").read_text(encoding="utf-8"), re.M).group(1)
+    with tempfile.TemporaryDirectory() as tmp:
+      copy = Path(tmp) / "pack"
+      shutil.copytree(self.PACK, copy, ignore=shutil.ignore_patterns(".git", "documents", "graphify-out", ".ai-context"))
+      with (copy / "README.md").open("a", encoding="utf-8") as fh:
+        fh.write(f"\nCurrent release: {version}.\n")
+      result = self._run(copy)
+    self.assertEqual(result.returncode, 1, result.stdout)
+    self.assertIn(f"README.md restates the release version {version}", result.stdout)
 
 
 if __name__ == "__main__":

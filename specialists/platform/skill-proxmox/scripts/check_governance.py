@@ -146,6 +146,13 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     # },
 }
 
+# The pack version lives only in CHANGELOG.md's newest release heading (.archcore/rules/changelog-version-of-record.rule.md).
+# It changes at every release, so it is read from that heading at run time rather than registered as a fixed constant.
+# Exempt: verbatim captures (third-party pages carry their own version strings) and rotated changelog history.
+VERSION_RECORD = "CHANGELOG.md"
+VERSION_HEADING = re.compile(r"^## (\d+\.\d+\.\d+) — ", re.M)
+VERSION_EXEMPT_PREFIXES: tuple[str, ...] = ("documents/", "docs/history/")
+
 # Append-only tables and the columns that give them their grain: (entity column, pass column). An append-only table
 # records a re-measurement by ADDING a row, which is right and useless on its own — without a column that orders the
 # passes there is no way to compute which row is current, and every aggregate over the table double-counts whatever was
@@ -517,6 +524,37 @@ def check_evidence_provenance() -> None:
                  f"{EVIDENCE_DIR}/{item.name} defers its provenance to {corrector}, which does not exist")
 
 
+def check_version_restated() -> None:
+    """The release version appears in no pack file except its record, so a release bump has one place to change.
+
+    Reads the newest `## x.y.z — date` heading of VERSION_RECORD and fails when any other scanned file (dot folders,
+    this checker and VERSION_EXEMPT_PREFIXES aside) contains that exact version as a standalone token.
+
+    Args:
+        None.
+
+    Returns:
+        None; findings go through fail().
+    """
+    text = read(VERSION_RECORD)
+    counted()
+    found = VERSION_HEADING.search(text or "")
+    if found is None:
+        fail("version", f"{VERSION_RECORD} has no `## x.y.z — date` release heading")
+        return
+    version = found.group(1)
+    token = re.compile(rf"(?<![\d.]){re.escape(version)}(?!\.?\d)")  # a whole token, also before a full stop; never part of a longer dotted number
+    for path in sorted(ROOT.rglob("*")):
+        if not path.is_file() or path.suffix not in SCAN_SUFFIXES:
+            continue
+        rel = path.relative_to(ROOT).as_posix()
+        if rel in (VERSION_RECORD, SELF) or rel.startswith(".") or "/." in rel or rel.startswith(VERSION_EXEMPT_PREFIXES):
+            continue
+        counted()
+        if token.search(path.read_text(encoding="utf-8", errors="ignore")):
+            fail("version", f"{rel} restates the release version {version}; it lives only in {VERSION_RECORD}")
+
+
 # --------------------------------------------------------------------------------------------------------------- MAIN
 
 CHECKS = (
@@ -530,6 +568,7 @@ CHECKS = (
     check_constant_sync,
     check_append_only_grain,
     check_evidence_provenance,
+    check_version_restated,
 )
 
 

@@ -26,7 +26,7 @@ engaging project. Its structure mirrors [skill-nautobot](../skill-nautobot/READM
 - [documents/](documents/) — verbatim source captures. Index: [documents/readme.md](documents/readme.md); per-date folder index: [documents/research-sources-20261107/readme.md](documents/research-sources-20261107/readme.md)
 - [scripts/](scripts/) — tested stdlib-only helpers and the governance checker. Index: [scripts/README.md](scripts/README.md)
 - [tests/](tests/) — offline package contract, helper tests, scenarios, evaluation procedure
-- [.archcore/](.archcore/) — durable decisions, rules and plans (6 documents, proposed 2026-11-07). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
+- [.archcore/](.archcore/) — durable decisions, rules and plans (6 documents, accepted 2026-11-09). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
 
 ## Key files
 

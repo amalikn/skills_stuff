@@ -1,14 +1,14 @@
 ---
 title: CHANGELOG release heading is the version of record
 type: rule
-status: proposed
+status: accepted
 tags: [versioning, governance]
 created: 2026-11-07
 ---
 
 # Rule: CHANGELOG release heading is the version of record
 
-Status: proposed (2026-11-07; same rule as skill-nautobot)
+Status: accepted (operator, 2026-11-09, after the archcore review that corrected it). Same rule as skill-nautobot.
 
 ## Rule
 
@@ -21,4 +21,7 @@ The package contract forbids a manifest JSON file, so there is no second metadat
 
 ## Enforcement
 
-The contract test requires a version-shaped heading in `CHANGELOG.md`. Restatement elsewhere is not yet checked.
+- `tests/test_package_contract.py` asserts that `CHANGELOG.md` contains a `0.x.y` string somewhere (not specifically a heading).
+- `scripts/check_governance.py` `check_version_restated` (2026-11-09) reads the newest release heading and fails when any other `.md`, `.py`
+  or `.yaml` file states that version; verbatim captures under `documents/`, rotated history under `docs/history/`, dot folders and the
+  checker itself are exempt. `Governance.test_a_restated_version_fails_the_gate` proves it can fail.

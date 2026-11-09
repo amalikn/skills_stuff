@@ -30,6 +30,7 @@
     "package.json",
     "memory-bank/**/*.md",
     ".archcore/**/*.md",
+    "ARCHCORE_PROMOTION_CANDIDATES.md",
     "docs/**/*.md"
   ],
   "ignore": {

@@ -28,7 +28,7 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Only files matching these patterns are included: AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, README.md, ARCHITECTURE.md, architecture.md, CONVENTIONS.md, ROADMAP.md, roadmap.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, sources.yaml, compatibility.yaml, references/**/*.md, tests/*.md, context-map.yaml, scripts/README.md, scripts/**, justfile, Justfile, Taskfile.yml, Makefile, package.json, memory-bank/**/*.md, .archcore/**/*.md, docs/**/*.md
+- Only files matching these patterns are included: AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, README.md, ARCHITECTURE.md, architecture.md, CONVENTIONS.md, ROADMAP.md, roadmap.md, SCRATCHPAD.md, CHANGELOG.md, SKILL.md, sources.yaml, compatibility.yaml, references/**/*.md, tests/*.md, context-map.yaml, scripts/README.md, scripts/**, justfile, Justfile, Taskfile.yml, Makefile, package.json, memory-bank/**/*.md, .archcore/**/*.md, ARCHCORE_PROMOTION_CANDIDATES.md, docs/**/*.md
 - Files matching these patterns are excluded: node_modules/**, .git/**, dist/**, build/**, cache/**, runtime/**, __pycache__/**, .venv/**, graphify-out/**, .ai-context/**
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
@@ -77,6 +77,7 @@ tests/
   scenarios.md
 AGENTS.md
 AI_NAVIGATION.md
+ARCHCORE_PROMOTION_CANDIDATES.md
 CHANGELOG.md
 CLAUDE.md
 compatibility.yaml
@@ -96,14 +97,14 @@ sources.yaml
 ---
 title: Governance checker runs inside the test suite
 type: adr
-status: proposed
+status: accepted
 tags: [governance, tests]
 created: 2026-11-07
 ---
 
 # ADR: Governance checker runs inside the test suite
 
-Status: proposed (2026-11-07; carried over from skill-nautobot, where the operator accepted it on 2026-10-05)
+Status: accepted (operator, 2026-11-09, after the archcore review that corrected it). Carried over from skill-nautobot, where the operator accepted it on 2026-10-05.
 
 ## Context
 
@@ -112,16 +113,18 @@ so the governance checker cannot sit in `scripts/` untested.
 
 ## Decision
 
-`tests/test_helpers.py` runs the checker as a subprocess (`Governance.test_governance_claims_hold`) and proves it can fail on a copy of the
-pack with a broken reference (`Governance.test_a_broken_reference_fails_the_gate`). `just test` is the single completion gate; `just check`
-runs the checker alone.
+`tests/test_helpers.py` runs the checker as a subprocess (`Governance.test_governance_claims_hold`) and proves on a copy of the pack that it
+can fail: a broken reference (`Governance.test_a_broken_reference_fails_the_gate`) and a restated release version
+(`Governance.test_a_restated_version_fails_the_gate`, added 2026-11-09). `just test` is the single completion gate; `just check` runs the
+checker alone, with the skill-ai-it doc-freshness and role checks.
 
 ## Consequences
 
-- A governance drift (an uncataloged helper, an unrouted reference, a stale path) turns the pack's tests red.
+- A governance drift (an uncataloged helper, an unrouted reference, a stale path, a restated version) turns the pack's tests red.
 - Work that adds a helper is red until it is catalogued in `scripts/README.md`; that is intended.
+- Each new check family gets a test that breaks a copy of the pack and expects red, so no check scans an empty set unnoticed.
 
-Confidence: medium, as in skill-nautobot.
+Confidence: high; both tests ran red on a broken copy before the gate was trusted (2026-11-07 and 2026-11-09).
 ````
 
 ## File: .archcore/adr/independent-platform-pack.adr.md
@@ -129,14 +132,14 @@ Confidence: medium, as in skill-nautobot.
 ---
 title: Independent Proxmox VE platform pack
 type: adr
-status: proposed
+status: accepted
 tags: [pack-boundary, proxmox]
 created: 2026-11-07
 ---
 
 # ADR: Independent Proxmox VE platform pack
 
-Status: proposed (2026-11-07, at creation; awaits operator acceptance)
+Status: accepted (operator, 2026-11-09, after the archcore review that corrected it).
 
 ## Context
 
@@ -151,10 +154,13 @@ skill-nautobot and skill-openwisp under `specialists/platform/`. It is not a sec
 ## Consequences
 
 - The primary pack for a task is chosen by the object being changed (`SKILL.md`, Route the task); a guest's own OS stays with its workload.
+- Local Vagrant VMs on the Mac (Parallels, the arm64 half of a lab) belong to `skill-vagrant`, created the same day; this pack holds the x86
+  Proxmox half. Lab symmetry between the two lives in skill-vagrant's `references/tool-choice-and-lab-symmetry.md`.
 - Node names, addresses, VMIDs and lab inventories stay in the engaging project.
 - Every engagement owes a write-back here (`references/evolution-and-write-back.md`).
+- Every project under `project_stuff/` and `skills_stuff/` learns of the pack from its `AGENTS.md` "Shared tools and skills" list (2026-11-09).
 
-Confidence: high for the operator's request; the boundary wording is this session's proposal.
+Confidence: high for the operator's request and the boundary, now accepted.
 ````
 
 ## File: .archcore/plans/live-probes-then-client-matrix.plan.md
@@ -162,34 +168,41 @@ Confidence: high for the operator's request; the boundary wording is this sessio
 ---
 title: Live probes, then the client evaluation matrix
 type: plan
-status: proposed
+status: accepted
 tags: [evaluation, compatibility]
 created: 2026-11-07
 ---
 
 # Plan: Live probes, then the client evaluation matrix
 
-Status: proposed (2026-11-07; mirrors skill-nautobot's accepted plan)
+Status: accepted (operator, 2026-11-09, after the archcore review that corrected it). Mirrors skill-nautobot's accepted plan.
 
 ## Goal
 
-Raise the `UNVERIFIED` items and the lab-only rows to evidenced ones, and test the pack on every target client.
+Raise the `UNVERIFIED` items, the lab-only rows and the documentation-only sections to evidenced ones, and test the pack on every target client.
 
 ## Steps
 
 1. On a disposable or lab node matching a `compatibility.yaml` row (never a production node), run the read-only probes for each `UNVERIFIED`
    item listed in `SCRATCHPAD.md` (Open items); writes only with the engaging project's approval.
-2. Move a row above `observed_install` only with a `test_id`, as the contract requires.
-3. Run the client matrix in `tests/eval-procedure.md` (Claude Code, Codex; with and without the skill).
-4. Record results in `compatibility.yaml`, `sources.yaml` and a CHANGELOG line.
+2. Re-run the operations cookbook on the lab node once it is on 9.2 (pending in its update queue), and record the result as a new
+   `compatibility.yaml` row.
+3. On a lab cluster of three or more nodes, exercise the sections that rest on documentation alone since 2026-11-09: hyperconverged Ceph
+   (`references/storage.md`), migration and resource mappings (`references/qemu-vms.md`), notifications (`references/monitoring-and-metrics.md`)
+   and node removal (`references/architecture-and-cluster.md`). Each run that confirms or contradicts a claim (P-C22 to P-C26) is a Learned or
+   Disputed entry plus a CHANGELOG line.
+4. Move a row to a live layer (`api_accepted` and above) only with a `test_id`, as the contract requires.
+5. Run the client matrix in `tests/eval-procedure.md` (Claude Code, Codex; with and without the skill), scenarios P-S01 to P-S20.
+6. Record results in `compatibility.yaml`, `sources.yaml` and a CHANGELOG line.
 
 ## Exit criteria
 
-Every claimed environment row has evidence at the layer it claims, and every client in the matrix has a recorded with/without result.
+Every claimed environment row has evidence at the layer it claims, every documentation-only section has a lab run or an explicit "not
+tested" note, and every client in the matrix has a recorded with/without result.
 
 ## Blockers
 
-A disposable node and client authentication are operator-controlled.
+A disposable node, a lab cluster of three nodes (step 3) and client authentication are operator-controlled.
 ````
 
 ## File: .archcore/rules/capability-search-order.rule.md
@@ -197,20 +210,20 @@ A disposable node and client authentication are operator-controlled.
 ---
 title: Capability search order
 type: rule
-status: proposed
+status: accepted
 tags: [capability, extension]
 created: 2026-11-07
 ---
 
 # Rule: Capability search order
 
-Status: proposed (2026-11-07). The order is the operator's (USER_STATED 2026-10-01, accepted for skill-nautobot on 2026-10-05), applied here to Proxmox.
+Status: accepted (operator, 2026-11-09, after the archcore review that corrected it). The order is the operator's (USER_STATED 2026-10-01, accepted for skill-nautobot on 2026-10-05), applied here to Proxmox.
 
 ## Rule
 
 Before building anything around Proxmox VE, search in this order and state at each step why the previous level cannot meet the acceptance test:
 
-1. Proxmox VE core (API, CLIs, SDN, HA, firewall, vzdump, metric servers).
+1. Proxmox VE core (API, CLIs, SDN, HA, firewall, vzdump, metric servers, notifications).
 2. Proxmox products (Proxmox Backup Server, Proxmox Datacenter Manager) and the bpg/proxmox provider.
 3. Supported seams: hook scripts, cloud-init custom data, API clients.
 4. Compatible external FOSS through the API.
@@ -228,14 +241,14 @@ Judgement at design time; `SKILL.md` (Search before building) and `references/ca
 ---
 title: CHANGELOG release heading is the version of record
 type: rule
-status: proposed
+status: accepted
 tags: [versioning, governance]
 created: 2026-11-07
 ---
 
 # Rule: CHANGELOG release heading is the version of record
 
-Status: proposed (2026-11-07; same rule as skill-nautobot)
+Status: accepted (operator, 2026-11-09, after the archcore review that corrected it). Same rule as skill-nautobot.
 
 ## Rule
 
@@ -248,7 +261,10 @@ The package contract forbids a manifest JSON file, so there is no second metadat
 
 ## Enforcement
 
-The contract test requires a version-shaped heading in `CHANGELOG.md`. Restatement elsewhere is not yet checked.
+- `tests/test_package_contract.py` asserts that `CHANGELOG.md` contains a `0.x.y` string somewhere (not specifically a heading).
+- `scripts/check_governance.py` `check_version_restated` (2026-11-09) reads the newest release heading and fails when any other `.md`, `.py`
+  or `.yaml` file states that version; verbatim captures under `documents/`, rotated history under `docs/history/`, dot folders and the
+  checker itself are exempt. `Governance.test_a_restated_version_fails_the_gate` proves it can fail.
 ````
 
 ## File: .archcore/rules/memory-channel-name.rule.md
@@ -256,24 +272,25 @@ The contract test requires a version-shaped heading in `CHANGELOG.md`. Restateme
 ---
 title: Memory channel is exactly proxmox
 type: rule
-status: proposed
+status: accepted
 tags: [memory]
 created: 2026-11-07
 ---
 
 # Rule: Memory channel is exactly `proxmox`
 
-Status: proposed (2026-11-07). skill-nautobot's channel `nautobot` was named by the operator; `proxmox` follows the same pattern and needs
-the operator's confirmation.
+Status: accepted (operator, 2026-11-09, after the archcore review that corrected it). Follows skill-nautobot's channel `nautobot`, which the operator named.
 
 ## Rule
 
-memory-keeper entries about this pack use the channel `proxmox`, exactly that string. Project-specific engagement notes may also go to the
-engaging project's channel.
+Memory entries about this pack use the channel `proxmox`, exactly that string, in both memory backends: memory-keeper and
+mcp-project-context (the operator's rule is to write both every time). Project-specific engagement notes may also go to the engaging
+project's channel.
 
 ## Enforcement
 
 None automated. memory-keeper truncates channels to 20 characters and normalises underscores to hyphens; `proxmox` is unaffected by either.
+On 2026-11-09 memory-keeper had no `proxmox` channel yet: the first write creates it; read it back to confirm the name survived.
 ````
 
 ## File: .archcore/index.guide.md
@@ -284,32 +301,32 @@ status: accepted
 tags: [index]
 ---
 
-Durable index of everything in `.archcore/` for skill-proxmox. Written at creation on 2026-11-07, mirroring skill-nautobot's six documents.
+Durable index of everything in `.archcore/` for skill-proxmox. Written at creation on 2026-11-07, mirroring skill-nautobot's six documents;
+reviewed, corrected and accepted by the operator on 2026-11-09.
 
-Every document below is `status: proposed`: the operator has not yet accepted them. Until accepted they record intent, not decisions;
-accept or change each one, then update its status line and this table. Supersede an accepted document in place with a dated note naming
-its replacement rather than deleting it.
+Accepted documents are durable decisions and outrank `AGENTS.md` prose where they differ. Supersede an accepted document in place with a
+dated note naming its replacement rather than deleting it.
 
 ## adr/
 
 | Document | Status |
 |---|---|
-| [independent-platform-pack.adr.md](adr/independent-platform-pack.adr.md) | proposed |
-| [governance-checker-in-test-suite.adr.md](adr/governance-checker-in-test-suite.adr.md) | proposed |
+| [independent-platform-pack.adr.md](adr/independent-platform-pack.adr.md) | accepted 2026-11-09 |
+| [governance-checker-in-test-suite.adr.md](adr/governance-checker-in-test-suite.adr.md) | accepted 2026-11-09 |
 
 ## rules/
 
 | Document | Status |
 |---|---|
-| [capability-search-order.rule.md](rules/capability-search-order.rule.md) | proposed |
-| [changelog-version-of-record.rule.md](rules/changelog-version-of-record.rule.md) | proposed |
-| [memory-channel-name.rule.md](rules/memory-channel-name.rule.md) | proposed |
+| [capability-search-order.rule.md](rules/capability-search-order.rule.md) | accepted 2026-11-09 |
+| [changelog-version-of-record.rule.md](rules/changelog-version-of-record.rule.md) | accepted 2026-11-09 |
+| [memory-channel-name.rule.md](rules/memory-channel-name.rule.md) | accepted 2026-11-09 |
 
 ## plans/
 
 | Document | Status |
 |---|---|
-| [live-probes-then-client-matrix.plan.md](plans/live-probes-then-client-matrix.plan.md) | proposed |
+| [live-probes-then-client-matrix.plan.md](plans/live-probes-then-client-matrix.plan.md) | accepted 2026-11-09 |
 
 ## Never promoted, and why
 
@@ -317,11 +334,13 @@ its replacement rather than deleting it.
 |---|---|
 | specs/ — claim and environment ledger schemas | Already specified executably by `tests/test_package_contract.py`; a prose spec would be a second, unenforced copy |
 | guides/ — write-back procedure | Lives in `references/evolution-and-write-back.md`, which the contract test enforces |
+| Verbatim captures with sha256 | Enforced by the contract test and stated in `AGENTS.md`; a rule here would duplicate it |
 | Rules from the parent `AGENTS.md` and the global policy | Governed upstream; restating them here would duplicate policy |
 
 ## Proposing another
 
-Run `/skill-ai-it refresh`; it re-scans the governance files and writes a new `ARCHCORE_PROMOTION_CANDIDATES.md`. Check the table above first so a rejected area is not re-proposed.
+Candidates wait in `ARCHCORE_PROMOTION_CANDIDATES.md` at the pack root until the operator promotes or rejects each one; `/skill-ai-it refresh`
+re-scans and updates it. Check the table above first so a rejected area is not re-proposed.
 ````
 
 ## File: references/access-control.md
@@ -2158,6 +2177,13 @@ CONSTANT_SURFACES: dict[str, dict[str, object]] = {
     # },
 }
 
+# The pack version lives only in CHANGELOG.md's newest release heading (.archcore/rules/changelog-version-of-record.rule.md).
+# It changes at every release, so it is read from that heading at run time rather than registered as a fixed constant.
+# Exempt: verbatim captures (third-party pages carry their own version strings) and rotated changelog history.
+VERSION_RECORD = "CHANGELOG.md"
+VERSION_HEADING = re.compile(r"^## (\d+\.\d+\.\d+) — ", re.M)
+VERSION_EXEMPT_PREFIXES: tuple[str, ...] = ("documents/", "docs/history/")
+
 # Append-only tables and the columns that give them their grain: (entity column, pass column). An append-only table
 # records a re-measurement by ADDING a row, which is right and useless on its own — without a column that orders the
 # passes there is no way to compute which row is current, and every aggregate over the table double-counts whatever was
@@ -2529,6 +2555,37 @@ def check_evidence_provenance() -> None:
                  f"{EVIDENCE_DIR}/{item.name} defers its provenance to {corrector}, which does not exist")
 
 
+def check_version_restated() -> None:
+    """The release version appears in no pack file except its record, so a release bump has one place to change.
+
+    Reads the newest `## x.y.z — date` heading of VERSION_RECORD and fails when any other scanned file (dot folders,
+    this checker and VERSION_EXEMPT_PREFIXES aside) contains that exact version as a standalone token.
+
+    Args:
+        None.
+
+    Returns:
+        None; findings go through fail().
+    """
+    text = read(VERSION_RECORD)
+    counted()
+    found = VERSION_HEADING.search(text or "")
+    if found is None:
+        fail("version", f"{VERSION_RECORD} has no `## x.y.z — date` release heading")
+        return
+    version = found.group(1)
+    token = re.compile(rf"(?<![\d.]){re.escape(version)}(?!\.?\d)")  # a whole token, also before a full stop; never part of a longer dotted number
+    for path in sorted(ROOT.rglob("*")):
+        if not path.is_file() or path.suffix not in SCAN_SUFFIXES:
+            continue
+        rel = path.relative_to(ROOT).as_posix()
+        if rel in (VERSION_RECORD, SELF) or rel.startswith(".") or "/." in rel or rel.startswith(VERSION_EXEMPT_PREFIXES):
+            continue
+        counted()
+        if token.search(path.read_text(encoding="utf-8", errors="ignore")):
+            fail("version", f"{rel} restates the release version {version}; it lives only in {VERSION_RECORD}")
+
+
 # --------------------------------------------------------------------------------------------------------------- MAIN
 
 CHECKS = (
@@ -2542,6 +2599,7 @@ CHECKS = (
     check_constant_sync,
     check_append_only_grain,
     check_evidence_provenance,
+    check_version_restated,
 )
 
 
@@ -2569,13 +2627,7 @@ if __name__ == "__main__":
 ````json
 {
   "no-header:.ai-context/governance-pack.md": "2026-11-09",
-  "over-budget:AI_NAVIGATION.md": "lines=159 bytes=10430 AI_NAVIGATION.md: over its budget of 150 lines, 12 KB",
-  "review-due:.archcore/adr/governance-checker-in-test-suite.adr.md": "2026-11-09",
-  "review-due:.archcore/adr/independent-platform-pack.adr.md": "2026-11-09",
-  "review-due:.archcore/plans/live-probes-then-client-matrix.plan.md": "2026-11-09",
-  "review-due:.archcore/rules/capability-search-order.rule.md": "2026-11-09",
-  "review-due:.archcore/rules/changelog-version-of-record.rule.md": "2026-11-09",
-  "review-due:.archcore/rules/memory-channel-name.rule.md": "2026-11-09"
+  "over-budget:AI_NAVIGATION.md": "lines=159 bytes=10430 AI_NAVIGATION.md: over its budget of 150 lines, 12 KB"
 }
 ````
 
@@ -3523,7 +3575,7 @@ workload and source-of-truth skills, and the gates to run before calling work co
 - Never write a credential, private address, production domain or path to unredacted field data into any pack file outside the verbatim captures — the contract
   test scans every `.md`/`.yaml`/`.txt` file, generated ones included.
 - Durable decisions, rules and plans live in `.archcore/`, indexed by [.archcore/index.guide.md](.archcore/index.guide.md); they outrank this file's prose where they differ.
-- memory-keeper channel for this pack is `proxmox` (proposed, see `.archcore/rules/memory-channel-name.rule.md`).
+- memory-keeper channel for this pack is `proxmox` in both memory backends (accepted 2026-11-09, see `.archcore/rules/memory-channel-name.rule.md`).
 - The package version lives only in the [CHANGELOG.md](CHANGELOG.md) release heading. Do not restate it in other governance files.
 - Time-bound notes use `<slug>-YYYYMMDD_hhmm.md`. <!-- path:example -->
 - Triage before opening: `just docs <folder>` gives one header line per file; run `just stale` before editing. Old CHANGELOG and SCRATCHPAD
@@ -3784,6 +3836,62 @@ Ordinary tasks load one reference. What runs inside a guest belongs to that work
 | [.archcore/index.guide.md](.archcore/index.guide.md) | Index of durable ADRs, rules and plans, and what is never promoted | `scripts/check_governance.py` (both directions) |
 ````
 
+## File: ARCHCORE_PROMOTION_CANDIDATES.md
+````markdown
+---
+Title: Archcore promotion candidates — skill-proxmox
+Category: working-state
+Status: draft
+Authority: working-state
+Scope: Queue of candidate .archcore/ documents for skill-proxmox awaiting the operator's promote or reject
+Last reviewed: 2026-11-09
+Summary: Candidates surfaced by the 2026-11-09 skill-ai-it refresh and archcore review; nothing here is a decision until promoted.
+---
+
+# Archcore Promotion Candidates
+
+Generated by `skill-ai-it` on 2026-11-09 (refresh and archcore review). Review each candidate, then run `/skill-ai-it promote` to authorize writing Archcore
+content; promote deletes this file once the queue is empty. Sources inspected: `README.md`, `AGENTS.md`, `SCRATCHPAD.md`, plus the claim and scenario ledgers
+named below. Already accepted or deliberately never promoted: see [.archcore/index.guide.md](.archcore/index.guide.md).
+
+## adr candidates
+
+| Source file | Excerpt | Confidence | Notes |
+|---|---|---|---|
+| — | none | — | The two pack-shaping decisions are already accepted ADRs |
+
+## rules candidates
+
+| Source file | Excerpt | Confidence | Notes |
+|---|---|---|---|
+| `tests/scenarios.md` (P-S20), `sources.yaml` (P-C27) | "Prohibit ... stating 'latest' without the date it was checked." | high | Proposed rule `dated-latest-claims`: any "latest" or "current" release claim carries the date it was checked and the capture behind it. Enforcement today is the scenario only |
+
+## specs candidates
+
+| Source file | Excerpt | Confidence | Notes |
+|---|---|---|---|
+| — | none | — | Ledger schemas stay executable in the contract test (never promoted) |
+
+## guides candidates
+
+| Source file | Excerpt | Confidence | Notes |
+|---|---|---|---|
+| — | none | — | Write-back procedure stays in `references/evolution-and-write-back.md` (never promoted) |
+
+## plans candidates
+
+| Source file | Excerpt | Confidence | Notes |
+|---|---|---|---|
+| — | none | — | Live probes and the client matrix are the accepted plan, extended 2026-11-09 |
+
+## Considered and not proposed
+
+| Source file | Excerpt | Reason |
+|---|---|---|
+| `SCRATCHPAD.md` (Recent decisions) | "New helpers use two-space indentation (skill-coder rule); the copied governance checker keeps four." | Governed upstream by skill-coder; restating it here would duplicate policy |
+| `AGENTS.md` | Verbatim captures indexed with sha256, exempt from the redaction scan except private keys | Enforced by the contract test; already in the index's never-promoted table |
+````
+
 ## File: CHANGELOG.md
 ````markdown
 ---
@@ -3802,6 +3910,9 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-09 archcore review (operator: "see if it is all up to date and if it needs more optimization"): the six `.archcore/` documents corrected (version rule enforcement wording, plan steps for the 2026-11-09 doc-only sections and the 9.2 cookbook re-run, memory rule names both backends, pack ADR names the skill-vagrant boundary, checker ADR names the new test) and accepted (operator, 2026-11-09); index updated; `ARCHCORE_PROMOTION_CANDIDATES.md` written (one candidate: dated-latest-claims) and added to the Repomix include; doc-freshness baseline 8 to 2. New governance check `check_version_restated` with `Governance.test_a_restated_version_fails_the_gate` (it caught a missed sentence-final version before release).
+- 2026-11-09 gap review with online research (operator: "confirm the skill is defined properly ... do online research and fill in"): new sections for hyperconverged Ceph (references/storage.md), node removal and arm64 hosts (references/architecture-and-cluster.md), migration, resource mappings and virtiofs (references/qemu-vms.md), notifications (references/monitoring-and-metrics.md), two-factor authentication (references/access-control.md), PBS 4.x and S3 datastores (references/backup-and-restore.md), PDM 1.0/1.1 (references/capability-extension.md), the 9.2 arm64 release row (references/upgrade-and-troubleshooting.md); ASCII diagrams and tables in nine references (operator: "add ASCII diagrams and tables"); claims P-C22 to P-C27, scenarios P-S17 to P-S20, environment pve-docs-9-current-20261109; seven captures in documents/research-sources-20261109/; bpg/proxmox re-checked, still 0.120.0.
+- 2026-11-09 skill-ai-it refresh: govern (navigation block upgraded, AI_NAVIGATION 322 to 159 lines, adoption recipes and record keys), front matter with summaries on 16 references and 2 test documents (doc-freshness baseline 26 to 8), docs/history and docs/trackers registered as conditional paths in the checker, code-map.toml with each module's status, context pack regenerated.
 - 2026-11-08 write-back from smc-resiliency X1: references/qemu-vms.md (iTCO_wdt on q35 without i6300esb; explicit modprobe past the deny-list; a crash reset in 91.1 s)
 - 2026-11-07 (c) write-back from smc-resiliency X2: references/qemu-vms.md (OVMF entry deletion, watchdog driver), references/opentofu-bpg-provider.md (watchdog block, boot_order)
 
@@ -4870,7 +4981,7 @@ engaging project. Its structure mirrors [skill-nautobot](../skill-nautobot/READM
 - [documents/](documents/) — verbatim source captures. Index: [documents/readme.md](documents/readme.md); per-date folder index: [documents/research-sources-20261107/readme.md](documents/research-sources-20261107/readme.md)
 - [scripts/](scripts/) — tested stdlib-only helpers and the governance checker. Index: [scripts/README.md](scripts/README.md)
 - [tests/](tests/) — offline package contract, helper tests, scenarios, evaluation procedure
-- [.archcore/](.archcore/) — durable decisions, rules and plans (6 documents, proposed 2026-11-07). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
+- [.archcore/](.archcore/) — durable decisions, rules and plans (6 documents, accepted 2026-11-09). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
 
 ## Key files
 
@@ -4926,15 +5037,14 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 
 ## Open items
 
-- [ ] Operator review: accept or change the six proposed `.archcore/` documents (memory channel `proxmox`, independent pack, search order, checker in tests, version of record, live-probe plan).
+- [x] Operator review: the six `.archcore/` documents corrected and accepted (operator, 2026-11-09); their review-date findings left the baseline.
 - [x] Commit: pack folder, registry rows and install symlinks committed in skills_stuff bd1691d (2026-11-07).
-- [ ] `just check` fails (seen 2026-11-07 22:45 from smc-resiliency's slurp): 21 files with no header summary (references, AI_NAVIGATION,
-  SCRATCHPAD, .ai-context), AI_NAVIGATION.md over its 200-line budget (322), six `.archcore/` documents with no Last reviewed date. Pack
-  adoption work: write each summary from its file, split AI_NAVIGATION, date the archcore documents after the operator review above.
+- [x] `just check` passes (2026-11-09 refresh): summaries written, AI_NAVIGATION 322 to 159 lines. Still baselined: AI_NAVIGATION 9 lines over 150 (its routing table is a checked rule), `.ai-context/` (generated, no header).
 - [ ] Live probes on a disposable node for the `UNVERIFIED` items: `pvesh set /cluster/sdn` apply form, live restore from PBS, hook-script phase names, the task list's errors filter, the disks list endpoint,
   Ubuntu cloud image without qemu-guest-agent.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill).
 - [ ] Re-verify the cookbook when the lab node moves to 9.2 (pending in its update queue).
+- [ ] Live probe on a cluster for the 2026-11-09 doc-only sections (Ceph, migration, mappings, notifications): today they rest on the docs, with no lab run.
 
 ---
 
@@ -4945,7 +5055,7 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 | Install          | `~/.claude/skills/skill-proxmox` and `~/.agents/skills/skill-proxmox` are symlinks to this folder (as skill-nautobot) |
 | Observed version | Proxmox VE 9.1.5 (lab; see `compatibility.yaml`)                                                                      |
 | Provider         | bpg/proxmox 0.120.0 (latest on 2026-11-07)                                                                            |
-| Memory channel   | memory-keeper `proxmox` (proposed)                                                                                    |
+| Memory channel   | `proxmox`, both backends (accepted)                                                                                   |
 | Origin project   | smc-resiliency (its spike/x86 folder: the x86 lab)                                                                       |
 | Gate             | `just test` then `just check`                                                                                         |
 

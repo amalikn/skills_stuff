@@ -1,10 +1,4 @@
 {
   "no-header:.ai-context/governance-pack.md": "2026-11-09",
-  "over-budget:AI_NAVIGATION.md": "lines=159 bytes=10430 AI_NAVIGATION.md: over its budget of 150 lines, 12 KB",
-  "review-due:.archcore/adr/governance-checker-in-test-suite.adr.md": "2026-11-09",
-  "review-due:.archcore/adr/independent-platform-pack.adr.md": "2026-11-09",
-  "review-due:.archcore/plans/live-probes-then-client-matrix.plan.md": "2026-11-09",
-  "review-due:.archcore/rules/capability-search-order.rule.md": "2026-11-09",
-  "review-due:.archcore/rules/changelog-version-of-record.rule.md": "2026-11-09",
-  "review-due:.archcore/rules/memory-channel-name.rule.md": "2026-11-09"
+  "over-budget:AI_NAVIGATION.md": "lines=159 bytes=10430 AI_NAVIGATION.md: over its budget of 150 lines, 12 KB"
 }

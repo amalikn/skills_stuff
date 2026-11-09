@@ -30,10 +30,9 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 
 ## Open items
 
-- [ ] Operator review: accept or change the six proposed `.archcore/` documents (memory channel `proxmox`, independent pack, search order, checker in tests, version of record, live-probe plan).
+- [x] Operator review: the six `.archcore/` documents corrected and accepted (operator, 2026-11-09); their review-date findings left the baseline.
 - [x] Commit: pack folder, registry rows and install symlinks committed in skills_stuff bd1691d (2026-11-07).
-- [x] `just check` passes (2026-11-09 refresh): summaries written, AI_NAVIGATION 322 to 159 lines. Still baselined: the six `.archcore/` dates (wait for the operator review
-  above; not bumped), AI_NAVIGATION 9 lines over 150 (its routing table is a checked rule), `.ai-context/` (generated, no header).
+- [x] `just check` passes (2026-11-09 refresh): summaries written, AI_NAVIGATION 322 to 159 lines. Still baselined: AI_NAVIGATION 9 lines over 150 (its routing table is a checked rule), `.ai-context/` (generated, no header).
 - [ ] Live probes on a disposable node for the `UNVERIFIED` items: `pvesh set /cluster/sdn` apply form, live restore from PBS, hook-script phase names, the task list's errors filter, the disks list endpoint,
   Ubuntu cloud image without qemu-guest-agent.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill).
@@ -49,7 +48,7 @@ Standalone, cross-project Proxmox VE 9.x and bpg/proxmox pack. Seeded from the s
 | Install          | `~/.claude/skills/skill-proxmox` and `~/.agents/skills/skill-proxmox` are symlinks to this folder (as skill-nautobot) |
 | Observed version | Proxmox VE 9.1.5 (lab; see `compatibility.yaml`)                                                                      |
 | Provider         | bpg/proxmox 0.120.0 (latest on 2026-11-07)                                                                            |
-| Memory channel   | memory-keeper `proxmox` (proposed)                                                                                    |
+| Memory channel   | `proxmox`, both backends (accepted)                                                                                   |
 | Origin project   | smc-resiliency (its spike/x86 folder: the x86 lab)                                                                       |
 | Gate             | `just test` then `just check`                                                                                         |
 

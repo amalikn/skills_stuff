@@ -16,6 +16,7 @@ Last rotated: 20261107_1732
 
 ## Unreleased
 
+- 2026-11-09 write-back from skill-proxmox: references/testing.md (a token lookahead that excludes '.' misses a sentence-final token; write the negative test as prose)
 - 2026-11-08 (c) write-back from smc-resiliency: references/testing.md (read_text hides \r\n; a raw pty for serial tests; termios without pyserial)
 - 2026-11-08 (b) write-back from smc-resiliency S1V: references/safety-and-writes.md (write, fsync, rename is not crash-safe on FAT)
 - 2026-11-08 write-back from smc-resiliency: references/testing.md (read an injected fault back before judging the case; retry only the transport's failure)

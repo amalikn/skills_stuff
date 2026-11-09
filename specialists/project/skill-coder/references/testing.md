@@ -264,3 +264,12 @@ if _opposite_status(ca, cb):
 > serial stand-in must be raw (`tty.setraw`) before the far end writes, or its line discipline turns `\r` into `\n` itself. A serial port needs no
 > pyserial: `os.open` plus `termios` (raw, CS8, CREAD, CLOCAL, the speed constant) and `select` read it.
 
+> **Learned 2026-11-09** · core (a check that matches a token in prose) · VERIFIED_PRIMARY · Source: skill-proxmox `scripts/check_governance.py` `check_version_restated` and `tests/test_helpers.py` `test_a_restated_version_fails_the_gate`, uncommitted on 2026-11-09 · Falsifier: a lookahead of `(?![\d.])` that still matches a version at the end of a sentence
+> A token boundary written as "not followed by a digit or a dot" misses every token that ends a sentence ("release 0.1.0."), so the check
+> passed on the text it existed to catch. The fail-proof test, written as natural prose rather than a bare token, went red and found it. Reject
+> only what extends the token (a digit, or a dot followed by a digit), and write the negative test in the form the defect takes in real files.
+> ```python
+> token = re.compile(rf"(?<![\d.]){re.escape(version)}(?!\.?\d)")  # was (?![\d.]): missed "0.1.0."
+> fh.write(f"\nCurrent release: {version}.\n")                      # the test line that exposed it
+> ```
+
