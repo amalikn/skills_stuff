@@ -1352,6 +1352,36 @@ for name, p in doc.get("profiles", {}).items():
     best, best_n = name, len(rule)
 ```
 
+### P-62 Bind a multi-part answer with one signature over its parts and the request
+
+> **Learned 2026-11-09** · reusable_candidate · VERIFIED_PRIMARY · Source: smc-resiliency `spike/onbox/smcbox/claim.py` `verify_binding`, `lab/standin/binding.py`, `docs/interfaces/unc/schemas/issue-binding.json`, commit f8755a70 · Falsifier: an answer whose every part is signed by one key and bound to the request
+> An answer of several parts, each signed or encrypted on its own, is not authenticated as a whole: a part encrypted to the receiver's public
+> key (anyone can make one), a field outside every signature, or a part from another answer can be swapped in while every single check passes.
+
+**Problem.** A device asks a controller for its identity; the answer holds a signed certificate, a signed configuration, credentials encrypted
+to the device's public recipient and a plain release field. The transport is not trusted.
+
+**Solution.** The issuer signs one more object, the binding: the sha256 of each part's exact string, the release, the receiver's identity
+(CID, production key digest, recipient) and the nonce of the request it answers. The receiver checks the binding first, before any write, and
+refuses the answer on any mismatch or when it is missing.
+
+**Why it works.** Every part, and the answer's link to this request and this receiver, sits under one signature from the issuer's key; a
+replay fails the nonce, a swap fails a digest, a misdirected answer fails the identity fields.
+
+**Reuse elsewhere.** Any bundle of separately protected parts: a release manifest with its artefacts, a certificate with its chain and config,
+a job result with its attachments.
+
+**Pitfalls.** Digest the exact bytes sent (the base64 string, not the decoded file), or the two ends disagree on encoding. Strip a PEM's
+surrounding whitespace on both sides before hashing it. The receiver needs the nonce it sent, so let the request carry a caller-chosen nonce.
+Keep the parts' own checks: the binding proves origin and combination, not each part's content rules.
+
+```python
+want = {"cid": own_cid, "production_pub_sha256": _sha(own_pub.strip()), "recipient": recipient.strip(), "request_nonce": nonce,
+        "release": ans.get("release", "")}
+want.update({f"{part}_sha256": _sha(str(ans.get(part, ""))) for part in ("cert", "varset", "sealed")})
+return doc, [f"binding {k} does not match" for k, v in want.items() if doc.get(k) != v]
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

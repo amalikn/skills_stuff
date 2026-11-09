@@ -284,3 +284,28 @@ if _opposite_status(ca, cb):
 > reachable = r.returncode == 0
 > return {"passed": reachable == expected}
 > ```
+
+> **Learned 2026-11-09 (b)** · test oracles (a case judged by its end state) · VERIFIED_PRIMARY · Source: smc-resiliency `lab/logic/x2cases.py` `cause` and `commit_gate`, commit f923adbe · Falsifier: an end state no other cause can produce
+> "Ended on slot A" passed the panic, hang and power-cut cases, but firmware refusing slot B ends there too, so a pass proved nothing about the
+> fault. Each case must show its own cause from the system's record (the fault marker the failing slot wrote, the armed watchdog, the driver's
+> reset, the slot that answered before the cut); missing evidence is inconclusive, not a pass. A commit step gated on `|| true` cannot refuse a
+> degraded trial: judge health against the baseline taken before the change. Re-judge old passes from their raw records; never rewrite them.
+>
+> ```python
+> if case.variant == "hang-watchdog":
+>   if "smc-x2: hang" not in log: return "no hang marker from B (smc-x2-fault never ran)"
+>   if "state active" not in log: return "the hardware watchdog was not armed when B hung"
+> if case.variant == "hang-noinit" and not trial.get("driver_reset"):
+>   return "back on A without the driver's reset: the hang the case needs never happened"
+> ```
+
+> **Learned 2026-11-09 (c)** · shell (testing a function in a script that is uploaded alone) · VERIFIED_PRIMARY · Source: smc-resiliency `spike/tests/test_tool_digests.py` `function`, commit f923adbe · Falsifier: a sourced script that runs nothing at load
+> A payload copied to a box as one file cannot source a shared library, and sourcing the payload runs it. Test its check function by cutting the
+> function out of the file (from `name() {` to the `}` at column 0) and running it under bash against temporary files: the test executes the
+> real code, not a copy. A fake on PATH for a wrapper that quotes with `printf %q` sees backslash-escaped spaces: strip them (`${4//\\/}`) before
+> matching, or every pattern misses and the run looks like an instrument failure.
+>
+> ```python
+> m = re.search(rf"^{name}\(\) \{{\n.*?^\}}\n", script.read_text(encoding="utf-8"), re.S | re.M)
+> rc = run_group(["bash", "-c", f'{m.group(0)}\nrauc_tarball "{tb}" {good}'], dict(os.environ), 30)[0]
+> ```

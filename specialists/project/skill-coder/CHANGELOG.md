@@ -16,6 +16,7 @@ Last rotated: 20261109_1222
 
 ## Unreleased
 
+- 2026-11-09 (c) write-back from smc-resiliency (follow-up audit fixes): references/testing.md (an end state needs its cause on record; test a shell function cut out of its script; printf %q fakes), references/security.md (pin a release tarball to its GitHub asset digest; check a cached tool's executable, not a marker), languages/python.md (legacy files outside ruff include lose F821), references/design-patterns.md P-62 (bind a multi-part answer with one signature)
 - 2026-11-09 (b) write-back from skill-vagrant: references/errors-and-timeouts.md (a streamed download can end short without an error; check Content-Length)
 - 2026-11-09 write-back from skill-vagrant: references/efficiency-and-measurement.md (a pipe filter holds a long job's progress lines)
 - 2026-11-09 write-back from unified-network-controller (three entries parked in its audit follow-up, promoted): (the errors-and-timeouts.md entry is dated 2026-11-08) references/safety-and-writes.md (a rollback verifies restored state, not reachability), references/testing.md (a negative assertion needs a probe that ran; cleanup is part of the verdict), references/errors-and-timeouts.md (held alarms reach derived projections; delivery needs a durable pending record)

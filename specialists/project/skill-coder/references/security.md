@@ -86,3 +86,18 @@ or Data Integrity Failures; A09 Security Logging and Alerting Failures; A10 Mish
 > gpg -q --batch --pinentry-mode loopback --passphrase-file "$WORK/pp" --quick-gen-key "$KEY_UID" ed25519 sign "$EXPIRY"
 > cp "$GNUPGHOME/openpgp-revocs.d/$FPR.rev" "$WORK/rev.asc"
 > ```
+
+> **Learned 2026-11-09** · supply chain (a tool built from a release tarball) · VERIFIED_PRIMARY · Source: `gh api repos/rauc/rauc/releases/tags/v1.15.2 --jq '.assets[] | {name, digest}'` (2026-11-09) and smc-resiliency `lab/payloads/rauc_build.sh`, `spike/build/build_mkosi.sh` `syft_verified`, commit f923adbe · Falsifier: a release API that lists no digest
+> Printing a downloaded tarball's sha256 checks nothing. GitHub's releases API gives each asset a `digest` (`sha256:<hex>`): pin it in the
+> script with its source and date, compare before unpacking, and remove a mismatch so a bad cache is not reused. A cached tool trusted through a
+> marker file ("this tarball was checked") passes after the executable is replaced and the marker kept; keep the checked tarball and compare the
+> executable with the one inside it, at setup and again before use.
+>
+> ```bash
+> rauc_tarball() {
+>   if echo "$2  $1" | sha256sum -c --quiet - >/dev/null 2>&1; then return 0; fi
+>   echo "refused: $1 is not the pinned RAUC tarball (sha256 $2)" >&2
+>   rm -f "$1"
+>   return 1
+> }
+> ```

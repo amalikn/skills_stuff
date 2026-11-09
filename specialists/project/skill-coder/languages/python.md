@@ -189,3 +189,9 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 > loopback test failed "signature does not verify"). Write `key: Path | None = None` and use `key or CA_KEY` inside. Also: a search-and-replace
 > that routes calls through a new wrapper rewrites the wrapper's own call too (infinite recursion; smc-resiliency `lab/logic/bootstate.py`
 > `run_noted`): test a path through the wrapper; a cache keyed only on a name served stale content: key it on the content's hash or signature.
+
+> **Learned 2026-11-09** · ruff (legacy files outside `include`) · VERIFIED_PRIMARY · Source: smc-resiliency `justfile` `lint` and `spike/onbox/smcbox/recheck.py:86`, commit f923adbe · Falsifier: a legacy file outside `include` whose undefined name ruff reports
+> Leaving legacy files out of ruff's `include` (so they are not reformatted) also turns off its correctness rules for them: an exception handler
+> named a module it never imported (`NameError` on the error path) and nothing flagged it. Run the undefined-name rules over every file, legacy
+> included, without the project config: `ruff check --isolated --select F821,F822,F823 .`; it found exactly that one error. The same project's
+> `check` also ran none of the on-box unit tests (see testing.md, the closing check): both went red with the import removed.
