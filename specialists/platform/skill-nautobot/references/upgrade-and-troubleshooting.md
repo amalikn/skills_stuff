@@ -62,3 +62,18 @@ plan. Rebase/retire a core patch only if the project actually has one; supported
 > upgrade: read who holds template-authoring permissions and which constrained object permissions exist (the cable-path case), confirm the
 > running image, then take a compatibility-tested update to 3.2.6 or later behind a backup and reapply local patches. A version detector
 > (Renovate) is not an advisory scan.
+
+> **Learned 2026-11-09** · Nautobot 3.2.3, permissions · VERIFIED_PRIMARY · Source: `scripts/nautobot_template_exposure.py` run read-only on one 3.2.3 deployment; the grant
+> built from every content type of the listed apps (unified-network-controller `wc-local/scripts/nautobot_tools/seed_nautobot_catalog.py:965-969`) · Falsifier: a
+> permission granted per app whose object types exclude Custom Links, Job Buttons, Export Templates, Computed Fields, Webhooks, Secrets and GraphQL queries.
+> A machine-writer permission built as "every content type of these apps" with `extras` in the list grants add/change on Custom Links, Job Buttons,
+> Export Templates, Computed Fields, Webhooks, Secrets and saved GraphQL queries: exactly the template-authoring rights GHSA-8f2w-54mq-66gg needs to
+> harvest a superuser's token. Name the extras models a writer needs (tags, statuses, relationships, custom fields) instead of the app, and run the
+> exposure check before deciding an upgrade or a token rotation.
+>
+> ```python
+> cts = sorted(f"{c['app_label']}.{c['model']}" for c in api.all("/extras/content-types/") if c["app_label"] in apps)
+> ensure(api, "/users/permissions/", "name=machine writers", {
+>     "name": "machine writers", "object_types": cts, "actions": spec["actions"], "enabled": True, "groups": [group]}, ...)
+> ```
+

@@ -1,5 +1,5 @@
 """Offline tests for the promoted helpers in scripts/: the fail-closed paging guard, the IPAM mask rule, the mask planner and
-the site linkage engine, the interface-template sync planner and the app compatibility check."""
+the site linkage engine, the interface-template sync planner, the app compatibility check and the advisory exposure report."""
 
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ _linkage = importlib.import_module("nautobot_linkage")
 _template_sync = importlib.import_module("nautobot_template_sync")
 _app_compat = importlib.import_module("nautobot_app_compat")
 _web_login = importlib.import_module("nautobot_web_login")
+_exposure = importlib.import_module("nautobot_template_exposure")
 
 
 def pages(*chunks, count=None):
@@ -431,3 +432,40 @@ class WebLoginTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TemplateExposure(unittest.TestCase):
+    """nautobot_template_exposure: which grants the advisories depend on, and the template audit."""
+
+    @staticmethod
+    def perm(actions, types, constraints=None):
+        return {"name": "p", "actions": actions, "types": [list(t) for t in types], "constraints": constraints, "members": ["group:g"]}
+
+    def test_app_wide_extras_change_is_authoring(self):
+        lines = _exposure.classify(self.perm(["view", "add", "change"], [("extras", "customlink"), ("extras", "tag")]))
+        self.assertEqual(len(lines), 1)
+        self.assertTrue(lines[0].startswith("AUTHORING"))
+
+    def test_view_only_is_not_authoring(self):
+        self.assertEqual(_exposure.classify(self.perm(["view"], [("extras", "customlink")])), [])
+
+    def test_cable_view_flagged_only_when_constrained(self):
+        self.assertEqual(_exposure.classify(self.perm(["view"], [("dcim", "cable")])), [])
+        lines = _exposure.classify(self.perm(["view"], [("dcim", "interface")], {"device__location__name": "x"}))
+        self.assertTrue(lines[0].startswith("CONSTRAINED_CABLE_VIEW"))
+
+    def test_referencing_word_boundary(self):
+        self.assertTrue(_exposure.referencing(["https://x/?t={{ user.username }}"]))
+        self.assertFalse(_exposure.referencing(["{{ obj.users_page }}", "plain"]))
+
+    def test_report_from_facts_and_query_is_read_only(self):
+        facts = {"version": "3.2.3", "users": [{"name": "a", "superuser": True, "groups": []}],
+                 "permissions": [self.perm(["add", "change", "view"], [("extras", "jobbutton")])],
+                 "templates": [{"model": "CustomLink", "name": "c", "texts": ["{{ request.user }}", ""]}]}
+        out = _exposure.report(facts)
+        self.assertIn("nautobot_version 3.2.3", out)
+        self.assertTrue(any(line.startswith("AUTHORING") for line in out))
+        self.assertIn("CustomLink count 1 referencing_user_or_request ['c']", out)
+        for verb in (".save(", ".delete(", ".create(", ".update(", "raw("):
+            self.assertNotIn(verb, _exposure.QUERY)
+

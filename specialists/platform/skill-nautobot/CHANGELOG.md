@@ -14,6 +14,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261109 scripts/nautobot_template_exposure.py (tests in tests/test_helpers.py `TemplateExposure`): read-only advisory exposure check, stdlib `--query` snippet plus `--report` (who can author templates, constrained cable view, templates naming user/request); smoke-run on one 3.2.3 deployment, where an app-wide `extras` grant gave the machine-writer group Custom Link, Job Button and Secret authoring. Learned 2026-11-09 appended to references/upgrade-and-troubleshooting.md
 - 20261109 Learned 2026-11-09 in `references/upgrade-and-troubleshooting.md` (new section Security advisories against the pinned version): 3.2.3 is inside GHSA-2v7j-x3g6-qj94, GHSA-8f2w-54mq-66gg (<3.2.5) and GHSA-m6h7-g92h-9p44 (<3.2.6); triage and token-rotation guidance (from unified-network-controller's audit follow-up)
 - 20261106 Learned 2026-11-06 in `references/app-development.md`: read a plugin view read-only with RequestFactory, not Client.force_login.
 - 20261106 Learned 2026-11-06 in `references/apps-jobs-validation.md`: periodic app work as a ScheduledJob (CELERY_BEAT_SCHEDULE refused by NautobotDatabaseScheduler); Golden Config compliance by GraphQL (6.6 s vs 34.5 s); code excerpt.
