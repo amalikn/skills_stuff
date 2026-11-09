@@ -183,3 +183,16 @@ def classify(cmdline, held):
 > sync "$(dirname "$SELECTION")" 2>/dev/null || sync
 > ```
 
+> **Learned 2026-11-08** · core (transaction recovery) · VERIFIED_PRIMARY · Source: unified-network-controller audit follow-up `docs/reports/project-reviews/unc-technical-audit-followup-20261108_1255.md` (offline fake-target probes), code at e873366b, `wc-local/scripts/safe_write/rollback.py:150-174` · Falsifier: a no-op
+> revert cannot return a restored outcome.
+> A rollback result must verify the state it claims to restore. "The target answers" proves reachability only: a no-op revert, a partial restore
+> or an ignored compensating write all leave a reachable target with the new value. Read the managed prestate back after every rollback class; a
+> mismatch, a timeout or an exception during verification is failed or unknown, and an unknown keeps a manual recovery obligation.
+>
+> ```python
+> # Anti-pattern, sanitized excerpt (rollback.py at e873366b): success is reachability, not restored state.
+> revert()
+> if not adapter.reachable():
+>     return RollbackOutcome("rollback_failed", "unreachable")
+> return RollbackOutcome("rolled_back", "reachable")
+> ```

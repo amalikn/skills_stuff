@@ -281,6 +281,11 @@ plan-tracker project *ARGS: _require-venv
 test: _require-venv
     @{{py}} -m unittest discover -s tests -q
 
+# [files; writes with --apply] Add a column to markdown tables keyed by the first cell (wrapped rows merged): just table-add-column FILE --header-first-cell RE --column NAME --values JSON [--apply]
+[positional-arguments]
+table-add-column *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/markdown/table_add_column.py" "$@"
+
 # Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
 [positional-arguments]
 outline *ARGS: _require-venv

@@ -140,6 +140,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Ideas
 
+- **Freshness for generated docs dated by their data** (proposed 2026-11-09, unified-network-controller; not decided): a generated file whose `Last reviewed` is set from its newest input (topology scorecards: newest discovery run) goes overdue with nothing a person can review; the operator baselined two on 2026-11-09. Option: judge `Authority: generated` files by their own drift check instead of a review interval. Needs the operator's decision; it changes the check for every project.
 - **Move lines, not only sections (2026-11-05, ansible-wifi AGENTS.md split).** `move_sections.py` moves whole headed sections; a flat rule list
   (191 lines under no heading) had to be split by line ranges with a one-off script that proved each non-blank line landed in exactly one
   destination. Add `--lines A-B[,C-D]` with the same no-line-lost audit, and a `--keep-summary` mode that leaves a one-line pointer per moved

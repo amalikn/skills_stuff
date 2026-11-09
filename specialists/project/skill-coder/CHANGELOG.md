@@ -9,13 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261107_1732
+Last rotated: 20261109_1222
 ---
 
 # Changelog
 
 ## Unreleased
 
+- 2026-11-09 write-back from unified-network-controller (three entries parked in its audit follow-up, promoted): references/safety-and-writes.md (a rollback verifies restored state, not reachability), references/testing.md (a negative assertion needs a probe that ran; cleanup is part of the verdict), references/errors-and-timeouts.md (held alarms reach derived projections; delivery needs a durable pending record)
 - 2026-11-09 write-back from skill-proxmox: references/testing.md (a token lookahead that excludes '.' misses a sentence-final token; write the negative test as prose)
 - 2026-11-08 (c) write-back from smc-resiliency: references/testing.md (read_text hides \r\n; a raw pty for serial tests; termios without pyserial)
 - 2026-11-08 (b) write-back from smc-resiliency S1V: references/safety-and-writes.md (write, fsync, rename is not crash-safe on FAT)
@@ -194,8 +195,3 @@ references/configuration-and-literals.md: an imported recipe file defines no var
 ## 20261028_2229 — Learned: a symlinked source ships whatever is checked out
 
 references/safety-and-writes.md: pin a copy from the commit when a deploy needs a specific version; a link only when the target cannot vary by branch (ansible-wifi apt-info-no-update, 2026-10-28).
-
-## 20261028_2101 — Learned: freeing a lock another process holds
-
-`references/safety-and-writes.md`: Learned 2026-10-28 "freeing a lock another process holds": decide by the locks the holder has (end a refresh,
-never a writer), never delete lock files, owner by device and inode. From the ansible-wifi apt lock guard (plans/apt-lock-guard-20261028_2055).

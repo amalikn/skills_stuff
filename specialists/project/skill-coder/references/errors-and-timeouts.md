@@ -112,3 +112,17 @@ agent should have found (lesson `feedback_proactive_upstream_research`).
 > Absent, zero and filtered-empty must never render the same. A missing rate fails rather than printing nothing or 0; a filtered query
 > that returns nothing says so (and may fall back to the unfiltered set, saying it did), because "empty after the filter" is
 > indistinguishable from "no data" otherwise.
+
+> **Learned 2026-11-08** · core (derived state and delivery) · VERIFIED_PRIMARY · Source: unified-network-controller audit follow-up `docs/reports/project-reviews/unc-technical-audit-followup-20261108_1255.md` (offline fake-target probes), code at e873366b, `wc-local/scripts/alarming/engine.py:122-156` · Falsifier: an unreadable
+> input cannot yield a "recovered" projection, and a failed recovery notice survives a restart for retry.
+> When an unreadable input holds its alarms instead of clearing them, every projection derived from alarms must see the held ones too, or it
+> reports healthy while the alarm is held. A notification's delivery needs its own durable pending record: removing the alarm and saving state
+> before the send succeeds loses the recovery notice on a failed delivery, with nothing left to retry.
+>
+> ```python
+> # Anti-pattern, sanitized excerpt (engine.py at e873366b).
+> record = active.pop(key)
+> batch.append(recovery_notification(record))
+> delivery = notifications.send(batch)
+> state.save(active)   # saved without the record even when delivery failed
+> ```

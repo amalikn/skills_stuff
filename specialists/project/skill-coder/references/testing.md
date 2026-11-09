@@ -273,3 +273,14 @@ if _opposite_status(ca, cb):
 > fh.write(f"\nCurrent release: {version}.\n")                      # the test line that exposed it
 > ```
 
+> **Learned 2026-11-08** · test oracles (fault-injection runners) · VERIFIED_PRIMARY · Source: unified-network-controller audit follow-up `docs/reports/project-reviews/unc-technical-audit-followup-20261108_1255.md` (offline fake-target probes), code at e873366b, `unc-simulation-lab/engine/run.py:50-55,103-115` · Falsifier: a tool
+> failure or a failed cleanup cannot produce a passing acceptance result.
+> A negative assertion ("the service is unreachable") needs a probe that provably ran: a nonzero exit from the tool itself (daemon down, missing
+> binary, permission denied) is not the expected outage, it is inconclusive. Cleanup and fault readback are part of the verdict: record each
+> fault's readback and each cleanup's receipt, and a failed or uncertain cleanup invalidates the run.
+>
+> ```python
+> # Anti-pattern, sanitized excerpt (run.py at e873366b): any nonzero rc reads as "unreachable".
+> reachable = r.returncode == 0
+> return {"passed": reachable == expected}
+> ```

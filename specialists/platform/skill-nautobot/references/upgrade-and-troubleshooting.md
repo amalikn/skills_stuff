@@ -49,3 +49,16 @@ and workers, exercise validators on UI/API, Job invocation and queue consumption
 after a 3.2 Job upgrade points first to argument validation and scheduled kwargs, not necessarily to a missing worker. A Job stuck pending points to queue routing;
 a field unexpectedly writable points to validator registration/catalog load or a validation-bypassing path. Preserve a tested rollback and data migration reversal
 plan. Rebase/retire a core patch only if the project actually has one; supported app/setting seams need compatibility tests, not generic patch theatre.
+
+## Security advisories against the pinned version
+
+> **Learned 2026-11-09** · Nautobot 3.0.0 to 3.2.5 · VERIFIED_PRIMARY · Source: GHSA-2v7j-x3g6-qj94 and GHSA-8f2w-54mq-66gg (published 2026-09-15, affected `>=3.0.0,<3.2.5`,
+> patched 3.2.5; 2.x fixed in 2.4.42), GHSA-m6h7-g92h-9p44 (published 2026-09-28, cable-path permission disclosure, 3.x patched in 3.2.6); pages archived in unified-network-controller
+> `docs/reports/project-reviews/unc-technical-audit-followup-sources-20261108_1255/nautobot-advisory-*.txt` · Falsifier: a 3.2.3 install where a template author cannot read
+> another user's API token through a Custom Link or Job Button render.
+> Nautobot 3.2.3 (an image several deployments pinned) is inside all three. The template-sandbox advisories need a user who can author templates
+> rendered against objects (Custom Links, Job Buttons and similar); the maintainers state that no setting disables the behaviour while those
+> permissions stand, that tokens are stored in plaintext, and that operators should assume exposure and rotate API tokens. Triage before an
+> upgrade: read who holds template-authoring permissions and which constrained object permissions exist (the cable-path case), confirm the
+> running image, then take a compatibility-tested update to 3.2.6 or later behind a backup and reapply local patches. A version detector
+> (Renovate) is not an advisory scan.

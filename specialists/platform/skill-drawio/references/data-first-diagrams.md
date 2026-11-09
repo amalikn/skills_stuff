@@ -302,3 +302,11 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 >       next: [live, flush]
 >       when: {live: "no (and every plain-root SMC)", flush: "yes"}
 > ```
+
+> **Learned 2026-11-09** · engine changes and their consumers · VERIFIED_PRIMARY · Source: skills_stuff commit 2c713d2 (step page `‹ E2E page` button) against
+> unified-network-controller commit 42a7645a (`just flows` re-render: 32 back buttons added, `flows.yaml` unchanged) · Falsifier: an engine commit that changes a consumer's
+> drawing names that consumer in its message.
+> The 2026-11-06 rule held for three of four engine commits on 2026-11-07 (each listed its consumers), but the one that added a button to every
+> step page named none; one consumer's `just check` failed on flow drift for two days and its commit gate refused an unrelated commit until a
+> re-render. Run `just consumer-check` for every engine commit that touches page building, not only routing ones, and list each changed
+> consumer in the message and to its hub.
