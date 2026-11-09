@@ -22,7 +22,7 @@ Agent working memory for skill-vagrant. Use for: draft plans, terminal output, i
 
 ## Current state
 
-**Phase:** first release, heading in [CHANGELOG.md](CHANGELOG.md); created 2026-11-07 beside skill-nautobot and skill-proxmox, not yet committed.
+**Phase:** all providers covered (2026-11-09); Archcore accepted; flow map live; box archive pass 2 and its verification running (session record docs/session-record-20261109_1244.md).
 
 ## Open items
 
@@ -41,6 +41,10 @@ Agent working memory for skill-vagrant. Use for: draft plans, terminal output, i
 
 - [ ] `family-friendly-vsmc01`: VirtualBox has no VMs for its two machines (deleted); the next `vagrant up` there recreates them.
 - [ ] Watch where bento publishes after 2026-12-31 (plan step 5).
+- [ ] After archive pass 2: run the session verifier (verify_boxes, kept in the session scratchpad; size, published checksum, tar read); re-fetch any BAD file before 2026-12-31.
+- [ ] Operator: 21 vagrant_stuff Vagrantfiles name `bento/ubuntu-22.04-arm64` (gone from the registry): switch to `bento/ubuntu-22.04` 202502.21.0.
+- [ ] skill-ai-it's AGENTS.md (tracked since 95bf5f2) is past its review date: needs a real review.
+- [ ] Memory pointers: memory-keeper `skill-vagrant.session.20261109`, `skill-vagrant.box-archive.20261109` (channel vagrant); project-context skills_stuff notes and 6 decisions (2026-11-09).
 
 ## Key anchors
 

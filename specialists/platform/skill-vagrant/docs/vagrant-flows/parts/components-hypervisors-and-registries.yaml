@@ -1,0 +1,33 @@
+#% Part: components, group "Hypervisors and registries"
+#% Scope: the components drawn in that group
+#% Lands under: components
+- id: parallels
+  name: Parallels Desktop 27 (prlctl)
+  kind: external
+  group: Hypervisors and registries
+  host: the lab Mac; Pro edition needed for the CLI
+  health: prlsrvctl info --license reads pro/ACTIVE
+- id: virtualbox
+  name: VirtualBox 7.2.22 (VBoxManage)
+  kind: external
+  group: Hypervisors and registries
+  host: the lab Mac; arm64 guests only
+  health: VBoxManage list vms answers
+- id: qemu
+  name: qemu-system-aarch64 (hvf)
+  kind: external
+  group: Hypervisors and registries
+  host: Homebrew QEMU on the lab Mac; no daemon
+  health: qemu-system-aarch64 --version
+- id: libvirt-host
+  name: libvirtd on a Linux host
+  kind: external
+  group: Hypervisors and registries
+  host: a remote KVM host reached over SSH
+  health: virsh -c <uri> list answers
+- id: registry
+  name: HCP Vagrant box registry
+  kind: external
+  group: Hypervisors and registries
+  host: vagrantcloud.com (ends operations 2026-12-31)
+  health: the box API answers for a pinned version

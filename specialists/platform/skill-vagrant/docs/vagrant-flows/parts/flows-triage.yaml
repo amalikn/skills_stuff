@@ -1,0 +1,42 @@
+#% Part: flows, family "Triage"
+#% Scope: the flows of that family, in drawing order
+#% Lands under: flows
+- id: wedged-guest
+  title: A guest that does not answer
+  category: custom
+  purpose: Look at the console before any reset; the capture decides the next step.
+  trigger: {kind: manual, detail: "prlctl exec or vagrant ssh hangs"}
+  runs_on: agent
+  owner: operator
+  dependencies: {components: [parallels, guest]}
+  steps:
+    - id: capture
+      actor: parallels
+      action: prlctl capture (VBoxManage screenshotpng, or the QEMU serial socket).
+      via: [CLI]
+      writes: [console PNG]
+    - id: what
+      actor: agent
+      action: What does the console show?
+      via: [internal]
+      shape: decision
+      next: [wait, record, status]
+      when: {wait: "login prompt", record: "panic or shell", status: "blank"}
+    - id: wait
+      actor: agent
+      action: Guest is up; retry exec with a deadline until Tools answer.
+      via: [CLI]
+      shape: terminator
+      next: []
+    - id: record
+      actor: operator
+      action: Keep the PNG as the result; reset or roll back only with approval.
+      via: [manual]
+      shape: terminator
+      next: []
+    - id: status
+      actor: parallels
+      action: prlctl status; a suspended VM starts, or stop --drop-state.
+      via: [CLI]
+      shape: terminator
+      next: []

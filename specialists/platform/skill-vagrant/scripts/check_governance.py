@@ -70,6 +70,7 @@ CATALOGS: dict[str, tuple[str, str]] = {
     ".archcore/index.guide.md": (".archcore", "*/*.md"),
     # Every verbatim research capture is indexed (with its sha256, checked by the contract test).
     "documents/research-sources-20261107/readme.md": ("documents/research-sources-20261107", "*"),
+    "documents/research-sources-20261109/readme.md": ("documents/research-sources-20261109", "*"),  # second dated folder (2026-11-09)
 }
 
 # Files a catalog may legitimately omit (the index itself, generated output, dotfiles).

@@ -108,6 +108,16 @@ https://vagrantcloud.com/api/v2/box/<user>/<name>` with every version, its statu
 > seconds, then it was removed. A box added from a file has version 0, so `box_version = "202510.26.0"` only resolves when the file is served from
 > a `metadata.json` catalog that names that version.
 
+> **Learned 2026-11-09 (c)** · HCP Vagrant registry API, bento and other publishers · VERIFIED_PRIMARY (registry API and archive run on the lab Mac) · Source: `https://vagrantcloud.com/api/v2/box/<user>/<box>` read 2026-11-09; archive pass 1 (13 files, 2066 s, all ok) · Falsifier: a registry box version whose provider download URL is not `/<user>/boxes/<box>/versions/<v>/providers/<provider>/<arch or unknown>/vagrant.box`
+> Every provider file has a direct download URL of that shape (it redirects to storage), so a box can be streamed straight to an archive disk
+> without `vagrant box add` filling the home disk; one that is installed is saved with `vagrant box repackage` instead. Pass 1 on this Mac: 13
+> files, the largest 9.2 GB (stromweld/windows-11 virtualbox arm64, 1003 s), 34 min in all. Already gone from the registry on 2026-11-09:
+> `bento/ubuntu-22.04-arm64` (21 local Vagrantfiles still name it; `bento/ubuntu-22.04` 202502.21.0 has parallels/arm64) and
+> `bento/centos-stream-9-arm64` (the installed copy was the last one). bento publishes no qemu or libvirt builds for Debian and none for arm64
+> Ubuntu 24.04; `cloud-image/*` (Ubuntu 24.04 and 26.04, Debian 12 and 13) has qemu and libvirt for arm64 and amd64 and keeps cloud-init on,
+> and `debian/bookworm64`/`trixie64` are Debian's own libvirt amd64 boxes. MikroTik RouterOS 7 has no current box: CHR images come from
+> download.mikrotik.com.
+
 ## Removing boxes
 
 With vagrant-parallels, a new machine is a linked clone of the box image by default; "the box deletion will make all its linked clones not working" (VERIFIED_PRIMARY, [vp-configuration.md]). Before

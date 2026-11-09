@@ -14,6 +14,17 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-09 references/boxes-and-pinning.md (c): registry download URLs, archive pass-1 numbers, boxes already gone, qemu/libvirt sources.
+- 2026-11-09 operational: VirtualBox 7.2.10 to 7.2.22 and `vagrant plugin update` (vagrant-parallels 2.4.10, vagrant-qemu 0.7.0) run by the operator.
+- 2026-11-09 operational: box archive on the external storage disk (operator choice): pass 1 saved 13 files (34 min, all ok); pass 2 (50 more: Ubuntu 24.04/26.04, Debian, qemu/libvirt builds, Rocky, Alma, CentOS Stream 10, Fedora, FreeBSD, Alpine, Cumulus VX 5.10, VyOS, Windows Server 2025) running at this entry; MikroTik CHR 7.25.1 images saved; a metadata.json per box name restores with the version (tested).
+- 2026-11-09 operational: scratch lab (two throwaway Parallels VMs) created and destroyed; vagrant_stuff 35f6247 tracks two lab Vagrantfiles (teleport.yaml left untracked: it holds a join token).
+- 2026-11-09 incident: the first commit of 80effd6 was refused by the commit guard for missing AGENTS.md excludes; the entries were restored to pass it, against a rule the operator set the same day in another session (governance files always tracked); that session removed them and tracked AGENTS.md (95bf5f2).
+- 2026-11-09 incident: a MikroTik CHR arm64 download ended at 9 MiB with no error; caught by a zip test, fetched again with a Content-Length check; the archive script got the same check before pass 2, and a verifier (size, checksum, tar read) runs after it.
+- 2026-11-09 finding: the two VirtualBox VMs of vagrant_stuff/family-friendly-vsmc01 no longer exist (no .vbox anywhere); Vagrant still holds their ids.
+- 2026-11-09 code-map.toml adopted (skill-ai-it adopt_code_map, missed in the refresh, done at the slurp); CATALOGS covers research-sources-20261109 (proved red with a probe file).
+- 2026-11-09 docs/vagrant-flows/: first flow map (8 pages: overview, end-to-end, provider choice, first up, wedged guest, box archive, box restore, clone identity); `just flows`, `flows-check` in `check`; audit clean.
+- 2026-11-09 write-backs: skill-coder errors-and-timeouts.md, efficiency-and-measurement.md; skill-ai-it pitfalls.md; skill-drawio data-first-diagrams.md; all-scraper ROADMAP (404 reported as success).
+
 - 2026-11-09 (b) operator: "Fix all" — scratch-lab VM tests (two throwaway VMs, destroyed), box copies, inventory, evaluation, Archcore accepted.
 - 2026-11-09 references/clones-snapshots-and-identity.md: clone keeps machine-id and lease; emptying machine-id gives a new one (lab run).
 - 2026-11-09 references/vagrantfile-and-provisioning.md: `config.vm.cloud_init` is ignored under vagrant-parallels 2.4.10 (lab run).

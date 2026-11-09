@@ -1,0 +1,33 @@
+#% Part: components, group "Lab records"
+#% Scope: the components drawn in that group
+#% Lands under: components
+- id: vagrantfile
+  name: Vagrantfile
+  kind: store
+  group: Lab records
+  host: vagrant_stuff canonical, byte-identical project copy
+  health: lint passes; copy-check passes
+- id: box-store
+  name: Installed boxes
+  kind: store
+  group: Lab records
+  host: ~/.vagrant.d/boxes
+  health: vagrant box list shows every pinned version
+- id: box-archive
+  name: Box archive
+  kind: store
+  group: Lab records
+  host: external disk; package.box, sha256 and metadata.json per box
+  health: every file passes size, checksum and tar checks
+- id: machine-ids
+  name: .vagrant machine ids
+  kind: store
+  group: Lab records
+  host: <lab>/.vagrant/machines/<m>/<provider>/id
+  health: each id names a registered VM
+- id: guest
+  name: Lab VM (guest)
+  kind: store
+  group: Lab records
+  host: arm64 Ubuntu or Debian with its agent (Tools or Guest Additions)
+  health: answers vagrant ssh or prlctl exec

@@ -63,3 +63,8 @@ if not need_text:
 text = render(data, profile, built)
 render_cache.record(k, text)
 ```
+
+> **Learned 2026-11-09** · long jobs piped through a filter · VERIFIED_PRIMARY (observed) · Source: skill-vagrant box archive session 2026-11-09 (`python3 archive_boxes.py --apply | cut -c1-200` run in the background) · Falsifier: a progress line that reaches the log while `cut` is still reading
+> A progress line flushed by the program still waits in the next pipe stage: `| cut -c1-200` held every `ok` line of a two-hour job until the
+> job ended, so a monitor tailing the log saw nothing and the run looked stalled while a 9.2 GB file had already landed. Watch a long job's
+> unfiltered log, or make every filter line-buffered (`grep --line-buffered`, `awk` with `fflush()`); `cut` and `head` cannot be.

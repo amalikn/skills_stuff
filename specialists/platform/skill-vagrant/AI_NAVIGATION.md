@@ -143,5 +143,6 @@ Project-authored, outside the managed block. Mirrors the routing table in [SKILL
 | [tests/scenarios.md](tests/scenarios.md)      | Evaluation scenarios (V-Snn) each claim links to                                          | Contract test                                            |
 | [tests/eval-procedure.md](tests/eval-procedure.md) | How to run a with/without-skill evaluation                                                | —                                                        |
 | [scripts/README.md](scripts/README.md)        | Helper and recipe catalog                                                                 | `scripts/check_governance.py`                            |
+| [docs/vagrant-flows/](docs/vagrant-flows/) | Flow map (provider choice, first up, wedged guest, box archive and restore, clone identity); edit `parts/` only | `just flows-check` (drift + layout audit) |
 | [CHANGELOG.md](CHANGELOG.md)                  | Release history; `## Unreleased` collects write-back lines                                | Contract test                                            |
 | [.archcore/index.guide.md](.archcore/index.guide.md) | Index of durable ADRs, rules and plans, and what is never promoted                        | `scripts/check_governance.py` (both directions)          |

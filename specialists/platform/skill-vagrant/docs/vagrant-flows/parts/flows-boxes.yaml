@@ -1,0 +1,89 @@
+#% Part: flows, family "Boxes"
+#% Scope: the flows of that family, in drawing order
+#% Lands under: flows
+- id: box-archive
+  title: Archive a box before the registry closes
+  category: custom
+  purpose: Keep every pinned box rebuildable after 2026-12-31 with its version intact.
+  trigger: {kind: manual, detail: "archive script with --apply"}
+  runs_on: agent
+  owner: operator
+  dependencies: {components: [registry, box-store, box-archive]}
+  steps:
+    - id: installed
+      actor: box-store
+      action: Is the box version installed here?
+      via: [file]
+      shape: decision
+      next: [repackage, download]
+      when: {repackage: "yes", download: "no"}
+    - id: repackage
+      actor: vagrant
+      action: vagrant box repackage writes package.box to the archive.
+      via: [CLI]
+      writes: [package.box]
+      next: [hash]
+    - id: download
+      actor: registry
+      action: Streams the provider file straight to the archive (no home-disk use).
+      via: [HTTPS]
+      writes: [package.box]
+    - id: length
+      actor: agent
+      action: Bytes equal Content-Length?
+      via: [internal]
+      shape: decision
+      next: [hash, retry]
+      when: {hash: "yes", retry: "no"}
+    - id: retry
+      actor: agent
+      action: Keeps the .part file and fails the item; a re-run fetches it again.
+      via: [file]
+      shape: terminator
+      next: []
+    - id: hash
+      actor: box-archive
+      action: sha256 beside the file; metadata.json names version, provider, architecture.
+      via: [file]
+      writes: [sha256, metadata.json]
+    - id: verify
+      actor: agent
+      action: Size, published checksum and a full tar read for every file.
+      via: [file]
+      reads: [package.box]
+      shape: terminator
+      next: []
+
+- id: box-restore
+  title: Restore a pinned box from the archive
+  category: custom
+  purpose: Bring a box back with its version, so box_version pins still resolve.
+  trigger: {kind: manual, detail: "vagrant box add file://.../metadata.json"}
+  runs_on: vagrant
+  owner: operator
+  dependencies: {components: [box-archive, box-store]}
+  steps:
+    - id: check
+      actor: operator
+      action: shasum -a 256 -c package.box.sha256
+      via: [manual]
+    - id: how
+      actor: vagrant
+      action: Added from metadata.json or a bare file?
+      via: [internal]
+      shape: decision
+      next: [versioned, version-zero]
+      when: {versioned: "metadata.json", version-zero: "bare file"}
+    - id: version-zero
+      actor: box-store
+      action: Box recorded as version 0; a pinned Vagrantfile does not match it.
+      via: [file]
+      shape: terminator
+      next: []
+    - id: versioned
+      actor: box-store
+      action: Box recorded with its real version; or set config.vm.box_url to the metadata.json.
+      via: [file]
+      writes: [boxes]
+      shape: terminator
+      next: []

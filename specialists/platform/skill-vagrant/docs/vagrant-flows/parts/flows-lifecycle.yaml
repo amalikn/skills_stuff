@@ -1,0 +1,104 @@
+#% Part: flows, family "Lab lifecycle"
+#% Scope: the flows of that family, in drawing order
+#% Lands under: flows
+- id: provider-select
+  title: Which provider runs vagrant up
+  category: custom
+  purpose: Show the order Vagrant uses to pick a provider, so a lab names its own (rule name-the-provider).
+  trigger: {kind: manual, detail: "vagrant up"}
+  runs_on: vagrant
+  owner: operator
+  dependencies: {components: [vagrantfile, vp, vbox-provider, vq, vl]}
+  steps:
+    - id: flag
+      actor: vagrant
+      action: Was --provider given?
+      via: [internal]
+      shape: decision
+      next: [use-flag, env]
+      when: {use-flag: "yes", env: "no"}
+    - id: use-flag
+      actor: vagrant
+      action: Uses that provider; later commands remember it.
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: env
+      actor: vagrant
+      action: Is VAGRANT_DEFAULT_PROVIDER set?
+      via: [internal]
+      shape: decision
+      next: [use-env, blocks]
+      when: {use-env: "yes", blocks: "no"}
+    - id: use-env
+      actor: vagrant
+      action: Uses the provider the variable names.
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: blocks
+      actor: vagrantfile
+      action: The first config.vm.provider block that is usable here, in file order.
+      via: [file]
+      reads: [Vagrantfile]
+      shape: decision
+      next: [use-block, priority]
+      when: {use-block: "found", priority: "none usable"}
+    - id: use-block
+      actor: vagrant
+      action: Uses that block's provider.
+      via: [internal]
+      shape: terminator
+      next: []
+    - id: priority
+      actor: vagrant
+      action: Highest-priority installed plugin that is usable, else an error.
+      via: [internal]
+      shape: terminator
+      next: []
+
+- id: first-up
+  title: First vagrant up of a new machine
+  category: custom
+  purpose: What runs, in order, the first time a machine comes up, and what only runs then.
+  trigger: {kind: manual, detail: "vagrant up <machine>"}
+  runs_on: vagrant
+  owner: operator
+  dependencies: {components: [box-store, vp, parallels, guest]}
+  steps:
+    - id: pin
+      actor: vagrantfile
+      action: Box and exact box_version are read.
+      via: [file]
+      reads: [Vagrantfile]
+    - id: box
+      actor: box-store
+      action: Pinned box installed?
+      via: [file]
+      shape: decision
+      next: [clone, fetch]
+      when: {clone: "yes", fetch: "no"}
+    - id: fetch
+      actor: registry
+      action: Downloads the box (until 2026-12-31; then from the archive's metadata.json).
+      via: [HTTPS]
+      writes: [boxes]
+      next: [clone]
+    - id: clone
+      actor: vp
+      action: Linked clone of the box image; customize post-import runs once.
+      via: [CLI]
+    - id: boot
+      actor: parallels
+      action: customize pre-boot, boot, post-boot, wait for SSH, post-comm.
+      via: [CLI]
+    - id: configure
+      actor: guest
+      action: Hostname, network interfaces, synced folders.
+      via: [SSH]
+    - id: provision
+      actor: guest
+      action: Provisioners run outside in; only on this first up unless run "always".
+      via: [SSH]
+      shape: terminator
+      next: []

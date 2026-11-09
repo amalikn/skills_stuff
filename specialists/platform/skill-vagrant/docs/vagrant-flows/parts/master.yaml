@@ -1,0 +1,44 @@
+# skill-vagrant flow map, master part: drawing settings and the `#@include` lines naming the parts beside it (one per component group and per
+# flow family, as skill-goal-guard does). `just flows` assembles ../vagrant_flows.yaml from them (skill-drawio assemble_flowmap.py) and renders
+# ../vagrant_flows.drawio; both are generated, never edited by hand. Edit the parts; `just check` fails on drift.
+# The rules drawn here live in references/providers-and-choice.md, vagrantfile-and-provisioning.md, upgrade-and-troubleshooting.md,
+# boxes-and-pinning.md and clones-snapshots-and-identity.md; where a drawing and a reference disagree, the reference wins and this map is fixed.
+schema_version: 1
+title: "Vagrant labs: components and flows"
+updated: "2026-11-09"
+
+drawing:
+  output: vagrant_flows.drawio
+  command: just flows
+  look:
+    last_row_align: centre
+  kinds:
+    person: ["#ffffff", "#000000"]
+    agent: ["#e1d5e7", "#9673a6"]
+    tool: ["#dae8fc", "#6c8ebf"]
+    store: ["#e6e6e6", "#4d4d4d"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People and agents, groups: [People and agents]}
+    - {name: Vagrant and providers, groups: [Vagrant and providers]}
+    - {name: Hypervisors and registries, groups: [Hypervisors and registries]}
+  below: {groups: [Lab records]}
+  band_title: Lab records
+  families:
+    - {id: lifecycle, name: Lab lifecycle, colour: "#1f4e9c", flows: [provider-select, first-up]}
+    - {id: triage, name: Triage, colour: "#a0522d", flows: [wedged-guest]}
+    - {id: boxes, name: Boxes, colour: "#1b7a3a", flows: [box-archive, box-restore]}
+    - {id: identity, name: Identity, colour: "#6a3fa0", flows: [clone-identity]}
+
+
+components:
+  #@include components-people-and-agents.yaml
+  #@include components-vagrant-and-providers.yaml
+  #@include components-hypervisors-and-registries.yaml
+  #@include components-lab-records.yaml
+
+flows:
+  #@include flows-lifecycle.yaml
+  #@include flows-triage.yaml
+  #@include flows-boxes.yaml
+  #@include flows-identity.yaml

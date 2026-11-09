@@ -16,7 +16,9 @@ Last rotated: 20261109_1222
 
 ## Unreleased
 
-- 2026-11-09 write-back from unified-network-controller (three entries parked in its audit follow-up, promoted): references/safety-and-writes.md (a rollback verifies restored state, not reachability), references/testing.md (a negative assertion needs a probe that ran; cleanup is part of the verdict), references/errors-and-timeouts.md (held alarms reach derived projections; delivery needs a durable pending record)
+- 2026-11-09 (b) write-back from skill-vagrant: references/errors-and-timeouts.md (a streamed download can end short without an error; check Content-Length)
+- 2026-11-09 write-back from skill-vagrant: references/efficiency-and-measurement.md (a pipe filter holds a long job's progress lines)
+- 2026-11-09 write-back from unified-network-controller (three entries parked in its audit follow-up, promoted): (the errors-and-timeouts.md entry is dated 2026-11-08) references/safety-and-writes.md (a rollback verifies restored state, not reachability), references/testing.md (a negative assertion needs a probe that ran; cleanup is part of the verdict), references/errors-and-timeouts.md (held alarms reach derived projections; delivery needs a durable pending record)
 - 2026-11-09 write-back from skill-proxmox: references/testing.md (a token lookahead that excludes '.' misses a sentence-final token; write the negative test as prose)
 - 2026-11-08 (c) write-back from smc-resiliency: references/testing.md (read_text hides \r\n; a raw pty for serial tests; termios without pyserial)
 - 2026-11-08 (b) write-back from smc-resiliency S1V: references/safety-and-writes.md (write, fsync, rename is not crash-safe on FAT)

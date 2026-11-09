@@ -134,7 +134,7 @@ invocation half.
   # scripts/adoption/adopt_governed_files.py (legacy-header branch)
   while j < len(lines) and (re.match(r"[A-Z][\w ]*: ", lines[j]) or (keys and re.match(r"[ \t]+\S", lines[j]))):
   ```
-- The compact navigation block (2026-10-14-compact-v2) names `docs/history/` and `docs/trackers/`, which a pack without rotated records lacks;
+- The compact navigation block (compact v2, October 2026) names `docs/history/` and `docs/trackers/`, which a pack without rotated records lacks;
   the checker's path check fails until each project registers them in `CONDITIONAL_PATHS` with a reason (skill-vagrant had; skill-proxmox did not).
 - `govern` baselines every finding the project already had (26 there, mostly missing header summaries). Write the summaries and drop the
   resolved baseline entries; the baseline is a ratchet, not a fix.
@@ -142,4 +142,8 @@ invocation half.
   the operator accepted them, not by adding dates.
 - A refresh with `.archcore/` present owes `ARCHCORE_PROMOTION_CANDIDATES.md` or a stated reason (finishing.md checklist); it was skipped
   in the first pass and written in the second.
-
+- skill-vagrant refresh 2026-11-09: `just govern` does not create `code-map.toml`; the refresh step `adopt_code_map.py --apply` was skipped in the
+  first pass and caught at the slurp. A front-matter `Summary:` containing `: ` stops parsing as YAML and fails the role check: quote it. A
+  long CHANGELOG bullet that names several files gets wrapped by the markdown hook, so a contract that wants file and date on one line fails:
+  one short line per file. Under auto mode `GOVERN_ALLOW_DIRTY=1 just govern` is refused as a safety bypass; `doc_freshness.py --prune-baseline`
+  drops resolved entries without it. A second dated `documents/research-sources-<date>/` folder needs its own `CATALOGS` entry in the checker.

@@ -310,3 +310,14 @@ When the signs disagree (a banner on a file the operator says they edited), stop
 > step page named none; one consumer's `just check` failed on flow drift for two days and its commit gate refused an unrelated commit until a
 > re-render. Run `just consumer-check` for every engine commit that touches page building, not only routing ones, and list each changed
 > consumer in the message and to its hub.
+
+> **Learned 2026-11-09** · assembling a parted map · VERIFIED_PRIMARY · Source: skill-vagrant `docs/vagrant-flows/` (first assembly 2026-11-09), justfile `flows`/`flows-check`; screenshot `references/screenshots/20261109-vagrant-flows-assembly-path/` · Falsifier: an assembly run from the map folder that the root-run `flows-check` accepts
+> The assembled map records the `--master` path as it was given, so a first assembly run from inside the map folder (`--master parts/master.yaml`)
+> wrote a file that the project's `flows-check`, run from the project root, reported as drift. Assemble through the project's `flows` recipe
+> from its root, the same way the check runs; a new consumer copies skill-goal-guard's two recipes and adds `@just flows-check` to `check`.
+>
+> ```make
+> flows:
+>     @{{drawio_py}} "{{drawio}}/assemble_flowmap.py" --master docs/vagrant-flows/parts/master.yaml --out docs/vagrant-flows/vagrant_flows.yaml --write
+>     @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root docs/vagrant-flows --map vagrant_flows.yaml --write
+> ```

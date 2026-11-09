@@ -126,3 +126,19 @@ agent should have found (lesson `feedback_proactive_upstream_research`).
 > delivery = notifications.send(batch)
 > state.save(active)   # saved without the record even when delivery failed
 > ```
+
+> **Learned 2026-11-09 (b)** · Python urllib streaming downloads · VERIFIED_PRIMARY (reproduced once, fixed the same hour) · Source: skill-vagrant box archive session 2026-11-09, `archive_boxes.py` `download()` (scratchpad, one-off; procedure in skill-vagrant references/boxes-and-pinning.md) · Falsifier: a short body that makes `resp.read()` raise instead of returning b""
+> A streamed download can end early with no exception: a `while chunk := resp.read(n)` loop stopped at exactly 9 MiB of a 19.2 MB zip from
+> download.mikrotik.com, exit 0, and the file looked fine until a zip test. A sha256 written afterwards fingerprints the truncated file, and a
+> resumable job then skips it as done. Compare the bytes written with `Content-Length` before renaming the `.part` file, and verify the
+> archive's structure (zip test, `tar -tf`) for anything kept long-term.
+>
+> ```python
+> with urllib.request.urlopen(url, timeout=READ_TIMEOUT_S) as resp, part.open("wb") as f:
+>   want = int(resp.headers.get("Content-Length") or 0)
+>   while chunk := resp.read(8 << 20):
+>     f.write(chunk)
+> if want and part.stat().st_size != want:
+>   raise OSError(f"short download: {part.stat().st_size} of {want} bytes; {part} kept")
+> part.rename(out)
+> ```

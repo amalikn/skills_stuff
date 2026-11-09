@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- references/data-first-diagrams.md: Learned 2026-11-09, the assembled map records the --master path as given; assemble from the project root (new consumer skill-vagrant, docs/vagrant-flows)
 - references/data-first-diagrams.md: Learned 2026-11-09, an engine commit that adds page furniture (2c713d2, the `‹ E2E page` button) changed a consumer's drawing without a consumer check; unified-network-controller drifted two days (re-rendered 42a7645a)
 - scripts/flowmap/e2e_family.py (`back_target`, `back_button`), pages.py, profile.py, schema: a step page's `‹ E2E page` button (look `back_button`); scripts/drawio/audit.py: page_audit counts note cards as boxes no arrow may cross (the router unchanged: as obstacles they moved smc-change 44 to 49 crossings); BackButtonTests, NoteAuditTests; consumers' layout measures unchanged; ROADMAP operator-review and notes-band items done (2026-11-07).
 - scripts/route_probe.py (new), justfile `route-probe`, scripts/README.md: one flow page's router choices (straight-first picks, each decision's corner trials and costs) and final routes, to see which routing stage made a choice; promoted from the 2026-11-07 commission-gps debugging; tests/test_straight_first.py RouteProbeTests; ROADMAP item for a label on a run near a lane edge (2026-11-07).

@@ -1,0 +1,45 @@
+#% Part: components, group "Vagrant and providers"
+#% Scope: the components drawn in that group
+#% Lands under: components
+- id: vagrant
+  name: Vagrant 2.4.9
+  kind: tool
+  group: Vagrant and providers
+  host: /opt/vagrant (BUSL 1.1 release)
+  health: vagrant --version; vagrant plugin list
+  depends_on: [vp, vbox-provider, vq, vl, vagrantfile, box-store]
+- id: vp
+  name: vagrant-parallels 2.4.10
+  kind: tool
+  group: Vagrant and providers
+  host: ~/.vagrant.d/gems (default provider here)
+  health: shared folders mount via prl_fsd on 24.04
+  depends_on: [parallels]
+- id: vbox-provider
+  name: virtualbox provider (built in)
+  kind: tool
+  group: Vagrant and providers
+  host: part of Vagrant; VirtualBox 7.2 needs Vagrant 2.4.9
+  health: VBoxManage --version is a supported line
+  depends_on: [virtualbox]
+- id: vq
+  name: vagrant-qemu 0.7.0
+  kind: tool
+  group: Vagrant and providers
+  host: ~/.vagrant.d/gems; QEMU 11.1.3 from Homebrew
+  health: 0.6.4 or later on macOS 27 (port-check fix)
+  depends_on: [qemu]
+- id: vl
+  name: vagrant-libvirt 0.12.2
+  kind: tool
+  group: Vagrant and providers
+  host: ~/.vagrant.d/gems; uri qemu+ssh to a Linux host
+  health: plugin loads; remote host answers virsh
+  depends_on: [libvirt-host]
+- id: inventory
+  name: vagrant_lab_inventory.py
+  kind: tool
+  group: Vagrant and providers
+  host: skill-vagrant scripts/ (just inventory-lab)
+  health: lists machines, VMs and pins in about 2 s
+  depends_on: [vagrant, parallels, virtualbox, machine-ids]

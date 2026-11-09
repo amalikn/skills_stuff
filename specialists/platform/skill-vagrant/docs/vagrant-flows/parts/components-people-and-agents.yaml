@@ -1,0 +1,16 @@
+#% Part: components, group "People and agents"
+#% Scope: the components drawn in that group
+#% Lands under: components
+- id: operator
+  name: Operator
+  kind: person
+  group: People and agents
+  host: the lab Mac
+  health: approves every VM write and host change
+- id: agent
+  name: Agent session
+  kind: agent
+  group: People and agents
+  host: Claude Code or Codex with skill-vagrant
+  health: read-only commands only unless the project gates a write
+  depends_on: [vagrant, inventory]

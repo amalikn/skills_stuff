@@ -26,7 +26,9 @@ the engaging project. The counterpart pack for the x86 lab is [skill-proxmox](..
 - [documents/](documents/) — verbatim research captures with provenance and sha256. Index: [documents/readme.md](documents/readme.md)
 - [scripts/](scripts/) — tested stdlib-only read-only helpers and the governance checker. Index: [scripts/README.md](scripts/README.md)
 - [tests/](tests/) — offline package contract, helper tests, scenarios, evaluation procedure
-- [.archcore/](.archcore/) — durable decisions, rules and plans (proposed 2026-11-07). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
+- [.archcore/](.archcore/) — durable decisions, rules and plans (accepted 2026-11-09). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
+- [docs/](docs/) — session records (`session-record-<stamp>.md`) and the flow map
+- [docs/vagrant-flows/](docs/vagrant-flows/) — flow map: source in `parts/`, assembled `docs/vagrant-flows/vagrant_flows.yaml` and rendered `docs/vagrant-flows/vagrant_flows.drawio` are generated (`just flows`)
 
 ## Key files
 

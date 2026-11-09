@@ -1,0 +1,39 @@
+#% Part: flows, family "Identity"
+#% Scope: the flows of that family, in drawing order
+#% Lands under: flows
+- id: clone-identity
+  title: A linked clone and its identity
+  category: custom
+  purpose: Why a clone takes its source's address, and the tested way to give it its own (lab run 2026-11-09).
+  trigger: {kind: manual, detail: "prlctl clone <vm> --linked"}
+  runs_on: parallels
+  owner: operator
+  dependencies: {components: [guest, parallels]}
+  steps:
+    - id: stop
+      actor: parallels
+      action: Source stopped; clone --linked; new MAC with --mac auto.
+      via: [CLI]
+    - id: same
+      actor: guest
+      action: Clone boots with the source's machine-id, so DHCP gives it the same address.
+      via: [internal]
+    - id: choice
+      actor: operator
+      action: Must the clone share the source's network?
+      via: [manual]
+      shape: decision
+      next: [isolate, reset]
+      when: {isolate: "no", reset: "yes"}
+    - id: isolate
+      actor: parallels
+      action: Disconnect the shared adapters; reach the clone by prlctl exec only.
+      via: [CLI]
+      shape: terminator
+      next: []
+    - id: reset
+      actor: guest
+      action: truncate /etc/machine-id, reboot; systemd commits a new id and the clone gets a new lease.
+      via: [CLI]
+      shape: terminator
+      next: []

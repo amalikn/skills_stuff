@@ -1,0 +1,416 @@
+# GENERATED from docs/vagrant-flows/parts/master.yaml and the parts it includes, by skill-drawio's assemble_flowmap.py (`just flows`).
+# Edit the parts, never this file: the check fails when it differs from what the parts assemble to.
+
+# skill-vagrant flow map, master part: drawing settings and the `#@include` lines naming the parts beside it (one per component group and per
+# flow family, as skill-goal-guard does). `just flows` assembles ../vagrant_flows.yaml from them (skill-drawio assemble_flowmap.py) and renders
+# ../vagrant_flows.drawio; both are generated, never edited by hand. Edit the parts; `just check` fails on drift.
+# The rules drawn here live in references/providers-and-choice.md, vagrantfile-and-provisioning.md, upgrade-and-troubleshooting.md,
+# boxes-and-pinning.md and clones-snapshots-and-identity.md; where a drawing and a reference disagree, the reference wins and this map is fixed.
+schema_version: 1
+title: "Vagrant labs: components and flows"
+updated: "2026-11-09"
+
+drawing:
+  output: vagrant_flows.drawio
+  command: just flows
+  look:
+    last_row_align: centre
+  kinds:
+    person: ["#ffffff", "#000000"]
+    agent: ["#e1d5e7", "#9673a6"]
+    tool: ["#dae8fc", "#6c8ebf"]
+    store: ["#e6e6e6", "#4d4d4d"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People and agents, groups: [People and agents]}
+    - {name: Vagrant and providers, groups: [Vagrant and providers]}
+    - {name: Hypervisors and registries, groups: [Hypervisors and registries]}
+  below: {groups: [Lab records]}
+  band_title: Lab records
+  families:
+    - {id: lifecycle, name: Lab lifecycle, colour: "#1f4e9c", flows: [provider-select, first-up]}
+    - {id: triage, name: Triage, colour: "#a0522d", flows: [wedged-guest]}
+    - {id: boxes, name: Boxes, colour: "#1b7a3a", flows: [box-archive, box-restore]}
+    - {id: identity, name: Identity, colour: "#6a3fa0", flows: [clone-identity]}
+
+
+components:
+  - id: operator
+    name: Operator
+    kind: person
+    group: People and agents
+    host: the lab Mac
+    health: approves every VM write and host change
+  - id: agent
+    name: Agent session
+    kind: agent
+    group: People and agents
+    host: Claude Code or Codex with skill-vagrant
+    health: read-only commands only unless the project gates a write
+    depends_on: [vagrant, inventory]
+  - id: vagrant
+    name: Vagrant 2.4.9
+    kind: tool
+    group: Vagrant and providers
+    host: /opt/vagrant (BUSL 1.1 release)
+    health: vagrant --version; vagrant plugin list
+    depends_on: [vp, vbox-provider, vq, vl, vagrantfile, box-store]
+  - id: vp
+    name: vagrant-parallels 2.4.10
+    kind: tool
+    group: Vagrant and providers
+    host: ~/.vagrant.d/gems (default provider here)
+    health: shared folders mount via prl_fsd on 24.04
+    depends_on: [parallels]
+  - id: vbox-provider
+    name: virtualbox provider (built in)
+    kind: tool
+    group: Vagrant and providers
+    host: part of Vagrant; VirtualBox 7.2 needs Vagrant 2.4.9
+    health: VBoxManage --version is a supported line
+    depends_on: [virtualbox]
+  - id: vq
+    name: vagrant-qemu 0.7.0
+    kind: tool
+    group: Vagrant and providers
+    host: ~/.vagrant.d/gems; QEMU 11.1.3 from Homebrew
+    health: 0.6.4 or later on macOS 27 (port-check fix)
+    depends_on: [qemu]
+  - id: vl
+    name: vagrant-libvirt 0.12.2
+    kind: tool
+    group: Vagrant and providers
+    host: ~/.vagrant.d/gems; uri qemu+ssh to a Linux host
+    health: plugin loads; remote host answers virsh
+    depends_on: [libvirt-host]
+  - id: inventory
+    name: vagrant_lab_inventory.py
+    kind: tool
+    group: Vagrant and providers
+    host: skill-vagrant scripts/ (just inventory-lab)
+    health: lists machines, VMs and pins in about 2 s
+    depends_on: [vagrant, parallels, virtualbox, machine-ids]
+  - id: parallels
+    name: Parallels Desktop 27 (prlctl)
+    kind: external
+    group: Hypervisors and registries
+    host: the lab Mac; Pro edition needed for the CLI
+    health: prlsrvctl info --license reads pro/ACTIVE
+  - id: virtualbox
+    name: VirtualBox 7.2.22 (VBoxManage)
+    kind: external
+    group: Hypervisors and registries
+    host: the lab Mac; arm64 guests only
+    health: VBoxManage list vms answers
+  - id: qemu
+    name: qemu-system-aarch64 (hvf)
+    kind: external
+    group: Hypervisors and registries
+    host: Homebrew QEMU on the lab Mac; no daemon
+    health: qemu-system-aarch64 --version
+  - id: libvirt-host
+    name: libvirtd on a Linux host
+    kind: external
+    group: Hypervisors and registries
+    host: a remote KVM host reached over SSH
+    health: virsh -c <uri> list answers
+  - id: registry
+    name: HCP Vagrant box registry
+    kind: external
+    group: Hypervisors and registries
+    host: vagrantcloud.com (ends operations 2026-12-31)
+    health: the box API answers for a pinned version
+  - id: vagrantfile
+    name: Vagrantfile
+    kind: store
+    group: Lab records
+    host: vagrant_stuff canonical, byte-identical project copy
+    health: lint passes; copy-check passes
+  - id: box-store
+    name: Installed boxes
+    kind: store
+    group: Lab records
+    host: ~/.vagrant.d/boxes
+    health: vagrant box list shows every pinned version
+  - id: box-archive
+    name: Box archive
+    kind: store
+    group: Lab records
+    host: external disk; package.box, sha256 and metadata.json per box
+    health: every file passes size, checksum and tar checks
+  - id: machine-ids
+    name: .vagrant machine ids
+    kind: store
+    group: Lab records
+    host: <lab>/.vagrant/machines/<m>/<provider>/id
+    health: each id names a registered VM
+  - id: guest
+    name: Lab VM (guest)
+    kind: store
+    group: Lab records
+    host: arm64 Ubuntu or Debian with its agent (Tools or Guest Additions)
+    health: answers vagrant ssh or prlctl exec
+
+flows:
+  - id: provider-select
+    title: Which provider runs vagrant up
+    category: custom
+    purpose: Show the order Vagrant uses to pick a provider, so a lab names its own (rule name-the-provider).
+    trigger: {kind: manual, detail: "vagrant up"}
+    runs_on: vagrant
+    owner: operator
+    dependencies: {components: [vagrantfile, vp, vbox-provider, vq, vl]}
+    steps:
+      - id: flag
+        actor: vagrant
+        action: Was --provider given?
+        via: [internal]
+        shape: decision
+        next: [use-flag, env]
+        when: {use-flag: "yes", env: "no"}
+      - id: use-flag
+        actor: vagrant
+        action: Uses that provider; later commands remember it.
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: env
+        actor: vagrant
+        action: Is VAGRANT_DEFAULT_PROVIDER set?
+        via: [internal]
+        shape: decision
+        next: [use-env, blocks]
+        when: {use-env: "yes", blocks: "no"}
+      - id: use-env
+        actor: vagrant
+        action: Uses the provider the variable names.
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: blocks
+        actor: vagrantfile
+        action: The first config.vm.provider block that is usable here, in file order.
+        via: [file]
+        reads: [Vagrantfile]
+        shape: decision
+        next: [use-block, priority]
+        when: {use-block: "found", priority: "none usable"}
+      - id: use-block
+        actor: vagrant
+        action: Uses that block's provider.
+        via: [internal]
+        shape: terminator
+        next: []
+      - id: priority
+        actor: vagrant
+        action: Highest-priority installed plugin that is usable, else an error.
+        via: [internal]
+        shape: terminator
+        next: []
+
+  - id: first-up
+    title: First vagrant up of a new machine
+    category: custom
+    purpose: What runs, in order, the first time a machine comes up, and what only runs then.
+    trigger: {kind: manual, detail: "vagrant up <machine>"}
+    runs_on: vagrant
+    owner: operator
+    dependencies: {components: [box-store, vp, parallels, guest]}
+    steps:
+      - id: pin
+        actor: vagrantfile
+        action: Box and exact box_version are read.
+        via: [file]
+        reads: [Vagrantfile]
+      - id: box
+        actor: box-store
+        action: Pinned box installed?
+        via: [file]
+        shape: decision
+        next: [clone, fetch]
+        when: {clone: "yes", fetch: "no"}
+      - id: fetch
+        actor: registry
+        action: Downloads the box (until 2026-12-31; then from the archive's metadata.json).
+        via: [HTTPS]
+        writes: [boxes]
+        next: [clone]
+      - id: clone
+        actor: vp
+        action: Linked clone of the box image; customize post-import runs once.
+        via: [CLI]
+      - id: boot
+        actor: parallels
+        action: customize pre-boot, boot, post-boot, wait for SSH, post-comm.
+        via: [CLI]
+      - id: configure
+        actor: guest
+        action: Hostname, network interfaces, synced folders.
+        via: [SSH]
+      - id: provision
+        actor: guest
+        action: Provisioners run outside in; only on this first up unless run "always".
+        via: [SSH]
+        shape: terminator
+        next: []
+  - id: wedged-guest
+    title: A guest that does not answer
+    category: custom
+    purpose: Look at the console before any reset; the capture decides the next step.
+    trigger: {kind: manual, detail: "prlctl exec or vagrant ssh hangs"}
+    runs_on: agent
+    owner: operator
+    dependencies: {components: [parallels, guest]}
+    steps:
+      - id: capture
+        actor: parallels
+        action: prlctl capture (VBoxManage screenshotpng, or the QEMU serial socket).
+        via: [CLI]
+        writes: [console PNG]
+      - id: what
+        actor: agent
+        action: What does the console show?
+        via: [internal]
+        shape: decision
+        next: [wait, record, status]
+        when: {wait: "login prompt", record: "panic or shell", status: "blank"}
+      - id: wait
+        actor: agent
+        action: Guest is up; retry exec with a deadline until Tools answer.
+        via: [CLI]
+        shape: terminator
+        next: []
+      - id: record
+        actor: operator
+        action: Keep the PNG as the result; reset or roll back only with approval.
+        via: [manual]
+        shape: terminator
+        next: []
+      - id: status
+        actor: parallels
+        action: prlctl status; a suspended VM starts, or stop --drop-state.
+        via: [CLI]
+        shape: terminator
+        next: []
+  - id: box-archive
+    title: Archive a box before the registry closes
+    category: custom
+    purpose: Keep every pinned box rebuildable after 2026-12-31 with its version intact.
+    trigger: {kind: manual, detail: "archive script with --apply"}
+    runs_on: agent
+    owner: operator
+    dependencies: {components: [registry, box-store, box-archive]}
+    steps:
+      - id: installed
+        actor: box-store
+        action: Is the box version installed here?
+        via: [file]
+        shape: decision
+        next: [repackage, download]
+        when: {repackage: "yes", download: "no"}
+      - id: repackage
+        actor: vagrant
+        action: vagrant box repackage writes package.box to the archive.
+        via: [CLI]
+        writes: [package.box]
+        next: [hash]
+      - id: download
+        actor: registry
+        action: Streams the provider file straight to the archive (no home-disk use).
+        via: [HTTPS]
+        writes: [package.box]
+      - id: length
+        actor: agent
+        action: Bytes equal Content-Length?
+        via: [internal]
+        shape: decision
+        next: [hash, retry]
+        when: {hash: "yes", retry: "no"}
+      - id: retry
+        actor: agent
+        action: Keeps the .part file and fails the item; a re-run fetches it again.
+        via: [file]
+        shape: terminator
+        next: []
+      - id: hash
+        actor: box-archive
+        action: sha256 beside the file; metadata.json names version, provider, architecture.
+        via: [file]
+        writes: [sha256, metadata.json]
+      - id: verify
+        actor: agent
+        action: Size, published checksum and a full tar read for every file.
+        via: [file]
+        reads: [package.box]
+        shape: terminator
+        next: []
+
+  - id: box-restore
+    title: Restore a pinned box from the archive
+    category: custom
+    purpose: Bring a box back with its version, so box_version pins still resolve.
+    trigger: {kind: manual, detail: "vagrant box add file://.../metadata.json"}
+    runs_on: vagrant
+    owner: operator
+    dependencies: {components: [box-archive, box-store]}
+    steps:
+      - id: check
+        actor: operator
+        action: shasum -a 256 -c package.box.sha256
+        via: [manual]
+      - id: how
+        actor: vagrant
+        action: Added from metadata.json or a bare file?
+        via: [internal]
+        shape: decision
+        next: [versioned, version-zero]
+        when: {versioned: "metadata.json", version-zero: "bare file"}
+      - id: version-zero
+        actor: box-store
+        action: Box recorded as version 0; a pinned Vagrantfile does not match it.
+        via: [file]
+        shape: terminator
+        next: []
+      - id: versioned
+        actor: box-store
+        action: Box recorded with its real version; or set config.vm.box_url to the metadata.json.
+        via: [file]
+        writes: [boxes]
+        shape: terminator
+        next: []
+  - id: clone-identity
+    title: A linked clone and its identity
+    category: custom
+    purpose: Why a clone takes its source's address, and the tested way to give it its own (lab run 2026-11-09).
+    trigger: {kind: manual, detail: "prlctl clone <vm> --linked"}
+    runs_on: parallels
+    owner: operator
+    dependencies: {components: [guest, parallels]}
+    steps:
+      - id: stop
+        actor: parallels
+        action: Source stopped; clone --linked; new MAC with --mac auto.
+        via: [CLI]
+      - id: same
+        actor: guest
+        action: Clone boots with the source's machine-id, so DHCP gives it the same address.
+        via: [internal]
+      - id: choice
+        actor: operator
+        action: Must the clone share the source's network?
+        via: [manual]
+        shape: decision
+        next: [isolate, reset]
+        when: {isolate: "no", reset: "yes"}
+      - id: isolate
+        actor: parallels
+        action: Disconnect the shared adapters; reach the clone by prlctl exec only.
+        via: [CLI]
+        shape: terminator
+        next: []
+      - id: reset
+        actor: guest
+        action: truncate /etc/machine-id, reboot; systemd commits a new id and the clone gets a new lease.
+        via: [CLI]
+        shape: terminator
+        next: []
