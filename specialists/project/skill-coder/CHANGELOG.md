@@ -16,6 +16,7 @@ Last rotated: 20261109_2227
 
 ## Unreleased
 
+- 2026-11-09 (e) write-back from smc-resiliency (N03 and the S1 bench): references/design-patterns.md P-64 (a fixed-length record overwritten in place), languages/shell/learned-other.md (stdout errors with exit 0; ssh host-key, ControlPath, agent and askpass traps; macOS screen, sync, sudo), references/testing.md (vfat inodes are made up at mount)
 - 2026-11-09 (d) write-back from tools_stuff cline (benchmark and prompt-cost tools): references/design-patterns.md P-63 (agent benchmark: known answers in a throwaway copy, a watch on real repos and their submodules), references/security.md (a disposable CLI config can fall back to a cloud default URL; guard egress)
 - 2026-11-09 (c) write-back from smc-resiliency (follow-up audit fixes): references/testing.md (an end state needs its cause on record; test a shell function cut out of its script; printf %q fakes), references/security.md (pin a release tarball to its GitHub asset digest; check a cached tool's executable, not a marker), languages/python.md (legacy files outside ruff include lose F821), references/design-patterns.md P-62 (bind a multi-part answer with one signature)
 - 2026-11-09 (b) write-back from skill-vagrant: references/errors-and-timeouts.md (a streamed download can end short without an error; check Content-Length)

@@ -6,13 +6,19 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261108_0156
+Last rotated: 20261109_2301
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)
+
+`references/07_hardware-overlay.md`: Learned 2026-11-09: autoboot.txt and tryboot on GPT (bootloader 2026-01-09), Ubuntu 24.04.5 start4.elf
+cannot boot partition 2 (firmware 1.20260915 can), flash-kernel copies it back, rpi-eeprom-update auto-upgrades, vcgencmd exits 0 without root,
+PARTITION_WALK stops at 8, the watchdog only after systemd, a NoCloud seed per root (VERIFIED_PRIMARY, bench console).
 
 ## 20261108_0155 — Pi 4 serial console (smc-resiliency S1 bench) (v0.12.8 -> v0.12.9)
 
@@ -191,10 +197,3 @@ Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tpli
 - `scripts/switch/tplink_cli_driver.py` and `tplink-switch.sh` append `ssh-dss`, `hmac-md5`, `diffie-hellman-group1-sha1` and `aes128-cbc` as
   fallbacks: SG2428P firmware 4.0.1 (`IPSSH-6.6.0`) offers nothing else, and three aurukun switches could not be read. Learned 2026-10-29 in
   `references/16_tplink-site-switches.md`.
-
-## 20261029_0958 — ha capture group, multi-SMC hosts and --proxy; aurukun VRRP layout (v0.9.8 -> v0.9.9)
-
-- `scripts/capture/collect-smc-evidence-full.sh`: `ha` group (keepalived, VIPs, track scripts, transitions, dhcpd failover and leases;
-  `auth_pass` redacted), `<site>-smcNN` hosts kept as given, `--proxy` / `SMC_TSH_PROXY` on every tsh call. Catalogue: `scripts/README.md`.
-- Learned 2026-10-29 in `references/01_overview.md` (VRRP): aurukun's keepalived source build, VIPs per VLAN, `google_ping` weight -30, no
-  DHCP failover (each box leases its own clients). Found for unified-network-controller's multi-SMC model.

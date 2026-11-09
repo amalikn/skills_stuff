@@ -1167,3 +1167,36 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > termios.tcsetattr(self.fd, termios.TCSANOW, attrs)
 > ```
 
+
+## Pi 4 A/B boot on a GPT card: bootloader, firmware and update traps (smc-resiliency S1 bench, 2026-11-09)
+
+> **Learned 2026-11-09** · Pi 4B (rev 1.5, 8 GB) bench, Ubuntu 24.04.5 raspi · VERIFIED_PRIMARY (serial console with `BOOT_UART=1` and
+> `uart_2ndstage=1`; commands read on the box) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 19, apn commits
+> 4e086c18 and 01cf282c · Falsifier: Ubuntu's packaged start4.elf booting partition 2 of a GPT card, or the bootloader ignoring autoboot.txt on GPT.
+> - `autoboot.txt` with `tryboot_a_b=1` works on a GPT card with bootloader 2026-01-09: `Read autoboot.txt bytes 256`, `Select partition ...
+>   C(boot_partition) 2 ... result 2`; `reboot "0 tryboot"` gives `result 3`; the next plain reboot is back on 2 (the flag is one-shot; the box
+>   reads it at `/proc/device-tree/chosen/bootloader/tryboot`, the partition at `.../partition`, both 4-byte big-endian). A 256-byte autoboot.txt
+>   padded by a comment line is read. The fleet's 2023-01-11 bootloader is not yet run.
+> - Ubuntu 24.04.5's start4.elf (Firmware f4e2138c, Feb 29 2024) chooses partition 2 and then cannot open its files:
+>   `Failed to open command line file 'cmdline.txt'`, `No compatible kernel found`, and the box stays frozen until power is cycled (nothing resets
+>   it before Linux). Raspberry Pi firmware 1.20260915 (start4.elf, fixup4.dat from github.com/raspberrypi/firmware at that tag) boots it.
+> - Ubuntu's flash-kernel copies the packaged firmware from `/usr/lib/linux-firmware-raspi` into /boot/firmware (`/usr/share/flash-kernel/functions`
+>   line 859), so a kernel or firmware update puts the failing start4.elf back. A box relying on newer firmware holds linux-firmware-raspi,
+>   flash-kernel and the raspi kernel packages, or the image replaces the packaged files.
+> - `rpi-eeprom-update.service` is enabled on Ubuntu 24.04 raspi and upgrades the bootloader at boot; mask it to pin a version.
+> - `vcgencmd` without root prints `Can't open device file: /dev/vcio` on stdout and exits 0: `vcgencmd bootloader_config > file` then holds the
+>   error text. Read EEPROM state with sudo and check the content, never the exit code.
+> - `PARTITION_WALK` (default 1) checks partitions 1 to 8 only and does not read autoboot.txt while walking (Raspberry Pi eeprom-bootloader docs).
+> - The BCM2835 watchdog's maximum is 15 s and systemd arms it (`RuntimeWatchdogSec`); a hang before systemd, or a firmware stage that fails,
+>   gets no reset.
+> - Ubuntu raspi's cloud-init reads NoCloud from the filesystem labelled `system-boot`; two boot slots cannot share the label, so each root carries
+>   its own seed in `/var/lib/cloud/seed/nocloud/`.
+>
+> ```bash
+> # smc-resiliency lab/payloads/s1_card_build.sh @ 01cf282c: per slot
+> cp "$FILES/start4.elf" "$FILES/fixup4.dat" "$boot/"
+> for u in rpi-eeprom-update.service apt-daily.timer apt-daily-upgrade.timer unattended-upgrades.service; do
+>   ln -sf /dev/null "$root/etc/systemd/system/$u"
+> done
+> chroot "$root" apt-mark hold linux-firmware-raspi flash-kernel linux-raspi linux-image-raspi linux-headers-raspi >/dev/null
+> ```

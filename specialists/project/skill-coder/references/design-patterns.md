@@ -101,6 +101,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-59 | Export a spec to plain code, with provenance and an edit guard | Hand-copying a change from an engine into a repo that must not depend on it |
 | P-60 | Order resumed records by attempt, not by transaction start  | A resume sorted before attempts that ran ahead of it                        |
 | P-63 | Agent benchmark: known answers in a throwaway copy, a watch on real repos | Choosing a model or config for an agent by impression, or letting the run touch live work |
+| P-64 | A fixed-length record overwritten in place | A small state file on a filesystem without atomic rename (FAT) that a power cut must never leave empty |
 
 ## Patterns
 
@@ -1523,5 +1524,35 @@ def watched_repos() -> list[Path]:
     repos += [repo / line.strip() for line in out.splitlines() if line.strip() and (repo / line.strip() / ".git").exists()]
   return repos
 # per task: before = repo_state(); run the agent in the copy; touched = repo_changes(before, repo_state()); fails += touched
+```
+
+### P-64 A fixed-length record overwritten in place
+
+> **Learned 2026-11-09** · any language writing small state to FAT or another filesystem without a safe rename · VERIFIED_PRIMARY (smc-resiliency
+> S1V: a power cut mid-rewrite left a 0-byte file with temp-file-and-rename on vfat; after this pattern the file survived the same cut at full
+> length, and the Pi firmware read it) · Source: smc-resiliency spike/release/rauc/tryboot_backend.sh @ 4e086c18 · Falsifier: a cut during the
+> in-place write leaving the file shorter than its fixed length. `reusable_candidate` until a second project uses it.
+
+Problem:      A small file that another program must always be able to read (a boot selector, a counter) lives on a filesystem where
+              write-temp-then-rename is not crash-safe: a cut between the steps leaves the name pointing at an empty or missing file.
+Solution:     Give the file a fixed length (pad with a comment line to N bytes, N within one sector). Write it once by rename at install;
+              afterwards open it without truncating and overwrite all N bytes from offset 0, then fsync. Any other length means it is not
+              ours yet: write it the install way. The reader validates the content and a boot-time check rewrites a bad file from known state.
+Why it works: Size and directory entry never change after the first write, so only one data sector is rewritten; a cut leaves old or new
+              bytes, never a 0-byte name. The validator covers a torn sector.
+Reuse:        Pi autoboot.txt and config flags on the boot FAT; a retry counter on an EFI partition; a small marker on a USB stick read by firmware.
+Pitfalls:     The first write of a new medium still takes the rename path unless the image ships the file at its fixed length (found
+              2026-11-09: set-up wrote a shorter file). vfat renumbers inodes at each mount, so prove in-place writes within one boot.
+Realised in:  shell -> spike/release/rauc/tryboot_backend.sh (smc-resiliency, 4e086c18)
+
+```bash
+pad=$((SIZE - ${#body} - 3))
+body=$(printf '%s\n#%*s' "$body" "$pad" '')
+if [ -f "$SELECTION" ] && [ "$(wc -c <"$SELECTION")" -eq "$SIZE" ]; then
+  printf '%s\n' "$body" 1<>"$SELECTION"     # open read-write, no truncate: overwrite in place
+  sync "$SELECTION" 2>/dev/null || sync
+else
+  printf '%s\n' "$body" >"$tmp" && sync "$tmp" && mv "$tmp" "$SELECTION"   # first write only
+fi
 ```
 

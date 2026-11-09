@@ -309,3 +309,9 @@ if _opposite_status(ca, cb):
 > m = re.search(rf"^{name}\(\) \{{\n.*?^\}}\n", script.read_text(encoding="utf-8"), re.S | re.M)
 > rc = run_group(["bash", "-c", f'{m.group(0)}\nrauc_tarball "{tb}" {good}'], dict(os.environ), 30)[0]
 > ```
+
+> **Learned 2026-11-09** · tests that prove a file was rewritten in place · VERIFIED_PRIMARY (smc-resiliency S1V on vfat: inode 11 before a
+> reboot, 3 after, same file) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 18 · Falsifier: vfat keeping
+> inode numbers across mounts. FAT has no inodes; Linux makes them up at mount, so an inode compared across a reboot proves nothing. Compare
+> size and inode before and after one write within one boot.
+
