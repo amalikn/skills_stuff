@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Nightly Pad backup (pad_backup.sh --apply) at 02:30. Install: ln -s <this file> ~/Library/LaunchAgents/au.malik.pad-backup.plist;
+     launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/au.malik.pad-backup.plist. Stop: launchctl bootout gui/$(id -u)/au.malik.pad-backup -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>au.malik.pad-backup</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-pad/scripts/pad_backup.sh</string>
+    <string>--apply</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/bin:/bin</string></dict>
+  <key>StartCalendarInterval</key>
+  <dict><key>Hour</key><integer>2</integer><key>Minute</key><integer>30</integer></dict>
+  <key>StandardOutPath</key><string>/Volumes/Data/_ai/_scripts/scripts-runtime/pad-backup.log</string>
+  <key>StandardErrorPath</key><string>/Volumes/Data/_ai/_scripts/scripts-runtime/pad-backup.log</string>
+</dict>
+</plist>

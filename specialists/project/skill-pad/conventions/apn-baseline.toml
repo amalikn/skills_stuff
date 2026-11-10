@@ -1,0 +1,70 @@
+# apn-baseline.toml — the five Pad conventions every apn project workspace carries (operator, 2026-11-10: "capture the conventions centrally so
+# that other projects can copy the same"). Agreed in unified-network-controller and smc-resiliency on 2026-11-10.
+#
+# Applied by scripts/pad_conventions.py: it rewrites the startup template's four conventions in place (matched by `replaces`, their template
+# titles) and creates the rest, so a workspace ends with exactly these. `{project}` is the project folder name and `{trackers}` its tracker list,
+# both passed on the command line. Plan by default; --apply writes. Edit a rule here, then re-apply it to each workspace.
+#
+# An entry:  id        stable key, used for the create idempotency key (skill-pad-<id>-<workspace>)
+#            title     the convention's title;   content  its body (Markdown)
+#            trigger   always | on-commit | on-task-complete | ... (Pad's trigger vocabulary for the startup template)
+#            scope, priority, category, commands   Pad convention fields (priority must | should)
+#            replaces  the template title this entry rewrites, when the startup template seeds one
+
+[[convention]]
+id = "commit-message"
+replaces = "Conventional commit format"
+title = "Commit messages: '{project}: <summary>' through just commit-project"
+trigger = "on-commit"
+scope = "all"
+priority = "should"
+category = "git"
+content = """Commit with `just commit-project -m "{project}: <what changed, plain words>" --apply` from the project folder. It runs the commit gate \
+(`just check`), commits only this project's folder in the shared apn repo and pushes. Do not use feat:/fix: prefixes. No apostrophes or contractions in \
+the message (shell quoting). Source: AGENTS.md Cross-project exchange; ../scripts/README.md Agent rules."""
+
+[[convention]]
+id = "one-branch"
+replaces = "Never push directly to main"
+title = "Commit only through just commit-project (one repo, one branch)"
+trigger = "on-commit"
+scope = "all"
+priority = "must"
+category = "git"
+content = """The apn repo has one branch, main (operator, 2026-10-21, option 1). Every commit of this project goes through `just commit-project ... \
+--apply`, which commits only this folder under the shared git lock and pushes main. Never `git add -A`, `git commit -a` or a commit spanning another \
+project's folder; never open a branch or PR for this project unless the operator asks."""
+
+[[convention]]
+id = "just-check"
+replaces = "Run tests before completing tasks"
+title = "just check passes before a task is done"
+trigger = "on-task-complete"
+scope = "all"
+priority = "must"
+category = "quality"
+commands = ["just check"]
+content = """Before marking a task done, run `just check` in the project folder (governance checks, tests and linters; `just commit-project` runs \
+it as its gate) and fix the project, not the check, when it fails. Say what was validated and what was not. Source: AGENTS.md (Governance coherence \
+checks; fix the project, not the check)."""
+
+[[convention]]
+id = "review-diff"
+replaces = "Review your own changes before PR"
+title = "Review your own diff before committing (no PRs here)"
+trigger = "on-commit"
+scope = "all"
+priority = "should"
+category = "quality"
+content = """This project commits straight to main through `just commit-project`; there are no pull requests, so the review happens before the \
+commit. Read your own `git diff` for the project folder first: debug code left behind, missing error handling, unclear names, unintended changes, \
+files another session is editing. Then let the commit gate run `just check`."""
+
+[[convention]]
+id = "trackers-truth"
+title = "Repo trackers are the truth; Pad items link to them"
+trigger = "always"
+scope = "all"
+priority = "must"
+content = """Pad is the operator's personal layer over {project}'s trackers ({trackers}). Never copy tracker items into Pad wholesale; a Pad item \
+names the tracker ID it serves. Status changes are made in the tracker first."""
