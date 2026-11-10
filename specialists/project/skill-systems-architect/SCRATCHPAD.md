@@ -12,6 +12,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- 20261110_1205: v2.3.4: restore proof by exact row counts (backup-disaster-recovery) and compose `up --wait` false failures (containers-and-platforms), from the UNC Nautobot 3.2.9 upgrade.
 - 20261110_0525: v2.3.3: ai-inference-platforms measured Qwen3.8-27B on oMLX, prefill-peak rule, hybrid prefix-cache blocks (from the Cline tuning work).
 - 20261110_0025: v2.3.0: write-back from smc-resiliency S1 (bench Pi 4) and the APN operator context extended (see CHANGELOG 20261110_0025); not pushed until the operator's closeout push.
 

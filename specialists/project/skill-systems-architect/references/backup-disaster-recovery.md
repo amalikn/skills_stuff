@@ -151,6 +151,22 @@ Proxmox Backup Server (VERIFIED_PRIMARY, [pbs-overview] and [pbs-maint], checked
 - Verify jobs re-read chunks and check digests. PBS recommends re-verifying all backups at least monthly. Off-site copies use sync jobs to a remote, or tape.
 - One corrupted shared chunk damages every snapshot that references it. Hence verification and a second independent store.
 
+> **Learned 2026-11-10** · PostgreSQL restore proof before and after an application upgrade · VERIFIED_PRIMARY (run on two stacks) · Source:
+> unified-network-controller `scripts/upgrade/restore_proof.sh` (f3b6570e and its slurp commit), `docs/trackers/upgrade-log.md` · Falsifier: a dump whose
+> restore has every table's exact row count yet misses data a later check finds.
+> A dump-header check (`PGDMP`) proves a file exists, not that it restores. A cheap proof: restore the dump into a scratch database in the same server,
+> count every public table exactly in live and restored (`query_to_xml(format('select count(*) ... %I', table_name))` per table, one query), drop the
+> scratch database. On a live system the comparison has three outcomes: equal; live higher (rows written after the dump: job logs, change log, leases;
+> list, do not fail); restored higher or a table missing (fail). After the upgrade, compare live counts with the saved ones: a missing table or a table
+> that lost rows fails, except tables that expire rows (sessions). On a 299-table, ~190 MB Nautobot database this took about 2 min on a laptop and
+> about 5 min on a small cloud host, cheap enough for every upgrade.
+>
+> ```bash
+> # unified-network-controller scripts/upgrade/restore_proof.sh: the per-table verdict (excerpt)
+> if (mode == "restored") { if (got[t] < ref[t]) print "GREW " t; else { print "MORE? " t; bad = 1 } }
+> else if (got[t] > ref[t]) print "GREW " t; else if (t in ok) print "SHRANK (allowed) " t; else { print "SHRANK " t; bad = 1 }
+> ```
+
 ## Patterns and anti-patterns
 
 | Pattern                                | Use when                         | Anti-pattern                             | Why it fails                                              |

@@ -93,3 +93,39 @@ plan. Rebase/retire a core patch only if the project actually has one; supported
 >     return sorted(n for c in content_types if c["app_label"] in apps and (n := f"{c['app_label']}.{c['model']}") not in skip)
 > ```
 
+
+## Base image upgrades with a frozen constraints file
+
+> **Learned 2026-11-10** · Nautobot 3.2.3 to 3.2.9, a local image built `FROM networktocode/nautobot:<tag>` with apps installed `pip install -c constraints.txt` · VERIFIED_PRIMARY
+> (run on two stacks) · Source: unified-network-controller `scripts/upgrade/constraints_rebase.py`, `docs/trackers/upgrade-log.md` (commit f3b6570e); Nautobot v3.2.7
+> release notes "Updated dependency django to >=5.2.18,<5.3", v3.2.9 ">=5.2.19" · Falsifier: a base bump whose app install resolves with the old frozen file unchanged.
+> A constraints file frozen from the old image pins packages the new base has already moved (Django 5.2.17 under 3.2.9, social-auth 5.x under 6.x), so the
+> first `pip install -c` of the build fails or downgrades Nautobot's own dependencies. Before the build, re-pin every package the new base ships to the
+> base's own version (read with `docker run --rm --entrypoint pip <base>@<digest> freeze`), keep the app-only pins, then refreeze from the built image.
+> The same upgrade added 5 migrations (no data change: every table's row count equal or grown) and kept the apps (Golden Config 3.0.7, Design Builder
+> 3.1.2, SSoT 4.7.0, DLM 4.2.0, Secrets Providers 4.0.1, DNS Models 2.3.0, Capacity Metrics 4.1.1) working unchanged. On a loaded host Celery beat took
+> about 150 s to write its first heartbeat after the rebuild (start-up system checks), past a 60 s `start_period` plus 3 x 30 s retries, so
+> `docker compose up --wait` reported the scheduler unhealthy on a working stack: give the beat health check about 300 s of start period.
+>
+> ```python
+> # unified-network-controller scripts/upgrade/constraints_rebase.py (f3b6570e)
+> def rebase_constraints(text: str, base_frozen: str) -> tuple[str, list[str]]:
+>     base = {dist_name(ln.split("==", 1)[0]): ln.split("==", 1)[1].strip() for ln in base_frozen.splitlines() if "==" in ln}
+>     out, changed = [], []
+>     for ln in text.splitlines():
+>         name, sep, old = ln.partition("==")
+>         new = base.get(dist_name(name)) if sep and not ln.startswith("#") else None
+>         if new and new != old.strip():
+>             changed.append(f"{name} {old.strip()} -> {new}")
+>             ln = f"{name}=={new}"
+>         out.append(ln)
+>     return "\n".join(out) + "\n", changed
+> ```
+
+> **Learned 2026-11-10** · Nautobot and NTC app release notes on GitHub · VERIFIED_PRIMARY · Source: `gh api repos/nautobot/<repo>/releases` read 2026-11-10;
+> unified-network-controller `scripts/upgrade/release_notes.py` · Falsifier: a core release body without "Security in vX" / "Breaking Changes in vX" headings.
+> Core release bodies carry per-type headings ("Breaking Changes in v3.2.9", "Security in v3.2.9", "Deprecated in v3.2.4"), so the lines an upgrade must
+> read can be pulled by heading. App releases (nautobot-app-*) use Added/Changed/Fixed/Dependencies/Housekeeping and put upgrade warnings in a prose
+> "Release Overview" (SSoT 4.8.0: "Existing IP Fabric syncs change on upgrade"), so read that section whole. The device lifecycle app's repository is
+> `nautobot/nautobot-app-device-lifecycle-mgmt`, not `-management`. Bodies arrive with CRLF line ends: normalise before comparing saved copies.
+> Screenshot: not applicable (no visual surface).

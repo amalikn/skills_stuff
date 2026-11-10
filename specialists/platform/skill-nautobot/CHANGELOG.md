@@ -1,3 +1,14 @@
+---
+Title: Changelog
+Category: change-log
+Status: current
+Summary: Newest entries only; older ones rotate to docs/history (search with --find, print with --show).
+Kind: log
+Budget: 200 lines, 25 KB
+Archive: docs/history/ (`--find`, `--show`)
+Last rotated: 20261110_1200
+---
+
 # Changelog
 
 ## 2026-10-07 — deterministic navigation-control upgrade
@@ -14,6 +25,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 20261110 `references/upgrade-and-troubleshooting.md` new section "Base image upgrades with a frozen constraints file": two Learned 2026-11-10 entries (re-pin base packages before the build; 3.2.3 to 3.2.9 migrations and beat start time; release-note headings for core and apps), from unified-network-controller f3b6570e
 - 20261109 `references/upgrade-and-troubleshooting.md` narrowing entry: removing a model from a grant removes view too; check readers (REST, include=computed_fields, GraphQL, Jobs), not only writers
 - 20261109 Learned 2026-11-09 (second) in `references/upgrade-and-troubleshooting.md`: narrowing a writer grant by subtracting template-authoring models and a per-user grant for the one needed (Secrets); not yet applied live
 - 20261109 scripts/nautobot_template_exposure.py (tests in tests/test_helpers.py `TemplateExposure`): read-only advisory exposure check, stdlib `--query` snippet plus `--report` (who can author templates, constrained cable view, templates naming user/request); smoke-run on one 3.2.3 deployment, where an app-wide `extras` grant gave the machine-writer group Custom Link, Job Button and Secret authoring. Learned 2026-11-09 appended to references/upgrade-and-troubleshooting.md
@@ -154,10 +166,3 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 - Deepened ownership, paging/writer, onboarding, replacement, Wireless Link, Job, backup and upgrade decisions with synthetic failure cases (N-C01–N-C17).
 - Split official, implementation, test, synthesis, policy and install evidence; repaired N-C13 → N-S16 and N-C03 → N-S17 links.
 - Added scenario N-S16–N-S18, claim/scenario semantic validation and a mixed-primary routing rule. No runnable helpers or runtime install changes.
-
-## 0.1.0 — 2026-10-01
-
-- Added claims N-C01 through N-C17, scenarios N-S01 through N-S15, and the deterministic package contract.
-- Recorded the observed Nautobot 3.2.3/application baseline, the version-bounded 3.2 Job source, and local official-documentation snapshots.
-- Hardened authority, pagination, staged onboarding, replacement, topology, worker, backup, extension, and upgrade guidance with Phase 1 worked patterns.
-- No migrations or retirements.

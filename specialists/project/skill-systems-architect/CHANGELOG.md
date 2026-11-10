@@ -11,6 +11,12 @@ Kind: log
 
 # Changelog
 
+## 20261110_1205 — Restore proof by exact row counts; compose `up --wait` false failures (v2.3.3 -> v2.3.4)
+
+- references/backup-disaster-recovery.md: Learned 2026-11-10 before "Patterns and anti-patterns" (restore into a scratch DB, per-table exact counts, live-growth vs loss verdict).
+- references/containers-and-platforms.md: Learned 2026-11-10 before "Kubernetes essentials" (start_period from the worst post-rebuild start; read the process before a rollback).
+- Source: unified-network-controller Nautobot 3.2.9 upgrade on the Mac and apn-unc01 (2026-11-10).
+
 ## 20261110_0525 — Measured Qwen3.8-27B on oMLX; prefill-peak rule; prefix-cache blocks on hybrid models (v2.3.2 -> v2.3.3)
 
 - references/ai-inference-platforms.md: three Learned entries before "Fair comparisons" (measured weights, prefill, MTP accept and an agentic

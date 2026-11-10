@@ -98,6 +98,15 @@ Platform layers: a failure at any layer takes down every layer above it on that 
 - Bound log growth with logging-driver size and rotation, or ship logs to the central collector.
 - Pin images by digest or exact tag. `latest` makes rollback and DR non-reproducible.
 
+> **Learned 2026-11-10** · Docker Compose `up --wait` and slow-starting services · VERIFIED_PRIMARY · Source: unified-network-controller
+> `wc-local/docker-compose.yml` nautobot-scheduler health check, upgrade log run unc01 2026-11-10 · Falsifier: `up --wait` reporting a service unhealthy
+> that never becomes healthy without intervention.
+> `docker compose up --wait` fails as soon as a service is unhealthy after its `start_period` plus `retries` x `interval`. A service whose first
+> heartbeat comes late after a rebuild (Celery beat behind start-up system checks on a loaded host: about 150 s against 60 s + 3 x 30 s) makes an
+> upgrade report failure on a working stack, and an automated rollback would then undo a good change. Size `start_period` from the measured worst start
+> after a rebuild, not a normal restart (300 s here), and add `start_interval` so a fast start still reports quickly. Before rolling back, read the
+> service's process list and its health log: a running process with no heartbeat yet is a timing fault, not a broken release.
+
 ## Kubernetes essentials
 
 - etcd needs a majority: quorum = (n/2)+1. Run 3 or 5 members; an even count adds no tolerance. VERIFIED_PRIMARY, [etcd-faq], checked 2026-10-29.

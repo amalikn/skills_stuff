@@ -115,3 +115,11 @@ Part of [shell.md](../shell.md).
 > that calls the script anew per case is safe between cases, never during one. Also from that session: `prlctl exec <vm> "VAR=x cmd"` runs no
 > shell (wrap it in `bash -c`), and a helper that derives an argument from a remote command (`$(prlctl exec ... | sed ...)`) must refuse an
 > empty result: an empty slot name made a "wipe" print its usage and the next case ran on an unwiped slot.
+
+> **Learned 2026-11-10** · a script sent to a remote shell on stdin (`ssh host bash -s < script`) · VERIFIED_PRIMARY · Source: unified-network-controller
+> `infra/apn-unc01/ops/host-run.sh` running a restore proof on apn-unc01, 2026-11-10 (the run printed nothing and exited 0) · Falsifier: a child that
+> reads stdin leaving the rest of a `bash -s` script unread.
+> When a script reaches bash on stdin, any command inside it that reads stdin (`docker compose exec -T`, `ssh`, `psql`, `read`, a `while read` loop)
+> consumes the rest of the script: bash then finds end of input and exits 0 with the later lines never run, and no error anywhere. Either close stdin
+> on every such command (`< /dev/null`), or copy the script to the host and run it as a file with stdin closed:
+> `echo <base64> | base64 -d > /tmp/x.sh && bash /tmp/x.sh < /dev/null`. A wrapper that sends scripts this way says so in its header.
