@@ -33,3 +33,22 @@ at them. The text is Pad's: do not edit it by hand, a refresh overwrites it.
 
 `pad init` in any project writes its own `.claude/skills/pad/` and `.agents/skills/pad/` copies again. Delete those two folders after `pad init` (keep `.pad.toml`); the central copy already serves
 every project.
+
+## Setting Pad up in a project
+
+Learned in unified-network-controller, 2026-11-10 (CHANGELOG 20261110_1202 and later):
+
+1. `pad auth whoami` reports a user, then `pad workspace init <name> --template startup` in the project folder (`pad init` only on a machine not yet set up).
+2. Delete the `.claude/skills/pad/` and `.agents/skills/pad/` copies Pad writes into the project; this folder serves every project. Keep `.pad.toml`
+   and give it a `#` comment header (governance freshness checks refuse a file without a summary).
+3. The startup template seeds conventions that contradict a single-branch repo with its own commit recipe: CONVE-1 "Conventional commit format"
+   (`feat:`/`fix:`) and CONVE-2 "Never push directly to main". Rewrite them to the project's rules (`pad item update <ref> --title --content
+   --expected-seq <seq> --comment`), or agents loading /pad propose the wrong commits.
+4. Add an always-on convention naming the project's trackers as the truth, then seed plans and tasks that each name their tracker entry; pass
+   `--op-key` on every create so a rerun does not duplicate.
+5. Keep a readable copy in Git: scripts_stuff `python/pad_export/pad_export.py --out <trackers>/pad-focus.md --apply`, run non-fatally in the
+   project's commit gate (`-@` in just) so it never blocks a commit when Pad is stopped or its disk is absent.
+
+Install facts behind this folder (verified 2026-11-10): Claude Code reads user skills only from `~/.claude/skills`; Codex reads `~/.agents/skills`
+(and the deprecated `~/.codex/skills`; source openai/codex `codex-rs/ext/skills/src/host_roots.rs`); Pad writes skills with a plain file write,
+which follows a symlink (`internal/cli/agents.go` `InstallForTool`).
