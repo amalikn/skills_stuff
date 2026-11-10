@@ -510,7 +510,7 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   copy (references/09, Learned 2026-11-10). The spec's template holds no script text: it sets the role's two values from `variables.yml` and includes the company template through a link,
   `templates/urlcapture-prune/company_rsync_urlcapture.sh.j2`, and its render is byte-identical to `smc_url_capture`'s own (`cmp`, md5 `57e27de8...`, the same on the box after apply). Jinja drops an
   included file's last newline and `trim_blocks` the one after the tag, so the wrapper ends with an explicit `{{ '\n' }}`. `reboot: never` (x86 has no overlay, operator 2026-11-10); `probe_first:
-  true`; facts record capture months, size and root use; `just months <hosts>` reads them. The deletion happens at the next cron run (10 0,8,16), not in the change run. Family `urlcapture` on the flow
+  true`; facts record capture months, size and root use; `just uc-old-files <hosts>` reads them. The deletion happens at the next cron run (10 0,8,16), not in the change run. Family `urlcapture` on the flow
   map.
 
   ```jinja
