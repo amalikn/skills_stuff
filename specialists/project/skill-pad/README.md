@@ -89,3 +89,12 @@ Learned in unified-network-controller, 2026-11-10:
 
 Install facts behind this folder (verified 2026-11-10): Claude Code reads user skills only from its own skills folder; Codex reads `~/.agents/skills` (path:install-example) and the deprecated codex
 skills folder (source openai/codex `codex-rs/ext/skills/src/host_roots.rs`); Pad writes skills with a plain file write, which follows a symlink.
+
+## Learned
+
+> **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY (run in unified-network-controller and smc-resiliency) · Source: `pad item update --help`,
+> CLI errors · Falsifier: a Pad release that accepts these writes or lists disabled items by default.
+> `pad item update --fields-json` refuses the `convention` key ("system metadata ... BUG-2627"): set `trigger`, `status`, `commands` and Pad rewrites
+> its own `convention` block. `pad item list conventions` hides disabled items; add `--all` to see them (a disabled template rule looks deleted).
+> `--fields-json` is the way to set a list field (`commands`); `--field key=value` only sets strings. Bare `pad agent install` asks interactively and
+> does nothing with stdin closed: name the tool. `pad workspace init` with an authenticated CLI needs no browser; `pad init` does.
