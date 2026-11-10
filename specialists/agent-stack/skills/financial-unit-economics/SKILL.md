@@ -1,6 +1,7 @@
 ---
 name: financial-unit-economics
 description: "Evaluate unit economics: CAC, LTV, payback, contribution margin, scalability."
+disabled: true
 ---
 # Financial Unit Economics
 

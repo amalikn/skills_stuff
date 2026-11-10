@@ -11,6 +11,7 @@ trigger: >
 version: "0.5.0"
 phase: "Phase 4 runnable — not finance-control complete"
 status: "runnable — Phase 1+2+3+4 scripts validated (pytest 219/219, 2026-05-21); finance_control_checklist.parquet, citation validator, and deterministic severity scoring pending (4b–4c)"
+disabled: true
 ---
 
 # Internal Invoice Analysis

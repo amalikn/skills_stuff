@@ -2,6 +2,7 @@
 name: premortem
 description: Pre-mortem analysis that imagines a plan has failed, then works backward to identify causes and preventions. Use before launches, major decisions, or risky initiatives to surface hidden risks.
 user-invocable: true
+disabled: true
 ---
 
 # Pre-Mortem Analysis

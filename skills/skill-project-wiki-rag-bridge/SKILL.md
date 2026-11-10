@@ -1,6 +1,7 @@
 ---
 name: skill-project-wiki-rag-bridge
 description: "Bridges project repos to the shared LLM wiki + rag-tools, Qdrant-isolated."
+disabled: true
 ---
 
 # Project Wiki RAG Bridge Skill

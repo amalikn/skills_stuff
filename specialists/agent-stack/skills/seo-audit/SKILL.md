@@ -2,6 +2,7 @@
 name: seo-audit
 version: 1.0.0
 description: "Audit/diagnose SEO issues: technical SEO, on-page, meta tags, ranking problems."
+disabled: true
 ---
 
 # SEO Audit

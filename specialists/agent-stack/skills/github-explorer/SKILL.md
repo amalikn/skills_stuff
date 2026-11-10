@@ -1,6 +1,7 @@
 ---
 name: github-explorer
 description: "Deep-dive analysis of a GitHub repo: architecture, health, competitive context."
+disabled: true
 ---
 
 # GitHub Explorer — Project Deep Dive

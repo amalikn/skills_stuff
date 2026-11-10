@@ -3,6 +3,7 @@ name: team
 description: Form the smallest sufficient temporary persona team for a task using Agent Stack routing ownership and non-overlap rules. Normally invoked by skill-agent-stack rather than directly by the operator.
 argument-hint: "[task description]"
 disable-model-invocation: true
+disabled: true
 ---
 
 # Form a Temporary Agent Stack Team

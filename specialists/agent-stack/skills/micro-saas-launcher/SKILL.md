@@ -2,6 +2,7 @@
 name: micro-saas-launcher
 description: "Launch small SaaS fast: idea validation, MVP, pricing, launch strategy."
 source: vibeship-spawner-skills (Apache 2.0)
+disabled: true
 ---
 
 # Micro-SaaS Launcher

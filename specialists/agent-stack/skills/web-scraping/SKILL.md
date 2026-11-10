@@ -1,6 +1,7 @@
 ---
 name: web-scraping
 description: "Web scraping with anti-bot bypass, content extraction, undocumented APIs."
+disabled: true
 ---
 
 # Web scraping methodology

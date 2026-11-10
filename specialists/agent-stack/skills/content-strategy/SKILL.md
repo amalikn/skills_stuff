@@ -2,6 +2,7 @@
 name: content-strategy
 version: 1.0.0
 description: "Plan content strategy: what to create, topic clusters, content ideas."
+disabled: true
 ---
 
 # Content Strategy

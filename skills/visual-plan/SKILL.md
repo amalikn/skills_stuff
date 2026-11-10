@@ -6,6 +6,7 @@ description: >-
   useful.
 metadata:
   visibility: exported
+disabled: true
 ---
 
 # Agent-Native Plans

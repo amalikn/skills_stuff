@@ -1,6 +1,7 @@
 ---
 name: "doc"
 description: "Read, create, or edit .docx documents with formatting/layout fidelity checks."
+disabled: true
 ---
 
 

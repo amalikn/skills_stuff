@@ -9,6 +9,7 @@ metadata:
   sdlc-phase: code-review
 allowed-tools: Read Grep Glob Write Bash(python:*) Bash(npm:*)
 context: fork
+disabled: true
 ---
 
 # Code Review Security

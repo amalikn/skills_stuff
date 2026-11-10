@@ -1,6 +1,7 @@
 ---
 name: read-the-damn-docs
 description: "Web-search official docs before answering on APIs, libraries, or SDK behavior."
+disabled: true
 ---
 
 # Read The Damn Docs

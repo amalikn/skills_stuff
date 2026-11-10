@@ -2,6 +2,7 @@
 name: email-sequence
 version: 1.0.0
 description: "Create or optimize email sequences, drip campaigns, lifecycle email flows."
+disabled: true
 ---
 
 # Email Sequence Design

@@ -1,6 +1,7 @@
 ---
 name: senior-qa
 description: "QA/test strategy for React/Next/Node: test suites, coverage, E2E automation."
+disabled: true
 ---
 
 # Senior Qa

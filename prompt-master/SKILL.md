@@ -2,6 +2,7 @@
 name: prompt-master
 version: 1.6.0
 description: "Write/fix/adapt prompts for a specific AI tool (LLM, Cursor, Midjourney, etc)."
+disabled: true
 ---
 
 ## PRIMACY ZONE — Identity, Hard Rules, Output Lock

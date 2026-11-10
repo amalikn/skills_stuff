@@ -1,6 +1,7 @@
 ---
 name: find-skills
 description: "Discover and install agent skills matching a described capability."
+disabled: true
 ---
 
 # Find Skills

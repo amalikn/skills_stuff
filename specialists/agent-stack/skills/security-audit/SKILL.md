@@ -2,6 +2,7 @@
 name: security-audit
 agents: [yokay-security-scanner]
 description: "Security review: CVEs, secrets, auth/authz patterns, OWASP vulnerabilities."
+disabled: true
 ---
 
 # Security Audit
