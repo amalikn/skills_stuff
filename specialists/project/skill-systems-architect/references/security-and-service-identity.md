@@ -185,6 +185,22 @@ Rotate at once on compromise or staff exit. Log access and name an owner.
 | Backup reachable from production admin | Backups deleted with production | All recovery points         | Attempt deletion with production credentials; it fails |
 | Secret in git, logs or tickets         | Scanner hit or leaked value     | Systems using that secret   | Secret scan of repos and log samples                   |
 
+> **Learned 2026-11-10** · SSH host-key trust for unattended tunnels · VERIFIED-OBSERVED (one site box, 22 days) · Source: ansible-wifi
+> `roles/smc_autossh/templates/autossh-teleport-openssh.service.j2:15` · Falsifier: a reverse tunnel that stays up while known_hosts holds a
+> **different** key for the server
+> `StrictHostKeyChecking=no` only accepts **unknown** hosts. When known_hosts holds a **different** key for the server, OpenSSH still connects
+> for key auth but disables port forwarding ("forwarding disabled due to host key check failure"), so a reverse tunnel with
+> `ExitOnForwardFailure=yes` fails and autossh restarts it forever while the unit reads `active`, `NRestarts=0`. Ordinary commands over the
+> same trust (rsync by name) keep working, which hides it. Monitor the tunnel by its **listener on the server**, not the client unit. Fix by
+> installing the server's keys read on the server itself over another trusted path and compared by fingerprint with a healthy client; never
+> trust whatever answers (`ssh-keyscan`).
+>
+> ```ini
+> # autossh-teleport-openssh.service.j2:15 (ansible-wifi rise 0fc086ca)
+> ExecStart=/usr/bin/autossh -M 0 -i <key> -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes \
+>   -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -N -4 -R {{ openssh_remoteport }}:127.0.0.1:22 <user>@{{ teleport_address }}
+> ```
+
 ## Worked example
 
 Fleet: 400 Linux hosts. Compare a leaked static SSH key with a leaked short-lived certificate.

@@ -139,6 +139,42 @@ DURABLE JOB STATE ON THE BOX: controller reconciles, never presumes
   that does not share fate with the primary access path.
 - Gate any fleet change on the real target population (hardware class, image type); never roll to one class on another class's measurements.
 
+> **Learned 2026-11-10** · edge retention of data shipped upstream · VERIFIED-OBSERVED (20 x86 site boxes and their bastion, read-only) ·
+> Source: ansible-wifi `roles/smc_url_capture/templates/rsync_urlcapture.sh.j2` (rise `74d574b0`); smc-resiliency TASK-30 · Falsifier: a box on the
+> new rule that keeps a month older than last month whose upload succeeded
+> A local-retention rule that deletes **an exact period** ("the month two back", "last year") leaks every period whose turn was missed: a box that
+> was off, or got the script late, keeps those periods forever (boxes held 13 to 52 GB, one root reached 98%). Write retention as **every period
+> older than N**, and delete each one only after **its own** upload has just succeeded (exit 0), so a failed upload keeps the data for the next
+> run. Re-upload is cheap where the copy tool skips what the far end already holds (rsync quick check). Before rolling such a fix, prove the far
+> end holds what will be deleted (per-period file counts, both sides), and check the rule offline with a stub that fails one upload.
+>
+> ```bash
+> # rsync_urlcapture.sh.j2 (ansible-wifi rise 74d574b0), the prune loop
+> for dir in {{ url_capture_dir }}/20[0-9][0-9][0-9][0-9]; do
+>     [ -d "$dir" ] || continue
+>     month=$(basename "$dir")
+>     [ "$month" -lt "$last_month" ] || continue
+>     if rsync -a --partial -e "$SSH_COMMAND -o Compression=no" \
+>          --exclude 'generic-*.pcap' "$dir" "$server_user@$server_ip:$server_smc_dir/"; then
+>         rm -rf "$dir"
+>     fi
+> done
+> ```
+
+> **Learned 2026-11-10** · provisioning steps that silently skip · VERIFIED-OBSERVED · Source: ansible-wifi `roles/smc_system/tasks/main.yml:116`
+> (fixed rise `0fc086ca`) · Falsifier: a fleet survey of the outcome that finds nothing the step should have done
+> A build step guarded by a wrong condition skips without error: `flavor in ['a' or 'b']` is `['a']`, so "grow root LV into the free VG space"
+> never ran for flavor b, and one box filled a half-size root while 28 GiB sat unused. Verify provisioning by surveying the **outcome** on the
+> fleet (VG free space, root size), not the run's success. A one-off grow on a live ext4 root is safe online after reading hostname, fstype and
+> free extents: `lvextend -r -l +100%FREE <lv>`.
+
+> **Learned 2026-11-10** · long jobs started over a flaky remote session · VERIFIED-OBSERVED (method) · Source: smc-resiliency session 2026-11-10 ·
+> Falsifier: a `systemd-run` job killed when the starting session drops
+> A job started inside an SSH/Teleport session dies with the session; over satellite that is likely for anything long (an upload backlog).
+> Start it as a transient unit, `systemd-run --unit=<name> --collect <cmd>`: systemd owns the process, the named unit gives
+> `systemctl status <name>` while it runs and `journalctl -u <name>` after `--collect` has removed it, and a second start of the same name is
+> refused while the first runs. A script with no lock of its own can still overlap its cron run: start it outside the cron window.
+
 ## Flash wear and RAM placement
 
 - Write rate, not capacity, decides flash life. Years of life = rated TBW / (device bytes per day x 365). Small single-device industrial flash at multi-GB/day is a consumable on a few-year horizon,

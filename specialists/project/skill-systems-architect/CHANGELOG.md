@@ -11,6 +11,14 @@ Kind: log
 
 # Changelog
 
+## 20261110_1355 — Edge retention, silent provisioning skips, transient units; SSH changed host key kills reverse tunnels (v2.3.5 -> v2.3.6)
+
+- references/edge-appliances.md: three Learned 2026-11-10 entries before "Flash wear and RAM placement" (delete each period only after its own upload
+  succeeds, never an exact period; survey provisioning outcomes, online `lvextend -r`; `systemd-run --unit --collect` for long jobs over flaky sessions).
+- references/security-and-service-identity.md: Learned 2026-11-10 before "Worked example" (`StrictHostKeyChecking=no` does not cover a changed key:
+  forwarding is disabled; monitor the server-side listener; install keys read on the server).
+- Source: smc-resiliency, koonibba-smc01 disk, backdoor and url_capture work (2026-11-10).
+
 ## 20261110_1248 — Fleet survey: watchdog audit, write measurement, overlay wear, undervoltage; systemd credentials rotation (v2.3.4 -> v2.3.5)
 
 - references/edge-appliances.md: Learned 2026-11-10 before "Patterns and anti-patterns" (a shipped driver is not a watchdog; writes per disk and per process; overlay root wear; Pi undervoltage; census bootloaders).
