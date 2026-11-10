@@ -79,7 +79,9 @@ dates sit in body text (UNC TASK-12 "Due Fri 20 Nov") so Pad cannot flag them ov
 ## 2. Principles
 
 1. **The repo is the truth; Pad is the queue.** An item names its tracker entry on its first line (stage criterion, bug ID, open-item stamp, decision record). Status lands in the tracker first, then
-   in Pad. Pad never holds the only copy of a fact, decision or result.
+   in Pad. Pad never holds the only copy of a fact, decision or result. **Exception (operator, 2026-11-10):** bugs, feature requests and tech debt live in Pad (collections Bugs, Feature Requests, Tech
+   Debt), and `bug-tracker.md` and `features-to-add.md` are generated from them by `just pad-trackers` in each commit gate (skill-pad `scripts/pad_tracker.py`; convention `pad-owned-trackers`). Change
+   those items in Pad, never in a generated block.
 2. **Asks are separate from work.** Anything that needs the operator (a decision, an approval of a production write, hands-on bench work, a review, a fact) is an ask, so the operator's list is one
    inbox, not a search.
 3. **Small and current.** Pad holds the next one to two weeks, not the backlog: at most five active plans; a task is one session or less; an item nobody will touch within a month is closed or becomes
@@ -93,14 +95,17 @@ dates sit in body text (UNC TASK-12 "Due Fri 20 Nov") so Pad cannot flag them ov
 
 ### 3.1 Collections
 
-| Collection             | Holds                                                                                    | Change                            |
-| ---------------------- | ---------------------------------------------------------------------------------------- | --------------------------------- |
-| **Asks** (new, ASK)    | Every item waiting on the operator                                                       | create (schema below)             |
-| Plans                  | One plan per current timeline focus (a roadmap step, a survey follow-up, an audit batch) | keep                              |
-| Tasks                  | Agent work, and operator hands-on work that is not a question                            | keep; move pure decisions to Asks |
-| Ideas                  | Proposals not yet on the timeline                                                        | start using                       |
-| Docs                   | Unused: documents live in the repo                                                       | leave empty                       |
-| Conventions, Playbooks | Rules and procedures (3.8, 3.9)                                                          | extend                            |
+| Collection             | Holds                                                                                                                                | Change                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- |
+| **Asks** (new, ASK)    | Every item waiting on the operator                                                                                                   | create (schema below)             |
+| Plans                  | One plan per current timeline focus (a roadmap step, a survey follow-up, an audit batch)                                             | keep                              |
+| Tasks                  | Agent work, and operator hands-on work that is not a question                                                                        | keep; move pure decisions to Asks |
+| Ideas                  | Proposals not yet on the timeline                                                                                                    | start using                       |
+| Docs                   | Unused: documents live in the repo                                                                                                   | leave empty                       |
+| Bugs (BUG)             | Every bug, open and fixed; the truth, exported to `bug-tracker.md` (Bug Tracker template, closed: fixed, wont-fix)                   | created 2026-11-10                |
+| Feature Requests (FR)  | The operator's features to add, verbatim, nested as children; exported to `features-to-add.md` (closed: shipped, declined)           | created 2026-11-10                |
+| Tech Debt (TD)         | Internal clean-up (refactors, tool pins); UNC's refactor tracker stays a generated file, one TD item points at it (closed: resolved) | created 2026-11-10                |
+| Conventions, Playbooks | Rules and procedures (3.8, 3.9)                                                                                                      | extend                            |
 
 Asks must be created with `--schema`, not `--fields`: the DSL cannot declare which statuses close an item, and Pad would then treat `answered` as open forever ([cli-reference.md](../references/cli-reference.md), Traps). `--tracks-work
 false` keeps answered asks out of changelog, standup and progress counts.

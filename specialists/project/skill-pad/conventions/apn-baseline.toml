@@ -68,7 +68,7 @@ trigger = "always"
 scope = "all"
 priority = "must"
 content = """Pad is the operator's personal layer over {project}'s trackers ({trackers}). Never copy tracker items into Pad wholesale; a Pad item \
-names the tracker ID it serves. Status changes are made in the tracker first."""
+names the tracker ID it serves. Status changes are made in the tracker first. Exception: bugs, feature requests and tech debt live in Pad and their tracker files are generated from it (convention pad-owned-trackers, operator 2026-11-10)."""
 
 [[convention]]
 id = "writing-standard"

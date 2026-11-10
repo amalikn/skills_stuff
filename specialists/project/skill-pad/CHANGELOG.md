@@ -13,6 +13,16 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_2020 — UNC moved: bugs, feature requests and tech debt in Pad in both workspaces
+
+### Changed
+
+- UNC: Bugs (73, nested as children), Feature Requests (84, 49 children) imported, round trip identical; TASK-21 and TASK-22 moved to Tech Debt
+  (TD-21, TD-22) and TD-183 points at the refactor tracker (a generated inventory read by check_script_structure, so it stays a file); commit gate
+  runs `just pad-trackers`; AGENTS.md rule and task text point at Pad; 34 bug IDs set; tasks linked to their bugs (implements).
+- Both workspaces: trackers-truth conventions (CONVE-9, CONVE-24) and the baseline gain the Pad exception; pad-owned-trackers applied to UNC.
+- Guidelines: principle 1 exception; 3.1 lists Bugs, Feature Requests, Tech Debt.
+
 ## 20261110_2014 — bugs, feature requests and tech debt in Pad (smc-resiliency done)
 
 ### Added

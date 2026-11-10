@@ -55,6 +55,7 @@ smc-resiliency.
 
 ## Recent decisions
 
+- 2026-11-10 — Bugs, feature requests and tech debt live in Pad in smc-resiliency and UNC; their tracker files are generated (operator).
 - 2026-11-10 — Pad usage guidelines in force: Q1 Asks collection, Q2 current focus, Q3 no roles, Q4 answers on the ask or in chat, Q5 both workspaces now, Q6 keep OneDrive (operator).
 - 2026-11-10 — Usage proposal rewritten after review; archcore ADRs written; `.ai-context/` gitignored (operator).
 - 2026-11-10 — Own skill, no plugin; Pad text extracted and rewritten into references, the Pad-generated copies removed (operator).
