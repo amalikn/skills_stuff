@@ -35,7 +35,7 @@ Budget: 150 lines, 12 KB
   `references/upstream/readme.md`. Markdown under it is exempt from this pack's front-matter and link checks.
 - Do not add Pad-shipped skill files (`.claude/skills/pad/`, `.agents/skills/pad/`) back to this pack, and never run `pad agent install` or `pad agent update` against a home folder: the install links
   `~/.claude/skills/skill-pad` and `~/.agents/skills/skill-pad` point at this folder.
-- `references/pad-usage-guidelines-proposal-20261110_1628.md` is the operator's draft under review: do not edit it or build rules on it until the operator decides.
+- `docs/pad-usage-guidelines-proposal-20261110_1628.md` is the operator's draft under review: do not edit it or build rules on it until the operator decides.
 - Never write a Pad token or the contents of `~/.pad/credentials.json` or `~/.pad/encryption.key` into any file.
 - Time-bound docs use `<slug>-YYYYMMDD_hhmm.md`; check the clock with `date` before writing a stamp.
 - Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries live in `docs/history/`, read only on need (`just history <term>`,

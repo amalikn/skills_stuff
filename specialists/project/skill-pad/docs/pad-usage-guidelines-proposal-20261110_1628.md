@@ -19,7 +19,26 @@ Operator, 2026-11-10: "How do you intend to use Pad? Only for listing the things
 
 **Short answer.** Both. Pad holds (1) every ask of the operator, in its own collection that Pad routes to the needs-you inbox, and (2) the agent's queue for the current focus, as plans and tasks that
 name their tracker entry. The repo trackers stay the truth (convention `trackers-truth`). Pad holds what is next, who it waits on, and what an agent did between sessions. Features and commands are in
-this pack's references: [items-and-edits.md](items-and-edits.md), [playbooks-and-workflows.md](playbooks-and-workflows.md), [cli-reference.md](cli-reference.md).
+this pack's references: [items-and-edits.md](../references/items-and-edits.md), [playbooks-and-workflows.md](../references/playbooks-and-workflows.md), [cli-reference.md](../references/cli-reference.md).
+
+```text
+PAD OVER THE TRACKERS: the repo holds every fact; Pad holds the queue and the asks
+
++----------------------------+   item names its entry   +------------------------------+
+| project repo (truth)       |<-------------------------| Pad workspace (queue)        |
+|  trackers, ROADMAP,        |                          |  Plans --> Tasks (agents)    |
+|  SCRATCHPAD, decisions     |<-------------------------|  Asks (the operator)         |
++----------------------------+   pad_export.py copy     +------------------------------+
+                                                           |                      |
+                                                           | open asks            | pad db backup
+                                                           v                      v 02:30 nightly
+                                                 +------------------+   +-------------------+
+                                                 | needs-you inbox  |   | OneDrive backups  |
+                                                 | (web, catch-up)  |   | newest 30 (Q6)    |
+                                                 +------------------+   +-------------------+
+
+Legend: --> from the side that refers, copies or sends, to its target
+```
 
 ## Contents
 
@@ -72,7 +91,7 @@ dates sit in body text (UNC TASK-12 "Due Fri 20 Nov") so Pad cannot flag them ov
 | Docs                   | Unused: documents live in the repo                                                       | leave empty                       |
 | Conventions, Playbooks | Rules and procedures (3.6, 3.7)                                                          | extend                            |
 
-Asks must be created with `--schema`, not `--fields`: the DSL cannot declare which statuses close an item, and Pad would then treat `answered` as open forever ([cli-reference.md](cli-reference.md), Traps). `--tracks-work
+Asks must be created with `--schema`, not `--fields`: the DSL cannot declare which statuses close an item, and Pad would then treat `answered` as open forever ([cli-reference.md](../references/cli-reference.md), Traps). `--tracks-work
 false` keeps answered asks out of changelog, standup and progress counts.
 
 ```bash
@@ -107,6 +126,25 @@ An ask body has four parts, so it can be answered from the inbox:
 The agent links the ask to the work it holds up (`pad item block ASK-N TASK-M`): the task leaves `next` and shows in `stale`. On the answer, the agent records it in the repo first, then sets `answer`,
 `status=answered` with a comment citing where it was recorded, and unblocks the task.
 
+```text
+ASK LIFECYCLE: an open ask blocks its task; the answer reaches the repo before Pad
+
++------------------+    block    +-------------------------+
+| ASK-N open       |------------>| TASK-M blocked          |
+| (needs-you)      |             | out of next, in stale   |
++------------------+             +-------------------------+
+         |                                    ^
+         | operator answers                   | unblock
+         v                                    |
++------------------+    then     +-------------------------+
+| answer recorded  |------------>| ASK-N answered (closed) |
+| in the repo      |             | answer field, comment   |
++------------------+             | cites the record        |
+                                 +-------------------------+
+
+withdrawn: ASK-N closes without delivering; TASK-M is unblocked or cancelled with the reason
+```
+
 ### 3.2 Plans and tasks
 
 - **Plan:** one per current focus; its first line names the timeline entry; `end_date` set to the timeline's date; `active` only in the current fortnight, otherwise `planned` or `paused`.
@@ -137,6 +175,12 @@ A new tag is added here first; `pad tag list` shows drift.
 - `decide`: only to point at the repo decision record.
 - `remind`: when the agent must come back (a scheduled run to verify, a review date), at a time of day; a fired reminder heads `next` until `pad item ack`.
 - `watch`: the operator's, to follow an item until done; agents do not create watches.
+
+### 3.4a Pushes are nudges, not records
+
+A push (`pad push <ref> -m ...`) reaches only a session whose stream is running at that moment; Pad keeps no inbox, so a push sent during a gap is lost
+([modes.md](../references/modes.md), Delivery limits). Anything that must not be lost is an item: an ask, a task or a comment. A push only says "look
+at this now", and the item still holds the instruction if the push was missed.
 
 ### 3.5 What Pad is not for
 
@@ -178,6 +222,24 @@ Pad's data lives on malik1tb (`~/.pad` is a link to it); the server runs on this
 | pad.db damaged or lost            | items, comments, history gone          | `pad db restore` from the newest nightly backup (loss up to 24 hours); the trackers hold every fact                     |
 | Backup job failing silently       | the next restore is older              | the backup log and file dates are checked weekly (rollout step 7)                                                       |
 |                                   |   than expected                        |                                                                                                                         |
+
+```text
+SESSION START WHEN PAD MAY BE DOWN: Pad when it answers, the trackers when it does not
+
++------------------+   answers   +--------------------------------+
+| pad project next |------------>| work the queue; claim first    |
++------------------+             +--------------------------------+
+         |
+         X no answer (malik1tb not mounted, server down)
+         v
++--------------------------------+   Pad back   +--------------------------------+
+| work from the trackers and the |------------->| add the asks noted in          |
+| last pad-focus.md export; asks |              | SCRATCHPAD; note the work done |
+| go to SCRATCHPAD open items    |              +--------------------------------+
++--------------------------------+
+
+Legend: X failed call
+```
 
 A backup is not a recovery until a restore has been shown to work: rollout step 1 restores the newest backup into a scratch `PAD_DATA_DIR` and compares item counts with the live workspace.
 

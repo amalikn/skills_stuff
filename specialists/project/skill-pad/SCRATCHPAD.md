@@ -34,8 +34,8 @@ smc-resiliency.
 
 ## Open items
 
-- [ ] Live test of `connect` in a linked project (unc or smc-resiliency): Monitor receives a `pad push` from the operator; `disconnect` stops it.
-- [ ] Operator answers Q1-Q6 of the rewritten usage proposal (`references/pad-usage-guidelines-proposal-20261110_1628.md`); then rollout step 1 (restore test).
+- [ ] Live test of `connect` in a linked project (unc or smc-resiliency): Monitor receives a `pad push` from the operator; `disconnect` stops it. Include the delivery-limit case: push after more than 30 minutes idle (modes.md, Delivery limits).
+- [ ] Operator answers Q1-Q6 of the rewritten usage proposal (`docs/pad-usage-guidelines-proposal-20261110_1628.md`); then rollout step 1 (restore test).
 - [ ] Projects that ran `pad workspace init` after today: delete their `.claude/skills/pad/` and `.agents/skills/pad/` copies.
 - [ ] Old scripts_stuff symlinks (`bash/pad_backup.sh`, `python/pad_export/pad_export.py`): retire once every project points here.
 

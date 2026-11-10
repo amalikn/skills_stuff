@@ -13,6 +13,14 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_1701 — usage proposal moved to docs/ with three diagrams
+
+### Changed
+
+- `docs/pad-usage-guidelines-proposal-20261110_1628.md` (was under references/; operator: "move this under docs folder"): links repointed to
+  `../references/`; ASCII diagrams added for Pad over the trackers, the ask lifecycle, and session start when Pad is down. Pointers in SKILL.md,
+  README, AGENTS and SCRATCHPAD updated.
+
 ## 20261110_1659 — usage proposal reviewed and rewritten; archcore, lint and repomix
 
 ### Added

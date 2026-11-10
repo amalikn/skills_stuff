@@ -105,7 +105,7 @@ clients and Pad Cloud: [references/integrations.md](references/integrations.md).
 - [references/cli-reference.md](references/cli-reference.md): command groups, the commands agents use, CLI traps.
 - [references/integrations.md](references/integrations.md): MCP (local and remote), clients, the official plugin compared with this skill.
 - [references/upgrade.md](references/upgrade.md): refreshing the upstream mirror and this skill after a Pad release.
-- [references/pad-usage-guidelines-proposal-20261110_1628.md](references/pad-usage-guidelines-proposal-20261110_1628.md): **draft, not in force**: how Pad
+- [docs/pad-usage-guidelines-proposal-20261110_1628.md](docs/pad-usage-guidelines-proposal-20261110_1628.md): **draft, not in force**: how Pad
   should be used in apn workspaces; follow it only once the operator approves it.
 - [references/upstream/readme.md](references/upstream/readme.md): verbatim upstream sources (site pages, repo files, release notes, CLI help).
 - [references/examples/setup-message-to-a-project-20261110.md](references/examples/setup-message-to-a-project-20261110.md): a worked setup message.
