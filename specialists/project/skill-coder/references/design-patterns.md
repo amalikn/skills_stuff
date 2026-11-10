@@ -1384,6 +1384,38 @@ want.update({f"{part}_sha256": _sha(str(ans.get(part, ""))) for part in ("cert",
 return doc, [f"binding {k} does not match" for k, v in want.items() if doc.get(k) != v]
 ```
 
+### P-65 One version record, its pins found by pattern
+
+> **Learned 2026-11-10** · any project whose versions are pinned in several files · VERIFIED_PRIMARY (smc-resiliency `versions.toml` and
+> `scripts/check_versions.py` @ 6f45ec65: the first run caught three wrong entries, a changed RAUC version gave five file:line failures; adopted
+> by unified-network-controller the same day, `scripts/checks/version_pins.py` @ 4202687f) · Falsifier: a pin copy the patterns miss.
+> `verified_reusable` (two projects).
+
+Problem:      Versions live where each tool reads them (.mise.toml, requirements, Dockerfiles, scripts, lock files), copies multiply (a tool's
+              version and digest written in three scripts) and nothing ties them together; a bespoke checker per file grows with every pin.
+Solution:     One record (TOML: no implicit typing of version strings) with an entry per pinned thing: `version` and `at = [{files = glob,
+              pattern = regex with one group, min = N}]`; every match must equal the version and appear at least `min` times. `[[complete]]`
+              makes every line of a pin file (mise, requirements) need an entry. An entry that cannot be enforced carries `unpinned = "<why>"`
+              and is listed on every run. Sections by lifecycle: build, lab (each naming the profile it stands in for), firmware, image,
+              contract, and fleet (observed and dated, never enforced). Image and firmware entries may carry a read-only probe a lab command runs
+              on a box. Globs honour exclusions; a file named outright is always read.
+Why it works: Adding a pin, or a new copy of one, needs no code; a missed copy fails as `found 1, needs 2`; the unenforced list keeps a green
+              run from being read as proof of what it cannot check.
+Reuse:        Any repo with tool, image or firmware pins; the image part is the desired-state record a controller reads back from devices.
+Pitfalls:     A regex with no group or two groups matches silently wrong: check one group. A broad exclusion (docs/) hid a named file. Comments
+              that name a version are pins only by text: mark them unpinned.
+Realised in:  Python -> smc-resiliency scripts/check_versions.py (stdlib tomllib) and lab/logic/versions.py (probes); UNC version_pins.py
+
+```python
+for f in files(root, loc["files"], exclude):          # a named file ignores exclusions
+  for m in rx.finditer(f.read_text(encoding="utf-8", errors="replace")):
+    found += 1
+    if m.group(1) != version:
+      out.append(f"{label}: {f.relative_to(root)}:{line} pins {m.group(1)!r}, the record says {version!r}")
+if found < loc.get("min", 1):
+  out.append(f"{label}: {loc['pattern']!r} found {found} time(s) in {loc['files']}, needs {loc.get('min', 1)}")
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

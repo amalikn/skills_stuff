@@ -9,13 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261109_2227
+Last rotated: 20261110_1246
 ---
 
 # Changelog
 
 ## Unreleased
 
+- 2026-11-10 (b) write-back from smc-resiliency (versions record, fleet survey, N05): references/design-patterns.md P-65 (one version record, pins found by pattern; adopted by UNC), languages/shell/learned-processes-and-timeouts.md (Go programs survive SIGALRM: fork and TERM then KILL; recurrence of editing a running script), references/errors-and-timeouts.md (stop an flock holder and judge by taking the lock)
 - 2026-11-10 write-back from unified-network-controller (Nautobot 3.2.9 upgrade): languages/shell/learned-processes-and-timeouts.md (a `bash -s` script loses its remainder to a child reading stdin); the `{{args}}` interpolation rule in references/tooling-and-runtime.md (Learned 2026-10-20) recurred in a new recipe and was fixed with `[positional-arguments]`, no new entry
 - 2026-11-10 write-back from smc-resiliency (flash step): references/testing.md (fakes from real tool output; smoke a refusal against a real wrong target)
 - 2026-11-09 (e) write-back from smc-resiliency (N03 and the S1 bench): references/design-patterns.md P-64 (a fixed-length record overwritten in place), languages/shell/learned-other.md (stdout errors with exit 0; ssh host-key, ControlPath, agent and askpass traps; macOS screen, sync, sudo), references/testing.md (vfat inodes are made up at mount)
@@ -194,7 +195,3 @@ Learned 2026-10-29 in `references/testing.md`: report a missing tool, never skip
 ## 20261028_2306 — Learned: optimise the real outcome, not a proxy
 
 references/design-patterns.md: proxy ranks candidates, the real computation chooses, current state always a candidate (skill-drawio overview placement, 2026-10-28).
-
-## 20261028_2237 — Learned: shared justfile recipes and the editor
-
-references/configuration-and-literals.md: an imported recipe file defines no variables (justfile_directory, source_directory); the VS Code just extension does not follow import for names but flags duplicates (ansible-wifi change.just, 2026-10-28).

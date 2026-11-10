@@ -123,3 +123,19 @@ Part of [shell.md](../shell.md).
 > consumes the rest of the script: bash then finds end of input and exits 0 with the later lines never run, and no error anywhere. Either close stdin
 > on every such command (`< /dev/null`), or copy the script to the host and run it as a file with stdin closed:
 > `echo <base64> | base64 -d > /tmp/x.sh && bash /tmp/x.sh < /dev/null`. A wrapper that sends scripts this way says so in its header.
+
+> **Learned 2026-11-10** · a deadline on a Go program (`tsh`, and any Go CLI) · VERIFIED_PRIMARY · Source: smc-resiliency fleet survey, skill-smc
+> `scripts/probes/*_probe.sh` @ 2f57ab5: a `tsh ssh` hung 6 minutes under a 120 s `perl -e 'alarm shift; exec @ARGV'` deadline; reproduced with a child
+> that ignores SIGALRM (old form ran 8 s past a 2 s deadline and exited 0) · Falsifier: a Go binary dying on SIGALRM.
+> `alarm` then `exec` delivers SIGALRM to the program itself; the Go runtime catches it, so the call never ends and the wrapper even reports success.
+> Fork, alarm in the parent, and on expiry send TERM, wait up to 5 s, then KILL; pass the child's exit code through, 124 on timeout (GNU `timeout -k`
+> semantics without depending on coreutils):
+>
+> ```bash
+> perl -e '$d=shift; defined(my $p=fork) or die "fork: $!"; if(!$p){exec @ARGV; exit 127}
+>   $SIG{ALRM}=sub{kill "TERM",$p; for(1..5){exit 124 if waitpid($p,1)>0; sleep 1} kill "KILL",$p; waitpid($p,0); exit 124};
+>   alarm $d; waitpid($p,0); exit($? & 127 ? 128+($? & 127) : $?>>8)' "$deadline" tsh ssh --proxy="$proxy" "root@$node" "$REMOTE" </dev/null
+> ```
+>
+> Recurrence 2026-11-10 of the 2026-11-06 entry above (editing a script a job is running): editing the probe while a survey batch ran it made bash
+> fail with `unexpected EOF` after the last box (exit 2, every result already written).

@@ -142,3 +142,10 @@ agent should have found (lesson `feedback_proactive_upstream_research`).
 >   raise OSError(f"short download: {part.stat().st_size} of {want} bytes; {part} kept")
 > part.rename(out)
 > ```
+
+> **Learned 2026-11-10** · stopping the process that holds an `flock` · VERIFIED_PRIMARY · Source: smc-resiliency `spike/onbox/smcagent/siteops.py`
+> `render`/`_signal_holder` @ 6f45ec65, test `RenderStopsHungChange` · Falsifier: a dead holder keeping its flock.
+> A fallback that must not run inside a live transaction waits for its lock, and a holder that hangs alive then blocks the fallback for good. Record
+> the holder's PID in the lock file once the lock is taken (open the file without truncating, `a+`, so a waiter never erases it), and when the wait
+> ends send TERM, then KILL, judging success by **taking the lock**, not by the PID: a killed child stays a zombie until its parent reaps it, so
+> `kill(pid, 0)` still answers, while its lock is released at death. Never signal yourself or PID 1.
