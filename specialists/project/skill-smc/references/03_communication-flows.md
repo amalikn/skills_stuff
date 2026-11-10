@@ -194,6 +194,35 @@ deciding whether a site-side symptom is the site or the backend. Measured latenc
 own public source IP is `3.104.50.51`. **Caveat: SSH port 22 to the LVS director (`202.171.100.132:22`) is FILTERED from this host**, so you can reach the director's service ports but cannot log into
 it to read a rule set — a live 2026-09-08 investigation was blocked on exactly this.
 
+> **Learned 2026-11-10** · backdoor down on one box for 22 days: stale bastion keys in `known_hosts` · VERIFIED-OBSERVED (koonibba-smc01, read
+> over cw Teleport; fixed and re-checked UP) · Source: ansible-wifi `roles/smc_autossh/templates/autossh-teleport-openssh.service.j2:15` (rise `0fc086ca`) ·
+> Falsifier: a box whose `known_hosts` holds a wrong key for the bastion and whose tunnel still listens
+> `StrictHostKeyChecking=no` does not save a tunnel from a **changed** key: ssh logs `REMOTE HOST IDENTIFICATION HAS CHANGED`, then
+> `Port forwarding is disabled to avoid man-in-the-middle attacks` and `Error: forwarding disabled due to host key check failure`, and with
+> `ExitOnForwardFailure=yes` autossh restarts it forever while `systemctl is-active` says `active` and `NRestarts=0`. koonibba-smc01 held ED25519
+> `CdkO8...` and ECDSA `F328...` for `3.104.50.51` (cw-teleport01) while the server's keys are ED25519 `zHxP...`, ECDSA `E+nmm...`, RSA `s+FS...`; the
+> other 19 cw nbn_accelerate boxes had the right keys and their ports listened. Down 2026-10-19 23:09 to 2026-11-10 13:09 (3,116 failures). The
+> url-capture rsync on the same box kept working: it connects by name with key auth, which a changed key does not block. Why only this box held
+> old keys: UNVERIFIED.
+>
+> ```ini
+> # roles/smc_autossh/templates/autossh-teleport-openssh.service.j2:15 (ansible-wifi rise 0fc086ca)
+> ExecStart=/usr/bin/autossh -M 0 -i /var/local/autossh/ssh-portfwding.id_rsa -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes \
+>   -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -N -4 -R {{ openssh_remoteport }}:127.0.0.1:22 ssh-portfwding@{{ teleport_address }}
+> ```
+>
+> Diagnose: `journalctl -u autossh-teleport-openssh -n 40 | grep -E 'IDENTIFICATION|Offending|forwarding disabled'`. Fix (a write: operator's word):
+> read the bastion's own keys over Teleport (`tsh ssh --proxy <cluster> root@<bastion> 'cat /etc/ssh/ssh_host_{ed25519,ecdsa,rsa}_key.pub'`),
+> compare `ssh-keygen -lf` fingerprints with a box whose tunnel works, then on the SMC back up `/root/.ssh/known_hosts`, `ssh-keygen -R <bastion ip>`,
+> append those keys as `<ip> <type> <key>`, `systemctl restart autossh-teleport-openssh`, and re-run `backdoor-watch.sh`. Never `ssh-keyscan` blind.
+> Fleet sweep in one bastion read: `ss -tln | grep -oE '127\.0\.0\.1:6[0-9]{4}'` on cw-teleport01, compared with `50000 + site_eclipse_siteid` per box.
+>
+> **`backdoor-watch.sh` misses a site ID kept in group_vars.** It reads only `host_vars/<host>.yml` and prints `No site_eclipse_siteid ... Pass
+> PORT=`. Single-box sites keep it in `group_vars/<site>.yml` (koonibba 10001, gan-gan 10010, indulkana 10006, wandawuy 10009 in nbn_accelerate);
+> read it with `ansible-vars-guard.py read`, then `PORT=<50000+id>`. Script fix pending.
+>
+> No visual surface.
+
 ### Outbound from SMC Box
 
 ```

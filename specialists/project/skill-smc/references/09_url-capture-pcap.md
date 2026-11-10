@@ -17,6 +17,7 @@
   - [Rollout Policy](#rollout-policy)
   - [Fleet Deployment Lessons (2026-05-18)](#fleet-deployment-lessons-2026-05-18)
   - [PIN/Session Enforcement Degraded While Content Filtering Still Works (`nbn_accelerate` / `rcp`)](#pinsession-enforcement-degraded-while-content-filtering-still-works-nbn_accelerate--rcp)
+- [Learned 2026-11-10 — the on-box prune, and three boxes that never got it](#learned-2026-11-10--the-on-box-prune-and-three-boxes-that-never-got-it)
 - [Learned 2026-10-29 — "URL capture" captures DNS queries only](#learned-2026-10-29--url-capture-captures-dns-queries-only)
 - [Learned 2026-11-05 (b) — what the DNS capture holds, its gaps, and the pcapfix cost](#learned-2026-11-05-b--what-the-dns-capture-holds-its-gaps-and-the-pcapfix-cost)
 
@@ -402,6 +403,36 @@ tsh ssh root@<host> "ssh -i /var/local/sslurlcapture/sslurlcapture.id_rsa -o Str
 |   commands         |   app to kernel marks                                                                                                                                                           |
 
 ---
+
+## Learned 2026-11-10 — the on-box prune, and three boxes that never got it
+
+VERIFIED-OBSERVED (read-only, all 20 nbn_accelerate boxes over cw Teleport; server listing on cw-teleport01) · Source: ansible-wifi `roles/smc_url_capture/templates/rsync_urlcapture.sh.j2:97-110`
+(rise `0fc086ca`) · Falsifier: an SMC whose `/url_capture` keeps months older than last month while its script has the prune.
+
+- **Old capture months are deleted on the SMC by `rsync_urlcapture.sh`** (cron `10 0,8,16`), not by `smc_get_pcapv8.yml`. pcapv8 runs on `cw-teleport01` / `apn-teleport01` and deletes only its own
+  `/tmp/url_capture` staging dir there.
+- **The prune deletes two things only**: the month exactly two months back and last calendar year's twelve months. A month whose turn is missed (box off, script deployed late) is never deleted again:
+  aurukun-smc03 keeps 202601, indulkana-smc01 keeps 202408. Months before last year (2023, 2024) are never deleted.
+- **galiwinku-smc01, hope-vale-smc01 and koonibba-smc01 run an older script with no prune** (`grep -c two_months_ago` = 0): 52 GB, 22 GB and 13 GB, 20 to 21 months back to 202308. The other 17 have it
+  and hold 2 to 4 months. koonibba's root reached 98% (grown 2026-11-10, see 13_known-issues). Redeploying the role clears only month -2 and last year; January to August of this year would stay.
+- **Before deleting on a box, compare with the server** (`/home/sslurlcapture/urlcapture_storage/<host>/<YYYYMM>` on the bastion). On the three boxes only `generic-*` files were absent from the server
+  (image-build captures, excluded from rsync on purpose), and the current month is one file short (the file being written is excluded).
+
+```bash
+# roles/smc_url_capture/templates/rsync_urlcapture.sh.j2:97-107 (ansible-wifi rise 0fc086ca)
+# delete two months old capture files
+if test -d $rsync_local_two_months_ago; then
+    rm -rf $rsync_local_two_months_ago
+fi
+# delete last year's capture files
+for dir in ${rsync_local_last_year}{01..12}; do
+    if [ -d "$dir" ] && [ "$dir" != "$rsync_local_last_month" ]; then
+        rm -rf "$dir"
+    fi
+done
+```
+
+No visual surface.
 
 ## Learned 2026-10-29 — "URL capture" captures DNS queries only
 

@@ -1718,3 +1718,21 @@ The same run exposed `verify.yml:79`: `smc_change_after.gates.stale` exists only
   Fix branches prepared, not merged: `fix/bitbucket-ssh-hostname-rise`, `fix/bitbucket-ssh-hostname-master`. Count all forms with
   `git grep -lE '(git@|ssh://)bitbucket\.org'` (skip collections/).
 
+## 2026-11-10 — `smc_system` never grew the root LV on nbn_accelerate (FIXED on rise `0fc086ca`, unpushed)
+
+VERIFIED-OBSERVED · Source: ansible-wifi `roles/smc_system/tasks/main.yml:116` · Falsifier: an nbn_accelerate box built by the role with VG free space left.
+`hotspot_flavor in ['rcp' or 'nbn_accelerate']` is `['rcp']` (`'rcp' or ...` evaluates to `'rcp'`), so the `lvol size=+100%FREE resizefs=yes` block skipped every
+nbn_accelerate box. Impact today: koonibba-smc01 only (28 GiB LV, 28 GiB VG free, root 98%); grown by hand 2026-11-10 with `lvextend -r -l +100%FREE
+/dev/ubuntu-vg/ubuntu-lv` (= the role's task) after checking hostname, ext4 and VG free: 56G, 49%. The other 12 LVM nbn_accelerate boxes already had VG
+free 0 (grown some other way, UNVERIFIED how); 7 use plain 116G partitions.
+
+```yaml
+# roles/smc_system/tasks/main.yml:115-117 after 0fc086ca
+      when:
+        - hotspot_flavor in ['rcp', 'nbn_accelerate'] or (hotspot_flavor in ['rct', 'wh', 'nbn_wh'] and smc_bases_vagrant_interface is defined)
+        - vg_list.stdout != ""
+```
+
+**`smc_bases.yml --tags <role tag>` is not narrow.** `--list-tasks` with `--tags rsync_url_capture` also lists `smc_rise_enable_overlay`'s
+`always` tasks (initramfs update, `Reboot Helper`, `end_play`). Run `--list-tasks` before any tagged `smc_bases.yml` run on production, and deploy
+one role's file through `smc_change` instead (references/19_smc-change-role.md).
