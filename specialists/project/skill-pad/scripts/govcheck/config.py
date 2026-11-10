@@ -25,7 +25,7 @@ FRONT_MATTER_KEYS = ("Title", "Category", "Status", "Authority", "Scope", "Last 
 
 # Verbatim upstream mirror (AGENTS.md: "never edit a mirrored file"): its links point into Pad's own trees and its files carry no front matter.
 # Its index readme.md is the operator's file and is checked.
-VERBATIM = ("references/upstream/v", "references/upstream/getpad.dev/")
+VERBATIM = ("references/upstream/v", "references/upstream/getpad.dev/", "references/upstream/github.com/")
 UPSTREAM = "references/upstream"
 UPSTREAM_INDEX = "references/upstream/readme.md"
 

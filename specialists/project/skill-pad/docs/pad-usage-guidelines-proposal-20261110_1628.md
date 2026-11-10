@@ -213,11 +213,11 @@ Drift detection is a script, not playbook prose, because it must give the same a
 
 ## 4. When Pad is down, and recovery
 
-Pad's data lives on malik1tb (`~/.pad` is a link to it); the server runs on this Mac only.
+Pad's data lives in `/Volumes/Data/_ai/_tool/tools_stuff/pad` (`~/.pad` is a link to it); the server runs on this Mac only.
 
 | Failure                           | Effect                                 | What agents do                                                                                                          |
 | --------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| malik1tb not mounted, server down | every `pad` call fails or hangs        | work from the trackers and the last `pad-focus.md` export; record asks in SCRATCHPAD open items; add them to Pad when   |
+| Data volume not mounted, server down | every `pad` call fails or hangs        | work from the trackers and the last `pad-focus.md` export; record asks in SCRATCHPAD open items; add them to Pad when   |
 |                                   |                                        |   it is back                                                                                                            |
 | pad.db damaged or lost            | items, comments, history gone          | `pad db restore` from the newest nightly backup (loss up to 24 hours); the trackers hold every fact                     |
 | Backup job failing silently       | the next restore is older              | the backup log and file dates are checked weekly (rollout step 7)                                                       |
@@ -230,7 +230,7 @@ SESSION START WHEN PAD MAY BE DOWN: Pad when it answers, the trackers when it do
 | pad project next |------------>| work the queue; claim first    |
 +------------------+             +--------------------------------+
          |
-         X no answer (malik1tb not mounted, server down)
+         X no answer (Data volume not mounted, server down)
          v
 +--------------------------------+   Pad back   +--------------------------------+
 | work from the trackers and the |------------->| add the asks noted in          |

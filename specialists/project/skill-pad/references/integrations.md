@@ -35,8 +35,13 @@ Use MCP for a client with no shell (Claude Desktop, ChatGPT) or when the CLI is 
 
 ## Pad Cloud and self-hosting
 
-This Mac runs Pad locally (`mode = "local"`, SQLite, data on malik1tb). Pad Cloud is `app.getpad.dev`; self-hosting (Docker, Postgres, Unraid) is in `upstream/getpad.dev/docs_self-hosting*.md` and
+This Mac runs Pad locally (`mode = "local"`, SQLite, data in tools_stuff/pad). Pad Cloud is `app.getpad.dev`; self-hosting (Docker, Postgres, Unraid) is in `upstream/getpad.dev/docs_self-hosting*.md` and
 `upstream/v0.19.2/docs_deployment.md`. Moving data: `pad workspace export` (tar.gz) and `import`, `pad db migrate-to-pg`, `pad db release-cloud`; all operator decisions.
+
+Container image (VERIFIED_PRIMARY, GHCR package page and README v0.19.2, 2026-11-10): `ghcr.io/perpetualsoftware/pad`, multi-arch and cosign-signed;
+`latest` follows each stable release (0.19.2 on 2026-11-10), so pin a bare version tag (`:0.19.2`). `docker run -p 127.0.0.1:7777:7777 -v pad-data:/data
+ghcr.io/perpetualsoftware/pad`; first run prints a one-time setup URL to the log (`docker logs <c> 2>&1 | grep -A6 'Pad first-run setup'`), or
+`docker exec -it <c> pad auth setup`; `PUID`/`PGID` set file ownership (defaults 99/100). Not used here: this Mac runs the Homebrew binary.
 
 ## Official plugin compared with skill-pad
 

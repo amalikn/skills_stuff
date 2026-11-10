@@ -23,6 +23,9 @@ Built from `pad help --all --format json` on v0.19.2 (22e50fe, 2026-11-08), VERI
 
 ## Looking up flags
 
+The repo README's "CLI Reference" (also shown on the GHCR package page) is a 176-line summary of the same tree; on `main` after 0.19.2 it adds
+`--stdin` to `pad item comment` (not in the installed binary yet). The binary stays the authority.
+
 `pad help <group> [command] --format md|json|llm` (cmdhelp v0.1, `pad help --capabilities`); `pad <group> <command> --help` for the human form. `pad agent guide <topic>` prints Pad's own agent
 guidance for the installed version (`context-loading`, `items`, `before-performing-work`, `role-awareness`, `multi-step-workflows`, `all`).
 
@@ -62,7 +65,7 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 ## Global flags and environment
 
 - `--format table|json|markdown` (default table; parse with json), `--workspace <slug>` (override `.pad.toml`), `--url <server>`.
-- Workspace detection: `.pad.toml` in the folder tree. Config: `~/.pad/config.toml` (here `mode = "local"`, `127.0.0.1:7777`). Data: `~/.pad`, a symlink to `/Volumes/malik1tb/malik-storage/pad` on
+- Workspace detection: `.pad.toml` in the folder tree. Config: `~/.pad/config.toml` (here `mode = "local"`, `127.0.0.1:7777`). Data: `~/.pad`, a symlink to `/Volumes/Data/_ai/_tool/tools_stuff/pad` on
   this Mac (pad.db, attachments, sessions, credentials).
 - Database: `PAD_DB_PATH` > `PAD_DATA_DIR/pad.db` > `~/.pad/pad.db`; `PAD_DB_DRIVER=postgres` for Postgres.
 - `PAD_AGENT=<name>` (or `agent_name` in `.pad.toml`) names the agent under harnesses other than Claude Code.

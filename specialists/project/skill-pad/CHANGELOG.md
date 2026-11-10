@@ -13,6 +13,17 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_1708 — Pad data moved to tools_stuff/pad; container image facts
+
+### Changed
+
+- Pad data moved from `/Volumes/malik1tb/malik-storage/pad` to `/Volumes/Data/_ai/_tool/tools_stuff/pad` (operator; tracked in tools_stuff by the
+  operator's choice). Server stopped, copied and compared, `~/.pad` relinked, restarted; the server holds the new pad.db, item counts unchanged (30 and
+  24). Old copy kept as `pad.moved-20261110_1706` on malik1tb. SETUP, ARCHITECTURE, SCRATCHPAD, cli-reference, integrations, the proposal and
+  `pad_backup.sh` updated.
+- integrations.md: container image `ghcr.io/perpetualsoftware/pad` (pin a version tag, first-run setup URL, PUID/PGID). cli-reference.md: the README
+  CLI Reference is a summary of the same tree. Mirror: `references/upstream/github.com/pkgs_container_pad.md`, treated as verbatim by the checker.
+
 ## 20261110_1701 — usage proposal moved to docs/ with three diagrams
 
 ### Changed

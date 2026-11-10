@@ -147,3 +147,9 @@ the blog category pages were left out as not useful to an agent:
 The whole mirror is refreshed for a new release with `scripts/pad_upstream_refresh.sh <version> --apply` (repo files, CLI help, agent guide, release
 notes); site pages stay a manual all-scraper pass. The CLI dumps in `v0.19.2/cli/` were regenerated outside any workspace on 2026-11-10, so they no
 longer name smc-resiliency.
+
+## github.com (2026-11-10)
+
+| File | Holds |
+| --- | --- |
+| [github.com/pkgs_container_pad.md](github.com/pkgs_container_pad.md) | GHCR package page `ghcr.io/perpetualsoftware/pad`: tags `latest` = 0.19.2, 0.19.1, digests; its "CLI reference" anchor is the repo README section, mirrored as `v0.19.2/README.md` |

@@ -46,7 +46,7 @@ smc-resiliency.
 | Item          | Detail                                                                  |
 | ------------- | ----------------------------------------------------------------------- |
 | Pad CLI       | v0.19.2 (22e50fe), Homebrew `perpetualsoftware/tap/pad`                 |
-| Pad data      | `~/.pad` -> `/Volumes/malik1tb/malik-storage/pad`                       |
+| Pad data      | `~/.pad` -> `/Volumes/Data/_ai/_tool/tools_stuff/pad` (moved 2026-11-10; old copy `/Volumes/malik1tb/malik-storage/pad.moved-20261110_1706`)                       |
 | Install links | `~/.claude/skills/skill-pad`, `~/.agents/skills/skill-pad` -> pack root |
 | Backup job    | launchd `au.malik.pad-backup`, 02:30                                    |
 | Presence hooks | `~/.claude/settings.json` UserPromptSubmit and Stop, added 2026-11-10 |

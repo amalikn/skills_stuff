@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pad_backup.sh: back up the local Pad database (pad.db under ~/.pad, which points at malik1tb) to a second disk, keeping the newest N copies.
+# pad_backup.sh: back up the local Pad database (pad.db under ~/.pad, which points at tools_stuff/pad on the Data volume) to a second disk, keeping the newest N copies.
 #
 # Why: Pad keeps every task, plan and history in one SQLite file; Git holds only .pad.toml (operator, 2026-11-10: "do pad backup to a different
 # path", OneDrive pad_backups). `pad db backup` writes an online-safe copy (SQLite VACUUM INTO), so the server may keep running.
@@ -45,7 +45,7 @@ case "${1:-}" in
 esac
 
 start=$(date +%s)
-[ -f "$DB" ] || die "no database at $DB (is malik1tb mounted, and has 'pad init' run?)"
+[ -f "$DB" ] || die "no database at $DB (is the Data volume mounted, ~/.pad linked, and has 'pad init' run?)"
 [ -d "$DEST" ] || die "no backup folder $DEST"
 out="$DEST/pad-$(date +%Y%m%d_%H%M).db"
 mapfile_list=$(ls -1t "$DEST"/pad-*.db 2>/dev/null || true)

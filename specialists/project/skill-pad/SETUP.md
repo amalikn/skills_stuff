@@ -32,7 +32,7 @@ Depends on: justfile, .mise.toml, scripts/pad_backup.plist
 | gh, curl   | current | Homebrew; `gh auth status` for the upstream refresh |
 | shellcheck | current | Homebrew (script lint)                              |
 
-Pad's data folder: `~/.pad` is a symlink to `/Volumes/malik1tb/malik-storage/pad`, so malik1tb must be mounted for Pad to start. First-time Pad setup is interactive: `pad init` in a terminal (browser
+Pad's data folder: `~/.pad` is a symlink to `/Volumes/Data/_ai/_tool/tools_stuff/pad` (moved from malik1tb 2026-11-10; tracked in the tools_stuff repo, operator), so the Data volume must be mounted for Pad to start. First-time Pad setup is interactive: `pad init` in a terminal (browser
 sign-in); after that `pad auth whoami` reports the user.
 
 ## Bootstrap
@@ -81,7 +81,7 @@ In a linked project, `/skill-pad status` prints the connection header and the da
 
 ## Troubleshooting
 
-- `pad` hangs or the server will not start: malik1tb is not mounted (`ls ~/.pad/`).
+- `pad` hangs or the server will not start: the Data volume is not mounted or the link is broken (`ls -l ~/.pad`).
 - `Pad is not configured`: run `pad init` in a terminal.
 - `/skill-pad` not offered in Claude Code: the link points at a folder without `SKILL.md`; recheck the links above.
 - Backup missing: `cat /Volumes/Data/_ai/_scripts/scripts-runtime/pad-backup.log`; run `bash scripts/pad_backup.sh` (plan) to see why.
