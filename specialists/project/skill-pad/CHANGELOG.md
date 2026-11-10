@@ -13,6 +13,14 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_1936 — Pad usage guidelines in force (Q1 to Q6 answered)
+
+### Changed
+
+- Operator answered Q1 to Q6: Asks collection, current focus only, no roles, answers on the ask or in chat (both), roll out to smc-resiliency and
+  UNC together, keep the OneDrive backup. Proposal renamed `docs/pad-usage-guidelines-20261110_1628.md` (Status current); rollout reworked for both
+  workspaces (smc-resiliency canary first within each step); SKILL.md, AGENTS, README and SCRATCHPAD now treat it as in force.
+
 ## 20261110_1724 — pad_conventions --only; writing-standard live in both workspaces
 
 ### Added

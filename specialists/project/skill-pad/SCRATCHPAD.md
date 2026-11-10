@@ -35,7 +35,7 @@ smc-resiliency.
 ## Open items
 
 - [ ] Live test of `connect` in a linked project (unc or smc-resiliency): Monitor receives a `pad push` from the operator; `disconnect` stops it. Include the delivery-limit case: push after more than 30 minutes idle (modes.md, Delivery limits).
-- [ ] Operator answers Q1-Q6 of the rewritten usage proposal (`docs/pad-usage-guidelines-proposal-20261110_1628.md`); then rollout step 1 (restore test).
+- [ ] Pad usage rollout (`docs/pad-usage-guidelines-20261110_1628.md` section 6, both workspaces together): step 1 restore test, then Asks with one test ask in smc-resiliency.
 - [ ] Projects that ran `pad workspace init` after today: delete their `.claude/skills/pad/` and `.agents/skills/pad/` copies.
 - [ ] Old scripts_stuff symlinks (`bash/pad_backup.sh`, `python/pad_export/pad_export.py`): retire once every project points here.
 
@@ -55,6 +55,7 @@ smc-resiliency.
 
 ## Recent decisions
 
+- 2026-11-10 — Pad usage guidelines in force: Q1 Asks collection, Q2 current focus, Q3 no roles, Q4 answers on the ask or in chat, Q5 both workspaces now, Q6 keep OneDrive (operator).
 - 2026-11-10 — Usage proposal rewritten after review; archcore ADRs written; `.ai-context/` gitignored (operator).
 - 2026-11-10 — Own skill, no plugin; Pad text extracted and rewritten into references, the Pad-generated copies removed (operator).
 - 2026-11-10 — Rebuild all plugin parts: status/capture/onboard, connect/disconnect live feed, busy/idle presence hooks (operator).

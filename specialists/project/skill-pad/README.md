@@ -41,7 +41,7 @@ Operator, 2026-11-10: manage Pad's skill centrally like the other skills (symlin
 | `references/examples/`          | readers                           | a worked setup message sent to a project (2026-11-10)                                                     |
 | `conventions/apn-baseline.toml` | every apn project workspace       | applied by `scripts/pad_conventions.py`                                                                   |
 | `scripts/`                      | the operator's Mac                | see [Scripts](#scripts) and [scripts/README.md](scripts/README.md)                                        |
-| `docs/pad-usage-guidelines-proposal-20261110_1628.md` | operator         | proposal: how Pad is used in apn workspaces (asks, plans, tasks, tags, conventions); draft under review   |
+| `docs/pad-usage-guidelines-20261110_1628.md` | operator         | guidelines in force (operator, 2026-11-10): asks, plans, tasks, writing standard, tags |
 
 Operator, 2026-11-10: "develop our own skill and not rely on the plugin"; Pad's generated `.claude/skills/pad/` and `.agents/skills/pad/` copies were
 extracted into the references and removed. Install and first run: [SETUP.md](SETUP.md); how the parts fit: [ARCHITECTURE.md](ARCHITECTURE.md).

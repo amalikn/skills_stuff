@@ -1,11 +1,11 @@
 ---
-Title: Pad usage guidelines (proposal)
-Category: proposal
-Status: draft
+Title: Pad usage guidelines
+Category: guideline
+Status: current
 Authority: >-
-  Proposal for the operator's decision; nothing here is in force until the operator approves it. Pad facts are VERIFIED_PRIMARY against CLI v0.19.2
-  and the upstream sources in references/upstream/ unless marked otherwise.
-Scope: How agents and the operator use Pad in apn project workspaces; smc-resiliency is the pilot, unified-network-controller already runs a trial
+  In force: the operator answered section 7 on 2026-11-10 (Q1 to Q6). Pad facts are VERIFIED_PRIMARY against CLI v0.19.2 and the upstream sources
+  in references/upstream/ unless marked otherwise.
+Scope: How agents and the operator use Pad in apn project workspaces; rolled out to smc-resiliency and unified-network-controller together
 Last reviewed: 2026-11-10
 Summary: >-
   Pad holds two things: every ask of the operator, in an Asks collection routed to the needs-you inbox, and the agent's current-focus queue of plans
@@ -13,7 +13,7 @@ Summary: >-
   dates in fields, a degraded mode when Pad is down, and one joint trial review.
 ---
 
-# Pad usage guidelines (proposal)
+# Pad usage guidelines
 
 Operator, 2026-11-10: "How do you intend to use Pad? Only for listing the things you want my input in, or also plans and tasks for a project? Come up with guidelines so it can be used efficiently."
 
@@ -310,20 +310,33 @@ A backup is not a recovery until a restore has been shown to work: rollout step 
 
 ## 6. Rollout
 
-Each step plans first and needs the operator's go. Pilot: smc-resiliency; UNC is already on a trial.
+Each step plans first and needs the operator's go. Both workspaces together (Q5, operator 2026-11-10); within a step, smc-resiliency goes first as the canary and UNC follows once it passes.
 
-| Step | What                                                                                                                            | Check                                                  |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 0    | Operator answers section 7                                                                                                      | answers recorded here                                  |
-| 1    | Restore test: newest backup into a scratch `PAD_DATA_DIR`                                                                       | item counts match the live workspaces                  |
-| 2    | Create Asks in smc-resiliency (3.1 schema); one test ask end to end                                                             | it shows in catch-up's needs-you; `answered` closes it |
-| 3    | Move today's waits to asks and block their tasks; move body dates into `due_date`                                               | `pad project next` offers no blocked task              |
-| 4    | Tags (3.4), conventions (3.8), playbooks (3.9) with `--field status=active`                                                     | `pad bootstrap` lists them                             |
-| 5    | `pad_tracker_drift.py` and the export ask columns (skill-coder: tests, plan by default)                                         | `just check` in skill-pad; a drift run on the pilot    |
-| 6    | One joint review of both workspaces through UNC TASK-20 (on or after 17 Nov): asks raised and answered, wait times, drift found | keep, trim or drop; result in this file                |
-| 7    | If kept: the same steps in UNC from its own session; weekly backup check                                                        | its bootstrap; backup log dates                        |
+| Step | What                                                                                                                      | Check                                                  |
+| ---- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 0    | Operator answers section 7                                                                                                | done 2026-11-10                                        |
+| 1    | Restore test: newest backup into a scratch `PAD_DATA_DIR`                                                                 | item counts match the live workspaces                  |
+| 2    | Create Asks in both workspaces (3.1 schema); one test ask end to end in smc-resiliency first                              | it shows in catch-up's needs-you; `answered` closes it |
+| 3    | Move today's waits to asks and block their tasks; move body dates into `due_date` (both)                                  | `pad project next` offers no blocked task              |
+| 4    | Tags (3.4), conventions (3.8), playbooks (3.9) with `--field status=active` (both); `writing-standard` already applied    | `pad bootstrap` lists them                             |
+| 5    | `pad_tracker_drift.py` and the export ask columns (skill-coder: tests, plan by default)                                   | `just check` in skill-pad; a drift run on each         |
+| 6    | One review of both workspaces through UNC TASK-20 (on or after 17 Nov): asks raised and answered, wait times, drift found | keep, trim or drop; result in this file                |
+| 7    | Weekly backup check from then on                                                                                          | backup log dates                                       |
 
 ## 7. Decisions for the operator
+
+Answered by the operator on 2026-11-10:
+
+| #   | Answer                                                                                                |
+| --- | ----------------------------------------------------------------------------------------------------- |
+| Q1  | A. Asks collection                                                                                    |
+| Q2  | A. Current focus, next one to two weeks                                                               |
+| Q3  | A. No roles until two agents work in parallel                                                         |
+| Q4  | C. Both: on the ask or in the session chat; the agent always writes it to the ask and the repo record |
+| Q5  | B. Now, together: smc-resiliency and UNC in the same rollout (section 6)                              |
+| Q6  | A. Keep the OneDrive backup as the stated exception to "private by default"                           |
+
+The options as asked:
 
 | #   | Question                            | Options                                                                                                                                               |
 | --- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
