@@ -344,7 +344,7 @@ Each step plans first and needs the operator's go. Both workspaces together (Q5,
 | 3    | Move today's waits to asks and block their tasks; move body dates into `due_date` (both)                                  | `pad project next` offers no blocked task              |
 | 4    | Tags (3.4), conventions (3.8), playbooks (3.9) with `--field status=active` (both); `writing-standard` already applied    | `pad bootstrap` lists them                             |
 | 5    | `pad_tracker_drift.py` and the export ask columns (skill-coder: tests, plan by default)                                   | `just check` in skill-pad; a drift run on each         |
-| 6    | One review of both workspaces through UNC TASK-20 (on or after 17 Nov): asks raised and answered, wait times, drift found | keep, trim or drop; result in this file                |
+| 6    | One review of both workspaces through UNC TASK-20 (on or after 17 Nov): asks raised and answered, wait times, drift found; subtract the closed items imported on 10 Nov (UNC 43, smc 7) | keep, trim or drop; result in this file                |
 | 7    | Weekly backup check from then on                                                                                          | backup log dates                                       |
 
 ## 7. Decisions for the operator

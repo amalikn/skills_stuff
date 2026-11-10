@@ -13,6 +13,14 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_2055 — tracker import spike noted for the trial review
+
+### Changed
+
+- Side agent: imported closed bugs and features count as done on 10 Nov. Checked in UNC: `next`, `stale` and the dashboard are not flooded;
+  today's changelog lists 43 imported closures. Operator: keep both collections as work and discount the spike; noted on UNC TASK-20 and in
+  guidelines section 6 step 6.
+
 ## 20261110_2031 — slurp close: session record, write-backs, collection schemas
 
 ### Added
