@@ -39,6 +39,8 @@ Summary: >-
 - [Facts, conditions, when and loop (2026-10-30)](#facts-conditions-when-and-loop-2026-10-30)
 - [Chained changes, per-change state, named value files (2026-11-04)](#chained-changes-per-change-state-named-value-files-2026-11-04)
 - [Self-repair of cut-off runs, success means every goal, applies_when (2026-11-04 evening)](#self-repair-of-cut-off-runs-success-means-every-goal-applies_when-2026-11-04-evening)
+- [Export to a company role: a spec as a plain task file (2026-11-06)](#export-to-a-company-role-a-spec-as-a-plain-task-file-2026-11-06)
+- [A rollback over a failed-verify apply, and the Jinja line break in a value file (2026-11-09)](#a-rollback-over-a-failed-verify-apply-and-the-jinja-line-break-in-a-value-file-2026-11-09)
 
 ## When to use it
 
@@ -501,6 +503,21 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   if ! printf '%s\n' "$have" | grep -qxF "$type $key"; then
     printf '%s %s %s\n' "$KH_HOST" "$type" "$key" >>"$KH_FILE"
   fi
+  ```
+
+- **Change `urlcapture-prune` (built 2026-11-10; canary koonibba-smc01 applied and passed 13:34, gates 4/4, 120 s; galiwinku and hope-vale not yet)**: the first spec with a `template` action. It puts
+  ansible-wifi's current `rsync_urlcapture.sh` (rise `74d574b0`: each capture month older than last month is deleted only after its own rsync to the bastion exits 0) on x86 SMCs still running an older
+  copy (references/09, Learned 2026-11-10). The spec's template holds no script text: it sets the role's two values from `variables.yml` and includes the company template through a link,
+  `templates/urlcapture-prune/company_rsync_urlcapture.sh.j2`, and its render is byte-identical to `smc_url_capture`'s own (`cmp`, md5 `57e27de8...`, the same on the box after apply). Jinja drops an
+  included file's last newline and `trim_blocks` the one after the tag, so the wrapper ends with an explicit `{{ '\n' }}`. `reboot: never` (x86 has no overlay, operator 2026-11-10); `probe_first:
+  true`; facts record capture months, size and root use; `just months <hosts>` reads them. The deletion happens at the next cron run (10 0,8,16), not in the change run. Family `urlcapture` on the flow
+  map.
+
+  ```jinja
+  {# templates/urlcapture-prune/rsync_urlcapture.sh.j2 (local-knowledge-ansible, 2026-11-10) #}
+  {%- set teleport_fqdn = smc_change_vars.urlcapture.teleport_fqdn -%}
+  {%- set url_capture_dir = smc_change_vars.urlcapture.dir -%}
+  {%- include 'company_rsync_urlcapture.sh.j2' %}{{ '\n' }}
   ```
 
 - **Under strategy free (live 2026-11-05)**:
@@ -977,10 +994,10 @@ check reads the AVR, says ALREADY and writes nothing, and restart and soak are s
 
 Proven: check-mode chain on alkngarrija-smc01 2026-11-04 15:45 (81 s): both changes in order, each record in its own folder, the new scripts ran under the SMC's dash with every value (the four failing
 proofs were real: no loader, master build, `/viewstats2` 404). `just test` 124 tests, `test_chain_gate` (HELD on apply, none on check), `test_load_spec_vars`, controller tests as before;
-`test_journal` fails as it did before (missing fixture record). Not proven: a chain in apply mode on a real SMC. First real apply on the rewritten role, single change: the-crossing-smc01 passed
-`rct-tstik-iridium-update` 2026-11-04 16:21 (299 s). Flows: tracker steps cite `smc_change_run.yml`; 145 steps touched only by the write rewrite accepted on the `verify_codemod.py` proof
-(`trace_sync.py --accept <files> --apply`), the other 40 read and accepted; `smc_change_flows_check` passes. Unused chain slots use the host pattern `smc_bases:!smc_bases` (Ansible warns about an
-unknown group, not an empty one) and templated play names ("Change N of the chain: not used"). New `change-variables-template.yml` beside `change-spec-template.yml`.
+  `test_journal` fails as it did before (missing fixture record). Not proven: a chain in apply mode on a real SMC. First real apply on the rewritten role, single change: the-crossing-smc01 passed
+  `rct-tstik-iridium-update` 2026-11-04 16:21 (299 s). Flows: tracker steps cite `smc_change_run.yml`; 145 steps touched only by the write rewrite accepted on the `verify_codemod.py` proof
+  (`trace_sync.py --accept <files> --apply`), the other 40 read and accepted; `smc_change_flows_check` passes. Unused chain slots use the host pattern `smc_bases:!smc_bases` (Ansible warns about an
+  unknown group, not an empty one) and templated play names ("Change N of the chain: not used"). New `change-variables-template.yml` beside `change-spec-template.yml`.
 
 ## Self-repair of cut-off runs, success means every goal, applies_when (2026-11-04 evening)
 
@@ -1052,27 +1069,28 @@ agent) and the first canary did exactly this. Before a deploy: `ansible-inventor
 ## Export to a company role: a spec as a plain task file (2026-11-06)
 
 > **Learned 2026-11-06** · smc_change export · VERIFIED_PRIMARY (18 offline tests; rct-avr-smsc and rct-tstik-iridium-update exported into a scratch copy
-> of smc_application: ansible-lint production profile 0 failures, `--syntax-check` passes; no live run yet) · Source: local-knowledge-ansible
-> `ansible-wifi/roles/smc_change/files/export_tasks.py`, `export_render.py`, design `plans/smc-change-export-design-20261106_1335.md` (commit 7056782)
-> · Falsifier: an exported file that fails on an SMC where the smc_change run of the same spec passes, or that still references the role.
+> of smc_application: ansible-lint production profile 0 failures, `--syntax-check` passes; no live run yet) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/export_tasks.py`,
+> `export_render.py`, design `plans/smc-change-export-design-20261106_1335.md` (commit 7056782) · Falsifier: an exported file that fails on an SMC where the smc_change run of the same spec passes, or
+> that still references the role.
 
-smc_change is the operator's own test tool; the company repo must not depend on it (operator, 2026-11-06), yet `smc_rise_deploy.yml` imports
-`smc_change.yml` for the two AVR changes today. `just export_change <change> <role>` (plan; `--apply` writes into ansible-wifi, uncommitted) writes
-`roles/<role>/tasks/<change>.yml`, `<change>-rollback.yml` and `roles/<role>/files/<change>/` (variables.yml, scripts/, copied and shared files).
-`just export_check <change> <role>` lints a scratch copy (about 4 s); `just export_drift` says when a spec or the company copy moved since the export.
+smc_change is the operator's own test tool; the company repo must not depend on it (operator, 2026-11-06), yet `smc_rise_deploy.yml` imports `smc_change.yml` for the two AVR changes today. `just
+export_change <change> <role>` (plan; `--apply` writes into ansible-wifi, uncommitted) writes `roles/<role>/tasks/<change>.yml`, `<change>-rollback.yml` and `roles/<role>/files/<change>/`
+(variables.yml, scripts/, copied and shared files). `just export_check <change> <role>` lints a scratch copy (about 4 s); `just export_drift` says when a spec or the company copy moved since the
+export.
 
-- **Regenerated only on the operator's word**; the agent reminds the operator when `export_drift` shows a moved spec. A company file edited by hand
-  is kept (the export refuses and names it) unless `--overwrite-edits`.
-- **What it carries**: applies_to (flavor as `inventory_dir | basename`, arch by `uname -m`), applies_when and conditions (a fact condition reads the
-  registered fact and is false when the fact failed), facts before and after, `copy` (loops expanded as `templates/spec_actions.j2`, transient copies
-  removed after verify passes) and `command` (check, then cmd only when it fails, under `timeout --kill-after=30`; no re-check, as the role), a backup folder `<smc_change_backup_dir>/<change>-<stamp>` with `paths.tgz`, made only when an action will change something (each command's check and each kept copy in check mode, read first), so the rollback's newest backup is always the last run that changed the SMC (side-agent note, 2026-11-06: a no-op rerun's backup would hold the new values; local-knowledge-ansible 567a61d), which the AVR scripts look up by glob, restart (services, and restart.yml's
-  stop-and-relaunch shell for processes), verify (`services_active` and `commands` before and after, `logs`, `proves`) and a rollback file (undo last
-  first with `SMC_CHANGE_BACKUP`).
-- **What it leaves out**: probe, guard, journal, records, soak, reboot, overlay (the play's first task owns it, operator 2026-11-06), and the fail
-  gate: **the importing play sets `max_fail_percentage: 0` and a small `serial`** (side-agent note, 2026-11-06). `apt_pin`, `ini`, `ssh`, `ecdsa`,
-  `template` and verify `http`, `same_as_before`, `stale_maps`, `report_only` are refused until a spec that needs them is exported.
-- **Values still naming smc_change ideas** are carried and listed for the operator: `/var/backups/smc_change`, `/run/smc-change-*`, `LOWER_DIR`
-  (the scripts skip their lower-dir step when nothing is mounted there, the overlay-off case).
+- **Regenerated only on the operator's word**; the agent reminds the operator when `export_drift` shows a moved spec. A company file edited by hand is kept (the export refuses and names it) unless
+  `--overwrite-edits`.
+- **What it carries**: applies_to (flavor as `inventory_dir | basename`, arch by `uname -m`), applies_when and conditions (a fact condition reads the registered fact and is false when the fact
+  failed), facts before and after, `copy` (loops expanded as `templates/spec_actions.j2`, transient copies removed after verify passes) and `command` (check, then cmd only when it fails, under
+  `timeout --kill-after=30`; no re-check, as the role), a backup folder `<smc_change_backup_dir>/<change>-<stamp>` with `paths.tgz`, made only when an action will change something (each command's
+  check and each kept copy in check mode, read first), so the rollback's newest backup is always the last run that changed the SMC (side-agent note, 2026-11-06: a no-op rerun's backup would hold the
+  new values; local-knowledge-ansible 567a61d), which the AVR scripts look up by glob, restart (services, and restart.yml's stop-and-relaunch shell for processes), verify (`services_active` and
+  `commands` before and after, `logs`, `proves`) and a rollback file (undo last first with `SMC_CHANGE_BACKUP`).
+- **What it leaves out**: probe, guard, journal, records, soak, reboot, overlay (the play's first task owns it, operator 2026-11-06), and the fail gate: **the importing play sets `max_fail_percentage:
+  0` and a small `serial`** (side-agent note, 2026-11-06). `apt_pin`, `ini`, `ssh`, `ecdsa`, `template` and verify `http`, `same_as_before`, `stale_maps`, `report_only` are refused until a spec that
+  needs them is exported.
+- **Values still naming smc_change ideas** are carried and listed for the operator: `/var/backups/smc_change`, `/run/smc-change-*`, `LOWER_DIR` (the scripts skip their lower-dir step when nothing is
+  mounted there, the overlay-off case).
 - **Not proven live**: next step is `--check` then apply of an exported file on the canary alkngarrija-smc01, against smc_change's own verify.
 
 ```python
@@ -1085,12 +1103,11 @@ smc_change is the operator's own test tool; the company repo must not depend on 
 
 ## A rollback over a failed-verify apply, and the Jinja line break in a value file (2026-11-09)
 
-- **A rollback may take over an apply stopped after its actions (`rollback_over_apply`).** bitbucket-ssh-hostname on the rct canary failed at 9/11 VERIFY; the
-  rollback its failure message names was refused (`needs_repair: Resume must use the original transaction mode`), so the SMC could not be undone through the
-  role. Now a rollback over an apply journal at phase 7-10 sets that journal aside (`journal/superseded/`) and restores the apply's backup, which
-  `rollback_locate.yml` finds by itself; the apply-only `abandoned_clean` tasks that fetch and remove a backup do not run. On changed code or spec the rollback
-  would run today's `undo` on the old backup, so it is refused unless `-e smc_change_rollback_drifted=true` (default false; operator, 2026-11-09). Proved live:
-  refused without the flag, passed with it, SMC back to its original known_hosts, live and lower dir. Phases 5-6 still need the operator.
+- **A rollback may take over an apply stopped after its actions (`rollback_over_apply`).** bitbucket-ssh-hostname on the rct canary failed at 9/11 VERIFY; the rollback its failure message names was
+  refused (`needs_repair: Resume must use the original transaction mode`), so the SMC could not be undone through the role. Now a rollback over an apply journal at phase 7-10 sets that journal aside
+  (`journal/superseded/`) and restores the apply's backup, which `rollback_locate.yml` finds by itself; the apply-only `abandoned_clean` tasks that fetch and remove a backup do not run. On changed
+  code or spec the rollback would run today's `undo` on the old backup, so it is refused unless `-e smc_change_rollback_drifted=true` (default false; operator, 2026-11-09). Proved live: refused
+  without the flag, passed with it, SMC back to its original known_hosts, live and lower dir. Phases 5-6 still need the operator.
 
   ```python
   # files/recovery.py, local-knowledge-ansible 9e1af74
@@ -1101,16 +1118,15 @@ smc_change is the operator's own test tool; the company repo must not depend on 
     result.update(classification="rollback_over_apply", can_start=True, supersede_journal=True)
   ```
 
-- **A line break in a value file is a real line break, never `'\n'` inside Jinja in a YAML `|` block.** variables.yml built `KH_KEYS` with
-  `{{ '\n' if not loop.last }}`; under ansible-core 2.21.6 that reached the SMC as a literal backslash-n, so `kh_add.sh` wrote one 5-field line
-  (`ssh-ed25519 <key>\necdsa... \nssh-rsa ...`) and the proof failed. The role's own `'\n'` uses sit in double-quoted YAML, where YAML turns
-  them into newlines first, so they are fine. A test that feeds a script hand-built values cannot see this: `test_bitbucket_known_hosts.py` now
-  renders the spec through ansible-core (fails on the old file, passes on the fix). Fix (d392dcb):
+- **A line break in a value file is a real line break, never `'\n'` inside Jinja in a YAML `|` block.** variables.yml built `KH_KEYS` with `{{ '\n' if not loop.last }}`; under ansible-core 2.21.6 that
+  reached the SMC as a literal backslash-n, so `kh_add.sh` wrote one 5-field line (`ssh-ed25519 <key>\necdsa... \nssh-rsa ...`) and the proof failed. The role's own `'\n'` uses sit in double-quoted
+  YAML, where YAML turns them into newlines first, so they are fine. A test that feeds a script hand-built values cannot see this: `test_bitbucket_known_hosts.py` now renders the spec through
+  ansible-core (fails on the old file, passes on the fix). Fix (d392dcb):
 
   ```yaml
   KH_KEYS='{% for k in smc_change_vars.kh['keys'] %}{{ k.type }} {{ k.key }}
   {% endfor %}'
   ```
 
-- **bitbucket-ssh-hostname canary passed** (alkngarrija-smc01, 2026-11-09 13:22): three 3-field `ssh.bitbucket.org` lines live and in the lower dir;
-  `ssh -o StrictHostKeyChecking=yes -T git@ssh.bitbucket.org` from the SMC authenticates. Fleet batches handed to the operator.
+- **bitbucket-ssh-hostname canary passed** (alkngarrija-smc01, 2026-11-09 13:22): three 3-field `ssh.bitbucket.org` lines live and in the lower dir; `ssh -o StrictHostKeyChecking=yes -T
+  git@ssh.bitbucket.org` from the SMC authenticates. Fleet batches handed to the operator.
