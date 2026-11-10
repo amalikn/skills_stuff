@@ -32,8 +32,9 @@ Depends on: justfile, .mise.toml, scripts/pad_backup.plist
 | gh, curl   | current | Homebrew; `gh auth status` for the upstream refresh |
 | shellcheck | current | Homebrew (script lint)                              |
 
-Pad's data folder: `~/.pad` is a symlink to `/Volumes/Data/_ai/_tool/tools_stuff/pad` (moved from malik1tb 2026-11-10; tracked in the tools_stuff repo, operator), so the Data volume must be mounted for Pad to start. First-time Pad setup is interactive: `pad init` in a terminal (browser
-sign-in); after that `pad auth whoami` reports the user.
+Pad's data folder: `~/.pad` is a symlink to `/Volumes/Data/_ai/_tool/tools_stuff/pad` (moved from malik1tb 2026-11-10; tracked in the tools_stuff repo, operator), so the Data volume must be mounted
+for Pad to start. Git tracks the live database there: never stash, check out, reset, clean or switch branches in tools_stuff while Pad runs, and commit `pad/` only after `pad server stop` (rule in
+tools_stuff `.agents/pad-data.md`). First-time Pad setup is interactive: `pad init` in a terminal (browser sign-in); after that `pad auth whoami` reports the user.
 
 ## Bootstrap
 

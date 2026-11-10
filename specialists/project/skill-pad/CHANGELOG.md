@@ -13,6 +13,13 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_1940 — guard for the live Pad database in tools_stuff
+
+### Changed
+
+- SETUP.md: Git tracks the live pad.db in tools_stuff (operator); no stash, checkout, restore, clean or branch switch there while Pad runs, and
+  `pad/` is committed only with the server stopped. Rule kept in tools_stuff `.agents/pad-data.md` (operator chose a rule over untracking).
+
 ## 20261110_1936 — Pad usage guidelines in force (Q1 to Q6 answered)
 
 ### Changed
