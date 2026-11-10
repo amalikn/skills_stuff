@@ -6,13 +6,22 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261110_1226
+Last rotated: 20261110_1350
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261110_1355 — koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)
+
+`references/01_overview.md`: a box missing from plain `tsh ls` is not offline (the cluster comes from the profile; nbn_accelerate is on communitywifi).
+`references/03_communication-flows.md`: Learned 2026-11-10, a changed bastion key disables the backdoor's forwarding under `StrictHostKeyChecking=no`;
+verified fix and fleet sweep; `backdoor-watch.sh` misses a site ID kept in group vars (fix pending). `references/09_url-capture-pcap.md`: the on-box
+prune, three boxes without it, server check before deleting (`da4a328`). `references/13_known-issues.md`: `smc_system` root-LV condition (ansible-wifi
+`0fc086ca`) and the `smc_bases.yml --tags` always-task hazard (`da4a328`). `references/19_smc-change-role.md`: change `urlcapture-prune`, the first
+template action (`14eabeb`).
 
 ## 20261110_1225 — Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0)
 
@@ -186,13 +195,3 @@ fixes; D12 P0 software lifecycle under the A/B decision), `references/13_known-i
 takes gateway and NTP from the SMC, not DHCP, cross-referenced to skill-mikrotik), `references/02_service-map.md` (Asterisk replacement options; CDR
 and CEL back-ends noloaded), `references/09_url-capture-pcap.md` (the capture filter is `dst port 53`). Skipped as covered: tbot state reset, proxy
 naming, fleet utilisation, Asterisk RSS, tmpfiles.d rule, deadline and random-node access rules. manifest 0.10.4 -> 0.10.5.
-
-## 20261029_1750 — Inbound route to the peer architect skills (v0.10.3 -> v0.10.4)
-
-SKILL.md Related Skills names skill-network-architect and skill-systems-architect and when to call them (design rather than device facts), with their
-handoff form; they call back here for platform facts (operator, 2026-10-29). manifest 0.10.3 -> 0.10.4.
-
-## 20261029_1417 — aurukun: six WAN legs per box; a leg down at draft time is left out (v0.10.2 -> v0.10.3)
-
-Learned 2026-10-29 in `references/01_overview.md` (WAN legs): every aurukun box has six NBN Co WAN legs with their own routing
-tables; an uplink plan drafted while one is down leaves it out (unified-network-controller, smc01 `enp1s0`).

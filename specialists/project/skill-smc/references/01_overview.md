@@ -3,6 +3,7 @@
 ## Contents
 
 - [1. What an SMC Box Is](#1-what-an-smc-box-is)
+- [2. Operator answers, 6 Oct 2026](#2-operator-answers-6-oct-2026)
 
 ---
 
@@ -44,8 +45,17 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
   location (first raised by the NTG26-0134 tender, which limits personal information to the NT and customer data to Australia).
 - Direct SSH to port 22 is not reachable externally
 - **SSH only** — Teleport DB/Kubernetes/app access features not in use
-- **Access is exclusively `tsh ssh root@<hostname>` (Teleport CLI) — there is no SSH-wrapping MCP in use and no plain-`ssh` path to an SMC.** A `ssh root@<hostname>.teleport.<domain>` form only works if `tsh config` has already generated a `ProxyCommand`-wired `~/.ssh/config` entry for that specific cluster and `tsh login` is active; `tsh ssh` directly is the authoritative form.
-- **`--proxy` flag is sometimes required for direct `tsh ssh` access** (operator-confirmed, 2026-11-03). When `tsh ssh root@<hostname>` returns `access denied` despite the node being registered (visible in `tsh ls`) and the user having `root` login in `tsh status`, adding `--proxy=<teleport_domain>` explicitly resolves it: `tsh --proxy=teleport.apn.au ssh root@<hostname>`. This occurred on `map-smc01` (RCT, siteid 265) — the node has an active tunnel, the user has root login, but direct `tsh ssh` was denied. The `--proxy` form connected immediately. **Rule: if `tsh ssh root@<host>` is denied, retry with `tsh --proxy=<domain> ssh root@<host>` before assuming a role or certificate issue.** The Teleport domain is chosen per-project from the table above; for RCT/APN sites use `teleport.apn.au`.
+- **Access is exclusively `tsh ssh root@<hostname>` (Teleport CLI) — there is no SSH-wrapping MCP in use and no plain-`ssh` path to an SMC.** A `ssh root@<hostname>.teleport.<domain>` form only works
+  if `tsh config` has already generated a `ProxyCommand`-wired `~/.ssh/config` entry for that specific cluster and `tsh login` is active; `tsh ssh` directly is the authoritative form.
+- **`--proxy` flag is sometimes required for direct `tsh ssh` access** (operator-confirmed, 2026-11-03). When `tsh ssh root@<hostname>` returns `access denied` despite the node being registered
+  (visible in `tsh ls`) and the user having `root` login in `tsh status`, adding `--proxy=<teleport_domain>` explicitly resolves it: `tsh --proxy=teleport.apn.au ssh root@<hostname>`. This occurred on
+  `map-smc01` (RCT, siteid 265) — the node has an active tunnel, the user has root login, but direct `tsh ssh` was denied. The `--proxy` form connected immediately. **Rule: if `tsh ssh root@<host>` is
+  denied, retry with `tsh --proxy=<domain> ssh root@<host>` before assuming a role or certificate issue.** The Teleport domain is chosen per-project from the table above; for RCT/APN sites use
+  `teleport.apn.au`.
+- **A box missing from plain `tsh ls` is not offline** (2026-11-10, VERIFIED-OBSERVED). Without `--proxy`, `tsh ls` and `tsh ssh` use the profile's current cluster (`tsh status`, here
+  `teleport.apn.au`), and an nbn_accelerate box exists only in `teleport.communitywifi.net.au`: koonibba-smc01 was absent from `tsh ls` and `tsh ssh` said "agent is offline", yet `tsh
+  --proxy=teleport.communitywifi.net.au ls` listed it and it had been up 7 days. Pick the cluster from the flavor (table above) before any reachability read, then check the backdoor before calling a
+  box unreachable.
 
 - **Canonical local-port-forward tunnel to a device behind an SMC box** (operator-supplied form, 2026-09-17): `tsh ssh --proxy <teleport> -L <local_port>:<device_ip>:<device_port>
   root@<smc-hostname>`. The explicit `--proxy` flag matters — an earlier attempt without it (just `tsh ssh -L ... root@<host>`) was flaky in an agent-harness background-task context (intermittent
@@ -85,13 +95,13 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
   - One unexplained first-attempt failure (`Connection closed`, askpass exec error) preceded two clean runs.
   - **At a multi-SMC site, any box is a valid jump host for the whole site** (`USER_STATED`, operator, 2026-09-21). The boxes share one management address space as a VRRP-style redundant set (aurukun:
     three boxes); if one fails, traffic moves to the others through the switching layer and the wireless network. A fixed `ProxyJump` does not fail over by itself — pick another box by hand, or use a
-    `ProxyCommand` that tries each in turn (untested). Device host keys stay keyed by site, not by box, because the device is the same whichever box you enter through. Implemented for
-    the controller's device pushes on 2026-09-26 (`unified-network-controller/wc-local/scripts/collector/batch_push_devices.py` tries the site's other SMC boxes); see `06_failure-modes.md`.
-- **`--proxy` goes before the host (verified 2026-09-30).** `tsh ssh --proxy=teleport.communitywifi.net.au root@<node>` works; `tsh ssh root@<node>
-  --proxy=...` passes the flag to the node as a command and uses the default profile, failing with `dial tcp: lookup <node> ... server misbehaving`.
-- **Always name the proxy; never try one and then the other (operator, 2026-09-29).** A node name can exist on both clusters: `mungkarta-smc01` is a
-  BOXER-6404 on `teleport.communitywifi.net.au` and a Raspberry Pi (kernel `5.15.0-1078-raspi`) on `teleport.apn.au`. A loop that tries apn first and
-  keeps the first answer reads the wrong box without any error. Take the proxy from the box's flavour (inventory folder) or its Nautobot SMC Device.
+    `ProxyCommand` that tries each in turn (untested). Device host keys stay keyed by site, not by box, because the device is the same whichever box you enter through. Implemented for the controller's
+    device pushes on 2026-09-26 (`unified-network-controller/wc-local/scripts/collector/batch_push_devices.py` tries the site's other SMC boxes); see `06_failure-modes.md`.
+- **`--proxy` goes before the host (verified 2026-09-30).** `tsh ssh --proxy=teleport.communitywifi.net.au root@<node>` works; `tsh ssh root@<node> --proxy=...` passes the flag to the node as a
+  command and uses the default profile, failing with `dial tcp: lookup <node> ... server misbehaving`.
+- **Always name the proxy; never try one and then the other (operator, 2026-09-29).** A node name can exist on both clusters: `mungkarta-smc01` is a BOXER-6404 on `teleport.communitywifi.net.au` and a
+  Raspberry Pi (kernel `5.15.0-1078-raspi`) on `teleport.apn.au`. A loop that tries apn first and keeps the first answer reads the wrong box without any error. Take the proxy from the box's flavour
+  (inventory folder) or its Nautobot SMC Device.
 - **`--cluster=` is NOT a substitute for `--proxy=` on `teleport.communitywifi.net.au`, for ANY command — not just `-L` tunnels — and getting this wrong produces an error that convincingly fakes a
   real outage (incident 2026-09-18).** Two independent agent sessions in `cambium-swap` ran `tsh ls --cluster=teleport.communitywifi.net.au` / `tsh ssh --cluster=teleport.communitywifi.net.au
   root@hope-vale-smc01` and got `ERROR: connection error: desc = "transport: authentication handshake failed: EOF"` on every attempt, while `tsh status` showed a fully valid cached session (hours
@@ -101,11 +111,11 @@ hardcode a single domain in tooling or scripts; use this table to pick the right
   cause:** `teleport.communitywifi.net.au` is its own independently-logged-in root Teleport target (its own separate `tsh status` profile) — it is not subordinate to `teleport.apn.au`. `--cluster=`
   asks tsh to route to a target as a subordinate via a trust relationship from your current root context; that relationship doesn't exist here, so the gRPC handshake fails with EOF — a transport-layer
   error that gives no hint it's a flag-choice problem rather than a server problem. **Rule: always pass `--proxy=teleport.communitywifi.net.au` explicitly on every `tsh` command against this Teleport
-  target** (`tsh ls`, `tsh ssh`, tunnels — not just the tunnel case documented above), never `--cluster=`. For a device tunnel specifically, prefer `scripts/access/teleport-tunnel.sh` over a hand-written
-  `tsh` invocation — it already hardcodes `--proxy` correctly and resolves the right target from ansible-wifi's inventory automatically (its internal shell variable is still named `CLUSTER`; left
-  as-is, a code rename is out of scope here), so this class of mistake can't happen through it. The 2026-09-18 incident happened because both agent sessions wrote raw `tsh ls`/`tsh ssh <cmd>` calls by
-  hand instead of going through it — that path still needs `--proxy=` added by hand. Before ever concluding this Teleport target is down or a node is missing/decommissioned, re-run the same command
-  with `--proxy=` explicit first — if that works, it was this flag, not an outage.
+  target** (`tsh ls`, `tsh ssh`, tunnels — not just the tunnel case documented above), never `--cluster=`. For a device tunnel specifically, prefer `scripts/access/teleport-tunnel.sh` over a
+  hand-written `tsh` invocation — it already hardcodes `--proxy` correctly and resolves the right target from ansible-wifi's inventory automatically (its internal shell variable is still named
+  `CLUSTER`; left as-is, a code rename is out of scope here), so this class of mistake can't happen through it. The 2026-09-18 incident happened because both agent sessions wrote raw `tsh ls`/`tsh ssh
+  <cmd>` calls by hand instead of going through it — that path still needs `--proxy=` added by hand. Before ever concluding this Teleport target is down or a node is missing/decommissioned, re-run the
+  same command with `--proxy=` explicit first — if that works, it was this flag, not an outage.
 
 ### APN Cluster vs NBN Accelerate Cluster — Structural Comparison (2026-08-03)
 
@@ -118,9 +128,9 @@ and has real functional differences beyond the SSH endpoint — do not assume "c
 | ----------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
 | Central-infra inventory | `inventories/apn/` — jenkins, prometheus_aws,                      | `inventories/cw/` — jenkins, prometheus_aws, teleport_aws; **no graylog/opensearch host groups**      |
 |                         |   teleport_aws, **graylog_servers, opensearch_servers**            |                                                                                                       |
-| Site-fleet inventories  | `rcp` (x86, 18 prod sites, VoIP), `rct` (RPi, read-only, ~300+     | `nbn_accelerate` (x86, ~20 sites), `nbn_wh` (RPi, overlayroot not yet active, 2 real sites +          |
-|                         |   sites — largest fleet in repo), `wh` (RPi, read-only, 24         |   1 generic template)                                                                                 |
-|                         |   sites); platform and counts: operator 2026-10-06                 |                                                                                                       |
+| Site-fleet inventories  | `rcp` (x86, 18 prod sites, VoIP), `rct` (RPi, read-only, ~300+     | `nbn_accelerate` (x86, ~20 sites), `nbn_wh` (RPi, overlayroot not yet active, 2 real sites + 1        |
+|                         |   sites — largest fleet in repo), `wh` (RPi, read-only, 24 sites); |   generic template)                                                                                   |
+|                         |   platform and counts: operator 2026-10-06                         |                                                                                                       |
 | Kernel-update pipeline  | Full automated Jenkins kernel-update pipeline                      | **Absent** — `cw/group_vars/jenkins.yml` has no kernel-update keys or toggle at all                   |
 |                         |   (`jenkins_update_kernel` batch/quarantine config) in             |                                                                                                       |
 |                         |   `apn/group_vars/jenkins.yml`; per-flavor                         |                                                                                                       |
@@ -211,19 +221,17 @@ Operational implications:
 - Prometheus remote_write and federation scrapes must tolerate high latency
 - Any continuous disk writer (pcap, journal, large logs) has compounding impact since data cannot be quickly offloaded over the link
 
-**Learned 2026-10-16 — a working Teleport SSH read takes 7–9 s** (unified-network-controller host verifier, VERIFIED_PRIMARY): fresh `tsh ssh`
-reads from an AWS host to norton-bore, indulkana and areyonga took 7–9 s, so a 6 s deadline failed healthy boxes. Give each attempt 10 s and allow
-two attempts; put outer deadlines on `tsh status` and `tsh ls` too; pick random current `*-smc01` nodes from `tsh ls` rather than one fixed box.
+**Learned 2026-10-16 — a working Teleport SSH read takes 7–9 s** (unified-network-controller host verifier, VERIFIED_PRIMARY): fresh `tsh ssh` reads from an AWS host to norton-bore, indulkana and
+areyonga took 7–9 s, so a 6 s deadline failed healthy boxes. Give each attempt 10 s and allow two attempts; put outer deadlines on `tsh status` and `tsh ls` too; pick random current `*-smc01` nodes
+from `tsh ls` rather than one fixed box.
 
-**Learned 2026-10-29 — per-unit reads through Teleport over satellite cost about 7 s a unit; batch per site** (unified-network-controller onboarding-stage
-report, measured 2026-10-15 on its controller host, VERIFIED_PRIMARY): at a 323-unit Sky Muster Plus `rcp` site the OpenWISP registration stage took 48 min,
-37.5 of them in a per-unit read loop at 7.4 s a unit (one `ssh -f -L` Teleport session per unit; 3.2 s a unit at a terrestrial site), and the Topology
-stage 46 min (152 R195P forwards opened one at a time, `open_tunnels(..., parallel=1)`; every SNMP walk run serially on the SMC, `smc_snmp.run`; UNC
-code at af9474d). The stages are latency-bound, not bandwidth- or CPU-bound. Ranked fixes: open forwards in parallel; bounded concurrency for on-box
-SNMP; forwards through the SMC's shared ControlMaster (`ssh -O forward`) instead of a session per unit; one down list per run (most misses were down
-units, 14 failing the SMC's fping); keep the site's collector off the link while a stage runs (its 15 min cycle overran to 18-26 min). The 15-20 min
-expected after the fixes is UNVERIFIED until a canary measures it. Source: `apn/unified-network-controller/docs/reports/smc-and-site-network/onboarding-stage-speed-and-missed-units-20261015_1528.md`
-§1 and §6 (apn 5cba35f).
+**Learned 2026-10-29 — per-unit reads through Teleport over satellite cost about 7 s a unit; batch per site** (unified-network-controller onboarding-stage report, measured 2026-10-15 on its controller
+host, VERIFIED_PRIMARY): at a 323-unit Sky Muster Plus `rcp` site the OpenWISP registration stage took 48 min, 37.5 of them in a per-unit read loop at 7.4 s a unit (one `ssh -f -L` Teleport session
+per unit; 3.2 s a unit at a terrestrial site), and the Topology stage 46 min (152 R195P forwards opened one at a time, `open_tunnels(..., parallel=1)`; every SNMP walk run serially on the SMC,
+`smc_snmp.run`; UNC code at af9474d). The stages are latency-bound, not bandwidth- or CPU-bound. Ranked fixes: open forwards in parallel; bounded concurrency for on-box SNMP; forwards through the
+SMC's shared ControlMaster (`ssh -O forward`) instead of a session per unit; one down list per run (most misses were down units, 14 failing the SMC's fping); keep the site's collector off the link
+while a stage runs (its 15 min cycle overran to 18-26 min). The 15-20 min expected after the fixes is UNVERIFIED until a canary measures it. Source:
+`apn/unified-network-controller/docs/reports/smc-and-site-network/onboarding-stage-speed-and-missed-units-20261015_1528.md` §1 and §6 (apn 5cba35f).
 
 ### WAN Uplink Topology Pattern — Direct-to-NTD and Switch-Trunked Access-VLANs Can Coexist on One Box
 
@@ -268,59 +276,51 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 - **VRRP.** Only aurukun (three SMCs, `nbn_accelerate`) runs keepalived; no `rcp`, `wh`, `nbn_wh` or `rct` site does.
 
 > **Learned 2026-10-29** · aurukun-smc01..03 (`nbn_accelerate`, BOXER-6404) · VERIFIED_PRIMARY · Source: `collect-smc-evidence-full.sh --only ha` on all
-> three boxes, 2026-10-29 09:47 and 09:53 (keepalived config, `ip -o addr`, journal) · Falsifier: a config on any of the three that differs from this.
-> The VRRP layout of the only multi-SMC site, read live:
+> three boxes, 2026-10-29 09:47 and 09:53 (keepalived config, `ip -o addr`, journal) · Falsifier: a config on any of the three that differs from this. The VRRP layout of the only multi-SMC site, read
+> live:
 > - keepalived v2.2.7 is a **source build**: config `/usr/local/etc/keepalived/keepalived.conf`, options `/usr/local/etc/sysconfig/keepalived`,
->   binary `/usr/local/sbin/keepalived`; `/etc/keepalived/` does not exist.
+> binary `/usr/local/sbin/keepalived`; `/etc/keepalived/` does not exist.
 > - Management (`bridge_500`, /22): boxes `.254` / `.253` / `.252`, one VIP `10.255.0.1` (`management_internet`, VRID 1; smc01 priority 150,
->   smc02 140).
+> smc02 140).
 > - Public (`bridge_501`, /20): boxes `.254` / `.253` / `.252`, three VIPs `10.0.0.1` / `.2` / `.3` (`public_internet01..03`, VRIDs 1-3), one
->   led by each box, so clients are spread over three gateways.
+> led by each box, so clients are spread over three gateways.
 > - One track script, `google_ping` (`/bin/ping -c 1 -W 2 8.8.8.8`), weight -30 on every instance: a WAN miss on the master hands its VIPs over.
->   On 2026-10-29 smc01 flipped about hourly from 02:36 (40 transitions that day vs 4-8 a day before): its WAN, not the boxes.
+> On 2026-10-29 smc01 flipped about hourly from 02:36 (40 transitions that day vs 4-8 a day before): its WAN, not the boxes.
 > - **DHCP is not shared**: no `failover peer`; each box runs its own `dhcpd` (619 / 587 / 149 active leases). A reader that takes leases from one
->   box sees about a third of the site's clients; read all three.
+> box sees about a third of the site's clients; read all three.
 > - Placement evidence: `bridge fdb show br bridge_500` lists learned entries as `<mac> dev enp3s0.500 master bridge_500` (the trunk's VLAN 500
->   sub-interface); a box's own switch is learned alone on its trunk port; the box's own ports are `permanent`. The master holds the VIP as a
->   `secondary` inet on `bridge_500` (`ip -o -4 addr show dev bridge_500`).
+> sub-interface); a box's own switch is learned alone on its trunk port; the box's own ports are `permanent`. The master holds the VIP as a `secondary` inet on `bridge_500` (`ip -o -4 addr show dev
+> bridge_500`).
 > - At a multi-SMC site the capture tools need the box name as given (`aurukun-smc02`) and the proxy named (`--proxy`), both added 2026-10-29.
 
 > **Learned 2026-10-29** · aurukun-smc01..03 (`nbn_accelerate`) · VERIFIED_PRIMARY · Source: `ip route show table all` in the 09:47 evidence
-> set and unified-network-controller `just wc::uplinks read` (14:00, public IP and ASN per leg) · Falsifier: a box at the site with more or
-> fewer than six WAN tables, or a leg whose ASN is not NBN Co
-> Each aurukun box has **six WAN legs of its own** (operator: six internet links per SMC, 18 at the site), the same interface names on every
-> box, each with its own routing table and default route: `enp1s0`, `enp2s0`, `vlan521`, `vlan523`, `vlan532`, `vlan534`; every one NBN Co
-> (Sky Muster). The other templated uplink VLANs (522, 524-526, 531, 533, 535, 536) hold no address. A leg that is down when an uplink
-> plan is drafted reads "provider unknown (ASN none)" and is left out (smc01 `enp1s0`, Port 1): count each box's WAN tables before
-> trusting a draft, and redraft when one was missing.
-- **Central hosting.** Prometheus and Graylog run in AWS Sydney (ap-southeast-2) and are managed by Malik. Eclipse is hosted in SY3, is high availability and is monitored by the NOC. RADIUS and
-  802.1X are not used anywhere.
+> set and unified-network-controller `just wc::uplinks read` (14:00, public IP and ASN per leg) · Falsifier: a box at the site with more or fewer than six WAN tables, or a leg whose ASN is not NBN Co
+> Each aurukun box has **six WAN legs of its own** (operator: six internet links per SMC, 18 at the site), the same interface names on every box, each with its own routing table and default route:
+> `enp1s0`, `enp2s0`, `vlan521`, `vlan523`, `vlan532`, `vlan534`; every one NBN Co (Sky Muster). The other templated uplink VLANs (522, 524-526, 531, 533, 535, 536) hold no address. A leg that is down
+> when an uplink plan is drafted reads "provider unknown (ASN none)" and is left out (smc01 `enp1s0`, Port 1): count each box's WAN tables before trusting a draft, and redraft when one was missing.
+- **Central hosting.** Prometheus and Graylog run in AWS Sydney (ap-southeast-2) and are managed by Malik. Eclipse is hosted in SY3, is high availability and is monitored by the NOC. RADIUS and 802.1X
+  are not used anywhere.
 - **Satellite round trip.** Depends on the link: Sky Muster Plus 600–800 ms; Starlink under 100 ms. Operator figures, not a measurement.
   > **Learned 2026-11-06** · link figures measured · VERIFIED_PRIMARY · Source: `just smc_link_health <host> --pings 600` (read-only) and the
-  > speedtest exporter's 30-day medians (`quantile_over_time(0.5, speedtest_download_bits_per_second[30d])`, apn Prometheus), smc-resiliency
-  > S3 · Falsifier: a month of speedtests at Sky Muster sites with a median far from 48 Mbit/s
-  > Round trip to the Teleport proxy: bidyadanga (Sky Muster) 543 / 700 / 2447 ms min/avg/max, 3 of 600 pings lost (0.5 %); warburton
-  > Starlink legs 56 / 64 / 100 ms, 0 of 600. Speedtests (about 720 a site in 30 days): Sky Muster sites (ping 560 to 700 ms, about 300 sites)
-  > median 48 Mbit/s down, 5 up; four Starlink sites (ping 24 to 33 ms) 45 to 297 down, 5 to 57 up. Many sites' 10th percentile is 0
-  > (failed tests). Speedtests use parallel connections, so one TCP stream at 700 ms gets less.
-- **MQTT.** The IoT devices behind mosquitto monitor the UPS and the battery boxes; `apn-mqtt-client` collects the data, and Rob is its main user.
-  Security: `roles/smc_mqtt/tasks/main.yml` writes the `APN_IOT` broker password as a literal value (not a variable) into `/etc/mosquitto/mosquitto.passwd` with mode 0644, on
-  HEAD, `big_push` and `master` (checked 2026-10-06). Rotate it and move it to the secrets store.
-- **Tstik.** Thuraya is to be replaced by Iridium; whether the same Tstik is used afterwards is unknown (to check with Germain, NOC).
-  Update 2026-10-28: the same `rct-tstik` app is kept; Iridium sites run its `release/iridium` branch (`smc_bases_telemetry_iridium_git`, 1318c7b)
-  with AVR firmware V3.07, rolled out per SMC by the smc_change spec `rct-tstik-iridium-update` plus `smc_bases_iridium: true` per host
-  (canary aeroplane-1-smc01; [19_smc-change-role.md](19_smc-change-role.md)). That flag also switches the portal branch, the latlon role and
-  the Teleport lat/lon labels on the next full smc_bases run.
+  > speedtest exporter's 30-day medians (`quantile_over_time(0.5, speedtest_download_bits_per_second[30d])`, apn Prometheus), smc-resiliency S3 · Falsifier: a month of speedtests at Sky Muster sites
+  > with a median far from 48 Mbit/s Round trip to the Teleport proxy: bidyadanga (Sky Muster) 543 / 700 / 2447 ms min/avg/max, 3 of 600 pings lost (0.5 %); warburton Starlink legs 56 / 64 / 100 ms, 0
+  > of 600. Speedtests (about 720 a site in 30 days): Sky Muster sites (ping 560 to 700 ms, about 300 sites) median 48 Mbit/s down, 5 up; four Starlink sites (ping 24 to 33 ms) 45 to 297 down, 5 to 57
+  > up. Many sites' 10th percentile is 0 (failed tests). Speedtests use parallel connections, so one TCP stream at 700 ms gets less.
+- **MQTT.** The IoT devices behind mosquitto monitor the UPS and the battery boxes; `apn-mqtt-client` collects the data, and Rob is its main user. Security: `roles/smc_mqtt/tasks/main.yml` writes the
+  `APN_IOT` broker password as a literal value (not a variable) into `/etc/mosquitto/mosquitto.passwd` with mode 0644, on HEAD, `big_push` and `master` (checked 2026-10-06). Rotate it and move it to
+  the secrets store.
+- **Tstik.** Thuraya is to be replaced by Iridium; whether the same Tstik is used afterwards is unknown (to check with Germain, NOC). Update 2026-10-28: the same `rct-tstik` app is kept; Iridium sites
+  run its `release/iridium` branch (`smc_bases_telemetry_iridium_git`, 1318c7b) with AVR firmware V3.07, rolled out per SMC by the smc_change spec `rct-tstik-iridium-update` plus `smc_bases_iridium:
+  true` per host (canary aeroplane-1-smc01; [19_smc-change-role.md](19_smc-change-role.md)). That flag also switches the portal branch, the latlon role and the Teleport lat/lon labels on the next full smc_bases run.
 - **postfix.** Decision: listen on loopback only (`inet_interfaces = loopback-only`). Not yet implemented.
 - **autossh backdoor and DNS-over-TLS tunnel.** Retirement undecided.
-- **A/B update mechanism.** Undecided; the `ansible-wifi` SCRATCHPAD recommendation (tryboot on RPi, Mender on x86) is not approved.
-  Update 2026-10-29 (unified-network-controller `ARCHITECTURE.md` D12, decided 2026-09-27, amended 2026-10-05; register IC1-IC7): SMC-resident P0
-  software is standard-library Python 3.10 on the fleet's Ubuntu 22.04, shipped as an ansible-wifi role and rolled back to the role's previous revision,
-  rehearsed on the virtual SMC first; Podman quadlets are the P1 direction once `podman --version` is read on one SMC (whether 22.04's Podman is new
-  enough is UNVERIFIED); A/B recovery is for reimaged units only (a Pi whose SD card is replaced; no x86 plan yet); no existing SMC is converted remotely.
+- **A/B update mechanism.** Undecided; the `ansible-wifi` SCRATCHPAD recommendation (tryboot on RPi, Mender on x86) is not approved. Update 2026-10-29 (unified-network-controller `ARCHITECTURE.md`
+  D12, decided 2026-09-27, amended 2026-10-05; register IC1-IC7): SMC-resident P0 software is standard-library Python 3.10 on the fleet's Ubuntu 22.04, shipped as an ansible-wifi role and rolled back
+  to the role's previous revision, rehearsed on the virtual SMC first; Podman quadlets are the P1 direction once `podman --version` is read on one SMC (whether 22.04's Podman is new enough is
+  UNVERIFIED); A/B recovery is for reimaged units only (a Pi whose SD card is replaced; no x86 plan yet); no existing SMC is converted remotely.
 - **Hardware watchdog (P17).** Acceptable; test on the spare (`spare-smc01`) first. Constraints: [06_failure-modes.md](06_failure-modes.md).
-- **Low touch after cnMaestro.** Nothing should change for the field or the NOC: the Unified Network Controller takes over the steps cnMaestro performs today (claim, approve, the RPZ names).
-  A low-touch install takes more than two days on site.
+- **Low touch after cnMaestro.** Nothing should change for the field or the NOC: the Unified Network Controller takes over the steps cnMaestro performs today (claim, approve, the RPZ names). A
+  low-touch install takes more than two days on site.
 - **Captive portal.** Required on every product and flavour; when Eclipse is unreachable it fails closed (no new access).
 - **Content filtering.** Required at all community sites.
 - **url_capture.** Required on all x86 solutions; extending it to the Raspberry Pi solutions and Litebooth is being considered, not decided.
@@ -328,16 +328,18 @@ Answers the operator gave to the enterprise-strategy clarification register (`/V
 - **Site switches.** Each `rcp` and `nbn_accelerate` site has two TP-Link switches; at some both are online, at others one is on standby. Credentials are mostly the same (see
   [16_tplink-site-switches.md](16_tplink-site-switches.md)).
 - **Internet links.** Most sites use Sky Muster Plus; the x86 deployments of the past year are all Starlink.
-- **Monitoring.** LibreNMS is not in use. Alerts reach the NOC from Prometheus (Alertmanager) to Teams and from the Wi-Fi dashboard bots. Detecting a silent site stays with Prometheus for now;
-  there is no response target for a silent site.
+- **Monitoring.** LibreNMS is not in use. Alerts reach the NOC from Prometheus (Alertmanager) to Teams and from the Wi-Fi dashboard bots. Detecting a silent site stays with Prometheus for now; there
+  is no response target for a silent site.
 - **SMC resiliency scope.** The A/B update model only; hang recovery stays investigation only (the watchdog test on the spare is still acceptable).
 - **Rob and the SMC.** Rob gives hardware input and can raise concerns on SMC decisions; the SMC decisions are Malik's.
-- **Who knows what.** Gravolin — level 2 engineer, primary on low touch. Germain — NOC, Cambium and the Wi-Fi dashboard. Brendan — the field team. Mark — NOC, desktop RF study for each
-  deployment. Rob — electronics, new hardware and radio; main user of the UPS and battery data.
+- **Who knows what.** Gravolin — level 2 engineer, primary on low touch. Germain — NOC, Cambium and the Wi-Fi dashboard. Brendan — the field team. Mark — NOC, desktop RF study for each deployment. Rob
+  — electronics, new hardware and radio; main user of the UPS and battery data.
 
-- **Site topology (operator, 13 Oct 2026, `USER_STATED`).** No community has a loop or ring topology except Kalumburu: each site is a tree from its SMC
-  (switches, tower radios, subscribers, then each subscriber's router). A drawn loop anywhere else is a discovery error, typically a unit behind a
-  subscriber radio whose MAC a switch learnt on the port towards the tower. A few routers are cabled at towers rather than behind an SM (no Option 82
-  Remote ID; old-looma 3 of 66). unified-network-controller enforces this in its topology rules (`correlate.py`, `topology_push.py`).
+- **Site topology (operator, 13 Oct 2026, `USER_STATED`).** No community has a loop or ring topology except Kalumburu: each site is a tree from its SMC (switches, tower radios, subscribers, then each
+  subscriber's router). A drawn loop anywhere else is a discovery error, typically a unit behind a subscriber radio whose MAC a switch learnt on the port towards the tower. A few routers are cabled at
+  towers rather than behind an SM (no Option 82 Remote ID; old-looma 3 of 66). unified-network-controller enforces this in its topology rules (`correlate.py`, `topology_push.py`).
 
-- **Inventory flavor verification before answering (operator, 2026-11-04).** When given site names and asked for SMC commands or naming, **always run `ls inventories/<flavor>/host_vars/ | grep <site>` before assuming the flavor**. Never guess RCP vs RCT vs WH vs NBN from site names alone. Sites like "scrubby bore", "the crossing", "shelfo crossing", "wonya bore", "oriners" are RCT sites — they lived in `inventories/rct/host_vars/` long before I saw them. A wrong flavor guess produces wrong inventory paths (`-i inventories/rcp/prod` instead of `-i inventories/rct/prod`), which is a silent failure. Rule: list the flavor's host_vars, grep for the site, confirm before proceeding.
+- **Inventory flavor verification before answering (operator, 2026-11-04).** When given site names and asked for SMC commands or naming, **always run `ls inventories/<flavor>/host_vars/ | grep <site>`
+  before assuming the flavor**. Never guess RCP vs RCT vs WH vs NBN from site names alone. Sites like "scrubby bore", "the crossing", "shelfo crossing", "wonya bore", "oriners" are RCT sites — they
+  lived in `inventories/rct/host_vars/` long before I saw them. A wrong flavor guess produces wrong inventory paths (`-i inventories/rcp/prod` instead of `-i inventories/rct/prod`), which is a silent
+  failure. Rule: list the flavor's host_vars, grep for the site, confirm before proceeding.
