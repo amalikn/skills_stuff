@@ -165,7 +165,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"pad_rewrite: {exc}", file=sys.stderr)
     return 2
   for label, cmd, stdin in todo:
-    print(("apply " if a.apply else "plan  ") + label)
+    print(("apply " if a.apply else "plan  ") + label, flush=True)
     if a.apply:
       try:
         pad(cmd, a.timeout, a.pad, stdin)

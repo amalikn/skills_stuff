@@ -13,6 +13,15 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_2004 — closed items on the standard; output order fix
+
+### Changed
+
+- The four closed items (smc TASK-29; UNC TASK-15, TASK-19, IDEA-23) rewritten to guidelines 3.3; their 8 comment originals saved as notes first,
+  then reformatted. Sweep: 36 plans, tasks and ideas and 20 comments in both workspaces on the standard.
+- `pad_rewrite.py` flushes each progress line, so an error is no longer printed ahead of it (the earlier "silent stop" was an `update_conflict`
+  hidden by that order). cli-reference Traps: notes and comments move an item's seq.
+
 ## 20261110_1958 — original comment texts kept; rate-limit retries
 
 ### Changed

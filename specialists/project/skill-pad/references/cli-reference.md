@@ -99,3 +99,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > without a wait; an API or CLI read that returns an edited comment's earlier text.
 > Pad rate-limits bursts of writes: back off by `retry_after_seconds` (scripts/pad_rewrite.py retries up to 5 times). `pad item history` keeps item
 > body versions, but nothing found keeps the earlier text of an edited comment: save a comment's original as a note before editing it.
+
+> **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY · Source: `update_conflict` (expected_seq 53, actual 110) after `pad item note`
+> writes on the same item · Falsifier: a note that leaves the item's seq unchanged.
+> `pad item note`, `decide` and comment writes move the item's `seq`, so a body update guarded by a seq read before them is refused. Write the body
+> first, or re-read the seq (and check the body is unchanged) before the guarded write.
