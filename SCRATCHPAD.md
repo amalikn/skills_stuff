@@ -51,6 +51,8 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 
 ## Open items
 
+- [ ] **20261110_1404** `KEEP`: `stop-slop` and `superpowers` have no `REVISION_HISTORY.md` (REVISION_HISTORY Policy requires one); and whether Claude Code honours `disabled: true` in SKILL.md front
+  matter is unverified (the 53 disabled skills were still listed in a session started before the flags were committed): check in a fresh session.
 - [ ] **Run `skill-staleness-audit` end-to-end on a project other than its originating one.** It has been unit-tested across four repos but never driven through all nine phases elsewhere.
   `apn/vocus-profitability` is the obvious first target — 932 files, 240 novel lines in its managed blocks, never swept. `KEEP`
 
@@ -97,6 +99,8 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 
 ## Recent decisions
 
+- 2026-11-10 — Operator kept `disabled: true` on the skills it was found on (d2d14f1), then re-enabled executing-plans, writing-plans and verification-before-completion (the disabled ones the global
+  AGENTS.md routing names; 87e8f96). 53 stay disabled; list in REVISION_HISTORY 2026-11-10. `KEEP`
 - 2026-09-18 — Established rule: before committing/pushing into any nested embedded git repo, check `git remote -v` for actual ownership. Audited 6 gitlinked dirs; 4 are third-party upstream mirrors
   (`diagram-design`→cathrynlavery, `graphify/graphify-github`→safishamsi, `skill-anydoc/anydoc-github`→firecrawl, `swarms/swarms-github`→am-will) and `strategy-os`→BellaBe is also not the operator's
   (already 1 commit ahead of its origin) — all five left untouched on operator instruction. Only `superpowers` (`amalikn/superpowers.git`, operator's own fork) was committed (0b28fd3) and pushed; the
@@ -138,6 +142,10 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 ---
 
 ## Session history (summaries — full detail in memory-keeper)
+
+### 2026-11-10 — Commit-all of the pending tree, disable flags kept, three re-enabled <!-- KEEP -->
+- Committed and pushed knowledge-curator pilot work (44aad34) and the `disabled: true` flags (d2d14f1, stop-slop 8efb958, superpowers), from the UNC session.
+- Incident: flags committed without asking intent; a side agent's warning came after. Operator kept them, re-enabled three routing skills (87e8f96). Detail: REVISION_HISTORY 2026-11-10.
 
 ### 2026-09-18 — Repo commit/push + embedded-repo ownership audit <!-- KEEP -->
 - Committed/pushed skill-smc, skill-ai-it, and skill-walk-before-run changes (adcbea4), including four new upstream-clone gitlinks (diagram-design, graphify, skill-anydoc/anydoc-github, swarms).
@@ -241,6 +249,8 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 
 ## Memory pointers (navigation only — content is above)
 
+- 2026-11-10: memory-keeper `skills-stuff` / `skills_stuff.git.disable-flags-commit-20261110`, `session.closeout.20261110.skills-disable-flags`; project-context note and two decisions; checkpoints
+  `slurp-20261110-skills-disable-flags`.
 - memory-keeper channel `skills-stuff` / keys (2026-09-18): `skills_stuff.git.skill-smc-ai-it-wbr-commit-20260918`, `skills_stuff.git-hygiene.embedded-repo-ownership-decision-20260918`,
   `skills_stuff.git.superpowers-fork-push-20260918`, `skills_stuff.git-hygiene.gitlink-convention-and-broken-submodule-mapping-20260918`, `skills_stuff.task.third-party-clone-edits-orphaned-20260918`
 - MK checkpoint: `slurp-20260918-git-hygiene-commits` (ID: 0ae71541) — PC checkpoint same name (ID: bdaf8f76-b6c7-4350-a554-4b1cc8e6cb4c)

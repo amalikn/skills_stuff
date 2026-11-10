@@ -7,6 +7,21 @@ Change log for the `skills_stuff` parent repository.
 - Submodules must contain their own `REVISION_HISTORY.md`.
 - Pushes should use controlled workflows so rollback points are explicit.
 
+## 2026-11-10
+- Committed and pushed the pending tree (operator: "can you commit all the skills_stuff?"). `44aad34`: skill-knowledge-curator's 2026-11-05 UNC pilot work (status_claims, merge_labels, locate_lines
+  with tests; workflow steps 3b and 3c; 152 tests pass). `d2d14f1`: `disabled: true` in the front matter of 44 skills here, 1 in `stop-slop` (8efb958) and 11 in `superpowers`, with both gitlink
+  pointers bumped. Disabled here: agent-watchdog, code-review-security, cold-email-sequence-generator, community-led-growth, competitive-intelligence-analyst, content-strategy, deep-reading-analyst,
+  devops, doc, email-sequence, financial-unit-economics, find-skills, frontend-design (agent-stack copy), github-explorer, internal-invoice-analysis, market-sizing-analysis, micro-saas-launcher,
+  ph-community-outreach, plan-arbiter, plow-ahead, premortem, pricing-strategy, product-strategist, prompt-master, quick-recap, read-the-damn-docs, scientific-critical-thinking, security-audit,
+  senior-qa, seo-audit, seo-content-strategist, skill-project-wiki-rag-bridge, startup-business-models, startup-financial-modeling, stay-within-limits, tailwind-v4-shadcn, team, user-persona-creation,
+  user-research-synthesis, ux-audit-rethink, visual-plan, visual-recap, web-scraping, websh.
+- Incident: the flags were already on disk when the commit was asked for; the agent committed them without asking whether the disabling was meant, and a side agent's warning that writing-plans,
+  executing-plans and verification-before-completion (named in the global AGENTS.md routing) were among them arrived after the commit. Asked then; the operator kept the disabling (answer "1"), then
+  had those three re-enabled ("enable them", "the 3"): superpowers `309813f`, pointer `87e8f96`. Still disabled in superpowers: finishing-a-development-branch, receiving-code-review,
+  requesting-code-review, subagent-driven-development, test-driven-development, using-git-worktrees, using-superpowers, writing-skills. The other skills the global routing names (brainstorming,
+  systematic-debugging, safe-change-validation, skill-coder) were never disabled. Both submodule remotes were checked as the operator's (`amalikn/`) before pushing; pushed stop-slop
+  `ce2acca..8efb958`, superpowers `0b28fd3..309813f`, then this repo `470f45a..87e8f96`. Neither submodule has its own `REVISION_HISTORY.md` yet (Policy line 2): open.
+
 ## 2026-11-07
 - Added the platform specialist `skill-proxmox` 0.1.0 under `specialists/platform/` (operator: "create and setup skill-proxmox like skill-nautobot"): sixteen references, claim and environment ledgers,
   sixteen scenarios, offline package contract, three stdlib-only read-only helpers with tests, 51 verbatim source captures, the skill-ai-it governance layer; symlinked into `~/.claude/skills` and
@@ -70,6 +85,5 @@ Change log for the `skills_stuff` parent repository.
 - Created `_wiki/CLAUDE.md` governance wrapper (thin `@AGENTS.md` import, fixes missing entrypoint for wiki vault).
 
 ## 2026-11-09
-- Governance files tracked (operator rule): the `.git/info/exclude` lines `AGENTS.md`, `.agents/`, `skills.md` removed; 22 AGENTS.md, `.agents/` and
-  skills.md files committed (95bf5f2). repo-local-guidance 0.2.0 rewrite; repo-knowledge-capture 0.1.3. skill-proxmox gap review, refresh and archcore
-  acceptance (9cbd227, bd2a566).
+- Governance files tracked (operator rule): the `.git/info/exclude` lines `AGENTS.md`, `.agents/`, `skills.md` removed; 22 AGENTS.md, `.agents/` and skills.md files committed (95bf5f2).
+  repo-local-guidance 0.2.0 rewrite; repo-knowledge-capture 0.1.3. skill-proxmox gap review, refresh and archcore acceptance (9cbd227, bd2a566).
