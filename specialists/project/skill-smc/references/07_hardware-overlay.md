@@ -1218,3 +1218,19 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > - The ext4 root spreads blocks up to the card's end (dumpe2fs group counts): 0.6 to 1.4 GiB of data sits above 35 GiB and 1.3 to 4.4 GiB above
 >   8 GiB; rct boxes hold two to three times more high up than wh. A shrink of a deployed root moves that much data.
 
+
+> **Learned 2026-11-10** · deployed fleet, all Pi flavours and both x86 flavours (read-only: 79 boxes probed, 306 of 312 Pis censused, 10 writer
+> probes) · VERIFIED_PRIMARY · Source: smc-resiliency `docs/overview/smc-fleet-survey-20261110_1145.md` and its sources folder (raw output),
+> commit 6f45ec65 · Falsifier: a later census showing the 2022 bootloaders updated, or nbn_wh with overlayroot enabled.
+> - Pi bootloaders are not uniform: 260 on 2023-01-11, 36 rct on 2022-04-26, 10 rct on 2022-01-25. Every Rev 1.4 board (11) runs a 2022
+>   bootloader; nothing updates the EEPROM in the field (`vcgencmd bootloader_version`).
+> - nbn_wh Pis run a writable root: `/etc/overlayroot.conf` has `overlayroot_cfgdisk="disabled" overlayroot=""`. Their cards take 5 to 6 GB a
+>   day (cron jobs and the journal), against 10 to 20 MB a day on overlayroot rct and wh.
+> - Undervoltage since boot on 8 of 306 Pis (`vcgencmd get_throttled` bit 16; 5 wh, 3 rct); the kernel logs "Undervoltage detected" (not
+>   "under-voltage") every few seconds while it lasts.
+> - x86 (BOXER-6404 BIOS B404BM14, BOXER-6641 B641HM20; Ubuntu 22.04.1, .3 and .4): every box ships `iTCO_wdt.ko` but none loads a watchdog or
+>   sets `RuntimeWatchdogSec`. Cron jobs (php `kohana status:*` every 1 to 5 minutes, `url_capturev1.sh` every 2, blocklist rebuilds) and the
+>   journal write up to 30 GB and 7 GB a day on nbn_accelerate (galiwinku, 366 days up); fluent-bit about 2 GB a day on an rcp box.
+> - `/proc/<pid>/io` write_bytes of cron includes its reaped jobs, so cron's figure is the total of everything cron started.
+> - Probes: `scripts/probes/pi_resiliency_probe.sh`, `smc_writers_probe.sh`, `scripts/fleet/pi_bootloader_census.sh`; `tsh` survives SIGALRM, so a
+>   deadline must fork and send TERM then KILL (all probes fixed).

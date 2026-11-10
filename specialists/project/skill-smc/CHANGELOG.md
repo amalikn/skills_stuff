@@ -6,13 +6,20 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261110_0202
+Last rotated: 20261110_1226
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261110_1225 — Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0)
+
+New: `scripts/probes/pi_resiliency_probe.sh`, `scripts/probes/smc_writers_probe.sh`, `scripts/fleet/sample_fleet.py`, `scripts/fleet/summarise_survey.py`,
+`scripts/fleet/pi_bootloader_census.sh` (catalogued, recipes in the justfile). `x86_resiliency_probe.sh` also prints OS, partitions, I/O since boot and
+SMART. Fix: the `perl alarm; exec tsh` deadline in four probes never cut a hung tsh (Go survives SIGALRM); they now fork and send TERM then KILL.
+`references/07_hardware-overlay.md`: Learned 2026-11-10: bootloader census, nbn_wh writable root, undervoltage, x86 watchdog and write rates.
 
 ## 20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)
 
@@ -189,7 +196,3 @@ handoff form; they call back here for platform facts (operator, 2026-10-29). man
 
 Learned 2026-10-29 in `references/01_overview.md` (WAN legs): every aurukun box has six NBN Co WAN legs with their own routing
 tables; an uplink plan drafted while one is down leaves it out (unified-network-controller, smc01 `enp1s0`).
-
-## 20261029_1257 — FDB and VIP placement evidence; TL- model prefix on old SG2428P firmware (v0.10.1 -> v0.10.2)
-
-Learned 2026-10-29 in `references/01_overview.md` (VRRP) and `references/16_tplink-site-switches.md` (b).

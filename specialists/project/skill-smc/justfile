@@ -217,6 +217,26 @@ rct_avr_probe proxy +nodes:
 x86_resiliency_probe proxy +nodes:
     @bash scripts/probes/x86_resiliency_probe.sh --proxy "{{proxy}}" {{nodes}}
 
+# Pi SMC resiliency probe over Teleport (read-only): card, layout, bootloader, write rate, shrink data. Example: just pi_resiliency_probe teleport.apn.au 20-mile-smc01
+pi_resiliency_probe proxy +nodes:
+    @bash scripts/probes/pi_resiliency_probe.sh --proxy "{{proxy}}" {{nodes}}
+
+# Reproducible sample per flavour of prod hosts Teleport lists (read-only). Example: just sample_fleet /Volumes/Data/_ansible/ansible-wifi/inventories --per-flavour 20
+sample_fleet inventories *ARGS: _require-venv
+    @{{py}} scripts/fleet/sample_fleet.py --inventories "{{inventories}}" {{ARGS}}
+
+# Bootloader version of every Pi on stdin (read-only, 8 at a time). Example: just pi_bootloader_census < sample.txt
+pi_bootloader_census *ARGS:
+    @bash scripts/fleet/pi_bootloader_census.sh {{ARGS}}
+
+# What writes on an SMC: processes, folders changed in 24 h, journal, cron, undervoltage (read-only). Example: just smc_writers_probe teleport.apn.au canteen-creek-smc01
+smc_writers_probe proxy +nodes:
+    @bash scripts/probes/smc_writers_probe.sh --proxy "{{proxy}}" {{nodes}}
+
+# Fleet counts and per-box rows from resiliency probe output (read-only; --csv writes one file). Example: just summarise_survey rct=rct.txt rcp=rcp.txt
+summarise_survey +ARGS: _require-venv
+    @{{py}} scripts/fleet/summarise_survey.py {{ARGS}}
+
 # rct site ATA settings through each SMC, compared across units (read-only). Example: just ata_settings_read teleport.apn.au adjamarragu-smc01 alamirra-smc01
 ata_settings_read proxy +nodes: _require-venv
     @{{py}} scripts/probes/ata_settings_read.py --proxy "{{proxy}}" {{nodes}}

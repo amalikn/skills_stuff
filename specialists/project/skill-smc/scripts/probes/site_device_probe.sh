@@ -51,7 +51,7 @@ echo probe_end=ok
 '
 
 echo "== $node ($proxy)"
-out=$(printf '%s' "$REMOTE" | perl -e 'alarm shift; exec @ARGV' "$deadline" tsh ssh --proxy="$proxy" "root@$node" "bash -s -- $*" 2>&1)
+out=$(printf '%s' "$REMOTE" | perl -e '$d=shift; defined(my $p=fork) or die "fork: $!"; if(!$p){exec @ARGV; exit 127} $SIG{ALRM}=sub{kill "TERM",$p; for(1..5){exit 124 if waitpid($p,1)>0; sleep 1} kill "KILL",$p; waitpid($p,0); exit 124}; alarm $d; waitpid($p,0); exit($? & 127 ? 128+($? & 127) : $?>>8)' "$deadline" tsh ssh --proxy="$proxy" "root@$node" "bash -s -- $*" 2>&1)
 rc=$?
 if [ $rc -ne 0 ] || ! printf '%s\n' "$out" | grep -q '^probe_end=ok$'; then
   printf '%s\n' "$out" | tail -3 | sed 's/^/  /'

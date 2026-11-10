@@ -9,7 +9,8 @@
 # root source and filesystem, LVM volume groups with free space, EFI boot entries and timeout, the UEFI surface the OS can see (UEFI or legacy
 # mode, efivars mount mode, Secure Boot and Setup Mode, ESRT capsule entries, the capsule loader, fwupd, DMI BIOS characteristics), the hardware watchdog (device, identity,
 # timeouts, which watchdog drivers ship with the kernel), the soft-lockup detector, systemd version, and the size of the
-# state directories that must survive a reboot (squidguard, Asterisk, DHCP, url_capture, MySQL, ClamAV, Teleport).
+# state directories that must survive a reboot (squidguard, Asterisk, DHCP, url_capture, MySQL, ClamAV, Teleport); since 2026-11-10 also the OS
+# release and RAUC version, every partition, the I/O counters since boot with uptime, and the SMART wear and health attributes of each disk.
 # These are the inputs to smc-resiliency's x86 plan (section 3) and its per-model qualification (stage XQ).
 # Only reads; writes nothing on the box or locally. Every tsh call has a deadline (default 90 s, `--deadline`).
 # Exit status: 0 when every node answered, 1 when any node was unreachable or returned no probe output, 2 on bad usage.
@@ -57,6 +58,12 @@ echo watchdog_drivers=$(ls /lib/modules/$(uname -r)/kernel/drivers/watchdog/ 2>/
 echo runtime_watchdog=$(grep -hE "^RuntimeWatchdogSec" /etc/systemd/system.conf /etc/systemd/system.conf.d/*.conf 2>/dev/null | tail -1) softlockup=$(cat /proc/sys/kernel/watchdog 2>/dev/null)
 echo systemd=$(systemctl --version | head -1 | cut -d" " -f2) kernel=$(uname -r)
 for d in /var/lib/squidguard /var/lib/asterisk /var/lib/dhcp /url_capture /var/lib/mysql /var/lib/clamav /var/lib/teleport; do [ -d "$d" ] && echo state=$d,$(du -sh "$d" 2>/dev/null | cut -f1); done
+. /etc/os-release 2>/dev/null; echo os="$PRETTY_NAME" codename=$VERSION_CODENAME rauc=$(rauc --version 2>/dev/null | cut -d" " -f2)
+lsblk -n -o NAME,SIZE,FSTYPE,PARTTYPENAME,MOUNTPOINT 2>/dev/null | sed "s/^/part=/"
+echo uptime_s=$(cut -d. -f1 /proc/uptime)
+for d in $(lsblk -dn -o NAME,TYPE 2>/dev/null | awk "\$2==\"disk\"{print \$1}"); do echo io=$d,sectors_written=$(awk "{print \$7}" /sys/block/$d/stat),sectors_read=$(awk "{print \$3}" /sys/block/$d/stat); done
+command -v smartctl >/dev/null 2>&1 || echo smart=smartctl-absent
+for d in $(lsblk -dn -o NAME,TYPE 2>/dev/null | awk "\$2==\"disk\"{print \$1}"); do command -v smartctl >/dev/null 2>&1 && smartctl -A -i /dev/$d 2>/dev/null | grep -E "Device Model|Model Number|Power_On_Hours|Wear_Leveling|Media_Wearout|Percent_Lifetime|Percentage Used|Total_LBAs_Written|Data Units Written|Host_Writes|Reallocated_Sector|Program_Fail|Erase_Fail|Available Spare|Unsafe_Shutdown|Power_Cycle" | sed "s/^/smart=$d,/"; done
 echo probe_end=ok
 '
 
@@ -64,7 +71,7 @@ probe() {
   # Run the fixed read-only command set on one node and print its block.
   # Args: $1 node name (Teleport node). Returns: 0 when the node completed the probe, 1 when unreachable, cut short or past the deadline.
   local node="$1" out rc
-  out=$(perl -e 'alarm shift; exec @ARGV' "$deadline" tsh ssh --proxy="$proxy" "root@$node" "$REMOTE" </dev/null 2>&1)   # stdin closed: a tsh reading stdin hung a background run (2026-10-22)
+  out=$(perl -e '$d=shift; defined(my $p=fork) or die "fork: $!"; if(!$p){exec @ARGV; exit 127} $SIG{ALRM}=sub{kill "TERM",$p; for(1..5){exit 124 if waitpid($p,1)>0; sleep 1} kill "KILL",$p; waitpid($p,0); exit 124}; alarm $d; waitpid($p,0); exit($? & 127 ? 128+($? & 127) : $?>>8)' "$deadline" tsh ssh --proxy="$proxy" "root@$node" "$REMOTE" </dev/null 2>&1)   # stdin closed: a tsh reading stdin hung a background run (2026-10-22)
   rc=$?
   echo "== $node ($proxy)"
   if [ $rc -ne 0 ] || ! printf '%s\n' "$out" | grep -q '^probe_end=ok$'; then

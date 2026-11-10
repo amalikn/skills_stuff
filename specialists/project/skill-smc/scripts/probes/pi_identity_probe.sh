@@ -65,7 +65,7 @@ probe() {
   # Run the fixed read-only command set on one node.
   # Args: $1 node name (Teleport node). Returns: 0 when the node completed the probe, 1 when unreachable, cut short or past the deadline.
   local node="$1" out rc
-  out=$(perl -e 'alarm shift; exec @ARGV' "$deadline" tsh ssh --proxy="$proxy" "root@$node" "$REMOTE" </dev/null 2>&1)   # stdin closed: a tsh reading stdin hung a background run (2026-10-22)
+  out=$(perl -e '$d=shift; defined(my $p=fork) or die "fork: $!"; if(!$p){exec @ARGV; exit 127} $SIG{ALRM}=sub{kill "TERM",$p; for(1..5){exit 124 if waitpid($p,1)>0; sleep 1} kill "KILL",$p; waitpid($p,0); exit 124}; alarm $d; waitpid($p,0); exit($? & 127 ? 128+($? & 127) : $?>>8)' "$deadline" tsh ssh --proxy="$proxy" "root@$node" "$REMOTE" </dev/null 2>&1)   # stdin closed: a tsh reading stdin hung a background run (2026-10-22)
   rc=$?
   echo "== $node ($proxy)"
   if [ $rc -ne 0 ] || ! printf '%s\n' "$out" | grep -q '^probe_end=ok$'; then

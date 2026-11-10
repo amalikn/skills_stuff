@@ -30,9 +30,9 @@ up from its own folder; tests sit beside the script they test.
 |---|---|---|
 | `ansible/` | ansible-wifi repo work: change reach, smc_change records, inventory adds, lint gates, local-knowledge index | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_change_parallel.sh](ansible/smc_change_parallel.sh), [role_stale_facts.py](ansible/role_stale_facts.py), [test_role_stale_facts.py](ansible/test_role_stale_facts.py), [test_smc_change_parallel.py](ansible/test_smc_change_parallel.py), [smc_inventory_add.py](ansible/smc_inventory_add.py), [smc_mark_iridium.py](ansible/smc_mark_iridium.py), [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh) |
 | `access/` | getting onto a box: Teleport tunnel and sessions, the autossh backdoor | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [teleport_sessions.py](access/teleport_sessions.py) |
-| `probes/` | read-only probes of named boxes over Teleport | [ata_settings_read.py](probes/ata_settings_read.py), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_identity_probe.sh](probes/pi_identity_probe.sh), [site_device_probe.sh](probes/site_device_probe.sh), [x86_resiliency_probe.sh](probes/x86_resiliency_probe.sh), [smc_link_health.sh](probes/smc_link_health.sh), [smc_gateway_loss.sh](probes/smc_gateway_loss.sh), [smc_gateway_loss_remote.sh](probes/smc_gateway_loss_remote.sh), [test_smc_gateway_loss.py](probes/test_smc_gateway_loss.py), [test_smc_link_health.py](probes/test_smc_link_health.py), [overlay-usage-breakdown.sh](probes/overlay-usage-breakdown.sh), [dns_capture_top.sh](probes/dns_capture_top.sh) |, [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh) |
+| `probes/` | read-only probes of named boxes over Teleport | [ata_settings_read.py](probes/ata_settings_read.py), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_resiliency_probe.sh](probes/pi_resiliency_probe.sh), [smc_writers_probe.sh](probes/smc_writers_probe.sh), [pi_identity_probe.sh](probes/pi_identity_probe.sh), [site_device_probe.sh](probes/site_device_probe.sh), [x86_resiliency_probe.sh](probes/x86_resiliency_probe.sh), [smc_link_health.sh](probes/smc_link_health.sh), [smc_gateway_loss.sh](probes/smc_gateway_loss.sh), [smc_gateway_loss_remote.sh](probes/smc_gateway_loss_remote.sh), [test_smc_gateway_loss.py](probes/test_smc_gateway_loss.py), [test_smc_link_health.py](probes/test_smc_link_health.py), [overlay-usage-breakdown.sh](probes/overlay-usage-breakdown.sh), [dns_capture_top.sh](probes/dns_capture_top.sh) |, [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh) |
 | `capture/` | evidence capture from boxes and pin-activation diagnosis | [collect-smc-evidence.sh](capture/collect-smc-evidence.sh), [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh), [test_with_deadline.sh](capture/test_with_deadline.sh), [tstik-capture.sh](capture/tstik-capture.sh), [audit-pin-activation.sh](capture/audit-pin-activation.sh), [correlate-pin-activation.sh](capture/correlate-pin-activation.sh), [pin-funnel-hourly.sh](capture/pin-funnel-hourly.sh), [pin-fleet-check.sh](capture/pin-fleet-check.sh) |
-| `fleet/` | fleet-wide sweeps and package installs | [collect-fleet-health.sh](fleet/collect-fleet-health.sh), [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh), [install_packages.sh](fleet/install_packages.sh) |
+| `fleet/` | fleet-wide sweeps and package installs | [collect-fleet-health.sh](fleet/collect-fleet-health.sh), [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh), [install_packages.sh](fleet/install_packages.sh), [sample_fleet.py](fleet/sample_fleet.py), [summarise_survey.py](fleet/summarise_survey.py), [pi_bootloader_census.sh](fleet/pi_bootloader_census.sh) |
 | `metrics/` | Prometheus and Graylog queries and the analyses built on them (the analyses import `smc_prom`/`smc_graylog` from this folder) | [smc_prom.py](metrics/smc_prom.py), [smc_graylog.py](metrics/smc_graylog.py), [graylog-health.sh](metrics/graylog-health.sh), [fleet-reboot-timeline.py](metrics/fleet-reboot-timeline.py), [fleet-resource-profile.py](metrics/fleet-resource-profile.py), [predark-snapshot.py](metrics/predark-snapshot.py), [undervoltage-profile.py](metrics/undervoltage-profile.py), [vlan-traffic-timeline.py](metrics/vlan-traffic-timeline.py) |
 | `routing/` | WAN-routing drift and topology/interface cross-checks | [analyse-routing-drift.py](routing/analyse-routing-drift.py), [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) |
 | `switch/` | TP-Link site switch access through an SMC | [tplink-switch.sh](switch/tplink-switch.sh), [tplink_cli_driver.py](switch/tplink_cli_driver.py), [ssh_handshake_probe.py](switch/ssh_handshake_probe.py), [test_ssh_handshake_probe.py](switch/test_ssh_handshake_probe.py) |
@@ -701,6 +701,63 @@ just x86_resiliency_probe teleport.apn.au horn-island-smc01 jigalong-smc01
 | Script                    | Touches                               | Safety        | Notes                                                                      |
 | ------------------------- | ------------------------------------- | ------------- | -------------------------------------------------------------------------- |
 | `x86_resiliency_probe.sh` | Live x86 SMC appliances via `tsh ssh` | **read-only** | Fixed command set, node names only; idempotent; proxy required             |
+
+Since 2026-11-10 it also prints the OS release and RAUC version, every partition (`part=`), the I/O counters since boot with the uptime (`io=`,
+`uptime_s=`: a write rate in GB a day), and each disk's SMART wear and health attributes (`smart=`; raw values, units vendor-specific:
+Transcend `Total_LBAs_Written` and Innodisk `Host_Writes_32MiB` differ, so a rate is taken from the kernel counter, not from SMART).
+
+### `pi_resiliency_probe.sh`
+
+Added 2026-11-10 (smc-resiliency fleet survey, 20 boxes per flavour). The Pi sibling of `x86_resiliency_probe.sh`, same contract (fixed command set, node
+names only, proxy required, deadline per `tsh` call, default 120 s for satellite links, stdin closed). Prints per Pi: board and RAM, OS, kernel, RAUC,
+the card (name, manfid, oemid, date, size), partition table and layout, root mount (overlayroot or not), space used per mount, bootloader version and
+EEPROM config, autoboot.txt, kernel command line root options, throttling flags, I/O counters since boot with uptime (SD cards report no SMART), and the
+data held above 8, 16, 25 and 35 GiB on the root's lower ext4 (the block moves a shrink to that size needs; dumpe2fs group free counts, processed on the
+box). Checked against the six-Pi hand survey of the same day: `used_gib` and every threshold match to 0.01 GiB.
+
+```bash
+just pi_resiliency_probe teleport.apn.au 20-mile-smc01 areyonga-smc01
+```
+
+| Script                    | Touches                               | Safety        | Notes                                                                      |
+| ------------------------- | ------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| `pi_resiliency_probe.sh`  | Live Pi SMC appliances via `tsh ssh`  | **read-only** | Fixed command set, node names only; idempotent; proxy required             |
+
+### `sample_fleet.py` and `summarise_survey.py`
+
+Added 2026-11-10. `fleet/sample_fleet.py --inventories <ansible-wifi>/inventories [--per-flavour 20] [--seed N]` prints `<flavour> <proxy> <host>` for a
+reproducible sample per flavour, keeping only prod inventory hosts the flavour's Teleport cluster lists (the proxy comes from the flavour's project,
+never guessed). `fleet/summarise_survey.py <flavour>=<probe output> ... [--csv out.csv]` turns the two resiliency probes' blocks into fleet counts and
+one Markdown row per box (write rate, wear, watchdog, layout, shrink data); the raw files stay the evidence.
+
+```bash
+just sample_fleet /Volumes/Data/_ansible/ansible-wifi/inventories
+just summarise_survey rct=rct.txt rcp=rcp.txt
+```
+
+| Script                 | Touches                                          | Safety        | Notes                                                    |
+| ---------------------- | ------------------------------------------------ | ------------- | -------------------------------------------------------- |
+| `sample_fleet.py`      | Inventory files; `tsh ls` once per cluster       | **read-only** | Seeded sample; 90 s timeout on each listing              |
+| `summarise_survey.py`  | Probe output files; writes only the `--csv` file | **safe**      | Stdlib only                                              |
+
+### `pi_bootloader_census.sh` and `smc_writers_probe.sh`
+
+Added 2026-11-10. `fleet/pi_bootloader_census.sh [--parallel 8] [--deadline 120] < sample.txt` reads only the bootloader version, board and
+throttle flags of every Pi named on stdin (`sample_fleet.py --per-flavour 1000` lists them all), eight at a time: 312 Pis in about 8 minutes.
+`probes/smc_writers_probe.sh --proxy <proxy> <node>...` shows what writes on a Pi or x86 box: top processes by `/proc/<pid>/io` write_bytes (a
+parent's figure includes its reaped children, so cron's is everything cron started), folders holding files changed in the last 24 h (find at idle
+I/O priority, cut at 90 s), the journal size, overlayroot settings, every cron line, the journal's top sources in the last hour, and on a Pi the
+undervoltage history.
+
+```bash
+just pi_bootloader_census < sample.txt
+just smc_writers_probe teleport.communitywifi.net.au bungardi-smc01
+```
+
+| Script                    | Touches                                | Safety        | Notes                                                       |
+| ------------------------- | -------------------------------------- | ------------- | ----------------------------------------------------------- |
+| `pi_bootloader_census.sh` | Live Pi SMCs via `tsh ssh`             | **read-only** | Proxy from each input line; deadline TERM then KILL         |
+| `smc_writers_probe.sh`    | Live Pi and x86 SMCs via `tsh ssh`     | **read-only** | Fixed command set, node names only; find cut at 90 s        |
 
 ### `pi_identity_probe.sh` and `ata_settings_read.py`
 
