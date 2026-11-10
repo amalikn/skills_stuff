@@ -22,6 +22,8 @@ Summary: >-
 - [Gate 0 and the rerun (2026-11-01)](#gate-0-and-the-rerun-2026-11-01)
 - [Pilot on the MCP audit corpus (2026-11-01)](#pilot-on-the-mcp-audit-corpus-2026-11-01)
 - [kc roots and kc verify (2026-11-05)](#kc-roots-and-kc-verify-2026-11-05)
+- [Continuum P0 pass (2026-11-05)](#continuum-p0-pass-2026-11-05)
+- [Pilot on unified-network-controller (2026-11-05, in progress)](#pilot-on-unified-network-controller-2026-11-05-in-progress)
 - [Release gate](#release-gate)
 
 ## Deterministic catalog
@@ -366,6 +368,28 @@ id; all 632 evidence excerpts still at their lines. Two new conflicts were regis
   `citation_audit.py` `SUPERSEDED-CANDIDATE` caught every one. Candidate input for `kc links`.
 - P36: P18 again: stored excerpts narrower than their line range (cl-5a349e547fd0 keeps step 1 of a ten-step list at mv:281-290; cl-01a180a3ad18, cl-ddb213d5e584 keep one endpoint of 5 to 8). The page
   holds against the source, the stored evidence alone does not.
+
+## Pilot on unified-network-controller (2026-11-05, in progress)
+
+Corpus: 52 Markdown files from unified-network-controller `docs/architecture/` and `docs/field-ownership/` at `f4a754da`, copied read-only into a shadow project
+that is its own local git repository (`skills-data/skill-knowledge-curator/unc-pilot-20261105/`; the live project is never written; operator, 2026-11-05). 4,284
+sections, 1.5 MB; the archive is 2,497 sections (six master-plan revisions). Pass marks were fixed in the pilot readme before any result.
+
+| Stage | Result |
+| --- | --- |
+| Labels | Two blind labellers: 41 and 21 labels, every quote verified; 11 found by both, union 51 (14 P1, 37 P2); agreement 21.6% (`scripts/merge_labels.py`) |
+| Extraction | Six agents, 210 batch files, 5,245 claims, every section claimed or context; archive revisions ported by line diff (restatements merge) |
+| Consolidation | 431 aliases, topics 1,050 to 930 |
+| Relate | Within-file R1-R4 96 relations; `scripts/status_claims.py` 49 claims and 5 status-line-vs-banner conflicts; cross-file X1-X4 52 relations; 141 open (29 P1, 112 P2) |
+| Recall | 43.1% before cross-file, **60.8%** after (blocking 64.3%); by kind: cross-file 57.1% (MCP 25%), within-file 55%, time-evolution 85.7%, authority 66.7% (0% before `status_claims.py`) |
+| Not yet measured | precision (blind sample of 40), triage, roots purity, verify arms |
+
+Findings: blind labels are noisy here (two careful agents share a fifth of their conflicts), so recall is reported against the union and its
+agreement. Front-matter Status lines held no claims, so status and authority conflicts were invisible until a deterministic pass made them
+claims (three relate agents reported the gap). Four extractors each wrote an excerpt line finder (`scripts/locate_lines.py` now). The usage
+limit stopped all eight first-wave agents with nothing saved; resumed agents saved each batch as it passed, and agents sharing one scratchpad
+overwrote each other's helpers until each got its own folder. Cost: about 7M agent tokens so far (labellers 0.57M, extraction 2.5M, consolidation
+and relate 2.4M, coordinator extra). Gate not passed (80%); precision next.
 
 ## Release gate
 

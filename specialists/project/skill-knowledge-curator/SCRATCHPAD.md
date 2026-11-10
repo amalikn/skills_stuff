@@ -62,8 +62,9 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Next actions — KEEP
 
-0. New corpus: unified-network-controller (operator, 2026-11-05); 890 files, 19,281 sections, too big whole. Pick one slice of about 50 files, label it blind (an agent that never
-   sees kc output), then measure roots purity, verify by kind (agent arm against the oMLX arm) and confirm safety there. Work on a scratch copy; UNC is a live apn project.
+0. Resume the UNC pilot (`skills-data/skill-knowledge-curator/unc-pilot-20261105/`, readme has the pass marks): precision on a blind sample of 40 open
+   conflicts, `kc triage`, `kc roots` purity, `kc verify` agent arm against the oMLX arm, then compare with the marks. Recall now 60.8% (gate 80%).
+   Offer the stale-document list (pilot `findings.md`) to the UNC owners; never edit UNC from here.
 1. Review the project_stuff audit corrections and commit them there (not done by this session). The local-llm README oMLX entry in tools_stuff is uncommitted too (folder untracked).
    The Continuum session's citation_audit and decision_sheet work in this pack is its own to commit.
 2. Held: P29, v2 stage 1, slurp Step 4b; research B5 (`kc resolve`) needs an adjudicated set first.

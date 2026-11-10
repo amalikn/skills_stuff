@@ -72,6 +72,10 @@ Measured on the MCP pilot ([evaluation.md](evaluation.md)). Agents started toget
 1. `just restate-copies <project> > copies.json`, then `claims --file copies.json --apply`: byte copies need no agent.
 2. Consolidate: one agent reads `vocabulary` and writes `aliases.json` (same thing or same question merges; merely related stays apart; one level only), then `aliases --file ... --apply`. Topics fell from 245 to 148.
 3. Relate by reading: one agent reads `kc topics` whole, across topics too, and records every disagreeing pair, including inside one file and with historical claims. `decision-points` and `candidates` are prompts, not the task.
+3b. Make each document's Status line and banner comparable: `just status-claims <project>` then `--relations` (front matter is context to extractors, so
+   status and authority conflicts had no claims; UNC pilot 2026-11-05).
+3c. Brief parallel agents to save each batch as soon as its dry run passes (a usage limit stopped eight agents with nothing saved), to keep scratch
+   files in their own folder (shared-scratchpad agents overwrote each other), and to use `just locate-lines` before the dry run.
 4. Measure with `recall --labels` when a labelled set exists. Labels are written blind to `kc` output, with the pass mark fixed first. This pipeline reached 44.4% on the MCP set, and 62.2% after a pass per file (`topics --by-file`, reading sources beside claims) plus a cross-file pass. Within-file reached 87.5%, so keep that pass; cross-file reached 25%. A third round of reading added 59 conflicts for 2 labels, so do not add passes: use `kc triage` and read what is left. Never report conflicts as complete.
 
 ## External verification (not yet in the kernel)

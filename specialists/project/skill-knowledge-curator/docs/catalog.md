@@ -52,6 +52,10 @@ Asked in one round before building research B3 and B4:
 - **New corpus (later the same day):** unified-network-controller (operator, 2026-11-05: "you can use unified-network-controller"). A read-only `kc inventory` dry run found 890
   Markdown files and 19,281 sections (about 21 times Continuum), so measurement starts on one slice the operator or the next session picks, labelled blind first.
 
+- **UNC pilot (evening):** the whole 52-file slice (operator chose it over three smaller options after seeing about 9M tokens), two blind labellers, never a
+  change in UNC itself but a shadow copy whose changes can be watched (`git log -p` in the pilot's `project/`), and stop after the four cross-file agents
+  (all operator, 2026-11-05).
+
 Agent defaults inside that scope, open to override: verdict words `conflict`, `not-conflict`, `uncertain` ("refuted" read backwards in the first model trial); two
 control pairs before every model run; a shared claim is a hint, never a group join; loopback-only endpoint unless `verify.allow_remote`.
 

@@ -25,6 +25,15 @@ Budget: 200 lines, 25 KB
 
 ## 2026-11-05 — kc roots, kc verify on a local model, documented-evolution
 
+- 2026-11-05 22:48 (learned, operator request): UNC pilot on a read-only shadow copy (52 files, 4,284 sections, its own local git repo, one commit per step):
+  two blind labellers (51 labels, agreement 21.6%), six extractors (5,245 claims), 431 aliases, within-file and cross-file relate (141 open); recall 43.1% to
+  60.8%, cross-file 57.1%; precision, triage, roots and verify next. `references/evaluation.md`, P37-P39 in `references/feature-inventory.md`.
+- 2026-11-05 22:48 (feature): `scripts/status_claims.py` (`just status-claims`), `scripts/merge_labels.py` (`just merge-labels`), `scripts/locate_lines.py`
+  (`just locate-lines`), `just apply-batches`; `mdparse.status_line`; 152 tests. Workflow steps 3b and 3c in `references/workflow.md`.
+- 2026-11-05 22:48 (incidents): the 5-hour usage limit stopped all eight first-wave agents with nothing saved (resumed at the 21:30 reset, saving per batch);
+  agents sharing the scratchpad overwrote each other's helpers (own folders after); a `noqa` was written in `tests/test_label_tools.py` and removed before commit.
+- 2026-11-05 22:48 (decision, operator): whole 52-file slice and two blind labellers; never change UNC itself, work in a shadow copy whose changes can be watched;
+  stop after the four cross-file agents and continue next session. `docs/catalog.md`.
 - 2026-11-05 21:39 (script, Continuum): `scripts/decisions_to_adrs.py` (`just decisions-to-adrs`), promoted from the Continuum Archcore promotion: ADRs from decision chains,
   plan by default, accepted ADRs never overwritten; 4 tests, one shown red with the chain disabled.
 - 2026-11-05 21:01 (fix, Continuum): `citation_audit.py` no longer crashes on a claim with no evidence (operator-authored `kc decide CORRECTED` claims); found auditing all 71

@@ -142,6 +142,9 @@ scopes, which repairs existing ledgers. P15 dropped `archive` from the default a
 | P33 | Built as `kc triage`, `kc status-map`, `kc sample`; proposals until a blind sample is 95% right (92.5% so far). History rules clear as `documented-evolution` (2026-11-05, research report 5) |
 | B3  | Built 2026-11-05 as `kc roots` (`roots.py`): cause groups over rare shared identifiers, no chaining, shared claim a hint only; `review` lists Root causes; one `kc decide` line per member |
 | B4  | Built 2026-11-05 as `kc verify` (`verify.py`, `llm.py`): agent export and import, local model on oMLX (allowlist, loopback, control pairs), quote check, bulk `--confirm` undone by `triage --undo`, `--score` |
+| P37 | UNC pilot 2026-11-05: Status lines held no claims, so status and authority conflicts were invisible. Built `scripts/status_claims.py` (claims plus `status-line-vs-banner` relations); authority recall 0% to 66.7% |
+| P38 | UNC pilot: four extractors each wrote an excerpt line finder. Built `scripts/locate_lines.py` (`just locate-lines`); `just apply-batches` applies a folder of batches in order |
+| P39 | UNC pilot: two blind labellers agreed on 21.6% (11 of 51). Built `scripts/merge_labels.py`; report recall against the union with its agreement |
 | P24 | Port with P17: conformance into `claims`, verification into the external-fact record |
 
 ## Invariants and where they are enforced

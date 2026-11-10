@@ -65,6 +65,18 @@ Summary: >-
 `llm_probe.py [--base URL] [--model ID]` (`just llm-probe [ID]`) lists a local OpenAI-compatible server's models and times the two kc verify control pairs on one; read-only,
 sends only the control texts, loopback unless `--allow-remote`. Exit 0 pass, 3 a control wrong, 6 server failed. `kc verify --score` also reports what `--confirm` would clear per run.
 
+`status_claims.py <project> [--relations]` (`just status-claims`) prints one claim per document Status line and whole-file banner (front matter is
+context to extractors, so these had no claims), then with `--relations` a P2 `status-line-vs-banner` conflict where a current-like Status sits under a
+superseded or historical banner; read-only. UNC pilot: 49 claims, 5 conflicts, no false positives after the banner rule was tightened.
+
+`merge_labels.py <a.json> <b.json>` (`just merge-labels`) merges two blind label sets into one key (union; matched pairs once, stricter severity,
+`found_by`) and prints agreement on stderr; read-only.
+
+`locate_lines.py --project <dir> <claims.json>` (`just locate-lines`) corrects evidence line numbers from excerpts (whitespace-normalised, blockquote
+marks dropped); leaves valid spans alone; reports missing or ambiguous excerpts; exit 3 when any is unresolved; read-only.
+
+`just apply-batches <project> '<glob>'` applies extractor batch files one at a time in name order and stops at the first refusal (writes `.kc/`).
+
 `ledger_diff.py <before> <after>` (`just ledger-diff`) compares two projects' folded ledgers: claim dispositions, successors, conflict status and members. Read-only, standard library. Exit 0
 match, 1 differ, 2 missing ledger. Rehearse a decision sequence on a scratch copy with real sources, then diff against live before `--apply`; a single dry run cannot show a later step undoing an
 earlier one.

@@ -107,6 +107,24 @@ def parse_blocks(text: str) -> list[Block]:
   return blocks
 
 
+def status_line(text: str) -> tuple[int, str] | None:
+  """The line where a document declares its own status, and the value: front matter `Status:` or a `Status:` line near the top.
+
+  Args:
+    text: the whole document.
+
+  Returns:
+    (1-based line, status text), or None.
+  """
+  lines = text.splitlines()
+  end = front_matter_end(lines)
+  for n, line in enumerate(lines[:end] if end else lines[:15], 1):
+    match = _STATUS.match(line)
+    if match and match.group(1).strip("*: "):
+      return n, match.group(1).strip("*: ")
+  return None
+
+
 def declared_status(text: str) -> str | None:
   """Status a document declares about itself: front matter `Status:` or a `Status:` line near the top.
 
@@ -116,10 +134,5 @@ def declared_status(text: str) -> str | None:
   Returns:
     The declared status text, or None.
   """
-  lines = text.splitlines()
-  end = front_matter_end(lines)
-  for line in lines[:end] if end else lines[:15]:
-    match = _STATUS.match(line)
-    if match and match.group(1).strip("*: "):
-      return match.group(1).strip("*: ")
-  return None
+  found = status_line(text)
+  return found[1] if found else None

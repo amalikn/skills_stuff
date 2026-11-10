@@ -76,6 +76,31 @@ decisions-to-adrs *ARGS: _require-venv
 decision-sheet *ARGS: _require-venv
     @{{py}} scripts/decision_sheet.py "$@"
 
+# Claims for each document's Status line and whole-file banner; --relations pairs a current-like Status under a superseded banner (read-only).
+[positional-arguments]
+status-claims project *ARGS: _require-venv
+    @{{py}} scripts/status_claims.py "$@"
+
+# Merge two blind labellers' answer keys and print their agreement on stderr (read-only).
+merge-labels first second: _require-venv
+    @{{py}} scripts/merge_labels.py "{{first}}" "{{second}}"
+
+# Fix claim evidence line numbers from the excerpt text before kc claims checks it (read-only; prints corrected records).
+locate-lines project file: _require-venv
+    @{{py}} scripts/locate_lines.py --project "{{project}}" "{{file}}"
+
+# Apply every batch file matching a glob, one at a time in name order, stopping at the first refusal: just apply-batches <project> '<dir>/E1-*.json' (writes .kc/).
+[positional-arguments]
+apply-batches project glob: _require-venv
+    #!/usr/bin/env bash
+    set -euo pipefail
+    n=0
+    for f in $(ls $2 | sort); do
+      if ! out=$(timeout 300 {{py}} scripts/knowledge_curator.py claims --project "$1" --file "$f" --apply 2>&1); then echo "REFUSED $f"; echo "$out" | tail -5; exit 1; fi
+      n=$((n + 1))
+    done
+    echo "applied $n batch file(s)"
+
 # Run the unit and end-to-end tests (read-only; temporary copies only).
 test: _require-venv
     @{{py}} -m unittest discover -s tests

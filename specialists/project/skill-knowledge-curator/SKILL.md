@@ -36,7 +36,7 @@ never edits, moves or deletes a source. It adds no daemon, vector store, knowled
 
 ## Orient first
 
-1. **Status.** v1 kernel with the Continuum pilot fixes, plus `kc roots` and `kc verify` (2026-11-05; 133 tests pass). Continuum (45 sources, 3,496 claims) is the real-corpus pilot; gate 0 failed
+1. **Status.** v1 kernel with the Continuum pilot fixes, plus `kc roots` and `kc verify` (2026-11-05; 152 tests pass; UNC pilot recall 60.8%, in progress). Continuum (45 sources, 3,496 claims) is the real-corpus pilot; gate 0 failed
    three attempts on the MCP pilot (precision 37.5% against 70%, recall 51.1% against 80% after triage), so never call a project's conflicts complete. `roots` put 23 of 24 real MCP conflicts in one
    cause group; `verify` on the local model is safe but clears little ([references/evaluation.md](references/evaluation.md)). Semantic recall is not measured, `render`, `promote` and `archive-plan` have not served a real
    project, skill-slurp-chat Step 4b is not wired, and archiving is plan-only. Do not say a project has been curated until its `kc validate` passes and the operator has reviewed it.
