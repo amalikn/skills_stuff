@@ -55,6 +55,7 @@ Legend: --> from the side that refers, copies or sends, to its target
   - [3.7 What Pad is not for](#37-what-pad-is-not-for)
   - [3.8 Conventions to add to the apn baseline](#38-conventions-to-add-to-the-apn-baseline)
   - [3.9 Playbooks and scripts](#39-playbooks-and-scripts)
+  - [3.10 Links between items](#310-links-between-items)
 - [4. When Pad is down, and recovery](#4-when-pad-is-down-and-recovery)
 - [5. Use cases](#5-use-cases)
 - [6. Rollout](#6-rollout)
@@ -258,6 +259,23 @@ Added to `conventions/apn-baseline.toml` and applied with `scripts/pad_conventio
 |                        |   (skill-coder rules)        |   read-only, tested, run by a `sync-trackers` playbook and by `just check` as a warning                                                      |
 
 Drift detection is a script, not playbook prose, because it must give the same answer every run. `pad_export.py` gains an ask column set (kind, due date) when Asks exist.
+
+### 3.10 Links between items
+
+Pad has typed links, fewer than Jira (VERIFIED_PRIMARY, CLI v0.19.2). Use the Pad form; where Pad has none, use the fallback.
+
+| Jira link                      | Pad                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| blocks / is blocked by         | `pad item block A B`, `blocked-by`, `unblock`; a blocked item leaves `next`                 |
+| implements / is implemented by | `pad item implements A B`, `unimplements`; `implemented-by` lists them                      |
+| supersedes / is superseded by  | `pad item supersedes A B`, `unsupersede`                                                    |
+| split from                     | `pad item split-from A B`, `unsplit` (a task too big for one session)                       |
+| parent / sub-task              | `--parent PLAN-N` on any item; the parent shows progress                                    |
+| relates to                     | no typed link: `[[TASK-N]]` in the body; the other item lists it under `pad item backlinks` |
+| duplicates                     | none: `supersedes`, or close as `cancelled` with a comment naming the original              |
+| clones                         | none: `pad item copy` copies an item (even to another workspace) but records no link        |
+
+`pad item related <ref>` shows all of an item's links at once; `pad item deps <ref>` shows only the blocking ones. An ask blocks the work it holds up with `pad item block ASK-N TASK-M` (3.1).
 
 ## 4. When Pad is down, and recovery
 

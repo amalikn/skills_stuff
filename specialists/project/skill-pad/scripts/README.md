@@ -25,6 +25,7 @@ folder's `.pad.toml`. Tests: `just test` (offline, fake pad).
 |                           |   over `pad watch --stream --for-session`                                                              |   session locally)                 |   folder); Monitor tool    |
 | `pad_upstream_refresh.sh` | Mirrors a Pad release into `references/upstream/v<version>/` (repo files at tag, CLI help, agent       | plan; writes the mirror            | `upstream VERSION`         |
 |                           |   guide, release notes)                                                                                |   with `--apply`                   |                            |
+| `pad_rewrite.py`          | Applies a reviewed JSON spec to Pad items: bodies (guarded by seq), titles, tags, comment type prefixes, note and decide entries (idempotent keys) | plan; writes Pad with `--apply` | `rewrite SPEC` (project folder) |
 | `check_governance.py`     | The pack's governance claims as assertions (`govcheck/` package: core, config, helpers, checks         | read-only                          | `governance`, `check`      |
 |                           |   by family)                                                                                           |                                    |                            |
 

@@ -89,3 +89,8 @@ status = "promoted"
 skill = "skill-pad"
 reason = "Pad helper used by every apn project with a Pad workspace; lives in the skill (operator, 2026-11-10)"
 
+
+[modules."scripts/pad_rewrite.py"]
+status = "promoted"
+skill = "skill-pad"
+reason = "Applies reviewed Pad item rewrites (writing standard migration 2026-11-10); reusable for later migrations"

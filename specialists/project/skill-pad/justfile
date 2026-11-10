@@ -149,3 +149,8 @@ outline *ARGS: _require-venv
 [positional-arguments]
 section *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"
+
+# Apply a reviewed rewrite spec (bodies, titles, tags, comment types, notes, decisions) to the current folder's workspace: plan by default, --apply to write.
+[no-cd]
+rewrite SPEC *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_rewrite.py" "{{SPEC}}" {{ARGS}}

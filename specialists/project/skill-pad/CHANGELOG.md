@@ -13,6 +13,19 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_1955 — open Pad items rewritten to the writing standard; pad_rewrite.py; item links
+
+### Added
+
+- `scripts/pad_rewrite.py` (spec-driven, plan by default, seq-guarded bodies, idempotent notes and decisions; 3 tests, `just rewrite`, code-map).
+- Guidelines 3.10: Pad link types mapped to Jira's (blocks, implements, supersedes, split-from, parent; fallbacks for relates, duplicates, clones).
+
+### Changed
+
+- All 32 open plans and tasks rewritten to guidelines 3.3 (smc-resiliency 20, UNC 12): bodies, titles, dates from the timelines, tags; smc's 12
+  comments gained type words, with 8 notes and 2 decisions extracted. Old text compared token by token; two facts dropped from TASK-30 restored as a
+  note (side agent). Open: the first smc apply stopped once without an error message; a rerun completed it; cause not found.
+
 ## 20261110_1940 — guard for the live Pad database in tools_stuff
 
 ### Changed
