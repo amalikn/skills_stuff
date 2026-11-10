@@ -11,6 +11,12 @@ Kind: log
 
 # Changelog
 
+## 20261110_1248 — Fleet survey: watchdog audit, write measurement, overlay wear, undervoltage; systemd credentials rotation (v2.3.4 -> v2.3.5)
+
+- references/edge-appliances.md: Learned 2026-11-10 before "Patterns and anti-patterns" (a shipped driver is not a watchdog; writes per disk and per process; overlay root wear; Pi undervoltage; census bootloaders).
+- references/linux-unix.md: Learned 2026-11-10 (LoadCredential copies at start: stage, switch a symlink, restart users).
+- Source: smc-resiliency fleet survey and N15 design note (2026-11-10).
+
 ## 20261110_1205 — Restore proof by exact row counts; compose `up --wait` false failures (v2.3.3 -> v2.3.4)
 
 - references/backup-disaster-recovery.md: Learned 2026-11-10 before "Patterns and anti-patterns" (restore into a scratch DB, per-table exact counts, live-growth vs loss verdict).

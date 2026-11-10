@@ -221,6 +221,22 @@ STORE AND FORWARD: bounded, counted, acknowledged after storage
 - Know which filesystems are volatile: a spool on a RAM overlay is lost at every reboot.
 - Deliver current state before backfill so dashboards recover first.
 
+> **Learned 2026-11-10** · a deployed fleet of edge boxes (Linux, x86 and Pi) · VERIFIED_PRIMARY (read-only survey of 79 boxes and a census of
+> 306, smc-resiliency `docs/overview/smc-fleet-survey-20261110_1145.md` @ 6f45ec65) · Falsifier: a box with `/dev/watchdog0` held by PID 1 and no
+> `RuntimeWatchdogSec`; a parent's `/proc/<pid>/io` excluding reaped children.
+> - **A shipped watchdog driver is not a watchdog.** Every x86 box carried `iTCO_wdt.ko`, none had `/dev/watchdog*` or `RuntimeWatchdogSec`. Audit
+>   the device and who holds it, not the module list; a hung box without it waits for a power cycle.
+> - **Measure writes per disk and per process.** The rate is the disk's sectors written since boot (`/sys/block/<disk>/stat` field 7) over the
+>   uptime; SMART write counters use vendor units (`Total_LBAs_Written`, `Host_Writes_32MiB`) and only serve trends. `/proc/<pid>/io` write_bytes
+>   of a parent includes its reaped children, so cron's figure is everything cron started: on these boxes cron jobs (1 to 5 minute PHP pollers,
+>   blocklist rebuilds) and the journal wrote up to 30 and 7 GB a day while the journal held 4 GB on disk: churn, not growth.
+> - **An overlay root changes wear by orders of magnitude**: overlayroot boxes wrote 10 to 20 MB a day to the card; the same flavour family with
+>   overlayroot disabled wrote 5 to 6 GB a day. Check the overlay config (`/etc/overlayroot.conf`), not the design document.
+> - **Pi undervoltage is common in the field**: `vcgencmd get_throttled` bit 16 (since boot) on 8 of 306; bit 0 (now) with the kernel logging
+>   `Undervoltage detected!` every few seconds. Grep for "undervoltage" without a hyphen.
+> - **Bootloader firmware is not uniform across a fleet that never updates it**: older board revisions keep older EEPROMs; census before
+>   designing a boot path that depends on a firmware feature.
+
 ## Patterns and anti-patterns
 
 | Pattern                                    | Use when                       | Anti-pattern                                   | Why it fails                                            |

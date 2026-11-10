@@ -11,6 +11,11 @@ Kind: log
 
 # Changelog
 
+## 20261110_1248 — APN fleet survey facts in operator/apn (v2.3.0 -> v2.3.1)
+
+- operator/apn/site-boxes-and-platforms.md: Learned 2026-11-10 before "Hangs, power and detection" (bootloader census, nbn_wh writable root, undervoltage, x86 watchdog and write rates, census misses).
+- Source: smc-resiliency fleet survey (2026-11-10).
+
 ## 20261110_0025 — APN operator context extended; collaboration protocol: proxmox and vagrant rows, one fact one home (v2.2.0 -> v2.3.0)
 
 - operator/apn/site-fleet-network.md items 43 to 62 (site patterns, reach checks and ladder, DNS paths, backdoor, Teleport, cnMaestro, the SMC to

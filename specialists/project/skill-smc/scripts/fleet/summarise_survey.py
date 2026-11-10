@@ -3,7 +3,7 @@
 
 Why: a fleet survey prints one `== <node> (<proxy>)` block of key=value lines per box; reading 80 blocks by eye misses the pattern. This keeps the raw
 files as the evidence and derives the tables from them, so a table can always be rebuilt and checked against its source.
-Run: summarise_survey.py <flavour>=<probe output file> [...] [--csv out.csv]   (a later file's answer replaces an unreachable block: pass retries last)   (read-only apart from --csv; prints Markdown to stdout)
+Run: summarise_survey.py [<flavour>=<probe output file> ...] [--csv out.csv] [--census census.txt]   (a later file's answer replaces an unreachable block: pass retries last)   (read-only apart from --csv; prints Markdown to stdout)
      e.g. summarise_survey.py rct=rct.txt wh=wh.txt rcp=rcp.txt --csv boxes.csv
 Exit: 0 printed; 2 bad arguments or a file missing.
 """
@@ -79,12 +79,13 @@ def first(d: dict[str, list[str]], key: str) -> str:
   return (d.get(key) or [""])[0]
 
 
-def rate(d: dict[str, list[str]], disk: str) -> str:
-  """GB written per day since boot for one disk, from the kernel's sector counter and the uptime.
+def rate(d: dict[str, list[str]], disk: str, unit: float = 1e9) -> str:
+  """Bytes written per day since boot for one disk, from the kernel's sector counter and the uptime (GB by default, MB with unit=1e6).
 
   Args:
     d: as kv() returns.
     disk: the block device name.
+    unit: bytes per reported unit (1e9 GB, 1e6 MB: an overlayroot Pi writes megabytes a day, which GB rounds to 0.0).
 
   Returns:
     The rate to one decimal, or "".
@@ -94,7 +95,7 @@ def rate(d: dict[str, list[str]], disk: str) -> str:
     name, rest = v.split(",", 1)
     if name == disk and up > 0:
       written = int(dict(p.split("=") for p in rest.split(","))["sectors_written"]) * 512
-      return f"{written / 1e9 / (up / 86400):.1f}"
+      return f"{written / unit / (up / 86400):.1f}"
   return ""
 
 
@@ -116,7 +117,7 @@ def pi_row(flavour: str, node: str, d: dict[str, list[str]]) -> dict[str, str]:
     "kernel": first(d, "kernel"), "card": first(d, "card_name"), "manfid": first(d, "manfid"), "card_date": first(d, "card_date"),
     "card_gb": f"{int(first(d, 'size_bytes') or 0) / 1e9:.0f}", "pttype": first(d, "pttype"), "root": first(d, "root_mount").split(",")[0],
     "lower_used": ro.split("used=")[1].split(",")[0] if ro else "", "bootloader": first(d, "bootloader"), "autoboot": first(d, "autoboot"),
-    "throttled": first(d, "throttled"), "uptime_d": f"{int(first(d, 'uptime_s') or 0) / 86400:.0f}", "gb_written_per_day": rate(d, "mmcblk0"),
+    "throttled": first(d, "throttled"), "uptime_d": f"{int(first(d, 'uptime_s') or 0) / 86400:.0f}", "mb_written_per_day": rate(d, "mmcblk0", 1e6),
     "used_gib": shrink.get("used_gib", ""), "above_25G": shrink.get("above_25G", ""),
   }
 
@@ -200,6 +201,41 @@ def counts(rows: list[dict[str, str]], keys: tuple[str, ...]) -> str:
   return "\n".join(f"- {k}: " + ", ".join(f"{v or '(none)'} x{n}" for v, n in collections.Counter(r[k] for r in rows).most_common()) for k in keys)
 
 
+def census(text: str) -> str:
+  """Tally pi_bootloader_census.sh output: bootloaders per flavour, bootloader by board revision, undervoltage, and the boxes that did not answer.
+
+  Args:
+    text: the census output (`<flavour> <host> bootloader=... model=... throttled=...` or `<flavour> <host> unreachable ...`).
+
+  Returns:
+    Markdown lines.
+  """
+  per = collections.Counter()
+  board = collections.Counter()
+  silent, uv_seen, uv_now = [], collections.Counter(), []
+  for line in text.splitlines():
+    parts = line.split()
+    if len(parts) < 3:
+      continue
+    if parts[2] == "unreachable":
+      silent.append(parts[1])
+      continue
+    f = dict(p.split("=", 1) for p in parts[2:] if "=" in p)
+    per[(parts[0], f.get("bootloader", ""))] += 1
+    board[(f.get("bootloader", ""), f.get("model", "")[-3:])] += 1
+    t = int(f.get("throttled") or "0", 16)
+    if t & 0x10000:
+      uv_seen[parts[0]] += 1
+    if t & 0x1:
+      uv_now.append(parts[1])
+  out = ["## Pi bootloader census", "", "| Flavour | Bootloader | Boxes |", "|---|---|---|"]
+  out += [f"| {fl} | {bl} | {n} |" for (fl, bl), n in sorted(per.items())]
+  out += ["", "- bootloader by board revision: " + ", ".join(f"{bl} rev {rev} x{n}" for (bl, rev), n in sorted(board.items()))]
+  out += [f"- undervoltage since boot: {dict(uv_seen) or 0}; now: {', '.join(uv_now) or 'none'}"]
+  out += [f"- did not answer ({len(silent)}): {', '.join(sorted(silent)) or 'none'}", ""]
+  return "\n".join(out)
+
+
 def main(argv: list[str] | None = None) -> int:
   """Print the summary.
 
@@ -210,9 +246,15 @@ def main(argv: list[str] | None = None) -> int:
     0 printed; 2 bad arguments.
   """
   ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-  ap.add_argument("files", nargs="+", help="<flavour>=<file>")
+  ap.add_argument("files", nargs="*", help="<flavour>=<file>")
+  ap.add_argument("--census", type=Path, help="pi_bootloader_census.sh output to tally")
   ap.add_argument("--csv", type=Path)
   args = ap.parse_args(argv)
+  if args.census:
+    if not args.census.is_file():
+      print(f"missing file: {args.census}", file=sys.stderr)
+      return 2
+    print(census(args.census.read_text(encoding="utf-8")))
   pis, x86s, seen = [], [], set()
   for spec in args.files:
     flavour, _, name = spec.partition("=")

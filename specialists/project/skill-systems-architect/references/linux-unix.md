@@ -148,6 +148,12 @@ UDP RECEIVE PATH: where packets are dropped before the daemon sees them
   Legend: --> packet path   X where to read the drop or saturation counter
 ```
 
+> **Learned 2026-11-10** · systemd credentials (`LoadCredential=`) · VERIFIED_SECONDARY (smc-resiliency contract U10 and its audit N15, which
+> cites the systemd 255 credential interface) · Falsifier: a running unit reading a replaced source credential without a restart.
+> systemd copies a credential into the unit's own credential folder when the unit starts; replacing the source files changes nothing for a
+> running service. Rotation is therefore: stage the whole set in a new folder, switch one symlink with `rename()` (readers see all old or all new),
+> then restart only the units whose credentials changed. A set replaced file by file can be read half old and half new after a power cut.
+
 ## Patterns and anti-patterns
 
 | Pattern                          | Use when                     | Anti-pattern                                | Why it fails                                           |

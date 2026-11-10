@@ -8,7 +8,7 @@ description: >-
   product's commands or settings (its platform pack), diagram layout (skill-drawio) or code (skill-coder); collaborates with skill-network-architect on
   connectivity, addressing and traffic.
 metadata:
-  version: "2.3.4"
+  version: "2.3.5"
   reviewed: "2026-10-29"
   scope: "Vendor-neutral domain architecture"
 ---

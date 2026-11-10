@@ -90,6 +90,16 @@ Summary: >-
    - Evidence: `APN/smc-file-writing-analysis/docs/audits/tmpfs-exhaustion-behaviour-and-monitoring-20260723_1414.md` (lines 110-125)
    - Applies: [Alert routing and honest measurement](../../../skill-systems-architect/references/observability-and-incident.md#alert-routing-and-honest-measurement)
 
+> **Learned 2026-11-10** · APN site boxes, fleet survey (read-only, 79 boxes probed, 306 of 312 Pis censused) · VERIFIED_PRIMARY · Source:
+> smc-resiliency `docs/overview/smc-fleet-survey-20261110_1145.md` @ 6f45ec65 · Falsifier: a later census or survey reading otherwise.
+> - Pi bootloaders: 2023-01-11 x260, 2022-04-26 x36 (rct), 2022-01-25 x10 (rct, all Rev 1.4 boards); A/B on GPT is proved on 2023-01-11 and
+>   2026-01-09 only. Every surveyed Pi: 7.8 GB RAM, Ubuntu 22.04.1, AFNI0 62 GB card, MBR.
+> - nbn_wh runs a writable root (`overlayroot` disabled in its config): 5 to 6 GB a day to the card, against 10 to 20 MB on rct and wh.
+> - Undervoltage since boot on 5 of 20 wh and 3 rct; canteen-creek and kundat-djaru logged it every few seconds (2026-11-10 12:04).
+> - x86 (BOXER-6404 BIOS B404BM14, BOXER-6641 B641HM20; Ubuntu 22.04.1, .3, .4): no box loads a watchdog; nbn_accelerate writes 5.6 to 44.5 GB
+>   a day (cron jobs, the journal); koonibba-smc01's root was 98% full (`/url_capture` 13 GB).
+> - Six census misses: the backdoor tunnel was up on four (the box runs, the Teleport agent does not answer), down on two.
+
 ## Hangs, power and detection
 
 10. Pi hub boxes went fully silent (no tunnel, all exporters stopped in one scrape) and needed an on-site power cycle; memory, card, overlay, load and WAN causes were ruled out; root cause unknown

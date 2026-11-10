@@ -728,7 +728,9 @@ just pi_resiliency_probe teleport.apn.au 20-mile-smc01 areyonga-smc01
 Added 2026-11-10. `fleet/sample_fleet.py --inventories <ansible-wifi>/inventories [--per-flavour 20] [--seed N]` prints `<flavour> <proxy> <host>` for a
 reproducible sample per flavour, keeping only prod inventory hosts the flavour's Teleport cluster lists (the proxy comes from the flavour's project,
 never guessed). `fleet/summarise_survey.py <flavour>=<probe output> ... [--csv out.csv]` turns the two resiliency probes' blocks into fleet counts and
-one Markdown row per box (write rate, wear, watchdog, layout, shrink data); the raw files stay the evidence.
+one Markdown row per box (write rate: GB a day on x86, MB a day on a Pi; wear, watchdog, layout, shrink data); the raw files stay the evidence.
+`--census <file>` tallies `pi_bootloader_census.sh` output (bootloaders per flavour, by board revision, undervoltage, the boxes that did not answer).
+Offline tests: `fleet/test_summarise_survey.py` (`python3 -m unittest discover -s scripts/fleet`).
 
 ```bash
 just sample_fleet /Volumes/Data/_ansible/ansible-wifi/inventories
