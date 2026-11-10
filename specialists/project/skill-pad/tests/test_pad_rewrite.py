@@ -60,6 +60,17 @@ class Commands(unittest.TestCase):
     with self.assertRaises(ValueError):
       pr.commands({"comments": [{"ref": "TASK-1", "id": "zz", "type": "RISK"}]}, {})
 
+  def test_comment_body_replace_skips_when_equal(self):
+    """A comment with `body` is replaced by that text, and skipped when it already reads so.
+
+    Returns:
+      None.
+    """
+    spec = {"comments": [{"ref": "TASK-1", "id": "a", "body": "new"}, {"ref": "TASK-1", "id": "b", "body": "same"}]}
+    cmds = pr.commands(spec, {"a": "old", "b": "same"})
+    self.assertEqual(len(cmds), 1)
+    self.assertEqual(cmds[0][2], "new")
+
 
 if __name__ == "__main__":
   unittest.main()

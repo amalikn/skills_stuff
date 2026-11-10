@@ -13,6 +13,14 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_1956 — smc-resiliency comments rewritten to the comment standard
+
+### Changed
+
+- The 12 smc-resiliency comments rewritten to guidelines 3.3 (operator: comment formatting not updated): stamp and type first (times from each
+  comment's creation, AEDT), at most five lines, verified and not verified said, `Next:` last; every fact kept. `pad_rewrite.py` comment entries
+  take `body` to replace the text (skipped when equal); test added.
+
 ## 20261110_1955 — open Pad items rewritten to the writing standard; pad_rewrite.py; item links
 
 ### Added

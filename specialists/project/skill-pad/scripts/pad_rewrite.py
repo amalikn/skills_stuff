@@ -7,7 +7,8 @@ them repeatable and safe. Run from the project folder whose .pad.toml names the 
 
 Spec (JSON):
     {"items":    [{"ref": "TASK-30", "seq": 55, "title": "...", "body": "...", "tags": ["prod-write"], "fields": {"due_date": "2026-11-13"}}],
-     "comments": [{"ref": "TASK-30", "id": "<comment-id>", "type": "FINDING"}],
+     "comments": [{"ref": "TASK-30", "id": "<comment-id>", "type": "FINDING"},   # add the type word only
+                  {"ref": "TASK-30", "id": "<comment-id>", "body": "<whole new text>"}],   # replace the text (skipped when equal)
      "notes":    [{"ref": "TASK-30", "summary": "...", "details": "...", "key": "<stable key>"}],
      "decides":  [{"ref": "TASK-30", "decision": "...", "rationale": "...", "key": "<stable key>"}]}
 Each part is optional. A body write is guarded by the spec's `seq` (a conflict means someone changed the item: re-read, never force); a comment
@@ -91,9 +92,12 @@ def commands(spec: dict, comment_bodies: dict[str, str]) -> list[tuple[str, list
   for c in spec.get("comments", []):
     if c["id"] not in comment_bodies:
       raise ValueError(f"{c['ref']}: comment {c['id']} not found")
-    new = prefixed(comment_bodies[c["id"]], c["type"])
+    if "body" in c:
+      new = None if c["body"] == comment_bodies[c["id"]] else c["body"]
+    else:
+      new = prefixed(comment_bodies[c["id"]], c["type"])
     if new is not None:
-      out.append((f"comment {c['ref']} {c['id'][:8]} {c['type']}", ["item", "comment-edit", c["ref"], c["id"], "--stdin"], new))
+      out.append((f"comment {c['ref']} {c['id'][:8]} {c.get('type', 'body')}", ["item", "comment-edit", c["ref"], c["id"], "--stdin"], new))
   for n in spec.get("notes", []):
     argv = ["item", "note", n["ref"], n["summary"], "--op-key", n["key"]] + (["--details", n["details"]] if n.get("details") else [])
     out.append((f"note {n['ref']}", argv, None))
