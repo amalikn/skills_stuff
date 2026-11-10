@@ -1,0 +1,3876 @@
+{
+  "cmdhelp_version": "0.1",
+  "binary": "pad",
+  "version": "0.19.2 (22e50fe 2026-11-08T04:17:17Z)",
+  "summary": "Pad — project management for developers and AI agents",
+  "homepage": "https://getpad.dev",
+  "global_flags": {
+    "format": {
+      "type": "string",
+      "description": "output format: table, json, markdown",
+      "default": "table"
+    },
+    "url": {
+      "type": "string",
+      "description": "server URL override (e.g., https://app.getpad.dev)"
+    },
+    "workspace": {
+      "type": "string",
+      "description": "workspace slug override"
+    }
+  },
+  "commands": {
+    "agent": {
+      "summary": "Install and manage Pad agent skills"
+    },
+    "agent guide": {
+      "summary": "Print Pad agent guidance on demand",
+      "args": [
+        {
+          "name": "topic",
+          "type": "string"
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad agent guide playbooks"
+        }
+      ]
+    },
+    "agent install": {
+      "summary": "Install the /pad skill for your AI coding tools",
+      "description": "Install the Pad skill file for AI coding tools.\n\nWith no arguments, auto-detects tools in use and offers to install for each.\nSpecify a tool name to install for that tool directly.\n\nSupported tools:\n  claude       Claude Code (.claude/skills/)\n  cursor       Cursor (.agents/skills/) — also covers Codex, Windsurf \u0026 OpenCode\n  codex        OpenAI Codex (.agents/skills/)\n  windsurf     Windsurf (.agents/skills/)\n  opencode     OpenCode (.agents/skills/)\n  copilot      GitHub Copilot (.github/instructions/)\n  amazon-q     Amazon Q Developer (.amazonq/rules/)\n  junie        JetBrains Junie (.junie/guidelines/)",
+      "args": [
+        {
+          "name": "tool",
+          "type": "enum",
+          "enum": [
+            "claude",
+            "agents",
+            "codex",
+            "cursor",
+            "windsurf",
+            "opencode",
+            "copilot",
+            "github-copilot",
+            "amazon-q",
+            "amazonq",
+            "q",
+            "junie"
+          ]
+        }
+      ],
+      "flags": {
+        "all": {
+          "type": "bool",
+          "description": "install for all detected tools"
+        },
+        "force": {
+          "type": "bool",
+          "description": "replace a skill file even when it was edited or written by a newer pad (BUG-3466)"
+        },
+        "list": {
+          "type": "bool",
+          "description": "list supported tools and installation status"
+        },
+        "update": {
+          "type": "bool",
+          "description": "update all installed tool integrations"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad agent install"
+        },
+        {
+          "cmd": "pad agent install claude"
+        },
+        {
+          "cmd": "pad agent install cursor"
+        },
+        {
+          "cmd": "pad agent install opencode"
+        },
+        {
+          "cmd": "pad agent install --all"
+        },
+        {
+          "cmd": "pad agent status"
+        }
+      ]
+    },
+    "agent status": {
+      "summary": "Show installed Pad skill status across supported tools",
+      "examples": [
+        {
+          "cmd": "pad agent status"
+        }
+      ]
+    },
+    "agent update": {
+      "summary": "Update installed Pad skills across all supported tools",
+      "flags": {
+        "force": {
+          "type": "bool",
+          "description": "replace a skill file even when it was edited or written by a newer pad (BUG-3466)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad agent update"
+        }
+      ]
+    },
+    "attachment": {
+      "summary": "Upload, download, view, and list item attachments",
+      "description": "Upload, download, view, and list attachments (images, files) on items.\n\nAttachments belong to a workspace and may optionally reference an item.\nPass \"-\" as the item argument to upload without associating with any item.\nAn unattached image does not render on share pages even when an item embeds\nit, because a share serves only attachments its items own. Prefer uploading\nto the item; \"pad attachment attach\" fixes one after the fact.\n\nFor agents: ALWAYS use these CLI commands to read attachments — never read\ndirectly from ~/.pad/attachments/. The CLI goes through the authenticated\nREST API, which works on local SQLite, Pad Cloud, and remote/Postgres\ndeployments and respects workspace ACLs.",
+      "examples": [
+        {
+          "cmd": "pad attachment list"
+        },
+        {
+          "cmd": "pad attachment list --item TASK-5"
+        },
+        {
+          "cmd": "pad attachment list --category image --limit 20"
+        },
+        {
+          "cmd": "pad attachment show \u003cattachment-id\u003e"
+        },
+        {
+          "cmd": "pad attachment view \u003cattachment-id\u003e"
+        },
+        {
+          "cmd": "pad attachment view \u003cattachment-id\u003e -o ./pic.png"
+        },
+        {
+          "cmd": "pad attachment upload TASK-5 ./screenshot.png"
+        },
+        {
+          "cmd": "pad attachment attach \u003cattachment-id\u003e TASK-5"
+        },
+        {
+          "cmd": "pad attachment download \u003cattachment-id\u003e ./pic.png"
+        }
+      ]
+    },
+    "attachment attach": {
+      "summary": "Attach an unattached attachment to an item",
+      "description": "Attach an attachment that was uploaded without an item (\"upload -\") to an item.\n\nShare pages serve only attachments the shared item owns, so an unattached image\nan item embeds renders as a placeholder there until it is attached to that item.\n\nOnly an unattached attachment can be attached; one that already belongs to an\nitem is refused, never moved. You must be able to edit the item, and you must\nhave uploaded the attachment or be a workspace owner.",
+      "args": [
+        {
+          "name": "attachment-id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "item-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad attachment attach 3f2a9c1e-... TASK-5"
+        }
+      ]
+    },
+    "attachment download": {
+      "summary": "Download an attachment by ID",
+      "description": "Download the bytes of an attachment by its UUID. Pass \"-\" as the out\npath to stream to stdout (useful for piping into image viewers etc.).",
+      "args": [
+        {
+          "name": "attachment-id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "out-path",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "variant": {
+          "type": "string",
+          "description": "request a derived variant (thumb-sm | thumb-md)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad attachment download \u003cid\u003e ./screenshot.png"
+        },
+        {
+          "cmd": "pad attachment download \u003cid\u003e --variant thumb-sm ./thumb.png"
+        },
+        {
+          "cmd": "pad attachment download \u003cid\u003e -  | open -f -a Preview"
+        }
+      ]
+    },
+    "attachment list": {
+      "summary": "List attachments in the workspace",
+      "description": "List attachments in the current workspace, with optional\nfilters. Returns the same fields the web UI uses (id, mime, size,\nfilename, parent item, collection, created_at).\n\nThe --item flag accepts an item ref (TASK-5) or slug; the CLI\nresolves it to a UUID before calling the API.",
+      "flags": {
+        "attached": {
+          "type": "bool",
+          "description": "only attachments associated with an item"
+        },
+        "category": {
+          "type": "string",
+          "description": "filter by MIME category: image|video|audio|document|text|archive|other"
+        },
+        "collection": {
+          "type": "string",
+          "description": "filter by collection UUID"
+        },
+        "item": {
+          "type": "string",
+          "description": "filter to attachments on a specific item (ref or slug)"
+        },
+        "limit": {
+          "type": "int",
+          "description": "page size (1-200, default 50)"
+        },
+        "offset": {
+          "type": "int",
+          "description": "page offset"
+        },
+        "sort": {
+          "type": "string",
+          "description": "sort: size|size_desc|filename|filename_desc|created_at|created_at_desc (default created_at_desc)"
+        },
+        "unattached": {
+          "type": "bool",
+          "description": "only orphan attachments (no parent item)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad attachment list"
+        },
+        {
+          "cmd": "pad attachment list --item TASK-5"
+        },
+        {
+          "cmd": "pad attachment list --category image --limit 20"
+        },
+        {
+          "cmd": "pad attachment list --unattached"
+        },
+        {
+          "cmd": "pad attachment list --format json"
+        }
+      ]
+    },
+    "attachment show": {
+      "summary": "Show attachment metadata (size, MIME, filename) without downloading",
+      "description": "Issue a HEAD request and print the attachment's MIME type,\nsize, filename, ETag, and Last-Modified — without transferring the\nbytes. Useful to confirm an attachment exists, or to size a\ndownload before committing to it.",
+      "args": [
+        {
+          "name": "attachment-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "variant": {
+          "type": "string",
+          "description": "request a derived variant (thumb-sm | thumb-md)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad attachment show \u003cid\u003e"
+        },
+        {
+          "cmd": "pad attachment show \u003cid\u003e --format json"
+        },
+        {
+          "cmd": "pad attachment show \u003cid\u003e --variant thumb-sm"
+        }
+      ]
+    },
+    "attachment upload": {
+      "summary": "Upload a file as an item attachment",
+      "description": "Upload a file. The first argument is the parent item (issue ref or slug).\nUse \"-\" to upload without associating with any item. Prefer the item: an\nunattached image does not render on share pages even when an item embeds it,\nbecause a share serves only attachments its items own. To fix one afterwards,\nrun \"pad attachment attach \u003cattachment-id\u003e \u003citem-ref\u003e\".",
+      "args": [
+        {
+          "name": "item-ref-or-dash",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "filename": {
+          "type": "string",
+          "description": "override the stored filename (defaults to basename of path)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad attachment upload TASK-5 ./screenshot.png"
+        },
+        {
+          "cmd": "pad attachment upload - ./standalone.pdf"
+        },
+        {
+          "cmd": "pad attachment upload TASK-5 ./design.pdf --filename \"Design v2.pdf\""
+        }
+      ]
+    },
+    "attachment view": {
+      "summary": "Fetch an attachment to a file and print its path",
+      "description": "Fetch an attachment by UUID through the authenticated REST API\nand save it to disk. Prints the absolute path of the saved file on\nstdout — designed for agents to use as $(pad attachment view \u003cid\u003e).\n\nWith no -o flag, the file lands in a fresh OS temp directory. The\nfilename starts from the attachment's Content-Disposition header,\nreduced to a safe local path component (whitespace trimmed, path\nseparators and dot-only or trailing-dot forms removed — stricter\nthan what the server stores, because this name is written to YOUR\nfilesystem); when the result has no extension, the canonical\nextension for the attachment's MIME type is appended so viewers\nthat dispatch on extension still open it. An unusable name falls\nback to the attachment id, reduced the same way.\n\nWith -o \u003cpath\u003e, the file is written to that path using the same\natomic temp-then-rename strategy as 'pad attachment download'.\n\nThis is the recommended way for AI agents (Claude Code, Cursor, etc.)\nto view attachments referenced in item content as\n![alt](pad-attachment:\u003cuuid\u003e). It works for every Pad install\n(local SQLite, Pad Cloud, remote/Postgres) and respects workspace\nACLs. Reading directly from ~/.pad/attachments/ does NOT — never\ndo that.",
+      "args": [
+        {
+          "name": "attachment-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "output": {
+          "type": "string",
+          "description": "save to this path instead of an OS temp file"
+        },
+        "variant": {
+          "type": "string",
+          "description": "request a derived variant (thumb-sm | thumb-md)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad attachment view \u003cid\u003e"
+        },
+        {
+          "cmd": "pad attachment view \u003cid\u003e -o ./screenshot.png"
+        },
+        {
+          "cmd": "pad attachment view \u003cid\u003e --variant thumb-md"
+        },
+        {
+          "cmd": "pad attachment view \u003cid\u003e --format json"
+        }
+      ]
+    },
+    "auth": {
+      "summary": "Configure authentication and account access"
+    },
+    "auth 2fa": {
+      "summary": "Manage two-factor authentication for your account"
+    },
+    "auth 2fa disable": {
+      "summary": "Turn off two-factor authentication",
+      "description": "Turn off two-factor authentication.\n\nAn account with a password confirms with the password. An account without\none (signed up with GitHub, Google or Apple) confirms with a code from the\nauthenticator app or a recovery code. Turning 2FA off signs out your other\nsessions; this one is kept.",
+      "examples": [
+        {
+          "cmd": "pad auth 2fa disable"
+        }
+      ]
+    },
+    "auth 2fa setup": {
+      "summary": "Turn on two-factor authentication (authenticator app)",
+      "description": "Turn on two-factor authentication.\n\nPad shows an otpauth:// URI and its secret for your authenticator app, asks\nfor a code from the app, and then prints your recovery codes. The recovery\ncodes are shown once: store them somewhere safe.",
+      "examples": [
+        {
+          "cmd": "pad auth 2fa setup"
+        }
+      ]
+    },
+    "auth configure": {
+      "summary": "Configure how this Pad client connects to a server",
+      "description": "Configure how this Pad client connects to a server.\n\nModes:\n  cloud   This client connects to your Pad Cloud account at https://app.getpad.dev.\n          Managed, OAuth sign-in, no setup. Recommended.\n  local   This client manages a local Pad server on this machine.\n  remote  This client connects to your own self-hosted Pad server by base URL.",
+      "flags": {
+        "host": {
+          "type": "string",
+          "description": "local server host override for local mode"
+        },
+        "mode": {
+          "type": "string",
+          "description": "connection mode: cloud, local, remote"
+        },
+        "port": {
+          "type": "int",
+          "description": "local server port override for local mode"
+        },
+        "url": {
+          "type": "string",
+          "description": "server base URL for remote mode"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad auth configure --mode remote --url https://pad.example.com"
+        }
+      ]
+    },
+    "auth login": {
+      "summary": "Log in to Pad",
+      "flags": {
+        "interactive": {
+          "type": "bool",
+          "description": "Use email/password prompt instead of browser-based login"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad auth login"
+        }
+      ]
+    },
+    "auth logout": {
+      "summary": "Log out of Pad",
+      "examples": [
+        {
+          "cmd": "pad auth logout"
+        }
+      ]
+    },
+    "auth reset-password": {
+      "summary": "Recover a locked-out account from the server host",
+      "description": "Recover an account when you're locked out and email isn't configured.\n\nRun this ON THE SERVER HOST. It talks to the local Pad instance over\nloopback — the same trust model as 'pad auth setup' — so it needs no\nlogin (the whole point is that you can't log in). The endpoint refuses\nproxied or remote requests and is disabled entirely in cloud mode.\n\nBy default it prints a single-use reset link; open it in a browser to\nchoose a new password. Use --temp-password to instead set a random\ntemporary password printed to this terminal — handy on a headless box.\nRotate it right after you log in.",
+      "args": [
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "temp-password": {
+          "type": "bool",
+          "description": "Set a random temporary password instead of printing a reset link"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad auth reset-password alex@example.com"
+        }
+      ]
+    },
+    "auth setup": {
+      "summary": "Initialize a fresh Pad instance with the first admin account",
+      "description": "Initialize a fresh Pad instance with the first admin account.\n\nBy default the CLI hands the operator a deep link into the browser-based\n/setup form (which uses password managers, HTML5 email validation, and the\nlive strength meter). If the browser path won't work — headless server\nwithout an SSH tunnel, broken X11, etc. — re-run with --cli-prompt for the\nlegacy in-terminal email/name/password prompts, or supply --email/--name/\n--password for fully non-interactive (agent) use.",
+      "flags": {
+        "cli-prompt": {
+          "type": "bool",
+          "description": "Use the legacy in-terminal email/name/password prompts instead of the browser /setup flow."
+        },
+        "email": {
+          "type": "string",
+          "description": "Admin email address (headless bootstrap — requires --name and --password)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Admin display name (headless bootstrap — requires --email and --password)"
+        },
+        "password": {
+          "type": "string",
+          "description": "Admin password (headless bootstrap — requires --email and --name)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad auth setup"
+        }
+      ]
+    },
+    "auth timezone": {
+      "summary": "Show or set your IANA time zone",
+      "args": [
+        {
+          "name": "zone",
+          "type": "string"
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad auth timezone America/New_York"
+        }
+      ]
+    },
+    "auth whoami": {
+      "summary": "Show current user info",
+      "examples": [
+        {
+          "cmd": "pad auth whoami"
+        }
+      ]
+    },
+    "bootstrap": {
+      "summary": "Print the agent bootstrap blob (workspace + collections + conventions + roles + playbooks + dashboard) in one round-trip",
+      "description": "Print the consolidated agent bootstrap blob for the current workspace.\n\nThe blob carries everything the /pad skill needs to start a session:\n\n  - Workspace identity (slug, name, id)\n  - The calling user (name, email, id)\n  - Collections (with schemas)\n  - Always-on, active conventions (full body — must-follow rules)\n  - Convention index (METADATA ONLY — every active convention by\n    trigger, so triggered rules are discoverable; bodies load on demand)\n  - Agent roles\n  - Playbooks (METADATA ONLY — full bodies load on invocation)\n  - Dashboard (active items, attention, suggested next)\n  - Recent activity (last 24h, capped)\n\nUse --format json for machine consumption (default). Use --format markdown\nfor a readable summary.",
+      "examples": [
+        {
+          "cmd": "pad bootstrap --format json"
+        }
+      ]
+    },
+    "chat": {
+      "summary": "Chat with agents across workspaces",
+      "description": "Global chat. Targets are C\u003cn\u003e, \u003cn\u003e, or @\u003cname\u003e for your DM with an agent."
+    },
+    "chat arm": {
+      "summary": "Accept chat instructions for this session",
+      "flags": {
+        "accept-instructions": {
+          "type": "bool",
+          "description": "Allow human chat messages to drive this agent for this session"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad chat arm --accept-instructions"
+        }
+      ]
+    },
+    "chat delete": {
+      "summary": "Delete one of your chat messages",
+      "args": [
+        {
+          "name": "target",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "seq",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad chat delete C12 4"
+        }
+      ]
+    },
+    "chat disarm": {
+      "summary": "Treat chat as information again",
+      "examples": [
+        {
+          "cmd": "pad chat disarm"
+        }
+      ]
+    },
+    "chat inbox": {
+      "summary": "Show unread chat counts",
+      "flags": {
+        "agent": {
+          "type": "string",
+          "description": "Filter by agent key"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad chat inbox --agent rook"
+        }
+      ]
+    },
+    "chat list": {
+      "summary": "List your global chat conversations",
+      "examples": [
+        {
+          "cmd": "pad chat list"
+        }
+      ]
+    },
+    "chat read": {
+      "summary": "Mark chat read through a message sequence",
+      "args": [
+        {
+          "name": "target",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "to": {
+          "type": "int",
+          "description": "Mark read through this sequence"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad chat read C12 --to 4"
+        }
+      ]
+    },
+    "chat send": {
+      "summary": "Send a chat message (- reads stdin)",
+      "args": [
+        {
+          "name": "target",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "body",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "context-workspace": {
+          "type": "string",
+          "description": "Workspace for resolving message references (defaults to cwd link)"
+        },
+        "op-key": {
+          "type": "string",
+          "description": "Caller-owned idempotency key"
+        },
+        "reply-to": {
+          "type": "int",
+          "description": "Reply to this message sequence (marks read through this sequence)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad chat send @rook \"Ready for review\""
+        }
+      ]
+    },
+    "chat show": {
+      "summary": "Show chat messages and mark read when no unread messages are skipped",
+      "args": [
+        {
+          "name": "target",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "limit": {
+          "type": "int",
+          "description": "Maximum messages to return",
+          "default": "50"
+        },
+        "no-mark": {
+          "type": "bool",
+          "description": "Do not mark returned messages read"
+        },
+        "since": {
+          "type": "int",
+          "description": "Show messages after this sequence"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad chat show C12 --since 4"
+        }
+      ]
+    },
+    "collection": {
+      "summary": "List, create, update, and delete collections"
+    },
+    "collection archived": {
+      "summary": "List archived collections and their item counts (owner-only)",
+      "examples": [
+        {
+          "cmd": "pad collection archived"
+        }
+      ]
+    },
+    "collection create": {
+      "summary": "Create a custom collection",
+      "description": "Create a new collection with custom fields.\n\nTwo ways to define the schema:\n\n  --fields  Compact DSL for the simple case: key:type[:option1,option2,...]\n            Separate multiple fields with semicolons. Does not support\n            terminal_options, custom defaults, computed fields, or suffixes.\n\n            For a relation the third part is the TARGET COLLECTION slug\n            rather than an options list, and it is required:\n              owner:relation:people\n            A relation with no target is refused, because such a field\n            cannot accept any value.\n\n  --schema  Full CollectionSchema JSON for everything else. Accepts:\n              inline JSON:  --schema '{\"fields\":[...]}'\n              file path:    --schema @./schema.json\n              stdin:        --schema -\n\n  --fields and --schema are mutually exclusive.\n\nTip: if you omit \"label\" on a --schema field, the CLI auto-fills it from\nthe key using Title Case (e.g. \"due_date\" → \"Due Date\") — matching what\nthe --fields DSL does. Set \"label\" explicitly when you want a custom display name.",
+      "args": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "awaits-human": {
+          "type": "string",
+          "description": "true: the collection's items are asks of a person, routed to their assignee's needs-you list; false: an ordinary collection. Default: false"
+        },
+        "board-group-by": {
+          "type": "string",
+          "description": "field to group by in board view",
+          "default": "status"
+        },
+        "default-view": {
+          "type": "string",
+          "description": "default view type: list, board, table",
+          "default": "board"
+        },
+        "description": {
+          "type": "string",
+          "description": "collection description"
+        },
+        "fields": {
+          "type": "string",
+          "description": "field definitions DSL (key:type[:options]; ...); use --schema for terminal_options, computed, defaults, etc."
+        },
+        "icon": {
+          "type": "string",
+          "description": "collection emoji icon"
+        },
+        "layout": {
+          "type": "string",
+          "description": "item detail layout: fields-primary, content-primary, balanced",
+          "default": "fields-primary"
+        },
+        "schema": {
+          "type": "string",
+          "description": "full CollectionSchema JSON: inline, @path, or - for stdin; mutually exclusive with --fields"
+        },
+        "tracks-work": {
+          "type": "string",
+          "description": "true: items count as work (progress, parent completion, Insights); false: reference material. Default: work when the done field can finish"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad collection create \"Bugs\" --fields \"status:select:new,triaged,fixing,resolved;severity:select:low,medium,high,critical;component:text\""
+        },
+        {
+          "cmd": "pad collection create \"Decisions\" --icon \"⚖️\" --fields \"status:select:proposed,accepted,rejected;impact:select:low,medium,high\""
+        },
+        {
+          "cmd": "pad collection create \"Reviews\" --fields \"status:select:open,done;reviewer:relation:people\""
+        },
+        {
+          "cmd": "pad collection create \"Asks\" --awaits-human --fields \"status:select:open,done\""
+        },
+        {
+          "cmd": "pad collection create \"Marketing\" --schema '{\"fields\":[{\"key\":\"status\",\"label\":\"Status\",\"type\":\"select\",\"options\":[\"idea\",\"drafting\",\"review\",\"published\",\"archived\"],\"terminal_options\":[\"published\",\"archived\"],\"default\":\"idea\",\"required\":true}]}'"
+        },
+        {
+          "cmd": "pad collection create \"Marketing\" --schema @./marketing-schema.json"
+        },
+        {
+          "cmd": "cat schema.json | pad collection create \"Marketing\" --schema -"
+        }
+      ]
+    },
+    "collection delete": {
+      "summary": "Archive a non-default collection and hide its items (owner-only; restore with 'pad collection restore')",
+      "description": "Soft-delete a collection by slug.\n\nConstraints:\n  - Workspace owner role required.\n  - Cannot delete a default collection (template-seeded ones are\n    marked is_default=true). For seeded collections, use\n    'pad collection update' to adapt them (rename, reshape schema,\n    swap icon) instead.\n  - Items in the collection are NOT deleted — they stay in the\n    database, hidden with the collection.\n  - Reversible: 'pad collection archived' lists archived collections\n    and 'pad collection restore \u003cslug\u003e' brings one back with its items\n    (TASK-2189).",
+      "args": [
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad collection delete experiments"
+        }
+      ]
+    },
+    "collection list": {
+      "summary": "List collections with item counts",
+      "examples": [
+        {
+          "cmd": "pad collection list"
+        }
+      ]
+    },
+    "collection restore": {
+      "summary": "Restore an archived collection, with its items (owner-only)",
+      "description": "Restore an archived collection by its slug (or id). Its items come back\nwith it: archiving never deleted them. See 'pad collection archived'.",
+      "args": [
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad collection restore experiments"
+        }
+      ]
+    },
+    "collection update": {
+      "summary": "Update an existing collection",
+      "description": "Update an existing collection's name, icon, description, prefix,\nschema, or sort order.\n\nOnly flags you explicitly set are sent — every other property is left\nuntouched. Use this to rename collections, swap icons, or reshape the\nschema (e.g. change status enum options or add/remove fields).\n\nThe --schema and --fields flags accept the same input modes as\n'pad collection create':\n\n  --fields  Compact DSL for the simple case: key:type[:option1,option2,...]\n  --schema  Full CollectionSchema JSON: inline, @path, or - for stdin\n\nCollections can be referenced by slug (e.g. 'tasks') only — there is no\nissue-ID equivalent for collections themselves.",
+      "args": [
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "awaits-human": {
+          "type": "string",
+          "description": "true: the collection's items are asks of a person, routed to their assignee's needs-you list; false: an ordinary collection"
+        },
+        "description": {
+          "type": "string",
+          "description": "new description (use empty string to clear)"
+        },
+        "fields": {
+          "type": "string",
+          "description": "replacement schema via DSL: \"key:type[:options]; ...\""
+        },
+        "icon": {
+          "type": "string",
+          "description": "new emoji icon (use empty string to clear)"
+        },
+        "name": {
+          "type": "string",
+          "description": "new display name"
+        },
+        "prefix": {
+          "type": "string",
+          "description": "new issue-ID prefix (e.g. TASK, BUG)"
+        },
+        "schema": {
+          "type": "string",
+          "description": "replacement CollectionSchema JSON: inline, @path, or - for stdin"
+        },
+        "sort-order": {
+          "type": "int",
+          "description": "new sort order (lower = appears first)"
+        },
+        "tracks-work": {
+          "type": "string",
+          "description": "true: items count as work (progress, parent completion, Insights); false: the collection is reference material"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad collection update tasks --name Issues --icon 🎯"
+        },
+        {
+          "cmd": "pad collection update conventions --description \"Updated rules\""
+        },
+        {
+          "cmd": "pad collection update bugs --schema @./new-bug-schema.json"
+        },
+        {
+          "cmd": "pad collection update tasks --fields \"status:select:open,doing,done;priority:select:high,medium,low\""
+        },
+        {
+          "cmd": "pad collection update human-tasks --awaits-human"
+        },
+        {
+          "cmd": "pad collection update human-tasks --awaits-human=false"
+        }
+      ]
+    },
+    "completion": {
+      "summary": "Generate shell completion scripts",
+      "description": "Generate shell completion scripts for your shell.\n\nUsage:\n  source \u003c(pad completion bash)\n  pad completion zsh \u003e \"${fpath[1]}/_pad\"\n  pad completion fish | source",
+      "args": [
+        {
+          "name": "value",
+          "type": "enum",
+          "enum": [
+            "bash",
+            "zsh",
+            "fish",
+            "powershell"
+          ]
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad completion bash"
+        },
+        {
+          "cmd": "pad completion zsh"
+        },
+        {
+          "cmd": "pad completion fish"
+        },
+        {
+          "cmd": "pad completion powershell"
+        }
+      ]
+    },
+    "db": {
+      "summary": "Database backup, restore, repair, and migration tools"
+    },
+    "db backup": {
+      "summary": "Back up the database",
+      "description": "Creates a backup of the Pad database.\n\nFor PostgreSQL (PAD_DB_DRIVER=postgres): creates a SQL dump using pg_dump.\nFor SQLite (default): writes an online-safe single-file backup via VACUUM INTO —\nsafe to run while the server is live. The database path is resolved the same way\nthe server resolves it (PAD_DB_PATH \u003e PAD_DATA_DIR/pad.db \u003e ~/.pad/pad.db).",
+      "flags": {
+        "cron": {
+          "type": "bool",
+          "description": "cron mode: structured log output, no interactive messages"
+        },
+        "output": {
+          "type": "string",
+          "description": "output file path (default: pad-backup-YYYYMMDD-HHMMSS.db or .sql)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad db backup --output pad-backup.db"
+        }
+      ]
+    },
+    "db migrate-to-pg": {
+      "summary": "Migrate data from SQLite to PostgreSQL",
+      "description": "One-time migration from a SQLite database to PostgreSQL.\nUses application-level export/import to transfer all workspace data.\n\nThis reads each workspace from the SQLite database and imports it into\nthe PostgreSQL database. Users, platform settings, and auth data are\nNOT migrated — only workspace content (collections, items, comments,\nlinks, versions).\n\nSteps:\n  1. Set up a fresh PostgreSQL database\n  2. Run 'pad server start' with PAD_DB_DRIVER=postgres once to create the schema\n  3. Stop the server\n  4. Run this command to migrate workspace data",
+      "flags": {
+        "discard-unflushed-edits": {
+          "type": "bool",
+          "description": "migrate even though some items have edits only in the collaborative op-log, permanently losing them"
+        },
+        "force": {
+          "type": "bool",
+          "description": "migrate even though a Pad server appears to be running, OR the config needed to check for one could not be read (an edit made during the migration may be lost)"
+        },
+        "from": {
+          "type": "string",
+          "description": "SQLite database path (default: server-resolved — PAD_DB_PATH \u003e PAD_DATA_DIR/pad.db \u003e ~/.pad/pad.db)"
+        },
+        "to": {
+          "type": "string",
+          "description": "PostgreSQL connection URL (default: PAD_DATABASE_URL)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad db migrate-to-pg --to postgres://pad@localhost:5432/pad"
+        }
+      ]
+    },
+    "db release-cloud": {
+      "summary": "Let a self-hosted boot convert this database's free users to self-hosted (moving off Pad Cloud)",
+      "description": "Records that this database is deliberately leaving Pad Cloud, so the next\nnon-cloud boot converts free and empty plans to self-hosted (no limits).\n\nA database a cloud-mode server has booted is marked cloud-owned, and a\nnon-cloud boot leaves its plans alone (TASK-3551). Run this on the server\nhost, against the database the server uses. It refuses while users carry\nPad Cloud billing state (a Stripe plan source or customer id) unless\n--force. A later cloud-mode boot marks the database cloud-owned again.",
+      "flags": {
+        "force": {
+          "type": "bool",
+          "description": "release even though users carry Pad Cloud billing state"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad db release-cloud"
+        },
+        {
+          "cmd": "pad db release-cloud --force"
+        }
+      ]
+    },
+    "db repair-nul": {
+      "summary": "Replace stored NULs and invalid UTF-8 with U+FFFD (rewrites user content)",
+      "description": "Rewrites every stored value 'pad db scan-nul' reports, replacing each NUL,\nand each invalid UTF-8 byte sequence, with U+FFFD (the Unicode replacement\ncharacter) and leaving the rest of the value byte for byte as it was. In a valid\nJSON document an invalid byte can only sit inside a string, so the document\nstays valid JSON with that string's bad bytes replaced; a value that was not\nvalid JSON to begin with is not made valid by this.\n\nTHIS CHANGES USER CONTENT. It is a separate command, and never part of a\nmigration, for that reason: a migration that rewrote stored text would decide\non the operator's behalf. Every value it changes is listed.\n\nRun 'pad db scan-nul' first to see what would change — that is the dry run, so\nthis command has no --dry-run of its own. Running it twice is safe: the second\npass finds nothing to do.\n\nA row whose PRIMARY KEY carries the NUL is reported and left alone, because\nrepairing it would change the row's identity and could collide with another\nrow.",
+      "flags": {
+        "force": {
+          "type": "bool",
+          "description": "skip the confirmation prompt and the running-server check"
+        },
+        "from": {
+          "type": "string",
+          "description": "SQLite database path (default: server-resolved)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad db repair-nul"
+        }
+      ]
+    },
+    "db restore": {
+      "summary": "Restore a database from a backup",
+      "description": "Restores a Pad database from a backup created by 'pad db backup'.\n\nFor PostgreSQL: restores in one transaction using psql, stopping on SQL errors\nand ignoring psql startup files. Requires PAD_DATABASE_URL.\nFor SQLite (default): stages and checks the backup before atomically replacing\nthe live database after checkpointing existing WAL data. The database path\nis resolved the same way the server resolves it (PAD_DB_PATH \u003e PAD_DATA_DIR/pad.db\n\u003e ~/.pad/pad.db). Stop the server first — restore refuses to run while it detects\na live server (a running WAL checkpoint could clobber the restored file); use\n--force to override.\n\nWARNING: This will overwrite the current database contents.",
+      "args": [
+        {
+          "name": "file",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "force": {
+          "type": "bool",
+          "description": "skip confirmation prompt"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad db restore pad-backup.db"
+        }
+      ]
+    },
+    "db scan-nul": {
+      "summary": "Report stored values PostgreSQL refuses: a NUL, or invalid UTF-8 (read-only)",
+      "description": "Counts and locates every stored value that violates Pad's NUL invariant:\na real NUL byte in any protected column, or a JSON escape in a JSON column\nthat a JSON parser would decode to one. It also reports every value that is\nnot valid UTF-8. That is not a NUL, but PostgreSQL refuses it too (SQLSTATE\n22021 under a UTF8 database), so it breaks a migration in the same way.\n\nFinding invalid UTF-8 means reading every stored value in full, since SQLite\nhas no way to test for it in a query; on a large database that takes about as\nlong as reading the database once.\n\nSuch rows can only have been written by a binary older than the enforcement\nthat now refuses them. They are not cosmetic: their workspace exports fine and\nre-imports with a 400, and 'pad db migrate-to-pg' fails partway through the\ncopy against PostgreSQL. A SQL_ASCII PostgreSQL would accept the invalid-UTF-8\nbytes; they are reported anyway, because nothing on the Pad side can tell which\nencoding a later migration will target.\n\nThe scan itself only reads. Opening the database does apply any pending schema\nmigrations, exactly as starting the server does — pass --from to inspect a\nbackup file instead of the live database.\n\nNothing is repaired. Run 'pad db repair-nul' for that.",
+      "flags": {
+        "from": {
+          "type": "string",
+          "description": "SQLite database path (default: server-resolved — PAD_DB_PATH \u003e PAD_DATA_DIR/pad.db \u003e ~/.pad/pad.db)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad db scan-nul"
+        }
+      ]
+    },
+    "github": {
+      "summary": "Link GitHub pull requests to Pad items",
+      "description": "Link GitHub pull requests to Pad items and view their status.\n\nRequires the GitHub CLI (gh) to be installed: https://cli.github.com/",
+      "examples": [
+        {
+          "cmd": "pad github link TASK-5"
+        },
+        {
+          "cmd": "pad github link"
+        },
+        {
+          "cmd": "pad github status"
+        },
+        {
+          "cmd": "pad github status TASK-5"
+        },
+        {
+          "cmd": "pad github unlink TASK-5"
+        }
+      ]
+    },
+    "github link": {
+      "summary": "Link the current branch's PR to a Pad item",
+      "description": "Link the current branch's GitHub pull request to a Pad item.\n\nIf no item ref is provided, attempts to auto-detect from the branch name.\nFor example, branch \"fix/TASK-5-oauth-bug\" would auto-link to TASK-5.",
+      "args": [
+        {
+          "name": "item-ref",
+          "type": "string"
+        }
+      ],
+      "flags": {
+        "pr-branch": {
+          "type": "string",
+          "description": "the PR's head branch, with --pr-number"
+        },
+        "pr-number": {
+          "type": "int",
+          "description": "link this PR number instead of the current branch's (with --pr-url; nothing is fetched from GitHub)"
+        },
+        "pr-repo": {
+          "type": "string",
+          "description": "the PR's repository (owner/name), with --pr-number"
+        },
+        "pr-state": {
+          "type": "string",
+          "description": "the PR's state (e.g. open, merged, closed), with --pr-number"
+        },
+        "pr-title": {
+          "type": "string",
+          "description": "the PR's title, with --pr-number"
+        },
+        "pr-url": {
+          "type": "string",
+          "description": "the PR's URL, with --pr-number"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad github link TASK-5"
+        },
+        {
+          "cmd": "pad github link fix-oauth-bug"
+        },
+        {
+          "cmd": "pad github link"
+        },
+        {
+          "cmd": "pad github link TASK-5 --pr-number 42 --pr-url https://github.com/acme/app/pull/42 --pr-state open"
+        }
+      ]
+    },
+    "github status": {
+      "summary": "Show GitHub PR status for linked items",
+      "description": "Show the GitHub PR status for one or all items that have linked PRs.",
+      "args": [
+        {
+          "name": "item-ref",
+          "type": "string"
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad github status"
+        },
+        {
+          "cmd": "pad github status TASK-5"
+        }
+      ]
+    },
+    "github unlink": {
+      "summary": "Remove the GitHub PR link from an item",
+      "args": [
+        {
+          "name": "item-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad github unlink TASK-5"
+        }
+      ]
+    },
+    "init": {
+      "summary": "Set up Pad — configure, authenticate, and create a workspace",
+      "description": "Initialize Pad for this project. This smart command detects what's needed and\nwalks you through each step:\n\n  1. Configure connection (local server, remote, or Docker)\n  2. Start local server if needed\n  3. Create the first admin account (fresh installs)\n  4. Log in if not authenticated\n  5. Create or link a workspace for the current directory\n  6. Install/update the /pad skill for detected AI tools\n\nSafe to re-run anytime — it skips steps that are already done and shows\nyour current status.",
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "flags": {
+        "cli-prompt": {
+          "type": "bool",
+          "description": "Use the legacy in-terminal email/name/password prompts for the admin-account step instead of the browser /setup flow."
+        },
+        "email": {
+          "type": "string",
+          "description": "Admin email address (headless bootstrap — requires --name and --password)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Admin display name (headless bootstrap — requires --email and --password)"
+        },
+        "password": {
+          "type": "string",
+          "description": "Admin password (headless bootstrap — requires --email and --name)"
+        },
+        "template": {
+          "type": "string",
+          "description": "workspace template (omit for interactive picker; run 'pad workspace init --list-templates' to see all)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad init"
+        },
+        {
+          "cmd": "pad init myproject"
+        },
+        {
+          "cmd": "pad init --template scrum"
+        }
+      ]
+    },
+    "item": {
+      "summary": "Create, update, relate, and discuss Pad items"
+    },
+    "item ack": {
+      "summary": "Acknowledge a fired reminder",
+      "description": "Acknowledge a reminder that has fired, removing it from 'pad project next'.\n\nNothing else acknowledges a reminder. In particular, completing the item does\nNOT: a reminder may have been armed precisely to fire after the work was done,\nand consuming it on a status change would throw that away. A reminder on a\ncompleted item is hidden from the recommendation surface but stays in the\ntable, still unacknowledged, exactly as you left it.",
+      "args": [
+        {
+          "name": "reminder-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item ack \u003creminder-id\u003e"
+        }
+      ]
+    },
+    "item backlinks": {
+      "summary": "List items that link to this item via [[ref]]",
+      "description": "Show items whose body contains a [[\u003cref\u003e]] reference to the target.\n\nBacklinks are the reverse of [[]] wiki-links: if BUG-5's body contains\n[[TASK-1]], then \"pad item backlinks TASK-1\" lists BUG-5 as a source.\n\nCode blocks (fenced and inline) are excluded — example refs in docs\ndon't count as real links. Self-links (an item referencing its own\nref in its own body) are hidden.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "limit": {
+          "type": "int",
+          "description": "max backlinks to return (default 50, max 300)"
+        },
+        "offset": {
+          "type": "int",
+          "description": "skip the first N backlinks (for pagination)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item backlinks TASK-5"
+        },
+        {
+          "cmd": "pad item backlinks PLAN-42 --limit 10"
+        },
+        {
+          "cmd": "pad item backlinks IDEA-3 --format json"
+        }
+      ]
+    },
+    "item block": {
+      "summary": "Mark that one item blocks another",
+      "description": "Create a blocking dependency between two items.\n\nThe source item blocks the target item. For example:\n  pad item block TASK-5 TASK-8    # TASK-5 blocks TASK-8",
+      "args": [
+        {
+          "name": "source-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "target-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item block TASK-5 TASK-8"
+        }
+      ]
+    },
+    "item blocked-by": {
+      "summary": "Mark that an item is blocked by another",
+      "description": "Create a blocking dependency (reverse direction).\n\nThe source item is blocked by the blocker item. For example:\n  pad item blocked-by TASK-5 TASK-3    # TASK-5 is blocked by TASK-3",
+      "args": [
+        {
+          "name": "source-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "blocker-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item blocked-by TASK-8 TASK-5"
+        }
+      ]
+    },
+    "item bulk-update": {
+      "summary": "Update multiple items at once",
+      "description": "Update the status or priority of multiple items in a single command.\n\nItems can be referenced by issue ID (e.g. TASK-5) or slug.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true,
+          "repeatable": true
+        }
+      ],
+      "flags": {
+        "force": {
+          "type": "bool",
+          "description": "override the open-children guard (allow marking items terminal even if children are non-terminal)"
+        },
+        "priority": {
+          "type": "string",
+          "description": "set priority for all items"
+        },
+        "status": {
+          "type": "string",
+          "description": "set status for all items"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item bulk-update --status done TASK-5 TASK-8 TASK-12"
+        },
+        {
+          "cmd": "pad item bulk-update --priority high IDEA-3 IDEA-7"
+        },
+        {
+          "cmd": "pad item bulk-update --status in_progress --priority urgent TASK-1 TASK-2"
+        }
+      ]
+    },
+    "item claim": {
+      "summary": "Atomically claim an item for execution (lease with expiry)",
+      "description": "Acquire the execution lease on an item, or refresh it if you already\nhold it (a re-claim by the live holder extends the expiry — heartbeat).\n\nFails with the live holder and expiry when someone else holds the item, so\nthe loser can log who won and skip instead of double-working. The lease\nexpires on its own; a crashed holder blocks nobody past the TTL.\n\nThe lease is held under this session's WORKER ID plus your account: an\nopaque id \"pad session register\" mints, kept across a /clear and new for\neach process, so two sessions get distinct leases even under one agent\nname. --worker-id (or $PAD_WORKER_ID) acts as a given id, e.g. to resume\nafter a restart. An unregistered session sends none and is matched on its\nholder label, as before: two unregistered sessions of one runtime share a\nname, and a name-only claim of a worker-bound lease is refused.\n\n--holder is the display label (default: this session's agent name, else\nyour account's email). \"pad project next\" / \"ready\" leave out items another\nworker has leased, by the same identity a claim uses.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "holder": {
+          "type": "string",
+          "description": "lease holder display label (default: this session's agent name, else your email); the lease is matched by worker id when this session has one"
+        },
+        "ttl": {
+          "type": "string",
+          "description": "lease duration, e.g. 15m, 1h (default: 15m; max 24h)"
+        },
+        "worker-id": {
+          "type": "string",
+          "description": "lease worker id (\"wk_\" + 32 hex) to act as (default: this session's own, from pad session register or $PAD_WORKER_ID)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item claim TASK-5"
+        },
+        {
+          "cmd": "pad item claim TASK-5 --holder sweep-runner --ttl 30m"
+        }
+      ]
+    },
+    "item comment": {
+      "summary": "Add a comment to an item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "op-key": {
+          "type": "string",
+          "description": "idempotency key: retrying the SAME comment with the same key returns the comment it made instead of a second one (default: a new key per invocation)"
+        },
+        "reply-to": {
+          "type": "string",
+          "description": "reply to a specific comment ID"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item comment TASK-5 \"Reproduced on main; the fix is in progress\""
+        }
+      ]
+    },
+    "item comment-delete": {
+      "summary": "Delete a comment from an item",
+      "description": "Delete a comment from an item.\n\nAnyone who may edit the item may delete its comments. A comment that still\nhas replies is refused and nothing is deleted; delete the replies first.\nGet comment IDs from \"pad item comments \u003cref\u003e\".",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "comment-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item comment-delete TASK-5 \u003ccomment-id\u003e"
+        }
+      ]
+    },
+    "item comment-edit": {
+      "summary": "Replace the body of a comment on an item",
+      "description": "Replace the body of a comment on an item.\n\nOnly the comment's author may edit it; an admin may too, but only from a\nbrowser session. Get comment IDs from \"pad item comments \u003cref\u003e\". An edited\ncomment is shown with \"edited\" in that listing.\n\n  pad item comment-edit TASK-5 3f2a... \"corrected threshold is 0.7\"\n  pad item comment-edit TASK-5 3f2a... --stdin \u003c note.md",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "comment-id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "message",
+          "type": "string"
+        }
+      ],
+      "flags": {
+        "stdin": {
+          "type": "bool",
+          "description": "read the new body from stdin instead of the message argument (a blank read is refused)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item comment-edit TASK-5 \u003ccomment-id\u003e \"The fix landed in #1234\""
+        }
+      ]
+    },
+    "item comments": {
+      "summary": "List comments on an item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item comments TASK-5"
+        }
+      ]
+    },
+    "item context": {
+      "summary": "Everything an agent needs before working an item, in one brief",
+      "description": "Fetch one deterministic brief for working an item (PLAN-3598): the item\nwith its seq, its parent chain with parsed acceptance criteria, the bodies\nof the conventions whose trigger matches the intent (plus the always-on\nones), matching playbooks, dependencies with statuses, the typed decisions\nPad would surface (the rest are only counted), linked items, and the sections that say what was left out for size and\nwhich rules may conflict.\n\n--intent maps onto the workspace's convention triggers: \"implement\" means\non-implement when that trigger is declared. --role keeps a convention scoped\nto another role out of the brief. --budget caps the brief in characters;\nwhole parts are dropped from the end, never cut, and each is listed under\nomitted.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "budget": {
+          "type": "int",
+          "description": "size cap in characters (default 40000 on the server)"
+        },
+        "intent": {
+          "type": "string",
+          "description": "what you are about to do (implement, review, commit, ...): selects the conventions whose trigger matches"
+        },
+        "role": {
+          "type": "string",
+          "description": "your agent role slug: conventions scoped to another role are left out"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item context TASK-5 --intent implement"
+        },
+        {
+          "cmd": "pad item context TASK-5 --intent implement --role implementer --format json"
+        },
+        {
+          "cmd": "pad item context TASK-5 --intent review --budget 20000"
+        }
+      ]
+    },
+    "item copy": {
+      "summary": "Copy an item into another workspace",
+      "description": "Copy an item into a different workspace, choosing the destination collection.\n\nFields are migrated into the destination collection's schema: matching keys with\ncompatible types carry across, incompatible ones are dropped, and destination\nfields that end up required-but-empty must be supplied with --field.\n\nWith --archive-source the source is archived after a successful copy — that is\nthe MOVE path. The archived source records where it went.\n\nWhat never carries: child items, the parent link, dependency links (blocks /\nblocked-by / related), the assignee when they are not a member of the\ndestination workspace, and the agent role (role slugs are workspace-local).\n--dry-run reports all of it before anything happens.\n\nThe content is copied as written, with two exceptions worth knowing:\n\n  - pad-attachment: references that resolve to a LIVE attachment in the source\n    workspace are repointed at the copied attachments (originals and their\n    thumbnail variants). Any other reference — an id from another workspace, a\n    soft-deleted one, or one that never existed — is left in the text\n    unchanged and reported as unresolvable; it does not become a copy.\n  - [[wiki-links]] are NOT rewritten. The copy is re-resolved in the\n    DESTINATION workspace, so a link can end up pointing at a different item\n    there, or at nothing at all. An explicit [[workspace::REF]] link stays a\n    genuine cross-workspace reference to the original.\n\n--dry-run calls a read-only preview endpoint and changes nothing. Without it,\nthe preview still runs first: if any destination field needs a value you have\nnot supplied, the copy is refused before any mutating request is sent.\n\nA copy is attempted at most once per invocation and is NEVER retried\nautomatically. There is no idempotency key, so a blind re-run after an\nambiguous failure would create a duplicate item — on such a failure the\ncommand tells you to check the destination workspace instead.\n\nItems can be referenced by issue ID (e.g. TASK-5) or slug.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "archive-source": {
+          "type": "bool",
+          "description": "archive the source after a successful copy (the move path)"
+        },
+        "collection": {
+          "type": "string",
+          "description": "destination collection slug (required)"
+        },
+        "dry-run": {
+          "type": "bool",
+          "description": "report what the copy would do, without doing any of it"
+        },
+        "field": {
+          "type": "string",
+          "description": "set a destination field value (repeatable): --field key=value",
+          "repeatable": true
+        },
+        "op-key": {
+          "type": "string",
+          "description": "idempotency key: retrying the SAME copy with the same key returns the first copy instead of making another (default: a new key per invocation)"
+        },
+        "to-workspace": {
+          "type": "string",
+          "description": "destination workspace slug (required)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item copy IDEA-12 --to-workspace pad-web --collection tasks --dry-run"
+        },
+        {
+          "cmd": "pad item copy IDEA-12 --to-workspace pad-web --collection tasks"
+        },
+        {
+          "cmd": "pad item copy TASK-5 --to-workspace pad-web --collection tasks --archive-source"
+        },
+        {
+          "cmd": "pad item copy TASK-5 --to-workspace pad-web --collection tasks --field priority=high"
+        }
+      ]
+    },
+    "item create": {
+      "summary": "Create a new item in a collection",
+      "description": "Create a new item in the specified collection.\n\nRun with --help-collections to see available collections and their status values.",
+      "args": [
+        {
+          "name": "collection",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "assign": {
+          "type": "string",
+          "description": "assign to user (name or email)"
+        },
+        "category": {
+          "type": "string",
+          "description": "category field value"
+        },
+        "content": {
+          "type": "string",
+          "description": "item body content"
+        },
+        "field": {
+          "type": "string",
+          "description": "set arbitrary field (repeatable): --field key=value; refused for implementation_notes, decision_log, github_pr and convention (create the item, then use `pad item note` / `pad item decide` / `pad github link`; conventions come from `pad library activate`)",
+          "repeatable": true
+        },
+        "fields-json": {
+          "type": "string",
+          "description": "set fields from one JSON object, values keeping their JSON type (e.g. '{\"labels\":[\"a\",\"b\"],\"meta\":{\"k\":1}}'); for structured values --field key=value cannot carry. A key also set by --field or a dedicated flag is refused, and so is null"
+        },
+        "op-key": {
+          "type": "string",
+          "description": "idempotency key: retrying the SAME create with the same key returns the item it created instead of a second one (default: a new key per invocation)"
+        },
+        "parent": {
+          "type": "string",
+          "description": "parent item (ref, slug, or ID)"
+        },
+        "priority": {
+          "type": "string",
+          "description": "priority field value"
+        },
+        "role": {
+          "type": "string",
+          "description": "assign agent role (slug)"
+        },
+        "status": {
+          "type": "string",
+          "description": "status field value"
+        },
+        "stdin": {
+          "type": "bool",
+          "description": "read content from stdin"
+        },
+        "tags": {
+          "type": "string",
+          "description": "JSON array of tags"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item create task \"Fix OAuth redirect\" --priority high"
+        },
+        {
+          "cmd": "pad item create idea \"Real-time collaboration\" --category infrastructure"
+        },
+        {
+          "cmd": "pad item create plan \"API Redesign\" --status active"
+        },
+        {
+          "cmd": "pad item create doc \"Payment Architecture\" --category architecture --stdin"
+        }
+      ]
+    },
+    "item decide": {
+      "summary": "Append a decision log entry to an item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "decision",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "op-key": {
+          "type": "string",
+          "description": "idempotency key: retrying the SAME decision with the same key returns the decision it appended instead of a second one (default: a new key per invocation)"
+        },
+        "rationale": {
+          "type": "string",
+          "description": "decision rationale"
+        },
+        "stdin": {
+          "type": "bool",
+          "description": "read decision rationale from stdin"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item decide TASK-5 \"Use SQLite FTS5 for search\" --rationale \"No extra service to run\""
+        }
+      ]
+    },
+    "item delete": {
+      "summary": "Archive (soft-delete) an item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item delete TASK-5"
+        }
+      ]
+    },
+    "item deps": {
+      "summary": "Show all dependencies for an item",
+      "description": "Display blocking relationships for an item.\n\nShows two sections:\n  Blocks:      items that this item is blocking\n  Blocked by:  items that are blocking this item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item deps TASK-5"
+        }
+      ]
+    },
+    "item edit": {
+      "summary": "Open an item's content in $EDITOR",
+      "description": "Open an item's rich content in your default editor. After editing\nand saving, the content is updated in Pad.\n\nItems can be referenced by issue ID (e.g. TASK-5) or slug.\nSet EDITOR or VISUAL env var to choose your editor (default: vi).\n\nThe save is guarded: it is refused if the stored item was written since\nthe editor opened. If it is refused, or the save fails for any other\nreason, your edited text is written to a recovery file and its path is\nprinted. Exiting the editor with a nonzero status (e.g. vim's :cq) aborts\nwithout saving, as git does.\n\nA browser tab's unsaved typing is not a write to the stored item until the\ntab writes it back, so the version token alone cannot see it. The command\nchecks for such typing when the editor opens and again just before saving,\nand the server refuses the save if any is pending when it arrives. With an\neditor tab open, typing in the instant between the server's check and the\neditor applying the new body can still be replaced.\n\nRefuses to open when the stored body is behind the item's live\ncollaborative document (an editor in a browser tab holds edits not yet\nwritten back), because saving would replace those edits. Open the item\nin a browser tab so it flushes, then retry — or pass --force to edit the\nstored body anyway. It refuses the same way when the item holds edits an\neditor upgrade set aside (see pad item set-aside); opening the item does not\nrestore those, and --force discards them.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "force": {
+          "type": "bool",
+          "description": "edit even when the stored body is behind the live collaborative document, and save with overwrite_pending_edits (replaces edits held only there)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item edit DOC-3"
+        }
+      ]
+    },
+    "item export": {
+      "summary": "Export a playbook or convention as a portable artifact",
+      "description": "Export a single playbook or convention item to a portable artifact\n(Markdown body + YAML frontmatter) that can be imported into another workspace.\n\nOnly playbooks and conventions can be exported. They are Pad's two \"library\"\nitem types — the ones designed to move between workspaces. Every other item\ntype is workspace-local and has no portable-artifact form, so the server\nrejects it. To pull data out of a task, idea, doc, or any other item, use\n\"pad item show \u003cref\u003e --format json\" instead.\n\nItems can be referenced by issue ID (e.g. PLAYB-3) or slug.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "output": {
+          "type": "string",
+          "description": "output file path (default \u003cslug\u003e.pad.md; use - for stdout)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item export PLAYB-3"
+        },
+        {
+          "cmd": "pad item export ship -o ship.pad.md"
+        },
+        {
+          "cmd": "pad item export CONVE-7 -o -"
+        }
+      ]
+    },
+    "item history": {
+      "summary": "Show an item's version history (read-only)",
+      "description": "Show the recorded version history for an item, newest first.\n\nEach row is a snapshot captured when the item's content changed (edits from\nthe web editor, CLI, MCP, collab flushes, and version restores). This is a\nREAD-ONLY view — use the web UI to restore a specific version.\n\nShows the newest 50 by default; pass --limit 0 for the whole history. A\ncollab-edited item records a version every few seconds while someone types, so\nhistories get long.\n\nA single request is capped server-side, so a very large --limit returns the\ncap rather than everything, and the \"showing the newest N\" notice cannot detect\nthat case. Use --limit 0 when you genuinely want the complete history.\n\nItems can be referenced by issue ID (e.g. TASK-5) or slug.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "full": {
+          "type": "bool",
+          "description": "include each version's resolved content body (JSON output only)"
+        },
+        "limit": {
+          "type": "int",
+          "description": "show only the newest N versions (0 = all; very large values are capped server-side)",
+          "default": "50"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item history TASK-5"
+        },
+        {
+          "cmd": "pad item versions TASK-5 --format json"
+        },
+        {
+          "cmd": "pad item history TASK-5 --limit 10"
+        },
+        {
+          "cmd": "pad item history TASK-5 --limit 0"
+        },
+        {
+          "cmd": "pad item history TASK-5 --full --format json"
+        }
+      ]
+    },
+    "item implemented-by": {
+      "summary": "Show items that implement the given item",
+      "description": "List the direct incoming \"implements\" lineage relationships for an item.\n\nThis is useful for ideas or parent tasks that are realized by one or more\nimplementation tasks.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item implemented-by SPEC-2"
+        }
+      ]
+    },
+    "item implements": {
+      "summary": "Mark that one item implements another",
+      "description": "Create a lineage relationship showing that one item implements another.\n\nThe first item is the implementation work item, and the second item is the item being implemented.\nFor example:\n  pad item implements TASK-121 IDEA-108",
+      "args": [
+        {
+          "name": "implementer-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "target-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item implements TASK-5 SPEC-2"
+        }
+      ]
+    },
+    "item import": {
+      "summary": "Import a playbook or convention artifact into the workspace",
+      "description": "Import a portable artifact (Markdown body + YAML frontmatter) as a new\nplaybook or convention in the current workspace.\n\nOnly playbooks and conventions have a portable-artifact form, so an import\nonly ever creates one of those two \"library\" item types. No other item type\ncan be created this way.\n\nThe item is always imported as a draft — review and activate it afterward.\nThe server may emit warnings (e.g. a foreign select value cleared, or an\ninvocation_slug de-collided); each is printed on its own line.\n\nUse - to read the artifact from stdin.",
+      "args": [
+        {
+          "name": "file",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item import ship.pad.md"
+        },
+        {
+          "cmd": "cat ship.pad.md | pad item import -"
+        }
+      ]
+    },
+    "item list": {
+      "summary": "List items, optionally filtered by collection",
+      "description": "List items in the workspace. If a collection is specified, only items\nin that collection are shown. Items with status \"done\" are hidden by default.",
+      "args": [
+        {
+          "name": "collection",
+          "type": "string"
+        }
+      ],
+      "flags": {
+        "all": {
+          "type": "bool",
+          "description": "include done/completed/archived items"
+        },
+        "assign": {
+          "type": "string",
+          "description": "filter by assigned user (name or email)"
+        },
+        "field": {
+          "type": "string",
+          "description": "filter by field value (repeatable): --field key=value",
+          "repeatable": true
+        },
+        "full": {
+          "type": "bool",
+          "description": "JSON output only: include full content + all fields (default: token-light summary shape)"
+        },
+        "group-by": {
+          "type": "string",
+          "description": "group results by field"
+        },
+        "limit": {
+          "type": "int",
+          "description": "max number of items to return (default 200, max 1000; with --format json and no --limit, every matching item is returned)"
+        },
+        "offset": {
+          "type": "int",
+          "description": "skip the first N items (for pagination)"
+        },
+        "parent": {
+          "type": "string",
+          "description": "filter by parent item (ref, slug, or ID)"
+        },
+        "priority": {
+          "type": "string",
+          "description": "filter by priority"
+        },
+        "role": {
+          "type": "string",
+          "description": "filter by agent role (slug)"
+        },
+        "sort": {
+          "type": "string",
+          "description": "sort order (e.g. priority:desc,created_at:asc)"
+        },
+        "status": {
+          "type": "string",
+          "description": "filter by status (comma-separated)"
+        },
+        "tag": {
+          "type": "string",
+          "description": "filter by tag (exact match; spans collections)"
+        },
+        "unparented": {
+          "type": "bool",
+          "description": "filter to items with no parent or implements relationship"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item list"
+        },
+        {
+          "cmd": "pad item list tasks"
+        },
+        {
+          "cmd": "pad item list tasks --status done"
+        },
+        {
+          "cmd": "pad item list ideas --status exploring"
+        },
+        {
+          "cmd": "pad item list --all"
+        }
+      ]
+    },
+    "item move": {
+      "summary": "Move an item to a different collection",
+      "description": "Move an item to a different collection with automatic field migration.\n\nFields with matching names and compatible types transfer automatically.\nIncompatible fields are dropped. Use --field to set values for target-specific fields.\n\nItems can be referenced by issue ID (e.g. TASK-5) or slug.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "target-collection",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "field": {
+          "type": "string",
+          "description": "set field values in target collection (key=value)",
+          "repeatable": true
+        },
+        "force": {
+          "type": "bool",
+          "description": "override the open-children guard when the move would write a terminal done-field value"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item move BUG-3 tasks"
+        },
+        {
+          "cmd": "pad item move IDEA-7 tasks --field priority=high"
+        }
+      ]
+    },
+    "item note": {
+      "summary": "Append an implementation note to an item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "details": {
+          "type": "string",
+          "description": "implementation details"
+        },
+        "op-key": {
+          "type": "string",
+          "description": "idempotency key: retrying the SAME note with the same key returns the note it appended instead of a second one (default: a new key per invocation)"
+        },
+        "stdin": {
+          "type": "bool",
+          "description": "read note details from stdin"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item note TASK-5 \"Added retry with backoff\" --details \"Three attempts at 1s, 2s and 4s\""
+        }
+      ]
+    },
+    "item open": {
+      "summary": "Open an item in the Pad web UI",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item open TASK-5"
+        }
+      ]
+    },
+    "item patch": {
+      "summary": "Replace exact text in an item's body, and print the diff",
+      "description": "Edit part of an item's body without sending the whole of it. Each edit\nnames text (--old) that must occur EXACTLY ONCE in the current body and the\ntext that replaces it (--new). Edits apply in order, all or nothing. The\nanswer is a unified diff of what changed.\n\nAnchors are text, not line numbers: line N when you read is not line N when\nthe write lands. Quote enough surrounding text to be unique. Anchors\nguarantee position, not meaning: if someone rewrote the paragraph around your\nanchor, the edit still lands; read the diff.\n\n--expected-seq does not refuse a moved item. If every anchor still matches,\nthe patch applies and reports rebased, with the writes in between and the\ndiff; if an anchor no longer matches, nothing is written.\n\nFor several or multi-line edits use --edits with a JSON array of\n{\"old\",\"new\",\"line_hint\"} (line_hint, 1-based, only chooses among several\nexact matches): --edits @edits.json, or --edits - to read stdin.\n\n--undo PATCH-ID inverts an earlier patch on this item (the patch_id a patch\nprinted). It anchors on the text around each edit as it landed, so it refuses,\nwriting nothing, when that text has changed since: it never reverts someone\nelse's later edit. The undo is itself a patch, with its own patch id.\n\nOn an item open in a browser editor, that editor applies the patch to its live\ndocument, merging with the typing there; the row catches up on its next flush.\nIt refuses with patch_unstable_roundtrip when applying would also change\ncontent you did not edit, and patch_room_open when only an older editor that\ncannot apply patches holds the item.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "edits": {
+          "type": "string",
+          "description": "edits as a JSON array of {\"old\",\"new\",\"line_hint\"}: @FILE, - for stdin, or the JSON itself"
+        },
+        "expected-seq": {
+          "type": "int",
+          "description": "the seq you read; a moved item is still patched when every anchor matches, and reported as rebased"
+        },
+        "new": {
+          "type": "string",
+          "description": "replacement text (repeatable, paired in order with --old; may be empty to delete)",
+          "repeatable": true
+        },
+        "old": {
+          "type": "string",
+          "description": "text to replace; must occur exactly once in the current body (repeatable, paired in order with --new)",
+          "repeatable": true
+        },
+        "op-key": {
+          "type": "string",
+          "description": "idempotency key: retrying the SAME request with the same key returns the first answer instead of applying it again (default: a new key per invocation)"
+        },
+        "undo": {
+          "type": "string",
+          "description": "invert an earlier patch on this item by its patch id; refused, writing nothing, if the text it changed has changed since"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item patch TASK-5 --old \"Status: draft\" --new \"Status: ready\""
+        },
+        {
+          "cmd": "pad item patch DOC-3 --old \"old line\" --new \"new line\" --expected-seq 41"
+        },
+        {
+          "cmd": "pad item patch DOC-3 --edits @edits.json"
+        },
+        {
+          "cmd": "pad item patch DOC-3 --undo 3f2c9a1e-…"
+        }
+      ]
+    },
+    "item related": {
+      "summary": "Show direct relationships around an item",
+      "description": "Show the direct dependency, lineage, wiki-link, and related-item graph around a single item.\n\nThis is a query-oriented view of the item's immediate context.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item related TASK-5"
+        }
+      ]
+    },
+    "item release": {
+      "summary": "Release an item's execution lease (idempotent)",
+      "description": "Release the execution lease you hold on an item. Releasing an absent or\nalready-expired lease is a no-op, not an error — cleanup code never needs\nto check whether it still holds the lease first. Releasing another\nholder's LIVE lease is refused.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "holder": {
+          "type": "string",
+          "description": "lease holder display label (default: this session's agent name, else your email; a name-only lease must match the claim's)"
+        },
+        "worker-id": {
+          "type": "string",
+          "description": "lease worker id (\"wk_\" + 32 hex) to act as (default: this session's own, from pad session register or $PAD_WORKER_ID)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item release TASK-5"
+        }
+      ]
+    },
+    "item remind": {
+      "summary": "Arm a reminder on an item",
+      "description": "Arm a one-shot reminder that fires at a specific instant.\n\nThe instant is RFC3339 and must carry a time of day — 2026-08-01T09:00:00Z, or\n2026-08-01T09:00:00-04:00, which is stored as the same moment in UTC. A bare\ndate is refused rather than assumed to mean midnight: \"2026-08-01\" names a\n24-hour span, and picking an hour inside it would be Pad choosing a time you\ndid not and then firing at it.\n\nWhen the reminder fires it appears in 'pad project next' and 'pad project\nready' until you acknowledge it with 'pad item ack', and it emits an\nitem.reminder_due webhook event. The poll surface is not optional: an instance\nwith no webhook configured delivers reminders that way and only that way.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string"
+        }
+      ],
+      "flags": {
+        "rearm": {
+          "type": "string",
+          "description": "move an existing reminder by id instead of arming a new one"
+        },
+        "remind-at": {
+          "type": "string",
+          "description": "when to fire (RFC3339 instant, e.g. 2026-08-01T09:00:00Z)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item remind TASK-5 --remind-at 2026-11-02T09:00:00Z"
+        }
+      ]
+    },
+    "item reminders": {
+      "summary": "Show an item's reminders",
+      "description": "List every reminder on an item — armed, fired, and acknowledged.\n\nFired reminders are kept rather than deleted: the row is the record that a\nreminder existed and went out.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item reminders TASK-5"
+        }
+      ]
+    },
+    "item restore": {
+      "summary": "Restore (un-archive) a soft-deleted item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item restore TASK-5"
+        }
+      ]
+    },
+    "item search": {
+      "summary": "Full-text search across all items",
+      "args": [
+        {
+          "name": "query",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "collection": {
+          "type": "string",
+          "description": "filter by collection (e.g. tasks, ideas)"
+        },
+        "limit": {
+          "type": "int",
+          "description": "max results to return (default 50, max 200)"
+        },
+        "offset": {
+          "type": "int",
+          "description": "skip this many results (for pagination)"
+        },
+        "priority": {
+          "type": "string",
+          "description": "filter by priority (e.g. high, medium)"
+        },
+        "sort": {
+          "type": "string",
+          "description": "sort by: relevance (default), created_at, updated_at, title"
+        },
+        "status": {
+          "type": "string",
+          "description": "filter by status (e.g. open, done)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item search \"oauth redirect\" --collection tasks"
+        }
+      ]
+    },
+    "item set-aside": {
+      "summary": "Show or discard edits an editor upgrade set aside",
+      "description": "Show the edits an editor upgrade set aside on an item, or discard them.\n\nWhen the collaborative editor's schema changes, edits that were typed under the\nold editor and never saved to the item's body can no longer be replayed. They\nare set aside instead of deleted, and the item reads\ncontent_state=superseded_set_aside. Opening the item does NOT restore them.\n\nWith no flag this prints them as raw Yjs updates (base64 in --format json), so\nthey can be kept or recovered with a matching editor. --discard deletes them and\nclears the state. A content write or version restore sent with\n--overwrite-pending-edits discards them too.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "discard": {
+          "type": "bool",
+          "description": "delete the set-aside edits and clear the state"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item set-aside DOC-3"
+        }
+      ]
+    },
+    "item show": {
+      "summary": "Show item detail (fields + content)",
+      "description": "Show item detail (fields + content).\n\nWhen the server marks the stored body as BEHIND the item's live collaborative\ndocument (an editor holds unflushed edits), the default table output says so on\nits FIRST line, on stdout. --format markdown does NOT: that output is the body\nverbatim, for redirecting into a file and writing back with \"item update\n--stdin\", so a notice there would become part of the body. It prints the notice\non stderr instead. --format json carries it as the content_state field.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "agent": {
+          "type": "bool",
+          "description": "return compact agent-oriented JSON"
+        },
+        "lines": {
+          "type": "string",
+          "description": "show only these body lines, numbered (A-B, A- or A; 1-based), with the seq: for targeting pad item patch. Line numbers are for reading; a patch anchors on text"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item show TASK-5"
+        }
+      ]
+    },
+    "item split-from": {
+      "summary": "Mark that an item was split from another item",
+      "description": "Create a lineage relationship showing that one item was split from another.\n\nThe first item is the derived item, and the second item is the original source.\nFor example:\n  pad item split-from TASK-122 TASK-121",
+      "args": [
+        {
+          "name": "child-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "parent-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item split-from TASK-9 TASK-5"
+        }
+      ]
+    },
+    "item star": {
+      "summary": "Star an item for quick access",
+      "description": "Star an item to mark it as personally important. Starred items appear on your dashboard and in the Starred sidebar page.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item star TASK-5"
+        }
+      ]
+    },
+    "item starred": {
+      "summary": "List your starred items",
+      "flags": {
+        "all": {
+          "type": "bool",
+          "description": "include completed/terminal items"
+        },
+        "limit": {
+          "type": "int",
+          "description": "at most this many, from the most recently starred (default: all)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item starred"
+        }
+      ]
+    },
+    "item supersedes": {
+      "summary": "Mark that one item supersedes another",
+      "description": "Create a lineage relationship showing that one item supersedes another.\n\nThe first item is the newer replacement, and the second item is the older item.\nFor example:\n  pad item supersedes TASK-130 TASK-118",
+      "args": [
+        {
+          "name": "new-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "old-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item supersedes DOC-7 DOC-3"
+        }
+      ]
+    },
+    "item unblock": {
+      "summary": "Remove a blocking dependency between items",
+      "description": "Remove a \"blocks\" relationship where source blocks target.",
+      "args": [
+        {
+          "name": "source-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "target-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item unblock TASK-5 TASK-8"
+        }
+      ]
+    },
+    "item unimplements": {
+      "summary": "Remove an implements relationship",
+      "args": [
+        {
+          "name": "implementer-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "target-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item unimplements TASK-5 SPEC-2"
+        }
+      ]
+    },
+    "item unremind": {
+      "summary": "Disarm a reminder",
+      "description": "Remove a reminder.\n\nDeletion is the only disarm — there is no cancelled state, because a cancelled\nreminder and an absent one are indistinguishable to everything that reads them.",
+      "args": [
+        {
+          "name": "reminder-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item unremind \u003creminder-id\u003e"
+        }
+      ]
+    },
+    "item unsplit": {
+      "summary": "Remove a split-from relationship",
+      "args": [
+        {
+          "name": "child-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "parent-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item unsplit TASK-9 TASK-5"
+        }
+      ]
+    },
+    "item unstar": {
+      "summary": "Remove a star from an item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item unstar TASK-5"
+        }
+      ]
+    },
+    "item unsupersede": {
+      "summary": "Remove a supersedes relationship",
+      "args": [
+        {
+          "name": "new-ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "old-ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad item unsupersede DOC-7 DOC-3"
+        }
+      ]
+    },
+    "item update": {
+      "summary": "Update an item's fields or content",
+      "description": "Update an existing item. Only the specified fields are changed.\n\nItems can be referenced by issue ID (e.g. TASK-5) or slug.\n\nWhen --content is written while someone has the item open in an editor, the\nmarkdown goes to that live document first and the stored copy is updated only by\na later collab-snapshot flush — usually from the tab that applied it, though any\nsuch write updates the row. The response echoes what you sent and carries\nwarnings.content_outcome=applied_pending_flush; a warning line is printed to\nstderr, and the last line of stdout says the body went to the open editor. A \"pad item show\" before such a flush lands reads the stored copy and shows\nthe PREVIOUS content — that is the lag, not a failed write. Nothing here\nguarantees the flush happens (see BUG-3000), so the window has no stated\nduration.\n\n--stdin REPLACES the body with what it reads, and a blank read (empty or\nwhitespace-only) is refused before anything is sent, because it is what a lost\nheredoc looks like. To empty a body on purpose, use --clear-content.\n\nA body write replaces whatever is stored, so guard it with the version you\nread: --expected-seq \u003cseq from pad item show --agent\u003e. A conflict means the item\nchanged after your read. Re-read it and apply your edit to the CURRENT body;\nresending yours would undo the other change. --replace overwrites on purpose.\nA body write with neither prints a warning, and a future release refuses it\n(PLAN-3555).",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "assign": {
+          "type": "string",
+          "description": "assign to user (name or email)"
+        },
+        "category": {
+          "type": "string",
+          "description": "update category field"
+        },
+        "clear-agent-role": {
+          "type": "bool",
+          "description": "clear the item's agent role (agent_role_id)"
+        },
+        "clear-assigned-user": {
+          "type": "bool",
+          "description": "unassign the item (clear assigned_user_id)"
+        },
+        "clear-content": {
+          "type": "bool",
+          "description": "clear the item's body; conflicts with --content and --stdin (a blank --stdin is refused, BUG-3100)"
+        },
+        "clear-parent": {
+          "type": "bool",
+          "description": "detach the item from its parent (clear the parent link); conflicts with --parent"
+        },
+        "comment": {
+          "type": "string",
+          "description": "attach a comment explaining this update (e.g. why status changed)"
+        },
+        "content": {
+          "type": "string",
+          "description": "REPLACE the whole body with this text (an empty value is ignored; use --clear-content)"
+        },
+        "expected-seq": {
+          "type": "int",
+          "description": "optimistic concurrency (preferred): the `seq` you last read; rejected with a conflict if the item changed since. Unlike --expected-updated-at this distinguishes two writes inside the same second (BUG-3037)"
+        },
+        "expected-updated-at": {
+          "type": "string",
+          "description": "optimistic concurrency: RFC3339 updated_at you last read; the update is rejected with a conflict (exit non-zero) if the item changed since"
+        },
+        "field": {
+          "type": "string",
+          "description": "set a field (repeatable): --field key=value; refused for implementation_notes (use `pad item note`), decision_log (`pad item decide`), github_pr (`pad github link`) and convention (`pad library activate`)",
+          "repeatable": true
+        },
+        "fields-json": {
+          "type": "string",
+          "description": "set fields from one JSON object, values keeping their JSON type (e.g. '{\"labels\":[\"a\",\"b\"],\"meta\":{\"k\":1}}'); for structured values --field key=value cannot carry. A key also set by --field or a dedicated flag is refused, and so is null"
+        },
+        "force": {
+          "type": "bool",
+          "description": "override the open-children guard (allow marking the item terminal even if children are non-terminal)"
+        },
+        "overwrite-pending-edits": {
+          "type": "bool",
+          "description": "with a version token and new content: replace unflushed edits a browser tab holds for this item instead of being refused with content_pending_flush (BUG-3133)"
+        },
+        "parent": {
+          "type": "string",
+          "description": "update parent item (ref, slug, or ID); an empty --parent \"\" is REFUSED, it does not clear — use --clear-parent"
+        },
+        "priority": {
+          "type": "string",
+          "description": "update priority field"
+        },
+        "replace": {
+          "type": "bool",
+          "description": "with --content, --stdin or --clear-content: overwrite the body on purpose, whatever changed since you read it (no version token). A body write with neither this nor --expected-seq is warned about now and will be refused in a future release (PLAN-3555)"
+        },
+        "role": {
+          "type": "string",
+          "description": "assign agent role (slug)"
+        },
+        "sort-order": {
+          "type": "int",
+          "description": "set the item's sort_order key (lower appears first; a sort key, not a position: drag-reorder writes values far apart, TASK-3525)"
+        },
+        "status": {
+          "type": "string",
+          "description": "update status field"
+        },
+        "stdin": {
+          "type": "bool",
+          "description": "REPLACE the whole body with what is read from stdin (a blank read is refused)"
+        },
+        "tags": {
+          "type": "string",
+          "description": "update tags (JSON array)"
+        },
+        "title": {
+          "type": "string",
+          "description": "update title"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad item update TASK-5 --status done"
+        },
+        {
+          "cmd": "pad item update TASK-5 --status done --comment \"Fixed the login bug\""
+        },
+        {
+          "cmd": "pad item update PLAN-2 --status active --priority high"
+        },
+        {
+          "cmd": "pad item update DOC-3 --stdin --expected-seq 41 \u003c updated-doc.md"
+        },
+        {
+          "cmd": "pad item update DOC-3 --stdin --replace \u003c replacement.md"
+        },
+        {
+          "cmd": "pad item update DOC-3 --clear-content"
+        }
+      ]
+    },
+    "library": {
+      "summary": "Browse and activate pre-built conventions and playbooks"
+    },
+    "library activate": {
+      "summary": "Activate a library convention or playbook in the current workspace",
+      "description": "Look up a convention or playbook in the library by title and create it as an item\nin the appropriate collection (conventions or playbooks) with all fields set.",
+      "args": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad library activate \"Commit after task completion\""
+        },
+        {
+          "cmd": "pad library activate \"Ship tasks\""
+        }
+      ]
+    },
+    "library diff": {
+      "summary": "Compare a built-in convention or playbook with Pad's current library text",
+      "description": "Show how an item made from one of the conventions or playbooks Pad ships\ndiffers from the library's current text: what the library changed since the\nitem was made, what you changed, and which settings an update would replace.\nRead-only. Take the update with \"pad library update \u003cref\u003e\".",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad library diff PLAYB-12"
+        },
+        {
+          "cmd": "pad library diff PLAYB-12 --format json"
+        }
+      ]
+    },
+    "library get": {
+      "summary": "Show the full body of one library convention or playbook by exact title",
+      "description": "Fetch a single library entry by exact title match. Conventions are checked\nfirst, then playbooks — same precedence `pad library activate` uses, so a title\nresolves to the same kind in both surfaces.\n\nPair with `pad library list` (which returns summaries for playbooks by default)\nto browse, then `pad library get` for the full body of any entry you want to\nread end-to-end before activating.",
+      "args": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad library get \"Commit after task completion\""
+        },
+        {
+          "cmd": "pad library get \"Ship tasks\""
+        },
+        {
+          "cmd": "pad library get \"Ship tasks\" --format json"
+        }
+      ]
+    },
+    "library list": {
+      "summary": "Browse pre-built conventions and playbooks",
+      "description": "Browse the convention and playbook libraries and activate items in your workspace.\n\nJSON output: conventions always carry their full content (bodies are short).\nPlaybooks carry a short `summary` instead of full `content` by default — use\n`--full` to opt into full playbook bodies (e.g. when piping into a tool that\nneeds the entire text). For one entry's full body use `pad library get \u003ctitle\u003e`.",
+      "flags": {
+        "category": {
+          "type": "string",
+          "description": "server-side filter by category"
+        },
+        "full": {
+          "type": "bool",
+          "description": "return full playbook bodies instead of summaries"
+        },
+        "type": {
+          "type": "string",
+          "description": "filter by type: conventions, playbooks"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad library list"
+        },
+        {
+          "cmd": "pad library list --type conventions"
+        },
+        {
+          "cmd": "pad library list --type playbooks"
+        },
+        {
+          "cmd": "pad library list --category git"
+        },
+        {
+          "cmd": "pad library list --format json"
+        },
+        {
+          "cmd": "pad library list --full --format json"
+        },
+        {
+          "cmd": "pad library get \"Ship tasks\""
+        },
+        {
+          "cmd": "pad library activate \"Commit after task completion\""
+        }
+      ]
+    },
+    "library update": {
+      "summary": "Replace a built-in convention or playbook with Pad's current library text",
+      "description": "Give an item made from one of the conventions or playbooks Pad ships the\nlibrary's current text: its body and the settings an update writes. Status and\ntitle are never changed, and the item's previous text stays in its version\nhistory. Review first with \"pad library diff \u003cref\u003e\"; nothing updates on its own.\n\nThe update is guarded by the version read just before it: if the item changes\nin between, it is refused rather than applied over the change.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "overwrite-pending-edits": {
+          "type": "bool",
+          "description": "Also replace edits that are not in the item's stored text (unsaved typing, or edits set aside by an editor upgrade); they are not kept"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad library update PLAYB-12"
+        },
+        {
+          "cmd": "pad library update PLAYB-12 --overwrite-pending-edits"
+        }
+      ]
+    },
+    "mcp": {
+      "summary": "Run pad as a Model Context Protocol server",
+      "description": "Run pad as an MCP server so AI agents (Claude Desktop, Cursor, Windsurf,\nClaude Code, Codex, etc.) can call pad commands as tools and read pad data\nas resources.\n\nUse `pad mcp serve` to start the server over stdio.\nUse `pad mcp install` to register pad with a client app.\nSee https://getpad.dev/mcp/local for client configuration."
+    },
+    "mcp install": {
+      "summary": "Install pad as an MCP server for a client app",
+      "description": "Write a \"pad\" entry into the named agent's MCP server config.\n\nSupported agents:\n  claude-desktop   Claude Desktop        (~/.../Claude/claude_desktop_config.json)\n  cursor           Cursor                (~/.cursor/mcp.json)\n  windsurf         Windsurf              (~/.codeium/windsurf/mcp_config.json)\n  claude-code      Claude Code           (project-local ./.mcp.json)\n  codex            Codex                 (~/.codex/config.toml)\n\nclaude-code writes a project-local .mcp.json in the current directory,\nso it's install-on-request only — `--all` and `pad mcp status` skip it\n(they cover the per-user configs). codex writes TOML; the rest write JSON.\n\nWith no arguments, lists current install status across supported\nagents (run `pad mcp status` for the same view). With\n--all, installs for every per-user agent, creating config files\non demand.\n\nFor Cursor or Codex, --compact-results removes the duplicate successful-result\nchannel while preserving the channel that client exposes to its model. It\nconfigures text-only results for Cursor and structured-only results for Codex.\n\nExisting MCP server entries (other servers configured by the user)\nare preserved — only the \"pad\" entry is touched.",
+      "args": [
+        {
+          "name": "agent",
+          "type": "enum",
+          "enum": [
+            "claude-desktop",
+            "cursor",
+            "windsurf",
+            "claude-code",
+            "codex"
+          ]
+        }
+      ],
+      "flags": {
+        "all": {
+          "type": "bool",
+          "description": "install for every supported agent"
+        },
+        "compact-results": {
+          "type": "bool",
+          "description": "configure one model-visible result channel (Cursor/Codex)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad mcp install claude-desktop"
+        }
+      ]
+    },
+    "mcp serve": {
+      "summary": "Run the MCP server over stdio",
+      "description": "Starts the MCP server speaking JSON-RPC on stdin/stdout.\nLogs go to stderr — stdout is reserved for protocol traffic.\n\nIntended to be spawned by an MCP client (Claude Desktop, Cursor, Windsurf,\netc.) per its mcp.json configuration. Direct human invocation is rare;\nwhen running interactively you'll see an idle process waiting for the\nclient's initialize message.\n\nThe tool surface is the hand-curated v0.106 catalog —\nten resource × action tools (`pad_item`, `pad_workspace`, `pad_collection`, `pad_project`, `pad_role`, `pad_search`, `pad_meta`, `pad_playbook`, `pad_library`, `pad_attachment`) plus `pad_set_workspace` for session-default workspace\npinning. cmdhelp (v0.1) still drives per-command argument\nschemas at dispatch time, but the historical leaf-walker that\nexposed every CLI verb as its own tool was retired in TASK-981\nof PLAN-969's v0.2 rollout.\n\nShuts down cleanly on EOF, SIGINT, or SIGTERM.",
+      "flags": {
+        "debug": {
+          "type": "bool",
+          "description": "verbose logging on stderr (development)"
+        },
+        "structured-only": {
+          "type": "bool",
+          "description": "omit duplicate structured-result JSON text"
+        },
+        "text-only": {
+          "type": "bool",
+          "description": "omit duplicate structuredContent while keeping JSON text"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad mcp serve"
+        }
+      ]
+    },
+    "mcp status": {
+      "summary": "Show pad MCP install status across supported clients",
+      "examples": [
+        {
+          "cmd": "pad mcp status"
+        }
+      ]
+    },
+    "mcp uninstall": {
+      "summary": "Remove the pad MCP entry from a client's config",
+      "description": "Remove the \"pad\" entry from the named agent's MCP server\nconfig. Other server entries are preserved. Idempotent: removing a\nnon-existent entry is not an error.",
+      "args": [
+        {
+          "name": "agent",
+          "type": "enum",
+          "required": true,
+          "enum": [
+            "claude-desktop",
+            "cursor",
+            "windsurf",
+            "claude-code",
+            "codex"
+          ]
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad mcp uninstall claude-desktop"
+        }
+      ]
+    },
+    "playbook": {
+      "summary": "Work with playbooks — first-class invokable procedures"
+    },
+    "playbook list": {
+      "summary": "List the workspace's playbooks (metadata only)",
+      "examples": [
+        {
+          "cmd": "pad playbook list"
+        }
+      ]
+    },
+    "playbook match": {
+      "summary": "Ask the typed-decision provider which active playbook (if any) matches text",
+      "description": "Send free text to the workspace's typed-decision provider and get back a\nChoice over the workspace's ACTIVE playbooks (draft and deprecated are\nexcluded), plus a reserved \"none\" option for text that doesn't ask for any\nof them. Read-only and side-effect-free — nothing is stored or enqueued.\n\nRefuses with 404 (decision_provider_unavailable) when no provider is\nconfigured for this instance — callers should fall back to slug/trigger\nrouting rather than treating that as a hard failure.\n\nText is user speech and may start with \"-\" (a dash-led sentence, or literal\ntext like \"-ship it\"); the flag parser reads a leading \"-\" as a flag, so put\n\"--\" before the text to stop that (BUG-3142 tracks this for the CLI/MCP\nstdio surface generally — this command's own help just tells you the\nworkaround):",
+      "args": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad playbook match -- \"-ship it\""
+        }
+      ]
+    },
+    "playbook run": {
+      "summary": "Bind args to a playbook's declared spec and return the body + bound args",
+      "description": "Parse the supplied args against the playbook's declared argument spec\n(stored as the 'arguments' field on the item) and return the body with\nthose args bound. The server does NOT execute the playbook — playbooks\nare agent instructions, not shell scripts. The CLI just primes the call\nso an agent can take it from there.\n\nParsing rules:\n  - Required positional args first, in declared order.\n  - Flag-typed args: bareword presence (e.g. `stop-after-each`).\n  - Other typed args: `key=value` form (e.g. `merge-strategy=rebase`).\n  - Refs accept either issue IDs (TASK-5) or item slugs.\n\nDraft gate: the server refuses to run a playbook whose status isn't\n\"active\" (e.g. one still being drafted). Pass --allow-draft to override\nand run it anyway.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "args",
+          "type": "string",
+          "repeatable": true
+        }
+      ],
+      "flags": {
+        "allow-draft": {
+          "type": "bool",
+          "description": "Run a playbook even if its status isn't \"active\" (the draft gate escape hatch)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad playbook run ship TASK-5"
+        }
+      ]
+    },
+    "playbook show": {
+      "summary": "Show a single playbook's full body and metadata",
+      "description": "Print a playbook by invocation_slug, item slug, or issue ref. The resolver tries each in turn.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad playbook show ship"
+        }
+      ]
+    },
+    "project": {
+      "summary": "Inspect project state, reports, and activity"
+    },
+    "project activity": {
+      "summary": "Show recent workspace activity — what agents and users changed (non-streaming)",
+      "description": "Show a bounded, non-streaming snapshot of workspace activity.\n\nAnswers \"what did other agents/users do since I last worked?\" — the query\ncounterpart to the live 'pad project watch' stream. Backed by the same\nenriched activity feed the web UI uses (item refs, titles, change details).",
+      "flags": {
+        "actor": {
+          "type": "string",
+          "description": "filter by actor category: user or agent"
+        },
+        "limit": {
+          "type": "int",
+          "description": "maximum number of activity entries to return",
+          "default": "20"
+        },
+        "since": {
+          "type": "string",
+          "description": "only show activity on or after this date (YYYY-MM-DD)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad project activity --since 2026-10-09 --actor agent"
+        }
+      ]
+    },
+    "project catch-up": {
+      "summary": "Show your catch-up digest: what changed since you last marked the workspace caught up",
+      "description": "Show your own catch-up digest for the workspace: what needs you now, and what\nothers finished, created, reopened, commented on, or did as agents since you\nlast pressed Mark caught up (at most 14 days back).\n\nRead-only. It never moves your cursor; Mark caught up is done in the web UI.\n\n--format json prints the server's JSON, re-indented.",
+      "examples": [
+        {
+          "cmd": "pad project catch-up --format markdown"
+        }
+      ]
+    },
+    "project changelog": {
+      "summary": "Generate release notes from completed items",
+      "flags": {
+        "days": {
+          "type": "int",
+          "description": "show items completed in last N days",
+          "default": "7"
+        },
+        "parent": {
+          "type": "string",
+          "description": "only show items under a specific parent (ref, slug, or title)"
+        },
+        "since": {
+          "type": "string",
+          "description": "only show items completed after this date (YYYY-MM-DD)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad project changelog --days 7"
+        }
+      ]
+    },
+    "project dashboard": {
+      "summary": "Show project dashboard — progress, attention items, suggested next",
+      "examples": [
+        {
+          "cmd": "pad project dashboard"
+        }
+      ]
+    },
+    "project next": {
+      "summary": "Recommend the next task to work on",
+      "flags": {
+        "worker-id": {
+          "type": "string",
+          "description": "lease worker id (\"wk_\" + 32 hex) to act as (default: this session's own, from pad session register or $PAD_WORKER_ID)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad project next"
+        }
+      ]
+    },
+    "project ready": {
+      "summary": "Show actionable next items for an agent",
+      "description": "List up to three items Pad suggests working on next, best first.\n\nIt is the same ranked list as 'pad project next' and the dashboard's Up next:\nfired reminders, then overdue work, in-progress work, open items in active\nplans, and high or critical priority items. Any slot left over is filled with\nother open items from collections that track priority or severity (Tasks,\nBugs, Features, Backlog), ranked by priority (else severity), then age.\nBlocked items are never listed; 'pad project stale' shows them.",
+      "flags": {
+        "worker-id": {
+          "type": "string",
+          "description": "lease worker id (\"wk_\" + 32 hex) to act as (default: this session's own, from pad session register or $PAD_WORKER_ID)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad project ready"
+        }
+      ]
+    },
+    "project reconcile": {
+      "summary": "Detect stale task, branch, and pull request state",
+      "description": "Inspect items with linked code metadata, compare their stored GitHub PR and branch state\nagainst live GitHub data, and report drift.\n\nBy default, reconcile only reports findings. With --apply, it refreshes stored GitHub PR metadata\non items when the live PR state differs, but it does not automatically change item statuses.",
+      "args": [
+        {
+          "name": "item-ref",
+          "type": "string"
+        }
+      ],
+      "flags": {
+        "apply": {
+          "type": "bool",
+          "description": "refresh stored PR metadata from GitHub when it is stale"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad project reconcile TASK-5"
+        }
+      ]
+    },
+    "project report": {
+      "summary": "Windowed project report — throughput, net flow, completions, status mix",
+      "description": "Show a time-windowed project report: items created vs completed per bucket,\nnet flow, completed-by-collection, and a current status-distribution snapshot.\n\n--window day|week|2wk|month (default week; day buckets hourly, others daily).\n--collections restricts to a comma-separated list of collection slugs.",
+      "flags": {
+        "collections": {
+          "type": "string",
+          "description": "Comma-separated collection slugs to include (default: all visible, non-system; name a system collection to include it)"
+        },
+        "window": {
+          "type": "string",
+          "description": "Report window: day|week|2wk|month",
+          "default": "week"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad project report --window month"
+        }
+      ]
+    },
+    "project stale": {
+      "summary": "Show stale or attention-worthy items for an agent",
+      "description": "List the current workspace items that need attention because they are stalled,\nblocked, overdue, or otherwise falling out of the active workflow.",
+      "examples": [
+        {
+          "cmd": "pad project stale"
+        }
+      ]
+    },
+    "project standup": {
+      "summary": "Auto-generate a daily standup report from recent activity",
+      "flags": {
+        "days": {
+          "type": "int",
+          "description": "number of days to look back for completed items",
+          "default": "1"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad project standup --days 1"
+        }
+      ]
+    },
+    "project watch": {
+      "summary": "Stream real-time workspace activity (like kubectl get events --watch)",
+      "examples": [
+        {
+          "cmd": "pad project watch"
+        }
+      ]
+    },
+    "push": {
+      "summary": "Push an item + instruction to your own connected agent session(s)",
+      "description": "pad push \u003cref\u003e -m \"message\"\n    Publish a self-addressed push notification on an item. It reaches\n    your OWN plugin-monitor sessions (pad watch --stream --for-session)\n    that are ACCEPTING pushes and can see the item — a connected session\n    that hasn't opted in, or that lacks access to the item, does not\n    receive it. Fire-and-forget over the watch-events bus, with no\n    durable inbox: a push nothing is listening for is simply not seen\n    (Phase 1 scope).\n\n    On a multi-instance deployment (PAD_REDIS_URL set) both broadcast\n    and session-targeted pushes reach your sessions on every instance:\n    the notification bus and the session-presence registry are both\n    shared, so a session connected to one server is visible and\n    addressable from any of them. Addressable is still not the same as\n    delivered. The count does check that a session is accepting pushes\n    and that it can see the item (BUG-2725 — it applies the same\n    visibility predicate delivery applies), but it is taken before the\n    publish and nothing acknowledges receipt, so treat it as a\n    prediction rather than a receipt. It can also under-count: a session\n    past the per-user registry cap receives broadcasts while never\n    entering the registry.\n\n    -m/--message is required and must not be blank; it is the\n    instruction text the receiving agent acts on (load the item first,\n    then do what the message says — see the plugin skill's notification\n    section for the full contract). Newlines are collapsed to spaces:\n    the monitor stream is a one-line-per-event wire contract. Limited to\n    4096 characters after that collapse — the server rejects anything\n    longer rather than truncating it.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "message": {
+          "type": "string",
+          "description": "instruction text to push (required, max 4096 characters after whitespace collapse)"
+        },
+        "op-key": {
+          "type": "string",
+          "description": "idempotency key: re-running the SAME push with the same key answers the first push instead of delivering it again (default: a new key per invocation)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad push TASK-5 --message \"Pick this up next\""
+        }
+      ]
+    },
+    "role": {
+      "summary": "Manage agent roles",
+      "description": "Agent roles define capability specializations (e.g. Planner, Implementer, Reviewer) for human-agent work assignment."
+    },
+    "role create": {
+      "summary": "Create a new agent role",
+      "args": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "description": {
+          "type": "string",
+          "description": "role description"
+        },
+        "icon": {
+          "type": "string",
+          "description": "role icon (emoji)"
+        },
+        "tools": {
+          "type": "string",
+          "description": "preferred tools/models (e.g. 'Claude Code + Sonnet 4.6')"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad role create \"Reviewer\" --description \"Reviews PRs against the conventions\" --icon \"🔍\""
+        }
+      ]
+    },
+    "role delete": {
+      "summary": "Delete an agent role",
+      "args": [
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad role delete reviewer"
+        }
+      ]
+    },
+    "role list": {
+      "summary": "List agent roles in the workspace",
+      "examples": [
+        {
+          "cmd": "pad role list"
+        }
+      ]
+    },
+    "role update": {
+      "summary": "Update an existing agent role",
+      "description": "Update an existing agent role's name, slug, description,\nicon, tools, or sort order.\n\nOnly flags you explicitly set are sent — every other property is left\nuntouched. The \u003cslug\u003e positional accepts either the role's current\nslug (\"planner\") or its UUID.\n\nNOTE: the rename flag is --new-slug, not --slug. This is deliberate:\nthe MCP catalog passes the positional via MCP property \"slug\" and\nthe rename target via \"new_slug\"; calling the CLI flag --slug too\nwould collide on the local stdio MCP path (Codex review on PR #574).",
+      "args": [
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "description": {
+          "type": "string",
+          "description": "new description (empty string clears)"
+        },
+        "icon": {
+          "type": "string",
+          "description": "new emoji icon (empty string clears)"
+        },
+        "name": {
+          "type": "string",
+          "description": "new display name"
+        },
+        "new-slug": {
+          "type": "string",
+          "description": "rename target — new slug (kebab-case identifier)"
+        },
+        "sort-order": {
+          "type": "int",
+          "description": "new sort order (lower = appears first)"
+        },
+        "tools": {
+          "type": "string",
+          "description": "preferred tools/models string"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad role update planner --description \"Decomposes plans into tasks\""
+        },
+        {
+          "cmd": "pad role update reviewer --icon 👁️"
+        },
+        {
+          "cmd": "pad role update implementer --name \"Engineer\" --new-slug engineer"
+        }
+      ]
+    },
+    "server": {
+      "summary": "Manage the Pad server process and web UI"
+    },
+    "server info": {
+      "summary": "Show local Pad client, connection, and server status",
+      "description": "Show a client-oriented snapshot of this Pad installation and connection state.\n\nThis command reports local configuration, reachability, auth/session state, and\nlocal runtime details when applicable. It does not auto-start the server and it\ndoes not inspect remote server internals.",
+      "examples": [
+        {
+          "cmd": "pad server info"
+        }
+      ]
+    },
+    "server open": {
+      "summary": "Open the Pad web UI in your browser",
+      "examples": [
+        {
+          "cmd": "pad server open"
+        }
+      ]
+    },
+    "server start": {
+      "summary": "Start the Pad API server",
+      "flags": {
+        "force": {
+          "type": "bool",
+          "description": "start even if the database schema is newer than this binary (a downgrade — risks data corruption; see the README \"Upgrading Pad\" section)"
+        },
+        "host": {
+          "type": "string",
+          "description": "host address to listen on",
+          "default": "127.0.0.1"
+        },
+        "port": {
+          "type": "int",
+          "description": "port to listen on",
+          "default": "7777"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad server start --port 7777"
+        }
+      ]
+    },
+    "server stop": {
+      "summary": "Stop the background Pad server",
+      "examples": [
+        {
+          "cmd": "pad server stop"
+        }
+      ]
+    },
+    "session": {
+      "summary": "Manage this session's pad registry entry and push-arming"
+    },
+    "session activity": {
+      "summary": "Report this worker's activity (best effort, for hooks)",
+      "args": [
+        {
+          "name": "value",
+          "type": "enum",
+          "required": true,
+          "enum": [
+            "busy",
+            "idle"
+          ]
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad session activity busy"
+        },
+        {
+          "cmd": "pad session activity idle"
+        }
+      ]
+    },
+    "session arm": {
+      "summary": "Declare that this session accepts pad push notifications",
+      "description": "Arm this session: declare consent to receive 'pad push' notifications.\n\nWrites a local, session-scoped arm-state file. A push monitor for this\nsession announces armed=true to the server on its next stream connect,\nand only armed sessions receive pushes (the consent gate). Run\n'pad session disarm' to withdraw consent, or 'pad session status' to see\nthe current state.\n\nRe-running 'pad session arm' creates a new arm generation and ends chat\ndirection. To accept chat instructions again, the user must re-run\n'pad chat arm --accept-instructions'.\n\nArming is per-session and transient. To opt a whole REPOSITORY in without\narming each session by hand, set 'push.auto_arm = true' under a [push]\ntable in the repo's .pad.toml (a deliberate, committed choice).\n\nA headless session (no messaging socket) is identified by CLAUDE_PID or\nPAD_SESSION_PID, exactly as for 'pad session disarm'; with neither set this\ncommand exits non-zero.",
+      "examples": [
+        {
+          "cmd": "pad session arm"
+        }
+      ]
+    },
+    "session disarm": {
+      "summary": "Withdraw this session's consent to pad push notifications",
+      "description": "Disarm this session: stop accepting 'pad push' notifications for the\nrest of this session.\n\nThis holds even when the repository opted in via .pad.toml\n'push.auto_arm = true' — the disconnect is session-scoped and wins for this\nsession. It does NOT revoke the repo's standing consent: a NEW session in\nan auto_arm repo arms again. To turn auto-arm off permanently, remove\n'push.auto_arm' from .pad.toml (the same deliberate edit that turned it on).\n\nWithout a messaging socket (a headless session), the disarm is tied to the\nsession's process, which the harness names: Claude Code exports CLAUDE_PID,\nand any other harness or shell can set PAD_SESSION_PID to the pid of the\nlong-lived session process. With neither set, this command exits non-zero\nrather than report a disarm that would expire the moment it returns. Where\nthe session's process cannot be checked at all (headless on Windows), the\ndisarm is kept for the directory until 'pad session reset'.\n\nIdempotent.",
+      "examples": [
+        {
+          "cmd": "pad session disarm"
+        }
+      ]
+    },
+    "session list": {
+      "summary": "List registered sessions on this machine with a liveness verdict each",
+      "description": "Reads ~/.pad/sessions and reports each registered session: its owner pid,\nthe agent it registered as, its working directory, and whether it is\nalive right now.\n\nLiveness is decided locally and fails toward honesty: \"alive\" means every\nsignal the record carries — its messaging socket, its owner pid, and the\nidentity captured for each at registration where the platform supplies\none — still checks out; \"dead\" means one is gone or has been reused by\nsomething else; \"unknown\" means one could not be examined (a platform\nthat cannot probe pids, a socket that cannot be stat'ed, or an owner that\nthis version registered in a different PID or mount namespace from this\nreader's, such as a host session read from inside a sandbox or container;\na row registered before this version may still read dead there). A legacy row\n(registered before sessions carried an agent name) is judged by its pid\nalone: it can say a session exists but not who it is, and it matches no\n--agent filter.\n\nEverything a row says about WHO — agent, session id, and (unless\nsession_pid_verified is true) the owner pid itself — is what the session\ndeclared. On Linux the pid claim is checked against the registering\nprocess's ancestry; a consumer that needs that check reads\nsession_pid_verified in the JSON.\n\nDeciding whether a NAME is in use from this output (the rule a script\nneeds, and where it is only as good as its inputs):\n\n  - List WITHOUT --agent (use --cwd to scope), then apply the rule\n    yourself: a row with liveness \"alive\", no legacy/malformed flag, and\n    session_pid_verified true, whose agent is the name, means IN USE by\n    that session (identify it by session_id, else session_pid).\n  - Any \"unknown\", legacy, or malformed row scoped to the same directory\n    is INDETERMINATE, never \"not in use\" — such a row cannot say who it\n    is, so --agent NAME would have hidden it.\n  - No matching row means \"no registered row\", not \"nobody\": a harness\n    that never registers, or whose registration failed, is invisible.\n  - Two or more alive rows for one name is ambiguous; do not pick the\n    newest — registered_at is each session's own clock.\n  - The registry is this OS user's; other users' sessions are not here.\n  - The verdict is a sample: a session can register or exit right after.\n  - A row's name IS the name the session's writes carry (BUG-2882), and\n    it outranks PAD_AGENT and .pad.toml while the row is alive. A plain\n    're-register' keeps it; to change it, run 'pad session register\n    --agent \u003cname\u003e' — changing PAD_AGENT alone changes nothing.\n\nNewest first. Use --format json for the stable shape.",
+      "flags": {
+        "agent": {
+          "type": "string",
+          "description": "only sessions registered as this agent name (\"\" matches anonymous sessions)"
+        },
+        "all": {
+          "type": "bool",
+          "description": "include dead sessions"
+        },
+        "cwd": {
+          "type": "string",
+          "description": "only sessions registered from this directory (symlinks resolved on both sides)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad session list"
+        }
+      ]
+    },
+    "session prune": {
+      "summary": "Remove dead sessions' records from the local session registry",
+      "description": "Deletes registry records whose session is dead, with each one's chat-seen\nlog (~/.pad/chat-seen/\u003cpid\u003e.log and .log.1). Never deletes a record it can\nsee is alive.\n\nRecords whose liveness is unknown (this platform cannot probe the owner,\nthis version registered the owner in a different PID or mount namespace\nfrom this reader's, or the file is malformed) are kept unless --older-than\nis given, in which\ncase those older than the bound are deleted too — live or not, since\nunknown means exactly that; it is the only way such a registry ever\nshrinks, and an explicit choice for that reason.\n\n'pad session register' already prunes the records it can see are dead on\nevery call; this verb is for the unknown ones and for cleaning up\nwithout registering.",
+      "flags": {
+        "older-than": {
+          "type": "duration",
+          "description": "also remove unknown-liveness records older than this (e.g. 72h)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad session prune --older-than 72h"
+        }
+      ]
+    },
+    "session register": {
+      "summary": "Register this session, and the agent it runs as, in the local session registry",
+      "description": "Records this session — the harness session process (from $PAD_SESSION_PID,\nelse $CLAUDE_PID, else this process), its working directory, the agent\nname it runs as, and its messaging socket's identity — to\n~/.pad/sessions/\u003csession_pid\u003e.json, mode 0600. 'pad session list' reads\nthe registry back with a liveness verdict per session.\n\nThe agent name defaults to what every write is attributed to (.pad.toml\nagent_name, else $PAD_AGENT, else the detected runtime); --agent overrides\nit, and --agent \"\" registers an anonymous session. A registered name is\nthen what this session's writes carry from that point on — the record is\nconsulted before .pad.toml and the environment (BUG-2882) — so re-registering\nunder a different name re-attributes the session's later writes with it. An\nanonymous registration leaves an environment-declared name in force.\n\nSafe to call from any directory — it does not require a linked workspace\n(.pad.toml) — and safe to call more than once per session: each call\noverwrites the session's record with a fresh timestamp. Records of\nsessions it can see are dead are pruned on the way (see 'pad session\nprune').",
+      "flags": {
+        "agent": {
+          "type": "string",
+          "description": "agent name to register as; becomes the name this session's writes carry (default: the current one; \"\" for an anonymous row)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad session register --agent wren"
+        }
+      ]
+    },
+    "session reset": {
+      "summary": "Remove this session's local arm/disarm override so auto_arm decides",
+      "description": "Remove this session's local arm-state file, so the repository's\n.pad.toml 'push.auto_arm' decides whether this session accepts pushes.\n\nNeeded mainly where a session cannot be verified (a headless session on\nWindows): there a local arm or disarm is kept rather than expiring with the\nsession, and stays in force for the directory until reset.\n\nIdempotent.",
+      "examples": [
+        {
+          "cmd": "pad session reset"
+        }
+      ]
+    },
+    "session status": {
+      "summary": "Show this session's push-arming state and the server's session view",
+      "examples": [
+        {
+          "cmd": "pad session status"
+        }
+      ]
+    },
+    "tag": {
+      "summary": "Inspect tags used across the workspace",
+      "description": "Tags are free-form labels on items. They span collections, so a single tag groups items of any type (an Idea and a Bug can share one tag)."
+    },
+    "tag list": {
+      "summary": "List distinct tags in the workspace with item counts",
+      "examples": [
+        {
+          "cmd": "pad tag list"
+        }
+      ]
+    },
+    "token": {
+      "summary": "Manage API tokens for automation and agents",
+      "description": "Manage user-scoped API tokens (the pad_ tokens PAD_TOKEN carries).\n\nTokens act as the user who minted them. The secret is shown exactly once,\nat mint time — the server stores only a hash and cannot show it again.",
+      "examples": [
+        {
+          "cmd": "pad token create --name ci-agent"
+        },
+        {
+          "cmd": "pad token create --name cursor --expires-in 30"
+        },
+        {
+          "cmd": "pad token list"
+        },
+        {
+          "cmd": "pad token rotate 7fde5e41-..."
+        },
+        {
+          "cmd": "pad token revoke 7fde5e41-..."
+        }
+      ]
+    },
+    "token create": {
+      "summary": "Mint a new API token (secret shown once)",
+      "args": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "expires-in": {
+          "type": "int",
+          "description": "expiry in days (0 = platform default)"
+        },
+        "name": {
+          "type": "string",
+          "description": "token name (required; shown in list and audit log)"
+        },
+        "scopes": {
+          "type": "string",
+          "description": "comma-separated scopes: *, read, write, pad:read, pad:write, pad:admin (default: full access)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad token create ci-deploy --scopes read --expires-in 90"
+        }
+      ]
+    },
+    "token list": {
+      "summary": "List your API tokens (metadata only, never secrets)",
+      "examples": [
+        {
+          "cmd": "pad token list"
+        }
+      ]
+    },
+    "token revoke": {
+      "summary": "Revoke an API token by id (immediate; cannot be undone)",
+      "description": "Revoke an API token by its exact id (from 'pad token list').\n\nRevocation is immediate: anything authenticating with the token fails on\nits next call. The id must be exact — there is no prefix matching, so a\ntypo is a not-found error rather than a wrong token revoked.",
+      "args": [
+        {
+          "name": "token-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad token revoke \u003ctoken-id\u003e"
+        }
+      ]
+    },
+    "token rotate": {
+      "summary": "Replace a token's secret (the old one stops working immediately)",
+      "description": "Rotate an API token by its exact id (from 'pad token list'): the server\ngenerates a new secret and the old one stops working with the same write —\nthere is no grace window, so anything still using the old secret fails on\nits next call. Metadata (name, scopes) is preserved; last-used resets.\n\nThe new secret is shown exactly once. --expires-in sets a new expiry in\ndays; without it the original expiry is preserved.\n\nLike create, rotation needs a login session: a call authenticated by a\npad_ API token is refused with 403 session_required.",
+      "args": [
+        {
+          "name": "token-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "expires-in": {
+          "type": "int",
+          "description": "new expiry in days (0 = keep the original expiry)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad token rotate \u003ctoken-id\u003e"
+        }
+      ]
+    },
+    "watch": {
+      "summary": "Create a durable watch on an item, or run the session-monitor stream",
+      "description": "pad watch \u003cref\u003e\n    Create (or update) a durable, server-side watch on an item. Watches\n    survive monitor restarts and padd restarts — they are not client-side\n    state.\n\npad watch \u003cref\u003e --until status=X\n    Same, but the item only notifies once its status-equivalent field\n    reaches X (an unconditional watch, the default, notifies on every\n    status-change / assignment / comment on the item).\n\npad watch list\n    List your active watches, across every workspace you belong to.\n\npad watch remove \u003cref\u003e\n    Stop watching an item.\n\npad watch --stream --for-session\n    The plugin monitor command (see monitors/monitors.json). Prints one\n    line per matching event to stdout in a fixed, machine-readable\n    format, and one \"PAD (resync) ...\" line when the server says the\n    stream may have missed notifications it cannot replay: after that line,\n    re-check watched items rather than assuming nothing changed.\n\n    Chat replies append a reference and server-supplied quote excerpt after\n    the body (and its truncation pointer); missing/deleted quotes are omitted.\n    After chat identity first resolves, ensures the owner-agent DM once per\n    monitor process in the background, using the presence agent key. No agent\n    name skips it; existing DMs are uncharged. Only 429 retries, waiting\n    Retry-After (defaulting to 120s when the server gives no usable value),\n    with at most three attempts. Success is silent; a final failure writes\n    one stderr line and delivery continues.\n\n    Every chat line is also appended, byte for byte, to\n    ~/.pad/chat-seen/\u003charness pid\u003e.log (0600), so the person at the agent's\n    terminal can see it: the Claude Code plugin shows it above the prompt,\n    and any other harness can tail the file. The pid is PAD_SESSION_PID,\n    else CLAUDE_PID; with neither set, or with one that is not a pid,\n    there is no log, and the first chat line writes one stderr line saying\n    so. The log holds 256 KiB, then moves\n    to \u003cpid\u003e.log.1; pad session prune removes both with the session.\n\n    Silent on startup in three cases, and silence does not distinguish\n    them: no workspace linked (retries hourly), padd unreachable\n    (backoff from 5s, capped at 5min), and the server refusing the\n    stream at its connection limit — a 429, which folds into that same\n    backoff. See the DOC-2479 behavior contract in this command's\n    source. Not meant to be run by hand; the pad plugin's monitor entry\n    invokes it.",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string"
+        }
+      ],
+      "flags": {
+        "for-session": {
+          "type": "bool",
+          "description": "format output for the Claude Code plugin monitor (requires --stream)"
+        },
+        "stream": {
+          "type": "bool",
+          "description": "run the session-monitor stream (requires --for-session)"
+        },
+        "until": {
+          "type": "string",
+          "description": "optional predicate, e.g. --until status=done"
+        }
+      }
+    },
+    "watch list": {
+      "summary": "List your active watches",
+      "examples": [
+        {
+          "cmd": "pad watch list"
+        }
+      ]
+    },
+    "watch remove": {
+      "summary": "Stop watching an item",
+      "args": [
+        {
+          "name": "ref",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad watch remove TASK-5"
+        }
+      ]
+    },
+    "webhook": {
+      "summary": "Manage workspace webhooks",
+      "description": "Manage webhooks that receive POST notifications when events occur.",
+      "examples": [
+        {
+          "cmd": "pad webhook list"
+        },
+        {
+          "cmd": "pad webhook create https://httpbin.org/post --events \"item.created,item.updated\""
+        },
+        {
+          "cmd": "pad webhook delete 7fde5e41"
+        },
+        {
+          "cmd": "pad webhook test 7fde5e41"
+        }
+      ]
+    },
+    "webhook create": {
+      "summary": "Register a new webhook",
+      "description": "Register a new webhook URL to receive event notifications.",
+      "args": [
+        {
+          "name": "url",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "events": {
+          "type": "string",
+          "description": "comma-separated event types (default: all)"
+        },
+        "secret": {
+          "type": "string",
+          "description": "shared secret for HMAC signature verification"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad webhook create https://httpbin.org/post"
+        },
+        {
+          "cmd": "pad webhook create https://slack.com/webhook/... --events \"item.created,item.updated\""
+        },
+        {
+          "cmd": "pad webhook create https://example.com/hook --secret \"mysecret\""
+        }
+      ]
+    },
+    "webhook delete": {
+      "summary": "Delete a webhook",
+      "args": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad webhook delete \u003cid\u003e"
+        }
+      ]
+    },
+    "webhook list": {
+      "summary": "List all webhooks in the workspace",
+      "examples": [
+        {
+          "cmd": "pad webhook list"
+        }
+      ]
+    },
+    "webhook test": {
+      "summary": "Send a test payload to a webhook",
+      "args": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad webhook test \u003cid\u003e"
+        }
+      ]
+    },
+    "workspace": {
+      "summary": "Manage workspaces and workspace membership"
+    },
+    "workspace accept": {
+      "summary": "Accept a workspace invitation from pad workspace invitations",
+      "args": [
+        {
+          "name": "invitation-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad workspace accept \u003cinvitation-id\u003e"
+        }
+      ]
+    },
+    "workspace audit-log": {
+      "summary": "View the compliance audit log (admin-only)",
+      "flags": {
+        "action": {
+          "type": "string",
+          "description": "filter by action type"
+        },
+        "actor": {
+          "type": "string",
+          "description": "filter by actor (user ID)"
+        },
+        "days": {
+          "type": "int",
+          "description": "number of days to look back",
+          "default": "30"
+        },
+        "limit": {
+          "type": "int",
+          "description": "maximum number of entries",
+          "default": "50"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad workspace audit-log --days 7"
+        }
+      ]
+    },
+    "workspace claim": {
+      "summary": "Redeem a 6-digit claim code to add a workspace to this OAuth connection's allow-list",
+      "description": "Redeem a 6-digit claim code at POST /api/v1/oauth/claim, granting the\ncalling OAuth connection access to one specific workspace.\n\nGenerate the code in the workspace's web UI (\"Connect project\" modal,\navatar menu). The code is valid for 5–10 minutes (sliding window).\n\nClaim is meaningful only over cloud-mode OAuth MCP sessions where\nworkspace allow-lists actually constrain access. CLI session tokens\nand PATs already see every workspace you belong to; running this from\nthe CLI succeeds (the code verifies) but the side effect no-ops —\nthe response 'note' field explains.",
+      "args": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "workspace": {
+          "type": "string",
+          "description": "Workspace slug to claim (defaults to CWD-linked workspace)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad workspace claim 482913"
+        }
+      ]
+    },
+    "workspace context": {
+      "summary": "Show or update machine-readable workspace context",
+      "description": "Show or update the structured workspace context stored in the current workspace.",
+      "examples": [
+        {
+          "cmd": "pad workspace context --format json"
+        },
+        {
+          "cmd": "pad workspace context"
+        },
+        {
+          "cmd": "pad workspace context set --file workspace-context.json"
+        },
+        {
+          "cmd": "cat workspace-context.json | pad workspace context set --stdin"
+        }
+      ]
+    },
+    "workspace context set": {
+      "summary": "Replace the structured workspace context from JSON input",
+      "description": "Replace the structured workspace context using a JSON object.\n\nThe JSON must match the workspace context schema, including optional sections like\nrepositories, paths, commands, stack, deployment, and assumptions.",
+      "flags": {
+        "file": {
+          "type": "string",
+          "description": "path to a JSON file containing workspace context"
+        },
+        "stdin": {
+          "type": "bool",
+          "description": "read workspace context JSON from stdin"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad workspace context set --file context.json"
+        }
+      ]
+    },
+    "workspace create": {
+      "summary": "Create a workspace non-interactively (use 'pad workspace init' for the guided flow)",
+      "description": "Create a new workspace by name. Non-interactive — no prompts, no\nCWD link side effect. Hits POST /api/v1/workspaces directly with the\nsupplied name + optional slug + template.\n\nFor the guided flow that ensures auth, picks a template interactively,\nand links the CWD, use 'pad workspace init' instead. The 'create' shape\nexists to back the MCP pad_workspace.action: create route + scripts\nthat just want the workspace row.\n\nWhen called over an OAuth-bound MCP session whose grant has\nmay_create_workspaces=true, the new workspace is auto-added to that\nconnection's allow-list (PLAN-1519 / TASK-1521 / IDEA-1517 §1) so\nthe agent can use it immediately without re-auth. When that grant has\nmay_create_workspaces=false the create is REFUSED with a 403 and no\nworkspace is made (IDEA-2756). Only the user can lift it, either by\nre-authorizing or by enabling the flag on the existing connection at\n/console/connected-apps.",
+      "args": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "slug": {
+          "type": "string",
+          "description": "Workspace slug (default: derived from name)"
+        },
+        "template": {
+          "type": "string",
+          "description": "Template to seed collections from (run 'pad workspace init --list-templates' to see options)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad workspace create \"Mobile App\" --template startup"
+        }
+      ]
+    },
+    "workspace decline": {
+      "summary": "Decline a workspace invitation from pad workspace invitations",
+      "args": [
+        {
+          "name": "invitation-id",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad workspace decline \u003cinvitation-id\u003e"
+        }
+      ]
+    },
+    "workspace deleted": {
+      "summary": "List soft-deleted workspaces still within the restore window",
+      "examples": [
+        {
+          "cmd": "pad workspace deleted"
+        }
+      ]
+    },
+    "workspace export": {
+      "summary": "Export workspace as a self-contained tar.gz bundle",
+      "description": "Export the current workspace (collections, items, comments, versions,\nand attachments) to a portable tar.gz bundle:\n\n  pad-export.json              — workspace metadata + items + collections + ...\n  attachments/manifest.json    — uuid → {filename, mime, size, content_hash}\n  attachments/\u003cuuid\u003e.\u003cext\u003e     — original attachment blobs\n\nPass --json to emit the legacy items-only JSON file (no attachments).\nBoth formats can be re-imported via 'pad workspace import'.",
+      "flags": {
+        "json": {
+          "type": "bool",
+          "description": "emit legacy items-only JSON (no attachments)"
+        },
+        "output": {
+          "type": "string",
+          "description": "output file path (default: stdout)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad workspace export --output backup.tar.gz"
+        }
+      ]
+    },
+    "workspace import": {
+      "summary": "Import workspace from JSON export or tar.gz bundle",
+      "description": "Import a workspace from a previously exported file. Creates a new\nworkspace with regenerated IDs.\n\nAccepts both formats produced by 'pad workspace export':\n  - .json (legacy, items only)\n  - .tar.gz (new bundle, includes attachment blobs)\n\nFormat is detected by file extension. Override workspace name with --name.",
+      "args": [
+        {
+          "name": "file",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "name": {
+          "type": "string",
+          "description": "override workspace name"
+        },
+        "repair-nul": {
+          "type": "bool",
+          "description": "replace NULs carried by the export with U+FFFD instead of refusing it (rewrites content; default is strict)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad workspace import backup.tar.gz --name \"Mobile App (restored)\""
+        }
+      ]
+    },
+    "workspace init": {
+      "summary": "Create a workspace and link it to the current directory",
+      "description": "Create a workspace and link it to the current directory.\n\nUse --template to choose a workspace template:\n  pad workspace init myproject --template scrum\n  pad workspace init myproject --template blank    # build it out via /pad onboard\n\nThe 'blank' template ships only the system collections (Conventions,\nPlaybooks) plus the canonical /pad onboard playbook. Run /pad onboard\ninside the workspace and the agent will adapt collections, conventions,\nroles, and playbooks to whatever your project actually is.\n\nUse --list-templates to see available templates.\n\nTip: 'pad init' handles everything — configure, authenticate, and create\na workspace in one step.",
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "flags": {
+        "list-templates": {
+          "type": "bool",
+          "description": "list available workspace templates"
+        },
+        "template": {
+          "type": "string",
+          "description": "workspace template (use --list-templates to see available templates by category)"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad workspace init --template startup"
+        }
+      ]
+    },
+    "workspace invitations": {
+      "summary": "List workspace invitations waiting for your answer",
+      "examples": [
+        {
+          "cmd": "pad workspace invitations"
+        }
+      ]
+    },
+    "workspace invite": {
+      "summary": "Invite a user to the workspace",
+      "args": [
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "flags": {
+        "role": {
+          "type": "string",
+          "description": "role for the invited user (owner, editor, viewer)",
+          "default": "editor"
+        }
+      },
+      "examples": [
+        {
+          "cmd": "pad workspace invite alex@example.com --role editor"
+        }
+      ]
+    },
+    "workspace join": {
+      "summary": "Accept a workspace invitation",
+      "args": [
+        {
+          "name": "code",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad workspace join \u003ccode\u003e"
+        }
+      ]
+    },
+    "workspace link": {
+      "summary": "Link the current directory to an existing workspace",
+      "description": "Link the current directory to an existing workspace by writing its .pad.toml file.\n\nUnlike 'pad workspace init', this does NOT create a new workspace — it only links to one that already exists.\n\n  pad workspace link myproject\n\nAn existing .pad.toml is updated, not replaced: only the workspace and the\nserver url change, so agent_name and [push] are kept. With --url, a directory\nlinked to another server is moved to that one, even when the slug is the same\nthere (moving a workspace to Pad Cloud):\n\n  pad workspace link myproject --url https://app.getpad.dev\n\nUse 'pad workspace list' to see available workspaces.",
+      "args": [
+        {
+          "name": "workspace",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad workspace link mobile-app"
+        }
+      ]
+    },
+    "workspace list": {
+      "summary": "List all workspaces",
+      "examples": [
+        {
+          "cmd": "pad workspace list"
+        }
+      ]
+    },
+    "workspace members": {
+      "summary": "List workspace members",
+      "examples": [
+        {
+          "cmd": "pad workspace members"
+        }
+      ]
+    },
+    "workspace restore": {
+      "summary": "Restore a soft-deleted workspace within the restore window",
+      "args": [
+        {
+          "name": "slug",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad workspace restore mobile-app"
+        }
+      ]
+    },
+    "workspace storage": {
+      "summary": "Show workspace storage usage and effective limit",
+      "description": "Print the workspace's current attachment storage usage versus the\neffective limit for the workspace owner's plan.\n\nThe effective limit follows the resolution chain:\n  1. Per-user storage_bytes override (admin-set)\n  2. Platform plan_limits_\u003cplan\u003e_storage_bytes setting\n  3. Hardcoded plan default (free=100MB, pro=1GB)\n\nOn Pro the limit is one pool for the owner's whole account: usage sums every\nworkspace they own, including soft-deleted ones until they are purged. On Free\nit is per workspace. On Pad Cloud an upload that would pass the limit is\nrefused; existing files stay available, and deleting files frees space. A\nlimit of \"unlimited\" indicates no enforced cap (self-hosted / workspaces with\nno owner).",
+      "examples": [
+        {
+          "cmd": "pad workspace storage"
+        }
+      ]
+    },
+    "workspace switch": {
+      "summary": "Link current directory to a different workspace",
+      "args": [
+        {
+          "name": "workspace",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "examples": [
+        {
+          "cmd": "pad workspace switch mobile-app"
+        }
+      ]
+    }
+  }
+}

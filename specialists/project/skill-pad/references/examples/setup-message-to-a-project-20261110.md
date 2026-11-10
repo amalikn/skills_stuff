@@ -1,3 +1,15 @@
+---
+Title: Pad setup message sent to smc-resiliency (worked example)
+Category: example
+Status: historical
+Authority: record
+Scope: The setup message relayed from unified-network-controller to smc-resiliency on 2026-11-10, kept verbatim
+Last reviewed: 2026-11-10
+Summary: >-
+  A worked example of setting Pad up in a project. Kept verbatim as sent; its skill install paths (skills_stuff/pad, ~/.claude/skills/pad) predate
+  skill-pad and are superseded by SETUP.md.
+---
+
 Operator request (relayed from the unified-network-controller session, 10 Nov 12:20): set up Pad for smc-resiliency and seed its tasks, the way UNC did today.
 
 Pad (github.com/PerpetualSoftware/pad, v0.19.2, installed by brew) is the operator's personal project-management layer. The project's own trackers (ROADMAP, SCRATCHPAD open items, D12 and the rest) stay the source of truth; Pad items name the tracker entry they serve.

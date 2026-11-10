@@ -1,14 +1,15 @@
 ---
-Title: skill-pad (the Pad skill, central)
+Title: skill-pad (the operator's own Pad skill)
 Category: skill-install
 Status: current
-Authority: Pad's own skill text (`pad agent install`) plus the operator's conventions baseline and scripts; this folder is the one copy
+Authority: canonical; the operator's own Pad skill, conventions baseline and scripts (this folder is the one copy)
 Scope: The /pad skill for Claude Code and for Codex, Cursor, Windsurf and OpenCode, the apn convention baseline, and the Pad backup and export scripts
 Last reviewed: 2026-11-10
 Summary: >-
   Pad (github.com/PerpetualSoftware/pad) is the operator's personal project-management layer over each project's trackers. This folder (renamed from
-  skills_stuff/pad on 2026-11-10) holds Pad's skill in the layout `pad agent install` writes, the conventions every apn workspace carries, and the
-  scripts that back Pad up and export a workspace into its project.
+  skills_stuff/pad on 2026-11-10) holds the operator's own Pad skill (SKILL.md and references, no Pad-shipped skill file), the conventions every apn
+  workspace carries, the scripts that back Pad up, export a workspace and run the live feed, and a verbatim mirror of Pad's documentation.
+Budget: 200 lines, 25 KB
 ---
 
 # skill-pad
@@ -16,35 +17,40 @@ Summary: >-
 Operator, 2026-11-10: manage Pad's skill centrally like the other skills (symlinked, no per-project copies), keep its conventions here so other projects copy the same, and name it skill-pad under
 `specialists/project/`.
 
+## Quick start
+
+`just bootstrap`, `just check`; in a linked project, `/skill-pad status`. Full setup: [SETUP.md](SETUP.md).
+
 ## Contents
 
+- [Quick start](#quick-start)
 - [Layout and install](#layout-and-install)
 - [Refresh after a Pad upgrade](#refresh-after-a-pad-upgrade)
 - [Conventions baseline](#conventions-baseline)
 - [Scripts](#scripts)
 - [Setting Pad up in a project](#setting-pad-up-in-a-project)
+- [Learned](#learned)
 
 ## Layout and install
 
-| Path                            | Used by                           | Installed as                                                                                 |
-| ------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------- |
-| `.claude/skills/pad/SKILL.md`   | Claude Code                       | `~/.claude/skills/skill-pad` (path:install-example), a symlink to `.claude/skills/pad/` here |
-| `.agents/skills/pad/SKILL.md`   | Codex, Cursor, Windsurf, OpenCode | `~/.agents/skills/skill-pad` (path:install-example), a symlink to `.agents/skills/pad/` here |
-| `conventions/apn-baseline.toml` | every apn project workspace       | applied by `scripts/pad_conventions.py`                                                      |
-| `scripts/`                      | the operator's Mac                | see [Scripts](#scripts)                                                                      |
-| `references/examples/`          | readers                           | a worked setup message sent to a project (2026-11-10)                                        |
+| Path                            | Used by                           | What                                                                                                      |
+| ------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `SKILL.md`                      | Claude Code, Codex, Cursor, ...   | the operator's own skill (name skill-pad); `~/.claude/skills/skill-pad` and `~/.agents/skills/skill-pad` link here |
+| `references/*.md`               | agents                            | topic references routed from SKILL.md, rewritten from Pad v0.19.2 sources                                 |
+| `references/upstream/`          | agents, readers                   | verbatim Pad sources: repo at tag v0.19.2, getpad.dev pages, CLI help; index [readme.md](references/upstream/readme.md) |
+| `references/examples/`          | readers                           | a worked setup message sent to a project (2026-11-10)                                                     |
+| `conventions/apn-baseline.toml` | every apn project workspace       | applied by `scripts/pad_conventions.py`                                                                   |
+| `scripts/`                      | the operator's Mac                | see [Scripts](#scripts) and [scripts/README.md](scripts/README.md)                                        |
+| `references/pad-usage-guidelines-proposal-20261110_1628.md` | operator         | proposal: how Pad is used in apn workspaces (asks, plans, tasks, tags, conventions); draft under review   |
 
-The SKILL.md files are Pad's text and keep Pad's own `name: pad` (a refresh rewrites them); the install links carry the name skill-pad. Do not edit them by hand.
+Operator, 2026-11-10: "develop our own skill and not rely on the plugin"; Pad's generated `.claude/skills/pad/` and `.agents/skills/pad/` copies were
+extracted into the references and removed. Install and first run: [SETUP.md](SETUP.md); how the parts fit: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Refresh after a Pad upgrade
 
-```bash
-cd /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-pad && pad agent install codex && pad agent install claude   # name the tools: bare `pad agent install` only asks
-git -C /Volumes/Data/_ai/_skills/skills_stuff diff -- specialists/project/skill-pad/   # read what Pad changed, then commit
-```
-
-Pad writes with a plain file write into the current folder (source: `internal/cli/agents.go` `InstallForTool`, v0.19.2), so running it here updates these files in place and the install links keep
-pointing at them.
+`brew upgrade perpetualsoftware/tap/pad`, then `just upstream <version>` (plan) and `just upstream <version> --apply` to mirror the release, diff it
+against the previous mirror, and carry what changed into the references by hand: [references/upgrade.md](references/upgrade.md). Never run `pad agent
+install` or `pad agent update` here or in a home folder.
 
 ## Conventions baseline
 
@@ -64,16 +70,9 @@ should win.
 
 ## Scripts
 
-| Script                       | What it does                                                                     | Run                                                                                |
-| ---------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `scripts/pad_conventions.py` | Applies the conventions baseline to one workspace (plan, then `--apply`)         | from the project folder                                                            |
-| `scripts/pad_export.py`      | One workspace's items as a Markdown page in its project; rewrites only when an   | each project's `just pad-export`, run non-fatally by its `commit-gate`             |
-|                              |   item changed                                                                   |                                                                                    |
-| `scripts/pad_backup.sh`      | Online-safe backup of pad.db (all workspaces) to OneDrive `pad_backups`, newest  | launchd `au.malik.pad-backup` at 02:30 (`scripts/pad_backup.plist`, symlinked      |
-|                              |   30 kept                                                                        |   into ~/Library/LaunchAgents)                                                     |
-
-Tests: `tests/test_pad_export.py`, `tests/test_pad_conventions.py` (`python3 -m unittest discover -s tests`). The old scripts_stuff paths (`bash/pad_backup.sh`, `python/pad_export/pad_export.py`) are
-symlinks to these until every project points here.
+Catalogue with safety labels and recipes: [scripts/README.md](scripts/README.md) (conventions, export, backup, live monitor, upstream refresh, governance
+checker). Tests: `just test`. The old scripts_stuff paths (`bash/pad_backup.sh`, `python/pad_export/pad_export.py`) are symlinks to these until every
+project points here.
 
 ## Setting Pad up in a project
 
@@ -92,9 +91,4 @@ skills folder (source openai/codex `codex-rs/ext/skills/src/host_roots.rs`); Pad
 
 ## Learned
 
-> **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY (run in unified-network-controller and smc-resiliency) · Source: `pad item update --help`,
-> CLI errors · Falsifier: a Pad release that accepts these writes or lists disabled items by default.
-> `pad item update --fields-json` refuses the `convention` key ("system metadata ... BUG-2627"): set `trigger`, `status`, `commands` and Pad rewrites
-> its own `convention` block. `pad item list conventions` hides disabled items; add `--all` to see them (a disabled template rule looks deleted).
-> `--fields-json` is the way to set a list field (`commands`); `--field key=value` only sets strings. Bare `pad agent install` asks interactively and
-> does nothing with stdin closed: name the tool. `pad workspace init` with an authenticated CLI needs no browser; `pad init` does.
+Moved to [references/cli-reference.md](references/cli-reference.md), Traps (2026-11-10), where CLI behaviours met in use are kept.
