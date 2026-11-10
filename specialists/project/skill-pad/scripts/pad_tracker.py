@@ -8,11 +8,17 @@ their paths, headings and links. Each section's item list sits between generated
           then render the file from Pad and write it only if it matches the original apart from the markers.
   export  render each marked block from Pad; a block edited by hand since the last export (its text no longer matches the hash in its marker) is
           refused and shown, so the edit goes into Pad first.
+  links   rewrite the relative repo links already in the collection's Pad bodies into opener links (guarded by each item's seq).
+
+Links (operator, 2026-11-11): a relative link means nothing on a Pad page and Pad strips vscode://, so a link to an existing repo path goes into
+Pad as a pad_link_opener.py link (http://127.0.0.1:<port>/open/<absolute path>?f=<fragment>, which opens VS Code), and the export turns it back
+into the link relative to the tracker file. --no-opener writes bodies unchanged; the export always turns opener links back.
 
 Usage (from the project folder, whose .pad.toml names the workspace):
     python3 pad_tracker.py import docs/trackers/bug-tracker.md --collection bugs --kind bugs            # plan
     python3 pad_tracker.py import docs/trackers/bug-tracker.md --collection bugs --kind bugs --apply    # create items, write markers
     python3 pad_tracker.py export docs/trackers/bug-tracker.md --collection bugs --kind bugs [--apply]
+    python3 pad_tracker.py links docs/trackers/bug-tracker.md --collection bugs --kind bugs [--apply]
 Kinds: bugs (open/fixed), features (submitted/shipped), techdebt (identified/resolved): the status a checkbox maps to on import.
 Exit: 0 done or plan clean, 1 refused (hand edit in a generated block, or import round-trip mismatch), 2 bad arguments, 3 Pad unreachable.
 Budget: one list call plus one create per item; about 0.3 s per item on import, under 2 s for an export.
@@ -24,17 +30,22 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 import re
 import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlsplit
 
 # The shared pad call (timeout, rate-limit retry) lives in pad_rewrite.py beside this file; loaded by path so the scripts need no package.
 _spec = importlib.util.spec_from_file_location("pad_rewrite", Path(__file__).resolve().parent / "pad_rewrite.py")
 _rewrite = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_rewrite)
 pad = _rewrite.pad
+_ospec = importlib.util.spec_from_file_location("pad_link_opener", Path(__file__).resolve().parent / "pad_link_opener.py")
+opener = importlib.util.module_from_spec(_ospec)
+_ospec.loader.exec_module(opener)
 
 KINDS = {"bugs": ("open", "fixed"), "features": ("submitted", "shipped"), "techdebt": ("identified", "resolved")}
 CLOSED = {"fixed", "wont-fix", "shipped", "declined", "resolved"}
@@ -42,6 +53,52 @@ BOX = re.compile(r"^(?P<ind> *)- \[(?P<x>[ xX])\] (?P<text>.*)$")
 HEAD = re.compile(r"^(#{1,6}) (.*)$")
 MARK = re.compile(r'^<!-- pad:generated collection=(?P<c>\S+) section="(?P<s>[^"]*)" sha=(?P<h>[0-9a-f]{12}); edit in Pad, not here -->$')
 END = "<!-- /pad:generated -->"
+LINK = re.compile(r"(\[[^\]]*\]\()([^)\s]+)(\))")
+SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+
+
+def to_pad_links(text: str, base: Path, port: int) -> str:
+  """Rewrite relative links to existing repo paths into opener links, for a Pad body.
+
+  Args:
+    text: Markdown (an item body).
+    base: the folder the tracker file sits in, which relative links are relative to.
+    port: the opener's port.
+
+  Returns:
+    The text with each `[x](rel/path#frag)` whose path exists turned into `[x](http://127.0.0.1:<port>/open/<abs>?f=frag)`; links with a scheme,
+    anchors within the page and paths that do not exist are left as they are.
+  """
+  def one(m: re.Match) -> str:
+    href = m.group(2)
+    if SCHEME.match(href) or href.startswith("#"):
+      return m.group(0)
+    path, _, frag = href.partition("#")
+    full = os.path.normpath(os.path.join(base, path))
+    return m.group(1) + opener.link_for(full, frag, port) + m.group(3) if os.path.exists(full) else m.group(0)
+
+  return LINK.sub(one, text)
+
+
+def from_pad_links(text: str, base: Path) -> str:
+  """Turn opener links (any port) back into links relative to the tracker file, for the repo export.
+
+  Args:
+    text: Markdown from Pad.
+    base: the tracker file's folder.
+
+  Returns:
+    The text with each opener link replaced by `relative/path#frag`.
+  """
+  def one(m: re.Match) -> str:
+    parts = urlsplit(m.group(2))
+    if parts.scheme != "http" or parts.hostname != "127.0.0.1" or not parts.path.startswith(opener.PREFIX + "/"):
+      return m.group(0)
+    rel = os.path.relpath(unquote(parts.path[len(opener.PREFIX):]), base)
+    frag = (parse_qs(parts.query).get("f") or [""])[0]
+    return m.group(1) + rel + (f"#{frag}" if frag else "") + m.group(3)
+
+  return LINK.sub(one, text)
 
 
 @dataclass
@@ -312,7 +369,8 @@ def cmd_import(a) -> int:
         fields["tracker_id"] = m.group(1)
     argv = ["item", "create", a.collection, title_of(it.first), "--stdin", "--status", closed_s if it.done else open_s,
             "--fields-json", json.dumps(fields), "--op-key", key, "--format", "json"] + (["--parent", parent] if parent else [])
-    ref = json.loads(pad(argv, a.timeout, a.pad, to_body(it)))["ref"]
+    body = to_body(it) if a.no_opener else to_pad_links(to_body(it), base_of(a.file), a.opener_port)
+    ref = json.loads(pad(argv, a.timeout, a.pad, body))["ref"]
     created += 1
     for n, ch in enumerate(it.children, 1):
       ch.section = it.section
@@ -322,6 +380,52 @@ def cmd_import(a) -> int:
     create(it, None, it.order)
   print(f"created or found {created} item(s)")
   return cmd_export(a, initial=found)
+
+
+def base_of(file: str) -> Path:
+  """The folder relative links in a tracker file are relative to.
+
+  Args:
+    file: the tracker file path as given.
+
+  Returns:
+    Its absolute folder (symlinks kept, so links stay as written).
+  """
+  return Path(os.path.dirname(os.path.abspath(file)))
+
+
+def cmd_links(a) -> int:
+  """Rewrite relative repo links in the collection's Pad bodies into opener links: plan by default, --apply writes.
+
+  Args:
+    a: parsed arguments.
+
+  Returns:
+    Exit code: 0 done or planned, 1 a write failed (later ones are not attempted).
+  """
+  base = base_of(a.file)
+  todo = []
+  for r in list_rows(a.collection, a):
+    old = r.get("content") or ""
+    new = to_pad_links(old, base, a.opener_port)
+    if new != old:
+      changed = sum(1 for x, y in zip(LINK.findall(old), LINK.findall(new)) if x != y)
+      todo.append((r["ref"], r["seq"], new, changed))
+  for ref, seq, _, n in todo:
+    print(f"{ref}: {n} link(s) to rewrite (seq {seq})")
+  print(f"{len(todo)} item(s) to update")
+  if not a.apply or not todo:
+    if todo:
+      print("plan only; --apply writes")
+    return 0
+  for ref, seq, body, _ in todo:
+    try:
+      pad(["item", "update", ref, "--stdin", "--expected-seq", str(seq)], a.timeout, a.pad, body)
+    except RuntimeError as exc:
+      print(f"{ref}: write failed, stopping: {exc}", file=sys.stderr)
+      return 1
+    print(f"{ref}: updated")
+  return 0
 
 
 def _walk(items: list[Item]):
@@ -357,7 +461,8 @@ def cmd_export(a, initial: list | None = None) -> int:
       body = "\n".join(L[s:e])
       L[s:e] = [f'<!-- pad:generated collection={a.collection} section="{section}" sha={sha(body)}; edit in Pad, not here -->', *L[s:e], END]
     text = "\n".join(L)
-  top = from_pad(list_rows(a.collection, a))
+  base = base_of(a.file)
+  top = from_pad([dict(r, content=from_pad_links(r.get("content") or "", base)) for r in list_rows(a.collection, a)])
   new, refused = export_text(text, a.collection, top, a.force)
   if refused:
     print(f"refused: block(s) edited by hand since the last export: {', '.join(refused)}. Put the change into Pad, or rerun with --force", file=sys.stderr)
@@ -388,7 +493,7 @@ def main(argv: list[str] | None = None) -> int:
     Exit code: 0 done, 1 refused, 2 bad arguments, 3 Pad unreachable.
   """
   ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-  ap.add_argument("cmd", choices=["import", "export"])
+  ap.add_argument("cmd", choices=["import", "export", "links"])
   ap.add_argument("file")
   ap.add_argument("--collection", required=True)
   ap.add_argument("--kind", choices=sorted(KINDS), required=True)
@@ -396,10 +501,12 @@ def main(argv: list[str] | None = None) -> int:
   ap.add_argument("--force", action="store_true", help="export: replace blocks edited by hand (their edit is lost unless already in Pad)")
   ap.add_argument("--pad", default="pad")
   ap.add_argument("--timeout", type=int, default=60)
+  ap.add_argument("--opener-port", type=int, default=opener.PORT, help="pad_link_opener.py port for links written into Pad")
+  ap.add_argument("--no-opener", action="store_true", help="import: write bodies with their relative links unchanged")
   a = ap.parse_args(argv)
   started = time.monotonic()
   try:
-    rc = cmd_import(a) if a.cmd == "import" else cmd_export(a)
+    rc = {"import": cmd_import, "export": cmd_export, "links": cmd_links}[a.cmd](a)
   except RuntimeError as exc:
     print(f"pad_tracker: {exc}", file=sys.stderr)
     return 3

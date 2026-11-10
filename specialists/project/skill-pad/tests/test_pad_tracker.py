@@ -115,5 +115,39 @@ class RoundTrip(unittest.TestCase):
     self.assertLessEqual(len(pt.title_of("word " * 40)), 100)
 
 
+class Links(unittest.TestCase):
+  """Relative repo links go into Pad as opener links and come back unchanged; links that cannot be opened are left alone."""
+
+  def setUp(self):
+    import tempfile
+    self.tmp = tempfile.TemporaryDirectory()
+    root = Path(self.tmp.name)
+    (root / "lab" / "logic").mkdir(parents=True)
+    (root / "lab" / "logic" / "x2.py").write_text("x\n")
+    (root / "docs" / "trackers").mkdir(parents=True)
+    self.base = root / "docs" / "trackers"
+    self.x2 = str(root / "lab" / "logic" / "x2.py")
+
+  def tearDown(self):
+    self.tmp.cleanup()
+
+  def test_round_trip_with_line_anchor(self):
+    text = "- Cause: [x2.py:86](../../lab/logic/x2.py#L86) and [x2.py](../../lab/logic/x2.py)."
+    to = pt.to_pad_links(text, self.base, 47800)
+    self.assertIn("http://127.0.0.1:47800/open" + self.x2 + "?f=L86", to)
+    self.assertNotIn("](../", to)
+    self.assertEqual(pt.from_pad_links(to, self.base), text)
+
+  def test_left_alone(self):
+    text = "[web](https://example.com/a) [here](#section) [gone](../../lab/missing.py) [mail](mailto:a@b)"
+    self.assertEqual(pt.to_pad_links(text, self.base, 47800), text)
+    self.assertEqual(pt.from_pad_links(text, self.base), text)
+
+  def test_export_turns_opener_links_back(self):
+    body = pt.to_pad_links("**N09 (P1)** x\n  - Cause: [x2.py](../../lab/logic/x2.py#L5).", self.base, 47800)
+    rows = [{"ref": "BUG-1", "content": pt.from_pad_links(body, self.base), "fields": {"status": "fixed", "section": "A", "order": 10}}]
+    self.assertIn("](../../lab/logic/x2.py#L5)", pt.render(pt.from_pad(rows)["A"]))
+
+
 if __name__ == "__main__":
   unittest.main()

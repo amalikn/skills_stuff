@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pad link opener (pad_link_opener.py serve) on 127.0.0.1:47800, kept running. Install: just link-opener install (symlinks this file to
+     ~/Library/LaunchAgents/au.malik.pad-link-opener.plist and bootstraps it). Stop: just link-opener uninstall -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>au.malik.pad-link-opener</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Volumes/Data/_ai/_skills/skills-working-cache/skill-pad/.venv/bin/python</string>
+    <string>/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-pad/scripts/pad_link_opener.py</string>
+    <string>serve</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>30</integer>
+  <key>StandardOutPath</key><string>/Volumes/Data/_ai/_scripts/scripts-runtime/pad-link-opener.log</string>
+  <key>StandardErrorPath</key><string>/Volumes/Data/_ai/_scripts/scripts-runtime/pad-link-opener.log</string>
+</dict>
+</plist>

@@ -26,11 +26,13 @@ folder's `.pad.toml`. Tests: `just test` (offline, fake pad).
 | `pad_upstream_refresh.sh` | Mirrors a Pad release into `references/upstream/v<version>/` (repo files at tag, CLI help, agent       | plan; writes the mirror            | `upstream VERSION`         |
 |                           |   guide, release notes)                                                                                |   with `--apply`                   |                            |
 | `pad_rewrite.py`          | Applies a reviewed JSON spec to Pad items: bodies (guarded by seq), titles, tags, comment type prefixes, note and decide entries (idempotent keys) | plan; writes Pad with `--apply` | `rewrite SPEC` (project folder) |
-| `pad_tracker.py`          | Keeps a Markdown tracker as a file generated from a Pad collection: `import` (items created, round trip proved) and `export` (marked blocks; a hand edit is refused) | plan; writes Pad and the file with `--apply` | `tracker CMD FILE` (project folder) |
+| `pad_tracker.py`          | Keeps a Markdown tracker as a file generated from a Pad collection: `import` (items created, round trip proved), `export` (marked blocks; a hand edit is refused) and `links` (relative repo links in Pad bodies become opener links; the export turns them back) | plan; writes Pad and the file with `--apply` | `tracker CMD FILE` (project folder) |
+| `pad_link_opener.py`      | Localhost service (127.0.0.1:47800) that redirects `/open/<absolute path>?f=L<n>` to `vscode://file/<path>:<n>`, so repo links in Pad open in VS Code (Pad strips vscode:// links); `url <path>` prints a link | read-only; serves redirects only, for existing paths under `/Volumes/Data` | `link-opener [status\|install\|uninstall\|restart]`, `link-url PATH` |
 | `check_governance.py`     | The pack's governance claims as assertions (`govcheck/` package: core, config, helpers, checks         | read-only                          | `governance`, `check`      |
 |                           |   by family)                                                                                           |                                    |                            |
 
-`pad_backup.plist` is the launchd job for `pad_backup.sh` (symlinked into `~/Library/LaunchAgents`), not a script.
+`pad_backup.plist` is the launchd job for `pad_backup.sh` (symlinked into `~/Library/LaunchAgents`), not a script; `pad_link_opener.plist` is the same for
+`pad_link_opener.py serve` (kept alive; `just link-opener install`).
 
 ## Governance recipes (skill-ai-it)
 

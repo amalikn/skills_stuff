@@ -63,6 +63,25 @@ conventions *ARGS: _require-venv
 export *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_export.py" {{ARGS}}
 
+# Pad link opener on 127.0.0.1:47800 (opens repo links from Pad in VS Code): status (default, read-only), install, uninstall or restart the launchd job.
+link-opener ACTION="status": _require-venv
+    #!/usr/bin/env bash
+    set -euo pipefail
+    plist="{{justfile_directory()}}/scripts/pad_link_opener.plist"; dst="$HOME/Library/LaunchAgents/au.malik.pad-link-opener.plist"; job="gui/$(id -u)/au.malik.pad-link-opener"
+    case "{{ACTION}}" in
+      status) launchctl print "$job" 2>/dev/null | grep -E "^\s*(state|pid|last exit code) " || echo "not loaded"
+              curl -s -o /dev/null -w "probe: HTTP %{http_code} (404 expected for /open/)\n" --max-time 3 http://127.0.0.1:47800/open/ || echo "probe: no answer";;
+      install) ln -sfn "$plist" "$dst"; launchctl bootstrap "gui/$(id -u)" "$dst"; echo "installed: $dst";;
+      uninstall) launchctl bootout "$job" 2>/dev/null || true; rm -f "$dst"; echo "removed: $dst";;
+      restart) launchctl kickstart -k "$job";;
+      *) echo "ACTION: status, install, uninstall or restart" >&2; exit 2;;
+    esac
+
+# Print the Pad link for a repo file (read-only), e.g. just link-url lab/logic/x2.py --line 86
+[no-cd]
+link-url PATH *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_link_opener.py" url "{{PATH}}" {{ARGS}}
+
 # Back up pad.db to OneDrive pad_backups: plan by default, --apply to write (launchd runs it nightly).
 backup *ARGS:
     @bash scripts/pad_backup.sh {{ARGS}}

@@ -13,6 +13,18 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261111_1054 — Pad link opener: repo links in Pad open in VS Code
+
+### Added
+
+- `scripts/pad_link_opener.py`: a localhost service (127.0.0.1:47800, launchd `pad_link_opener.plist`, `just link-opener`) that redirects
+  `/open/<absolute path>?f=L<n>` to `vscode://file/<path>:<n>`. Pad v0.19.2 strips vscode:// links (web/src/lib/utils/markdown.ts:224, only
+  http(s), mailto, ftp, tel kept), so Pad holds http links and is not patched: upgrades need nothing. Existing paths under `/Volumes/Data`
+  only; no file content served. `just link-url PATH --line N` prints a link. Tests `tests/test_pad_link_opener.py`.
+- `pad_tracker.py links`: rewrites relative repo links in a collection's Pad bodies into opener links (each write guarded by the item's seq);
+  `import` writes opener links (`--no-opener` to skip) and `export` always turns them back into links relative to the tracker file, so the
+  repo file is unchanged. Applied to smc-resiliency Bugs (7 items, 8 links); the operator confirmed a click in BUG-41 opens VS Code.
+
 ## 20261110_2055 — tracker import spike noted for the trial review
 
 ### Changed
