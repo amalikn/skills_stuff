@@ -13,6 +13,22 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_1724 — pad_conventions --only; writing-standard live in both workspaces
+
+### Added
+
+- `scripts/pad_conventions.py --only ID[,ID]` (`select_entries`, test added; unknown id exits 2): plans or applies only the named entries.
+- Applied `--only writing-standard` to smc-resiliency (CONVE-32) and unified-network-controller (CONVE-25); read back `same`; their own wording of
+  the other conventions left untouched.
+
+## 20261110_1719 — writing standard for plans, tasks, updates and tags
+
+### Added
+
+- `writing-standard` convention (always, should) in `conventions/apn-baseline.toml`, now six conventions; README table and tests updated (operator: yes).
+- Proposal section 3.3 (Writing standard): plan and task body templates, four update channels, comment types, tags; 3.8 lists the new convention;
+  section 3 renumbered without letter suffixes (operator).
+
 ## 20261110_1708 — Pad data moved to tools_stuff/pad; container image facts
 
 ### Changed

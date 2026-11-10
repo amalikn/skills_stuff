@@ -54,7 +54,7 @@ install` or `pad agent update` here or in a home folder.
 
 ## Conventions baseline
 
-`conventions/apn-baseline.toml` holds the five conventions agreed in unified-network-controller and smc-resiliency on 2026-11-10, with `{project}` and `{trackers}` filled per project:
+`conventions/apn-baseline.toml` holds the six conventions agreed in unified-network-controller and smc-resiliency on 2026-11-10, with `{project}` and `{trackers}` filled per project:
 
 | id             | Title                                                                 | Trigger          | Replaces (startup template)       |
 | -------------- | --------------------------------------------------------------------- | ---------------- | --------------------------------- |
@@ -63,10 +63,11 @@ install` or `pad agent update` here or in a home folder.
 | just-check     | just check passes before a task is done (`commands = ["just check"]`) | on-task-complete | Run tests before completing tasks |
 | review-diff    | Review your own diff before committing (no PRs here)                  | on-commit        | Review your own changes before PR |
 | trackers-truth | Repo trackers are the truth; Pad items link to them                   | always           | (new)                             |
+| writing-standard | Write plans, tasks and updates to the apn writing standard | always | (new, 2026-11-10) |
 
 Apply to a workspace, from the project folder: `python3 <this folder>/scripts/pad_conventions.py --project <name> --trackers "<its trackers>"` (plan), then `--apply`. It rewrites the template's four
 in place, creates the fifth, and leaves any other convention alone. A project may keep richer wording of its own: the plan shows `update ... content` for those; apply only when the baseline text
-should win.
+should win. To add one new entry without touching the rest, pass `--only <id>` (2026-11-10: how `writing-standard` reached both workspaces).
 
 ## Scripts
 

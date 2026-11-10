@@ -30,13 +30,13 @@ class Baseline(unittest.TestCase):
     def setUp(self):
         self.b = pc.load_baseline(pc.BASELINE, "proj-x", "ROADMAP")
 
-    def test_five_conventions_with_placeholders_filled(self):
+    def test_six_conventions_with_placeholders_filled(self):
         """Five entries; no placeholder left; the project name reaches the commit-message title.
 
         Returns:
             None.
         """
-        self.assertEqual(len(self.b), 5)
+        self.assertEqual(len(self.b), 6)
         self.assertTrue(all("{" not in c["title"] + c["content"] for c in self.b))
         self.assertIn("'proj-x: <summary>'", next(c for c in self.b if c["id"] == "commit-message")["title"])
 
@@ -50,7 +50,7 @@ class Baseline(unittest.TestCase):
         self.assertEqual({a for a, *_ in pc.plan(self.b, existing)}, {"same"})
         tmpl = dict(existing[0], title=self.b[0]["replaces"], content="old")
         actions = pc.plan(self.b, [tmpl] + existing[1:4])
-        self.assertEqual([a for a, *_ in actions], ["update", "same", "same", "same", "create"])
+        self.assertEqual([a for a, *_ in actions], ["update", "same", "same", "same", "create", "create"])
         self.assertEqual(actions[0][3], ["title", "content"])
 
     def test_disabled_or_wrong_commands_is_an_update(self):
@@ -62,6 +62,18 @@ class Baseline(unittest.TestCase):
         just = next(c for c in self.b if c["id"] == "just-check")
         acts = pc.plan([just], [item("CONVE-3", just, fields={"status": "disabled", "commands": ["go test ./..."]})])
         self.assertEqual((acts[0][0], acts[0][3]), ("update", ["status", "commands"]))
+
+    def test_only_selects_named_entries_and_refuses_unknown(self):
+        """--only keeps the named entries in baseline order; an unknown id raises before anything is planned.
+
+        Returns:
+            None.
+        """
+        self.assertEqual([b["id"] for b in pc.select_entries(self.b, "writing-standard")], ["writing-standard"])
+        self.assertEqual([b["id"] for b in pc.select_entries(self.b, "writing-standard, commit-message")], ["commit-message", "writing-standard"])
+        self.assertEqual(len(pc.select_entries(self.b, None)), 6)
+        with self.assertRaises(ValueError):
+            pc.select_entries(self.b, "writing-standard,nope")
 
 
 if __name__ == "__main__":

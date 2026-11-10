@@ -40,11 +40,21 @@ PAD OVER THE TRACKERS: the repo holds every fact; Pad holds the queue and the as
 Legend: --> from the side that refers, copies or sends, to its target
 ```
 
+<!-- toc-depth: 3 -->
 ## Contents
 
 - [1. Where things stand](#1-where-things-stand)
 - [2. Principles](#2-principles)
 - [3. The model](#3-the-model)
+  - [3.1 Collections](#31-collections)
+  - [3.2 Plans and tasks](#32-plans-and-tasks)
+  - [3.3 Writing standard](#33-writing-standard)
+  - [3.4 Tags](#34-tags)
+  - [3.5 Notes, decisions, reminders, watches](#35-notes-decisions-reminders-watches)
+  - [3.6 Pushes are nudges, not records](#36-pushes-are-nudges-not-records)
+  - [3.7 What Pad is not for](#37-what-pad-is-not-for)
+  - [3.8 Conventions to add to the apn baseline](#38-conventions-to-add-to-the-apn-baseline)
+  - [3.9 Playbooks and scripts](#39-playbooks-and-scripts)
 - [4. When Pad is down, and recovery](#4-when-pad-is-down-and-recovery)
 - [5. Use cases](#5-use-cases)
 - [6. Rollout](#6-rollout)
@@ -89,7 +99,7 @@ dates sit in body text (UNC TASK-12 "Due Fri 20 Nov") so Pad cannot flag them ov
 | Tasks                  | Agent work, and operator hands-on work that is not a question                            | keep; move pure decisions to Asks |
 | Ideas                  | Proposals not yet on the timeline                                                        | start using                       |
 | Docs                   | Unused: documents live in the repo                                                       | leave empty                       |
-| Conventions, Playbooks | Rules and procedures (3.6, 3.7)                                                          | extend                            |
+| Conventions, Playbooks | Rules and procedures (3.8, 3.9)                                                          | extend                            |
 
 Asks must be created with `--schema`, not `--fields`: the DSL cannot declare which statuses close an item, and Pad would then treat `answered` as open forever ([cli-reference.md](../references/cli-reference.md), Traps). `--tracks-work
 false` keeps answered asks out of changelog, standup and progress counts.
@@ -156,7 +166,45 @@ withdrawn: ASK-N closes without delivering; TASK-M is unblocked or cancelled wit
 - **Priority:** critical = production at risk now; high = on the current timeline step; medium = this month; low = could slip.
 - **Roles:** off until two agents work one workspace in parallel (Q3).
 
-### 3.3 Tags
+### 3.3 Writing standard
+
+Carried into every session by the `writing-standard` convention (3.8). Measured against the live items on 2026-11-10: comments already follow most of it (time, facts, paths, commits, corrections);
+plan bodies were one line, task bodies one paragraph, and decisions and work done sat in comments.
+
+**Plan body** (`end_date` holds the date; title = the outcome and its date, e.g. "R2.1 Pi A/B working by Fri 13 Nov"):
+
+```text
+Serves: plan-timeline.yaml R2.1; target-map.yaml S1
+Goal: one sentence, the outcome
+Done when: 2-4 checkable criteria, copied from the tracker
+Out of scope: what this plan will not do
+Waits on: ASK-N (or none)
+```
+
+**Task body** (`priority`, `due_date`, `parent` are fields; title = verb and object, 70 characters or fewer, e.g. "Trim url_capture on three boxes"):
+
+```text
+Serves: bug-tracker N08
+Why: 1-2 sentences, the finding with its evidence path
+Do: the next action, or numbered steps
+Done when: checkable; always "tracker updated, just check passes"
+Writes: none | repo | production (production = an approval ask first)
+Refs: paths, commits, [[related item]]
+```
+
+**Updates: four channels, one job each.**
+
+| Channel                        | For                       | Form                                                                |
+| ------------------------------ | ------------------------- | ------------------------------------------------------------------- |
+| `--comment` on a status change | why the status moved      | one line                                                            |
+| `pad item note`                | work done                 | what, evidence, commit (`rise 74d574b0; canary passed 4/4 gates`)   |
+| `pad item decide`              | a choice made             | the decision and a pointer to the repo record                       |
+| `pad item comment`             | everything else, a person | `YYYY-MM-DD HH:MM AEDT TYPE:` then at most five lines; ends `Next:` |
+
+Comment types: `FINDING`, `BLOCKED`, `RISK`, `CORRECTION`, `HANDOFF`, `NEXT`. Each comment holds one event and says what is verified and what is not; a correction is a new `CORRECTION:` comment that
+leaves the old one in place.
+
+### 3.4 Tags
 
 Tracker IDs are not tags: the first line already carries them, and a second copy drifts. Tags mark only what cuts across plans:
 
@@ -169,37 +217,37 @@ Tracker IDs are not tags: the first line already carries them, and a second copy
 
 A new tag is added here first; `pad tag list` shows drift.
 
-### 3.4 Notes, decisions, reminders, watches
+### 3.5 Notes, decisions, reminders, watches
 
 - `note`: at the end of each session on an item, what was done and the commit.
 - `decide`: only to point at the repo decision record.
 - `remind`: when the agent must come back (a scheduled run to verify, a review date), at a time of day; a fired reminder heads `next` until `pad item ack`.
 - `watch`: the operator's, to follow an item until done; agents do not create watches.
 
-### 3.4a Pushes are nudges, not records
+### 3.6 Pushes are nudges, not records
 
-A push (`pad push <ref> -m ...`) reaches only a session whose stream is running at that moment; Pad keeps no inbox, so a push sent during a gap is lost
-([modes.md](../references/modes.md), Delivery limits). Anything that must not be lost is an item: an ask, a task or a comment. A push only says "look
-at this now", and the item still holds the instruction if the push was missed.
+A push (`pad push <ref> -m ...`) reaches only a session whose stream is running at that moment; Pad keeps no inbox, so a push sent during a gap is lost ([modes.md](../references/modes.md), Delivery limits). Anything that must
+not be lost is an item: an ask, a task or a comment. A push only says "look at this now", and the item still holds the instruction if the push was missed.
 
-### 3.5 What Pad is not for
+### 3.7 What Pad is not for
 
 Not a copy of the trackers, ROADMAP or SCRATCHPAD; not for long design text (it lives in `docs/`, the item links it); never secrets, credentials or customer data; not a cross-project channel (messages
 go through the hub; an item may record that one was sent).
 
-### 3.6 Conventions to add to the apn baseline
+### 3.8 Conventions to add to the apn baseline
 
 Added to `conventions/apn-baseline.toml` and applied with `scripts/pad_conventions.py` (plan, then `--apply`):
 
-| id                 | Rule                                                                         | Trigger          | Priority |
-| ------------------ | ---------------------------------------------------------------------------- | ---------------- | -------- |
-| asks-for-input     | Ask the operator through an ASK item, never only in chat                     | always           | must     |
-| prod-write-ask     | A production write waits on an answered approval ask (tag `prod-write`)      | on-task-start    | must     |
-| task-names-tracker | A plan or task names its tracker entry on its first line; dates in fields    | always           | must     |
-| session-start      | Start with `pad project next` (trackers if Pad does not answer); claim first | on-task-start    | should   |
-| session-close      | Note each worked item, raise asks, run `just pad-export`                     | on-task-complete | should   |
+| id                 | Rule                                                                              | Trigger          | Priority |
+| ------------------ | --------------------------------------------------------------------------------- | ---------------- | -------- |
+| asks-for-input     | Ask the operator through an ASK item, never only in chat                          | always           | must     |
+| prod-write-ask     | A production write waits on an answered approval ask (tag `prod-write`)           | on-task-start    | must     |
+| task-names-tracker | A plan or task names its tracker entry on its first line; dates in fields         | always           | must     |
+| session-start      | Start with `pad project next` (trackers if Pad does not answer); claim first      | on-task-start    | should   |
+| session-close      | Note each worked item, raise asks, run `just pad-export`                          | on-task-complete | should   |
+| writing-standard   | Plans, tasks and updates follow 3.3; tags only from 3.4 (already in the baseline) | always           | should   |
 
-### 3.7 Playbooks and scripts
+### 3.9 Playbooks and scripts
 
 | Name                   | Kind                         | What it does                                                                                                                                 |
 | ---------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -215,13 +263,13 @@ Drift detection is a script, not playbook prose, because it must give the same a
 
 Pad's data lives in `/Volumes/Data/_ai/_tool/tools_stuff/pad` (`~/.pad` is a link to it); the server runs on this Mac only.
 
-| Failure                           | Effect                                 | What agents do                                                                                                          |
-| --------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Data volume not mounted, server down | every `pad` call fails or hangs        | work from the trackers and the last `pad-focus.md` export; record asks in SCRATCHPAD open items; add them to Pad when   |
-|                                   |                                        |   it is back                                                                                                            |
-| pad.db damaged or lost            | items, comments, history gone          | `pad db restore` from the newest nightly backup (loss up to 24 hours); the trackers hold every fact                     |
-| Backup job failing silently       | the next restore is older              | the backup log and file dates are checked weekly (rollout step 7)                                                       |
-|                                   |   than expected                        |                                                                                                                         |
+| Failure                              | Effect                                | What agents do                                                                                                        |
+| ------------------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Data volume not mounted, server down | every `pad` call fails or hangs       | work from the trackers and the last `pad-focus.md` export; record asks in SCRATCHPAD open items; add them to Pad when |
+|                                      |                                       |   it is back                                                                                                          |
+| pad.db damaged or lost               | items, comments, history gone         | `pad db restore` from the newest nightly backup (loss up to 24 hours); the trackers hold every fact                   |
+| Backup job failing silently          | the next restore is older             | the backup log and file dates are checked weekly (rollout step 7)                                                     |
+|                                      |   than expected                       |                                                                                                                       |
 
 ```text
 SESSION START WHEN PAD MAY BE DOWN: Pad when it answers, the trackers when it does not
@@ -270,7 +318,7 @@ Each step plans first and needs the operator's go. Pilot: smc-resiliency; UNC is
 | 1    | Restore test: newest backup into a scratch `PAD_DATA_DIR`                                                                       | item counts match the live workspaces                  |
 | 2    | Create Asks in smc-resiliency (3.1 schema); one test ask end to end                                                             | it shows in catch-up's needs-you; `answered` closes it |
 | 3    | Move today's waits to asks and block their tasks; move body dates into `due_date`                                               | `pad project next` offers no blocked task              |
-| 4    | Tags (3.3), conventions (3.6), playbooks (3.7) with `--field status=active`                                                     | `pad bootstrap` lists them                             |
+| 4    | Tags (3.4), conventions (3.8), playbooks (3.9) with `--field status=active`                                                     | `pad bootstrap` lists them                             |
 | 5    | `pad_tracker_drift.py` and the export ask columns (skill-coder: tests, plan by default)                                         | `just check` in skill-pad; a drift run on the pilot    |
 | 6    | One joint review of both workspaces through UNC TASK-20 (on or after 17 Nov): asks raised and answered, wait times, drift found | keep, trim or drop; result in this file                |
 | 7    | If kept: the same steps in UNC from its own session; weekly backup check                                                        | its bootstrap; backup log dates                        |

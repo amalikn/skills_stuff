@@ -9,7 +9,9 @@ seq, with a comment), a missing one is created (idempotency key skill-pad-<id>-<
 Usage:
     python3 pad_conventions.py --project smc-resiliency                    # plan: same / update / create per convention
     python3 pad_conventions.py --project smc-resiliency --apply            # write
-Options: --workspace SLUG (default: the project name), --trackers "ROADMAP, ..." (fills {trackers}), --baseline FILE, --pad PATH, --timeout SECONDS.
+    python3 pad_conventions.py --project smc-resiliency --only writing-standard --apply   # one entry; the rest stay as the workspace has them
+Options: --workspace SLUG (default: the project name), --trackers "ROADMAP, ..." (fills {trackers}), --only ID[,ID] (default: all), --baseline FILE,
+--pad PATH, --timeout SECONDS.
 Exit: 0 done or plan clean, 1 a pad call failed, 2 bad arguments. Budget: a few seconds (one list plus one call per change); prints its time.
 """
 
@@ -121,6 +123,31 @@ def apply(actions: list, workspace: str, timeout: int, binary: str) -> None:
                  "--op-key", f"skill-pad-{b['id']}-{workspace}"], timeout, binary)
 
 
+def select_entries(baseline: list[dict], only: str | None) -> list[dict]:
+    """Keep only the named baseline entries, so one new convention can be added without rewriting a workspace's own wording of the others.
+
+    Why (operator, 2026-11-10): a plain apply also overwrote conventions a project had worded more richly; `--only writing-standard` creates just
+    the new one.
+
+    Args:
+        baseline: from load_baseline().
+        only: comma-separated entry ids, or None for every entry.
+
+    Returns:
+        The selected entries, in baseline order.
+
+    Raises:
+        ValueError: an id that the baseline does not hold (nothing is planned or written).
+    """
+    if not only:
+        return baseline
+    wanted = [x.strip() for x in only.split(",") if x.strip()]
+    unknown = sorted(set(wanted) - {b["id"] for b in baseline})
+    if unknown:
+        raise ValueError(f"unknown baseline id(s): {', '.join(unknown)}")
+    return [b for b in baseline if b["id"] in wanted]
+
+
 def main(argv: list[str] | None = None) -> int:
     """Plan, and with --apply write, the baseline conventions in one workspace.
 
@@ -138,11 +165,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--apply", action="store_true", help="write; without it only the plan is printed")
     ap.add_argument("--pad", default="pad")
     ap.add_argument("--timeout", type=int, default=60)
+    ap.add_argument("--only", help="comma-separated baseline ids to plan or apply (default: all); the others are left as the workspace has them")
     a = ap.parse_args(argv)
     started, ws = time.monotonic(), a.workspace or a.project
     try:
+        selected = select_entries(load_baseline(a.baseline, a.project, a.trackers), a.only)
+    except ValueError as exc:
+        print(f"pad_conventions: {exc}", file=sys.stderr)
+        return 2
+    try:
         existing = json.loads(pad(["item", "list", "conventions", "--all", "--workspace", ws, "--format", "json", "--full"], a.timeout, a.pad))
-        actions = plan(load_baseline(a.baseline, a.project, a.trackers), existing)
+        actions = plan(selected, existing)
         for action, b, item, diff in actions:
             print(f"{action:6} {b['id']:15} {item['ref'] if item else '-':9} {', '.join(diff)}")
         if a.apply:

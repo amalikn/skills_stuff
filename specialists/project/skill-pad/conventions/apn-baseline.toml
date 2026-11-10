@@ -1,5 +1,6 @@
-# apn-baseline.toml — the five Pad conventions every apn project workspace carries (operator, 2026-11-10: "capture the conventions centrally so
-# that other projects can copy the same"). Agreed in unified-network-controller and smc-resiliency on 2026-11-10.
+# apn-baseline.toml — the six Pad conventions every apn project workspace carries (operator, 2026-11-10: "capture the conventions centrally so
+# that other projects can copy the same"). Agreed in unified-network-controller and smc-resiliency on 2026-11-10;
+# writing-standard added the same day (operator: "yes" to the writing standard).
 #
 # Applied by scripts/pad_conventions.py: it rewrites the startup template's four conventions in place (matched by `replaces`, their template
 # titles) and creates the rest, so a workspace ends with exactly these. `{project}` is the project folder name and `{trackers}` its tracker list,
@@ -68,3 +69,22 @@ scope = "all"
 priority = "must"
 content = """Pad is the operator's personal layer over {project}'s trackers ({trackers}). Never copy tracker items into Pad wholesale; a Pad item \
 names the tracker ID it serves. Status changes are made in the tracker first."""
+
+[[convention]]
+id = "writing-standard"
+title = "Write plans, tasks and updates to the apn writing standard"
+trigger = "always"
+scope = "all"
+priority = "should"
+category = "documentation"
+content = """Plan body: line 1 `Serves: <tracker entries>`, then `Goal:` (one sentence), `Done when:` (2-4 checkable criteria from the tracker), \
+`Out of scope:`, `Waits on:` (ASK refs or none). Due date in `end_date`. Title: the outcome and its date.
+Task body: line 1 `Serves: <tracker entry>`, then `Why:` (finding and evidence path), `Do:` (next action or steps), `Done when:` (always: tracker \
+updated, just check passes), `Writes: none | repo | production` (production needs an approval ask first), `Refs:` (paths, commits, [[items]]). \
+priority, due_date and parent are fields, never text. Title: verb and object, 70 characters or fewer.
+Updates: --comment on a status change says why in one line; `pad item note` for work done (what, evidence, commit); `pad item decide` for a \
+choice (decision and the repo record); `pad item comment` for the rest: start `YYYY-MM-DD HH:MM AEDT TYPE:` with TYPE one of FINDING, BLOCKED, \
+RISK, CORRECTION, HANDOFF, NEXT; five lines at most; say what is verified and what is not; one event per comment; a correction is a new \
+CORRECTION comment, never an edit.
+Tags: only prod-write, bench, hub, skill-writeback; tracker IDs are never tags. A new tag is added to the skill-pad guidelines first."""
+
