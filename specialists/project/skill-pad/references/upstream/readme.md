@@ -153,3 +153,4 @@ longer name smc-resiliency.
 | File | Holds |
 | --- | --- |
 | [github.com/pkgs_container_pad.md](github.com/pkgs_container_pad.md) | GHCR package page `ghcr.io/perpetualsoftware/pad`: tags `latest` = 0.19.2, 0.19.1, digests; its "CLI reference" anchor is the repo README section, mirrored as `v0.19.2/README.md` |
+| [v0.19.2/web_src_lib_components_collections_collection-templates.ts](v0.19.2/web_src_lib_components_collections_collection-templates.ts) | The web UI's collection templates (Bug Tracker, Feature Requests, Tech Debt, ...): fields and settings; source of skill-pad's Bugs, Feature Requests and Tech Debt schemas |

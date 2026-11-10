@@ -94,3 +94,8 @@ reason = "Pad helper used by every apn project with a Pad workspace; lives in th
 status = "promoted"
 skill = "skill-pad"
 reason = "Applies reviewed Pad item rewrites (writing standard migration 2026-11-10); reusable for later migrations"
+
+[modules."scripts/pad_tracker.py"]
+status = "promoted"
+skill = "skill-pad"
+reason = "Bug and feature trackers generated from Pad (operator, 2026-11-10: Pad is the truth for them)"

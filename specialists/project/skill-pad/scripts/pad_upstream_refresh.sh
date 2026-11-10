@@ -25,6 +25,7 @@ FILES=(
   internal/mcp/instructions.md internal/mcp/chatgpt_instructions.md internal/cli/agents.go
   docs/api.md docs/apps.md docs/architecture.md docs/backup.md docs/deployment.md docs/mcp.md docs/plugin-releases.md schema/README.md
   integrations/chatgpt/README.md integrations/chatgpt/skills/pad/SKILL.md
+  web/src/lib/components/collections/collection-templates.ts
 )
 
 # die: print a message to stderr and exit.

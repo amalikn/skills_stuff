@@ -1,4 +1,4 @@
-# apn-baseline.toml — the six Pad conventions every apn project workspace carries (operator, 2026-11-10: "capture the conventions centrally so
+# apn-baseline.toml — the seven Pad conventions every apn project workspace carries (operator, 2026-11-10: "capture the conventions centrally so
 # that other projects can copy the same"). Agreed in unified-network-controller and smc-resiliency on 2026-11-10;
 # writing-standard added the same day (operator: "yes" to the writing standard).
 #
@@ -87,4 +87,17 @@ choice (decision and the repo record); `pad item comment` for the rest: start `Y
 RISK, CORRECTION, HANDOFF, NEXT; five lines at most; say what is verified and what is not; one event per comment; a correction is a new \
 CORRECTION comment, never an edit.
 Tags: only prod-write, bench, hub, skill-writeback; tracker IDs are never tags. A new tag is added to the skill-pad guidelines first."""
+
+[[convention]]
+id = "pad-owned-trackers"
+title = "Bugs, feature requests and tech debt live in Pad; their tracker files are generated"
+trigger = "always"
+scope = "all"
+priority = "must"
+category = "tracking"
+content = """Exception to trackers-truth (operator, 2026-11-10): bugs, feature requests and tech debt live in Pad, in the collections bugs (BUG-n), \
+feature-requests (FR-n) and tech-debt (TD-n). docs/trackers/bug-tracker.md and docs/trackers/features-to-add.md are generated from them by \
+`just pad-trackers`, which the commit gate runs. Add or change an item in Pad, never in a generated block of those files: a hand edit stops the \
+commit gate. A bug's first line keeps its form `**ID (Pn)** what is wrong`, with indented lines for cause, fix and evidence; a feature's text is the \
+operator's own and is not reworded. Link the task that does the work to its item with `pad item implements TASK-n BUG-n`."""
 

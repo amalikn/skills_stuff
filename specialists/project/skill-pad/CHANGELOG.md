@@ -13,6 +13,16 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_2014 — bugs, feature requests and tech debt in Pad (smc-resiliency done)
+
+### Added
+
+- `scripts/pad_tracker.py` (import and export of a Markdown tracker as a file generated from a Pad collection; hand-edited blocks refused; 4 tests).
+- Convention `pad-owned-trackers` (always, must; exception to trackers-truth) in the baseline, now seven; applied to smc-resiliency.
+- smc-resiliency: collections Bugs (BUG), Feature Requests (FR), Tech Debt (TD) from Pad's web templates plus section, order and declared closed
+  states (the Feature Requests and Tech Debt templates declare none); 16 bugs and 1 feature imported, round trip identical; commit gate runs
+  `just pad-trackers`; tasks link to their bugs (implements). UNC next.
+
 ## 20261110_2004 — closed items on the standard; output order fix
 
 ### Changed

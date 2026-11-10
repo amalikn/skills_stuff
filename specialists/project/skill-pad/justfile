@@ -154,3 +154,9 @@ section *ARGS: _require-venv
 [no-cd]
 rewrite SPEC *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_rewrite.py" "{{SPEC}}" {{ARGS}}
+
+# Import a Markdown tracker into a Pad collection, or export it back (run from the project folder): plan by default, --apply to write.
+# e.g. just -f <this>/justfile tracker export docs/trackers/bug-tracker.md --collection bugs --kind bugs --apply
+[no-cd]
+tracker CMD FILE *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_tracker.py" {{CMD}} "{{FILE}}" {{ARGS}}
