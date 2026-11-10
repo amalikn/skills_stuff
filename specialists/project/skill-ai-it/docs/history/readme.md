@@ -69,3 +69,5 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 - [changelog-20261103_1745.md](changelog-20261103_1745.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
 - [roadmap-20261103_1745.md](roadmap-20261103_1745.md) 2 done items from `ROADMAP.md`, moved 20261103_1745.
 - [changelog-20261105_2141.md](changelog-20261105_2141.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
+- [changelog-20261110_2029.md](changelog-20261110_2029.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
+- [scratchpad-20261110_2029.md](scratchpad-20261110_2029.md) 1 entries from `SCRATCHPAD.md`, 2026-10-07 to 2026-10-07.

@@ -1,0 +1,56 @@
+{
+ "fields": [
+  {
+   "key": "status",
+   "label": "Status",
+   "type": "select",
+   "options": [
+    "submitted",
+    "under-review",
+    "planned",
+    "building",
+    "shipped",
+    "declined"
+   ],
+   "default": "submitted",
+   "required": true,
+   "terminal_options": [
+    "shipped",
+    "declined"
+   ],
+   "abandoned_options": [
+    "declined"
+   ]
+  },
+  {
+   "key": "priority",
+   "label": "Priority",
+   "type": "select",
+   "options": [
+    "low",
+    "medium",
+    "high"
+   ]
+  },
+  {
+   "key": "votes",
+   "label": "Votes",
+   "type": "number"
+  },
+  {
+   "key": "category",
+   "label": "Category",
+   "type": "text"
+  },
+  {
+   "key": "section",
+   "label": "Section",
+   "type": "text"
+  },
+  {
+   "key": "order",
+   "label": "Order",
+   "type": "number"
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "fields": [
+  {
+   "key": "status",
+   "label": "Status",
+   "type": "select",
+   "options": [
+    "open",
+    "confirmed",
+    "in-progress",
+    "fixed",
+    "wont-fix"
+   ],
+   "default": "open",
+   "required": true,
+   "terminal_options": [
+    "fixed",
+    "wont-fix"
+   ],
+   "abandoned_options": [
+    "wont-fix"
+   ]
+  },
+  {
+   "key": "severity",
+   "label": "Severity",
+   "type": "select",
+   "options": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+   ]
+  },
+  {
+   "key": "priority",
+   "label": "Priority",
+   "type": "select",
+   "options": [
+    "low",
+    "medium",
+    "high"
+   ]
+  },
+  {
+   "key": "assignee",
+   "label": "Assignee",
+   "type": "text"
+  },
+  {
+   "key": "reported_by",
+   "label": "Reported By",
+   "type": "text"
+  },
+  {
+   "key": "tracker_id",
+   "label": "Tracker ID",
+   "type": "text"
+  },
+  {
+   "key": "section",
+   "label": "Section",
+   "type": "text"
+  },
+  {
+   "key": "order",
+   "label": "Order",
+   "type": "number"
+  }
+ ]
+}

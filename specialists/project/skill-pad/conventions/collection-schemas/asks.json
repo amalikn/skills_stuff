@@ -1,0 +1,58 @@
+{
+ "fields": [
+  {
+   "key": "status",
+   "label": "Status",
+   "type": "select",
+   "options": [
+    "open",
+    "answered",
+    "withdrawn"
+   ],
+   "terminal_options": [
+    "answered",
+    "withdrawn"
+   ],
+   "abandoned_options": [
+    "withdrawn"
+   ],
+   "default": "open",
+   "required": true
+  },
+  {
+   "key": "kind",
+   "label": "Kind",
+   "type": "select",
+   "options": [
+    "decision",
+    "approval",
+    "bench",
+    "review",
+    "info"
+   ],
+   "default": "decision"
+  },
+  {
+   "key": "priority",
+   "label": "Priority",
+   "type": "select",
+   "options": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+   ],
+   "default": "medium"
+  },
+  {
+   "key": "due_date",
+   "label": "Due date",
+   "type": "date"
+  },
+  {
+   "key": "answer",
+   "label": "Answer",
+   "type": "text"
+  }
+ ]
+}

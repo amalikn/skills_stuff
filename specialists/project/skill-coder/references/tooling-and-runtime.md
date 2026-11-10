@@ -62,3 +62,30 @@ Use the project's configured formatter and linter; the language override names t
 > (`export RUNNER := env("RUNNER", "real-runner")`) so a test can point it at a stub that prints its argv and prove a compound command and a
 > spaced argument arrive whole.
 
+
+> **Learned 2026-11-10** · Python 3.14, scripts loaded by path · VERIFIED_PRIMARY · Source: skill-pad scripts/pad_tracker.py and
+> tests/test_pad_tracker.py (skills_stuff b2e2e52) · Falsifier: a `@dataclass` module run through `spec.loader.exec_module` without a
+> `sys.modules` entry that builds without error.
+> A module that defines a `@dataclass` and is loaded with `importlib.util.spec_from_file_location` must be put in `sys.modules` under its
+> name before `exec_module`: the dataclass decorator looks the module up by name and fails with `AttributeError: 'NoneType' object has no
+> attribute '__dict__'`. Loading a sibling script this way also avoids `sys.path` edits and the inline lint suppression they need.
+
+```python
+# skill-pad tests/test_pad_tracker.py (skills_stuff b2e2e52)
+_spec = importlib.util.spec_from_file_location("pad_tracker", Path(__file__).resolve().parents[1] / "scripts" / "pad_tracker.py")
+pt = importlib.util.module_from_spec(_spec)
+sys.modules["pad_tracker"] = pt  # dataclasses look the module up by name while the class is built
+_spec.loader.exec_module(pt)
+```
+
+> **Learned 2026-11-10** · CLI progress output · VERIFIED_PRIMARY · Source: skill-pad scripts/pad_rewrite.py (skills_stuff a28cf80) · Falsifier:
+> a run piped to `| tail -n 1` that shows its error line last without flushing.
+> A script that prints progress to stdout and errors to stderr must flush each progress line (`print(..., flush=True)`): piped, stdout is block
+> buffered and stderr is not, so the error appears before the line it belongs to, and `2>&1 | tail -1` shows a progress line instead of the
+> error. Twice this read as a "silent stop"; the cause was an `update_conflict` printed out of order.
+
+```python
+# skill-pad scripts/pad_rewrite.py main() (skills_stuff a28cf80)
+for label, cmd, stdin in todo:
+  print(("apply " if a.apply else "plan  ") + label, flush=True)
+```

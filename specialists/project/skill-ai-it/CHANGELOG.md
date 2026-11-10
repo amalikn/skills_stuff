@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261105_2141
+Last rotated: 20261110_2029
 ---
 
 # Changelog — skill-ai-it
@@ -34,10 +34,11 @@ Last rotated: 20261105_2141
 - [20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check](#20261022_1749--slurp-tracker-linking-documented-incident-a-commit-made-on-a-failed-check)
 - [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
 - [20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings](#20261022_1741--anchor_links-promoted-plan_timeline-links-ids-to-their-headings)
-- [20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above](#20261022_1646--target-map-reference-summary-is-one-short-line-a-missed-stage-heading-folds-its-checklist-into-the-stage-above)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
+
+- 20261110 references/pitfalls.md: Learned 2026-11-10 (skill-pad bootstrap): walk the generation-policy table (archcore, markdownlint, repomix); the markdown hook re-wraps whole files, so edit budgeted or hash-guarded files from Bash.
 
 - scripts/adoption/adopt_governed_files.py: a legacy-header value hard-wrapped onto an unindented line now stays in the fenced value (`wrapped_continuation`, previous line 100+ characters; operator, 2026-11-09: "Fix with a test"); 2 tests, red on the old code; references/pitfalls.md entry updated.
 - ROADMAP idea (2026-11-09, unified-network-controller): the target-map change-log rule counts a target ID mentioned only as a date anchor as work on that target
@@ -180,11 +181,6 @@ Operator, 2026-10-22, on unified-network-controller's plan tracker: "there shoul
 - `scripts/plan_timeline.py`: a column may declare `link_ids: {page, heading}`; plain ids in its cells link to the first heading of `page` matching `heading` with the id filled in (`Step {id}` finds
   "Step 2 — ...", not "Step 21"). Unknown ids stay text; a cell that already holds a link is left as written, so hand-linked data keeps rendering byte for byte.
 - Tests: `tests/test_anchor_links.py` (slugs, repeats, HTML anchors, skips, exit code) and three `LinkIds` cases; 201 pass.
-
-## 20261022_1646 — target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above
-
-`references/target-map-and-timeline.md`: `summary` is one short line of where a target stands (operator, smc-resiliency 2026-10-22); Learned 2026-10-22: a `target_heading` pattern that misses a stage
-heading silently gives its checklist to the target above (smc-resiliency SM and S6).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

@@ -104,3 +104,12 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > writes on the same item · Falsifier: a note that leaves the item's seq unchanged.
 > `pad item note`, `decide` and comment writes move the item's `seq`, so a body update guarded by a seq read before them is refused. Write the body
 > first, or re-read the seq (and check the body is unchanged) before the guarded write.
+
+> **Learned 2026-11-10** · Pad v0.19.2 web UI and CLI · VERIFIED_PRIMARY · Source: web/src/lib/components/collections/collection-templates.ts at
+> v0.19.2 (mirrored), the operator's screenshot of the New Collection dialog; `pad help collection create` · Falsifier: a `--template` flag on
+> `pad collection create`, or a Feature Requests or Tech Debt template that declares terminal_options.
+> The web UI's New Collection dialog offers templates (Blank, Bug Tracker, Feature Requests, Meeting Notes, Decisions, Tech Debt, OKRs, Sprint
+> Backlog, Knowledge Base); the CLI has none, so an agent recreates one with `--schema` from that file. Only Bug Tracker declares its closed
+> statuses (fixed, wont-fix); Feature Requests and Tech Debt declare none, so add terminal_options (shipped/declined, resolved) or they never
+> close. The schemas used: conventions/collection-schemas/. An agent once answered "Pad has no collection types" from the CLI docs alone: check the
+> web UI source before saying a feature does not exist.

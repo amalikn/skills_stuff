@@ -148,3 +148,16 @@ invocation half.
   long CHANGELOG bullet that names several files gets wrapped by the markdown hook, so a contract that wants file and date on one line fails:
   one short line per file. Under auto mode `GOVERN_ALLOW_DIRTY=1 just govern` is refused as a safety bypass; `doc_freshness.py --prune-baseline`
   drops resolved entries without it. A second dated `documents/research-sources-<date>/` folder needs its own `CATALOGS` entry in the checker.
+
+> **Learned 2026-11-10** · bootstrap of skill-pad · VERIFIED_PRIMARY · Source: skills_stuff 6a168aa then the operator's "why haven't you created
+> R score?" (archcore) · Falsifier: a bootstrap report that lists every row of the generation-policy file table with created, skipped or reason.
+> A bootstrap that reads only the always-created file list misses the rows of references/generation-policy.md "File creation/update policy":
+> `archcore init` when the CLI is installed, `.markdownlint-cli2.jsonc` when the project owns no lint config, `repomix.config.json` when repomix is
+> installed (its `.ai-context/` output gitignored with the operator's OK). Walk that table row by row and report each row.
+
+> **Learned 2026-11-10** · markdown wrap hook on Edit and Write · VERIFIED_PRIMARY · Source: tools_stuff AGENTS.md (24 lines, long single-line
+> rules) grew to 40 lines after one Edit and the repo's pre-commit `agents_thin` check (under 25 lines) refused the commit; fixed in tools_stuff
+> 0b08f12 by restoring the file and appending from Bash · Falsifier: an Edit to a file with lines over 200 columns that leaves the other lines as they were.
+> The markdown hook re-wraps the whole file at 200 columns on every Edit or Write, not only the edited lines. In a file with long unwrapped lines
+> and a line budget, or with generated blocks guarded by a content hash (skill-pad tracker markers), make the change from Bash (a short Python
+> replace), which the hook does not touch, and check the line count before committing.

@@ -1,0 +1,53 @@
+{
+ "fields": [
+  {
+   "key": "status",
+   "label": "Status",
+   "type": "select",
+   "options": [
+    "identified",
+    "planned",
+    "in-progress",
+    "resolved"
+   ],
+   "default": "identified",
+   "required": true,
+   "terminal_options": [
+    "resolved"
+   ]
+  },
+  {
+   "key": "severity",
+   "label": "Severity",
+   "type": "select",
+   "options": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+   ]
+  },
+  {
+   "key": "area",
+   "label": "Area",
+   "type": "select",
+   "options": [
+    "backend",
+    "frontend",
+    "infrastructure",
+    "database",
+    "testing"
+   ]
+  },
+  {
+   "key": "section",
+   "label": "Section",
+   "type": "text"
+  },
+  {
+   "key": "order",
+   "label": "Order",
+   "type": "number"
+  }
+ ]
+}

@@ -13,6 +13,19 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_2031 — slurp close: session record, write-backs, collection schemas
+
+### Added
+
+- `docs/session-record-20261110_2029.md`: all 56 operator messages with destinations, side effects outside the repos, open work by owner.
+- `conventions/collection-schemas/` (asks, bugs, feature-requests, tech-debt) with a readme; cli-reference Traps: web collection templates.
+- Write-backs: skill-coder `references/tooling-and-runtime.md` (dataclass loaded by path, flushed progress lines); skill-ai-it
+  `references/pitfalls.md` (generation-policy table rows; markdown hook re-wraps whole files).
+
+### Notes
+
+- Flows: smc-resiliency and UNC rendered and traced; nothing of this session's changes is described there; UNC's 157 unstamped steps are its own.
+
 ## 20261110_2020 — UNC moved: bugs, feature requests and tech debt in Pad in both workspaces
 
 ### Changed

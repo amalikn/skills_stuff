@@ -9,7 +9,7 @@ Summary: Current working state, newest first per section; superseded entries rot
 Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_2055
+Last rotated: 20261110_2029
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
@@ -82,9 +82,6 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
   **20261019_1817** `KEEP`: this pack's justfile has no `test` recipe and no working-cache venv; `tests/` need PyYAML, so a run with the host `python3`
   reports 7 false failures (`No module named 'yaml'`). Add `bootstrap`/`test` recipes as the packs it generates have.
 
-- [ ] **20261027_2023** Residual risk, staleness audit ([staleness-audit-20261027_2023.md](docs/reviews/staleness-audit-20261027_2023.md)): 150 live path
-  claims name target-project files (not resolved); weak tests: test_agent_usage, test_move_doc, test_upgrade_navigation_control_layer; `roles-fleet` misses
-  tools_stuff and unstamped projects.
 - [ ] **20261027_2054** Callers failing `just check` for their own reasons (not the scripts move; `just callers-check`): review dates due
   (cambium-swap, enterprise-strategy, smc-file-writing-analysis, health, japan, of-si, psy-assess), over budget (enterprise-strategy SCRATCHPAD,
   smc-file-writing-analysis ROADMAP), govcheck `core.py` differs from the template (islam, jdm, uae/atar), no `check` recipe (opticomm, vocus, voip),
@@ -156,10 +153,6 @@ not overwrite the hand-built checker (521 assertions); it is the reference imple
   existing files); template renamed `templates/context_preflight.sh`. Open: the template's own kebab recipes (`nav_upgrade` and the rest) wait until touched; whether `check_function_docs`
   (skill-mikrotik) joins the template is the operator's call.
 
-### 20261007_1626 — `scripts/skills_registry.py`: a skills list for any project area
-
-- Operator asked for a maintained list of work skills per project area. `apn/skills.md` and `me/skills.md` were written by hand first (committed in those repos), then generalised into
-  `scripts/skills_registry.py` and `just skills_registry <root>` (check by default; `--print`; `--write`, which never replaces an existing file without `--force` and a backup).
 - Names only ever written in plain prose cannot be told apart from hyphenated phrases, so they are reported for a human (`--keep` lists one). Open from its first run: `skill-malik-ai` is cited by
   `me/islam` and `me/japan/tracks/jdm` but exists nowhere.
 
