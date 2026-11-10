@@ -73,6 +73,11 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
 
 ## Open items
 
+- [ ] **20261110_1205** budget_plan.py audit reports `LOST` for SCRATCHPAD lines that an earlier rotation had already moved (unified-network-controller,
+  2026-11-10: "5 line(s) lost, e.g. '- [ ] **Onboarding from the Nautobot UI (operator, 2026-09-29...'", a line not in HEAD's SCRATCHPAD and present in
+  docs/trackers/open-items-20261010_1819.md; every line this rotation removed was found in an archive). The audit's reference looks older than the
+  file it rotates: compare against the pre-run file, not an earlier snapshot. Exit 1 made `just budget --apply` fail a clean run.
+
 - **Superseded 2026-10-27 (staleness audit):** done; `bootstrap` (justfile:52) and `test` (justfile:247) exist and the working-cache venv runs 210 tests green. The text below stands as the record of the gap.
   **20261019_1817** `KEEP`: this pack's justfile has no `test` recipe and no working-cache venv; `tests/` need PyYAML, so a run with the host `python3`
   reports 7 false failures (`No module named 'yaml'`). Add `bootstrap`/`test` recipes as the packs it generates have.
