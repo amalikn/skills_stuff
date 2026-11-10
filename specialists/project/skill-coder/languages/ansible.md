@@ -84,6 +84,6 @@ The rest of this override lives in [ansible/](ansible/) (split 2026-11-07 by scr
 | [learned-execution.md](ansible/learned-execution.md) | 5 |
 | [learned-lint-and-tests.md](ansible/learned-lint-and-tests.md) | 3 |
 | [learned-other.md](ansible/learned-other.md) | 1 |
-| [learned-templating.md](ansible/learned-templating.md) | 13 |
+| [learned-templating.md](ansible/learned-templating.md) | 14 |
 | [learned-tooling.md](ansible/learned-tooling.md) | 2 |
 | [open-items.md](ansible/open-items.md) | 7 |

@@ -16,6 +16,7 @@ Last rotated: 20261110_1246
 
 ## Unreleased
 
+- 2026-11-10 (c) write-back from smc-resiliency (urlcapture-prune change): languages/ansible/learned-templating.md (a wrapper template that includes another: values by `set`, two lost newlines, prove with `cmp`)
 - 2026-11-10 (b) write-back from smc-resiliency (versions record, fleet survey, N05): references/design-patterns.md P-65 (one version record, pins found by pattern; adopted by UNC), languages/shell/learned-processes-and-timeouts.md (Go programs survive SIGALRM: fork and TERM then KILL; recurrence of editing a running script), references/errors-and-timeouts.md (stop an flock holder and judge by taking the lock)
 - 2026-11-10 write-back from unified-network-controller (Nautobot 3.2.9 upgrade): languages/shell/learned-processes-and-timeouts.md (a `bash -s` script loses its remainder to a child reading stdin); the `{{args}}` interpolation rule in references/tooling-and-runtime.md (Learned 2026-10-20) recurred in a new recipe and was fixed with `[positional-arguments]`, no new entry
 - 2026-11-10 write-back from smc-resiliency (flash step): references/testing.md (fakes from real tool output; smoke a refusal against a real wrong target)

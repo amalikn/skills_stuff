@@ -143,3 +143,17 @@ Part of [ansible.md](../ansible.md).
 > expression (`text - {{ (x) ~ ' ' ~ (y) }}`) and capitalise it (`name[casing]`). PyYAML cannot fold a string with no spaces, so `{{ a }}{{ b }}` runs
 > stay over the line limit: join them as `{{ (a) ~ (b) }}` (parentheses keep `if/else` and filters bound; same rendered text, tested under Jinja).
 > Dump with a width (here 120), then `safe_load` the dump and compare with the data: a fold that changed a value refuses the write.
+
+> **Learned 2026-11-10** · a template that includes another, rendered by `ansible.builtin.template` (ansible-core 2.21) · VERIFIED_PRIMARY (`cmp` of the wrapper's render
+> against the included template's own render, then md5 on the target box) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/templates/urlcapture-prune/rsync_urlcapture.sh.j2`
+> (08c12ce) · Falsifier: a wrapper ending `{% include 'x.j2' %}` that renders byte-identical to `x.j2` rendered alone
+> To reuse another role's template without copying its text, set the values it expects and include it through a link beside the wrapper (the include
+> resolves relative to the wrapper's folder). Top-level `{% set %}` values are visible to the include. Two newlines go missing: Jinja drops the
+> included file's last newline (`keep_trailing_newline` is off), and `trim_blocks` drops the one after the include tag, so a script rendered this way
+> loses its final blank line. Put it back with an explicit `{{ '\n' }}`, and prove the render with `cmp` against the original, not by eye.
+>
+> ```jinja
+> {%- set teleport_fqdn = smc_change_vars.urlcapture.teleport_fqdn -%}
+> {%- set url_capture_dir = smc_change_vars.urlcapture.dir -%}
+> {%- include 'company_rsync_urlcapture.sh.j2' %}{{ '\n' }}
+> ```
