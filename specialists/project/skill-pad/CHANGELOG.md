@@ -13,6 +13,14 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261110_1958 — original comment texts kept; rate-limit retries
+
+### Changed
+
+- The 12 smc-resiliency comments' original texts saved verbatim as notes on their items (side agent: Pad may not keep an edited comment's
+  earlier text). Guidelines 3.3: keep the original as a note before reformatting a comment. `pad_rewrite.py` retries `rate_limited` answers up to
+  5 times (the likely cause of the earlier silent stop). cli-reference Traps: rate limit, comment history.
+
 ## 20261110_1956 — smc-resiliency comments rewritten to the comment standard
 
 ### Changed

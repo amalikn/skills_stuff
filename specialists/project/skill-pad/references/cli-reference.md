@@ -93,3 +93,9 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > wontfix, duplicate, declined, abandoned, disabled); `answered`, `done`-like custom words stay open forever. Create any workflow collection with
 > `--schema` and set `terminal_options` (and `abandoned_options` for values that close without delivering), as the templates do (tasks: done and
 > cancelled; plans: completed).
+
+> **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY (rate limit, observed) and UNVERIFIED (comment history) · Source: `pad item note`
+> burst error `rate_limited` with `retry_after_seconds: 1`; docs_api.md comment edit and delete routes · Falsifier: a burst of 12 notes accepted
+> without a wait; an API or CLI read that returns an edited comment's earlier text.
+> Pad rate-limits bursts of writes: back off by `retry_after_seconds` (scripts/pad_rewrite.py retries up to 5 times). `pad item history` keeps item
+> body versions, but nothing found keeps the earlier text of an edited comment: save a comment's original as a note before editing it.

@@ -33,6 +33,7 @@ import sys
 import time
 from pathlib import Path
 
+RATE_RETRIES = 5
 TYPES = ("FINDING", "BLOCKED", "RISK", "CORRECTION", "HANDOFF", "NEXT")
 STAMP = re.compile(r"^(?P<stamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?: [A-Z]{3,5})?)(?P<sep>:?\s*)")
 
@@ -120,15 +121,21 @@ def pad(argv: list[str], timeout: int, binary: str, stdin: str | None = None) ->
     The command's stdout.
 
   Raises:
-    RuntimeError: a non-zero exit or a timeout, with pad's stderr.
+    RuntimeError: a non-zero exit or a timeout, with pad's stderr; a `rate_limited` answer is retried up to RATE_RETRIES times, waiting the
+      server's retry_after_seconds (2026-11-10: a 12-note burst was refused with retry_after 1).
   """
-  try:
-    r = subprocess.run([binary, *argv], input=stdin, capture_output=True, text=True, timeout=timeout)
-  except subprocess.TimeoutExpired as exc:
-    raise RuntimeError(f"pad {' '.join(argv[:3])} timed out after {timeout}s") from exc
-  if r.returncode != 0:
-    raise RuntimeError(f"pad {' '.join(argv[:3])} failed: {r.stderr.strip()[:400]}")
-  return r.stdout
+  for attempt in range(RATE_RETRIES + 1):
+    try:
+      r = subprocess.run([binary, *argv], input=stdin, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+      raise RuntimeError(f"pad {' '.join(argv[:3])} timed out after {timeout}s") from exc
+    if r.returncode == 0:
+      return r.stdout
+    m = re.search(r'"retry_after_seconds":\s*(\d+)', r.stderr)
+    if "rate_limited" not in r.stderr or attempt == RATE_RETRIES:
+      break
+    time.sleep(int(m.group(1)) if m else 1 + attempt)
+  raise RuntimeError(f"pad {' '.join(argv[:3])} failed: {r.stderr.strip()[:400]}")
 
 
 def main(argv: list[str] | None = None) -> int:

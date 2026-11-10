@@ -203,7 +203,8 @@ Refs: paths, commits, [[related item]]
 | `pad item comment`             | everything else, a person | `YYYY-MM-DD HH:MM AEDT TYPE:` then at most five lines; ends `Next:` |
 
 Comment types: `FINDING`, `BLOCKED`, `RISK`, `CORRECTION`, `HANDOFF`, `NEXT`. Each comment holds one event and says what is verified and what is not; a correction is a new `CORRECTION:` comment that
-leaves the old one in place.
+leaves the old one in place. Reformatting an old comment to this standard is allowed only after its original text is saved verbatim as a `note` on the same item: Pad keeps item body versions, but not,
+as far as its docs show, the earlier text of an edited comment (done for smc-resiliency's 12 comments, 2026-11-10).
 
 ### 3.4 Tags
 
