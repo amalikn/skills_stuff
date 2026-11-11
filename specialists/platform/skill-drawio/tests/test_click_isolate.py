@@ -160,10 +160,11 @@ class ClickIsolate(unittest.TestCase):
         self.assertTrue(all(v == "locked=1;" for k, v in layers.items() if k.startswith("ov-L-")))
 
     def test_off_by_default_and_tab_names(self) -> None:
-        """Without the key no cell carries an action link and no layer is locked; `e2e_tab` renames the End-to-end tabs."""
+        """Without the key no cell carries an action link; the base layer is locked by default (one click follows a link; operator, 2026-11-11);
+        `e2e_tab` renames the E2E tabs."""
         text = _render(_map(e2e_layers="flow", e2e_family_pages=True))
         self.assertNotIn("data:action/json", text)
-        self.assertNotIn("locked=1", text)
+        self.assertIn('style="locked=1;"', text)
         names = [d.get("name") for d in _diagrams(_render(_map(e2e_family_pages=True, e2e_tab="E2E")))]
         self.assertIn("E2E flow", names)
         self.assertTrue([n for n in names if n.startswith("E2E: ")])

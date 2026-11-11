@@ -110,11 +110,11 @@ class CellsTipsAndTags(unittest.TestCase):
         self.assertEqual(set(heads) - {"classic", "oval"}, set())
 
     def test_every_generated_cell_is_frozen(self) -> None:
-        """Every box, label and arrow is frozen (movable, resizable, rotatable, bendable, editable, deletable 0); layers stay unlocked."""
+        """Every box, label and arrow is frozen (movable, resizable, rotatable, bendable, editable, deletable 0); only the base layer is locked (default since 2026-11-11)."""
         root = ET.fromstring(TestMap._render(TestMap._minimal()).split("-->", 1)[1])
         styled = [c for c in root.iter("mxCell") if c.get("style") is not None]
         self.assertTrue(styled)
-        self.assertEqual([c.get("id") or "?" for c in styled if "movable=0;resizable=0;rotatable=0;bendable=0;editable=0;deletable=0;" not in c.get("style")], [])
+        self.assertEqual([c.get("id") or "?" for c in styled if c.get("id") != "1" and "movable=0;resizable=0;rotatable=0;bendable=0;editable=0;deletable=0;" not in c.get("style")], [])   # layer 1 is the locked base layer (2026-11-11)
 
 
 if __name__ == "__main__":

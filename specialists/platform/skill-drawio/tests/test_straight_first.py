@@ -204,6 +204,16 @@ class BackButtonTests(unittest.TestCase):
         self.assertIn('data:page/id,end-to-end"', self._button(self._page({})))
         self.assertEqual(self._button(self._page({"back_button": "off"})), "")
 
+    def test_button_sits_above_the_header(self) -> None:
+        """The button sits above the header's top-left corner, not beside its right end, and the header moves down to make room; with the
+        button off the header keeps the top (operator, 2026-11-11)."""
+        page = self._page({})
+        (bx, by, _bw, bh), (hx, hy, _hw, _hh) = page.rects["flow-commission-gps-back"], page.rects["commission-gps-head"]
+        self.assertEqual(bx, hx)
+        self.assertLessEqual(by + bh, hy)
+        off = self._page({"back_button": "off"}).rects["commission-gps-head"]
+        self.assertLess(off[1], hy)
+
 
 class NoteAuditTests(unittest.TestCase):
     """drawio.audit.page_audit ("audit") counts a note card as a box no arrow may cross, though the router does not (ROADMAP 2026-11-06)."""

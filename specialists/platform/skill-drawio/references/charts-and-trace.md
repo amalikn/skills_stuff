@@ -143,9 +143,9 @@ cite a symbol where one exists. Ansible task files have no symbol yet, because a
 
 ## Learned
 
-> **Learned 2026-11-11** · lane pages, two branches of one diamond in a shared gap · VERIFIED_PRIMARY (test SharedGap in tests/test_flowchart_layout.py
-> fails with the search off; enterprise-strategy program swimlane, before and after in screenshots/20261111-shared-gap/) · Source: scripts/flowmap/flowchart/order.py
-> `improve_tracks`, route.py `assign_tracks(reversed_gaps)` · Falsifier: a diamond whose branches still cross when some combination of swap and track order would not.
+> **Learned 2026-11-11** · lane pages, two branches of one diamond in a shared gap · VERIFIED_PRIMARY · Source: scripts/flowmap/flowchart/order.py
+> `improve_tracks` and route.py `assign_tracks(reversed_gaps)`; test SharedGap in tests/test_flowchart_layout.py fails with the search off; before and after in
+> screenshots/20261111-shared-gap/ · Falsifier: a diamond whose branches still cross when some combination of swap and track order would not.
 > Swapping a diamond's branches is half the move: when both branches run through one gap, the gap's first-fit track order can make each order of the branches
 > cross. The search therefore also tries the gap's reversed track order, alone and with the branches swapped, and keeps what scores best (crossings, bends,
 > length). Five consumers re-rendered: every layout metric unchanged (layout_quality), only text differed. Two other fixes in the same pass: an explicit

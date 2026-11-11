@@ -47,6 +47,9 @@ UNDER_ROOM = 28
 HEAD_LINE_H = 15
 
 
+#: The `‹ E2E page` button's height (flowmap.e2e_family.back_button) and the gap under it, above a step page's header.
+BACK_H, BACK_GAP = 22, 8
+
 def flow_header_lines(flow: dict, comps: dict[str, dict], number: int | str) -> list[str]:
     """A flow page's header, set out like a note: bold title and category, a blank line, the purpose, a blank line, one line per field with its
     name in bold, a blank line, then the link back.
@@ -171,11 +174,14 @@ def flow_header(page: Page, flow: dict, comps: dict, number: int | str, width: f
     head_w = max(width, 900)
     head_chars = int((head_w - 16) / 7)   # font 12: about 6.5 px a character, so 7 px is conservative
     head_h = 14 + sum(wrapped_lines(h.replace("*", ""), head_chars) for h in header) * HEAD_LINE_H
-    page.box(f"{flow['id']}-head", label(*header), MARGIN, MARGIN, head_w, head_h,
+    top = MARGIN
+    if getattr(page, "back_link", ""):   # `‹ E2E page` above the header's top-left corner, not beside its right end (operator, 2026-11-11)
+        back_button(page, MARGIN, MARGIN)
+        top = MARGIN + BACK_H + BACK_GAP
+    page.box(f"{flow['id']}-head", label(*header), MARGIN, top, head_w, head_h,
              "rounded=0;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=12;",
              link="data:page/id,overview")
-    back_button(page, MARGIN + head_w + 10, MARGIN)   # `‹ E2E page`, when flow_page set page.back_link (look.back_button)
-    return head_h
+    return head_h + top - MARGIN   # callers place the lanes below MARGIN + this
 
 
 def _below_lanes(page: Page, profile: Profile, lane_y: list, bottom: float) -> tuple[bool, float]:

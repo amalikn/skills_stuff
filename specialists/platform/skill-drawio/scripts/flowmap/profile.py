@@ -57,7 +57,7 @@ DEFAULT_LOOK = {
     "e2e_band_search": True,       # E2E: swap two boxes in the band below the columns when the real routes then cross less (operator, 2026-11-02)
     "e2e_row_search": False,       # E2E: swap boxes inside a column to cut crossings the grid implies, after barycentre (operator, 2026-10-28)
     "e2e_loops": False,            # a step done by the same box as the step before is a loop on that box's top or bottom (operator, 2026-10-26)
-    "lock_base_layer": False,      # every page's background layer ("1") drawn locked (operator, 2026-10-26)
+    "lock_base_layer": True,       # every page's background layer ("1") locked, so one click follows a box's link (operator 2026-10-26; default 2026-11-11)
     "chart_tab": "Chart",          # flowchart page tab names: "<chart_tab>: <title>" (operator, 2026-11-06: "Step by step" for a chained family)
     "e2e_tab": "E2E",              # E2E tab names: "<e2e_tab> flow" and "<e2e_tab>: <family>" (operator asked for "E2E" 2026-10-26; the default since 2026-11-11)
     "e2e_family_colours": "page",  # family-page flow colours: "page" (restart on each page, no repeats) or "flow" (full-page colour; operator, 2026-10-26)
