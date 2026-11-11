@@ -16,6 +16,7 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-11 (c) write-back from the token-optimizer session: languages/python/learned-other.md, splitting front matter on "\n---" drops the last line's newline (a line regex misses the final description line); check JSON dump round-trips byte for byte before rewriting a config
 - 2026-11-11 (b) write-back from ansible-wifi (smc_lynis NO_PUBKEY): languages/ansible/learned-other.md, `apt_key` with `url` and no `id` never refreshes a key whose primary is present (a new vendor subkey stays missing); pin the subkey `id` or use `get_url` plus `signed-by=`
 - 2026-11-11 languages/yaml-json-toml.md: Learned, TOML vs YAML for registries keyed by id (duplicate tables fail at parse, YAML keeps the last key silently), no stdlib TOML writer, JSON Lines for appended data (unified-network-controller session)
 - 2026-11-11 templates/ruff.toml: a project's ruff config (two-space, 160 columns, the skills' rule set, existing files excluded until reformatted, Markdown excluded); languages/python.md names it (operator approved, from smc-resiliency)

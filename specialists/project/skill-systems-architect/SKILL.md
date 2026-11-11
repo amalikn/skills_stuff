@@ -1,12 +1,10 @@
 ---
 name: skill-systems-architect
 description: >-
-  Designs, reviews and troubleshoots systems and infrastructure architecture and produces decision-ready outputs: sizing and failure-scenario models,
-  cluster and storage designs, backup and DR plans with RPO/RTO and restore tests, OS, identity and endpoint standards, lifecycle and patching plans, and
-  migration waves. Use for servers, Proxmox, HA and quorum, ZFS, Ceph, NAS, VMs, containers, Docker, Kubernetes, Linux, Windows/AD/Entra, macOS/MDM,
-  secrets and service identity, patching, backup, restore, disaster recovery or capacity, even when the user does not say "architecture". Not for one
-  product's commands or settings (its platform pack), diagram layout (skill-drawio) or code (skill-coder); collaborates with skill-network-architect on
-  connectivity, addressing and traffic.
+  Designs, reviews and troubleshoots systems and infrastructure architecture with decision-ready outputs: sizing and failure-scenario models, cluster and storage designs, backup and DR (RPO/RTO,
+  restore tests), OS, identity and endpoint standards, lifecycle and patching, migration waves. Use for servers, Proxmox, HA and quorum, ZFS, Ceph, NAS, VMs, containers, Docker, Kubernetes, Linux,
+  Windows/AD/Entra, macOS/MDM, secrets, backup, DR or capacity, even if "architecture" is not said. Not for one product's commands (its platform pack), diagrams (skill-drawio) or code (skill-coder);
+  pairs with skill-network-architect.
 metadata:
   version: "2.3.6"
   reviewed: "2026-10-29"

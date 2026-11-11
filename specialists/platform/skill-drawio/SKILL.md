@@ -1,11 +1,9 @@
 ---
 name: skill-drawio
 description: >-
-  draw.io (diagrams.net) work for any project: data-first diagrams where a YAML map of components, flows and dependencies is validated and rendered to
-  a .drawio file deterministically (generated banner, drift check); the file format (mxfile, layers, UserObject, compressed pages); orthogonal layout
-  and routing with layout audits; colours, layers and legends; exporting pages with the desktop CLI and reviewing them before anyone sees them; and
-  reading existing drawings as data. Use for any .drawio file or diagram generated from data; not for the domain facts a diagram shows (use that
-  domain's skill), and never to regenerate over a drawing a person edited by hand.
+  draw.io (diagrams.net) work for any project: data-first diagrams (YAML map of components, flows and dependencies validated and rendered deterministically to .drawio, generated banner, drift
+  check); file format (mxfile, layers, UserObject, compressed pages); orthogonal layout and routing audits; colours, layers, legends; desktop CLI export and review; reading drawings as data. Use for
+  any .drawio file or diagram generated from data; not for the domain facts shown (use that domain's skill); never regenerate over a hand-edited drawing.
 ---
 
 # draw.io

@@ -1,12 +1,10 @@
 ---
 name: skill-proxmox
 description: >-
-  Design, operate, automate and troubleshoot Proxmox VE 9.x: nodes, clusters, Corosync and pmxcfs (/etc/pve); storage (dir, LVM-thin,
-  ZFS, hyperconverged Ceph with pveceph, PBS 4.x; content types including import); Linux bridges, VLAN-aware bridges, SDN zones, VNets and DHCP/IPAM; QEMU VMs (q35, OVMF
-  and the EFI disk, Secure Boot keys, boot order, cloud-init, guest agent, serial console, disk import, templates and clones, migration, PCI/USB/directory resource mappings and virtiofs); LXC;
-  pools, users, realms, roles, privileges, ACLs and privilege-separated API tokens; the REST API and pvesh, pveum, qm, pct and pvesm;
-  OpenTofu with the bpg/proxmox provider; vzdump and PBS backups; HA; upgrades (repositories, apt full-upgrade, pve8to9);
-  certificates, firewall, metrics and notifications; arm64 hosts; Proxmox Datacenter Manager. Use for Proxmox VE work; not for the guest OS inside a VM or for device-specific facts.
+  Design, operate, automate and troubleshoot Proxmox VE 9.x: clusters, Corosync, pmxcfs (/etc/pve); storage (dir, LVM-thin, ZFS, Ceph/pveceph, PBS 4.x); bridges, VLAN-aware bridges, SDN zones/VNets,
+  DHCP/IPAM; QEMU VMs (q35, OVMF, Secure Boot, cloud-init, guest agent, disk import, templates, migration, PCI/USB mappings, virtiofs), LXC; users, realms, roles, ACLs, API tokens; REST API, pvesh,
+  pveum, qm, pct, pvesm; OpenTofu bpg/proxmox; vzdump and PBS backups; HA; upgrades (pve8to9); certificates, firewall, metrics, notifications; arm64 hosts; Datacenter Manager. Not for the guest OS
+  inside a VM or device-specific facts.
 ---
 
 # Proxmox VE

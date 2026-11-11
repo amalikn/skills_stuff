@@ -1,10 +1,9 @@
 ---
 name: skill-coder
 description: >-
-  Programming practice for any project and any language. Use before writing, changing, reviewing or refactoring code in any project: designing modules and layers;
-  adding scripts and CLIs; tests and checks; error handling and timeouts; write safety; configuration; performance and runtime budgets; dependencies;
-  security; and promoting reusable code into a skill. Language overrides cover Python, shell, JavaScript/TypeScript, Go, Rust, SQL, YAML/JSON/TOML and Ansible.
-  Not for a platform's or device's own facts (use that domain skill), not for prose or governance documents alone, and never above the project's own rules.
+  Programming practice for any project and language. Use before writing, changing, reviewing or refactoring code: module and layer design, scripts and CLIs, tests and checks, error handling and
+  timeouts, write safety, configuration, performance and runtime budgets, dependencies, security, promoting reusable code into a skill. Language overrides: Python, shell, JS/TS, Go, Rust, SQL,
+  YAML/JSON/TOML, Ansible. Not for a platform's or device's own facts (use that domain skill) or prose/governance docs alone; never above the project's own rules.
 ---
 
 # Coder

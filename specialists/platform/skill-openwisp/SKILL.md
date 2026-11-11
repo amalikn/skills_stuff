@@ -1,10 +1,9 @@
 ---
 name: skill-openwisp
 description: >-
-  Operate, diagnose and extend OpenWISP: device registration and hardware_id, organisations and device groups, REST API and tokens, NetJSON DeviceMonitoring
-  pushes and backfill, custom metrics and charts, InfluxDB storage and retention, Celery workers and queues, health checks, alerts and notifications,
-  configuration templates and VPN, SSH commands and firmware upgrades, RADIUS and captive portal, backup and restore, docker-openwisp settings
-  and upgrades. Use for OpenWISP work; not as the primary skill for Nautobot inventory or lifecycle intent.
+  Operate, diagnose and extend OpenWISP: device registration and hardware_id, organisations and device groups, REST API and tokens, NetJSON DeviceMonitoring pushes and backfill, custom metrics and
+  charts, InfluxDB and retention, Celery workers and queues, health checks, alerts and notifications, templates and VPN, SSH commands and firmware upgrades, RADIUS and captive portal,
+  backup/restore, docker-openwisp settings and upgrades. Not the primary skill for Nautobot inventory or lifecycle intent.
 ---
 
 # OpenWISP

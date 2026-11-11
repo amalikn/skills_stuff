@@ -97,3 +97,21 @@ Part of [python.md](../python.md).
 > named a module it never imported (`NameError` on the error path) and nothing flagged it. Run the undefined-name rules over every file, legacy
 > included, without the project config: `ruff check --isolated --select F821,F822,F823 .`; it found exactly that one error. The same project's
 > `check` also ran none of the on-box unit tests (see testing.md, the closing check): both went red with the import removed.
+
+> **Learned 2026-11-11** · Python 3.14, scripted edits of Markdown front matter and JSON config · VERIFIED_PRIMARY · Source: token-optimizer session scratch scripts
+> `shorten_desc.py` and `apply_qw.py` (one-offs, not committed; edits landed in skills_stuff `specialists/*/SKILL.md`, 2026-11-11) · Falsifier: a dry run whose reported old
+> length equals the real folded description length with the plain split
+> Splitting front matter with `src.split("\n---", 1)[0]` drops the newline that ends the last front-matter line, so a line regex such as
+> `^description: >-\n((?:  .*\n)+)` stops one line short: the dry run reported 466 old characters for a 620-character description, and an apply would have left the old
+> last line under the new text. Keep the newline (`+ "\n"`), compare the dry run's old length with the listing, then parse the result with `yaml.safe_load` and assert
+> the field equals the intended text. Rewriting a JSON config with `json.dumps` can silently re-escape the whole file (`–` vs `–`): before writing, check that
+> loading and dumping the untouched file reproduces it byte for byte, choose `ensure_ascii` per file to match, and only then apply the change, so the diff holds the change alone.
+>
+> ```python
+> head = src.split("\n---", 1)[0] + "\n"          # keep the last line's newline
+> block = re.compile(r"^description: >-\n((?:  .*\n)+)", re.M)
+> raw = open(cfg).read()
+> for ascii_ in (True, False):                    # pick the escaping that round-trips
+>   if json.dumps(json.loads(raw), indent=2, ensure_ascii=ascii_) + "\n" == raw:
+>     break
+> ```

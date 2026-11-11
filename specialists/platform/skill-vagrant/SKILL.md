@@ -1,13 +1,9 @@
 ---
 name: skill-vagrant
 description: >-
-  Build, pin, run and troubleshoot local Vagrant labs on macOS Apple silicon with any of the operator's providers: Parallels (vagrant-parallels,
-  the default), VirtualBox 7.1/7.2, QEMU (vagrant-qemu) and libvirt (vagrant-libvirt against a Linux KVM host). Covers provider choice and
-  selection order, boxes and version pinning (bento arm64), multi-machine and multi-provider Vagrantfiles, customize events, networks per provider
-  (Parallels shared and host-only, VirtualBox host-only networks and internal networks, QEMU vmnet and socket modes), synced folders, provisioners,
-  triggers and cloud-init, `vagrant ssh -c`, prlctl and VBoxManage exec, console capture and power, serial consoles, linked clones and their shared
-  machine-id, snapshots, wrong-VM guards, project copies of a canonical Vagrantfile, Vagrant versus OpenTofu, licensing and editions. Use for any
-  Vagrant lab VM work; not for Proxmox or OpenTofu (skill-proxmox) and not for what runs inside the guest (that project's skill).
+  Build, pin, run and troubleshoot local Vagrant labs on macOS Apple silicon: Parallels (default), VirtualBox 7.1/7.2, QEMU and libvirt/KVM providers and selection order; bento arm64 boxes and
+  pinning; multi-machine and multi-provider Vagrantfiles, customize, per-provider networks (host-only, internal, vmnet), synced folders, provisioners, triggers, cloud-init; `vagrant ssh -c`,
+  prlctl/VBoxManage exec, serial console; linked clones (machine-id), snapshots, wrong-VM guards; Vagrant vs OpenTofu, licensing. Not Proxmox/OpenTofu (skill-proxmox) or what runs inside the guest.
 ---
 
 # Vagrant

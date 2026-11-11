@@ -1,10 +1,9 @@
 ---
 name: skill-nautobot
 description: >-
-  Design, query and troubleshoot Nautobot: inventory, IPAM and Namespaces, custom fields, computed fields, Relationships, Dynamic Groups, Config Contexts,
-  Secrets, REST/GraphQL/pynautobot, Jobs and Job Hooks, webhooks, approvals, change log, Golden Config, staged onboarding, field ownership, permissions and
-  upgrades (nautobot-server), app development, SSoT/DiffSync, Ansible and Nornir inventories, backup and restore, metrics and security settings.
-  Use for Nautobot work; not as the primary skill for OpenWISP telemetry, graphs or alerts.
+  Design, query and troubleshoot Nautobot: inventory, IPAM and Namespaces, custom and computed fields, Relationships, Dynamic Groups, Config Contexts, Secrets, REST/GraphQL/pynautobot, Jobs and Job
+  Hooks, webhooks, approvals, change log, Golden Config, staged onboarding, permissions, upgrades (nautobot-server), app development, SSoT/DiffSync, Ansible and Nornir inventories, backup and
+  restore. Not the primary skill for OpenWISP telemetry, graphs or alerts.
 ---
 
 # Nautobot
