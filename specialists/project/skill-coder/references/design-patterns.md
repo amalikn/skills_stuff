@@ -1416,6 +1416,41 @@ if found < loc.get("min", 1):
   out.append(f"{label}: {loc['pattern']!r} found {found} time(s) in {loc['files']}, needs {loc.get('min', 1)}")
 ```
 
+### P-66 A localhost redirect for a link scheme a web app strips
+
+> **Learned 2026-11-11** · any web UI that sanitises link schemes (DOMPurify, a Markdown renderer) · VERIFIED_PRIMARY (skill-pad
+> `scripts/pad_link_opener.py` and `pad_tracker.py` @ c931f50: Pad v0.19.2 keeps only http(s), mailto, ftp and tel, web/src/lib/utils/markdown.ts:224;
+> a click in a Pad item opened the file in VS Code, operator 2026-11-11) · Falsifier: a browser that refuses to follow a 302 to a custom scheme.
+> `reusable_candidate` (one project).
+
+Problem:      A tool's web UI must link to something only a custom scheme opens (vscode://file, an app deep link), and the UI strips
+              that scheme; relative repo links mean nothing on its pages either. Patching the tool means a fork rebuilt on every upgrade.
+Solution:     A tiny service on 127.0.0.1 answers `http://127.0.0.1:<port>/open/<absolute path>?f=<fragment>` with a 302 to the custom
+              URL. The tool keeps the http link (allowed), the click lands on the service, and the browser follows on to the app. The
+              writer that puts links into the tool converts relative links to this form; the exporter that writes the repo file converts
+              them back, so the repo copy stays portable and its link check unchanged.
+Why it works: The UI's allowlist is satisfied by plain http; the custom scheme exists only in the redirect, which the browser handles
+              (with its own "open the app?" prompt). The tool is untouched, so its upgrades need nothing.
+Reuse:        Pad, wiki or issue-tracker pages linking to local files; any app deep link a sanitiser drops.
+Pitfalls:     The browser never sends `#...` to the server: carry the fragment in the query (`?f=L86`) and restore it on export. Resolve
+              symlinks and `..` before the allowed-roots check, and serve no file content, so a hostile page can at most open an editor.
+              Only convert links whose path exists, or a typo becomes a redirect to nothing. New links written into the tool later stay
+              relative unless the conversion runs again (put it beside the export).
+Realised in:  Python -> skill-pad scripts/pad_link_opener.py (stdlib http.server, launchd KeepAlive) and pad_tracker.py `links`
+
+```python
+def target(request_path, roots):                     # pure: tested without a socket
+  parts = urlsplit(request_path)
+  path = unquote(parts.path[len(PREFIX):])
+  real = os.path.realpath(path)
+  if not any(real == r or real.startswith(r.rstrip("/") + "/") for r in map(os.path.realpath, roots)):
+    return 404, f"outside the allowed roots: {path}"
+  if not os.path.exists(real):
+    return 404, f"no such file: {path}"
+  m = LINE.match((parse_qs(parts.query).get("f") or [""])[0])
+  return 302, "vscode://file" + quote(path, safe="/") + (f":{m.group(1)}" if m else "")
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

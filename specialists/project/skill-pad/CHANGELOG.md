@@ -24,6 +24,7 @@ Archive: docs/history/ (`just history`, `just history-show`)
 - `pad_tracker.py links`: rewrites relative repo links in a collection's Pad bodies into opener links (each write guarded by the item's seq);
   `import` writes opener links (`--no-opener` to skip) and `export` always turns them back into links relative to the tracker file, so the
   repo file is unchanged. Applied to smc-resiliency Bugs (7 items, 8 links); the operator confirmed a click in BUG-41 opens VS Code.
+- `references/items-and-edits.md`: Learned 2026-11-11, Pad strips vscode:// and relative links go nowhere; write opener links.
 
 ## 20261110_2055 — tracker import spike noted for the trial review
 

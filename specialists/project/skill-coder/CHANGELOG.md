@@ -9,13 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261110_1246
+Last rotated: 20261111_1100
 ---
 
 # Changelog
 
 ## Unreleased
 
+- 2026-11-11 write-back from smc-resiliency (Pad links): references/design-patterns.md P-66 (a localhost redirect for a link scheme a web app strips; skill-pad c931f50)
 - 20261110 references/tooling-and-runtime.md: Learned 2026-11-10 (skill-pad): a dataclass module loaded by path needs a sys.modules entry; flush progress lines so errors stay in order.
 
 - 2026-11-10 (c) write-back from smc-resiliency (urlcapture-prune change): languages/ansible/learned-templating.md (a wrapper template that includes another: values by `set`, two lost newlines, prove with `cmp`)
@@ -194,7 +195,3 @@ Learned 2026-10-29 in `references/design-patterns.md` (P-36), from unified-netwo
 ## 20261029_1220 — Learned: a check that skips when its tool is missing cannot fail
 
 Learned 2026-10-29 in `references/testing.md`: report a missing tool, never skip silently (unified-network-controller pre-commit hook, 27 to 29 Oct).
-
-## 20261028_2306 — Learned: optimise the real outcome, not a proxy
-
-references/design-patterns.md: proxy ranks candidates, the real computation chooses, current state always a candidate (skill-drawio overview placement, 2026-10-28).

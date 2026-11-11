@@ -6,13 +6,18 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261110_1350
+Last rotated: 20261111_1058
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261111_1105 — urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)
+
+`references/19_smc-change-role.md`: Learned 2026-11-11, the canary's first cron prune (13 GB to two months, root 49% to 26%) and `tsh_each.sh`'s apn-cluster
+default (`PROXY=teleport.communitywifi.net.au` for nbn_accelerate boxes); the read recipe is `uc-old-files` (was `months`, `590716b`).
 
 ## 20261110_1355 — koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)
 
@@ -186,12 +191,3 @@ Learned 2026-10-30 (ansible-wifi chat cad11710): `references/19_smc-change-role.
 local-knowledge-ansible `cf4f994`), `references/08_ansible-authoring.md` (pipe lookups run on the controller, macOS `date -Is`; smc_application
 PHP pinned against the ondrej PPA, mod_php kept; ansible-wifi `fb6ae80b`), `references/03_communication-flows.md` (kaltjiti-fergon-smc01: two
 node records for ~9 min after clearing `/var/lib/teleport`; old-process errors; exit 127 from a stale `versions` label). manifest 0.10.5 -> 0.10.6.
-
-## 20261029_2011 — Harvest write-back: tbot repair, onboarding latency, D12, Kea gate, switch needs, voice options, DNS-only capture (v0.10.4 -> v0.10.5)
-
-Learned 2026-10-29 from the architect-pack harvest of apn projects: `references/03_communication-flows.md` (stale tbot state; "did not match any
-allow rules" from an orphaned bot role and expired token), `references/01_overview.md` (about 7 s a unit through Teleport over satellite, ranked
-fixes; D12 P0 software lifecycle under the A/B decision), `references/13_known-issues.md` (ISC DHCP end of life and the gated Kea port; the rct switch
-takes gateway and NTP from the SMC, not DHCP, cross-referenced to skill-mikrotik), `references/02_service-map.md` (Asterisk replacement options; CDR
-and CEL back-ends noloaded), `references/09_url-capture-pcap.md` (the capture filter is `dst port 53`). Skipped as covered: tbot state reset, proxy
-naming, fleet utilisation, Asterisk RSS, tmpfiles.d rule, deadline and random-node access rules. manifest 0.10.4 -> 0.10.5.

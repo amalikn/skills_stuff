@@ -121,6 +121,24 @@ class TypedTextTest(unittest.TestCase):
         kinds = [(k, t) for _, k, t in tp.events(path)]
         self.assertIn(("user", "Ask me questions."), kinds)
 
+    def test_repeated_typed_turns_are_all_listed(self) -> None:
+        """Four "yes" turns are four approvals: each reaches pass 1 (2026-11-11: three of four were dropped as duplicates of the first)."""
+        rows = [{"type": "user", "timestamp": f"2026-11-11T0{i}:00:00Z", "message": {"content": "yes"}} for i in range(4)]
+        self.assertEqual([t for _, k, t in tp.events(write_transcript(rows)) if k == "user"], ["yes"] * 4)
+
+    def test_queued_copy_of_a_typed_turn_is_listed_once(self) -> None:
+        """A turn typed mid-work is queued (mid) and then delivered as a user turn: one line, not two."""
+        rows = [{"type": "queue-operation", "operation": "enqueue", "timestamp": "2026-11-11T01:00:00Z", "content": "stop and slurp"},
+                {"type": "user", "timestamp": "2026-11-11T01:00:05Z", "message": {"content": "stop and slurp"}},
+                {"type": "user", "timestamp": "2026-11-11T02:00:00Z", "message": {"content": "stop and slurp"}}]
+        self.assertEqual([k for _, k, t in tp.events(write_transcript(rows))], ["mid", "user"])
+
+    def test_command_tags_inside_a_tool_result_are_not_a_command(self) -> None:
+        """A Read of a file that quotes command tags returns them in a tool result: not a typed /command (2026-11-11 false positive)."""
+        tags = "<command-name>/skill-ai-it</command-name><command-args>promote</command-args>"
+        rows = [{"type": "user", "timestamp": "2026-11-11T01:00:00Z", "message": {"content": [{"type": "tool_result", "content": tags}]}}]
+        self.assertEqual([k for _, k, _ in tp.events(write_transcript(rows)) if k == "user"], [])
+
     def test_codex_events_preserve_repeated_turns_and_hide_tool_arguments(self) -> None:
         """Read Codex event envelopes without duplicating mirrored messages or printing command secrets.
 

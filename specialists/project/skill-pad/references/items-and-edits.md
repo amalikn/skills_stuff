@@ -72,6 +72,11 @@ Completed-work views (`changelog`, `standup`, reports) count terminal minus aban
   key it used on stderr. Applies to `create`, `patch`, `comment`, `note`, `decide`, `copy`, `push`.
 - `pad item edit <ref>` opens `$EDITOR` (human use); `pad item history <ref>` lists versions; `pad item set-aside <ref>` shows edits an editor upgrade set aside.
 
+> **Learned 2026-11-11** · Pad v0.19.2 web UI · VERIFIED_PRIMARY · Source: github.com/PerpetualSoftware/pad web/src/lib/utils/markdown.ts:224 (`ALLOWED_URI_REGEXP`,
+> https?, mailto, ftp, tel) and web/src/lib/components/editor/extensions/safeLink.ts (`openOnClick: false`) at tag v0.19.2 · Falsifier: a vscode:// link that stays clickable in an item page
+> Links in an item body: a relative repo link (`../../lab/x.py`) resolves against the Pad page and goes nowhere, and a `vscode://` link is stripped. Write repo links as
+> pad_link_opener links (`just link-url <path> --line N`; `pad_tracker.py` converts on import and with `links`, and back on export). Pad has no plugin system.
+
 ## Claiming work
 
 Before working an item (not just discussing it): `pad item claim <ref> [--ttl 2h]`. `lease_held` means another agent has it: pick something else, do not retry in a loop. `pad item release <ref>` when

@@ -4,7 +4,7 @@ Category: architecture
 Status: current
 Authority: canonical
 Scope: How skill-pad's parts connect: the skill, its references and mirror, the Pad CLI and server, the projects, the backup and export paths
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-11
 Summary: >-
   skill-pad is a CLI-driven skill over a local Pad server whose data lives in tools_stuff/pad on the Data volume; repo trackers stay the truth, Pad items point at them, and
   exports and nightly backups keep copies outside Pad.
@@ -29,6 +29,9 @@ verbatim under `references/upstream/` and rewritten into topic references the sk
 | `conventions/apn-baseline.toml`    | the five conventions every apn workspace carries                                                           |
 | `scripts/pad_conventions.py`       | applies the baseline to one workspace (plan, then `--apply`)                                               |
 | `scripts/pad_export.py`            | renders one workspace's items to Markdown in its project (run by each project's commit gate)               |
+| `scripts/pad_tracker.py`           | a Bugs or Features tracker file generated from its Pad collection: `import`, `export` (commit gate), `links` |
+| `scripts/pad_rewrite.py`           | applies a reviewed JSON spec of Pad item rewrites (bodies by seq, comments, notes, decisions); shared `pad` call |
+| `scripts/pad_link_opener.py` + `.plist` | 127.0.0.1:47800 redirect from an http link in Pad to `vscode://file/<path>:<line>` (launchd `au.malik.pad-link-opener`, kept alive) |
 | `scripts/pad_backup.sh` + `.plist` | nightly `pad db backup` to OneDrive `pad_backups` (launchd `au.malik.pad-backup`, 02:30, newest 30)        |
 | `scripts/pad_monitor.sh`           | the live push/watch feed for one session, run under Claude Code's Monitor tool by `connect`                |
 | `scripts/pad_upstream_refresh.sh`  | mirrors a Pad release into `references/upstream/v<version>/`                                               |
@@ -44,6 +47,9 @@ Pad release --pad_upstream_refresh.sh--> references/upstream/v<ver>/ --read, rew
 ```
 
 A fact is recorded when it is in the project's trackers (convention `trackers-truth`); Pad holds the work queue, links and discussion.
+Exception (operator, 2026-11-10): a project's Bugs and Features collections are the truth, and `docs/trackers/bug-tracker.md` and `features-to-add.md` are generated from
+them by `pad_tracker.py export` in the commit gate. Repo links in those bodies are stored as link-opener links (Pad strips `vscode://` and a relative link means nothing on a
+Pad page) and turned back into relative links in the generated file.
 
 ## Boundaries
 
@@ -57,5 +63,7 @@ A fact is recorded when it is in the project's trackers (convention `trackers-tr
   are rebuilt as modes, a monitor script and two hooks ([references/integrations.md](references/integrations.md)).
 - Pad's text is rewritten, not vendored, because a verbatim copy would be overwritten by every release and mixes upstream and operator rules; the mirror keeps the source for diffing
   ([references/upgrade.md](references/upgrade.md)).
+- A localhost link opener instead of a patched Pad, because Pad v0.19.2 keeps only http(s), mailto, ftp and tel links (web/src/lib/utils/markdown.ts:224) and a rebuilt fork would need
+  the patch reapplied at every upgrade; the opener needs nothing when Pad is upgraded (operator, 2026-11-11; skill-coder P-66).
 - Monitor instead of a plugin monitor, because a skill cannot declare a session-long background process; the Monitor runs at most 30 minutes and is re-armed, and the script's per-session lock prevents
   a double stream.

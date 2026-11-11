@@ -4,9 +4,9 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing Pad and skill-pad on the operator's Mac, and checking that each part works
-Last reviewed: 2026-11-10
-Summary: A working setup needs the pad CLI from Homebrew, an initialised local Pad, the two install links, the pack's venv, the backup job and the presence hooks.
-Depends on: justfile, .mise.toml, scripts/pad_backup.plist
+Last reviewed: 2026-11-11
+Summary: A working setup needs the pad CLI from Homebrew, an initialised local Pad, the two install links, the pack's venv, the backup and link-opener jobs and the presence hooks.
+Depends on: justfile, .mise.toml, scripts/pad_backup.plist, scripts/pad_link_opener.plist
 ---
 
 # Setup — skill-pad
@@ -17,6 +17,7 @@ Depends on: justfile, .mise.toml, scripts/pad_backup.plist
 - [Bootstrap](#bootstrap)
 - [Install links](#install-links)
 - [Backup job](#backup-job)
+- [Link opener](#link-opener)
 - [Presence hooks](#presence-hooks)
 - [Environment](#environment)
 - [First run](#first-run)
@@ -56,6 +57,13 @@ Never add `~/.claude/skills/pad` or `~/.agents/skills/pad` (what `pad agent inst
 `scripts/pad_backup.plist` is symlinked as `~/Library/LaunchAgents/au.malik.pad-backup.plist`; load it with `launchctl load` on that path. Log:
 `/Volumes/Data/_ai/_scripts/scripts-runtime/pad-backup.log`.
 
+## Link opener
+
+`just link-opener install` symlinks `scripts/pad_link_opener.plist` as `~/Library/LaunchAgents/au.malik.pad-link-opener.plist` and bootstraps it; the job runs
+`pad_link_opener.py serve` from the pack's venv on `127.0.0.1:47800`, kept alive. `just link-opener` (status) shows the job and probes the port; `uninstall` and `restart`
+do what they say. Log: `/Volumes/Data/_ai/_scripts/scripts-runtime/pad-link-opener.log`. The first click on a link in Pad asks the browser whether to open Visual Studio
+Code; allow it (and "always", if offered).
+
 ## Presence hooks
 
 `UserPromptSubmit` and `Stop` entries in `~/.claude/settings.json` running `pad session activity busy|idle` (exact JSON: [references/modes.md](references/modes.md), Presence hooks).
@@ -67,6 +75,7 @@ Never add `~/.claude/skills/pad` or `~/.agents/skills/pad` (what `pad agent inst
 | `PAD_AGENT`                           | agent name under Codex or other harnesses | set per harness; Claude Code detected          |
 | `PAD_BACKUP_DIR`, `_KEEP`, `_TIMEOUT` | backup target, copies kept, timeout       | defaults in `scripts/pad_backup.sh`            |
 | `PAD_MONITOR_BACKOFF`, `PAD_BIN`      | monitor reconnect delay, pad binary       | defaults in `scripts/pad_monitor.sh`           |
+| `PAD_LINK_OPENER_PORT`, `_ROOTS`      | link opener port, allowed folders (`:`)   | defaults in `scripts/pad_link_opener.py` (47800, `/Volumes/Data`) |
 | Pad credentials                       | CLI session                               | `~/.pad/credentials.json` (0600); never copied |
 
 ## First run
@@ -74,7 +83,8 @@ Never add `~/.claude/skills/pad` or `~/.agents/skills/pad` (what `pad agent inst
 ```bash
 pad --version && pad auth whoami && pad server info      # CLI, user, server reachable
 ls -la ~/.claude/skills/skill-pad ~/.agents/skills/skill-pad
-launchctl list | grep au.malik.pad-backup
+launchctl list | grep -E 'au.malik.pad-(backup|link-opener)'
+just link-opener                                          # job running, probe HTTP 404 on /open/
 just check
 ```
 
@@ -85,4 +95,5 @@ In a linked project, `/skill-pad status` prints the connection header and the da
 - `pad` hangs or the server will not start: the Data volume is not mounted or the link is broken (`ls -l ~/.pad`).
 - `Pad is not configured`: run `pad init` in a terminal.
 - `/skill-pad` not offered in Claude Code: the link points at a folder without `SKILL.md`; recheck the links above.
+- A Pad link opens nothing: `just link-opener` (job loaded? probe answers?); a 404 page names the reason (a path outside `/Volumes/Data` or one that does not exist).
 - Backup missing: `cat /Volumes/Data/_ai/_scripts/scripts-runtime/pad-backup.log`; run `bash scripts/pad_backup.sh` (plan) to see why.

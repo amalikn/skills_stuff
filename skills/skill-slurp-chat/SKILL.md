@@ -257,6 +257,7 @@ companion rules, the Step 6b result, and the last memory-keeper and project-cont
 | "The skill file is written; committing is another repo" | Uncommitted is not written back; commit it in the skills repo (Step 5b)  |
 | "Another session's edits are in that skill file, so I leave it dirty" | They are write-backs under the same contract: commit them with yours (say so in the message) or ask; never report 6b passed with a dirty skill (2026-10-26) |
 | "Its edits are write-backs, so I commit them with mine" | Not while that session is live (`ListAgents` shows it busy): its files may be half-written. Stage only your own lines (skill-coder version-control-and-review, two sessions), test the exported index, tell it what you left, and report its files as its own open work, not a failed 6b (2026-11-05) |
+| "Pass 1 lists every approval I gave" | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the user count with the raw transcript when approvals matter |
 | "The reference entry is there, so the write-back is read back" | Read back the skill's CHANGELOG line and version too: an entry added after the CHANGELOG line was written is not in it (2026-10-26) |
 | "The changed file is recorded; its index can wait" | Companion rules are part of the slurp (Step 6)                               |
 | "No compaction, so I can walk it from context"    | Run `transcript_passes.py` on every slurp of a long session (2026-10-20: two slurps missed four items) |

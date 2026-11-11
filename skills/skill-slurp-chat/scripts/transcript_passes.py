@@ -147,6 +147,7 @@ def events(path: pathlib.Path, since: str = ""):
         (timestamp, kind, text) with kind `compaction`, `user`, `mid`, `answer`, `bash`, `file`, `mcp` or Codex `tool`.
     """
     seen: set[str] = set()
+    queued: dict[str, int] = {}   # mid-turn texts not yet delivered as a typed turn; a typed turn consumes one copy instead of being listed twice
     for line in _lines(path):
         try:
             d = json.loads(line)
@@ -176,6 +177,7 @@ def events(path: pathlib.Path, since: str = ""):
             t = typed_text(str(d.get("content") or ""))
             if t and not t.startswith("<") and t not in seen:
                 seen.add(t)
+                queued[t] = queued.get(t, 0) + 1
                 yield ts, "mid", t
             continue
         att = d.get("attachment") or {}
@@ -183,6 +185,7 @@ def events(path: pathlib.Path, since: str = ""):
             t = typed_text(att.get("prompt"))
             if t and not t.startswith("<") and t not in seen:
                 seen.add(t)
+                queued[t] = queued.get(t, 0) + 1
                 yield ts, "mid", t
             continue
         msg = d.get("message") or {}
@@ -191,16 +194,20 @@ def events(path: pathlib.Path, since: str = ""):
             yield ts, "compaction", "context summarised here; details before it come from this transcript, not the summary"
             continue
         if d.get("type") == "user":
-            command = slash_command(text_of(content))
+            typed = content if isinstance(content, str) else [b for b in content or [] if isinstance(b, dict) and b.get("type") == "text"]
+            command = slash_command(text_of(typed))   # typed blocks only: a tool result quoting command tags is not a command (2026-11-11)
             if command and (ts, command) not in seen:   # a repeated command is a new run: key it by time, not by text
                 seen.add((ts, command))
                 yield ts, "user", command
                 continue
             if isinstance(content, str) or (isinstance(content, list) and any(b.get("type") == "text" for b in content if isinstance(b, dict))):
                 t = typed_text(content)
-                if t and not t.startswith(("<", "Base directory for this skill", "(Re-invocation of")) and t not in seen:
-                    seen.add(t)   # a typed turn is also queued as a mid-turn message: keep one (2026-10-09)
-                    yield ts, "user", t
+                if t and not t.startswith(("<", "Base directory for this skill", "(Re-invocation of")):
+                    if queued.get(t):   # a typed turn is also queued as a mid-turn message: keep one (2026-10-09)
+                        queued[t] -= 1
+                    else:   # a repeated turn ("yes" four times) is a new message: never dedupe by text alone (2026-11-11)
+                        seen.discard(t)   # a later queued copy of it is a new mid-turn message too
+                        yield ts, "user", t
             for b in content if isinstance(content, list) else []:
                 if isinstance(b, dict) and b.get("type") == "tool_result":
                     r = text_of(b.get("content"))

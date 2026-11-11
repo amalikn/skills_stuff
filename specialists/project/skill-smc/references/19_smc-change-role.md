@@ -512,6 +512,21 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   included file's last newline and `trim_blocks` the one after the tag, so the wrapper ends with an explicit `{{ '\n' }}`. `reboot: never` (x86 has no overlay, operator 2026-11-10); `probe_first:
   true`; facts record capture months, size and root use; `just uc-old-files <hosts>` reads them. The deletion happens at the next cron run (10 0,8,16), not in the change run. Family `urlcapture` on the flow
   map.
+  > **Learned 2026-11-11** · urlcapture-prune first run on the canary · VERIFIED_PRIMARY · Source: koonibba-smc01 syslog `CRON ... rsync_urlcapture.sh` at 16:10:01 and
+  > `/url_capture` mtime 16:13 (read-only `tsh ssh`, 2026-11-10 17:00) · Falsifier: a box on the new script still holding a month older than last month after a cron run whose rsync exited 0
+  > The first cron run after the apply pruned everything older than last month in about 3 minutes: 13 GB back to 2023-08 became two months (current and last), 264 MB; root 49% to 26%.
+  > `just uc-old-files` (renamed from `months`, 2026-11-10, local-knowledge-ansible `7cbbe04`) probes through `tsh_each.sh`, whose proxy defaults to the apn cluster, so a box on
+  > the communitywifi cluster answers "agent offline" (references/01: wrong cluster, not down). Set the proxy for those boxes:
+  >
+  > ```bash
+  > # files/changes/tsh_each.sh:19 (local-knowledge-ansible 7cbbe04)
+  > proxy="${PROXY:-teleport.apn.au}"
+  > # nbn_accelerate (communitywifi) boxes:
+  > PROXY=teleport.communitywifi.net.au just uc-old-files koonibba-smc01
+  > # koonibba-smc01  prune=1 months=2 oldest=202610 size=264M root=26%
+  > ```
+  >
+  > Per-host cluster selection (from the box's group or a fallback to the other cluster) is not built yet.
 
   ```jinja
   {# templates/urlcapture-prune/rsync_urlcapture.sh.j2 (local-knowledge-ansible, 2026-11-10) #}
