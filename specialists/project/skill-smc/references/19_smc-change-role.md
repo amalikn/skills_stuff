@@ -526,7 +526,8 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   > # koonibba-smc01  prune=1 months=2 oldest=202610 size=264M root=26%
   > ```
   >
-  > Per-host cluster selection (from the box's group or a fallback to the other cluster) is not built yet.
+  > Per-host cluster selection (from the box's group or a fallback to the other cluster) is not built yet. galiwinku-smc01's `check` (2026-11-11 11:50) passed:
+  > 21 capture months, 52G, root 62%, guard clean; its apply and hope-vale's wait for the operator (an agent's auto mode refuses the production apply).
 
   ```jinja
   {# templates/urlcapture-prune/rsync_urlcapture.sh.j2 (local-knowledge-ansible, 2026-11-10) #}

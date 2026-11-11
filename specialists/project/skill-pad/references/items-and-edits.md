@@ -76,6 +76,8 @@ Completed-work views (`changelog`, `standup`, reports) count terminal minus aban
 > https?, mailto, ftp, tel) and web/src/lib/components/editor/extensions/safeLink.ts (`openOnClick: false`) at tag v0.19.2 · Falsifier: a vscode:// link that stays clickable in an item page
 > Links in an item body: a relative repo link (`../../lab/x.py`) resolves against the Pad page and goes nowhere, and a `vscode://` link is stripped. Write repo links as
 > pad_link_opener links (`just link-url <path> --line N`; `pad_tracker.py` converts on import and with `links`, and back on export). Pad has no plugin system.
+> A project whose commit gate exports trackers runs `pad_tracker.py links ... --apply` before each export, so a link written later is converted on the
+> next commit (smc-resiliency `just pad-trackers`, 2026-11-11).
 
 ## Claiming work
 

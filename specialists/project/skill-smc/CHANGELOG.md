@@ -14,6 +14,10 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)
+
+`references/19_smc-change-role.md`: galiwinku's check result; the applies wait for the operator.
+
 ## 20261111_1105 — urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)
 
 `references/19_smc-change-role.md`: Learned 2026-11-11, the canary's first cron prune (13 GB to two months, root 49% to 26%) and `tsh_each.sh`'s apn-cluster

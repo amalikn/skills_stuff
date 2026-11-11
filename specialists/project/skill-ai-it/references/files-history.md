@@ -72,6 +72,23 @@ it anywhere under the git top level (`--refs-root` to change), repoints plain me
 archive of the same name is never touched), skips `.remember/`, regenerates the index and fails when a link that resolved before no longer does. Then run the project's `just check` and commit the
 folder.
 
+### Rolling it out across projects
+
+```bash
+just history-migrate <p1> <p2> ...                                  # survey: one plan per project, dirty reference files flagged
+just history-migrate <project> --apply --check-cmd 'just check'     # one project: refused when its check is already red,
+                                                                     # undone (git restore to HEAD) when red after the move
+```
+
+Then commit only `docs/history` and the files the migration rewrote, by pathspec, in the repo that owns the project.
+
+> **Learned 2026-11-11** · rolling the layout out to 18 projects · VERIFIED_PRIMARY · Source: smc-resiliency CHANGELOG 20261111_1159 · Falsifier: a
+> project whose red check the migration itself caused
+> Of 18 folders, 12 had a check that was already red (doc reviews due, a budget, an outdated govcheck copy) and 1 a dirty CHANGELOG from another
+> session; apn's pre-commit refuses a commit touching a project with a new freshness finding, so two migrated projects had to be restored. Migrate a
+> project only when its check is green first (`--check-cmd`), one project per run: a batch over many repos was refused by the agent's auto-mode
+> classifier, one project at a time was not.
+
 ## Pitfalls
 
 - A project that keeps its own copy of a records script (UNC `scripts/render/roadmap_trim.py`) or a recipe that globs `docs/history/*.md` must be repointed by hand: search the project for

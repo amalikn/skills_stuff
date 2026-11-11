@@ -13,6 +13,10 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261111_1213 — links step in a commit gate
+
+- `references/items-and-edits.md`: run `pad_tracker.py links` before the export in a project's commit gate.
+
 ## 20261111_1135 — workspace sharing noted
 
 - `references/workspace-context.md`: Learned 2026-11-11, `pad workspace link` shares an existing workspace across repos (skill-ai-it asks at bootstrap).

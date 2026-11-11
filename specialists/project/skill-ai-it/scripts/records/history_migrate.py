@@ -14,6 +14,8 @@ What is rewritten, and where:
 Usage:
     python3 history_migrate.py --project-root <project>                         # plan: moves per kind, files whose references change
     python3 history_migrate.py --project-root <project> --apply                 # git mv, rewrite, regenerate the index, verify links
+    python3 history_migrate.py --project-root <project> --apply --check-cmd 'just check'   # only when the check is green before; undone if red after
+    python3 history_migrate.py --project-root <p1> <p2> ...                     # survey: plan several projects (dirty reference files flagged)
     options: --refs-root <dir> (default: the project's git top level), --allow-dirty (move with uncommitted changes under docs/history)
 Safety: plan by default; refuses with uncommitted changes under docs/history unless --allow-dirty; verifies after the write that every link
 that resolved before still resolves (exit 1 and the list when one does not).
@@ -28,6 +30,7 @@ import importlib.util
 import os
 import pathlib
 import re
+import shlex
 import subprocess
 import sys
 import time
@@ -184,23 +187,17 @@ def broken_links(path: pathlib.Path, text: str) -> list[str]:
   return out
 
 
-def main(argv: list[str] | None = None) -> int:
-  """Plan or apply the migration.
+def migrate_one(root: pathlib.Path, a: argparse.Namespace) -> int:
+  """Plan or apply the migration for one project.
 
   Args:
-    argv: command-line arguments (None reads sys.argv).
+    root: the project root (resolved).
+    a: parsed arguments (refs_root, apply, allow_dirty, check_cmd).
 
   Returns:
-    Exit code: 0 done or planned, 1 refused or a link broke, 2 bad arguments.
+    Exit code: 0 done or planned, 1 refused, a link broke or the check failed (the move is then undone), 2 no docs/history.
   """
-  ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-  ap.add_argument("--project-root", type=pathlib.Path, required=True)
-  ap.add_argument("--refs-root", type=pathlib.Path)
-  ap.add_argument("--apply", action="store_true")
-  ap.add_argument("--allow-dirty", action="store_true")
-  a = ap.parse_args(argv)
   started = time.monotonic()
-  root = a.project_root.resolve()
   if not (root / hl.HISTORY).is_dir():
     print(f"no {hl.HISTORY} in {root}", file=sys.stderr)
     return 2
@@ -238,6 +235,9 @@ def main(argv: list[str] | None = None) -> int:
     f"references: {len(changed)} file(s) outside the moved ones change"
     + (": " + ", ".join(str(p.relative_to(refs_root)) for p in sorted(changed)[:12]) + (" ..." if len(changed) > 12 else "") if changed else "")
   )
+  dirty_refs = [p for p in changed if git(p.parent, "status", "--porcelain", "--", p.name).stdout.strip()]
+  if dirty_refs:
+    print("dirty: " + ", ".join(str(p.relative_to(refs_root)) for p in dirty_refs) + " (uncommitted edits a migration commit would sweep in)")
   if not moves:
     if a.apply:
       hl.write_index(root)
@@ -247,9 +247,14 @@ def main(argv: list[str] | None = None) -> int:
     print(f"plan only; --apply moves them (refs root {refs_root}) — {time.monotonic() - started:.1f} s")
     return 0
   dirty = git(root, "status", "--porcelain", "--", hl.HISTORY).stdout.strip()
-  if dirty and not a.allow_dirty:
-    print(f"refused: uncommitted changes under {hl.HISTORY} (commit first, or --allow-dirty):\n{dirty}", file=sys.stderr)
+  if (dirty or dirty_refs) and not a.allow_dirty:
+    print(f"refused: uncommitted changes under {hl.HISTORY} or in a file to rewrite (commit first, or --allow-dirty):\n{dirty}", file=sys.stderr)
     return 1
+  if a.check_cmd:
+    rc, out = run_check(root, a.check_cmd)
+    if rc != 0:
+      print(f"refused: `{a.check_cmd}` is already red before the move (exit {rc}); a migration commit would not pass its gate:\n{out}", file=sys.stderr)
+      return 1
   for old, new in moves.items():
     new.parent.mkdir(parents=True, exist_ok=True)
     r = git(root, "mv", str(old), str(new))
@@ -269,7 +274,73 @@ def main(argv: list[str] | None = None) -> int:
     for b in broke[:20]:
       print("  " + b, file=sys.stderr)
     return 1
+  if a.check_cmd:
+    rc, out = run_check(root, a.check_cmd)
+    if rc != 0:
+      undo(root, list(changed))
+      print(f"`{a.check_cmd}` is red after the move (exit {rc}); the move was undone (git restore to HEAD):\n{out}", file=sys.stderr)
+      return 1
+    print(f"`{a.check_cmd}` green before and after")
   return 0
+
+
+def run_check(root: pathlib.Path, cmd: str) -> tuple[int, str]:
+  """Run the project's check command in its folder.
+
+  Args:
+    root: the project root.
+    cmd: the command (split like a shell would, run without one), e.g. `just check`.
+
+  Returns:
+    (exit code, its failing lines: those with a cross mark, or the last lines).
+  """
+  try:
+    r = subprocess.run(shlex.split(cmd), cwd=root, capture_output=True, text=True, timeout=900)
+  except (OSError, subprocess.TimeoutExpired) as exc:
+    return 1, str(exc)
+  lines = (r.stdout + r.stderr).splitlines()
+  bad = [ln for ln in lines if "\u2717" in ln] or lines[-5:]
+  return r.returncode, "\n".join(bad[:8])
+
+
+def undo(root: pathlib.Path, changed: list[pathlib.Path]) -> None:
+  """Put docs/history and the rewritten reference files back to HEAD (staged and working tree).
+
+  Args:
+    root: the project root.
+    changed: the reference files the migration rewrote.
+
+  Returns:
+    None.
+  """
+  git(root, "restore", "--source=HEAD", "--staged", "--worktree", "--", hl.HISTORY)
+  for f in changed:
+    git(f.parent, "restore", "--source=HEAD", "--staged", "--worktree", "--", f.name)
+
+
+def main(argv: list[str] | None = None) -> int:
+  """Plan one or more projects, or apply one.
+
+  Args:
+    argv: command-line arguments (None reads sys.argv).
+
+  Returns:
+    Exit code: 0 done or planned, 1 refused or failed (see migrate_one), 2 bad arguments.
+  """
+  ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+  ap.add_argument("--project-root", type=pathlib.Path, required=True, nargs="+", help="one project to apply; several to plan (a survey)")
+  ap.add_argument("--refs-root", type=pathlib.Path)
+  ap.add_argument("--apply", action="store_true")
+  ap.add_argument("--allow-dirty", action="store_true")
+  ap.add_argument("--check-cmd", help="e.g. 'just check': must pass before the move, and after it or the move is undone")
+  a = ap.parse_args(argv)
+  if a.apply and len(a.project_root) > 1:
+    print("refused: --apply takes one project at a time (canary each; operator review per project)", file=sys.stderr)
+    return 2
+  worst = 0
+  for root in a.project_root:
+    worst = max(worst, migrate_one(root.resolve(), a))
+  return worst
 
 
 if __name__ == "__main__":

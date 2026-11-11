@@ -22,7 +22,7 @@ Last reviewed: 2026-11-11
 - [governance-checker.md](governance-checker.md) (73 lines) Governance coherence checker.
 - [managed-blocks.md](managed-blocks.md) (69 lines) Managed block pattern.
 - [navigation-automation.md](navigation-automation.md) (89 lines) Deterministic navigation-control automation.
-- [files-history.md](files-history.md) (80 lines) docs/history: a folder per kind, generated index with summaries, migration.
+- [files-history.md](files-history.md) (97 lines) docs/history: a folder per kind, generated index with summaries, migration.
 - [pad-workspace.md](pad-workspace.md) (63 lines) The Pad workspace question at bootstrap and refresh; repos sharing a workspace.
 - [package-layout.md](package-layout.md) (75 lines) Skill package layout.
 - [phases-1-3.md](phases-1-3.md) (114 lines) Phases 1 to 3: inventory, understand, infer.

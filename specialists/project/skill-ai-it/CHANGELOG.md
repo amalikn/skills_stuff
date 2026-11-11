@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261111_1135
+Last rotated: 20261111_1213
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,7 @@ Last rotated: 20261111_1135
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261111_1213 — history_migrate: check gate, dirty-reference refusal, survey](#20261111_1213--history_migrate-check-gate-dirty-reference-refusal-survey)
 - [20261111_1135 — archcore, ruff, code map, templates and the Pad question](#20261111_1135--archcore-ruff-code-map-templates-and-the-pad-question)
 - [20261111_1125 — docs/history by kind, generated index with summaries, migration](#20261111_1125--docshistory-by-kind-generated-index-with-summaries-migration)
 - [20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs](#20261105_2139--promote-quoted-front-matter-last-reviewed-decisions_to_adrs)
@@ -31,7 +32,6 @@ Last rotated: 20261111_1135
 - [20261027_1922 — Quoted code excerpts restored after a markdown hook bug](#20261027_1922--quoted-code-excerpts-restored-after-a-markdown-hook-bug)
 - [20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea](#20261027_1840--pitfalls-from-the-skill-goal-guard-bootstrap-upgrader-placement-idea)
 - [20261026_1525 — Line-only budgets reverted: the 25 KB limit is back](#20261026_1525--line-only-budgets-reverted-the-25-kb-limit-is-back)
-- [20261022_2132 — plan_tracker: What next gets a detail block per item](#20261022_2132--plan_tracker-what-next-gets-a-detail-block-per-item)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -47,6 +47,16 @@ Last rotated: 20261111_1135
 - scripts/adoption/adopt_governed_files.py: FILE_BUDGETS: AGENTS.md and AI_NAVIGATION.md get `Budget: 150 lines, 12 KB` as README gets its own (operator, 2026-11-06: governance files read whole carry a budget; doc_freshness enforces it, grandfather_sizes keeps a file already over from failing); scripts/records/budget_plan.py reports those files against their stated budget; test asserts AGENTS.md gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261111_1213 — history_migrate: check gate, dirty-reference refusal, survey
+
+From the rollout to 18 other projects (smc-resiliency session, operator "do all of them", 2026-11-11).
+
+- `scripts/records/history_migrate.py`: `--check-cmd 'just check'` refuses a project whose check is already red and undoes the move (git restore to HEAD)
+  when the check is red after it; a file the migration would rewrite with uncommitted edits refuses the apply; several `--project-root` values plan them
+  all (a survey), while `--apply` takes one. Promoted from the session's one-off scripts. Test `test_check_gate_and_dirty_references`; 6 history tests pass.
+- [references/files-history.md](references/files-history.md): "Rolling it out across projects" and a Learned entry (12 of 18 checks already red; one project per run).
+- The 22 docs past review: approved by the operator 2026-11-11 (`a806ef4`).
 
 ## 20261111_1135 — archcore, ruff, code map, templates and the Pad question
 
@@ -169,15 +179,6 @@ marker in a trusted folder holding untrusted repos). Smoke-run on three real fol
   back in doc_freshness, rotate_records, budget_plan, add_changelog_entry, adopt_governed_files, move_sections, their tests and docs, and every `Budget: 200 lines, 25 KB` header the change rewrote.
 - Why the KB part stays: Codex reads AGENTS.md only up to about 32 KiB and drops the rest without warning; 200 lines of up to 200 characters is about 40 KB, so a line budget alone lets an
   always-loaded file pass and still be cut short. Whether Codex counts the whole AGENTS.md chain against that cap is unverified.
-
-## 20261022_2132 — plan_tracker: What next gets a detail block per item
-
-- Operator, 2026-10-22 (smc-resiliency): "I'm still not able to understand what is really required next and what would the done when really make sense"; "update the skill about this approach for what
-  next". What next is now a one-line table (#, Next, Owner, By, Done when) whose Next cell links to a `### <n>. <action>` block with What is needed, Why now, In hand and a Done when checklist.
-- `scripts/plan_tracker.py`: `slug`, `detail_blocks`; a block without "Done when" fails, a row with no block on the page is a note (UNC's tracker passes with notes until it adopts). Tests
-  `test_detail_blocks`, `test_slug_matches_vs_code` (8 pass). Template `templates/plan-tracker.md` and reference `target-map-and-timeline.md` (The plan tracker page; Learned 2026-10-22) updated.
-- ROADMAP: the rotation item is answered on the consumer side; smc-resiliency's decision check now reads `docs/history/changelog-*.md`, as the rotation contract asks.
-- The template's `Last reviewed: {today}` failed the skill's own freshness check: it now carries a real date and `--init` stamps today.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

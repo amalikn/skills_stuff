@@ -241,7 +241,7 @@ history TERM RECORD="CHANGELOG.md": _require-venv
 history-show STAMP RECORD="CHANGELOG.md": _require-venv
     @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
 
-# [files; writes with --apply] Move a project's flat docs/history into the by-kind layout and repoint references (references/files-history.md): just history-migrate <project> [--apply]
+# [files; writes with --apply] Move a project's flat docs/history into the by-kind layout and repoint references (references/files-history.md): just history-migrate <project> [--apply --check-cmd 'just check']; several projects plan them all
 [positional-arguments]
 history-migrate PROJECT *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/records/history_migrate.py" --project-root "$@"

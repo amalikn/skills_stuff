@@ -170,6 +170,23 @@ class MigrateTest(unittest.TestCase):
       (root / "docs/history/changelog-20261110_0032.md").write_text("edited\n")
       self.assertEqual(hm.main(["--project-root", str(root), "--apply"]), 1)
 
+  def test_check_gate_and_dirty_references(self):
+    """A red check before refuses; red after undoes the move; a dirty reference file refuses; --apply takes one project."""
+    with tempfile.TemporaryDirectory() as t:
+      tmp = Path(t)
+      root = project(tmp)
+      hist = root / "docs/history"
+      self.assertEqual(hm.main(["--project-root", str(root), "--apply", "--check-cmd", "false"]), 1)
+      self.assertTrue((hist / "changelog-20261110_0032.md").exists())  # red before: nothing moved
+      self.assertEqual(hm.main(["--project-root", str(root), "--apply", "--check-cmd", "test ! -d docs/history/changelog"]), 1)
+      self.assertTrue((hist / "changelog-20261110_0032.md").exists())  # red after: undone
+      self.assertFalse((hist / "changelog").exists())
+      self.assertIn("](docs/history/changelog-20261110_0032.md)", (root / "CHANGELOG.md").read_text())
+      (root / "CHANGELOG.md").write_text((root / "CHANGELOG.md").read_text() + "another session's edit\n")
+      self.assertEqual(hm.main(["--project-root", str(root), "--refs-root", str(tmp), "--apply"]), 1)
+      self.assertTrue((hist / "changelog-20261110_0032.md").exists())
+      self.assertEqual(hm.main(["--project-root", str(root), str(tmp / "other"), "--apply"]), 2)
+
 
 if __name__ == "__main__":
   unittest.main()

@@ -16,6 +16,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261111_1213.md](changelog/changelog-20261111_1213.md) 1 entry, 2026-10-22 to 2026-10-22: plan_tracker: What next gets a detail block per item
 - [changelog-20261111_1135.md](changelog/changelog-20261111_1135.md) 3 entries, 2026-10-22 to 2026-10-22: plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller; Slurp: tracker linking documented; incident, a commit made on a failed check; anchor_links: --outside warn ...
 - [changelog-20261111_1125.md](changelog/changelog-20261111_1125.md) 1 entry, 2026-10-22 to 2026-10-22: anchor_links promoted; plan_timeline links ids to their headings
 - [changelog-20261110_2029.md](changelog/changelog-20261110_2029.md) 1 entry, 2026-10-22 to 2026-10-22: target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above
