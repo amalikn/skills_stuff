@@ -2,71 +2,81 @@
 
 Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within budget. Do not read these by default: search with `rotate_records.py --find` (`just history`) or print one entry with `--show <stamp>`.
 
-- [changelog-20261010_1801.md](changelog-20261010_1801.md) 118 entries from `CHANGELOG.md`, 2026-04-15 to 2026-10-09.
-- [scratchpad-20261010_1801.md](scratchpad-20261010_1801.md) 62 entries from `SCRATCHPAD.md`, 2026-06-26 to 2026-10-07.
-- [scratchpad-20261010_1821.md](scratchpad-20261010_1821.md) 5 entries from `SCRATCHPAD.md`, 2026-08-03 to 2026-09-24.
-- [changelog-20261015_1441.md](changelog-20261015_1441.md) 1 entries from `CHANGELOG.md`, 2026-06-26 to 2026-06-26.
-- [changelog-20261015_1554.md](changelog-20261015_1554.md) 1 entries from `CHANGELOG.md`, 2026-09-11 to 2026-09-11.
-- [changelog-20261019_1121.md](changelog-20261019_1121.md) 2 entries from `CHANGELOG.md`, 2026-09-30 to 2026-09-30.
-- [changelog-20261020_0939.md](changelog-20261020_0939.md) 1 entries from `CHANGELOG.md`, 2026-10-08 to 2026-10-08.
-- [changelog-20261020_1141.md](changelog-20261020_1141.md) 1 entries from `CHANGELOG.md`, 2026-10-08 to 2026-10-08.
-- [changelog-20261020_1336.md](changelog-20261020_1336.md) 1 entries from `CHANGELOG.md`, 2026-10-09 to 2026-10-09.
-- [changelog-20261020_1648.md](changelog-20261020_1648.md) 1 entries from `CHANGELOG.md`, 2026-10-09 to 2026-10-09.
-- [changelog-20261020_1706.md](changelog-20261020_1706.md) 1 entries from `CHANGELOG.md`, 2026-10-09 to 2026-10-09.
-- [changelog-20261020_1752.md](changelog-20261020_1752.md) 1 entries from `CHANGELOG.md`, 2026-10-09 to 2026-10-09.
-- [changelog-20261020_1905.md](changelog-20261020_1905.md) 1 entries from `CHANGELOG.md`, 2026-10-09 to 2026-10-09.
-- [changelog-20261020_2028.md](changelog-20261020_2028.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [changelog-20261022_1200.md](changelog-20261022_1200.md) 1 entries from `CHANGELOG.md`, 2026-10-13 to 2026-10-13.
-- [changelog-20261022_1440.md](changelog-20261022_1440.md) 1 entries from `CHANGELOG.md`, 2026-10-13 to 2026-10-13.
-- [changelog-20261022_1510.md](changelog-20261022_1510.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1621.md](changelog-20261022_1621.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1623.md](changelog-20261022_1623.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1653.md](changelog-20261022_1653.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1704.md](changelog-20261022_1704.md) 2 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-15.
-- [changelog-20261022_1718.md](changelog-20261022_1718.md) 1 entries from `CHANGELOG.md`, 2026-10-15 to 2026-10-15.
-- [changelog-20261023_1339.md](changelog-20261023_1339.md) 2 entries from `CHANGELOG.md`, 2026-10-15 to 2026-10-15.
-- [changelog-20261023_1351.md](changelog-20261023_1351.md) 1 entries from `CHANGELOG.md`, 2026-10-15 to 2026-10-15.
-- [changelog-20261023_1455.md](changelog-20261023_1455.md) 1 entries from `CHANGELOG.md`, 2026-10-15 to 2026-10-15.
-- [changelog-20261023_1536.md](changelog-20261023_1536.md) 2 entries from `CHANGELOG.md`, 2026-10-19 to 2026-10-20.
-- [changelog-20261023_1626.md](changelog-20261023_1626.md) 1 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [changelog-20261023_1738.md](changelog-20261023_1738.md) 1 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [changelog-20261026_1510.md](changelog-20261026_1510.md) 2 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [scratchpad-20261026_1516.md](scratchpad-20261026_1516.md) 1 entries from `SCRATCHPAD.md`, 2026-08-03 to 2026-08-03.
-- [changelog-20261026_1534.md](changelog-20261026_1534.md) 1 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [changelog-20261026_1617.md](changelog-20261026_1617.md) 2 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [changelog-20261026_1844.md](changelog-20261026_1844.md) 2 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [changelog-20261026_2146.md](changelog-20261026_2146.md) 2 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-22.
-- [changelog-20261027_1050.md](changelog-20261027_1050.md) 2 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [changelog-20261027_1207.md](changelog-20261027_1207.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [changelog-20261027_1459.md](changelog-20261027_1459.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [changelog-20261027_1923.md](changelog-20261027_1923.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [changelog-20261027_1947.md](changelog-20261027_1947.md) 2 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [changelog-20261027_1956.md](changelog-20261027_1956.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [changelog-20261027_2012.md](changelog-20261027_2012.md) 2 entries from `CHANGELOG.md`, 2026-10-23 to 2026-10-23.
-- [scratchpad-20261027_2012.md](scratchpad-20261027_2012.md) 5 entries from `SCRATCHPAD.md`, 2026-09-08 to 2026-09-08.
-- [changelog-20261027_2015.md](changelog-20261027_2015.md) 2 entries from `CHANGELOG.md`, 2026-10-23 to 2026-10-23.
-- [scratchpad-20261027_2015.md](scratchpad-20261027_2015.md) 2 entries from `SCRATCHPAD.md`, 2026-09-08 to 2026-09-08.
-- [changelog-20261028_1224.md](changelog-20261028_1224.md) 1 entries from `CHANGELOG.md`, 2026-10-23 to 2026-10-23.
-- [changelog-20261028_1242.md](changelog-20261028_1242.md) 1 entries from `CHANGELOG.md`, 2026-10-23 to 2026-10-23.
-- [changelog-20261028_1315.md](changelog-20261028_1315.md) 1 entries from `CHANGELOG.md`, 2026-10-26 to 2026-10-26.
-- [changelog-20261028_1516.md](changelog-20261028_1516.md) 1 entries from `CHANGELOG.md`, 2026-10-26 to 2026-10-26.
-- [changelog-20261028_2205.md](changelog-20261028_2205.md) 3 entries from `CHANGELOG.md`, 2026-10-26 to 2026-10-26.
-- [changelog-20261029_1208.md](changelog-20261029_1208.md) 1 entries from `CHANGELOG.md`, 2026-10-26 to 2026-10-26.
-- [changelog-20261029_1257.md](changelog-20261029_1257.md) 1 entries from `CHANGELOG.md`, 2026-10-26 to 2026-10-26.
-- [changelog-20261029_1417.md](changelog-20261029_1417.md) 1 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
-- [changelog-20261029_1751.md](changelog-20261029_1751.md) 1 entries from `CHANGELOG.md`, 2026-09-08 to 2026-09-08.
-- [changelog-20261102_1132.md](changelog-20261102_1132.md) 5 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
-- [changelog-20261102_1434.md](changelog-20261102_1434.md) 1 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
-- [changelog-20261104_1604.md](changelog-20261104_1604.md) 1 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
-- [changelog-20261104_2134.md](changelog-20261104_2134.md) 1 entries from `CHANGELOG.md`, 2026-10-27 to 2026-10-27.
-- [changelog-20261105_1155.md](changelog-20261105_1155.md) 1 entries from `CHANGELOG.md`, 2026-10-28 to 2026-10-28.
-- [changelog-20261105_1634.md](changelog-20261105_1634.md) 1 entries from `CHANGELOG.md`, 2026-10-28 to 2026-10-28.
-- [changelog-20261106_1029.md](changelog-20261106_1029.md) 1 entries from `CHANGELOG.md`, 2026-10-28 to 2026-10-28.
-- [changelog-20261106_1255.md](changelog-20261106_1255.md) 2 entries from `CHANGELOG.md`, 2026-10-28 to 2026-10-28.
-- [changelog-20261108_0156.md](changelog-20261108_0156.md) 2 entries from `CHANGELOG.md`, 2026-10-28 to 2026-10-28.
-- [changelog-20261109_2301.md](changelog-20261109_2301.md) 1 entries from `CHANGELOG.md`, 2026-10-29 to 2026-10-29.
-- [changelog-20261110_0031.md](changelog-20261110_0031.md) 1 entries from `CHANGELOG.md`, 2026-10-29 to 2026-10-29.
-- [changelog-20261110_0202.md](changelog-20261110_0202.md) 1 entries from `CHANGELOG.md`, 2026-10-29 to 2026-10-29.
-- [changelog-20261110_1226.md](changelog-20261110_1226.md) 1 entries from `CHANGELOG.md`, 2026-10-29 to 2026-10-29.
-- [changelog-20261110_1350.md](changelog-20261110_1350.md) 2 entries from `CHANGELOG.md`, 2026-10-29 to 2026-10-29.
-- [changelog-20261111_1058.md](changelog-20261111_1058.md) 1 entries from `CHANGELOG.md`, 2026-10-29 to 2026-10-29.
+<!-- history-index:start (generated by skill-ai-it history_layout.py; descriptions written by hand are kept) -->
+
+## Change log
+
+- [changelog-20261111_1319.md](changelog-20261111_1319.md) 1 entry, 2026-10-30 to 2026-10-30: install_missing, controller lookups and pinned PHP, Teleport duplicate node after a data-dir wipe (v0.10.5 -> v0.10.6)
+- [changelog-20261111_1058.md](changelog-20261111_1058.md) 1 entry, 2026-10-29 to 2026-10-29: Harvest write-back: tbot repair, onboarding latency, D12, Kea gate, switch needs, voice options, DNS-only capture (v0.10.4 -> v0.10.5)
+- [changelog-20261110_1350.md](changelog-20261110_1350.md) 2 entries, 2026-10-29 to 2026-10-29: Inbound route to the peer architect skills (v0.10.3 -> v0.10.4); aurukun: six WAN legs per box; a leg down at draft time is left out (v0.10.2 -> v0.10.3)
+- [changelog-20261110_1226.md](changelog-20261110_1226.md) 1 entry, 2026-10-29 to 2026-10-29: FDB and VIP placement evidence; TL- model prefix on old SG2428P firmware (v0.10.1 -> v0.10.2)
+- [changelog-20261110_0202.md](changelog-20261110_0202.md) 1 entry, 2026-10-29 to 2026-10-29: ssh_handshake_probe: what SSH a device behind an SMC offers, no login (v0.10.0 -> v0.10.1)
+- [changelog-20261110_0031.md](changelog-20261110_0031.md) 1 entry, 2026-10-29 to 2026-10-29: TP-Link switches on IPSSH firmware: legacy SSH fallbacks (v0.9.9 -> v0.10.0)
+- [changelog-20261109_2301.md](changelog-20261109_2301.md) 1 entry, 2026-10-29 to 2026-10-29: ha capture group, multi-SMC hosts and --proxy; aurukun VRRP layout (v0.9.8 -> v0.9.9)
+- [changelog-20261108_0156.md](changelog-20261108_0156.md) 2 entries, 2026-10-28 to 2026-10-28: stuck apt_info.py holds the apt lists lock; apt_lock_probe.sh (v0.9.7 -> v0.9.8); PIN funnel and fleet check, runtime budget clock (v0.9.6 -> v0.9.7)
+- [changelog-20261106_1255.md](changelog-20261106_1255.md) 2 entries, 2026-10-28 to 2026-10-28: rct_avr_probe.sh and AVR routing (v0.9.5 -> v0.9.6); AVR V3.07 vs Thuraya, fleet AVR state (v0.9.4 -> v0.9.5)
+- [changelog-20261106_1029.md](changelog-20261106_1029.md) 1 entry, 2026-10-28 to 2026-10-28: Automated AVR flash, probe self-match, resume_safe (v0.9.3 -> v0.9.4)
+- [changelog-20261105_1634.md](changelog-20261105_1634.md) 1 entry, 2026-10-28 to 2026-10-28: AVR serial collision verified on warehouse-rct01 (v0.9.2 -> v0.9.3)
+- [changelog-20261105_1155.md](changelog-20261105_1155.md) 1 entry, 2026-10-28 to 2026-10-28: rct-tstik iridium change: self-persisting command, symlinked copy sources, AVR flash (v0.9.1 -> v0.9.2)
+- [changelog-20261104_2134.md](changelog-20261104_2134.md) 1 entry, 2026-10-27 to 2026-10-27: Slurp close: governed-file adoption, sibling write-backs (v0.9.0 -> v0.9.1)
+- [changelog-20261104_1604.md](changelog-20261104_1604.md) 1 entry, 2026-10-27 to 2026-10-27: scripts/ arranged into job folders; layout and catalogue checks (v0.8.9 -> v0.9.0)
+- [changelog-20261102_1434.md](changelog-20261102_1434.md) 1 entry, 2026-10-27 to 2026-10-27: Staleness audit: branch reach, two checker gaps, version rule (v0.8.8 -> v0.8.9)
+- [changelog-20261102_1132.md](changelog-20261102_1132.md) 5 entries, 2026-10-27 to 2026-10-27: ansible_change_reach probe; July apt fixes and smc_ltp fix not on rise (v0.8.7 -> v0.8.8); Open-items tracker reviewed (v0.8.6 -> v0.8.7); Quoted code excerpt restored after a markdown hook bug (v0.8.5 -> v0.8.6); ...
+- [changelog-20261029_1751.md](changelog-20261029_1751.md) 0 entries, 2026-09-08 to 2026-09-08
+- [changelog-20261029_1417.md](changelog-20261029_1417.md) 1 entry, 2026-10-27 to 2026-10-27: smc_change: done SMCs skipped before connecting, runs per flavor, retries, TASK_TIMING, journal freeze (v0.8.2 -> v0.8.3)
+- [changelog-20261029_1257.md](changelog-20261029_1257.md) 1 entry, 2026-10-26 to 2026-10-26: smc_change: new order passed on two Pis; second drop at chroot dpkg (v0.8.1 -> v0.8.2)
+- [changelog-20261029_1208.md](changelog-20261029_1208.md) 1 entry, 2026-10-26 to 2026-10-26: smc_change drop-proof installs, lower dir first, runs table (v0.8.0 -> v0.8.1)
+- [changelog-20261028_2205.md](changelog-20261028_2205.md) 3 entries, 2026-10-26 to 2026-10-26: smc_change: Pi clock wait, remount retry, lower_busy, http timeout/retries, probe survives a dropped session, resume by default (v0.7.9 -> v0.8.0); smc_change safe recovery, completion after cleanup and phase timing ...
+- [changelog-20261028_1516.md](changelog-20261028_1516.md) 1 entry, 2026-10-26 to 2026-10-26: smc_change backup.shared: name-identified backup files kept once for all SMCs (v0.7.6 -> v0.7.7)
+- [changelog-20261028_1315.md](changelog-20261028_1315.md) 1 entry, 2026-10-26 to 2026-10-26: smc_change flow map in parts, one E2E page per change spec (v0.7.5 -> v0.7.6)
+- [changelog-20261028_1242.md](changelog-20261028_1242.md) 1 entry, 2026-10-23 to 2026-10-23: smc_change on an overlay Pi: close after restart, overlay_fallback, proves, soak_minutes; tstik bench note; identity probe hosts_name (v0.7.4 -> v0.7.5)
+- [changelog-20261028_1224.md](changelog-20261028_1224.md) 1 entry, 2026-10-23 to 2026-10-23: smc_inventory_add.py: add a new SMC to an inventory without guessing (v0.7.3 -> v0.7.4)
+- [changelog-20261027_2015.md](changelog-20261027_2015.md) 2 entries, 2026-10-23 to 2026-10-23: smc_change rollback mode and done-tracking; root linters for every language (v0.7.2 -> v0.7.3); smc_change: generic role, probe split per check, cleanup, skip unreachable/refused, stages; ruff root config (v0.7.1 -> ...
+- [changelog-20261027_2012.md](changelog-20261027_2012.md) 2 entries, 2026-10-23 to 2026-10-23: backdoor-watch.sh resolves stage hosts; smc_change command guard (v0.7.0 -> v0.7.1); Local-knowledge folder reference and index script; PHP verification by mapped files; smc_change role recorded (v0.6.9 -> v0.7.0)
+- [changelog-20261027_1956.md](changelog-20261027_1956.md) 1 entry, 2026-10-22 to 2026-10-22: Evidence capture: timeouts reported as such, full-capture timing, end-marker fix (v0.6.8 -> v0.6.9)
+- [changelog-20261027_1947.md](changelog-20261027_1947.md) 2 entries, 2026-10-22 to 2026-10-22: Evidence scripts: a deadline on every tsh call, with an offline test (v0.6.7 -> v0.6.8); Asterisk memory measured on the rcp fleet; umoona still without Asterisk; evidence script lacks a tsh deadline (v0.6.6 -> v0.6.7)
+- [changelog-20261027_1923.md](changelog-20261027_1923.md) 1 entry, 2026-10-22 to 2026-10-22: collect-smc-evidence-full.sh voip group records Asterisk resident memory (v0.6.5 -> v0.6.6)
+- [changelog-20261027_1459.md](changelog-20261027_1459.md) 1 entry, 2026-10-22 to 2026-10-22: rcp Asterisk dialplan summarised; x86 fleet by model with its 7-day load (v0.6.4 -> v0.6.5)
+- [changelog-20261027_1207.md](changelog-20261027_1207.md) 1 entry, 2026-10-22 to 2026-10-22: Firmware access from the OS: UEFI and EEPROM lines in the x86 and Pi probes, deadlines (v0.6.3 -> v0.6.4)
+- [changelog-20261027_1050.md](changelog-20261027_1050.md) 2 entries, 2026-10-22 to 2026-10-22: What WAN-side equipment tells an SMC about its site: Starlink position, Sky Muster NTD nothing (v0.6.2 -> v0.6.3); backdoor_exec.sh passes a stdin script through (v0.6.1 -> v0.6.2)
+- [changelog-20261026_2146.md](changelog-20261026_2146.md) 2 entries, 2026-10-20 to 2026-10-22: PHP CVE fleet status, extra PHP processes, backdoor hostname check, nbn_wh read rule (v0.6.0 -> v0.6.1); Sky Muster reads: session set-up and the concurrency curve (v0.5.9 -> v0.6.0)
+- [changelog-20261026_1844.md](changelog-20261026_1844.md) 2 entries, 2026-10-20 to 2026-10-20: networkd keeps changed netdevs; render with the task's options; /etc executables; fleet-health TSH_PROXY and fqdn2ip bundle (v0.5.8 -> v0.5.9); Pi uplink on the eth0 trunk; ssh forwards detach from the caller; Sky ...
+- [changelog-20261026_1617.md](changelog-20261026_1617.md) 2 entries, 2026-10-20 to 2026-10-20: /etc census in overlay-usage-breakdown; fqdn2ip still on darlngunaya (v0.5.6 -> v0.5.7); Run-time writers under /etc; read-only /etc on the new image (v0.5.5 -> v0.5.6)
+- [changelog-20261026_1534.md](changelog-20261026_1534.md) 1 entry, 2026-10-20 to 2026-10-20: A Pi SMC's internet is eth0 untagged, read on five rct sites (v0.5.4 -> v0.5.5)
+- [changelog-20261026_1510.md](changelog-20261026_1510.md) 2 entries, 2026-10-20 to 2026-10-20: Ubuntu 24.04 arm64 spike VM for the read-only Pi image (v0.5.3 -> v0.5.4); ATA page markers by position; lingering tsh proxy after an ssh timeout (v0.5.2 -> v0.5.3)
+- [changelog-20261023_1738.md](changelog-20261023_1738.md) 1 entry, 2026-10-20 to 2026-10-20: Write-back evidence: code excerpts and screenshots (v0.5.1 -> v0.5.2)
+- [changelog-20261023_1626.md](changelog-20261023_1626.md) 1 entry, 2026-10-20 to 2026-10-20: Client MACs may be stored; S11 ATA reads; IPSSH as TP-Link; Teleport command labels (v0.5.0 -> v0.5.1)
+- [changelog-20261023_1536.md](changelog-20261023_1536.md) 2 entries, 2026-10-19 to 2026-10-20: Bot-host skill scripts, dhcpd shared networks, uplink gateway (v0.4.9 -> v0.5.0); Working Teleport SSH reads take 7–9 s; 10 s attempts, two tries, random nodes (v0.4.8 -> v0.4.9)
+- [changelog-20261023_1455.md](changelog-20261023_1455.md) 1 entry, 2026-10-15 to 2026-10-15: WireGuard and NETMAP kernel modules present on rcp and rct SMCs; no overlay tools installed (no version change)
+- [changelog-20261023_1351.md](changelog-20261023_1351.md) 1 entry, 2026-10-15 to 2026-10-15: Operator's account of the 1 Sep trigger, monthly PIN expiry, two incident-evidence scripts (v0.4.7 -> v0.4.8)
+- [changelog-20261023_1339.md](changelog-20261023_1339.md) 2 entries, 2026-10-15 to 2026-10-15: Why the 2025 portal misconfiguration stayed latent; 1 Sep trigger checks (v0.4.6 -> v0.4.7); The SMC runs four parallel SNMP walks cleanly; fping absent on old-looma-smc01 too (v0.4.5 -> v0.4.6)
+- [changelog-20261022_1718.md](changelog-20261022_1718.md) 1 entry, 2026-10-15 to 2026-10-15: Three-site PIN outage dated by conntrack; koonibba bot restarts stopped 2026-10-01, 9 Oct Xbox spike (v0.4.5 -> v0.4.6)
+- [changelog-20261022_1704.md](changelog-20261022_1704.md) 2 entries, 2026-10-14 to 2026-10-15: fping absent on yakanarra-smc01; iputils ping used for device ping (v0.4.4 -> v0.4.5); Topology_vars differ by branch; read them at the listing ref (v0.4.3 -> v0.4.4)
+- [changelog-20261022_1653.md](changelog-20261022_1653.md) 1 entry, 2026-10-14 to 2026-10-14: Central chassis port plans from as-built sets; old-looma SWP 24 corrected (v0.4.2 -> v0.4.3)
+- [changelog-20261022_1623.md](changelog-20261022_1623.md) 1 entry, 2026-10-14 to 2026-10-14: BIND check-names on the smc_ltp RPZ zone (v0.4.1 -> v0.4.2)
+- [changelog-20261022_1621.md](changelog-20261022_1621.md) 1 entry, 2026-10-14 to 2026-10-14: x86 SMC facts, Teleport static-token join, x86 resiliency probe (v0.4.0 -> v0.4.1)
+- [changelog-20261022_1510.md](changelog-20261022_1510.md) 1 entry, 2026-10-14 to 2026-10-14: Pi bootloader already supports tryboot A/B (v0.3.9 -> v0.4.0)
+- [changelog-20261022_1440.md](changelog-20261022_1440.md) 1 entry, 2026-10-13 to 2026-10-13: umoona vlan621 dark again; uplink check cost (v0.3.8 -> v0.3.9)
+- [changelog-20261022_1200.md](changelog-20261022_1200.md) 1 entry, 2026-10-13 to 2026-10-13: Teleport Machine ID facts, site topology, two 2026-10-13 entries recorded (v0.3.7 -> v0.3.8)
+- [changelog-20261020_2028.md](changelog-20261020_2028.md) 1 entry, 2026-10-10 to 2026-10-10: Governed-file standard: recipes, records rotated (v0.3.6 -> v0.3.7)
+- [changelog-20261020_1905.md](changelog-20261020_1905.md) 1 entry, 2026-10-09 to 2026-10-09: Sidekick and the low-touch hook: confirmed and unplugged releases a unit (v0.3.5 -> v0.3.6)
+- [changelog-20261020_1752.md](changelog-20261020_1752.md) 1 entry, 2026-10-09 to 2026-10-09: What else the low-touch hook logs record: state and secret, events, the SM by its own MAC, preferred_ssid names the AP (v0.3.4 -> v0.3.5)
+- [changelog-20261020_1706.md](changelog-20261020_1706.md) 1 entry, 2026-10-09 to 2026-10-09: The provisioning hook's per-unit logs are a low-touch site's install-time pairing (v0.3.3 -> v0.3.4)
+- [changelog-20261020_1648.md](changelog-20261020_1648.md) 1 entry, 2026-10-09 to 2026-10-09: Low-touch provisioning logs live only on the SMC; sizes per site, backup in UNC (v0.3.2 -> v0.3.3)
+- [changelog-20261020_1336.md](changelog-20261020_1336.md) 1 entry, 2026-10-09 to 2026-10-09: An SMC's DHCP history lives in a short journal and is not a unit's boot history (v0.3.1 -> v0.3.2)
+- [changelog-20261020_1141.md](changelog-20261020_1141.md) 1 entry, 2026-10-08 to 2026-10-08: Pi identity probe and rct site ATA settings reader promoted to scripts/ (v0.2.2 -> v0.2.3)
+- [changelog-20261020_0939.md](changelog-20261020_0939.md) 1 entry, 2026-10-08 to 2026-10-08: Raspberry Pi SMC identity and ports, rct site ATA, vendor sources linked (v0.2.1 -> v0.2.2)
+- [changelog-20261019_1121.md](changelog-20261019_1121.md) 2 entries, 2026-09-30 to 2026-09-30: Terminology: access is free via T&C acceptance, not a paid PIN (v0.1.75 -> v0.1.76); bot-cw-dashboard wipes PIN marks on koonibba/amata; a zero ECLIPSE_MARK count is not normal (v0.1.73 -> v0.1.74)
+- [changelog-20261015_1554.md](changelog-20261015_1554.md) 1 entry, 2026-09-11 to 2026-09-11: bungardi-smc01 confirmed as third broken site; Eclipse "PIN Last Issued" admin report documented as a third corroborating evidence source (v0.1.35 -> v0.1.36)
+- [changelog-20261015_1441.md](changelog-20261015_1441.md) 1 entry, 2026-06-26 to 2026-06-26: v0.1.3: project-coherence checklist + references/10-13 content update
+- [changelog-20261010_1801.md](changelog-20261010_1801.md) 118 entries, 2026-04-15 to 2026-10-09: kupungarri back on a spare disk; Pi identity probe gains swap checks (v0.3.1 -> v0.3.2); A home's SM and router as the SMC sees them: dependency, failure states, provisioning order (site view) (v0.3.0 -> v0.3.1); Unit ...
+
+## Scratchpad
+
+- [scratchpad-20261027_2015.md](scratchpad-20261027_2015.md) 0 entries, 2026-09-08 to 2026-09-08
+- [scratchpad-20261027_2012.md](scratchpad-20261027_2012.md) 0 entries, 2026-09-08 to 2026-09-08
+- [scratchpad-20261026_1516.md](scratchpad-20261026_1516.md) 0 entries, 2026-08-03 to 2026-08-03
+- [scratchpad-20261010_1821.md](scratchpad-20261010_1821.md) 0 entries, 2026-08-03 to 2026-09-24
+- [scratchpad-20261010_1801.md](scratchpad-20261010_1801.md) 0 entries, 2026-06-26 to 2026-10-07
+
+<!-- history-index:end -->

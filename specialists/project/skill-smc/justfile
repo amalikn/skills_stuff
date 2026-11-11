@@ -114,6 +114,15 @@ smc_change_compare before after: _require-venv
 smc_gateway_loss *ARGS:
     @scripts/probes/smc_gateway_loss.sh {{ARGS}}
 
+# Does each SMC trust an apt signing key fingerprint (primary or subkey)? Read-only. Example:
+# just apt_key_subkey_probe teleport.communitywifi.net.au 3E82FB7C68F57341349ED2C17A9A1D9D5B27C6D3 kaltjiti-fergon-smc01
+apt_key_subkey_probe proxy fpr +nodes:
+    @bash scripts/probes/apt_key_subkey_probe.sh --proxy "{{proxy}}" --fpr "{{fpr}}" {{nodes}}
+
+# Offline test of apt_key_subkey_probe.sh with a stand-in tsh and throwaway gpg keys; about 2 s.
+apt_key_subkey_probe_test: _require-venv
+    @{{py}} -m unittest scripts/probes/test_apt_key_subkey_probe.py
+
 # Offline test of smc_gateway_loss.sh with a stand-in tsh; <5 s.
 smc_gateway_loss_test: _require-venv
     @{{py}} -m unittest scripts/probes/test_smc_gateway_loss.py

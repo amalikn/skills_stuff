@@ -6,13 +6,19 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261111_1058
+Last rotated: 20261111_1319
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)
+
+`references/06_failure-modes.md` (`ec58b08`): cisofy's 2025-10-22 signing subkey; `apt_key` with `url` alone does not import it on SMCs holding the
+older key, so the role pins the subkey `id` (ansible-wifi master `9d504a89`, rise `c4d2ef51`). New read-only `scripts/probes/apt_key_subkey_probe.sh`
+(recipes `apt_key_subkey_probe`, `apt_key_subkey_probe_test`), smoke-run on kaltjiti-fergon-smc01.
 
 ## 20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)
 
@@ -188,10 +194,3 @@ Learned 2026-10-30 (ansible-wifi chat 0a7b835b): `references/02_service-map.md` 
 Thuraya labels and unpadded version, `/bin/sh` is dash), `references/19_smc-change-role.md` (facts, conditions, when, loop; local-knowledge-ansible
 `7ef59c7`). `scripts/probes/rct_avr_probe.sh` adds modem, modem_net, modem_comms and sim (Iridium* or Thuraya* fields); its test passes.
 manifest 0.10.6 -> 0.10.7.
-
-## 20261030_1222 — install_missing, controller lookups and pinned PHP, Teleport duplicate node after a data-dir wipe (v0.10.5 -> v0.10.6)
-
-Learned 2026-10-30 (ansible-wifi chat cad11710): `references/19_smc-change-role.md` (apt_pin `install_missing`, kept out of the target;
-local-knowledge-ansible `cf4f994`), `references/08_ansible-authoring.md` (pipe lookups run on the controller, macOS `date -Is`; smc_application
-PHP pinned against the ondrej PPA, mod_php kept; ansible-wifi `fb6ae80b`), `references/03_communication-flows.md` (kaltjiti-fergon-smc01: two
-node records for ~9 min after clearing `/var/lib/teleport`; old-process errors; exit 127 from a stale `versions` label). manifest 0.10.5 -> 0.10.6.
