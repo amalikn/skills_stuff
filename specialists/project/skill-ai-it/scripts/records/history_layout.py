@@ -26,6 +26,7 @@ Budget: one read per archive file; under 1 s for 400 files.
 from __future__ import annotations
 
 import argparse
+import datetime
 import os
 import pathlib
 import re
@@ -337,7 +338,7 @@ def render_index(root: pathlib.Path) -> str:
   block = index_block(root, current)
   template = pathlib.Path(__file__).resolve().parents[2] / "templates" / "history-readme.md"
   if not current and template.is_file():  # a project without an index starts from the template
-    current = template.read_text(encoding="utf-8")
+    current = re.sub(r"^Last reviewed: .*$", f"Last reviewed: {datetime.date.today():%Y-%m-%d}", template.read_text(encoding="utf-8"), count=1, flags=re.M)
   if START in current and END in current:
     return current[: current.index(START)] + block + current[current.index(END) + len(END) :]
   intro = (

@@ -4,7 +4,7 @@ Category: pattern
 Status: current
 Authority: skill-module
 Scope: Deterministic upgrade, validation and diff-check scripts for the navigation layer
-Last reviewed: 2026-10-10
+Last reviewed: 2026-11-11
 Summary: >-
   When to run the upgrade, validate and expected-diff scripts, how to read their exit codes and how to handle .proposed files.
 ---

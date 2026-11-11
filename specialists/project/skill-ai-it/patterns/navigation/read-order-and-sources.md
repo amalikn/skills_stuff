@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: skill-ai-it
 Scope: Full text behind these sections of every project's compact AI_NAVIGATION.md managed block: Mandatory read order, Source priority, Project context files
-Last reviewed: 2026-10-10
+Last reviewed: 2026-11-11
 Summary: Moved verbatim from templates/AI_NAVIGATION.md on 2026-10-10 (Graphify steps are obsolete: Graphify was disabled workspace-wide that day).
 ---
 

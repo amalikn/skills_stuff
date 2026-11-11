@@ -3,7 +3,7 @@ Title: Navigation reference index
 Category: index
 Status: current
 Summary: Index of the full routing tables and procedures behind the compact AI_NAVIGATION.md managed block, one file per topic so an agent opens only the one it needs.
-Last reviewed: 2026-10-10
+Last reviewed: 2026-11-11
 ---
 
 # Navigation reference

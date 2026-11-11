@@ -4,7 +4,7 @@ Category: pattern
 Status: current
 Authority: skill-module
 Scope: Auditing a target project's scripts, task runners and their catalog
-Last reviewed: 2026-10-10
+Last reviewed: 2026-11-11
 Summary: >-
   Checklist for managed-block integrity, task-runner discovery, catalog coverage and safety labels of a project's scripts and tasks.
 ---

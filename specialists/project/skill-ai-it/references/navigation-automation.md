@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-10-10
+Last reviewed: 2026-11-11
 Summary: >-
   Deterministic navigation-control automation; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---

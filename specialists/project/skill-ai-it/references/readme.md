@@ -3,7 +3,7 @@ Title: skill-ai-it references index
 Category: index
 Status: current
 Summary: One file per topic, moved verbatim from SKILL.md on 2026-10-10; SKILL.md links each at the step that needs it. Open only the one the task needs.
-Last reviewed: 2026-10-10
+Last reviewed: 2026-11-11
 ---
 
 # skill-ai-it references

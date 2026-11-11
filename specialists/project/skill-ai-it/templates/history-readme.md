@@ -1,3 +1,12 @@
+---
+Title: History
+Category: folder-index
+Status: current
+Authority: generated index
+Last reviewed: 2026-11-11
+Summary: Rotated records, one folder per kind; the file list is generated with a summary line per file.
+---
+
 # History
 
 Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-records, sync). Do not read these by default: search with
