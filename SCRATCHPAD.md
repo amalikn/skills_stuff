@@ -53,6 +53,8 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 
 - [ ] **20261110_1404** `KEEP`: `stop-slop` and `superpowers` have no `REVISION_HISTORY.md` (REVISION_HISTORY Policy requires one); and whether Claude Code honours `disabled: true` in SKILL.md front
   matter is unverified (the 53 disabled skills were still listed in a session started before the flags were committed): check in a fresh session.
+  **20261111_1340** answered: not honoured (fresh 2026-11-11 session still listed them in full); Codex ignores it too (source). Open: drop the flags or keep them as
+  documentation; the working switches are now set per tool (REVISION_HISTORY 2026-11-11).
 - [ ] **Run `skill-staleness-audit` end-to-end on a project other than its originating one.** It has been unit-tested across four repos but never driven through all nine phases elsewhere.
   `apn/vocus-profitability` is the obvious first target — 932 files, 240 novel lines in its managed blocks, never swept. `KEEP`
 
@@ -142,6 +144,10 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 ---
 
 ## Session history (summaries — full detail in memory-keeper)
+
+### 2026-11-11 — Token Optimizer clean-up: four descriptions shortened, `disabled: true` found inert <!-- KEEP -->
+- `5dc0abc`: four non-routing skill descriptions shortened, full text kept in the body; pushed.
+- Front-matter `disabled: true` is ignored by Claude Code and Codex; per-tool switches set instead. Detail: REVISION_HISTORY 2026-11-11.
 
 ### 2026-11-10 — Commit-all of the pending tree, disable flags kept, three re-enabled <!-- KEEP -->
 - Committed and pushed knowledge-curator pilot work (44aad34) and the `disabled: true` flags (d2d14f1, stop-slop 8efb958, superpowers), from the UNC session.

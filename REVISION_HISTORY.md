@@ -7,6 +7,15 @@ Change log for the `skills_stuff` parent repository.
 - Submodules must contain their own `REVISION_HISTORY.md`.
 - Pushes should use controlled workflows so rollback points are explicit.
 
+## 2026-11-11
+- `5dc0abc` (pushed `3adefce..5dc0abc`): descriptions of `skill-pad`, `skill-eval-manager`, `skill-knowledge-curator` and `skill-network-architect` shortened to 120-130 characters, quoted for
+  YAML; the full original text moved verbatim into a `## When to use` section under each H1 (Token Optimizer clean-up, operator: "Trim non-routing skills only"; routing skills such as
+  skill-coder, skill-drawio, skill-nautobot and skill-openwisp left long on purpose). Record and rollback: governance `reports/token-optimizer-changes-20261111_1325.md`.
+- Finding: front-matter `disabled: true` (d2d14f1, 2026-11-10) is not honoured by Claude Code: a session started on 2026-11-11 listed `doc`, `agent-watchdog`, `devops` and other flagged skills
+  with full descriptions. Codex's source (`codex-rs/config/src/skills_config.rs`) switches skills only through `[[skills.config]]` in `config.toml`. The switches that work are Claude
+  `skillOverrides` in `~/.claude/settings.json` and Codex `[[skills.config]] name = ... enabled = false`; on 2026-11-11 the operator chose per-tool sets there (Claude: 90 name-only;
+  Codex: 27 marketing skills and `vibeshell` disabled).
+
 ## 2026-11-10
 - Committed and pushed the pending tree (operator: "can you commit all the skills_stuff?"). `44aad34`: skill-knowledge-curator's 2026-11-05 UNC pilot work (status_claims, merge_labels, locate_lines
   with tests; workflow steps 3b and 3c; 152 tests pass). `d2d14f1`: `disabled: true` in the front matter of 44 skills here, 1 in `stop-slop` (8efb958) and 11 in `superpowers`, with both gitlink
