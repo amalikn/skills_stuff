@@ -1,7 +1,7 @@
 ---
 name: skill-proxmox
 description: >-
-  Proxmox VE 9.x and PBS: clusters, storage, networking/SDN, QEMU VMs and LXC, users/API, pvesh/qm/pct, OpenTofu bpg/proxmox, backups, HA, upgrades.
+  Proxmox VE 9.x and PBS: clusters, Corosync, ZFS/Ceph/LVM storage, bridges/VLAN/SDN, QEMU VMs (cloud-init, PCI passthrough, migration), LXC, users/API tokens, pvesh/qm/pct, OpenTofu bpg/proxmox, vzdump, HA, upgrades.
 ---
 
 # Proxmox VE

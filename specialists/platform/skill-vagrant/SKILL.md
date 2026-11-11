@@ -1,7 +1,7 @@
 ---
 name: skill-vagrant
 description: >-
-  Vagrant labs on macOS Apple silicon: Parallels/VirtualBox/QEMU/libvirt providers, bento boxes, Vagrantfiles, networks, provisioners, snapshots; not Proxmox.
+  Vagrant labs on macOS Apple silicon: Parallels, VirtualBox, QEMU, libvirt providers; bento boxes, Vagrantfiles, networks, synced folders, provisioners, snapshots, linked clones, prlctl/VBoxManage; not Proxmox.
 ---
 
 # Vagrant
