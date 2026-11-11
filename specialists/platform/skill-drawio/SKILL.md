@@ -1,15 +1,14 @@
 ---
 name: skill-drawio
 description: >-
-  draw.io (diagrams.net) work for any project: data-first diagrams (YAML map of components, flows and dependencies validated and rendered deterministically to .drawio, generated banner, drift
-  check); file format (mxfile, layers, UserObject, compressed pages); orthogonal layout and routing audits; colours, layers, legends; desktop CLI export and review; reading drawings as data. Use for
-  any .drawio file or diagram generated from data; not for the domain facts shown (use that domain's skill); never regenerate over a hand-edited drawing.
+  draw.io (.drawio) diagrams: data-first YAML-to-drawio rendering, file format, layout/routing audits, CLI export and review; never over a hand-edited drawing.
 ---
 
 # draw.io
 
 ## Contents
 
+- [Full description](#full-description)
 - [Role and non-goals](#role-and-non-goals)
 - [Orient first](#orient-first)
 - [Route the task](#route-the-task)
@@ -20,6 +19,14 @@ description: >-
 - [Evidence](#evidence)
 
 ---
+
+## Full description
+
+The listing shows a short description; this is the full scope (moved here 2026-11-11 to cut startup tokens).
+
+draw.io (diagrams.net) work for any project: data-first diagrams (YAML map of components, flows and dependencies validated and rendered deterministically to .drawio, generated banner, drift check);
+file format (mxfile, layers, UserObject, compressed pages); orthogonal layout and routing audits; colours, layers, legends; desktop CLI export and review; reading drawings as data. Use for any .drawio
+file or diagram generated from data; not for the domain facts shown (use that domain's skill); never regenerate over a hand-edited drawing.
 
 ## Role and non-goals
 

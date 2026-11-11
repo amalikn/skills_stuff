@@ -1,11 +1,7 @@
 ---
 name: skill-walk-before-run
 description: >-
-  Blocking gate that judges whether work about to happen is expansion sitting on an unverified
-  load-bearing assumption, and if so blocks it and redirects to the cheapest real-world test.
-  Use before adding a component, framework, dependency or abstraction; starting a bake-off or
-  evaluation; writing a third document about one undecided thing; or when a project feels
-  overwhelming. Manual invocation only.
+  Manual gate: block expansion built on an unverified load-bearing assumption and redirect to the cheapest real-world test.
 metadata:
   aliases: skill-wbr
   version: 0.1.3
@@ -23,6 +19,7 @@ Step 0's ledger check below depends on it matching.
 
 ## Contents
 
+- [Full description](#full-description)
 - [Step 0 — name the assumption (always first, fixed for the whole run)](#step-0--name-the-assumption-always-first-fixed-for-the-whole-run)
 - [Verdict](#verdict)
 - [Reality contact](#reality-contact)
@@ -34,6 +31,14 @@ Step 0's ledger check below depends on it matching.
 - [Code changes](#code-changes)
 
 ---
+
+## Full description
+
+The listing shows a short description; this is the full scope (moved here 2026-11-11 to cut startup tokens).
+
+Blocking gate that judges whether work about to happen is expansion sitting on an unverified load-bearing assumption, and if so blocks it and redirects to the cheapest real-world test. Use before
+adding a component, framework, dependency or abstraction; starting a bake-off or evaluation; writing a third document about one undecided thing; or when a project feels overwhelming. Manual invocation
+only.
 
 ## Step 0 — name the assumption (always first, fixed for the whole run)
 

@@ -1,10 +1,7 @@
 ---
 name: skill-systems-architect
 description: >-
-  Designs, reviews and troubleshoots systems and infrastructure architecture with decision-ready outputs: sizing and failure-scenario models, cluster and storage designs, backup and DR (RPO/RTO,
-  restore tests), OS, identity and endpoint standards, lifecycle and patching, migration waves. Use for servers, Proxmox, HA and quorum, ZFS, Ceph, NAS, VMs, containers, Docker, Kubernetes, Linux,
-  Windows/AD/Entra, macOS/MDM, secrets, backup, DR or capacity, even if "architecture" is not said. Not for one product's commands (its platform pack), diagrams (skill-drawio) or code (skill-coder);
-  pairs with skill-network-architect.
+  Systems and infrastructure architecture: sizing, HA/quorum, ZFS/Ceph storage, backup/DR, OS/identity standards, patching, migrations; not product commands, diagrams or code.
 metadata:
   version: "2.3.6"
   reviewed: "2026-10-29"
@@ -15,6 +12,7 @@ metadata:
 
 ## Contents
 
+- [Full description](#full-description)
 - [Use When](#use-when)
 - [Standing Write-Back Contract](#standing-write-back-contract)
 - [Start Here](#start-here)
@@ -30,6 +28,15 @@ metadata:
 Act as a domain architect for compute, storage, operating systems, virtualisation, platforms, identity implementation, endpoints and data recovery. Apply depth
 proportionate to the decision. Understand vendor and platform implementations without making a vendor, controller, inventory system or AI provider the
 architectural foundation. Treat skill-network-architect as a peer; either may coordinate a cross-domain request.
+
+## Full description
+
+The listing shows a short description; this is the full scope (moved here 2026-11-11 to cut startup tokens).
+
+Designs, reviews and troubleshoots systems and infrastructure architecture with decision-ready outputs: sizing and failure-scenario models, cluster and storage designs, backup and DR (RPO/RTO, restore
+tests), OS, identity and endpoint standards, lifecycle and patching, migration waves. Use for servers, Proxmox, HA and quorum, ZFS, Ceph, NAS, VMs, containers, Docker, Kubernetes, Linux,
+Windows/AD/Entra, macOS/MDM, secrets, backup, DR or capacity, even if "architecture" is not said. Not for one product's commands (its platform pack), diagrams (skill-drawio) or code (skill-coder);
+pairs with skill-network-architect.
 
 ## Use When
 

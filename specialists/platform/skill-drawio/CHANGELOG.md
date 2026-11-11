@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 - justfile: `assemble-flowmap` and `split-flowmap` pass arguments quoted (`[positional-arguments]`, `"$@"`), so `--command "just flows"` stays one argument (2026-11-11, found building skill-ai-it's first flow map, a new consumer)
 - references/data-first-diagrams.md: Learned 2026-11-09, the assembled map records the --master path as given; assemble from the project root (new consumer skill-vagrant, docs/vagrant-flows)
 - references/data-first-diagrams.md: Learned 2026-11-09, an engine commit that adds page furniture (2c713d2, the `‹ E2E page` button) changed a consumer's drawing without a consumer check; unified-network-controller drifted two days (re-rendered 42a7645a)

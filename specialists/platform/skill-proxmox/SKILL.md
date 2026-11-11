@@ -1,16 +1,14 @@
 ---
 name: skill-proxmox
 description: >-
-  Design, operate, automate and troubleshoot Proxmox VE 9.x: clusters, Corosync, pmxcfs (/etc/pve); storage (dir, LVM-thin, ZFS, Ceph/pveceph, PBS 4.x); bridges, VLAN-aware bridges, SDN zones/VNets,
-  DHCP/IPAM; QEMU VMs (q35, OVMF, Secure Boot, cloud-init, guest agent, disk import, templates, migration, PCI/USB mappings, virtiofs), LXC; users, realms, roles, ACLs, API tokens; REST API, pvesh,
-  pveum, qm, pct, pvesm; OpenTofu bpg/proxmox; vzdump and PBS backups; HA; upgrades (pve8to9); certificates, firewall, metrics, notifications; arm64 hosts; Datacenter Manager. Not for the guest OS
-  inside a VM or device-specific facts.
+  Proxmox VE 9.x and PBS: clusters, storage, networking/SDN, QEMU VMs and LXC, users/API, pvesh/qm/pct, OpenTofu bpg/proxmox, backups, HA, upgrades.
 ---
 
 # Proxmox VE
 
 ## Contents
 
+- [Full description](#full-description)
 - [Role and non-goals](#role-and-non-goals)
 - [Read, write, and evidence boundaries](#read-write-and-evidence-boundaries)
 - [Orient first](#orient-first)
@@ -21,6 +19,15 @@ description: >-
 - [Standing write-back contract](#standing-write-back-contract)
 
 ---
+
+## Full description
+
+The listing shows a short description; this is the full scope (moved here 2026-11-11 to cut startup tokens).
+
+Design, operate, automate and troubleshoot Proxmox VE 9.x: clusters, Corosync, pmxcfs (/etc/pve); storage (dir, LVM-thin, ZFS, Ceph/pveceph, PBS 4.x); bridges, VLAN-aware bridges, SDN zones/VNets,
+DHCP/IPAM; QEMU VMs (q35, OVMF, Secure Boot, cloud-init, guest agent, disk import, templates, migration, PCI/USB mappings, virtiofs), LXC; users, realms, roles, ACLs, API tokens; REST API, pvesh,
+pveum, qm, pct, pvesm; OpenTofu bpg/proxmox; vzdump and PBS backups; HA; upgrades (pve8to9); certificates, firewall, metrics, notifications; arm64 hosts; Datacenter Manager. Not for the guest OS
+inside a VM or device-specific facts.
 
 ## Role and non-goals
 

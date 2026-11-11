@@ -1,15 +1,14 @@
 ---
 name: skill-vagrant
 description: >-
-  Build, pin, run and troubleshoot local Vagrant labs on macOS Apple silicon: Parallels (default), VirtualBox 7.1/7.2, QEMU and libvirt/KVM providers and selection order; bento arm64 boxes and
-  pinning; multi-machine and multi-provider Vagrantfiles, customize, per-provider networks (host-only, internal, vmnet), synced folders, provisioners, triggers, cloud-init; `vagrant ssh -c`,
-  prlctl/VBoxManage exec, serial console; linked clones (machine-id), snapshots, wrong-VM guards; Vagrant vs OpenTofu, licensing. Not Proxmox/OpenTofu (skill-proxmox) or what runs inside the guest.
+  Vagrant labs on macOS Apple silicon: Parallels/VirtualBox/QEMU/libvirt providers, bento boxes, Vagrantfiles, networks, provisioners, snapshots; not Proxmox.
 ---
 
 # Vagrant
 
 ## Contents
 
+- [Full description](#full-description)
 - [Role and non-goals](#role-and-non-goals)
 - [Read, write, and evidence boundaries](#read-write-and-evidence-boundaries)
 - [Orient first](#orient-first)
@@ -21,6 +20,14 @@ description: >-
 - [Standing write-back contract](#standing-write-back-contract)
 
 ---
+
+## Full description
+
+The listing shows a short description; this is the full scope (moved here 2026-11-11 to cut startup tokens).
+
+Build, pin, run and troubleshoot local Vagrant labs on macOS Apple silicon: Parallels (default), VirtualBox 7.1/7.2, QEMU and libvirt/KVM providers and selection order; bento arm64 boxes and pinning;
+multi-machine and multi-provider Vagrantfiles, customize, per-provider networks (host-only, internal, vmnet), synced folders, provisioners, triggers, cloud-init; `vagrant ssh -c`, prlctl/VBoxManage
+exec, serial console; linked clones (machine-id), snapshots, wrong-VM guards; Vagrant vs OpenTofu, licensing. Not Proxmox/OpenTofu (skill-proxmox) or what runs inside the guest.
 
 ## Role and non-goals
 

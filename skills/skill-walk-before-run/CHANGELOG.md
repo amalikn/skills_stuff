@@ -16,6 +16,8 @@ waivers on one assumption are flagged. Seven fixture tests. Not a parked-list ea
 
 ## Unreleased — canary becomes 1 + 5 across sites and clusters, 2026-09-22
 
+- 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
+
 No behaviour change. The parked canary note in [`BRIEF.md`](BRIEF.md) records the operator's change from 1 + 4 to 1 + 5. That means six devices, two from each of three separate sites, with the sites
 spanning both Teleport clusters when the device type exists behind both. All six must be online.
 

@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## Unreleased
+
+- 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
+
 ## 20261110_1355 — Edge retention, silent provisioning skips, transient units; SSH changed host key kills reverse tunnels (v2.3.5 -> v2.3.6)
 
 - references/edge-appliances.md: three Learned 2026-11-10 entries before "Flash wear and RAM placement" (delete each period only after its own upload

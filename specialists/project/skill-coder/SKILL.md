@@ -1,15 +1,14 @@
 ---
 name: skill-coder
 description: >-
-  Programming practice for any project and language. Use before writing, changing, reviewing or refactoring code: module and layer design, scripts and CLIs, tests and checks, error handling and
-  timeouts, write safety, configuration, performance and runtime budgets, dependencies, security, promoting reusable code into a skill. Language overrides: Python, shell, JS/TS, Go, Rust, SQL,
-  YAML/JSON/TOML, Ansible. Not for a platform's or device's own facts (use that domain skill) or prose/governance docs alone; never above the project's own rules.
+  Programming practice for any language: use before writing, changing, reviewing or refactoring code or scripts; never above the project's own rules.
 ---
 
 # Coder
 
 ## Contents
 
+- [Full description](#full-description)
 - [Role and non-goals](#role-and-non-goals)
 - [Orient first](#orient-first)
 - [Route the task](#route-the-task)
@@ -20,6 +19,14 @@ description: >-
 - [Evidence](#evidence)
 
 ---
+
+## Full description
+
+The listing shows a short description; this is the full scope (moved here 2026-11-11 to cut startup tokens).
+
+Programming practice for any project and language. Use before writing, changing, reviewing or refactoring code: module and layer design, scripts and CLIs, tests and checks, error handling and
+timeouts, write safety, configuration, performance and runtime budgets, dependencies, security, promoting reusable code into a skill. Language overrides: Python, shell, JS/TS, Go, Rust, SQL,
+YAML/JSON/TOML, Ansible. Not for a platform's or device's own facts (use that domain skill) or prose/governance docs alone; never above the project's own rules.
 
 ## Role and non-goals
 
