@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [20261111 — Skill description shortened](#20261111--skill-description-shortened)
 - [20261029_2006 — Telco wholesale reconciliation patterns (skill v0.5.0)](#20261029_2006--telco-wholesale-reconciliation-patterns-skill-v050)
 - [20260829 — FOSS tools evaluation and readiness re-verification](#20260829--foss-tools-evaluation-and-readiness-re-verification)
 - [20260526 — Wiki RAG bridge and coherence sweep](#20260526--wiki-rag-bridge-and-coherence-sweep)
@@ -12,6 +13,10 @@
 - [2026-05-21 — Phase 0–4 implementation](#2026-05-21--phase-04-implementation)
 
 ---
+
+## 20261111 — Skill description shortened
+
+- Front-matter description of `internal-invoice-analysis` cut from 237 to about 150 characters to save startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md. The `trigger:` field is unchanged. No behaviour change.
 
 ## 20261029_2006 — Telco wholesale reconciliation patterns (skill v0.5.0)
 

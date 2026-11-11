@@ -1,9 +1,7 @@
 ---
 name: internal-invoice-analysis
 description: >
-  Use when the user provides invoice, sales, rate-card, billing, cost, margin,
-  or profitability CSVs and asks for financial comparison, reconciliation,
-  variance analysis, anomaly detection, margin review, or multi-layer invoice analysis.
+  Invoice, sales, rate-card, billing, cost and margin CSVs: financial comparison, reconciliation, variance, anomalies, margin review, multi-layer analysis.
 trigger: >
   User mentions: invoice reconciliation, supplier invoice, rate card validation,
   margin analysis, billing discrepancy, unmatched charges, cost vs revenue,
@@ -18,6 +16,7 @@ status: "runnable — Phase 1+2+3+4 scripts validated (pytest 219/219, 2026-05-2
 <!-- toc-depth: 3 -->
 ## Contents
 
+- [Full description](#full-description)
 - [Hard Rules](#hard-rules)
 - [15-Step Workflow](#15-step-workflow)
   - [Step 1 — Input Inventory](#step-1--input-inventory)
@@ -55,6 +54,13 @@ status: "runnable — Phase 1+2+3+4 scripts validated (pytest 219/219, 2026-05-2
 Source-data-only multi-layer CSV invoice reconciliation, rate-card validation, margin analysis, and anomaly detection.
 
 ---
+
+## Full description
+
+The listing shows a short description; this is the full original (moved here 2026-11-11 to cut startup tokens).
+
+Use when the user provides invoice, sales, rate-card, billing, cost, margin, or profitability CSVs and asks for financial comparison, reconciliation, variance analysis, anomaly detection, margin
+review, or multi-layer invoice analysis.
 
 ## Hard Rules
 
