@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate the ``## Contents`` block of a communications-tracking.md from its entry headings.
 
-Entry headings are ``## Email N - ...``, ``## Teams N - ...``, ``## Call N - ...`` and ``## Meeting N - ...``
+Entry headings are ``## Email N - ...``, ``## Teams N - ...``, ``## Call N - ...``, ``## Meeting N - ...`` and ``## Cross-reference N - ...``
 (the four prefixes in SKILL.md); they are listed in file order with GitHub-Flavored Markdown anchors.
 
 Run:
@@ -23,7 +23,7 @@ import re
 import sys
 from pathlib import Path
 
-ENTRY_PREFIXES = ("Email", "Teams", "Call", "Meeting")
+ENTRY_PREFIXES = ("Email", "Teams", "Call", "Meeting", "Cross-reference")   # Cross-reference: 2026-11-11
 
 _ATX_HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
 _ENTRY_RE = re.compile(r"^(?:" + "|".join(ENTRY_PREFIXES) + r")\s+[\da-z]+\s*[-–—]", re.IGNORECASE)

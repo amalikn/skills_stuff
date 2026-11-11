@@ -27,6 +27,7 @@ HEADINGS = [
     "Call 1 - 20261012_1500 - Stu + Martin catch-up",
     "Meeting 2 - 20261013 - Hours/attendance: \"hard reset\" meeting",
     "Email 2 - 20261014_1733 - Plan — dates, sent (to Martin)",
+    "Cross-reference 1 - 20261110_0810 - Martin in person: business requirements first",
 ]
 
 EXPECTED_ANCHORS = [
@@ -36,6 +37,7 @@ EXPECTED_ANCHORS = [
     "call-1---20261012_1500---stu--martin-catch-up",
     "meeting-2---20261013---hoursattendance-hard-reset-meeting",
     "email-2---20261014_1733---plan--dates-sent-to-martin",
+    "cross-reference-1---20261110_0810---martin-in-person-business-requirements-first",
 ]
 
 
@@ -78,7 +80,7 @@ class TocTest(unittest.TestCase):
     """toc.py against a tracker holding all four entry types."""
 
     def test_all_entry_types_in_file_order(self) -> None:
-        """Email, Teams, Call and Meeting entries all appear, in file order."""
+        """Email, Teams, Call, Meeting and Cross-reference entries all appear, in file order."""
         lines = toc.build_toc_lines(_tracker([]))
         self.assertEqual([re.match(r"- \[(.+)\]\(", ln).group(1) for ln in lines], HEADINGS)
 

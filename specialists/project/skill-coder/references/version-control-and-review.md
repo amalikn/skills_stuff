@@ -188,3 +188,14 @@ PYTHONPATH=.:wc-local/scripts "$PY" -m unittest -q tests.test_structure_confirma
 > [ $rc -eq 0 ] && git push -q origin HEAD
 > ```
 
+> **Learned 2026-11-11** · commits in a pack or project with both tests and a check · VERIFIED_PRIMARY · Source: skills_stuff 7c86de8 (skill-drawio, pages.py
+> pushed to 406 lines with only `just test` run) and 8a7a276 (split into flowmap/flow_head.py) · Falsifier: a size, catalogue or freshness rule that the tests
+> also enforce, so running them alone would have caught it.
+> Tests passing is not the definition of done when the repo also has a check: the check holds rules the tests do not (module size budgets, catalogue coverage,
+> doc freshness, a write-back entry's header form). Run both before every commit and gate on each exit code; here a 400-line module budget and a malformed
+> Learned header both reached commits that had passed the tests.
+>
+> ```bash
+> just test && just check && git commit -F - -- <paths>   # each step gates the next; never `just test | tail && git commit`
+> ```
+

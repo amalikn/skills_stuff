@@ -16,6 +16,7 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-11 (f) write-back from enterprise-strategy: references/version-control-and-review.md, run the check as well as the tests before a commit (a module budget and a write-back header form are check rules, not test rules).
 - 2026-11-11 (e) promoted enterprise-strategy's two parked candidates of 2026-11-06: references/design-patterns.md P-68 (baseline beside forecast in a generated report) and languages/python/learned-other.md (accept the decoration hand-typed lines carry).
 - 2026-11-11 (d) write-back from enterprise-strategy (apn project_sync, cc69e7c1): references/design-principles.md, principle 4: two lookups for the same thing share one search-scope function; fixtures carry every folder layout.
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.

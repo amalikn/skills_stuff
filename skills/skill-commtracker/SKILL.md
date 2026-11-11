@@ -184,6 +184,11 @@ A phone call or in-person meeting, provided as a transcript file, pasted dictati
 
 Prefix the entry ID with `Call` (phone) or `Meeting` (in-person) — not `Email` or `Teams`.
 
+**Recorded in another tracker — `Cross-reference N`** (operator, 2026-11-11): when a communication is filed in full in a different tracker (for example a
+personal case file) and only its business content belongs here, file a `## Cross-reference N - <stamp> - <summary>` entry, numbered on its own: date,
+medium, participants, a **Recorded in** list linking the other tracker's entry and its source, a note when the other tracker's numbering clashes with
+this one's, and the business direction only, with no personal or HR content. `scripts/toc.py` lists it in Contents with the other entry types.
+
 **Verbatim transcript vs. reported speech — mark clearly which one this is:**
 - If a full transcript exists (recording writeup, dictation), treat it as verbatim per ADR-001 (no paraphrasing) and write it up as a normal dialogue entry.
 - If no transcript exists and the user is recounting a call/meeting from memory, the entry is **reported speech, not verbatim**. Mark it explicitly: add a `**Status:** VERBAL_UNRECORDED — reported by
