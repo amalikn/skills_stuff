@@ -108,6 +108,7 @@ def relink(text: str, old_dir: pathlib.Path, new_dir: pathlib.Path, moves: dict[
   Returns:
     The text with each relative link that resolves (before the move) pointing at the same file from new_dir.
   """
+
   def fix(m: re.Match) -> str:
     """One `](target)` match, its target recomputed or left as it is.
 
@@ -233,8 +234,10 @@ def main(argv: list[str] | None = None) -> int:
     text = old.read_text(encoding="utf-8")
     before_broken[new] = {t for t in broken_links(old, text)}
     moved_text[new] = mentions(relink(text, old.parent, new.parent, moves), True, root.name, moves_by_name)
-  print(f"references: {len(changed)} file(s) outside the moved ones change"
-        + (": " + ", ".join(str(p.relative_to(refs_root)) for p in sorted(changed)[:12]) + (" ..." if len(changed) > 12 else "") if changed else ""))
+  print(
+    f"references: {len(changed)} file(s) outside the moved ones change"
+    + (": " + ", ".join(str(p.relative_to(refs_root)) for p in sorted(changed)[:12]) + (" ..." if len(changed) > 12 else "") if changed else "")
+  )
   if not moves:
     if a.apply:
       hl.write_index(root)

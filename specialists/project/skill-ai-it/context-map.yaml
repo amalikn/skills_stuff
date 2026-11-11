@@ -25,6 +25,9 @@ authority_order:
 - path: ARCHITECTURE.md
   type: package_architecture
   authority: high
+- path: .archcore/rules
+  type: package_rules
+  authority: high
 - path: templates
   type: reusable_templates
   authority: high

@@ -1,0 +1,231 @@
+# Code map: the human decisions about this project's code that skill-coder's checkers act on (created by skill-ai-it adopt_code_map 2026-11-11).
+# Only decisions live here, never facts the code states (line counts, import edges, header text): the checkers measure those, and their
+# shrink-only baselines are separate machine-written files. TOML so the checkers read it with the project's own Python 3.11+ (tomllib).
+
+[meta]
+summary = "Code intent for skill-ai-it: what is scanned, size limits, import layers, write gates and where each module stands."
+
+[scan]
+roots = ["scripts"]   # folders every checker scans unless its own section says otherwise
+python = "3.14"              # the project's Python grammar, so newer syntax is reported rather than misread
+
+# Size limits: warn = plan the split along a seam when next touched; the hard limit fails unless the baseline records the unit.
+# The pack defaults (modules 300/400, functions 40/60; shell 100/200, 30/40) apply where nothing is set.
+[limits.python]
+module = 400
+function = 60
+
+[limits.shell]
+module = 200
+warn_module = 100
+
+# Entry points that write without --apply, each with the gate it uses instead. A stale entry (gone, no longer writes, now gated) fails.
+[write_gates]
+roots = ["scripts"]
+write_patterns = []   # project-specific writes, e.g. a client library's create call
+
+[write_gates.exceptions]
+# "scripts/collector.py" = "pushes metrics by design; --dry-run reads only"
+
+[timeouts]
+roots = ["scripts"]
+
+# Timed subprocess calls whose command (ssh, scp, rsync, a shell) starts children the timeout leaves running (scripts/group_timeouts.py).
+[group_timeouts]
+baseline = "scripts/group-timeout-baseline.json"
+
+# Inline linter suppressions (noqa, type: ignore, shellcheck disable, eslint-disable, nolint, allow) per file (scripts/suppressions.py).
+[suppressions]
+baseline = "scripts/suppressions-baseline.json"
+
+# Where each module stands for promotion to a shared skill: project_only (reason), candidate (needs), promoted (skill = the file it moved to).
+[modules."scripts/adoption/adopt_code_map.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/adoption/adopt_code_map.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/adoption/adopt_governed_files.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/adoption/adopt_governed_files.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/adoption/repoint_paths.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/adoption/repoint_paths.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/adoption/split_checker.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/adoption/split_checker.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/check_governance.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/check_governance.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/checks/agents_chain.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/checks/agents_chain.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/checks/anchor_links.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/checks/anchor_links.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/checks/doc_freshness.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/checks/doc_freshness.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/checks/docstring_ratchet.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/checks/docstring_ratchet.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/checks/file_headers.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/checks/file_headers.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/checks/govern_guard.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/checks/govern_guard.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/checks/role_check.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/checks/role_check.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/install/mirror_skills.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/install/mirror_skills.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/markdown/md_sections.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/markdown/md_sections.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/markdown/move_doc.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/markdown/move_doc.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/markdown/table_add_column.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/markdown/table_add_column.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/markdown/table_wrap.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/markdown/table_wrap.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/navigation/check_expected_diff.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/navigation/check_expected_diff.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/navigation/check_outside_blocks.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/navigation/check_outside_blocks.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/navigation/migrate_legacy_blocks.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/navigation/migrate_legacy_blocks.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/navigation/selftest_blocks.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/navigation/selftest_blocks.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/navigation/upgrade_navigation_control_layer.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/navigation/upgrade_navigation_control_layer.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/navigation/validate_navigation_control_layer.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/navigation/validate_navigation_control_layer.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/navigation/yaml_key_diff.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/navigation/yaml_key_diff.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/plans/plan_timeline.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/plans/plan_timeline.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/plans/plan_tracker.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/plans/plan_tracker.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/plans/target_map.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/plans/target_map.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/add_changelog_entry.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/add_changelog_entry.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/audit_rotations.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/audit_rotations.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/budget_plan.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/budget_plan.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/history_layout.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/history_layout.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/history_migrate.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/history_migrate.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/move_sections.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/move_sections.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/normalise_records.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/normalise_records.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/roadmap_trim.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/roadmap_trim.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/records/rotate_records.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/records/rotate_records.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/survey/agent_usage.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/survey/agent_usage.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+
+[modules."scripts/survey/skills_registry.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/survey/skills_registry.py"
+reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
+

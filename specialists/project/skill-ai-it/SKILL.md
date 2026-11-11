@@ -137,6 +137,7 @@ Every governed project runs `scripts/checks/doc_freshness.py` from this skill (n
 - `bootstrap`, `navigation-add`, `refresh`: `scripts/adoption/adopt_governed_files.py --project-root . --apply` (recipes incl. `check`, record keys, baseline), then `just stale`; add `just stale` to the
   `AGENTS.md` preflight (outside the managed block). Then `scripts/adoption/adopt_code_map.py --project-root . --apply` (operator, 2026-10-20): a project with code gets skill-coder's `code-map.toml`, and every
   new Python script an `unreviewed:` `[modules]` entry; the project's `check_code_map` fails until each status is decided ([files-support](references/files-support.md#code-maptoml--create-when-the-project-has-code)).
+  Then, with no `.pad.toml`, ask once whether to link a Pad workspace (folder name suggested, existing ones offered: repos may share one): [pad-workspace](references/pad-workspace.md).
 - `audit`: run `just stale` and report the counts per rule; also report whether the project's LLM wiki page (`/Volumes/Data/_ai/_wiki/wiki_stuff/projects/<folder>.md`) exists and is older than the
   project's newest CHANGELOG entry.
 - Prefer fixing over baselining: date an undated living document from its content, move a superseded file to `archive/` (update links and the folder index in the same pass).
@@ -152,7 +153,7 @@ Every governed project runs `scripts/checks/doc_freshness.py` from this skill (n
 - Roles and loading tiers (always-read files small, detail on need, history on demand): [references/governed-file-roles.md](references/governed-file-roles.md); `just roles` (`scripts/checks/role_check.py`, in `check`, baseline ratchet) enforces
   the mechanical part.
 - Read [references/files-readme-agents-claude.md](references/files-readme-agents-claude.md) before that work (moved verbatim from here): README.md; AGENTS.md; CLAUDE.md.
-- docs/history: one subfolder per kind, generated index; `just history-migrate <project>` ([references/files-history.md](references/files-history.md)).
+- docs/history: a folder per kind, index from `templates/history-readme.md`, closeouts from `templates/session-record.md`; `just history-migrate` ([files-history](references/files-history.md)).
 - Read [references/files-records.md](references/files-records.md) before that work (moved verbatim from here): SCRATCHPAD.md; CHANGELOG.md; .markdownlint-cli2.jsonc.
 
 ### Conditionally-created files
@@ -196,5 +197,4 @@ Generated outputs (`graphify-out/`, `.ai-context/`) are support artifacts only a
 
 - Read [references/navigation-automation.md](references/navigation-automation.md) before that work (moved verbatim from here): Deterministic Navigation-Control Automation.
 - Read [references/background.md](references/background.md) before that work (moved verbatim from here): Public Pattern Inspiration; Required Follow-Up Packaging Task.
-
 - Read [references/pitfalls.md](references/pitfalls.md) before that work (moved verbatim from here): Pitfalls observed in practice.

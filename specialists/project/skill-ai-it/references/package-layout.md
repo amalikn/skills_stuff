@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-10-10
+Last reviewed: 2026-11-11
 Summary: >-
   Skill package layout; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -53,6 +53,9 @@ skill-ai-it/
 │   ├── scripts-README.md
 │   ├── check_governance.py
 │   ├── context_preflight.sh
+│   ├── history-readme.md       # docs/history/readme.md starter (generated list)
+│   ├── session-record.md       # slurp closeout record (docs/history/session-records/)
+│   ├── archcore/               # index.guide.md and rule.md for promote
 │   └── .markdownlint-cli2.jsonc
 └── patterns/
     ├── archcore-routing.md

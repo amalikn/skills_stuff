@@ -217,7 +217,8 @@ Then regenerate the project's wiki page from those files (operator, 2026-10-10; 
 When the request includes "commit and push", commit and push those wiki_stuff paths too, staged by name (operator, 2026-10-19).
 
 ## Step 8 — Closeout mode only
-Closeout writes the whole-chat record into the project (`session-record-<stamp>.md` or the project's equivalent): each operator message with its destination, each agent with its output, follow-ups by owner,
+Closeout writes the whole-chat record into the project (`docs/history/session-records/session-record-<stamp>.md`, from skill-ai-it
+`templates/session-record.md`, or the project's equivalent): each operator message with its destination, each agent with its output, follow-ups by owner,
 defects in source material, unmerged proposals, and side effects outside the repositories. Decisions taken after a close are slurped before the next commit: memory, `record_decision`, then a sweep for pages still
 calling them open. Re-run the project's check after the first commit of a previously untracked folder: tracked-only tools see it for the first time (2026-11-01); read its exit code before any push, never in the same command (2026-11-05: a push went out red).
 Before the closeout entry, run Step 6b over the whole conversation, not only since the last slurp (operator, 2026-10-20: "why did I had to remind

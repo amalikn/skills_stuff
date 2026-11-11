@@ -4,7 +4,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-ai-it package maintenance
-Last reviewed: 2026-05-22
+Last reviewed: 2026-11-11
 Summary: Rules for maintaining the skill-ai-it package.
 ---
 
@@ -12,39 +12,23 @@ Summary: Rules for maintaining the skill-ai-it package.
 
 ## Working rules
 
-- Treat `SKILL.md` as the orchestration contract.
-- Treat `templates/` as the source for reusable generated-file content.
-- Treat `patterns/` as reusable optional guidance modules.
-- Treat `CHANGELOG.md` as the durable package history and governance/navigation change ledger.
-- Do not let embedded fallback examples in `SKILL.md` drift away from external templates.
-- If a template changes, check whether the matching fallback/example in `SKILL.md` should also change.
-- If `SKILL.md` changes the expected package layout, update `README.md`, `AI_NAVIGATION.md`, and `context-map.yaml`.
-- If `SKILL.md`, templates, patterns, or governance routing changes materially, append a concise entry to `CHANGELOG.md`.
-- Preserve repeat-safe behaviour:
-  - no wholesale overwrites
-  - use managed blocks
-  - write `.proposed` files for risky YAML/JSON changes
-  - report created/updated/skipped/proposed files separately
-- Keep `CLAUDE.md` as a thin wrapper around this file.
-- Keep this package tool-agnostic: it should work for Codex, Claude Code, and local LLM workflows.
-- Before running project-local scripts or automation, inspect the task catalog in this order:
-  - `justfile` / `Justfile`
-  - `scripts/README.md`
-  - `Taskfile.yml`
-  - `Makefile`
-  - `package.json`
-- Prefer `just --list` and `just <task>` when a `justfile` is present.
-- Prefer cataloged tasks over raw scripts.
-- Treat uncataloged scripts as unknown safety.
-- Do not run destructive, review-required, or unknown-safety tasks without review.
-- When adding, modifying, or removing scripts or tasks, update or propose an update to `scripts/README.md`.
+One line each; the rule and its reason are in its own file under [.archcore/rules/](.archcore/index.guide.md) (operator, 2026-11-11).
+
+- [Templates are the source; SKILL.md fallbacks follow them](.archcore/rules/templates-are-the-source.rule.md)
+- [A layout or routing change updates its companions and CHANGELOG in the same pass](.archcore/rules/layout-changes-carry-companions.rule.md)
+- [Every write into a project is repeat-safe (managed blocks, `.proposed`, plan then `--apply`)](.archcore/rules/repeat-safe-writes.rule.md)
+- [Run catalogued tasks only; a new script is catalogued](.archcore/rules/catalogued-tasks-only.rule.md)
+- [Code follows skill-coder: code map, ruff on new files, tests](.archcore/rules/code-follows-skill-coder.rule.md)
+- [docs/history is one folder per kind with a generated index](.archcore/rules/history-by-kind.rule.md)
+- [Bootstrap and refresh ask whether to link a Pad workspace](.archcore/rules/ask-about-pad-at-bootstrap.rule.md)
+- [The pack stays tool-agnostic, generic and free of project output](.archcore/rules/tool-agnostic-and-generic.rule.md)
 
 - Token budget (operator, 2026-10-14: "not too narrow so that the whole picture is not seen ... but not bombarding it with information which
   is not required, and the AI agent should be able to get more information when needed"): every file and template this package generates keeps to
   the loading tiers in `references/governed-file-roles.md`: always-read files hold rules and pointers, detail sits one link down, history is
-  moved verbatim to `docs/history/` and found with `just history`. Never inline what a link can carry; never delete to save space.
+  moved verbatim to `docs/history/<kind>/` and found with `just history`. Never inline what a link can carry; never delete to save space.
 - Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries
-  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`).
+  live in `docs/history/<kind>/`, read only on need (`just history <term>`, `just history-show <stamp>`).
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->
 <!-- skill-ai-it-version: 2026-10-14-compact-v2 -->

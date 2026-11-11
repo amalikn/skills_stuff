@@ -130,6 +130,7 @@ def relink(text: str, source_dir: str, archive_dir: str) -> str:
   Returns:
     The text with each relative `](target)` recomputed; URLs, absolute paths and anchor-only targets unchanged.
   """
+
   def fix(m: re.Match) -> str:
     """One `](target)` match, its target recomputed or left as it is.
 
@@ -249,7 +250,7 @@ def summary(path: pathlib.Path) -> str:
   prefix = kind[0] if kind else ""
   body = text.split("\n---", 1)[1] if text.startswith("---\n") and "\n---" in text[4:] else text
   if prefix == "session-record" or not kind:
-    return head.get("summary") or head.get("title") or _plain(next((l for l in body.split("\n") if l.startswith("# ")), path.stem)[2:])
+    return head.get("summary") or head.get("title") or _plain(next((ln for ln in body.split("\n") if ln.startswith("# ")), path.stem)[2:])
   if prefix == "changelog":
     titles = [m.group(1) for m in re.finditer(r"^## .*? — (.+)$", body, re.M)]
     parts, n = titles, len(titles)
@@ -259,14 +260,14 @@ def summary(path: pathlib.Path) -> str:
       parts = [f"{s.strip()}: {_words(_plain(first), 9)}" for _, s, first in rows]
       n = len(rows)
     else:
-      items = [l for l in body.split("\n") if re.match(r"^- \*\*\d{8}_\d{4}\*\*", l)]
-      parts, n = [_words(_plain(l), 9) for l in items], len(items)
+      items = [ln for ln in body.split("\n") if re.match(r"^- \*\*\d{8}_\d{4}\*\*", ln)]
+      parts, n = [_words(_plain(ln), 9) for ln in items], len(items)
   elif prefix == "roadmap":
-    items = [l for l in body.split("\n") if l.startswith("- [x]")]
-    parts, n = [_words(_plain(l), 8) for l in items], len(items)
+    items = [ln for ln in body.split("\n") if ln.startswith("- [x]")]
+    parts, n = [_words(_plain(ln), 8) for ln in items], len(items)
   else:  # sync-archive
-    items = [l for l in body.split("\n") if re.match(r"^- \[[xX]\] ", l)]
-    parts, n = [_words(_plain(l), 9) for l in items], len(items)
+    items = [ln for ln in body.split("\n") if re.match(r"^- \[[xX]\] ", ln)]
+    parts, n = [_words(_plain(ln), 9) for ln in items], len(items)
   covers = head.get("covers", "")
   dates = re.findall(r"\d{4}-\d{2}-\d{2}", covers)
   span = f", {dates[0]} to {dates[-1]}" if dates else ""
@@ -305,7 +306,7 @@ def index_block(root: pathlib.Path, current: str = "") -> str:
   top = root / HISTORY
   keep = _existing(current)
   out = [START, ""]
-  for prefix, sub, title, _ in KINDS:
+  for prefix, _sub, title, _ in KINDS:
     files = archives(root, prefix)
     if not files:
       continue
@@ -334,16 +335,28 @@ def render_index(root: pathlib.Path) -> str:
   path = root / HISTORY / "readme.md"
   current = path.read_text(encoding="utf-8") if path.is_file() else ""
   block = index_block(root, current)
+  template = pathlib.Path(__file__).resolve().parents[2] / "templates" / "history-readme.md"
+  if not current and template.is_file():  # a project without an index starts from the template
+    current = template.read_text(encoding="utf-8")
   if START in current and END in current:
-    return current[:current.index(START)] + block + current[current.index(END) + len(END):]
-  intro = [l for l in current.split("\n")] if current else ["# History", "", "Rotated records, one folder per kind. Do not read these by default:"
-                                                                " search with `just history <term>`, print one entry with `just history-show <stamp>`.", ""]
-  first_row = next((i for i, l in enumerate(intro) if ROW.match(l)), None)
-  rest = [l for l in intro[first_row:] if not ROW.match(l) and not l.startswith("## ")] if first_row is not None else []
+    return current[: current.index(START)] + block + current[current.index(END) + len(END) :]
+  intro = (
+    [ln for ln in current.split("\n")]
+    if current
+    else [
+      "# History",
+      "",
+      "Rotated records, one folder per kind. Do not read these by default:"
+      " search with `just history <term>`, print one entry with `just history-show <stamp>`.",
+      "",
+    ]
+  )
+  first_row = next((i for i, ln in enumerate(intro) if ROW.match(ln)), None)
+  rest = [ln for ln in intro[first_row:] if not ROW.match(ln) and not ln.startswith("## ")] if first_row is not None else []
   head = intro[:first_row] if first_row is not None else intro
   while head and not head[-1].strip():
     head.pop()
-  tail = [l for l in rest if l.strip()]
+  tail = [ln for ln in rest if ln.strip()]
   return "\n".join(head + ["", block] + ([""] + tail if tail else [])) + "\n"
 
 
@@ -377,8 +390,12 @@ def main(argv: list[str] | None = None) -> int:
   if not (a.project_root / HISTORY).is_dir():
     print(f"no {HISTORY} under {a.project_root}", file=sys.stderr)
     return 2
-  print(index_block(a.project_root.resolve(), (a.project_root / HISTORY / "readme.md").read_text(encoding="utf-8")
-                    if (a.project_root / HISTORY / "readme.md").is_file() else ""))
+  print(
+    index_block(
+      a.project_root.resolve(),
+      (a.project_root / HISTORY / "readme.md").read_text(encoding="utf-8") if (a.project_root / HISTORY / "readme.md").is_file() else "",
+    )
+  )
   return 0
 
 

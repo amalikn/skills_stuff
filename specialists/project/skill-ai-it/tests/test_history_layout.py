@@ -81,14 +81,18 @@ def project(tmp: Path, flat: bool = True) -> Path:
   (hist / "scratchpad-20261110_0136.md").write_text(SCRATCH_ARC)
   (hist / "session-record-20261106_1650.md").write_text(SESSION)
   (hist / "rotation-audit-baseline.txt").write_text("# none\n")
-  (hist / "readme.md").write_text("# History\n\nIntro kept.\n\n- [session-record-20261106_1650.md](session-record-20261106_1650.md) Hand words.\n"
-                                  "- [changelog-20261110_0032.md](changelog-20261110_0032.md) 1 entries from `CHANGELOG.md`, 2026-11-08 to 2026-11-08.\n")
+  (hist / "readme.md").write_text(
+    "# History\n\nIntro kept.\n\n- [session-record-20261106_1650.md](session-record-20261106_1650.md) Hand words.\n"
+    "- [changelog-20261110_0032.md](changelog-20261110_0032.md) 1 entries from `CHANGELOG.md`, 2026-11-08 to 2026-11-08.\n"
+  )
   (root / "CHANGELOG.md").write_text("# Changelog\n\nOld: [arc](docs/history/changelog-20261110_0032.md); also `docs/history/scratchpad-20261110_0136.md`.\n")
   other = tmp / "other" / "docs" / "history"
   other.mkdir(parents=True)
   (other / "changelog-20261110_0032.md").write_text("other project's own archive\n")
-  (tmp / "other" / "notes.md").write_text("Ours: `docs/history/changelog-20261110_0032.md`; theirs: proj/docs/history/changelog-20261110_0032.md "
-                                          "and [link](../proj/docs/history/changelog-20261110_0032.md).\n")
+  (tmp / "other" / "notes.md").write_text(
+    "Ours: `docs/history/changelog-20261110_0032.md`; theirs: proj/docs/history/changelog-20261110_0032.md "
+    "and [link](../proj/docs/history/changelog-20261110_0032.md).\n"
+  )
   for args in (["init", "-q"], ["add", "-A"], ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "init"]):
     subprocess.run(["git", "-C", str(tmp), *args], check=True, capture_output=True, timeout=60)
   return root

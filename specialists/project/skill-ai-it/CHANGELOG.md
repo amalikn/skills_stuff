@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261111_1125
+Last rotated: 20261111_1135
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,7 @@ Last rotated: 20261111_1125
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261111_1135 — archcore, ruff, code map, templates and the Pad question](#20261111_1135--archcore-ruff-code-map-templates-and-the-pad-question)
 - [20261111_1125 — docs/history by kind, generated index with summaries, migration](#20261111_1125--docshistory-by-kind-generated-index-with-summaries-migration)
 - [20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs](#20261105_2139--promote-quoted-front-matter-last-reviewed-decisions_to_adrs)
 - [20261105_2047 — adopt_governed_files: check recipe matched by exact name](#20261105_2047--adopt_governed_files-check-recipe-matched-by-exact-name)
@@ -31,9 +32,6 @@ Last rotated: 20261111_1125
 - [20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea](#20261027_1840--pitfalls-from-the-skill-goal-guard-bootstrap-upgrader-placement-idea)
 - [20261026_1525 — Line-only budgets reverted: the 25 KB limit is back](#20261026_1525--line-only-budgets-reverted-the-25-kb-limit-is-back)
 - [20261022_2132 — plan_tracker: What next gets a detail block per item](#20261022_2132--plan_tracker-what-next-gets-a-detail-block-per-item)
-- [20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller](#20261022_1819--plan_tracker-plan-tracker-page-setup-and-upkeep-promoted-from-smc-resiliency-and-unified-network-controller)
-- [20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check](#20261022_1749--slurp-tracker-linking-documented-incident-a-commit-made-on-a-failed-check)
-- [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -49,6 +47,23 @@ Last rotated: 20261111_1125
 - scripts/adoption/adopt_governed_files.py: FILE_BUDGETS: AGENTS.md and AI_NAVIGATION.md get `Budget: 150 lines, 12 KB` as README gets its own (operator, 2026-11-06: governance files read whole carry a budget; doc_freshness enforces it, grandfather_sizes keeps a file already over from failing); scripts/records/budget_plan.py reports those files against their stated budget; test asserts AGENTS.md gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261111_1135 — archcore, ruff, code map, templates and the Pad question
+
+Operator, 2026-11-11: skill-ai-it gets the lint config, code map and archcore "like we do in our other skills", its templates updated with any
+missing ones added, and bootstrap and refresh ask whether to link a Pad workspace (a suggested name; repos may share one).
+
+- Added `.archcore/` (archcore 0.3.6 init, `archcore status` clean): eight rules, one file each, and `index.guide.md`; AGENTS.md Working rules are now
+  one line and a link per rule (AGENTS.md re-read in full, Last reviewed 2026-11-11).
+- Added `ruff.toml` (two-space, 160 columns, the other skills' rule set; the 65 older Python files excluded until a reformat is decided, Markdown
+  excluded), `ruff==0.17.3` in requirements.txt, `just lint` inside `just check` (proved to fail on a bad new file).
+- Added `code-map.toml` (adopt_code_map.py): 38 modules, all `promoted` (this pack's own tooling).
+- Added templates `history-readme.md` (used by history_layout.py for a project without an index), `session-record.md` (slurp closeouts; skill-slurp-chat
+  Step 8 names it), `archcore/index.guide.md` and `archcore/rule.md` (promote; patterns/archcore-routing.md names them); AI_NAVIGATION template names the
+  history folders.
+- Added [references/pad-workspace.md](references/pad-workspace.md) and its SKILL.md step: with no `.pad.toml`, ask once (folder name suggested, existing
+  workspaces offered, `pad workspace link <slug>` shares one; VERIFIED_PRIMARY `pad workspace --help` v0.19.2); "no" recorded in AGENTS.md.
+- Proposed, not built: a project `ruff.toml` template belongs with skill-coder (owner of lint rules).
 
 ## 20261111_1125 — docs/history by kind, generated index with summaries, migration
 
@@ -163,27 +178,6 @@ marker in a trusted folder holding untrusted repos). Smoke-run on three real fol
   `test_detail_blocks`, `test_slug_matches_vs_code` (8 pass). Template `templates/plan-tracker.md` and reference `target-map-and-timeline.md` (The plan tracker page; Learned 2026-10-22) updated.
 - ROADMAP: the rotation item is answered on the consumer side; smc-resiliency's decision check now reads `docs/history/changelog-*.md`, as the rotation contract asks.
 - The template's `Last reviewed: {today}` failed the skill's own freshness check: it now carries a real date and `--init` stamps today.
-
-## 20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller
-
-- Operator, 2026-10-22 (smc-resiliency session): "Ensure that plan tracker setup and maintenance is written back to skill-ai-it ... so that all the projects can follow it." New
-  `scripts/plan_tracker.py` (`--init` prints, `--init --apply` writes the starter page when absent; `--check` fails on a missing section, a missing `As of`, or a What next row unlinked or split; split
-  rows elsewhere and a stale `As of` are notes), `templates/plan-tracker.md` (the page both pilots share), `templates/AGENTS-plan-tracker-block.md` (upkeep rules to paste), recipe `just plan-tracker
-  <project>`, tests `tests/test_plan_tracker.py` (6), and the reference section "The plan tracker page" with a Learned entry.
-- First runs: smc-resiliency and unified-network-controller both failed on a split What next row (the markdown hook splits a row rendered wider than 200 columns); smc-resiliency's rows were shortened
-  and now pass; unified-network-controller is told through the hub.
-
-## 20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check
-
-Slurp of unified-network-controller session 76e313d5. `references/target-map-and-timeline.md` gains `link_ids`, a "Linking a tracker" section (linked nouns, one-line rows, `anchor_links.py` with
-`--outside warn`) and a Learned entry with its code excerpt. ROADMAP: plan_timeline.py over the module budget (486 lines), smc-resiliency adoption of anchor_links.py. Incident: fdf90d0 was committed
-while `just check` failed (CHANGELOG at 206 of 200 lines); found on the check's exit code right after, fixed by rotation in 2d3665c. The commit was chained with `;`, not gated on the check.
-
-## 20261022_1744 — anchor_links: --outside warn for links into other projects
-
-A side agent's note on unified-network-controller (2026-10-22): its commit gate now follows links into smc-resiliency and enterprise-strategy files, so a heading renamed by another project's session
-would block UNC's commits. `--outside warn` reports a broken link into a file outside the project root as a warning that names the likely cause (the linked project's recent edits) without failing
-`--check`; `--outside fail` stays the default. The root is resolved before comparing (macOS temp folders live under /private). Test: test_outside_links_warn_only_when_asked; 202 pass.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

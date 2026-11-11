@@ -39,6 +39,8 @@ When `skill-ai-it` runs in `bootstrap`, `navigation-add`, or `refresh` mode and 
 
 Do not populate `.archcore/` content during bootstrap or refresh. Surface candidates; require explicit authorization to promote.
 
+Starting files: [templates/archcore/index.guide.md](../templates/archcore/index.guide.md) and [templates/archcore/rule.md](../templates/archcore/rule.md) (one rule per file, quoted titles: a colon in an unquoted title is invalid YAML and `archcore status` fails, 2026-11-11).
+
 ## Source mapping
 
 | Content                     | Archcore target     |

@@ -72,15 +72,18 @@ skill-ai-it/
 ├── AI_NAVIGATION.md     agent router; context-map.yaml is its machine-readable twin
 ├── ARCHITECTURE.md      how the skill works and why
 ├── ROADMAP.md           current phase and open milestones
-├── CHANGELOG.md         dated change history (older entries in docs/history/)
+├── CHANGELOG.md         dated change history (older entries in docs/history/changelog/)
 ├── SCRATCHPAD.md        working state between sessions
+├── .archcore/          working rules, one file each (index.guide.md); AGENTS.md links each
 ├── justfile             task catalog; .mise.toml pins runtimes; requirements.txt
+├── ruff.toml            Python lint and format (new files; `just lint` in `just check`)
+├── code-map.toml        skill-coder's code map: each script's status
 ├── references/          on-need detail moved out of SKILL.md, one topic per file
 ├── templates/           files generated into target projects (incl. govcheck/)
 ├── patterns/            optional guidance modules
 ├── scripts/             tooling in family folders, catalogued in scripts/README.md
 ├── tests/               tests for the scripts
-├── docs/                plans, reviews, history/, trackers/, archive/
+├── docs/                plans, reviews, history/ (a folder per kind), trackers/, archive/
 └── governance/          watchman event log for historical context recovery
 ```
 

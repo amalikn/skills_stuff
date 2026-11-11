@@ -88,7 +88,7 @@ audit-scripts:
 
 # Must exit 0 before durable work is called complete. Fix the project when it fails, never the check.
 # Governance coherence checks — assert this project's governance claims against reality
-check: _require-venv
+check: _require-venv lint
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
     @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
@@ -124,6 +124,11 @@ stale: _require-venv
 
 # Run safe local preflight checks
 preflight: runtimes audit-scripts check lint-md
+
+# Ruff lint and format check of the Python (ruff.toml: two-space indent, 160 columns; files from before 2026-11-11 excluded until reformatted)
+lint: _require-venv
+    @{{py}} -m ruff check .
+    @{{py}} -m ruff format --check .
 
 # Lint Markdown files when markdownlint-cli2 is available
 lint-md:

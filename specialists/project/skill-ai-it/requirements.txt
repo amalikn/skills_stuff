@@ -12,3 +12,6 @@
 # must never fail for environment reasons, since a check that cannot run is indistinguishable from
 # a check that passes.
 PyYAML>=6.0.2
+
+# ruff: lint and format check of new Python files (ruff.toml; `just lint`), the same pin as the other skills.
+ruff==0.17.3
