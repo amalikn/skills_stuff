@@ -1451,6 +1451,36 @@ def target(request_path, roots):                     # pure: tested without a so
   return 302, "vscode://file" + quote(path, safe="/") + (f":{m.group(1)}" if m else "")
 ```
 
+### P-67 Move files and repoint every reference by resolving links, not by matching names
+
+> **Learned 2026-11-11** · any repo moving dated files into subfolders · VERIFIED_PRIMARY (skill-ai-it `scripts/records/history_migrate.py` @ 22047db: 151 files
+> in smc-resiliency and 58 in skill-ai-it moved, 4 reference files repointed, one pre-existing broken link reported, tests in a throwaway git repo) ·
+> Falsifier: a link that resolved before the move and not after, with the verification passing. `reusable_candidate` (one tool, two projects).
+
+Problem:      Files are moved into subfolders (by kind, by year) in a repo where many files link to them, the moved files link to each other and outward
+              with relative paths, and other projects in the same tree hold files with the same names.
+Solution:     Plan the moves as old path -> new path. For every Markdown link in every text file (moved ones included), resolve the target against the
+              file's OLD folder; if the target moved, use its new path; write the link relative to the file's NEW folder. Plain path mentions (no link)
+              are rewritten only when they are unambiguous: `docs/history/<name>` inside the moved project, `<project>/docs/history/<name>` elsewhere.
+              Record each file's broken links before, compare after, fail on any new one. `git mv` keeps history; refuse with uncommitted changes.
+Why it works: Resolution, not name matching, so identical names in other projects are never touched and links that were already broken are not
+              "fixed" into new nonsense; the before/after comparison proves nothing regressed.
+Reuse:        Reorganising docs folders, splitting a flat archive, renaming a project folder in a monorepo.
+Pitfalls:     Skip other tools' memory folders (`.remember/`); a file copied with stale relative links (an index row) shows up as already broken,
+              not as caused by the move; readers that `glob("*.md")` the old folder silently find nothing afterwards, so change them to search both
+              layouts before migrating.
+Realised in:  Python -> skill-ai-it scripts/records/history_migrate.py (stdlib; history_layout.py for the kinds and the index)
+
+```python
+def fix(m):                                            # one ](target) in a file read at old_dir, now at new_dir
+  path, sep, anchor = m.group(1).partition("#")
+  old_target = Path(os.path.normpath(old_dir / path))
+  new_target = moves.get(old_target, old_target)       # follow the target if it moved too
+  if not (old_target.exists() or old_target in moves):
+    return m.group(0)                                  # already broken: leave it, report it
+  return f"]({os.path.relpath(new_target, new_dir)}{sep}{anchor})"
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

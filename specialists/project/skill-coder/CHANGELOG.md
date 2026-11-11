@@ -16,6 +16,7 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-11 write-back from smc-resiliency (docs/history standard): references/design-patterns.md P-67 (move files and repoint references by resolving links), languages/python.md (ruff 0.17 formats Markdown: exclude `*.md`)
 - 2026-11-11 write-back from smc-resiliency (Pad links): references/design-patterns.md P-66 (a localhost redirect for a link scheme a web app strips; skill-pad c931f50)
 - 20261110 references/tooling-and-runtime.md: Learned 2026-11-10 (skill-pad): a dataclass module loaded by path needs a sys.modules entry; flush progress lines so errors stay in order.
 

@@ -64,6 +64,12 @@ A non-zero exit with no JSON is a setup state, not a broken CLI; read stderr:
 [--template X]` (confirm the name with the user), then bootstrap again. Anything else ("not configured", "session expired", an error) means a human must finish auth in an interactive terminal; do not
 run `pad init` or `pad workspace init`. Both fail fast without a terminal (BUG-2538/2577/2592) and only spend a call; with a real terminal attached they start a browser flow bounded at 20 minutes.
 
+> **Learned 2026-11-11** · several repos, one workspace · VERIFIED_PRIMARY · Source: `pad workspace --help` and `pad workspace link --help`, pad 0.19.2 ·
+> Falsifier: `link` creating a workspace or replacing agent_name
+> `pad workspace link <slug>` links the current folder to an EXISTING workspace by writing (or updating) its `.pad.toml`; it creates nothing and keeps
+> `agent_name` and `[push]`. So several repos can share one workspace; `pad workspace switch <slug>` moves a folder to another. skill-ai-it bootstrap and
+> refresh ask which (its references/pad-workspace.md).
+
 ## Conventions before work
 
 Before an action that has a trigger (`on-implement` before code, `on-commit`, `on-pr-create`, `on-task-complete`, `on-plan`, and in other domains `on-candidate-advance`, `on-source-cited`, ...), check

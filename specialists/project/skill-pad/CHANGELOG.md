@@ -13,6 +13,10 @@ Archive: docs/history/ (`just history`, `just history-show`)
 
 # Changelog — skill-pad
 
+## 20261111_1135 — workspace sharing noted
+
+- `references/workspace-context.md`: Learned 2026-11-11, `pad workspace link` shares an existing workspace across repos (skill-ai-it asks at bootstrap).
+
 ## 20261111_1054 — Pad link opener: repo links in Pad open in VS Code
 
 ### Added
