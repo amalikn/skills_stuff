@@ -1,15 +1,18 @@
 ---
 name: skill-knowledge-curator
-description: >-
-  Knowledge Curator (alias skill-kc): evidence-linked curation of a project's Markdown knowledge. Use to audit, consolidate or reconcile project docs
-  ("curate the docs in X", "consolidate these reviews", "do these notes contradict each other", "what is the current design of Y", "which of these files
-  is authoritative", "archive the old reports"): inventories every source, takes agent-extracted atomic claims only with verified source excerpts, finds
-  duplicates and conflicts, asks the operator targeted review questions, renders derived knowledge pages, promotes a page to authoritative behind gates,
-  and plans (never performs) archiving of absorbed sources. Not for routine memory or status writes, governance decisions or code refactors; never edits a
-  source document or governing file and never approves a disputed fact itself.
+description: "Knowledge Curator (alias skill-kc): audit, consolidate and reconcile a project's Markdown docs with evidence-linked claims."
 ---
 
 # Knowledge Curator
+
+## When to use
+
+Knowledge Curator (alias skill-kc): evidence-linked curation of a project's Markdown knowledge. Use to audit, consolidate or reconcile project docs
+("curate the docs in X", "consolidate these reviews", "do these notes contradict each other", "what is the current design of Y", "which of these files
+is authoritative", "archive the old reports"): inventories every source, takes agent-extracted atomic claims only with verified source excerpts, finds
+duplicates and conflicts, asks the operator targeted review questions, renders derived knowledge pages, promotes a page to authoritative behind gates,
+and plans (never performs) archiving of absorbed sources. Not for routine memory or status writes, governance decisions or code refactors; never edits a
+source document or governing file and never approves a disputed fact itself.
 
 ## Contents
 

@@ -1,11 +1,6 @@
 ---
 name: skill-pad
-description: >-
-  Pad (getpad.dev) project management through the pad CLI: talk to a project's Pad workspace (create, find, update and plan items, conventions,
-  playbooks, roles), plus status, capture, onboard, connect and disconnect for the live push feed, and the operator's Pad setup (conventions baseline,
-  export into the repo, nightly backup). Use whenever the user says /pad, $pad, "pad", or asks about a project's Pad tasks, ideas, plans, bugs or
-  docs, or sets Pad up in a project. Not for a project's repo trackers themselves (those stay the truth) and not for Pad's Claude Code plugin, which
-  the operator does not use.
+description: "Pad (getpad.dev) project management via the pad CLI: items, plans, conventions, live feed, setup. Use for /pad, $pad or Pad tasks."
 argument-hint: "[status | capture <thought> | onboard | connect | disconnect | anything you want to say to your project]"
 allowed-tools:
   - Bash
@@ -14,6 +9,14 @@ allowed-tools:
 ---
 
 # skill-pad
+
+## When to use
+
+Pad (getpad.dev) project management through the pad CLI: talk to a project's Pad workspace (create, find, update and plan items, conventions,
+playbooks, roles), plus status, capture, onboard, connect and disconnect for the live push feed, and the operator's Pad setup (conventions baseline,
+export into the repo, nightly backup). Use whenever the user says /pad, $pad, "pad", or asks about a project's Pad tasks, ideas, plans, bugs or
+docs, or sets Pad up in a project. Not for a project's repo trackers themselves (those stay the truth) and not for Pad's Claude Code plugin, which
+the operator does not use.
 
 The operator's own Pad skill (operator, 2026-11-10: "develop our own skill and not rely on the plugin"). It drives the `pad` CLI (v0.19.2, Homebrew `perpetualsoftware/tap/pad`) for Claude Code and,
 through the same file, Codex, Cursor, Windsurf and OpenCode. It carries what Pad's own skill and plugin teach, rewritten into this pack's references, plus the operator's rules; it depends on no

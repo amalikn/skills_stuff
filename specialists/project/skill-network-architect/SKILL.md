@@ -1,12 +1,6 @@
 ---
 name: skill-network-architect
-description: >-
-  Designs, reviews and troubleshoots network architecture and produces decision-ready outputs: target designs, IP and VLAN/VRF plans, routing and
-  segmentation policy, failure-domain and capacity models, migration and cutover plans, and validation tests. Use for campus, datacenter, WAN/SD-WAN, VPN,
-  Wi-Fi and radio links, IPv4/IPv6 addressing, BGP/OSPF/EVPN, firewalls and trust zones, DNS/DHCP/NTP, redundant ISPs and failover, MTU and link budgets,
-  or any connectivity problem that spans devices or layers, even when the user does not say "architecture". Not for one device's commands or firmware
-  (skill-smc, skill-cambium, skill-mikrotik), diagram layout (skill-drawio) or code (skill-coder); collaborates with skill-systems-architect on hosts,
-  storage and recovery.
+description: "Network architecture design, review and troubleshooting: IP/VLAN/VRF plans, routing, segmentation, WAN, Wi-Fi, failover."
 metadata:
   version: "2.3.1"
   reviewed: "2026-10-29"
@@ -14,6 +8,15 @@ metadata:
 ---
 
 # Network Architect
+
+## When to use
+
+Designs, reviews and troubleshoots network architecture and produces decision-ready outputs: target designs, IP and VLAN/VRF plans, routing and
+segmentation policy, failure-domain and capacity models, migration and cutover plans, and validation tests. Use for campus, datacenter, WAN/SD-WAN, VPN,
+Wi-Fi and radio links, IPv4/IPv6 addressing, BGP/OSPF/EVPN, firewalls and trust zones, DNS/DHCP/NTP, redundant ISPs and failover, MTU and link budgets,
+or any connectivity problem that spans devices or layers, even when the user does not say "architecture". Not for one device's commands or firmware
+(skill-smc, skill-cambium, skill-mikrotik), diagram layout (skill-drawio) or code (skill-coder); collaborates with skill-systems-architect on hosts,
+storage and recovery.
 
 ## Contents
 

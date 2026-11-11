@@ -1,9 +1,6 @@
 ---
 name: skill-eval-manager
-description: >-
-  Define, review, record, and maintain durable evaluation or acceptance/verification suites for operational systems, including independent oracles,
-  evidence layers, populations, validity, and falsifiability. Use for system-evaluation discipline and results history; do not use for ordinary unit
-  testing, debugging, CI setup, or LLM/prompt evaluation.
+description: "Define, review and record durable acceptance/verification suites for operational systems. Not unit tests, CI or LLM evals."
 metadata:
   version: 0.1.10
   aliases:
@@ -12,6 +9,12 @@ metadata:
 ---
 
 # Skill: Eval Manager
+
+## When to use
+
+Define, review, record, and maintain durable evaluation or acceptance/verification suites for operational systems, including independent oracles,
+evidence layers, populations, validity, and falsifiability. Use for system-evaluation discipline and results history; do not use for ordinary unit
+testing, debugging, CI setup, or LLM/prompt evaluation.
 
 Use this skill to make a project's claims testable over time. An eval is a claim, an independently defined population, an independent oracle, evidence at a declared layer, a recorded verdict, and a
 validity policy.
