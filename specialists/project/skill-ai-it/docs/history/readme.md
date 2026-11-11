@@ -12,62 +12,74 @@ Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by
 
 Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within budget. Do not read these by default: search with `rotate_records.py --find` (`just history`) or print one entry with `--show <stamp>`.
 
-- [changelog-20261010_1759.md](changelog-20261010_1759.md) 46 entries from `CHANGELOG.md`, 2026-05-22 to 2026-10-07.
-- [scratchpad-20261010_1759.md](scratchpad-20261010_1759.md) 16 entries from `SCRATCHPAD.md`, 2026-05-22 to 2026-08-11.
-- [changelog-20261010_2017.md](changelog-20261010_2017.md) 1 entries from `CHANGELOG.md`, 2026-09-03 to 2026-09-03.
-- [changelog-20261010_2207.md](changelog-20261010_2207.md) 1 entries from `CHANGELOG.md`, 2026-09-03 to 2026-09-03.
-- [changelog-20261011_0525.md](changelog-20261011_0525.md) 1 entries from `CHANGELOG.md`, 2026-10-07 to 2026-10-07.
-- [changelog-20261012_0953.md](changelog-20261012_0953.md) 1 entries from `CHANGELOG.md`, 2026-10-07 to 2026-10-07.
-- [changelog-20261013_2230.md](changelog-20261013_2230.md) 1 entries from `CHANGELOG.md`, 2026-10-07 to 2026-10-07.
-- [changelog-20261013_2241.md](changelog-20261013_2241.md) 1 entries from `CHANGELOG.md`, 2026-10-08 to 2026-10-08.
-- [changelog-20261014_0931.md](changelog-20261014_0931.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [roadmap-20261014_0942.md](roadmap-20261014_0942.md) 5 done items from `ROADMAP.md`, moved 20261014_0942.
-- [changelog-20261014_0943.md](changelog-20261014_0943.md) 2 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [changelog-20261014_1003.md](changelog-20261014_1003.md) 2 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [changelog-20261014_1009.md](changelog-20261014_1009.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [scratchpad-20261014_1017.md](scratchpad-20261014_1017.md) 3 entries from `SCRATCHPAD.md`, 2026-05-22 to 2026-08-11.
-- [rotation-audit-baseline.txt](rotation-audit-baseline.txt) record lines edited on purpose, accepted by `audit_rotations.py` (with the reason).
-- [changelog-20261014_1018.md](changelog-20261014_1018.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [changelog-20261014_1020.md](changelog-20261014_1020.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [changelog-20261014_1027.md](changelog-20261014_1027.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [changelog-20261014_1030.md](changelog-20261014_1030.md) 1 entries from `CHANGELOG.md`, 2026-10-10 to 2026-10-10.
-- [scratchpad-20261014_1035.md](scratchpad-20261014_1035.md) SCRATCHPAD Next actions as replaced at the 2026-10-14 slurp close (verbatim).
-- [changelog-20261014_1051.md](changelog-20261014_1051.md) 1 entries from `CHANGELOG.md`, 2026-10-11 to 2026-10-11.
-- [changelog-20261014_1100.md](changelog-20261014_1100.md) 1 entries from `CHANGELOG.md`, 2026-10-12 to 2026-10-12.
-- [changelog-20261014_1102.md](changelog-20261014_1102.md) 2 entries from `CHANGELOG.md`, 2026-10-12 to 2026-10-13.
-- [changelog-20261014_1202.md](changelog-20261014_1202.md) 1 entries from `CHANGELOG.md`, 2026-10-13 to 2026-10-13.
-- [changelog-20261014_1213.md](changelog-20261014_1213.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261014_1233.md](changelog-20261014_1233.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [scratchpad-20261014_1247.md](scratchpad-20261014_1247.md) 1 entries from `SCRATCHPAD.md`, 2026-08-11 to 2026-08-11.
-- [changelog-20261015_0129.md](changelog-20261015_0129.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261019_1734.md](changelog-20261019_1734.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261020_1308.md](changelog-20261020_1308.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261020_1322.md](changelog-20261020_1322.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261020_1632.md](changelog-20261020_1632.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261020_1753.md](changelog-20261020_1753.md) 2 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261021_1817.md](changelog-20261021_1817.md) 2 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1209.md](changelog-20261022_1209.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [roadmap-20261022_1209.md](roadmap-20261022_1209.md) 1 done items from `ROADMAP.md`, moved 20261022_1209.
-- [changelog-20261022_1623.md](changelog-20261022_1623.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1632.md](changelog-20261022_1632.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1741.md](changelog-20261022_1741.md) 2 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1744.md](changelog-20261022_1744.md) 1 entries from `CHANGELOG.md`, 2026-10-14 to 2026-10-14.
-- [changelog-20261022_1749.md](changelog-20261022_1749.md) 1 entries from `CHANGELOG.md`, 2026-10-15 to 2026-10-15.
-- [changelog-20261022_1819.md](changelog-20261022_1819.md) 1 entries from `CHANGELOG.md`, 2026-10-19 to 2026-10-19.
-- [changelog-20261022_2132.md](changelog-20261022_2132.md) 2 entries from `CHANGELOG.md`, 2026-10-19 to 2026-10-19.
-- [changelog-20261026_1525.md](changelog-20261026_1525.md) 2 entries from `CHANGELOG.md`, 2026-10-19 to 2026-10-20.
-- [changelog-20261027_1840.md](changelog-20261027_1840.md) 1 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [changelog-20261027_1922.md](changelog-20261027_1922.md) 1 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [changelog-20261027_1942.md](changelog-20261027_1942.md) 1 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [scratchpad-20261027_2024.md](scratchpad-20261027_2024.md) 1 entries from `SCRATCHPAD.md`, 2026-09-23 to 2026-09-23.
-- [changelog-20261027_2024.md](changelog-20261027_2024.md) 1 entries from `CHANGELOG.md`, 2026-10-20 to 2026-10-20.
-- [changelog-20261027_2048.md](changelog-20261027_2048.md) 2 entries from `CHANGELOG.md`, 2026-10-21 to 2026-10-21.
-- [scratchpad-20261027_2055.md](scratchpad-20261027_2055.md) 7 entries from `SCRATCHPAD.md`, 2026-09-23 to 2026-10-07.
-- [changelog-20261027_2055.md](changelog-20261027_2055.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [roadmap-20261029_1209.md](roadmap-20261029_1209.md) 1 done items from `ROADMAP.md`, moved 20261029_1209.
-- [changelog-20261029_2015.md](changelog-20261029_2015.md) 2 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [changelog-20261103_1745.md](changelog-20261103_1745.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [roadmap-20261103_1745.md](roadmap-20261103_1745.md) 2 done items from `ROADMAP.md`, moved 20261103_1745.
-- [changelog-20261105_2141.md](changelog-20261105_2141.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [changelog-20261110_2029.md](changelog-20261110_2029.md) 1 entries from `CHANGELOG.md`, 2026-10-22 to 2026-10-22.
-- [scratchpad-20261110_2029.md](scratchpad-20261110_2029.md) 1 entries from `SCRATCHPAD.md`, 2026-10-07 to 2026-10-07.
+<!-- history-index:start (generated by skill-ai-it history_layout.py; descriptions written by hand are kept) -->
+
+## Change log
+
+- [changelog-20261111_1125.md](changelog/changelog-20261111_1125.md) 1 entry, 2026-10-22 to 2026-10-22: anchor_links promoted; plan_timeline links ids to their headings
+- [changelog-20261110_2029.md](changelog/changelog-20261110_2029.md) 1 entry, 2026-10-22 to 2026-10-22: target map reference: summary is one short line; a missed stage heading folds its checklist into the stage above
+- [changelog-20261105_2141.md](changelog/changelog-20261105_2141.md) 1 entry, 2026-10-22 to 2026-10-22: table_wrap: shared hook-compatible wrapper; target-map embeds wrap too
+- [changelog-20261103_1745.md](changelog/changelog-20261103_1745.md) 1 entry, 2026-10-22 to 2026-10-22: plan_timeline: the Timeline table wraps like the page's other tables
+- [changelog-20261029_2015.md](changelog/changelog-20261029_2015.md) 2 entries, 2026-10-22 to 2026-10-22: audit_rotations: safety header and git timeouts; rewrap tolerance reverted; Plan timeline: extra rows before the plan rows they feed on one date
+- [changelog-20261027_2055.md](changelog/changelog-20261027_2055.md) 1 entry, 2026-10-22 to 2026-10-22: plan_timeline: after places unplanned rows beside their plan step
+- [changelog-20261027_2048.md](changelog/changelog-20261027_2048.md) 2 entries, 2026-10-21 to 2026-10-21: target_map.py and plan_timeline.py promoted from unified-network-controller; governance-checks: a supersession banner tied to a tracker
+- [changelog-20261027_2024.md](changelog/changelog-20261027_2024.md) 1 entry, 2026-10-20 to 2026-10-20: Template: a type check replaces the type-ignore in check_governance.py; split_checker's mirror diff
+- [changelog-20261027_1942.md](changelog/changelog-20261027_1942.md) 1 entry, 2026-10-20 to 2026-10-20: rotate_records: project-sync outbox and inbox lines never rotate
+- [changelog-20261027_1922.md](changelog/changelog-20261027_1922.md) 1 entry, 2026-10-20 to 2026-10-20: Template: govcheck/core.py header states it is read-only
+- [changelog-20261027_1840.md](changelog/changelog-20261027_1840.md) 1 entry, 2026-10-20 to 2026-10-20: pitfalls: navigation dry run exits 2 when changes are pending
+- [changelog-20261026_1525.md](changelog/changelog-20261026_1525.md) 2 entries, 2026-10-19 to 2026-10-20: Code map in bootstrap and refresh: adopt_code_map.py, check_code_map; pitfalls: promote leaves routing to the deleted candidates file
+- [changelog-20261022_2132.md](changelog/changelog-20261022_2132.md) 2 entries, 2026-10-19 to 2026-10-19: Checker template: duplicated KEBAB_LEGACY block removed; pitfalls: hand-bootstrapped packs write accepted archcore decisions
+- [changelog-20261022_1819.md](changelog/changelog-20261022_1819.md) 1 entry, 2026-10-19 to 2026-10-19: Recipe names back to kebab-case; upgrader renames the template's snake_case recipes
+- [changelog-20261022_1749.md](changelog/changelog-20261022_1749.md) 1 entry, 2026-10-15 to 2026-10-15: doc_freshness: a Budget header counts only with a size
+- [changelog-20261022_1744.md](changelog/changelog-20261022_1744.md) 1 entry, 2026-10-14 to 2026-10-14: yaml_key_diff: context-map key changes and lost comments after an upgrade
+- [changelog-20261022_1741.md](changelog/changelog-20261022_1741.md) 2 entries, 2026-10-14 to 2026-10-14: pitfalls: the navigation upgrade drops context-map.yaml comments; validator: accepts the compact template's generated-output wording
+- [changelog-20261022_1632.md](changelog/changelog-20261022_1632.md) 1 entry, 2026-10-14 to 2026-10-14: govern: stops on uncommitted governed files; drops resolved baseline entries
+- [changelog-20261022_1623.md](changelog/changelog-20261022_1623.md) 1 entry, 2026-10-14 to 2026-10-14: adopt: a future deadline is not a review date
+- [changelog-20261022_1209.md](changelog/changelog-20261022_1209.md) 1 entry, 2026-10-14 to 2026-10-14: Token efficiency from the UNC run: compact AGENTS block, load cost, header validity
+- [changelog-20261021_1817.md](changelog/changelog-20261021_1817.md) 2 entries, 2026-10-14 to 2026-10-14: deterministic navigation-control upgrade; govern fixes from the UNC run: folded legacy headers stay fenced; audit failures named
+- [changelog-20261020_1753.md](changelog/changelog-20261020_1753.md) 2 entries, 2026-10-14 to 2026-10-14: govern: one-step governance recipe and skill mode; refresh runs it first; role_check: context-map.yaml must parse (nav_validate stays manual)
+- [changelog-20261020_1632.md](changelog/changelog-20261020_1632.md) 1 entry, 2026-10-14 to 2026-10-14: Stamping unstamped projects: canary on agent-stack failed and was reverted
+- [changelog-20261020_1322.md](changelog/changelog-20261020_1322.md) 1 entry, 2026-10-14 to 2026-10-14: Coherence pass: ARCHITECTURE key decisions, sibling skills, sweep clean
+- [changelog-20261020_1308.md](changelog/changelog-20261020_1308.md) 1 entry, 2026-10-14 to 2026-10-14: Staleness audit: upgrader header, derived index counts, links, indexes
+- [changelog-20261019_1734.md](changelog/changelog-20261019_1734.md) 1 entry, 2026-10-14 to 2026-10-14: Graphify confirmed disabled; slurp write-backs (token-budget rule, roles_fleet)
+- [changelog-20261015_0129.md](changelog/changelog-20261015_0129.md) 1 entry, 2026-10-14 to 2026-10-14: File roles enforced: role_check.py, adoption adds headers, templates and loading tiers
+- [changelog-20261014_1233.md](changelog/changelog-20261014_1233.md) 1 entry, 2026-10-14 to 2026-10-14: Governed file roles defined; README trimmed; front matter everywhere
+- [changelog-20261014_1213.md](changelog/changelog-20261014_1213.md) 1 entry, 2026-10-14 to 2026-10-14: ROADMAP contract, budget and trim (roadmap_trim.py promoted from UNC)
+- [changelog-20261014_1202.md](changelog/changelog-20261014_1202.md) 1 entry, 2026-10-13 to 2026-10-13: Pitfall: enforce skill invocation with a hook, not a rule
+- [changelog-20261014_1102.md](changelog/changelog-20261014_1102.md) 2 entries, 2026-10-12 to 2026-10-13: Pitfall: the wrap hook runs on Write and Edit and reflows the whole file; check_outside_blocks.py; upgrader Python floor; adopter and the outline trial
+- [changelog-20261014_1100.md](changelog/changelog-20261014_1100.md) 1 entry, 2026-10-12 to 2026-10-12: Upgrader CHANGELOG heading uses the YYYYMMDD_hhmm stamp
+- [changelog-20261014_1051.md](changelog/changelog-20261014_1051.md) 1 entry, 2026-10-11 to 2026-10-11: Section-level Markdown reads (outline, section) and adopter attribute fix
+- [changelog-20261014_1030.md](changelog/changelog-20261014_1030.md) 1 entry, 2026-10-10 to 2026-10-10: move_sections link repointing and shared pointer; budget tidy step; add_changelog_entry
+- [changelog-20261014_1027.md](changelog/changelog-20261014_1027.md) 1 entry, 2026-10-10 to 2026-10-10: Reference reads measured (not split); tracker pointer no longer duplicates
+- [changelog-20261014_1020.md](changelog/changelog-20261014_1020.md) 1 entry, 2026-10-10 to 2026-10-10: Memory pointers rotate; no upgrade hint for project-owned blocks; jdm within budget
+- [changelog-20261014_1018.md](changelog/changelog-20261014_1018.md) 1 entry, 2026-10-10 to 2026-10-10: SKILL.md restructured: 2,074 to 198 lines, detail in references/ by topic
+- [changelog-20261014_1009.md](changelog/changelog-20261014_1009.md) 1 entry, 2026-10-10 to 2026-10-10: Compact navigation template; reference split by topic; adopter documents recipes; budget suggestions
+- [changelog-20261014_1003.md](changelog/changelog-20261014_1003.md) 2 entries, 2026-10-10 to 2026-10-10: budget_plan and normalise_records; heading dates and time grouping; runaway incident and fix; Rotation made safe and complete; adopter; headers for every script and config
+- [changelog-20261014_0943.md](changelog/changelog-20261014_0943.md) 2 entries, 2026-10-10 to 2026-10-10: Governed-file tools: rotation by bullet, ticked items resolved; checker standard; slurp rotates; feat: doc_freshness.py; Graphify disabled
+- [changelog-20261014_0931.md](changelog/changelog-20261014_0931.md) 1 entry, 2026-10-10 to 2026-10-10: deterministic navigation-control upgrade
+- [changelog-20261013_2241.md](changelog/changelog-20261013_2241.md) 1 entry, 2026-10-08 to 2026-10-08: feat: docstring_ratchet.py, the global docstring standard as a ratchet for any project
+- [changelog-20261013_2230.md](changelog/changelog-20261013_2230.md) 1 entry, 2026-10-07 to 2026-10-07: fix: the upgrade CHANGELOG entry follows the file's order
+- [changelog-20261012_0953.md](changelog/changelog-20261012_0953.md) 1 entry, 2026-10-07 to 2026-10-07: feat: migrate_legacy_blocks.py, the refresh step for pre-2026-09-23 blocks; the seven refused projects migrated
+- [changelog-20261011_0525.md](changelog/changelog-20261011_0525.md) 1 entry, 2026-10-07 to 2026-10-07: fix: nav_upgrade refuses legacy-layout blocks; context-map edited in place; recipe renames reach the docs
+- [changelog-20261010_2207.md](changelog/changelog-20261010_2207.md) 1 entry, 2026-09-03 to 2026-09-03: deterministic navigation-control automation
+- [changelog-20261010_2017.md](changelog/changelog-20261010_2017.md) 1 entry, 2026-09-03 to 2026-09-03: feat: AI navigation control-layer upgrade
+- [changelog-20261010_1759.md](changelog/changelog-20261010_1759.md) 42 entries, 2026-05-22 to 2026-10-07: feat: snake_case recipes (VERSION 2026-10-07-snake-case-recipes-v1); check_function_docs in the template; feat: snake_case file naming, check_file_naming; template renamed to context_preflight.sh; fix: runtime isolation ...
+
+## Scratchpad
+
+- [scratchpad-20261110_2029.md](scratchpad/scratchpad-20261110_2029.md) 1 entry, 2026-10-07 to 2026-10-07: Session history: ### 20261007_1626 — scripts/skills_registry.py: a skills list for any ...
+- [scratchpad-20261027_2055.md](scratchpad/scratchpad-20261027_2055.md) 0 entries, 2026-09-23 to 2026-10-07
+- [scratchpad-20261027_2024.md](scratchpad/scratchpad-20261027_2024.md) 0 entries, 2026-09-23 to 2026-09-23
+- [scratchpad-20261014_1247.md](scratchpad/scratchpad-20261014_1247.md) 0 entries, 2026-08-11 to 2026-08-11
+- [scratchpad-20261014_1035.md](scratchpad/scratchpad-20261014_1035.md) SCRATCHPAD Next actions as replaced at the 2026-10-14 slurp close (verbatim).
+- [scratchpad-20261014_1017.md](scratchpad/scratchpad-20261014_1017.md) 0 entries, 2026-05-22 to 2026-08-11
+- [scratchpad-20261010_1759.md](scratchpad/scratchpad-20261010_1759.md) 0 entries, 2026-05-22 to 2026-08-11
+
+## Roadmap
+
+- [roadmap-20261103_1745.md](roadmap/roadmap-20261103_1745.md) 2 done items: just check fails on the plan tracker template ...; Rotation keeps decision-cited log entries (answered 2026-10-22 21:30: ...
+- [roadmap-20261029_1209.md](roadmap/roadmap-20261029_1209.md) 1 done item: Plan tracker timeline as data (2026-10-21, candidate in ...
+- [roadmap-20261022_1209.md](roadmap/roadmap-20261022_1209.md) 1 done item: README budget across projects (2026-10-14): adopt_governed_files.py adds Budget: ...
+- [roadmap-20261014_0942.md](roadmap/roadmap-20261014_0942.md) 5 done items: Phase 1 — Initial navigation module (2026-05-22) Bootstrapped ...; Phase 2 — Tool-stack integration (2026-05-22) Added active ...; Phase 3 — Coherence and governance hardening (2026-05-22) ...; Phase 4 — Archcore ...
+
+<!-- history-index:end -->

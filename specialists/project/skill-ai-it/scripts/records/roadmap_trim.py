@@ -17,8 +17,14 @@ from __future__ import annotations
 import argparse
 import datetime
 import re
+import importlib.util
 import sys
 from pathlib import Path
+
+# Archive folder, link rewrite and index from the shared layout (one subfolder per kind, operator 2026-11-11).
+_hl_spec = importlib.util.spec_from_file_location("history_layout", Path(__file__).resolve().parent / "history_layout.py")
+hl = importlib.util.module_from_spec(_hl_spec)
+_hl_spec.loader.exec_module(hl)
 
 TOUCHES = ("files only",)
 ITEM = re.compile(r"^- \[( |x|X)\] ")
@@ -113,8 +119,8 @@ def tidy(lines: list[str]) -> str:
         ROADMAP.md text.
     """
     text = re.sub(r"\n{3,}", "\n\n", "\n".join(lines).rstrip() + "\n")
-    return text.replace("## Completed\n\n", "## Completed\n\nDone items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).\n\n", 1) \
-        if "docs/history/roadmap-" not in text else text
+    return text.replace("## Completed\n\n", "## Completed\n\nDone items move to `docs/history/roadmap/roadmap-*.md` (`just rotate`; find one with `just history <term>`).\n\n", 1) \
+        if "docs/history/roadmap" not in text else text
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -143,16 +149,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
     name = f"roadmap-{stamp}.md"
-    (args.root / "docs/history").mkdir(parents=True, exist_ok=True)
-    (args.root / "docs/history" / name).write_text(archive_text(moved, stamp), encoding="utf-8")
+    arc_dir = hl.archive_dir(args.root, "roadmap")
+    (args.root / arc_dir).mkdir(parents=True, exist_ok=True)
+    (args.root / arc_dir / name).write_text(hl.relink(archive_text(moved, stamp), "", arc_dir), encoding="utf-8")
     roadmap.write_text(tidy(kept), encoding="utf-8")
-    index = args.root / "docs/history/readme.md"
-    if not index.is_file():
-        index.write_text("---\nTitle: History\nCategory: folder-index\nStatus: current\nSummary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by their tools.\n---\n\n# History\n",
-                         encoding="utf-8")
-    index.write_text(index.read_text(encoding="utf-8").rstrip() + f"\n- [{name}]({name}) {len(moved)} done items from `ROADMAP.md`, moved {stamp}.\n",
-                     encoding="utf-8")
-    print(f"moved to docs/history/{name}; ROADMAP.md now {len(tidy(kept).splitlines())} lines")
+    hl.write_index(args.root)
+    print(f"moved to {arc_dir}/{name}; ROADMAP.md now {len(tidy(kept).splitlines())} lines")
     return 0
 
 

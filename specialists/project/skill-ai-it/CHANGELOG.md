@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261110_2029
+Last rotated: 20261111_1125
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,7 @@ Last rotated: 20261110_2029
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261111_1125 — docs/history by kind, generated index with summaries, migration](#20261111_1125--docshistory-by-kind-generated-index-with-summaries-migration)
 - [20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs](#20261105_2139--promote-quoted-front-matter-last-reviewed-decisions_to_adrs)
 - [20261105_2047 — adopt_governed_files: check recipe matched by exact name](#20261105_2047--adopt_governed_files-check-recipe-matched-by-exact-name)
 - [20261105_1725 — agents_chain check: AGENTS.md chains for Claude Code and Codex](#20261105_1725--agents_chain-check-agentsmd-chains-for-claude-code-and-codex)
@@ -33,7 +34,6 @@ Last rotated: 20261110_2029
 - [20261022_1819 — plan_tracker: plan tracker page setup and upkeep promoted from smc-resiliency and unified-network-controller](#20261022_1819--plan_tracker-plan-tracker-page-setup-and-upkeep-promoted-from-smc-resiliency-and-unified-network-controller)
 - [20261022_1749 — Slurp: tracker linking documented; incident, a commit made on a failed check](#20261022_1749--slurp-tracker-linking-documented-incident-a-commit-made-on-a-failed-check)
 - [20261022_1744 — anchor_links: --outside warn for links into other projects](#20261022_1744--anchor_links---outside-warn-for-links-into-other-projects)
-- [20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings](#20261022_1741--anchor_links-promoted-plan_timeline-links-ids-to-their-headings)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -49,6 +49,20 @@ Last rotated: 20261110_2029
 - scripts/adoption/adopt_governed_files.py: FILE_BUDGETS: AGENTS.md and AI_NAVIGATION.md get `Budget: 150 lines, 12 KB` as README gets its own (operator, 2026-11-06: governance files read whole carry a budget; doc_freshness enforces it, grandfather_sizes keeps a file already over from failing); scripts/records/budget_plan.py reports those files against their stated budget; test asserts AGENTS.md gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261111_1125 — docs/history by kind, generated index with summaries, migration
+
+Operator, 2026-11-11: docs/history gets one subfolder per kind (changelog, scratchpad, roadmap, session-records, sync) as the standard, and its index a summary line
+per file like the session records have. [references/files-history.md](references/files-history.md).
+
+- Added `scripts/records/history_layout.py` (layout, archive lookup in both layouts, link rewrite, generated index keeping hand-written descriptions) and
+  `scripts/records/history_migrate.py` (`just history-migrate <project> [--apply]`: git mv, links inside and references elsewhere repointed, another project's
+  same-name archive untouched, `.remember/` skipped, links verified); tests `tests/test_history_layout.py` (5).
+- Changed: rotate_records.py, roadmap_trim.py, audit_rotations.py and target_map.py write and read through the layout; roadmap_trim.py now relinks moved items
+  (it never did); rotate_records.py relinks the archive index rows too (a row could keep a root-relative link that never resolved). Older tests read archives
+  recursively. 234 tests pass.
+- Migrated: this pack's own docs/history (58 files) and smc-resiliency's (151 files, the canary).
+- Open: 24 doc-freshness reviews came due before this change (AGENTS.md, patterns/navigation/*, the open-items tracker and others); not bumped without a re-read.
 
 ## 20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs
 
@@ -170,17 +184,6 @@ while `just check` failed (CHANGELOG at 206 of 200 lines); found on the check's 
 A side agent's note on unified-network-controller (2026-10-22): its commit gate now follows links into smc-resiliency and enterprise-strategy files, so a heading renamed by another project's session
 would block UNC's commits. `--outside warn` reports a broken link into a file outside the project root as a warning that names the likely cause (the linked project's recent edits) without failing
 `--check`; `--outside fail` stays the default. The root is resolved before comparing (macOS temp folders live under /private). Test: test_outside_links_warn_only_when_asked; 202 pass.
-
-## 20261022_1741 — anchor_links promoted; plan_timeline links ids to their headings
-
-Operator, 2026-10-22, on unified-network-controller's plan tracker: "there should be hyperlink where possible, so that there is easy navigation", with smc-resiliency's tracker as the pattern, then
-"yes" to promoting what both projects now share.
-
-- `scripts/anchor_links.py` (new, read-only): every markdown link to a `#heading` must land on a heading that exists. Same rule as the copies piloted that day in smc-resiliency's and
-  unified-network-controller's govchecks, which now call this one. Recipe `just anchor-links`.
-- `scripts/plan_timeline.py`: a column may declare `link_ids: {page, heading}`; plain ids in its cells link to the first heading of `page` matching `heading` with the id filled in (`Step {id}` finds
-  "Step 2 — ...", not "Step 21"). Unknown ids stay text; a cell that already holds a link is left as written, so hand-linked data keeps rendering byte for byte.
-- Tests: `tests/test_anchor_links.py` (slugs, repeats, HTML anchors, skips, exit code) and three `LinkIds` cases; 201 pass.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

@@ -63,6 +63,10 @@ TRACKER_POINTER = "- Older open items are tracked in"
 SYNC_MARK = re.compile(r"^<!-- project-sync:\w+:(start|end) -->")
 RESOLVED = re.compile(r"\b(done|closed|resolved|superseded|retired)\b|^- \[x\]|~~", re.I)
 ARCHIVE_DIR = "docs/history"
+# Archive paths and the index come from the shared layout (one subfolder per kind, operator 2026-11-11); loaded by path like the other helpers.
+_hl_spec = importlib.util.spec_from_file_location("history_layout", pathlib.Path(__file__).resolve().parent / "history_layout.py")
+hl = importlib.util.module_from_spec(_hl_spec)
+_hl_spec.loader.exec_module(hl)
 #: Measured 2026-10-10 on UNC (about 30 log entries a day): age protects too much in an active project, so the newest units are kept by
 #: count and age is opt-in (`--keep-days`). A SCRATCHPAD section's newest entries supersede its older ones.
 DEFAULTS = {"log": {"keep_days": 0, "min_keep": 5}, "state": {"keep_days": 0, "min_keep": 3}}
@@ -576,10 +580,9 @@ def archives_of(root: pathlib.Path, live: str) -> list[pathlib.Path]:
         live: the record's project-relative path.
 
     Returns:
-        Paths under docs/history named after the record.
+        Paths under docs/history named after the record, in the flat or the by-kind layout.
     """
-    stem = pathlib.Path(live).stem.lower()
-    return sorted((root / ARCHIVE_DIR).glob(f"{stem}-*.md"))
+    return hl.archives(root, pathlib.Path(live).stem.lower())
 
 
 def find(root: pathlib.Path, live: str, term: str | None, stamp: str | None) -> int:
@@ -612,7 +615,7 @@ def find(root: pathlib.Path, live: str, term: str | None, stamp: str | None) -> 
     return 0 if hits else 1
 
 
-def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: dt.datetime, source_dir: str) -> str:
+def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: dt.datetime, source_dir: str, archive_dir: str = ARCHIVE_DIR) -> str:
     """The archive file for the units leaving the live record: front matter, an index, then the units verbatim (links relinked).
 
     Args:
@@ -622,6 +625,7 @@ def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: 
         stamp_now: this run's stamp.
         now: this run's moment.
         source_dir: the record's folder, for relinking.
+        archive_dir: the archive's folder, project-relative (history_layout.archive_dir).
 
     Returns:
         The archive text.
@@ -633,7 +637,9 @@ def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: 
            " Read the index first; open an entry only when a live record cites it or the history is the question.", "---", "",
            f"# {title} archive {stamp_now}", "", "## Index", "", "| Stamp | Section | First line |", "| --- | --- | --- |"]
     for u in sorted(moved, key=lambda u: u.when or dt.datetime.min):
-        first = re.sub(r"\s+", " ", (u.lines[1] if u.lines[0] == u.section and len(u.lines) > 1 else u.lines[0])).replace("|", "/")[:110]
+        first_line = u.lines[1] if u.lines[0] == u.section and len(u.lines) > 1 else u.lines[0]
+        # the index row is read from the archive's folder too: relink it like the body (2026-11-11: a row kept a root-relative link)
+        first = re.sub(r"\s+", " ", relink([first_line], source_dir, archive_dir)[0]).replace("|", "/")[:110]
         arc.append(f"| {u.stamp} | {u.section.lstrip('# ').replace('|', '/')[:40]} | {first} |")
     arc.append("")
     by_section: dict[str, list[Unit]] = {}
@@ -643,13 +649,13 @@ def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: 
         if units[0].lines[:1] != [section]:
             arc += [section, ""]
         for u in units:
-            arc += relink(u.lines, source_dir, ARCHIVE_DIR)
+            arc += relink(u.lines, source_dir, archive_dir)
         arc.append("")
     return "\n".join(arc) + "\n"
 
 
 def write_archive(root: pathlib.Path, archive_rel: str, text: str, moved: list[Unit], live: str) -> None:
-    """Write the archive and add it to docs/history/readme.md.
+    """Write the archive and regenerate docs/history/readme.md (history_layout: a summary line per file, hand-written descriptions kept).
 
     Args:
         root: the project root.
@@ -658,17 +664,9 @@ def write_archive(root: pathlib.Path, archive_rel: str, text: str, moved: list[U
         moved: the units in it (for the index line's date range).
         live: the record it came from.
     """
-    (root / ARCHIVE_DIR).mkdir(parents=True, exist_ok=True)
+    (root / archive_rel).parent.mkdir(parents=True, exist_ok=True)
     (root / archive_rel).write_text(text, encoding="utf-8")
-    dates = sorted(u.when for u in moved if u.when)
-    index = root / ARCHIVE_DIR / "readme.md"
-    line = f"- [{pathlib.Path(archive_rel).name}]({pathlib.Path(archive_rel).name}) {len(moved)} entries from `{live}`, {dates[0]:%Y-%m-%d} to {dates[-1]:%Y-%m-%d}."
-    if index.is_file():
-        index.write_text(index.read_text(encoding="utf-8").rstrip("\n") + "\n" + line + "\n", encoding="utf-8")
-    else:
-        index.write_text("# History\n\nRecords rotated out of the live CHANGELOG and SCRATCHPAD to keep them within budget. Do not read these by default:"
-                         " search with `rotate_records.py --find` (`just history`) or print one entry with `--show <stamp>`.\n\n" + line + "\n",
-                         encoding="utf-8")
+    hl.write_index(root)
     subprocess.run(["git", "-C", str(root), "add", "-N", archive_rel, f"{ARCHIVE_DIR}/readme.md"], check=False, timeout=60)
 
 
@@ -746,7 +744,8 @@ def main(argv: list[str] | None = None) -> int:
     date_undated(rec, blame_dates(root, live))
     now = dt.datetime.now()
     stamp_now = now.strftime("%Y%m%d_%H%M")
-    archive_rel = f"{ARCHIVE_DIR}/{path.stem.lower()}-{stamp_now}.md"
+    arc_dir = hl.archive_dir(root, path.stem.lower())
+    archive_rel = f"{arc_dir}/{path.stem.lower()}-{stamp_now}.md"
     title = path.stem.title() if path.stem.isupper() else path.stem
     new_keys = {} if head.get("title") else {
         "Title": path.stem.title() if path.stem.isupper() else path.stem,
@@ -793,14 +792,14 @@ def main(argv: list[str] | None = None) -> int:
     if not to_archive and not to_tracker:
         return 0
     source_dir = os.path.dirname(live)
-    arc_text = archive_text(to_archive, title, live, stamp_now, now, source_dir) if to_archive else ""
+    arc_text = archive_text(to_archive, title, live, stamp_now, now, source_dir, arc_dir) if to_archive else ""
     tracker_dir = os.path.dirname(tracker_rel)
     tracker_lines = [l for u in to_tracker for l in relink(u.lines, source_dir, tracker_dir)]
     live_text = "\n".join(collapse_blanks(rebuild_contents(front_matter_update(rec.preamble, new_keys) + render(rec)[len(rec.preamble):])))
     # Verify the whole file: every content line (all but front matter and Contents links) is still live, archived or in the tracker.
     lost = Counter(l for l in content_lines(original) if l.strip()) - Counter(l for l in content_lines(live_text) if l.strip())
     found = Counter(l for l in arc_text.split("\n") if l.strip()) + Counter(l for l in tracker_lines if l.strip())
-    missing = [l for l in lost.elements() if found[relink([l], source_dir, ARCHIVE_DIR)[0]] < 1 and found[relink([l], source_dir, tracker_dir)[0]] < 1]
+    missing = [l for l in lost.elements() if found[relink([l], source_dir, arc_dir)[0]] < 1 and found[relink([l], source_dir, tracker_dir)[0]] < 1]
     if missing:
         print(f"refused: {len(missing)} removed line(s) not found in the archive or tracker; nothing written", file=sys.stderr)
         for line in missing[:3]:

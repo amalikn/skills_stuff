@@ -152,6 +152,7 @@ Every governed project runs `scripts/checks/doc_freshness.py` from this skill (n
 - Roles and loading tiers (always-read files small, detail on need, history on demand): [references/governed-file-roles.md](references/governed-file-roles.md); `just roles` (`scripts/checks/role_check.py`, in `check`, baseline ratchet) enforces
   the mechanical part.
 - Read [references/files-readme-agents-claude.md](references/files-readme-agents-claude.md) before that work (moved verbatim from here): README.md; AGENTS.md; CLAUDE.md.
+- docs/history: one subfolder per kind, generated index; `just history-migrate <project>` ([references/files-history.md](references/files-history.md)).
 - Read [references/files-records.md](references/files-records.md) before that work (moved verbatim from here): SCRATCHPAD.md; CHANGELOG.md; .markdownlint-cli2.jsonc.
 
 ### Conditionally-created files

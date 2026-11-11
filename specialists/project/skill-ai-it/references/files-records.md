@@ -137,7 +137,7 @@ Last reviewed: <YYYY-MM-DD>
 Summary: Newest entries only; older ones rotate to docs/history (just history <term>).
 Kind: log
 Budget: 200 lines, 25 KB
-Archive: docs/history/ (`just history`, `just history-show`)
+Archive: docs/history/changelog/ (`just history`, `just history-show`; layout: references/files-history.md)
 ---
 
 # Changelog — <Project Name>

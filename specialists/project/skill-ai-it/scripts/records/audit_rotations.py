@@ -24,6 +24,10 @@ import subprocess
 import sys
 from collections import Counter
 
+_hl_spec = importlib.util.spec_from_file_location("history_layout", pathlib.Path(__file__).resolve().parent / "history_layout.py")
+hl = importlib.util.module_from_spec(_hl_spec)
+_hl_spec.loader.exec_module(hl)
+
 _spec = importlib.util.spec_from_file_location("rotate_records", pathlib.Path(__file__).resolve().parent / "rotate_records.py")
 rotate_records = importlib.util.module_from_spec(_spec)
 sys.modules["rotate_records"] = rotate_records
@@ -100,7 +104,7 @@ def audit(project: pathlib.Path, name: str) -> list[str] | None:
         The missing lines, then `SPLIT: <tail>` for each entry split across files; None when the record was never rotated or has no earlier
         version in git.
     """
-    archives = sorted((project / "docs" / "history").glob(f"{name[:-3].lower()}-*.md"))
+    archives = hl.archives(project, name[:-3].lower())  # flat or by-kind layout
     if not archives:
         return None
     added = git(project, "log", "--diff-filter=A", "--format=%H", "--reverse", "--", str(archives[0].relative_to(project))).split()

@@ -1534,7 +1534,8 @@ def evaluate(root: Path, today: dt.date | None = None) -> Outcome:
     if tmap.changelog and (root / tmap.changelog.path).is_file():
         changelog = (root / tmap.changelog.path).read_text(encoding="utf-8")
         # Rotated entries (skill-ai-it rotate_records.py, 2026-10-10) live in docs/history; the rule must still see them.
-        for arc in sorted((root / "docs" / "history").glob(f"{Path(tmap.changelog.path).stem.lower()}-*.md")):
+        stem = Path(tmap.changelog.path).stem.lower()
+        for arc in sorted({*(root / "docs" / "history").glob(f"{stem}-*.md"), *(root / "docs" / "history" / stem).glob(f"{stem}-*.md")}, key=lambda p: p.name):
             changelog += ARCHIVE_BOUNDARY + arc.read_text(encoding="utf-8")
     validator = TargetMapValidator(tmap, source_defs, roadmap, root, today or dt.date.today(), changelog)
     problems += validator.problems()

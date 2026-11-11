@@ -72,7 +72,7 @@ class Main(unittest.TestCase):
             (root / "ROADMAP.md").write_text(ROADMAP, encoding="utf-8")
             with redirect_stdout(io.StringIO()):
                 rt.main(["--project-root", str(root), "--apply", "--keep-days", "0"])
-            archives = list((root / "docs/history").glob("roadmap-*.md"))
+            archives = list((root / "docs/history").rglob("roadmap-*.md"))  # by-kind layout
             self.assertEqual(len(archives), 1)
             self.assertIn(archives[0].name, (root / "docs/history/readme.md").read_text(encoding="utf-8"))
             self.assertNotIn("Old done item", (root / "ROADMAP.md").read_text(encoding="utf-8"))

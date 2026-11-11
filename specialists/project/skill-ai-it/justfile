@@ -236,6 +236,11 @@ history TERM RECORD="CHANGELOG.md": _require-venv
 history-show STAMP RECORD="CHANGELOG.md": _require-venv
     @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . --show {{STAMP}} {{RECORD}}
 
+# [files; writes with --apply] Move a project's flat docs/history into the by-kind layout and repoint references (references/files-history.md): just history-migrate <project> [--apply]
+[positional-arguments]
+history-migrate PROJECT *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/history_migrate.py" --project-root "$@"
+
 # Keep CHANGELOG and SCRATCHPAD within budget: plan by default; `just rotate --apply` (slurp runs `just budget`, which trims ROADMAP too)
 rotate *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/records/rotate_records.py" --project-root . {{ARGS}} CHANGELOG.md
