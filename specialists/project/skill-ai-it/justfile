@@ -47,6 +47,8 @@ wc := "/Volumes/Data/_ai/_skills/skills-working-cache/specialists/project/skill-
 py := wc + "/.venv/bin/python"
 coder := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder"
 ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+drawio_skill := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/platform/skill-drawio"
+drawio_py := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-drawio/.venv/bin/python"
 nd := "mise exec -- node"
 
 # Build the working-cache venv from the mise-pinned runtimes. Safe to re-run.
@@ -95,6 +97,19 @@ check: _require-venv lint
     @{{py}} "{{skill_dir}}/scripts/navigation/validate_navigation_control_layer.py" --project-root . >/dev/null || just nav-validate
     @echo "OK — navigation control layer valid"
     @just self-check
+    @just flows-check
+
+# [files only] The skill's flow map (docs/flows/parts/*.yaml, skill-drawio standard): assemble docs/flows/flows.yaml and render
+# docs/flows/drawio/skill-ai-it-flows.drawio. Edit the parts, never the two generated files. Runs on skill-drawio's interpreter (PyYAML).
+flows:
+    @{{drawio_py}} "{{drawio_skill}}/scripts/assemble_flowmap.py" --master docs/flows/parts/master.yaml --out docs/flows/flows.yaml --command "just flows" --write
+    @{{drawio_py}} "{{drawio_skill}}/scripts/render_flowmap.py" --root . --map docs/flows/flows.yaml --write
+
+# [read-only] Flow map drift and layout: the assembled map and the drawing match their parts, and the layout audit is clean (in `just check`)
+flows-check:
+    @{{drawio_py}} "{{drawio_skill}}/scripts/assemble_flowmap.py" --master docs/flows/parts/master.yaml --out docs/flows/flows.yaml --command "just flows"
+    @{{drawio_py}} "{{drawio_skill}}/scripts/render_flowmap.py" --root . --map docs/flows/flows.yaml
+    @{{drawio_py}} "{{drawio_skill}}/scripts/render_flowmap.py" --root . --map docs/flows/flows.yaml --audit
 
 # The package held to skill-coder's rules: sizes (shrink-only baseline scripts/code-size-baseline.json), timeouts, write gates, headers, suppressions, names
 self-check: _require-venv
@@ -295,6 +310,11 @@ test: _require-venv
 [positional-arguments]
 table-add-column *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/markdown/table_add_column.py" "$@"
+
+# [read-only] A design document's examples and structure: fenced TOML/YAML/JSON/Python parse, table rows match their header, #anchors resolve: just md-examples FILE...
+[positional-arguments]
+md-examples *ARGS: _require-venv
+    @{{py}} scripts/markdown/md_examples_check.py "$@"
 
 # Large Markdown: each heading with its line range, so one section is read instead of the file: `just outline docs/x.md`. Read-only
 [positional-arguments]

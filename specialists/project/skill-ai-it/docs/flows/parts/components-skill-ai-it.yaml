@@ -1,0 +1,66 @@
+#% Part: components, skill-ai-it
+#% Lands under: components
+- id: skill-docs
+  name: SKILL.md and references
+  kind: record
+  group: skill-ai-it scripts
+  host: skills_stuff/specialists/project/skill-ai-it
+  health: within budget; passes the skill's just check
+- id: adoption
+  name: Bootstrap and adoption scripts
+  kind: script
+  group: skill-ai-it scripts
+  host: scripts/adoption/ (adopt_governed_files.py and others)
+  health: plan by default; --apply writes managed blocks only
+  code: [scripts/adoption/adopt_governed_files.py]
+  depends_on: [templates]
+- id: templates
+  name: Templates
+  kind: record
+  group: skill-ai-it scripts
+  host: templates/ (justfile, govcheck, history readme, session record)
+  health: copied at bootstrap today; imported once the plan lands
+- id: records
+  name: Record scripts
+  kind: script
+  group: skill-ai-it scripts
+  host: scripts/records/ (rotate_records.py, roadmap_trim.py, budget_plan.py, history_layout.py, history_migrate.py)
+  health: plan by default; reads flat or by-kind docs/history
+  code: [scripts/records/rotate_records.py, scripts/records/history_migrate.py]
+- id: checks
+  name: Check scripts
+  kind: script
+  group: skill-ai-it scripts
+  host: scripts/checks/ (doc_freshness.py, file_headers.py, anchor_links.py, govern_guard.py, ...)
+  health: read only; exit 1 on a finding
+  code: [scripts/checks/doc_freshness.py]
+- id: consumer-check
+  name: consumer_check.py (proposed)
+  kind: proposed
+  group: Proposed scripts
+  host: scripts/consumers/, generalised from skill-drawio
+  health: every consumer's saved output compared before and after
+  status: {state: proposed, since: "2026-11-11", evidence: "plan section 7.1"}
+  depends_on: [consumers-registry]
+- id: conformance
+  name: conformance.py and cue_seam.py (proposed)
+  kind: proposed
+  group: Proposed scripts
+  host: scripts/standard/
+  health: stdlib inside a project; full CUE pass centrally
+  status: {state: proposed, since: "2026-11-11", evidence: "plan sections 4.5, 7.3, 7.4"}
+- id: refresh
+  name: standard_refresh.py (proposed)
+  kind: proposed
+  group: Proposed scripts
+  host: scripts/standard/ (just refresh)
+  health: plan by default; --apply moves the pin and diffs output
+  status: {state: proposed, since: "2026-11-11", evidence: "plan section 7.2"}
+  depends_on: [worktree]
+- id: consumers-registry
+  name: consumers.toml (proposed)
+  kind: proposed
+  group: Proposed scripts
+  host: skill-ai-it root
+  health: one table per consumer project
+  status: {state: proposed, since: "2026-11-11", evidence: "plan section 4.4"}

@@ -1,0 +1,27 @@
+#% Part: components, consumer project
+#% Lands under: components
+- id: governed-files
+  name: Governed files
+  kind: record
+  group: Consumer project
+  host: AGENTS.md, AI_NAVIGATION.md, context-map.yaml, README.md
+  health: passes doc freshness and file roles
+- id: running-records
+  name: Running records
+  kind: record
+  group: Consumer project
+  host: CHANGELOG.md, SCRATCHPAD.md, ROADMAP.md
+  health: within 200 lines and 25 KB
+- id: history
+  name: docs/history
+  kind: record
+  group: Consumer project
+  host: docs/history/{changelog,scratchpad,roadmap,session-records,sync}/ plus readme.md
+  health: every archive listed in the generated index
+- id: project-check
+  name: Project check (just check)
+  kind: script
+  group: Consumer project
+  host: the project's justfile and scripts/govcheck/
+  health: exit 0
+  depends_on: [checks]

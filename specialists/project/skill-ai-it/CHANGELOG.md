@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261111_1213
+Last rotated: 20261111_1300
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,7 @@ Last rotated: 20261111_1213
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261111_1259 — central project tooling plan, the skill's flow map, md_examples_check](#20261111_1259--central-project-tooling-plan-the-skills-flow-map-md_examples_check)
 - [20261111_1213 — history_migrate: check gate, dirty-reference refusal, survey](#20261111_1213--history_migrate-check-gate-dirty-reference-refusal-survey)
 - [20261111_1135 — archcore, ruff, code map, templates and the Pad question](#20261111_1135--archcore-ruff-code-map-templates-and-the-pad-question)
 - [20261111_1125 — docs/history by kind, generated index with summaries, migration](#20261111_1125--docshistory-by-kind-generated-index-with-summaries-migration)
@@ -30,8 +31,6 @@ Last rotated: 20261111_1213
 - [20261027_2024 — Staleness audit: dependency claim derived, stale KEEP lines superseded](#20261027_2024--staleness-audit-dependency-claim-derived-stale-keep-lines-superseded)
 - [20261027_1941 — Open-items tracker reviewed](#20261027_1941--open-items-tracker-reviewed)
 - [20261027_1922 — Quoted code excerpts restored after a markdown hook bug](#20261027_1922--quoted-code-excerpts-restored-after-a-markdown-hook-bug)
-- [20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea](#20261027_1840--pitfalls-from-the-skill-goal-guard-bootstrap-upgrader-placement-idea)
-- [20261026_1525 — Line-only budgets reverted: the 25 KB limit is back](#20261026_1525--line-only-budgets-reverted-the-25-kb-limit-is-back)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -47,6 +46,20 @@ Last rotated: 20261111_1213
 - scripts/adoption/adopt_governed_files.py: FILE_BUDGETS: AGENTS.md and AI_NAVIGATION.md get `Budget: 150 lines, 12 KB` as README gets its own (operator, 2026-11-06: governance files read whole carry a budget; doc_freshness enforces it, grandfather_sizes keeps a file already over from failing); scripts/records/budget_plan.py reports those files against their stated budget; test asserts AGENTS.md gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261111_1259 — central project tooling plan, the skill's flow map, md_examples_check
+
+- `docs/central-project-tooling-plan-20261111_1141.md` (new, status proposed): the central project tooling plan from a unified-network-controller session (operator, 2026-11-11). Two read-only
+  surveys (govcheck in three projects; justfiles, hooks, configs and tests across 13), the home decision (skill-ai-it now, versioned packages, extraction trigger to a pinned
+  package), the project standard (Core, Modules, Local; the `standard:` block in context-map.yaml; levels Mandatory, Advised, Optional), map formats with a `meta` block,
+  CUE schemas, HCL as the env-map source, Pad collections and `tracker-map.toml`, stages S0 to S8 with go and abort numbers and rollout waves, proposed scripts with excerpts,
+  language choice. Reviewed against skill-coder and skill-systems-architect the same day; all fixes the operator accepted are in. Indexed in `docs/readme.md`.
+- `docs/flows/` (new): the skill's first flow map (skill-drawio standard: parts, assembled `flows.yaml`, `drawio/skill-ai-it-flows.drawio`): today's bootstrap, rotation,
+  history migration and governance check, and the plan's proposed release, refresh and conformance flows. Recipes `just flows` and `just flows-check` (in `just check`;
+  0.4 s), run on skill-drawio's interpreter for PyYAML. Layout audit clean; Overview and End-to-end pages exported and reviewed.
+- `scripts/markdown/md_examples_check.py` (new, `just md-examples`, tests/test_md_examples_check.py, 11 tests): a design document's fenced TOML, YAML, JSON (or JSON Lines)
+  and Python examples parse, table rows match their header's cell count, internal anchors resolve. Promoted from the session's ad hoc check; 0.06 s on the 1,650-line plan.
+- ROADMAP: three Fleet adoption items (the plan's open decisions; rotation front matter missing Authority and Scope; per-folder docs index after history_migrate).
 
 ## 20261111_1213 — history_migrate: check gate, dirty-reference refusal, survey
 
@@ -164,21 +177,6 @@ marker in a trusted folder holding untrusted repos). Smoke-run on three real fol
 
 - `references/target-map-and-timeline.md`: three quoted code excerpts had been joined into run-on prose by the markdown hook (a `rewrap.py` bug with quoted fences, fixed in scripts_stuff 2026-10-27).
   One restored from git history (`plan_timeline.py` reflow excerpt); two that were committed flattened rebuilt from `scripts/plan_tracker.py` and `scripts/plan_timeline.py`, words unchanged.
-
-## 20261027_1840 — Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea
-
-- Three pitfalls from the skill-goal-guard bootstrap and promote (references/pitfalls.md): quote promoted titles that hold a colon and keep a small tag vocabulary for `archcore status`; a "folder
-  readme covers its folder" catalog rule must skip the project root (found by a negative test); freshness reads only tracked files, so give created files their header summary before the first commit.
-- ROADMAP Ideas: the upgrader appends its CHANGELOG entry at the bottom when a file dates entries as `###` under `## Unreleased`.
-- Committed while `just check` fails on `docs/trackers/open-items-20261010_1830.md` (review due 2026-10-24), an existing finding that needs a fleet review; these edits do not touch it (operator asked
-  for the write-backs to be committed and pushed).
-
-## 20261026_1525 — Line-only budgets reverted: the 25 KB limit is back
-
-- Operator, 2026-10-26, after a side agent's note: "Okay then put the limit back", "Wherever you removed it from". 59d3c31 (budgets by line count only) is reverted: the 200 lines and 25 KB budget is
-  back in doc_freshness, rotate_records, budget_plan, add_changelog_entry, adopt_governed_files, move_sections, their tests and docs, and every `Budget: 200 lines, 25 KB` header the change rewrote.
-- Why the KB part stays: Codex reads AGENTS.md only up to about 32 KiB and drops the rest without warning; 200 lines of up to 200 characters is about 40 KB, so a line budget alone lets an
-  always-loaded file pass and still be cut short. Whether Codex counts the whole AGENTS.md chain against that cap is unverified.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

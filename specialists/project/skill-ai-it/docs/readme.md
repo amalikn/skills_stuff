@@ -16,6 +16,8 @@ Summary: Plans, reviews, history and trackers of this package; point-in-time rec
 - [reviews/](reviews/readme.md) staleness audits and other dated reviews.
 - [trackers/](trackers/) open-items trackers rotated out of SCRATCHPAD.
 - [archive/](archive/readme.md) superseded working documents.
+- [flows/](flows/parts/master.yaml) the skill's flow map (skill-drawio standard): edit `parts/`, then `just flows`; `flows.yaml` and `drawio/skill-ai-it-flows.drawio` are generated.
+- [central-project-tooling-plan-20261111_1141.md](central-project-tooling-plan-20261111_1141.md) plan: govcheck, just modules, the apn hook and lint configs imported from one home (proposed).
 - [fix-archcore-bootstrap-seeding-20260522_2331.md](fix-archcore-bootstrap-seeding-20260522_2331.md) design: report-first Archcore promotion candidates (archived).
 - [implement-archcore-candidate-reporting-20260522_2347.md](implement-archcore-candidate-reporting-20260522_2347.md) its implementation plan (archived).
 - [replace-mise-with-just-20260522_1652.md](replace-mise-with-just-20260522_1652.md) prompt: just-preferred task inventory (archived).

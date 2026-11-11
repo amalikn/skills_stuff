@@ -1,0 +1,15 @@
+#% Part: components, people
+#% Lands under: components
+- id: operator
+  name: Operator
+  kind: person
+  group: People
+  host: the Mac
+  health: answers decisions and approvals
+- id: agent
+  name: Agent session
+  kind: person
+  group: People
+  host: Claude Code or Codex in the project
+  health: reads AGENTS.md and AI_NAVIGATION.md first
+  depends_on: [skill-docs]

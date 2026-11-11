@@ -21,6 +21,16 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Fleet adoption
 
+- [ ] **Central project tooling plan: operator decisions open** (2026-11-11, unified-network-controller session): `docs/central-project-tooling-plan-20261111_1141.md`
+  (status proposed) moves govcheck, the justfile governance recipes, the apn hook and lint configs into imported packages run from a pinned
+  worktree, with a project standard, maps and a conformance check. Its section 10 lists nine decisions; nothing is built until the operator's go per stage.
+- [ ] **Rotation writes incomplete front matter** (found 2026-11-11 in skill-pad): the open-items tracker, the rotated archive and the
+  `docs/history/readme.md` that `rotate_records.py` and `history_layout.py` create lack `Authority` and `Scope`, so a project whose
+  front-matter check requires them fails right after `just rotate --apply` (fixed by hand in skill-pad). Plan stage S1b.
+- [ ] **After history_migrate, a per-folder docs index check fails** (found 2026-11-11 in unified-network-controller): a project check that
+  wants a `readme.md` in every docs folder flagged all 367 moved files; UNC's `check_docs_indexed` now reads `docs/history/readme.md` for
+  `docs/history/<kind>/`. `history_migrate` should warn when the project's check has such a rule; plan stage S3 step 4 (two index modes).
+
 - [ ] **Bootstrap template drift and untracked coverage** (found 2026-10-30, Continuum): generating `context-map.yaml` from its template and running
   `just nav-validate` reports legacy update_rules and missing governance_navigation; add the validator-required mapping to the template.
   `just context_pack` with the Repomix template includes both justfile and Justfile on case-insensitive macOS, duplicating one file; select the actual runner.

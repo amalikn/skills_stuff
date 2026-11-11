@@ -17,6 +17,7 @@ folder's `.pad.toml`. Tests: `just test` (offline, fake pad).
 | ------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------- | -------------------------- |
 | `pad_conventions.py`      | Applies `conventions/apn-baseline.toml` to one workspace: rewrites the template's four,                | plan; writes Pad with `--apply`    | `conventions`              |
 |                           |   adds `trackers-truth`                                                                                |                                    |   (project folder)         |
+| `pad_toml_probe.py`       | Pad upgrade test: switches a scratch `.pad.toml` away and back and reports whether Pad still keeps the workspace, unknown tables and other files (comments are known to be deleted) | writes a temporary folder only     | `pad-toml-probe`           |
 | `pad_export.py`           | One workspace's items as a Markdown page in its project; rewrites only when an item changed            | plan; writes the file              | `export` (project folder)  |
 |                           |                                                                                                        |   with `--apply`                   |                            |
 | `pad_backup.sh`           | `pad db backup` (online-safe) to OneDrive `pad_backups`, newest 30 kept; launchd nightly 02:30         | plan; writes and prunes            | `backup`                   |

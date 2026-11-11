@@ -1,0 +1,98 @@
+#% Part: flows, today
+#% Lands under: flows
+- id: bootstrap
+  title: Bootstrap or refresh a project
+  category: custom
+  purpose: Give a folder the governed-file standard (agent rules, navigation, records, checks), or add what it lacks.
+  trigger: {kind: manual, detail: "the operator asks for skill-ai-it bootstrap or refresh"}
+  runs_on: agent
+  owner: agent
+  steps:
+    - id: ask
+      actor: operator
+      action: Asks for a bootstrap or refresh of a project folder.
+      via: [chat]
+    - id: plan
+      actor: adoption
+      action: Plans every governed file the project lacks, from the templates.
+      via: [internal]
+      reads: [templates]
+    - id: apply
+      actor: adoption
+      action: With --apply, writes managed blocks and missing files, never over user content.
+      via: [file]
+      writes: [governed-files, running-records]
+      gate: --apply
+    - id: verify
+      actor: project-check
+      action: Runs the project's check; a failure is fixed in the project, not in the check.
+      via: [internal]
+- id: rotate-records
+  title: Rotate running records
+  category: custom
+  purpose: Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget by moving old entries to docs/history.
+  trigger: {kind: manual, detail: "just rotate, or a slurp's just budget --apply"}
+  runs_on: agent
+  owner: records
+  steps:
+    - id: plan
+      actor: records
+      action: Picks the entries over budget; open items go to a tracker, not to history.
+      via: [internal]
+      reads: [running-records]
+    - id: write
+      actor: records
+      action: With --apply, writes the archive into its kind folder and adds it to the history index.
+      via: [file]
+      writes: [history, running-records]
+      gate: --apply
+      failures: ["new tracker and archive files lack Authority and Scope in front matter (found 2026-11-11; plan stage S1b)"]
+    - id: check
+      actor: project-check
+      action: Confirms the records are within budget and the index lists every archive.
+      via: [internal]
+- id: history-migrate
+  title: Group docs/history by kind
+  category: custom
+  purpose: Move a project's flat rotated records into changelog, scratchpad, roadmap, session-records and sync folders.
+  trigger: {kind: manual, detail: "just -f skill-ai-it/justfile history-migrate <project> [--apply]"}
+  runs_on: agent
+  owner: records
+  steps:
+    - id: refuse
+      actor: records
+      action: Refuses when docs/history has uncommitted changes.
+      via: [internal]
+      reads: [git]
+    - id: move
+      actor: records
+      action: With --apply, moves each file with git mv, names unchanged, and repoints references in the project.
+      via: [file]
+      writes: [history, governed-files]
+      gate: --apply
+    - id: index
+      actor: records
+      action: Regenerates the history index, one section per kind, hand descriptions kept.
+      via: [file]
+      writes: [history]
+    - id: verify
+      actor: project-check
+      action: Runs the project's check; a docs-index check that wants one readme per folder must accept the history index (UNC, 2026-11-11).
+      via: [internal]
+- id: governance-check
+  title: Governance check
+  category: custom
+  purpose: Prove the project's governance claims against its files before a commit.
+  trigger: {kind: manual, detail: "just check, and the apn pre-commit hook"}
+  runs_on: agent
+  owner: project-check
+  steps:
+    - id: run
+      actor: project-check
+      action: Runs the project's own checks and skill-ai-it's checks.
+      via: [internal]
+      reads: [governed-files, running-records, history]
+    - id: freshness
+      actor: checks
+      action: Flags documents past review, records over budget and files without a header.
+      via: [internal]

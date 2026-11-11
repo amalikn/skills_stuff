@@ -82,3 +82,17 @@ YAML 1.2.2 specification, yamllint rules documentation, RFC 8259 (JSON), TOML 1.
 > `.taplo.toml` with `include = ["lab/**/*.toml"]` scopes taplo to new files; it logs INFO lines on every run, so a recipe sets
 > `RUST_LOG=warn`. A YAML value with `key: value` inside it must be quoted in a flow map (a draw.io flow step with "`retry_rejected: true`"
 > broke the render: "mapping values are not allowed here").
+
+> **Learned 2026-11-11** · PyYAML 6, Python 3.14 `tomllib` · VERIFIED_PRIMARY · Source: probes in a unified-network-controller session
+> (2026-11-11), recorded in skill-ai-it `docs/central-project-tooling-plan-20261111_1141.md` section 4.3 · Falsifier: `yaml.safe_load`
+> rejecting a duplicate key, or `tomllib` accepting a repeated table
+> Choosing between them for a hand-written registry: TOML refuses a repeated table (`Cannot declare ('rules', 'x') twice`), so a registry keyed
+> by id (`[rules.<id>]`) catches duplicate ids at parse; YAML keeps the last of two equal keys silently and never checks `id:` values inside a
+> list. TOML 1.0 cannot wrap an inline table across lines, so a table of long rows stays YAML. Python reads TOML but has no writer in the
+> standard library, and rewriting TOML loses its comments, so data a script appends goes to a separate JSON Lines file, and a generated TOML
+> file comes from a small tested emitter (sorted keys, the few types it needs, a round-trip test with `tomllib`).
+>
+> ```python
+> yaml.safe_load("a: 1\na: 2\n")                     # {'a': 2}: the duplicate is kept silently
+> tomllib.loads("[r.x]\nt=1\n[r.x]\nt=2\n")           # TOMLDecodeError: Cannot declare ('r', 'x') twice
+> ```

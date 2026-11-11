@@ -84,6 +84,11 @@ status = "promoted"
 skill = "skill-pad"
 reason = "Pad helper used by every apn project with a Pad workspace; lives in the skill (operator, 2026-11-10)"
 
+[modules."scripts/pad_toml_probe.py"]
+status = "promoted"
+skill = "skill-pad"
+reason = "Pad upgrade test, from the 2026-11-11 .pad.toml rewrite test (unified-network-controller session); runs before any Pad upgrade"
+
 [modules."scripts/pad_export.py"]
 status = "promoted"
 skill = "skill-pad"

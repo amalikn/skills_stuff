@@ -325,9 +325,12 @@ nav-selftest: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/navigation/selftest_blocks.py"
 
 # Split a long flow map into #@include parts (component groups, flow sections, options), proved to load the same: plan by default, `--apply` to write
+[positional-arguments]
 split-flowmap *ARGS: _require-venv
-    @{{py}} scripts/split_flowmap.py {{ARGS}}
+    @{{py}} scripts/split_flowmap.py "$@"
 
-# Build a flow map's flows.yaml from parts/master.yaml and its parts (complete, no pointers): drift check by default, `--write` to build
+# Build a flow map's flows.yaml from parts/master.yaml and its parts (complete, no pointers): drift check by default, `--write` to build.
+# Arguments pass through quoted, so `--command "just flows"` stays one argument (2026-11-11: {{ARGS}} split it into two).
+[positional-arguments]
 assemble-flowmap *ARGS: _require-venv
-    @{{py}} scripts/assemble_flowmap.py {{ARGS}}
+    @{{py}} scripts/assemble_flowmap.py "$@"

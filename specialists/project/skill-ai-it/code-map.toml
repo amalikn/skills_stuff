@@ -119,6 +119,11 @@ status = "promoted"
 skill = "skill-ai-it/scripts/markdown/table_add_column.py"
 reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
 
+[modules."scripts/markdown/md_examples_check.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/markdown/md_examples_check.py"
+reason = "skill-ai-it's own tooling, promoted from a 2026-11-11 unified-network-controller session where it validated the central tooling plan after every edit"
+
 [modules."scripts/markdown/table_wrap.py"]
 status = "promoted"
 skill = "skill-ai-it/scripts/markdown/table_wrap.py"

@@ -1,0 +1,16 @@
+#% Part: components, outside
+#% Lands under: components
+- id: git
+  name: Git repositories
+  kind: external
+  group: Outside
+  host: skills_stuff and each project repository
+  health: clean tree before a migration
+- id: worktree
+  name: Tagged skill-ai-it worktree (proposed)
+  kind: proposed
+  group: Outside
+  host: git worktree of skill-ai-it at standard-<version>
+  health: label and checked-out tag agree
+  status: {state: proposed, since: "2026-11-11", evidence: "plan section 3, version pin"}
+  depends_on: [git]

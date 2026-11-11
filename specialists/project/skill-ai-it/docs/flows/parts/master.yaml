@@ -1,0 +1,36 @@
+# Flow map for skill-ai-it: how the skill's scripts act on a consumer project, today and as proposed by
+# docs/central-project-tooling-plan-20261111_1141.md (operator, 2026-11-11: "add/update flows for skill-ai-it").
+# Source of truth: this master and the parts beside it (skill-drawio standard, one part per component group and per flow family).
+# `just flows` assembles ../flows.yaml and renders ../drawio/skill-ai-it-flows.drawio (paths from the skill root); edit the parts, never the two generated files.
+schema_version: 1
+title: "skill-ai-it: governance scripts and consumer projects"
+updated: "2026-11-11"
+
+drawing:
+  output: docs/flows/drawio/skill-ai-it-flows.drawio
+  command: just flows
+  kinds:
+    person: ["#ffffff", "#000000"]
+    script: ["#dae8fc", "#6c8ebf"]
+    proposed: ["#f5f5f5", "#999999"]
+    record: ["#e6e6e6", "#4d4d4d"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People, groups: [People]}
+    - {name: skill-ai-it, groups: [skill-ai-it scripts, Proposed scripts]}
+    - {name: Consumer project, groups: [Consumer project]}
+  below: {groups: [Outside]}
+  band_title: Outside the project
+  families:
+    - {id: today, name: Today, colour: "#1f4e9c", flows: [bootstrap, rotate-records, history-migrate, governance-check]}
+    - {id: proposed, name: Proposed by the 2026-11-11 plan, colour: "#6a3fa0", flows: [standard-release, project-refresh, conformance-run]}
+
+components:
+  #@include components-people.yaml
+  #@include components-skill-ai-it.yaml
+  #@include components-project.yaml
+  #@include components-outside.yaml
+
+flows:
+  #@include flows-today.yaml
+  #@include flows-proposed.yaml

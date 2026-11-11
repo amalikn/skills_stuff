@@ -1,0 +1,73 @@
+#% Part: flows, proposed by the 2026-11-11 plan
+#% Lands under: flows
+- id: standard-release
+  title: Release a new standard tag (proposed)
+  category: custom
+  purpose: Change skill-ai-it once and let projects take the change on purpose, never by a live edit.
+  trigger: {kind: manual, detail: "a central change is ready"}
+  runs_on: agent
+  owner: consumer-check
+  status: {state: proposed, since: "2026-11-11", evidence: "plan section 3 and 4.6"}
+  steps:
+    - id: edit
+      actor: agent
+      action: Edits skill-ai-it in its working folder, which no project runs.
+      via: [file]
+      writes: [skill-docs]
+    - id: compare
+      actor: consumer-check
+      action: Runs every consumer's check against the new checkout and compares saved outputs and counts with the last tag.
+      via: [internal]
+      reads: [consumers-registry]
+      failures: ["a changed output not accepted by the operator", "a run that changed a project's files", "over 10 minutes with 4 workers"]
+    - id: tag
+      actor: consumer-check
+      action: Cuts tag standard-<version> only when the comparison passes.
+      via: [git]
+      writes: [worktree]
+- id: project-refresh
+  title: Move a project to the next tag (proposed)
+  category: custom
+  purpose: Take a released standard into one project, characterised in the same change.
+  trigger: {kind: manual, detail: "just refresh [--apply]"}
+  runs_on: agent
+  owner: refresh
+  status: {state: proposed, since: "2026-11-11", evidence: "plan section 7.2"}
+  steps:
+    - id: plan
+      actor: refresh
+      action: Prints the move from the current tag to the next.
+      via: [internal]
+      reads: [governed-files]
+    - id: move
+      actor: refresh
+      action: With --apply, points the project at the new tag's worktree and updates standard.version.
+      via: [file]
+      writes: [governed-files]
+      gate: --apply
+    - id: diff
+      actor: project-check
+      action: Runs the check before and after; any difference is listed for the operator.
+      via: [internal]
+- id: conformance-run
+  title: Conformance across projects (proposed)
+  category: custom
+  purpose: Show which projects follow the standard, which declared a difference and which drifted.
+  trigger: {kind: manual, detail: "just consumers --conformance"}
+  runs_on: agent
+  owner: conformance
+  status: {state: proposed, since: "2026-11-11", evidence: "plan section 4.5"}
+  steps:
+    - id: read
+      actor: conformance
+      action: Reads each project's standard block, maps and recipes; runs the CUE pass centrally.
+      via: [internal]
+      reads: [governed-files, consumers-registry]
+    - id: report
+      actor: conformance
+      action: Appends one line per project to conformance-runs.jsonl and renders the drift table.
+      via: [file]
+    - id: decide
+      actor: operator
+      action: Accepts each undeclared difference as a deviation, or asks for it to be removed.
+      via: [chat]

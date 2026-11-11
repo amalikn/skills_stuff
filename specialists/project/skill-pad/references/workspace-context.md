@@ -70,6 +70,14 @@ run `pad init` or `pad workspace init`. Both fail fast without a terminal (BUG-2
 > `agent_name` and `[push]`. So several repos can share one workspace; `pad workspace switch <slug>` moves a folder to another. skill-ai-it bootstrap and
 > refresh ask which (its references/pad-workspace.md).
 
+> **Learned 2026-11-11** · Pad CLI v0.19.2 · VERIFIED_PRIMARY · Source: test on a scratch copy of a `.pad.toml` carrying extra tables and a
+> comment (unified-network-controller session, 2026-11-11) · Falsifier: `switch` keeping comments, or dropping an unknown table
+> `pad workspace link` on a folder already linked prints "Already linked" and writes nothing, even when given another slug; `pad workspace switch
+> <slug>` rewrites `.pad.toml`: unknown tables keep their data (parsed equal) but every comment is deleted and the layout reformatted. Read
+> commands work with extra tables present. `link` and `switch` also write Pad's skill copies into `.claude/skills/pad/` and
+> `.agents/skills/pad/`, not only `workspace init`; delete them as for init. So `.pad.toml` belongs to Pad: project settings go in a file Pad
+> never writes (skill-ai-it plan `docs/central-project-tooling-plan-20261111_1141.md`, `tracker-map.toml`, tool-neutral), and an upgrade re-runs this test.
+
 ## Conventions before work
 
 Before an action that has a trigger (`on-implement` before code, `on-commit`, `on-pr-create`, `on-task-complete`, `on-plan`, and in other domains `on-candidate-advance`, `on-source-cited`, ...), check

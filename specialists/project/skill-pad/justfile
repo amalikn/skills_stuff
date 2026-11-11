@@ -63,6 +63,11 @@ conventions *ARGS: _require-venv
 export *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_export.py" {{ARGS}}
 
+# [read-only for projects] Pad upgrade test: rewrite a scratch .pad.toml through `pad workspace switch` and report what Pad kept (run before a new Pad version is used): just pad-toml-probe <slug> <other-slug>
+[positional-arguments]
+pad-toml-probe *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_toml_probe.py" "$@"
+
 # Pad link opener on 127.0.0.1:47800 (opens repo links from Pad in VS Code): status (default, read-only), install, uninstall or restart the launchd job.
 link-opener ACTION="status": _require-venv
     #!/usr/bin/env bash

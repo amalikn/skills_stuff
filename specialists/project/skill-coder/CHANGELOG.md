@@ -16,6 +16,7 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-11 languages/yaml-json-toml.md: Learned, TOML vs YAML for registries keyed by id (duplicate tables fail at parse, YAML keeps the last key silently), no stdlib TOML writer, JSON Lines for appended data (unified-network-controller session)
 - 2026-11-11 templates/ruff.toml: a project's ruff config (two-space, 160 columns, the skills' rule set, existing files excluded until reformatted, Markdown excluded); languages/python.md names it (operator approved, from smc-resiliency)
 - 2026-11-11 write-back from smc-resiliency (docs/history standard): references/design-patterns.md P-67 (move files and repoint references by resolving links), languages/python.md (ruff 0.17 formats Markdown: exclude `*.md`)
 - 2026-11-11 write-back from smc-resiliency (Pad links): references/design-patterns.md P-66 (a localhost redirect for a link scheme a web app strips; skill-pad c931f50)

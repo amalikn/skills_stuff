@@ -1,0 +1,316 @@
+# GENERATED from docs/flows/parts/master.yaml and the parts it includes, by skill-drawio's assemble_flowmap.py (`just flows`).
+# Edit the parts, never this file: the check fails when it differs from what the parts assemble to.
+
+# Flow map for skill-ai-it: how the skill's scripts act on a consumer project, today and as proposed by
+# docs/central-project-tooling-plan-20261111_1141.md (operator, 2026-11-11: "add/update flows for skill-ai-it").
+# Source of truth: this master and the parts beside it (skill-drawio standard, one part per component group and per flow family).
+# `just flows` assembles ../flows.yaml and renders ../drawio/skill-ai-it-flows.drawio (paths from the skill root); edit the parts, never the two generated files.
+schema_version: 1
+title: "skill-ai-it: governance scripts and consumer projects"
+updated: "2026-11-11"
+
+drawing:
+  output: docs/flows/drawio/skill-ai-it-flows.drawio
+  command: just flows
+  kinds:
+    person: ["#ffffff", "#000000"]
+    script: ["#dae8fc", "#6c8ebf"]
+    proposed: ["#f5f5f5", "#999999"]
+    record: ["#e6e6e6", "#4d4d4d"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People, groups: [People]}
+    - {name: skill-ai-it, groups: [skill-ai-it scripts, Proposed scripts]}
+    - {name: Consumer project, groups: [Consumer project]}
+  below: {groups: [Outside]}
+  band_title: Outside the project
+  families:
+    - {id: today, name: Today, colour: "#1f4e9c", flows: [bootstrap, rotate-records, history-migrate, governance-check]}
+    - {id: proposed, name: Proposed by the 2026-11-11 plan, colour: "#6a3fa0", flows: [standard-release, project-refresh, conformance-run]}
+
+components:
+  - id: operator
+    name: Operator
+    kind: person
+    group: People
+    host: the Mac
+    health: answers decisions and approvals
+  - id: agent
+    name: Agent session
+    kind: person
+    group: People
+    host: Claude Code or Codex in the project
+    health: reads AGENTS.md and AI_NAVIGATION.md first
+    depends_on: [skill-docs]
+  - id: skill-docs
+    name: SKILL.md and references
+    kind: record
+    group: skill-ai-it scripts
+    host: skills_stuff/specialists/project/skill-ai-it
+    health: within budget; passes the skill's just check
+  - id: adoption
+    name: Bootstrap and adoption scripts
+    kind: script
+    group: skill-ai-it scripts
+    host: scripts/adoption/ (adopt_governed_files.py and others)
+    health: plan by default; --apply writes managed blocks only
+    code: [scripts/adoption/adopt_governed_files.py]
+    depends_on: [templates]
+  - id: templates
+    name: Templates
+    kind: record
+    group: skill-ai-it scripts
+    host: templates/ (justfile, govcheck, history readme, session record)
+    health: copied at bootstrap today; imported once the plan lands
+  - id: records
+    name: Record scripts
+    kind: script
+    group: skill-ai-it scripts
+    host: scripts/records/ (rotate_records.py, roadmap_trim.py, budget_plan.py, history_layout.py, history_migrate.py)
+    health: plan by default; reads flat or by-kind docs/history
+    code: [scripts/records/rotate_records.py, scripts/records/history_migrate.py]
+  - id: checks
+    name: Check scripts
+    kind: script
+    group: skill-ai-it scripts
+    host: scripts/checks/ (doc_freshness.py, file_headers.py, anchor_links.py, govern_guard.py, ...)
+    health: read only; exit 1 on a finding
+    code: [scripts/checks/doc_freshness.py]
+  - id: consumer-check
+    name: consumer_check.py (proposed)
+    kind: proposed
+    group: Proposed scripts
+    host: scripts/consumers/, generalised from skill-drawio
+    health: every consumer's saved output compared before and after
+    status: {state: proposed, since: "2026-11-11", evidence: "plan section 7.1"}
+    depends_on: [consumers-registry]
+  - id: conformance
+    name: conformance.py and cue_seam.py (proposed)
+    kind: proposed
+    group: Proposed scripts
+    host: scripts/standard/
+    health: stdlib inside a project; full CUE pass centrally
+    status: {state: proposed, since: "2026-11-11", evidence: "plan sections 4.5, 7.3, 7.4"}
+  - id: refresh
+    name: standard_refresh.py (proposed)
+    kind: proposed
+    group: Proposed scripts
+    host: scripts/standard/ (just refresh)
+    health: plan by default; --apply moves the pin and diffs output
+    status: {state: proposed, since: "2026-11-11", evidence: "plan section 7.2"}
+    depends_on: [worktree]
+  - id: consumers-registry
+    name: consumers.toml (proposed)
+    kind: proposed
+    group: Proposed scripts
+    host: skill-ai-it root
+    health: one table per consumer project
+    status: {state: proposed, since: "2026-11-11", evidence: "plan section 4.4"}
+  - id: governed-files
+    name: Governed files
+    kind: record
+    group: Consumer project
+    host: AGENTS.md, AI_NAVIGATION.md, context-map.yaml, README.md
+    health: passes doc freshness and file roles
+  - id: running-records
+    name: Running records
+    kind: record
+    group: Consumer project
+    host: CHANGELOG.md, SCRATCHPAD.md, ROADMAP.md
+    health: within 200 lines and 25 KB
+  - id: history
+    name: docs/history
+    kind: record
+    group: Consumer project
+    host: docs/history/{changelog,scratchpad,roadmap,session-records,sync}/ plus readme.md
+    health: every archive listed in the generated index
+  - id: project-check
+    name: Project check (just check)
+    kind: script
+    group: Consumer project
+    host: the project's justfile and scripts/govcheck/
+    health: exit 0
+    depends_on: [checks]
+  - id: git
+    name: Git repositories
+    kind: external
+    group: Outside
+    host: skills_stuff and each project repository
+    health: clean tree before a migration
+  - id: worktree
+    name: Tagged skill-ai-it worktree (proposed)
+    kind: proposed
+    group: Outside
+    host: git worktree of skill-ai-it at standard-<version>
+    health: label and checked-out tag agree
+    status: {state: proposed, since: "2026-11-11", evidence: "plan section 3, version pin"}
+    depends_on: [git]
+
+flows:
+  - id: bootstrap
+    title: Bootstrap or refresh a project
+    category: custom
+    purpose: Give a folder the governed-file standard (agent rules, navigation, records, checks), or add what it lacks.
+    trigger: {kind: manual, detail: "the operator asks for skill-ai-it bootstrap or refresh"}
+    runs_on: agent
+    owner: agent
+    steps:
+      - id: ask
+        actor: operator
+        action: Asks for a bootstrap or refresh of a project folder.
+        via: [chat]
+      - id: plan
+        actor: adoption
+        action: Plans every governed file the project lacks, from the templates.
+        via: [internal]
+        reads: [templates]
+      - id: apply
+        actor: adoption
+        action: With --apply, writes managed blocks and missing files, never over user content.
+        via: [file]
+        writes: [governed-files, running-records]
+        gate: --apply
+      - id: verify
+        actor: project-check
+        action: Runs the project's check; a failure is fixed in the project, not in the check.
+        via: [internal]
+  - id: rotate-records
+    title: Rotate running records
+    category: custom
+    purpose: Keep CHANGELOG, SCRATCHPAD and ROADMAP within budget by moving old entries to docs/history.
+    trigger: {kind: manual, detail: "just rotate, or a slurp's just budget --apply"}
+    runs_on: agent
+    owner: records
+    steps:
+      - id: plan
+        actor: records
+        action: Picks the entries over budget; open items go to a tracker, not to history.
+        via: [internal]
+        reads: [running-records]
+      - id: write
+        actor: records
+        action: With --apply, writes the archive into its kind folder and adds it to the history index.
+        via: [file]
+        writes: [history, running-records]
+        gate: --apply
+        failures: ["new tracker and archive files lack Authority and Scope in front matter (found 2026-11-11; plan stage S1b)"]
+      - id: check
+        actor: project-check
+        action: Confirms the records are within budget and the index lists every archive.
+        via: [internal]
+  - id: history-migrate
+    title: Group docs/history by kind
+    category: custom
+    purpose: Move a project's flat rotated records into changelog, scratchpad, roadmap, session-records and sync folders.
+    trigger: {kind: manual, detail: "just -f skill-ai-it/justfile history-migrate <project> [--apply]"}
+    runs_on: agent
+    owner: records
+    steps:
+      - id: refuse
+        actor: records
+        action: Refuses when docs/history has uncommitted changes.
+        via: [internal]
+        reads: [git]
+      - id: move
+        actor: records
+        action: With --apply, moves each file with git mv, names unchanged, and repoints references in the project.
+        via: [file]
+        writes: [history, governed-files]
+        gate: --apply
+      - id: index
+        actor: records
+        action: Regenerates the history index, one section per kind, hand descriptions kept.
+        via: [file]
+        writes: [history]
+      - id: verify
+        actor: project-check
+        action: Runs the project's check; a docs-index check that wants one readme per folder must accept the history index (UNC, 2026-11-11).
+        via: [internal]
+  - id: governance-check
+    title: Governance check
+    category: custom
+    purpose: Prove the project's governance claims against its files before a commit.
+    trigger: {kind: manual, detail: "just check, and the apn pre-commit hook"}
+    runs_on: agent
+    owner: project-check
+    steps:
+      - id: run
+        actor: project-check
+        action: Runs the project's own checks and skill-ai-it's checks.
+        via: [internal]
+        reads: [governed-files, running-records, history]
+      - id: freshness
+        actor: checks
+        action: Flags documents past review, records over budget and files without a header.
+        via: [internal]
+  - id: standard-release
+    title: Release a new standard tag (proposed)
+    category: custom
+    purpose: Change skill-ai-it once and let projects take the change on purpose, never by a live edit.
+    trigger: {kind: manual, detail: "a central change is ready"}
+    runs_on: agent
+    owner: consumer-check
+    status: {state: proposed, since: "2026-11-11", evidence: "plan section 3 and 4.6"}
+    steps:
+      - id: edit
+        actor: agent
+        action: Edits skill-ai-it in its working folder, which no project runs.
+        via: [file]
+        writes: [skill-docs]
+      - id: compare
+        actor: consumer-check
+        action: Runs every consumer's check against the new checkout and compares saved outputs and counts with the last tag.
+        via: [internal]
+        reads: [consumers-registry]
+        failures: ["a changed output not accepted by the operator", "a run that changed a project's files", "over 10 minutes with 4 workers"]
+      - id: tag
+        actor: consumer-check
+        action: Cuts tag standard-<version> only when the comparison passes.
+        via: [git]
+        writes: [worktree]
+  - id: project-refresh
+    title: Move a project to the next tag (proposed)
+    category: custom
+    purpose: Take a released standard into one project, characterised in the same change.
+    trigger: {kind: manual, detail: "just refresh [--apply]"}
+    runs_on: agent
+    owner: refresh
+    status: {state: proposed, since: "2026-11-11", evidence: "plan section 7.2"}
+    steps:
+      - id: plan
+        actor: refresh
+        action: Prints the move from the current tag to the next.
+        via: [internal]
+        reads: [governed-files]
+      - id: move
+        actor: refresh
+        action: With --apply, points the project at the new tag's worktree and updates standard.version.
+        via: [file]
+        writes: [governed-files]
+        gate: --apply
+      - id: diff
+        actor: project-check
+        action: Runs the check before and after; any difference is listed for the operator.
+        via: [internal]
+  - id: conformance-run
+    title: Conformance across projects (proposed)
+    category: custom
+    purpose: Show which projects follow the standard, which declared a difference and which drifted.
+    trigger: {kind: manual, detail: "just consumers --conformance"}
+    runs_on: agent
+    owner: conformance
+    status: {state: proposed, since: "2026-11-11", evidence: "plan section 4.5"}
+    steps:
+      - id: read
+        actor: conformance
+        action: Reads each project's standard block, maps and recipes; runs the CUE pass centrally.
+        via: [internal]
+        reads: [governed-files, consumers-registry]
+      - id: report
+        actor: conformance
+        action: Appends one line per project to conformance-runs.jsonl and renders the drift table.
+        via: [file]
+      - id: decide
+        actor: operator
+        action: Accepts each undeclared difference as a deviation, or asks for it to be removed.
+        via: [chat]
