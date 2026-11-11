@@ -651,3 +651,21 @@ public function sendData($data, $length = 0)
   did not answer (`smc_link_health.sh` earlier: 27 % at the first hop, 40 % to the proxy, 4,947 backdoor ssh restarts). Each site has its own
   gateway /24, so a shared-upstream fault would show as many sites at once; here it was four. Effect: their smc_change clones of rct-tstik ran at
   3-4 KB/s, and Teleport dropped their sessions mid-run. Before a change on such a site, run the survey; raise a persistent one with the link provider.
+- **smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 on SMCs with the older cisofy key (2026-11-11)**: cisofy added signing subkey
+  `3E82FB7C68F57341349ED2C17A9A1D9D5B27C6D3` to primary `84FAA998...FEBB7D1812576482` on 2025-10-22. SMCs that imported the key before that
+  (old role: keyserver id `013baa07...`, itself a 2021 subkey of the same primary) fail at "Add cisofy-lynis source repository" with
+  `NO_PUBKEY 7A9A1D9D5B27C6D3` (kaltjiti-fergon-smc01; `apt-key list` there showed only the 2021 subkeys). `apt_key` with `url` alone does not fix it:
+  it takes the primary fingerprint from the download, finds it present and imports nothing. Pinning `id` to the new subkey forces the import.
+  Tested in ubuntu:22.04 against a keyring missing the subkey (url only: fails; url plus id: role key, repo and install tasks pass).
+  ansible-wifi master `9d504a89`, rise `c4d2ef51`:
+
+  ```yaml
+  # roles/smc_lynis/tasks/main.yml (ansible-wifi rise c4d2ef51)
+  - name: Download key from cisofy
+    ansible.builtin.apt_key:
+      id: 3E82FB7C68F57341349ED2C17A9A1D9D5B27C6D3
+      url: https://packages.cisofy.com/keys/cisofy-software-public.key
+      state: present
+  ```
+
+  At the next cisofy key rotation, compare `gpg --show-keys` of the key URL with the pinned id and bump it.
