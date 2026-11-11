@@ -67,6 +67,21 @@ class Page:
         self.cells.append(f'<mxCell id="{self.pid}-{self.n}" style="edgeStyle=none;html=1;endArrow=block;endFill=1;endSize=5;strokeColor=#777777;'
                           f'{extra or "exitX=1;exitY=0.5;entryX=0;entryY=0.5;"}" edge="1" parent="1" source="{a}" target="{b}"><mxGeometry relative="1" as="geometry"/></mxCell>')
 
+    def route(self, a: str, b: str, pts: list, extra: str = "") -> None:
+        """Add an arrow through explicit waypoints, square corners and a jump arc where it crosses another (skill-drawio's flow pages).
+
+        Args:
+            a: source id.
+            b: target id.
+            pts: the waypoints between the two ports, [(x, y), ...].
+            extra: the port fractions and any other style.
+        """
+        self.n += 1
+        points = "".join(f'<mxPoint x="{x:.1f}" y="{y:.1f}"/>' for x, y in pts)
+        self.cells.append(f'<mxCell id="{self.pid}-{self.n}" style="edgeStyle=none;html=1;endArrow=block;endFill=1;endSize=5;strokeColor=#777777;'
+                          f'jumpStyle=arc;jumpSize=8;{extra}" edge="1" parent="1" source="{a}" target="{b}"><mxGeometry relative="1" as="geometry">'
+                          f'<Array as="points">{points}</Array></mxGeometry></mxCell>')
+
     def xml(self) -> str:
         """The page as a diagram element.
 
@@ -175,8 +190,12 @@ def scorecard() -> Page:
 
 
 def requirement_tree() -> Page:
-    """Business requirements -> technical requirements -> initiatives (the whiteboard's structure). The middle row is ordered by the mean position of
-    the requirements each serves (barycentre) and every line has its own end points spread along the box edges, so lines do not pile up on one point.
+    """Business requirements -> technical requirements -> initiatives (the whiteboard's structure), in Martin's order.
+
+    Routing follows skill-drawio's flow pages: each line has its own port on both boxes, ordered by where its other end sits; it runs down, across on
+    a horizontal track of its own in the gap, and down into its target; runs whose spans overlap never share a track. Track choice is measured, not
+    first fit: a local search moves each line to the track that gives the fewest crossings (the engine's "try it, score it, keep the better"), then
+    each gap is sized so tracks sit TRACK_GAP apart. A crossing that remains is drawn with a jump arc.
 
     Returns:
         The page.
@@ -189,44 +208,99 @@ def requirement_tree() -> Page:
             "T4 Own controller, any vendor", "T5 One signed image per platform", "T6 Each site only what it needs", "T7 Drift and firmware under control"]
     inits = [("SMC resiliency (R1-R6)", "smc"), ("UNC (U1-U8)", "unc"), ("Litebooth and router-only sites", "lb")]
     links = {0: [2, 6], 1: [0, 1, 4], 2: [5, 3], 3: [0, 1, 5], 4: [4, 6], 5: [1, 2], 6: [4, 6], 7: [2, 3], 8: [2, 1], 9: [3]}
-    serves = {t: [r for r, ts in links.items() if t in ts] for t in range(len(tech))}
-    order = sorted(range(len(tech)), key=lambda t: sum(serves[t]) / len(serves[t]))   # barycentre of the requirements above
-    rw, tw, iw = 146, 200, 340
-    rx = {k: 20 + k * 156 for k in range(len(reqs))}
-    tx = {t: 40 + n * 220 for n, t in enumerate(order)}
     impl = {0: [0], 1: [0], 2: [1], 3: [1, 2], 4: [0], 5: [2, 0], 6: [1]}
-    users = {i: sorted((t for t, il in impl.items() if i in il), key=lambda t: tx[t]) for i in range(len(inits))}
-    ix = {i: 20 + (sum(tx[t] for t in users[i]) / len(users[i]) + tw / 2) - iw / 2 - 20 for i in range(len(inits))}
-    for i in sorted(ix, key=ix.get)[1:]:   # keep the initiative boxes apart
-        prev = max((ix[j] for j in ix if ix[j] < ix[i] or (ix[j] == ix[i] and j < i)), default=None)
-        if prev is not None and ix[i] < prev + iw + 30:
-            ix[i] = prev + iw + 30
-    r_ids = {k: p.box(f"<b>{t}</b>", rx[k], 120, rw, 40, "req") for k, t in enumerate(reqs)}
-    t_ids = {t: p.box(tech[t], tx[t], 320, tw, 50, "chg") for t in range(len(tech))}
-    i_ids = {i: p.box(f"<b>{t}</b>", ix[i], 520, iw, 44, kind) for i, (t, kind) in enumerate(inits)}
-
-    def spread(n: int, k: int) -> float:
-        """The k-th of n points spread along an edge, as a fraction of it.
-
-        Args:
-            n: how many points.
-            k: which one.
-
-        Returns:
-            0 to 1.
-        """
-        return (k + 1) / (n + 1)
-
-    ins = {t: sorted(serves[t], key=lambda r: rx[r]) for t in serves}
-    for r, ts in links.items():
-        outs = sorted(ts, key=lambda t: tx[t])
-        for t in outs:
-            p.edge(r_ids[r], t_ids[t], f"exitX={spread(len(outs), outs.index(t)):.3f};exitY=1;entryX={spread(len(ins[t]), ins[t].index(r)):.3f};entryY=0;")
-    for t, il in impl.items():
-        outs = sorted(il, key=lambda i: ix[i])
-        for i in outs:
-            p.edge(t_ids[t], i_ids[i], f"exitX={spread(len(outs), outs.index(i)):.3f};exitY=1;entryX={spread(len(users[i]), users[i].index(t)):.3f};entryY=0;")
+    size = {"r": (40, 146), "t": (50, 200), "i": (44, 340)}   # height, width per row
+    xs = {"r": [20 + k * 156 for k in range(len(reqs))], "t": [40 + k * 220 for k in range(len(tech))], "i": [200 + k * 420 for k in range(len(inits))]}
+    upper = plan_layer(xs, size, "r", "t", [(r, t) for r, ts in links.items() for t in ts])
+    lower = plan_layer(xs, size, "t", "i", [(t, i) for t, il in impl.items() for i in il])
+    y = {"r": 120}
+    y["t"] = y["r"] + size["r"][0] + (upper[1] + 1) * TRACK_GAP
+    y["i"] = y["t"] + size["t"][0] + (lower[1] + 1) * TRACK_GAP
+    ids = {"r": [p.box(f"<b>{t}</b>", xs["r"][k], y["r"], size["r"][1], size["r"][0], "req") for k, t in enumerate(reqs)],
+           "t": [p.box(t, xs["t"][k], y["t"], size["t"][1], size["t"][0], "chg") for k, t in enumerate(tech)],
+           "i": [p.box(f"<b>{t}</b>", xs["i"][k], y["i"], size["i"][1], size["i"][0], kind) for k, (t, kind) in enumerate(inits)]}
+    for (lines, _n), up, down in ((upper, "r", "t"), (lower, "t", "i")):
+        gap_top = y[up] + size[up][0]
+        for a, b, fo, fi, x0, x1, k in lines:
+            ty = gap_top + TRACK_GAP * (k + 1)
+            p.route(ids[up][a], ids[down][b], [(x0, ty), (x1, ty)], f"exitX={fo:.3f};exitY=1;entryX={fi:.3f};entryY=0;")
     return p
+
+
+#: Space between two horizontal tracks in a gap, px.
+TRACK_GAP = 14
+
+
+def crossings(lines: list, slot: dict) -> int:
+    """Crossings among square lines in one gap: a line's horizontal run against another's vertical legs.
+
+    Args:
+        lines: (a, b, fo, fi, x0, x1) per line.
+        slot: track index per (a, b); a larger index is lower.
+
+    Returns:
+        The count.
+    """
+    n = 0
+    for la in lines:
+        ya, lo, hi = slot[la[:2]], min(la[4], la[5]), max(la[4], la[5])
+        for lb in lines:
+            if lb is la:
+                continue
+            yb = slot[lb[:2]]
+            if lo < lb[4] < hi and yb > ya:   # b's first leg runs from the top down to its track, past a's run
+                n += 1
+            if lo < lb[5] < hi and yb < ya:   # b's last leg runs from its track down to the bottom, past a's run
+                n += 1
+    return n
+
+
+def plan_layer(xs: dict, size: dict, up: str, down: str, pairs: list) -> tuple[list, int]:
+    """Ports and tracks for every line between two rows of boxes.
+
+    Args:
+        xs: box left edges per row key.
+        size: (height, width) per row key.
+        up: the upper row's key.
+        down: the lower row's key.
+        pairs: (upper index, lower index) per line.
+
+    Returns:
+        ([(a, b, exit fraction, entry fraction, x0, x1, track)], tracks used).
+    """
+    centre = lambda row, k: xs[row][k] + size[row][1] / 2
+    outs = {a: sorted((b for a2, b in pairs if a2 == a), key=lambda b: centre(down, b)) for a, _ in pairs}
+    ins = {b: sorted((a for a, b2 in pairs if b2 == b), key=lambda a: centre(up, a)) for _, b in pairs}
+    frac = lambda n, k: (k + 1) / (n + 1)
+    lines = []
+    for a, b in pairs:
+        fo, fi = frac(len(outs[a]), outs[a].index(b)), frac(len(ins[b]), ins[b].index(a))
+        lines.append((a, b, fo, fi, xs[up][a] + size[up][1] * fo, xs[down][b] + size[down][1] * fi))
+    span = {ln[:2]: (min(ln[4], ln[5]) - 6, max(ln[4], ln[5]) + 6) for ln in lines}
+    slot = {ln[:2]: k for k, ln in enumerate(lines)}   # start: one track each, then compact
+    def free(key: tuple, k: int) -> bool:
+        lo, hi = span[key]
+        return all(slot[o] != k or hi < span[o][0] or lo > span[o][1] for o in slot if o != key)
+    for _ in range(40):
+        moved = False
+        for ln in lines:
+            key = ln[:2]
+            best, best_k = (crossings(lines, slot), len(set(slot.values()))), slot[key]
+            for k in range(len(lines)):
+                if k == slot[key] or not free(key, k):
+                    continue
+                old, slot[key] = slot[key], k
+                score = (crossings(lines, slot), len(set(slot.values())))
+                slot[key] = old
+                if score < best:
+                    best, best_k = score, k
+            if best_k != slot[key]:
+                slot[key], moved = best_k, True
+        if not moved:
+            break
+    used = sorted(set(slot.values()))
+    rank = {k: n for n, k in enumerate(used)}
+    return [ln + (rank[slot[ln[:2]]],) for ln in lines], len(used)
 
 
 def site_shapes() -> Page:
