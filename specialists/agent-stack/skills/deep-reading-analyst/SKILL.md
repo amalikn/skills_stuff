@@ -1,7 +1,6 @@
 ---
 name: deep-reading-analyst
 description: "Deep analysis of articles/papers using multiple thinking frameworks."
-disabled: true
 ---
 
 # Deep Reading Analyst

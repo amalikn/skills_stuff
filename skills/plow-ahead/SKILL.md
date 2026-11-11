@@ -1,7 +1,6 @@
 ---
 name: plow-ahead
 description: "Autonomous progress mode - proceed without clarification until truly blocked."
-disabled: true
 ---
 
 # Plow Ahead

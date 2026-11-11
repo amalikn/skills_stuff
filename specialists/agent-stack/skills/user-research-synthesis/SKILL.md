@@ -1,7 +1,6 @@
 ---
 name: user-research-synthesis
 description: "Synthesize user research (interviews, surveys, tickets) into themes/personas."
-disabled: true
 ---
 
 # User Research Synthesis Skill

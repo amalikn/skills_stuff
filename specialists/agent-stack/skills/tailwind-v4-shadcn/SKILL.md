@@ -2,7 +2,6 @@
 name: tailwind-v4-shadcn
 description: "Tailwind v4 + shadcn/ui + Vite/React setup, theming, and common gotchas."
 license: MIT
-disabled: true
 ---
 
 # Tailwind v4 + shadcn/ui Production Stack

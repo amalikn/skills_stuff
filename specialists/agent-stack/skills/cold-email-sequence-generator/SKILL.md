@@ -1,7 +1,6 @@
 ---
 name: cold-email-sequence-generator
 description: "Generate personalized cold email sequences (7-14 emails) with A/B subjects."
-disabled: true
 ---
 
 # Cold Email Sequence Generator

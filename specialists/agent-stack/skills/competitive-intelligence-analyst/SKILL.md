@@ -10,7 +10,6 @@ tags:
   - differentiation
   - benchmarking
 auto_activate: true
-disabled: true
 ---
 
 # Competitive Intelligence Analyst - Market & Competitor Tracking

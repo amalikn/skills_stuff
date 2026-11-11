@@ -2,7 +2,6 @@
 name: startup-financial-modeling
 description: "Build startup financial projections: revenue, burn rate, runway, cash flow."
 version: 1.0.0
-disabled: true
 ---
 
 # Startup Financial Modeling

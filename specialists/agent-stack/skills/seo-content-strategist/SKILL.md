@@ -1,7 +1,6 @@
 ---
 name: seo-content-strategist
 description: "SEO content strategy: keyword research, clusters, pillar pages, technical SEO."
-disabled: true
 ---
 
 # SEO Content Strategist

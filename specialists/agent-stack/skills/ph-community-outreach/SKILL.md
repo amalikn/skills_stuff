@@ -1,7 +1,6 @@
 ---
 name: ph-community-outreach
 description: "Engage Reddit/Indie Hackers/HN communities for Product Hunt launches."
-disabled: true
 ---
 
 # Product Hunt Community Outreach

@@ -1,7 +1,6 @@
 ---
 name: community-led-growth
 description: "Community-led growth strategy: ambassador programs, user communities, CLG."
-disabled: true
 ---
 
 # Community Led Growth

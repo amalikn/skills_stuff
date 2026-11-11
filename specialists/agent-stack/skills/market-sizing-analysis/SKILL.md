@@ -2,7 +2,6 @@
 name: market-sizing-analysis
 description: "Calculate TAM/SAM/SOM market sizing for a startup or business opportunity."
 version: 1.0.0
-disabled: true
 ---
 
 # Market Sizing Analysis

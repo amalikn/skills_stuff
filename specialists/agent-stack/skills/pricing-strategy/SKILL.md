@@ -2,7 +2,6 @@
 name: pricing-strategy
 version: 1.0.0
 description: "Pricing, packaging, monetization strategy: tiers, freemium, willingness to pay."
-disabled: true
 ---
 
 # Pricing Strategy

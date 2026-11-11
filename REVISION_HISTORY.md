@@ -15,6 +15,13 @@ Change log for the `skills_stuff` parent repository.
   with full descriptions. Codex's source (`codex-rs/config/src/skills_config.rs`) switches skills only through `[[skills.config]]` in `config.toml`. The switches that work are Claude
   `skillOverrides` in `~/.claude/settings.json` and Codex `[[skills.config]] name = ... enabled = false`; on 2026-11-11 the operator chose per-tool sets there (Claude: 90 name-only;
   Codex: 27 marketing skills and `vibeshell` disabled).
+- Front-matter `disabled: true` removed from all 53 flagged skills (operator: "Remove them"): 43 here, `superpowers` `e987f39` (8, pushed `309813f..e987f39`), `stop-slop` `f20e051` (1,
+  pushed `8efb958..f20e051`), both gitlink pointers bumped; `diagram-design` (third-party clone, `cathrynlavery/diagram-design`) edited in the working copy only, its local description edit kept.
+  The working switches now hold the intent: Claude `skillOverrides` gained `subagent-driven-development`, `test-driven-development`, `using-superpowers` (93 name-only); Codex disabled 15 more by
+  name (`agent-watchdog`, `find-skills`, `plan-arbiter`, `plow-ahead`, `prompt-master`, `quick-recap`, `skill-project-wiki-rag-bridge`, `stay-within-limits`, `tailwind-v4-shadcn`, `team`,
+  `ux-audit-rethink`, `visual-plan`, `visual-recap`, `websh`, `web-scraping`; 43 entries). Kept on in Codex by operator choice: `premortem`, `security-audit`, `code-review-security`, `senior-qa`,
+  `devops`, `read-the-damn-docs`, `using-git-worktrees`, `finishing-a-development-branch`, `requesting-code-review`, `receiving-code-review`, `scientific-critical-thinking`,
+  `deep-reading-analyst`, `github-explorer`. Re-enabled earlier the same day in Claude and left on: `doc`, `stop-slop`, `writing-skills`.
 
 ## 2026-11-10
 - Committed and pushed the pending tree (operator: "can you commit all the skills_stuff?"). `44aad34`: skill-knowledge-curator's 2026-11-05 UNC pilot work (status_claims, merge_labels, locate_lines

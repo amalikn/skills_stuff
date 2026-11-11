@@ -3,7 +3,6 @@ name: devops
 description: Deploy to Cloudflare (Workers, R2, D1), Docker, GCP (Cloud Run, GKE), Kubernetes (kubectl, Helm). Use for serverless, containers, CI/CD, GitOps, security audit.
 license: MIT
 version: 2.0.0
-disabled: true
 ---
 
 # DevOps Skill

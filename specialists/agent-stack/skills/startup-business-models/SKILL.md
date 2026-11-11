@@ -1,7 +1,6 @@
 ---
 name: startup-business-models
 description: "Evaluate startup revenue models, pricing, packaging, and unit economics."
-disabled: true
 ---
 
 # Startup Business Models

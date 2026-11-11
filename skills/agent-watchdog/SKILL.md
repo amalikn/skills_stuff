@@ -1,7 +1,6 @@
 ---
 name: agent-watchdog
 description: "Watch/audit another agent's work (Codex, Claude session, PR) until done/blocked."
-disabled: true
 ---
 
 # Agent Watchdog

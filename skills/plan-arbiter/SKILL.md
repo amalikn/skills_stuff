@@ -1,7 +1,6 @@
 ---
 name: plan-arbiter
 description: "Compare/arbitrate competing plans from multiple agents into one recommendation."
-disabled: true
 ---
 
 # Plan Arbiter

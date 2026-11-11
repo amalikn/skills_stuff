@@ -1,7 +1,6 @@
 ---
 name: quick-recap
 description: Use when adding or following the red/yellow/green final status block convention for agent responses, especially by installing managed AGENTS.md or CLAUDE.md instructions.
-disabled: true
 ---
 
 # Quick Recap

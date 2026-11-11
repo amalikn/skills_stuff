@@ -5,7 +5,6 @@ version: 1.0.0
 author: Claude Skills
 category: product-design
 tags: [strategy, market-analysis, gtm, positioning, growth]
-disabled: true
 ---
 
 # Product Strategist

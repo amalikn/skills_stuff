@@ -51,10 +51,10 @@ Auto-memory consolidated: all Claude auto-memory writes go to `/Volumes/Data/_ai
 
 ## Open items
 
-- [ ] **20261110_1404** `KEEP`: `stop-slop` and `superpowers` have no `REVISION_HISTORY.md` (REVISION_HISTORY Policy requires one); and whether Claude Code honours `disabled: true` in SKILL.md front
+- [x] **20261110_1404** `KEEP`: `stop-slop` and `superpowers` have no `REVISION_HISTORY.md` (REVISION_HISTORY Policy requires one); and whether Claude Code honours `disabled: true` in SKILL.md front
   matter is unverified (the 53 disabled skills were still listed in a session started before the flags were committed): check in a fresh session.
   **20261111_1340** answered: not honoured (fresh 2026-11-11 session still listed them in full); Codex ignores it too (source). Open: drop the flags or keep them as
-  documentation; the working switches are now set per tool (REVISION_HISTORY 2026-11-11).
+  documentation; the working switches are now set per tool (REVISION_HISTORY 2026-11-11). **20261111_1430** done: flags removed, intent moved to per-tool switches.
 - [ ] **Run `skill-staleness-audit` end-to-end on a project other than its originating one.** It has been unit-tested across four repos but never driven through all nine phases elsewhere.
   `apn/vocus-profitability` is the obvious first target — 932 files, 240 novel lines in its managed blocks, never swept. `KEEP`
 
