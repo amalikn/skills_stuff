@@ -38,7 +38,7 @@ python -I draw_views.py docs/flows/business-views-<stamp>.drawio
 python3 draw_gantt.py docs/flows/drawio/program-gantt-<stamp>.drawio   # stdlib only; added by skill-drawio-fa
 ```
 
-Both overwrite their output: never point one at a drawing someone has edited by hand.
+All three overwrite their output: never point one at a drawing someone has edited by hand.
 
 ## What the trial showed
 
