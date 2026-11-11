@@ -35,8 +35,11 @@
 
 ## 10. url_capture v2 — Python Streaming Service
 
-> **Branch reach (checked 2026-10-27):** v2 (`c19a61fa`, 2026-06-09 onward) is on `rise-multi` and side branches, not on `rise`, which still carries only the v1 role (`url_capturev1.sh`, no
-> `v2_setup.yml`). A `smc_url_capture` run from `rise` deploys v1. See `13_known-issues.md` (Branch reach).
+> **Branch reach (updated 2026-11-11):** the v2 role from `rise-multi` `c0d72c0a` is imported into `master` (`1ef84551`) and `rise` (`906ee778`), unpushed at 2026-11-11 14:28. The default
+> `smc_url_capture_version: v2` is kept (operator, 2026-11-11), so the next `smc_bases.yml --tags url_capture` run from either branch on an `rcp` or `nbn_accelerate` SMC tears down v1 and starts
+> `url-capture.service`; limit with `-l` for canary and staged rollout, or set `smc_url_capture_version: v1` per host to hold an SMC on v1. `rsync_urlcapture.sh.j2` on both branches carries the `rise`
+> `74d574b0` prune rule (a month older than last month is deleted only after its own rsync exits 0); `rise-multi` itself still has the old exact-month deletes. Only the role folder was imported: the
+> rcp inventory, `smc_network` and `_helpers` parts of `c19a61fa` were not. Before 2026-11-11 `rise` carried only v1. See `13_known-issues.md` (Branch reach).
 
 ### Why the Rewrite
 
