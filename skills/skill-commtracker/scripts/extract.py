@@ -7,7 +7,7 @@ Claude reads the JSON; no raw EML bytes enter the context window.
 
 Usage:
     python extract.py <eml-path>
-        [--attachments-dir <dir>]    default: <eml-dir>/attachments/
+        [--attachments-dir <dir>]    default: <communications>/attachments/ (see default_attachments_dir)
         [--internal-domain <domain>] e.g. apn.net.au — marks external senders
         [--slug <YYYYMMDD_HHMM>]     override timestamp slug for file naming
         [--save-signatures]          include Outlook/Teams UI chrome images (default: skip)
@@ -218,6 +218,30 @@ def unique_path(dir_path: Path, filename: str) -> Path:
 # Main extraction
 # ---------------------------------------------------------------------------
 
+# Source subfolders of the standard communications/ layout (SKILL.md, Folder layout).
+# Attachments live once, beside the tracker, so an .eml filed in one of these goes up a level.
+SOURCE_SUBDIRS = ("emails", "teams")
+
+
+def default_attachments_dir(eml_path: Path) -> Path:
+    """Return the attachments folder for an .eml when --attachments-dir is not given.
+
+    Args:
+        eml_path: Path to the .eml being extracted.
+
+    Returns:
+        ``<communications>/attachments`` when the .eml sits in a source subfolder
+        (``emails/`` or ``teams/``), else ``attachments`` beside the .eml (flat layout).
+
+    Raises:
+        Nothing.
+    """
+    parent = eml_path.parent
+    if parent.name in SOURCE_SUBDIRS:
+        return parent.parent / "attachments"
+    return parent / "attachments"
+
+
 def extract(
     eml_path: str,
     attachments_dir: str | None = None,
@@ -273,7 +297,7 @@ def extract(
     if attachments_dir:
         att_dir = Path(attachments_dir)
     else:
-        att_dir = eml_path.parent / "attachments"
+        att_dir = default_attachments_dir(eml_path)
 
     attachments = []
     sig_skipped = 0

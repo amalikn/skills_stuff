@@ -11,6 +11,7 @@ metadata:
 
 - [Use When](#use-when)
 - [Step 1 — Identify Source Type and Multi-Email Containers](#step-1--identify-source-type-and-multi-email-containers)
+- [Folder layout](#folder-layout)
 - [Step 2 — Determine Thread File](#step-2--determine-thread-file)
 - [Step 3 — Extract Fields](#step-3--extract-fields)
 - [Step 4 — Clean the Body](#step-4--clean-the-body)
@@ -62,11 +63,36 @@ then run `extract.py` again on each extracted `.eml` file individually to get it
 
 ---
 
+## Folder layout
+
+Standard for every `communications/` folder (operator, 2026-11-11). Sources are filed by type; the tracker, its README and the shared `attachments/` stay at the top:
+
+```text
+communications/
+  README.md                    folder index (what is where, counts, hazards)
+  communications-tracking.md   the thread tracker
+  attachments/                 extracted attachments and inline images, YYYYMMDD_HHMM-filename
+  emails/                      raw .eml exports, original filenames kept
+  teams/                       Teams staging files (teams-messages.md) and Teams exports
+  transcripts/                 call and meeting transcripts, meeting records, verbal notes
+```
+
+- A new folder is created with this layout. A subfolder is created when its first file arrives; an empty one is not needed.
+- An existing flat folder moves to it the next time the project files a communication, as its own step: move each file, rewrite every `communications/<file>` path in the
+  project's live documents (dated history such as CHANGELOG stays as written), update the README, and run the project's check. The scripts read both layouts, so nothing breaks
+  in between.
+- `.eml` filenames are not renamed in the move; they stay as exported.
+- Tracker links stay relative to the tracker: `attachments/...` for files, and source pointers as `communications/emails/<file>` or `communications/transcripts/<file>`.
+- A per-stream thread folder (Step 2 rule 2) uses the same layout inside itself.
+
+---
+
 ## Step 2 — Determine Thread File
 
 1. Check if the user specified a thread file path explicitly. If yes, use it.
-2. **Per-subdirectory threading:** If the source `.eml` file lives in a subdirectory of `communications/` (e.g. `communications/apn/`, `communications/vocus/`), the thread file belongs in that same
-   subdirectory — use `communications/<subdir>/communications-tracking.md`. This keeps threads isolated per correspondence stream.
+2. **Per-subdirectory threading:** If the source `.eml` file lives in a correspondence-stream subdirectory of `communications/` (e.g. `communications/apn/`, `communications/vocus/`), the thread
+   file belongs in that same subdirectory — use `communications/<subdir>/communications-tracking.md`. This keeps threads isolated per correspondence stream. The layout folders `emails/`,
+   `teams/`, `transcripts/` and `attachments/` are not streams: an `.eml` in `communications/emails/` belongs to `communications/communications-tracking.md`.
 3. Check if the project has a `communications/communications-tracking.md` relative to the working directory. If yes, use it.
 4. If no thread file exists yet, ask the user for:
    - Thread file path (suggest the appropriate path per rule 2)
@@ -175,6 +201,11 @@ This keeps the tracker itself scannable while preserving the full record separat
 of `---`, and unlabelled `Speaker:` lines instead of bold. Before filing, reformat the source file itself to standard markdown: `#`/`##` headers for sections, `**Speaker:**` for turn labels, `---` for
 dividers. Preserve all wording exactly — this is formatting cleanup only, never a content edit.
 
+**Transcript turn layout** (operator, 2026-11-11): each speaker turn is one block. The label sits on its own line with its lines directly under it: no blank line after the
+label, no blank lines between the turn's lines, and no trailing backslash after the label or a line (the file is read as source). One blank line separates turns. A quote, list
+or table inside a turn keeps one blank line above and below, so it does not swallow the next line. Field labels over a list (`**Participants:**`) are not turns. Apply it with
+`scripts/compact_turns.py <file>` (preview) then `--apply`; it refuses to write if any wording would change.
+
 **Fact conflicts — stop and confirm, don't guess:** if a call/meeting transcript's stated date, a name, or another detail conflicts with an already-tracked fact elsewhere in the project (a different
 dated communication implies a different date, a name doesn't match a known person), stop and ask the user to confirm before filing. Do not silently pick one version or infer which is correct — get it
 wrong here and every downstream chronology/case-file entry inherits the error.
@@ -208,7 +239,7 @@ pointing to the saved file: `![filename](attachments/YYYYMMDD_HHMM-filename)`. M
 
 Skip entirely if no attachments or inline images were found in Step 3.
 
-1. **Save path:** `communications/attachments/` relative to the thread file. Create the directory if it does not exist.
+1. **Save path:** `communications/attachments/`, beside the thread file (never `emails/attachments/`). Create the directory if it does not exist.
 2. **Naming convention:** `{YYYYMMDD_HHMM}-{original-filename}` using the email timestamp slug.
    - Replace spaces in the original filename with hyphens.
    - If a collision exists (same name already in the folder), append `-2`, `-3`, etc.
@@ -347,7 +378,7 @@ Helper scripts at `scripts/` (relative to this skill): Use these instead of inli
 
 ```bash
 python ~/.agents/scripts/commtracker/extract.py <eml-path> \
-  [--attachments-dir <dir>]    # default: <eml-dir>/attachments/
+  [--attachments-dir <dir>]    # default: <communications>/attachments/ (an .eml in emails/ or teams/ goes up one level)
   [--internal-domain <domain>] # e.g. apn.net.au
   [--save-signatures]          # include Outlook/Teams chrome (default: skip)
   [--tz <IANA zone>]           # e.g. Australia/Sydney; Outlook saves Date in UTC, so pass it for local slugs
@@ -374,7 +405,7 @@ Claude reads the JSON and performs Steps 4–7 (body cleaning decisions, CID sub
 python ~/.agents/scripts/commtracker/reconcile.py <communications-dir>
 ```
 
-Compares `.eml` files in the folder against `communications-tracking.md`. Reports exact matches, AEST-timezone matches, same-date candidates, and genuinely untracked files.
+Compares `.eml` files in the folder (`emails/`, `teams/` and the top level, so both layouts) against `communications-tracking.md`. Reports exact matches, AEST-timezone matches, same-date candidates, and genuinely untracked files.
 
 ### apply_corrections.py — correct transcript dialogue after review
 
@@ -385,6 +416,15 @@ python ~/.agents/scripts/commtracker/apply_corrections.py <transcript.md> <corre
 For **Transcript source cleanup** when names and terms are misheard: review the transcript, write the corrections as a TSV (`transcribed<TAB>corrected`; `\n` splits a mis-attributed turn), then apply.
 Only the dialogue below `## Full…` changes; `--table` records every change so the original stays reconstructable. Correcting misheard words is a content change, so do it only when the user asks, and
 mark guesses `[?: …]`.
+
+### compact_turns.py — one block per speaker turn
+
+```bash
+python ~/.agents/scripts/commtracker/compact_turns.py <transcript.md> [...]          # preview
+python ~/.agents/scripts/commtracker/compact_turns.py <transcript.md> [...] --apply  # write
+```
+
+Applies the **Transcript turn layout** (Step 3). Idempotent; compares every line's wording before and after and writes nothing on a difference (exit 1).
 
 ### toc.py — regenerate Contents TOC
 
@@ -427,7 +467,7 @@ Before writing to the thread file, verify:
 - [ ] Entry ID is sequential and correct for the prefix type
 - [ ] TOC anchor will resolve correctly in rendered markdown
 - [ ] Chronological position is correct relative to surrounding entries
-- [ ] Attachments saved to `communications/attachments/` with correct `YYYYMMDD_HHMM-filename` naming
+- [ ] Source file filed in its layout folder (`emails/`, `teams/`, `transcripts/`); attachments saved to `communications/attachments/` with correct `YYYYMMDD_HHMM-filename` naming
 - [ ] CID references in body replaced with working markdown image links
 - [ ] `**Attachments:**` line present in entry header when attachments exist; omitted when none
 - [ ] For Call/Meeting entries: `**Status:** VERBAL_UNRECORDED` present if there is no transcript (reported speech, not quoted dialogue)

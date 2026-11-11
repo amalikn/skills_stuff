@@ -12,7 +12,7 @@ Python 3.14, stdlib only — no pip installs required.
 
 ```bash
 python ~/.agents/scripts/commtracker/extract.py <eml-path> \
-  [--attachments-dir <dir>]    # default: <eml-dir>/attachments/
+  [--attachments-dir <dir>]    # default: <communications>/attachments/ (an .eml in emails/ or teams/ goes up one level)
   [--internal-domain <domain>] # e.g. apn.net.au — marks external senders
   [--slug <YYYYMMDD_HHMM>]     # override timestamp slug for file naming
   [--save-signatures]          # include Outlook/Teams UI chrome (default: skip)
@@ -42,6 +42,8 @@ python ~/.agents/scripts/commtracker/extract.py \
 ---
 
 ## reconcile.py — Diff EML files vs tracker
+
+Scans `emails/*.eml`, `teams/*.eml` and top-level `*.eml`, so both the standard layout (SKILL.md, Folder layout) and a flat folder work.
 
 ```bash
 python ~/.agents/scripts/commtracker/reconcile.py <communications-dir>
@@ -141,3 +143,12 @@ then run `extract.py` on each untracked file.
 
 `~/.agents/scripts/commtracker/` — global, available to all projects.
 No project-local copies needed.
+
+## compact_turns.py — One block per speaker turn
+
+```bash
+python ~/.agents/scripts/commtracker/compact_turns.py <transcript.md> [...] [--apply]
+```
+
+Lays out a transcript per SKILL.md "Transcript turn layout": label and lines together, no blank lines or trailing backslashes inside a turn, quotes/lists/tables kept as their
+own blocks. Preview by default; `--apply` writes. Refuses to write when the wording (non-blank lines) would change. Measured: 11 transcripts, about 8,000 lines, 0.04 s.

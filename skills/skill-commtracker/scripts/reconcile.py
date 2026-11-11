@@ -6,6 +6,9 @@ against the entries in communications-tracking.md.
 Usage:
     python reconcile.py <communications-dir>
 
+Scans emails/*.eml and teams/*.eml (standard layout) and *.eml at the top of the
+folder (flat layout, still supported).
+
 Output:
     Lists any EML files whose date slug does not appear in the tracker,
     plus a summary of date-match candidates (e.g. a Teams EML that
@@ -104,6 +107,27 @@ def parse_tracker(tracker_path: Path) -> list[dict]:
 # Reconcile
 # ---------------------------------------------------------------------------
 
+SOURCE_SUBDIRS = ("emails", "teams")
+
+
+def find_eml_files(comms_path: Path) -> list[Path]:
+    """List the .eml sources of a communications folder in either layout.
+
+    Args:
+        comms_path: The communications/ folder (the one holding the tracker).
+
+    Returns:
+        Sorted paths: top-level *.eml (flat layout) plus emails/*.eml and teams/*.eml.
+
+    Raises:
+        Nothing.
+    """
+    found = list(comms_path.glob("*.eml"))
+    for sub in SOURCE_SUBDIRS:
+        found.extend((comms_path / sub).glob("*.eml"))
+    return sorted(found)
+
+
 def reconcile(comms_dir: str) -> None:
     comms_path = Path(comms_dir).resolve()
     if not comms_path.is_dir():
@@ -111,7 +135,7 @@ def reconcile(comms_dir: str) -> None:
         sys.exit(1)
 
     tracker_path = comms_path / "communications-tracking.md"
-    eml_files = sorted(comms_path.glob("*.eml"))
+    eml_files = find_eml_files(comms_path)
 
     if not eml_files:
         print("No .eml files found.")
@@ -153,7 +177,7 @@ def reconcile(comms_dir: str) -> None:
             matched_entry = next((e for e in entries if e["slug"] == matched_slug), None)
             entry_str = f"{matched_entry['type']} {matched_entry['n']} - {matched_slug}" if matched_entry else matched_slug
             tz_note = " (AEST match)" if matched_slug == slug_aest and matched_slug != slug else ""
-            print(f"  ✓ {eml.name}")
+            print(f"  ✓ {str(eml.relative_to(comms_path))}")
             print(f"      Slug {matched_slug}{tz_note} → matched {entry_str}")
         else:
             # Check for same-date candidate across both slug variants
@@ -168,7 +192,7 @@ def reconcile(comms_dir: str) -> None:
 
             if close_match:
                 date_matched.append({
-                    "file": eml.name,
+                    "file": str(eml.relative_to(comms_path)),
                     "date": raw_date,
                     "slug": slug,
                     "slug_aest": slug_aest,
@@ -177,7 +201,7 @@ def reconcile(comms_dir: str) -> None:
                 })
             else:
                 untracked.append({
-                    "file": eml.name,
+                    "file": str(eml.relative_to(comms_path)),
                     "date": raw_date,
                     "slug": slug,
                     "subject": subject,
