@@ -47,3 +47,11 @@ All three overwrite their output: never point one at a drawing someone has edite
 - The requirement tree is many-to-many and gets busy; draw.io's own orthogonal routing ran lines through boxes, so these scripts use straight lines between fixed sides (`edgeStyle=none`, exit right,
   entry left; top to bottom on trees).
 - In `draw_views.py` the content (steps, changes, benefits, ratings) is hard-coded; an engine view would read it from the map.
+- Routing learnings from the operator's review (2026-11-11, `draw_views.py`):
+  - Cost driver tree: a root box as tall as all its drivers, and each driver as tall as its steps, lets every line run straight across with no shared end
+    point. Reusable for any one-to-many tree.
+  - Requirement tree (10 to 7 to 3 boxes, 21 and 9 links): reordering the middle row by barycentre made it worse to the operator (order matters more
+    than crossings). Square lines on tracks with their own ports, a crossing-minimising local search over tracks and gaps sized 14 px a track cut the
+    upper gap from 138 to 94 crossings with no shared segments; first-fit tracks squeezed into a fixed gap looked worse than straight lines. Still busy:
+    open whether this view stays a tree or becomes a grid (next session). Untried: let each box's exit order follow its line's track order.
+
