@@ -115,3 +115,13 @@ Part of [python.md](../python.md).
 >   if json.dumps(json.loads(raw), indent=2, ensure_ascii=ascii_) + "\n" == raw:
 >     break
 > ```
+
+> **Learned 2026-11-06** (promoted 2026-11-11 from enterprise-strategy's parked candidates) · Python, parsing hand-written list items · reusable_candidate ·
+> Source: apn scripts/project_sync.py `OUT_ITEM` @ 2683a323 · Falsifier: a hand-stamped line is left alone again.
+> A line format people type by hand gets the decorations they habitually add (here a leading `**YYYYMMDD_hhmm**` copied from ticked lines).
+> Accept the decoration as optional in the pattern and drop it, rebuilding the line on write; a refusal that recurs (30 Oct and 6 Nov) is the
+> signal. Prove it with a self-test that fails on the old pattern.
+>
+> ```python
+> OUT_ITEM = re.compile(r"^- \[ \] (?:\*\*\d{8}_\d{4}\*\* )?(?P<directive>directive )?to (?P<to>[\w ,-]+?):\s*(?P<text>.+)$", re.S)
+> ```

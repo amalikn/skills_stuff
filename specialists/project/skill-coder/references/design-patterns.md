@@ -102,6 +102,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-60 | Order resumed records by attempt, not by transaction start  | A resume sorted before attempts that ran ahead of it                        |
 | P-63 | Agent benchmark: known answers in a throwaway copy, a watch on real repos | Choosing a model or config for an agent by impression, or letting the run touch live work |
 | P-64 | A fixed-length record overwritten in place | A small state file on a filesystem without atomic rename (FAT) that a power cut must never leave empty |
+| P-68 | Baseline beside forecast in a generated report | A status report rendered from a fixed plan whose dates slip week by week |
 
 ## Patterns
 
@@ -1653,3 +1654,27 @@ else
 fi
 ```
 
+### P-68 Baseline beside forecast in a generated report
+
+> **Learned 2026-11-06** (promoted 2026-11-11 from enterprise-strategy's parked candidates) · any report rendered from a fixed plan · reusable_candidate ·
+> Source: apn enterprise-strategy/scripts/weekly_update_xlsx.py `add_stages_sheet` @ 7347fc4e · Falsifier: a reader who takes the copied plan date as
+> current after a slip, with the forecast shown beside it.
+
+Problem:      A status report is generated from a fixed plan, and dates slip. Overwriting the plan's dates loses the agreed baseline, and the next
+              render from the plan undoes the edit anyway.
+Solution:     Copy the plan's dates unchanged (the baseline) and add the forecast as separate columns fed from the period's own data file,
+              coloured by state. A period with no forecasts renders exactly as before; a forecast naming an unknown stage fails the run.
+Why it works: The plan stays the single source of the baseline, the forecast has one home per period, and the reader sees the slip as a pair.
+Reuse:        Project plans, release trains, SLA reports against a contract date, budget against actual.
+Pitfalls:     A typo in a stage key silently drops a forecast unless unknown keys fail the run.
+Realised in:  Python -> enterprise-strategy/scripts/weekly_update_xlsx.py (7347fc4e)
+
+```python
+forecasts = {str(k): v for k, v in (week.get("stages") or {}).items()}
+unknown += sorted(set(forecasts) - {str(r[0]) for r in stages[1:]})
+extra = [("Forecast", 14), ("Note", 50)] if forecasts else []
+st.append(list(stages[0]) + [name for name, _ in extra])
+for row in stages[1:]:
+  fc = forecasts.get(str(row[0]))
+  st.append(list(row) + ([fc["forecast"], cell_text(fc.get("note"))] if fc else [None] * len(extra)))
+```
