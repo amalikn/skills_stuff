@@ -40,7 +40,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 | --------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Interpreter     | The project's pin (`.mise.toml`, `requires-python`); operator default 3.14 for        | Address by path; see core tooling                                                          |
 |                 |   new work                                                                            |                                                                                            |
-| Format and lint | ruff (`ruff format`, `ruff check`)                                                    | ruff's pydocstyle setting accepts `convention = "google"` (VERIFIED_PRIMARY, ruff FAQ)     |
+| Format and lint | ruff (`ruff format`, `ruff check`); start from `templates/ruff.toml`                   | ruff's pydocstyle setting accepts `convention = "google"` (VERIFIED_PRIMARY, ruff FAQ)     |
 | Types           | The project's type checker (mypy or pyright)                                          | UNVERIFIED: no source fetched; follow the project's config                                 |
 | Tests           | pytest, or `unittest` where the project is stdlib-only                                | pytest fixtures with `yield` give set-up and teardown (VERIFIED_PRIMARY)                   |
 | Packaging       | `pyproject.toml`; the src layout                                                      | The src layout stops tests importing the working copy by accident (VERIFIED_PRIMARY, PyPA) |

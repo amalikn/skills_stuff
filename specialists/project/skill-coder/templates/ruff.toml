@@ -1,0 +1,14 @@
+# Lint and format this project's Python with ruff (skill-coder: one linter per language, configured once at the root, for new files only).
+# Copy to the project root; run `ruff check .` and `ruff format --check .` from a `just lint` recipe inside `just check`.
+# Files that exist when this is adopted keep their style: list each under extend-exclude, and remove one only when its reformat is decided.
+# A new file is never added to the list. Never silence a rule inline (no noqa); fix it.
+target-version = "py311"   # the oldest Python the project supports (its pin, requires-python)
+indent-width = 2           # operator, 2026-10-23: two spaces in every language
+line-length = 160
+extend-exclude = [
+  "*.md",                  # ruff 0.17 also formats code blocks in Markdown (languages/python.md, Learned 2026-11-11)
+  # "scripts/old_tool.py", # existing files, one per line, until reformatted
+]
+
+[lint]
+select = ["E4", "E7", "E9", "F", "B", "I"]   # the skills' common set: errors, pyflakes, bugbear, import order
