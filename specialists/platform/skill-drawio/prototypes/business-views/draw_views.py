@@ -175,7 +175,8 @@ def scorecard() -> Page:
 
 
 def requirement_tree() -> Page:
-    """Business requirements -> technical requirements -> initiatives (the whiteboard's structure).
+    """Business requirements -> technical requirements -> initiatives (the whiteboard's structure). The middle row is ordered by the mean position of
+    the requirements each serves (barycentre) and every line has its own end points spread along the box edges, so lines do not pile up on one point.
 
     Returns:
         The page.
@@ -187,16 +188,44 @@ def requirement_tree() -> Page:
     tech = ["T1 Remote, safe updates with rollback", "T2 Boxes recover on their own", "T3 Central visibility and alerting",
             "T4 Own controller, any vendor", "T5 One signed image per platform", "T6 Each site only what it needs", "T7 Drift and firmware under control"]
     inits = [("SMC resiliency (R1-R6)", "smc"), ("UNC (U1-U8)", "unc"), ("Litebooth and router-only sites", "lb")]
-    r_ids = [p.box(f"<b>{t}</b>", 20 + k * 156, 120, 146, 40, "req") for k, t in enumerate(reqs)]
-    t_ids = [p.box(t, 40 + k * 220, 300, 200, 50, "chg") for k, t in enumerate(tech)]
-    i_ids = [p.box(f"<b>{t}</b>", 200 + k * 420, 500, 340, 44, kind) for k, (t, kind) in enumerate(inits)]
     links = {0: [2, 6], 1: [0, 1, 4], 2: [5, 3], 3: [0, 1, 5], 4: [4, 6], 5: [1, 2], 6: [4, 6], 7: [2, 3], 8: [2, 1], 9: [3]}
+    serves = {t: [r for r, ts in links.items() if t in ts] for t in range(len(tech))}
+    order = sorted(range(len(tech)), key=lambda t: sum(serves[t]) / len(serves[t]))   # barycentre of the requirements above
+    rw, tw, iw = 146, 200, 340
+    rx = {k: 20 + k * 156 for k in range(len(reqs))}
+    tx = {t: 40 + n * 220 for n, t in enumerate(order)}
+    impl = {0: [0], 1: [0], 2: [1], 3: [1, 2], 4: [0], 5: [2, 0], 6: [1]}
+    users = {i: sorted((t for t, il in impl.items() if i in il), key=lambda t: tx[t]) for i in range(len(inits))}
+    ix = {i: 20 + (sum(tx[t] for t in users[i]) / len(users[i]) + tw / 2) - iw / 2 - 20 for i in range(len(inits))}
+    for i in sorted(ix, key=ix.get)[1:]:   # keep the initiative boxes apart
+        prev = max((ix[j] for j in ix if ix[j] < ix[i] or (ix[j] == ix[i] and j < i)), default=None)
+        if prev is not None and ix[i] < prev + iw + 30:
+            ix[i] = prev + iw + 30
+    r_ids = {k: p.box(f"<b>{t}</b>", rx[k], 120, rw, 40, "req") for k, t in enumerate(reqs)}
+    t_ids = {t: p.box(tech[t], tx[t], 320, tw, 50, "chg") for t in range(len(tech))}
+    i_ids = {i: p.box(f"<b>{t}</b>", ix[i], 520, iw, 44, kind) for i, (t, kind) in enumerate(inits)}
+
+    def spread(n: int, k: int) -> float:
+        """The k-th of n points spread along an edge, as a fraction of it.
+
+        Args:
+            n: how many points.
+            k: which one.
+
+        Returns:
+            0 to 1.
+        """
+        return (k + 1) / (n + 1)
+
+    ins = {t: sorted(serves[t], key=lambda r: rx[r]) for t in serves}
     for r, ts in links.items():
-        for t in ts:
-            p.edge(r_ids[r], t_ids[t], "exitX=0.5;exitY=1;entryX=0.5;entryY=0;")
-    for t, i_list in {0: [0], 1: [0], 2: [1], 3: [1, 2], 4: [0], 5: [2, 0], 6: [1]}.items():
-        for i in i_list:
-            p.edge(t_ids[t], i_ids[i], "exitX=0.5;exitY=1;entryX=0.5;entryY=0;")
+        outs = sorted(ts, key=lambda t: tx[t])
+        for t in outs:
+            p.edge(r_ids[r], t_ids[t], f"exitX={spread(len(outs), outs.index(t)):.3f};exitY=1;entryX={spread(len(ins[t]), ins[t].index(r)):.3f};entryY=0;")
+    for t, il in impl.items():
+        outs = sorted(il, key=lambda i: ix[i])
+        for i in outs:
+            p.edge(t_ids[t], i_ids[i], f"exitX={spread(len(outs), outs.index(i)):.3f};exitY=1;entryX={spread(len(users[i]), users[i].index(t)):.3f};entryY=0;")
     return p
 
 
@@ -229,7 +258,8 @@ def site_shapes() -> Page:
 
 
 def cost_tree() -> Page:
-    """Cost per site broken into its drivers, with the steps that reduce each.
+    """Cost per site broken into its drivers, with the steps that reduce each. The root spans every driver and each driver spans its steps, so every
+    line runs straight across and none meets another at an end point.
 
     Returns:
         The page.
@@ -237,7 +267,6 @@ def cost_tree() -> Page:
     p = Page("cost", "Cost drivers")
     title(p, "Cost per site, its drivers, and which steps reduce each",
           "Martin: field labour, accommodation, allowances and travel are \"where the money is\". No baseline exists yet: truck rolls a month (FD-01) and time on site (FD-02) are still open questions.", 1300)
-    root = p.box("<b>Cost per site</b><br>and so the bid price", 20, 330, 200, 70, "req")
     drivers = [("Truck rolls (travel)", [("R2 updates without a visit", "smc"), ("R3, R4 self-recovery", "smc"), ("U2 remote diagnosis", "unc")]),
                ("Hours on site (field labour)", [("U3 low-touch replacement", "unc"), ("Shape A: fewer boxes to install", "lb")]),
                ("Accommodation and allowances", [("follow truck rolls and hours on site", "chg")]),
@@ -245,16 +274,22 @@ def cost_tree() -> Page:
                ("Hardware per site", [("Router-only sites (small saving, Malik 10 Nov)", "lb")]),
                ("Licences and vendor cloud", [("U3, U4 own controller instead of a vendor cloud", "unc")]),
                ("NOC and support time", [("U1 one record of every device", "unc"), ("R6 updates from the controller", "smc")])]
-    y = 110
-    for name, steps in drivers:
-        h = max(60, len(steps) * 40)
-        d = p.box(f"<b>{name}</b>", 320, y + (h - 44) / 2, 260, 44, "ben")
-        p.edge(root, d)
+    top, step_h, step_gap, group_gap = 110, 34, 8, 22
+    spans, y = [], top
+    for _name, steps in drivers:
+        h = len(steps) * (step_h + step_gap) - step_gap
+        spans.append((y, h))
+        y += h + group_gap
+    bottom = y - group_gap
+    root = p.box("<b>Cost per site</b><br>and so the bid price", 20, top, 200, bottom - top, "req")
+    for (name, steps), (gy, gh) in zip(drivers, spans):
+        d = p.box(f"<b>{name}</b>", 320, gy, 260, gh, "ben")
+        p.edge(root, d, f"exitX=1;exitY={(gy + gh / 2 - top) / (bottom - top):.3f};entryX=0;entryY=0.5;")
         for j, (t, kind) in enumerate(steps):
-            s = p.box(t, 680, y + j * 40, 360, 34, kind)
-            p.edge(s, d, "dashed=1;")
-        y += h + 16
-    legend(p, 20, y + 10)
+            sy = gy + j * (step_h + step_gap)
+            s = p.box(t, 680, sy, 360, step_h, kind)
+            p.edge(s, d, f"dashed=1;exitX=0;exitY=0.5;entryX=1;entryY={(sy + step_h / 2 - gy) / gh:.3f};")
+    legend(p, 20, bottom + 30)
     return p
 
 
