@@ -19,6 +19,16 @@ Last rotated: 20261107_1723
 ## Open items
 
 - Older open items are tracked in [this](this).
+- KEEP enforcement of skill-coder on every code change (operator, 2026-11-11, unified-network-controller session: "shouldn't we be making it
+  mandatory that whenever any code change needs to happen, skill coder should be used"; all four layers chosen, built in a dedicated session).
+  Today a hook only checks that skill-coder was loaded, not that the code follows it; that session wrote two scripts and a plan's script
+  excerpts with four-space indentation, a 51-line function and five logic bugs before checks and a review caught them. Build, smallest first:
+  (1) lint code in documents: skill-ai-it `md_examples_check.py` also runs the project's formatter and lint on Python excerpts;
+  (2) the load gate in every repo: UNC's `scripts/registries/skill-domains.json` code rule (`.py`, `.sh`, `.js`, `.ts`, justfile) moved to the
+  governance hooks so skills_stuff, tools and every project get it; (3) a check on each code write: a PostToolUse hook runs the fast
+  checkers (`ruff format --check` with the project's config, `script_headers`, `call_timeouts`, `code_size`) on the written file and shows the
+  findings to the agent (a settings change: show it before applying); (4) skill-coder checks in every project's `just check`, a Core item of
+  skill-ai-it's central tooling plan, rolled out in its waves. Feedback memory: `feedback_skill_coder_before_code.md`.
 - KEEP design-patterns.md follow-ups (2026-10-27): (1) all twelve patterns are `reusable_candidate`: when a second project uses one, cite it and
   raise the evidence (falsifiers are in each header); (2) P-05 is CANDIDATE until ansible-wifi applies `plans/smc-change-resume-20261027_1038/
   prepare-once.patch` and its canary passes; (3) harvest patterns from other projects (operator: "all the out of the box thinking"):

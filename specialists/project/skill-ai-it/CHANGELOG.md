@@ -35,6 +35,9 @@ Last rotated: 20261111_1300
 
 ## Unreleased
 
+- 2026-11-11 scripts/checks/doc_freshness.py: the dependency rule skips commits that only rewrite link targets or backticked paths
+  (`path_only_change`, `content_change_date`, at most 20 commits back); tests/test_doc_freshness_paths.py (7 tests, a temporary git repository).
+  Found when history_migrate's link repoints in UNC's options register flagged four dependent documents for review.
 - 20261110 references/pitfalls.md: Learned 2026-11-10 (skill-pad bootstrap): walk the generation-policy table (archcore, markdownlint, repomix); the markdown hook re-wraps whole files, so edit budgeted or hash-guarded files from Bash.
 
 - scripts/adoption/adopt_governed_files.py: a legacy-header value hard-wrapped onto an unindented line now stays in the fenced value (`wrapped_continuation`, previous line 100+ characters; operator, 2026-11-09: "Fix with a test"); 2 tests, red on the old code; references/pitfalls.md entry updated.

@@ -9,7 +9,8 @@ loads whole keep growing, and a file without a header must be opened to be judge
 1. `review-due`: a living markdown document (`Status: current`, `draft` or `proposed`, Category not point-in-time) past `Review by`, else
    `Last reviewed` + 30 days. Reports, reviews, audits, sources and evidence describe a moment and never expire.
 2. `superseded-in-place`: `Status: superseded ...` outside an `archive/` folder (move it with `move_doc.py`).
-3. `dependency-changed`: a file named under `Depends on` was committed after the document's `Last reviewed`.
+3. `dependency-changed`: a file named under `Depends on` changed content after the document's `Last reviewed` (a commit that only rewrote link
+   targets or backticked paths does not count; 2026-11-11).
 4. `over-budget`: a file an agent loads whole (AGENTS.md, CLAUDE.md, AI_NAVIGATION.md, SCRATCHPAD.md, CHANGELOG.md, ROADMAP.md, SKILL.md, MEMORY.md, or
    any file with a `Budget` key) over 200 lines or 25 KB, one standard for every agent (operator, 2026-10-10). Rotate records with
    `rotate_records.py`; trim the others.
@@ -108,6 +109,58 @@ def last_commit_date(root: pathlib.Path, rel: str) -> dt.date | None:
     return parse_date(out.strip())
 
 
+#: How far back the dependency rule looks for a commit that changed content, not only paths.
+MAX_PATH_ONLY_COMMITS = 20
+#: A Markdown link target and a backticked path: the parts a move or a history migration rewrites without changing meaning.
+PATH_TOKEN = re.compile(r"\]\([^)\s]*\)|`[^`\s]*/[^`\s]*`")
+
+
+def path_only_change(removed: list[str], added: list[str]) -> bool:
+    """Whether a diff changes nothing but link targets and backticked paths.
+
+    Why (unified-network-controller, 2026-11-11): `history_migrate` repointed three history links in an options register; four documents that
+    depend on it were flagged for review although nothing they rely on had changed.
+
+    Args:
+        removed: the diff's removed lines, without the leading `-`.
+        added: the diff's added lines, without the leading `+`.
+
+    Returns:
+        True when both sides are equal once every link target and backticked path is blanked, and the diff is not empty.
+    """
+    def blank(lines: list[str]) -> list[str]:
+        return sorted(PATH_TOKEN.sub("<path>", line) for line in lines)
+
+    return bool(removed or added) and blank(removed) == blank(added)
+
+
+def content_change_date(root: pathlib.Path, rel: str) -> dt.date | None:
+    """The date of the last commit that changed a file's content, skipping commits that only rewrote paths.
+
+    Args:
+        root: the project root (inside a git repository).
+        rel: the path relative to root.
+
+    Returns:
+        The committer date of the newest commit whose diff is not path-only (within MAX_PATH_ONLY_COMMITS), falling back to the last commit
+        touching the path; None when the path has no commit or git is unavailable.
+    """
+    try:
+        log = subprocess.run(["git", "-C", str(root), "log", f"-{MAX_PATH_ONLY_COMMITS}", "--format=%H %cs", "--", rel],
+                             capture_output=True, text=True, check=False, timeout=60).stdout.split("\n")
+        for entry in filter(None, log):
+            sha, day = entry.split(" ", 1)
+            diff = subprocess.run(["git", "-C", str(root), "show", "--format=", "-U0", sha, "--", rel],
+                                  capture_output=True, text=True, check=False, timeout=60).stdout.split("\n")
+            removed = [line[1:] for line in diff if line.startswith("-") and not line.startswith("---")]
+            added = [line[1:] for line in diff if line.startswith("+") and not line.startswith("+++")]
+            if not path_only_change(removed, added):
+                return parse_date(day)
+    except (OSError, subprocess.TimeoutExpired):
+        return last_commit_date(root, rel)
+    return last_commit_date(root, rel)
+
+
 def findings(root: pathlib.Path, today: dt.date, window_days: int) -> dict[str, str]:
     """Every finding under the five rules.
 
@@ -150,7 +203,7 @@ def findings(root: pathlib.Path, today: dt.date, window_days: int) -> dict[str, 
             elif due < today:
                 out[f"review-due:{rel}"] = f"{rel}: review was due {due.isoformat()} (Last reviewed {head.get('last reviewed', '-')})"
         for dep in [d.strip() for d in head.get("depends on", "").split(",") if d.strip()]:
-            changed = last_commit_date(root, dep)
+            changed = content_change_date(root, dep)  # a path-only commit (a move, a history migration) is not a change to review
             if not (root / dep).exists():
                 out[f"dependency-changed:{rel}:{dep}"] = f"{rel}: Depends on {dep}, which no longer exists"
             elif changed and reviewed and changed > reviewed:
