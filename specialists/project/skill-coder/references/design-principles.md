@@ -45,6 +45,26 @@ project (unified-network-controller) and are generic.
 | 9   | Standard library in       | Third-party libraries sit only in the layers that need them                                               | The core stays easy to test and to upgrade             |
 |     |   the core                |                                                                                                           |   (see [dependencies.md](dependencies.md))             |
 
+> **Learned 2026-11-11** · principle 4, search scopes · `reusable_candidate` · Source: apn `scripts/project_sync.py` (commit cc69e7c1), hub register
+> showed an acknowledged directive as unacknowledged · Falsifier: a case where two lookups must search different places on purpose (then name both scopes and why).
+> When two functions look for the same thing (here: whether a sync-id was delivered, and whether it was ticked), they share one function that lists the
+> places to look. Here one used `rglob` (any depth) and the other `glob` (one level); the gap stayed hidden until a partner moved its archive files one
+> folder deeper, and the second lookup then reported the item gone. A test fixture should carry every folder layout the readers must accept (flat and
+> one folder per kind), since a layout move by another project is exactly what breaks a copied search scope.
+>
+> ```python
+> def sync_files(project: str) -> list[pathlib.Path]:
+>     root = APN / project
+>     return [root / "SCRATCHPAD.md", *sorted((root / "docs" / "history").rglob("*.md")),
+>             *sorted((root / "docs" / "trackers").rglob("*.md"))]
+>
+> def id_present(project, sid):   # delivery check
+>     return any(needle in f.read_text(errors="replace") for f in sync_files(project) if f.is_file())
+>
+> def item_state(project, sid):   # acknowledgement check, same scope
+>     for f in sync_files(project): ...
+> ```
+
 ## Layers
 
 A typical layered program, innermost first. Outer rings may use inner rings, never the reverse.

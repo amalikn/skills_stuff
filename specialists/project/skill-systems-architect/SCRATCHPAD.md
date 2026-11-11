@@ -24,6 +24,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Next actions
 
+- 2026-11-11 (v2.3.7): edge-appliances read-only root entry is design reasoning; promote to VERIFIED once smc-resiliency records the R28 outcome with scheduled writers run in a trial.
+
 1. Operator: push skills_stuff (see the network pack SCRATCHPAD).
 2. Verify the open items: Apple Business built-in MDM depth (FileVault escrow, enforced updates), Patroni maximum_lag_on_failover default,
    libvirt multiqueue change needing a full stop and start per version, colocation kVA billing as a general rule.

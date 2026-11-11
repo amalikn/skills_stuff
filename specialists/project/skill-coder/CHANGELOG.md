@@ -16,6 +16,7 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-11 (d) write-back from enterprise-strategy (apn project_sync, cc69e7c1): references/design-principles.md, principle 4: two lookups for the same thing share one search-scope function; fixtures carry every folder layout.
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 - 2026-11-11 (c) write-back from the token-optimizer session: languages/python/learned-other.md, splitting front matter on "\n---" drops the last line's newline (a line regex misses the final description line); check JSON dump round-trips byte for byte before rewriting a config
 - 2026-11-11 (b) write-back from ansible-wifi (smc_lynis NO_PUBKEY): languages/ansible/learned-other.md, `apt_key` with `url` and no `id` never refreshes a key whose primary is present (a new vendor subkey stays missing); pin the subkey `id` or use `get_url` plus `signed-by=`

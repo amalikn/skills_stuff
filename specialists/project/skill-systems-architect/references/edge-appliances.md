@@ -117,6 +117,26 @@ ONE MEDIUM, A/B LAYOUT (one SD card, eMMC or disk)
   > - Keep writes low by design (read-only root, every writer given a home) and measure wear in the field: SMART on SSD and CFast; written sectors
   >   from /sys/block/<dev>/stat on SD cards, which have no SMART; alarm on growth.
 
+  > **Learned 2026-11-11** · read-only root (erofs) versus a RAM copy-on-write overlay on A/B site boxes · design reasoning, UNVERIFIED in the field;
+  > the overlay measurement is VERIFIED_PRIMARY on a lab VM · Source: smc-resiliency docs/pi/pi-spike-sm-root-writes-20261107_1602.md section 4;
+  > enterprise-strategy SCRATCHPAD outbox es-f61b9e75 and es-643ebcd9 (apn b76afb57 and later) · Falsifier: a missed writer on a strict
+  > read-only root that the trial's health check exercised and still reached a committed slot.
+  > - A strict read-only root turns a missed writer into a loud failure; with A/B and commit-on-health, that failure happens on the trial boot and
+  >   the box falls back, so it never reaches a committed slot. That holds only if the health check exercises every service's write path.
+  > - The trial catches only writers that run during it. Scheduled writers (cron and systemd timers, log rotation, nightly or monthly jobs) may
+  >   not run in that window and fail days later on a committed slot at a remote site: list them per role and run each once in the trial or in
+  >   a canary before release.
+  > - A RAM overlay that absorbs stray writes keeps services running on day one but hides the missed writer and loses its data at restart; use it
+  >   on the bench and in canaries as a write detector, not as the field safety net. Its growth is mostly logs (98% in the lab run), so cap the
+  >   journal if it is used at all.
+  >
+  > ```text
+  > |                     | RAM dm-snapshot over the release root   | erofs only, every writer given a home      |
+  > | Stray writer        | succeeds into RAM; lost at restart      | fails at once (read-only file system)      |
+  > | Risk                | RAM runs out: needs a watcher, log cap  | a missed writer breaks a service           |
+  > | Cost                | 310 MiB a day under load, mostly logs   | engineering time per writer                |
+  > ```
+
 ## Pull-based jobs over poor links
 
 Push configuration management over SSH loses the session when the link drops; a terminal multiplexer keeps a shell, not the controller's TCP session. Decouple transport from execution.

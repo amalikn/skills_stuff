@@ -15,6 +15,12 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261111_2007 — Read-only root versus RAM overlay: the trial boot catches missed writers, scheduled writers need their own run (v2.3.6 -> v2.3.7)
+
+- references/edge-appliances.md, Image layout and updates: Learned 2026-11-11 entry from the APN R28 review (enterprise-strategy hub, smc-resiliency SM report):
+  commit-on-health turns a missed writer on a read-only root into a fallback, only when the health check exercises every write path; scheduled writers need a
+  run in the trial or a canary; a RAM overlay is a bench write detector, not a field safety net.
+
 ## 20261110_1355 — Edge retention, silent provisioning skips, transient units; SSH changed host key kills reverse tunnels (v2.3.5 -> v2.3.6)
 
 - references/edge-appliances.md: three Learned 2026-11-10 entries before "Flash wear and RAM placement" (delete each period only after its own upload

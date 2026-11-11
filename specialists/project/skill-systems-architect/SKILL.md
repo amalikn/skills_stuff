@@ -3,7 +3,7 @@ name: skill-systems-architect
 description: >-
   Systems and infrastructure architecture, even if 'architecture' is not said: servers, Proxmox, HA/quorum, ZFS, Ceph, NAS, VMs, Docker, Kubernetes, Linux, Windows/AD/Entra, macOS/MDM, secrets, backup/DR, capacity, migrations.
 metadata:
-  version: "2.3.6"
+  version: "2.3.7"
   reviewed: "2026-10-29"
   scope: "Vendor-neutral domain architecture"
 ---
