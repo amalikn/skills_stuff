@@ -245,3 +245,13 @@ class NoteAuditTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FlowHeadModule(unittest.TestCase):
+    """flowmap.flow_head ("flow_head") holds the step page header since 2026-11-11; flowmap.pages re-exports it for its callers."""
+
+    def test_pages_reexports_the_header(self) -> None:
+        """pages.flow_header and pages.flow_header_lines are the flow_head functions, so older imports keep working."""
+        head, pages = importlib.import_module("flowmap.flow_head"), importlib.import_module("flowmap.pages")
+        self.assertIs(pages.flow_header, head.flow_header)
+        self.assertIs(pages.flow_header_lines, head.flow_header_lines)
