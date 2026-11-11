@@ -114,6 +114,10 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 - Every subprocess (the draw.io CLI) has a timeout; a write takes `--write` or `--apply`.
 - A layout fault a reviewer sees (a crossing, an overlap, text past its box) is fixed in the engine's logic, never by hand in one map or
   drawing, so every consumer gains (operator, 2026-10-26: "improve the logic in the skill, not like a manual handwork").
+- Navigation is one click: every box with a link (Overview index, a page's header, the E2E button) opens its page on a single click, because the
+  base layer is locked by default (`look.lock_base_layer`; operator, 2026-11-11: "make it a standard"). A map does not turn the lock off.
+- A step page's `‹ E2E page` button sits above the header's top-left corner, never beside its right end; the header moves down to make room
+  (`flowmap.pages.flow_header`; operator, 2026-11-11). The E2E pages are named "E2E" (`look.e2e_tab`).
 
 ## Standing write-back contract
 
