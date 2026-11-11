@@ -20,7 +20,7 @@ from .lanes import LANE_HEAD, View, draw_lanes
 from .labels import mark_size, place_labels
 from .branches import expand_branches
 from .graph import END, START, Graph, Grid, chart_graph, is_decision, lane_columns, lane_map, place, swap_branches
-from .order import improve_branches
+from .order import improve_branches, improve_tracks
 from .route import CHANNEL, TRACK, assign_tracks, exit_point, left_channels, node_rect, plan_gaps, row_spans
 from ..model import GAP, MARGIN, comp_style, step_targets
 from ..profile import Profile
@@ -52,7 +52,10 @@ END_BOX = ("rounded=1;absoluteArcSize=1;arcSize=30;whiteSpace=wrap;html=1;fillCo
 
 
 def short_text(step: dict) -> str:
-    """A box's words: the `label`, else a gate's question, else the action cut at a word.
+    """A box's words: the `label` whole, else a gate's question, else the action, those two cut at a word.
+
+    A `label` is the box's words by contract (schema: up to 80 characters), so it is never cut; the box wraps it. Only text the engine picks
+    for the box is cut at CUT (2026-11-11: enterprise-strategy's lane page lost the end of 65 to 80 character labels to " ...").
 
     Args:
         step: the step from the map.
@@ -60,7 +63,9 @@ def short_text(step: dict) -> str:
     Returns:
         The text.
     """
-    text = step.get("label") or step.get("gate") or step["action"].split("; ")[0].split(". ")[0]
+    if step.get("label"):
+        return step["label"]
+    text = step.get("gate") or step["action"].split("; ")[0].split(". ")[0]
     return text if len(text) <= CUT else text[:CUT].rsplit(" ", 1)[0] + " ..."
 
 
@@ -153,6 +158,7 @@ class Chart:
         self.labels = {(e.src, e.dst): _branch(self.graph, e, self.targets.get(e.src, [])) for e in self.graph.edges}
         swap_branches(self.graph, self.grid)
         self.left = {} if self.lanes else left_channels(self.graph, self.grid)
+        self.reversed_gaps: frozenset = frozenset()   # gaps whose track order improve_tracks reversed
         self.text, self.size = {}, {}
         for nid in self.graph.order:
             self.text[nid] = self._lines(nid)
@@ -311,7 +317,7 @@ def _polylines(chart: Chart) -> list:
         The polylines.
     """
     legs, entries = plan_gaps(chart)
-    tracks = assign_tracks(legs)
+    tracks = assign_tracks(legs, chart.reversed_gaps)
     ys = row_spans(chart, tracks, 0)
     return [_edge_points(chart, ys, e, (legs, entries, tracks)) for e in chart.graph.edges]
 
@@ -364,8 +370,9 @@ def chart_page(flow: dict, comps: dict, profile: Profile, page_ids: tuple, mode:
             BLANK, "[back to Overview]"]
     if swimlanes:
         improve_branches(chart.graph, lambda: _polylines(chart))
+        improve_tracks(chart, lambda: _polylines(chart))
     legs, entries = plan_gaps(chart)
-    tracks = assign_tracks(legs)
+    tracks = assign_tracks(legs, chart.reversed_gaps)
     span = chart.channel_x + CHANNEL * len(chart.channels)
     width = max(900.0, (row_spans(chart, tracks, LANE_HEAD + 8)["bottom"] if chart.turned else span - MARGIN))
     head_h = header_height(head, width, 80)

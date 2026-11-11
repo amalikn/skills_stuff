@@ -247,3 +247,40 @@ class BranchSwap(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SharedGap(unittest.TestCase):
+    """A diamond whose two branches share a gap: swapping the branches alone or reversing the gap's tracks alone still crosses; both together
+    do not (operator, 2026-11-11: "those arrows could have been swapped"; enterprise-strategy program swimlane)."""
+
+    COMPS = {k: {"id": k, "name": k.upper(), "kind": "service"} for k in ("a", "b", "c", "d")}
+    STEPS = [step("s", actor="a"), step("r", actor="b"), step("u", actor="c"), step("p", actor="a"),
+             step("q", actor="a", gate="needs it?", next=["near", "far"], when={"near": "yes", "far": "no"}),
+             step("near", actor="b", next=["j"]), step("far", actor="d", next=["j"]), step("j", actor="c"), step("e", actor="a")]
+
+    @staticmethod
+    def sibling_crossings(page: object) -> int:
+        """Crossings between the diamond's two branches on a lanes page.
+
+        Args:
+            page: the chart page.
+
+        Returns:
+            The count.
+        """
+        runs = {r.cid: segments(r.points) for r in page.routes if "-ce-q-" in r.cid}
+        a, b = runs.values()
+        return sum(crossing(s, t) is not None for s in a for t in b)
+
+    def test_the_branches_do_not_cross(self):
+        """The joint search leaves the two branches uncrossed and the audit clean; with it off they cross, so the test can fail."""
+        import flowmap.flowchart.page as pg
+        page = chart_page(flow(self.STEPS), self.COMPS, profile(), (set(), set()), "lanes")
+        self.assertEqual(faults(page_audit(page)), [])
+        self.assertEqual(self.sibling_crossings(page), 0)
+        keep, pg.improve_tracks = pg.improve_tracks, lambda chart, draw: None
+        try:
+            off = chart_page(flow(self.STEPS), self.COMPS, profile(), (set(), set()), "lanes")
+        finally:
+            pg.improve_tracks = keep
+        self.assertGreater(self.sibling_crossings(off), 0)

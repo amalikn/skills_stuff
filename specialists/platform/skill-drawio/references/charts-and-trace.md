@@ -143,6 +143,27 @@ cite a symbol where one exists. Ansible task files have no symbol yet, because a
 
 ## Learned
 
+> **Learned 2026-11-11** · lane pages, two branches of one diamond in a shared gap · VERIFIED_PRIMARY (test SharedGap in tests/test_flowchart_layout.py
+> fails with the search off; enterprise-strategy program swimlane, before and after in screenshots/20261111-shared-gap/) · Source: scripts/flowmap/flowchart/order.py
+> `improve_tracks`, route.py `assign_tracks(reversed_gaps)` · Falsifier: a diamond whose branches still cross when some combination of swap and track order would not.
+> Swapping a diamond's branches is half the move: when both branches run through one gap, the gap's first-fit track order can make each order of the branches
+> cross. The search therefore also tries the gap's reversed track order, alone and with the branches swapped, and keeps what scores best (crossings, bends,
+> length). Five consumers re-rendered: every layout metric unchanged (layout_quality), only text differed. Two other fixes in the same pass: an explicit
+> `label` is never cut (only the engine's own pick is cut at 64 characters), and `look.e2e_tab` defaults to "E2E", used in every heading and index box.
+>
+> ```python
+> for g in shared:   # gaps two branches of this diamond both use
+>     keep = (chart.reversed_gaps, two[0].index if swappable else None)
+>     tries = [(True, False)] + ([(True, True), (False, True)] if swappable else [])   # reverse; reverse and swap; swap
+>     for rev, swap in tries:
+>         chart.reversed_gaps = keep[0] ^ ({g} if rev else set())
+>         if swappable:
+>             two[0].index, two[1].index = (1, 0) if swap else (0, 1)
+>         now = score(draw())
+>         if now < best:
+>             best, keep = now, (chart.reversed_gaps, two[0].index if swappable else None)
+> ```
+
 > **Learned 2026-11-02** · flow maps · VERIFIED_PRIMARY · Source: skill-drawio `scripts/flowtrace/` on smc_change, 203 steps · Falsifier: a behaviour-only edit raises no finding, or a comment edit raises one
 > Baseline stamped 203 steps; check 0.25 s with 608 KB of accepted source. On a copy of the role: a comment raised nothing, a task change raised 14 steps, a new helper was reported uncovered, a new
 > spec action raised the step citing `:actions`.

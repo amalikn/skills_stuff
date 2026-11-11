@@ -95,7 +95,7 @@ def family_entries(page: Page, data: dict, profile: Profile, x: float, y: float)
     for fam, name, _col, _ids in (g for g in profile.families
                                   if g[0] in of and (every or g[0] in profile.own_families) and g[0] not in profile.no_e2e_pages):
         nums = ", ".join(str(n) for f, n in zip(of, flow_numbers(data, profile).values()) if f == fam)
-        page.box(f"ov-f-end-to-end-{fam}", label(f"**End-to-end: {name}**", f"flows {nums} only"), x, y + 102, 340, 52,
+        page.box(f"ov-f-end-to-end-{fam}", label(f"**{profile.look.get('e2e_tab', 'E2E')}: {name}**", f"flows {nums} only"), x, y + 102, 340, 52,
                  "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
                  link=f"data:page/id,end-to-end-{fam}", tooltip=f"The {name} flows only, and the components they touch")
         y += 62
@@ -142,7 +142,7 @@ def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> 
     """
     page.box("ov-flows", label("**Flows** (click to open the page)"), x, y, 340, 30, "text;html=1;align=left;verticalAlign=middle;fontSize=13;")
     every = "every shared flow; a family with its own page below" if profile.own_families else "every component and every flow on one page"
-    page.box("ov-f-end-to-end", label("**End-to-end flow**", every), x, y + 40, 340, 52,
+    page.box("ov-f-end-to-end", label(f"**{profile.look.get('e2e_tab', 'E2E')} flow**", every), x, y + 40, 340, 52,
              "rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f4fa;strokeColor=#3d5a80;fontSize=11;align=left;spacingLeft=6;",
              link="data:page/id,end-to-end", tooltip="All flows as coloured paths through their components, one layer per family")
     y = family_entries(page, data, profile, x, y)
@@ -166,7 +166,7 @@ def flow_index(page: Page, data: dict, profile: Profile, x: float, y: float) -> 
     if blocks:   # the index's box colours (operator, 2026-10-21: the green option boxes had no legend)
         page.box("ov-idx-leg", label("**Legend: index boxes**"), x, bottom + 8, 340, 24, "text;html=1;align=left;fontSize=12;whiteSpace=wrap;")
         for n, (key, text, fill, stroke) in enumerate((("opt", "decision page: questions, choices and what was decided", "#d5e8d4", "#82b366"),
-                                                       ("e2e", "End-to-end flow", "#f0f4fa", "#3d5a80"),
+                                                       ("e2e", f"{profile.look.get('e2e_tab', 'E2E')} flow", "#f0f4fa", "#3d5a80"),
                                                        ("flow", "one flow's page", "#ffffff", "#3d5a80"))):
             page.box(f"ov-idx-{key}", label(text), x, bottom + 38 + n * 32, 340, 26,
                      f"rounded=1;whiteSpace=wrap;html=1;fillColor={fill};strokeColor={stroke};fontSize=11;align=left;spacingLeft=6;")

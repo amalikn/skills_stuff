@@ -140,6 +140,9 @@ class Page(unittest.TestCase):
         self.assertEqual(short_text({"label": "L", "gate": "G", "action": "A"}), "L")
         self.assertEqual(short_text({"gate": "G", "action": "A"}), "G")
         self.assertTrue(short_text({"action": "word " * 30}).endswith(" ..."))
+        long_label = "R2 Pi booth image: read-only, A/B, rollback (Nov) and more words · Robust, Secure"[:80]
+        self.assertEqual(short_text({"label": long_label, "action": "A"}), long_label)  # a label is never cut (2026-11-11)
+        self.assertTrue(short_text({"gate": "g " * 40, "action": "A"}).endswith(" ..."))
 
 
 class Branches(unittest.TestCase):

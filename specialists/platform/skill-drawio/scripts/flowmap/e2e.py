@@ -52,7 +52,7 @@ class EndToEnd(E2EGrid):
         """
         super().__init__(data, profile, numbers, band_swaps)
         self.paged = {f["id"] for f in paged_flows(data, profile)}   # flows with a step page, linked from the legend (2026-11-06)
-        self.title = "**End-to-end flow: every component, every flow**"
+        self.title = f"**{profile.look.get('e2e_tab', 'E2E')} flow: every component, every flow**"
         self.label_font, self.step_total, self.n_steps, self.label_w, self.label_h = label_setup(self.links, data, self.number, profile)
         self._improve()
         self.loops = plan_loops(self)   # with look.e2e_loops: steps that stay in a box, as loops on it (may widen gaps and lay out again)
@@ -317,7 +317,7 @@ class EndToEnd(E2EGrid):
         Returns:
             The page.
         """
-        page = Page(page_id, name or f"{self.profile.look.get('e2e_tab', 'End-to-end')} flow")
+        page = Page(page_id, name or f"{self.profile.look.get('e2e_tab', 'E2E')} flow")
         right = self.col_x[-1] + E2E_BW + (self.ch_w[self.ncol - 1] if self.right_outer else 0)   # a one-column page draws its channel too
         self._frame(page, right)
         dim = dim_level(self.profile.look)
@@ -378,7 +378,7 @@ def end_to_end_page(data: dict, profile: Profile) -> Page:
         return routed_e2e(data, profile).page()
     numbers = flow_numbers(data, profile)
     e2e = routed_e2e(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})   # no empty column
-    e2e.title = "**End-to-end flow: every component, every shared flow** (a family with its own page is drawn only there)"
+    e2e.title = f"**{profile.look.get('e2e_tab', 'E2E')} flow: every component, every shared flow** (a family with its own page is drawn only there)"
     return e2e.page()
 
 

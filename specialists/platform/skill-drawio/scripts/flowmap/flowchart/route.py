@@ -165,12 +165,14 @@ def nudge_arrivals(chart: object, legs: dict, entries: dict) -> None:
                 runs[i], entries[key] = (gap, a, b + NUDGE), b + NUDGE
 
 
-def assign_tracks(legs: dict) -> dict:
+def assign_tracks(legs: dict, reversed_gaps: frozenset = frozenset()) -> dict:
     """A track per horizontal run: runs that overlap take different tracks, and a run leaving an x sits above a run arriving at the same x, so
-    the two arrows do not share that vertical.
+    the two arrows do not share that vertical. A gap in `reversed_gaps` takes its tracks in the opposite order, which can uncross two branches
+    of one diamond that share the gap (flowmap.flowchart.order.improve_tracks; operator, 2026-11-11).
 
     Args:
         legs: plan_gaps()'s legs.
+        reversed_gaps: gap rows whose track order is reversed.
 
     Returns:
         {(edge key, gap row, x from): track}, and under the key `"count"` {gap row: tracks used}.
@@ -192,6 +194,9 @@ def assign_tracks(legs: dict) -> dict:
             used[t].append(((lo, hi), b, a))
             out[(key, gap, a)] = t
         out["count"][gap] = len(used)
+        if gap in reversed_gaps:
+            for k in [k for k in out if k != "count" and k[1] == gap]:
+                out[k] = len(used) - 1 - out[k]
     return out
 
 

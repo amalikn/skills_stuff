@@ -60,8 +60,9 @@ def family_page(data: dict, profile: Profile, fam: str, name: str, part: dict) -
     e2e = routed_e2e(part, narrowed(profile, part["components"]), {f["id"]: numbers[f["id"]] for f in part["flows"]})
     nums = ", ".join(str(numbers[f["id"]]) for f in part["flows"])
     own = fam in profile.own_families
-    e2e.title = f"**End-to-end: {name}** (flows {nums}; " + ("drawn on this page only)" if own else "the full End-to-end page shows every flow)")
-    page = e2e.page(f"end-to-end-{fam}", f"{profile.look.get('e2e_tab', 'End-to-end')}: {name}")
+    tab = profile.look.get('e2e_tab', 'E2E')
+    e2e.title = f"**{tab}: {name}** (flows {nums}; " + ("drawn on this page only)" if own else f"the full {tab} page shows every flow)")
+    page = e2e.page(f"end-to-end-{fam}", f"{profile.look.get('e2e_tab', 'E2E')}: {name}")
     page.rename = ("e2e-", f"e2f-{fam}-")
     return page
 
@@ -109,4 +110,4 @@ def back_button(page: Page, x: float, y: float) -> None:
     if target:
         page.box(f"{page.page_id}-back", label("‹ E2E page"), x, y, 100, 22,
                  "rounded=1;html=1;fillColor=#ffffff;strokeColor=#666666;fontColor=#333333;fontSize=11;align=center;verticalAlign=middle;",
-                 link=f"data:page/id,{target}", tooltip="Back to this flow's End-to-end page")
+                 link=f"data:page/id,{target}", tooltip="Back to this flow's E2E page")

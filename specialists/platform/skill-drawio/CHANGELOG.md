@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-11 (operator review of the enterprise-strategy swimlane): lane pages search a gap's reversed track order with the branch swap (order.improve_tracks, route.assign_tracks reversed_gaps; test SharedGap); an explicit `label` is never cut; `look.e2e_tab` defaults to "E2E" in tabs, headings and index boxes. Consumers: layout metrics unchanged, text differs; each reruns its flows recipe. references/charts-and-trace.md Learned 2026-11-11.
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 - justfile: `assemble-flowmap` and `split-flowmap` pass arguments quoted (`[positional-arguments]`, `"$@"`), so `--command "just flows"` stays one argument (2026-11-11, found building skill-ai-it's first flow map, a new consumer)
 - references/data-first-diagrams.md: Learned 2026-11-09, the assembled map records the --master path as given; assemble from the project root (new consumer skill-vagrant, docs/vagrant-flows)

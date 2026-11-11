@@ -86,3 +86,41 @@ def improve_branches(graph: object, draw: object) -> None:
             best = now
         else:
             out[0].index, out[1].index = 0, 1
+
+
+def improve_tracks(chart: object, draw: object) -> None:
+    """Reverse the track order of a gap a diamond's branches share, alone or with the branches swapped, where that scores better.
+
+    Swapping a diamond's branches (improve_branches) cannot uncross two branches that run through the same gap on tracks in the crossing order:
+    each order of the branches then still crosses (operator, 2026-11-11: "those arrows could have been swapped"). Reversing that gap's tracks
+    is the other half of the same swap.
+
+    Args:
+        chart: the flowmap.flowchart.page.Chart; its `reversed_gaps` change.
+        draw: a function returning every arrow's polyline as the chart stands.
+    """
+    from .route import plan_gaps   # here, not at the top: route imports nothing from order, and page imports both
+    best = score(draw())
+    for nid in chart.graph.steps:
+        out = [e for e in chart.graph.edges if e.src == nid and e.kind != "stop"]
+        if len(out) < 2:
+            continue
+        legs = plan_gaps(chart)[0]
+        gaps = {gap for e in out for gap, _a, _b in legs.get((e.src, e.dst), [])}
+        shared = [g for g in sorted(gaps) if sum(any(gap == g for gap, _a, _b in legs.get((e.src, e.dst), [])) for e in out) > 1]
+        two = {e.index: e for e in out}
+        swappable = set(two) == {0, 1}
+        for g in shared:
+            keep = (chart.reversed_gaps, two[0].index if swappable else None)
+            tries = [(True, False)] + ([(True, True), (False, True)] if swappable else [])   # reverse; reverse and swap; swap
+            for rev, swap in tries:
+                chart.reversed_gaps = keep[0] ^ ({g} if rev else set())
+                if swappable:
+                    two[0].index, two[1].index = (1, 0) if swap else (0, 1)
+                now = score(draw())
+                if now < best:
+                    best, keep = now, (chart.reversed_gaps, two[0].index if swappable else None)
+            chart.reversed_gaps = keep[0]
+            if swappable:
+                two[0].index, two[1].index = keep[1], 1 - keep[1]
+
