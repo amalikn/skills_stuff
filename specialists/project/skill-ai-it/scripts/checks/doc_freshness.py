@@ -129,6 +129,14 @@ def path_only_change(removed: list[str], added: list[str]) -> bool:
         True when both sides are equal once every link target and backticked path is blanked, and the diff is not empty.
     """
     def blank(lines: list[str]) -> list[str]:
+        """Lines with every link target and backticked path replaced by a placeholder, sorted for comparison.
+
+        Args:
+            lines: the removed or added diff lines.
+
+        Returns:
+            The blanked lines in sorted order.
+        """
         return sorted(PATH_TOKEN.sub("<path>", line) for line in lines)
 
     return bool(removed or added) and blank(removed) == blank(added)

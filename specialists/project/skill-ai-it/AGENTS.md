@@ -22,6 +22,7 @@ One line each; the rule and its reason are in its own file under [.archcore/rule
 - [docs/history is one folder per kind with a generated index](.archcore/rules/history-by-kind.rule.md)
 - [Bootstrap and refresh ask whether to link a Pad workspace](.archcore/rules/ask-about-pad-at-bootstrap.rule.md)
 - [The pack stays tool-agnostic, generic and free of project output](.archcore/rules/tool-agnostic-and-generic.rule.md)
+- [A new skill starts from a seed and the shared scaffold](.archcore/rules/new-skills-start-from-a-seed.rule.md)
 
 - Token budget (operator, 2026-10-14: "not too narrow so that the whole picture is not seen ... but not bombarding it with information which
   is not required, and the AI agent should be able to get more information when needed"): every file and template this package generates keeps to

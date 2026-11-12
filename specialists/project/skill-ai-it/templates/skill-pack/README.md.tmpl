@@ -1,0 +1,38 @@
+---
+Title: {{NAME}}
+Category: readme
+Status: current
+Authority: canonical
+Scope: Root README.md of {{NAME}}
+Last reviewed: {{DATE}}
+Summary: "{{SHORT_DESCRIPTION}}"
+Budget: 200 lines, 25 KB
+---
+
+# {{NAME}}
+
+{{SHORT_DESCRIPTION}}
+
+## Purpose
+
+{{PURPOSE}}
+
+## Folder index
+
+- [SKILL.md](SKILL.md): the activation surface an agent loads; routes every reference.
+- [references/](references/readme.md): one focused file per topic.
+- [sources.yaml](sources.yaml) and [compatibility.yaml](compatibility.yaml): the claims the pack makes with their falsifiers, and the environments tested.
+- [tests/](tests/scenarios.md): behaviour scenarios and the package contract test.
+- [docs/](docs/): session records and history.
+
+## Run
+
+```bash
+just bootstrap   # build the working-cache venv from the mise pin
+just check       # governance checks; must exit 0 before work is called complete
+just test        # package contract and helper tests
+```
+
+## Related
+
+{{RELATED}}

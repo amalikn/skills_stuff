@@ -10,7 +10,6 @@ metadata:
 ## Contents
 
 - [Use When](#use-when)
-- [Inputs](#inputs)
 - [Operating Modes](#operating-modes)
 - [Repeat-Safety Contract](#repeat-safety-contract)
 - [Phase 4 — Generate Files](#phase-4--generate-files)
@@ -22,7 +21,7 @@ Detail lives in one file per topic under [references/](references/readme.md), li
 
 Shipped templates: `templates/AI_NAVIGATION.md`, `templates/AGENTS-navigation-block.md`, `templates/AGENTS-governance-checks-block.md`, `templates/check_governance.py`, `templates/govcheck/`,
 `templates/justfile`, `templates/scripts-README.md`, `templates/context-map.yaml`, `templates/update_rules.yaml`, `templates/repomix.config.json`, `templates/context_preflight.sh`,
-`templates/plan-tracker.md`, `templates/AGENTS-plan-tracker-block.md`. Patterns: `patterns/archcore-routing.md`, `patterns/drift-audit.md`, `patterns/memory-bank-structure.md`,
+`templates/plan-tracker.md`, `templates/AGENTS-plan-tracker-block.md`, `templates/skill-intake.md`, `templates/research-brief.md`, `templates/skill-seed.md`, `templates/skill-pack/`. Patterns: `patterns/archcore-routing.md`, `patterns/drift-audit.md`, `patterns/memory-bank-structure.md`,
 `patterns/navigation-control-automation.md`, `patterns/script-task-audit-checklist.md`, `patterns/governance-checks.md`, `patterns/navigation/`.
 
 ## Use When
@@ -34,8 +33,8 @@ Shipped templates: `templates/AI_NAVIGATION.md`, `templates/AGENTS-navigation-bl
 - Auditing whether AI agents can find the right project context
 - Promoting durable content from scratchpad/memory/docs into navigation, ADR, rule, spec, or roadmap structures
 - Bootstrapping a child project under `apn/`, `project_stuff/`, or any managed workspace
-- Creating a new skill or specialist pack, or any folder that gets scripts or a task runner — **before its first commit**, even when it already has an `AGENTS.md` copied from a sibling
-  (skill-mikrotik, 2026-10-07, was built by hand and shipped with shebang-run recipes and bare `python3` until the operator caught it)
+- Creating a new skill or specialist pack: use `new-skill` (seed, scaffold, check; [references/new-skill.md](references/new-skill.md)). Any other folder that gets scripts or a task runner: **before its first
+  commit**, even with an `AGENTS.md` copied from a sibling (skill-mikrotik, 2026-10-07, was built by hand with shebang-run recipes and bare `python3`)
 - User says "set up the AI files for this folder", "bootstrap this project", "add AI navigation", "refresh the governance", "audit project context", or invokes `/skill-ai-it`
 
 **Do not invoke** for destructive rewrites. This skill is repeat-safe by design: if governance files already exist, audit and update only missing or stale sections unless the user explicitly requests
@@ -43,14 +42,7 @@ regeneration.
 
 ---
 
-## Inputs
-
-| Input                | How to obtain                                                        |
-| -------------------- | -------------------------------------------------------------------- |
-| Target folder path   | Explicit argument, current working directory, or IDE open file       |
-| Project context hint | Optional — user may supply a one-liner; otherwise infer from content |
-
----
+- Read [references/inputs.md](references/inputs.md) before that work (moved verbatim from here): Inputs.
 
 ## Operating Modes
 
@@ -73,6 +65,8 @@ Determine the mode before editing. If the user does not specify a mode, infer it
 | `promote`        | User authorizes promotion from                        | Write or propose `.archcore/` content files (adr, rules, specs, guides, plans). Only mode that creates `.archcore/`       |
 |                  |   `ARCHCORE_PROMOTION_CANDIDATES.md` or explicitly    |   content. Do not silently promote.                                                                                       |
 |                  |   requests durable promotion                          |                                                                                                                           |
+| `new-skill`      | `/skill-ai-it new-skill [name]`: a new skill pack     | Interview and research, seed, scaffold and check a new pack (`just new-skill-intake`, `new-skill-research-briefs`, `new-skill-seed`, `new-skill-check`,  |
+|                  |                                                       |   `new-skill-scaffold`, `skill-pack-check`); plan by default, `--apply` writes; bootstrap runs on the new folder after.     |
 
 ### Mode selection rules
 
@@ -82,7 +76,7 @@ Determine the mode before editing. If the user does not specify a mode, infer it
 - If the user asks only to bring governance files up to standard (`govern` argument): use `govern`.
 - If the user asks what is wrong, missing, stale, or why agents get lost: use `audit`.
 - If the user asks to turn notes/decisions into durable project truth: use `promote`.
-- If uncertain, run `audit` first and propose the smallest safe update.
+- If the user asks for a new skill: `new-skill`. If uncertain, run `audit` first and propose the smallest safe update.
 
 ---
 

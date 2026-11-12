@@ -234,3 +234,27 @@ status = "promoted"
 skill = "skill-ai-it/scripts/survey/skills_registry.py"
 reason = "skill-ai-it's own tooling: it already lives in the shared skill (decided 2026-11-11 when the map was created)"
 
+[modules."scripts/skills/new_skill.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/skills/new_skill.py"
+reason = "skill-ai-it's own tooling (new-skill capability, operator 2026-11-12): it already lives in the shared skill"
+
+[modules."scripts/skills/skill_seed.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/skills/skill_seed.py"
+reason = "skill-ai-it's own tooling (new-skill capability, operator 2026-11-12): it already lives in the shared skill"
+
+[modules."scripts/skills/skill_pack_check.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/skills/skill_pack_check.py"
+reason = "skill-ai-it's own tooling (new-skill capability, operator 2026-11-12): it already lives in the shared skill"
+
+[modules."scripts/skills/skill_intake.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/skills/skill_intake.py"
+reason = "skill-ai-it's own tooling (new-skill capability, operator 2026-11-12): it already lives in the shared skill"
+
+[modules."scripts/skills/skill_scaffold.py"]
+status = "promoted"
+skill = "skill-ai-it/scripts/skills/skill_scaffold.py"
+reason = "skill-ai-it's own tooling (new-skill capability, operator 2026-11-12): it already lives in the shared skill"

@@ -1,0 +1,57 @@
+---
+Title: Evolution and write-back
+Category: reference
+Status: current
+Authority: >-
+  {{NAME}} canonical reference; claims carry evidence labels and cite sources.yaml
+Scope: {{NAME}}: how the pack learns from each engagement
+Last reviewed: {{DATE}}
+Summary: The standing write-back contract: engagement classes, the Learned and Disputed entry format, evidence with every entry, research captures, release reconciliation and script promotion.
+---
+
+# Evolution and write-back
+
+## Standing write-back contract
+
+This pack is a cross-project source of reusable knowledge. Invoking it carries the obligation, in any project, to write back what the engagement taught: a new fact, a changed behaviour, a fix, a
+root cause or a correction. Write it before the session ends when the task permits edits to this skill's canonical source; skill use alone never authorises a change to a live system. Read the
+edited file back in the same session: a scratchpad note or a timestamp is not proof.
+
+Classify every engagement at closeout, one sentence in the reply:
+
+| Class | Action |
+| --- | --- |
+| `no_new_reusable_learning` | Nothing to write; say so |
+| `verified_reusable_update` | Add a Learned entry to the focused reference and one CHANGELOG line under `## Unreleased` |
+| `reusable_candidate` | Same, with evidence `UNVERIFIED` and a falsifier that would settle it |
+| `contradicts_existing_claim` | Add a Disputed entry beside the old text; never delete or silently rewrite it |
+| `project_only` | Write it in the engaging project's docs (names, addresses, layout), not here |
+| `domain_only` | Write it in the skill that owns that domain, not here |
+
+## Entry format
+
+```text
+> **Learned YYYY-MM-DD** · <scope> · <EVIDENCE> · Source: <URL or file:line> · Falsifier: <observation that would prove it wrong>
+> <the fact, generic: no customer names, hostnames, addresses, keys or credentials>
+```
+
+A contradiction is a `Disputed` entry beside the old text with `Conflicts: <claim ID>`.
+
+## Evidence with every entry
+
+A write-back that records how something is done carries (1) a code or configuration excerpt of the few lines that matter (about 30 at most), as a fenced block with its source path and commit,
+secrets and customer identifiers removed; and (2) for anything with a visual surface, a redacted screenshot under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image,
+what it shows and where it was taken. When the surface is not available yet, the entry says "screenshot pending: <page>" and the next engagement adds it.
+
+## Research captures
+
+External pages are captured verbatim under `documents/research-sources-<YYYYMMDD>/` with a provenance header, and a row with the file's sha256 in that folder's `readme.md`. A page that blocks
+agents is fetched with the all-scraper tool.
+
+## Closeout
+
+1. Classify the engagement and write the entry or say none is owed.
+2. Add the CHANGELOG `## Unreleased` line naming the file and date.
+3. Update `sources.yaml` for any new load-bearing claim, with its falsifier.
+4. Run the pack's `just check` and `just test`; read the edited file back.
+5. A script written for the engagement that is likely to be reused is promoted into `scripts/` with a test, a catalogue row and a recipe, in the same session.

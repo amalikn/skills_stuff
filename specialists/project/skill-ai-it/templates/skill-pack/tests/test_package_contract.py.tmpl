@@ -1,0 +1,47 @@
+"""The pack's executable contract: run skill-ai-it's skill_pack_check on this folder and fail on any error.
+
+Run: python -m unittest discover -s tests   (or `just test`)
+
+The rules live in one place, skill-ai-it's scripts/skills/skill_pack_check.py, so every pack is held to the same contract. Add pack-specific
+rules as further tests in this file.
+"""
+
+from __future__ import annotations
+
+import importlib.util
+import unittest
+from pathlib import Path
+
+PACK = Path(__file__).resolve().parents[1]
+CHECKER = (PACK / "{{AI_IT_REL}}" / "scripts" / "skills" / "skill_pack_check.py").resolve()
+
+
+def load_checker():
+  """Import skill_pack_check from skill-ai-it by path.
+
+  Returns:
+    The loaded module.
+
+  Raises:
+    unittest.SkipTest: when skill-ai-it is not beside this pack.
+  """
+  if not CHECKER.is_file():
+    raise unittest.SkipTest(f"skill-ai-it checker not found at {CHECKER}")
+  spec = importlib.util.spec_from_file_location("skill_pack_check", CHECKER)
+  module = importlib.util.module_from_spec(spec)
+  spec.loader.exec_module(module)
+  return module
+
+
+class PackContract(unittest.TestCase):
+  """The pack meets the shared skill pack contract."""
+
+  def test_no_contract_errors(self):
+    """skill_pack_check reports no error for this folder."""
+    findings = load_checker().check_pack(PACK)
+    errors = [f for f in findings if f.level == "error"]
+    self.assertEqual([], [str(f) for f in errors])
+
+
+if __name__ == "__main__":
+  unittest.main()

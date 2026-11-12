@@ -1,0 +1,59 @@
+---
+Title: {{NAME}} Agent Policy
+Category: agent-governance-guide
+Status: current
+Authority: local-supplement
+Scope: {{NAME}} pack: canonical, cross-project source of its reusable knowledge
+Last reviewed: {{DATE}}
+Summary: Agent guidance for maintaining and using {{NAME}}: artifact roles, the package contract, the write-back obligation, and the gates to run before calling work complete.
+Budget: 150 lines, 12 KB
+---
+
+@{{REPO_AGENTS_REL}}
+
+# AGENTS.md
+
+## Contents
+
+- [Working rules](#working-rules)
+- [Package contract](#package-contract)
+- [Cross-project write-back trigger](#cross-project-write-back-trigger)
+- [Code changes](#code-changes)
+
+---
+
+## Working rules
+
+- [SKILL.md](SKILL.md) is the agent-facing activation surface: role, boundaries, orient-first checks, task routing and the standing write-back contract. It routes every file in `references/`.
+- `references/` is the content source. Load only the reference the task needs; the routing table in SKILL.md is the index.
+- Evidence discipline: every load-bearing claim lives in [sources.yaml](sources.yaml) with its source and a falsifier; environment facts live in [compatibility.yaml](compatibility.yaml). An
+  observed install is not behavioural proof.
+- `documents/research-sources-<YYYYMMDD>/` holds verbatim captures with a provenance header; adding or replacing one needs a row with its sha256 in that folder's `readme.md`.
+- Never write a credential, private address, production domain or token into an authored pack file; the contract test scans every authored text file.
+- Keep project facts (names, addresses, sites, customers) in the engaging project. This pack holds only what is true in every project.
+- memory-keeper channel for this pack is exactly `{{MEMORY_CHANNEL}}`.
+- The package version, when the pack keeps one, lives only in the [CHANGELOG.md](CHANGELOG.md) release heading.
+- Time-bound notes use `<slug>-YYYYMMDD_hhmm.md`. <!-- path:example -->
+- Triage before opening: `just docs <folder>` gives one header line per file; run `just stale` before editing.
+
+## Package contract
+
+`tests/test_package_contract.py` runs skill-ai-it's `skill_pack_check.py` on this folder and is the pack's executable contract:
+
+| Rule | Consequence |
+| --- | --- |
+| `SKILL.md` front matter `name` equals the folder name; `description` is one short paragraph | The listing is what every session loads, so it stays short |
+| Every file in `references/` is linked from `SKILL.md` | Routing changes start in `SKILL.md` |
+| No `TODO(build)` or `TODO(seed)` marker and no unreplaced template placeholder remains in a `Status: current` file | A skeleton is not a finished pack |
+| Every script has a header, a catalogue row in `scripts/README.md` and a test | An uncatalogued script is unknown safety |
+| No secret pattern in any authored text file | The pack is shared across projects |
+
+## Cross-project write-back trigger
+
+Any session in any project that invoked this skill, followed its rules or ran its helpers owes the write-back in [references/evolution-and-write-back.md](references/evolution-and-write-back.md)
+at closeout. When this source cannot be written, park the entry in the engaging project under `## {{NAME}} write-back candidates`.
+
+## Code changes
+
+Invoke `skill-coder` before adding or changing a script and follow its rules: purpose header, docstrings with Args, Returns and Raises, plan by default and `--apply` for writes, a timeout on
+every call, tests, and a `code-map.toml` entry. Python is pinned in `.mise.toml`; run it through the recipes in the `justfile`, never a bare interpreter.

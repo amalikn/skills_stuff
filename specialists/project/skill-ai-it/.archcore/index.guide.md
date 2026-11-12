@@ -20,3 +20,4 @@ gets its own file, a row below, and a line in AGENTS.md.
 | [history-by-kind.rule.md](rules/history-by-kind.rule.md) | docs/history is one folder per kind with a generated index |
 | [ask-about-pad-at-bootstrap.rule.md](rules/ask-about-pad-at-bootstrap.rule.md) | Bootstrap and refresh ask whether to link a Pad workspace |
 | [tool-agnostic-and-generic.rule.md](rules/tool-agnostic-and-generic.rule.md) | The pack stays tool-agnostic, generic and free of project output |
+| [new-skills-start-from-a-seed.rule.md](rules/new-skills-start-from-a-seed.rule.md) | A new skill starts from a seed and the shared scaffold |

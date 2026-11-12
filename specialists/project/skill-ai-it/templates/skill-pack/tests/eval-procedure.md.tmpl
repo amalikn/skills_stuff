@@ -1,0 +1,18 @@
+---
+Title: {{NAME}} eval procedure
+Category: test-procedure
+Status: draft
+Authority: canonical
+Scope: How the scenarios in scenarios.md are run and scored
+Last reviewed: {{DATE}}
+Summary: Run each scenario in a fresh session with the skill installed, score pass or fail against the expected behaviour, and record the date, model and result.
+---
+
+# {{NAME}} eval procedure
+
+1. Install the pack by symlink and start a fresh session with no other context.
+2. Give the prompt of one scenario exactly as written. Do not hint at the skill by name unless the scenario does.
+3. Score against the Expected behaviour column: pass only when every part is met; note which part failed.
+4. Record the date, the model and the result in the scenario's Result cell, and a one-line cause for any failure.
+5. A failure becomes a Learned entry or a fix in the reference it exposed; rerun the scenario afterwards.
+6. A scenario the skill passes without being installed does not test the skill: tighten it.

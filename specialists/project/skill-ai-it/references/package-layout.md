@@ -41,6 +41,7 @@ skill-ai-it/
 │   ├── plans/                # target map, plan tracker, timeline
 │   ├── markdown/             # shared markdown helpers
 │   ├── survey/               # read-only surveys across projects and transcripts
+│   ├── skills/               # new-skill: seed parser, scaffold, pack contract check
 │   └── README.md
 ├── templates/
 │   ├── AI_NAVIGATION.md
@@ -56,6 +57,8 @@ skill-ai-it/
 │   ├── history-readme.md       # docs/history/readme.md starter (generated list)
 │   ├── session-record.md       # slurp closeout record (docs/history/session-records/)
 │   ├── archcore/               # index.guide.md and rule.md for promote
+│   ├── skill-seed.md           # new-skill: the seed a new skill is designed in
+│   ├── skill-pack/             # new-skill: the pack skeleton (*.tmpl, filled from a seed by scripts/skills/new_skill.py)
 │   └── .markdownlint-cli2.jsonc
 └── patterns/
     ├── archcore-routing.md

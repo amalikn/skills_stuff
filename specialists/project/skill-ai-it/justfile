@@ -213,6 +213,35 @@ skills-registry root *args: _require-venv
 mirror-skills *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/install/mirror_skills.py" {{args}}
 
+# [writes with --apply] New skill, stage 1: write the intake form (the interview record) and the seed folder (research/, parts/): just new-skill-intake skill-topic [--family specialists/platform] [--apply]
+[positional-arguments]
+new-skill-intake *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/skills/new_skill.py" intake "$@"
+
+# [writes with --apply] New skill, stage 1: one generic research brief per intake research topic, refused if a forbidden term is in it: just new-skill-research-briefs INTAKE.md [--apply]
+[positional-arguments]
+new-skill-research-briefs *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/skills/new_skill.py" research-briefs "$@"
+
+# [writes with --apply] New skill, step 1: write the seed template to pending_skills/<name>/ (plan by default): just new-skill-seed skill-topic [--family specialists/platform] [--from-intake INTAKE.md] [--apply]
+[positional-arguments]
+new-skill-seed *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/skills/new_skill.py" seed "$@"
+
+# [read-only] New skill, step 3: list what a seed still lacks (unfilled TODO(seed), missing sections, thin tables, blocking questions): just new-skill-check SEED.md
+new-skill-check SEED: _require-venv
+    @{{py}} "{{ai_it}}/scripts/skills/new_skill.py" check-seed "{{SEED}}"
+
+# [writes with --apply] New skill, step 4: plan, then write the pack skeleton from a complete seed; never overwrites (a different existing file gets .proposed): just new-skill-scaffold SEED.md [--apply]
+[positional-arguments]
+new-skill-scaffold *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/skills/new_skill.py" scaffold "$@"
+
+# [read-only] Hold a skill pack to the shared contract (front matter, routing, references, evidence files, scripts, secrets); --strict also fails on warnings: just skill-pack-check PACK_DIR [--strict]
+[positional-arguments]
+skill-pack-check *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/skills/skill_pack_check.py" "$@"
+
 # How often agents touch a file, folder or command in recent Claude transcripts (keep or retire a navigation aid on evidence)
 agent-usage *args: _require-venv
 	@{{py}} "{{skill_dir}}/scripts/survey/agent_usage.py" {{args}}

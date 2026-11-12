@@ -1,0 +1,18 @@
+---
+Title: {{NAME}} behaviour scenarios
+Category: test-scenarios
+Status: draft
+Authority: canonical
+Scope: Prompts and the behaviour {{NAME}} must show; run by hand or by an eval harness
+Last reviewed: {{DATE}}
+Summary: Acceptance scenarios from the seed, including one that must not trigger the skill and one where the agent must stop and ask; the Result column records the last run.
+---
+
+# {{NAME}} behaviour scenarios
+
+Each scenario is a prompt and the behaviour that counts as a pass. Run them with [eval-procedure.md](eval-procedure.md) and write the date and result in the last column. A scenario that
+cannot fail is rewritten, not kept.
+
+| ID | Prompt | Expected behaviour | Result |
+| --- | --- | --- | --- |
+{{SCENARIO_ROWS}}

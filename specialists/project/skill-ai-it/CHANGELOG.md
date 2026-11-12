@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261111_1300
+Last rotated: 20261112_1552
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,8 @@ Last rotated: 20261111_1300
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261112_1552 — new-skill: intake, research briefs, seed folder with research and parts](#20261112_1552--new-skill-intake-research-briefs-seed-folder-with-research-and-parts)
+- [20261112_1536 — new-skill mode: seed template, pack scaffold and pack contract check](#20261112_1536--new-skill-mode-seed-template-pack-scaffold-and-pack-contract-check)
 - [20261111_1259 — central project tooling plan, the skill's flow map, md_examples_check](#20261111_1259--central-project-tooling-plan-the-skills-flow-map-md_examples_check)
 - [20261111_1213 — history_migrate: check gate, dirty-reference refusal, survey](#20261111_1213--history_migrate-check-gate-dirty-reference-refusal-survey)
 - [20261111_1135 — archcore, ruff, code map, templates and the Pad question](#20261111_1135--archcore-ruff-code-map-templates-and-the-pad-question)
@@ -28,9 +30,6 @@ Last rotated: 20261111_1300
 - [20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class](#20261029_2015--pitfalls-one-route-for-cross-project-messages-route-facts-by-class)
 - [20261027_2055 — Slurp close: callers-check, write-backs, coherence](#20261027_2055--slurp-close-callers-check-write-backs-coherence)
 - [20261027_2048 — Scripts in family folders; callers repointed; skill-coder gates in check](#20261027_2048--scripts-in-family-folders-callers-repointed-skill-coder-gates-in-check)
-- [20261027_2024 — Staleness audit: dependency claim derived, stale KEEP lines superseded](#20261027_2024--staleness-audit-dependency-claim-derived-stale-keep-lines-superseded)
-- [20261027_1941 — Open-items tracker reviewed](#20261027_1941--open-items-tracker-reviewed)
-- [20261027_1922 — Quoted code excerpts restored after a markdown hook bug](#20261027_1922--quoted-code-excerpts-restored-after-a-markdown-hook-bug)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -49,6 +48,26 @@ Last rotated: 20261111_1300
 - scripts/adoption/adopt_governed_files.py: FILE_BUDGETS: AGENTS.md and AI_NAVIGATION.md get `Budget: 150 lines, 12 KB` as README gets its own (operator, 2026-11-06: governance files read whole carry a budget; doc_freshness enforces it, grandfather_sizes keeps a file already over from failing); scripts/records/budget_plan.py reports those files against their stated budget; test asserts AGENTS.md gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261112_1552 — new-skill: intake, research briefs, seed folder with research and parts
+
+- new-skill now runs the seeding itself (operator, 2026-11-12): `new-skill-intake` writes an interview form (four rounds, at most four questions each, answers recorded as
+  USER_STATED, search before asking); `new-skill-research-briefs` writes one generic research brief per topic and refuses a forbidden term; `new-skill-seed --from-intake` pre-fills
+  the seed. Added `templates/skill-intake.md`, `templates/research-brief.md`, `templates/seed-folder/`, `scripts/skills/skill_intake.py` and `skill_scaffold.py` (split from
+  `new_skill.py` to keep modules under 400 lines), and 9 tests.
+- The seed is a folder in `pending_skills/<name>/`: `research/` and `parts/` stay beside it for good (operator ruling); a `parts/<reference>.md` becomes that reference's body on
+  scaffold; the scaffold never copies the seed into the pack and refuses a `forbidden_terms` name in any generated file. The seed parser merges rows wrapped by the repo's table
+  formatter.
+
+## 20261112_1536 — new-skill mode: seed template, pack scaffold and pack contract check
+
+- New mode `new-skill` (operator, 2026-11-12): a new skill pack is built from a written seed, scaffolded to the shared shape and checked against one contract. Added
+  `templates/skill-seed.md` (nineteen sections; "What was learned" is the core), `templates/skill-pack/` (SKILL.md, AGENTS, README, CHANGELOG, references, sources.yaml,
+  compatibility.yaml, scenarios, contract test, Python pin and ruff for packs with scripts), `scripts/skills/` (`new_skill.py` seed, check-seed and scaffold; `skill_seed.py`;
+  `skill_pack_check.py`), four recipes (`new-skill-seed`, `new-skill-check`, `new-skill-scaffold`, `skill-pack-check`), `references/new-skill.md`, archcore rule `new-skills-start-
+  from-a-seed` and 21 tests. Shape taken from skill-nautobot, skill-vagrant, skill-coder, skill-network-architect and skill-systems-architect. The scaffold plans by default, never
+  overwrites (`.proposed` beside a different file) and does not install, commit or push.
+- SKILL.md: the Inputs section moved verbatim to `references/inputs.md` (move_sections.py) to make room; SKILL.md is 194 lines.
 
 ## 20261111_1259 — central project tooling plan, the skill's flow map, md_examples_check
 
@@ -161,25 +180,6 @@ marker in a trusted folder holding untrusted repos). Smoke-run on three real fol
   the helpers; `just check` runs it and `nav-validate` (red on a YAML error). 520 checks, 213 tests.
 - Incident, fixed: the repoint also rewrote three dated session-history lines inside this package's SCRATCHPAD.md (`audit_rotations.py` reported them LOST); restored word for word. The one live KEEP
   line whose path changed is accepted in `docs/history/rotation-audit-baseline.txt`. `repoint_paths.py` skips history files but not dated sections inside a living file (ROADMAP item).
-
-## 20261027_2024 — Staleness audit: dependency claim derived, stale KEEP lines superseded
-
-- Staleness audit, whole package ([staleness-audit-20261027_2023.md](docs/reviews/staleness-audit-20261027_2023.md)): 4 defects, none band M. `requirements.txt` claimed one script needed PyYAML (seven import it, `plan_timeline.py` and
-  `target_map.py` at module level): count removed and `check_declared_dependencies` added to `scripts/check_governance.py` (red on PyYAML removed, green on restore; 458 to 490 checks). SCRATCHPAD: a
-  done `KEEP` open item (no test recipe) superseded in place, a stale push next-action replaced.
-- Why it survived: a hand-written count from 2026-09-23 (five scripts then, 32 now) that nothing derived. Phase 4 test rows were first filled with one stock line and redone one by one after a side
-  agent flagged it; weak tests and residuals are listed in the report and SCRATCHPAD.
-
-## 20261027_1941 — Open-items tracker reviewed
-
-- `docs/trackers/open-items-20261010_1830.md` reviewed (it failed `just check`, due 2026-10-24); next review 2026-11-10, the date of its reference re-measure item. Closed: the
-  `patterns/archcore-routing.md` review (done in 9d7fda8, `Last reviewed: 2026-10-19`). Still open, checked on disk: no governance checker yet in llm-m2max, vocus-profitability,
-  opticomm-profitability, openbb or invoice-finance-analyst (jdm has one); `nav-validate` still not in `just check`; the context-map schema decision and the skill-coder helper overlap are undecided.
-
-## 20261027_1922 — Quoted code excerpts restored after a markdown hook bug
-
-- `references/target-map-and-timeline.md`: three quoted code excerpts had been joined into run-on prose by the markdown hook (a `rewrap.py` bug with quoted fences, fixed in scripts_stuff 2026-10-27).
-  One restored from git history (`plan_timeline.py` reflow excerpt); two that were committed flattened rebuilt from `scripts/plan_tracker.py` and `scripts/plan_timeline.py`, words unchanged.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

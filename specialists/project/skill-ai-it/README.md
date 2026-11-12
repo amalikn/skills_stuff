@@ -50,6 +50,7 @@ architecture docs, roadmaps, scratchpads, changelogs and planning documents. Wha
 | `govern` | Governance only, scripted: adoption, record budgets with `just check`, role findings (`/skill-ai-it govern`, or `just govern`) |
 | `audit`          | Report missing, stale or conflicting governance and context files, and files outside their role                |
 | `promote`        | Promote candidates from `ARCHCORE_PROMOTION_CANDIDATES.md`, or explicitly requested content, into `.archcore/` |
+| `new-skill`      | Seed, scaffold and check a new skill pack so it shares the shape of skill-nautobot, skill-vagrant and the others ([references/new-skill.md](references/new-skill.md)) |
 
 ## What it gives a project
 
@@ -79,7 +80,7 @@ skill-ai-it/
 ├── ruff.toml            Python lint and format (new files; `just lint` in `just check`)
 ├── code-map.toml        skill-coder's code map: each script's status
 ├── references/          on-need detail moved out of SKILL.md, one topic per file
-├── templates/           files generated into target projects (incl. govcheck/)
+├── templates/           files generated into target projects (incl. govcheck/, skill-seed.md and skill-pack/ for new-skill)
 ├── patterns/            optional guidance modules
 ├── scripts/             tooling in family folders, catalogued in scripts/README.md
 ├── tests/               tests for the scripts
