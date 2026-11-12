@@ -16,6 +16,8 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-12 references/testing.md: Learned entry, planting a bad value in a real input to prove a test fails leaves the input newer, so an mtime-based derived check goes red;
+  plant into a copy or restore the timestamp (from apn enterprise-strategy).
 - 2026-11-12 write-back from enterprise-strategy (one-pager pack and strategy deck, apn a3e29af7, ee9046df, 6c262ea9): languages/javascript-typescript.md Learned, pptxgenjs text-box margins are points; convert in the one text helper.
 - 2026-11-12 write-back from enterprise-strategy (skill-ai-it new-skill, d3132c2): references/design-patterns.md P-69 (a seed, a plan-first scaffold and a guard on the shared output) and languages/python/learned-other.md (load a sibling module by path; parse wrapped markdown table rows by indentation).
 - 2026-11-11 (f) write-back from enterprise-strategy: references/version-control-and-review.md, run the check as well as the tests before a commit (a module budget and a write-back header form are check rules, not test rules).

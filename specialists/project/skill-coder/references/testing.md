@@ -320,3 +320,17 @@ if _opposite_status(ca, cb):
 > lab/tests/test_lab.py FlashTargetTests · Falsifier: a guard whose fakes were copied from real output missing the same case. Build the fake from
 > the tool's real output for the case that must be refused, and smoke the refusal against a real wrong target in plan mode before trusting it.
 
+> **Learned 2026-11-12** · proving a data check can fail · VERIFIED_PRIMARY · Source: apn enterprise-strategy `scripts/test_program_one_pagers_data.py` and `just check` (12 Nov 2026) ·
+> Falsifier: a freshness check that compares content hashes, not modification times
+> Planting a bad value in a real input file to prove a test goes red, then writing the original text back, leaves the content identical but the file newer. A derived-artifact check that
+> compares modification times (output older than its input) then fails on the next run, with nothing changed. Plant into a copy (point the test at it), or restore the timestamp with
+> `os.utime(path, (st.st_atime, st.st_mtime))` from a `stat` taken first, or rebuild the derived file after the proof.
+
+```python
+# apn enterprise-strategy, 12 Nov 2026: the proof that went red, then left the pack "older than its input"
+p = pathlib.Path("scripts/program_one_pagers_data.json"); orig = p.read_text()
+d = json.loads(orig); d["footer"] += " BR4"; p.write_text(json.dumps(d))
+r = subprocess.run(["python3", "-m", "unittest", "scripts/test_program_one_pagers_data.py"], capture_output=True, text=True, timeout=60)
+p.write_text(orig)   # same text, newer mtime: the derived .pptx check then failed
+```
+

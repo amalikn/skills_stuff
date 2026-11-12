@@ -264,6 +264,14 @@ Two discipline rules when using this table:
 
 These belong in the target project's `AGENTS.md` as a managed block (see `templates/AGENTS-governance-checks-block.md`), because the obligation must live where the agent doing the work will read it.
 
+> **Learned 2026-11-12** · AGENTS.md under a size limit · USER_STATED + VERIFIED_PRIMARY · Source: apn enterprise-strategy `AGENTS.md` and `.agents/governance-checks.md` (12 Nov 2026);
+> `scripts/navigation/validate_navigation_control_layer.py` (the check for the string `check_governance`) · Falsifier: an upgrader run that re-appends the block to a trimmed AGENTS.md
+> Where the operator's lean-AGENTS rule applies (AGENTS.md loads on every request: one line and a link per rule), the whole managed block moves verbatim, markers included, into a topic file
+> (`.agents/governance-checks.md`) and AGENTS.md keeps a one-line obligation that names `scripts/check_governance.py`: run it before calling work done, fix the project not the check, extend
+> the checker as the project grows. The navigation validator only looks for that name in AGENTS.md, so it stays green. No script inserts this block on its own (only the template and
+> `references/files-readme-agents-claude.md` place it), but the general rule "if a block is absent, append it" (`references/managed-blocks.md`) would put it back: run upgrades against
+> the topic file, not AGENTS.md. One project went from 21.6 KB to 5.7 KB this way, with every rule's full text kept in five topic files.
+
 | Change made | Required checker update |
 |---|---|
 | Add a document to a cataloged folder | None if a coverage check exists — it will fail until the index links it. That is the intended workflow. |
