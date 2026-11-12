@@ -19,12 +19,14 @@ import importlib.util
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 _spec = importlib.util.spec_from_file_location("skill_seed", Path(__file__).resolve().with_name("skill_seed.py"))
 ss = importlib.util.module_from_spec(_spec)
 sys.modules["skill_seed"] = ss
 _spec.loader.exec_module(ss)
 
+Seed = Any  # the Seed dataclass lives in skill_seed, which is loaded by path, so annotations use this alias
 AI_IT = Path(__file__).resolve().parents[2]
 TEMPLATES = AI_IT / "templates"
 FENCE = "intake-parameters"
@@ -33,7 +35,7 @@ SEED_PARAMS = ("name", "family", "short_description", "scripts", "operator_conte
 PLACEHOLDER_RX = re.compile(r"\{\{([A-Z_]+)\}\}")
 
 
-def parse_intake(path: Path) -> ss.Seed:
+def parse_intake(path: Path) -> Seed:
   """Parse an intake file the way a seed is parsed, with the intake parameter fence.
 
   Args:
@@ -66,7 +68,7 @@ def bullet_blocks(section: str) -> list[str]:
   return items
 
 
-def answer(seed: ss.Seed, qid: str) -> str:
+def answer(seed: Seed, qid: str) -> str:
   """The answer text of one question (`- Q1.1 ... Answer: text`).
 
   Args:
@@ -83,7 +85,7 @@ def answer(seed: ss.Seed, qid: str) -> str:
   return ""
 
 
-def research_topics(seed: ss.Seed) -> list[tuple[str, str, str]]:
+def research_topics(seed: Seed) -> list[tuple[str, str, str]]:
   """The research topic rows as (area, questions, scope).
 
   Args:
@@ -96,7 +98,7 @@ def research_topics(seed: ss.Seed) -> list[tuple[str, str, str]]:
   return [(r[0], r[1] if len(r) > 1 else "", r[2] if len(r) > 2 else "") for r in rows]
 
 
-def intake_problems(seed: ss.Seed) -> list[str]:
+def intake_problems(seed: Seed) -> list[str]:
   """Everything still missing from an intake.
 
   Args:
@@ -149,7 +151,7 @@ def slug(text: str) -> str:
   return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:60] or "topic"
 
 
-def render_briefs(seed: ss.Seed, now: dt.datetime) -> dict[str, str]:
+def render_briefs(seed: Seed, now: dt.datetime) -> dict[str, str]:
   """One research brief per research topic.
 
   Args:
@@ -201,7 +203,7 @@ def ensure_seed_folder(folder: Path, name: str, now: dt.datetime) -> None:
       note.write_text(body.replace("<skill-name>", name).replace("<YYYYMMDD_hhmm>", now.strftime("%Y%m%d_%H%M")), encoding="utf-8")
 
 
-def apply_intake(seed_text: str, intake: ss.Seed) -> str:
+def apply_intake(seed_text: str, intake: Seed) -> str:
   """Fill the seed's parameter block from the intake's answered parameters.
 
   Args:

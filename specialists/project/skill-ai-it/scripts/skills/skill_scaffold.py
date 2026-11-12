@@ -15,12 +15,14 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 _spec = importlib.util.spec_from_file_location("skill_seed", Path(__file__).resolve().with_name("skill_seed.py"))
 ss = importlib.util.module_from_spec(_spec)
 sys.modules["skill_seed"] = ss
 _spec.loader.exec_module(ss)
 
+Seed = Any  # the Seed dataclass lives in skill_seed, which is loaded by path, so annotations use this alias
 AI_IT = Path(__file__).resolve().parents[2]
 TEMPLATES = AI_IT / "templates"
 PACK_TEMPLATES = TEMPLATES / "skill-pack"
@@ -69,13 +71,13 @@ def md_table(header: list[str], rows: list[list[str]]) -> str:
   return "\n".join(out)
 
 
-def _routing(seed: ss.Seed) -> list[tuple[str, str, str]]:
+def _routing(seed: Seed) -> list[tuple[str, str, str]]:
   """The routing rows as (task, reference file, contents)."""
   rows = ss.table_rows(seed.sections["Task routing"])
   return [(r[0], r[1], r[2] if len(r) > 2 else r[0]) for r in rows]
 
 
-def _tools(seed: ss.Seed) -> str:
+def _tools(seed: Seed) -> str:
   """The 'The pack's tools' block: planned scripts from the seed, or a statement that there are none."""
   rows = ss.table_rows(seed.sections.get("Scripts plan", ""))
   if not rows:
@@ -87,7 +89,7 @@ def _tools(seed: ss.Seed) -> str:
   )
 
 
-def _claims(seed: ss.Seed, short: str) -> str:
+def _claims(seed: Seed, short: str) -> str:
   """sources.yaml claim rows from the seed's Evidence plan."""
   rows = ss.table_rows(seed.sections["Evidence plan"])
   out = []
@@ -111,7 +113,7 @@ def _claims(seed: ss.Seed, short: str) -> str:
   return "\n".join(out)
 
 
-def build_mapping(seed: ss.Seed, pack: Path, root: Path, now: dt.datetime) -> dict[str, str]:
+def build_mapping(seed: Seed, pack: Path, root: Path, now: dt.datetime) -> dict[str, str]:
   """All placeholder values for the pack's templates, from the seed.
 
   Args:
@@ -152,7 +154,7 @@ def build_mapping(seed: ss.Seed, pack: Path, root: Path, now: dt.datetime) -> di
   }
 
 
-def plan_files(seed: ss.Seed, pack: Path, mapping: dict[str, str]) -> dict[str, str]:
+def plan_files(seed: Seed, pack: Path, mapping: dict[str, str]) -> dict[str, str]:
   """The pack's files as relative path to rendered text.
 
   Args:
@@ -187,7 +189,7 @@ def plan_files(seed: ss.Seed, pack: Path, mapping: dict[str, str]) -> dict[str, 
   return files
 
 
-def orphan_parts(seed: ss.Seed) -> list[str]:
+def orphan_parts(seed: Seed) -> list[str]:
   """Part files beside the seed that no routing row names.
 
   Args:
