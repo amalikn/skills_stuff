@@ -103,6 +103,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-63 | Agent benchmark: known answers in a throwaway copy, a watch on real repos | Choosing a model or config for an agent by impression, or letting the run touch live work |
 | P-64 | A fixed-length record overwritten in place | A small state file on a filesystem without atomic rename (FAT) that a power cut must never leave empty |
 | P-68 | Baseline beside forecast in a generated report | A status report rendered from a fixed plan whose dates slip week by week |
+| P-69 | A seed, a plan-first scaffold and a guard on the shared output | Generating a new shared package from a written design without leaking names or overwriting hand edits |
 
 ## Patterns
 
@@ -1677,4 +1678,42 @@ st.append(list(stages[0]) + [name for name, _ in extra])
 for row in stages[1:]:
   fc = forecasts.get(str(row[0]))
   st.append(list(row) + ([fc["forecast"], cell_text(fc.get("note"))] if fc else [None] * len(extra)))
+```
+
+### P-69 A seed, a plan-first scaffold and a guard on the shared output
+
+> **Learned 2026-11-12** · any generator that builds a shared package from a written design · reusable_candidate ·
+> Source: skill-ai-it `scripts/skills/skill_scaffold.py` `find_leaks`, `classify` and `skill_intake.py` `cmd_research_briefs` @ d3132c2 · Falsifier: a generated shared package that still carries a name its guard listed.
+
+Problem:      New packages built by copying a sibling drift apart and lose what the work that produced them taught; a generator that writes at once overwrites hand edits, and anything private in the design
+              (project, customer or people names) can leak into an artifact many projects read, or into a search query sent to an outside service.
+Solution:     Write the design as a seed (a parameter block and tables, with an unfilled marker a check refuses) kept in its own folder with its research and draft parts. The scaffold renders every file in
+              memory, scans the rendered text for the seed's forbidden terms as whole words and refuses before any write, then classifies each file as create, skip (identical) or propose (a different file exists:
+              write a `.proposed` beside it) and prints the plan; only `--apply` writes. A contract check runs on the result. The seed and its research are never copied into the output.
+Why it works: The lessons live in one place that outlives the build; a refusal costs nothing before the write; a rerun is safe because nothing a person wrote is replaced; the guard protects both the output and the
+              outgoing research briefs.
+Reuse:        New skill packs, projects started from templates, service or module scaffolds, any export that must stay free of one customer's names.
+Pitfalls:     Substring matching flags "Rob" inside "robust" (match whole words); a brief that lists the forbidden words to tell a researcher what to avoid must be excluded from its own scan; a formatter that wraps
+              table rows breaks a naive table parser (merge continuation rows, see the Python learned entry); a seed that names the private terms must stay outside the shared output.
+Realised in:  Python -> skill-ai-it/scripts/skills/skill_scaffold.py and skill_intake.py (d3132c2)
+
+```python
+def find_leaks(files, terms):
+  out = []
+  for rel, text in files.items():
+    out += [f"{rel}: {t}" for t in terms if re.search(rf"(?<!\w){re.escape(t)}(?!\w)", text, re.I)]
+  return out
+
+def classify(pack, files):
+  out = []
+  for rel, text in files.items():
+    target = pack / rel
+    if not target.exists():
+      out.append(("create", rel))
+    elif target.read_text(encoding="utf-8") == text:
+      out.append(("skip", rel))
+    else:
+      out.append(("propose", rel))  # written as <file>.proposed on --apply, never over the original
+  return out
+# command: render all -> find_leaks -> refuse -> classify -> print plan -> write only with --apply
 ```

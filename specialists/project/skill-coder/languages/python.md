@@ -110,5 +110,5 @@ The rest of this override lives in [python/](python/) (split 2026-11-07 by scrip
 
 | File | Blocks |
 | --- | --- |
-| [learned-other.md](python/learned-other.md) | 10 |
+| [learned-other.md](python/learned-other.md) | 12 |
 | [open-items.md](python/open-items.md) | 2 |

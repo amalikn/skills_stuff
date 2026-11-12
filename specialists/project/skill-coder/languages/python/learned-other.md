@@ -125,3 +125,33 @@ Part of [python.md](../python.md).
 > ```python
 > OUT_ITEM = re.compile(r"^- \[ \] (?:\*\*\d{8}_\d{4}\*\* )?(?P<directive>directive )?to (?P<to>[\w ,-]+?):\s*(?P<text>.+)$", re.S)
 > ```
+
+> **Learned 2026-11-12** · Python, scripts and tests that import a sibling module · VERIFIED_PRIMARY (the editor reported three unresolved imports after a `sys.path.insert`; none after the change) ·
+> Source: skill-ai-it `tests/test_new_skill.py` `load()` and `scripts/skills/new_skill.py` @ d3132c2 · Falsifier: an editor that resolves a `sys.path.insert` import, or a name collision the path load does not avoid.
+> Load a sibling module by its file path with `importlib.util.spec_from_file_location`, and register it in `sys.modules` so modules that import each other resolve. A `sys.path.insert` before the import works at
+> run time but leaves the editor's language server with unresolved-import warnings, and a stem such as `json` or `new` can shadow another module. This is the form the pack's older tests already use.
+>
+> ```python
+> def load(name: str):
+>   spec = importlib.util.spec_from_file_location(name, SKILLS / f"{name}.py")
+>   module = importlib.util.module_from_spec(spec)
+>   sys.modules[name] = module
+>   spec.loader.exec_module(module)
+>   return module
+> ```
+
+> **Learned 2026-11-12** · Python, parsing markdown tables in a repo with a table formatter · VERIFIED_PRIMARY (a seed with long rows failed to parse until wrapped rows were merged) ·
+> Source: skill-ai-it `scripts/skills/skill_seed.py` `table_rows` and `tests/test_new_skill.py` `test_wrapped_table_rows_are_merged` @ d3132c2 · Falsifier: a formatter that wraps rows without indenting the continuation cells.
+> A hook that wraps long markdown table rows writes the continuation as a new row whose cells are indented by three or more spaces, often with an empty first cell, and any cell can wrap. A parser of such tables
+> must merge a continuation into the row above cell by cell: test the raw cell text (before stripping) for the indentation. Parsing only the empty first cell loses rows whose first cell wraps.
+>
+> ```python
+> raw = re.split(r"(?<!\\)\|", line.strip("|"))
+> cells = [c.strip() for c in raw]
+> if rows and any(c.startswith("   ") for c in raw):
+>   for i, cell in enumerate(cells):
+>     if cell and i < len(rows[-1]):
+>       rows[-1][i] = f"{rows[-1][i]} {cell}".strip()
+>   continue
+> rows.append(cells)
+> ```
