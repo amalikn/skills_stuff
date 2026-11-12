@@ -37,6 +37,11 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (the declared floor is untested).
 - [ ] **Shell limits** — 100/200 lines are UNVERIFIED until the Google Shell Style Guide capture is in `documents/`.
+- [ ] **Write-back contract test red (found 2026-11-12, enterprise-strategy closeout)** — `tests/test_package_contract.py` test_write_back_entries_logged stops on 13 Learned entries
+  written 2026-10-30 to 2026-11-12 (languages/ansible/learned-templating.md 90 and 139; languages/python/learned-other.md 119; languages/shell/learned-other.md 22;
+  references/design-patterns.md 1040, 1424, 1459, 1661, 1686; design-principles.md 48; engine-composition.md 188; testing.md 313 and 318; tooling-and-runtime.md 81).
+  Some look well formed, so check the parser's header join (six lines, " ·" at a line end) before rewriting entries. design-patterns.md P-65 (2026-11-10) only lacked
+  its `· Source:` field and was fixed in the same closeout.
 - [ ] **Ansible and YAML size** — `code_size.py` measures no `.yml` files; decide a task-file limit once `languages/ansible.md` has a source.
 
 ## Completed

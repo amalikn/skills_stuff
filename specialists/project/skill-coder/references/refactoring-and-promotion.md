@@ -49,6 +49,21 @@ When a module or script moves:
 > python scripts/goal_guard.py next --state examples/portfolio.json --date 2026-10-27 | md5
 > ```
 
+> **Learned 2026-11-12** · moving scripts and their outputs into subfolders, any language · VERIFIED_PRIMARY (apn enterprise-strategy d7bc439e: 34 files moved,
+> 64 files repointed, every deck rebuilt from its new place) · Source: project_stuff/scripts/move_and_repoint.py (12 Nov 2026, committed with this write-back's session) · Falsifier: a move where a text
+> rewrite catches a path built from parts, or a path pattern that refuses "." and still matches a path ending a sentence
+> Three things a text rewrite of "scripts/x" paths misses, each met in one move: (1) a path at the end of a sentence ("from scripts/x.js."): a lookahead `(?![\w.-])` that
+> protects "x.json" from "x.js" also refuses the full stop, so allow "." when whitespace or the end follows; (2) relative markdown links in a file that itself moved: resolve
+> each link against the file's old folder and rewrite it from the new one; (3) paths built from parts (`path.join(ROOT, "slides", name)`, `Path(__file__).parent.parent`):
+> fix the root anchor and the output folder by hand. Prove the move by running every builder from its new place; a builder that regenerates committed history (two October
+> decks here) gets its output restored to the committed bytes, not committed as a change.
+
+```python
+# project_stuff/scripts/move_and_repoint.py: a root path not inside a longer path, a sentence's full stop allowed after it
+for old, new in sorted(moves.items(), key=lambda kv: -len(kv[0])):
+  text = re.sub(r"(?<![\w/.-])" + re.escape(old) + r"(?=\.(?:\s|$)|[^\w.-]|$)", new, text)
+```
+
 ## Promotion
 
 Code grows in the projects that use it and moves to a shared skill when it has earned it. The global policy says every script judged likely to be reused is promoted, in the same session, without being

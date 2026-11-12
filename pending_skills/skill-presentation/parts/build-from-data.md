@@ -145,3 +145,23 @@ Operator rules of 12 Nov 2026 for management material, each held by a test or ch
 - A "menu card" (a function as rows, each platform as a column, cost rows) lets management pick the cheapest option and see in writing what it gives up; the operator's own model for the site box and the
   radio equipment.
 - Supplied documents change facts: read every file in a folder the operator points at, including later additions, before building on it.
+
+## Timeline pages that read (review of 12 Nov 2026)
+
+Source: apn enterprise-strategy program pack, 12 Nov 2026 (commits e743df34 to 09068983; operator review in session bba30cc3). Each point came from the operator rejecting a render.
+
+- One timeline page per workstream. Two workstreams on one spine at 8.5 pt was "too tight; not really visible what is happening".
+- Centre the month spine between the two rows of boxes ("the month row should be in the middle"); compute it from the rows, not a fixed y.
+- Boxes alternate above and below the spine in date order, evenly spaced in slots; each rib runs from its box to the step's date. Slot
+  placement keeps ribs from crossing boxes; placing boxes at their own dates collided in busy months.
+- One box per step. Two ribs into one shared box was rejected ("create two separate boxes").
+- A box says: the date and the business need it answers; the step in plain words with its code small and grey after it; what it brings
+  (the capability that arrives, pointing to the "how it works" page); and "So:" the benefit. Show the current plan only: "(was 6 Nov)"
+  history belongs on the what-changed slide, not the timeline.
+- Box text around 9 to 10 pt: 12 pt was "unnecessarily big", 8.5 pt too small.
+
+## pptxgenjs and the render tool: two quirks
+
+- A `fill` on a text run is ignored by PowerPoint: a panel title written as a filled run disappeared. Draw the band as its own shape.
+- Rendered page files are zero-padded once a deck passes nine pages (`page-01.png`); look for both forms.
+

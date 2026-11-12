@@ -116,3 +116,18 @@ Item: a lab-proven recovery path for a remote box. Technical: the box boots a fa
 a software change, which serves the requirement for availability. Financial: avoids visits for failed updates; the number of visits has not been counted, so `to be counted`, owner, date; the build
 effort is known. Management: approve a canary on two sites by a date, owner named, top risk a stuck update on a remote site mitigated by a manual recovery card. Coverage check: four lenses filled, one
 `GAP` with an owner.
+
+## Plain words and honest claims (12 Nov 2026)
+
+Source: apn enterprise-strategy program pack, 12 Nov 2026 (commits e743df34 to 09068983; operator review in session bba30cc3).
+
+- No shorthand that needs another page or a reference: "levels 1 to 6", "voice first", step codes leading a line ("these numbers will
+  make no sense") and vague verbs ("restart themselves": say a frozen box is reset by its watchdog). Plain words lead; a code may follow,
+  small.
+- A benefit line carries the proof state of what delivers it: "designed to", "tests to come", "once running". A timeline that says boxes
+  "recover on their own" while the how-it-works page shows no level fully proven over-promises.
+- Drop figures that will be redone ("all of it will be done again from scratch, so don't give them false hopes"): a count from a build
+  that is being replaced reads as a commitment.
+- A field finish date that depends on site visits is not a commitment: give the target for the image to be ready and say the site dates
+  come from the visit schedule, run by run.
+

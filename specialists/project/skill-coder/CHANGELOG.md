@@ -16,6 +16,7 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-12 write-back from enterprise-strategy (scripts and slides arranged, d7bc439e; YAML view, 64a64b0c): references/refactoring-and-promotion.md Learned (what a text rewrite of moved paths misses: a sentence's full stop, links in a moved file, paths built from parts) and references/generated-artifacts.md Learned (a second format is a generated view with a `--check`, never a copy); design-patterns.md P-65 given its missing `· Source:` field; ROADMAP item for the red write-back contract test (13 entries the parser rejects).
 - 2026-11-12 references/testing.md: Learned entry, planting a bad value in a real input to prove a test fails leaves the input newer, so an mtime-based derived check goes red;
   plant into a copy or restore the timestamp (from apn enterprise-strategy).
 - 2026-11-12 write-back from enterprise-strategy (one-pager pack and strategy deck, apn a3e29af7, ee9046df, 6c262ea9): languages/javascript-typescript.md Learned, pptxgenjs text-box margins are points; convert in the one text helper.

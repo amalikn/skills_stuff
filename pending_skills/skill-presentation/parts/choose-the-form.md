@@ -51,3 +51,16 @@ markdown with a reference document, and a PDF is exported from the Word or HTML 
 - The content is a table of numbers that will be updated: build a workbook.
 - A conversation is needed to resolve an objection: a one-page brief and a meeting, not a deck.
 - The audience has not agreed the requirements: agree those first; a deck presented before the requirements reads as a point solution.
+
+## Matching the chart to the management question (12 Nov 2026)
+
+Source: apn enterprise-strategy program pack, 12 Nov 2026 (commits e743df34 to 09068983; operator review in session bba30cc3).
+
+- "When does each piece land, and what does it answer?" A timeline fishbone, one page per workstream (build-from-data, Timeline pages).
+- "What is each need getting?" An Ishikawa with the needs as bones read as "random stuff written under each heading". Offer candidates side
+  by side and let the operator choose: a benefits map (project, change, what the business sees, need met), coverage by quarter (shaded),
+  today and after (a table with how it will be shown), an outcome roadmap (now, next, later). Mark each with an "Option" chip.
+- "Where is the mechanism?" The operator asked where A/B recovery and the monitoring detail were. Add a "how it works" backing page right
+  after each project page: a recovery ladder (if this happens, the box does this, so the business gets this, how far it is proven) and a
+  monitoring flow (devices, collector, record, alarm engine, NOC, with the alarm list). Keep it as backing, so the story stays short.
+

@@ -1390,7 +1390,8 @@ return doc, [f"binding {k} does not match" for k, v in want.items() if doc.get(k
 
 > **Learned 2026-11-10** · any project whose versions are pinned in several files · VERIFIED_PRIMARY (smc-resiliency `versions.toml` and
 > `scripts/check_versions.py` @ 6f45ec65: the first run caught three wrong entries, a changed RAUC version gave five file:line failures; adopted
-> by unified-network-controller the same day, `scripts/checks/version_pins.py` @ 4202687f) · Falsifier: a pin copy the patterns miss.
+> by unified-network-controller the same day, `scripts/checks/version_pins.py` @ 4202687f) · Source: smc-resiliency `scripts/check_versions.py` @ 6f45ec65 · Falsifier: a pin
+> copy the patterns miss.
 > `verified_reusable` (two projects).
 
 Problem:      Versions live where each tool reads them (.mise.toml, requirements, Dockerfiles, scripts, lock files), copies multiply (a tool's
