@@ -167,6 +167,7 @@ class IntakeTests(unittest.TestCase):
     briefs = sorted((self.root / "research" / "briefs").glob("brief-*.md"))
     self.assertEqual(["brief-demo-review.md", "brief-demo-tooling.md"], [b.name for b in briefs])
     text = briefs[1].read_text(encoding="utf-8")
+    self.assertFalse(text.startswith("---"), "the template's front matter is stripped from a brief")
     self.assertIn("Produce a demonstration artifact", text)
     self.assertIn("do NOT use any of these words", text)
     _, out, _ = self.run_cli("research-briefs", str(self.intake), "--apply")

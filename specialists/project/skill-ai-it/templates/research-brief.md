@@ -1,10 +1,23 @@
+---
+Title: Research brief template
+Category: template
+Status: current
+Authority: local-supplement
+Scope: The prompt a research agent receives for one research topic of a new skill; the front matter is stripped when a brief is written
+Last reviewed: 2026-11-12
+Summary: Generic web-research prompt with placeholders for the area, scope, questions and the forbidden words; filled by new-skill research-briefs.
+---
+
 Research task (web research, read-only, no local file writes) for a new reusable agent skill. Generic research: do NOT use any of these words in a search query, a fetch or your report: {{FORBIDDEN}}
 
 Skill being designed: {{PURPOSE}}
 
-Area: {{AREA}} Products, formats or versions in scope: {{SCOPE}}
+- **Area:** {{AREA}}
+- **Products, formats or versions in scope:** {{SCOPE}}
 
-Questions to answer: {{QUESTIONS}}
+Questions to answer:
+
+{{QUESTIONS}}
 
 How to research:
 1. Prefer primary sources: official documentation, the project's own repository, licence files, standards pages. Read a page before tagging a claim `VERIFIED_PRIMARY`; tag what you did not read

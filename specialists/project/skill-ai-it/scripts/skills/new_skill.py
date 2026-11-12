@@ -60,7 +60,7 @@ def cmd_seed(args: argparse.Namespace) -> int:
     return 2
   now = dt.datetime.now()
   out = Path(args.out) if args.out else Path(args.skills_root) / "pending_skills" / args.name / f"seed-{args.name}-{now.strftime('%Y%m%d_%H%M')}.md"
-  text = (TEMPLATES / "skill-seed.md").read_text(encoding="utf-8").replace("<skill-name>", args.name).replace("<YYYYMMDD_hhmm>", now.strftime("%Y%m%d_%H%M"))
+  text = si.stamp_header((TEMPLATES / "skill-seed.md").read_text(encoding="utf-8").replace("<skill-name>", args.name), now)
   text = re.sub(r"^name: TODO\(seed\)$", f"name: {args.name}", text, flags=re.M)
   text = re.sub(r"^family: .*$", f"family: {args.family}", text, count=1, flags=re.M)
   if args.from_intake:

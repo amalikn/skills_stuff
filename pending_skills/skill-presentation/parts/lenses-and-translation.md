@@ -10,10 +10,12 @@ the check that finds tilt.
 ## Contents of this reference
 
 - [The four lenses](#the-four-lenses)
+- [Mapping to published frameworks](#mapping-to-published-frameworks)
 - [The translation chain](#the-translation-chain)
 - [The translation table](#the-translation-table)
 - [Applying the overlay to a deliverable](#applying-the-overlay-to-a-deliverable)
 - [The lens coverage check](#the-lens-coverage-check)
+- [The lens mind map](#the-lens-mind-map)
 - [Failure modes](#failure-modes)
 - [Worked example](#worked-example)
 
@@ -34,6 +36,21 @@ omitted.
 |            |                                                          |   an owner and a date                                                 |                                                      |
 | Management | What must I decide, who owns it, by when, and what could | The decision or ask, the owner, the milestone and date, status as at  | Status with no decision, or a date with no owner     |
 |            |   go wrong?                                              |   a day, dependencies and resources, the top risk and its mitigation  |                                                      |
+
+## Mapping to published frameworks
+
+The overlay is not new: the UK Treasury "five case model" business case asks five questions of any proposal (Strategic: is there a robust case for change; Economic: best value for money; Commercial: is it commercially
+viable; Financial: is it financially viable; Management: is it achievable), and ISO/IEC/IEEE 42010 organises description around stakeholder concerns, with a viewpoint and a view per concern and decisions recorded against
+the concerns. Mapping used here (the lead's inference, not a published method; apply the public-sector guidance proportionately):
+
+| Lens | Five case model | Architecture view |
+| --- | --- | --- |
+| Business | Strategic case (the case for change, the requirements served) | the stakeholder concerns the view answers |
+| Financial | Economic case (value for money) and Financial case (affordability, funding) | not covered by the standard; add cost and return |
+| Management | Management case (delivery, risks, milestones) and Commercial case (suppliers, contracts) | decisions and rationale recorded against concerns |
+| Technical | outside the five cases (they assume a solution) | the viewpoint that specifies how the technical view is built |
+
+Design rule: list the audience's concerns first, then give each concern one view from this table, so every concern has an answer and no lens is filled for its own sake.
 
 ## The translation chain
 
@@ -78,6 +95,11 @@ Keep one table per project from `templates/translation-table.md`, filled before 
 - cells that repeat another lens's text (a faked lens);
 - a `GAP` without an owner.
 It reads text only and cannot judge quality; a reader reads the output as a prompt, then fixes the content.
+
+## The lens mind map
+
+For a one-glance check, draw the item as a mind map (see mind-maps.md and `templates/lens-mindmap.md`): the root is the decision; four branches, Business, Technical, Financial, Management; under each, one line per link
+of the translation chain; every unknown is a `GAP: <reason and owner>` leaf. A branch with no leaves is a missing lens.
 
 ## Failure modes
 

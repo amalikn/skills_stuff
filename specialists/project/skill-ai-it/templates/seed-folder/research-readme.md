@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: index
 Scope: Everything gathered while designing the skill: research records, verbatim captures, transcripts, screenshots
-Last reviewed: <YYYYMMDD_hhmm>
+Last reviewed: 2026-11-12
 Summary: Research and captures kept beside the seed for good, so the build and later revisions can refer to the evidence behind each lesson.
 ---
 

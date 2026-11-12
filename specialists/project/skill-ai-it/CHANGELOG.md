@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261112_1552
+Last rotated: 20261112_1656
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,7 @@ Last rotated: 20261112_1552
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261112_1656 — new-skill: Deferred and extensions section, stamped template dates, brief front matter](#20261112_1656--new-skill-deferred-and-extensions-section-stamped-template-dates-brief-front-matter)
 - [20261112_1552 — new-skill: intake, research briefs, seed folder with research and parts](#20261112_1552--new-skill-intake-research-briefs-seed-folder-with-research-and-parts)
 - [20261112_1536 — new-skill mode: seed template, pack scaffold and pack contract check](#20261112_1536--new-skill-mode-seed-template-pack-scaffold-and-pack-contract-check)
 - [20261111_1259 — central project tooling plan, the skill's flow map, md_examples_check](#20261111_1259--central-project-tooling-plan-the-skills-flow-map-md_examples_check)
@@ -29,7 +30,6 @@ Last rotated: 20261112_1552
 - [20261103_1741 — mirror_skills: one client's skills linked into another](#20261103_1741--mirror_skills-one-clients-skills-linked-into-another)
 - [20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class](#20261029_2015--pitfalls-one-route-for-cross-project-messages-route-facts-by-class)
 - [20261027_2055 — Slurp close: callers-check, write-backs, coherence](#20261027_2055--slurp-close-callers-check-write-backs-coherence)
-- [20261027_2048 — Scripts in family folders; callers repointed; skill-coder gates in check](#20261027_2048--scripts-in-family-folders-callers-repointed-skill-coder-gates-in-check)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -48,6 +48,14 @@ Last rotated: 20261112_1552
 - scripts/adoption/adopt_governed_files.py: FILE_BUDGETS: AGENTS.md and AI_NAVIGATION.md get `Budget: 150 lines, 12 KB` as README gets its own (operator, 2026-11-06: governance files read whole carry a budget; doc_freshness enforces it, grandfather_sizes keeps a file already over from failing); scripts/records/budget_plan.py reports those files against their stated budget; test asserts AGENTS.md gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261112_1656 — new-skill: Deferred and extensions section, stamped template dates, brief front matter
+
+- new-skill: the seed template gains a `Deferred and extensions` section (everything researched or considered and not used now, why, where the evidence is, how to enable it; routed
+  as an `extensions.md` reference), so a personal or scoped skill records what it set aside (operator, 2026-11-12). Templates now carry a real `Last reviewed` date that generation
+  stamps with the clock (the placeholder dates failed the freshness check once tracked); the research brief template has front matter that is stripped when a brief is written, and
+  its lines no longer merge under the table formatter. First real run through the intake: skill-presentation (intake, five briefs, seed 1653, parts for mind maps, analysis
+  workbooks and extensions).
 
 ## 20261112_1552 — new-skill: intake, research briefs, seed folder with research and parts
 
@@ -164,22 +172,6 @@ marker in a trusted folder holding untrusted repos). Smoke-run on three real fol
   (the gate's YAML step SKIPPED under a host python3; Phase 4 counts rows, not judgements).
 - Coherence pass after the audit: `scripts/README.md` checker row names the dependency check; ROADMAP Ideas: ship `check_declared_dependencies` in the template. Other repos touched by the repoint
   (apn, me, tools_stuff, governance) are left uncommitted: the commit was asked for skills_stuff.
-
-## 20261027_2048 — Scripts in family folders; callers repointed; skill-coder gates in check
-
-- `scripts/` split into family folders (operator chose "subfolders, update callers"): `records/`, `checks/`, `adoption/`, `navigation/`, `plans/`, `markdown/`, `survey/`; `check_governance.py` and the
-  baselines stay at the root, where every governed project keeps its own. Cross-loads fixed (`role_check` finds a script in any family, `rotate_records` loads `checks/file_headers.py`, plans put
-  `markdown/` and `checks/` on the path); `scripts/README.md` catalogued by family, `references/package-layout.md` tree redrawn.
-- New `scripts/adoption/repoint_paths.py` (`just repoint-paths`, test `tests/test_repoint_paths.py`): 467 references in 43 files across 30 projects and skills repointed (justfiles, skill-slurp-chat
-  SKILL.md, skill-coder refs, governance naming guide); CHANGELOGs, `docs/history/`, archives and dated `*-YYYYMMDD_hhmm.md` files left as written. 107 s over eight roots. smc-resiliency and
-  unified-network-controller built the path in code (`AI_IT_SCRIPTS / f"{name}.py"`); their govcheck loaders now search the family folders. Every consumer's `just check` was run: no path errors.
-- The checker found the move: catalogue paths failed, and its script scans were flat (`scripts/*.py`), so its count fell 492 to 411. Scans are recursive, catalogue coverage matches the path below
-  `scripts/` (red when a script is listed under the wrong family), bare script names resolve in their family.
-- skill-coder brought in: run/safety lines in 8 headers, `timeout=` on 21 subprocess calls, one `type: ignore` removed, a shrink-only size baseline (`scripts/code-size-baseline.json`, 8 modules, 17
-  functions), and `scripts/write-gates.json` counting local file writes (23 writers; two GAP entries, navigation writers that plan only with `--dry-run`, are a ROADMAP item). `just self-check` runs
-  the helpers; `just check` runs it and `nav-validate` (red on a YAML error). 520 checks, 213 tests.
-- Incident, fixed: the repoint also rewrote three dated session-history lines inside this package's SCRATCHPAD.md (`audit_rotations.py` reported them LOST); restored word for word. The one live KEEP
-  line whose path changed is accepted in `docs/history/rotation-audit-baseline.txt`. `repoint_paths.py` skips history files but not dated sections inside a living file (ROADMAP item).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

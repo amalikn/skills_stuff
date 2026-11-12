@@ -31,3 +31,7 @@ like a routed reference (`lenses-and-translation.md`) becomes that reference's b
 | render-and-review.md            | render-and-review.md            | to write                   | The engagement's review findings; research record                             |
 | accessibility-and-contrast.md   | accessibility-and-contrast.md   | to write                   | Research record, WCAG and Microsoft guidance                                  |
 | honesty-and-evidence.md         | honesty-and-evidence.md         | to write                   | Operator rulings 2026-11-12                                                   |
+| mind-maps.md | mind-maps.md | drafted (from the profitability projects; viewer unverified) | Research record 2, the profitability work |
+| analysis-workbooks.md | analysis-workbooks.md | drafted (from the profitability projects) | Research record 2, the profitability work |
+| extensions.md | extensions.md | drafted (from the seed Deferred and extensions) | The seed |
+| career-documents.md | career-documents.md | to write | The career builders (docx_builder.py, build_resume.py), the Word-engine script |

@@ -85,6 +85,7 @@ only what the pack needs to cite.
 - **Standing rules** carry a reason and who decided them and when ("operator, 2026-11-12"); they land in SKILL.md.
 - **Acceptance scenarios** are at least five, including one that must not trigger the skill and one where the agent must stop and ask.
 - **Open questions** marked `blocking` stop the build until answered.
+- **Deferred and extensions** lists what was researched or considered and is not used now, with why, where the evidence is and how to enable it later; it is routed as an `extensions.md` reference (a `parts/extensions.md` becomes its body), so the skill can be extended without repeating the research.
 
 Parameters are a plain `key: value` block, so the scaffold needs no YAML parser. `family` is `specialists/project` (method or practice for any project), `specialists/platform` (one product or tool),
 `skills` (single-file contract) or `personal`.

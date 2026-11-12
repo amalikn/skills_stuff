@@ -164,7 +164,7 @@ def render_briefs(seed: Seed, now: dt.datetime) -> dict[str, str]:
   Raises:
     ValueError: when the brief template uses a placeholder this module does not fill.
   """
-  template = (TEMPLATES / "research-brief.md").read_text(encoding="utf-8")
+  template = re.sub(r"\A---\n.*?\n---\n+", "", (TEMPLATES / "research-brief.md").read_text(encoding="utf-8"), flags=re.S)
   terms = [t.strip() for t in seed.params.get("forbidden_terms", "").split(",") if t.strip()]
   purpose = answer(seed, "Q1.1") or seed.params.get("short_description", "")
   briefs = {}
@@ -200,7 +200,20 @@ def ensure_seed_folder(folder: Path, name: str, now: dt.datetime) -> None:
     note.parent.mkdir(parents=True, exist_ok=True)
     if not note.exists():
       body = (TEMPLATES / "seed-folder" / template).read_text(encoding="utf-8")
-      note.write_text(body.replace("<skill-name>", name).replace("<YYYYMMDD_hhmm>", now.strftime("%Y%m%d_%H%M")), encoding="utf-8")
+      note.write_text(stamp_header(body.replace("<skill-name>", name), now), encoding="utf-8")
+
+
+def stamp_header(text: str, now: dt.datetime) -> str:
+  """Set the first `Last reviewed:` line of a generated file to the clock reading (the templates carry a real date so they pass the freshness check).
+
+  Args:
+    text: the generated file text.
+    now: the clock reading.
+
+  Returns:
+    The text with its review date set to now.
+  """
+  return re.sub(r"^Last reviewed:.*$", f"Last reviewed: {now.strftime('%Y%m%d_%H%M')}", text, count=1, flags=re.M)
 
 
 def apply_intake(seed_text: str, intake: Seed) -> str:
@@ -238,9 +251,7 @@ def cmd_intake(args, stamp: dt.datetime) -> int:
   if out.exists():
     print(f"refused: {out} already exists", file=sys.stderr)
     return 1
-  text = (
-    (TEMPLATES / "skill-intake.md").read_text(encoding="utf-8").replace("<skill-name>", args.name).replace("<YYYYMMDD_hhmm>", stamp.strftime("%Y%m%d_%H%M"))
-  )
+  text = stamp_header((TEMPLATES / "skill-intake.md").read_text(encoding="utf-8").replace("<skill-name>", args.name), stamp)
   text = re.sub(r"^name: TODO\(intake\)$", f"name: {args.name}", text, flags=re.M)
   text = re.sub(r"^family: .*$", f"family: {args.family}", text, count=1, flags=re.M)
   print(f"{'write' if args.apply else 'plan: would write'} {out}")

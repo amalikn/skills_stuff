@@ -16,6 +16,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261112_1656.md](changelog/changelog-20261112_1656.md) 1 entry, 2026-10-27 to 2026-10-27: Scripts in family folders; callers repointed; skill-coder gates in check
 - [changelog-20261112_1552.md](changelog/changelog-20261112_1552.md) 1 entry, 2026-10-27 to 2026-10-27: Staleness audit: dependency claim derived, stale KEEP lines superseded
 - [changelog-20261112_1538.md](changelog/changelog-20261112_1538.md) 2 entries, 2026-10-27 to 2026-10-27: Open-items tracker reviewed; Quoted code excerpts restored after a markdown hook bug
 - [changelog-20261111_1300.md](changelog/changelog-20261111_1300.md) 2 entries, 2026-10-26 to 2026-10-27: Pitfalls from the skill-goal-guard bootstrap; upgrader placement idea; Line-only budgets reverted: the 25 KB limit is back

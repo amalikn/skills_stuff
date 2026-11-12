@@ -5,7 +5,7 @@ Status: draft
 Authority: >-
   Design brief for a new skill pack, written by the operator with an agent; the pack is built from it with `new-skill scaffold` and the agent fills the references, scripts and evidence it lists
 Scope: What the skill is for, what it is not, what it learned from real work, and every file the pack will hold
-Last reviewed: <YYYYMMDD_hhmm>
+Last reviewed: 2026-11-12
 Summary: >-
   Seed for <skill-name>: purpose, boundaries, source material, lessons, routing, scripts, rules, evidence, acceptance scenarios and build order, in the form `new-skill` reads.
 ---
@@ -37,6 +37,7 @@ operator layer). -->
 - [Acceptance scenarios](#acceptance-scenarios)
 - [Write-back](#write-back)
 - [Install and registry](#install-and-registry)
+- [Deferred and extensions](#deferred-and-extensions)
 - [Open questions](#open-questions)
 - [Build order and done](#build-order-and-done)
 
@@ -188,6 +189,14 @@ calling project. -->
 
 - Install targets: `~/.claude/skills`, `~/.codex/skills`, `~/.hermes/skills/domain` (symlinks to the canonical folder).
 - Registry rows: TODO(seed)
+
+## Deferred and extensions
+
+<!-- Everything researched or considered that this skill is NOT using now, so it can be enabled or built later without repeating the research. One row each: what it is, why it is not used now (scope, personal use, licence, cost, not read), where the evidence is (a research file and section) and how to enable it. Route this section as an `extensions.md` reference (a part file `parts/extensions.md` becomes its body) so an agent can find it when the skill is extended. Say `none` if nothing was set aside. -->
+
+| Item | Why not now | Evidence | How to enable |
+| --- | --- | --- | --- |
+| TODO(seed) | TODO(seed) | TODO(seed) | TODO(seed) |
 
 ## Open questions
 

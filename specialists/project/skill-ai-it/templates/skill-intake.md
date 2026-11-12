@@ -5,7 +5,7 @@ Status: draft
 Authority: >-
   Interview record for a new skill pack: the operator's answers and the research plan the seed is built from; written with `new-skill intake` and filled by the agent in rounds
 Scope: What the operator wants the skill to do, what to harvest from existing work, and which topics need online research
-Last reviewed: <YYYYMMDD_hhmm>
+Last reviewed: 2026-11-12
 Summary: >-
   Intake for <skill-name>: the questions asked in rounds, the answers recorded as USER_STATED, the material to harvest, the neighbour skills to study and the research topics that become research briefs.
 ---

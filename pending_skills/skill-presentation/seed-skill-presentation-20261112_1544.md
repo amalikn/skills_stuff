@@ -1,7 +1,7 @@
 ---
 Title: Skill seed: skill-presentation
 Category: skill-seed
-Status: draft
+Status: superseded by seed-skill-presentation-20261112_1653.md (kept as a record)
 Authority: >-
   Design brief for the skill-presentation pack, written by the operator with an agent from a real deck-building engagement (2026-11-12) and web research of existing office-document skills and libraries;
   the pack is built from it with `new-skill scaffold`
