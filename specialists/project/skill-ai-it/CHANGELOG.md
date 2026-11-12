@@ -17,6 +17,7 @@ Last rotated: 20261112_1656
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261112_1700 — new-skill: Learned entry on prompt templates under the formatter](#20261112_1700--new-skill-learned-entry-on-prompt-templates-under-the-formatter)
 - [20261112_1656 — new-skill: Deferred and extensions section, stamped template dates, brief front matter](#20261112_1656--new-skill-deferred-and-extensions-section-stamped-template-dates-brief-front-matter)
 - [20261112_1552 — new-skill: intake, research briefs, seed folder with research and parts](#20261112_1552--new-skill-intake-research-briefs-seed-folder-with-research-and-parts)
 - [20261112_1536 — new-skill mode: seed template, pack scaffold and pack contract check](#20261112_1536--new-skill-mode-seed-template-pack-scaffold-and-pack-contract-check)
@@ -48,6 +49,10 @@ Last rotated: 20261112_1656
 - scripts/adoption/adopt_governed_files.py: FILE_BUDGETS: AGENTS.md and AI_NAVIGATION.md get `Budget: 150 lines, 12 KB` as README gets its own (operator, 2026-11-06: governance files read whole carry a budget; doc_freshness enforces it, grandfather_sizes keeps a file already over from failing); scripts/records/budget_plan.py reports those files against their stated budget; test asserts AGENTS.md gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261112_1700 — new-skill: Learned entry on prompt templates under the formatter
+
+- references/new-skill.md: Learned 2026-11-12 (prompt and form templates saved as markdown: formatter-joined lines, real front matter and dates, strip front matter when written; 0ce0278).
 
 ## 20261112_1656 — new-skill: Deferred and extensions section, stamped template dates, brief front matter
 

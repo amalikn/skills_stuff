@@ -21,7 +21,7 @@ Last reviewed: 2026-11-11
 - [governed-file-roles.md](governed-file-roles.md) (140 lines) What each governed root file is for, and the role check.
 - [governance-checker.md](governance-checker.md) (73 lines) Governance coherence checker.
 - [managed-blocks.md](managed-blocks.md) (69 lines) Managed block pattern.
-- [new-skill.md](new-skill.md) (155 lines) The new-skill mode: seed, scaffold, pack contract check, install and closeout.
+- [new-skill.md](new-skill.md) (159 lines) The new-skill mode: seed, scaffold, pack contract check, install and closeout.
 - [inputs.md](inputs.md) (21 lines) Inputs table moved from SKILL.md.
 - [navigation-automation.md](navigation-automation.md) (89 lines) Deterministic navigation-control automation.
 - [files-history.md](files-history.md) (97 lines) docs/history: a folder per kind, generated index with summaries, migration.

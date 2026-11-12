@@ -153,3 +153,7 @@ generic terms in the pack, list the names that must not appear in `forbidden_ter
 
 > **Learned 2026-11-12** · pack standard · VERIFIED_PRIMARY · Source: skill-nautobot, skill-vagrant, skill-coder, skill-network-architect, skill-systems-architect SKILL.md and layout · Falsifier: a model pack without a write-back contract or routing table
 > The shared shape is the SKILL.md sections above plus `references/`, `sources.yaml`, `compatibility.yaml`, `tests/` and a catalogued script set; the scaffold and the check encode exactly that.
+
+> **Learned 2026-11-12** · new-skill, prompt and form templates saved as markdown · VERIFIED_PRIMARY (the formatter hook joined the lines of the research brief template) · Source: `templates/research-brief.md` and `scripts/skills/skill_intake.py` `render_briefs` @ 0ce0278 · Falsifier: a formatter that keeps hard line breaks in prose.
+> A prompt template kept as a markdown file gets its prose re-wrapped, so lines that must stay separate (Area, Scope, Questions) merge. Put such fields in list items or in paragraphs separated by blank lines, give the
+> template real front matter and a real `Last reviewed` date so it passes the freshness check, strip the front matter when the prompt is written, and stamp the date at generation instead of a placeholder.

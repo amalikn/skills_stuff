@@ -260,7 +260,7 @@ All research, captures and part files stay in this seed's folder for good (`rese
 | archive_dated.py     | Plans, then moves superseded timestamped report files (md, xlsx,  | new (from the operator's archive rule)         | plan by default; moves | tests/test_archive_dated.py     |
 |                      |   csv with an older stamp on the same slug) into an archive       |                                                |   only with --apply;   |                                 |
 |                      |   folder beside them, keeping the latest                          |                                                |   never deletes        |                                 |
-| deck_layout.js       | The layout helpers from the deck builder (box, line, table, grid, | reuse (the project's build_strategy_pptx.js,   | writes one .pptx only  | tests/test_deck_layout.js       |
+| deck_layout.js       | The layout helpers from the deck builder (box, line, table, grid, | reuse (the project's build_strategy_pptx.js and build_brief_pptx.js: layout helpers, masters, notes, text diagrams, markdown wording split; | writes one .pptx only  | tests/test_deck_layout.js       |
 |                      |   timeline bars, chevrons, cards) for building a deck             |   generalised; a spec-driven builder           |   when called          |                                 |
 |                      |   in pptxgenjs                                                    |   is deferred)                                 |   with --apply         |                                 |
 
