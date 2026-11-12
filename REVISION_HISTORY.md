@@ -403,3 +403,4 @@ Change log for the `skills_stuff` parent repository.
 | 2026-11-12T05:35:40.342975+00:00 | main | origin | `08cc6cd9a3ff` | skill-commtracker: Teams multi-turn entries carry no trailing backslashes (operator, 2026-11-12); matches the Transcript turn layout |
 | 2026-11-12T05:35:40.342975+00:00 | main | origin | `d3132c2dd510` | skill-ai-it: new-skill mode (intake, research briefs, seed, scaffold, pack check) and the skill-presentation seed |
 | 2026-11-12T05:35:40.342975+00:00 | main | origin | `b89bbcbaa8db` | skill-coder: write-back from enterprise-strategy (skill-ai-it new-skill): P-69 seed, plan-first scaffold and guard on the shared output; python learned entries (load a sibling module by path; parse wrapped markdown table rows) |
+| 2026-11-12T05:42:37.163318+00:00 | main | origin | `babd0d79f1cf` | skill-ai-it: new-skill scripts annotate the seed type with a local alias (editor warning: a path-loaded module cannot be used in a type expression) |
