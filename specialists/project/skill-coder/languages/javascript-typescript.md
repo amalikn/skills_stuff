@@ -64,6 +64,21 @@ The Google TypeScript Style Guide, the TypeScript `tsconfig` reference (`strict`
 - Serve test scripts with a charset (`text/javascript; charset=utf-8`): a "·" in hover text came out garbled without it.
 - A browser test that needs a browser module skips without it (`skipUnless(os.environ.get(...))`), so the plain suite does not crash on `require(undefined)`.
 
+> **Learned 2026-11-12** · JavaScript, pptxgenjs 3.12.0 text margins · VERIFIED_PRIMARY (library source `valToPts(slideItemObj.options.margin)` for text boxes; table cells read a margin
+> below 1 as inches; the slide XML showed `lIns="109728"` after the fix) · Source: apn enterprise-strategy `scripts/build_strategy_pptx.js` (a3e29af7) · Falsifier: a pptxgenjs text box whose
+> `margin: 0.12` renders a visible inset.
+
+- Units differ inside one library: a pptxgenjs text box takes `margin` in points, a table cell takes it in inches when below 1. Keep inches in the call sites and convert in the one helper
+  that adds text (`margin: (o.margin ?? 0.08) * 72`), so every card gets the same inset; a passing build does not show it, only a render does.
+
+```js
+// apn enterprise-strategy scripts/build_strategy_pptx.js (a3e29af7)
+const PT_PER_INCH = 72;
+function box(s, text, x, y, w, h, o = {}) {
+  s.addText(text, { x, y, w, h, margin: (o.margin ?? 0.08) * PT_PER_INCH /* ...style */ });
+}
+```
+
 ## Open items
 
 - Formatter, test runner and module-format (ESM versus CommonJS) guidance: UNVERIFIED stubs.

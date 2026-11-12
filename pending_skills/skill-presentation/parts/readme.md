@@ -23,7 +23,7 @@ like a routed reference (`lenses-and-translation.md`) becomes that reference's b
 | choose-the-form.md              | choose-the-form.md              | drafted (table unverified) | Research record, Audience and structure                                       |
 | story-and-structure.md          | story-and-structure.md          | to write                   | Research record (pyramid, SCQA, action titles); the engagement's eight slides |
 | views-and-visuals.md            | views-and-visuals.md            | to write                   | The engagement's deck builder and its review findings                         |
-| build-from-data.md              | build-from-data.md              | to write                   | The engagement's builders and the shared markdown converter                   |
+| build-from-data.md              | build-from-data.md              | drafted 2026-11-12         | enterprise-strategy builders (deck, one-pagers in PowerPoint and draw.io), render fixes; code cited by path and commit |
 | powerpoint.md                   | powerpoint.md                   | to write                   | Research record, PowerPoint                                                   |
 | word-documents.md               | word-documents.md               | to write                   | Research record, Word                                                         |
 | spreadsheets.md                 | spreadsheets.md                 | to write                   | Research record, Excel and PDF                                                |

@@ -225,6 +225,25 @@ Never rebuild a hand-edited file from a script: that silently throws away the op
 
 When the signs disagree (a banner on a file the operator says they edited), stop and ask; do not guess.
 
+> **Learned 2026-11-12** · page layouts without flows · VERIFIED_PRIMARY (four pages written, `page_audit()` clean, byte drift check proven to fail by changing the data) · Source: apn
+> enterprise-strategy `scripts/build_one_pagers_drawio.py` (ee9046df), screenshots `references/screenshots/20261112-one-pager-pages/` · Falsifier: two renders of the same data that differ.
+
+A page that is a layout, not a flow (management one-pagers: cards, a table of boxes, a milestone line), is built straight with `drawio.mxfile.Page.box` and `label`, one id prefix per page, wrapped
+with `banner()` and `mxfile()`; the flow-map engine is not needed. Run `drawio.audit.page_audit()` on every page and refuse to write on a fault, and compare a fresh render with the file for the drift
+check. The same data file can feed a pptxgenjs deck at one geometry (1 inch = 100 px).
+
+```python
+# apn enterprise-strategy scripts/build_one_pagers_drawio.py (ee9046df)
+from drawio.audit import page_audit
+from drawio.mxfile import Page, banner, label, mxfile
+pages = [Page("overview", "Overview")]
+overview_page(pages[0], label, data)            # Page.box(id, label(*lines), x*100, y*100, w*100, h*100, style)
+faults = {pg.name: {k: v for k, v in page_audit(pg).items() if v} for pg in pages}
+if any(faults.values()):
+    raise ValueError(f"layout audit found faults: {faults}")
+return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just one-pagers", "just check"))
+```
+
 ## Checklist for a new data-first drawing
 
 - [ ] Map in YAML with a stable name, an `updated` field and comments where a value needs a reason.

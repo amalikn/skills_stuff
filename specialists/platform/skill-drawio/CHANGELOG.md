@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-12 write-back from apn enterprise-strategy (ee9046df): references/data-first-diagrams.md Learned, page layouts (one-pagers) drawn straight from drawio.mxfile with page_audit() and a byte drift check; references/export-and-self-review.md Learned, the CLI export has no Calibri or Cambria (use Helvetica and Georgia); screenshots references/screenshots/20261112-one-pager-pages/.
 - 2026-11-11 SKILL.md Standing rules: one-click navigation (base layer locked by default) and the E2E button above the step page header are standards (operator: "make it a standard").
 - 2026-11-11 (operator review): `look.lock_base_layer` defaults to true, so one click on any box with a link (Overview index, header, E2E button) opens its page, as on UNC's drawing; the step page's `‹ E2E page` button sits above the header's top-left corner, the header moved down to make room (test_button_sits_above_the_header). Learned entry of the same day corrected to the contract's header form. Consumers: layout metrics unchanged.
 - 2026-11-11 (operator review of the enterprise-strategy swimlane): lane pages search a gap's reversed track order with the branch swap (order.improve_tracks, route.assign_tracks reversed_gaps; test SharedGap); an explicit `label` is never cut; `look.e2e_tab` defaults to "E2E" in tabs, headings and index boxes. Consumers: layout metrics unchanged, text differs; each reruns its flows recipe. references/charts-and-trace.md Learned 2026-11-11.
