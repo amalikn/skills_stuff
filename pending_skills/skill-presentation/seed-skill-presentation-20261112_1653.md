@@ -155,6 +155,7 @@ All research, captures and part files stay in this seed's folder for good (`rese
 |   facts, a legend, status icons per node, bold key numbers; generated from data for breakdowns and written by hand  |   generators and maps             |   templates/lens-mindmap.md                |
 |   for plans.                                                                                                        |   read 2026-11-12                 |                                            |
 | Superseded dated outputs move to an archive folder beside them during every sweep; only the latest of each report   | vocus AGENTS.md hard rule         | analysis-workbooks.md; archive_dated.py    |
+| Render and review mind maps in the VS Code Markmap extension (gera2ld.markmap-vscode, Open as markmap); the PNG export is the render to look at | one renderer, already installed, so reviews are repeatable | operator tooling, verified 2026-11-12 |
 |   type stays active (operator rule, 2026-06-05).                                                                    |                                   |                                            |
 | Playwright `page.pdf` has tagged and outline off by default; WeasyPrint needs `--pdf-tags` and valid HTML           | library docs, read 2026-11-12     | pdf-output.md (checks deferred)            |
 |   structure; neither guarantees an accessible PDF.                                                                  |                                   |                                            |
@@ -208,7 +209,7 @@ All research, captures and part files stay in this seed's folder for good (`rese
 | Keep content as data and rebuild the file     | build-from-data.md              | Markdown source, data module, builder, derived files, naming and versioning, plan then apply, the archive rule,    |
 |                                               |                                 |   previews before sending, repurposing                                                                             |
 | Build a markdown mind map                     | mind-maps.md                    | The markmap form, the data mind map shape (headline, base facts, legend, status icons), hand-written plan maps,    |
-|                                               |                                 |   the four-lens mind map, generating from data, rendering and review                                               |
+|                                               |                                 |   the four-lens mind map, generating from data, rendering in the VS Code Markmap extension (gera2ld.markmap-vscode), review                                               |
 | Build or edit a profitability, scenario or    | analysis-workbooks.md           | The operator's workbook convention, basis in the name, assumptions block, formula glossary, baseline and what-if   |
 |   analysis workbook                           |                                 |   columns, canonical file, archiving, recalculation and error scan                                                 |
 | Build or edit a spreadsheet in general        | spreadsheets.md                 | XlsxWriter versus openpyxl, formulas and recalculation, error scan, conventions, RAG sheets, summary sheet first,  |
@@ -334,6 +335,7 @@ All research, captures and part files stay in this seed's folder for good (`rese
 | Re-opening a deck at the same path in PowerPoint can show a cached copy           | observed 2026-11-12                                   | repeated exports from the same path always show the      |
 |                                                                                   |                                                       |   current file                                           |
 | Existing public office skills hold no audience, story or lens guidance            | negative finding of 2026-11-12 from                   | a published skill that teaches audience-driven structure |
+| Mind maps render in the VS Code extension gera2ld.markmap-vscode (command Open as markmap), exported as HTML, SVG or PNG | the installed extension's package.json and readme, 2026-11-12 | the extension is removed, renamed or loses the command; or the operator moves to another renderer |
 |                                                                                   |   anthropics/skills, openai/skills and GitHub search  |   is found                                               |
 
 ## Acceptance scenarios

@@ -60,5 +60,10 @@ Run the archive step (analysis-workbooks.md, archiving) after a new version is w
 
 ## Rendering and review
 
-Open the markdown in a markmap viewer (a VS Code extension or the markmap command line; neither was verified in this research) and look at it: is the headline readable at a glance, are the strongest and weakest groups
-findable in three seconds, do any nodes wrap badly. Review the plain markdown too, since that is what is committed. Fix the generator, not the output.
+**Renderer: the VS Code extension `gera2ld.markmap-vscode` ("Markmap", MIT, version 0.3.1 installed on the operator's machine, verified from its package.json and README on 2026-11-12).** Open the markdown
+file, then run `Open as markmap` from the Command Palette (command id `markmap-vscode.open`), the Explorer context menu, or the markmap button on the editor title bar. The map updates as the markdown is edited;
+`Toggle the active node` and `Toggle the active node recursively` collapse branches; it works offline. Themes and layouts are set in the file's front matter (`markmap:` options); settings `markmap.defaultOptions`
+and `markmap.customCSS` set the defaults and the page styling. Export as HTML, SVG or PNG from the map view (the PNG is the render to look at when reviewing). The project READMEs call these files "Markmap" mindmaps.
+
+Review: is the headline readable at a glance, are the strongest and weakest groups findable in three seconds, do any nodes wrap badly, do the icons match the legend. Review the plain markdown too, since that is what is
+committed. Fix the generator, not the output. No command-line renderer was researched (the markmap CLI is deferred).
