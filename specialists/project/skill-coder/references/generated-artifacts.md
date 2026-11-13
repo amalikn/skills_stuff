@@ -110,3 +110,31 @@ diff. Why: a hand-edited lock file can claim a version the resolver never chose.
 > A project that runs on a lab VM keeps a copy of the VM definition (a Vagrantfile) beside the design it proves, never its keys; the
 > canonical file stays in its own repo, and the project's check fails when the copy differs. The copy keeps the definition reviewable
 > with the design; the drift check keeps it from becoming a second truth.
+
+> **Learned 2026-11-13** · two renderers, one table; legends and yearless dates · VERIFIED_PRIMARY (built and rendered 13 Nov 2026) · Source: apn enterprise-strategy
+> `scripts/program_pack/program_menu_card.js`, `scripts/program_pack/build_program_one_pagers_pptx.js:stateKey`, `scripts/weekly_update/weekly_update_xlsx.py:sort_date` (13 Nov close)
+> · Falsifier: a reader who finds a legend entry with nothing on the page useful, or a yearless label that sorts into the right year without an anchor
+> Three rules from one review of generated slides and a workbook. (1) When a second renderer in the same repo needs a table the first one already
+> draws, read the first renderer's data module (`require`, `import`) instead of copying it: a copy needs a drift check, a shared read cannot drift;
+> the copy rule of 2026-10-29 is for definitions owned by another repo. (2) Build a colour key from the states the page actually draws, not from the
+> full palette: an entry with nothing behind it reads as a claim ("this has no meaning"). (3) Date labels without a year ("Fri 16 Oct", "Wk of 25
+> Jan") sort only with an anchor: take the year from the plan's first month and the twelve months after it, let an explicit year win, and refuse a
+> label with no month rather than guess its place.
+>
+> ```js
+> // scripts/program_pack/build_program_one_pagers_pptx.js: the key lists only the states in use
+> function stateKey(s, x, y, used) {
+>   Object.entries(D.states).filter(([id]) => !used || used.includes(id)).map(([, st]) => st).forEach((st, i) => { /* dot and label */ });
+> }
+> stateKey(s, 6.6, 4.5, O.lanes.flatMap((l) => l[1].map((m) => m[2])));
+> const { SITE_MENU } = require("../deck/strategy_deck_data");  // the deck's table, read, not copied
+> ```
+>
+> ```python
+> # scripts/weekly_update/weekly_update_xlsx.py: a yearless label sorts inside the plan's twelve months
+> m = DATE_RE.search(str(text))
+> if not m:
+>     sys.exit(f"cannot sort on Done by {text!r}: give a month, e.g. 'Wk of 25 Jan' or 'Jan 2027'")
+> day, month = int(m.group(1) or 1), MONTHS[m.group(2)]
+> year = int(m.group(3)) if m.group(3) else start.year + (month < start.month)
+> ```
