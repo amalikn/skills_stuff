@@ -28,6 +28,13 @@ Summary: rct sites run an RB450Gx4 switch and a Metal 52 ac AP on RouterOS 7.8 f
 Every surveyed device ran RouterOS 7.8 (stable, build 2023-02-24); RB450Gx4 factory firmware 6.48.6/6.48.7. One login (KeePass `Network/mikrotik switch & metal ap`) works on every `rct` switch and AP
 and on the two `wh` switches tried.
 
+> **Disputed 2026-11-16** · Conflicts: the "Switch" column above · USER_STATED (operator, 16 Nov 2026, correcting a management slide: "Switches are TP link, not Mikrotik") ·
+> Source: apn enterprise-strategy meeting deck, 16 Nov 2026 · Falsifier: the operator confirming that the RB450Gx4 at `10.255.0.5` is the only switch at those sites.
+
+- The survey above stands (it read RB450Gx4 units at `10.255.0.5`). The operator states the sites' switches are TP-Link. Not yet settled: whether the RB450Gx4 is the site router doing
+  switch duty and the switches proper are separate TP-Link units, or which flavors have which. Until settled, management material says "TP-Link switches" and names MikroTik only for
+  the `rct` Metal 52 ac access points and Litebooth's router.
+
 ## Switch port and VLAN layout (rct, delye)
 
 VERIFIED-OBSERVED on delye 2026-10-07 (`/interface bridge port print`, `/ip address print`). The switch uses one bridge per VLAN, not a VLAN-filtering bridge.

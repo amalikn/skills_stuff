@@ -39,6 +39,8 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 8. Any change to the provisioning flow goes into our own script under `scripts/`; `450gmk3_v1.1.py` stays untouched (operator, 2026-10-08).
 9. Commit the v0.1.21 doc edits together with the concurrent session's work; keep `firmware-files/` (494 MB) out of git unless the operator decides how to
    store it (GitHub rejects files over 100 MB).
+10. Settle with the operator (16 Nov 2026): "Switches are TP link, not Mikrotik" against the survey's RB450Gx4 at `10.255.0.5` (is it the router? which flavors have TP-Link
+   switches?); see the Disputed entry in `references/01_overview.md`.
 
 ## Recent decisions
 

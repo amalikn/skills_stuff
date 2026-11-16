@@ -11,6 +11,11 @@ Last rotated: 20261105_1950
 
 # Changelog
 
+## 20261116_1759 — Disputed: site switches are TP-Link (operator) beside the RB450Gx4 survey (no version change)
+
+`references/01_overview.md` Devices per flavor: a Disputed entry records the operator's statement (16 Nov 2026) that the switches are TP-Link, beside the 7 Oct survey's
+RB450Gx4 at `10.255.0.5`; the survey is kept; the question is in SCRATCHPAD Open items (from apn enterprise-strategy).
+
 ## 20261105_1948 — Packet capture and DNS visibility in 08 (v0.1.33 -> v0.1.34)
 
 `references/08_routeros-platform-features.md` new section: `/tool sniffer` TZSP streaming and its file limit without rotation, hardware offload hiding
