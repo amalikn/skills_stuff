@@ -28,13 +28,13 @@ Summary: rct sites run an RB450Gx4 switch and a Metal 52 ac AP on RouterOS 7.8 f
 Every surveyed device ran RouterOS 7.8 (stable, build 2023-02-24); RB450Gx4 factory firmware 6.48.6/6.48.7. One login (KeePass `Network/mikrotik switch & metal ap`) works on every `rct` switch and AP
 and on the two `wh` switches tried.
 
-> **Disputed 2026-11-16** · Conflicts: the "Switch" column above · USER_STATED (operator, 16 Nov 2026, correcting a management slide: "Switches are TP link, not Mikrotik") ·
-> Source: apn enterprise-strategy meeting deck, 16 Nov 2026 · Falsifier: the operator confirming that the RB450Gx4 at `10.255.0.5` is the only switch at those sites.
+> **Resolved 2026-11-16** · was Disputed 2026-11-16 (the "Switch" column above) · USER_STATED (operator, 16 Nov 2026) · Source: apn enterprise-strategy, 17 Nov
+> meeting deck session · Falsifier: an x86-flavor site found with an RB450Gx4 as its switch, or an RPi-flavor site with a TP-Link switch.
 
-- The survey above stands (it read RB450Gx4 units at `10.255.0.5`). The operator states the sites' switches are TP-Link. Not yet settled: whether the RB450Gx4 is the site router doing
-  switch duty and the switches proper are separate TP-Link units, or which flavors have which. Evidence so far: unified-network-controller's `docs/runbooks/site-onboarding-runbook.md`
-  lists "x86 SMC, TP-Link switches" for the x86 flavors (`rcp`, `nbn_accelerate`). Until settled, management material names no switch vendor (operator, 16 Nov 2026) and names MikroTik only
-  for the `rct` Metal 52 ac access points and Litebooth's router.
+- **Switches by flavor (operator):** the x86 flavors (`rcp`, `nbn_accelerate`) have TP-Link switches; every RPi flavor (`rct`, `wh` and the other RPi flavors, `nbn_wh` included)
+  uses the MikroTik RB450Gx4 at `10.255.0.5` as its switch. This agrees with the survey above and with unified-network-controller's `docs/runbooks/site-onboarding-runbook.md` ("x86 SMC,
+  TP-Link switches"). The operator's first statement ("Switches are TP link, not Mikrotik") was about a slide that spoke of every site; management material that covers all sites names
+  no switch vendor. TP-Link switches are not RouterOS devices and are outside this pack.
 
 ## Switch port and VLAN layout (rct, delye)
 

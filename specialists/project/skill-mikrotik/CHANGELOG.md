@@ -11,6 +11,11 @@ Last rotated: 20261105_1950
 
 # Changelog
 
+## 20261116_1815 — Resolved: switches by flavor (no version change)
+
+`references/01_overview.md`: the 16 Nov dispute is resolved by the operator: x86 flavors (`rcp`, `nbn_accelerate`) have TP-Link switches; every RPi flavor uses the
+RB450Gx4 at `10.255.0.5` (from apn enterprise-strategy).
+
 ## 20261116_1759 — Disputed: site switches are TP-Link (operator) beside the RB450Gx4 survey (no version change)
 
 `references/01_overview.md` Devices per flavor: a Disputed entry records the operator's statement (16 Nov 2026) that the switches are TP-Link, beside the 7 Oct survey's
