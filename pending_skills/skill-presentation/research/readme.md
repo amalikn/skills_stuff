@@ -16,4 +16,7 @@ external pages go in a subfolder with a provenance header and a sha256 row here.
 
 ## Contents
 
-None yet.
+- [research-20261116_1754.md](research-20261116_1754.md) — research record 3: lessons from a short meeting deck for a first-time senior audience (apn enterprise-strategy, 16 Nov 2026).
+- [research-20261112_1700.md](research-20261112_1700.md) — research record 2: gap research and the operator's own work (12 Nov 2026).
+- [research-20261112_1600.md](research-20261112_1600.md) — research record 1 (12 Nov 2026).
+- [briefs/](briefs/) — the five research briefs.

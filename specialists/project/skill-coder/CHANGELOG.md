@@ -9,13 +9,15 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261116_1737
+Last rotated: 20261116_1752
 ---
 
 # Changelog
 
 ## Unreleased
 
+- 2026-11-16 write-back from apn enterprise-strategy (17 Nov meeting deck): references/design-patterns.md P-72 (a short derived deck: reused builders, wording table with must-match
+  rules, byte-identical refactor proof); languages/javascript-typescript.md Learned 2026-11-16 (`require.main` run guard; pptxgenjs Company and Subject defaults).
 - 2026-11-16 write-back from apn smc-resiliency (ASCII renderer promoted to skill-drawio): SKILL.md Standing rules, a lint config for every project or skill worked on that lacks one (operator, 2026-11-16); references/refactoring-and-promotion.md Learned (promoting into a pack with no lint config: add ruff.toml with existing files excluded, never re-indent the promoted file; B905 strict zip).
 - 2026-11-16 write-back from scripts_stuff vscode_extensions (link width and soft wrap): languages/javascript-typescript.md Learned (VS Code soft wrap measures raw text plus injected text; a hiding decoration cannot change wrap points).
 - 2026-11-16 write-back from scripts_stuff vscode_extensions (table-reflow path rule): references/safety-and-writes.md Learned (a shared tool's default change reaches every hook that calls it: ship opt-in, prove with a flag-off run, mtime marker for the live window).
@@ -194,7 +196,3 @@ From the 2026-10-29 knowledge harvest of the apn and personal projects (read-onl
 ## 20261029_2027 — Learned: know what the commit gate runs
 
 Learned 2026-10-29 in `references/version-control-and-review.md`: a gate without tests passed 14 failing tests (unified-network-controller e6dee23).
-
-## 20261029_1915 — Pattern P-39: carry a placement over proven edges, narrow by direction
-
-Learned 2026-10-29 in `references/design-patterns.md`: placement over a typed evidence graph, no site convention (unified-network-controller a8c58f9).

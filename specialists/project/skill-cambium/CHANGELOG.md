@@ -11,6 +11,12 @@ Last rotated: 20261029_1751
 
 # Changelog — skill-cambium
 
+## 20261116_1754 — Low-touch lost on cnMaestro Essentials, confirmed (no version change)
+
+Learned 2026-11-16 from apn enterprise-strategy (17 Nov meeting deck): `references/01_overview.md` Controllers and licences gains the operator's confirmation that
+Essentials has no API, so low-touch onboarding and automation are lost; moving back to cnMaestro X is possible (licence held) and recommended against to reduce
+dependence on one vendor.
+
 ## 20261029_2013 — Harvest write-back: Anchor fuse, vendor artefacts, Cloud-held devices, spares, emergency access, source accuracy (v0.8.4 -> v0.8.5)
 
 Learned 2026-10-29 from the architect-pack harvest of apn projects (cambium-swap, unified-network-controller, aws-to-local, aurukun-fni):

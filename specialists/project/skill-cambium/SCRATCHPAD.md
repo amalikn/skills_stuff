@@ -39,6 +39,7 @@ same pass as this note (2026-09-17, staleness audit).
 
 ## Open items
 
+- **20261116_1754** Open (found by apn enterprise-strategy's write-back): `just check` fails on AGENTS.md's overdue review (due 2026-10-17); it needs a real re-read before its date moves.
 - [ ] Run `/skill-ai-it refresh` here: the navigation validator fails on stale managed blocks (`AGENTS.md` navigation, `scripts/README.md` scripts at the 2026-08-11 stamp) and
   warns on the `context-map.yaml` version (found 2026-10-05, v0.6.32).
 - [ ] `AGENTS.md` is not tracked in git (the repo's git info/exclude file ignores it repo-wide); the platform packs force-added theirs on 2026-10-05 — decide whether this pack should too.

@@ -106,6 +106,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-69 | A seed, a plan-first scaffold and a guard on the shared output | Generating a new shared package from a written design without leaking names or overwriting hand edits |
 | P-70 | Physical map as data, with the consumer named on each slot | A switch, port or outlet acted on by name must never act on the wrong box |
 | P-71 | Anchor-guarded, re-runnable patch of a shipped bundle | Local changes to a vendor's built file (no source) that a reinstall silently wipes |
+| P-72 | A short derived deck: reuse another builder's slides, local wording on top, proof the source did not move | A short version of sent material with new wording, without forking or changing the source |
 
 ## Patterns
 
@@ -1547,6 +1548,43 @@ function applyEdits(text, edits, file) {
   return out;
 }
 // patchFolder: skip if js.includes(MARKER); build both files in memory; JSON.parse(newPkg); write only with --apply after a .bak copy
+```
+
+### P-72 A short derived deck: reuse another builder's slides, local wording on top, proof the source did not move
+
+> **Learned 2026-11-16** · design pattern, any language with a document builder · VERIFIED_PRIMARY (the strategy deck and the program pack rebuilt before and after
+> exporting their builders: every `ppt/` part byte-identical; the meeting deck's wording table refused a build when a rule matched nothing) · Source: apn
+> enterprise-strategy `scripts/meeting/build_meeting_deck_pptx.js`, `scripts/deck/build_strategy_pptx.js`, `scripts/pptx_text.py` (commit at the session's
+> second close) · Falsifier: a reused builder that keeps module state between slides, so drawing its slides into a second deck changes the first deck's output.
+
+- **Problem:** a short version of existing material is needed fast (a meeting deck from a 16-slide deck and a 16-page pack), with some wording changed for the
+  new audience, while the source decks stay exactly as sent. Copying slides by hand forks them; editing the shared data changes the decks already sent.
+- **Solution:** (1) make each source builder importable: export its slide functions and helpers, and run its `main` only when executed directly; a setter
+  covers the one constant the new deck needs to change (the footer). (2) Prove the refactor changed nothing: build each source before and after, compare the
+  slide parts byte for byte (zip dates and file properties ignored). (3) The derived builder draws the reused slides into its own presentation and wraps the
+  presentation's slide factory so every text, table cell and note goes through a wording table (regex rules); each rule must match at least once per build or
+  the build fails. A copy of shared data takes data-level edits with expected counts, failing on a mismatch.
+- **Why it works:** one drawing function per slide stays the single source; the derived deck cannot drift from it, and its local wording is visible in one
+  table. The must-match counts turn "the source wording changed" into a failed build instead of an old term quietly left on a slide.
+- **Reuse:** a board version of a project report, a customer cut of an internal deck, a summary PDF from a full document generator, a localised copy.
+- **Pitfalls:** wording rules are global: scope each to the phrase that means the thing (a "box" that is a shape in a diagram is not the product), and keep
+  vendor-neutral wording neutral. Check notes as well as slides. Rebuilding a source for any reason changes bytes the recipient may hold: record which
+  commit was sent.
+- **Realised in:** Node with pptxgenjs 3.12.0; the proof in Python stdlib (`zipfile`).
+
+```js
+// apn enterprise-strategy scripts/meeting/build_meeting_deck_pptx.js (16 Nov 2026)
+function useDeckTerms(pres) {
+  const addSlide = pres.addSlide.bind(pres);
+  pres.addSlide = (...a) => {
+    const s = addSlide(...a), addText = s.addText.bind(s), addTable = s.addTable.bind(s), addNotes = s.addNotes.bind(s);
+    s.addText = (t, o) => addText(rewordText(t), o);
+    s.addTable = (rows, o) => addTable(rows.map((r) => r.map((c) => (typeof c === "string" ? reword(c) : { ...c, text: rewordText(c.text) }))), o);
+    s.addNotes = (t) => addNotes(reword(t));
+    return s;
+  };
+}
+// after drawing: TERMS rules with termHits[i] === 0 -> throw; source builders end with `if (require.main === module) main();`
 ```
 
 ## Language realisations

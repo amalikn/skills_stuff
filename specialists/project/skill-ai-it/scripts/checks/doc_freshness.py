@@ -48,7 +48,8 @@ _spec.loader.exec_module(file_headers)
 DEFAULT_BASELINE = "scripts/doc-freshness-baseline.json"
 DEFAULT_WINDOW_DAYS = 30
 LIVING_STATUSES = ("current", "draft", "proposed")
-POINT_IN_TIME = re.compile(r"report|review|audit|sources?\b|source-index|sources-index|evidence|capture|changelog|record|prompt|handoff|archive", re.I)
+# A transcript records a meeting as it happened, so it is point in time (enterprise-strategy, 2026-11-16: a 13 Oct meeting transcript was flagged as overdue).
+POINT_IN_TIME = re.compile(r"report|review|audit|sources?\b|source-index|sources-index|evidence|capture|changelog|record|prompt|handoff|archive|transcript", re.I)
 BUDGET_NAMES = {"AGENTS.md", "CLAUDE.md", "AI_NAVIGATION.md", "SCRATCHPAD.md", "CHANGELOG.md", "ROADMAP.md", "SKILL.md", "MEMORY.md"}  # ROADMAP 2026-10-14
 DEFAULT_BUDGET = (200, 25 * 1024)
 CHECKER_SPLIT_LINES = 800

@@ -35,6 +35,8 @@ Last rotated: 20261112_1656
 
 ## Unreleased
 
+- 2026-11-16 scripts/checks/doc_freshness.py: `transcript` joins the point-in-time categories, so a meeting transcript is never review-due (a 13 Oct transcript was
+  flagged in apn enterprise-strategy); tests/test_doc_freshness_point_in_time.py (2 tests: transcript skipped, living document still due; fails without the fix).
 - 2026-11-12 patterns/governance-checks.md: Learned entry, the governance-checks block moves verbatim to `.agents/governance-checks.md` when AGENTS.md is trimmed to one line per rule;
   AGENTS.md keeps a line naming `scripts/check_governance.py` (from apn enterprise-strategy).
 - 2026-11-11 scripts/checks/doc_freshness.py: the dependency rule skips commits that only rewrite link targets or backticked paths

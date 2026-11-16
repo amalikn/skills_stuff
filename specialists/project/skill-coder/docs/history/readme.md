@@ -11,6 +11,7 @@ Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by
 
 ## Change log
 
+- [changelog-20261116_1752.md](changelog-20261116_1752.md) 1 entry, 2026-10-29 to 2026-10-29: Pattern P-39: carry a placement over proven edges, narrow by direction
 - [changelog-20261116_1737.md](changelog-20261116_1737.md) 4 entries, 2026-10-29 to 2026-10-29: Patterns P-37 and P-38 (skill-drawio speed and quality work); Pattern P-36: widen a name's scope by renaming in place; Patterns P-33 to P-35 (multi-SMC build); Learned: a check that skips when its tool is missing cannot ...
 - [changelog-20261111_1100.md](changelog-20261111_1100.md) 1 entry, 2026-10-28 to 2026-10-28: Learned: optimise the real outcome, not a proxy
 - [changelog-20261110_1246.md](changelog-20261110_1246.md) 1 entry, 2026-10-28 to 2026-10-28: Learned: shared justfile recipes and the editor

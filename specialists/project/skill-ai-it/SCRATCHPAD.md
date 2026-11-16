@@ -73,6 +73,8 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
 
 ## Open items
 
+- **20261116_1752** Open (found by apn enterprise-strategy's write-back): `just check` fails on 15 review-due documents in this skill (AI_NAVIGATION.md, ARCHITECTURE.md,
+  README.md, ROADMAP.md, docs/readme.md and ten more), all due 2026-11-13; they need a real re-read before their dates move. The doc_freshness transcript fix was committed with tests green.
 - [ ] **20261110_1205** budget_plan.py audit reports `LOST` for SCRATCHPAD lines that an earlier rotation had already moved (unified-network-controller,
   2026-11-10: "5 line(s) lost, e.g. '- [ ] **Onboarding from the Nautobot UI (operator, 2026-09-29...'", a line not in HEAD's SCRATCHPAD and present in
   docs/trackers/open-items-20261010_1819.md; every line this rotation removed was found in an archive). The audit's reference looks older than the

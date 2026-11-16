@@ -111,6 +111,15 @@ Module._load = function (request, ...rest) {
   cannot make soft wrap follow the visible width; only folding removes text from layout, and it works on whole lines. Plan around it: hard-wrap the source
   by visible width and turn soft wrap off for that language, or shorten the raw text (reference-style links).
 
+> **Learned 2026-11-16** · JavaScript, Node scripts and pptxgenjs · VERIFIED_PRIMARY (pptxgenjs 3.12.0 `dist/pptxgen.cjs.js`: the constructor sets
+> `this._company = 'PptxGenJS'` and `this._subject = 'PptxGenJS Presentation'`; a deck built without setting them showed both in File > Properties) · Source: that
+> file in apn enterprise-strategy's working cache, read 2026-11-16 · Falsifier: a pptxgenjs release whose defaults are empty.
+
+- A Node build script that another script may `require` ends with `if (require.main === module) main();`, so importing it for its functions does not run
+  its build (and overwrite its output) as a side effect; export what reuse needs with `module.exports`.
+- pptxgenjs writes its own name into every deck's properties unless told otherwise: set `pres.company = ""` and `pres.subject = ""` (or real values) next to
+  `new pptxgen()`, and check a built deck's `docProps/app.xml` and `docProps/core.xml`, not only its slides, before it leaves the team.
+
 ## Open items
 
 - Formatter, test runner and module-format (ESM versus CommonJS) guidance: UNVERIFIED stubs.
