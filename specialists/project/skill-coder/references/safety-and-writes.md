@@ -196,3 +196,13 @@ def classify(cmdline, held):
 >     return RollbackOutcome("rollback_failed", "unreachable")
 > return RollbackOutcome("rolled_back", "reachable")
 > ```
+
+> **Learned 2026-11-16** · any language, shared CLIs called by hooks · VERIFIED_PRIMARY (the markdown hook `governance/hooks/markdown-wrap-toc.sh` runs
+> `table-reflow/cli.mjs FILE --width 200 --measure-rendered --in-place` on every markdown write; a new path rule made default-on was live for about eight minutes
+> before a side note caught it; ten files were written in that window, none changed) · Source: scripts_stuff `vscode_extensions/shared/table-reflow/cli.mjs`
+> `--link-paths` (uncommitted, 2026-11-16) · Falsifier: a tool whose callers are all interactive, where a default change reaches only the person who asked.
+
+- Before changing a default in a shared tool, find its non-interactive callers (hooks, generators, other skills' scripts: `grep -rl <tool path>` over hook folders and
+  skill scripts). A default change there is a write to every file those callers touch. Ship the new behaviour behind an opt-in flag, prove it with a
+  before/after run over real files with the flag off (expect zero changes) and on, and let the operator decide whether the hooks pass the flag.
+- To find what a live window already touched, use a file saved just before the change as the mtime marker: `find <roots> -name '*.md' -newer <marker>`.
