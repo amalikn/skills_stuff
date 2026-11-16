@@ -6,13 +6,18 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261116_1736
+Last rotated: 20261117_1045
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)
+
+`references/03_communication-flows.md` "Teleport self-upgrade cron": `/upgrade_teleport.sh` daily at 00:00 on all flavours (ansible-wifi 906ee778), and why an
+image-based root drops it; cross-link to the C6 `pkill -9 python3` entry (from apn smc-resiliency scheduled-writer inventory, 17 Nov 2026).
 
 ## 20261116_1859 — Solutions to platforms (no version change)
 
@@ -192,8 +197,3 @@ Learned 2026-11-01 (ansible-wifi `iridium` 8608c717): `references/13_known-issue
 ## 20261101_0108 — overlayroot.conf vs local.conf in smc_disable_overlay; Teleport vars (v0.10.8 -> v0.10.9)
 
 Learned 2026-11-01 (ansible-wifi `iridium` afbc8f1b): `references/13_known-issues.md`.
-
-## 20261101_0030 — PHP fix ported from rise to a master-based branch; pre-push traps (v0.10.7 -> v0.10.8)
-
-Learned 2026-11-01 (ansible-wifi `iridium` 4aaebca0): `references/13_known-issues.md` (guard_no_overlay travels with the PHP tasks, pinned names in master's
-custom_apt_install, smc_bases.yml CRLF and the lint delta gate, hook venv without ansible.posix, vars guard behaviour).

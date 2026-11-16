@@ -107,6 +107,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-70 | Physical map as data, with the consumer named on each slot | A switch, port or outlet acted on by name must never act on the wrong box |
 | P-71 | Anchor-guarded, re-runnable patch of a shipped bundle | Local changes to a vendor's built file (no source) that a reinstall silently wipes |
 | P-72 | A short derived deck: reuse another builder's slides, local wording on top, proof the source did not move | A short version of sent material with new wording, without forking or changing the source |
+| P-73 | A fault put into the standby side, always taken out, with a hard reset the harness owns | A fault case that can leave the target unbootable, or wait for a person to pull the plug |
 
 ## Patterns
 
@@ -1585,6 +1586,38 @@ function useDeckTerms(pres) {
   };
 }
 // after drawing: TERMS rules with termHits[i] === 0 -> throw; source builders end with `if (require.main === module) main();`
+```
+
+### P-73 A fault put into the standby side, always taken out, with a hard reset the harness owns
+
+> **Learned 2026-11-17** · design pattern, fault-injection harnesses on real hardware · VERIFIED_PRIMARY (offline only: 19 tests with fakes in 2.0 s; deleting
+> the restore turned `test_kernel_restored_when_case_fails` red; not yet run on the bench) · Source: apn smc-resiliency `lab/logic/s1faults.py`,
+> `lab/logic/s1.py` `_bounded` and `_trial_or_cycle`, commit 1eb7ff15 · Falsifier: a case whose fault is still present after the run, or a silent target the
+> harness leaves for a person.
+> `reusable_candidate` until a second project uses it.
+
+- **Problem:** a recovery test must break the thing it tests (random bytes over the kernel, init moved aside, a unit that panics), on hardware a person may
+  not be near. A run that fails midway leaves the fault in; a target that hangs waits for someone to pull the plug.
+- **Solution:** (1) put the fault only into the side under trial (the standby slot), never the side that recovers. (2) One function per fault takes a flag:
+  the same call breaks or restores, and the restore is idempotent (it acts only when the kept copy exists), so it is safe in `finally` and after a crash.
+  (3) Each remote step mounts, acts, and always unmounts, while keeping the act's exit code. (4) The harness owns a hard reset (a switched outlet): if the
+  target is silent past a freeze window it cycles power itself, then waits a bounded time and fails naming the bench when nothing answers.
+  (5) A power-cut case refuses to cut unless the target is on the trial side.
+- **Why it works:** the recovering side is never touched, so the worst case is the recovery under test; the restore cannot be skipped by a failure; the
+  freeze window turns "hung forever" into a bounded, evidenced step.
+- **Reuse:** A/B firmware or OS slots, blue/green hosts, a standby database replica, a router's backup image, any test that corrupts one copy of two.
+- **Pitfalls:** a restore that fails when nothing was kept breaks the `finally` path; a mount left behind blocks the next run; the reset must be mapped to the
+  right box by data (P-70); judge each case by its own evidence, not by the end state.
+- **Realised in:** Python over SSH with POSIX sh on the target.
+
+```python
+# apn smc-resiliency lab/logic/s1faults.py (commit 1eb7ff15)
+if broken:
+  act = f'cp -p "{m}/$k" "{m}/$k.s1-keep" && head -c 4194304 /dev/urandom > "{m}/$k"'
+else:
+  act = f'if [ -f "{m}/$k.s1-keep" ]; then mv -f "{m}/$k.s1-keep" "{m}/$k"; fi'  # nothing kept: nothing to put back
+run(t, f"mkdir -p {m} && mount {BOOTS[trial]} {m} && {{ {name}; echo kernel=$k; {act} && sync; }}; rc=$?; umount {m}; exit $rc")
+# lab/logic/s1.py _bounded: breaker(True); try: ...run the trial... finally: breaker(False)
 ```
 
 ## Language realisations

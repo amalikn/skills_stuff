@@ -16,6 +16,8 @@ Last rotated: 20261116_1752
 
 ## Unreleased
 
+- 2026-11-17 write-back from apn smc-resiliency (S1 outlet fault cases, 1eb7ff15): references/design-patterns.md P-73 (fault in the standby side,
+  idempotent restore in `finally`, mount-act-unmount keeping rc, harness-owned hard reset); references/testing.md Learned 2026-11-17 (formatter-tolerant fixture edits).
 - 2026-11-16 write-back from apn enterprise-strategy (17 Nov meeting deck): references/design-patterns.md P-72 (a short derived deck: reused builders, wording table with must-match
   rules, byte-identical refactor proof); languages/javascript-typescript.md Learned 2026-11-16 (`require.main` run guard; pptxgenjs Company and Subject defaults).
 - 2026-11-16 write-back from apn smc-resiliency (ASCII renderer promoted to skill-drawio): SKILL.md Standing rules, a lint config for every project or skill worked on that lacks one (operator, 2026-11-16); references/refactoring-and-promotion.md Learned (promoting into a pack with no lint config: add ruff.toml with existing files excluded, never re-indent the promoted file; B905 strict zip).

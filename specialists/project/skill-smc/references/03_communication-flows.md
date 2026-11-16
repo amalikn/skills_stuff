@@ -133,6 +133,26 @@ modes = {n["spec"]["hostname"]: r for n in nodes
          if (r := str((n["spec"].get("cmd_labels") or {}).get("overlay", {}).get("result", "")).strip()) in ("readonly", "persistent", "unconfigured")}
 ```
 
+### Teleport self-upgrade cron (read at source 2026-11-17)
+
+> **Learned 2026-11-17** · all flavours · VERIFIED_PRIMARY (source only, no box read) · Source: ansible-wifi `roles/smc_teleport/tasks/main.yml:162-168` at 906ee778
+> · Falsifier: a box whose root crontab has no `Check if teleport needs an upgrade` entry.
+> Every SMC runs `/upgrade_teleport.sh` from root's cron daily at 00:00 (the flavour gate is commented out), which can install a Teleport package
+> (`/usr`, `/var/lib/dpkg`). On a read-only or image-based root this job cannot work and changes the release outside the release path; an image build
+> removes it and ships Teleport inside the release (smc-resiliency scheduled-writer inventory C13, operator 20261117_0903: image only, fleet unchanged).
+> The nightly `pkill -9 python3` (C6) is in [09_url-capture-pcap.md](09_url-capture-pcap.md); it would also kill any Python agent on the box.
+
+```yaml
+- name: add upgrade_teleport.sh to cron
+  cron:
+    name: Check if teleport needs an upgrade
+    minute: "0"
+    hour: "0"
+    job: "/upgrade_teleport.sh"
+    state: present
+# when: hotspot_flavor in ['rct', 'wh', 'rcp']
+```
+
 ### Backdoor SSH Access (raw reverse tunnel, bypasses Teleport's node agent)
 
 Use this when `tsh ssh <site>` hangs, refuses to connect, or the box is registered in Teleport (shows up in `tsh ls`) but is unresponsive over it — the Teleport agent on the SMC has stalled, but the

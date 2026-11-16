@@ -334,3 +334,14 @@ r = subprocess.run(["python3", "-m", "unittest", "scripts/test_program_one_pager
 p.write_text(orig)   # same text, newer mtime: the derived .pptx check then failed
 ```
 
+> **Learned 2026-11-17** · tests that edit a formatted config to make a bad case · VERIFIED_PRIMARY · Source: apn smc-resiliency `lab/tests/test_conversion_layout.py`
+> `edited()`, commit 1eb7ff15 · Falsifier: a formatter run that leaves every fixture key matching.
+> Bad cases built by replacing text in the real file (`'fs = "erofs"'` to `'fs = "btrfs"'`) depend on the formatter's spacing: `taplo fmt` re-aligned the
+> file and one key no longer occurred. Because the helper asserts the old text occurs, the test went red instead of loading the good file as the "bad"
+> case and passing. Every fixture edit asserts its match; after a formatter runs, re-key the edits to the formatted text.
+>
+> ```python
+> text = LAYOUT.read_text(encoding="utf-8")
+> assert old in text, old            # a missed edit fails, never weakens the test
+> path.write_text(text.replace(old, new, 1), encoding="utf-8")
+> ```
