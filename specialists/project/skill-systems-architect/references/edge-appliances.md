@@ -261,6 +261,10 @@ DURABLE JOB STATE ON THE BOX: controller reconciles, never presumes
   > - Expect a reconnect delay: after a controller restart the strip answered only on IPv4, so the controller tried its IPv6 addresses first and reported it available 12 s to 2 minutes
   >   later. A test harness waits for the device to be available before the cut.
   > - The controller's API had no authentication; bind it to localhost and decide which agents may switch which outlets before mixing lab and household devices on one controller.
+  > - A password in front helps less than it looks on a single-user workstation: a basic-auth reverse proxy (Caddy) with the controller moved to a Unix socket refused
+  >   unauthenticated and wrong-password calls (401, tested), but any process of the same OS user can still read the password store, the controller's keys or the
+  >   socket. It stops accidents and habit, not a deliberate local bypass; isolation needs the controller and its keys under a separate OS user. Source: tools_stuff
+  >   `matter-server/infrastructure/Caddyfile`, README Access and agents (2026-11-16).
 - Any automatic recovery must emit an event to monitoring. An external board that power-cycles on loss of internet hides how often the box hangs.
 - On a RAM-backed root, kernel logs are lost with the power cycle. Ship kernel logs off-box or keep a small ramoops/pstore area, which logs oopses and panics to RAM that survives a restart on hardware
   that supports it [RAMOOPS].

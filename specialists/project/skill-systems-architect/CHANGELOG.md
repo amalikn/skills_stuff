@@ -15,6 +15,11 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261116_1425 — A password proxy does not isolate same-user processes (v2.3.8 -> v2.3.9)
+
+- references/edge-appliances.md, Hangs, watchdogs and power: the 2026-11-16 bench-power entry gains a bullet: a basic-auth proxy with the controller on a Unix socket
+  stops unauthenticated calls (401, tested) but not a same-user process (password store, keys, socket); isolation needs a separate OS user.
+
 ## 20261116_1340 — Bench power-cut automation through a Matter smart strip (v2.3.7 -> v2.3.8)
 
 - references/edge-appliances.md, Hangs, watchdogs and power: Learned 2026-11-16 from smc-resiliency (afe4f03b): a Matter strip joined from Apple Home as a second controller
