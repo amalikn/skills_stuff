@@ -105,6 +105,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-68 | Baseline beside forecast in a generated report | A status report rendered from a fixed plan whose dates slip week by week |
 | P-69 | A seed, a plan-first scaffold and a guard on the shared output | Generating a new shared package from a written design without leaking names or overwriting hand edits |
 | P-70 | Physical map as data, with the consumer named on each slot | A switch, port or outlet acted on by name must never act on the wrong box |
+| P-71 | Anchor-guarded, re-runnable patch of a shipped bundle | Local changes to a vendor's built file (no source) that a reinstall silently wipes |
 
 ## Patterns
 
@@ -1512,6 +1513,40 @@ def strip_outlet(doc: dict, name: str, pw: dict) -> tuple[dict, dict]:
   if outlet.get("feeds") != name:
     raise LabError(f"target {name}: outlet {outlet['home']!r} is recorded as feeding {outlet.get('feeds') or 'nothing'!r}, not this target")
   return strip, outlet
+```
+
+### P-71 Anchor-guarded, re-runnable patch of a shipped bundle
+
+> **Learned 2026-11-16** · design pattern, any language · VERIFIED_PRIMARY (dry run listed eight anchors each found once; applied to two copies, byte-identical after; second run printed
+> "skip: already patched"; an offline stub test passed 11/11 on the patched bundle and failed on the unpatched one) · Source: scripts_stuff `vscode_extensions/scripts/mermaid-zoom-patch/apply-mermaid-zoom.mjs`
+> (uncommitted, 2026-11-16) · Falsifier: an extension update that keeps every anchor yet changes what the surrounding code means, so the patch applies cleanly and misbehaves.
+
+- **Problem:** a feature or fix has to live in a built file you do not own (a bundled `dist/extension.js`, a minified plugin, a vendored script) with no source to rebuild from. Hand edits are
+  lost on every reinstall, and several installed copies drift.
+- **Solution:** keep the change as a script plus the code it injects, not as an edited file. Each edit is `[label, exact anchor, replacement]`; the anchor must occur exactly once or the folder
+  is refused before anything is written. A marker string makes a second run a no-op. Dry run by default; `--apply` copies each file to `<file>.bak-<slug>-<date>` first. Injected code sits in
+  its own file, so it can be read, linted and diffed; the edits only splice it in and wire it up. An offline test loads the patched bundle with a stubbed host API and exercises the new paths.
+- **Why it works:** an exact, unique anchor turns "the vendor changed this code" into a refusal instead of a silent mis-patch; the marker and backups make re-running safe, so reapplying after
+  an update is one command against every copy.
+- **Reuse:** VS Code or browser extensions you patch locally, vendored JS/CSS in a static site, a third-party Python package hot-fixed in a venv, generated config you must amend.
+- **Pitfalls:** a unique anchor proves position, not meaning: re-read the code around each anchor after a vendor update. Match exact text including indentation; refuse on 0 *and* on 2+.
+  Edit manifests (package.json) as strings when the file's formatting must survive, then `JSON.parse` the result as a check.
+- **Realised in:** Node (ESM) patching a CommonJS VS Code extension bundle.
+
+```js
+// scripts_stuff vscode_extensions/scripts/mermaid-zoom-patch/apply-mermaid-zoom.mjs (uncommitted, 2026-11-16)
+function applyEdits(text, edits, file) {
+  let out = text;
+  for (const [label, find, replace] of edits) {
+    const count = out.split(find).length - 1;
+    if (count !== 1) {
+      throw new Error(`${file}: anchor for "${label}" found ${count} times (need exactly 1)`);
+    }
+    out = out.replace(find, () => replace);
+  }
+  return out;
+}
+// patchFolder: skip if js.includes(MARKER); build both files in memory; JSON.parse(newPkg); write only with --apply after a .bak copy
 ```
 
 ## Language realisations

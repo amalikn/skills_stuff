@@ -16,6 +16,7 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-16 write-back from scripts_stuff vscode_extensions (mermaid full-size patch to markdown-inline-editor): references/design-patterns.md P-71 (anchor-guarded, re-runnable patch of a shipped bundle); languages/javascript-typescript.md Learned (load a VS Code extension bundle under Node with a permissive `vscode` stub; compile-only check of an inline script; security-hook false positives).
 - 2026-11-16 write-back from smc-resiliency (bench power through a Matter strip, afe4f03b): references/design-patterns.md P-70 (physical map as data, the consumer named on each slot);
   languages/python/learned-other.md Learned (a stdlib WebSocket client for a local API).
 - 2026-11-13 write-back from enterprise-strategy (weekly update builder, program pack menu card and keys): references/generated-artifacts.md Learned (a second renderer reads the first one's data module; a colour key from the states in use; yearless date labels sorted against the plan's first month, a label with no month refused).
