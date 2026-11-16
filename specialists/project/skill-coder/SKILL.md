@@ -132,6 +132,9 @@ A language file never removes a safety rule. A loosening without a reason is voi
 - One linter per language, configured once at the project root, for new files only: existing files are listed as excluded in that
   config and reformatted only on a decision (operator, 2026-10-23). Python ruff, YAML yamllint, Jinja2 djlint (lint only), TOML taplo,
   JSON biome, shell shfmt + shellcheck, Ansible inventories parsed by ansible-inventory; see the language files.
+- A project or skill worked on that has no lint config gets one in the same session, from `templates/ruff.toml` (or the language's
+  tool), its existing files listed as excluded and a lint recipe run by the project's check (operator, 2026-11-16: "add lint config in every
+  project and skill when you work on it, if it is missing").
 - Indent with two spaces in every language (operator, 2026-10-23); Python is formatted and linted with ruff (`indent-width = 2`), as YAML
   is with yamllint. Existing tracked code keeps its indentation until a reformat is decided.
 - Label load-bearing claims `VERIFIED_PRIMARY`, `VERIFIED_SECONDARY`, `UNVERIFIED` or `USER_STATED`; never present a guess as a fact.

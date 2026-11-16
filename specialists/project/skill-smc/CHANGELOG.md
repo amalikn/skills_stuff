@@ -6,13 +6,18 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261111_1319
+Last rotated: 20261116_1736
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## 20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)
+
+`references/07_hardware-overlay.md` Learned 2026-11-16, from the 2026-11-10 survey raw output re-read by smc-resiliency: Pi p1 free (rct and wh 138 to 140 MB,
+nbn_wh 116 and 26 MB), `root=LABEL=writable` on all 41 Pis read, BOXER-6404 one-disk LVM with no free extents, BOXER-6641 two disks with the standby install.
 
 ## 20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)
 
@@ -187,10 +192,3 @@ Learned 2026-11-01 (ansible-wifi `iridium` afbc8f1b): `references/13_known-issue
 
 Learned 2026-11-01 (ansible-wifi `iridium` 4aaebca0): `references/13_known-issues.md` (guard_no_overlay travels with the PHP tasks, pinned names in master's
 custom_apt_install, smc_bases.yml CRLF and the lint delta gate, hook venv without ansible.posix, vars guard behaviour).
-
-## 20261030_1719 — rct-tstik AVR data map, smc_change conditions and loop, rct_avr_probe modem fields (v0.10.6 -> v0.10.7)
-
-Learned 2026-10-30 (ansible-wifi chat 0a7b835b): `references/02_service-map.md` (what update:stats reads from the AVR, stats.json, master's
-Thuraya labels and unpadded version, `/bin/sh` is dash), `references/19_smc-change-role.md` (facts, conditions, when, loop; local-knowledge-ansible
-`7ef59c7`). `scripts/probes/rct_avr_probe.sh` adds modem, modem_net, modem_comms and sim (Iridium* or Thuraya* fields); its test passes.
-manifest 0.10.6 -> 0.10.7.

@@ -1234,3 +1234,14 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > - `/proc/<pid>/io` write_bytes of cron includes its reaped jobs, so cron's figure is the total of everything cron started.
 > - Probes: `scripts/probes/pi_resiliency_probe.sh`, `smc_writers_probe.sh`, `scripts/fleet/pi_bootloader_census.sh`; `tsh` survives SIGALRM, so a
 >   deadline must fork and send TERM then KILL (all probes fixed).
+
+> **Learned 2026-11-16** · deployed fleet, boot partition free for a conversion, root reference, x86 disk layouts (re-read of the 2026-11-10 survey raw output) ·
+> VERIFIED_PRIMARY · Source: smc-resiliency `docs/overview/smc-fleet-survey-sources-20261110_1145/` (`rct.txt`, `wh.txt`, `nbn_wh.txt`, `rcp.txt`,
+> `boxes.csv`) · Falsifier: a deployed Pi whose `cmdline.txt` names `root=PARTUUID=`, or a BOXER-6404 with free extents in `ubuntu-vg`.
+> - Pi `/boot/firmware` (p1 FAT `system-boot`, 253 MB): 138 to 140 MB free on all 38 rct and wh read; the two nbn_wh have 116 and 26 MB. Enough for a
+>   maintenance kernel and initramfs on rct and wh, not on the fuller nbn_wh.
+> - `cmdline.txt` names the root by label on all 41 Pis read: `root=LABEL=writable rootfstype=ext4`, so new PARTUUIDs (an MBR-to-GPT conversion) do
+>   not break the root reference.
+> - BOXER-6404: one 59.6 GiB CFast (Innodisk 3ME3 or Transcend TS64GCFX600), GPT: ESP 1 GiB, `/boot` ext4 2 GiB, LVM 56.6 GiB, `ubuntu-vg` 0 free, root
+>   LV 56.6 GiB at 24 to 33% used (one 98%, pruned since). BOXER-6641: two 119.2 GiB Transcend SATA SSDs, each GPT ESP 1 GiB + ext4 118.2 GiB; the
+>   second is the standby install `smc_disk_failover` boots after 24 h without internet.

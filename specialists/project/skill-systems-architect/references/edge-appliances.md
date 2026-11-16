@@ -117,6 +117,33 @@ ONE MEDIUM, A/B LAYOUT (one SD card, eMMC or disk)
   > - Keep writes low by design (read-only root, every writer given a home) and measure wear in the field: SMART on SSD and CFast; written sectors
   >   from /sys/block/<dev>/stat on SD cards, which have no SMART; alarm on growth.
 
+  > **Learned 2026-11-16** · remote single-disk conversion: tool limits and per-platform paths · VERIFIED_PRIMARY for the tool behaviour (upstream pages
+  > kept verbatim 2026-11-16) and the fleet reads; the paths are design, unproven on hardware · Source: smc-resiliency
+  > docs/overview/smc-single-disk-remote-migration-research-20261116_1351.md and its sources folder (apn, 2026-11-16) · Falsifier: an upstream page that
+  > documents a crash-safe ext4 shrink, or Pi 4 bootloader A/B updates.
+  > - Tool limits: `resize2fs` shrinks only unmounted and "The undo file cannot be used to recover from a power or system crash"; `systemd-repart`
+  >   "does not shrink, delete, or move existing partitions" (it cannot make the space); `sgdisk -g` (MBR to GPT) fails without free space at the
+  >   disk's end, so shrink first; `pvresize` refuses to cut allocated extents; Pi bootloader A/B updates are Pi 5 and CM5 only, so never update a Pi 4
+  >   EEPROM inside a conversion. balena `takeover` replaces the OS whole (no fallback); Mender's repartitioner is archived and warns of bricking.
+  >   On a Pi 4, pulling `/WP` low (TP5) "does NOT write-protect the EEPROM unless the `Write Status Register` has also been configured".
+  > - Pi 4 first one-shot, before any new partition exists: the tryboot flag loads `tryboot.txt` (not `config.txt`) once unless `tryboot_a_b=1`, so a
+  >   maintenance kernel and initramfs on the existing FAT partition can be booted once with no selector change. A root named `root=LABEL=...` in
+  >   `cmdline.txt` survives the new PARTUUIDs of an MBR-to-GPT conversion; whether the old firmware still boots from the GPT card needs a bench run.
+  > - Staging: stream each image straight into its new, empty partition with HTTP range requests, resumable over days, then verify the hash; a
+  >   read-only or overlay root has no room to stage. Commit a converted box only on local health and reach (stricter than a normal trial).
+  > - A box with a second, idle disk (an old standby install) converts with no shrink at all: write the new layout there from the running system and
+  >   trial it with UEFI `BootNext`; the old disk is never touched until commit. LVM roots shrink in order: filesystem with the volume
+  >   (`lvreduce -r`), physical volume, partition; each step is part of the unprotected window.
+  > - Grade each box (no shrink / one measured unprotected window / physical route); quote no success rate before counted runs: zero failures in
+  >   n runs bounds the failure rate at about 3/n at 95%.
+  >
+  > ```text
+  > reboot '0 tryboot'                       # Pi 4: one boot from tryboot.txt, then the flag clears
+  > e2fsck -f /dev/mmcblk0p2 && resize2fs /dev/mmcblk0p2 25G   # offline, in the RAM system: the unprotected window starts
+  > sgdisk -g /dev/mmcblk0                   # after the partition shrink frees the disk's end
+  > efibootmgr --bootnext <entry>            # x86: one-shot to the maintenance image or the new slot
+  > ```
+
   > **Learned 2026-11-11** · read-only root (erofs) versus a RAM copy-on-write overlay on A/B site boxes · design reasoning, UNVERIFIED in the field;
   > the overlay measurement is VERIFIED_PRIMARY on a lab VM · Source: smc-resiliency docs/pi/pi-spike-sm-root-writes-20261107_1602.md section 4;
   > enterprise-strategy SCRATCHPAD outbox es-f61b9e75 and es-643ebcd9 (apn b76afb57 and later) · Falsifier: a missed writer on a strict

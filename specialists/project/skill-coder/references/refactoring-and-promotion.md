@@ -148,3 +148,21 @@ spec.loader.exec_module(module)
 > baselines and checks that open the file. An import graph shows only importers; a by-path reader keeps passing on the shim and silently
 > checks less. Grep for the file's path and name, point each reader at both files (or the new one), and compare its output before and after.
 
+> **Learned 2026-11-16** · promoting a script into a pack with no lint config · VERIFIED_PRIMARY · Source: skill-drawio `ruff.toml` and
+> `scripts/ascii_flow_render.py` (promoted from apn smc-resiliency, 2026-11-16) · Falsifier: `ruff format --check` reformatting an excluded file
+> The receiving pack indented with four spaces and had no lint config. Do not re-indent the promoted file to match: add the pack's `ruff.toml` from
+> `templates/ruff.toml` (two spaces), list every existing Python file under `extend-exclude` with `force-exclude = true`, and run `just lint` in
+> `just check`; the new file is checked, the old ones keep their style until a reformat is decided. ruff then caught B905 (`zip()` without
+> `strict=`) in the promoted code: two lists built from the same parts take `strict=True`.
+
+```toml
+# skill-drawio ruff.toml (2026-11-16), head; 111 existing files follow under extend-exclude
+indent-width = 2
+line-length = 160
+force-exclude = true
+extend-exclude = [
+  "*.md",
+  "scripts/assemble_flowmap.py",
+]
+```
+

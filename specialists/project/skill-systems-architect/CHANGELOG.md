@@ -15,6 +15,12 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261116_1735 — Remote single-disk conversion: tool limits and per-platform paths (v2.3.9 -> v2.3.10)
+
+- references/edge-appliances.md, Image layout and updates: Learned 2026-11-16 beside the 2026-11-10 conversion entry: upstream tool limits read verbatim
+  (resize2fs undo not crash-safe, systemd-repart never shrinks, sgdisk -g needs the disk's end, pvresize, Pi 4 has no bootloader A/B), the Pi 4 `/WP` pin alone does not write-protect the EEPROM, the Pi tryboot.txt first
+  one-shot, staging into raw partitions, commit on health and reach, the idle-second-disk path, LVM shrink order, grading and the 3/n bound (from apn smc-resiliency).
+
 ## 20261116_1425 — A password proxy does not isolate same-user processes (v2.3.8 -> v2.3.9)
 
 - references/edge-appliances.md, Hangs, watchdogs and power: the 2026-11-16 bench-power entry gains a bullet: a basic-auth proxy with the controller on a Unix socket

@@ -12,6 +12,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- 20261116_1735: v2.3.10: edge-appliances, remote single-disk conversion tool limits and per-platform paths (from smc-resiliency).
 - 20261116_1425: v2.3.9: edge-appliances, a password proxy does not isolate same-user processes.
 - 20261116_1340: v2.3.8: edge-appliances bench power-cut automation through a Matter smart strip (from smc-resiliency afe4f03b).
 - 20261110_1355: v2.3.6: edge retention after own upload, provisioning outcome surveys, transient units; SSH changed host key and reverse tunnels (from smc-resiliency koonibba work).

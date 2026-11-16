@@ -9,13 +9,14 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261111_1100
+Last rotated: 20261116_1737
 ---
 
 # Changelog
 
 ## Unreleased
 
+- 2026-11-16 write-back from apn smc-resiliency (ASCII renderer promoted to skill-drawio): SKILL.md Standing rules, a lint config for every project or skill worked on that lacks one (operator, 2026-11-16); references/refactoring-and-promotion.md Learned (promoting into a pack with no lint config: add ruff.toml with existing files excluded, never re-indent the promoted file; B905 strict zip).
 - 2026-11-16 write-back from scripts_stuff vscode_extensions (link width and soft wrap): languages/javascript-typescript.md Learned (VS Code soft wrap measures raw text plus injected text; a hiding decoration cannot change wrap points).
 - 2026-11-16 write-back from scripts_stuff vscode_extensions (table-reflow path rule): references/safety-and-writes.md Learned (a shared tool's default change reaches every hook that calls it: ship opt-in, prove with a flag-off run, mtime marker for the live window).
 - 2026-11-16 write-back from scripts_stuff vscode_extensions (mermaid full-size patch to markdown-inline-editor): references/design-patterns.md P-71 (anchor-guarded, re-runnable patch of a shipped bundle); languages/javascript-typescript.md Learned (load a VS Code extension bundle under Node with a permissive `vscode` stub; compile-only check of an inline script; security-hook false positives).
@@ -197,21 +198,3 @@ Learned 2026-10-29 in `references/version-control-and-review.md`: a gate without
 ## 20261029_1915 — Pattern P-39: carry a placement over proven edges, narrow by direction
 
 Learned 2026-10-29 in `references/design-patterns.md`: placement over a typed evidence graph, no site convention (unified-network-controller a8c58f9).
-
-## 20261029_1424 — Patterns P-37 and P-38 (skill-drawio speed and quality work)
-
-Learned 2026-10-29 in `references/design-patterns.md`: a cache proved by a differential assert, keyed so an undo hits (skill-drawio 73017a9,
-811c918); an estimate nominates, the real measure decides, never worse than the start (skill-drawio 1e6557d).
-
-## 20261029_1420 — Pattern P-36: widen a name's scope by renaming in place
-
-Learned 2026-10-29 in `references/design-patterns.md` (P-36), from unified-network-controller `smc_uplink_circuits.rename_legacy`
-(e62633c): Circuits and NTDs named per site renamed to per box, never recreated.
-
-## 20261029_1257 — Patterns P-33 to P-35 (multi-SMC build)
-
-`references/design-patterns.md`: read all then write once; pick a moving leader once per cycle; place by evidence with a listed ledger (unified-network-controller, 2026-10-29).
-
-## 20261029_1220 — Learned: a check that skips when its tool is missing cannot fail
-
-Learned 2026-10-29 in `references/testing.md`: report a missing tool, never skip silently (unified-network-controller pre-commit hook, 27 to 29 Oct).
