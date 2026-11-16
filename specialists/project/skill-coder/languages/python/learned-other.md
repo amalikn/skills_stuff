@@ -155,3 +155,19 @@ Part of [python.md](../python.md).
 >   continue
 > rows.append(cells)
 > ```
+
+> **Learned 2026-11-16** · Python, talking to a local WebSocket API from a stdlib-only project · VERIFIED_PRIMARY (a matter-server 1.6.0 on 127.0.0.1 answered `get_node` and `device_command`
+> through it; 64 KB `get_node` answers and the 16-bit and 64-bit length forms round-trip in tests) · Source: smc-resiliency `lab/adapters/matter_ws.py` @ afe4f03b; tools_stuff
+> `matter-server/scripts/matter_ctl.py` · Falsifier: a server that needs a subprotocol, compression or TLS (this client sends none), or one that pings and closes on a missing pong within a call.
+> A one-command-per-call WebSocket client needs about 60 lines of stdlib, so a stdlib-only project need not add `websockets`: send the upgrade request, read headers to `\r\n\r\n`, check `101`;
+> client frames must be masked (RFC 6455 5.3), server frames are not; read the 7-, 16- or 64-bit length; join continuation frames until FIN; skip ping and pong. Match the answer by your own
+> `message_id` and skip events in between. Node 22+ has a global `WebSocket` for the same probes from the shell.
+>
+> ```python
+> def encode_frame(text: str, mask: bytes | None = None) -> bytes:
+>   data, mask = text.encode(), mask or os.urandom(4)
+>   n = len(data)
+>   head = struct.pack("!BB", 0x81, 0x80 | n) if n < 126 else \
+>     struct.pack("!BBH", 0x81, 0x80 | 126, n) if n < 1 << 16 else struct.pack("!BBQ", 0x81, 0x80 | 127, n)
+>   return head + mask + bytes(b ^ mask[i % 4] for i, b in enumerate(data))
+> ```

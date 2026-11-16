@@ -104,6 +104,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-64 | A fixed-length record overwritten in place | A small state file on a filesystem without atomic rename (FAT) that a power cut must never leave empty |
 | P-68 | Baseline beside forecast in a generated report | A status report rendered from a fixed plan whose dates slip week by week |
 | P-69 | A seed, a plan-first scaffold and a guard on the shared output | Generating a new shared package from a written design without leaking names or overwriting hand edits |
+| P-70 | Physical map as data, with the consumer named on each slot | A switch, port or outlet acted on by name must never act on the wrong box |
 
 ## Patterns
 
@@ -1482,6 +1483,35 @@ def fix(m):                                            # one ](target) in a file
   if not (old_target.exists() or old_target in moves):
     return m.group(0)                                  # already broken: leave it, report it
   return f"]({os.path.relpath(new_target, new_dir)}{sep}{anchor})"
+```
+
+### P-70 Physical map as data, with the consumer named on each slot
+
+> **Learned 2026-11-16** · design pattern, any language · VERIFIED_PRIMARY (a live power cut through the map hit the intended box; tests refuse an outlet recorded for another target or for
+> nothing) · Source: smc-resiliency `lab/registry.py` `strip_outlet`, `lab/targets.toml` `[power_strips.bench-strip]` @ afe4f03b · Falsifier: a wrong box cut while its slot names the right one
+> (the map itself was wrong, which this pattern does not catch: hence the confirmation step).
+
+- **Problem:** code acts on a physical slot (an outlet, a switch port, a PDU socket, a relay) by a number the device knows, while people know it by another name, and nothing ties
+  the slot to the thing plugged into it. A typo or a re-cabled box cuts power or traffic to the wrong machine.
+- **Solution:** keep the map as data beside the targets: each slot has the human name, the device's ID, what kind of slot it is, the consumer it `feeds`, and how the mapping was
+  established. A target names its slot by the human name; the binder resolves it and refuses unless the slot's `feeds` names that same target. Empty slots say `feeds = ""`.
+- **Why it works:** two independent records (the target's choice and the slot's consumer) must agree before anything is switched; the map is reviewable in one file and in git.
+- **Reuse:** PDU outlets for lab servers, switch ports a script shuts, GPIO relays, smart plugs in a test rig.
+- **Pitfalls:** the map is only as true as the way it was made: record `mapped` (tapped one at a time, matched by state, confirmed by a planned cut) and confirm an inferred row with
+  one deliberate action before relying on it. Mapping by asking someone to act in order failed once (a slip mid-sequence); one slot per action with its name said each time held.
+- **Realised in:** Python + TOML, smc-resiliency lab.
+
+```python
+def strip_outlet(doc: dict, name: str, pw: dict) -> tuple[dict, dict]:
+  strip = doc.get("power_strips", {}).get(pw.get("strip", ""))
+  if strip is None:
+    raise LabError(f"target {name}: no power strip {pw.get('strip')!r}")
+  outlet = next((o for o in strip.get("outlets", []) if o.get("home") == pw.get("outlet")), None)
+  if outlet is None:
+    raise LabError(f"target {name}: strip {pw['strip']} has no outlet {pw.get('outlet')!r}")
+  if outlet.get("feeds") != name:
+    raise LabError(f"target {name}: outlet {outlet['home']!r} is recorded as feeding {outlet.get('feeds') or 'nothing'!r}, not this target")
+  return strip, outlet
 ```
 
 ## Language realisations

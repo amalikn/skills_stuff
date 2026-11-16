@@ -15,6 +15,11 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261116_1340 — Bench power-cut automation through a Matter smart strip (v2.3.7 -> v2.3.8)
+
+- references/edge-appliances.md, Hangs, watchdogs and power: Learned 2026-11-16 from smc-resiliency (afe4f03b): a Matter strip joined from Apple Home as a second controller
+  cuts a bench box per outlet (Pi 4: down within 1 s, back 45 s after power); map outlets one at a time and confirm with a planned cut; IPv4-only reconnect delay; unauthenticated API.
+
 ## 20261111_2007 — Read-only root versus RAM overlay: the trial boot catches missed writers, scheduled writers need their own run (v2.3.6 -> v2.3.7)
 
 - references/edge-appliances.md, Image layout and updates: Learned 2026-11-11 entry from the APN R28 review (enterprise-strategy hub, smc-resiliency SM report):

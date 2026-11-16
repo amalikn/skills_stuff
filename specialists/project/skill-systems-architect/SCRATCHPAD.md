@@ -12,6 +12,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- 20261116_1340: v2.3.8: edge-appliances bench power-cut automation through a Matter smart strip (from smc-resiliency afe4f03b).
 - 20261110_1355: v2.3.6: edge retention after own upload, provisioning outcome surveys, transient units; SSH changed host key and reverse tunnels (from smc-resiliency koonibba work).
 - 20261110_1205: v2.3.4: restore proof by exact row counts (backup-disaster-recovery) and compose `up --wait` false failures (containers-and-platforms), from the UNC Nautobot 3.2.9 upgrade.
 - 20261110_0525: v2.3.3: ai-inference-platforms measured Qwen3.8-27B on oMLX, prefill-peak rule, hybrid prefix-cache blocks (from the Cline tuning work).

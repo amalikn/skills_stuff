@@ -250,6 +250,17 @@ DURABLE JOB STATE ON THE BOX: controller reconciles, never presumes
 - Raspberry Pi (BCM2835 family) watchdog: a 20-bit register counted in 1/65536 s ticks, so the maximum timeout is about 15-16 s; keep the systemd timeout inside it (VERIFIED_PRIMARY [WDT], driver
   source, checked 2026-10-29). Identify each x86 model's watchdog driver separately.
 - Give the single site box an independent power-cycle path as well; software health checks cannot fix a hang.
+
+  > **Learned 2026-11-16** · automating power-cut tests on a bench edge box · VERIFIED_PRIMARY (bench Pi 4 on a Matter Wi-Fi power strip: outlet off 10 s then on,
+  > the box stopped answering within 1 s and answered again 45 s after power returned) · Source: smc-resiliency `lab/adapters/power.py` `MatterPower`, `lab/targets.toml`
+  > `[power_strips.bench-strip]` @ afe4f03b; tools_stuff `matter-server/README.md` · Falsifier: a strip that keeps an outlet on through the command, or one that cannot join a second controller.
+  > - A consumer Matter smart strip already in a home controller (Apple Home) can join a second controller from that app's pairing mode (multi-admin) and be switched per outlet by a lab
+  >   script, replacing "pull the plug at the bench". The cheap strips switch only (OnOff, no power metering): measure draw elsewhere.
+  > - The app's outlet names are not visible over Matter; map them by switching one outlet at a time and recording which endpoint changed, keep the map as data with the box each
+  >   outlet feeds, and confirm an inferred row with one planned cut before trusting it.
+  > - Expect a reconnect delay: after a controller restart the strip answered only on IPv4, so the controller tried its IPv6 addresses first and reported it available 12 s to 2 minutes
+  >   later. A test harness waits for the device to be available before the cut.
+  > - The controller's API had no authentication; bind it to localhost and decide which agents may switch which outlets before mixing lab and household devices on one controller.
 - Any automatic recovery must emit an event to monitoring. An external board that power-cycles on loss of internet hides how often the box hangs.
 - On a RAM-backed root, kernel logs are lost with the power cycle. Ship kernel logs off-box or keep a small ramoops/pstore area, which logs oopses and panics to RAM that survives a restart on hardware
   that supports it [RAMOOPS].

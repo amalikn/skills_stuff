@@ -36,6 +36,10 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   `just context_pack` with the Repomix template includes both justfile and Justfile on case-insensitive macOS, duplicating one file; select the actual runner.
   `just stale` reports zero findings on an entirely untracked project because file_headers.tracked uses git ls-files without --others; report the empty scope
   or explicitly cover untracked bootstrap files. Confirmed 2026-11-01: `just check` passed before the first commit of an untracked project and failed with 41 freshness findings immediately after it, because immutable sources became visible; the gate should run against `--others` too, or say that it covered nothing. Consumer workaround: explicit mapping, single runner include, and validation in a disposable tracked copy.
+- [ ] **The rotation audit counts sync archives as nowhere** (found 2026-11-13 by Codex, again 2026-11-16, smc-resiliency): `just budget --apply` rotates, then exits
+  1 with "SCRATCHPAD.md: 44 line(s) lost"; all 44 are verbatim in `docs/history/sync/sync-archive-20261113_1652.md`. `audit()` in `scripts/records/audit_rotations.py` counts
+  scratchpad archives, open-item trackers and "Moved verbatim" references, not `docs/history/sync/`, and the budget's own `just check` step is then skipped. Fix: count verbatim
+  sync archives as present, with a positive archived-sync fixture and a negative truly-lost-line fixture. Distinct from the re-wrapped-lines item below (these match exactly).
 - [ ] **The rotation audit reports re-wrapped lines as lost** (found 2026-11-13, enterprise-strategy): `just budget --apply` printed "SCRATCHPAD.md: 50 line(s)
   lost, e.g. 'Agent working memory for Enterprise Strategy.'" while that sentence was still in the file; a whitespace-folded search found every flagged line live, in
   `docs/history/scratchpad-20261113_1258.md`, or replaced on purpose. `scripts/records/audit_rotations.py` compares lines with the pre-rotation version, so a paragraph the
