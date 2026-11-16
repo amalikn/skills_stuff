@@ -102,6 +102,15 @@ Module._load = function (request, ...rest) {
 };
 ```
 
+> **Learned 2026-11-16** · JavaScript/TypeScript, VS Code extensions · VERIFIED_PRIMARY (microsoft/vscode `main`, `src/vs/editor/browser/view/domLineBreaksComputer.ts`:
+> `LineInjectedText.applyInjectedText(context.getLineContent(lineNumber), injectedTexts)` is what gets measured) · Source: that file, read 2026-11-16 ·
+> Falsifier: a VS Code release whose wrapping honours decoration CSS or exposes an API for wrap points.
+
+- A decoration that hides text (`textDecoration: "none; display: none;"`, the usual trick for hiding a markdown link's `](target)`) changes what is drawn, not
+  where VS Code soft-wraps: wrapping measures the raw line plus injected text (`before`/`after` content counts, hidden characters still count). An extension
+  cannot make soft wrap follow the visible width; only folding removes text from layout, and it works on whole lines. Plan around it: hard-wrap the source
+  by visible width and turn soft wrap off for that language, or shorten the raw text (reference-style links).
+
 ## Open items
 
 - Formatter, test runner and module-format (ESM versus CommonJS) guidance: UNVERIFIED stubs.

@@ -16,6 +16,7 @@ Last rotated: 20261111_1100
 
 ## Unreleased
 
+- 2026-11-16 write-back from scripts_stuff vscode_extensions (link width and soft wrap): languages/javascript-typescript.md Learned (VS Code soft wrap measures raw text plus injected text; a hiding decoration cannot change wrap points).
 - 2026-11-16 write-back from scripts_stuff vscode_extensions (table-reflow path rule): references/safety-and-writes.md Learned (a shared tool's default change reaches every hook that calls it: ship opt-in, prove with a flag-off run, mtime marker for the live window).
 - 2026-11-16 write-back from scripts_stuff vscode_extensions (mermaid full-size patch to markdown-inline-editor): references/design-patterns.md P-71 (anchor-guarded, re-runnable patch of a shipped bundle); languages/javascript-typescript.md Learned (load a VS Code extension bundle under Node with a permissive `vscode` stub; compile-only check of an inline script; security-hook false positives).
 - 2026-11-16 write-back from smc-resiliency (bench power through a Matter strip, afe4f03b): references/design-patterns.md P-70 (physical map as data, the consumer named on each slot);
