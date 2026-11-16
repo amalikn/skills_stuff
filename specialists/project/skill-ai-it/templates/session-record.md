@@ -16,6 +16,8 @@ Slurp close of the whole chat (operator: "<the request>"). Passes from the raw t
 ## Contents
 
 - [Operator messages and their destinations](#operator-messages-and-their-destinations)
+- [Coverage table](#coverage-table)
+- [Dependency reviews](#dependency-reviews)
 - [Writes outside the repositories](#writes-outside-the-repositories)
 - [Read-only reads](#read-only-reads)
 - [Incidents](#incidents)
@@ -27,6 +29,23 @@ Slurp close of the whole chat (operator: "<the request>"). Passes from the raw t
 | #   | Message (short) | Destination |
 | --- | --------------- | ----------- |
 | 1   |                 |             |
+
+## Coverage table
+
+One row per significant item from the transcript passes (operator messages, side effects, agent reports, answers, incidents, scripts). No blank cell: a destination, or `not needed` with the reason.
+One decision is one row.
+
+| #   | Item | Type | memory-keeper key | project-context | Governed file | Status |
+| --- | ---- | ---- | ----------------- | --------------- | ------------- | ------ |
+| 1   |      |      |                   |                 |               |        |
+
+## Dependency reviews
+
+Every document whose `Last reviewed` this session changed, and every `just stale` or freshness finding it cleared, with what was read before the date moved. None: write "None: no review date changed".
+
+| Document | Full read scope before edits                        | Review result                            |
+| -------- | --------------------------------------------------- | ---------------------------------------- |
+| <link>   | <all n lines; sections and sources checked against> | <what changed, or "accurate, date only"> |
 
 ## Writes outside the repositories
 

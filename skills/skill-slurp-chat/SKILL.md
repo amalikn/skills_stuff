@@ -18,7 +18,7 @@ log, agent rules, status surfaces). Memory alone is not capture: the next agent 
 - [Step 4 — Zone A scan (light)](#step-4--zone-a-scan-light)
 - [Step 5 — Memory backends](#step-5--memory-backends)
 - [Step 5a — Persistent scripts (every slurp, unprompted; operator, 2026-10-09: "when slurp is called, scripts should be handled in it as well")](#step-5a--persistent-scripts-every-slurp-unprompted-operator-2026-10-09-when-slurp-is-called-scripts-should-be-handled-in-it-as-well)
-- [Step 5b — Skill write-backs (every slurp; operator, 2026-10-13)](#step-5b--skill-write-backs-every-slurp-operator-2026-10-13-whenever-the-skill-is-engaged-there-is-a-contract-to-write-back-as-part-of-the-slurp-all-the-writebacks-should-be-rechecked)
+- [Step 5b — Skill write-backs (every slurp; operator, 2026-10-13: "Whenever the skill is engaged, there is a contract to write back. As part of the slurp all the writebacks should be rechecked")](#step-5b--skill-write-backs-every-slurp-operator-2026-10-13-whenever-the-skill-is-engaged-there-is-a-contract-to-write-back-as-part-of-the-slurp-all-the-writebacks-should-be-rechecked)
 - [Step 6 — Governed record (the step memory-only slurps skip)](#step-6--governed-record-the-step-memory-only-slurps-skip)
 - [Step 6b — Self-audit before the report (mandatory)](#step-6b--self-audit-before-the-report-mandatory)
 - [Step 7 — Checkpoints and SCRATCHPAD](#step-7--checkpoints-and-scratchpad)
@@ -30,7 +30,8 @@ log, agent rules, status surfaces). Memory alone is not capture: the next agent 
 
 ## Modes
 - **`/slurp-chat`** — steps 0 to 7, including 5a and 6b
-- **`/slurp-chat close`** — same, plus the closeout entry (step 8)
+- **`/slurp-chat in detail`** — same, plus the session record of Step 8 (no closeout entry)
+- **`/slurp-chat close`** — same, plus the closeout entry and the session record (step 8)
 
 A slurp never commits or pushes unless the user asked for that in the same request.
 
@@ -49,40 +50,37 @@ get_project_context(projectId="<id>", channel="<channel>", section="notes", sort
 Extract the newest memory-keeper and project-context timestamps and the topics each already covers. memory-keeper stores local time, so a `createdAfter` filter in UTC can return nothing: list by
 `sort` instead. Also note the newest change-log entry's stamp.
 
-**Zone boundary = the last *slurp* of this conversation** (an entry or checkpoint a slurp wrote: `slurp-*`, `session.closeout.*`), never a progress
-note written mid-session. A summary saved during the work is not a capture of the work: everything since the conversation's last slurp is Zone B,
-however many memory entries were written in between. No slurp yet in this conversation → the whole conversation is Zone B.
+**Zone boundary = the last *slurp* of this conversation** (an entry or checkpoint a slurp wrote: `slurp-*`, `session.closeout.*`), never a progress note written mid-session. A summary saved during the
+work is not a capture of the work: everything since the conversation's last slurp is Zone B, however many memory entries were written in between. No slurp yet in this conversation → the whole
+conversation is Zone B.
 
-**Compaction (operator, 2026-10-09: "as auto compaction happened before slurp so slurp should take necessary steps to make important info is not
-lost").** If the context was summarised since the boundary, the summary is not the source: it drops mid-turn messages, question answers, exact
-commands and incidents. Read the raw transcript instead (`~/.claude/projects/<cwd-slug>/<session>.jsonl`; the summary names it) with
-`scripts/transcript_passes.py --since <boundary, UTC>`, which prints both Step 3 passes from it. Every line it prints is walked; the report states
-that the transcript, not the summary, was used and gives its counts.
+**Compaction (operator, 2026-10-09: "as auto compaction happened before slurp so slurp should take necessary steps to make important info is not lost").** If the context was summarised since the
+boundary, the summary is not the source: it drops mid-turn messages, question answers, exact commands and incidents. Read the raw transcript instead (`~/.claude/projects/<cwd-slug>/<session>.jsonl`;
+the summary names it) with `scripts/transcript_passes.py --since <boundary, UTC>`, which prints both Step 3 passes from it. Every line it prints is walked; the report states that the transcript, not
+the summary, was used and gives its counts.
 
 ## Step 3 — Zone B scan (thorough)
 Walk the conversation **in order, from the boundary to now**, not from what is fresh in mind. Three passes, all written down:
 
-1. **Every user message**, one line each: what it asked, decided, ruled or challenged. A question that changes how work is done ("why custom and not
-   native?", "why did I have to remind you?") is an operator rule or preference, not chitchat.
-2. **Every action with a side effect**, in order: writes to a system of record, deploys and restarts, backups, permission or schema changes, deletes,
-   device logins and reads of production, files created outside the repo, and anything that went wrong (an incident: data stored that must not be,
-   a write refused, a rollback).
+1. **Every user message**, one line each: what it asked, decided, ruled or challenged. A question that changes how work is done ("why custom and not native?", "why did I have to remind you?") is an
+   operator rule or preference, not chitchat.
+2. **Every action with a side effect**, in order: writes to a system of record, deploys and restarts, backups, permission or schema changes, deletes, device logins and reads of production, files
+   created outside the repo, and anything that went wrong (an incident: data stored that must not be, a write refused, a rollback).
 
-`scripts/transcript_passes.py` prints both passes from the transcript (typed turns, messages sent mid-turn, AskUserQuestion answers; Bash
-commands, file writes, MCP writes). Use it whenever the session is long or was compacted; never rebuild the passes from memory or a summary.
+`scripts/transcript_passes.py` prints both passes from the transcript (typed turns, messages sent mid-turn, AskUserQuestion answers; Bash commands, file writes, MCP writes). Use it whenever the
+session is long or was compacted; never rebuild the passes from memory or a summary.
 
-3. **Every sub-agent** (operator, 2026-10-29: "when you're slurping you need to slurp information from the sub agents as well"): each agent
-   the session spawned, from its own transcript (`<session>/subagents/agent-*.jsonl`): its task, its final report (the parent saw only a summary
-   of it) and its own side effects (`sub-` lines in pass 2). Its findings, decisions it proposed and files it wrote are items like the parent's.
-   Notes from side agents that arrived mid-turn are pass-1 lines: each is routed (acted on, recorded, or answered with a reason).
+3. **Every sub-agent** (operator, 2026-10-29: "when you're slurping you need to slurp information from the sub agents as well"): each agent the session spawned, from its own transcript
+   (`<session>/subagents/agent-*.jsonl`): its task, its final report (the parent saw only a summary of it) and its own side effects (`sub-` lines in pass 2). Its findings, decisions it proposed and
+   files it wrote are items like the parent's. Notes from side agents that arrived mid-turn are pass-1 lines: each is routed (acted on, recorded, or answered with a reason).
 
 `scripts/transcript_passes.py --pass 3` lists the sub-agents; the full run prints all three passes.
 
-**Read the reports, not the labels (operator, 2026-11-01: "wite to skill-slurp-chat so it does not miss such thinsg again").** Pass 3 prints one line per agent. Run
-`scripts/transcript_passes.py --reports` and read every report in full, every run of a resumed agent. From each, list as items: whatever it flags for a decision or check ("please check", "for the
-operator", "could not", "not checked"); defects it found in sources; proposals and gaps it logged in its own files (`vocab-proposals-*`, `*-followups`); and limits on its evidence. A report relayed to the
-operator in chat is not captured: each item needs a governed file. On 2026-11-01 a re-walk found 64 proposals, 13 source defects and a dozen follow-ups that had lived only in agent reports, after a close
-that reported 6b passed.
+**Read the reports, not the labels (operator, 2026-11-01: "wite to skill-slurp-chat so it does not miss such thinsg again").** Pass 3 prints one line per agent. Run `scripts/transcript_passes.py
+--reports` and read every report in full, every run of a resumed agent. From each, list as items: whatever it flags for a decision or check ("please check", "for the operator", "could not", "not
+checked"); defects it found in sources; proposals and gaps it logged in its own files (`vocab-proposals-*`, `*-followups`); and limits on its evidence. A report relayed to the operator in chat is not
+captured: each item needs a governed file. On 2026-11-01 a re-walk found 64 proposals, 13 source defects and a dozen follow-ups that had lived only in agent reports, after a close that reported 6b
+passed.
 
 From the three passes, list every significant item as a numbered **item list**, one line each. Each item has a type:
 
@@ -110,45 +108,41 @@ For each existing entry, ask only: does the conversation hold specific detail (c
 - Undecided proposals are saved as open, never as decisions.
 
 ## Step 5a — Persistent scripts (every slurp, unprompted; operator, 2026-10-09: "when slurp is called, scripts should be handled in it as well")
-List every script the session wrote or ran ad hoc: scratchpad files, heredoc programs, one-off probes and measurements. Judge each by how likely it
-is to be needed again (operator, 2026-10-09: "only the scripts which you judge are good to have due to their probability for future use"); promote
-those, and give every other one a line saying why not:
+List every script the session wrote or ran ad hoc: scratchpad files, heredoc programs, one-off probes and measurements. Judge each by how likely it is to be needed again (operator, 2026-10-09: "only
+the scripts which you judge are good to have due to their probability for future use"); promote those, and give every other one a line saying why not:
 
-| Kind                                                      | Action                                                                                         |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| likely reused (a probe, measurement, check or fetch)     | promote now: the matching skill's `scripts/` (or the project's) with generic inputs, docstrings |
-|                                                           | (Args/Returns), a recipe, a catalogue row, an offline test, and a smoke run on real input      |
-| already persistent (a committed tool covers it)           | name the tool that covers it in the coverage table                                             |
-| a one-off edit (a records patch, a migration helper)      | `not needed` with that reason in the coverage table                                            |
+| Kind                                                 | Action                                                                                          |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| likely reused (a probe, measurement, check or fetch) | promote now: the matching skill's `scripts/` (or the project's) with generic inputs, docstrings |
+|                                                      | (Args/Returns), a recipe, a catalogue row, an offline test, and a smoke run on real input       |
+| already persistent (a committed tool covers it)      | name the tool that covers it in the coverage table                                              |
+| a one-off edit (a records patch, a migration helper) | `not needed` with that reason in the coverage table                                             |
 
-Register each promoted script in every registry the project keeps (promotion register, script catalogue, tracker, tests index), then run the
-project's check. A slurp is not complete while a script judged worth keeping exists only in the scratchpad. Do not wait to be asked; do not promote one-offs.
+Register each promoted script in every registry the project keeps (promotion register, script catalogue, tracker, tests index), then run the project's check. A slurp is not complete while a script
+judged worth keeping exists only in the scratchpad. Do not wait to be asked; do not promote one-offs.
 
 ## Step 5b — Skill write-backs (every slurp; operator, 2026-10-13: "Whenever the skill is engaged, there is a contract to write back. As part of the slurp all the writebacks should be rechecked")
-A skill's write-back contract binds whether or not the skill was formally invoked: a session that touched a skill's domain engaged it. Missing it twice in
-one day (2026-10-13: platform work done without invoking skill-nautobot; a skill-smc entry left uncommitted from the session before) is why this step exists.
+A skill's write-back contract binds whether or not the skill was formally invoked: a session that touched a skill's domain engaged it. Missing it twice in one day (2026-10-13: platform work done
+without invoking skill-nautobot; a skill-smc entry left uncommitted from the session before) is why this step exists.
 
-1. **Engaged skills.** List every skill whose domain the session touched: those invoked, plus those the project's AGENTS.md routes the work to
-   ("invoke skill-X before Y work"), plus skills used by name without routing: skill-coder whenever the session wrote, refactored or promoted code,
-   applied its rules or ran its helpers (operator, 2026-10-19). Name them in the report even when nothing is owed. For skill-coder also run
-   `scripts/write_back.py --project-root <project>` from the skill: each entry parked there is owed now.
-2. **Facts owed.** Walk the Step 3 item list and the change-log entries written since the boundary; mark each fact that is true of any deployment
-   (vendor, device, platform or tool behaviour, a version quirk, an API limit) with its owning skill. A fact about this project stays in the project.
-3. **Present and read back.** For each owed fact, open the skill's reference and confirm the entry is there in the skill's own format (Learned
-   entry, known-issues entry, CHANGELOG line), reading the file body, not a session note. Missing: write it now, from the source the project cites.
-3b. **Evidence** (operator, 2026-10-20). Each entry that records how something is done carries a code excerpt of the logic (fenced, with its
-   source path and commit, secrets and customer identifiers removed), and for a visual surface (Nautobot, OpenWISP, a device UI, a render) a
-   screenshot under the skill's `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md`, redacted or from a lab or sample instance; a
-   surface not live yet is marked "screenshot pending" and caught at the next slurp. The skill's own contract states the same.
-4. **Committed.** `just writeback-status <skill> ...` (this skill's justfile; exit 1 = a dirty skill) or `git status` in the skills repo for every engaged skill. A write-back that is not committed is not done: commit it (and push
-   it when the session commits and pushes) as part of the write-back; the operator's "commit and push is single-repo scoped" limits the request,
-   not the skill contracts. Run the skill's own tests first. Where a commit must leave other sessions' staged files alone, `scripts/private_commit.py` (`just private-commit`) commits
-   only the named paths through a private index and refuses if HEAD moved (2026-11-05). skills_stuff is shared by live sessions: commit with a pathspec
-   (`git commit -F - -- <paths>`; `git add` a new file first, a pathspec skips untracked ones), never `git add` then `git commit`: it takes other sessions' staged files (2026-11-05, 2026-11-07).
-4b. **Tools too** (operator, 2026-10-14). A tool from `tools_stuff` used this session (all-scraper first: the fallback for agent-blocked
-   fetches) owes its problems back the same way: fixed in the tool, or an open item in its ROADMAP per its AGENTS.md "Feedback write-back".
-5. **Backlog.** Also check the window since the last slurp of each earlier session in the same project (its change log), not only this one:
-   facts left behind earlier are caught here.
+1. **Engaged skills.** List every skill whose domain the session touched: those invoked, plus those the project's AGENTS.md routes the work to ("invoke skill-X before Y work"), plus skills used by
+   name without routing: skill-coder whenever the session wrote, refactored or promoted code, applied its rules or ran its helpers (operator, 2026-10-19). Name them in the report even when nothing is
+   owed. For skill-coder also run `scripts/write_back.py --project-root <project>` from the skill: each entry parked there is owed now.
+2. **Facts owed.** Walk the Step 3 item list and the change-log entries written since the boundary; mark each fact that is true of any deployment (vendor, device, platform or tool behaviour, a version
+   quirk, an API limit) with its owning skill. A fact about this project stays in the project.
+3. **Present and read back.** For each owed fact, open the skill's reference and confirm the entry is there in the skill's own format (Learned entry, known-issues entry, CHANGELOG line), reading the
+   file body, not a session note. Missing: write it now, from the source the project cites.
+3b. **Evidence** (operator, 2026-10-20). Each entry that records how something is done carries a code excerpt of the logic (fenced, with its source path and commit, secrets and customer identifiers
+removed), and for a visual surface (Nautobot, OpenWISP, a device UI, a render) a screenshot under the skill's `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md`, redacted or from a lab or
+sample instance; a surface not live yet is marked "screenshot pending" and caught at the next slurp. The skill's own contract states the same.
+4. **Committed.** `just writeback-status <skill> ...` (this skill's justfile; exit 1 = a dirty skill) or `git status` in the skills repo for every engaged skill. A write-back that is not committed is
+   not done: commit it (and push it when the session commits and pushes) as part of the write-back; the operator's "commit and push is single-repo scoped" limits the request, not the skill contracts.
+   Run the skill's own tests first. Where a commit must leave other sessions' staged files alone, `scripts/private_commit.py` (`just private-commit`) commits only the named paths through a private
+   index and refuses if HEAD moved (2026-11-05). skills_stuff is shared by live sessions: commit with a pathspec (`git commit -F - -- <paths>`; `git add` a new file first, a pathspec skips untracked
+   ones), never `git add` then `git commit`: it takes other sessions' staged files (2026-11-05, 2026-11-07).
+4b. **Tools too** (operator, 2026-10-14). A tool from `tools_stuff` used this session (all-scraper first: the fallback for agent-blocked fetches) owes its problems back the same way: fixed in the
+tool, or an open item in its ROADMAP per its AGENTS.md "Feedback write-back".
+5. **Backlog.** Also check the window since the last slurp of each earlier session in the same project (its change log), not only this one: facts left behind earlier are caught here.
 
 Report one line per engaged skill: facts owed, written, read back, committed (hash).
 
@@ -168,13 +162,13 @@ tracker, roadmap). Then route every item:
 
 | incident           | change-log entry: what happened, what it touched, how it was found and resolved                  |
 
-Then the project's **companion rules**: list the files this session changed (`git status --short` in every repo touched) and apply the project's
-own update rules to each (`context-map.yaml` `update_rules`, AGENTS.md "update X in the same pass" rules, folder indexes, trackers and matrices the
-rules name, rendered views). A changed file whose companion was not updated is a gap, not a detail.
+Then the project's **companion rules**: list the files this session changed (`git status --short` in every repo touched) and apply the project's own update rules to each (`context-map.yaml`
+`update_rules`, AGENTS.md "update X in the same pass" rules, folder indexes, trackers and matrices the rules name, rendered views). A changed file whose companion was not updated is a gap, not a
+detail.
 
-Before that check, run skill-ai-it `scripts/adoption/adopt_governed_files.py --project-root <project> --apply` (operator, 2026-10-10): it adds any part
-of the governed-file standard the project lacks (recipes, freshness and file roles in `check`, front matter on root files and records, README's
-budget, both baselines) and does nothing when adopted. `just budget --apply` (Step 7) also trims ROADMAP's done items (2026-10-14).
+Before that check, run skill-ai-it `scripts/adoption/adopt_governed_files.py --project-root <project> --apply` (operator, 2026-10-10): it adds any part of the governed-file standard the project lacks
+(recipes, freshness and file roles in `check`, front matter on root files and records, README's budget, both baselines) and does nothing when adopted. `just budget --apply` (Step 7) also trims
+ROADMAP's done items (2026-10-14).
 
 Run the project's own governance check (e.g. `scripts/check_governance.py`, `just check`) and any status validator afterwards. Fix the project, not the check.
 
@@ -182,7 +176,8 @@ Run the project's own governance check (e.g. `scripts/check_governance.py`, `jus
 Before reporting, check the capture against the conversation, not against the item list:
 - Every user message from pass 1 has a destination in the coverage table (or a stated reason it needs none).
 - Every side-effect action from pass 2 is in a change-log entry or the operational memory key.
-- Every sub-agent's report was read in full (`--reports`), and each flagged item, source defect, proposal and output file it wrote has a destination. Count them; list each agent output file not yet routed.
+- Every sub-agent's report was read in full (`--reports`), and each flagged item, source defect, proposal and output file it wrote has a destination. Count them; list each agent output file not yet
+  routed.
 - Every question asked and every answer has a destination, and any message that arrived after the previous slurp is covered: work after a close reopens it.
 - A claim of "traced" names how: a table in a governed file, built from the transcript, not recalled from context.
 - Every repo with changes has its companions applied (Step 6) and its check passing.
@@ -198,73 +193,86 @@ create_checkpoint(projectId, name="slurp-<YYYYMMDD>-<topic>")
 In the project's `SCRATCHPAD.md` (create via `/skill-ai-it` if missing), update only the sections this session changed, marked `KEEP`: Current state, Open items (add undecided proposals), Key anchors,
 Recent decisions, Session history (2–3 bullets), Next actions (replace), Memory pointers (keys, note and checkpoint IDs). No file-change lists, no task detail, no session logs.
 
-Then keep the records within budget (operator, 2026-10-10): `just budget` (plan) and `just budget --apply` (skill-ai-it `scripts/records/budget_plan.py`:
-normalises dated paragraphs, rotates to `docs/history/`, moves non-working-state sections to reference docs, audits for lost or split lines, runs
-`just check`). A project without the recipe: run the script with `--project-root`. A file it reports as still over budget is not done (operator,
-2026-10-10): list it, with the section it names, in the closeout as open work; never report it as within budget. Write CHANGELOG entries short: what changed and where, with `just changelog-entry --title ... --body-file ... --apply` (skill-ai-it
-`scripts/records/add_changelog_entry.py`: the project's own heading style and order, Contents line included).
+Then keep the records within budget (operator, 2026-10-10): `just budget` (plan) and `just budget --apply` (skill-ai-it `scripts/records/budget_plan.py`: normalises dated paragraphs, rotates to
+`docs/history/`, moves non-working-state sections to reference docs, audits for lost or split lines, runs `just check`). A project without the recipe: run the script with `--project-root`. A file it
+reports as still over budget is not done (operator, 2026-10-10): list it, with the section it names, in the closeout as open work; never report it as within budget. Write CHANGELOG entries short: what
+changed and where, with `just changelog-entry --title ... --body-file ... --apply` (skill-ai-it `scripts/records/add_changelog_entry.py`: the project's own heading style and order, Contents line
+included).
 
-Then the cross-project sync (operator, 2026-10-19; hub and spoke, 2026-10-21): when the project's `justfile` has a `sync-projects` recipe (the apn
-continuity projects: enterprise-strategy the hub, unified-network-controller and smc-resiliency the spokes), run `just sync-projects --apply` after the
-SCRATCHPAD update, so this session's outbox lines reach their inbox (a spoke's reach the hub only) and, in the hub, the hub register is brought up to date.
-Exit 1 means an item needs a person (a spoke-to-spoke line among them): list it as open work, never work around it. When the request includes "commit and
-push" and the justfile has `commit-project`, commit with `just commit-project -m "..." --apply`: it commits only this project's folder in the shared repo,
-gated on `just check`, so a partner session's files are never swept in.
+Then the cross-project sync (operator, 2026-10-19; hub and spoke, 2026-10-21): when the project's `justfile` has a `sync-projects` recipe (the apn continuity projects: enterprise-strategy the hub,
+unified-network-controller and smc-resiliency the spokes), run `just sync-projects --apply` after the SCRATCHPAD update, so this session's outbox lines reach their inbox (a spoke's reach the hub only)
+and, in the hub, the hub register is brought up to date. Exit 1 means an item needs a person (a spoke-to-spoke line among them): list it as open work, never work around it. When the request includes
+"commit and push" and the justfile has `commit-project`, commit with `just commit-project -m "..." --apply`: it commits only this project's folder in the shared repo, gated on `just check`, so a
+partner session's files are never swept in.
 
-Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written):
-`just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page <project-path>`. It rewrites only its generated block in
-`projects/<folder-name>.md` and appends to the wiki's `log.md`; add the page to `index.md` the first time it prints a note. Report it in the coverage table.
-When the request includes "commit and push", commit and push those wiki_stuff paths too, staged by name (operator, 2026-10-19).
+Then regenerate the project's wiki page from those files (operator, 2026-10-10; the page is generated, never hand-written): `just -f /Volumes/Data/_ai/_wiki/wiki_stuff/justfile project_page
+<project-path>`. It rewrites only its generated block in `projects/<folder-name>.md` and appends to the wiki's `log.md`; add the page to `index.md` the first time it prints a note. Report it in the
+coverage table. When the request includes "commit and push", commit and push those wiki_stuff paths too, staged by name (operator, 2026-10-19).
 
 ## Step 8 — Closeout mode only
-Closeout writes the whole-chat record into the project (`docs/history/session-records/session-record-<stamp>.md`, from skill-ai-it
-`templates/session-record.md`, or the project's equivalent): each operator message with its destination, each agent with its output, follow-ups by owner,
-defects in source material, unmerged proposals, and side effects outside the repositories. Decisions taken after a close are slurped before the next commit: memory, `record_decision`, then a sweep for pages still
-calling them open. Re-run the project's check after the first commit of a previously untracked folder: tracked-only tools see it for the first time (2026-11-01); read its exit code before any push, never in the same command (2026-11-05: a push went out red).
-Before the closeout entry, run Step 6b over the whole conversation, not only since the last slurp (operator, 2026-10-20: "why did I had to remind
-you"): every operator message in both passes traced to its entry in the governed record; an item an earlier slurp missed is written now.
-One more memory-keeper `progress` entry, key `session.closeout.<YYYYMMDD>.<topic>`: Session / Workstream, Scope, Completed, Files Changed, Decisions, Open Issues, Next Actions, Persistence Status
-(memory-keeper, project-context, checkpoints, commits).
+Closeout writes the whole-chat record into the project (`docs/history/session-records/session-record-<stamp>.md`, from skill-ai-it `templates/session-record.md`, or the project's equivalent): each
+operator message with its destination, each agent with its output, follow-ups by owner, defects in source material, unmerged proposals, and side effects outside the repositories.
+
+Every session record, in close or in-detail mode, carries two tables (operator, 2026-11-16, after a Codex record that had both):
+- **Coverage table**: the report's table (below), one row per Step 3 item, written into the record, not only shown in chat.
+- **Dependency reviews**: one row per document whose `Last reviewed` the session changed or whose `just stale` finding it cleared: Document, Full read scope before edits, Review result. Run `just
+  stale` after the session's last commit too: a commit can make documents stale that passed before it. No date changed: say so in one line.
+
+Decisions taken after a close are slurped before the next commit: memory, `record_decision`, then a sweep for pages still calling them open. Re-run the project's check after the first commit of a
+previously untracked folder: tracked-only tools see it for the first time (2026-11-01); read its exit code before any push, never in the same command (2026-11-05: a push went out red). Before the
+closeout entry, run Step 6b over the whole conversation, not only since the last slurp (operator, 2026-10-20: "why did I had to remind you"): every operator message in both passes traced to its entry
+in the governed record; an item an earlier slurp missed is written now. One more memory-keeper `progress` entry, key `session.closeout.<YYYYMMDD>.<topic>`: Session / Workstream, Scope, Completed,
+Files Changed, Decisions, Open Issues, Next Actions, Persistence Status (memory-keeper, project-context, checkpoints, commits).
 
 ## Report — the coverage table
-One row per Step 3 item. No cell may be blank: write the destination, or `not needed` with the reason.
+One row per Step 3 item. No cell may be blank: write the destination, or `not needed` with the reason. A session record (Step 8) carries this same table and the dependency-review table.
 
 | #   | Item | Type | memory-keeper key | project-context | Governed file | Status |
 | --- | ---- | ---- | ----------------- | --------------- | ------------- | ------ |
 
-Then: the boundary used (which slurp), whether the passes came from the transcript (required after a compaction), how many user messages and side-effect actions the two passes found, the repos and files checked against
-companion rules, the Step 6b result, and the last memory-keeper and project-context timestamps.
+Then: the boundary used (which slurp), whether the passes came from the transcript (required after a compaction), how many user messages and side-effect actions the two passes found, the repos and
+files checked against companion rules, the Step 6b result, and the last memory-keeper and project-context timestamps.
 
 ## Red flags — stop and route the item
-| Thought                                           | Reality                                                                       |
-| ------------------------------------------------- | ----------------------------------------------------------------------------- |
-| "The scripts were throwaway, nobody asked"        | Step 5a is mandatory: judge each; promote the likely-reused ones, unprompted  |
-| "No repo file changed, so no change-log entry."   | Operational events are durable; the change log is where the next agent looks. |
-| "It is in memory-keeper, so it is captured."      | Memory is not the project's record. Step 6 applies.                           |
-| "Nobody decided it, so there is nothing to save." | An undecided proposal is saved as open, or it is lost.                        |
-| "The rule is obvious from the code."              | Agents read the rules file, not the code. Write the rule.                     |
-| "The status file will be updated next session."   | A stale status source misleads the next reader now.                           |
-| "The time is about HH:MM."                        | Run `date`.                                                                   |
-| "The compaction summary covers the early part"    | It is lossy. Run `scripts/transcript_passes.py` on the raw transcript        |
-| "The agents' reports were in the chat, so they are captured" | Relayed is not recorded. Read `--reports`; route each flagged item to a file (2026-11-01: 64 proposals missed) |
-| "Pass 3 shows each agent's report" | It shows one line. `--reports` prints them whole |
-| "The close was earlier; these decisions came after" | Work after a close reopens it: slurp it before the commit |
-| "I saved a summary earlier, so that work is done" | A mid-session note is not a slurp; the boundary is the last slurp (Step 2)     |
-| "I wrote CHANGELOG entries as I worked, so it is covered" | Not until each operator message is traced to one (6b); a 2026-10-20 rename and a half-done review had none |
-| "Close only needs the delta since the last slurp" | Close re-runs 6b over the whole chat: an item an earlier slurp missed stays missed |
-| "The early part of the chat is covered"           | Walk it in order (Step 3); early incidents and ops are the ones that get lost |
-| "One row for all the decisions is enough"         | One decision, one row, one record_decision                                    |
-| "The skill was not invoked, so nothing is owed"   | Touching its domain engaged it; Step 5b applies                               |
-| "The skill file is written; committing is another repo" | Uncommitted is not written back; commit it in the skills repo (Step 5b)  |
-| "Another session's edits are in that skill file, so I leave it dirty" | They are write-backs under the same contract: commit them with yours (say so in the message) or ask; never report 6b passed with a dirty skill (2026-10-26) |
-| "Its edits are write-backs, so I commit them with mine" | Not while that session is live (`ListAgents` shows it busy): its files may be half-written. Stage only your own lines (skill-coder version-control-and-review, two sessions), test the exported index, tell it what you left, and report its files as its own open work, not a failed 6b (2026-11-05) |
-| "Pass 1 lists every approval I gave" | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the user count with the raw transcript when approvals matter |
-| "The reference entry is there, so the write-back is read back" | Read back the skill's CHANGELOG line and version too: an entry added after the CHANGELOG line was written is not in it (2026-10-26) |
-| "The changed file is recorded; its index can wait" | Companion rules are part of the slurp (Step 6)                               |
-| "No compaction, so I can walk it from context"    | Run `transcript_passes.py` on every slurp of a long session (2026-10-20: two slurps missed four items) |
-| "It is in memory and this project's change log"  | Each item also lands in the record of the repo that owns it: a skill's ROADMAP or SCRATCHPAD, `governance/change-log.md` |
-| "The question I asked was not answered"           | An unanswered question is an undecided proposal: SCRATCHPAD Open items                         |
-| "Other repos' trackers are not this slurp's job" | Work that makes another repo's ROADMAP item true is a status change there (Step 6)              |
-| "Freshness fails; set Last reviewed and it passes" | Only after a full re-read against sources: an impact check is not a review. Review it (or delegate) with a dated note, or say only an impact check was done and ask (2026-11-06: ten dates set that way, reviewed for real the same evening) |
-| "It is in the commit message"                    | A commit message is not the record: a refused commit, a re-dated file or a retried push goes in the CHANGELOG too (2026-10-21: two incidents found only in commit messages) |
-| "The outbox lines are written; sync them"       | Reread each line before `just sync-projects --apply`: a hub line is program-facing, so it states the evidence level ("pinned in versions.yaml", not "running on the host"; "unverified" until access is read) and carries only what the operator scoped (2026-11-09: a hub line said "confirms" from a source pin and passed an unrequested critique of another project; a correction followed) |
+| Thought                                                       | Reality                                                                                                                              |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| "The scripts were throwaway, nobody asked"                    | Step 5a is mandatory: judge each; promote the likely-reused ones, unprompted                                                         |
+| "No repo file changed, so no change-log entry."               | Operational events are durable; the change log is where the next agent looks.                                                        |
+| "It is in memory-keeper, so it is captured."                  | Memory is not the project's record. Step 6 applies.                                                                                  |
+| "Nobody decided it, so there is nothing to save."             | An undecided proposal is saved as open, or it is lost.                                                                               |
+| "The rule is obvious from the code."                          | Agents read the rules file, not the code. Write the rule.                                                                            |
+| "The status file will be updated next session."               | A stale status source misleads the next reader now.                                                                                  |
+| "The time is about HH:MM."                                    | Run `date`.                                                                                                                          |
+| "The compaction summary covers the early part"                | It is lossy. Run `scripts/transcript_passes.py` on the raw transcript                                                                |
+| "The agents' reports were in the chat, so they are captured"  | Relayed is not recorded. Read `--reports`; route each flagged item to a file (2026-11-01: 64 proposals missed)                       |
+| "Pass 3 shows each agent's report"                            | It shows one line. `--reports` prints them whole                                                                                     |
+| "The close was earlier; these decisions came after"           | Work after a close reopens it: slurp it before the commit                                                                            |
+| "I saved a summary earlier, so that work is done"             | A mid-session note is not a slurp; the boundary is the last slurp (Step 2)                                                           |
+| "I wrote CHANGELOG entries as I worked, so it is covered"     | Not until each operator message is traced to one (6b); a 2026-10-20 rename and a half-done review had none                           |
+| "Close only needs the delta since the last slurp"             | Close re-runs 6b over the whole chat: an item an earlier slurp missed stays missed                                                   |
+| "The early part of the chat is covered"                       | Walk it in order (Step 3); early incidents and ops are the ones that get lost                                                        |
+| "One row for all the decisions is enough"                     | One decision, one row, one record_decision                                                                                           |
+| "The skill was not invoked, so nothing is owed"               | Touching its domain engaged it; Step 5b applies                                                                                      |
+| "The skill file is written; committing is another repo"       | Uncommitted is not written back; commit it in the skills repo (Step 5b)                                                              |
+| "Another session's edits are in that skill file, so I leave   | They are write-backs under the same contract: commit them with yours (say so in the message) or ask; never report 6b passed with a   |
+|   it dirty"                                                   |   dirty skill (2026-10-26)                                                                                                           |
+| "Its edits are write-backs, so I commit them with mine"       | Not while that session is live (`ListAgents` shows it busy): its files may be half-written. Stage only your own lines (skill-coder   |
+|                                                               |   version-control-and-review, two sessions), test the exported index, tell it what you left, and report its files as its own open    |
+|                                                               |   work, not a failed 6b (2026-11-05)                                                                                                 |
+| "Pass 1 lists every approval I gave"                          | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the    |
+|                                                               |   user count with the raw transcript when approvals matter                                                                           |
+| "The reference entry is there, so the write-back is           | Read back the skill's CHANGELOG line and version too: an entry added after the CHANGELOG line was written is not in it (2026-10-26)  |
+|   read back"                                                  |                                                                                                                                      |
+| "The changed file is recorded; its index can wait"            | Companion rules are part of the slurp (Step 6)                                                                                       |
+| "No compaction, so I can walk it from context"                | Run `transcript_passes.py` on every slurp of a long session (2026-10-20: two slurps missed four items)                               |
+| "It is in memory and this project's change log"               | Each item also lands in the record of the repo that owns it: a skill's ROADMAP or SCRATCHPAD, `governance/change-log.md`             |
+| "The question I asked was not answered"                       | An unanswered question is an undecided proposal: SCRATCHPAD Open items                                                               |
+| "Other repos' trackers are not this slurp's job"              | Work that makes another repo's ROADMAP item true is a status change there (Step 6)                                                   |
+| "Freshness fails; set Last reviewed and it passes"            | Only after a full re-read against sources: an impact check is not a review. Review it (or delegate) with a dated note, or say only   |
+|                                                               |   an impact check was done and ask (2026-11-06: ten dates set that way, reviewed for real the same evening)                          |
+| "It is in the commit message"                                 | A commit message is not the record: a refused commit, a re-dated file or a retried push goes in the CHANGELOG too (2026-10-21: two   |
+|                                                               |   incidents found only in commit messages)                                                                                           |
+| "The outbox lines are written; sync them"                     | Reread each line before `just sync-projects --apply`: a hub line is program-facing, so it states the evidence level ("pinned in      |
+|                                                               |   versions.yaml", not "running on the host"; "unverified" until access is read) and carries only what the operator scoped            |
+|                                                               |   (2026-11-09: a hub line said "confirms" from a source pin and passed an unrequested critique of another project; a                 |
+|                                                               |   correction followed)                                                                                                               |
