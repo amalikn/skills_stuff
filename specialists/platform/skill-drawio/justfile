@@ -93,6 +93,7 @@ check: _require-venv
     @just example-check
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
     @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
+    @just lint
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
@@ -207,6 +208,17 @@ profile-render *args: _require-venv
 [positional-arguments]
 count-crossings *args: _require-venv
     @{{py}} scripts/count_crossings.py "$@"
+
+# [read-only] Draw an ASCII flow diagram for Markdown (box chains with exits, grids, columns) from a JSON spec: just ascii-flow-render spec.json
+# ASCII is the immediate documentation diagram; a draw.io drawing only when explicitly asked (operator, 2026-11-16).
+[positional-arguments]
+ascii-flow-render *args: _require-venv
+    @{{py}} scripts/ascii_flow_render.py "$@"
+
+# [read-only] Lint and format-check new Python with ruff (ruff.toml lists the pre-2026-11-16 files it leaves alone): just lint
+lint:
+    @uvx ruff check --config "{{justfile_directory()}}/ruff.toml" "{{justfile_directory()}}"
+    @uvx ruff format --check --config "{{justfile_directory()}}/ruff.toml" "{{justfile_directory()}}"
 
 # Render every consumer (consumers.yaml) to a scratch folder and compare with a baseline: just consumer-check --out /tmp/after --compare /tmp/before
 # Baseline with an older engine: --engine <worktree>/specialists/platform/skill-drawio/scripts; a look key: --look e2e_row_search=true (scratch only)

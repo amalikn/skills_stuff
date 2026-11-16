@@ -225,7 +225,7 @@ Never rebuild a hand-edited file from a script: that silently throws away the op
 
 When the signs disagree (a banner on a file the operator says they edited), stop and ask; do not guess.
 
-> **Learned 2026-11-12** · page layouts without flows · VERIFIED_PRIMARY (four pages written, `page_audit()` clean, byte drift check proven to fail by changing the data) · Source: apn
+> **Learned 2026-11-12** · page layouts without flows · VERIFIED_PRIMARY · Source: four pages written, `page_audit()` clean, byte drift check proven to fail by changing the data; apn
 > enterprise-strategy `scripts/build_one_pagers_drawio.py` (ee9046df), screenshots `references/screenshots/20261112-one-pager-pages/` · Falsifier: two renders of the same data that differ.
 
 A page that is a layout, not a flow (management one-pagers: cards, a table of boxes, a milestone line), is built straight with `drawio.mxfile.Page.box` and `label`, one id prefix per page, wrapped
@@ -340,3 +340,33 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 >     @{{drawio_py}} "{{drawio}}/assemble_flowmap.py" --master docs/vagrant-flows/parts/master.yaml --out docs/vagrant-flows/vagrant_flows.yaml --write
 >     @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root docs/vagrant-flows --map vagrant_flows.yaml --write
 > ```
+
+## ASCII diagrams in Markdown, first
+
+> **Learned 2026-11-16** · ASCII flows for documents · VERIFIED_PRIMARY · Source: apn smc-resiliency remote conversion plan and OpenRemote assessment
+> (18 diagrams drawn, `ascii_box_check.py` clean) · Falsifier: a drawn chain whose `|` edges or arrows leave their column under the edge checker
+> A document's diagram is ASCII first (operator, 2026-11-16); a draw.io drawing only when explicitly asked. Hand-drawn ASCII flows drift by a column; drawing
+> them from a JSON spec with `scripts/ascii_flow_render.py` pads every box to its width and puts each arrow at the box centre (`indent + 1 + width // 2`), so the
+> edge checker stays clean. A grid renderer alone (UNC's `ascii_box_render.py`) cannot draw arrows or side exits; fan-out arrows over columns must be
+> computed from each column's start, not typed.
+
+```python
+# skill-drawio scripts/ascii_flow_render.py (2026-11-16): a chain of boxes, arrows under the centre, an exit on the first text line
+def chain(steps: list[dict], width: int, indent: int = 2) -> list[str]:
+  out: list[str] = []
+  mid = indent + 1 + width // 2
+  for i, step in enumerate(steps):
+    for j, row in enumerate(box(step["lines"], width)):
+      line = " " * indent + row
+      if step.get("exit") and j == 1:
+        line += " --> " + step["exit"]
+      out.append(line.rstrip())
+    if i < len(steps) - 1:
+      label = step.get("label")
+      out.append(" " * mid + "|" + ("  " + label if label else ""))
+      out.append(" " * mid + "v")
+  return out
+```
+
+No screenshot: the output is text in the document itself.
+

@@ -184,3 +184,18 @@ input (observed 2026-10-19).
 > extra = "".join(f" {k}={quoteattr(v)}" for k, v in (("link", link), ("tooltip", tooltip), ("tags", " ".join(tags))) if v)
 > return f'<UserObject id="{cid}" label={quoteattr(label)}{extra}><mxCell {attrs}>{body}</mxCell></UserObject>'
 > ```
+
+> **Learned 2026-11-11** · core, hand-built Gantt chart (the engine has no Gantt, sequence, ER or rack type) · VERIFIED_PRIMARY · Source:
+> prototypes/business-views/draw_gantt.py (uncommitted at writing; page export reviewed with `just drawio-export`) · Falsifier: a Gantt built this way that draw.io
+> will not open, or whose bars drift from their dates when the page is resized.
+> A time chart needs no special shape: a bar is a plain rectangle vertex placed at `x = origin + days * px_per_day` with `width = (end - start) * px_per_day`
+> (minimum about 12 px so a one-week task stays visible), and a month gridline or "today" marker is an edge cell with `sourcePoint`/`targetPoint` and no
+> source or target cell. Late and at-risk read from a red outline (not colour alone), a proposal from a dashed outline with a white fill. Two faults showed only in
+> the exported PNG: a band placed at the same y as the month header overlapped it, and a tag drawn to the right of a bar that ends on the axis end fell off the
+> page, so tags for bars that reach the end go to the left. Read the export before showing a chart.
+> ```python
+> box(x_of(s), y + 3, max((e - s).days * PX, 12), ROW - 10, "", style)   # bar; x_of(d) = GX + (d - START).days * PX
+> ```
+> draw.io's `jgraph/drawio-diagrams` `examples/` folder (75 entries on branch `dev`, listed 2026-11-11) holds `GanttChart.xml`, `gantt-table.drawio`, timeline,
+> sequence, rack, network and UML files; their style keys were not opened: `UNVERIFIED`. Screenshot pending: the export is under the enterprise-strategy
+> project's `docs/flows/drawio/`, not copied here.

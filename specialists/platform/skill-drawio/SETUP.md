@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing and running skill-drawio, both as a pack under development and from a calling project
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-16
 Summary: >-
   A working setup needs mise, just, Python 3.11 or later with PyYAML for flow maps, and draw.io desktop only for exporting pages to images; the pack's
   own venv lives in the skills working cache.
@@ -24,19 +24,20 @@ Depends on: justfile, .mise.toml, requirements.txt, compatibility.yaml
 
 ## Prerequisites
 
-| Tool           | Version                                         | Pinned in                                        | Needed for                                                                     |
-| -------------- | ----------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------ |
-| mise           | any current                                     | -                                                | Installing the pinned Python (`just bootstrap`)                                |
-| just           | any current                                     | -                                                | The task catalog (`just --list`)                                               |
-| Python         | 3.14 for the pack's venv; 3.11 or later for     | `.mise.toml`; `REQUIRES_PYTHON = (3, 11)` in     | Everything                                                                     |
-|                |   the helpers                                   |   each front end                                 |                                                                                |
-| PyYAML         | 6.0.3                                           | `tests/requirements.txt`                         | Loading a flow map (`flowmap.model`, imported at the edge); the rest is stdlib |
-|                |                                                 |   (via `requirements.txt`)                       |                                                                                |
-| draw.io        | 32.5.5 verified (32.4.1 earlier)                | `compatibility.yaml`                             | Only `drawio_export.py` (pages to images); reading and rendering need no app   |
-|   desktop      |                                                 |                                                  |                                                                                |
-| Playwright     | any with a headless Chromium or Edge; the       | -                                                | Only `just viewer-click` (`scripts/viewer_click.py`): clicks in draw.io's      |
-|                |   viewer `js/viewer-static.min.js` of the       |                                                  |   viewer to test a click action (`look.click_isolate`); the pack's venv has     |
-|                |   draw.io version tested (jgraph/drawio tag)    |                                                  |   no Playwright                                                                |
+| Tool        | Version                                                  | Pinned in                                  | Needed for                                                                     |
+| ----------- | -------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------ |
+| mise        | any current                                              | -                                          | Installing the pinned Python (`just bootstrap`)                                |
+| just        | any current                                              | -                                          | The task catalog (`just --list`)                                               |
+| uv (`uvx`)  | any current; fetches ruff on demand                      | `ruff.toml` (rules)                        | `just lint`, part of `just check` (since 2026-11-16)                           |
+| Python      | 3.14 for the pack's venv; 3.11 or later for the helpers  | `.mise.toml`; `REQUIRES_PYTHON = (3, 11)`  | Everything                                                                     |
+|             |                                                          |   in each front end                        |                                                                                |
+| PyYAML      | 6.0.3                                                    | `tests/requirements.txt`                   | Loading a flow map (`flowmap.model`, imported at the edge); the rest is stdlib |
+|             |                                                          |   (via `requirements.txt`)                 |                                                                                |
+| draw.io     | 32.5.5 verified (32.4.1 earlier)                         | `compatibility.yaml`                       | Only `drawio_export.py` (pages to images); reading and rendering need no app   |
+|   desktop   |                                                          |                                            |                                                                                |
+| Playwright  | any with a headless Chromium or Edge; the viewer         | -                                          | Only `just viewer-click` (`scripts/viewer_click.py`): clicks in draw.io's      |
+|             |   `js/viewer-static.min.js` of the draw.io version       |                                            |   viewer to test a click action (`look.click_isolate`); the pack's venv has    |
+|             |   tested (jgraph/drawio tag)                             |                                            |   no Playwright                                                                |
 
 ## Bootstrap
 
@@ -54,15 +55,16 @@ front ends with its own interpreter (it needs PyYAML for maps), from the project
 
 ## Environment
 
-No secrets. Optional variables: `BROWSER_PY`, an interpreter with Playwright for `just viewer-click` (default `python3` on `PATH`);
-`SKILL_DRAWIO_WORKERS`, band-search worker processes (default the cores less one, at most 8; 1 runs them in process); `SKILL_DRAWIO_CACHE`, the
-render-cache folder (default `~/.cache/skill-drawio`; `off` disables); `SKILL_DRAWIO_CELL`, the crossing index's cell size (default 1000). `just profile-render` profiles a slow render. The draw.io binary is found on `PATH` (`drawio`, `draw.io`), then in the usual install paths (`scripts/drawio/export.py` `CANDIDATES`: the macOS app bundle,
-`/usr/bin/drawio`, `/opt/drawio/drawio`, the Windows default); `--binary` overrides it.
+No secrets. Optional variables: `BROWSER_PY`, an interpreter with Playwright for `just viewer-click` (default `python3` on `PATH`); `SKILL_DRAWIO_WORKERS`, band-search worker processes (default the
+cores less one, at most 8; 1 runs them in process); `SKILL_DRAWIO_CACHE`, the render-cache folder (default `~/.cache/skill-drawio`; `off` disables); `SKILL_DRAWIO_CELL`, the crossing index's cell size
+(default 1000). `just profile-render` profiles a slow render. The draw.io binary is found on `PATH` (`drawio`, `draw.io`), then in the usual install paths (`scripts/drawio/export.py` `CANDIDATES`: the
+macOS app bundle, `/usr/bin/drawio`, `/opt/drawio/drawio`, the Windows default); `--binary` overrides it.
 
 ## First run
 
-`just consumer-check` renders the projects listed in `consumers.yaml` (absolute paths on the operator's Mac; a consumer whose folder is missing is reported, not skipped silently) into a scratch folder only. `just example-check` checks that `examples/shop/flows.yaml` is what `examples/shop/parts/` assemble to and prints that it is valid, its drawing is current and the routed pages pass every layout audit. `just drawio-export
-examples/shop/drawio/flows.drawio --out-dir <folder> --pages 1` then proves the desktop export (one PNG in the folder).
+`just consumer-check` renders the projects listed in `consumers.yaml` (absolute paths on the operator's Mac; a consumer whose folder is missing is reported, not skipped silently) into a scratch folder
+only. `just example-check` checks that `examples/shop/flows.yaml` is what `examples/shop/parts/` assemble to and prints that it is valid, its drawing is current and the routed pages pass every layout
+audit. `just drawio-export examples/shop/drawio/flows.drawio --out-dir <folder> --pages 1` then proves the desktop export (one PNG in the folder).
 
 ## Troubleshooting
 

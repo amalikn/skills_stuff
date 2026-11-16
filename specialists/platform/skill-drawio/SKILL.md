@@ -31,8 +31,8 @@ file or diagram generated from data; not for the domain facts shown (use that do
 ## Role and non-goals
 
 This skill holds how the operator's projects draw with draw.io: diagrams are data first (a YAML map is the source; the drawing is rendered from it and never edited by hand), routed and audited by
-code, exported and looked at before they are shown. It ships the engine that does this (packages `scripts/drawio/`, `scripts/flowmap/` and `scripts/flowtrace/`), first built for unified-network-controller's flow map and
-promoted here on 2026-10-19.
+code, exported and looked at before they are shown. It ships the engine that does this (packages `scripts/drawio/`, `scripts/flowmap/` and `scripts/flowtrace/`), first built for
+unified-network-controller's flow map and promoted here on 2026-10-19.
 
 Non-goals: it holds no facts about the systems a diagram shows (the domain skill does), it does not decide a project's components or flows, and it never authorises a write outside the project's own
 drawing files.
@@ -47,62 +47,58 @@ drawing files.
 
 ## Route the task
 
-| Task                                                                                    | Read                                   |
-| --------------------------------------------------------------------------------------- | -------------------------------------- |
-| Start a diagram from data; map, schema, renderer, drift check; hand-edited drawings     | [references/data-first-diagrams.md](references/data-first-diagrams.md) |
-| Write or parse the XML: mxfile, root cells, layers, UserObject, links, compressed pages | [references/file-format.md](references/file-format.md) |
-| Place boxes and route arrows: rows, barycentre, channels, tracks, ports, labels, sizing | [references/layout-and-routing.md](references/layout-and-routing.md) |
-| Check a routed drawing; the audits, their thresholds, proving each can fail             | [references/layout-audits.md](references/layout-audits.md) |
-| Colours, contrast, thin grey, one layer per colour, legends, bold labels                | [references/visual-style.md](references/visual-style.md) |
-| Export pages with the desktop CLI; review before showing anyone                         | [references/export-and-self-review.md](references/export-and-self-review.md) |
+| Task                                                                                                       | Read                                   |
+| ---------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Start a diagram from data; map, schema, renderer, drift check; hand-edited drawings                        | [references/data-first-diagrams.md](references/data-first-diagrams.md) |
+| Write or parse the XML: mxfile, root cells, layers, UserObject, links, compressed pages                    | [references/file-format.md](references/file-format.md) |
+| Place boxes and route arrows: rows, barycentre, channels, tracks, ports, labels, sizing                    | [references/layout-and-routing.md](references/layout-and-routing.md) |
+| Check a routed drawing; the audits, their thresholds, proving each can fail                                | [references/layout-audits.md](references/layout-audits.md) |
+| Colours, contrast, thin grey, one layer per colour, legends, bold labels                                   | [references/visual-style.md](references/visual-style.md) |
+| Export pages with the desktop CLI; review before showing anyone                                            | [references/export-and-self-review.md](references/export-and-self-review.md) |
 | Flowcharts, vertical swimlanes and BPMN from a map; read a map instead of the code; hold a map to the code | [references/charts-and-trace.md](references/charts-and-trace.md) |
-| Read an existing drawing as data; group offsets; port labels to lines                   | [references/reading-drawings.md](references/reading-drawings.md) |
-| Closeout: record what this engagement taught                                            | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
+| Read an existing drawing as data; group offsets; port labels to lines                                      | [references/reading-drawings.md](references/reading-drawings.md) |
+| Closeout: record what this engagement taught                                                               | [references/evolution-and-write-back.md](references/evolution-and-write-back.md) |
 
 ## The pack's tools
 
-Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the top of `scripts/`; the library is in two packages. Catalogue with inputs, outputs and safety:
-[scripts/README.md](scripts/README.md).
+Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the top of `scripts/`; the library is in two packages. Catalogue with inputs, outputs and safety: [scripts/README.md](scripts/README.md).
 
-| Entry point                  | What it does                                                                                 |
-| ---------------------------- | -------------------------------------------------------------------------------------------- |
-| `scripts/render_flowmap.py`  | Validate a flow map and render it (`--write`), report drift, list flows, or audit the layout |
-| `scripts/drawio_export.py`   | Export pages (counted from 1) and layers to PNG/SVG with the desktop app, under a timeout    |
-| `scripts/profile_render.py`  | Profile one render (load, render, heaviest functions); writes nothing                        |
-| `scripts/drawio_read.py`     | Print an existing drawing's boxes and connections (compressed pages decoded); read-only      |
+| Entry point                  | What it does                                                                                  |
+| ---------------------------- | --------------------------------------------------------------------------------------------- |
+| `scripts/render_flowmap.py`  | Validate a flow map and render it (`--write`), report drift, list flows, or audit the layout  |
+| `scripts/drawio_export.py`   | Export pages (counted from 1) and layers to PNG/SVG with the desktop app, under a timeout     |
+| `scripts/profile_render.py`  | Profile one render (load, render, heaviest functions); writes nothing                         |
+| `scripts/drawio_read.py`     | Print an existing drawing's boxes and connections (compressed pages decoded); read-only       |
 | `scripts/trace_sync.py`      | Hold a map to the code: suspect steps, uncited code, stale words; `--accept` records a review |
 | `scripts/trace_query.py`     | Ask a map what happens: a flow, the steps citing a file, what writes or fails                 |
-| `scripts/commit_hook.sh`      | Git pre-commit body: run a project's check when a commit touches its watched folder           |
-| `scripts/yaml_list_patch.py` | Add values to flow-style lists in a YAML map without losing comments; plan, then `--apply`   |
+| `scripts/commit_hook.sh`     | Git pre-commit body: run a project's check when a commit touches its watched folder           |
+| `scripts/yaml_list_patch.py` | Add values to flow-style lists in a YAML map without losing comments; plan, then `--apply`    |
 
-| Package            | Modules                                                                                                       |
-| ------------------ | ------------------------------------------------------------------------------------------------------------- |
-| `scripts/drawio/`  | `mxfile` (build pages and files), `audit` (layout audits), `route` (tracks, ports, untwist), `read`, `export` |
-| `scripts/flowmap/` | `profile`, `model`, `overview_layout`, `overview`, `e2e_grid`, `e2e`, `pages`                                 |
-| `scripts/flowmap/flowchart/` | `graph`, `route`, `page`, `bpmn`, `pages`: flowcharts, vertical swimlanes and BPMN                  |
-| `scripts/flowtrace/` | `fingerprint`, `lockfile`, `coverage`, `query`: a map held to the code                                       |
+| Package                      | Modules                                                                                                       |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `scripts/drawio/`            | `mxfile` (build pages and files), `audit` (layout audits), `route` (tracks, ports, untwist), `read`, `export` |
+| `scripts/flowmap/`           | `profile`, `model`, `overview_layout`, `overview`, `e2e_grid`, `e2e`, `pages`                                 |
+| `scripts/flowmap/flowchart/` | `graph`, `route`, `page`, `bpmn`, `pages`: flowcharts, vertical swimlanes and BPMN                            |
+| `scripts/flowtrace/`         | `fingerprint`, `lockfile`, `coverage`, `query`: a map held to the code                                        |
 
 ## Using the flow-map engine in a project
 
-- **Every map is written in parts (the standard; operator, 2026-10-27: "make it as a standard for skill-drawio").** The source is `<map folder>/parts/master.yaml` (the
-  `drawing:` block and `#@include` lines) plus one part per component group and per flow family (or flow section); `flows.yaml` is GENERATED from them by
-  `assemble_flowmap.py` and the drawing is rendered from that. Edit only the parts. The project's `flows` recipe assembles then renders, and `just check`
-  runs the assembly drift check, the render drift check and `--audit`. A map that started as one file is converted with `split_flowmap.py --apply`
-  (proved to load the same; flows split by section comments, else by `drawing.families`). Schema: [schemas/flowmap.schema.json](schemas/flowmap.schema.json)
-  (copy and narrow it). Worked example: [examples/shop/parts/master.yaml](examples/shop/parts/master.yaml) (`just example`).
-- **Project with its own constants:** put them in the map's `drawing:` block (kind colours, tiers, the band below, families, output, banner
-  commands) and call `render_flowmap.py --map <map> --schema <its schema>` directly; unified-network-controller retired its wrapper this way on
-  2026-10-19. Only a project that needs code of its own builds a `flowmap.profile.Profile` and calls `flowmap.pages.render` / `evaluate`,
-  loading the pack through its one seam to the skills.
-- Optional map features (2026-10-21): `status` on components, flows and steps, and an `options` block drawn
-  as a decisions page after the Overview, or `decision_pages` drawn as one page per subject (never called options; `option_pages` still read) ([references/data-first-diagrams.md](references/data-first-diagrams.md)); flow pages draw
-  steps and lane heads as flowchart symbols derived from the map, and the Overview and End-to-end boxes take the same symbols (`look.component_shapes`) ([references/visual-style.md](references/visual-style.md)); every look choice is a
-  `drawing.look` key.
-- One map, four views: step pages, `look.flowcharts`, `look.swimlanes` and `look.bpmn` ([references/charts-and-trace.md](references/charts-and-trace.md)). A map carrying a `trace:` block is held to its
-  code by `trace_sync.py` in the project's flow check; read it with `trace_query.py` before reading the code.
+- **Every map is written in parts (the standard; operator, 2026-10-27: "make it as a standard for skill-drawio").** The source is `<map folder>/parts/master.yaml` (the `drawing:` block and `#@include`
+  lines) plus one part per component group and per flow family (or flow section); `flows.yaml` is GENERATED from them by `assemble_flowmap.py` and the drawing is rendered from that. Edit only the
+  parts. The project's `flows` recipe assembles then renders, and `just check` runs the assembly drift check, the render drift check and `--audit`. A map that started as one file is converted with
+  `split_flowmap.py --apply` (proved to load the same; flows split by section comments, else by `drawing.families`). Schema: [schemas/flowmap.schema.json](schemas/flowmap.schema.json) (copy and narrow it). Worked example:
+  [examples/shop/parts/master.yaml](examples/shop/parts/master.yaml) (`just example`).
+- **Project with its own constants:** put them in the map's `drawing:` block (kind colours, tiers, the band below, families, output, banner commands) and call `render_flowmap.py --map <map> --schema
+  <its schema>` directly; unified-network-controller retired its wrapper this way on 2026-10-19. Only a project that needs code of its own builds a `flowmap.profile.Profile` and calls
+  `flowmap.pages.render` / `evaluate`, loading the pack through its one seam to the skills.
+- Optional map features (2026-10-21): `status` on components, flows and steps, and an `options` block drawn as a decisions page after the Overview, or `decision_pages` drawn as one page per subject
+  (never called options; `option_pages` still read) ([references/data-first-diagrams.md](references/data-first-diagrams.md)); flow pages draw steps and lane heads as flowchart symbols derived from the map, and the Overview and End-to-end
+  boxes take the same symbols (`look.component_shapes`) ([references/visual-style.md](references/visual-style.md)); every look choice is a `drawing.look` key.
+- One map, four views: step pages, `look.flowcharts`, `look.swimlanes` and `look.bpmn` ([references/charts-and-trace.md](references/charts-and-trace.md)). A map carrying a `trace:` block is held to its code by `trace_sync.py` in the
+  project's flow check; read it with `trace_query.py` before reading the code.
 - A refactor of the engine must leave every consumer's drawing byte-identical; prove it with the before and after files.
-- An engine change that alters drawings on purpose runs `just consumer-check` before the push, lists the consumers that change, and tells each
-  one (its hub or session) to run its own flows recipe, since its `just check` drifts until then (2026-11-06: taller diamonds pushed without it).
+- An engine change that alters drawings on purpose runs `just consumer-check` before the push, lists the consumers that change, and tells each one (its hub or session) to run its own flows recipe,
+  since its `just check` drifts until then (2026-11-06: taller diamonds pushed without it).
 
 ## Standing rules
 
@@ -112,12 +108,15 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 - A step's review is cleared only by `--accept` after reading its diff; a hook on a person's commits is installed by that person.
 - Export, crop, trace every arrow and fix before showing a drawing; never send an unreviewed first render.
 - Every subprocess (the draw.io CLI) has a timeout; a write takes `--write` or `--apply`.
-- A layout fault a reviewer sees (a crossing, an overlap, text past its box) is fixed in the engine's logic, never by hand in one map or
-  drawing, so every consumer gains (operator, 2026-10-26: "improve the logic in the skill, not like a manual handwork").
-- Navigation is one click: every box with a link (Overview index, a page's header, the E2E button) opens its page on a single click, because the
-  base layer is locked by default (`look.lock_base_layer`; operator, 2026-11-11: "make it a standard"). A map does not turn the lock off.
-- A step page's `‹ E2E page` button sits above the header's top-left corner, never beside its right end; the header moves down to make room
-  (`flowmap.pages.flow_header`; operator, 2026-11-11). The E2E pages are named "E2E" (`look.e2e_tab`).
+- A layout fault a reviewer sees (a crossing, an overlap, text past its box) is fixed in the engine's logic, never by hand in one map or drawing, so every consumer gains (operator, 2026-10-26:
+  "improve the logic in the skill, not like a manual handwork").
+- Navigation is one click: every box with a link (Overview index, a page's header, the E2E button) opens its page on a single click, because the base layer is locked by default
+  (`look.lock_base_layer`; operator, 2026-11-11: "make it a standard"). A map does not turn the lock off.
+- A step page's `‹ E2E page` button sits above the header's top-left corner, never beside its right end; the header moves down to make room (`flowmap.pages.flow_header`; operator, 2026-11-11). The E2E
+  pages are named "E2E" (`look.e2e_tab`).
+- ASCII first: a diagram in a document is ASCII, drawn with `just ascii-flow-render` (box chains with exits, grids, columns) and kept edge-clean; a draw.io drawing is generated only when it is
+  explicitly asked for (operator, 2026-11-16: "the ASCII scripts can be part of drawio as an immediate documentation and then drawio can generate proper diagrams when needed ... and explicitly
+  asked").
 
 ## Standing write-back contract
 
@@ -126,12 +125,11 @@ reference a future reader would open plus one CHANGELOG line under `## Unrelease
 `## skill-drawio write-back candidates`; skill-coder's `scripts/write_back.py --project-root <project> --skill skill-drawio` finds parked entries for the next engagement to promote. Format and
 classes: [references/evolution-and-write-back.md](references/evolution-and-write-back.md).
 
-**Evidence with every entry (operator, 2026-10-20; every calling project owes it).** A write-back that records how something is done carries
-(1) a **code excerpt** of the logic that does it: the few lines that matter (about 30 at most), as a fenced block with its source path and
-commit, secrets and customer identifiers removed; and (2) for anything with a visual surface (Nautobot, OpenWISP, a device web UI, a draw.io
-render) a **screenshot** as reference, saved under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image, what it
-shows and where it was taken. Site names, addresses, MACs and serials are redacted or the shot is taken on a lab or sample instance; when the
-surface is not live yet, the entry says "screenshot pending: <page>, after <deploy>" and the next engagement adds it.
+**Evidence with every entry (operator, 2026-10-20; every calling project owes it).** A write-back that records how something is done carries (1) a **code excerpt** of the logic that does it: the few
+lines that matter (about 30 at most), as a fenced block with its source path and commit, secrets and customer identifiers removed; and (2) for anything with a visual surface (Nautobot, OpenWISP, a
+device web UI, a draw.io render) a **screenshot** as reference, saved under `references/screenshots/<YYYYMMDD>-<slug>/` with a `readme.md` naming each image, what it shows and where it was taken. Site
+names, addresses, MACs and serials are redacted or the shot is taken on a lab or sample instance; when the surface is not live yet, the entry says "screenshot pending: <page>, after <deploy>" and the
+next engagement adds it.
 
 ## Evidence
 

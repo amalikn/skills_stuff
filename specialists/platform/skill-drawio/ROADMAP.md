@@ -33,13 +33,11 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
 
 ## Engine and evidence
 
+- [ ] **UNC's ASCII grid renderer and edge checker join `ascii_flow_render.py` here** (proposed 2026-11-16, operator chose skill-drawio for ASCII tools): `ascii_box_render.py`
+  and `ascii_box_check.py` live in unified-network-controller and smc-resiliency calls them by path; moving them is UNC's change, asked through the apn hub.
 - [ ] **Archcore flow-map spec and adoption guide** — unblocked by the second project; write them (see `.archcore/index.guide.md`).
 - [ ] **C-D16 on the current app** — re-check "static export draws orthogonal edges through boxes" on draw.io desktop 32.5.5 (checked only on 32.4.1; `compatibility.yaml`).
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (3.11 is not installed, so the declared floor is untested).
-- [x] **Audit and route around the notes band on step pages** (found 2026-11-06, smc-resiliency flow `vm-render`; audit done 2026-11-07: page_audit counts note cards as boxes, NoteAuditTests proves it fails; no consumer crosses a note today, so routing was left as it is, since making notes router obstacles moved smc-change from 44 to 49 crossings): an edge to a far branch
-  target runs across the note cards below the lanes and `--audit` reports clean; add the note cards to `box_crossings` (or a `note_crossings` audit),
-  prove it fails on the repro in `references/screenshots/20261106-notes-band-crossing/`, then route such edges above the notes. Done when the repro
-  audits red before the router change and the page renders without a crossing after it.
 - [ ] **SCRATCHPAD's "Open items tracker: this file" is read as a path** (seen 2026-11-06 and at 87f5356): `just rotate --apply` moves open items into a
   tracked file named `this`. Point the header at a real tracker (or the skill-ai-it rotate tool should treat "this file" as SCRATCHPAD itself). Done when
   a rotation leaves no file named `this`.
@@ -97,10 +95,15 @@ Sources: https://uspto.report/patent/grant/4953106 , https://eclipse.dev/elk/blo
 https://www.adaptagrams.org/documentation/libavoid.html , https://www.doi.org/10.1007/978-3-642-11805-0_22 ,
 https://vis.khoury.northeastern.edu/pubs/Wilson2024EvaluatingExtendingSpeedup/ , https://google-melange.com/archive/gsoc/2013/orgs/ogdf/projects/pawel_schmidt.html
 
-- [x] **2026-11-07 operator review (smc-resiliency step pages):** done 2026-11-07: (1) no arrow crosses a note card on any consumer (0 measured on smc-resiliency, unc, smc-change) and the audit now counts note cards (page_audit); (2) the State file and /data/confexts connectors no longer share a corridor once the first column's links run on its left (screenshot after-vagrant-e2e-corridor.png); (3) the `‹ E2E page` button (look back_button). The request was: (1) an arrow that runs below the lanes (a branch back, e.g. `6 No` on the
-  release page) crosses the step notes: grow the lowest lane vertically so the arrow's run stays inside it, above the notes; (2) two flows'
-  arrows share one corridor on an E2E page (State file to /data/confexts), "thought already addressed": unshare them; (3) a back button on
-  each step page to its family's E2E page, like the `step page ›` button.
 - [ ] **2026-11-07 (label on a run near a lane edge):** smc-resiliency commission-gps, `6 Yes` sits just under its line because the run is 10 px
   below the lane edge and a label centred on it would cross the edge (route_costs.label_spot keeps labels off lane edges since d92937f). Keep
   runs that carry a label at least half a label's height from a lane edge (the room reserved for runs), so the label sits on its line.
+
+## Diagram-type sources to keep (2026-11-11, operator: "keep note of the two links") `OPEN`
+
+- [draw.io diagram types](https://www.drawio.com/docs/diagram-types/): the catalogue of types draw.io documents. Read 2026-11-11 by category headings only (`VERIFIED_PRIMARY` for the list; per-type articles not opened).
+- [jgraph/drawio-diagrams, examples](https://github.com/jgraph/drawio-diagrams/tree/dev/examples) (branch `dev`, 75 entries listed 2026-11-11): real `.drawio` files for network, rack, sequence, UML deployment/component/timing, BPMN, Gantt and timeline. Candidate ground truth for shape style keys.
+- Operator's fit shortlist (advice, `UNVERIFIED` against the files): network topology, rack, sequence and timing, deployment/component, swimlane and BPMN choreography, dependency graph.
+- Not done: files not yet downloaded to `documents/` (verbatim, with a `readme.md` index); engine support for sequence, ER, rack and Gantt not checked.
+- Gantt of the enterprise-strategy program by phase (operator, 2026-11-11): hand-built, code in `prototypes/business-views/draw_gantt.py` (prototype; the next chat decides which business views become skill-drawio views). Drawing: enterprise-strategy `docs/flows/drawio/program-gantt-20261111_2103.drawio`. Promotion to `scripts/` needs tests, a recipe, a catalogue row and Args/Returns docstrings (skill-coder).
+- Open (not from this session): `just check` fails doc freshness on SETUP.md (justfile changed 2026-11-11, after Last reviewed 2026-11-07); `just test` fails because `scripts/flowmap/flow_head.py` (another session's uncommitted file) has no tests. Neither touched here.

@@ -155,7 +155,7 @@ me."
 > drawio_export.py docs/flows/drawio/unc-flows.drawio --out-dir half --pages 5 --scale 0.5     # page 5 whole
 > ```
 
-> **Learned 2026-11-12** · fonts in the CLI export · VERIFIED_PRIMARY (the same page exported with `fontFamily=Calibri` and with `fontFamily=Helvetica`) · Source: apn enterprise-strategy
+> **Learned 2026-11-12** · fonts in the CLI export · VERIFIED_PRIMARY · Source: the same page exported with `fontFamily=Calibri` and with `fontFamily=Helvetica`; apn enterprise-strategy
 > `slides/one-pagers-20261112_1752.drawio` (ee9046df), screenshots `references/screenshots/20261112-one-pager-pages/` · Falsifier: a Calibri label that exports in Calibri on the same machine.
 >
 > The desktop CLI export has no Calibri or Cambria: labels fall back to a serif. A drawing that must match an Office deck uses Helvetica for text and Georgia for titles; the deck keeps its own fonts.
