@@ -14,6 +14,11 @@ Last reviewed: 2026-10-27
 
 # skill-smc Changelog
 
+## 20261116_1859 — Solutions to platforms (no version change)
+
+`references/01_overview.md` section 2: the Raspberry Pi solution covers the `rct` booths and the Wi-Fi hubs (`wh`, `nbn_wh`); Community Wi-Fi sites are all x86
+(`rcp`, `nbn_accelerate`); management material says "recover themselves" for SMC recovery (operator, 16 Nov 2026; from apn enterprise-strategy).
+
 ## 20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)
 
 `references/07_hardware-overlay.md` Learned 2026-11-16, from the 2026-11-10 survey raw output re-read by smc-resiliency: Pi p1 free (rct and wh 138 to 140 MB,

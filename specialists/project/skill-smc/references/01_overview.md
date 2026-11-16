@@ -271,6 +271,8 @@ different* circuits as access-VLANs.
 Answers the operator gave to the enterprise-strategy clarification register (`/Volumes/Data/_ai/_project/project_stuff/apn/enterprise-strategy/requirements/clarification-register-20261006_1430.md`),
 `USER_STATED`. Where they differ from older statements in this pack, they win.
 
+- **Solutions to platforms (operator, 16 Nov 2026).** The Raspberry Pi solution covers the `rct` booths and the Wi-Fi hubs (`wh`, `nbn_wh`); Community Wi-Fi sites are all x86
+  (`rcp`, `nbn_accelerate`). Management material says "recover themselves", not "reset themselves", when it means an SMC recovering.
 - **Platforms.** `rct`, `wh` and `nbn_wh` are Raspberry Pi; every other flavour is x86. `rct` and `wh` are read-only (overlayroot); `nbn_wh` is not yet.
 - **Site counts.** `wh` 24 sites; `rcp` 18 production sites; `smc_ltp` 8 sites — `pia` is not low touch, although `big_push` lists it.
 - **VRRP.** Only aurukun (three SMCs, `nbn_accelerate`) runs keepalived; no `rcp`, `wh`, `nbn_wh` or `rct` site does.
