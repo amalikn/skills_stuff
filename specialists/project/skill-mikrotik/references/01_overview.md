@@ -32,8 +32,9 @@ and on the two `wh` switches tried.
 > Source: apn enterprise-strategy meeting deck, 16 Nov 2026 · Falsifier: the operator confirming that the RB450Gx4 at `10.255.0.5` is the only switch at those sites.
 
 - The survey above stands (it read RB450Gx4 units at `10.255.0.5`). The operator states the sites' switches are TP-Link. Not yet settled: whether the RB450Gx4 is the site router doing
-  switch duty and the switches proper are separate TP-Link units, or which flavors have which. Until settled, management material says "TP-Link switches" and names MikroTik only for
-  the `rct` Metal 52 ac access points and Litebooth's router.
+  switch duty and the switches proper are separate TP-Link units, or which flavors have which. Evidence so far: unified-network-controller's `docs/runbooks/site-onboarding-runbook.md`
+  lists "x86 SMC, TP-Link switches" for the x86 flavors (`rcp`, `nbn_accelerate`). Until settled, management material names no switch vendor (operator, 16 Nov 2026) and names MikroTik only
+  for the `rct` Metal 52 ac access points and Litebooth's router.
 
 ## Switch port and VLAN layout (rct, delye)
 
