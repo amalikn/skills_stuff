@@ -199,8 +199,8 @@ Read the file, not this pack's memory of it, before acting on a specific device 
   Anchor is still used but ends at the end of October 2026, and its licences lapse with it. This supersedes the earlier `cw-cnmaestro01` and `lt-cnmaestro` entries in
   [02_device-access-and-vault.md](02_device-access-and-vault.md); the operator confirmed both are retired (6 Oct 2026).
 - **Low-touch lost on Essentials (operator, 6 Oct 2026; confirmed 16 Nov 2026, `USER_STATED`).** Essentials has no API, so the low-touch onboarding and automation that cnMaestro
-  X provided are lost: new and replacement devices are no longer set up automatically. Moving back to cnMaestro X is possible (the licence is held), but the operator recommends against it to
-  reduce dependence on one vendor; the program plans low-touch through the Unified Network Controller instead (apn enterprise-strategy, 17 Nov 2026 meeting deck).
+  X provided are lost: new and replacement devices are no longer set up automatically. Moving back to cnMaestro X is possible (the licence is held; cnMaestro X was hosted by APN in AWS, not in Cambium's
+  cloud, but it still needs Cambium's Cloud Anchor: operator, 16 Nov 2026), but the operator recommends against it to reduce dependence on one vendor; the program plans low-touch through the Unified Network Controller instead (apn enterprise-strategy, 17 Nov 2026 meeting deck).
 - **Firmware.** Upgrades go through cnMaestro.
 - **NOC views.** Daily troubleshooting uses signal/SNR, client and radio-statistics views (Germain or Adam to confirm the full list).
 - **Replacements.** When a model or vendor runs out of stock, Rob researches and recommends the replacement. MikroTik and UniFi are being looked at; hardware is ordered, not yet tested.

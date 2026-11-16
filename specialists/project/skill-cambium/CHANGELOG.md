@@ -11,6 +11,11 @@ Last rotated: 20261029_1751
 
 # Changelog — skill-cambium
 
+## 20261116_1851 — cnMaestro X hosting (no version change)
+
+`references/01_overview.md`: cnMaestro X was hosted by APN in AWS, not in Cambium's cloud, and still needs Cambium's Cloud Anchor (operator, 16 Nov 2026; from apn
+enterprise-strategy).
+
 ## 20261116_1754 — Low-touch lost on cnMaestro Essentials, confirmed (no version change)
 
 Learned 2026-11-16 from apn enterprise-strategy (17 Nov meeting deck): `references/01_overview.md` Controllers and licences gains the operator's confirmation that
