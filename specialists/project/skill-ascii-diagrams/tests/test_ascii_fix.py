@@ -247,9 +247,10 @@ class ArrowLists(unittest.TestCase):
     """Rows inside a box, chains of arrows, and rows already at the target are not rewritten."""
     boxed = ["|  a ---> b      |", "|  long ------> c |"]
     chain = ["  a --x--> b --> c", "  long -------> d"]
+    continued = ["-> sync -> persist pending", "-> trial boot -> local checks"]
     aligned = ["  a  -----> x", "  bb -----> y"]
     prose = ["Inbound DID -> extension.", "Outbound extension+destination -> presentation DID.", "Otherwise -> main DID."]
-    for lines in (boxed, chain, aligned, prose):
+    for lines in (boxed, chain, continued, aligned, prose):
       self.assertEqual(fx.checks.align_arrows(lines), lines)
 
   def test_single_row_and_other_indent_left(self) -> None:

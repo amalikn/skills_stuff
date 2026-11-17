@@ -113,7 +113,7 @@ def list_row(line: str) -> re.Match | None:
     The match, or None for a row with a box edge (`|`) or a second arrow in its target.
   """
   m = ARROW_ROW.match(line)
-  if not m or "|" in line or re.search(r"-+>", m.group("dst")):
+  if not m or "|" in line or re.search(r"-+>", m.group("src") + " " + m.group("dst")):  # an arrow on either side: a chain, not a list
     return None
   return m
 

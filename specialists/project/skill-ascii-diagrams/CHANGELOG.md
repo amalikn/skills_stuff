@@ -14,6 +14,7 @@ Last reviewed: 2026-11-17
 
 ## Unreleased
 
+- 2026-11-17: a row whose source holds an arrow (`-> a -> b`, a chain continued) is not part of an arrow list; found by the first `--check` gate run.
 - 2026-11-17: `ascii-fix --check`, a read-only gate for a project's closing check (exit 1 when a diagram would change); `edge_issues()`, `ch()` and
   `GRID_BORDER` moved to `scripts/ascii/checks.py` to keep `ascii_fix.py` under the 400-line budget (behaviour unchanged: sweep counts identical).
 - 2026-11-17: arrow lists line up (operator): `align_arrows()` in `scripts/ascii/checks.py`; box rows, chains and rows already in place excluded
