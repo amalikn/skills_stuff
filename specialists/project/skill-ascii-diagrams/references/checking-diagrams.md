@@ -33,7 +33,6 @@ What the checks report and how to act on each finding. Repairing: [fixing-diagra
 - **Wide characters and tabs** (emoji, CJK, a tab) break monospace alignment and cannot be fixed by moving edges: replace them. They are reported only in blocks that draw a box: a ```text block of
   command output (a firmware listing with tabs) is not a diagram. `VERIFIED_PRIMARY`; check ported in idea from ilia-pluzhnikov/box-diagram `validate.py` (MIT).
 - **A finding the projects' older edge checker misses** (a box whose border carries an arrow or a tee) is still a finding: trust the pack's check. `VERIFIED_PRIMARY`.
-
 - **Gate it in the project's closing check.** `ascii-fix --check <files>` writes nothing and exits 1 when a diagram would change or a finding is left, so a
   crooked diagram cannot be committed unnoticed; run it over the project's Markdown in `just check`. `USER_STATED` (a side review, 2026-11-17: the fixer
   only helped when run by hand, and the older edge check missed boxes with connectors in their borders).

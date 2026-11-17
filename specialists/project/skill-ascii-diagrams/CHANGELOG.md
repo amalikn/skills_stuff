@@ -14,6 +14,8 @@ Last reviewed: 2026-11-17
 
 ## Unreleased
 
+- 2026-11-17: `ascii-fix --check`, a read-only gate for a project's closing check (exit 1 when a diagram would change); `edge_issues()`, `ch()` and
+  `GRID_BORDER` moved to `scripts/ascii/checks.py` to keep `ascii_fix.py` under the 400-line budget (behaviour unchanged: sweep counts identical).
 - 2026-11-17: arrow lists line up (operator): `align_arrows()` in `scripts/ascii/checks.py`; box rows, chains and rows already in place excluded
   after a sweep over real documents; tests mutation-proven; references/fixing-diagrams.md rule.
 - 2026-11-17: pack created with skill-ai-it `new-skill scaffold` from a seed kept outside the pack; references, scripts and evidence to be written from the seed.

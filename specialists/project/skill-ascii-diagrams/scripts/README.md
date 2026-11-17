@@ -23,6 +23,7 @@ pack>/scripts/ascii_fix.py docs/design.md`. Moved from skill-drawio on 2026-11-1
 | `just ascii-fix`         | `scripts/ascii_fix.py`: repair existing diagrams; diff by default,         | Markdown or  | diff and findings; | `write-gated`    | Yes        | A drawn diagram drifted  |
 |                          |   `--apply` writes, never a GENERATED file                                 |   plain-text |   the file         |                  |            |                          |
 |                          |                                                                            |   files      |   with `--apply`   |                  |            |                          |
+|                          |   (`--check`: a read-only gate, exit 1 when a diagram would change)        |              |                    |                  |            |                          |
 | `just test`              | unit and contract tests                                                    | `tests/`     | console            | `safe`           | Yes        | Before calling a         |
 |                          |                                                                            |              |                    |                  |            |   change done            |
 | `just lint`              | ruff check and format check                                                | the pack     | console            | `safe`           | Yes        | Part of `just check`     |
