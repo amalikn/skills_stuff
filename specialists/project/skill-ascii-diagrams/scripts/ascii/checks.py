@@ -99,7 +99,7 @@ def arrow_issues(lines: list[str]) -> list[str]:
   return issues
 
 
-ARROW_ROW = re.compile(r"^(?P<lead>\s*)(?P<src>\S.*?)\s+(?P<arrow>-{2,}(?:[^<>|\s-][^<>|]*?-{2,})?>)\s+(?P<dst>\S.*)$")
+ARROW_ROW = re.compile(r"^(?P<lead>\s*)(?P<src>\S.*?)\s+(?P<arrow>-+(?:[^<>|\s-][^<>|]*?-{2,})?>)\s+(?P<dst>\S.*)$")
 
 
 def list_row(line: str) -> re.Match | None:
@@ -136,9 +136,9 @@ def align_arrows(lines: list[str]) -> list[str]:
     while r < len(out) and (m := list_row(out[r])) and (not group or m.group("lead") == group[0][1].group("lead")):
       group.append((r, m))
       r += 1
-    if len(group) < 2:
+    if len(group) < 2 or any(m.group("dst").rstrip().endswith(".") for _, m in group):
       r += 0 if group else 1
-      continue
+      continue  # one row is not a list; rows that end in full stops are sentences (pseudologic), not a diagram
     target = max(m.start("dst") for _, m in group)
     for row, m in group:
       grow = target - m.start("dst")

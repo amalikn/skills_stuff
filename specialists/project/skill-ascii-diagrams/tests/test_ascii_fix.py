@@ -221,12 +221,19 @@ class ArrowLists(unittest.TestCase):
     self.assertTrue(out[0].startswith("   smc-x.service "))
     self.assertEqual(out[0].index("a"), out[1].index("b"))
 
+  def test_short_arrow_keeps_the_list_whole(self) -> None:
+    """A one-dash arrow (`->`) in the middle is part of the list, so the whole list lines up."""
+    lines = ["  aa ---> x", "  b -> y", "  ccc ------> z"]
+    out = fx.checks.align_arrows(lines)
+    self.assertEqual(len({out[0].index("x"), out[1].index("y"), out[2].index("z")}), 1)
+
   def test_box_rows_chains_and_aligned_rows_left(self) -> None:
     """Rows inside a box, chains of arrows, and rows already at the target are not rewritten."""
     boxed = ["|  a ---> b      |", "|  long ------> c |"]
     chain = ["  a --x--> b --> c", "  long -------> d"]
     aligned = ["  a  -----> x", "  bb -----> y"]
-    for lines in (boxed, chain, aligned):
+    prose = ["Inbound DID -> extension.", "Outbound extension+destination -> presentation DID.", "Otherwise -> main DID."]
+    for lines in (boxed, chain, aligned, prose):
       self.assertEqual(fx.checks.align_arrows(lines), lines)
 
   def test_single_row_and_other_indent_left(self) -> None:

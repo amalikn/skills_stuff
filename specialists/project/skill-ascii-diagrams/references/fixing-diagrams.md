@@ -36,10 +36,10 @@ report: [checking-diagrams.md](checking-diagrams.md). Not covered here: see the 
 - **Text after a ragged edge moves with the edge.** A row one column short shifts everything after it on that row (an exit, a box beside it); closing the row
   puts them back in line. A connector glued to the edge (`|--->`) stays glued. `VERIFIED_PRIMARY`.
 - **Connectors snap.** A single-arrow connector whose rows stray a column or two from its first row is moved back into that column. `VERIFIED_PRIMARY`.
-- **Arrow lists line up.** Two or more consecutive rows with the same indent, each `source ---label--> target`, get their targets in the list's rightmost
-  target column by lengthening the shorter arrows; arrows never shrink, and a row already in place is left as drawn. Rows inside a box (`|`) and chains of
-  arrows (`a --> b --> c`) are not lists. `USER_STATED` (operator, 2026-11-17), `VERIFIED_PRIMARY` (a sweep showed box rows and chains as false matches
-  before they were excluded).
+- **Arrow lists line up.** Two or more consecutive rows with the same indent, each `source ---label--> target` (a one-dash `->` counts), get their targets in
+  the list's rightmost target column by lengthening the shorter arrows; arrows never shrink, and a row already in place is left as drawn. Not lists: rows
+  inside a box (`|`), chains (`a --> b --> c`), and rows whose targets end in full stops (sentences of pseudologic, not a diagram). `USER_STATED`
+  (operator, 2026-11-17), `VERIFIED_PRIMARY` (each exclusion found as a false match in a sweep over real documents).
 - **Two guards.** The diagram's words stay in the same order, and the fix leaves no more edge or arrow findings than the drawing had; if either fails the
   block is left as it was and the reason is printed. `VERIFIED_PRIMARY` (C-AD02; both guards mutation-tested).
 - **Never a generated file.** A file with a `GENERATED` banner is not written: fix the diagram in its source (the YAML or template it renders from) and
