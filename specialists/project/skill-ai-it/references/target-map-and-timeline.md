@@ -137,6 +137,21 @@ so linked items read evenly in an editor that hides link targets.
 
 ## Learned
 
+> **Learned 2026-11-16** · a change-log entry that names a target's mention after its review · VERIFIED_PRIMARY · Source: smc-resiliency CHANGELOG
+> 20261116_1822 and 20261116_1831 (commits 1b3fe1d2, d04ed4e7) · Falsifier: `just target-map` writing the trackers after such an entry with `reviewed` unchanged
+> Any CHANGELOG entry newer than a target's `reviewed` stamp whose heading or body contains the target's `mention` as a whole phrase (`S0`, `S1`, `X2`) stops
+> the render ("review the target and set `reviewed`"), even when the entry only mentions it in passing. Three times in one session: an operator decision about
+> the 2022 bootloaders named S0 and S1; a document re-read named X2; a later line naming S1 again reopened it. Practice: when a decision or re-read names a stage,
+> read that target in the same pass, update its `summary` or `next` if the decision changes them, set `reviewed` from `date`, and only then render and check.
+
+```python
+# skill-ai-it scripts/plans/target_map.py (0e3a7ea), the rule
+phrase = re.compile(rf"(?<![\w-]){re.escape(t.mention)}(?![\w-])")
+later = [stamp for stamp, heading, body in entries if stamp > t.reviewed and phrase.search(heading + body)]
+if later:
+    out.append(f"target {t.id}: ... after its review ... review the target and set `reviewed`")
+```
+
 > **Learned 2026-10-22** · plan trackers, any project · VERIFIED_PRIMARY · Source: scripts/plans/plan_tracker.py (commit pending); smc-resiliency and
 > unified-network-controller plan trackers, both failing the split-row rule on first run · Falsifier: a What next row the hook leaves on one line while it renders wider than 200 columns "Keep table
 > rows on one line" cannot be met by formatting alone: the markdown hook splits any row whose rendered width passes 200 columns into continuation rows, which render as extra rows. Both pilot trackers
