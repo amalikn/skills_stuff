@@ -22,20 +22,31 @@ discriminator or re-write the capture set from scratch.
 
 ## Layout
 
-Scripts sit in job folders (arranged 2026-10-27; operator). The governance files (`check_governance.py`, `doc-freshness-baseline.json`, `role-check-baseline.json` (skill-ai-it file-roles baseline), this README) and the
-two sub-justfiles (`fleet-health.justfile`, `routing-diagnostics.justfile`) stay at `scripts/`. A script that writes evidence resolves the pack root two levels
-up from its own folder; tests sit beside the script they test.
+Scripts sit in job folders (arranged 2026-10-27; operator). The governance files (`check_governance.py`, `doc-freshness-baseline.json`, `role-check-baseline.json` (skill-ai-it file-roles baseline),
+this README) and the two sub-justfiles (`fleet-health.justfile`, `routing-diagnostics.justfile`) stay at `scripts/`. A script that writes evidence resolves the pack root two levels up from its own
+folder; tests sit beside the script they test.
 
-| Folder | For | Files |
-|---|---|---|
-| `ansible/` | ansible-wifi repo work: change reach, smc_change records, inventory adds, lint gates, local-knowledge index | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_change_parallel.sh](ansible/smc_change_parallel.sh), [role_stale_facts.py](ansible/role_stale_facts.py), [test_role_stale_facts.py](ansible/test_role_stale_facts.py), [test_smc_change_parallel.py](ansible/test_smc_change_parallel.py), [smc_inventory_add.py](ansible/smc_inventory_add.py), [smc_mark_iridium.py](ansible/smc_mark_iridium.py), [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh) |
-| `access/` | getting onto a box: Teleport tunnel and sessions, the autossh backdoor | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [teleport_sessions.py](access/teleport_sessions.py) |
-| `probes/` | read-only probes of named boxes over Teleport | [ata_settings_read.py](probes/ata_settings_read.py), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_resiliency_probe.sh](probes/pi_resiliency_probe.sh), [smc_writers_probe.sh](probes/smc_writers_probe.sh), [pi_identity_probe.sh](probes/pi_identity_probe.sh), [site_device_probe.sh](probes/site_device_probe.sh), [x86_resiliency_probe.sh](probes/x86_resiliency_probe.sh), [smc_link_health.sh](probes/smc_link_health.sh), [smc_gateway_loss.sh](probes/smc_gateway_loss.sh), [smc_gateway_loss_remote.sh](probes/smc_gateway_loss_remote.sh), [test_smc_gateway_loss.py](probes/test_smc_gateway_loss.py), [test_smc_link_health.py](probes/test_smc_link_health.py), [overlay-usage-breakdown.sh](probes/overlay-usage-breakdown.sh), [dns_capture_top.sh](probes/dns_capture_top.sh) |, [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh), [apt_key_subkey_probe.sh](probes/apt_key_subkey_probe.sh), [test_apt_key_subkey_probe.py](probes/test_apt_key_subkey_probe.py) |
-| `capture/` | evidence capture from boxes and pin-activation diagnosis | [collect-smc-evidence.sh](capture/collect-smc-evidence.sh), [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh), [test_with_deadline.sh](capture/test_with_deadline.sh), [tstik-capture.sh](capture/tstik-capture.sh), [audit-pin-activation.sh](capture/audit-pin-activation.sh), [correlate-pin-activation.sh](capture/correlate-pin-activation.sh), [pin-funnel-hourly.sh](capture/pin-funnel-hourly.sh), [pin-fleet-check.sh](capture/pin-fleet-check.sh) |
-| `fleet/` | fleet-wide sweeps and package installs | [collect-fleet-health.sh](fleet/collect-fleet-health.sh), [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh), [install_packages.sh](fleet/install_packages.sh), [sample_fleet.py](fleet/sample_fleet.py), [summarise_survey.py](fleet/summarise_survey.py), [pi_bootloader_census.sh](fleet/pi_bootloader_census.sh) |
-| `metrics/` | Prometheus and Graylog queries and the analyses built on them (the analyses import `smc_prom`/`smc_graylog` from this folder) | [smc_prom.py](metrics/smc_prom.py), [smc_graylog.py](metrics/smc_graylog.py), [graylog-health.sh](metrics/graylog-health.sh), [fleet-reboot-timeline.py](metrics/fleet-reboot-timeline.py), [fleet-resource-profile.py](metrics/fleet-resource-profile.py), [predark-snapshot.py](metrics/predark-snapshot.py), [undervoltage-profile.py](metrics/undervoltage-profile.py), [vlan-traffic-timeline.py](metrics/vlan-traffic-timeline.py) |
-| `routing/` | WAN-routing drift and topology/interface cross-checks | [analyse-routing-drift.py](routing/analyse-routing-drift.py), [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) |
-| `switch/` | TP-Link site switch access through an SMC | [tplink-switch.sh](switch/tplink-switch.sh), [tplink_cli_driver.py](switch/tplink_cli_driver.py), [ssh_handshake_probe.py](switch/ssh_handshake_probe.py), [test_ssh_handshake_probe.py](switch/test_ssh_handshake_probe.py) |
+| Folder     | For                                                 | Files                                                                                                                             |
+| ---------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `ansible/` | ansible-wifi repo work: change reach, smc_change    | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), |
+|            |   records, inventory adds, lint gates,              |   [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_change_parallel.sh](ansible/smc_change_parallel.sh), [role_stale_facts.py](ansible/role_stale_facts.py), [test_role_stale_facts.py](ansible/test_role_stale_facts.py), |
+|            |   local-knowledge index                             |   [test_smc_change_parallel.py](ansible/test_smc_change_parallel.py), [smc_inventory_add.py](ansible/smc_inventory_add.py), [smc_mark_iridium.py](ansible/smc_mark_iridium.py), [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), |
+|            |                                                     |   [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh)      |
+| `access/`  | getting onto a box: Teleport tunnel and sessions,   | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [ssh_handshake_time.sh](access/ssh_handshake_time.sh), [test_ssh_handshake_time.sh](access/test_ssh_handshake_time.sh), [teleport_sessions.py](access/teleport_sessions.py) |
+|            |   the autossh backdoor                              |                                                                                                                                   |
+| `probes/`  | read-only probes of named boxes over Teleport       | [ata_settings_read.py](probes/ata_settings_read.py), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_resiliency_probe.sh](probes/pi_resiliency_probe.sh), [smc_writers_probe.sh](probes/smc_writers_probe.sh), | , [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh), [apt_key_subkey_probe.sh](probes/apt_key_subkey_probe.sh), [test_apt_key_subkey_probe.py](probes/test_apt_key_subkey_probe.py) |
+|  |  |   [pi_identity_probe.sh](probes/pi_identity_probe.sh), [site_device_probe.sh](probes/site_device_probe.sh), [x86_resiliency_probe.sh](probes/x86_resiliency_probe.sh), [smc_link_health.sh](probes/smc_link_health.sh), [smc_gateway_loss.sh](probes/smc_gateway_loss.sh), |  |
+|  |  |   [smc_gateway_loss_remote.sh](probes/smc_gateway_loss_remote.sh), [test_smc_gateway_loss.py](probes/test_smc_gateway_loss.py), [test_smc_link_health.py](probes/test_smc_link_health.py), [overlay-usage-breakdown.sh](probes/overlay-usage-breakdown.sh), [dns_capture_top.sh](probes/dns_capture_top.sh) |  |
+| `capture/` | evidence capture from boxes and                     | [collect-smc-evidence.sh](capture/collect-smc-evidence.sh), [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh), [test_with_deadline.sh](capture/test_with_deadline.sh), [tstik-capture.sh](capture/tstik-capture.sh), [audit-pin-activation.sh](capture/audit-pin-activation.sh), |
+|            |   pin-activation diagnosis                          |   [correlate-pin-activation.sh](capture/correlate-pin-activation.sh), [pin-funnel-hourly.sh](capture/pin-funnel-hourly.sh), [pin-fleet-check.sh](capture/pin-fleet-check.sh) |
+| `fleet/`   | fleet-wide sweeps and package installs              | [collect-fleet-health.sh](fleet/collect-fleet-health.sh), [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh), [install_packages.sh](fleet/install_packages.sh), [sample_fleet.py](fleet/sample_fleet.py), |
+|            |                                                     |   [summarise_survey.py](fleet/summarise_survey.py), [pi_bootloader_census.sh](fleet/pi_bootloader_census.sh)                      |
+| `metrics/` | Prometheus and Graylog queries and the analyses     | [smc_prom.py](metrics/smc_prom.py), [smc_graylog.py](metrics/smc_graylog.py), [graylog-health.sh](metrics/graylog-health.sh), [fleet-reboot-timeline.py](metrics/fleet-reboot-timeline.py), [fleet-resource-profile.py](metrics/fleet-resource-profile.py), [predark-snapshot.py](metrics/predark-snapshot.py), |
+|            |   built on them (the analyses import                |   [undervoltage-profile.py](metrics/undervoltage-profile.py), [vlan-traffic-timeline.py](metrics/vlan-traffic-timeline.py)        |
+|            |   `smc_prom`/`smc_graylog` from this folder)        |                                                                                                                                   |
+| `routing/` | WAN-routing drift and                               | [analyse-routing-drift.py](routing/analyse-routing-drift.py), [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) |
+|            |   topology/interface cross-checks                   |                                                                                                                                   |
+| `switch/`  | TP-Link site switch access through an SMC           | [tplink-switch.sh](switch/tplink-switch.sh), [tplink_cli_driver.py](switch/tplink_cli_driver.py), [ssh_handshake_probe.py](switch/ssh_handshake_probe.py), [test_ssh_handshake_probe.py](switch/test_ssh_handshake_probe.py) |
 
 **These are deliberately separate copies from the investigation folder's originals, not symlinks.** Promotion is a review checkpoint, not a relocation — the copies here are genericized (no hardcoded
 site lists, `OUTDIR_ROOT` override, etc.) and are meant to diverge from whatever an investigation folder's working copy does next. When an investigation script changes in a way worth having
@@ -50,38 +61,66 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 
 **Safety classification, per the parent policy — every script here is catalogued. An uncatalogued script must be treated as `unknown` safety until inspected.**
 
-| Script                              | Touches                 | Safety    | Notes                                                                                                                    |
-| ----------------------------------- | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
-| [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh) | Live SMC appliances | **read-only** | Reports per box whether `snmpget` is present and whether overlayroot is mounted, scoped by Teleport flavour label (`FLAVOURS`, default `rcp,nbn_accelerate`). Both facts vary per box and neither can be inferred from the flavour — that mistake is what it exists to prevent |
-| [local_knowledge_index.sh](ansible/local_knowledge_index.sh) | Local files only | **read-only** | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder, uncommitted changes. ~1 s. `just local_knowledge_index` |
-| [smc_change_compare_records.py](ansible/smc_change_compare_records.py) | Local files only | **read-only** | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, volatile fields ignored. <0.1 s. `just smc_change_compare` |
-| [ansible_change_reach.py](ansible/ansible_change_reach.py) | Local ansible-wifi git repo | **read-only** | Per commit: on the deploy branch (and origin) or not, the branches holding it, and whether a cherry-pick onto the deploy branch would be clean (`git merge-tree`, no checkout); optionally an inventory group's hosts when HEAD is the deploy branch. Exit 1 when a commit is off the branch. ~1 s plus ansible-inventory. `just ansible_change_reach <commit>`; test `test_ansible_change_reach.py` |
-| [smc_change_runs_table.py](ansible/smc_change_runs_table.py) | Local files only | **read-only** | One line per run record of a change: result, phase 6-9 seconds, whether the SMC rebooted (boot_id), lower-dir holders or the failure; answers "which runs rebooted and did they fail" across a rollout. <0.1 s. `just smc_change_runs <change>`; test `test_smc_change_runs_table.py` |
-| [smc_link_health.sh](probes/smc_link_health.sh) | Teleport (`tsh ssh`) | **read-only** | An SMC's uplink: loss to first hop and proxy, Teleport error trend, clock, upload backlog, autossh restarts, WAN rate; box, Teleport or link? ~1 min. `just smc_link_health <smc>`; test `test_smc_link_health.py` |
-| [apt_lock_probe.sh](probes/apt_lock_probe.sh) | Teleport (`tsh ssh`) | **read-only** | Who holds apt's lists lock (a stuck node_exporter `apt_info.py` held it 11-120 days on 3 rct SMCs, 2026-10-28), its age, last successful apt update, apt/dpkg running. ~15 s per batch. `just apt_lock_probe <proxy> <smc>...` |
-| [smc_boot_kernel_probe.sh](probes/smc_boot_kernel_probe.sh) | Teleport (`tsh ssh`) | **read-only** | Pi SMC: running kernel, the one in `/boot/firmware/vmlinuz` it boots next, and `/lib/modules`, against a target; `just smc_boot_kernel` |
-| [rct_avr_probe.sh](probes/rct_avr_probe.sh) | Teleport (`tsh ssh`) | **read-only** (`QUERY=1`: one AVR version request on `/dev/ttyS0`) | RCT AVR firmware: tstik's AVRVersion (3.7 = V3.07), TiniVer, stats.json age, rct-tstik HEAD, loader in /home, overlay; satellite modem model, network status, AVR link, SIM present (Iridium* or Thuraya* fields); `just rct_avr_probe <proxy> <node>...`; test `probes/test_rct_avr_probe.py` |
-| [ssh_handshake_probe.py](switch/ssh_handshake_probe.py) | Teleport (`tsh ssh`) | **read-only** (no authentication attempted) | What SSH each device behind an SMC offers: banner, kex, host key, cipher/MAC, auth methods; tells an IPSSH-6.6.0 switch from TPSSH |
-| [smc_inventory_add.py](ansible/smc_inventory_add.py) | ansible-wifi inventory files; tsh read of one box | **modifies-state** (plan by default, `--apply` writes) | Adds a new SMC the way every site is added: `[<site>_smc_bases]`, `smc_bases:children`, `[<site>:children]` and group/host/topology vars rendered from the repo's generator templates. Refuses an existing host, site or file; flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add` |
-| [smc_mark_iridium.py](ansible/smc_mark_iridium.py) | ansible-wifi host vars files (any checkout or worktree) | **modifies-state** (plan by default, `--apply` writes) | Adds `smc_bases_iridium: true` after `site_eclipse_siteid:` for each listed host; leaves a host already true alone; refuses a missing file or another value and then writes nothing. Prints no file content. <1 s. `just smc_mark_iridium` |
-| [install_packages.sh](fleet/install_packages.sh) | Live SMC appliances | **modifies-state** | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul |
-| [collect-smc-evidence.sh](capture/collect-smc-evidence.sh) | Live SMC appliances     | **read-only** | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires explicit hosts as** |
-|                                     |   over Teleport         |           |   **arguments — no default site list** (genericized from the original, which defaulted to one investigation's            |
-|                                     |                         |           |   specific sites)                                                                                                        |
-| [test_with_deadline.sh](capture/test_with_deadline.sh) | Local only (no network)  | **read-only** | Offline test of `with_deadline` in both evidence scripts: stdin passes through, exit status kept, killed at the deadline (`just test-deadline`). |
-| [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh) | Live SMC appliances     | **read-only** | The wide companion to `collect-smc-evidence.sh`: 144 captures across 17 subsystem groups, for triage and pre/post-deploy |
-|                                     |   over Teleport         |           |   baselines rather than the routing question. Same hardcoded-command, host-names-only contract. **One SSH session per host** |
-|                                     |                         |           |   (delimited stream split locally) instead of one per capture — 144 captures in ~25s. `--only`/`--skip` select groups;   |
-|                                     |                         |           |   **redacts credentials by default**, `--no-redact` to disable. x86 capture set; detects Raspberry Pi and says so rather |
-|                                     |                         |           |   than running x86-only probes against it                                                                                |
-| [analyse-routing-drift.py](routing/analyse-routing-drift.py) | Local `evidence/` tree, | **read-only** | `git show` only; never checks out, never writes to the ansible repo. `--flavor` selects                                  |
-|                                     |   local `ansible-wifi`  |           |   `inventories/<flavor>/topology_vars`; `--commit` selects the comparison ref — both default to the original             |
-|                                     |   git objects           |           |   investigation's `rcp`/`fb419e6c` and should be overridden per new investigation                                        |
-| [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) | Local `evidence/` tree, | **read-only** | Reads `topology_vars/<site>.yml` from the working tree (not a specific commit — pre-deploy sanity check, not historical  |
-|                                     |   local `ansible-wifi`  |           |   drift analysis); `--flavor` overridable                                                                                |
-|                                     |   working tree          |           |                                                                                                                          |
-| [routing-diagnostics.justfile](routing-diagnostics.justfile) | Wraps the three         | **read-only** | A **template**, not a ready-to-run file — copy it into a new investigation folder and edit the `sites`/`deployed`/`flavor` |
-|                                     |   scripts above         |           |   variables at the top before use                                                                                        |
+| Script                              | Touches                | Safety                  | Notes                                                                                                       |
+| ----------------------------------- | ---------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh) | Live SMC appliances    | **read-only**           | Reports per box whether `snmpget` is present and whether overlayroot is mounted, scoped by Teleport flavour |
+|                                     |                        |                         |   label (`FLAVOURS`, default `rcp,nbn_accelerate`). Both facts vary per box and neither can be inferred     |
+|                                     |                        |                         |   from the flavour — that mistake is what it exists to prevent                                              |
+| [local_knowledge_index.sh](ansible/local_knowledge_index.sh) | Local files only       | **read-only**           | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder,   |
+|                                     |                        |                         |   uncommitted changes. ~1 s. `just local_knowledge_index`                                                   |
+| [smc_change_compare_records.py](ansible/smc_change_compare_records.py) | Local files only       | **read-only**           | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, |
+|                                     |                        |                         |   volatile fields ignored. <0.1 s. `just smc_change_compare`                                                |
+| [ansible_change_reach.py](ansible/ansible_change_reach.py) | Local ansible-wifi     | **read-only**           | Per commit: on the deploy branch (and origin) or not, the branches holding it, and whether a cherry-pick    |
+|                                     |   git repo             |                         |   onto the deploy branch would be clean (`git merge-tree`, no checkout); optionally an inventory group's    |
+|                                     |                        |                         |   hosts when HEAD is the deploy branch. Exit 1 when a commit is off the branch. ~1 s plus                   |
+|                                     |                        |                         |   ansible-inventory. `just ansible_change_reach <commit>`; test `test_ansible_change_reach.py`              |
+| [smc_change_runs_table.py](ansible/smc_change_runs_table.py) | Local files only       | **read-only**           | One line per run record of a change: result, phase 6-9 seconds, whether the SMC rebooted (boot_id),         |
+|                                     |                        |                         |   lower-dir holders or the failure; answers "which runs rebooted and did they fail" across a rollout. <0.1  |
+|                                     |                        |                         |   s. `just smc_change_runs <change>`; test `test_smc_change_runs_table.py`                                  |
+| [smc_link_health.sh](probes/smc_link_health.sh) | Teleport (`tsh ssh`)   | **read-only**           | An SMC's uplink: loss to first hop and proxy, Teleport error trend, clock, upload backlog, autossh          |
+|                                     |                        |                         |   restarts, WAN rate; box, Teleport or link? ~1 min. `just smc_link_health <smc>`;                          |
+|                                     |                        |                         |   test `test_smc_link_health.py`                                                                            |
+| [apt_lock_probe.sh](probes/apt_lock_probe.sh) | Teleport (`tsh ssh`)   | **read-only**           | Who holds apt's lists lock (a stuck node_exporter `apt_info.py` held it 11-120 days on 3 rct SMCs,          |
+|                                     |                        |                         |   2026-10-28), its age, last successful apt update, apt/dpkg running. ~15 s per                             |
+|                                     |                        |                         |   batch. `just apt_lock_probe <proxy> <smc>...`                                                             |
+| [smc_boot_kernel_probe.sh](probes/smc_boot_kernel_probe.sh) | Teleport (`tsh ssh`)   | **read-only**           | Pi SMC: running kernel, the one in `/boot/firmware/vmlinuz` it boots next, and `/lib/modules`, against a    |
+|                                     |                        |                         |   target; `just smc_boot_kernel`                                                                            |
+| [rct_avr_probe.sh](probes/rct_avr_probe.sh) | Teleport (`tsh ssh`)   | **read-only** (`QUERY=1`: | RCT AVR firmware: tstik's AVRVersion (3.7 = V3.07), TiniVer, stats.json age, rct-tstik HEAD, loader in      |
+|                                     |                        |   one AVR version       |   /home, overlay; satellite modem model, network status, AVR link, SIM present (Iridium* or Thuraya* fields); |
+|                                     |                        |   request               |   `just rct_avr_probe <proxy> <node>...`; test `probes/test_rct_avr_probe.py`                               |
+|                                     |                        |   on `/dev/ttyS0`)      |                                                                                                             |
+| [ssh_handshake_probe.py](switch/ssh_handshake_probe.py) | Teleport (`tsh ssh`)   | **read-only** (no       | What SSH each device behind an SMC offers: banner, kex, host key, cipher/MAC, auth methods; tells an        |
+|                                     |                        |   authentication        |   IPSSH-6.6.0 switch from TPSSH                                                                             |
+|                                     |                        |   attempted)            |                                                                                                             |
+| [smc_inventory_add.py](ansible/smc_inventory_add.py) | ansible-wifi inventory | **modifies-state** (plan by | Adds a new SMC the way every site is added: `[<site>_smc_bases]`, `smc_bases:children`, `[<site>:children]` |
+|                                     |   files; tsh read of   |   default,              |   and group/host/topology vars rendered from the repo's generator templates. Refuses an existing host, site |
+|                                     |   one box              |   `--apply` writes)     |   or file; flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add`             |
+| [smc_mark_iridium.py](ansible/smc_mark_iridium.py) | ansible-wifi host vars | **modifies-state** (plan by | Adds `smc_bases_iridium: true` after `site_eclipse_siteid:` for each listed host; leaves a host already     |
+|                                     |   files (any checkout  |   default,              |   true alone; refuses a missing file or another value and then writes nothing. Prints no file content. <1   |
+|                                     |   or worktree)         |   `--apply` writes)     |   s. `just smc_mark_iridium`                                                                                |
+| [install_packages.sh](fleet/install_packages.sh) | Live SMC appliances    | **modifies-state**      | Installs apt packages across flavour-scoped boxes. Idempotent, `--dry-run` first, verifies the resulting    |
+|                                     |                        |                         |   binary rather than apt's exit code, waits on the dpkg lock via `DPkg::Lock::Timeout`, and refuses boxes   |
+|                                     |                        |                         |   with overlayroot mounted unless `--force-overlay`. Defaults to 5 workers for constrained backhaul         |
+| [collect-smc-evidence.sh](capture/collect-smc-evidence.sh) | Live SMC appliances    | **read-only**           | Remote command set is hardcoded; the script takes host names only, never arbitrary commands. **Requires**   |
+|                                     |   over Teleport        |                         |   **explicit hosts as arguments — no default site list** (genericized from the original, which defaulted to one |
+|                                     |                        |                         |   investigation's specific sites)                                                                           |
+| [test_with_deadline.sh](capture/test_with_deadline.sh) | Local only             | **read-only**           | Offline test of `with_deadline` in both evidence scripts: stdin passes through, exit status kept, killed at |
+|                                     |   (no network)         |                         |   the deadline (`just test-deadline`).                                                                      |
+| [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh) | Live SMC appliances    | **read-only**           | The wide companion to `collect-smc-evidence.sh`: 144 captures across 17 subsystem groups, for triage and    |
+|                                     |   over Teleport        |                         |   pre/post-deploy baselines rather than the routing question. Same hardcoded-command, host-names-only       |
+|                                     |                        |                         |   contract. **One SSH session per host** (delimited stream split locally) instead of one per capture — 144  |
+|                                     |                        |                         |   captures in ~25s. `--only`/`--skip` select groups; **redacts credentials by default**, `--no-redact` to   |
+|                                     |                        |                         |   disable. x86 capture set; detects Raspberry Pi and says so rather than running x86-only probes against it |
+| [analyse-routing-drift.py](routing/analyse-routing-drift.py) | Local `evidence/`      | **read-only**           | `git show` only; never checks out, never writes to the ansible repo. `--flavor` selects                     |
+|                                     |   tree, local          |                         |   `inventories/<flavor>/topology_vars`; `--commit` selects the comparison ref — both default to the         |
+|                                     |   `ansible-wifi`       |                         |   original investigation's `rcp`/`fb419e6c` and should be overridden per new investigation                  |
+|                                     |   git objects          |                         |                                                                                                             |
+| [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) | Local `evidence/`      | **read-only**           | Reads `topology_vars/<site>.yml` from the working tree (not a specific commit — pre-deploy sanity check,    |
+|                                     |   tree, local          |                         |   not historical drift analysis); `--flavor` overridable                                                    |
+|                                     |   `ansible-wifi`       |                         |                                                                                                             |
+|                                     |   working tree         |                         |                                                                                                             |
+| [routing-diagnostics.justfile](routing-diagnostics.justfile) | Wraps the three        | **read-only**           | A **template**, not a ready-to-run file — copy it into a new investigation folder and edit the              |
+|                                     |   scripts above        |                         |   `sites`/`deployed`/`flavor` variables at the top before use                                               |
 
 **Nothing here may write to an SMC.** If a future task needs a mutating command, run it by hand under change control and record it in the investigation's own analysis — do not add it to
 `collect-smc-evidence.sh`. The read-only contract is what makes it safe to run these against production sites without a change window.
@@ -189,13 +228,16 @@ module docstring.
 
 ## Contents
 
+- [Layout](#layout)
 - [What each script is for](#what-each-script-is-for)
 - [Usage](#usage)
 - [Requirements](#requirements)
 - [Evidence retention](#evidence-retention)
+- [doc-freshness-baseline.json](#doc-freshness-baselinejson)
 - [Execution Policy](#execution-policy)
 - [Preferred Execution Order](#preferred-execution-order)
 - [Maintenance Rules](#maintenance-rules)
+- [Governance recipes (skill-ai-it)](#governance-recipes-skill-ai-it)
 
 ---
 
@@ -203,18 +245,16 @@ module docstring.
 
 ### `collect-smc-evidence-full.sh`
 
-**ha group, -smcNN hosts and --proxy (2026-10-29):** the `ha` group (14 captures) reads keepalived (version, unit, config under both
-`/etc/keepalived` and a source build's `/usr/local/etc/keepalived`, track scripts, 14-day journal, 90-day MASTER/BACKUP transitions), the
-addresses the VIPs sit on, the neighbour table, conntrackd, dhcpd failover and active lease counts; `auth_pass` is redacted. A host named
-`<site>-smcNN` is kept as given (a multi-SMC site), and `--proxy host:port` (or `SMC_TSH_PROXY`) names the Teleport proxy on every tsh call.
-Measured on aurukun's three boxes over the nbn proxy: `--only ha,network,dhcp,identity` 234 s, `--only ha` 222 s (about 75 s a box).
+**ha group, -smcNN hosts and --proxy (2026-10-29):** the `ha` group (14 captures) reads keepalived (version, unit, config under both `/etc/keepalived` and a source build's `/usr/local/etc/keepalived`,
+track scripts, 14-day journal, 90-day MASTER/BACKUP transitions), the addresses the VIPs sit on, the neighbour table, conntrackd, dhcpd failover and active lease counts; `auth_pass` is redacted. A
+host named `<site>-smcNN` is kept as given (a multi-SMC site), and `--proxy host:port` (or `SMC_TSH_PROXY`) names the Teleport proxy on every tsh call. Measured on aurukun's three boxes over the nbn
+proxy: `--only ha,network,dhcp,identity` 234 s, `--only ha` 222 s (about 75 s a box).
 
-**Deadlines (2026-10-22):** every `tsh ssh` call runs under `with_deadline` (a watcher: TERM, then KILL 5 s later; macOS has no `timeout`). Platform probe
-`SMC_TSH_PROBE_DEADLINE` (default 60 s), the one capture session per host `SMC_TSH_DEADLINE` (default 300 s); the narrow `collect-smc-evidence.sh` uses
-`SMC_TSH_DEADLINE` per command (default 60 s). Smoke run 2026-10-22 on kalumburu-smc01, `--only voip`: 73 s, 11 of 11 captures. Full captures measured 2026-10-22: bidyadanga-smc01 (Sky Muster)
-86 s, kalumburu-smc01 93–97 s, 145 captures each, so the 300 s default leaves about 3x headroom; raise `SMC_TSH_DEADLINE` for a slower link. A session the
-deadline cuts prints `SESSION TIMED OUT` and counts the captures it never reached as **not run**, never as absent or failed (`with_deadline` returns 124,
-since tsh traps TERM and exits 1).
+**Deadlines (2026-10-22):** every `tsh ssh` call runs under `with_deadline` (a watcher: TERM, then KILL 5 s later; macOS has no `timeout`). Platform probe `SMC_TSH_PROBE_DEADLINE` (default 60 s), the
+one capture session per host `SMC_TSH_DEADLINE` (default 300 s); the narrow `collect-smc-evidence.sh` uses `SMC_TSH_DEADLINE` per command (default 60 s). Smoke run 2026-10-22 on kalumburu-smc01,
+`--only voip`: 73 s, 11 of 11 captures. Full captures measured 2026-10-22: bidyadanga-smc01 (Sky Muster) 86 s, kalumburu-smc01 93–97 s, 145 captures each, so the 300 s default leaves about 3x
+headroom; raise `SMC_TSH_DEADLINE` for a slower link. A session the deadline cuts prints `SESSION TIMED OUT` and counts the captures it never reached as **not run**, never as absent or failed
+(`with_deadline` returns 124, since tsh traps TERM and exits 1).
 
 The broad one. Use it when the question is "what is going on with this box" rather than a specific routing fault, and when you want a **baseline before a deploy and a matching capture after it**.
 
@@ -253,8 +293,8 @@ here" stays visible while the secret does not. Redaction is pattern-based — a 
 - **`systemctl status asterisk` reporting `active (exited)` is not proof Asterisk is running.** The unit is an LSB init wrapper, so systemd reports success once the script returns 0 whether or not a
   daemon survives. On umoona-smc01 the unit was `active (exited)` with **zero** asterisk processes, no control socket, and every `asterisk -rx` query failing. The `voip|asterisk-procs` and
   `voip|asterisk-ctl-socket` captures exist so this reads as a diagnosis instead of five confusing failures.
-- **`voip|asterisk-rss`** (2026-10-22) records each Asterisk process's resident memory, VSZ and age with `ps`; Prometheus has no process metrics, so this is
-  the only per-process sizing source (`./collect-smc-evidence-full.sh <host> --only voip`, read-only).
+- **`voip|asterisk-rss`** (2026-10-22) records each Asterisk process's resident memory, VSZ and age with `ps`; Prometheus has no process metrics, so this is the only per-process sizing source
+  (`./collect-smc-evidence-full.sh <host> --only voip`, read-only).
 - **A textfile collector that stopped writing does not alert as broken** — it alerts as no-data, or not at all. `monitoring|textfile-mtimes` is therefore captured alongside the contents; the staleness
   windows are in `../references/02_service-map.md`.
 
@@ -289,31 +329,31 @@ Two deliberate exclusions, both learned from the hardware rather than assumed:
 
 Captures the following read-only views from each appliance into `<output-root>/evidence/<YYYYMMDD_hhmm>/<host>/`:
 
-| Capture                                      | Command                                | Why it matters                                                                                               |
-| -------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `ip-route`                                   | `ip route show`                        | The ECMP pool and any stray `metric 100` default — the primary evidence for a Problem-1-class fault          |
-| `ip-route-table-all`                         | `ip route show table all`              | The per-interface tables the dhclient hook builds for `role: internet` interfaces                            |
-| `ip-rule`                                    | `ip rule show`                         | A source rule per interface proves the hook recognised that interface                                        |
-| `ip-addr` / `ip-link`                        | `ip -br addr` / `ip -br link`          | Which interfaces hold a CGNAT lease; the deterministic `72:77:77:*` generated MACs                           |
-| `dmidecode-model`                            | `dmidecode -s system-product-name`     | Which SMC chassis this is — different models use different physical NIC naming schemes (`enp1s0`-`enp4s0` vs |
-|                                              |                                        |   `eno1`/`enp3s0`/...), and `topology_vars` can silently assume the wrong one. Feeds                         |
-|                                              |                                        |   `analyse-topology-interface-match.py`'s cross-model naming hint                                            |
-| `netplan`                                    | `cat /etc/netplan/*.yaml`              | What `smc_network` actually rendered — compare against the deployed topology                                 |
-| `dhclient-enter-hooks`                       | `cat /etc/dhcp/dhclient-enter-hooks`   | What `smc_application` rendered — **the interface list that decides ECMP membership**                        |
-| `dhclient-enter-hooks-d`                     | `cat /etc/dhcp/dhclient-enter-hooks.d/*` | Stock Debian fragments only; kept to prove the override is not here (see capture trap below)                 |
-| `dhclient-script`                            | `cat /etc/dhcp/dhclient-script`        | Base `add_default_gateway()` and `is_router_reachable()`                                                     |
-| `dhclient-units`                             | `systemctl list-units 'dhclient@*'`    | Which interfaces are actually being leased                                                                   |
-| `iptables-save`                              | `iptables-save`                        | All tables in one dump — the authoritative ruleset snapshot                                                  |
-| `iptables-filter` / `-nat` / `-mangle`       | `iptables [-t <table>] -S`             | Per-table views — `filter`-only misses NAT/mangle entirely (see capture trap below)                          |
-|   / `-raw`                                   |                                        |                                                                                                              |
-| `interfacecheck`                             | `cat /usr/local/bin/interfacecheckv2.sh`                 | The ping check and its `dhclient@` restart behaviour                                                         |
-| `internet-ingress-shaping-script` /          | script/unit/status                     | The manual TBF/`ifb` ingress-shaping mechanism — see `../references/03_communication-flows.md`, "Manual      |
-|   `internet-shaping-service`                 |                                        |   TBF/`ifb` Ingress Shaping"                                                                                 |
-|   / `internet-shaping-unit-status`           |                                        |                                                                                                              |
-| `tc-qdisc` / `ip-link-ifb`                   | `tc -s qdisc show`                     | Actual configured shaping rate/burst/latency and traffic counters, and which `ifb*` redirects exist          |
-|                                              |   / `ip -br link show type ifb`        |                                                                                                              |
-| `netplan-mtime` / `hook-mtime`               | `stat --format='%Y %y %n' ...`         | Last-modified time of netplan vs the dhclient hook — directly shows how far apart `smc_network` and          |
-|                                              |                                        |   `smc_application` were last actually run                                                                   |
+| Capture                                      | Command                                   | Why it matters                                                                                            |
+| -------------------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `ip-route`                                   | `ip route show`                           | The ECMP pool and any stray `metric 100` default — the primary evidence for a Problem-1-class fault       |
+| `ip-route-table-all`                         | `ip route show table all`                 | The per-interface tables the dhclient hook builds for `role: internet` interfaces                         |
+| `ip-rule`                                    | `ip rule show`                            | A source rule per interface proves the hook recognised that interface                                     |
+| `ip-addr` / `ip-link`                        | `ip -br addr` / `ip -br link`             | Which interfaces hold a CGNAT lease; the deterministic `72:77:77:*` generated MACs                        |
+| `dmidecode-model`                            | `dmidecode -s system-product-name`        | Which SMC chassis this is — different models use different physical NIC naming schemes (`enp1s0`-`enp4s0` |
+|                                              |                                           |   vs `eno1`/`enp3s0`/...), and `topology_vars` can silently assume the wrong one. Feeds                   |
+|                                              |                                           |   `analyse-topology-interface-match.py`'s cross-model naming hint                                         |
+| `netplan`                                    | `cat /etc/netplan/*.yaml`                 | What `smc_network` actually rendered — compare against the deployed topology                              |
+| `dhclient-enter-hooks`                       | `cat /etc/dhcp/dhclient-enter-hooks`      | What `smc_application` rendered — **the interface list that decides ECMP membership**                     |
+| `dhclient-enter-hooks-d`                     | `cat /etc/dhcp/dhclient-enter-hooks.d/*`  | Stock Debian fragments only; kept to prove the override is not here (see capture trap below)              |
+| `dhclient-script`                            | `cat /etc/dhcp/dhclient-script`           | Base `add_default_gateway()` and `is_router_reachable()`                                                  |
+| `dhclient-units`                             | `systemctl list-units 'dhclient@*'`       | Which interfaces are actually being leased                                                                |
+| `iptables-save`                              | `iptables-save`                           | All tables in one dump — the authoritative ruleset snapshot                                               |
+| `iptables-filter` / `-nat` / `-mangle`       | `iptables [-t <table>] -S`                | Per-table views — `filter`-only misses NAT/mangle entirely (see capture trap below)                       |
+|   / `-raw`                                   |                                           |                                                                                                           |
+| `interfacecheck`                             | `cat /usr/local/bin/interfacecheckv2.sh`  | The ping check and its `dhclient@` restart behaviour                                                      |
+| `internet-ingress-shaping-script` /          | script/unit/status                        | The manual TBF/`ifb` ingress-shaping mechanism — see `../references/03_communication-flows.md`, "Manual   |
+|   `internet-shaping-service`                 |                                           |   TBF/`ifb` Ingress Shaping"                                                                              |
+|   / `internet-shaping-unit-status`           |                                           |                                                                                                           |
+| `tc-qdisc` / `ip-link-ifb`                   | `tc -s qdisc show`                        | Actual configured shaping rate/burst/latency and traffic counters, and which `ifb*` redirects exist       |
+|                                              |   / `ip -br link show type ifb`           |                                                                                                           |
+| `netplan-mtime` / `hook-mtime`               | `stat --format='%Y %y %n' ...`            | Last-modified time of netplan vs the dhclient hook — directly shows how far apart `smc_network` and       |
+|                                              |                                           |   `smc_application` were last actually run                                                                |
 
 **Two capture-path traps, both hit and corrected on 2026-07-29** — see `../references/03_communication-flows.md` for the full write-up:
 
@@ -395,11 +435,11 @@ just -f fleet-health.justfile chassis-models
 **Sites with more than one numbered host (e.g. `aurukun-smc01`/`aurukun-smc02`) must be passed with their full `-smcNN` suffix** — a bare `aurukun` always resolves to `aurukun-smc01`.
 
 **`just -f <path>` runs recipes with cwd = the justfile's own directory, not the invoker's cwd — confirmed the hard way on the first real fleet run.** `fleet-health.justfile` lives in `scripts/`, but
-`collect-fleet-health.sh` writes `evidence/` into its *parent* directory (skill-smc root) by default. A recipe written as `./scripts/fleet/collect-fleet-health.sh` or a bare `evidence` path looks correct
-when read, but silently resolves to a nonexistent `scripts/scripts/...` or `scripts/ evidence/` and fails (or worse, reports a misleading "no captures yet" instead of an error).
-`fleet-health.justfile`'s recipes use `./<folder>/<script>` (e.g. `./fleet/collect-fleet-health.sh`) and `../evidence` (one level up) for this reason — if you add a recipe to a justfile that lives in `scripts/`, match
-that convention, and **run every new recipe for real before trusting it**, the way this one was dogfooded: three of its four quick-check recipes had real bugs (wrong paths, and the same
-exit-code-of-last-command quirk documented in `collect-fleet-health.sh`'s header) that a syntax check alone would never have caught.
+`collect-fleet-health.sh` writes `evidence/` into its *parent* directory (skill-smc root) by default. A recipe written as `./scripts/fleet/collect-fleet-health.sh` or a bare `evidence` path looks
+correct when read, but silently resolves to a nonexistent `scripts/scripts/...` or `scripts/ evidence/` and fails (or worse, reports a misleading "no captures yet" instead of an error).
+`fleet-health.justfile`'s recipes use `./<folder>/<script>` (e.g. `./fleet/collect-fleet-health.sh`) and `../evidence` (one level up) for this reason — if you add a recipe to a justfile that lives in
+`scripts/`, match that convention, and **run every new recipe for real before trusting it**, the way this one was dogfooded: three of its four quick-check recipes had real bugs (wrong paths, and the
+same exit-code-of-last-command quirk documented in `collect-fleet-health.sh`'s header) that a syntax check alone would never have caught.
 
 ### `audit-pin-activation.sh`
 
@@ -491,23 +531,37 @@ fixed `local_port` so tunnels never collide and a stale leftover on a shared por
 
 ### `site_device_probe.sh`
 
-Read-only probe of a site's device addresses from its SMC over Teleport (2026-10-21, from unified-network-controller U1.2): for each IP the ARP
-entry, one ping and the TLS certificate the unit presents on 443 (handshake only, never a login). Answers "is a unit cnMaestro lost still
-working on site" and "when does its web certificate expire". Safety: `safe`, `external-network`, `requires-credentials` (a `tsh login`).
-Inputs: `--proxy` (required, never guessed), optional `--deadline` seconds (default 90, applied to the tsh call), the SMC node, dotted IPv4
-addresses (validated; nothing else reaches the box). Output: one `== <ip>` block per address. Exit 0 answered, 1 unreachable or cut off
-(check `backdoor-watch.sh` before calling it down), 2 bad usage. Measured: 3 addresses in 12.6 s at kakalpurannha-homeland (2026-10-22).
+Read-only probe of a site's device addresses from its SMC over Teleport (2026-10-21, from unified-network-controller U1.2): for each IP the ARP entry, one ping and the TLS certificate the unit
+presents on 443 (handshake only, never a login). Answers "is a unit cnMaestro lost still working on site" and "when does its web certificate expire". Safety: `safe`, `external-network`,
+`requires-credentials` (a `tsh login`). Inputs: `--proxy` (required, never guessed), optional `--deadline` seconds (default 90, applied to the tsh call), the SMC node, dotted IPv4 addresses
+(validated; nothing else reaches the box). Output: one `== <ip>` block per address. Exit 0 answered, 1 unreachable or cut off (check `backdoor-watch.sh` before calling it down), 2 bad usage. Measured:
+3 addresses in 12.6 s at kakalpurannha-homeland (2026-10-22).
 
 ```bash
 ./site_device_probe.sh --proxy teleport.apn.au kakalpurannha-homeland-smc01 10.255.0.20 10.255.0.21 10.255.0.11
 ```
 
+### `ssh_handshake_time.sh`
+
+Times the ssh handshake to one SMC through its Teleport ProxyCommand, once per connect timeout given (default 10 and 30), with BatchMode and no connection sharing, running only `true` (2026-11-17,
+ansible-wifi: wujal-wujal-booth-smc01 failed "Connection timed out during banner exchange" in a 10-SMC batch while `tsh ssh` worked). Compare the seconds with `ansible_ssh_timeout` (ssh plugin default
+10; the smc_change playbooks set 30). Output: `timeout=<t> rc=<rc> seconds=<s> result=<ok|timed-out|failed>` per try. Exit 0 all connected, 1 any failed, 2 bad usage. Test: `just
+test_ssh_handshake_time` (fake ssh via `SSH_BIN`, 7 cases). Measured: 9-10 s per try on wujal-wujal-booth (2026-11-17), 19 s for both tries.
+
+```bash
+just ssh_handshake_time wujal-wujal-booth-smc01.teleport.apn.au 10 30
+```
+
+| Script                  | Touches                     | Safety                                             | Notes                                                     |
+| ----------------------- | --------------------------- | -------------------------------------------------- | --------------------------------------------------------- |
+| `ssh_handshake_time.sh` | ssh through `tsh proxy ssh` | `safe`, `external-network`, `requires-credentials` | runs `true` as root; writes nothing on the SMC or locally |
+
 ### `backdoor-watch.sh`
 
-Checks, and optionally watches, a box's autossh backdoor: the reverse tunnel `autossh-teleport-openssh` holds open to the project bastion on port `50000 + site_eclipse_siteid`. Written
-2026-10-07 for kupungarri-smc01. Run it before calling any box unreachable; a box missing from `tsh ls` can still be up behind this tunnel. Site, host, siteid, port and bastion are resolved from
-ansible-wifi's inventory, the same way `teleport-tunnel.sh` does it.
-Since 2026-10-23 it also resolves stage hosts (any exact inventory host in `*/prod` or `*/stage`, e.g. `warehouse-rct01`), then a site name in prod then stage.
+Checks, and optionally watches, a box's autossh backdoor: the reverse tunnel `autossh-teleport-openssh` holds open to the project bastion on port `50000 + site_eclipse_siteid`. Written 2026-10-07 for
+kupungarri-smc01. Run it before calling any box unreachable; a box missing from `tsh ls` can still be up behind this tunnel. Site, host, siteid, port and bastion are resolved from ansible-wifi's
+inventory, the same way `teleport-tunnel.sh` does it. Since 2026-10-23 it also resolves stage hosts (any exact inventory host in `*/prod` or `*/stage`, e.g. `warehouse-rct01`), then a site name in
+prod then stage.
 
 ```bash
 ./backdoor-watch.sh kupungarri                 # check: is 50468 listening on apn-teleport01 now
@@ -516,96 +570,83 @@ INTERVAL=10 DURATION=7200 ./backdoor-watch.sh kupungarri-smc01 watch     # one l
 UNTIL_UP=1 ./backdoor-watch.sh kupungarri watch &                         # exits at the first UP
 ```
 
-Watch mode runs its loop on the bastion inside one `tsh` session, so a box in a reboot or WAN-flap loop that holds the tunnel for a minute is still caught. It never connects onward to the box; once
-it shows UP, get a shell with `tsh ssh --proxy <cluster> root@<bastion>` then `ssh -p <port> root@127.0.0.1` (`../references/03_communication-flows.md` §Backdoor SSH Access). Tested 2026-10-07
-against `apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (50471), history, watch and `UNTIL_UP`.
+Watch mode runs its loop on the bastion inside one `tsh` session, so a box in a reboot or WAN-flap loop that holds the tunnel for a minute is still caught. It never connects onward to the box; once it
+shows UP, get a shell with `tsh ssh --proxy <cluster> root@<bastion>` then `ssh -p <port> root@127.0.0.1` (`../references/03_communication-flows.md` §Backdoor SSH Access). Tested 2026-10-07 against
+`apn-teleport01`: DOWN on kupungarri (50468), UP on windjana-gorge (50471), history, watch and `UNTIL_UP`.
 
-| Script               | Touches                                                 | Safety                          | Notes                                                                             |
-| -------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
-| `backdoor-watch.sh`  | bastion via `tsh` (`ss`, auth logs), ansible-wifi        | **read-only**, `external-network` | Never touches the SMC box or ansible-wifi; history writes one temp file on the     |
-|                      |   inventories (read-only)                               |                                 |   bastion and removes it                                                          |
+| Script              | Touches                                                    | Safety                    | Notes                                                                                 |
+| ------------------- | ---------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------- |
+| `backdoor-watch.sh` | bastion via `tsh` (`ss`, auth logs), ansible-wifi          | **read-only**,            | Never touches the SMC box or ansible-wifi; history writes one temp file on the        |
+|                     |   inventories (read-only)                                  |   `external-network`      |   bastion and removes it                                                              |
 
 ### `apt_key_subkey_probe.sh`
 
 Does an SMC trust a given apt signing key (primary or subkey)? `apt_key_subkey_probe.sh --proxy <proxy> --fpr <40-hex> [--source <pattern>] <node>...` prints one
-`APTKEY|<node>|host=...|fpr=present|absent|in=<keyring files>|primary=<fpr>|source=<lines>` line per box, reading every keyring apt reads (`trusted.gpg`,
-`trusted.gpg.d`, `/etc/apt/keyrings`, `/usr/share/keyrings`) with subkeys. Use it when apt fails with `NO_PUBKEY` after a vendor added a signing subkey:
-boxes that imported the older key hold the primary but not the subkey. **Safety: read-only** (a gpg home in mktemp, removed on exit). Exit 0 all answered,
-1 some gave no line, 2 bad usage. Recipes: `just apt_key_subkey_probe ...`, `just apt_key_subkey_probe_test` (offline, stand-in tsh, about 2 s).
-2026-11-11: kaltjiti-fergon-smc01 cisofy subkey `3E82...7A9A1D9D5B27C6D3` absent, primary `84FA...12576482` present in `/etc/apt/trusted.gpg`, source
-line commented out; about 13 s per SMC.
+`APTKEY|<node>|host=...|fpr=present|absent|in=<keyring files>|primary=<fpr>|source=<lines>` line per box, reading every keyring apt reads (`trusted.gpg`, `trusted.gpg.d`, `/etc/apt/keyrings`,
+`/usr/share/keyrings`) with subkeys. Use it when apt fails with `NO_PUBKEY` after a vendor added a signing subkey: boxes that imported the older key hold the primary but not the subkey. **Safety:
+read-only** (a gpg home in mktemp, removed on exit). Exit 0 all answered, 1 some gave no line, 2 bad usage. Recipes: `just apt_key_subkey_probe ...`, `just apt_key_subkey_probe_test` (offline,
+stand-in tsh, about 2 s). 2026-11-11: kaltjiti-fergon-smc01 cisofy subkey `3E82...7A9A1D9D5B27C6D3` absent, primary `84FA...12576482` present in `/etc/apt/trusted.gpg`, source line commented out;
+about 13 s per SMC.
 
 ### `smc_gateway_loss.sh`
 
-Is the site link (Sky Muster Plus on rct) losing packets, and at one site or many? For each named SMC, all at once over Teleport: the default gateway
-(the first hop), loss and average RTT over `-c` pings (default 20), and WAN rx/tx over 5 s. Then a summary per gateway /24: loss that follows a
-shared upstream shows as one bad group, a single bad site stands alone. The SMC side is `smc_gateway_loss_remote.sh`, sent on stdin to `sh -s`.
-`-s` adds download speed, a 5 MB Cloudflare file and bitbucket.org over HTTPS (KB/s, to /dev/null), which separates a slow site link from a
-slow destination; give it `-t 240`. **Safety: read-only.** Exit 0 all answered, 1 some gave no answer (check the backdoor), 2 bad usage. Recipes: `just smc_gateway_loss ...`,
-`just smc_gateway_loss_test`. 2026-11-05: 16 of 20 rct SMCs 0 %; gurrbalgun 25 %, gumbarnun 10 %, banana-well 5 %, goojarr-goonyool no answer.
-Not a Sky Muster-wide fault, four sites. `smc_link_health.sh` reads one SMC in depth.
+Is the site link (Sky Muster Plus on rct) losing packets, and at one site or many? For each named SMC, all at once over Teleport: the default gateway (the first hop), loss and average RTT over `-c`
+pings (default 20), and WAN rx/tx over 5 s. Then a summary per gateway /24: loss that follows a shared upstream shows as one bad group, a single bad site stands alone. The SMC side is
+`smc_gateway_loss_remote.sh`, sent on stdin to `sh -s`. `-s` adds download speed, a 5 MB Cloudflare file and bitbucket.org over HTTPS (KB/s, to /dev/null), which separates a slow site link from a slow
+destination; give it `-t 240`. **Safety: read-only.** Exit 0 all answered, 1 some gave no answer (check the backdoor), 2 bad usage. Recipes: `just smc_gateway_loss ...`, `just smc_gateway_loss_test`.
+2026-11-05: 16 of 20 rct SMCs 0 %; gurrbalgun 25 %, gumbarnun 10 %, banana-well 5 %, goojarr-goonyool no answer. Not a Sky Muster-wide fault, four sites. `smc_link_health.sh` reads one SMC in depth.
 
 ### `role_stale_facts.py`
 
-Lists an Ansible role's facts that can carry over between two runs of the role in one `ansible-playbook` process: set under a condition (`when`,
-loop, rescue, or inside a guarded block or include) and read with `is defined` or `| default(`. Host facts outlive an `import_playbook`, and
-`meta: clear_facts` keeps `set_fact` values. With `--reset-file`, the facts that file sets count as reset. **Safety: read-only**, reads files.
-Exit 0 nothing open, 1 open facts, 2 bad usage. On smc_change (2026-11-05, `--reset-file tasks/load_spec.yml`) 11 stay open by design: re-set
-every run before use (stage and phase clocks, start, queue, probe source, journal, rollback-only `rb_*`). Recipes: `just role_stale_facts`,
-`just role_stale_facts_test`.
+Lists an Ansible role's facts that can carry over between two runs of the role in one `ansible-playbook` process: set under a condition (`when`, loop, rescue, or inside a guarded block or include) and
+read with `is defined` or `| default(`. Host facts outlive an `import_playbook`, and `meta: clear_facts` keeps `set_fact` values. With `--reset-file`, the facts that file sets count as reset.
+**Safety: read-only**, reads files. Exit 0 nothing open, 1 open facts, 2 bad usage. On smc_change (2026-11-05, `--reset-file tasks/load_spec.yml`) 11 stay open by design: re-set every run before use
+(stage and phase clocks, start, queue, probe source, journal, rollback-only `rb_*`). Recipes: `just role_stale_facts`, `just role_stale_facts_test`.
 
 ### `smc_change_parallel.sh`
 
-Runs one `ansible-playbook -f 1 -l <smc>` per named SMC, all at once (default `smc_change_multiple.yml`, `inventories/rct/prod`), so a slow
-or stalled SMC never holds the others: each SMC has its own controller run. Plan by default; `--apply` starts them. **Safety: CHANGES SMCs with
-`--apply`** (whatever the playbook does). It refuses an SMC another `ansible-playbook` on this machine already targets (one controller per SMC),
-skips one Teleport does not answer for within `-t` seconds, and starts each run under `nohup` with a log and PID per SMC under
-`-o <dir>` (default local-knowledge `evidence/smc-change-parallel-<stamp>`). Extra playbook arguments go after `--`. Exit 0 all passed, 1 a run
-failed or an SMC was skipped, 2 bad usage, 3 nothing to start. Recipes: `just smc_change_parallel ...`, `just smc_change_parallel_test`. Built
-2026-11-05 for the rct iridium resumes.
+Runs one `ansible-playbook -f 1 -l <smc>` per named SMC, all at once (default `smc_change_multiple.yml`, `inventories/rct/prod`), so a slow or stalled SMC never holds the others: each SMC has its own
+controller run. Plan by default; `--apply` starts them. **Safety: CHANGES SMCs with `--apply`** (whatever the playbook does). It refuses an SMC another `ansible-playbook` on this machine already
+targets (one controller per SMC), skips one Teleport does not answer for within `-t` seconds, and starts each run under `nohup` with a log and PID per SMC under `-o <dir>` (default local-knowledge
+`evidence/smc-change-parallel-<stamp>`). Extra playbook arguments go after `--`. Exit 0 all passed, 1 a run failed or an SMC was skipped, 2 bad usage, 3 nothing to start. Recipes: `just
+smc_change_parallel ...`, `just smc_change_parallel_test`. Built 2026-11-05 for the rct iridium resumes.
 
 ### `smc_change_compare_records.py`
 
-Added 2026-10-23, promoted from the proof that splitting the smc_change probe into per-check files changed nothing. Run the same check and
-verify runs with `-e smc_change_report_dir=<before>`, change the role, rerun with `<after>`, then `smc_change_compare_records.py <before>
-<after>`: exit 0 when every pair is identical. Ignores timestamps, free space, log positions, hit counts and samples. Background:
-`../references/19_smc-change-role.md`.
+Added 2026-10-23, promoted from the proof that splitting the smc_change probe into per-check files changed nothing. Run the same check and verify runs with `-e smc_change_report_dir=<before>`, change
+the role, rerun with `<after>`, then `smc_change_compare_records.py <before> <after>`: exit 0 when every pair is identical. Ignores timestamps, free space, log positions, hit counts and samples.
+Background: `../references/19_smc-change-role.md`.
 
 ### `local_knowledge_index.sh`
 
-Added 2026-10-23 (operator: the pack must stay across what is built in the local-knowledge folder). `local_knowledge_index.sh [--root DIR] [--repo DIR]
-[--days N] [--per-dir N]` prints every symlink from the ansible-wifi checkout into `local-knowledge-ansible/ansible-wifi` with whether git ignores it, the
-newest entries per top-level folder within the window, and uncommitted changes there. Read-only; about 1 s on the full folder (7,000+ files per big folder).
-Background: `../references/18_local-knowledge-ansible.md`.
+Added 2026-10-23 (operator: the pack must stay across what is built in the local-knowledge folder). `local_knowledge_index.sh [--root DIR] [--repo DIR] [--days N] [--per-dir N]` prints every symlink
+from the ansible-wifi checkout into `local-knowledge-ansible/ansible-wifi` with whether git ignores it, the newest entries per top-level folder within the window, and uncommitted changes there.
+Read-only; about 1 s on the full folder (7,000+ files per big folder). Background: `../references/18_local-knowledge-ansible.md`.
 
 ### `smc_inventory_add.py`
 
-Added 2026-10-23 (operator: adding a new SMC to the inventory must be straightforward, not guessed each time). `smc_inventory_add.py --flavor
-<rct|wh|nbn_accelerate> --env <stage|prod> --host <host> (--siteid N | --siteid-from-box) [--site S] [--iridium] [--booth] [--allow-shared-siteid]
-[--apply]`. Renders `roles/smc_generate_smc_files/templates/<flavor>/*.j2` through `ansible-playbook` (same engine as the generator role, so identical
-output) and inserts the three groups by text, because the generator role itself round-trips the whole inventory through JSON. Proven 2026-10-23 on
-php-rct-smc01: output byte-identical to the hand-made files; refuses a second apply. Background: `../references/08_ansible-authoring.md` (Adding a new
-SMC to an inventory).
+Added 2026-10-23 (operator: adding a new SMC to the inventory must be straightforward, not guessed each time). `smc_inventory_add.py --flavor <rct|wh|nbn_accelerate> --env <stage|prod> --host <host>
+(--siteid N | --siteid-from-box) [--site S] [--iridium] [--booth] [--allow-shared-siteid] [--apply]`. Renders `roles/smc_generate_smc_files/templates/<flavor>/*.j2` through `ansible-playbook` (same
+engine as the generator role, so identical output) and inserts the three groups by text, because the generator role itself round-trips the whole inventory through JSON. Proven 2026-10-23 on
+php-rct-smc01: output byte-identical to the hand-made files; refuses a second apply. Background: `../references/08_ansible-authoring.md` (Adding a new SMC to an inventory).
 
 ### `smc_mark_iridium.py`
 
-Added 2026-11-04 (operator: mark the flash-in-advance Iridium sites on `rise` and on `master`). `smc_mark_iridium.py --repo <checkout> --flavor rct
-<host,host,...> [--apply]`. Use the inventory host names, not the long site names (brubrunganjal-smc01, not brubrunganjal-kitty-wells-smc01). Run it
-against a `git worktree` of another branch to mark that branch without touching the working tree. Proven 2026-11-04: rise 1 added and 24 already
-marked, master 25 added; `ansible-inventory --host` gave `smc_bases_iridium: True` for all 25 on both (rise `6f869a12`, master `9cbe85ee`). Offline test: `test_smc_mark_iridium.py` (`just test_smc_mark_iridium`, 3 tests).
+Added 2026-11-04 (operator: mark the flash-in-advance Iridium sites on `rise` and on `master`). `smc_mark_iridium.py --repo <checkout> --flavor rct <host,host,...> [--apply]`. Use the inventory host
+names, not the long site names (brubrunganjal-smc01, not brubrunganjal-kitty-wells-smc01). Run it against a `git worktree` of another branch to mark that branch without touching the working tree.
+Proven 2026-11-04: rise 1 added and 24 already marked, master 25 added; `ansible-inventory --host` gave `smc_bases_iridium: True` for all 25 on both (rise `6f869a12`, master `9cbe85ee`). Offline test:
+`test_smc_mark_iridium.py` (`just test_smc_mark_iridium`, 3 tests).
 
 ### `php_package_probe.sh` and `backdoor_exec.sh`
 
-`php_package_probe.sh --proxy <proxy> <node>...` prints one `PHPPROBE|<node>|host=...|key=value|...` line per box: installed (`ii`) PHP and
-`libapache2-mod-php` package versions, loaded Apache PHP modules, the apt candidate, overlay and lower-dir state, holds, unattended-upgrades,
-long-running PHP processes (`php -S` built-in servers, cron-run CLI jobs) and PHP listening sockets. `php -v` alone never shows Ubuntu patch
-state: compare the package version with the USN's fixed build. `DEEP=1` also searches the disk for PHP binaries. Written 2026-10-22 for the
-CVE-2026-109618/109619 assessment; tested on beagle-bay-smc01 (x86) and fish-river-smc01 (Pi), and an unknown node gives `FAIL` and exit 1.
+`php_package_probe.sh --proxy <proxy> <node>...` prints one `PHPPROBE|<node>|host=...|key=value|...` line per box: installed (`ii`) PHP and `libapache2-mod-php` package versions, loaded Apache PHP
+modules, the apt candidate, overlay and lower-dir state, holds, unattended-upgrades, long-running PHP processes (`php -S` built-in servers, cron-run CLI jobs) and PHP listening sockets. `php -v` alone
+never shows Ubuntu patch state: compare the package version with the USN's fixed build. `DEEP=1` also searches the disk for PHP binaries. Written 2026-10-22 for the CVE-2026-109618/109619 assessment;
+tested on beagle-bay-smc01 (x86) and fish-river-smc01 (Pi), and an unknown node gives `FAIL` and exit 1.
 
-`backdoor_exec.sh <site> [cmd | -]` runs a command (or a script on stdin with `-`) through the autossh backdoor, using `backdoor-watch.sh` to
-resolve the port and the KeePassXC entry named by KP_ENTRY (default Network/SMC) via `sshpass -e` (the password never reaches an argument or the output). It reads
-the box's hostname first and stops with exit 4 when the port belongs to another box. Tested 2026-10-22: darlngunaya ran (exit 0),
-family-friendly stopped because 50501 answers as nocprov-smc01 (exit 4), new-looma down (exit 3).
+`backdoor_exec.sh <site> [cmd | -]` runs a command (or a script on stdin with `-`) through the autossh backdoor, using `backdoor-watch.sh` to resolve the port and the KeePassXC entry named by KP_ENTRY
+(default Network/SMC) via `sshpass -e` (the password never reaches an argument or the output). It reads the box's hostname first and stops with exit 4 when the port belongs to another box. Tested
+2026-10-22: darlngunaya ran (exit 0), family-friendly stopped because 50501 answers as nocprov-smc01 (exit 4), new-looma down (exit 3).
 
 ```bash
 ./php_package_probe.sh --proxy teleport.apn.au beagle-bay-smc01 fish-river-smc01
@@ -613,56 +654,65 @@ family-friendly stopped because 50501 answers as nocprov-smc01 (exit 4), new-loo
 ./backdoor_exec.sh bungardi - < some_read_only_probe.sh
 ```
 
-| Script                 | Touches                                                    | Safety                                | Notes                                                                   |
-| ---------------------- | ---------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------- |
-| `php_package_probe.sh` | `tsh` sessions to each node                                | **read-only**, `external-network`     | Reads packages, processes and mounts; writes nothing                    |
-| `backdoor_exec.sh`     | bastion via `tsh`, the box's sshd via the backdoor, `kp`   | `external-network`,                   | Runs what it is given as root with no Teleport recording: reads only    |
-|                        |                                                            |   `requires-credentials`              |   unless a change is approved (nbn_wh: reads only)                      |
+| Script                 | Touches                                    | Safety                          | Notes                                                                                        |
+| ---------------------- | ------------------------------------------ | ------------------------------- | -------------------------------------------------------------------------------------------- |
+| `php_package_probe.sh` | `tsh` sessions to each node                | **read-only**, `external-network` | Reads packages, processes and mounts; writes nothing                                         |
+| `backdoor_exec.sh`     | bastion via `tsh`, the box's sshd via the  | `external-network`,             | Runs what it is given as root with no Teleport recording: reads only unless a change is      |
+|                        |   backdoor, `kp`                           |   `requires-credentials`        |   approved (nbn_wh: reads only)                                                              |
 
 ### Fleet stability: `fleet-reboot-timeline.py`, `predark-snapshot.py`, `fleet-resource-profile.py`, `undervoltage-profile.py`, `overlay-usage-breakdown.sh`
 
 Written 2026-10-07 for the WH "sites get stuck until a technician reboots them" investigation (report:
 `local-knowledge-ansible/ansible-wifi/issues/wh-fleet/wh-stability-reboot-analysis-20261007_1310.md`). Use them in this order for any flavor:
 
-1. `fleet-reboot-timeline.py [days] [selector]` classifies every boot and outage per site from `node_boot_time_seconds`: `reboot` (ordinary),
-   `DARK->boot` (dark >1h then came back by booting = power loss or hard hang + power-cycle), `gap-no-reboot` (box up, WAN/tunnel down). A gap
-   every site shares is a central Prometheus outage. Many `DARK->boot` at the same clock time daily = solar/battery, not software.
-2. `predark-snapshot.py <site> '<last_seen>'` shows memory, swap, overlay, load, PSI, temperature and traffic in the hours before an event.
-   Flat healthy numbers up to the last sample rule out resource exhaustion.
-3. `undervoltage-profile.py daily|hourly <site> <from> <to>` counts `hwmon: Undervoltage detected!` in Graylog kern.log. Prometheus
-   `node_hwmon_in_lcrit_alarm_volts` misses it (not latched), so do not use that metric to clear a site.
-4. `fleet-resource-profile.py [selector] [window]` gives one CSV row per site (memory, PSI, temperature, overlay peak, hours >=70%, watchdog
-   cleanup minutes, auto_reboot) for a stable-vs-unstable comparison.
-5. `overlay-usage-breakdown.sh <host>...` lists what fills the overlayroot tmpfs upper layer, plus the auth.log message shapes, timers, cron
-   and snaps behind the growth. `--etc` prints only the `/etc` census (every `/etc` file changed since boot, or modified since boot on a box
-   without overlayroot) with true uptime, then the executables under `/etc` per folder; `HOST_DEADLINE` (60 s) bounds each host.
+1. `fleet-reboot-timeline.py [days] [selector]` classifies every boot and outage per site from `node_boot_time_seconds`: `reboot` (ordinary), `DARK->boot` (dark >1h then came back by booting = power
+   loss or hard hang + power-cycle), `gap-no-reboot` (box up, WAN/tunnel down). A gap every site shares is a central Prometheus outage. Many `DARK->boot` at the same clock time daily = solar/battery,
+   not software.
+2. `predark-snapshot.py <site> '<last_seen>'` shows memory, swap, overlay, load, PSI, temperature and traffic in the hours before an event. Flat healthy numbers up to the last sample rule out resource
+   exhaustion.
+3. `undervoltage-profile.py daily|hourly <site> <from> <to>` counts `hwmon: Undervoltage detected!` in Graylog kern.log. Prometheus `node_hwmon_in_lcrit_alarm_volts` misses it (not latched), so do not
+   use that metric to clear a site.
+4. `fleet-resource-profile.py [selector] [window]` gives one CSV row per site (memory, PSI, temperature, overlay peak, hours >=70%, watchdog cleanup minutes, auto_reboot) for a stable-vs-unstable
+   comparison.
+5. `overlay-usage-breakdown.sh <host>...` lists what fills the overlayroot tmpfs upper layer, plus the auth.log message shapes, timers, cron and snaps behind the growth. `--etc` prints only the `/etc`
+   census (every `/etc` file changed since boot, or modified since boot on a box without overlayroot) with true uptime, then the executables under `/etc` per folder; `HOST_DEADLINE` (60 s) bounds each
+   host.
 
-6. `vlan-traffic-timeline.py <site> --gap '<last_seen>' '<back>'` shows what crossed each interface while a box was invisible
-   (cumulative counters, valid when it did not reboot). Only the WAN interface silent = WAN/satellite fault; every VLAN on the trunk
-   silent while the SMC keeps transmitting = the SMC-to-switch segment or the switch itself.
+6. `vlan-traffic-timeline.py <site> --gap '<last_seen>' '<back>'` shows what crossed each interface while a box was invisible (cumulative counters, valid when it did not reboot). Only the WAN
+   interface silent = WAN/satellite fault; every VLAN on the trunk silent while the SMC keeps transmitting = the SMC-to-switch segment or the switch itself.
 
-`smc_prom.py` (Prometheus via the local Grafana datasource proxy, credentials read from the Grafana MCP entry in `~/.claude.json`) and
-`smc_graylog.py` (`search` / `agg` through the `apn-graylog` Teleport app, token from `../.graylog-token`) are the shared libraries; both also
-work as CLIs. Recipes: `just -f fleet-health.justfile stability-timeline|stability-profile|predark|undervoltage|overlay-breakdown`.
+`smc_prom.py` (Prometheus via the local Grafana datasource proxy, credentials read from the Grafana MCP entry in `~/.claude.json`) and `smc_graylog.py` (`search` / `agg` through the `apn-graylog`
+Teleport app, token from `../.graylog-token`) are the shared libraries; both also work as CLIs. Recipes: `just -f fleet-health.justfile
+stability-timeline|stability-profile|predark|undervoltage|overlay-breakdown`.
 
-| Script                        | Touches                                          | Safety                            | Notes                                                       |
-| ----------------------------- | ------------------------------------------------ | --------------------------------- | ----------------------------------------------------------- |
-| `smc_prom.py`                 | Grafana datasource proxy (Prometheus API)        | **read-only**, `external-network` | Reads the Grafana token from `~/.claude.json`; never prints it |
-| `smc_graylog.py`              | Graylog REST API via Teleport app                | **read-only**, `external-network` | `agg` is a POST but read-only; needs `tsh apps login`       |
-| `fleet-reboot-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | 90d WH run takes about 1 minute                             |
-| `predark-snapshot.py`         | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` |                                                             |
-| `fleet-resource-profile.py`   | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | CSV to stdout; failed columns are reported on stderr        |
-| `graylog-health.sh`           | AWS ELB/EC2 (noc-admin), apn-graylog01 and apn-datanode01 via `tsh ssh`, Graylog API | **read-only**, `external-network` | Every layer of the 2026-10-08/09 outage; exit 1 on any failure; `just -f fleet-health.justfile graylog-health` |
-| `undervoltage-profile.py`     | Graylog (via `smc_graylog.py`)                   | **read-only**, `external-network` | `hourly` makes 24 queries per day; keep ranges short        |
-| `overlay-usage-breakdown.sh`  | Live SMC appliances via `tsh ssh`                | **read-only**                     | du/find under nice+ionice; `TSH_PROXY` for the CW cluster; `--etc` census; per-host deadline |
-| `vlan-traffic-timeline.py`    | Prometheus (via `smc_prom.py`)                   | **read-only**, `external-network` | Per-interface rates, or counter deltas across a dark gap |
-| `tstik-capture.sh`            | Live RCT box via `tsh ssh`                       | **read-only**                     | TSTIK stats + reset history + eth0 link log + AVR reads/errors and ERROR kinds (07, ~90 s in all); `WAIT_UP=1` polls Teleport first; never copies `config.json` |
+| Script                       | Touches                              | Safety                    | Notes                                                                                              |
+| ---------------------------- | ------------------------------------ | ------------------------- | -------------------------------------------------------------------------------------------------- |
+| `smc_prom.py`                | Grafana datasource proxy             | **read-only**,            | Reads the Grafana token from `~/.claude.json`; never prints it                                     |
+|                              |   (Prometheus API)                   |   `external-network`      |                                                                                                    |
+| `smc_graylog.py`             | Graylog REST API via Teleport app    | **read-only**,            | `agg` is a POST but read-only; needs `tsh apps login`                                              |
+|                              |                                      |   `external-network`      |                                                                                                    |
+| `fleet-reboot-timeline.py`   | Prometheus (via `smc_prom.py`)       | **read-only**,            | 90d WH run takes about 1 minute                                                                    |
+|                              |                                      |   `external-network`      |                                                                                                    |
+| `predark-snapshot.py`        | Prometheus (via `smc_prom.py`)       | **read-only**,            |                                                                                                    |
+|                              |                                      |   `external-network`      |                                                                                                    |
+| `fleet-resource-profile.py`  | Prometheus (via `smc_prom.py`)       | **read-only**,            | CSV to stdout; failed columns are reported on stderr                                               |
+|                              |                                      |   `external-network`      |                                                                                                    |
+| `graylog-health.sh`          | AWS ELB/EC2 (noc-admin),             | **read-only**,            | Every layer of the 2026-10-08/09 outage; exit 1 on any                                             |
+|                              |   apn-graylog01 and apn-datanode01   |   `external-network`      |   failure; `just -f fleet-health.justfile graylog-health`                                          |
+|                              |   via `tsh ssh`, Graylog API         |                           |                                                                                                    |
+| `undervoltage-profile.py`    | Graylog (via `smc_graylog.py`)       | **read-only**,            | `hourly` makes 24 queries per day; keep ranges short                                               |
+|                              |                                      |   `external-network`      |                                                                                                    |
+| `overlay-usage-breakdown.sh` | Live SMC appliances via `tsh ssh`    | **read-only**             | du/find under nice+ionice; `TSH_PROXY` for the CW cluster; `--etc` census; per-host deadline       |
+| `vlan-traffic-timeline.py`   | Prometheus (via `smc_prom.py`)       | **read-only**,            | Per-interface rates, or counter deltas across a dark gap                                           |
+|                              |                                      |   `external-network`      |                                                                                                    |
+| `tstik-capture.sh`           | Live RCT box via `tsh ssh`           | **read-only**             | TSTIK stats + reset history + eth0 link log + AVR reads/errors and ERROR kinds (07, ~90 s in all); |
+|                              |                                      |                           |   `WAIT_UP=1` polls Teleport first; never copies `config.json`                                     |
 
 ### `tplink-switch.sh` and `tplink_cli_driver.py`
 
 Reach a TP-Link site switch (SG2428P and kin) through the site's SMC box, written 2026-09-24 at kalumburu. The wrapper resolves site -> SMC host -> Teleport cluster exactly as `teleport-tunnel.sh`
-does, reads the password from KeePass (`/Network/tplink switch`, override `TPLINK_KP_ENTRY`; separate enable password `TPLINK_KP_ENABLE_ENTRY`), and streams the password lines plus the driver to
-the SMC over stdin, so no secret reaches a command line or transcript. The driver runs on the SMC and drives the switch CLI through a pty, handling every quirk in
+does, reads the password from KeePass (`/Network/tplink switch`, override `TPLINK_KP_ENTRY`; separate enable password `TPLINK_KP_ENABLE_ENTRY`), and streams the password lines plus the driver to the
+SMC over stdin, so no secret reaches a command line or transcript. The driver runs on the SMC and drives the switch CLI through a pty, handling every quirk in
 `../references/16_tplink-site-switches.md` (legacy host-key and MAC algorithms, no exec channel, CR for Enter, the swallowed first keystroke, `enable` with or without a password, paging).
 
 ```bash
@@ -676,125 +726,117 @@ the SMC over stdin, so no secret reaches a command line or transcript. The drive
 Read-only by default: only `show`, `ping` and `tracert` are sent unless `--write` is given, which needs operator approval. One password attempt per run. Driver exit codes: 3 auth failed, 4
 connect/timeout, 5 no prompt, 6 enable failed. Requires an active `tsh login` for the site's cluster and `kp` on PATH.
 
-`--backup` redacts the `snmp-server host` community name as well as `snmp-server community` (2026-09-30: on these switches the trap host names the
-read-write community), and refuses to write if the login or enable password or any community value found in the config survives.
+`--backup` redacts the `snmp-server host` community name as well as `snmp-server community` (2026-09-30: on these switches the trap host names the read-write community), and refuses to write if the
+login or enable password or any community value found in the config survives.
 
-| Script                  | Touches                                                 | Safety                          | Notes                                                                             |
-| ----------------------- | ------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
-| `tplink-switch.sh`      | `tsh`, KeePass (`kp`), ansible-wifi inventories         | `external-network`,             | Logs into production switches; read-only unless `--write`. `--backup` writes      |
-|                         |   (read-only), live switches                            |   `requires-credentials`        |   redacted configs to the given directory; `--discover` pings bridge_500 only     |
-| `tplink_cli_driver.py`  | Runs on the SMC; SSH to one switch                      | `external-network`,             | Never run directly from the workstation; fed by `tplink-switch.sh`                |
-|                         |                                                         |   `requires-credentials`        |                                                                                   |
+| Script                 | Touches                                          | Safety                        | Notes                                                                                    |
+| ---------------------- | ------------------------------------------------ | ----------------------------- | ---------------------------------------------------------------------------------------- |
+| `tplink-switch.sh`     | `tsh`, KeePass (`kp`), ansible-wifi inventories  | `external-network`,           | Logs into production switches; read-only unless `--write`. `--backup` writes redacted    |
+|                        |   (read-only), live switches                     |   `requires-credentials`      |   configs to the given directory; `--discover` pings bridge_500 only                     |
+| `tplink_cli_driver.py` | Runs on the SMC; SSH to one switch               | `external-network`,           | Never run directly from the workstation; fed by `tplink-switch.sh`                       |
+|                        |                                                  |   `requires-credentials`      |                                                                                          |
 
 ### `smc_link_health.sh`
 
-Read-only, over Teleport: is a Teleport-agent, backdoor or slow-run problem the box, Teleport or the site's link? Prints clock and NTP sync,
-loss and RTT to the first hop and to the controller's Teleport proxy, Teleport warn/error lines per 10 minutes over the last hour with the
-most frequent kinds, the session-upload backlog, each autossh unit's restart count and the WAN rate over 10 s. Loss at the first hop with
-an idle WAN is the site link (a gateway may rate-limit pings to itself: trust it when the proxy path loses too). Recipe:
-`just smc_link_health banana-well-smc01 [--proxy teleport.communitywifi.net.au] [--pings 30]`; about 20 s per WAN leg with 20 pings. Since 2026-11-06 every leg is measured (rcp boxes route each leg through its own table; one ping to the proxy measured whichever leg the flow hash picked), legs with no table are bound to their device, and stale `from` rules are reported. Origin: banana-well-smc01,
-2026-10-27 (`../references/03_communication-flows.md`). Smoke-run on banana-well-smc01 the same day.
+Read-only, over Teleport: is a Teleport-agent, backdoor or slow-run problem the box, Teleport or the site's link? Prints clock and NTP sync, loss and RTT to the first hop and to the controller's
+Teleport proxy, Teleport warn/error lines per 10 minutes over the last hour with the most frequent kinds, the session-upload backlog, each autossh unit's restart count and the WAN rate over 10 s. Loss
+at the first hop with an idle WAN is the site link (a gateway may rate-limit pings to itself: trust it when the proxy path loses too). Recipe: `just smc_link_health banana-well-smc01 [--proxy
+teleport.communitywifi.net.au] [--pings 30]`; about 20 s per WAN leg with 20 pings. Since 2026-11-06 every leg is measured (rcp boxes route each leg through its own table; one ping to the proxy
+measured whichever leg the flow hash picked), legs with no table are bound to their device, and stale `from` rules are reported. Origin: banana-well-smc01, 2026-10-27
+(`../references/03_communication-flows.md`). Smoke-run on banana-well-smc01 the same day.
 
 ### `x86_resiliency_probe.sh`
 
-Promoted 2026-10-14 from the smc-resiliency x86 plan session. `x86_resiliency_probe.sh --proxy <proxy> <node>...` prints, per x86 SMC, the DMI model and
-BIOS, memory, each disk, the root source and use, LVM volume groups with free space, the EFI boot entries, the hardware watchdog (device, identity, timeouts,
-which watchdog drivers ship with the kernel, `RuntimeWatchdogSec`), the soft-lockup detector, systemd and kernel versions, and the size of the state
-directories that must survive a reboot. The remote command set is fixed; node names only; proxy required. Exits 1 when any node is unreachable or does not
-finish. Interpretation: `../references/07_hardware-overlay.md` (`smc_disk_failover` mechanics) and smc-resiliency's x86 plan, sections 3 and 6.7 (stage XQ). Since 2026-10-22 it also prints the UEFI surface the OS sees (UEFI or legacy, efivars mount mode, Secure Boot and Setup Mode, ESRT entries,
-the capsule loader, fwupd, DMI BIOS characteristics), puts a deadline on every `tsh` call (`--deadline`, default 90 s) and closes stdin.
+Promoted 2026-10-14 from the smc-resiliency x86 plan session. `x86_resiliency_probe.sh --proxy <proxy> <node>...` prints, per x86 SMC, the DMI model and BIOS, memory, each disk, the root source and
+use, LVM volume groups with free space, the EFI boot entries, the hardware watchdog (device, identity, timeouts, which watchdog drivers ship with the kernel, `RuntimeWatchdogSec`), the soft-lockup
+detector, systemd and kernel versions, and the size of the state directories that must survive a reboot. The remote command set is fixed; node names only; proxy required. Exits 1 when any node is
+unreachable or does not finish. Interpretation: `../references/07_hardware-overlay.md` (`smc_disk_failover` mechanics) and smc-resiliency's x86 plan, sections 3 and 6.7 (stage XQ). Since 2026-10-22 it
+also prints the UEFI surface the OS sees (UEFI or legacy, efivars mount mode, Secure Boot and Setup Mode, ESRT entries, the capsule loader, fwupd, DMI BIOS characteristics), puts a deadline on every
+`tsh` call (`--deadline`, default 90 s) and closes stdin.
 
 ```bash
 just x86_resiliency_probe teleport.apn.au horn-island-smc01 jigalong-smc01
 ```
 
-| Script                    | Touches                               | Safety        | Notes                                                                      |
-| ------------------------- | ------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| `x86_resiliency_probe.sh` | Live x86 SMC appliances via `tsh ssh` | **read-only** | Fixed command set, node names only; idempotent; proxy required             |
+| Script                    | Touches                               | Safety    | Notes                                                          |
+| ------------------------- | ------------------------------------- | --------- | -------------------------------------------------------------- |
+| `x86_resiliency_probe.sh` | Live x86 SMC appliances via `tsh ssh` | **read-only** | Fixed command set, node names only; idempotent; proxy required |
 
-Since 2026-11-10 it also prints the OS release and RAUC version, every partition (`part=`), the I/O counters since boot with the uptime (`io=`,
-`uptime_s=`: a write rate in GB a day), and each disk's SMART wear and health attributes (`smart=`; raw values, units vendor-specific:
-Transcend `Total_LBAs_Written` and Innodisk `Host_Writes_32MiB` differ, so a rate is taken from the kernel counter, not from SMART).
+Since 2026-11-10 it also prints the OS release and RAUC version, every partition (`part=`), the I/O counters since boot with the uptime (`io=`, `uptime_s=`: a write rate in GB a day), and each disk's
+SMART wear and health attributes (`smart=`; raw values, units vendor-specific: Transcend `Total_LBAs_Written` and Innodisk `Host_Writes_32MiB` differ, so a rate is taken from the kernel counter, not
+from SMART).
 
 ### `pi_resiliency_probe.sh`
 
-Added 2026-11-10 (smc-resiliency fleet survey, 20 boxes per flavour). The Pi sibling of `x86_resiliency_probe.sh`, same contract (fixed command set, node
-names only, proxy required, deadline per `tsh` call, default 120 s for satellite links, stdin closed). Prints per Pi: board and RAM, OS, kernel, RAUC,
-the card (name, manfid, oemid, date, size), partition table and layout, root mount (overlayroot or not), space used per mount, bootloader version and
-EEPROM config, autoboot.txt, kernel command line root options, throttling flags, I/O counters since boot with uptime (SD cards report no SMART), and the
-data held above 8, 16, 25 and 35 GiB on the root's lower ext4 (the block moves a shrink to that size needs; dumpe2fs group free counts, processed on the
-box). Checked against the six-Pi hand survey of the same day: `used_gib` and every threshold match to 0.01 GiB.
+Added 2026-11-10 (smc-resiliency fleet survey, 20 boxes per flavour). The Pi sibling of `x86_resiliency_probe.sh`, same contract (fixed command set, node names only, proxy required, deadline per `tsh`
+call, default 120 s for satellite links, stdin closed). Prints per Pi: board and RAM, OS, kernel, RAUC, the card (name, manfid, oemid, date, size), partition table and layout, root mount (overlayroot
+or not), space used per mount, bootloader version and EEPROM config, autoboot.txt, kernel command line root options, throttling flags, I/O counters since boot with uptime (SD cards report no SMART),
+and the data held above 8, 16, 25 and 35 GiB on the root's lower ext4 (the block moves a shrink to that size needs; dumpe2fs group free counts, processed on the box). Checked against the six-Pi hand
+survey of the same day: `used_gib` and every threshold match to 0.01 GiB.
 
 ```bash
 just pi_resiliency_probe teleport.apn.au 20-mile-smc01 areyonga-smc01
 ```
 
-| Script                    | Touches                               | Safety        | Notes                                                                      |
-| ------------------------- | ------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| `pi_resiliency_probe.sh`  | Live Pi SMC appliances via `tsh ssh`  | **read-only** | Fixed command set, node names only; idempotent; proxy required             |
+| Script                   | Touches                              | Safety    | Notes                                                          |
+| ------------------------ | ------------------------------------ | --------- | -------------------------------------------------------------- |
+| `pi_resiliency_probe.sh` | Live Pi SMC appliances via `tsh ssh` | **read-only** | Fixed command set, node names only; idempotent; proxy required |
 
 ### `sample_fleet.py` and `summarise_survey.py`
 
-Added 2026-11-10. `fleet/sample_fleet.py --inventories <ansible-wifi>/inventories [--per-flavour 20] [--seed N]` prints `<flavour> <proxy> <host>` for a
-reproducible sample per flavour, keeping only prod inventory hosts the flavour's Teleport cluster lists (the proxy comes from the flavour's project,
-never guessed). `fleet/summarise_survey.py <flavour>=<probe output> ... [--csv out.csv]` turns the two resiliency probes' blocks into fleet counts and
-one Markdown row per box (write rate: GB a day on x86, MB a day on a Pi; wear, watchdog, layout, shrink data); the raw files stay the evidence.
-`--census <file>` tallies `pi_bootloader_census.sh` output (bootloaders per flavour, by board revision, undervoltage, the boxes that did not answer).
-Offline tests: `fleet/test_summarise_survey.py` (`python3 -m unittest discover -s scripts/fleet`).
+Added 2026-11-10. `fleet/sample_fleet.py --inventories <ansible-wifi>/inventories [--per-flavour 20] [--seed N]` prints `<flavour> <proxy> <host>` for a reproducible sample per flavour, keeping only
+prod inventory hosts the flavour's Teleport cluster lists (the proxy comes from the flavour's project, never guessed). `fleet/summarise_survey.py <flavour>=<probe output> ... [--csv out.csv]` turns
+the two resiliency probes' blocks into fleet counts and one Markdown row per box (write rate: GB a day on x86, MB a day on a Pi; wear, watchdog, layout, shrink data); the raw files stay the evidence.
+`--census <file>` tallies `pi_bootloader_census.sh` output (bootloaders per flavour, by board revision, undervoltage, the boxes that did not answer). Offline tests: `fleet/test_summarise_survey.py`
+(`python3 -m unittest discover -s scripts/fleet`).
 
 ```bash
 just sample_fleet /Volumes/Data/_ansible/ansible-wifi/inventories
 just summarise_survey rct=rct.txt rcp=rcp.txt
 ```
 
-| Script                 | Touches                                          | Safety        | Notes                                                    |
-| ---------------------- | ------------------------------------------------ | ------------- | -------------------------------------------------------- |
-| `sample_fleet.py`      | Inventory files; `tsh ls` once per cluster       | **read-only** | Seeded sample; 90 s timeout on each listing              |
-| `summarise_survey.py`  | Probe output files; writes only the `--csv` file | **safe**      | Stdlib only                                              |
+| Script                | Touches                                          | Safety    | Notes                                       |
+| --------------------- | ------------------------------------------------ | --------- | ------------------------------------------- |
+| `sample_fleet.py`     | Inventory files; `tsh ls` once per cluster       | **read-only** | Seeded sample; 90 s timeout on each listing |
+| `summarise_survey.py` | Probe output files; writes only the `--csv` file | **safe**  | Stdlib only                                 |
 
 ### `pi_bootloader_census.sh` and `smc_writers_probe.sh`
 
-Added 2026-11-10. `fleet/pi_bootloader_census.sh [--parallel 8] [--deadline 120] < sample.txt` reads only the bootloader version, board and
-throttle flags of every Pi named on stdin (`sample_fleet.py --per-flavour 1000` lists them all), eight at a time: 312 Pis in about 8 minutes.
-`probes/smc_writers_probe.sh --proxy <proxy> <node>...` shows what writes on a Pi or x86 box: top processes by `/proc/<pid>/io` write_bytes (a
-parent's figure includes its reaped children, so cron's is everything cron started), folders holding files changed in the last 24 h (find at idle
-I/O priority, cut at 90 s), the journal size, overlayroot settings, every cron line, the journal's top sources in the last hour, and on a Pi the
-undervoltage history.
+Added 2026-11-10. `fleet/pi_bootloader_census.sh [--parallel 8] [--deadline 120] < sample.txt` reads only the bootloader version, board and throttle flags of every Pi named on stdin (`sample_fleet.py
+--per-flavour 1000` lists them all), eight at a time: 312 Pis in about 8 minutes. `probes/smc_writers_probe.sh --proxy <proxy> <node>...` shows what writes on a Pi or x86 box: top processes by
+`/proc/<pid>/io` write_bytes (a parent's figure includes its reaped children, so cron's is everything cron started), folders holding files changed in the last 24 h (find at idle I/O priority, cut at
+90 s), the journal size, overlayroot settings, every cron line, the journal's top sources in the last hour, and on a Pi the undervoltage history.
 
 ```bash
 just pi_bootloader_census < sample.txt
 just smc_writers_probe teleport.communitywifi.net.au bungardi-smc01
 ```
 
-| Script                    | Touches                                | Safety        | Notes                                                       |
-| ------------------------- | -------------------------------------- | ------------- | ----------------------------------------------------------- |
-| `pi_bootloader_census.sh` | Live Pi SMCs via `tsh ssh`             | **read-only** | Proxy from each input line; deadline TERM then KILL         |
-| `smc_writers_probe.sh`    | Live Pi and x86 SMCs via `tsh ssh`     | **read-only** | Fixed command set, node names only; find cut at 90 s        |
+| Script                    | Touches                            | Safety    | Notes                                                |
+| ------------------------- | ---------------------------------- | --------- | ---------------------------------------------------- |
+| `pi_bootloader_census.sh` | Live Pi SMCs via `tsh ssh`         | **read-only** | Proxy from each input line; deadline TERM then KILL  |
+| `smc_writers_probe.sh`    | Live Pi and x86 SMCs via `tsh ssh` | **read-only** | Fixed command set, node names only; find cut at 90 s |
 
 ### `pi_identity_probe.sh` and `ata_settings_read.py`
 
-Promoted 2026-10-08 from a unified-network-controller session that read the Raspberry Pi SMCs and the rct site ATAs. Both take the Teleport proxy as a
-required argument and never guess it, because a node name can exist on both clusters as different boxes.
+Promoted 2026-10-08 from a unified-network-controller session that read the Raspberry Pi SMCs and the rct site ATAs. Both take the Teleport proxy as a required argument and never guess it, because a
+node name can exist on both clusters as different boxes.
 
-`pi_identity_probe.sh --proxy <proxy> <node>...` prints, per Pi SMC, the device-tree model and serial-number, cpuinfo Serial/Revision/Model, dmidecode
-(empty on a Pi: no DMI), os-release, arch and kernel, each physical NIC with MAC, driver and speed, bridges, VLAN interfaces and memory. The remote command
-set is fixed in the script; it takes node names only. Exits 1 when any node is unreachable or does not finish the probe. Interpretation (serial as the
-identity anchor, the single-port layout, `Revision` decoding) is in `../references/07_hardware-overlay.md`, Raspberry Pi SMC identity.
+`pi_identity_probe.sh --proxy <proxy> <node>...` prints, per Pi SMC, the device-tree model and serial-number, cpuinfo Serial/Revision/Model, dmidecode (empty on a Pi: no DMI), os-release, arch and
+kernel, each physical NIC with MAC, driver and speed, bridges, VLAN interfaces and memory. The remote command set is fixed in the script; it takes node names only. Exits 1 when any node is unreachable
+or does not finish the probe. Interpretation (serial as the identity anchor, the single-port layout, `Revision` decoding) is in `../references/07_hardware-overlay.md`, Raspberry Pi SMC identity.
 
-Since 2026-10-09 it also prints swap-check lines: `hostname` and `boot_hostname` (from this boot's journal), `root_fs` and the `overlayroot=`
-setting, `boot_now`, `journal_boots` and `prev_boot_end`. A `boot_hostname` of `generic-wh01-*`, or ext4 root on a RISE box, means a spare went in
-during a site visit (kupungarri, `../references/06_failure-modes.md`). Recipe unchanged: `just pi_identity_probe teleport.apn.au <node>`. Since 2026-10-22 it also prints the EEPROM lines (`vcgencmd bootloader_version` and `bootloader_config`, the bare `rpi-eeprom-update`
-report, autoboot.txt presence, the watchdog identity), a deadline on every `tsh` call (`--deadline`, default 90 s), and closes stdin (a
-background run hung with it open, 2026-10-22).
+Since 2026-10-09 it also prints swap-check lines: `hostname` and `boot_hostname` (from this boot's journal), `root_fs` and the `overlayroot=` setting, `boot_now`, `journal_boots` and `prev_boot_end`.
+A `boot_hostname` of `generic-wh01-*`, or ext4 root on a RISE box, means a spare went in during a site visit (kupungarri, `../references/06_failure-modes.md`). Recipe unchanged: `just
+pi_identity_probe teleport.apn.au <node>`. Since 2026-10-22 it also prints the EEPROM lines (`vcgencmd bootloader_version` and `bootloader_config`, the bare `rpi-eeprom-update` report, autoboot.txt
+presence, the watchdog identity), a deadline on every `tsh` call (`--deadline`, default 90 s), and closes stdin (a background run hung with it open, 2026-10-22).
 
-`ata_settings_read.py --proxy <proxy> <node>...` sends a small stdlib agent (Python 3.10, embedded in the script) to each SMC through `tsh ssh`. The agent
-logs in to the Dallas Delta DDC_VoIP-m web UI at `--ip` (default `192.168.5.253`) with the **empty PIN**, which is what the units in service have
-(operator, 2026-10-08: try it), reads the `settings`, `phonebook` and `digitmap` pages and returns `{page: {field: value}}`. Any field named like
-`pin|pass|pwd|pw|secret` is dropped on the SMC and again locally, so no PIN, password or SIP secret is printed or stored. It tolerates the unit's short
-body (`IncompleteRead`: 43 bytes less than `Content-Length`). `_registered` is the settings page's `Registered : Yes|No`, the SIP registration state.
-With several nodes it lists, per page, how many fields are identical and the values of every field that differs; `--json` prints everything, and
-`--local HOST[:PORT]` runs the agent on the workstation (lab unit or test server). Exits 1 when any node or unit could not be read. Facts and the
-site-unique field list: `../references/17_site-ata-dallas-delta.md`.
+`ata_settings_read.py --proxy <proxy> <node>...` sends a small stdlib agent (Python 3.10, embedded in the script) to each SMC through `tsh ssh`. The agent logs in to the Dallas Delta DDC_VoIP-m web UI
+at `--ip` (default `192.168.5.253`) with the **empty PIN**, which is what the units in service have (operator, 2026-10-08: try it), reads the `settings`, `phonebook` and `digitmap` pages and returns
+`{page: {field: value}}`. Any field named like `pin|pass|pwd|pw|secret` is dropped on the SMC and again locally, so no PIN, password or SIP secret is printed or stored. It tolerates the unit's short
+body (`IncompleteRead`: 43 bytes less than `Content-Length`). `_registered` is the settings page's `Registered : Yes|No`, the SIP registration state. With several nodes it lists, per page, how many
+fields are identical and the values of every field that differs; `--json` prints everything, and `--local HOST[:PORT]` runs the agent on the workstation (lab unit or test server). Exits 1 when any
+node or unit could not be read. Facts and the site-unique field list: `../references/17_site-ata-dallas-delta.md`.
 
 ```bash
 just pi_identity_probe teleport.apn.au 20-mile-smc01 adjamarragu-smc01
@@ -802,28 +844,28 @@ just ata_settings_read teleport.apn.au adjamarragu-smc01 akwalirrumanja-smc01 al
 just ata_settings_read teleport.apn.au --json adjamarragu-smc01
 ```
 
-| Script                 | Touches                                              | Safety                            | Notes                                                                                                   |
-| ---------------------- | ---------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `pi_identity_probe.sh` | Live Pi SMC appliances via `tsh ssh`                 | **read-only**                     | Fixed command set, node names only; idempotent; proxy required                                          |
-| `ata_settings_read.py` | `tsh ssh` to SMCs; HTTP from the SMC to the site ATA | **read-only**, `external-network` | One login POST per page read with the empty PIN, never a form submission; secret-named fields dropped on the box; idempotent; proxy required |
+| Script                 | Touches                              | Safety                    | Notes                                                                                                    |
+| ---------------------- | ------------------------------------ | ------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `pi_identity_probe.sh` | Live Pi SMC appliances via `tsh ssh` | **read-only**             | Fixed command set, node names only; idempotent; proxy required                                           |
+| `ata_settings_read.py` | `tsh ssh` to SMCs; HTTP from the SMC | **read-only**,            | One login POST per page read with the empty PIN, never a form submission; secret-named fields dropped on |
+|                        |   to the site ATA                    |   `external-network`      |   the box; idempotent; proxy required                                                                    |
 
 ### `dns_capture_top.sh` and `teleport_sessions.py`
 
-Incident-window evidence when the box's own logs have rotated. `dns_capture_top.sh` reads the url_capture DNS pcaps on one SMC for a date and
-local time window and prints the top clients, the top domains, and each busy client's domains (Koonibba 9 Oct 2026: an Xbox One and Netflix
-behind a 181 GB day). DNS gives names, not bytes. `teleport_sessions.py` lists who had Teleport sessions on named hosts over a date range, from the
-cluster's session recordings, one UTC day per query so bot sessions cannot crowd out people (2026-09-01: staff on hope-vale and galiwinku the
-first morning of the PIN outage). About 10 s per day queried.
+Incident-window evidence when the box's own logs have rotated. `dns_capture_top.sh` reads the url_capture DNS pcaps on one SMC for a date and local time window and prints the top clients, the top
+domains, and each busy client's domains (Koonibba 9 Oct 2026: an Xbox One and Netflix behind a 181 GB day). DNS gives names, not bytes. `teleport_sessions.py` lists who had Teleport sessions on named
+hosts over a date range, from the cluster's session recordings, one UTC day per query so bot sessions cannot crowd out people (2026-09-01: staff on hope-vale and galiwinku the first morning of the PIN
+outage). About 10 s per day queried.
 
 ```bash
 just dns_capture_top teleport.communitywifi.net.au 20261009 16:00 23:59 koonibba-smc01
 just teleport_sessions teleport.communitywifi.net.au 2026-08-31 2026-09-06 hope-vale kowanyama galiwinku
 ```
 
-| Script                  | Touches                                        | Safety                            | Notes                                                                       |
-| ----------------------- | ---------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------- |
-| `dns_capture_top.sh`    | Live SMC via `tsh ssh`: `/url_capture` pcaps   | **read-only**                     | Fixed command set; validated inputs only; temp file on the box removed      |
-| `teleport_sessions.py`  | Teleport audit (`tsh recordings ls`)           | **read-only**, `external-network` | Needs the auditor role; `--exclude-user bot-cw-dashboard` for human sessions |
+| Script                 | Touches                                      | Safety                        | Notes                                                                        |
+| ---------------------- | -------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------- |
+| `dns_capture_top.sh`   | Live SMC via `tsh ssh`: `/url_capture` pcaps | **read-only**                 | Fixed command set; validated inputs only; temp file on the box removed       |
+| `teleport_sessions.py` | Teleport audit (`tsh recordings ls`)         | **read-only**, `external-network` | Needs the auditor role; `--exclude-user bot-cw-dashboard` for human sessions |
 
 ## Usage
 
@@ -845,15 +887,16 @@ just -f fleet-health.justfile pin-audit
 ## Requirements
 
 - `tsh` logged in to the relevant Teleport cluster (`tsh login`).
-- `just`, `bash`, and the pack's Python venv: run `just bootstrap` once at the pack root. It builds `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`
-  from the `.mise.toml` pin; every Python recipe, in the root `justfile` and both scoped justfiles here, runs through it. Scripts are standard library only.
+- `just`, `bash`, and the pack's Python venv: run `just bootstrap` once at the pack root. It builds `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv` from the `.mise.toml` pin; every
+  Python recipe, in the root `justfile` and both scoped justfiles here, runs through it. Scripts are standard library only.
 - A local clone of `ansible-wifi` at `/Volumes/Data/_ansible/ansible-wifi` for the topology comparisons.
 
 ## Evidence retention
 
 Captures are the only record of live state at a point in time and **should be kept**, not deleted to save space — they cannot be regenerated for a past date. Write them into your investigation
-folder's own `evidence/` directory (via `OUTDIR_ROOT=<investigation-path> ./capture/collect-smc-evidence.sh ...` or `./fleet/collect-fleet-health.sh ...`), not into this skill-smc directory — skill-smc holds
-reusable knowledge and tooling, not case-specific evidence. See the parent repo's canonical-source-of-truth policy on keeping investigation artifacts local to their investigation folder.
+folder's own `evidence/` directory (via `OUTDIR_ROOT=<investigation-path> ./capture/collect-smc-evidence.sh ...` or `./fleet/collect-fleet-health.sh ...`), not into this skill-smc directory —
+skill-smc holds reusable knowledge and tooling, not case-specific evidence. See the parent repo's canonical-source-of-truth policy on keeping investigation artifacts local to their investigation
+folder.
 
 **The 2026-08-03 NBN Accelerate fleet sweep was captured without `OUTDIR_ROOT` set** (script default, under `skill-smc/evidence/`) — relocate that capture to a case-specific
 `local-knowledge-ansible/ansible-wifi/issues/` folder per this policy once collection finishes, rather than leaving raw per-host evidence inside the skill-smc pack long-term. The *analysis*
@@ -864,9 +907,8 @@ reusable knowledge and tooling, not case-specific evidence. See the parent repo'
 
 ## doc-freshness-baseline.json
 
-Data, not a script: the findings skill-ai-it's `doc_freshness` grandfathered when this pack adopted the governed-file standard (2026-10-10).
-`just check` fails only on findings not in it; regenerate with `just stale` reviewed first, then `doc_freshness.py --project-root . --write-baseline`
-from the skill-ai-it package. A file over its budget may shrink, never grow.
+Data, not a script: the findings skill-ai-it's `doc_freshness` grandfathered when this pack adopted the governed-file standard (2026-10-10). `just check` fails only on findings not in it; regenerate
+with `just stale` reviewed first, then `doc_freshness.py --project-root . --write-baseline` from the skill-ai-it package. A file over its budget may shrink, never grow.
 
 ## Execution Policy
 

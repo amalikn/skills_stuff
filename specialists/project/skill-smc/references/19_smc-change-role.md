@@ -590,6 +590,23 @@ are per change (`smc_change_todo_<change>`; a play's `hosts:` can be templated f
     ```
   - `6/11 ACTIONS` in a failure is the role's stage (1 SPEC .. 11 RECORD), not the spec's action; `Action 3/3` is the spec's. The AVR version check sits inside `smsc_write.sh` on purpose: a `when`
     would skip the SMC and mark it done, while failing keeps it a to-do that resumes after the flash. Its cost is that stages 1-5 and two `/run` copies run first; nothing on the AVR changes.
+  - **When the state files appear (2026-11-17, VERIFIED_PRIMARY from `tasks/record.yml` and a live journal):** each change has its own `runs/<flavor>/state/<host>.json`, written at stage 11 RECORD of
+    that change for that SMC, after a passed apply, under strategy free, so one SMC's AVR state lands minutes after it finishes while others are still mid-change. Check mode never writes one. The SMSC
+    import is a second play: it starts when the first play has finished for every SMC, then runs only SMCs whose AVR state says passed. The "Say what the conditions decided" output comes before stage
+    5, so it is not a sign the SMC is done; its journal (`status: active`, `phase`) is.
+  - **An offline SMC fails INCOMPLETE (2026-11-17, operator):** an SMC left out as NOT IN TELEPORT, or recorded `unreachable`, used to end `ok=12 failed=0` in PLAY RECAP (malupirti-smc01), which read
+    as done. The summary play's last task now fails it with "INCOMPLETE <change> not applied", after the summary and trackers are written, so the recap shows `failed=1` and the run exits non-zero. In
+    `smc_change_multiple.yml` and `smc_rise_deploy.yml` that SMC then sits out the later plays (it was offline for them anyway). Refused SMCs are not marked. Health probe: `just ssh_handshake_time
+    <host-fqdn> 10 30` (scripts/access) times the Teleport handshake against each connect timeout.
+  - **Connect timeout 30 s at play level (2026-11-17):** "Connection timed out during banner exchange ... UNKNOWN port 65535" while `tsh ssh` works is the ssh plugin's 10 s default; a Teleport
+    handshake measured 9 s idle on wujal-wujal-booth-smc01 and went over in a 10-SMC batch. `ansible_ssh_timeout: 30` now sits in the apply play of `smc_change.yml` and in `smc_change_run` of
+    `smc_change_multiple.yml` (local-knowledge-ansible playbooks). Override with `-e ansible_ssh_timeout=N`; `-T N` loses to the play var.
+
+    ```yaml
+    # local-knowledge-ansible ansible-wifi/playbooks/smc_change.yml, apply play vars (2026-11-17)
+    ansible_ssh_retries: 8
+    ansible_ssh_timeout: 30
+    ```
   - a cut-off resume on goojarr read `avr_version=3.07` live but restored the journal's 2.14 conditions; the flash action's own check reads the AVR, so it says ALREADY, not a second flash
   - the "gap" in URL-capture fetch file times is rsync `-a` keeping source mtimes (reference 09)
 

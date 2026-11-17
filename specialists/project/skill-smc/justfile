@@ -206,6 +206,14 @@ smc_change_ask *ARGS:
 backdoor_exec target cmd="hostname":
     @bash scripts/access/backdoor_exec.sh "{{target}}" "{{cmd}}"
 
+# Time the ssh handshake to an SMC through Teleport per connect timeout (read-only, runs `true`): why Ansible says banner exchange timed out while tsh ssh works. Example: just ssh_handshake_time wujal-wujal-booth-smc01.teleport.apn.au 10 30
+ssh_handshake_time host *timeouts:
+    @bash scripts/access/ssh_handshake_time.sh "{{host}}" {{timeouts}}
+
+# Offline tests for ssh_handshake_time.sh (fake ssh, no network).
+test_ssh_handshake_time:
+    @bash scripts/access/test_ssh_handshake_time.sh
+
 # An SMC's uplink health over Teleport (read-only): loss to first hop and proxy, Teleport error trend, clock, backdoor restarts, WAN rate. Example: just smc_link_health banana-well-smc01
 smc_link_health host *args:
     @bash scripts/probes/smc_link_health.sh "{{host}}" {{args}}

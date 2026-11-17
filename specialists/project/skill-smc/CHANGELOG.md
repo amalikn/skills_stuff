@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261117_1859
+Last rotated: 20261117_1926
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)](#20261117_1922--smc_change-state-file-timing-connect-timeout-30-s-offline-smcs-fail-incomplete-ssh_handshake_timesh-v0147---v0148)
 - [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
 - [20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)](#20261117_1044--teleport-self-upgrade-cron-on-every-flavour-v0145---v0146)
 - [20261116_1859 — Solutions to platforms (no version change)](#20261116_1859--solutions-to-platforms-no-version-change)
@@ -41,10 +42,16 @@ Last reviewed: 2026-10-27
 - [20261104_1900 — smc_change self-repair, every-goal success rule, applies_when (v0.11.8 -> v0.11.9)](#20261104_1900--smc_change-self-repair-every-goal-success-rule-applies_when-v0118---v0119)
 - [20261104_1600 — smc_change chaining, per-change state, named value files (v0.11.7 -> v0.11.8)](#20261104_1600--smc_change-chaining-per-change-state-named-value-files-v0117---v0118)
 - [20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)](#20261102_1756--smc_change-skip-probe-or-force-per-smc-close-v0116---v0117)
-- [20261102_1721 — update:stats cron standard, port guard after cron starts (v0.11.5 -> v0.11.6)](#20261102_1721--updatestats-cron-standard-port-guard-after-cron-starts-v0115---v0116)
-- [20261102_1434 — smc_change flows held to the code (v0.11.4 -> v0.11.5)](#20261102_1434--smc_change-flows-held-to-the-code-v0114---v0115)
 
 ---
+
+## 20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)
+
+`references/19_smc-change-role.md` (smc_change_multiple bullets): a change's state file is written per SMC at its stage 11 under strategy free, never in check mode, and the SMSC play waits for the
+whole AVR play; "banner exchange" timeouts are the ssh plugin's 10 s default against a ~9 s Teleport handshake, now `ansible_ssh_timeout: 30` in both smc_change playbooks (ansible-wifi chat f516e57d).
+
+New read-only `scripts/access/ssh_handshake_time.sh` (`just ssh_handshake_time`, offline test `just test_ssh_handshake_time`, smoke-run on wujal-wujal-booth-smc01, catalogued in
+`scripts/README.md`); reference 19: an SMC left out as NOT IN TELEPORT or recorded unreachable now fails INCOMPLETE after the summary (operator).
 
 ## 20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)
 
@@ -189,12 +196,3 @@ brought up to date (0 steps to review), quiet unused chain slots, first real app
 
 Learned 2026-11-02: `references/19_smc-change-role.md` (per-SMC summary and tracker, queue time, nothing-changed path, `probe_first`, `smc_change_probe`, `checks` hash, `target-hash` correction, 39 s
 in-place stop), `references/13_known-issues.md` (a `-l` host absent from the inventory).
-
-## 20261102_1721 — update:stats cron standard, port guard after cron starts (v0.11.5 -> v0.11.6)
-
-Learned 2026-11-02: `references/13_known-issues.md` (`*/1` boxes, guard gap, `gates.stale` crash), `references/02_service-map.md` (two crontab copies on overlay SMCs),
-`references/19_smc-change-role.md` (action 8, checked crontab write, trace_sync accept).
-
-## 20261102_1434 — smc_change flows held to the code (v0.11.4 -> v0.11.5)
-
-`smc_change_flows_check` also audits the layout and runs trace_sync; new recipes `smc_change_trace` and `smc_change_ask` (skill-drawio references/charts-and-trace.md).
