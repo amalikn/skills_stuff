@@ -190,3 +190,10 @@ not strip the shared ones.
 
 On `refresh`, if the file exists and was written by this skill (its header comment cites this policy), merge in any newly-relevant generated-support ignores that the project has gained since; leave
 project-specific ignores entries untouched. If the file exists without that header, treat it as user-owned and do not touch it.
+
+> **Learned 2026-11-17** · CHANGELOG rotation · VERIFIED_PRIMARY (skill-drawio's `just budget --apply` moved its whole `## Unreleased` section to
+> `docs/history/`, 176 lines to 40; undone by hand) · Source: `scripts/records/rotate_records.py` `choose()`, test `test_the_unreleased_section_never_rotates` ·
+> Falsifier: a rotation that moves any line under `## Unreleased`.
+> An undated heading takes its date from git blame, so an `## Unreleased` heading written months ago looked like the oldest entry and rotated first. The
+> live section now never rotates; a CHANGELOG over budget because of a long `## Unreleased` is cut by writing shorter lines or releasing, not by rotation.
+

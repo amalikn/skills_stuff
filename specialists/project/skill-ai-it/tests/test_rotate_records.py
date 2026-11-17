@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import subprocess
 import sys
 import tempfile
@@ -96,6 +97,25 @@ class RotateTest(unittest.TestCase):
         self.assertIn("second paragraph 0", archive)
         self.assertNotIn("second paragraph 0\n", live)
         self.assertLessEqual(live.count("\n"), 220)
+
+    def test_the_unreleased_section_never_rotates(self):
+        """A CHANGELOG's `## Unreleased` stays live even when git blame dates its heading oldest; dated entries rotate instead (2026-11-17)."""
+        lines = ["# Changelog", "", "## Unreleased", ""]
+        lines += [f"- unreleased note {i} " + "x" * 120 for i in range(120)]
+        for i in range(40):
+            lines += ["", f"## 2026010{1 + i % 9}_12{i:02d} — entry {i}", "", f"- old entry body {i} " + "y" * 120]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            env = {**os.environ, "GIT_AUTHOR_DATE": "2025-01-01T00:00:00", "GIT_COMMITTER_DATE": "2025-01-01T00:00:00"}
+            git = ["git", "-c", "user.name=t", "-c", "user.email=t@example.com"]
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / "CHANGELOG.md").write_text("\n".join(lines) + "\n")
+            subprocess.run([*git, "add", "CHANGELOG.md"], cwd=root, check=True)
+            subprocess.run([*git, "commit", "-qm", "old"], cwd=root, check=True, env=env)
+            subprocess.run([sys.executable, str(SCRIPT), "--project-root", str(root), "--apply", "CHANGELOG.md"], check=True, capture_output=True)
+            live = (root / "CHANGELOG.md").read_text()
+        self.assertIn("## Unreleased", live)
+        self.assertIn("unreleased note 0 ", live)
 
     def test_a_wrapped_item_moves_with_its_unindented_continuation(self):
         """Lines wrapped at column 0 under a dated item travel with it; none is left behind as an orphan paragraph."""

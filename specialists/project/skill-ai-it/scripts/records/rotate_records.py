@@ -387,6 +387,9 @@ def choose(rec: Record, kind: str, now: dt.datetime, keep_days: int, min_keep: i
             if u.lines and u.lines[0].startswith(TRACKER_POINTER):
                 u.keep_reason = "tracker pointer"  # never an open item itself: moving it is how duplicates piled up (skill-ai-it, 2026-10-10)
                 continue
+            if u.section.strip().lstrip("#").strip().lower() == "unreleased":
+                u.keep_reason = "unreleased"  # the live section of a CHANGELOG: it once rotated whole to history (skill-drawio, 2026-11-17)
+                continue
             open_item = any(p in u.section for p in pinned) and not RESOLVED.search(u.lines[0] if u.lines else "")
             if open_item and open_days is not None:
                 u.moved = u.to_tracker = True  # still open: it moves to the live tracker, not to history

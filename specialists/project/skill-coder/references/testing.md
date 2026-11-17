@@ -332,3 +332,15 @@ p.write_text(orig)   # same text, newer mtime: the derived .pptx check then fail
 > cp /tmp/keep.py mod.py && touch mod.py && python3 -B -m unittest tests.test_mod                              # green again
 > ```
 
+> **Learned 2026-11-17 (c)** · testing a repair tool (a fixer, formatter or migrator) on real input · VERIFIED_PRIMARY · Source: skill-ascii-diagrams
+> `scripts/ascii_fix.py`, commits 49231b4 to 5b2224a · Falsifier: a repair tool whose unit tests passed and whose real-corpus sweep found nothing new.
+> Unit tests built from the cases you thought of passed every time; each real defect was found by sweeping a corpus of real files and comparing the tool
+> with an independent checker, file by file: a diff where the checker reported nothing was a restyle or a misread (chained boxes widened, a grid divider read
+> as a bottom, a generated file written, a list of sentences aligned), and a finding the checker lacked was either a true positive it missed or a new false
+> one. Give the tool a no-worse guard against that checker, run the sweep after every rule change, and turn each surprise into a fixture before fixing it.
+>
+> ```bash
+> for f in docs/*/*.md; do out=$(python3 -B fix.py "$f"); d=$(grep -c '^[-+][^-+]' <<<"$out"); c=$(python3 check.py "$f" | grep -c 'loses'); \
+>   [ "$d$c" != "00" ] && echo "$f diff=$d checker=$c"; done   # a diff with checker=0 is a restyle to explain
+> ```
+
