@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261117_1859.md](changelog-20261117_1859.md) 8 entries, 2026-11-01 to 2026-11-02: smc_change specs, trackers, shared scripts; AVR numbers ruling (v0.11.3 -> v0.11.4); AVR emergency and SMS numbers (v0.11.2 -> v0.11.3); smc_qos back on the meta-package (v0.11.1 -> v0.11.2); Kernel fix reaches rise ...
 - [changelog-20261117_1045.md](changelog-20261117_1045.md) 1 entry, 2026-11-01 to 2026-11-01: PHP fix ported from rise to a master-based branch; pre-push traps (v0.10.7 -> v0.10.8)
 - [changelog-20261116_1736.md](changelog-20261116_1736.md) 1 entry, 2026-10-30 to 2026-10-30: rct-tstik AVR data map, smc_change conditions and loop, rct_avr_probe modem fields (v0.10.6 -> v0.10.7)
 - [changelog-20261111_1319.md](changelog-20261111_1319.md) 1 entry, 2026-10-30 to 2026-10-30: install_missing, controller lookups and pinned PHP, Teleport duplicate node after a data-dir wipe (v0.10.5 -> v0.10.6)

@@ -510,13 +510,13 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   copy (references/09, Learned 2026-11-10). The spec's template holds no script text: it sets the role's two values from `variables.yml` and includes the company template through a link,
   `templates/urlcapture-prune/company_rsync_urlcapture.sh.j2`, and its render is byte-identical to `smc_url_capture`'s own (`cmp`, md5 `57e27de8...`, the same on the box after apply). Jinja drops an
   included file's last newline and `trim_blocks` the one after the tag, so the wrapper ends with an explicit `{{ '\n' }}`. `reboot: never` (x86 has no overlay, operator 2026-11-10); `probe_first:
-  true`; facts record capture months, size and root use; `just uc-old-files <hosts>` reads them. The deletion happens at the next cron run (10 0,8,16), not in the change run. Family `urlcapture` on the flow
-  map.
+  true`; facts record capture months, size and root use; `just uc-old-files <hosts>` reads them. The deletion happens at the next cron run (10 0,8,16), not in the change run. Family `urlcapture` on
+  the flow map.
   > **Learned 2026-11-11** · urlcapture-prune first run on the canary · VERIFIED_PRIMARY · Source: koonibba-smc01 syslog `CRON ... rsync_urlcapture.sh` at 16:10:01 and
-  > `/url_capture` mtime 16:13 (read-only `tsh ssh`, 2026-11-10 17:00) · Falsifier: a box on the new script still holding a month older than last month after a cron run whose rsync exited 0
-  > The first cron run after the apply pruned everything older than last month in about 3 minutes: 13 GB back to 2023-08 became two months (current and last), 264 MB; root 49% to 26%.
-  > `just uc-old-files` (renamed from `months`, 2026-11-10, local-knowledge-ansible `7cbbe04`) probes through `tsh_each.sh`, whose proxy defaults to the apn cluster, so a box on
-  > the communitywifi cluster answers "agent offline" (references/01: wrong cluster, not down). Set the proxy for those boxes:
+  > `/url_capture` mtime 16:13 (read-only `tsh ssh`, 2026-11-10 17:00) · Falsifier: a box on the new script still holding a month older than last month after a cron run whose rsync exited 0 The first
+  > cron run after the apply pruned everything older than last month in about 3 minutes: 13 GB back to 2023-08 became two months (current and last), 264 MB; root 49% to 26%. `just uc-old-files`
+  > (renamed from `months`, 2026-11-10, local-knowledge-ansible `7cbbe04`) probes through `tsh_each.sh`, whose proxy defaults to the apn cluster, so a box on the communitywifi cluster answers "agent
+  > offline" (references/01: wrong cluster, not down). Set the proxy for those boxes:
   >
   > ```bash
   > # files/changes/tsh_each.sh:19 (local-knowledge-ansible 7cbbe04)
@@ -526,8 +526,8 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
   > # koonibba-smc01  prune=1 months=2 oldest=202610 size=264M root=26%
   > ```
   >
-  > Per-host cluster selection (from the box's group or a fallback to the other cluster) is not built yet. galiwinku-smc01's `check` (2026-11-11 11:50) passed:
-  > 21 capture months, 52G, root 62%, guard clean; its apply and hope-vale's wait for the operator (an agent's auto mode refuses the production apply).
+  > Per-host cluster selection (from the box's group or a fallback to the other cluster) is not built yet. galiwinku-smc01's `check` (2026-11-11 11:50) passed: 21 capture months, 52G, root 62%, guard
+  > clean; its apply and hope-vale's wait for the operator (an agent's auto mode refuses the production apply).
 
   ```jinja
   {# templates/urlcapture-prune/rsync_urlcapture.sh.j2 (local-knowledge-ansible, 2026-11-10) #}
@@ -570,6 +570,26 @@ are per change (`smc_change_todo_<change>`; a play's `hosts:` can be templated f
     yet started instead.
   - `timeout` has to stay out of `smc_change_target`, or adding a limit re-runs every passed SMC
   - the SMSC change ran on SMCs whose AVR update had not passed (banana-well, gumbarnun, AVR 2.14). `smc_change_multiple.yml` now holds those back by reading the iridium state file. This part is live.
+  - **Never pass `-e smc_change=<spec>` to `smc_change_multiple.yml` (2026-11-17, VERIFIED_PRIMARY from the run records and the operator's shell history).** Each import names its change in play vars
+    (`smc_change: rct-tstik-iridium-update`, then `rct-avr-smsc`); an extra var outranks play vars, so `-e smc_change=rct-avr-smsc` turned both imports into the SMSC change. The flash never ran, and
+    the state-file holdback sits on the second import only, so the first import ran the SMSC write unguarded. A 23-SMC batch that way: 4 passed (AVR already 3.07, numbers already right), 6 failed at
+    `6/11 ACTIONS` with "AVR on '2.14', not one of: 3.07 3.7", 13 never started (max_fail 0 stopped the run). Run it with `-l` and run options only (`-e smc_change_mode=check`, `-e
+    smc_change_max_fail_percentage=10`, `-f 10`); `smc_change_force` is not needed for SMCs with no passed AVR update.
+
+    ```yaml
+    # ansible-wifi smc_change_multiple.yml (rise 9f17dd64), lines 43-49 and 78-81
+    - name: AVR update (tstik iridium)
+      import_playbook: smc_change.yml
+      vars:
+        smc_change: rct-tstik-iridium-update   # loses to -e smc_change=...
+        rct_avr_flash: true
+    - name: SMSC Number update
+      import_playbook: smc_change.yml
+      vars:
+        smc_change: rct-avr-smsc
+    ```
+  - `6/11 ACTIONS` in a failure is the role's stage (1 SPEC .. 11 RECORD), not the spec's action; `Action 3/3` is the spec's. The AVR version check sits inside `smsc_write.sh` on purpose: a `when`
+    would skip the SMC and mark it done, while failing keeps it a to-do that resumes after the flash. Its cost is that stages 1-5 and two `/run` copies run first; nothing on the AVR changes.
   - a cut-off resume on goojarr read `avr_version=3.07` live but restored the journal's 2.14 conditions; the flash action's own check reads the AVR, so it says ALREADY, not a second flash
   - the "gap" in URL-capture fetch file times is rsync `-a` keeping source mtimes (reference 09)
 

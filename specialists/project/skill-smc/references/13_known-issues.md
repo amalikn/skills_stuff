@@ -56,6 +56,13 @@
 - [2026-11-01 — packages.graylog2.org 503 stopped `smc_graylog` at the repo deb download (INFO)](#2026-11-01--packagesgraylog2org-503-stopped-smc_graylog-at-the-repo-deb-download-info)
 - [2026-11-01 — `Find root device details` fails "No first item" on overlay boxes; master has no overlay guard (OPEN)](#2026-11-01--find-root-device-details-fails-no-first-item-on-overlay-boxes-master-has-no-overlay-guard-open)
 - [2026-11-01 — AVR V3.07 flashed ahead of the Iridium install on seven rct sites (operator decision, INFO)](#2026-11-01--avr-v307-flashed-ahead-of-the-iridium-install-on-seven-rct-sites-operator-decision-info)
+- [2026-11-01 — unpinned `linux-modules-extra-raspi` moved a Pi's next boot off the target kernel; purge does not re-flash (OPEN)](#2026-11-01--unpinned-linux-modules-extra-raspi-moved-a-pis-next-boot-off-the-target-kernel-purge-does-not-re-flash-open)
+- [2026-11-01 — after a flash, stats.json reads AVR 2.11 until the next good update:stats pass (INFO)](#2026-11-01--after-a-flash-statsjson-reads-avr-211-until-the-next-good-updatestats-pass-info)
+- [2026-11-01 — ansible-wifi pre-push syntax check fails on any smc_bases.yml change: hook venv lacks ansible.posix (OPEN)](#2026-11-01--ansible-wifi-pre-push-syntax-check-fails-on-any-smc_basesyml-change-hook-venv-lacks-ansibleposix-open)
+- [2026-11-01 — `smc_rise_deploy.yml` never enables overlay (INFO)](#2026-11-01--smc_rise_deployyml-never-enables-overlay-info)
+- [2026-11-02 — `update:stats` cron is not `*/5` everywhere; `rct-avr-smsc` page proof collided with it (FIXED in specs; three boxes OPEN)](#2026-11-02--updatestats-cron-is-not-5-everywhere-rct-avr-smsc-page-proof-collided-with-it-fixed-in-specs-three-boxes-open)
+- [2026-11-02 — a host absent from the inventory is ignored by `-l` with a warning, and the run still exits 0 (INFO)](#2026-11-02--a-host-absent-from-the-inventory-is-ignored-by--l-with-a-warning-and-the-run-still-exits-0-info)
+- [2026-11-10 — `smc_system` never grew the root LV on nbn_accelerate (FIXED on rise `0fc086ca`, unpushed)](#2026-11-10--smc_system-never-grew-the-root-lv-on-nbn_accelerate-fixed-on-rise-0fc086ca-unpushed)
 
 ---
 
@@ -1521,6 +1528,12 @@ Safe at any age: the job only writes metrics, and `sponge` writes the .prom only
   (Homebrew's ansible here). The hook lints whole files in yamllint, so old errors in a touched file block.
 - The Bash vars guard blocks commands that name an inventory vars file with a printing command (`git show`, `git diff`, `ansible-inventory --host`), even when output is redirected. Use
   `ansible-vars-guard.py read`, `grep -c`, or a no-print `git cherry-pick -n`; redaction hides commit hashes too.
+- (2026-11-17) The guard also blocks edits that print nothing when the command names a host_vars file: `sed -i`, `printf ... >> file`, Read/Edit, `git add -u <path>/host_vars`, `git grep -l` on a
+  branch, `git rev-parse <ref>:<path>` and `git ls-tree`; the same `sed -i` passed once and was refused later in the session. To set the Iridium flag use `just smc_mark_iridium --repo <checkout>
+  --flavor rct <hosts> [--apply]` (it names hosts, not files, and prints no values); stage with `git add -u inventories/<flavor>`. On 2026-11-17 the operator had to run two appends by hand.
+- (2026-11-17) The ansible-lint delta gate compares the pushed range with its base, so a file largely rewritten in that range brings its old findings in as new: `smc_url_capture/tasks/main.yml`,
+  rewritten by `906ee778`, blocked the push on six pre-existing short module names until they took `ansible.builtin.` (rise `9f17dd64`). A `shell` task with a pipe needs `set -o pipefail` and `args:
+  executable: /bin/bash` (Ubuntu's `/bin/sh` is dash).
 
 ## 2026-11-01 — smc_disable_overlay on master misses boxes set in overlayroot.conf; Teleport vars (INFO)
 
@@ -1649,12 +1662,18 @@ if not device.startswith(('/', '\\')) and ':/' not in device or fstype == 'none'
 
 ## 2026-11-01 — unpinned `linux-modules-extra-raspi` moved a Pi's next boot off the target kernel; purge does not re-flash (OPEN)
 
-- Found on `myra-vale-smc01`: running `5.15.0-1078-raspi` (the target), `/boot/firmware/vmlinuz` `1110`. `smc_qos` installs the meta-package `linux-modules-extra-raspi` with `state: present`, so an `smc_bases` run
-  pulled `1110` on 2026-11-01 12:14 and the firmware moved at 12:16, with no alert: the box runs the old kernel until its next reboot. `smc_qos` is in `smc_bases.yml` only, not in `smc_rise_deploy.yml`.
-- `smc_enable_overlay.yml` then did nothing and reported `failed=0`: `ls /lib/modules | tail -n1` differs from `uname -r`, so 36 tasks skip after a `Not on the last downloaded kernel version` debug line.
-- `smc_update_kernel` removes every non-target kernel (`cleanup_old_kernels: true`, outside the update block), but `flash-kernel --force <target>` is inside that block, which skips when the running kernel is the
-  target. The purge at 19:31 left `/boot/firmware` on `1110` with its modules gone: a reboot then boots a kernel with no modules. `zz-flash-kernel` in `postrm.d` runs `flash-kernel "$abi"` with the removed
-  version and did not restore the target (cause of that `UNVERIFIED`). Repaired by hand: `flash-kernel --force 5.15.0-1078-raspi`. Fleet not surveyed: `just smc_boot_kernel <proxy> <target> <nodes>`. Fix on `rise` `8684e5ec` (not on `iridium` or `master`; not yet run on a box): `smc_update_kernel` proves and flashes the next boot on every run, `smc_rise_enable_overlay` fails on a mismatch. `smc_qos` stays on the meta-package (operator, 2026-11-01, `rise` `c22318fe`): pinning it to the target makes `smc_bases` pull that image too, because `linux-modules-extra-<v>` depends on `linux-image-<v>`, and the hook then moves the next boot with no planned reboot. So a plain `smc_bases` can still move a Pi's next boot, because `smc_update_kernel` is commented out there (line 81); `smc_rise_deploy.yml` corrects it. Check with `just smc_boot_kernel` after an `smc_bases` run.
+- Found on `myra-vale-smc01`: running `5.15.0-1078-raspi` (the target), `/boot/firmware/vmlinuz` `1110`. `smc_qos` installs the meta-package `linux-modules-extra-raspi` with `state: present`, so an
+  `smc_bases` run pulled `1110` on 2026-11-01 12:14 and the firmware moved at 12:16, with no alert: the box runs the old kernel until its next reboot. `smc_qos` is in `smc_bases.yml` only, not in
+  `smc_rise_deploy.yml`.
+- `smc_enable_overlay.yml` then did nothing and reported `failed=0`: `ls /lib/modules | tail -n1` differs from `uname -r`, so 36 tasks skip after a `Not on the last downloaded kernel version` debug
+  line.
+- `smc_update_kernel` removes every non-target kernel (`cleanup_old_kernels: true`, outside the update block), but `flash-kernel --force <target>` is inside that block, which skips when the running
+  kernel is the target. The purge at 19:31 left `/boot/firmware` on `1110` with its modules gone: a reboot then boots a kernel with no modules. `zz-flash-kernel` in `postrm.d` runs `flash-kernel
+  "$abi"` with the removed version and did not restore the target (cause of that `UNVERIFIED`). Repaired by hand: `flash-kernel --force 5.15.0-1078-raspi`. Fleet not surveyed: `just smc_boot_kernel
+  <proxy> <target> <nodes>`. Fix on `rise` `8684e5ec` (not on `iridium` or `master`; not yet run on a box): `smc_update_kernel` proves and flashes the next boot on every run, `smc_rise_enable_overlay`
+  fails on a mismatch. `smc_qos` stays on the meta-package (operator, 2026-11-01, `rise` `c22318fe`): pinning it to the target makes `smc_bases` pull that image too, because `linux-modules-extra-<v>`
+  depends on `linux-image-<v>`, and the hook then moves the next boot with no planned reboot. So a plain `smc_bases` can still move a Pi's next boot, because `smc_update_kernel` is commented out there
+  (line 81); `smc_rise_deploy.yml` corrects it. Check with `just smc_boot_kernel` after an `smc_bases` run.
 - Why `uname -r` misleads: a Pi boots whatever is in `/boot/firmware/vmlinuz` at that moment and a kernel install replaces that file, so the running kernel says nothing about the next boot.
 - `flash-kernel --help` is not help: it takes the argument as a kernel version and starts installing. Run twice on `myra-vale-smc01`, it left an empty `/boot/dtbs/--help`.
 
@@ -1668,27 +1687,33 @@ if not device.startswith(('/', '\\')) and ':/' not in device or fstype == 'none'
 
 ## 2026-11-01 — after a flash, stats.json reads AVR 2.11 until the next good update:stats pass (INFO)
 
-- Direct loader read was `3.07` on every box while `stats.json` said `2.11`: gumuluji, fish-river, bar-barrum. bar-barrum corrected at the next cron pass, 18:45, fish-river likewise with no reset. tstik's Stats page is not
-  proof of a flash for up to 5 minutes. stats.json is in the tree copied to the lower dir, so a reboot can bring the old value back.
+- Direct loader read was `3.07` on every box while `stats.json` said `2.11`: gumuluji, fish-river, bar-barrum. bar-barrum corrected at the next cron pass, 18:45, fish-river likewise with no reset.
+  tstik's Stats page is not proof of a flash for up to 5 minutes. stats.json is in the tree copied to the lower dir, so a reboot can bring the old value back.
 - Operator 2026-11-01: a flashed AVR needs a restart. `avr_flash.sh` runs the loader's `-r` before cron starts. Whether that changes the 2.11 reading is not established.
 
 ## 2026-11-01 — ansible-wifi pre-push syntax check fails on any smc_bases.yml change: hook venv lacks ansible.posix (OPEN)
 
-- `.git/hooks/pre-push` puts `/Volumes/Data/_ai/_skills/skills-runtime/ansible-wifi/.venv/bin` first (ansible-core 2.17), which has no `ansible.posix`, so `selinux` in `smc_system` fails: `couldn't resolve module/action
-  'selinux'`. It looks like a VS Code problem and is not. Homebrew's 2.21.5 has it, so a local syntax check passes. Pushed `iridium` with `ANSIBLE_COLLECTIONS_PATH` naming both. Permanent fix proposed: install `ansible.posix` into that venv.
+- `.git/hooks/pre-push` puts `/Volumes/Data/_ai/_skills/skills-runtime/ansible-wifi/.venv/bin` first (ansible-core 2.17), which has no `ansible.posix`, so `selinux` in `smc_system` fails: `couldn't
+  resolve module/action 'selinux'`. It looks like a VS Code problem and is not. Homebrew's 2.21.5 has it, so a local syntax check passes. Pushed `iridium` with `ANSIBLE_COLLECTIONS_PATH` naming both.
+  Permanent fix proposed: install `ansible.posix` into that venv.
 
 ## 2026-11-01 — `smc_rise_deploy.yml` never enables overlay (INFO)
 
-- It imports stage 0 with `setup_overlay: false`: `Overlay configuration and reboot bypassed`. Run `smc_enable_overlay.yml`. The `Verify if Overlayroot is enabled` error with `...ignoring` is the expected probe on a box with overlay off.
+- It imports stage 0 with `setup_overlay: false`: `Overlay configuration and reboot bypassed`. Run `smc_enable_overlay.yml`. The `Verify if Overlayroot is enabled` error with `...ignoring` is the
+  expected probe on a box with overlay off.
 
 ## 2026-11-02 — `update:stats` cron is not `*/5` everywhere; `rct-avr-smsc` page proof collided with it (FIXED in specs; three boxes OPEN)
 
 Ansible sets `*/5` (`roles/smc_application/tasks/main.yml:431-434`, `Tstik Stats Updater`), but a 2026-11-02 read of 30 rct boxes plus wungu-qld found 21 on `*/5`, 5 on `*/1` (wungu-qld, jungalina,
-bauhinia-downs, parkal-springs, tjiwuru) and 5 unreachable through Teleport. The one `*/1` line inspected (tjiwuru) carries the `#Ansible: Tstik Stats Updater` marker, so the entry was edited under the Ansible name and all 95 branches say `*/5`, so a hand edit is likely, not proven. Why they differ is UNVERIFIED. All five also hold `*/1` in the lower dir. The operator ruled `*/5` the standard; `rct-tstik-iridium-update` sets it live and in the lower dir (2026-11-02, commit 70bb516), so a box gets it only when that change runs there: bauhinia-downs, parkal-springs and tjiwuru stay on `*/1` until then. jungalina verified `*/5` live and lower after its run. `smc_prove_page.sh` (`stats_slot: 300`) and `avr_emergency.py` (`SLOT_MINUTES = 5`) assume `*/5`, and the port has no lock.
+bauhinia-downs, parkal-springs, tjiwuru) and 5 unreachable through Teleport. The one `*/1` line inspected (tjiwuru) carries the `#Ansible: Tstik Stats Updater` marker, so the entry was edited under
+the Ansible name and all 95 branches say `*/5`, so a hand edit is likely, not proven. Why they differ is UNVERIFIED. All five also hold `*/1` in the lower dir. The operator ruled `*/5` the standard;
+`rct-tstik-iridium-update` sets it live and in the lower dir (2026-11-02, commit 70bb516), so a box gets it only when that change runs there: bauhinia-downs, parkal-springs and tjiwuru stay on `*/1`
+until then. jungalina verified `*/5` live and lower after its run. `smc_prove_page.sh` (`stats_slot: 300`) and `avr_emergency.py` (`SLOT_MINUTES = 5`) assume `*/5`, and the port has no lock.
 
-On wungu-qld (apply 20261102_160644) the proof started update:stats as cron fired at 16:10:01: laravel.log shows two `Running stats update` at 05:10:02 UTC, interleaved replies, then
-`Unable to read the data from AVR`. The AVR read back at target; only the page proof failed. The guard also has a gap on `*/5` boxes: it ends on the slot boundary and pgrep cannot see a cron run
-that has not started, so a proof released by the guard can start with cron. Fixed 2026-11-02: both now hold off for 5 s after each slot start (`stats_start`, `SLOT_START_SECONDS`). Writes are not exposed: they run with cron stopped.
+On wungu-qld (apply 20261102_160644) the proof started update:stats as cron fired at 16:10:01: laravel.log shows two `Running stats update` at 05:10:02 UTC, interleaved replies, then `Unable to read
+the data from AVR`. The AVR read back at target; only the page proof failed. The guard also has a gap on `*/5` boxes: it ends on the slot boundary and pgrep cannot see a cron run that has not started,
+so a proof released by the guard can start with cron. Fixed 2026-11-02: both now hold off for 5 s after each slot start (`stats_start`, `SLOT_START_SECONDS`). Writes are not exposed: they run with
+cron stopped.
 
 Excerpt, `roles/smc_change/files/changes/rct-avr-smsc/scripts/smsc_prove_page.sh`, commit 70bb516 (local-knowledge-ansible):
 
@@ -1700,31 +1725,28 @@ port_busy() {
 }
 ```
 
-The same run exposed `verify.yml:79`: `smc_change_after.gates.stale` exists only when the spec sets `stale_maps`, so any failed gate on such a spec crashed the failure message and hid the failed gate; fixed with `gates.stale | default(true)` (70bb516).
+The same run exposed `verify.yml:79`: `smc_change_after.gates.stale` exists only when the spec sets `stale_maps`, so any failed gate on such a spec crashed the failure message and hid the failed gate;
+fixed with `gates.stale | default(true)` (70bb516).
 
 ## 2026-11-02 — a host absent from the inventory is ignored by `-l` with a warning, and the run still exits 0 (INFO)
 
-`warehouse-rct01` is in `inventories/rct/stage`, not `prod`. A `-l` list of ten hosts on `rct/prod` ran nine and no failure said so: count the recap against the list, and read the warning
-`Could not match supplied host pattern`. A `-l` of that host alone stops with "no hosts to target". The ten sites of the rct-tstik rollout span both inventories.
+`warehouse-rct01` is in `inventories/rct/stage`, not `prod`. A `-l` list of ten hosts on `rct/prod` ran nine and no failure said so: count the recap against the list, and read the warning `Could not
+match supplied host pattern`. A `-l` of that host alone stops with "no hosts to target". The ten sites of the rct-tstik rollout span both inventories.
 
-- **Bitbucket SSH host change, 2026-11-12 (seen 2026-11-05; VERIFIED_PRIMARY: Bitbucket's own SSH banner)**: a clone on gurrbalgun-smc01 printed
-  "Starting November 12, 2026, Bitbucket is moving SSH traffic to ssh.bitbucket.org. Change your host name now to avoid connection disruptions."
-  The SMC repos (rct-tstik, the portal) are cloned from `git@bitbucket.org:...`, and the smc_change rct-tstik-iridium-update spec uses the same
-  values. ansible-wifi: 31 lines in 7 files: the smc_bases group variables of rcp, rct, wh, nbn_wh and nbn_accelerate, the apn jenkins group variables, and
-  `roles/smc_application/tasks/main.yml`. After the move the host name changes, and so does the SMCs' known_hosts entry for it. Not yet changed (operator decision).
-  Scope found on 2026-11-05: besides the 31 `git@bitbucket.org:` lines, Jenkins clones ansible-wifi through `ssh://bitbucket.org/...` in
-  `roles/jenkins_core/templates/` (26 active lines on rise), and both `smc_application` and `jenkins_core` add a known_hosts entry for
-  `bitbucket.org` only. Both halves are needed: the SMCs must trust the new name (`bitbucket-ssh-hostname`) and every address must use it.
-  Fix branches prepared, not merged: `fix/bitbucket-ssh-hostname-rise`, `fix/bitbucket-ssh-hostname-master`. Count all forms with
-  `git grep -lE '(git@|ssh://)bitbucket\.org'` (skip collections/).
+- **Bitbucket SSH host change, 2026-11-12 (seen 2026-11-05; VERIFIED_PRIMARY: Bitbucket's own SSH banner)**: a clone on gurrbalgun-smc01 printed "Starting November 12, 2026, Bitbucket is moving SSH
+  traffic to ssh.bitbucket.org. Change your host name now to avoid connection disruptions." The SMC repos (rct-tstik, the portal) are cloned from `git@bitbucket.org:...`, and the smc_change
+  rct-tstik-iridium-update spec uses the same values. ansible-wifi: 31 lines in 7 files: the smc_bases group variables of rcp, rct, wh, nbn_wh and nbn_accelerate, the apn jenkins group variables, and
+  `roles/smc_application/tasks/main.yml`. After the move the host name changes, and so does the SMCs' known_hosts entry for it. Not yet changed (operator decision). Scope found on 2026-11-05: besides
+  the 31 `git@bitbucket.org:` lines, Jenkins clones ansible-wifi through `ssh://bitbucket.org/...` in `roles/jenkins_core/templates/` (26 active lines on rise), and both `smc_application` and
+  `jenkins_core` add a known_hosts entry for `bitbucket.org` only. Both halves are needed: the SMCs must trust the new name (`bitbucket-ssh-hostname`) and every address must use it. Fix branches
+  prepared, not merged: `fix/bitbucket-ssh-hostname-rise`, `fix/bitbucket-ssh-hostname-master`. Count all forms with `git grep -lE '(git@|ssh://)bitbucket\.org'` (skip collections/).
 
 ## 2026-11-10 — `smc_system` never grew the root LV on nbn_accelerate (FIXED on rise `0fc086ca`, unpushed)
 
-VERIFIED-OBSERVED · Source: ansible-wifi `roles/smc_system/tasks/main.yml:116` · Falsifier: an nbn_accelerate box built by the role with VG free space left.
-`hotspot_flavor in ['rcp' or 'nbn_accelerate']` is `['rcp']` (`'rcp' or ...` evaluates to `'rcp'`), so the `lvol size=+100%FREE resizefs=yes` block skipped every
-nbn_accelerate box. Impact today: koonibba-smc01 only (28 GiB LV, 28 GiB VG free, root 98%); grown by hand 2026-11-10 with `lvextend -r -l +100%FREE
-/dev/ubuntu-vg/ubuntu-lv` (= the role's task) after checking hostname, ext4 and VG free: 56G, 49%. The other 12 LVM nbn_accelerate boxes already had VG
-free 0 (grown some other way, UNVERIFIED how); 7 use plain 116G partitions.
+VERIFIED-OBSERVED · Source: ansible-wifi `roles/smc_system/tasks/main.yml:116` · Falsifier: an nbn_accelerate box built by the role with VG free space left. `hotspot_flavor in ['rcp' or
+'nbn_accelerate']` is `['rcp']` (`'rcp' or ...` evaluates to `'rcp'`), so the `lvol size=+100%FREE resizefs=yes` block skipped every nbn_accelerate box. Impact today: koonibba-smc01 only (28 GiB LV,
+28 GiB VG free, root 98%); grown by hand 2026-11-10 with `lvextend -r -l +100%FREE /dev/ubuntu-vg/ubuntu-lv` (= the role's task) after checking hostname, ext4 and VG free: 56G, 49%. The other 12 LVM
+nbn_accelerate boxes already had VG free 0 (grown some other way, UNVERIFIED how); 7 use plain 116G partitions.
 
 ```yaml
 # roles/smc_system/tasks/main.yml:115-117 after 0fc086ca
@@ -1733,6 +1755,5 @@ free 0 (grown some other way, UNVERIFIED how); 7 use plain 116G partitions.
         - vg_list.stdout != ""
 ```
 
-**`smc_bases.yml --tags <role tag>` is not narrow.** `--list-tasks` with `--tags rsync_url_capture` also lists `smc_rise_enable_overlay`'s
-`always` tasks (initramfs update, `Reboot Helper`, `end_play`). Run `--list-tasks` before any tagged `smc_bases.yml` run on production, and deploy
-one role's file through `smc_change` instead (references/19_smc-change-role.md).
+**`smc_bases.yml --tags <role tag>` is not narrow.** `--list-tasks` with `--tags rsync_url_capture` also lists `smc_rise_enable_overlay`'s `always` tasks (initramfs update, `Reboot Helper`,
+`end_play`). Run `--list-tasks` before any tagged `smc_bases.yml` run on production, and deploy one role's file through `smc_change` instead (references/19_smc-change-role.md).

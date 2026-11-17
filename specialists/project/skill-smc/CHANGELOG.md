@@ -6,13 +6,52 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261117_1045
+Last rotated: 20261117_1859
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
 ---
 
 # skill-smc Changelog
+
+## Contents
+
+- [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
+- [20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)](#20261117_1044--teleport-self-upgrade-cron-on-every-flavour-v0145---v0146)
+- [20261116_1859 — Solutions to platforms (no version change)](#20261116_1859--solutions-to-platforms-no-version-change)
+- [20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)](#20261116_1736--fleet-facts-for-a-remote-conversion-boot-partition-free-root-label-x86-disk-layouts-v0144---v0145)
+- [20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)](#20261111_1318--smc_lynis-no_pubkey-7a9a1d9d5b27c6d3-and-apt_key_subkey_probesh-v0143---v0144)
+- [20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)](#20261111_1213--urlcapture-prune-galiwinku-checked-v0142---v0143)
+- [20261111_1105 — urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)](#20261111_1105--urlcapture-prune-first-run-read-uc-old-files-needs-the-cw-proxy-v0141---v0142)
+- [20261110_1355 — koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)](#20261110_1355--koonibba-wrong-teleport-cluster-stale-bastion-keys-url_capture-prune-gaps-root-lv-condition-urlcapture-prune-change-v0140---v0141)
+- [20261110_1225 — Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0)](#20261110_1225--fleet-survey-probes-bootloader-census-writers-probe-probe-deadlines-fixed-v0132---v0140)
+- [20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)](#20261110_0202--deployed-pi-fleet-layout-and-root-block-spread-survey-of-6-v0131---v0132)
+- [20261110_0031 — Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)](#20261110_0031--pi-4-on-the-fleet-bootloader-2023-01-11-autoboottxt-on-gpt-and-eeprom-update-path-v0130---v0131)
+- [20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)](#20261109_2300--pi-4-ab-on-a-gpt-card-bootloader-firmware-and-update-traps-smc-resiliency-s1-v0129---v0130)
+- [20261108_0155 — Pi 4 serial console (smc-resiliency S1 bench) (v0.12.8 -> v0.12.9)](#20261108_0155--pi-4-serial-console-smc-resiliency-s1-bench-v0128---v0129)
+- [20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)](#20261106_1630--ansible-wifi-smc_bases-on-ubuntu-2404-and-in-an-image-build-v0127---v0128)
+- [20261106_1605 — Parallels linked clone shares the source's address; Parallels lab behaviour (v0.12.6 -> v0.12.7)](#20261106_1605--parallels-linked-clone-shares-the-sources-address-parallels-lab-behaviour-v0126---v0127)
+- [20261106_1545 — smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 -> v0.12.6)](#20261106_1545--smc_change-export-to-a-company-task-file-tracker-orders-resumed-runs-by-attempt-v0125---v0126)
+- [20261106_1300 — WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 -> v0.12.5)](#20261106_1300--wan-routing-confirmed-live-link-health-per-leg-grafana-tunnel-measured-link-figures-v0124---v0125)
+- [20261106_1029 — Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)](#20261106_1029--pi-clock-with-no-rtc-on-ubuntu-2404-measured-v0123---v0124)
+- [20261105_1758 — URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)](#20261105_1758--url-capture-dns-mechanism-measured-records-plan-proposed-v0122---v0123)
+- [20261105_1634 — v8 resumable PCAP fetch, EFS find, Teleport path loss probe (v0.12.1 -> v0.12.2)](#20261105_1634--v8-resumable-pcap-fetch-efs-find-teleport-path-loss-probe-v0121---v0122)
+- [20261105_1155 — smc_change Teleport login gate (v0.12.0 -> v0.12.1)](#20261105_1155--smc_change-teleport-login-gate-v0120---v0121)
+- [20261104_2130 — Iridium batches 1-3 marked; rise deploy flashes; smc_mark_iridium.py (v0.11.9 -> v0.12.0)](#20261104_2130--iridium-batches-1-3-marked-rise-deploy-flashes-smc_mark_iridiumpy-v0119---v0120)
+- [20261104_1900 — smc_change self-repair, every-goal success rule, applies_when (v0.11.8 -> v0.11.9)](#20261104_1900--smc_change-self-repair-every-goal-success-rule-applies_when-v0118---v0119)
+- [20261104_1600 — smc_change chaining, per-change state, named value files (v0.11.7 -> v0.11.8)](#20261104_1600--smc_change-chaining-per-change-state-named-value-files-v0117---v0118)
+- [20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)](#20261102_1756--smc_change-skip-probe-or-force-per-smc-close-v0116---v0117)
+- [20261102_1721 — update:stats cron standard, port guard after cron starts (v0.11.5 -> v0.11.6)](#20261102_1721--updatestats-cron-standard-port-guard-after-cron-starts-v0115---v0116)
+- [20261102_1434 — smc_change flows held to the code (v0.11.4 -> v0.11.5)](#20261102_1434--smc_change-flows-held-to-the-code-v0114---v0115)
+
+---
+
+## 20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)
+
+`references/19_smc-change-role.md` (smc_change_multiple bullets): `-e smc_change=<spec>` outranks each import's play var, so both imports ran rct-avr-smsc and the AVR flash never ran (23-SMC batch,
+2026-11-17: 4 passed, 6 failed on AVR 2.14, 13 never started); what `6/11 ACTIONS` means and why the AVR version check fails instead of skipping. `references/13_known-issues.md`: the vars guard also
+blocks non-printing edits of inventory host files (use `just smc_mark_iridium`); the lint delta gate brings old findings of a rewritten file in as new; pipefail needs bash (ansible-wifi chat
+f516e57d).
 
 ## 20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)
 
@@ -136,8 +175,7 @@ SMSC set; long site names miss four SMCs in `-l`; a host_vars file reverted on d
 ## 20261104_1900 — smc_change self-repair, every-goal success rule, applies_when (v0.11.8 -> v0.11.9)
 
 Learned 2026-11-04: `references/19_smc-change-role.md` (cut-off runs repair themselves, lower dir guard, a change passes only when every action's goal holds, `applies_when`, the-crossing-smc01 and
-  scrubby-bore-smc01 cases); `smc_change_trace` passes quoted arguments whole.
-Then: Iridium sites are flashed in advance of the hardware swap; the Thuraya SIM loss is accepted (reference 19).
+scrubby-bore-smc01 cases); `smc_change_trace` passes quoted arguments whole. Then: Iridium sites are flashed in advance of the hardware swap; the Thuraya SIM loss is accepted (reference 19).
 
 ## 20261104_1600 — smc_change chaining, per-change state, named value files (v0.11.7 -> v0.11.8)
 
@@ -160,39 +198,3 @@ Learned 2026-11-02: `references/13_known-issues.md` (`*/1` boxes, guard gap, `ga
 ## 20261102_1434 — smc_change flows held to the code (v0.11.4 -> v0.11.5)
 
 `smc_change_flows_check` also audits the layout and runs trace_sync; new recipes `smc_change_trace` and `smc_change_ask` (skill-drawio references/charts-and-trace.md).
-
-## 20261102_1347 — smc_change specs, trackers, shared scripts; AVR numbers ruling (v0.11.3 -> v0.11.4)
-
-Learned 2026-11-02: `references/19_smc-change-role.md` (vars, scripts, files/shared, transient tool, pool naming, fact_same, trackers, abandoned_clean apt_pin only), `references/02_service-map.md`
-(three numbers, reboot evidence, stats page, port), `references/18_local-knowledge-ansible.md`.
-
-## 20261102_1132 — AVR emergency and SMS numbers (v0.11.2 -> v0.11.3)
-
-Learned 2026-11-02 (rct-tstik 971d8d0, warehouse-rct01): `references/02_service-map.md` (framing, `/ec` path, blank fields kept, survey), `references/18_local-knowledge-ansible.md`
-(`avr_emergency.py`).
-
-## 20261101_1958 — smc_qos back on the meta-package (v0.11.1 -> v0.11.2)
-
-Learned 2026-11-01 (ansible-wifi `rise` c22318fe): `references/13_known-issues.md`, kernel drift entry.
-
-## 20261101_1944 — Kernel fix reaches rise (v0.11.0 -> v0.11.1)
-
-Learned 2026-11-01 (ansible-wifi `rise` 8684e5ec): `references/13_known-issues.md`, kernel drift entry.
-
-## 20261101_1937 — smc_change reporting and fallback, kernel drift, pre-push venv (v0.10.11 -> v0.11.0)
-
-Learned 2026-11-01: `references/13_known-issues.md` (overlay `Find root device details`, AVR ahead of Iridium, unpinned kernel meta-package and purge without re-flash, stats 2.11, pre-push venv,
-deploy never enables overlay), `references/19_smc-change-role.md` (action outcomes, busy lower dir, RULE-011, governance of the role), `SKILL.md` pointer. New
-`scripts/probes/smc_boot_kernel_probe.sh`, `just smc_boot_kernel`.
-
-## 20261101_0214 — apt-get update fix reaches rise (v0.10.10 -> v0.10.11)
-
-Learned 2026-11-01 (ansible-wifi `rise` a9d6e6b7): `references/13_known-issues.md`, branch reach of the helper change.
-
-## 20261101_0128 — one failed apt source stopping smc_bases; apt module versus apt-get update (v0.10.9 -> v0.10.10)
-
-Learned 2026-11-01 (ansible-wifi `iridium` 8608c717): `references/13_known-issues.md`.
-
-## 20261101_0108 — overlayroot.conf vs local.conf in smc_disable_overlay; Teleport vars (v0.10.8 -> v0.10.9)
-
-Learned 2026-11-01 (ansible-wifi `iridium` afbc8f1b): `references/13_known-issues.md`.
