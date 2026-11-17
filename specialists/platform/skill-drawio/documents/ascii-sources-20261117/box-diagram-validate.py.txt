@@ -1,0 +1,194 @@
+#!/usr/bin/env python3
+"""
+ASCII Diagram Validator
+Checks alignment, consistent widths, and vertical connector continuity.
+
+Usage:
+  python validate.py diagram.txt
+  echo "diagram" | python validate.py -
+  python validate.py --inline "+--+\n|  |\n+--+"
+"""
+
+import sys
+import unicodedata
+
+# --- Box-drawing character sets (ASCII + Unicode) ---
+CORNERS_ASCII = {'+'}
+CORNERS_UNICODE = set('╭╮╰╯┌┐└┘╔╗╚╝')
+CORNERS = CORNERS_ASCII | CORNERS_UNICODE
+
+VERT_ASCII = {'|'}
+VERT_UNICODE = set('│┃║')
+VERT = VERT_ASCII | VERT_UNICODE
+
+HORIZ_ASCII = set('-=')
+HORIZ_UNICODE = set('─━═')
+HORIZ = HORIZ_ASCII | HORIZ_UNICODE
+
+JUNCTIONS = set('┬┴├┤┼╦╩╠╣╬')  # T-junctions and crossings
+
+BOX_CHARS = CORNERS | VERT  # chars that indicate a "box line"
+
+
+def char_width(ch):
+    """Return display width of a character in monospace font."""
+    if ord(ch) < 32:
+        return 0
+    cat = unicodedata.east_asian_width(ch)
+    if cat in ("W", "F"):  # Wide or Fullwidth (emoji, CJK)
+        return 2
+    return 1
+
+
+def line_display_width(line):
+    """Return total display width of a line."""
+    return sum(char_width(ch) for ch in line)
+
+
+def find_columns(line, chars):
+    """Find display-column positions of specific characters in a line."""
+    cols = []
+    col = 0
+    for ch in line:
+        if ch in chars:
+            cols.append(col)
+        col += char_width(ch)
+    return cols
+
+
+def validate(text):
+    """Validate an ASCII diagram. Returns list of issues."""
+    lines = text.rstrip("\n").split("\n")
+    issues = []
+
+    if not lines or all(l.strip() == "" for l in lines):
+        return ["Empty diagram"]
+
+    # --- Check 1: Double-width characters ---
+    for i, line in enumerate(lines):
+        for j, ch in enumerate(line):
+            if char_width(ch) > 1:
+                issues.append(
+                    f"Line {i+1}, char {j+1}: double-width character '{ch}' "
+                    f"(U+{ord(ch):04X}) breaks monospace alignment"
+                )
+
+    # --- Check 2: Line width consistency within boxes ---
+    widths = [line_display_width(line) for line in lines]
+
+    def box_char_cols(line):
+        """Find display columns where box chars appear."""
+        return set(find_columns(line, BOX_CHARS))
+
+    # Group consecutive lines that share box-char column positions.
+    # Lines with box chars at different columns are separate structures
+    # (e.g., box content at [0,15,19,34] vs branch connector at [8,27,46]).
+    box_lines = []
+    current_group = []
+    for i, line in enumerate(lines):
+        cols = box_char_cols(line)
+        if len(cols) >= 2:
+            if current_group:
+                prev_cols = box_char_cols(lines[current_group[-1]])
+                if cols & prev_cols:  # shared columns → same structure
+                    current_group.append(i)
+                else:  # different columns → new group
+                    box_lines.append(current_group)
+                    current_group = [i]
+            else:
+                current_group = [i]
+        else:
+            if current_group:
+                box_lines.append(current_group)
+                current_group = []
+    if current_group:
+        box_lines.append(current_group)
+
+    for group in box_lines:
+        group_widths = set(widths[i] for i in group)
+        if len(group_widths) > 1:
+            details = ", ".join(f"line {i+1}={widths[i]}" for i in group)
+            issues.append(
+                f"Inconsistent widths in box (lines {group[0]+1}-{group[-1]+1}): {details}"
+            )
+
+    # --- Check 3: Vertical connector alignment ---
+    # | and + in consecutive lines should share at least some column positions
+    def is_border_only(line):
+        """Check if line is a box border like +---+ or ╭───╮ (no vertical pipes)."""
+        stripped = line.strip()
+        has_corner = any(ch in CORNERS for ch in stripped)
+        has_vert = any(ch in VERT for ch in stripped)
+        allowed = CORNERS | HORIZ | {' '}
+        return not has_vert and has_corner and all(ch in allowed for ch in stripped)
+
+    for i in range(len(lines) - 1):
+        # Skip border-only lines (transitions between box and connectors)
+        if is_border_only(lines[i]) or is_border_only(lines[i + 1]):
+            continue
+
+        curr_pipes = set(find_columns(lines[i], VERT))
+        next_pipes = set(find_columns(lines[i + 1], VERT))
+
+        if curr_pipes and next_pipes:
+            # If both lines have | pipes, check overlap
+            if not curr_pipes & next_pipes:
+                issues.append(
+                    f"Lines {i+1}-{i+2}: vertical connectors misaligned. "
+                    f"Line {i+1} pipes at cols {sorted(curr_pipes)}, "
+                    f"line {i+2} at cols {sorted(next_pipes)}"
+                )
+
+    # --- Check 4: Box border integrity ---
+    for i, line in enumerate(lines):
+        # Check +---+ or ╭───╮ patterns have matching corner positions
+        corner_positions = [j for j, ch in enumerate(line) if ch in CORNERS]
+        if len(corner_positions) >= 2:
+            for k in range(0, len(corner_positions) - 1, 2):
+                start = corner_positions[k]
+                end = corner_positions[k + 1]
+                between = line[start + 1 : end]
+                allowed_fill = HORIZ | JUNCTIONS | {' '}
+                if between and not all(ch in allowed_fill for ch in between):
+                    issues.append(
+                        f"Line {i+1}: broken box border between "
+                        f"col {start+1} and {end+1}: '{between}'"
+                    )
+
+    # --- Check 5: Tab characters ---
+    for i, line in enumerate(lines):
+        if "\t" in line:
+            issues.append(f"Line {i+1}: contains tab character (use spaces only)")
+
+    # --- Summary ---
+    if not issues:
+        max_w = max(widths) if widths else 0
+        return [f"OK: {len(lines)} lines, max width {max_w} chars"]
+
+    return issues
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+    if len(sys.argv) < 2:
+        print("Usage: python validate.py <file.txt | - | --inline 'text'>")
+        sys.exit(1)
+
+    if sys.argv[1] == "--inline":
+        text = sys.argv[2].replace("\\n", "\n")
+    elif sys.argv[1] == "-":
+        text = sys.stdin.read()
+    else:
+        with open(sys.argv[1], "r", encoding="utf-8") as f:
+            text = f.read()
+
+    results = validate(text)
+    for r in results:
+        print(r)
+
+    sys.exit(0 if results[0].startswith("OK") else 1)
+
+
+if __name__ == "__main__":
+    main()

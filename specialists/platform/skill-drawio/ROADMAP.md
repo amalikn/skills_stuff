@@ -46,6 +46,14 @@ Detail and order: UNC's [retirement assessment](/Volumes/Data/_ai/_project/proje
 
 ## Engine and evidence
 
+- [x] **ASCII stage 1: repair existing diagrams** (operator 2026-11-17, staged plan "snap, then graph"): `ascii_fix.py` with `ascii/checks.py`; connector snapping
+  (asciiflow's idea), wide-character and tab checks (box-diagram, MIT), arrows that miss their box, generated files never written.
+- [ ] **ASCII stage 2: graph renderer** (operator 2026-11-17): a spec of boxes and links laid out with this pack's rules (layered rows, barycentre order,
+  channels with one track per arrow, port spreading, crossing-cutting swaps) and A* routing on the character grid after mermaid-ascii `getPath`/`mergePath`
+  (MIT; `documents/ascii-sources-20261117/`), with a crossing penalty; logic in `scripts/ascii/`.
+- [ ] **ASCII stage 3: read a hand-drawn diagram into the stage-2 spec** (operator 2026-11-17): box recognition after svgbob's fragments, contacts and
+  `endorse_rect` (Apache-2.0), nested boxes and shared edges after ditaa's documented boundary split (LGPL: the idea only), connectors traced with a
+  claimed-cell mask (aafigure); then any diagram can be redrawn by stage 2.
 - [ ] **UNC's ASCII grid renderer and edge checker join `ascii_flow_render.py` here** (proposed 2026-11-16, operator chose skill-drawio for ASCII tools): `ascii_box_render.py` and `ascii_box_check.py`
   live in unified-network-controller and smc-resiliency calls them by path; moving them is UNC's change, asked through the apn hub. Since 2026-11-17 `ascii_fix.py` carries the checker's edge rule as
   `edge_issues()`, so the checker can be retired into it once UNC agrees.

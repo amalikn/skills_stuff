@@ -16,6 +16,9 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-17 ASCII stage 1 (operator: "staged: snap, then graph"; research into existing tools, sources in `documents/ascii-sources-20261117/`):
+  package `scripts/ascii/` with `scripts/ascii/checks.py` (connector snapping, wide characters and tabs, arrows missing their box); `ascii_fix.py` never writes a GENERATED
+  file and tells fan-out branches from broken boxes; ROADMAP stages 2 and 3.
 - 2026-11-17 (operator: "if there is an existing diagram, we can pass that diagram to the skill and it can fix it"): `scripts/ascii_fix.py` and `just ascii-fix` with
   `tests/test_ascii_fix.py`; SKILL.md tools table, scripts/README.md rows; references/data-first-diagrams.md Learned 2026-11-17 (from apn smc-resiliency).
 - 2026-11-16 (operator: "ASCII scripts part of drawio as immediate documentation; drawio when explicitly asked"): `scripts/ascii_flow_render.py` promoted from apn smc-resiliency with `tests/test_ascii_flow_render.py` (8 tests) and `just ascii-flow-render`; SKILL.md Standing rules: ASCII first; references/data-first-diagrams.md Learned 2026-11-16 with the code excerpt. `ruff.toml` and `just lint` (in `just check`) added for new Python, the 111 existing files excluded (operator: a lint config in every project and skill worked on). Consumers: no engine change.

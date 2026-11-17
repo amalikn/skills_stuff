@@ -113,6 +113,8 @@ constants and `render_flowmap.py` is the whole renderer (unified-network-control
 | `scripts/profile_render.py` | Front end: profile one render in memory (cProfile), print load and render time and the top functions; writes nothing | `safe` |
 | `scripts/ascii_flow_render.py` | Front end: ASCII flow diagrams for Markdown from a JSON spec (chain, grid, box, text, columns); promoted from apn smc-resiliency 2026-11-16 | `safe` |
 | `scripts/ascii_fix.py` | Front end: fixes existing ASCII diagrams at their edges, read-only unless `--apply`; operator request 2026-11-17 | `write-gated` |
+| `scripts/ascii/__init__.py` | Package `ascii`: shared logic of the ASCII front ends (checks and snapping now; graph renderer and parser planned) | `safe` |
+| `scripts/ascii/checks.py` | Checks and connector snapping for `ascii_fix.py`: wide characters and tabs, arrows that miss their box, straying connector rows snapped (ideas from box-diagram and asciiflow, both MIT; imported) | `safe` |
 | `scripts/count_crossings.py` | Front end: count crossings between routed arrows on one page (full paths from `drawio.read`), optionally an id prefix; `--compare` measures every page of two versions with shared runs | `safe` |
 | `scripts/consumer_check.py` | Front end: render every consumer (`consumers.yaml`) to scratch with this or another engine, optional look keys; compare two renders byte for byte; never a consumer's own drawing | `modifies-files` (scratch only) |
 | `scripts/layout_quality.py` | Front end: layout measures per page of a drawing (crossings, shared runs, bends, length, arrows through boxes, overlaps); `--compare` exits 3 when a page got worse | `safe` |

@@ -1,0 +1,1 @@
+"""ASCII diagrams for documents: the shared logic behind the front ends `ascii_flow_render.py` (draw) and `ascii_fix.py` (repair); checks and connector snapping today, the graph renderer and parser of stages 2 and 3 next (operator, 2026-11-17)."""
