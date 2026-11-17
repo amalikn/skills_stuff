@@ -51,6 +51,12 @@ Detail and order: UNC's [retirement assessment](/Volumes/Data/_ai/_project/proje
 - [ ] **ASCII stage 2: graph renderer** (operator 2026-11-17): a spec of boxes and links laid out with this pack's rules (layered rows, barycentre order,
   channels with one track per arrow, port spreading, crossing-cutting swaps) and A* routing on the character grid after mermaid-ascii `getPath`/`mergePath`
   (MIT; `documents/ascii-sources-20261117/`), with a crossing penalty; logic in `scripts/ascii/`.
+- [ ] **ASCII lessons from MonoSketch and the asciidiagrams catalogue** (operator links, read 2026-11-17): MonoSketch (Apache-2.0, Kotlin; reimplement with a
+  NOTICE line, never port verbatim) attaches a line end to the box side within 1 cell and stores it as a ratio along that side, so a moved box re-derives
+  the end (stage 2); its joints are a 4-direction mask ANDed with what the neighbouring cells reach (stage 1 junction repair, stage 3 joint recognition);
+  its router has no obstacle avoidance, so stage 2 keeps A*. The asciidiagrams.github.io catalogue (2156 diagrams from Chromium, Linux, LLVM, TensorFlow
+  comments; no licence, so a test corpus only, never copied into the pack): 27 use Unicode, median width 75, 90th percentile 80, so stage 2 defaults to
+  plain ASCII within 80 columns.
 - [ ] **ASCII stage 3: read a hand-drawn diagram into the stage-2 spec** (operator 2026-11-17): box recognition after svgbob's fragments, contacts and
   `endorse_rect` (Apache-2.0), nested boxes and shared edges after ditaa's documented boundary split (LGPL: the idea only), connectors traced with a
   claimed-cell mask (aafigure); then any diagram can be redrawn by stage 2.

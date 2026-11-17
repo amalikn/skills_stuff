@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-17 ascii-fix: borders with arrows and tees kept; text after a ragged edge moves with it; ROADMAP: MonoSketch lessons.
 - 2026-11-17 ASCII stage 1 (operator: "staged: snap, then graph"; research into existing tools, sources in `documents/ascii-sources-20261117/`):
   package `scripts/ascii/` with `scripts/ascii/checks.py` (connector snapping, wide characters and tabs, arrows missing their box); `ascii_fix.py` never writes a GENERATED
   file and tells fan-out branches from broken boxes; ROADMAP stages 2 and 3.

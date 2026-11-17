@@ -146,6 +146,24 @@ class Leaves(unittest.TestCase):
     self.assertTrue(any("words" in p for p in problems), problems)
 
 
+class Borders(unittest.TestCase):
+  """Borders that carry connectors, and rows that shift what follows them."""
+
+  def test_arrow_and_tee_on_border_kept(self) -> None:
+    """A box entered by an arrow (`+--v--+`) and left by a tee (`+--+--+`) is repaired and keeps both."""
+    lines = ["   |", "+--v-------+", "| ok       |", "| short   |", "+--+-------+", "   |"]
+    out, problems = fx.fix(lines)
+    self.assertEqual(problems, [])
+    self.assertEqual(out[3], "| short    |")
+    self.assertEqual((out[1], out[4]), (lines[1], lines[4]))
+
+  def test_box_beside_a_short_row_moves_back(self) -> None:
+    """A row one column short shifts the box beside it; closing the row puts that box back in line."""
+    lines = ["+-------+  +-----+", "| one   |  | two |", "| x    |  | y   |", "+-------+  +-----+"]
+    out, _ = fx.fix(lines)
+    self.assertEqual(out[2], "| x     |  | y   |")
+
+
 class Generated(unittest.TestCase):
   """A rendered file is never written: its diagram is fixed in the source."""
 

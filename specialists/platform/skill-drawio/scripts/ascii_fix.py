@@ -28,8 +28,7 @@ from pathlib import Path
 from ascii import checks  # the package beside this script: on sys.path when run as a script or imported by a test
 
 REQUIRES_PYTHON = (3, 11)
-BORDER = re.compile(r"\+-+\+")
-GRID_BORDER = re.compile(r"\+-[-+^]*-\+")  # the edge checker's border: grids and branch lines too
+GRID_BORDER = re.compile(r"\+-[-+v^]*-\+")  # a border run: may carry tees (`+`) and arrows (`v`, `^`) where connectors meet it
 ARROW = re.compile(r"^(\s*)([|v^])(\s.*)?$")
 WORDS = re.compile(r"[A-Za-z0-9_.]+")
 PASSES = 6
@@ -73,6 +72,22 @@ def ch(lines: list[str], r: int, c: int) -> str:
   return lines[r][c] if 0 <= r < len(lines) and 0 <= c < len(lines[r]) else " "
 
 
+def walls(lines: list[str], r: int, a: int, b: int, inward: int) -> bool:
+  """Whether a border's inner `+` continues into the box as a wall (a grid), rather than out of it as a connector's tee.
+
+  Args:
+    lines: the diagram.
+    r: the border's row.
+    a: its left corner column.
+    b: its right corner column.
+    inward: +1 for a top border (the box is below), -1 for a bottom border.
+
+  Returns:
+    True when any inner `+` has a `|` on the box's side.
+  """
+  return any(lines[r][c] == "+" and ch(lines, r + inward, c) == "|" for c in range(a + 1, b))
+
+
 def find_box(lines: list[str], r: int, a: int, b: int) -> dict | None:
   """The box whose top border runs from (r, a) to (r, b), read row by row down to its bottom border.
 
@@ -86,14 +101,14 @@ def find_box(lines: list[str], r: int, a: int, b: int) -> dict | None:
     {"top", "bottom", "a", "rows": [(row, content, right edge column or None)], "bottom_end"}, or None when this is not a box top
     (a branch line, the bottom of a box above).
   """
-  if ch(lines, r - 1, a) in "|+" or ch(lines, r + 1, a) == "v" or ch(lines, r + 1, b) == "v":
+  if ch(lines, r - 1, a) in "|+" or ch(lines, r + 1, a) == "v" or ch(lines, r + 1, b) == "v" or walls(lines, r, a, b, 1):
     return None
   rows = []
   for r2 in range(r + 1, len(lines)):
     line = lines[r2]
     m = GRID_BORDER.match(line, a) if ch(lines, r2, a) == "+" else None
     if m:
-      if "+" in line[a + 1 : m.end() - 1] or "^" in m.group(0):
+      if walls(lines, r2, a, m.end() - 1, -1):
         return None  # a divider or bottom shared with a grid: not a standalone box
       return {"top": r, "bottom": r2, "a": a, "b": b, "rows": rows, "bottom_end": m.end() - 1}
     if ch(lines, r2, a) != "|":
@@ -104,26 +119,20 @@ def find_box(lines: list[str], r: int, a: int, b: int) -> dict | None:
   return {"error": f"row {r + 1}: the box at column {a + 1} never closes"}
 
 
-def place(prefix: str, tail: str, old_end: int, delta: int) -> str:
-  """Put the text that followed a box's right edge back at its own column, moved by how far the box grew.
+def place(prefix: str, tail: str) -> str:
+  """Put the text that followed a box's right edge back after the new edge, with its own spacing.
+
+  A ragged row shifts everything after its edge by the same amount (a box beside it, an exit), so the text moves with the edge: a row one column
+  short puts a box beside it one column short too, and closing the row puts that box back in line.
 
   Args:
     prefix: the rebuilt line up to and including the box's right edge.
     tail: what followed the old right edge.
-    old_end: column of the old right edge.
-    delta: how far the box's right edge moved (new minus the top border's old edge).
 
   Returns:
     The full line, trailing spaces stripped.
   """
-  text = tail.lstrip(" ")
-  if not text:
-    return prefix
-  lead = len(tail) - len(text)
-  if lead == 0:
-    return (prefix + text).rstrip()  # glued to the edge (`|--->|`, `|====|`): stays glued
-  col = old_end + 1 + lead + delta
-  return (prefix + " " * max(1, col - len(prefix)) + text).rstrip()
+  return (prefix + tail).rstrip()
 
 
 def boxes(lines: list[str]) -> tuple[list[dict], list[str]]:
@@ -137,7 +146,7 @@ def boxes(lines: list[str]) -> tuple[list[dict], list[str]]:
   """
   found, problems = [], []
   for r, line in enumerate(lines):
-    for m in BORDER.finditer(line):
+    for m in GRID_BORDER.finditer(line):
       a, b = m.start(), m.end() - 1
       if ch(lines, r, a - 1) == "-" or ch(lines, r, b + 1) == "-":
         continue  # a grid cell sharing an edge: not redrawn; edge_issues reports it if broken
@@ -221,13 +230,12 @@ def redraw(lines: list[str], box: dict, w: int) -> None:
     None.
   """
   a, b = box["a"], box["b"]
-  delta = a + w + 1 - b
-  border = "+" + "-" * w + "+"
   for r, end in ((box["top"], b), (box["bottom"], box["bottom_end"])):
-    lines[r] = place(lines[r][:a] + border, lines[r][end + 1 :], end, delta)
+    border = "+" + lines[r][a + 1 : end].ljust(w, "-") + "+"  # tees and arrows on the border kept where they are
+    lines[r] = place(lines[r][:a] + border, lines[r][end + 1 :])
   for r, content, edge in box["rows"]:
     tail = lines[r][edge + 1 :] if edge is not None else ""
-    lines[r] = place(lines[r][:a] + "|" + content.rstrip().ljust(w) + "|", tail, edge if edge is not None else b, delta)
+    lines[r] = place(lines[r][:a] + "|" + content.rstrip().ljust(w) + "|", tail)
 
 
 def centre_arrows(lines: list[str], found: list[dict], w: dict[tuple[int, int], int]) -> None:
@@ -272,7 +280,7 @@ def edge_issues(lines: list[str]) -> list[str]:
         continue
       held = False  # whether anything stood between the edges: a fan-out branch (`+---+---+` with bare `|` legs) holds nothing
       for r2 in range(r + 1, len(lines)):
-        if ch(lines, r2, a) == "+" and ch(lines, r2, b) == "+" and set(lines[r2][a : b + 1]) <= set("+-^"):
+        if ch(lines, r2, a) == "+" and ch(lines, r2, b) == "+" and set(lines[r2][a : b + 1]) <= set("+-^v"):
           break
         if ch(lines, r2, a) not in "|+" or ch(lines, r2, b) not in "|+":
           if held:
