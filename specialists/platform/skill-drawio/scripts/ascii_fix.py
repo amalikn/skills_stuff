@@ -251,7 +251,8 @@ def edge_issues(lines: list[str]) -> list[str]:
   """What the edge checker would still report: a box (or grid) whose side edges break before its bottom edge.
 
   Same rule as the projects' ascii_box_check.py: a top edge is a border run with no `|` or `+` above both corners; its box runs down to the next
-  row holding `+` at both corners with only `-`, `+` or `^` between; a branch line (a `v` below a corner) has no bottom.
+  row holding `+` at both corners with only `-`, `+` or `^` between; a branch line (a `v` below a corner) has no bottom. Unlike that checker, edges
+  that end having held nothing between them are a fan-out branch (`+---+---+` with bare `|` legs), not a broken box.
 
   Args:
     lines: the diagram.
@@ -265,12 +266,15 @@ def edge_issues(lines: list[str]) -> list[str]:
       a, b = m.start(), m.end() - 1
       if ch(lines, r - 1, a) in "|+" and ch(lines, r - 1, b) in "|+" or "v" in (ch(lines, r + 1, a), ch(lines, r + 1, b)):
         continue
+      held = False  # whether anything stood between the edges: a fan-out branch (`+---+---+` with bare `|` legs) holds nothing
       for r2 in range(r + 1, len(lines)):
         if ch(lines, r2, a) == "+" and ch(lines, r2, b) == "+" and set(lines[r2][a : b + 1]) <= set("+-^"):
           break
         if ch(lines, r2, a) not in "|+" or ch(lines, r2, b) not in "|+":
-          issues.append(f"row {r2 + 1}: the box at columns {a + 1}-{b + 1} loses an edge (not fixed: redraw it with ascii_flow_render.py)")
+          if held:
+            issues.append(f"row {r2 + 1}: the box at columns {a + 1}-{b + 1} loses an edge (not fixed: redraw it with ascii_flow_render.py)")
           break
+        held = held or bool(lines[r2][a + 1 : b].strip())
       else:
         issues.append(f"row {r + 1}: the box at columns {a + 1}-{b + 1} never closes (not fixed)")
   return issues

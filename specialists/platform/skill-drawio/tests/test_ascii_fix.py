@@ -116,6 +116,13 @@ class Leaves(unittest.TestCase):
     self.assertEqual(fx.fix(grid)[0], grid)
     self.assertEqual(fx.fix(divided)[0], divided)
 
+  def test_fan_out_branch_not_a_broken_box(self) -> None:
+    """A branch line with bare `|` legs is not reported; a box that holds text and loses an edge is."""
+    fan = ["        |", "   +----+----+", "   |         |", "  one       two"]
+    broken = ["+--------+", "| text   |", "| more", "+--------+"]
+    self.assertEqual(fx.edge_issues(fan), [])
+    self.assertTrue(any("loses an edge" in x for x in fx.edge_issues(broken)))
+
   def test_words_never_change(self) -> None:
     """A fix that would alter the words is refused and the block returned as it was."""
 
