@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import itertools
 import re
 import sys
 from pathlib import Path
@@ -250,7 +251,7 @@ def centre_arrows(lines: list[str], found: list[dict], w: dict[tuple[int, int], 
     None.
   """
   for chain in chains(found, lines):
-    for upper, lower in zip(chain, chain[1:], strict=False):
+    for upper, lower in itertools.pairwise(chain):
       centre = upper["a"] + 1 + w[(upper["top"], upper["a"])] // 2
       for r in range(upper["bottom"] + 1, lower["top"]):
         m = ARROW.match(lines[r])

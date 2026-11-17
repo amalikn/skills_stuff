@@ -209,17 +209,7 @@ profile-render *args: _require-venv
 count-crossings *args: _require-venv
     @{{py}} scripts/count_crossings.py "$@"
 
-# [read-only] Draw an ASCII flow diagram for Markdown (box chains with exits, grids, columns) from a JSON spec: just ascii-flow-render spec.json
-# ASCII is the immediate documentation diagram; a draw.io drawing only when explicitly asked (operator, 2026-11-16).
-[positional-arguments]
-ascii-flow-render *args: _require-venv
-    @{{py}} scripts/ascii_flow_render.py "$@"
-
-# Fix an existing ASCII diagram (each ```text block of a Markdown file, or a plain-text diagram): ragged edges, borders, stray arrows. Diff by default; --apply writes
-# Words never change and no edge finding is added; grids with shared edges are reported, not rewritten (operator, 2026-11-17): just ascii-fix doc.md [--apply] [--even-widths]
-[positional-arguments]
-ascii-fix *args: _require-venv
-    @{{py}} scripts/ascii_fix.py "$@"
+# ASCII diagrams moved to skill-ascii-diagrams (2026-11-17): its `just ascii-flow-render` and `just ascii-fix`.
 
 # [read-only] Lint and format-check new Python with ruff (ruff.toml lists the pre-2026-11-16 files it leaves alone): just lint
 lint:

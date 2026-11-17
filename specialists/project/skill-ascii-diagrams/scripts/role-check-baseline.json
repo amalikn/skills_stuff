@@ -1,0 +1,4 @@
+{
+ "front-matter:AGENTS.md": "AGENTS.md: no `---` front matter with Title and Summary that parses as YAML",
+ "readme-quick-start:README.md": "README.md: no quick start heading and no SETUP.md link"
+}

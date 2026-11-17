@@ -72,7 +72,6 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 | `scripts/trace_sync.py`      | Hold a map to the code: suspect steps, uncited code, stale words; `--accept` records a review |
 | `scripts/trace_query.py`     | Ask a map what happens: a flow, the steps citing a file, what writes or fails                 |
 | `scripts/commit_hook.sh`     | Git pre-commit body: run a project's check when a commit touches its watched folder           |
-| `scripts/ascii_fix.py`       | Fix an existing ASCII diagram (ragged edges, borders, stray arrows); diff, then `--apply`      |
 | `scripts/yaml_list_patch.py` | Add values to flow-style lists in a YAML map without losing comments; plan, then `--apply`    |
 
 | Package                      | Modules                                                                                                       |
@@ -115,9 +114,8 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
   (`look.lock_base_layer`; operator, 2026-11-11: "make it a standard"). A map does not turn the lock off.
 - A step page's `‹ E2E page` button sits above the header's top-left corner, never beside its right end; the header moves down to make room (`flowmap.pages.flow_header`; operator, 2026-11-11). The E2E
   pages are named "E2E" (`look.e2e_tab`).
-- ASCII first: a diagram in a document is ASCII, drawn with `just ascii-flow-render` (box chains with exits, grids, columns) and kept edge-clean; a draw.io drawing is generated only when it is
-  explicitly asked for (operator, 2026-11-16: "the ASCII scripts can be part of drawio as an immediate documentation and then drawio can generate proper diagrams when needed ... and explicitly
-  asked").
+- ASCII first: a diagram in a document is ASCII, drawn and repaired with **skill-ascii-diagrams** (split out 2026-11-17, operator); a draw.io drawing is
+  generated only when it is explicitly asked for (operator, 2026-11-16).
 
 ## Standing write-back contract
 

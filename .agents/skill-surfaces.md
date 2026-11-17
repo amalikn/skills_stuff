@@ -24,6 +24,7 @@ Rules:
 | Skill name | Path | Purpose |
 |---|---|---|
 | `crewai` | `superpowers/skills/crewai/SKILL.md` | Guide for invoking the mcp-crewai MCP server from any AI agent |
+| `skill-ascii-diagrams` | `specialists/project/skill-ascii-diagrams/SKILL.md` | ASCII diagrams in documents: draw from a spec, repair hand-drawn ones, check edges and arrows (split from skill-drawio 2026-11-17, operator) |
 | `skill-coder` | `specialists/project/skill-coder/SKILL.md` | Programming practice for any project and language; the default skill for any code (operator, 2026-10-20) |
 | `skill-goal-guard` | `specialists/project/skill-goal-guard/SKILL.md` | GoalGuard (alias skill-gg): owner-approved MVP scope gate and portfolio focus over Vikunja; not installed yet (operator, 2026-10-27) |
 | `skill-knowledge-curator` | `specialists/project/skill-knowledge-curator/SKILL.md` | Knowledge Curator (alias skill-kc): evidence-linked claims, conflict review, derived and promoted knowledge pages, archive plans; installed (symlinks) 2026-10-27 |

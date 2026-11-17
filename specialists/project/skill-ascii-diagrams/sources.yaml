@@ -1,0 +1,36 @@
+# Claims skill-ascii-diagrams makes: each load-bearing statement with its kind, evidence status, source and a falsifier (what would prove it wrong).
+# Operator rules are USER_STATED with the file that records them. External pages are copied verbatim under documents/research-sources-<YYYYMMDD>/.
+# Created from the seed's Evidence plan (2026-11-17); C-AD04 is a research agent's count, not re-run here.
+claims:
+  - id: C-AD01
+    statement: "The fixer changes only faulty diagrams"
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    evidence: "sweep of 106 documents, 243 diagrams: changes only where the edge checker had findings"
+    falsifier: "a diagram the checker passes that the fixer changes"
+    reference: references/fixing-diagrams.md
+  - id: C-AD02
+    statement: "Words are never changed"
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    evidence: "guard plus mutation-proven test"
+    falsifier: "a fixed block whose word sequence differs"
+    reference: references/fixing-diagrams.md
+  - id: C-AD03
+    statement: "No existing tool parses and re-routes ASCII diagrams"
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    lifecycle: current
+    evidence: "research-20261117_1050.md"
+    falsifier: "a maintained tool that does both"
+    reference: references/extensions.md
+  - id: C-AD04
+    statement: "Real diagrams are mostly plain ASCII within 80 columns"
+    kind: generic_invariant
+    evidence_status: VERIFIED_SECONDARY
+    lifecycle: current
+    evidence: "asciidiagrams agg.json counts"
+    falsifier: "a corpus where Unicode is common"
+    reference: references/drawing-diagrams.md

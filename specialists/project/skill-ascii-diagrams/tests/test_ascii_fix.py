@@ -202,6 +202,16 @@ class Stage1(unittest.TestCase):
     self.assertEqual(fx.report(["Boot0004* SlotB\tHD(15,GPT)"]), [])  # command output in a text block, no box
 
 
+class Package(unittest.TestCase):
+  """The `ascii` package (scripts/ascii/__init__.py) imports from the scripts folder and says what it holds."""
+
+  def test_package_imports_with_docstring(self) -> None:
+    """The package the front ends share is importable and documented."""
+    pkg = importlib.import_module("ascii")
+    self.assertTrue(Path(pkg.__file__).match("scripts/ascii/__init__.py"))
+    self.assertIn("ASCII diagrams", pkg.__doc__ or "")
+
+
 class Files(unittest.TestCase):
   """The command reads Markdown fences, prints a diff, and writes only with --apply."""
 

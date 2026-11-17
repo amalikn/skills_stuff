@@ -24,6 +24,7 @@ Canonical source-of-truth for reusable specialist packs and client export adapte
 | `skill-smc`               | `specialists/project/skill-smc/`               | Active                                                                                                                  |
 | `skill-cambium`           | `specialists/project/skill-cambium/`           | Active — bootstrapped 2026-09-17, cross-referenced with `skill-smc`                                                     |
 | `skill-mx02-migration`    | `specialists/project/skill-mx02-migration/`    | Active                                                                                                                  |
+| `skill-ascii-diagrams`    | `specialists/project/skill-ascii-diagrams/`    | 0.1.0 — ASCII diagrams for documents (draw, fix, check); split from skill-drawio and installed (Claude, Codex, Hermes) 2026-11-17 |
 | `skill-coder`             | `specialists/project/skill-coder/`             | 0.1.0 — language-agnostic programming practice with per-language overrides and stdlib checkers; installed 2026-10-19,   |
 |                           |                                                |   not yet the default (global routing pending)                                                                          |
 | `skill-goal-guard`        | `specialists/project/skill-goal-guard/`        | 0.1.0-pre — GoalGuard (alias skill-gg): MVP scope gate and portfolio focus; rules consolidated, v0.1 prototype CLI,     |

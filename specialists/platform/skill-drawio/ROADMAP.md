@@ -46,23 +46,8 @@ Detail and order: UNC's [retirement assessment](/Volumes/Data/_ai/_project/proje
 
 ## Engine and evidence
 
-- [x] **ASCII stage 1: repair existing diagrams** (operator 2026-11-17, staged plan "snap, then graph"): `ascii_fix.py` with `ascii/checks.py`; connector snapping
-  (asciiflow's idea), wide-character and tab checks (box-diagram, MIT), arrows that miss their box, generated files never written.
-- [ ] **ASCII stage 2: graph renderer** (operator 2026-11-17): a spec of boxes and links laid out with this pack's rules (layered rows, barycentre order,
-  channels with one track per arrow, port spreading, crossing-cutting swaps) and A* routing on the character grid after mermaid-ascii `getPath`/`mergePath`
-  (MIT; `documents/ascii-sources-20261117/`), with a crossing penalty; logic in `scripts/ascii/`.
-- [ ] **ASCII lessons from MonoSketch and the asciidiagrams catalogue** (operator links, read 2026-11-17): MonoSketch (Apache-2.0, Kotlin; reimplement with a
-  NOTICE line, never port verbatim) attaches a line end to the box side within 1 cell and stores it as a ratio along that side, so a moved box re-derives
-  the end (stage 2); its joints are a 4-direction mask ANDed with what the neighbouring cells reach (stage 1 junction repair, stage 3 joint recognition);
-  its router has no obstacle avoidance, so stage 2 keeps A*. The asciidiagrams.github.io catalogue (2156 diagrams from Chromium, Linux, LLVM, TensorFlow
-  comments; no licence, so a test corpus only, never copied into the pack): 27 use Unicode, median width 75, 90th percentile 80, so stage 2 defaults to
-  plain ASCII within 80 columns.
-- [ ] **ASCII stage 3: read a hand-drawn diagram into the stage-2 spec** (operator 2026-11-17): box recognition after svgbob's fragments, contacts and
-  `endorse_rect` (Apache-2.0), nested boxes and shared edges after ditaa's documented boundary split (LGPL: the idea only), connectors traced with a
-  claimed-cell mask (aafigure); then any diagram can be redrawn by stage 2.
-- [ ] **UNC's ASCII grid renderer and edge checker join `ascii_flow_render.py` here** (proposed 2026-11-16, operator chose skill-drawio for ASCII tools): `ascii_box_render.py` and `ascii_box_check.py`
-  live in unified-network-controller and smc-resiliency calls them by path; moving them is UNC's change, asked through the apn hub. Since 2026-11-17 `ascii_fix.py` carries the checker's edge rule as
-  `edge_issues()`, so the checker can be retired into it once UNC agrees.
+- [ ] **ASCII diagrams moved to skill-ascii-diagrams** (2026-11-17, operator): its ROADMAP holds stages 2 and 3, the MonoSketch lessons and the edge
+  checker question; skill-drawio's routing rules feed its stage 2 by import.
 - [ ] **Archcore flow-map spec and adoption guide** — unblocked by the second project; write them (see `.archcore/index.guide.md`).
 - [ ] **C-D16 on the current app** — re-check "static export draws orthogonal edges through boxes" on draw.io desktop 32.5.5 (checked only on 32.4.1; `compatibility.yaml`).
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (3.11 is not installed, so the declared floor is untested).

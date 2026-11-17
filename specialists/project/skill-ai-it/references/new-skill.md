@@ -157,3 +157,8 @@ generic terms in the pack, list the names that must not appear in `forbidden_ter
 > **Learned 2026-11-12** · new-skill, prompt and form templates saved as markdown · VERIFIED_PRIMARY (the formatter hook joined the lines of the research brief template) · Source: `templates/research-brief.md` and `scripts/skills/skill_intake.py` `render_briefs` @ 0ce0278 · Falsifier: a formatter that keeps hard line breaks in prose.
 > A prompt template kept as a markdown file gets its prose re-wrapped, so lines that must stay separate (Area, Scope, Questions) merge. Put such fields in list items or in paragraphs separated by blank lines, give the
 > template real front matter and a real `Last reviewed` date so it passes the freshness check, strip the front matter when the prompt is written, and stamp the date at generation instead of a placeholder.
+
+> **Learned 2026-11-17** · new-skill, contract test template · VERIFIED_PRIMARY (the first scaffolded pack's `just test` failed: `AttributeError: 'NoneType' object has no attribute '__dict__'`) · Source: `templates/skill-pack/tests/test_package_contract.py.tmpl` `load_checker` · Falsifier: a pack scaffolded from the template whose contract test loads the checker without registering it
+> `skill_pack_check.py` defines a `@dataclass`; a module loaded with `importlib.util.spec_from_file_location` must be put in `sys.modules` before `exec_module`, or the
+> dataclass decorator cannot find its module. The template now registers it; packs scaffolded before 2026-11-17 carry the old loader.
+

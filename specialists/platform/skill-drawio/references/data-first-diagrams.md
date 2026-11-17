@@ -343,6 +343,8 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 
 ## ASCII diagrams in Markdown, first
 
+ASCII diagrams moved to **skill-ascii-diagrams** on 2026-11-17 (operator); the two entries below are kept as history, its references hold the current rules.
+
 > **Learned 2026-11-16** · ASCII flows for documents · VERIFIED_PRIMARY · Source: apn smc-resiliency remote conversion plan and OpenRemote assessment
 > (18 diagrams drawn, `ascii_box_check.py` clean) · Falsifier: a drawn chain whose `|` edges or arrows leave their column under the edge checker
 > A document's diagram is ASCII first (operator, 2026-11-16); a draw.io drawing only when explicitly asked. Hand-drawn ASCII flows drift by a column; drawing
