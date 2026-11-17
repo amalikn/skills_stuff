@@ -11,10 +11,11 @@ What it fixes, per ```text block of a Markdown file (or a whole plain-text file)
 What it does not rewrite: grids whose cells share an edge, and boxes whose left edge drifts; what the edge checker would still find is reported
 (redraw those with ascii_flow_render.py).
 Every fix keeps the diagram's words in the same order and never adds an edge finding, or the block is left as it was.
-Run: just ascii-fix <file> [...] [--apply] [--even-widths] (this pack), or python3 <pack>/scripts/ascii_fix.py <file> [...] [--apply].
+Run: just ascii-fix <file> [...] [--apply | --check] [--even-widths] (this pack), or python3 <pack>/scripts/ascii_fix.py <file> [...] [--apply].
 Safety: read-only by default (prints a unified diff of each fixed block); --apply writes the fixed blocks back into the same file, nothing else, and
 never into a file carrying a GENERATED banner (its source is fixed instead).
-Exit: 0 nothing left to report; 1 a block holds something it would not fix (listed); 2 bad arguments or an unreadable file.
+Exit: 0 nothing left to report; 1 a block holds something it would not fix (listed), or with --check a block would change; 2 bad arguments or an
+unreadable file.
 """
 
 from __future__ import annotations
@@ -27,9 +28,9 @@ import sys
 from pathlib import Path
 
 from ascii import checks  # the package beside this script: on sys.path when run as a script or imported by a test
+from ascii.checks import GRID_BORDER, ch, edge_issues  # moved to checks.py for the module budget (2026-11-17); names kept
 
 REQUIRES_PYTHON = (3, 11)
-GRID_BORDER = re.compile(r"\+-[-+v^]*-\+")  # a border run: may carry tees (`+`) and arrows (`v`, `^`) where connectors meet it
 ARROW = re.compile(r"^(\s*)([|v^])(\s.*)?$")
 WORDS = re.compile(r"[A-Za-z0-9_.]+")
 PASSES = 6
@@ -57,20 +58,6 @@ def blocks(text: str, markdown: bool) -> list[tuple[int, int]]:
       out.append((start, i))
       start = None
   return out
-
-
-def ch(lines: list[str], r: int, c: int) -> str:
-  """The character at a row and column, a space beyond the text.
-
-  Args:
-    lines: the diagram.
-    r: row.
-    c: column.
-
-  Returns:
-    One character.
-  """
-  return lines[r][c] if 0 <= r < len(lines) and 0 <= c < len(lines[r]) else " "
 
 
 def walls(lines: list[str], r: int, a: int, b: int, inward: int) -> bool:
@@ -260,39 +247,6 @@ def centre_arrows(lines: list[str], found: list[dict], w: dict[tuple[int, int], 
           lines[r] = (" " * centre + m.group(2) + (m.group(3) or "")).rstrip()
 
 
-def edge_issues(lines: list[str]) -> list[str]:
-  """What the edge checker would still report: a box (or grid) whose side edges break before its bottom edge.
-
-  Same rule as the projects' ascii_box_check.py: a top edge is a border run with no `|` or `+` above both corners; its box runs down to the next
-  row holding `+` at both corners with only `-`, `+` or `^` between; a branch line (a `v` below a corner) has no bottom. Unlike that checker, edges
-  that end having held nothing between them are a fan-out branch (`+---+---+` with bare `|` legs), not a broken box.
-
-  Args:
-    lines: the diagram.
-
-  Returns:
-    One message per broken box.
-  """
-  issues = []
-  for r, line in enumerate(lines):
-    for m in GRID_BORDER.finditer(line):
-      a, b = m.start(), m.end() - 1
-      if ch(lines, r - 1, a) in "|+" and ch(lines, r - 1, b) in "|+" or "v" in (ch(lines, r + 1, a), ch(lines, r + 1, b)):
-        continue
-      held = False  # whether anything stood between the edges: a fan-out branch (`+---+---+` with bare `|` legs) holds nothing
-      for r2 in range(r + 1, len(lines)):
-        if ch(lines, r2, a) == "+" and ch(lines, r2, b) == "+" and set(lines[r2][a : b + 1]) <= set("+-^v"):
-          break
-        if ch(lines, r2, a) not in "|+" or ch(lines, r2, b) not in "|+":
-          if held:
-            issues.append(f"row {r2 + 1}: the box at columns {a + 1}-{b + 1} loses an edge (not fixed: redraw it with ascii_flow_render.py)")
-          break
-        held = held or bool(lines[r2][a + 1 : b].strip())
-      else:
-        issues.append(f"row {r + 1}: the box at columns {a + 1}-{b + 1} never closes (not fixed)")
-  return issues
-
-
 def fix(lines: list[str], even: bool = False) -> tuple[list[str], list[str]]:
   """Fix one diagram: boxes redrawn, stray arrows centred (with `even`, chained boxes one width); repeated until nothing moves.
 
@@ -336,13 +290,14 @@ def report(lines: list[str]) -> list[str]:
   return edge_issues(lines) + checks.arrow_issues(lines) + (checks.text_issues(lines) if drawn else [])
 
 
-def fix_file(path: Path, apply: bool, even: bool = False) -> int:
+def fix_file(path: Path, apply: bool, even: bool = False, check: bool = False) -> int:
   """Fix every diagram in one file; print a diff, or write with apply.
 
   Args:
     path: a Markdown or plain-text file.
     apply: write the fixed blocks back.
     even: give boxes joined by arrows in one column one width.
+    check: count each block that would change as a problem (for a project's closing check).
 
   Returns:
     The number of problems left.
@@ -361,6 +316,7 @@ def fix_file(path: Path, apply: bool, even: bool = False) -> int:
     if fixed != lines[start:end]:
       sys.stdout.writelines(difflib.unified_diff([x + "\n" for x in lines[start:end]], [x + "\n" for x in fixed], f"{path}:{start + 1}", "fixed"))
       lines[start:end] = fixed
+      left += check
   if apply and "\n".join(lines) != text:
     if GENERATED.search(text):
       print(f"{path}: generated (it carries a GENERATED banner): not written; fix the diagram in its source and regenerate")
@@ -385,12 +341,13 @@ def main(argv: list[str] | None = None) -> int:
   ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
   ap.add_argument("files", nargs="+", type=Path, help="Markdown files (each ```text block) or plain-text diagrams")
   ap.add_argument("--apply", action="store_true", help="write the fixed blocks back (default: print a diff)")
+  ap.add_argument("--check", action="store_true", help="read-only gate: exit 1 when a diagram would change or a finding is left")
   ap.add_argument("--even-widths", action="store_true", help="also give boxes joined by arrows in one column one width (a style choice)")
   args = ap.parse_args(argv)
   left = 0
   for path in args.files:
     try:
-      left += fix_file(path, args.apply, args.even_widths)
+      left += fix_file(path, args.apply and not args.check, args.even_widths, args.check)
     except OSError as e:
       print(f"{path}: {e}", file=sys.stderr)
       return 2

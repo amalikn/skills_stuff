@@ -164,6 +164,22 @@ class Borders(unittest.TestCase):
     self.assertEqual(out[2], "| x     |  | y   |")
 
 
+class CheckMode(unittest.TestCase):
+  """--check is a read-only gate for a project's closing check."""
+
+  def test_check_fails_on_a_fixable_diagram_and_writes_nothing(self) -> None:
+    """A ragged diagram fails --check and stays as it was; a clean one passes."""
+    with tempfile.TemporaryDirectory() as d:
+      path = Path(d) / "doc.md"
+      text = "```text\n" + "\n".join(RAGGED) + "\n```\n"
+      path.write_text(text, encoding="utf-8")
+      with redirect_stdout(io.StringIO()):
+        self.assertEqual(fx.main([str(path), "--check", "--apply"]), 1)
+        self.assertEqual(path.read_text(encoding="utf-8"), text)
+        fx.main([str(path), "--apply"])
+        self.assertEqual(fx.main([str(path), "--check"]), 0)
+
+
 class Generated(unittest.TestCase):
   """A rendered file is never written: its diagram is fixed in the source."""
 
