@@ -319,3 +319,16 @@ p.write_text(orig)   # same text, newer mtime: the derived .pptx check then fail
 > assert old in text, old            # a missed edit fails, never weakens the test
 > path.write_text(text.replace(old, new, 1), encoding="utf-8")
 > ```
+
+> **Learned 2026-11-17 (b)** · mutation checks in Python (break the code, expect red, restore) · VERIFIED_PRIMARY · Source: skill-drawio
+> `scripts/ascii_fix.py` mutation of `if held:` to `if True:`, commit 421877e · Falsifier: a restored module that runs its restored code with the cache prefix set.
+> Python reuses a cached `.pyc` when the source's mtime (whole seconds) and size match. A mutation of the same length (`if held:` to `if True:`), tested
+> and restored within the same second, leaves the mutated bytecode in the cache, so the restored code keeps failing (or a broken one keeps passing).
+> With `PYTHONPYCACHEPREFIX` set the cache sits outside the folder, so `__pycache__` looks empty. Run mutation tests with `python3 -B` and `touch` the
+> source after restoring it.
+>
+> ```bash
+> cp mod.py /tmp/keep.py && sed -i '' 's/if held:/if True:/' mod.py && python3 -B -m unittest tests.test_mod   # must go red
+> cp /tmp/keep.py mod.py && touch mod.py && python3 -B -m unittest tests.test_mod                              # green again
+> ```
+

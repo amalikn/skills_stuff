@@ -16,6 +16,8 @@ Last rotated: 20261117_1101
 
 ## Unreleased
 
+- 2026-11-17 write-back from skill-drawio ascii-fix work: references/testing.md Learned 2026-11-17 (b) (same-length mutation reuses a stale `.pyc`;
+  run with `python3 -B`, `touch` after restoring).
 - 2026-11-17 write-back from apn smc-resiliency (S1 outlet fault cases, 1eb7ff15): references/design-patterns.md P-73 (fault in the standby side, idempotent restore in `finally`, mount-act-unmount
   keeping rc, harness-owned hard reset); references/testing.md Learned 2026-11-17 (formatter-tolerant fixture edits).
 - 2026-11-16 write-back from apn enterprise-strategy (17 Nov meeting deck): references/design-patterns.md P-72 (a short derived deck: reused builders, wording table with must-match rules,
