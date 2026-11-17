@@ -51,7 +51,7 @@ Last reviewed: 2026-10-27
 whole AVR play; "banner exchange" timeouts are the ssh plugin's 10 s default against a ~9 s Teleport handshake, now `ansible_ssh_timeout: 30` in both smc_change playbooks (ansible-wifi chat f516e57d).
 
 New read-only `scripts/access/ssh_handshake_time.sh` (`just ssh_handshake_time`, offline test `just test_ssh_handshake_time`, smoke-run on wujal-wujal-booth-smc01, catalogued in
-`scripts/README.md`); reference 19: an SMC left out as NOT IN TELEPORT or recorded unreachable now fails INCOMPLETE after the summary (operator).
+`scripts/README.md`); reference 19: any SMC a run did not finish (offline, no record, unreachable, refused, failed, held back) is noted and fails INCOMPLETE, in the wrapper's last play when `smc_change_defer_incomplete` is set (operator; side-agent note on later plays).
 
 ## 20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)
 

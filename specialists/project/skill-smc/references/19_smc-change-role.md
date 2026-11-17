@@ -594,9 +594,12 @@ are per change (`smc_change_todo_<change>`; a play's `hosts:` can be templated f
     that change for that SMC, after a passed apply, under strategy free, so one SMC's AVR state lands minutes after it finishes while others are still mid-change. Check mode never writes one. The SMSC
     import is a second play: it starts when the first play has finished for every SMC, then runs only SMCs whose AVR state says passed. The "Say what the conditions decided" output comes before stage
     5, so it is not a sign the SMC is done; its journal (`status: active`, `phase`) is.
-  - **An offline SMC fails INCOMPLETE (2026-11-17, operator):** an SMC left out as NOT IN TELEPORT, or recorded `unreachable`, used to end `ok=12 failed=0` in PLAY RECAP (malupirti-smc01), which read
-    as done. The summary play's last task now fails it with "INCOMPLETE <change> not applied", after the summary and trackers are written, so the recap shows `failed=1` and the run exits non-zero. In
-    `smc_change_multiple.yml` and `smc_rise_deploy.yml` that SMC then sits out the later plays (it was offline for them anyway). Refused SMCs are not marked. Health probe: `just ssh_handshake_time
+  - **Any SMC a run did not finish fails INCOMPLETE (2026-11-17, operator: "if any of the task is not completed, it should be shown"):** an SMC left out as NOT IN TELEPORT, with no record, or recorded
+    `unreachable`, `refused`, `failed` or `gates_failed` used to end ok in PLAY RECAP (malupirti-smc01 offline `ok=12 failed=0`; slim-creek-smc01 unreachable at the SMSC change, `ok=297 failed=0`).
+    The summary play now notes it in `smc_change_incomplete` (finished = a record of `passed`, `already_done`, `verified`, `probed` or `not_applicable`, ALREADY DONE, or a flavor out of scope) and
+    fails it after the summary and trackers. A wrapper sets `smc_change_defer_incomplete: true` (`smc_change_multiple.yml`, `smc_rise_deploy.yml`) and fails it in its own last play "Report SMCs with
+    an unfinished change" instead, because a failed SMC leaves every later play of the run (side-agent note: it would have lost the deploy's Prometheus and Graylog plays). The multiple file's AVR
+    hold-back notes the held-back SMC the same way. An SMC lost mid-task (UNREACHABLE) or failing a task is still dropped by Ansible at that point, as before. Health probe: `just ssh_handshake_time
     <host-fqdn> 10 30` (scripts/access) times the Teleport handshake against each connect timeout.
   - **Connect timeout 30 s at play level (2026-11-17):** "Connection timed out during banner exchange ... UNKNOWN port 65535" while `tsh ssh` works is the ssh plugin's 10 s default; a Teleport
     handshake measured 9 s idle on wujal-wujal-booth-smc01 and went over in a 10-SMC batch. `ansible_ssh_timeout: 30` now sits in the apply play of `smc_change.yml` and in `smc_change_run` of
