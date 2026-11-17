@@ -9,16 +9,32 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261117_1101
+Last rotated: 20261117_1859
 ---
 
 # Changelog
 
+## Contents
+
+- [Unreleased](#unreleased)
+- [20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records](#20261102_1347--learned-exit-trap-exit-code-ruff-through-a-symlink-tracker-from-records)
+- [20261102_1132 — Learned: one write frame for many fields](#20261102_1132--learned-one-write-frame-for-many-fields)
+- [20261101_2353 — Learned: guard first and dry-run a gate that hides records](#20261101_2353--learned-guard-first-and-dry-run-a-gate-that-hides-records)
+- [20261101_2307 — Learned: a predicate answering a second question](#20261101_2307--learned-a-predicate-answering-a-second-question)
+- [20261101_1937 — Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits](#20261101_1937--learned-jinja-dict-keys-through-json-filtered-loop-index-folded-newlines-crlf-edits)
+- [20261101_0103 — Gate output in recipes](#20261101_0103--gate-output-in-recipes)
+- [20261030_1721 — Pattern P-47 (decide once from facts, persist it); Learned: run_once set_fact freezes templates, 2.21 Jinja quirks](#20261030_1721--pattern-p-47-decide-once-from-facts-persist-it-learned-run_once-set_fact-freezes-templates-221-jinja-quirks)
+- [20261030_1249 — Pattern P-46: audience words at the output boundary, with a leak guard](#20261030_1249--pattern-p-46-audience-words-at-the-output-boundary-with-a-leak-guard)
+
+---
+
 ## Unreleased
 
+- 2026-11-17 write-back from ansible-wifi (chat f516e57d, rise 9f17dd64): languages/ansible/learned-lint-and-tests.md Learned 2026-11-17 (a) (a lint delta gate brings a rewritten file's old findings
+  in as new) and (b) (`shell` with a pipe: `pipefail` plus `executable: /bin/bash`).
+
 - 2026-11-17 write-back from skill-ascii-diagrams: references/testing.md Learned 2026-11-17 (c) (sweep a repair tool over real files against an independent checker).
-- 2026-11-17 write-back from skill-drawio ascii-fix work: references/testing.md Learned 2026-11-17 (b) (same-length mutation reuses a stale `.pyc`;
-  run with `python3 -B`, `touch` after restoring).
+- 2026-11-17 write-back from skill-drawio ascii-fix work: references/testing.md Learned 2026-11-17 (b) (same-length mutation reuses a stale `.pyc`; run with `python3 -B`, `touch` after restoring).
 - 2026-11-17 write-back from apn smc-resiliency (S1 outlet fault cases, 1eb7ff15): references/design-patterns.md P-73 (fault in the standby side, idempotent restore in `finally`, mount-act-unmount
   keeping rc, harness-owned hard reset); references/testing.md Learned 2026-11-17 (formatter-tolerant fixture edits).
 - 2026-11-16 write-back from apn enterprise-strategy (17 Nov meeting deck): references/design-patterns.md P-72 (a short derived deck: reused builders, wording table with must-match rules,
@@ -177,11 +193,3 @@ Learned 2026-10-30 (apn unified-network-controller, site workbook for the site t
 table then fallback, and refuse the write if the term survives.
 
 - `references/design-patterns.md`: Learned 2026-10-30, P-46
-
-## 20261030_1224 — Learned: filter precedence, free-form shell splitting, import_tasks placement, pipefail with grep -q
-
-Learned 2026-10-30 (ansible-wifi chat cad11710) in `languages/ansible.md` (a: a filter binds tighter than `+`; b: free-form `shell:` splits arguments, use `cmd:`; c: `import_tasks` only inside a play)
-and `languages/shell.md` (`pipefail` turns a passing `grep -q` into SIGPIPE 141).
-
-- `languages/ansible.md`: Learned 2026-10-30 (a), (b), (c)
-- `languages/shell.md`: Learned 2026-10-30
