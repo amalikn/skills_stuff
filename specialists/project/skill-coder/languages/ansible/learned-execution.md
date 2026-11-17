@@ -81,3 +81,12 @@ Part of [ansible.md](../ansible.md).
 > With the default linear strategy every task finishes on all hosts of a batch before the next starts, so a per-host timer between stage
 > markers measures the batch's wall-clock for that stage: the slowest host (or one reboot) sets every host's line. Measure per-host work
 > with a task-timing callback, not stage markers, and size budgets per batch.
+
+> **Learned 2026-11-17 (n)** · ansible-core 2.21 multi-play playbooks (import_playbook chains) · VERIFIED_PRIMARY (local test: six local hosts, deferred mode ran the later play
+> on all six, then failed the three unfinished ones; standalone mode failed them at once) · Source: local-knowledge-ansible `playbooks/smc_change.yml`, `smc_change_multiple.yml`,
+> ansible-wifi `smc_rise_deploy.yml` (2026-11-17) · Falsifier: a host failed in play N still running a task of play N+1 without `meta: clear_host_errors`
+>
+> A host that ends a play with `meta: end_host` or a skipped import shows `ok` in PLAY RECAP however little was done, and a host failed in one play leaves every later play of the
+> run. To show unfinished work without costing the later plays: note the reason in a host fact (`set_fact: incomplete: "{{ incomplete | default([]) + [reason] }}"`), fail at once only
+> when nothing wraps the playbook (`when: not defer_incomplete | default(false)`), and let each wrapper set `defer_incomplete: true` and end with one play that fails every host whose
+> list is non-empty. Judge "finished" from an allow-list of outcomes, so a new failure kind is incomplete by default.
