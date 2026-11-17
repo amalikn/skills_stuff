@@ -39,31 +39,29 @@ SMC box — port 22 (SSH)
 
 ### Teleport Machine ID (tbot) for unattended access (learned 2026-10-12/13 on apn-unc01, unified-network-controller)
 
-A host that reads SMCs without a person's `tsh login` runs one Machine ID bot per cluster (`tbot@apn`, `tbot@nbn`), joined by AWS IAM delegated join. Four
-behaviours cost time the first time (source: unified-network-controller `infra/apn-unc01/tbot/readme.md` and its CHANGELOG 20261013_1221, 20261012_1822):
+A host that reads SMCs without a person's `tsh login` runs one Machine ID bot per cluster (`tbot@apn`, `tbot@nbn`), joined by AWS IAM delegated join. Four behaviours cost time the first time (source:
+unified-network-controller `infra/apn-unc01/tbot/readme.md` and its CHANGELOG 20261013_1221, 20261012_1822):
 
-- **Use the bot output as a non-root reader.** The output directory is root-owned and the reader user gets it through POSIX ACLs, so `ls` shows the key as
-  0660 (the group bits are the ACL mask). OpenSSH checks a key's mode only when the key belongs to the user running ssh: root gets "UNPROTECTED PRIVATE KEY
-  FILE", the ACL reader does not. Run `ssh -F /opt/tbot-<c>/ssh_config root@<smc>.teleport.<domain>` as that user (e.g. `ubuntu`), never as root.
-- **An IAM-joined bot re-joins with its token at every renewal**, so a token with an expiry stops the bot when it lapses ("token expired or not found",
-  restart loop). Teleport 12.4.34 reads a token's expiry unconditionally in `tctl bots add --token` (`lib/auth/bot.go:183`), so such tokens get an expiry by
-  necessity; 13.4.24 reads it only when present (`bot.go:170-173`). Give a bot's IAM token `expires: "9999-12-31T23:59:59Z"`. VERIFIED_PRIMARY (Teleport source).
-- **tctl 12.4.34 has `bots ls`, `add` and `rm` only, no `bots update`**: changing a bot's roles means `bots rm` then `bots add`, then clearing the host's bot
-  state directory before restarting tbot, or it loads the old identity and fails on a `*.teleport.cluster.local` certificate.
-- **An IAM token's `aws_arn` pattern is a trust boundary.** A token allowing `<role>/*` lets any instance carrying that role's profile join as that bot; a
-  second host given the same profile could join as another service's bot (the `apn-dashboard-iam` token allows `teleport-ec2-bot-role-apn/*`). Give each
-  host its own role and token.
+- **Use the bot output as a non-root reader.** The output directory is root-owned and the reader user gets it through POSIX ACLs, so `ls` shows the key as 0660 (the group bits are the ACL mask).
+  OpenSSH checks a key's mode only when the key belongs to the user running ssh: root gets "UNPROTECTED PRIVATE KEY FILE", the ACL reader does not. Run `ssh -F /opt/tbot-<c>/ssh_config
+  root@<smc>.teleport.<domain>` as that user (e.g. `ubuntu`), never as root.
+- **An IAM-joined bot re-joins with its token at every renewal**, so a token with an expiry stops the bot when it lapses ("token expired or not found", restart loop). Teleport 12.4.34 reads a token's
+  expiry unconditionally in `tctl bots add --token` (`lib/auth/bot.go:183`), so such tokens get an expiry by necessity; 13.4.24 reads it only when present (`bot.go:170-173`). Give a bot's IAM token
+  `expires: "9999-12-31T23:59:59Z"`. VERIFIED_PRIMARY (Teleport source).
+- **tctl 12.4.34 has `bots ls`, `add` and `rm` only, no `bots update`**: changing a bot's roles means `bots rm` then `bots add`, then clearing the host's bot state directory before restarting tbot, or
+  it loads the old identity and fails on a `*.teleport.cluster.local` certificate.
+- **An IAM token's `aws_arn` pattern is a trust boundary.** A token allowing `<role>/*` lets any instance carrying that role's profile join as that bot; a second host given the same profile could join
+  as another service's bot (the `apn-dashboard-iam` token allows `teleport-ec2-bot-role-apn/*`). Give each host its own role and token.
 
 > **Learned 2026-10-29** · Machine ID bots on EC2 (apn `teleport/tbot` notes, 2026-03-24 and 2026-04-28) · VERIFIED_PRIMARY (incident notes with the
-> commands run) · Source: `apn/teleport/tbot/docs/ec2/stale-tbot-state-and-ecs-handling-20260324_1515.md` lines 40-118 and
-> `apn/teleport/tbot/docs/ec2/centos7-noc-iam-role-fix-20260428_1038.md` (apn 5cba35f)
+> commands run) · Source: `apn/teleport/tbot/docs/ec2/stale-tbot-state-and-ecs-handling-20260324_1515.md` lines 40-118 and `apn/teleport/tbot/docs/ec2/centos7-noc-iam-role-fix-20260428_1038.md` (apn
+> 5cba35f)
 >
 > - **Stale client state beats new config.** After a bot is renamed or recreated on the server, tbot logs `onboarding config ignored as identity was
->   loaded from persistent storage` and keeps renewing the old identity (TLS to a stale cluster hostname) while IAM and `aws sts get-caller-identity`
->   look right. Stop `tbot.service`, move `/var/lib/teleport/bot` aside, start it: it then joins fresh. On ECS this bites only when the bot directory is
->   persistent (EFS); ephemeral task storage joins fresh on every start.
+> loaded from persistent storage` and keeps renewing the old identity (TLS to a stale cluster hostname) while IAM and `aws sts get-caller-identity` look right. Stop `tbot.service`, move
+> `/var/lib/teleport/bot` aside, start it: it then joins fresh. On ECS this bites only when the bot directory is persistent (EFS); ephemeral task storage joins fresh on every start.
 > - **`instance did not match any allow rules` can be the server side.** With a correct IAM role the join still failed because the bot did not exist,
->   its `bot-<name>` role was orphaned by an earlier partial delete, and its IAM token had expired. Check all three before touching the client:
+> its `bot-<name>` role was orphaned by an earlier partial delete, and its IAM token had expired. Check all three before touching the client:
 
 ```bash
 # centos7-noc-iam-role-fix-20260428_1038.md (names made generic)
@@ -76,34 +74,32 @@ tctl bots add <name> --roles=access   # recreate, then apply its IAM token (far-
 
 ### SMC Teleport node join: static token, default data dir (read at source 2026-10-14)
 
-`roles/smc_teleport/templates/teleport.yaml.j2` joins the node with `auth_token: {{ teleport_token }}`, a static alphanumeric token the cluster defines under
-`tokens:` (`roles/teleport_core/templates/teleport-server.yaml.j2`); no per-box certificate is issued for the join. No `data_dir` is set, so the node's
-host identity lives in the default `/var/lib/teleport`. Static labels are site-level (`env`, `site`, `flavor`, `iridium`); the rest are `commands:` labels
-run on a period (hostname, `site.txt`, Teleport version, `disk` when `disk_count == '2'`, DMI model on x86, overlay state on the Pi flavours). Operator,
-2026-10-14: if `/var/lib/teleport` is lost, deleting it and restarting Teleport re-joins the node from `/etc/teleport.yaml`; smc-resiliency's identity
-partition design relies on this.
+`roles/smc_teleport/templates/teleport.yaml.j2` joins the node with `auth_token: {{ teleport_token }}`, a static alphanumeric token the cluster defines under `tokens:`
+(`roles/teleport_core/templates/teleport-server.yaml.j2`); no per-box certificate is issued for the join. No `data_dir` is set, so the node's host identity lives in the default `/var/lib/teleport`.
+Static labels are site-level (`env`, `site`, `flavor`, `iridium`); the rest are `commands:` labels run on a period (hostname, `site.txt`, Teleport version, `disk` when `disk_count == '2'`, DMI model
+on x86, overlay state on the Pi flavours). Operator, 2026-10-14: if `/var/lib/teleport` is lost, deleting it and restarting Teleport re-joins the node from `/etc/teleport.yaml`; smc-resiliency's
+identity partition design relies on this.
 
-**Duplicate node after clearing `/var/lib/teleport` (kaltjiti-fergon-smc01, nbn_accelerate, 2026-10-30; resolved by itself).** The operator deleted
-`/var/lib/teleport` and restarted Teleport (12:12:12). The node re-joined at once under a new host id (`Generating new host UUID`, registered via
-the proxy 12:12:15, tunnel mode 12:12:47, no errors after), but `tsh ls` listed two `kaltjiti-fergon-smc01` records until the old id's
-record expired at 12:21:19 (about 9 min after its last heartbeat), and `tsh ssh root@<hostname>` was ambiguous in that window. The errors seen
-were not the new node's: `Uploader scan failed ... open /var/lib/teleport/log/upload/streaming/default: no such file` and `Agent pool exited:
-context canceled` came from the old process, whose data dir was deleted under it, then from its SIGTERM. `Failed to run command and update
-label: exit status 127. labels/labels.go:153` is the `versions` label: `/etc/teleport.yaml` still runs `/usr/local/bin/role_versions_labels.sh`,
-which is not on the box; the current `roles/smc_teleport/templates/teleport.yaml.j2:94` has that label commented out, so the box's config is
-older than the template (once per start with `period: 1h`; cosmetic). Read-only checks used (backdoor, hostname verified):
-`scripts/access/backdoor_exec.sh <host> - < probe.sh`, `tsh ls -v ... hostname=<host>` (ids), `tsh ls --format=json` (`metadata.expires`).
-Lesson: after a data-dir wipe, wait for the old record to expire (or address the node by id) before calling Teleport broken.
+**Duplicate node after clearing `/var/lib/teleport` (kaltjiti-fergon-smc01, nbn_accelerate, 2026-10-30; resolved by itself).** The operator deleted `/var/lib/teleport` and restarted Teleport
+(12:12:12). The node re-joined at once under a new host id (`Generating new host UUID`, registered via the proxy 12:12:15, tunnel mode 12:12:47, no errors after), but `tsh ls` listed two
+`kaltjiti-fergon-smc01` records until the old id's record expired at 12:21:19 (about 9 min after its last heartbeat), and `tsh ssh root@<hostname>` was ambiguous in that window. The errors seen were
+not the new node's: `Uploader scan failed ... open /var/lib/teleport/log/upload/streaming/default: no such file` and `Agent pool exited: context canceled` came from the old process, whose data dir was
+deleted under it, then from its SIGTERM. `Failed to run command and update label: exit status 127. labels/labels.go:153` is the `versions` label: `/etc/teleport.yaml` still runs
+`/usr/local/bin/role_versions_labels.sh`, which is not on the box; the current `roles/smc_teleport/templates/teleport.yaml.j2:94` has that label commented out, so the box's config is older than the
+template (once per start with `period: 1h`; cosmetic). Read-only checks used (backdoor, hostname verified): `scripts/access/backdoor_exec.sh <host> - < probe.sh`, `tsh ls -v ... hostname=<host>`
+(ids), `tsh ls --format=json` (`metadata.expires`). Lesson: after a data-dir wipe, wait for the old record to expire (or address the node by id) before calling Teleport broken.
 
-**Re-join that never connects (banana-well-smc01, 2026-10-27; resolved by itself ~12:30, the link, not the clock).** After `/var/lib/teleport` was cleared and Teleport restarted,
-the auth server logged `Node "<host>" [<new host id>] has joined the cluster` (method token) at 11:38, 11:41 and 11:43: a new host id, re-joining
-every 2-3 minutes because its reverse tunnel never came up, so it never got a node record. `tsh ls` kept listing the **old** host id until its
-record expired (~10 min after the last heartbeat); SSH to it failed with `no node reverse tunnel for <old id>.<cluster> found`. The token
-(static, never expires), labels (env, flavor, site) and port (everything on 443, `proxy_listener_mode: multiplex`) matched a healthy SMC. The
-node log shows the join running "without validating the identity of the Auth Server" (no CA pin) and succeeding, while every step that checks
-TLS (direct auth, tunnel, `/v1/webapi/host/credentials`) failed: suspect the box clock (a Pi with no RTC) or a link that drops larger TLS
-exchanges (MTU; the backdoor flapped the same morning). Outcome: at 12:42 the box was in `tsh ls` under the new host id, clock synchronized, no reboot (same boot id,
-19 days up), Teleport errors until 12:29:45 and none after: the site's link, not the clock. Wait and watch before touching a re-joining node. Afternoon recurrence (14:06-14:36, during the PHP apply): 1,595 Teleport warn/error lines an hour (`Unable to communicate with the Teleport Auth Service`, `timeout waiting for stream status update`, dial timeouts to `/webapi/find`), the autossh backdoor at restart count 1,705 (`Connection reset by peer`) and its port down on apn-teleport01; clock synchronized, session-upload backlog 1 file; 30-40% packet loss and 550-960 ms RTT already to the first hop (the /30 gateway on eth0), with the WAN idle (3/13 kbit/s): a lossy site link, not Teleport, the clock or load. Errors peaked while the box downloaded and installed packages (likely congestion on a lossy link, UNVERIFIED). Read-only checks used, from the cluster side (no box access needed):
+**Re-join that never connects (banana-well-smc01, 2026-10-27; resolved by itself ~12:30, the link, not the clock).** After `/var/lib/teleport` was cleared and Teleport restarted, the auth server
+logged `Node "<host>" [<new host id>] has joined the cluster` (method token) at 11:38, 11:41 and 11:43: a new host id, re-joining every 2-3 minutes because its reverse tunnel never came up, so it
+never got a node record. `tsh ls` kept listing the **old** host id until its record expired (~10 min after the last heartbeat); SSH to it failed with `no node reverse tunnel for <old id>.<cluster>
+found`. The token (static, never expires), labels (env, flavor, site) and port (everything on 443, `proxy_listener_mode: multiplex`) matched a healthy SMC. The node log shows the join running "without
+validating the identity of the Auth Server" (no CA pin) and succeeding, while every step that checks TLS (direct auth, tunnel, `/v1/webapi/host/credentials`) failed: suspect the box clock (a Pi with
+no RTC) or a link that drops larger TLS exchanges (MTU; the backdoor flapped the same morning). Outcome: at 12:42 the box was in `tsh ls` under the new host id, clock synchronized, no reboot (same
+boot id, 19 days up), Teleport errors until 12:29:45 and none after: the site's link, not the clock. Wait and watch before touching a re-joining node. Afternoon recurrence (14:06-14:36, during the PHP
+apply): 1,595 Teleport warn/error lines an hour (`Unable to communicate with the Teleport Auth Service`, `timeout waiting for stream status update`, dial timeouts to `/webapi/find`), the autossh
+backdoor at restart count 1,705 (`Connection reset by peer`) and its port down on apn-teleport01; clock synchronized, session-upload backlog 1 file; 30-40% packet loss and 550-960 ms RTT already to
+the first hop (the /30 gateway on eth0), with the WAN idle (3/13 kbit/s): a lossy site link, not Teleport, the clock or load. Errors peaked while the box downloaded and installed packages (likely
+congestion on a lossy link, UNVERIFIED). Read-only checks used, from the cluster side (no box access needed):
 
 ```
 journalctl -u teleport --since '-45 min' | grep -E '<host>|<host id>'      # on the auth/proxy host: joins and "no node reverse tunnel"
@@ -111,19 +107,16 @@ tctl get nodes --format=json | python3 -c '...hostname, metadata.expires'  # old
 tctl tokens ls --format=json -> print roles and expires only                # never print token names: the name is the secret
 ```
 
-On the box: `date -u`, `timedatectl`, `journalctl -u teleport -l` for `x509`/`not yet valid`, `openssl s_client -connect <cluster>:443`,
-`ping -M do -s 1372 <cluster>`. On an overlay Pi the cleared `/var/lib/teleport` is gone only from the RAM upper layer: a reboot brings the old
-identity back from the lower dir. The backdoor needs the fleet root password interactively (`BatchMode` cannot log in), and 12 "cannot listen
-to port" events that morning meant stale sessions held the port.
+On the box: `date -u`, `timedatectl`, `journalctl -u teleport -l` for `x509`/`not yet valid`, `openssl s_client -connect <cluster>:443`, `ping -M do -s 1372 <cluster>`. On an overlay Pi the cleared
+`/var/lib/teleport` is gone only from the RAM upper layer: a reboot brings the old identity back from the lower dir. The backdoor needs the fleet root password interactively (`BatchMode` cannot log
+in), and 12 "cannot listen to port" events that morning meant stale sessions held the port.
 
-**Command labels as read (2026-10-20, `tsh ls --format=json`, read-only):** each node object carries them under `spec.cmd_labels.<name>.result`
-and the static ones under `metadata.labels`, so one list per cluster gives the whole fleet's labels with no login (0.9 s for teleport.apn.au's 340
-nodes, 0.5 s for teleport.communitywifi.net.au's 34). Seen on a Pi: `hostname`, `id` (site.txt, 20-mile `183`), `kernel`, `os`, `overlay`,
-`lat`, `lon`, `teleport`, `fluent-bit`, `kohana`, `sidecar`, `telemetry`, `uuid`, `watchdog`, `wifi`, `zram`, `healthcheck`. `overlay` runs
-`[ -f /root/.overlay_bash_settings ] && (mount | grep -q 'overlayroot on / type overlay' && echo readonly || echo persistent) || echo unconfigured`:
-309 Pis report one, 306 `readonly` and 3 `unconfigured` (bungardi, kupungarri, warehouse-rct01); x86 boxes have none. The `lat` label is not
-`/var/local/tstiklatlon/lat`: 20-mile's label says -16.08550 and the file -16.08567, so read the file for a Pi's position (operator, 2026-10-20).
-A failed label command shows as `exit status N output:` (bungardi's `versions`). VERIFIED-OBSERVED 2026-10-20.
+**Command labels as read (2026-10-20, `tsh ls --format=json`, read-only):** each node object carries them under `spec.cmd_labels.<name>.result` and the static ones under `metadata.labels`, so one list
+per cluster gives the whole fleet's labels with no login (0.9 s for teleport.apn.au's 340 nodes, 0.5 s for teleport.communitywifi.net.au's 34). Seen on a Pi: `hostname`, `id` (site.txt, 20-mile
+`183`), `kernel`, `os`, `overlay`, `lat`, `lon`, `teleport`, `fluent-bit`, `kohana`, `sidecar`, `telemetry`, `uuid`, `watchdog`, `wifi`, `zram`, `healthcheck`. `overlay` runs `[ -f
+/root/.overlay_bash_settings ] && (mount | grep -q 'overlayroot on / type overlay' && echo readonly || echo persistent) || echo unconfigured`: 309 Pis report one, 306 `readonly` and 3 `unconfigured`
+(bungardi, kupungarri, warehouse-rct01); x86 boxes have none. The `lat` label is not `/var/local/tstiklatlon/lat`: 20-mile's label says -16.08550 and the file -16.08567, so read the file for a Pi's
+position (operator, 2026-10-20). A failed label command shows as `exit status N output:` (bungardi's `versions`). VERIFIED-OBSERVED 2026-10-20.
 
 Excerpt (unified-network-controller `wc-local/scripts/collector/teleport_labels.py`, commit b0f5bfc):
 
@@ -136,11 +129,10 @@ modes = {n["spec"]["hostname"]: r for n in nodes
 ### Teleport self-upgrade cron (read at source 2026-11-17)
 
 > **Learned 2026-11-17** · all flavours · VERIFIED_PRIMARY (source only, no box read) · Source: ansible-wifi `roles/smc_teleport/tasks/main.yml:162-168` at 906ee778
-> · Falsifier: a box whose root crontab has no `Check if teleport needs an upgrade` entry.
-> Every SMC runs `/upgrade_teleport.sh` from root's cron daily at 00:00 (the flavour gate is commented out), which can install a Teleport package
-> (`/usr`, `/var/lib/dpkg`). On a read-only or image-based root this job cannot work and changes the release outside the release path; an image build
-> removes it and ships Teleport inside the release (smc-resiliency scheduled-writer inventory C13, operator 20261117_0903: image only, fleet unchanged).
-> The nightly `pkill -9 python3` (C6) is in [09_url-capture-pcap.md](09_url-capture-pcap.md); it would also kill any Python agent on the box.
+> · Falsifier: a box whose root crontab has no `Check if teleport needs an upgrade` entry. Every SMC runs `/upgrade_teleport.sh` from root's cron daily at 00:00 (the flavour gate is commented out),
+> which can install a Teleport package (`/usr`, `/var/lib/dpkg`). On a read-only or image-based root this job cannot work and changes the release outside the release path; an image build removes it
+> and ships Teleport inside the release (smc-resiliency scheduled-writer inventory C13, operator 20261117_0903: image only, fleet unchanged). The nightly `pkill -9 python3` (C6) is in
+> [09_url-capture-pcap.md](09_url-capture-pcap.md); it would also kill any Python agent on the box.
 
 ```yaml
 - name: add upgrade_teleport.sh to cron
@@ -172,8 +164,7 @@ authenticates with a raw OpenSSH key (`/var/local/autossh/ssh-portfwding.id_rsa`
 resulting port uniquely identifies one site fleet-wide, regardless of which project/teleport cluster it belongs to.
 
 > **Learned 2026-10-23** · reading the site ID from the box · VERIFIED-OBSERVED (php-rct-smc01, `ps -eo args`) · Falsifier: a box whose -R port
-> differs from 50000 + its host vars ID after a RISE run
-> The box shows its own ID: `autossh ... -R <50000+id>:127.0.0.1:22 ssh-portfwding@<bastion>`. A box imaged from a generic build can still carry
+> differs from 50000 + its host vars ID after a RISE run The box shows its own ID: `autossh ... -R <50000+id>:127.0.0.1:22 ssh-portfwding@<bastion>`. A box imaged from a generic build can still carry
 > the image's ID (181 = `generic-rct01*`), which is not unique; `scripts/ansible/smc_inventory_add.py --siteid-from-box` reads it and flags the clash.
 
 **Which bastion, per project** (`group_vars/smc_bases.yml` per inventory; each project has multiple flavors nested under it — see `01_overview.md` "Remote Access"):
@@ -183,12 +174,12 @@ resulting port uniquely identifies one site fleet-wide, regardless of which proj
 | nbn_accelerate | `nbn_accelerate`, `nbn_wh` (+ `cw` central-infra) | `teleport.communitywifi.net.au` | `3.104.50.51` — reverse-DNS/`known_hosts` alias `cw-teleport01` |
 | APN            | `rcp`, `wh`, `rct` (+ `apn` central-infra)        | `teleport.apn.au`               | `13.54.242.59`                                                  |
 
-**Script:** `../scripts/access/backdoor-watch.sh <site> [check|history|watch]` does steps 1-2 and the listener check without opening a shell; `watch` polls for a box that
-only holds the tunnel briefly (2026-10-07).
+**Script:** `../scripts/access/backdoor-watch.sh <site> [check|history|watch]` does steps 1-2 and the listener check without opening a shell; `watch` polls for a box that only holds the tunnel briefly
+(2026-10-07).
 
-**Never report a box as unreachable until this path has been checked** (operator, 2026-10-07). A box missing from `tsh ls` is not enough. On the project bastion
-(`apn-teleport01` / `cw-teleport01`), `ss -tln | grep 127.0.0.1:<50000+site_eclipse_siteid>`: listening means the box is alive, so SSH in through it. Not listening: grep the
-bastion's `/var/log/auth.log*` for `cannot listen to port: <port>` (a stale session is holding the port), and poll the listener to catch a box that comes up only briefly.
+**Never report a box as unreachable until this path has been checked** (operator, 2026-10-07). A box missing from `tsh ls` is not enough. On the project bastion (`apn-teleport01` / `cw-teleport01`),
+`ss -tln | grep 127.0.0.1:<50000+site_eclipse_siteid>`: listening means the box is alive, so SSH in through it. Not listening: grep the bastion's `/var/log/auth.log*` for `cannot listen to port:
+<port>` (a stale session is holding the port), and poll the listener to catch a box that comes up only briefly.
 
 **Procedure**:
 1. Find `site_eclipse_siteid` for the target site (`host_vars`/`group_vars`) and add 50000 to get its port.
@@ -215,15 +206,12 @@ own public source IP is `3.104.50.51`. **Caveat: SSH port 22 to the LVS director
 it to read a rule set — a live 2026-09-08 investigation was blocked on exactly this.
 
 > **Learned 2026-11-10** · backdoor down on one box for 22 days: stale bastion keys in `known_hosts` · VERIFIED-OBSERVED (koonibba-smc01, read
-> over cw Teleport; fixed and re-checked UP) · Source: ansible-wifi `roles/smc_autossh/templates/autossh-teleport-openssh.service.j2:15` (rise `0fc086ca`) ·
-> Falsifier: a box whose `known_hosts` holds a wrong key for the bastion and whose tunnel still listens
-> `StrictHostKeyChecking=no` does not save a tunnel from a **changed** key: ssh logs `REMOTE HOST IDENTIFICATION HAS CHANGED`, then
-> `Port forwarding is disabled to avoid man-in-the-middle attacks` and `Error: forwarding disabled due to host key check failure`, and with
-> `ExitOnForwardFailure=yes` autossh restarts it forever while `systemctl is-active` says `active` and `NRestarts=0`. koonibba-smc01 held ED25519
-> `CdkO8...` and ECDSA `F328...` for `3.104.50.51` (cw-teleport01) while the server's keys are ED25519 `zHxP...`, ECDSA `E+nmm...`, RSA `s+FS...`; the
-> other 19 cw nbn_accelerate boxes had the right keys and their ports listened. Down 2026-10-19 23:09 to 2026-11-10 13:09 (3,116 failures). The
-> url-capture rsync on the same box kept working: it connects by name with key auth, which a changed key does not block. Why only this box held
-> old keys: UNVERIFIED.
+> over cw Teleport; fixed and re-checked UP) · Source: ansible-wifi `roles/smc_autossh/templates/autossh-teleport-openssh.service.j2:15` (rise `0fc086ca`) · Falsifier: a box whose `known_hosts` holds
+> a wrong key for the bastion and whose tunnel still listens `StrictHostKeyChecking=no` does not save a tunnel from a **changed** key: ssh logs `REMOTE HOST IDENTIFICATION HAS CHANGED`, then `Port
+> forwarding is disabled to avoid man-in-the-middle attacks` and `Error: forwarding disabled due to host key check failure`, and with `ExitOnForwardFailure=yes` autossh restarts it forever while
+> `systemctl is-active` says `active` and `NRestarts=0`. koonibba-smc01 held ED25519 `CdkO8...` and ECDSA `F328...` for `3.104.50.51` (cw-teleport01) while the server's keys are ED25519 `zHxP...`,
+> ECDSA `E+nmm...`, RSA `s+FS...`; the other 19 cw nbn_accelerate boxes had the right keys and their ports listened. Down 2026-10-19 23:09 to 2026-11-10 13:09 (3,116 failures). The url-capture rsync
+> on the same box kept working: it connects by name with key auth, which a changed key does not block. Why only this box held old keys: UNVERIFIED.
 >
 > ```ini
 > # roles/smc_autossh/templates/autossh-teleport-openssh.service.j2:15 (ansible-wifi rise 0fc086ca)
@@ -231,15 +219,13 @@ it to read a rule set — a live 2026-09-08 investigation was blocked on exactly
 >   -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -N -4 -R {{ openssh_remoteport }}:127.0.0.1:22 ssh-portfwding@{{ teleport_address }}
 > ```
 >
-> Diagnose: `journalctl -u autossh-teleport-openssh -n 40 | grep -E 'IDENTIFICATION|Offending|forwarding disabled'`. Fix (a write: operator's word):
-> read the bastion's own keys over Teleport (`tsh ssh --proxy <cluster> root@<bastion> 'cat /etc/ssh/ssh_host_{ed25519,ecdsa,rsa}_key.pub'`),
-> compare `ssh-keygen -lf` fingerprints with a box whose tunnel works, then on the SMC back up `/root/.ssh/known_hosts`, `ssh-keygen -R <bastion ip>`,
-> append those keys as `<ip> <type> <key>`, `systemctl restart autossh-teleport-openssh`, and re-run `backdoor-watch.sh`. Never `ssh-keyscan` blind.
-> Fleet sweep in one bastion read: `ss -tln | grep -oE '127\.0\.0\.1:6[0-9]{4}'` on cw-teleport01, compared with `50000 + site_eclipse_siteid` per box.
+> Diagnose: `journalctl -u autossh-teleport-openssh -n 40 | grep -E 'IDENTIFICATION|Offending|forwarding disabled'`. Fix (a write: operator's word): read the bastion's own keys over Teleport (`tsh ssh
+> --proxy <cluster> root@<bastion> 'cat /etc/ssh/ssh_host_{ed25519,ecdsa,rsa}_key.pub'`), compare `ssh-keygen -lf` fingerprints with a box whose tunnel works, then on the SMC back up
+> `/root/.ssh/known_hosts`, `ssh-keygen -R <bastion ip>`, append those keys as `<ip> <type> <key>`, `systemctl restart autossh-teleport-openssh`, and re-run `backdoor-watch.sh`. Never `ssh-keyscan`
+> blind. Fleet sweep in one bastion read: `ss -tln | grep -oE '127\.0\.0\.1:6[0-9]{4}'` on cw-teleport01, compared with `50000 + site_eclipse_siteid` per box.
 >
-> **`backdoor-watch.sh` misses a site ID kept in group_vars.** It reads only `host_vars/<host>.yml` and prints `No site_eclipse_siteid ... Pass
-> PORT=`. Single-box sites keep it in `group_vars/<site>.yml` (koonibba 10001, gan-gan 10010, indulkana 10006, wandawuy 10009 in nbn_accelerate);
-> read it with `ansible-vars-guard.py read`, then `PORT=<50000+id>`. Script fix pending.
+> **`backdoor-watch.sh` misses a site ID kept in group_vars.** It reads only `host_vars/<host>.yml` and prints `No site_eclipse_siteid ... Pass PORT=`. Single-box sites keep it in
+> `group_vars/<site>.yml` (koonibba 10001, gan-gan 10010, indulkana 10006, wandawuy 10009 in nbn_accelerate); read it with `ansible-vars-guard.py read`, then `PORT=<50000+id>`. Script fix pending.
 >
 > No visual surface.
 
@@ -406,8 +392,8 @@ graylog-api <path>`. `apn-graylog01` is the server host (`tsh ssh`), API on `loc
 
 ### Graylog Backend Path in AWS (`gl.aws.apn.au`) — verified live 2026-10-07
 
-Endpoints by inventory (`graylog.api_url` / fluent-bit `Host`): `rct`, `wh` and `apn` use `gl.aws.apn.au`; `nbn_wh` uses `gl.communitywifi.net.au`, a separate
-Graylog not described here. The path below was read live from AWS account `519076595945` (`ap-southeast-2`) with the `noc-admin` CLI profile.
+Endpoints by inventory (`graylog.api_url` / fluent-bit `Host`): `rct`, `wh` and `apn` use `gl.aws.apn.au`; `nbn_wh` uses `gl.communitywifi.net.au`, a separate Graylog not described here. The path
+below was read live from AWS account `519076595945` (`ap-southeast-2`) with the `noc-admin` CLI profile.
 
 ```text
 SMC fluent-bit  --HTTPS POST /gelf (gzip GELF, X-GELF-Token, tls.verify On)--+
@@ -430,14 +416,14 @@ gl.aws.apn.au  Route 53 alias A (zone aws.apn.au Z06674973R861WSOMMI9V) -> apn-g
 | 40 | path `/gelf`, `/gelf/*` + `X-GELF-Token` header | `apn-graylog-gelf-tg` | 12202 (GELF HTTP input) |
 | default | anything else | fixed response **403** | - |
 
-- **A bare `curl https://gl.aws.apn.au/` returns 403 by design.** That proves TLS and the ALB are up, not that Graylog is broken. To check log shipping
-  end to end, query Graylog (below) or read fluent-bit's own log on a box.
+- **A bare `curl https://gl.aws.apn.au/` returns 403 by design.** That proves TLS and the ALB are up, not that Graylog is broken. To check log shipping end to end, query Graylog (below) or read
+  fluent-bit's own log on a box.
 - **Operators do not use this hostname.** UI and API access is through the Teleport app `apn-graylog` (next section).
-- **The cert is ACM-managed and depends on CAA at `aws.apn.au`.** `apn.au` only allows `letsencrypt.org`. Since 2026-10-07 `aws.apn.au` has
-  `CAA 0 issue "amazon.com"` + `0 issue "letsencrypt.org"`. Removing that record brings back the `CAA_ERROR` that let the cert expire on 2026-09-12
-  (13_known-issues.md, 2026-10-07). The current cert `9ca285a0-...` expires 2027-04-23. ACM renews it automatically while it stays attached and the CAA allows Amazon.
-- The header tokens are static shared secrets, stored in plain text in `roles/smc_graylog/files/apn-fluentbit-config-file` and in the ALB rules.
-  Rotating one means changing both sides at the same time, and the Graylog-side collector config as well (fluent-bit's live config is pulled by the sidecar).
+- **The cert is ACM-managed and depends on CAA at `aws.apn.au`.** `apn.au` only allows `letsencrypt.org`. Since 2026-10-07 `aws.apn.au` has `CAA 0 issue "amazon.com"` + `0 issue "letsencrypt.org"`.
+  Removing that record brings back the `CAA_ERROR` that let the cert expire on 2026-09-12 (13_known-issues.md, 2026-10-07). The current cert `9ca285a0-...` expires 2027-04-23. ACM renews it
+  automatically while it stays attached and the CAA allows Amazon.
+- The header tokens are static shared secrets, stored in plain text in `roles/smc_graylog/files/apn-fluentbit-config-file` and in the ALB rules. Rotating one means changing both sides at the same
+  time, and the Graylog-side collector config as well (fluent-bit's live config is pulled by the sidecar).
 - `noc-admin` cannot read WAF associations (`wafv2:GetWebACLForResource` denied), so whether a WAF sits in front of the ALB is unknown.
 
 ### WAN Uplink Addressing and Default-Route Programming
@@ -446,20 +432,19 @@ Established 2026-07-29 from ansible-wifi source during the APN routing-issue inv
 otherwise. **Not yet confirmed on a live box.**
 
 > **Learned 2026-11-06** · rcp WAN routing confirmed live · VERIFIED_PRIMARY · Source: read-only `ip rule`, `ip route show table main default` and
-> per-table defaults on bidyadanga-smc01 (6 legs) and warburton-smc01 (10 legs plus `vlan621`), smc-resiliency S3 (apn 2026-11-06);
-> ansible-wifi `roles/smc_application/templates/dhclient-enter-hooks.j2` (`add_default_gateway`); portal
-> `/var/www/html/wifi/application/classes/model/wifi/gateway.php` on bidyadanga · Falsifier: an rcp box whose main table holds a single-path
-> default for an `internet` leg, or an `internet` leg without its own table and `from` rule
+> per-table defaults on bidyadanga-smc01 (6 legs) and warburton-smc01 (10 legs plus `vlan621`), smc-resiliency S3 (apn 2026-11-06); ansible-wifi
+> `roles/smc_application/templates/dhclient-enter-hooks.j2` (`add_default_gateway`); portal `/var/www/html/wifi/application/classes/model/wifi/gateway.php` on bidyadanga · Falsifier: an rcp box whose
+> main table holds a single-path default for an `internet` leg, or an `internet` leg without its own table and `from` rule
 > - Each `internet` leg has its own routing table named after the interface, holding its default and subnet, and a rule
->   `from <its address> lookup <it>` (the dhclient hook). The main table holds one multipath default over all legs, written by the portal's
->   `kohana status:gateway` (`gateway.php`: `ip route replace default scope global nexthop via <gw> dev <leg> weight 1 ...`, gateways read
->   from each leg's table). The box's own traffic is spread across legs by flow hash: one ping to an outside host measures one leg.
+> `from <its address> lookup <it>` (the dhclient hook). The main table holds one multipath default over all legs, written by the portal's `kohana status:gateway` (`gateway.php`: `ip route replace
+> default scope global nexthop via <gw> dev <leg> weight 1 ...`, gateways read from each leg's table). The box's own traffic is spread across legs by flow hash: one ping to an outside host measures
+> one leg.
 > - A `starlink`-role leg (`vlan621`, the Sky Muster backup per the inversion above) gets a plain main-table default with metric 100 and no
->   table of its own: warburton's `vlan621` measured 760 ms to the Teleport proxy while its ten `internet` (Starlink) legs measured 60 to 68 ms.
+> table of its own: warburton's `vlan621` measured 760 ms to the Teleport proxy while its ten `internet` (Starlink) legs measured 60 to 68 ms.
 > - The hook deletes only the rule for the new address, so rules for old addresses pile up (warburton: `from 206.214.239.194 lookup vlan528`,
->   address no longer on the box).
+> address no longer on the box).
 > - `scripts/probes/smc_link_health.sh` measures every leg since 2026-11-06 (each from its own address; no-table legs bound to the device; stale
->   rules reported).
+> rules reported).
 >
 > ```sh
 > # roles/smc_application/templates/dhclient-enter-hooks.j2 (ansible-wifi)
@@ -580,14 +565,13 @@ Consequences worth knowing before diagnosing any WAN routing question:
 - **`interfacecheckv2.sh` does not delete routes.** It pings `8.8.8.8` (`-c 4 -W 3`) per interface and on failure runs `systemctl restart dhclient@<iface>.service`, writing
   `my_node_interfacecheck_success{device="…"} 0`. Route disappearance is second-order. That series is a usable per-interface failure-onset history without box access (`mcp-grafana-apn` for
   rcp/rct/wh).
-- **What the WAN-side equipment can tell the SMC about its site (researched 2026-10-22 for smc-resiliency's site fingerprint, decision 20261022_1426).** A Starlink dish answers a
-  local gRPC interface at `192.168.100.1:9200` (`SpaceX.API.Device.Device/Handle`, request `get_location`) with latitude, longitude and altitude, **only when "allow access on local network" is
-  on** in the Starlink app (Settings, Advanced, Debug Data); otherwise the location comes back empty. Unofficial and undocumented by SpaceX (community tools and a Teltonika forum report,
-  `VERIFIED_SECONDARY`; untested on the fleet; the SMC images carry no `grpcurl`). Starlink's Enterprise Telemetry API is behind account-manager access; a third-party integration lists the
-  terminal location as an H3 cell (`UNVERIFIED`). The nbn Sky Muster (Plus) NTD has no documented local status page or API (nbn and provider user guides searched 2026-10-22, negative finding),
-  and the gateway beyond it is the provider's, so it does not tell sites apart. Sources: community.teltonika.lt/t/grpcurl-stralink-location/16381;
-  starlink.com/au/support/article/2a140927-d1e3-de25-9a73-71e1410a76e9; docs.opsramp.com/integrations/saas-applications/starlink/;
-  nbnco.com.au/content/dam/nbn/documents/support/satellite/sky-muster-user-guide.pdf.
+- **What the WAN-side equipment can tell the SMC about its site (researched 2026-10-22 for smc-resiliency's site fingerprint, decision 20261022_1426).** A Starlink dish answers a local gRPC interface
+  at `192.168.100.1:9200` (`SpaceX.API.Device.Device/Handle`, request `get_location`) with latitude, longitude and altitude, **only when "allow access on local network" is on** in the Starlink app
+  (Settings, Advanced, Debug Data); otherwise the location comes back empty. Unofficial and undocumented by SpaceX (community tools and a Teltonika forum report, `VERIFIED_SECONDARY`; untested on the
+  fleet; the SMC images carry no `grpcurl`). Starlink's Enterprise Telemetry API is behind account-manager access; a third-party integration lists the terminal location as an H3 cell (`UNVERIFIED`).
+  The nbn Sky Muster (Plus) NTD has no documented local status page or API (nbn and provider user guides searched 2026-10-22, negative finding), and the gateway beyond it is the provider's, so it does
+  not tell sites apart. Sources: community.teltonika.lt/t/grpcurl-stralink-location/16381; starlink.com/au/support/article/2a140927-d1e3-de25-9a73-71e1410a76e9;
+  docs.opsramp.com/integrations/saas-applications/starlink/; nbnco.com.au/content/dam/nbn/documents/support/satellite/sky-muster-user-guide.pdf.
 - **`192.168.100.0/24` is the modem's own DHCP scope**, not an SMC address range. Both `roles/smc_network/files/dhclient.conf` and `dhclient-starlink.conf` carry `reject 192.168.100.0/24;` with the
   comments "nbn modem dhcp scope" / "starlink modem dhcp scope". On a primary uplink this is the **Starlink dish management address** (Starlink's standard `192.168.100.1`). Seeing ARP from it on a WAN
   VLAN means the dish's LAN side shares that broadcast domain — the dish is not in a clean bypass state, a real finding worth chasing — but **live-verified 2026-07-29 not to be the cause of "lease
@@ -700,10 +684,10 @@ This pair found Pandanus Park/Umoona/Beagle Bay's `vlan621` backup circuit provi
 Island's `starlink01`/`starlink02` topology block is applied even at sites with no backup circuit ever ordered — see `13_known-issues.md`. Source: `local-knowledge-ansible/ansible-wifi/
 issues/apn/routing-issue/docs/starlink-backup-no-lease-l2-investigation-20260730_1400.md`.
 
-**Recurrence, 2026-10-13 (UNC scheduled uplink check, `VERIFIED_PRIMARY`):** umoona's `starlink01` (`vlan621`) reached nothing on consecutive 15-minute checks from
-23:28 AEDT (pings to 8.8.8.8 and 1.1.1.1 and a DNS query, each sent out of that uplink), while its four internet uplinks reached everything; UNC raised `uplink_down`
-for it. The 2026-07-30 switch-side fix above has not held at umoona, or the backup has gone dark again; the cause is not yet read (try the RX counter and sibling-VLAN
-tests first). The check costs one SSH session per SMC: 15 to 19 s for four or five uplinks, about 22 s for two SMCs checked in parallel.
+**Recurrence, 2026-10-13 (UNC scheduled uplink check, `VERIFIED_PRIMARY`):** umoona's `starlink01` (`vlan621`) reached nothing on consecutive 15-minute checks from 23:28 AEDT (pings to 8.8.8.8 and
+1.1.1.1 and a DNS query, each sent out of that uplink), while its four internet uplinks reached everything; UNC raised `uplink_down` for it. The 2026-07-30 switch-side fix above has not held at
+umoona, or the backup has gone dark again; the cause is not yet read (try the RX counter and sibling-VLAN tests first). The check costs one SSH session per SMC: 15 to 19 s for four or five uplinks,
+about 22 s for two SMCs checked in parallel.
 
 ### Local (LAN) Traffic
 
@@ -720,8 +704,8 @@ MQTT devices → mosquitto (IoT telemetry)
 
 ### rct Site Addressing (ansible-wifi vs the Mk3 diagram)
 
-VERIFIED-CODE 2026-10-07: `inventories/rct/topology_vars/<site>.yml` `layer3.links`, identical in 319 of 325 files (the six others are warehouse, noc,
-malik, generic and similar test entries). Compared with the Mk3 connection diagram v0.5 (skill-mikrotik `references/mk3-connection-diagram-v0.5.pdf`).
+VERIFIED-CODE 2026-10-07: `inventories/rct/topology_vars/<site>.yml` `layer3.links`, identical in 319 of 325 files (the six others are warehouse, noc, malik, generic and similar test entries).
+Compared with the Mk3 connection diagram v0.5 (skill-mikrotik `references/mk3-connection-diagram-v0.5.pdf`).
 
 | Link       | SMC interface                | SMC address                         | DHCP (ansible)                          | Diagram says                          |
 | ---------- | ---------------------------- | ----------------------------------- | --------------------------------------- | ------------------------------------- |
@@ -737,20 +721,18 @@ malik, generic and similar test entries). Compared with the Mk3 connection diagr
 
 VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyonga and glen-hill `wh`, Teleport apn):
 
-- `bridge_500` holds both addresses live, `10.255.0.1/24` and `192.168.5.100/24`. In topology_vars this is `layer3.links.management.subnets: [10.255.0.0/24, 192.168.5.0/24]` with addresses
-  `[+1, +100]`, paired by position. Every `rct` (319), `wh` (28) and `nbn_wh` (3) topology file carries this pair; no x86 file does. `192.168.5.100` is the gateway kept for the rct site ATA at
+- `bridge_500` holds both addresses live, `10.255.0.1/24` and `192.168.5.100/24`. In topology_vars this is `layer3.links.management.subnets: [10.255.0.0/24, 192.168.5.0/24]` with addresses `[+1,
+  +100]`, paired by position. Every `rct` (319), `wh` (28) and `nbn_wh` (3) topology file carries this pair; no x86 file does. `192.168.5.100` is the gateway kept for the rct site ATA at
   `192.168.5.253` (`17_site-ata-dallas-delta.md`).
 - topology_vars defines the same four site VLANs on every Pi site checked: 500 management, 501 public, 521 nbn_modem, 522 internet02.
 - All of them ride the Pi's one wired port, `eth0` (`07_hardware-overlay.md`, Raspberry Pi SMC identity).
 
 > **Learned 2026-10-20** · Pi SMC uplinks (`rct`) · VERIFIED-OBSERVED 2026-10-20 on akwalirrumanja, adjamarragu, alamirra, alice-well and
-> alkngarrija (Teleport apn, read-only from apn-unc01; arrkapa did not answer) · Source: unified-network-controller
-> `wc-local/scripts/smc/uplink_provider.py` `read` (commit 03e4a8e) · Falsifier: a Pi site whose default route leaves on vlan521 or vlan522
-> The internet leaves on `eth0` untagged: it holds the default route (`10.181.x.x/30` DHCP from the switch's untagged VLAN 521, the Sky Muster
-> NTD on the switch's ether2) and `curl --interface eth0 https://ipinfo.io` answers an `AS38172 IPSTAR Australia` address (119.12.x.x).
-> `vlan521` (`192.168.100.50/24`) only reaches the satellite modem's own subnet: `curl --interface vlan521` fails at once (rc 7, no route out).
-> `vlan522` (internet02) has no address (rc 28). A reader that picks uplinks by a role (Nautobot's Internet role on vlan521/vlan522, since eth0
-> is also the switch trunk) misses the real one; read the interface carrying the default route as well:
+> alkngarrija (Teleport apn, read-only from apn-unc01; arrkapa did not answer) · Source: unified-network-controller `wc-local/scripts/smc/uplink_provider.py` `read` (commit 03e4a8e) · Falsifier: a Pi
+> site whose default route leaves on vlan521 or vlan522 The internet leaves on `eth0` untagged: it holds the default route (`10.181.x.x/30` DHCP from the switch's untagged VLAN 521, the Sky Muster NTD
+> on the switch's ether2) and `curl --interface eth0 https://ipinfo.io` answers an `AS38172 IPSTAR Australia` address (119.12.x.x). `vlan521` (`192.168.100.50/24`) only reaches the satellite modem's
+> own subnet: `curl --interface vlan521` fails at once (rc 7, no route out). `vlan522` (internet02) has no address (rc 28). A reader that picks uplinks by a role (Nautobot's Internet role on
+> vlan521/vlan522, since eth0 is also the switch trunk) misses the real one; read the interface carrying the default route as well:
 >
 > ```python
 > # uplink_provider.read (03e4a8e): the listed uplinks, then the default route's interface when it is not one of them
@@ -763,12 +745,10 @@ VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyon
 > No visual surface.
 
 > **Learned 2026-10-20 (b)** · Pi SMC uplinks in an inventory (`rct`) · VERIFIED-OBSERVED on akwalirrumanja (Circuits dry run on apn-unc01,
-> 16:24) · Source: unified-network-controller `wc-local/scripts/smc/uplink_sites.py` `draft_text`, `wc-local/scripts/smc/smc_uplink_circuits.py`
-> `circuit_plan` (commits 5f02e18, 3f3d847) · Falsifier: a Pi site whose eth0 is not the switch trunk
-> A Pi's `eth0` is both the trunk to the site switch (tagged VLANs, so an inventory gives it a trunk role) and the internet (untagged). An uplink
-> Circuit therefore sits on `eth0` named by interface, not by label (the port keeps the operator's `Port 1`), with its NTD on the switch port
-> that carries the untagged VLAN (the Sky Muster NTD on ether2); the trunk counts as the uplink only on that path (named interface, NTD on
-> another device):
+> 16:24) · Source: unified-network-controller `wc-local/scripts/smc/uplink_sites.py` `draft_text`, `wc-local/scripts/smc/smc_uplink_circuits.py` `circuit_plan` (commits 5f02e18, 3f3d847) · Falsifier:
+> a Pi site whose eth0 is not the switch trunk A Pi's `eth0` is both the trunk to the site switch (tagged VLANs, so an inventory gives it a trunk role) and the internet (untagged). An uplink Circuit
+> therefore sits on `eth0` named by interface, not by label (the port keeps the operator's `Port 1`), with its NTD on the switch port that carries the untagged VLAN (the Sky Muster NTD on ether2); the
+> trunk counts as the uplink only on that path (named interface, NTD on another device):
 >
 > ```python
 > # smc_uplink_circuits.circuit_plan (3f3d847)
@@ -780,12 +760,11 @@ VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyon
 > Screenshot pending: the akwalirrumanja Circuit page, after the operator approves its Circuits stage.
 
 > **Learned 2026-10-20 (c)** · OpenSSH through the Teleport ProxyCommand (`*.teleport.<domain>`), Linux and macOS · VERIFIED-OBSERVED on
-> apn-unc01 (`ps -eo pid,ppid,pgid,sid` during a collector cycle: forwards with parent 1 and a session of their own; `tsh proxy ssh` in the
-> caller's session) and reproduced with `ProxyCommand=sleep` · Source: unified-network-controller `src/unc/drivers/transports/process.py`,
-> `wc-local/scripts/collector/batch_push_devices.py` `_close_on_term` (commits 3efcb27, 36fa18e) · Falsifier: an ssh release whose `-f` keeps the session
-> `ssh` starts `tsh proxy ssh` as its own child. Killing `ssh` (a `subprocess.run` timeout) leaves that proxy running for minutes; end the
-> process group instead. `ssh -f -N -L` forwards detach into a session of their own once established, so no group kill reaches them: the
-> program that opened them must close each by name (`pkill -f -- "-L <port:ip:port> "`), also on SIGTERM:
+> apn-unc01 (`ps -eo pid,ppid,pgid,sid` during a collector cycle: forwards with parent 1 and a session of their own; `tsh proxy ssh` in the caller's session) and reproduced with `ProxyCommand=sleep` ·
+> Source: unified-network-controller `src/unc/drivers/transports/process.py`, `wc-local/scripts/collector/batch_push_devices.py` `_close_on_term` (commits 3efcb27, 36fa18e) · Falsifier: an ssh release
+> whose `-f` keeps the session `ssh` starts `tsh proxy ssh` as its own child. Killing `ssh` (a `subprocess.run` timeout) leaves that proxy running for minutes; end the process group instead. `ssh -f
+> -N -L` forwards detach into a session of their own once established, so no group kill reaches them: the program that opened them must close each by name (`pkill -f -- "-L <port:ip:port> "`), also on
+> SIGTERM:
 >
 > ```python
 > # batch_push_devices (36fa18e): forwards are closed by name, also when the caller's time limit sends SIGTERM
@@ -797,12 +776,10 @@ VERIFIED-OBSERVED 2026-10-08 on the boxes (20-mile and adjamarragu `rct`, areyon
 > No visual surface.
 
 > **Learned 2026-10-22** · autossh backdoor (`50000 + site_eclipse_siteid` on `apn-teleport01` / `cw-teleport01`) · VERIFIED-OBSERVED
-> (read-only sessions from the operator's Mac, ansible-wifi PHP CVE assessment) · Source: skill-smc `scripts/access/backdoor_exec.sh` (this commit) ·
-> Falsifier: a listening backdoor port that always reaches the box its siteid names
-> A listening backdoor port does not prove the box is up: `family-friendly-smc01`'s 50501 answered as `nocprov-smc01`, a box in no inventory,
-> so `backdoor-watch.sh` reported UP for a box that was not reached. Read `hostname` before attributing anything to the site. Separately, both
-> nbn_wh boxes ran `teleport` (`systemctl is-active` = active) while the cluster held no reverse tunnel for them (`no node reverse tunnel ...
-> found`); the backdoor reached both. Key login from the bastion is refused (`publickey,password`), so the fleet root password is needed:
+> (read-only sessions from the operator's Mac, ansible-wifi PHP CVE assessment) · Source: skill-smc `scripts/access/backdoor_exec.sh` (this commit) · Falsifier: a listening backdoor port that always
+> reaches the box its siteid names A listening backdoor port does not prove the box is up: `family-friendly-smc01`'s 50501 answered as `nocprov-smc01`, a box in no inventory, so `backdoor-watch.sh`
+> reported UP for a box that was not reached. Read `hostname` before attributing anything to the site. Separately, both nbn_wh boxes ran `teleport` (`systemctl is-active` = active) while the cluster
+> held no reverse tunnel for them (`no node reverse tunnel ... found`); the backdoor reached both. Key login from the bastion is refused (`publickey,password`), so the fleet root password is needed:
 >
 > ```bash
 > # backdoor_exec.sh: the credential goes from KeePassXC to sshpass by environment only; hostname is checked before any command runs
@@ -844,11 +821,10 @@ lsof -nP -iTCP:63000 -sTCP:LISTEN   # nbn cluster
 lsof -nP -iTCP:53000 -sTCP:LISTEN   # apn cluster
 ```
 
-**Setup** (from the retired Claude Code install doc, config location verified 2026-10-07). Both entries run one binary, built from
-`/Volumes/Data/_ai/_mcp/mcp_stuff/mcp-grafana` (`go build -o dist/mcp-grafana ./cmd/mcp-grafana`) and copied to `/Volumes/Data/_ai/_mcp/mcp-working-cache/mcp-grafana/mcp-grafana`.
-They are global MCP servers in `~/.claude.json` `mcpServers`, not `~/.claude/settings.json`, each with `GRAFANA_URL` as in the table and a `GRAFANA_SERVICE_ACCOUNT_TOKEN`.
-Smoke test: `query_prometheus` for `node_memory_MemAvailable_bytes`. SSH to an SMC uses no MCP at all: `tsh ssh root@<host>` directly, after the operator has run `tsh login`
-against the right cluster.
+**Setup** (from the retired Claude Code install doc, config location verified 2026-10-07). Both entries run one binary, built from `/Volumes/Data/_ai/_mcp/mcp_stuff/mcp-grafana` (`go build -o
+dist/mcp-grafana ./cmd/mcp-grafana`) and copied to `/Volumes/Data/_ai/_mcp/mcp-working-cache/mcp-grafana/mcp-grafana`. They are global MCP servers in `~/.claude.json` `mcpServers`, not
+`~/.claude/settings.json`, each with `GRAFANA_URL` as in the table and a `GRAFANA_SERVICE_ACCOUNT_TOKEN`. Smoke test: `query_prometheus` for `node_memory_MemAvailable_bytes`. SSH to an SMC uses no MCP
+at all: `tsh ssh root@<host>` directly, after the operator has run `tsh login` against the right cluster.
 
 **Dashboard inventory (confirmed live 2026-08-03).** The two instances are not mirrors — `mcp-grafana-apn` has 20 dashboards vs 9 on `mcp-grafana-nbn`. Both share a common "smc"-tagged core (Alerts,
 Heatmaps, Disk Wear and Tear, Internet Speed Analysis, SMC Disk Life Time, SMC Home, SMC Network, SMC System, Speedtest Exporter). `mcp-grafana-apn` additionally carries dashboards with no NBN
@@ -874,11 +850,9 @@ RISE dashboards exist **only** on `mcp-grafana-apn` because RISE is deployed to 
 non-RISE) and the NBN Accelerate cluster (`nbn_accelerate`/`nbn_wh`) run no RISE metrics at all, which is why they're absent from `mcp-grafana-nbn`.
 
 > **Learned 2026-11-06** · bringing up the APN Grafana tunnel · VERIFIED_PRIMARY · Source: smc-resiliency session 2026-11-06 (`ss -ltnp` on
-> apn-prometheus01: grafana on 3000, prometheus on 9090; `lsof` on the Mac) · Falsifier: `mcp-grafana-apn` answering with no tunnel, or Grafana
-> on another host or port
-> `mcp-grafana-apn` reaches `http://127.0.0.1:53000`, a Teleport port-forward to Grafana on `apn-prometheus01` (a node in the apn cluster, not a
-> Teleport app): `tsh ssh -N -L 53000:localhost:3000 root@apn-prometheus01` (keep it running; `lsof -nP -iTCP:53000 -sTCP:LISTEN` checks it).
-> `scripts/metrics/smc_prom.py` uses the same URL. The NBN cluster's 63000 forward is not yet recorded.
+> apn-prometheus01: grafana on 3000, prometheus on 9090; `lsof` on the Mac) · Falsifier: `mcp-grafana-apn` answering with no tunnel, or Grafana on another host or port `mcp-grafana-apn` reaches
+> `http://127.0.0.1:53000`, a Teleport port-forward to Grafana on `apn-prometheus01` (a node in the apn cluster, not a Teleport app): `tsh ssh -N -L 53000:localhost:3000 root@apn-prometheus01` (keep
+> it running; `lsof -nP -iTCP:53000 -sTCP:LISTEN` checks it). `scripts/metrics/smc_prom.py` uses the same URL. The NBN cluster's 63000 forward is not yet recorded.
 >
 > Screenshot: not applicable (no visual surface).
 
@@ -937,8 +911,8 @@ curl -s \
 for ad hoc queries rather than creating a second copy.
 
 
-**Graylog API on this version — aggregate counts (verified 2026-10-07):** `/api/search/universal/{absolute,relative}/terms` returns nothing. For
-per-source counts use the scripting API, which is read-only even though it is a POST:
+**Graylog API on this version — aggregate counts (verified 2026-10-07):** `/api/search/universal/{absolute,relative}/terms` returns nothing. For per-source counts use the scripting API, which is
+read-only even though it is a POST:
 
 ```bash
 curl -s --cert "$CERT" --key "$KEY" -u "${TOKEN}:token" -H 'Accept: application/json' \
@@ -948,18 +922,18 @@ curl -s --cert "$CERT" --key "$KEY" -u "${TOKEN}:token" -H 'Accept: application/
        "group_by":[{"field":"source","limit":500}],"metrics":[{"function":"count"},{"function":"max","field":"gl2_receive_timestamp"}]}'
 ```
 
-`_exists_:tp_site` selects SMC-originated messages only. To tell a live gap from a later backfill, compare `timestamp` with `gl2_receive_timestamp`.
-Inline `curl` in a Claude Code Bash call is blocked by the context-mode hook, so put the call in a script file and run that.
+`_exists_:tp_site` selects SMC-originated messages only. To tell a live gap from a later backfill, compare `timestamp` with `gl2_receive_timestamp`. Inline `curl` in a Claude Code Bash call is blocked
+by the context-mode hook, so put the call in a script file and run that.
 
-**fluent-bit and the sidecar treat TLS differently:** fluent-bit `tls.verify On` and sidecar `tls_skip_verify: true`. A bad or expired `gl.aws.apn.au` cert stops
-log shipping while the sidecars still look healthy (13_known-issues.md, 2026-10-07).
+**fluent-bit and the sidecar treat TLS differently:** fluent-bit `tls.verify On` and sidecar `tls_skip_verify: true`. A bad or expired `gl.aws.apn.au` cert stops log shipping while the sidecars still
+look healthy (13_known-issues.md, 2026-10-07).
 
 ---
 
 
 > **Learned 2026-11-05** · Bulk transfers from Teleport hosts to the operator's home line · VERIFIED-OBSERVED (read-only measurements from the operator's Mac and the ansible-apn VM; one approved,
-> reverted BBR route test) · Source: skill-smc `scripts/probes/teleport_path_throughput.sh` (this commit) · Falsifier: a single cubic stream from an AWS Teleport host to that line well above
-> ~1.3 MB/s, or 1400-byte pings to its first hop past the router with no loss
+> reverted BBR route test) · Source: skill-smc `scripts/probes/teleport_path_throughput.sh` (this commit) · Falsifier: a single cubic stream from an AWS Teleport host to that line well above ~1.3
+> MB/s, or 1400-byte pings to its first hop past the router with no loss
 
 **One TCP stream tops out near 1.2 MB/s (~10 Mbit/s); the cause is packet loss on the home access leg, not Teleport, EC2 or the VM.** Found when a v7 PCAP fetch timed out (reference 09).
 
@@ -982,10 +956,11 @@ random loss settles near MSS/RTT × 1.22/√p ≈ 1.3 MB/s. Wi-Fi was clean (-39
 **Work-arounds:** parallel streams (per-site rsync), or BBR on the **sender** (congestion control is the sender's; nothing on the Mac helps). apn-teleport01 runs kernel 6.5.0-1023-aws with `cubic` and
 `fq_codel`; `tcp_bbr` is available (loaded since 2026-11-05, unused). A fleet-wide BBR default is proposed, not decided.
 
-**apn-teleport01 itself (2026-11-05):** proxy, auth and node on one m5.2xlarge (8 vCPU, load ~0.1, ap-southeast-2a, `13.54.242.59`); the node registers as `teleport.apn.au:3022`, so a node session never
-leaves the box. Teleport 13.4.24 (tsh flags a patch: ≥ 13.4.26; operator's tsh 12.4.34). Session recording `mode: node`; exec output is not recorded in bulk (records < 1 KB per session). **Root disk 94%
-(30 GB free):** `/var/lib/teleport/log` 383 GB (`records/` 244 GB, audit events 139 GB), `/var/log/syslog*` 32 GB: no retention. After the v8 fetch deleted its 11 GB staging dir (2026-11-05 17:04): 93%, 39 GB free. A HUP reload on 2026-10-19 left the 2026-08-21 parent process holding 52
-connections (normal drain, long-lived tunnels). cw-teleport01 is an m5.xlarge in ap-southeast-2b on the same kernel.
+**apn-teleport01 itself (2026-11-05):** proxy, auth and node on one m5.2xlarge (8 vCPU, load ~0.1, ap-southeast-2a, `13.54.242.59`); the node registers as `teleport.apn.au:3022`, so a node session
+never leaves the box. Teleport 13.4.24 (tsh flags a patch: ≥ 13.4.26; operator's tsh 12.4.34). Session recording `mode: node`; exec output is not recorded in bulk (records < 1 KB per session). **Root
+disk 94% (30 GB free):** `/var/lib/teleport/log` 383 GB (`records/` 244 GB, audit events 139 GB), `/var/log/syslog*` 32 GB: no retention. After the v8 fetch deleted its 11 GB staging dir (2026-11-05
+17:04): 93%, 39 GB free. A HUP reload on 2026-10-19 left the 2026-08-21 parent process holding 52 connections (normal drain, long-lived tunnels). cw-teleport01 is an m5.xlarge in ap-southeast-2b on
+the same kernel.
 
 ```bash
 # skill-smc scripts/probes/teleport_path_throughput.sh (2026-11-05): loss per flow from the server's own counters, over 4 s

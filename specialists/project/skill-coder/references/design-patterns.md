@@ -1042,7 +1042,8 @@ def team_text(text: str) -> str:
 ```
 
 > **Learned 2026-11-02** · P-47 in practice · VERIFIED_PRIMARY · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/main.yml` · Falsifier: a resumed run that acts on the fresh read
-> A resume does read the facts again, because the run does not know it is resuming until after stage 3; the saved decision then replaces that read. What holds is that the saved decision decides, not that no read happens. Say which of the two a design promises.
+> A resume does read the facts again, because the run does not know it is resuming until after stage 3; the saved decision then replaces that read. What holds is that the saved decision decides, not
+> that no read happens. Say which of the two a design promises.
 
 ### P-48 One write frame for many fields: rebuild it from a read, prove it with a read
 
@@ -1091,7 +1092,8 @@ state = real[-1] if real else runs[-1]
 
 > **Learned 2026-11-02** · design pattern, any language (realised in Ansible and Jinja) · VERIFIED_PRIMARY (`just target-hash` shows a `loop` rewrite leaves the target unchanged) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/templates/spec_actions.j2`, e2f760e · Falsifier: a downstream stage that must still know the sugar form (reusable_candidate)
 
-- **Problem:** a data format gains a convenience (a loop, a default, a shorthand), and every reader of the data must then learn it: numbering, planning, conditions, rollback. The fifth reader gets it wrong.
+- **Problem:** a data format gains a convenience (a loop, a default, a shorthand), and every reader of the data must then learn it: numbering, planning, conditions, rollback. The fifth reader gets it
+  wrong.
 - **Solution:** one small step expands the convenience into the plain form, and every reader takes the plain form only. Expose it as a lazy value, so anything scoped per target stays that target's.
 - **Why it works:** the number of forms a reader meets is one, so a new sugar costs one edit.
 - **Reuse:** a config format with includes and shorthand; a compiler front end; an API that accepts two payload shapes and keeps one inside.
@@ -1103,7 +1105,8 @@ state = real[-1] if real else runs[-1]
 > **Learned 2026-11-02** · design pattern, any language · VERIFIED_PRIMARY (a command action reports its before and after commits with nothing in its spec) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/action_run.yml`, e2f760e · Falsifier: a derived value that disagrees with what ran (reusable_candidate)
 
 - **Problem:** every report needs a field an author must remember to fill, and a forgotten field is silently empty.
-- **Solution:** have the engine find the value from what the change already says. Any absolute path in a command that is a git work tree on the target has its HEAD read before and after; the record shows the commits.
+- **Solution:** have the engine find the value from what the change already says. Any absolute path in a command that is a git work tree on the target has its HEAD read before and after; the record
+  shows the commits.
 - **Why it works:** a field that does not exist cannot be wrong or missing, and old specs gain the report for free.
 - **Reuse:** report the files a job touched from its arguments; infer a dependency from an import; size a resource from what the task reads.
 - **Pitfalls:** bound the search (20 paths here, each one costs a call) and let a failed derivation leave the report blank, never fail the change.
@@ -1120,8 +1123,10 @@ smc_change_git_paths: >-
 
 > **Learned 2026-11-02** · design pattern, any language · VERIFIED_PRIMARY (each check found real faults: unanchored waits added 66 to 79 s per probe) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/lint.sh`, `files/tests/test_spec_pgrep.py`, e2f760e · Falsifier: a fault in the run form that the check passes (reusable_candidate)
 
-- **Problem:** the source a linter sees is not what executes: parts joined into one program use names from another part, shell runs under a different shell from the author's, and shell inside a data file is checked by nobody.
-- **Solution:** give the checker the run form. Lint the joined program, and format each part. Check scripts as the target's shell (`shellcheck -s sh` for dash). Read the data files in a test and assert on the text inside them. A file that cannot be fixed yet goes on a list with its reason, and leaves it when fixed.
+- **Problem:** the source a linter sees is not what executes: parts joined into one program use names from another part, shell runs under a different shell from the author's, and shell inside a data
+  file is checked by nobody.
+- **Solution:** give the checker the run form. Lint the joined program, and format each part. Check scripts as the target's shell (`shellcheck -s sh` for dash). Read the data files in a test and
+  assert on the text inside them. A file that cannot be fixed yet goes on a list with its reason, and leaves it when fixed.
 - **Why it works:** the check meets the same thing the machine meets, so no class of fault hides at the join.
 - **Reuse:** SQL inside migrations, templates checked after rendering, a bundle linted after bundling, config checked after variables are filled in.
 - **Pitfalls:** line numbers in the joined program do not match a part. Keep the frozen list short: a list without reasons becomes a place faults live.
@@ -1140,10 +1145,12 @@ FROZEN = {"<spec>": "<why it stays for now>"}
 > **Learned 2026-11-02** · design pattern, any language · VERIFIED_PRIMARY (the same seam serves the probe and the facts reader; 7 check types added with no engine edit) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/tasks/probe.yml`, `files/facts.py`, e2f760e · Falsifier: a seam that needed a shared library to stay correct (reusable_candidate)
 
 - **Problem:** components in different languages get tied together by shared code or files, so neither can be tested or changed alone, and a target picks up files that need cleaning.
-- **Solution:** pass the program on stdin, its config as JSON in one environment variable, and take one JSON object from stdout. Nothing is installed, nothing is left, and the seam can be printed. See P-09 for joining parts into one program.
+- **Solution:** pass the program on stdin, its config as JSON in one environment variable, and take one JSON object from stdout. Nothing is installed, nothing is left, and the seam can be printed. See
+  P-09 for joining parts into one program.
 - **Why it works:** every language has these three, a failure is visible as text, and a fake on either side is a few lines.
 - **Reuse:** a CI step running a checker on a build host; a database host check; a container probe; a sidecar with no image rebuild.
-- **Pitfalls:** an environment variable is on the process's command view, so it holds no secret, and it shows up in `pgrep -f` matches (hence the anchored patterns). Keep the output one object: a stray `print` breaks the parse. Size limits apply to very large config.
+- **Pitfalls:** an environment variable is on the process's command view, so it holds no secret, and it shows up in `pgrep -f` matches (hence the anchored patterns). Keep the output one object: a
+  stray `print` breaks the parse. Size limits apply to very large config.
 - **Realised in:** Ansible and Python, excerpt below.
 
 ```yaml
@@ -1163,32 +1170,35 @@ FROZEN = {"<spec>": "<why it stays for now>"}
 > **Learned 2026-11-02** · design pattern, any language · VERIFIED_PRIMARY (203 steps: comment edit raised nothing, task edit raised 14, a new helper reported uncovered) · Source: skill-drawio `scripts/flowtrace/`; traceability suspect links (jamb, Jama), snippetdrift · Falsifier: a comment edit raises a finding, or a behaviour edit in a cited symbol raises none (reusable_candidate)
 
 - **Problem:** a document describing code is the best thing to read and the first thing to go stale, and generating it from code loses the why.
-- **Solution:** each claim cites the code it rests on. A lock stores a fingerprint of each cited block with who reviewed it. Any change marks the claim suspect until a person reads the diff and accepts. Code nobody cites is reported too, so the trace runs both ways, and a reader sees a suspect mark in the answer itself.
-- **Why it works:** a machine is good at noticing change and bad at meaning, a person the reverse, so each does its own half. Fingerprinting a symbol's syntax tree keeps false alarms low enough to be believed.
+- **Solution:** each claim cites the code it rests on. A lock stores a fingerprint of each cited block with who reviewed it. Any change marks the claim suspect until a person reads the diff and
+  accepts. Code nobody cites is reported too, so the trace runs both ways, and a reader sees a suspect mark in the answer itself.
+- **Why it works:** a machine is good at noticing change and bad at meaning, a person the reverse, so each does its own half. Fingerprinting a symbol's syntax tree keeps false alarms low enough to be
+  believed.
 - **Reuse:** runbooks, architecture notes, API guides, compliance evidence, an agent's instructions pointing at code.
-- **Pitfalls:** a first baseline stamped in bulk proves nothing: an agent review of smc_change's 203 stamped steps found 94 with a wrong or stale claim and 98 branches hidden in prose, so review before you trust a baseline, and record who reviewed: a stamp saying "full review" over agent text applied by script claims more than happened, and a script applying review text pasted one reviewer's to-do note into a step. A pass proves someone looked, not that the words are right. Editing the text must not clear a flag, or the flag means nothing. Whole-file citations over-flag: cite a symbol.
+- **Pitfalls:** a first baseline stamped in bulk proves nothing: an agent review of smc_change's 203 stamped steps found 94 with a wrong or stale claim and 98 branches hidden in prose, so review
+  before you trust a baseline, and record who reviewed: a stamp saying "full review" over agent text applied by script claims more than happened, and a script applying review text pasted one
+  reviewer's to-do note into a step. A pass proves someone looked, not that the words are right. Editing the text must not clear a flag, or the flag means nothing. Whole-file citations over-flag: cite
+  a symbol.
 - **Realised in:** Python, `scripts/flowtrace/` in skill-drawio; how to adopt it: its `references/charts-and-trace.md`.
 
 ### P-55 State a run can empty: one dict per run, old names read through
 
 > **Learned 2026-11-04** · design pattern, Ansible (any engine whose variables cannot be unset) · VERIFIED_PRIMARY (smc_change chains specs in one
-> ansible-playbook run; 108 writes rewritten, a structural verifier found 0 differences, 124 tests and a real check run pass) · Source: ansible-wifi
-> local-knowledge `roles/smc_change/vars/main.yml`, `tasks/prepare.yml`, `files/tests/test_state_namespace.py` (uncommitted at write time) ·
-> Falsifier: a second spec in the same run reads a fact the first spec set. `reusable_candidate` until a second project uses it.
+> ansible-playbook run; 108 writes rewritten, a structural verifier found 0 differences, 124 tests and a real check run pass) · Source: ansible-wifi local-knowledge `roles/smc_change/vars/main.yml`,
+> `tasks/prepare.yml`, `files/tests/test_state_namespace.py` (uncommitted at write time) · Falsifier: a second spec in the same run reads a fact the first spec set. `reusable_candidate` until a second
+> project uses it.
 
-- **Problem:** a role written for one run per process sets facts freely; running it again in the same process (a chain, a loop of imports) reads the last
-  run's facts, because Ansible has no way to unset a `set_fact` or a register, and `meta: clear_facts` clears only gathered facts.
-- **Solution:** every write goes into one dict (`smc_change_s: "{{ smc_change_s | combine(smc_change_set) }}"`, the old expressions moved verbatim under
-  task `vars: smc_change_set:`), emptied as the first task of each run. Role `vars/main.yml` keeps each old name readable as
-  `old_name: "{{ dict['key'] }}"`, so reads, `is defined` and `| default()` need no edit: a missing key is undefined. A test fails on any bare `set_fact`.
-- **Why it works:** emptying one variable is the only reset Ansible offers, and the read-through keeps the change to the writes alone, which a codemod can
-  make and a parser can prove (same expressions, same other keys, no duplicate keys). Task vars are resolved inside the `set_fact`, so they still see the
-  old values, as the original `set_fact` did.
+- **Problem:** a role written for one run per process sets facts freely; running it again in the same process (a chain, a loop of imports) reads the last run's facts, because Ansible has no way to
+  unset a `set_fact` or a register, and `meta: clear_facts` clears only gathered facts.
+- **Solution:** every write goes into one dict (`smc_change_s: "{{ smc_change_s | combine(smc_change_set) }}"`, the old expressions moved verbatim under task `vars: smc_change_set:`), emptied as the
+  first task of each run. Role `vars/main.yml` keeps each old name readable as `old_name: "{{ dict['key'] }}"`, so reads, `is defined` and `| default()` need no edit: a missing key is undefined. A
+  test fails on any bare `set_fact`.
+- **Why it works:** emptying one variable is the only reset Ansible offers, and the read-through keeps the change to the writes alone, which a codemod can make and a parser can prove (same
+  expressions, same other keys, no duplicate keys). Task vars are resolved inside the `set_fact`, so they still see the old values, as the original `set_fact` did.
 - **Reuse:** any role imported several times in one playbook; per-item state in a loop over includes; a test playbook running a role twice.
-- **Pitfalls:** `run_once` with `combine` copies the first host's dict to all, so state written run-wide after the hosts differ needs its own dict;
-  `hostvars[h].old_name` does not see role vars (read `hostvars[h].dict.key`); `query('varnames')` now lists every read-through name; `default(omit)` inside
-  the merged dict stores the placeholder; a register cannot go into the dict (register under another name and copy it); role vars outrank play vars, so a
-  test that seeded an old name as a play var seeds the dict instead.
+- **Pitfalls:** `run_once` with `combine` copies the first host's dict to all, so state written run-wide after the hosts differ needs its own dict; `hostvars[h].old_name` does not see role vars (read
+  `hostvars[h].dict.key`); `query('varnames')` now lists every read-through name; `default(omit)` inside the merged dict stores the placeholder; a register cannot go into the dict (register under
+  another name and copy it); role vars outrank play vars, so a test that seeded an old name as a play var seeds the dict instead.
 - **Realised in:** Ansible, excerpt below.
 
 ```yaml
@@ -1211,21 +1221,20 @@ smc_change_backup_path: "{{ smc_change_s['backup_path'] }}"
 ### P-56 Trust a model's verdict only after it answers known controls, in words that cannot be read backwards
 
 > **Learned 2026-11-05** · design pattern, any language calling a model for a judgement · VERIFIED_PRIMARY (first oMLX call answered "refuted" for a
-> clear conflict while its reason said they conflict; with unambiguous words and two controls the run passed both and recorded every verdict) · Source:
-> skills_stuff skill-knowledge-curator `scripts/knowledge_curator_lib/verify.py`, `llm.py`, `tests/test_roots_verify.py` (uncommitted at write time) ·
-> Falsifier: a model passes both controls and then inverts verdicts on real items at a rate a labelled set shows. `reusable_candidate` until a second project uses it.
+> clear conflict while its reason said they conflict; with unambiguous words and two controls the run passed both and recorded every verdict) · Source: skills_stuff skill-knowledge-curator
+> `scripts/knowledge_curator_lib/verify.py`, `llm.py`, `tests/test_roots_verify.py` (uncommitted at write time) · Falsifier: a model passes both controls and then inverts verdicts on real items at a
+> rate a labelled set shows. `reusable_candidate` until a second project uses it.
 
-- **Problem:** a model asked to label items can read the label words the other way round ("refuted" = the claim is refuted, or the conflict is), fail
-  silently, or return prose; a run that trusts it can clear real findings in bulk.
-- **Solution:** (1) verdict words that name the outcome itself (`conflict`, `not-conflict`, `uncertain`), refusing the ambiguous one in the input schema;
-  (2) every run first answers fixed control items with known answers and stops before recording anything if one is wrong; (3) a negative verdict must quote
-  words of the item's own evidence or it is downgraded; (4) any failed call or off-vocabulary word is recorded as the safe answer (`uncertain`), never the
-  convenient one; (5) the verdict is a proposal a person confirms in bulk, reversibly.
-- **Why it works:** the controls catch a model or prompt that inverts the scale at the cost of two calls; the quote rule turns an unverifiable opinion into a
-  checkable citation; the safe default means an outage costs review time, not missed findings.
+- **Problem:** a model asked to label items can read the label words the other way round ("refuted" = the claim is refuted, or the conflict is), fail silently, or return prose; a run that trusts it
+  can clear real findings in bulk.
+- **Solution:** (1) verdict words that name the outcome itself (`conflict`, `not-conflict`, `uncertain`), refusing the ambiguous one in the input schema; (2) every run first answers fixed control
+  items with known answers and stops before recording anything if one is wrong; (3) a negative verdict must quote words of the item's own evidence or it is downgraded; (4) any failed call or
+  off-vocabulary word is recorded as the safe answer (`uncertain`), never the convenient one; (5) the verdict is a proposal a person confirms in bulk, reversibly.
+- **Why it works:** the controls catch a model or prompt that inverts the scale at the cost of two calls; the quote rule turns an unverifiable opinion into a checkable citation; the safe default means
+  an outage costs review time, not missed findings.
 - **Reuse:** any LLM judge, classifier or verifier over records: duplicate detection, ticket triage, log labelling, document checks.
-- **Pitfalls:** controls prove the scale, not accuracy on hard items (measure that on a labelled set); keep controls out of the scored set; a fallback that
-  returns "no problem" on an exception (seen in an outside report) hides every error.
+- **Pitfalls:** controls prove the scale, not accuracy on hard items (measure that on a labelled set); keep controls out of the scored set; a fallback that returns "no problem" on an exception (seen
+  in an outside report) hides every error.
 - **Realised in:** Python, excerpt below.
 
 ```python
@@ -1243,18 +1252,16 @@ except llm.ModelError as err:
 
 > **Learned 2026-11-05** · design pattern, any language · VERIFIED_PRIMARY (MCP pilot, 96 open conflicts: chaining merged two causes into one 57-member
 > group; primary-key grouping gave 42 on one cause and 6 on another, 23 of 24 judged-real conflicts in the first) · Source: skills_stuff skill-knowledge-curator
-> `scripts/knowledge_curator_lib/roots.py` (uncommitted at write time) · Falsifier: a corpus where one item's top key is a generic term that pulls unrelated
-> items together. `reusable_candidate` until a second project uses it.
+> `scripts/knowledge_curator_lib/roots.py` (uncommitted at write time) · Falsifier: a corpus where one item's top key is a generic term that pulls unrelated items together. `reusable_candidate` until
+> a second project uses it.
 
-- **Problem:** grouping findings by shared tokens with union-find (connected components) chains: one item naming two causes merges both groups, and the
-  largest group swallows its neighbours.
-- **Solution:** give each item one home, its key with the widest spread among items (ties to the shorter key), after dropping keys that are too common or only
-  name a container (a document, a folder). Items with no key stand alone; a weaker link (a shared record) is reported as a hint, never a join.
-- **Why it works:** an item's most-shared key is the cause it has in common with the most others, so it goes where a reviewer would put it, and no single
-  bridging item can merge two groups.
+- **Problem:** grouping findings by shared tokens with union-find (connected components) chains: one item naming two causes merges both groups, and the largest group swallows its neighbours.
+- **Solution:** give each item one home, its key with the widest spread among items (ties to the shorter key), after dropping keys that are too common or only name a container (a document, a folder).
+  Items with no key stand alone; a weaker link (a shared record) is reported as a hint, never a join.
+- **Why it works:** an item's most-shared key is the cause it has in common with the most others, so it goes where a reviewer would put it, and no single bridging item can merge two groups.
 - **Reuse:** clustering alerts by host or service, incidents by component, review findings by file or identifier, duplicate tickets.
-- **Pitfalls:** a frequency cap that is a share of a tiny corpus drops every key (keep a floor); measure purity by reading the members, since a joiner
-  through a shared record was wrong 6 times in 8 on the pilot.
+- **Pitfalls:** a frequency cap that is a share of a tiny corpus drops every key (keep a floor); measure purity by reading the members, since a joiner through a shared record was wrong 6 times in 8 on
+  the pilot.
 - **Realised in:** Python, excerpt below.
 
 ```python
@@ -1266,24 +1273,23 @@ home = {cid: max(ts, key=lambda t: (spread[t], -len(t), t)) for cid, ts in keys.
 ### P-58 Hold changes while blind; recover alone only by trials that undo themselves
 
 > **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (eight lab cases on a VM: a change sent during an outage held and judged
-> later; a box cut off by an approved bad change back on its own with no fix sent; a trial during a real outage undone; a plain outage never trialled)
-> · Source: apn smc-resiliency `spike/onbox/smcbox/hold.py`, `trial.py`, `siteops.py` (commit 1dc80235; S2 report section 7) · Falsifier: a device that
-> keeps a change it could not judge, or one whose own recovery attempt leaves it worse than before. `reusable_candidate` until a second project uses it.
+> later; a box cut off by an approved bad change back on its own with no fix sent; a trial during a real outage undone; a plain outage never trialled) · Source: apn smc-resiliency
+> `spike/onbox/smcbox/hold.py`, `trial.py`, `siteops.py` (commit 1dc80235; S2 report section 7) · Falsifier: a device that keeps a change it could not judge, or one whose own recovery attempt leaves
+> it worse than before. `reusable_candidate` until a second project uses it.
 
-- **Problem:** a remote device judges a change by whether it can still reach home. While the link is down it cannot tell its own bad change from an
-  outage, so it either keeps a bad change unjudged or rolls back good ones; and once a bad change cuts it off, no fix can be delivered.
-- **Solution:** (1) record reach just before a change; a change that arrives while reach fails is **held**, not applied, until reach passes, except a
-  return to the last known-good content (recognised by a hash of its values, never a label) or an explicitly approved override. (2) Keep the held item
-  **off** the slot that holds the known-good version. (3) After a long loss of reach under a version that is not known-good, try the known-good version
-  as a **trial** judged on reach alone: keep it if reach returns, otherwise put back what was there; at most one trial per wait. (4) Version numbers
+- **Problem:** a remote device judges a change by whether it can still reach home. While the link is down it cannot tell its own bad change from an outage, so it either keeps a bad change unjudged or
+  rolls back good ones; and once a bad change cuts it off, no fix can be delivered.
+- **Solution:** (1) record reach just before a change; a change that arrives while reach fails is **held**, not applied, until reach passes, except a return to the last known-good content (recognised
+  by a hash of its values, never a label) or an explicitly approved override. (2) Keep the held item **off** the slot that holds the known-good version. (3) After a long loss of reach under a version
+  that is not known-good, try the known-good version as a **trial** judged on reach alone: keep it if reach returns, otherwise put back what was there; at most one trial per wait. (4) Version numbers
   never go down and the version left behind is rejected, so it cannot be replayed.
-- **Why it works:** every step the device takes alone is reversible, so it never needs to know whether it is blind or broken; an outage costs one short
-  trial per wait, a cut-off is undone without help, and a hold makes "applied but never judged" impossible.
-- **Reuse:** remote config pushes to routers or CPE over a single uplink, kiosk or vehicle software over intermittent links, a service that changes its
-  own network or credentials, feature flags judged by an external health probe.
-- **Pitfalls:** a held item written to the spare slot overwrote the known-good one and blocked the trial (move held items to separate storage); never
-  start the wait from a central fault (the control plane down for the whole fleet would make every device trial at once): require local evidence and
-  add jitter; a judge that waits on a service restarted by the change (a time daemon) fails until it resyncs.
+- **Why it works:** every step the device takes alone is reversible, so it never needs to know whether it is blind or broken; an outage costs one short trial per wait, a cut-off is undone without
+  help, and a hold makes "applied but never judged" impossible.
+- **Reuse:** remote config pushes to routers or CPE over a single uplink, kiosk or vehicle software over intermittent links, a service that changes its own network or credentials, feature flags judged
+  by an external health probe.
+- **Pitfalls:** a held item written to the spare slot overwrote the known-good one and blocked the trial (move held items to separate storage); never start the wait from a central fault (the control
+  plane down for the whole fleet would make every device trial at once): require local evidence and add jitter; a judge that waits on a service restarted by the change (a time daemon) fails until it
+  resyncs.
 - **Realised in:** Python, excerpt below. Related: P-15 (dead-man revert timer), P-22 (fallback chain skipping rejected versions), P-28.
 
 ```python
@@ -1308,16 +1314,15 @@ def trial_due(state, other_hash, now, wait_s) -> str:
 
 
 > **Learned 2026-11-06** · design pattern P-58, second use, any language · VERIFIED_PRIMARY · Source: apn unified-network-controller
-> `wc-local/scripts/alarming/engine.py` `HELD_ON_ERROR`, `HELD_WHILE_RUNNING` (commits d49d2043, 5c563f8b; live on a controller host, alarm runs
-> evaluated mid-collector-run held 4 alarms and cleared 0, where before they sent "Cleared" for uplink alarms that came back 8 minutes later) ·
-> Falsifier: an alarm cleared, with a recovery notice sent, while the input that proves it was unreadable or half written. With this second project the
-> pattern is no longer a `reusable_candidate`.
+> `wc-local/scripts/alarming/engine.py` `HELD_ON_ERROR`, `HELD_WHILE_RUNNING` (commits d49d2043, 5c563f8b; live on a controller host, alarm runs evaluated mid-collector-run held 4 alarms and cleared
+> 0, where before they sent "Cleared" for uplink alarms that came back 8 minutes later) · Falsifier: an alarm cleared, with a recovery notice sent, while the input that proves it was unreadable or
+> half written. With this second project the pattern is no longer a `reusable_candidate`.
 
-- **The same rule on the reading side:** an evaluator that clears what it no longer sees must not clear while blind. When an input could not be read
-  (timeout, reset, bad answer) or is the partial record of a run still in progress, the alarms that input alone proves are **held**, not cleared, and a
-  later good read decides them. Map each input to the classes it proves; never hold everything (a stale-run alarm must still raise).
-- **Pitfall seen:** fixing a crash exposed this. Before, the evaluations that would have cleared wrongly crashed first, so the flap only appeared once
-  they ran to the end. After making a failing job succeed, look at what its success now does.
+- **The same rule on the reading side:** an evaluator that clears what it no longer sees must not clear while blind. When an input could not be read (timeout, reset, bad answer) or is the partial
+  record of a run still in progress, the alarms that input alone proves are **held**, not cleared, and a later good read decides them. Map each input to the classes it proves; never hold everything (a
+  stale-run alarm must still raise).
+- **Pitfall seen:** fixing a crash exposed this. Before, the evaluations that would have cleared wrongly crashed first, so the flap only appeared once they ran to the end. After making a failing job
+  succeed, look at what its success now does.
 
 ```python
 # wc-local/scripts/alarming/engine.py (apn unified-network-controller, 5c563f8b)
@@ -1334,22 +1339,20 @@ for key in sorted(set(active) - set(alarms)):
 ### P-61 One test logic for every target: a contract, adapters, and a profile chosen by what the box reports
 
 > **Learned 2026-11-07** · design pattern, Python · VERIFIED_PRIMARY (the same eight end-to-end cases passed on an arm64 Vagrant VM and an
-> x86 Proxmox VM through different adapters; a read-only probe picked each VM's profile from DMI) · Source: apn smc-resiliency `lab/`
-> (protocol.py, registry.py, adapters/, logic/; 2026-11-07), after unified-network-controller `adapters/protocol.py` and `registry.py` ·
-> Falsifier: a new platform that needs a change in the logic, not only a new adapter or profile. `reusable_candidate` until a second project uses it.
+> x86 Proxmox VM through different adapters; a read-only probe picked each VM's profile from DMI) · Source: apn smc-resiliency `lab/` (protocol.py, registry.py, adapters/, logic/; 2026-11-07), after
+> unified-network-controller `adapters/protocol.py` and `registry.py` · Falsifier: a new platform that needs a change in the logic, not only a new adapter or profile. `reusable_candidate` until a
+> second project uses it.
 
-- **Problem:** a test rig grows one script per platform (a Vagrant driver, a Proxmox driver, a bench-box driver), each repeating the cases;
-  a new hardware model or vendor means copying a script, and physical boxes get no tests at all.
-- **Solution:** a contract module (`Target`, `Profile`, a `Transport` with run and put, a `Power` with reboot and reset); one adapter class
-  per way in (vagrant, ssh, teleport) and per way to restart (guest, hypervisor API, manual for a bench box); a data file of targets and
-  hardware profiles; the logic (cases, a hardware probe) speaks only the contract. A profile is picked by what the box itself reports (DMI
-  vendor and product, or the device-tree model), most specific rule winning, and an unknown model gets "none: qualify it", never a guess.
-- **Why it works:** the cases are the asset and never change per platform; a new model is a data entry, a new access path one class; the
-  probe that checks a lab VM is the same read that qualifies a new physical model.
-- **Reuse elsewhere:** any fleet with several device generations (routers, kiosks, edge boxes); a non-Linux platform (RouterOS) is one more
-  transport and its own probe facts.
-- **Pitfalls:** a hypervisor's disk can look like a physical kind (Parallels shows an ATA SSD), so classify by the DMI vendor first; keep
-  set-up scripts (install, provision) as payloads the logic copies and runs, so they are not standalone tools beside the package.
+- **Problem:** a test rig grows one script per platform (a Vagrant driver, a Proxmox driver, a bench-box driver), each repeating the cases; a new hardware model or vendor means copying a script, and
+  physical boxes get no tests at all.
+- **Solution:** a contract module (`Target`, `Profile`, a `Transport` with run and put, a `Power` with reboot and reset); one adapter class per way in (vagrant, ssh, teleport) and per way to restart
+  (guest, hypervisor API, manual for a bench box); a data file of targets and hardware profiles; the logic (cases, a hardware probe) speaks only the contract. A profile is picked by what the box
+  itself reports (DMI vendor and product, or the device-tree model), most specific rule winning, and an unknown model gets "none: qualify it", never a guess.
+- **Why it works:** the cases are the asset and never change per platform; a new model is a data entry, a new access path one class; the probe that checks a lab VM is the same read that qualifies a
+  new physical model.
+- **Reuse elsewhere:** any fleet with several device generations (routers, kiosks, edge boxes); a non-Linux platform (RouterOS) is one more transport and its own probe facts.
+- **Pitfalls:** a hypervisor's disk can look like a physical kind (Parallels shows an ATA SSD), so classify by the DMI vendor first; keep set-up scripts (install, provision) as payloads the logic
+  copies and runs, so they are not standalone tools beside the package.
 
 ```python
 # lab/registry.py: profile by what the box reports, the most specific match wins
@@ -1363,25 +1366,22 @@ for name, p in doc.get("profiles", {}).items():
 ### P-62 Bind a multi-part answer with one signature over its parts and the request
 
 > **Learned 2026-11-09** · reusable_candidate · VERIFIED_PRIMARY · Source: smc-resiliency `spike/onbox/smcbox/claim.py` `verify_binding`, `lab/standin/binding.py`, `docs/interfaces/unc/schemas/issue-binding.json`, commit f8755a70 · Falsifier: an answer whose every part is signed by one key and bound to the request
-> An answer of several parts, each signed or encrypted on its own, is not authenticated as a whole: a part encrypted to the receiver's public
-> key (anyone can make one), a field outside every signature, or a part from another answer can be swapped in while every single check passes.
+> An answer of several parts, each signed or encrypted on its own, is not authenticated as a whole: a part encrypted to the receiver's public key (anyone can make one), a field outside every
+> signature, or a part from another answer can be swapped in while every single check passes.
 
-**Problem.** A device asks a controller for its identity; the answer holds a signed certificate, a signed configuration, credentials encrypted
-to the device's public recipient and a plain release field. The transport is not trusted.
+**Problem.** A device asks a controller for its identity; the answer holds a signed certificate, a signed configuration, credentials encrypted to the device's public recipient and a plain release
+field. The transport is not trusted.
 
-**Solution.** The issuer signs one more object, the binding: the sha256 of each part's exact string, the release, the receiver's identity
-(CID, production key digest, recipient) and the nonce of the request it answers. The receiver checks the binding first, before any write, and
-refuses the answer on any mismatch or when it is missing.
+**Solution.** The issuer signs one more object, the binding: the sha256 of each part's exact string, the release, the receiver's identity (CID, production key digest, recipient) and the nonce of the
+request it answers. The receiver checks the binding first, before any write, and refuses the answer on any mismatch or when it is missing.
 
-**Why it works.** Every part, and the answer's link to this request and this receiver, sits under one signature from the issuer's key; a
-replay fails the nonce, a swap fails a digest, a misdirected answer fails the identity fields.
+**Why it works.** Every part, and the answer's link to this request and this receiver, sits under one signature from the issuer's key; a replay fails the nonce, a swap fails a digest, a misdirected
+answer fails the identity fields.
 
-**Reuse elsewhere.** Any bundle of separately protected parts: a release manifest with its artefacts, a certificate with its chain and config,
-a job result with its attachments.
+**Reuse elsewhere.** Any bundle of separately protected parts: a release manifest with its artefacts, a certificate with its chain and config, a job result with its attachments.
 
-**Pitfalls.** Digest the exact bytes sent (the base64 string, not the decoded file), or the two ends disagree on encoding. Strip a PEM's
-surrounding whitespace on both sides before hashing it. The receiver needs the nonce it sent, so let the request carry a caller-chosen nonce.
-Keep the parts' own checks: the binding proves origin and combination, not each part's content rules.
+**Pitfalls.** Digest the exact bytes sent (the base64 string, not the decoded file), or the two ends disagree on encoding. Strip a PEM's surrounding whitespace on both sides before hashing it. The
+receiver needs the nonce it sent, so let the request carry a caller-chosen nonce. Keep the parts' own checks: the binding proves origin and combination, not each part's content rules.
 
 ```python
 want = {"cid": own_cid, "production_pub_sha256": _sha(own_pub.strip()), "recipient": recipient.strip(), "request_nonce": nonce,
@@ -1393,25 +1393,18 @@ return doc, [f"binding {k} does not match" for k, v in want.items() if doc.get(k
 ### P-65 One version record, its pins found by pattern
 
 > **Learned 2026-11-10** · any project whose versions are pinned in several files · VERIFIED_PRIMARY (smc-resiliency `versions.toml` and
-> `scripts/check_versions.py` @ 6f45ec65: the first run caught three wrong entries, a changed RAUC version gave five file:line failures; adopted
-> by unified-network-controller the same day, `scripts/checks/version_pins.py` @ 4202687f) · Source: smc-resiliency `scripts/check_versions.py` @ 6f45ec65 · Falsifier: a pin
-> copy the patterns miss.
-> `verified_reusable` (two projects).
+> `scripts/check_versions.py` @ 6f45ec65: the first run caught three wrong entries, a changed RAUC version gave five file:line failures; adopted by unified-network-controller the same day,
+> `scripts/checks/version_pins.py` @ 4202687f) · Source: smc-resiliency `scripts/check_versions.py` @ 6f45ec65 · Falsifier: a pin copy the patterns miss. `verified_reusable` (two projects).
 
-Problem:      Versions live where each tool reads them (.mise.toml, requirements, Dockerfiles, scripts, lock files), copies multiply (a tool's
-              version and digest written in three scripts) and nothing ties them together; a bespoke checker per file grows with every pin.
-Solution:     One record (TOML: no implicit typing of version strings) with an entry per pinned thing: `version` and `at = [{files = glob,
-              pattern = regex with one group, min = N}]`; every match must equal the version and appear at least `min` times. `[[complete]]`
-              makes every line of a pin file (mise, requirements) need an entry. An entry that cannot be enforced carries `unpinned = "<why>"`
-              and is listed on every run. Sections by lifecycle: build, lab (each naming the profile it stands in for), firmware, image,
-              contract, and fleet (observed and dated, never enforced). Image and firmware entries may carry a read-only probe a lab command runs
-              on a box. Globs honour exclusions; a file named outright is always read.
-Why it works: Adding a pin, or a new copy of one, needs no code; a missed copy fails as `found 1, needs 2`; the unenforced list keeps a green
-              run from being read as proof of what it cannot check.
-Reuse:        Any repo with tool, image or firmware pins; the image part is the desired-state record a controller reads back from devices.
-Pitfalls:     A regex with no group or two groups matches silently wrong: check one group. A broad exclusion (docs/) hid a named file. Comments
-              that name a version are pins only by text: mark them unpinned.
-Realised in:  Python -> smc-resiliency scripts/check_versions.py (stdlib tomllib) and lab/logic/versions.py (probes); UNC version_pins.py
+Problem: Versions live where each tool reads them (.mise.toml, requirements, Dockerfiles, scripts, lock files), copies multiply (a tool's version and digest written in three scripts) and nothing ties
+them together; a bespoke checker per file grows with every pin. Solution: One record (TOML: no implicit typing of version strings) with an entry per pinned thing: `version` and `at = [{files = glob,
+pattern = regex with one group, min = N}]`; every match must equal the version and appear at least `min` times. `[[complete]]` makes every line of a pin file (mise, requirements) need an entry. An
+entry that cannot be enforced carries `unpinned = "<why>"` and is listed on every run. Sections by lifecycle: build, lab (each naming the profile it stands in for), firmware, image, contract, and
+fleet (observed and dated, never enforced). Image and firmware entries may carry a read-only probe a lab command runs on a box. Globs honour exclusions; a file named outright is always read. Why it
+works: Adding a pin, or a new copy of one, needs no code; a missed copy fails as `found 1, needs 2`; the unenforced list keeps a green run from being read as proof of what it cannot check. Reuse: Any
+repo with tool, image or firmware pins; the image part is the desired-state record a controller reads back from devices. Pitfalls: A regex with no group or two groups matches silently wrong: check one
+group. A broad exclusion (docs/) hid a named file. Comments that name a version are pins only by text: mark them unpinned. Realised in: Python -> smc-resiliency scripts/check_versions.py (stdlib
+tomllib) and lab/logic/versions.py (probes); UNC version_pins.py
 
 ```python
 for f in files(root, loc["files"], exclude):          # a named file ignores exclusions
@@ -1426,24 +1419,18 @@ if found < loc.get("min", 1):
 ### P-66 A localhost redirect for a link scheme a web app strips
 
 > **Learned 2026-11-11** · any web UI that sanitises link schemes (DOMPurify, a Markdown renderer) · VERIFIED_PRIMARY (skill-pad
-> `scripts/pad_link_opener.py` and `pad_tracker.py` @ c931f50: Pad v0.19.2 keeps only http(s), mailto, ftp and tel, web/src/lib/utils/markdown.ts:224;
-> a click in a Pad item opened the file in VS Code, operator 2026-11-11) · Falsifier: a browser that refuses to follow a 302 to a custom scheme.
-> `reusable_candidate` (one project).
+> `scripts/pad_link_opener.py` and `pad_tracker.py` @ c931f50: Pad v0.19.2 keeps only http(s), mailto, ftp and tel, web/src/lib/utils/markdown.ts:224; a click in a Pad item opened the file in VS Code,
+> operator 2026-11-11) · Falsifier: a browser that refuses to follow a 302 to a custom scheme. `reusable_candidate` (one project).
 
-Problem:      A tool's web UI must link to something only a custom scheme opens (vscode://file, an app deep link), and the UI strips
-              that scheme; relative repo links mean nothing on its pages either. Patching the tool means a fork rebuilt on every upgrade.
-Solution:     A tiny service on 127.0.0.1 answers `http://127.0.0.1:<port>/open/<absolute path>?f=<fragment>` with a 302 to the custom
-              URL. The tool keeps the http link (allowed), the click lands on the service, and the browser follows on to the app. The
-              writer that puts links into the tool converts relative links to this form; the exporter that writes the repo file converts
-              them back, so the repo copy stays portable and its link check unchanged.
-Why it works: The UI's allowlist is satisfied by plain http; the custom scheme exists only in the redirect, which the browser handles
-              (with its own "open the app?" prompt). The tool is untouched, so its upgrades need nothing.
-Reuse:        Pad, wiki or issue-tracker pages linking to local files; any app deep link a sanitiser drops.
-Pitfalls:     The browser never sends `#...` to the server: carry the fragment in the query (`?f=L86`) and restore it on export. Resolve
-              symlinks and `..` before the allowed-roots check, and serve no file content, so a hostile page can at most open an editor.
-              Only convert links whose path exists, or a typo becomes a redirect to nothing. New links written into the tool later stay
-              relative unless the conversion runs again (put it beside the export).
-Realised in:  Python -> skill-pad scripts/pad_link_opener.py (stdlib http.server, launchd KeepAlive) and pad_tracker.py `links`
+Problem: A tool's web UI must link to something only a custom scheme opens (vscode://file, an app deep link), and the UI strips that scheme; relative repo links mean nothing on its pages either.
+Patching the tool means a fork rebuilt on every upgrade. Solution: A tiny service on 127.0.0.1 answers `http://127.0.0.1:<port>/open/<absolute path>?f=<fragment>` with a 302 to the custom URL. The
+tool keeps the http link (allowed), the click lands on the service, and the browser follows on to the app. The writer that puts links into the tool converts relative links to this form; the exporter
+that writes the repo file converts them back, so the repo copy stays portable and its link check unchanged. Why it works: The UI's allowlist is satisfied by plain http; the custom scheme exists only
+in the redirect, which the browser handles (with its own "open the app?" prompt). The tool is untouched, so its upgrades need nothing. Reuse: Pad, wiki or issue-tracker pages linking to local files;
+any app deep link a sanitiser drops. Pitfalls: The browser never sends `#...` to the server: carry the fragment in the query (`?f=L86`) and restore it on export. Resolve symlinks and `..` before the
+allowed-roots check, and serve no file content, so a hostile page can at most open an editor. Only convert links whose path exists, or a typo becomes a redirect to nothing. New links written into the
+tool later stay relative unless the conversion runs again (put it beside the export). Realised in: Python -> skill-pad scripts/pad_link_opener.py (stdlib http.server, launchd KeepAlive) and
+pad_tracker.py `links`
 
 ```python
 def target(request_path, roots):                     # pure: tested without a socket
@@ -1461,22 +1448,17 @@ def target(request_path, roots):                     # pure: tested without a so
 ### P-67 Move files and repoint every reference by resolving links, not by matching names
 
 > **Learned 2026-11-11** · any repo moving dated files into subfolders · VERIFIED_PRIMARY (skill-ai-it `scripts/records/history_migrate.py` @ 22047db: 151 files
-> in smc-resiliency and 58 in skill-ai-it moved, 4 reference files repointed, one pre-existing broken link reported, tests in a throwaway git repo) ·
-> Falsifier: a link that resolved before the move and not after, with the verification passing. `reusable_candidate` (one tool, two projects).
+> in smc-resiliency and 58 in skill-ai-it moved, 4 reference files repointed, one pre-existing broken link reported, tests in a throwaway git repo) · Falsifier: a link that resolved before the move
+> and not after, with the verification passing. `reusable_candidate` (one tool, two projects).
 
-Problem:      Files are moved into subfolders (by kind, by year) in a repo where many files link to them, the moved files link to each other and outward
-              with relative paths, and other projects in the same tree hold files with the same names.
-Solution:     Plan the moves as old path -> new path. For every Markdown link in every text file (moved ones included), resolve the target against the
-              file's OLD folder; if the target moved, use its new path; write the link relative to the file's NEW folder. Plain path mentions (no link)
-              are rewritten only when they are unambiguous: `docs/history/<name>` inside the moved project, `<project>/docs/history/<name>` elsewhere.
-              Record each file's broken links before, compare after, fail on any new one. `git mv` keeps history; refuse with uncommitted changes.
-Why it works: Resolution, not name matching, so identical names in other projects are never touched and links that were already broken are not
-              "fixed" into new nonsense; the before/after comparison proves nothing regressed.
-Reuse:        Reorganising docs folders, splitting a flat archive, renaming a project folder in a monorepo.
-Pitfalls:     Skip other tools' memory folders (`.remember/`); a file copied with stale relative links (an index row) shows up as already broken,
-              not as caused by the move; readers that `glob("*.md")` the old folder silently find nothing afterwards, so change them to search both
-              layouts before migrating.
-Realised in:  Python -> skill-ai-it scripts/records/history_migrate.py (stdlib; history_layout.py for the kinds and the index)
+Problem: Files are moved into subfolders (by kind, by year) in a repo where many files link to them, the moved files link to each other and outward with relative paths, and other projects in the same
+tree hold files with the same names. Solution: Plan the moves as old path -> new path. For every Markdown link in every text file (moved ones included), resolve the target against the file's OLD
+folder; if the target moved, use its new path; write the link relative to the file's NEW folder. Plain path mentions (no link) are rewritten only when they are unambiguous: `docs/history/<name>`
+inside the moved project, `<project>/docs/history/<name>` elsewhere. Record each file's broken links before, compare after, fail on any new one. `git mv` keeps history; refuse with uncommitted
+changes. Why it works: Resolution, not name matching, so identical names in other projects are never touched and links that were already broken are not "fixed" into new nonsense; the before/after
+comparison proves nothing regressed. Reuse: Reorganising docs folders, splitting a flat archive, renaming a project folder in a monorepo. Pitfalls: Skip other tools' memory folders (`.remember/`); a
+file copied with stale relative links (an index row) shows up as already broken, not as caused by the move; readers that `glob("*.md")` the old folder silently find nothing afterwards, so change them
+to search both layouts before migrating. Realised in: Python -> skill-ai-it scripts/records/history_migrate.py (stdlib; history_layout.py for the kinds and the index)
 
 ```python
 def fix(m):                                            # one ](target) in a file read at old_dir, now at new_dir
@@ -1491,17 +1473,17 @@ def fix(m):                                            # one ](target) in a file
 ### P-70 Physical map as data, with the consumer named on each slot
 
 > **Learned 2026-11-16** · design pattern, any language · VERIFIED_PRIMARY (a live power cut through the map hit the intended box; tests refuse an outlet recorded for another target or for
-> nothing) · Source: smc-resiliency `lab/registry.py` `strip_outlet`, `lab/targets.toml` `[power_strips.bench-strip]` @ afe4f03b · Falsifier: a wrong box cut while its slot names the right one
-> (the map itself was wrong, which this pattern does not catch: hence the confirmation step).
+> nothing) · Source: smc-resiliency `lab/registry.py` `strip_outlet`, `lab/targets.toml` `[power_strips.bench-strip]` @ afe4f03b · Falsifier: a wrong box cut while its slot names the right one (the
+> map itself was wrong, which this pattern does not catch: hence the confirmation step).
 
-- **Problem:** code acts on a physical slot (an outlet, a switch port, a PDU socket, a relay) by a number the device knows, while people know it by another name, and nothing ties
-  the slot to the thing plugged into it. A typo or a re-cabled box cuts power or traffic to the wrong machine.
-- **Solution:** keep the map as data beside the targets: each slot has the human name, the device's ID, what kind of slot it is, the consumer it `feeds`, and how the mapping was
-  established. A target names its slot by the human name; the binder resolves it and refuses unless the slot's `feeds` names that same target. Empty slots say `feeds = ""`.
+- **Problem:** code acts on a physical slot (an outlet, a switch port, a PDU socket, a relay) by a number the device knows, while people know it by another name, and nothing ties the slot to the thing
+  plugged into it. A typo or a re-cabled box cuts power or traffic to the wrong machine.
+- **Solution:** keep the map as data beside the targets: each slot has the human name, the device's ID, what kind of slot it is, the consumer it `feeds`, and how the mapping was established. A target
+  names its slot by the human name; the binder resolves it and refuses unless the slot's `feeds` names that same target. Empty slots say `feeds = ""`.
 - **Why it works:** two independent records (the target's choice and the slot's consumer) must agree before anything is switched; the map is reviewable in one file and in git.
 - **Reuse:** PDU outlets for lab servers, switch ports a script shuts, GPIO relays, smart plugs in a test rig.
-- **Pitfalls:** the map is only as true as the way it was made: record `mapped` (tapped one at a time, matched by state, confirmed by a planned cut) and confirm an inferred row with
-  one deliberate action before relying on it. Mapping by asking someone to act in order failed once (a slip mid-sequence); one slot per action with its name said each time held.
+- **Pitfalls:** the map is only as true as the way it was made: record `mapped` (tapped one at a time, matched by state, confirmed by a planned cut) and confirm an inferred row with one deliberate
+  action before relying on it. Mapping by asking someone to act in order failed once (a slip mid-sequence); one slot per action with its name said each time held.
 - **Realised in:** Python + TOML, smc-resiliency lab.
 
 ```python
@@ -1520,19 +1502,20 @@ def strip_outlet(doc: dict, name: str, pw: dict) -> tuple[dict, dict]:
 ### P-71 Anchor-guarded, re-runnable patch of a shipped bundle
 
 > **Learned 2026-11-16** · design pattern, any language · VERIFIED_PRIMARY (dry run listed eight anchors each found once; applied to two copies, byte-identical after; second run printed
-> "skip: already patched"; an offline stub test passed 11/11 on the patched bundle and failed on the unpatched one) · Source: scripts_stuff `vscode_extensions/scripts/mermaid-zoom-patch/apply-mermaid-zoom.mjs`
-> (uncommitted, 2026-11-16) · Falsifier: an extension update that keeps every anchor yet changes what the surrounding code means, so the patch applies cleanly and misbehaves.
+> "skip: already patched"; an offline stub test passed 11/11 on the patched bundle and failed on the unpatched one) · Source: scripts_stuff
+> `vscode_extensions/scripts/mermaid-zoom-patch/apply-mermaid-zoom.mjs` (uncommitted, 2026-11-16) · Falsifier: an extension update that keeps every anchor yet changes what the surrounding code means,
+> so the patch applies cleanly and misbehaves.
 
-- **Problem:** a feature or fix has to live in a built file you do not own (a bundled `dist/extension.js`, a minified plugin, a vendored script) with no source to rebuild from. Hand edits are
-  lost on every reinstall, and several installed copies drift.
-- **Solution:** keep the change as a script plus the code it injects, not as an edited file. Each edit is `[label, exact anchor, replacement]`; the anchor must occur exactly once or the folder
-  is refused before anything is written. A marker string makes a second run a no-op. Dry run by default; `--apply` copies each file to `<file>.bak-<slug>-<date>` first. Injected code sits in
-  its own file, so it can be read, linted and diffed; the edits only splice it in and wire it up. An offline test loads the patched bundle with a stubbed host API and exercises the new paths.
-- **Why it works:** an exact, unique anchor turns "the vendor changed this code" into a refusal instead of a silent mis-patch; the marker and backups make re-running safe, so reapplying after
-  an update is one command against every copy.
+- **Problem:** a feature or fix has to live in a built file you do not own (a bundled `dist/extension.js`, a minified plugin, a vendored script) with no source to rebuild from. Hand edits are lost on
+  every reinstall, and several installed copies drift.
+- **Solution:** keep the change as a script plus the code it injects, not as an edited file. Each edit is `[label, exact anchor, replacement]`; the anchor must occur exactly once or the folder is
+  refused before anything is written. A marker string makes a second run a no-op. Dry run by default; `--apply` copies each file to `<file>.bak-<slug>-<date>` first. Injected code sits in its own
+  file, so it can be read, linted and diffed; the edits only splice it in and wire it up. An offline test loads the patched bundle with a stubbed host API and exercises the new paths.
+- **Why it works:** an exact, unique anchor turns "the vendor changed this code" into a refusal instead of a silent mis-patch; the marker and backups make re-running safe, so reapplying after an
+  update is one command against every copy.
 - **Reuse:** VS Code or browser extensions you patch locally, vendored JS/CSS in a static site, a third-party Python package hot-fixed in a venv, generated config you must amend.
-- **Pitfalls:** a unique anchor proves position, not meaning: re-read the code around each anchor after a vendor update. Match exact text including indentation; refuse on 0 *and* on 2+.
-  Edit manifests (package.json) as strings when the file's formatting must survive, then `JSON.parse` the result as a check.
+- **Pitfalls:** a unique anchor proves position, not meaning: re-read the code around each anchor after a vendor update. Match exact text including indentation; refuse on 0 *and* on 2+. Edit manifests
+  (package.json) as strings when the file's formatting must survive, then `JSON.parse` the result as a check.
 - **Realised in:** Node (ESM) patching a CommonJS VS Code extension bundle.
 
 ```js
@@ -1554,23 +1537,21 @@ function applyEdits(text, edits, file) {
 ### P-72 A short derived deck: reuse another builder's slides, local wording on top, proof the source did not move
 
 > **Learned 2026-11-16** · design pattern, any language with a document builder · VERIFIED_PRIMARY (the strategy deck and the program pack rebuilt before and after
-> exporting their builders: every `ppt/` part byte-identical; the meeting deck's wording table refused a build when a rule matched nothing) · Source: apn
-> enterprise-strategy `scripts/meeting/build_meeting_deck_pptx.js`, `scripts/deck/build_strategy_pptx.js`, `scripts/pptx_text.py` (commit at the session's
-> second close) · Falsifier: a reused builder that keeps module state between slides, so drawing its slides into a second deck changes the first deck's output.
+> exporting their builders: every `ppt/` part byte-identical; the meeting deck's wording table refused a build when a rule matched nothing) · Source: apn enterprise-strategy
+> `scripts/meeting/build_meeting_deck_pptx.js`, `scripts/deck/build_strategy_pptx.js`, `scripts/pptx_text.py` (commit at the session's second close) · Falsifier: a reused builder that keeps module
+> state between slides, so drawing its slides into a second deck changes the first deck's output.
 
-- **Problem:** a short version of existing material is needed fast (a meeting deck from a 16-slide deck and a 16-page pack), with some wording changed for the
-  new audience, while the source decks stay exactly as sent. Copying slides by hand forks them; editing the shared data changes the decks already sent.
-- **Solution:** (1) make each source builder importable: export its slide functions and helpers, and run its `main` only when executed directly; a setter
-  covers the one constant the new deck needs to change (the footer). (2) Prove the refactor changed nothing: build each source before and after, compare the
-  slide parts byte for byte (zip dates and file properties ignored). (3) The derived builder draws the reused slides into its own presentation and wraps the
-  presentation's slide factory so every text, table cell and note goes through a wording table (regex rules); each rule must match at least once per build or
-  the build fails. A copy of shared data takes data-level edits with expected counts, failing on a mismatch.
-- **Why it works:** one drawing function per slide stays the single source; the derived deck cannot drift from it, and its local wording is visible in one
-  table. The must-match counts turn "the source wording changed" into a failed build instead of an old term quietly left on a slide.
+- **Problem:** a short version of existing material is needed fast (a meeting deck from a 16-slide deck and a 16-page pack), with some wording changed for the new audience, while the source decks stay
+  exactly as sent. Copying slides by hand forks them; editing the shared data changes the decks already sent.
+- **Solution:** (1) make each source builder importable: export its slide functions and helpers, and run its `main` only when executed directly; a setter covers the one constant the new deck needs to
+  change (the footer). (2) Prove the refactor changed nothing: build each source before and after, compare the slide parts byte for byte (zip dates and file properties ignored). (3) The derived
+  builder draws the reused slides into its own presentation and wraps the presentation's slide factory so every text, table cell and note goes through a wording table (regex rules); each rule must
+  match at least once per build or the build fails. A copy of shared data takes data-level edits with expected counts, failing on a mismatch.
+- **Why it works:** one drawing function per slide stays the single source; the derived deck cannot drift from it, and its local wording is visible in one table. The must-match counts turn "the source
+  wording changed" into a failed build instead of an old term quietly left on a slide.
 - **Reuse:** a board version of a project report, a customer cut of an internal deck, a summary PDF from a full document generator, a localised copy.
-- **Pitfalls:** wording rules are global: scope each to the phrase that means the thing (a "box" that is a shape in a diagram is not the product), and keep
-  vendor-neutral wording neutral. Check notes as well as slides. Rebuilding a source for any reason changes bytes the recipient may hold: record which
-  commit was sent.
+- **Pitfalls:** wording rules are global: scope each to the phrase that means the thing (a "box" that is a shape in a diagram is not the product), and keep vendor-neutral wording neutral. Check notes
+  as well as slides. Rebuilding a source for any reason changes bytes the recipient may hold: record which commit was sent.
 - **Realised in:** Node with pptxgenjs 3.12.0; the proof in Python stdlib (`zipfile`).
 
 ```js
@@ -1591,23 +1572,20 @@ function useDeckTerms(pres) {
 ### P-73 A fault put into the standby side, always taken out, with a hard reset the harness owns
 
 > **Learned 2026-11-17** · design pattern, fault-injection harnesses on real hardware · VERIFIED_PRIMARY (offline only: 19 tests with fakes in 2.0 s; deleting
-> the restore turned `test_kernel_restored_when_case_fails` red; not yet run on the bench) · Source: apn smc-resiliency `lab/logic/s1faults.py`,
-> `lab/logic/s1.py` `_bounded` and `_trial_or_cycle`, commit 1eb7ff15 · Falsifier: a case whose fault is still present after the run, or a silent target the
-> harness leaves for a person.
-> `reusable_candidate` until a second project uses it.
+> the restore turned `test_kernel_restored_when_case_fails` red; not yet run on the bench) · Source: apn smc-resiliency `lab/logic/s1faults.py`, `lab/logic/s1.py` `_bounded` and `_trial_or_cycle`,
+> commit 1eb7ff15 · Falsifier: a case whose fault is still present after the run, or a silent target the harness leaves for a person. `reusable_candidate` until a second project uses it.
 
-- **Problem:** a recovery test must break the thing it tests (random bytes over the kernel, init moved aside, a unit that panics), on hardware a person may
-  not be near. A run that fails midway leaves the fault in; a target that hangs waits for someone to pull the plug.
-- **Solution:** (1) put the fault only into the side under trial (the standby slot), never the side that recovers. (2) One function per fault takes a flag:
-  the same call breaks or restores, and the restore is idempotent (it acts only when the kept copy exists), so it is safe in `finally` and after a crash.
-  (3) Each remote step mounts, acts, and always unmounts, while keeping the act's exit code. (4) The harness owns a hard reset (a switched outlet): if the
-  target is silent past a freeze window it cycles power itself, then waits a bounded time and fails naming the bench when nothing answers.
-  (5) A power-cut case refuses to cut unless the target is on the trial side.
-- **Why it works:** the recovering side is never touched, so the worst case is the recovery under test; the restore cannot be skipped by a failure; the
-  freeze window turns "hung forever" into a bounded, evidenced step.
+- **Problem:** a recovery test must break the thing it tests (random bytes over the kernel, init moved aside, a unit that panics), on hardware a person may not be near. A run that fails midway leaves
+  the fault in; a target that hangs waits for someone to pull the plug.
+- **Solution:** (1) put the fault only into the side under trial (the standby slot), never the side that recovers. (2) One function per fault takes a flag: the same call breaks or restores, and the
+  restore is idempotent (it acts only when the kept copy exists), so it is safe in `finally` and after a crash. (3) Each remote step mounts, acts, and always unmounts, while keeping the act's exit
+  code. (4) The harness owns a hard reset (a switched outlet): if the target is silent past a freeze window it cycles power itself, then waits a bounded time and fails naming the bench when nothing
+  answers. (5) A power-cut case refuses to cut unless the target is on the trial side.
+- **Why it works:** the recovering side is never touched, so the worst case is the recovery under test; the restore cannot be skipped by a failure; the freeze window turns "hung forever" into a
+  bounded, evidenced step.
 - **Reuse:** A/B firmware or OS slots, blue/green hosts, a standby database replica, a router's backup image, any test that corrupts one copy of two.
-- **Pitfalls:** a restore that fails when nothing was kept breaks the `finally` path; a mount left behind blocks the next run; the reset must be mapped to the
-  right box by data (P-70); judge each case by its own evidence, not by the end state.
+- **Pitfalls:** a restore that fails when nothing was kept breaks the `finally` path; a mount left behind blocks the next run; the reset must be mapped to the right box by data (P-70); judge each case
+  by its own evidence, not by the end state.
 - **Realised in:** Python over SSH with POSIX sh on the target.
 
 ```python
@@ -1650,26 +1628,23 @@ for cand in candidates(current)[1:]:          # proxy-ranked, current first
 ### P-59 Export a spec to plain code, with provenance and an edit guard
 
 > **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (18 offline tests; two real specs exported, ansible-lint production profile
-> and `--syntax-check` pass) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/export_tasks.py`, `export_render.py` (commit 7056782)
-> · Falsifier: an exported file that still needs the engine to run, or a regenerate that overwrote a hand edit without being told to.
-> `reusable_candidate` until a second project uses it.
+> and `--syntax-check` pass) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/export_tasks.py`, `export_render.py` (commit 7056782) · Falsifier: an exported file that still needs
+> the engine to run, or a regenerate that overwrote a hand edit without being told to. `reusable_candidate` until a second project uses it.
 
-- **Problem:** changes are proven with a personal or test engine (P-01, change as data), but the place they must end up (a company repo, another team)
-  may not depend on that engine. Copying by hand drifts, and a generator that silently overwrites loses the other side's edits.
-- **Solution:** (1) map each spec key to plain code from what the engine *does* with it (read its code, not an old hand copy); (2) rewrite the engine's
-  names to the export's own (`engine_vars.` to `<change>.`, engine paths to the export's folder); (3) **refuse** to write while any engine name is left
-  in the output, and refuse spec features not yet mapped, naming them; (4) plan by default, write on `--apply`; (5) record a sha256 of every source
-  and every written file; a drift check reports "source changed" and "target edited", and a regenerate refuses to overwrite a target whose hash is
-  neither the last export nor the new one, until told to; (6) state in the output's header what the engine gave that the plain code does not.
-- **Why it works:** the refusal makes "no dependency" a checked property, not a hope; the two hashes tell the three cases apart (in step, source
-  moved, target hand-edited) without a diff; regenerating only on request keeps the other side in control.
-- **Reuse:** a DSL or spec compiled to Terraform, SQL migrations, CI pipeline files or Kubernetes manifests handed to another team; scaffolding a
-  vendor's config from an internal model; any generator whose output people may edit.
-- **Pitfalls:** the engine's safety that lives above a single change (a batch fail gate) cannot be carried in a file and must be named for the caller
-  (here: the play must set `max_fail_percentage: 0` and `serial`); helper scripts often depend on the engine's runtime layout (a backup folder they look
-  up by glob), so the export recreates that layout; output formatting to pass the target's linter may change values, so the dump is read back and
-  compared with the data, and a mismatch refuses the export; a rollback that takes the newest backup breaks once a no-op rerun writes a
-  backup of the new values, so make the backup only when a read-only pre-check says an action will change something (567a61d). Related: P-01, P-12 (plan, print, then apply).
+- **Problem:** changes are proven with a personal or test engine (P-01, change as data), but the place they must end up (a company repo, another team) may not depend on that engine. Copying by hand
+  drifts, and a generator that silently overwrites loses the other side's edits.
+- **Solution:** (1) map each spec key to plain code from what the engine *does* with it (read its code, not an old hand copy); (2) rewrite the engine's names to the export's own (`engine_vars.` to
+  `<change>.`, engine paths to the export's folder); (3) **refuse** to write while any engine name is left in the output, and refuse spec features not yet mapped, naming them; (4) plan by default,
+  write on `--apply`; (5) record a sha256 of every source and every written file; a drift check reports "source changed" and "target edited", and a regenerate refuses to overwrite a target whose hash
+  is neither the last export nor the new one, until told to; (6) state in the output's header what the engine gave that the plain code does not.
+- **Why it works:** the refusal makes "no dependency" a checked property, not a hope; the two hashes tell the three cases apart (in step, source moved, target hand-edited) without a diff; regenerating
+  only on request keeps the other side in control.
+- **Reuse:** a DSL or spec compiled to Terraform, SQL migrations, CI pipeline files or Kubernetes manifests handed to another team; scaffolding a vendor's config from an internal model; any generator
+  whose output people may edit.
+- **Pitfalls:** the engine's safety that lives above a single change (a batch fail gate) cannot be carried in a file and must be named for the caller (here: the play must set `max_fail_percentage: 0`
+  and `serial`); helper scripts often depend on the engine's runtime layout (a backup folder they look up by glob), so the export recreates that layout; output formatting to pass the target's linter
+  may change values, so the dump is read back and compared with the data, and a mismatch refuses the export; a rollback that takes the newest backup breaks once a no-op rerun writes a backup of the
+  new values, so make the backup only when a read-only pre-check says an action will change something (567a61d). Related: P-01, P-12 (plan, print, then apply).
 - **Realised in:** Python, excerpt below.
 
 ```python
@@ -1697,17 +1672,17 @@ if yaml.safe_load(body) != data:    # folding for the linter must not change a c
 ### P-60 Order resumed records by attempt, not by transaction start
 
 > **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (a regression test that fails on the old order; the fixed tracker moved two
-> sites from `failed` to `passed` and 38 `last_run` values) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/tracker.py`
-> (commit c7cb38b) · Falsifier: a summary whose "latest" row is not the newest attempt. `reusable_candidate` until a second project uses it.
+> sites from `failed` to `passed` and 38 `last_run` values) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/tracker.py` (commit c7cb38b) · Falsifier: a summary whose "latest"
+> row is not the newest attempt. `reusable_candidate` until a second project uses it.
 
-- **Problem:** a resumable job writes one record per attempt but carries the *transaction's* start time in each, so a reader that sorts by `start`
-  places a late resume before attempts that ran in between, and "latest state" picks an older failed attempt.
-- **Solution:** keep both stamps in every record (`start` for the transaction, `attempt_start` for this attempt, falling back to `start` on old
-  records); order runs, and take "last run", by `attempt_start`; keep "state since" on the transaction start.
+- **Problem:** a resumable job writes one record per attempt but carries the *transaction's* start time in each, so a reader that sorts by `start` places a late resume before attempts that ran in
+  between, and "latest state" picks an older failed attempt.
+- **Solution:** keep both stamps in every record (`start` for the transaction, `attempt_start` for this attempt, falling back to `start` on old records); order runs, and take "last run", by
+  `attempt_start`; keep "state since" on the transaction start.
 - **Why it works:** each question gets its own clock: when did this change begin on the target, and which attempt is newest.
 - **Reuse:** retried CI jobs, resumable migrations, sagas, any summary built from per-attempt rows of a long transaction.
-- **Pitfalls:** tests built only from fresh runs (attempt equals start) pass the bug; add a fixture with an old `start`, a newer `attempt_start` and
-  another run between them. Related: P-03 (write-ahead journal), P-04 (done ledger).
+- **Pitfalls:** tests built only from fresh runs (attempt equals start) pass the bug; add a fixture with an old `start`, a newer `attempt_start` and another run between them. Related: P-03
+  (write-ahead journal), P-04 (done ledger).
 - **Realised in:** Python.
 
 ```python
@@ -1718,34 +1693,30 @@ return sorted(rows, key=lambda row: (str(row.get("attempt_start") or row.get("st
 ```
 
 > **Learned 2026-11-07 (c)** · JWS without a crypto library; P-59 refinement · VERIFIED_PRIMARY · Source: smc-resiliency `spike/onbox/smcbox/jws.py`
-> (`sign`, tested byte for byte against RFC 8037 appendix A.4), `scripts/interfaces.py` (`view_state`) · Falsifier: a signature that differs
-> from the RFC vector, or a drift check that cannot tell a hand edit from a source change
-> A box with only the standard library signs compact JWS (alg EdDSA) by building `base64url(header).base64url(payload)` itself and signing it
-> with `openssl pkeyutl -sign -rawin`; the RFC's test vector is the independent check. A generated view (P-59) carries `sources-sha256` and
-> `view-sha256` in its banner, so the drift check tells "the source changed" from "someone edited the view".
+> (`sign`, tested byte for byte against RFC 8037 appendix A.4), `scripts/interfaces.py` (`view_state`) · Falsifier: a signature that differs from the RFC vector, or a drift check that cannot tell a
+> hand edit from a source change A box with only the standard library signs compact JWS (alg EdDSA) by building `base64url(header).base64url(payload)` itself and signing it with `openssl pkeyutl -sign
+> -rawin`; the RFC's test vector is the independent check. A generated view (P-59) carries `sources-sha256` and `view-sha256` in its banner, so the drift check tells "the source changed" from "someone
+> edited the view".
 
 ### P-63 Agent benchmark: known answers in a throwaway copy, a watch on real repos
 
 > **Learned 2026-11-09** · design pattern, any language driving an agent CLI · VERIFIED_PRIMARY (baseline 3/5, tuned 12/15, Qwen3.8-27B 8-bit 15/15; the submodule
-> blind spot found by a concurrent edit the watch missed, then a negative test) · Source: tools_stuff `cline/scripts/bench.py` (`prepare`, `watched_repos`, `repo_state`,
-> `run_task`), `cline/bench/tasks.toml` · Falsifier: a task that passes with a wrong answer, or a real-repo edit during a run that the watch does not report
-> Pattern P-63, written generically below. `reusable_candidate` until a second project uses it.
+> blind spot found by a concurrent edit the watch missed, then a negative test) · Source: tools_stuff `cline/scripts/bench.py` (`prepare`, `watched_repos`, `repo_state`, `run_task`),
+> `cline/bench/tasks.toml` · Falsifier: a task that passes with a wrong answer, or a real-repo edit during a run that the watch does not report Pattern P-63, written generically below.
+> `reusable_candidate` until a second project uses it.
 
-- **Problem:** a model, prompt or tool profile for a coding agent is chosen on impression from one task, and an agent run "in a copy" can still reach
-  and edit the live repositories through its shell.
-- **Solution:** a small task file of **known-answer** tasks drawn from real failures (a misread flag, a claim made without searching, an invented
-  timing, a duplicated finding, a failing unit test to fix). Each task runs headless in a **throwaway copy** (`git archive` of HEAD, or a fixture folder
-  with a private git snapshot so "files that must not change" can be checked). Scoring is by fixed checks only: regexes the answer must and must not
-  contain, "no number without the command that produced it", a post command (`unittest`), unchanged files. Around each task, snapshot every real
-  repo **and, recursively, every submodule in it** (porcelain status set plus a hash of `git diff`) and fail the task when they differ. Run each task
-  `--repeat N` (3 or more before choosing), scale timeouts per model (`--timeout-scale`) and label a timeout as time, not skill.
-- **Why it works:** known answers make the score independent of the judge; the copy keeps the task's own edits away from live work; the watch catches the
-  agent leaving the copy; repeats separate luck from skill.
+- **Problem:** a model, prompt or tool profile for a coding agent is chosen on impression from one task, and an agent run "in a copy" can still reach and edit the live repositories through its shell.
+- **Solution:** a small task file of **known-answer** tasks drawn from real failures (a misread flag, a claim made without searching, an invented timing, a duplicated finding, a failing unit test to
+  fix). Each task runs headless in a **throwaway copy** (`git archive` of HEAD, or a fixture folder with a private git snapshot so "files that must not change" can be checked). Scoring is by fixed
+  checks only: regexes the answer must and must not contain, "no number without the command that produced it", a post command (`unittest`), unchanged files. Around each task, snapshot every real repo
+  **and, recursively, every submodule in it** (porcelain status set plus a hash of `git diff`) and fail the task when they differ. Run each task `--repeat N` (3 or more before choosing), scale
+  timeouts per model (`--timeout-scale`) and label a timeout as time, not skill.
+- **Why it works:** known answers make the score independent of the judge; the copy keeps the task's own edits away from live work; the watch catches the agent leaving the copy; repeats separate luck
+  from skill.
 - **Reuse:** comparing local and cloud models for an agent, tuning a tool profile or rules, regression-checking an agent harness upgrade.
-- **Pitfalls:** a parent repo shows a dirty submodule as one unchanging ` M <path>` line and its diff as a constant `-dirty`, so a watch on the parent
-  alone misses every edit inside a submodule (2026-11-09: an edit in a submodule mid-run passed unseen; fixed with `git submodule foreach --recursive`,
-  22 repos, about 4 s a snapshot). Another session writing during a run trips the watch: read the paths before blaming the model. Tasks taken from
-  one project's history can leak their answers through that project's records: copy HEAD from before the fix, or use a fixture.
+- **Pitfalls:** a parent repo shows a dirty submodule as one unchanging ` M <path>` line and its diff as a constant `-dirty`, so a watch on the parent alone misses every edit inside a submodule
+  (2026-11-09: an edit in a submodule mid-run passed unseen; fixed with `git submodule foreach --recursive`, 22 repos, about 4 s a snapshot). Another session writing during a run trips the watch: read
+  the paths before blaming the model. Tasks taken from one project's history can leak their answers through that project's records: copy HEAD from before the fix, or use a fixture.
 - **Realised in:** Python (stdlib, `tomllib`, subprocess with timeouts).
 
 ```python
@@ -1765,21 +1736,20 @@ def watched_repos() -> list[Path]:
 ### P-64 A fixed-length record overwritten in place
 
 > **Learned 2026-11-09** · any language writing small state to FAT or another filesystem without a safe rename · VERIFIED_PRIMARY (smc-resiliency
-> S1V: a power cut mid-rewrite left a 0-byte file with temp-file-and-rename on vfat; after this pattern the file survived the same cut at full
-> length, and the Pi firmware read it) · Source: smc-resiliency spike/release/rauc/tryboot_backend.sh @ 4e086c18 · Falsifier: a cut during the
-> in-place write leaving the file shorter than its fixed length. `reusable_candidate` until a second project uses it.
+> S1V: a power cut mid-rewrite left a 0-byte file with temp-file-and-rename on vfat; after this pattern the file survived the same cut at full length, and the Pi firmware read it) · Source:
+> smc-resiliency spike/release/rauc/tryboot_backend.sh @ 4e086c18 · Falsifier: a cut during the in-place write leaving the file shorter than its fixed length. `reusable_candidate` until a second
+> project uses it.
 
-Problem:      A small file that another program must always be able to read (a boot selector, a counter) lives on a filesystem where
-              write-temp-then-rename is not crash-safe: a cut between the steps leaves the name pointing at an empty or missing file.
-Solution:     Give the file a fixed length (pad with a comment line to N bytes, N within one sector). Write it once by rename at install;
-              afterwards open it without truncating and overwrite all N bytes from offset 0, then fsync. Any other length means it is not
-              ours yet: write it the install way. The reader validates the content and a boot-time check rewrites a bad file from known state.
-Why it works: Size and directory entry never change after the first write, so only one data sector is rewritten; a cut leaves old or new
-              bytes, never a 0-byte name. The validator covers a torn sector.
-Reuse:        Pi autoboot.txt and config flags on the boot FAT; a retry counter on an EFI partition; a small marker on a USB stick read by firmware.
-Pitfalls:     The first write of a new medium still takes the rename path unless the image ships the file at its fixed length (found
-              2026-11-09: set-up wrote a shorter file). vfat renumbers inodes at each mount, so prove in-place writes within one boot.
-Realised in:  shell -> spike/release/rauc/tryboot_backend.sh (smc-resiliency, 4e086c18)
+Problem: A small file that another program must always be able to read (a boot selector, a counter) lives on a filesystem where
+write-temp-then-rename is not crash-safe: a cut between the steps leaves the name pointing at an empty or missing file.
+Solution: Give the file a fixed length (pad with a comment line to N bytes, N within one sector). Write it once by rename at install; afterwards open it without truncating and overwrite all N bytes
+  from offset 0, then fsync. Any other length means it is not
+ours yet: write it the install way. The reader validates the content and a boot-time check rewrites a bad file from known state.
+Why it works: Size and directory entry never change after the first write, so only one data sector is rewritten; a cut leaves old or new bytes, never a 0-byte name. The validator covers a torn sector.
+Reuse: Pi autoboot.txt and config flags on the boot FAT; a retry counter on an EFI partition; a small marker on a USB stick read by firmware.
+Pitfalls: The first write of a new medium still takes the rename path unless the image ships the file at its fixed length (found 2026-11-09: set-up wrote a shorter file). vfat renumbers inodes at each
+  mount, so prove in-place writes within one boot.
+Realised in: shell -> spike/release/rauc/tryboot_backend.sh (smc-resiliency, 4e086c18)
 
 ```bash
 pad=$((SIZE - ${#body} - 3))
@@ -1795,17 +1765,14 @@ fi
 ### P-68 Baseline beside forecast in a generated report
 
 > **Learned 2026-11-06** (promoted 2026-11-11 from enterprise-strategy's parked candidates) · any report rendered from a fixed plan · reusable_candidate ·
-> Source: apn enterprise-strategy/scripts/weekly_update_xlsx.py `add_stages_sheet` @ 7347fc4e · Falsifier: a reader who takes the copied plan date as
-> current after a slip, with the forecast shown beside it.
+> Source: apn enterprise-strategy/scripts/weekly_update_xlsx.py `add_stages_sheet` @ 7347fc4e · Falsifier: a reader who takes the copied plan date as current after a slip, with the forecast shown
+> beside it.
 
-Problem:      A status report is generated from a fixed plan, and dates slip. Overwriting the plan's dates loses the agreed baseline, and the next
-              render from the plan undoes the edit anyway.
-Solution:     Copy the plan's dates unchanged (the baseline) and add the forecast as separate columns fed from the period's own data file,
-              coloured by state. A period with no forecasts renders exactly as before; a forecast naming an unknown stage fails the run.
-Why it works: The plan stays the single source of the baseline, the forecast has one home per period, and the reader sees the slip as a pair.
-Reuse:        Project plans, release trains, SLA reports against a contract date, budget against actual.
-Pitfalls:     A typo in a stage key silently drops a forecast unless unknown keys fail the run.
-Realised in:  Python -> enterprise-strategy/scripts/weekly_update_xlsx.py (7347fc4e)
+Problem: A status report is generated from a fixed plan, and dates slip. Overwriting the plan's dates loses the agreed baseline, and the next render from the plan undoes the edit anyway. Solution:
+Copy the plan's dates unchanged (the baseline) and add the forecast as separate columns fed from the period's own data file, coloured by state. A period with no forecasts renders exactly as before; a
+forecast naming an unknown stage fails the run. Why it works: The plan stays the single source of the baseline, the forecast has one home per period, and the reader sees the slip as a pair. Reuse:
+Project plans, release trains, SLA reports against a contract date, budget against actual. Pitfalls: A typo in a stage key silently drops a forecast unless unknown keys fail the run. Realised in:
+Python -> enterprise-strategy/scripts/weekly_update_xlsx.py (7347fc4e)
 
 ```python
 forecasts = {str(k): v for k, v in (week.get("stages") or {}).items()}
@@ -1820,19 +1787,18 @@ for row in stages[1:]:
 ### P-69 A seed, a plan-first scaffold and a guard on the shared output
 
 > **Learned 2026-11-12** · any generator that builds a shared package from a written design · reusable_candidate ·
-> Source: skill-ai-it `scripts/skills/skill_scaffold.py` `find_leaks`, `classify` and `skill_intake.py` `cmd_research_briefs` @ d3132c2 · Falsifier: a generated shared package that still carries a name its guard listed.
+> Source: skill-ai-it `scripts/skills/skill_scaffold.py` `find_leaks`, `classify` and `skill_intake.py` `cmd_research_briefs` @ d3132c2 · Falsifier: a generated shared package that still carries a
+> name its guard listed.
 
-Problem:      New packages built by copying a sibling drift apart and lose what the work that produced them taught; a generator that writes at once overwrites hand edits, and anything private in the design
-              (project, customer or people names) can leak into an artifact many projects read, or into a search query sent to an outside service.
-Solution:     Write the design as a seed (a parameter block and tables, with an unfilled marker a check refuses) kept in its own folder with its research and draft parts. The scaffold renders every file in
-              memory, scans the rendered text for the seed's forbidden terms as whole words and refuses before any write, then classifies each file as create, skip (identical) or propose (a different file exists:
-              write a `.proposed` beside it) and prints the plan; only `--apply` writes. A contract check runs on the result. The seed and its research are never copied into the output.
-Why it works: The lessons live in one place that outlives the build; a refusal costs nothing before the write; a rerun is safe because nothing a person wrote is replaced; the guard protects both the output and the
-              outgoing research briefs.
-Reuse:        New skill packs, projects started from templates, service or module scaffolds, any export that must stay free of one customer's names.
-Pitfalls:     Substring matching flags "Rob" inside "robust" (match whole words); a brief that lists the forbidden words to tell a researcher what to avoid must be excluded from its own scan; a formatter that wraps
-              table rows breaks a naive table parser (merge continuation rows, see the Python learned entry); a seed that names the private terms must stay outside the shared output.
-Realised in:  Python -> skill-ai-it/scripts/skills/skill_scaffold.py and skill_intake.py (d3132c2)
+Problem: New packages built by copying a sibling drift apart and lose what the work that produced them taught; a generator that writes at once overwrites hand edits, and anything private in the design
+(project, customer or people names) can leak into an artifact many projects read, or into a search query sent to an outside service. Solution: Write the design as a seed (a parameter block and tables,
+with an unfilled marker a check refuses) kept in its own folder with its research and draft parts. The scaffold renders every file in memory, scans the rendered text for the seed's forbidden terms as
+whole words and refuses before any write, then classifies each file as create, skip (identical) or propose (a different file exists: write a `.proposed` beside it) and prints the plan; only `--apply`
+writes. A contract check runs on the result. The seed and its research are never copied into the output. Why it works: The lessons live in one place that outlives the build; a refusal costs nothing
+before the write; a rerun is safe because nothing a person wrote is replaced; the guard protects both the output and the outgoing research briefs. Reuse: New skill packs, projects started from
+templates, service or module scaffolds, any export that must stay free of one customer's names. Pitfalls: Substring matching flags "Rob" inside "robust" (match whole words); a brief that lists the
+forbidden words to tell a researcher what to avoid must be excluded from its own scan; a formatter that wraps table rows breaks a naive table parser (merge continuation rows, see the Python learned
+entry); a seed that names the private terms must stay outside the shared output. Realised in: Python -> skill-ai-it/scripts/skills/skill_scaffold.py and skill_intake.py (d3132c2)
 
 ```python
 def find_leaks(files, terms):
