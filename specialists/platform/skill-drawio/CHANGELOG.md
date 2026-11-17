@@ -16,6 +16,8 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-17 (operator: "if there is an existing diagram, we can pass that diagram to the skill and it can fix it"): `scripts/ascii_fix.py` and `just ascii-fix` with
+  `tests/test_ascii_fix.py`; SKILL.md tools table, scripts/README.md rows; references/data-first-diagrams.md Learned 2026-11-17 (from apn smc-resiliency).
 - 2026-11-16 (operator: "ASCII scripts part of drawio as immediate documentation; drawio when explicitly asked"): `scripts/ascii_flow_render.py` promoted from apn smc-resiliency with `tests/test_ascii_flow_render.py` (8 tests) and `just ascii-flow-render`; SKILL.md Standing rules: ASCII first; references/data-first-diagrams.md Learned 2026-11-16 with the code excerpt. `ruff.toml` and `just lint` (in `just check`) added for new Python, the 111 existing files excluded (operator: a lint config in every project and skill worked on). Consumers: no engine change.
 - 2026-11-12 write-back from apn enterprise-strategy (ee9046df): references/data-first-diagrams.md Learned, page layouts (one-pagers) drawn straight from drawio.mxfile with page_audit() and a byte drift check; references/export-and-self-review.md Learned, the CLI export has no Calibri or Cambria (use Helvetica and Georgia); screenshots references/screenshots/20261112-one-pager-pages/.
 - 2026-11-11 references/file-format.md Learned: a hand-built Gantt chart from plain cells (bars by date, gridline edges, red outline for late, dashed for proposed); prototypes/business-views/draw_gantt.py is the code (operator: draw a Gantt of the program by phase). The two draw.io links (diagram types, drawio-diagrams examples) are noted in ROADMAP.md. No engine change.

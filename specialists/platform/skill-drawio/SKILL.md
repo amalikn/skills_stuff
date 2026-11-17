@@ -72,6 +72,7 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
 | `scripts/trace_sync.py`      | Hold a map to the code: suspect steps, uncited code, stale words; `--accept` records a review |
 | `scripts/trace_query.py`     | Ask a map what happens: a flow, the steps citing a file, what writes or fails                 |
 | `scripts/commit_hook.sh`     | Git pre-commit body: run a project's check when a commit touches its watched folder           |
+| `scripts/ascii_fix.py`       | Fix an existing ASCII diagram (ragged edges, borders, stray arrows); diff, then `--apply`      |
 | `scripts/yaml_list_patch.py` | Add values to flow-style lists in a YAML map without losing comments; plan, then `--apply`    |
 
 | Package                      | Modules                                                                                                       |

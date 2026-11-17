@@ -368,5 +368,26 @@ def chain(steps: list[dict], width: int, indent: int = 2) -> list[str]:
   return out
 ```
 
+> **Learned 2026-11-17** · fixing an existing ASCII diagram · VERIFIED_PRIMARY · Source: `scripts/ascii_fix.py`, `tests/test_ascii_fix.py` · Falsifier: a
+> diagram the edge checker passes that `ascii-fix` changes, or one it makes worse.
+> Evidence: 9 offline tests; four guards each turned a test red when removed; a dry run over 106 apn documents (243 diagrams, 0.09 s) fixed 3 diagrams,
+> left the rest unchanged and reported 16 findings that the edge checker also reports.
+> The operator asked that an existing diagram can be handed to the skill and fixed (2026-11-17). `just ascii-fix <file>` repairs faults only: a box's rows
+> and borders end in one column (the border's width, grown only where text runs past it, keeping a row's padding space); text after a box keeps its column
+> and a connector glued to the edge (`|--->`) stays glued; an arrow between chained boxes moves only when it points past them. It never restyles a correct
+> drawing: equal widths along a chain are opt-in (`--even-widths`), off-centre arrows drawn inside a box's width stay, and grids with shared edges or row
+> dividers are left alone. Two guards make every fix safe: the diagram's words in the same order, and no more edge findings than before; either failing
+> leaves the block as it was. First runs widened boxes chained across blank lines, re-centred deliberate arrows and broke a box with a grid divider; each
+> was a restyle or a misread, found by comparing the fixer with the edge checker over real documents.
+
+```python
+# skill-drawio scripts/ascii_fix.py (2026-11-17): the two guards around every fix
+if WORDS.findall("\n".join(out)) != WORDS.findall("\n".join(lines)):
+  return list(lines), edge_issues(lines) + ["the fix would change the diagram's words: left as it was"]
+if len(edge_issues(out)) > len(edge_issues(lines)):
+  return list(lines), edge_issues(lines) + ["the fix would break an edge the drawing had: left as it was"]
+return out, edge_issues(out)
+```
+
 No screenshot: the output is text in the document itself.
 

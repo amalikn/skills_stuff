@@ -215,6 +215,12 @@ count-crossings *args: _require-venv
 ascii-flow-render *args: _require-venv
     @{{py}} scripts/ascii_flow_render.py "$@"
 
+# Fix an existing ASCII diagram (each ```text block of a Markdown file, or a plain-text diagram): ragged edges, borders, stray arrows. Diff by default; --apply writes
+# Words never change and no edge finding is added; grids with shared edges are reported, not rewritten (operator, 2026-11-17): just ascii-fix doc.md [--apply] [--even-widths]
+[positional-arguments]
+ascii-fix *args: _require-venv
+    @{{py}} scripts/ascii_fix.py "$@"
+
 # [read-only] Lint and format-check new Python with ruff (ruff.toml lists the pre-2026-11-16 files it leaves alone): just lint
 lint:
     @uvx ruff check --config "{{justfile_directory()}}/ruff.toml" "{{justfile_directory()}}"
