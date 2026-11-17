@@ -14,6 +14,8 @@ Last reviewed: 2026-11-17
 
 ## Unreleased
 
+- 2026-11-17: arrow lists line up (operator): `align_arrows()` in `scripts/ascii/checks.py`; box rows, chains and rows already in place excluded
+  after a sweep over real documents; tests mutation-proven; references/fixing-diagrams.md rule.
 - 2026-11-17: pack created with skill-ai-it `new-skill scaffold` from a seed kept outside the pack; references, scripts and evidence to be written from the seed.
 - 2026-11-17: built from the seed (operator: "do you think it is better to have skill-ascii-diagrams of its own?", answered both): `scripts/ascii_flow_render.py`,
   `scripts/ascii_fix.py`, `scripts/ascii/` and their tests moved from skill-drawio with history (`git mv`), with `documents/ascii-sources-20261117/`; six

@@ -313,7 +313,7 @@ def fix(lines: list[str], even: bool = False) -> tuple[list[str], list[str]]:
       redraw(out, box, w[(box["top"], box["a"])])
     found, _ = boxes(out)
     centre_arrows(out, found, widths(found, out, even))
-    out[:] = checks.snap_connectors(out)
+    out[:] = checks.align_arrows(checks.snap_connectors(out))
     if out == before:
       break
   if WORDS.findall("\n".join(out)) != WORDS.findall("\n".join(lines)):

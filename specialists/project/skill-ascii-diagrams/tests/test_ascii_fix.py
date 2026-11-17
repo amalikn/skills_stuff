@@ -202,6 +202,41 @@ class Stage1(unittest.TestCase):
     self.assertEqual(fx.report(["Boot0004* SlotB\tHD(15,GPT)"]), [])  # command output in a text block, no box
 
 
+class ArrowLists(unittest.TestCase):
+  """A list of horizontal arrows gets its targets in one column; nothing else moves."""
+
+  def test_targets_aligned_arrows_only_grow(self) -> None:
+    """Shorter arrows are lengthened to the rightmost target; labels and the longest row stay."""
+    lines = ["  [a] ----sig----> [x]", "  [long name] ------data------> [y]", "  b ---> z"]
+    out, problems = fx.fix(lines)
+    self.assertEqual(problems, [])
+    self.assertEqual(len({out[0].index("[x]"), out[1].index("[y]"), out[2].rindex("z")}), 1)
+    self.assertEqual(out[1], lines[1])
+    self.assertIn("----sig-", out[0])
+
+  def test_hyphenated_name_is_not_an_arrow(self) -> None:
+    """A name with one dash (`smc-x.service`) is the source, not an arrow."""
+    lines = ["   smc-x.service ---> a", "   y ------> b"]
+    out, _ = fx.fix(lines)
+    self.assertTrue(out[0].startswith("   smc-x.service "))
+    self.assertEqual(out[0].index("a"), out[1].index("b"))
+
+  def test_box_rows_chains_and_aligned_rows_left(self) -> None:
+    """Rows inside a box, chains of arrows, and rows already at the target are not rewritten."""
+    boxed = ["|  a ---> b      |", "|  long ------> c |"]
+    chain = ["  a --x--> b --> c", "  long -------> d"]
+    aligned = ["  a  -----> x", "  bb -----> y"]
+    for lines in (boxed, chain, aligned):
+      self.assertEqual(fx.checks.align_arrows(lines), lines)
+
+  def test_single_row_and_other_indent_left(self) -> None:
+    """One arrow row, or rows with different indents, are not a list."""
+    one = ["  a ---> b"]
+    mixed = ["  a ---> b", "      c -----> d"]
+    self.assertEqual(fx.fix(one)[0], one)
+    self.assertEqual(fx.fix(mixed)[0], mixed)
+
+
 class Package(unittest.TestCase):
   """The `ascii` package (scripts/ascii/__init__.py) imports from the scripts folder and says what it holds."""
 

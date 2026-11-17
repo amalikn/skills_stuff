@@ -14,11 +14,10 @@ Summary: >-
 
 ## Current phase
 
-**2026-11-17.** Stage 1 (repair existing diagrams) is done and the pack is split from skill-drawio; next, arrowhead alignment, then stage 2.
+**2026-11-17.** Stage 1 (repair existing diagrams) is done and the pack is split from skill-drawio; arrow lists line up; next, stage 2.
 
 ## Open
 
-- [ ] **Stage 1 follow-up: line up arrowheads** (operator, 2026-11-17): rows of `label ---->` arrows whose heads end in different columns get one target column, so a list of arrows reads as a list.
 - [ ] **Stage 2: graph renderer** ([graph-layout.md](references/graph-layout.md)): a spec of boxes and links laid out with skill-drawio's rules (layered rows, barycentre order, channels with one track per arrow, port spreading,
   crossing-cutting swaps; reused by import) and A* routing on the character grid after mermaid-ascii `getPath` and `mergePath` (MIT), with a crossing penalty; logic in `scripts/ascii/`.
 - [ ] **Stage 3: read a hand-drawn diagram into the stage-2 spec** ([reading-diagrams.md](references/reading-diagrams.md)): svgbob's fragments, contacts and `endorse_rect` (Apache-2.0), ditaa's boundary idea (LGPL: idea only),
@@ -30,4 +29,5 @@ Summary: >-
 
 ## Done
 
+- [x] **Arrow lists line up** (2026-11-17): `align_arrows()` in `scripts/ascii/checks.py`, run by `ascii-fix`.
 - [x] **Stage 1: repair existing diagrams** (2026-11-17): `ascii_fix.py` with `ascii/checks.py`; split from skill-drawio the same day.

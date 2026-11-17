@@ -97,3 +97,55 @@ def arrow_issues(lines: list[str]) -> list[str]:
     if runs and not any(a < col < b - 1 for a, b in runs):
       issues.append(f"row {r + 1}: the arrow at column {col + 1} misses the box below it (not fixed)")
   return issues
+
+
+ARROW_ROW = re.compile(r"^(?P<lead>\s*)(?P<src>\S.*?)\s+(?P<arrow>-{2,}(?:[^<>|\s-][^<>|]*?-{2,})?>)\s+(?P<dst>\S.*)$")
+
+
+def list_row(line: str) -> re.Match | None:
+  """A row that can belong to an arrow list: one `source ---label--> target` arrow, not inside a box and not a chain of arrows.
+
+  Args:
+    line: one diagram row.
+
+  Returns:
+    The match, or None for a row with a box edge (`|`) or a second arrow in its target.
+  """
+  m = ARROW_ROW.match(line)
+  if not m or "|" in line or re.search(r"-+>", m.group("dst")):
+    return None
+  return m
+
+
+def align_arrows(lines: list[str]) -> list[str]:
+  """Line up the targets of a list of horizontal arrows, in a copy (operator, 2026-11-17: arrowheads in one column).
+
+  A list is two or more consecutive rows with the same indent, each `source ---label--> target`. Every target moves to the list's rightmost target column by
+  lengthening the arrow's last dash run; arrows never shrink and words never change.
+
+  Args:
+    lines: the diagram.
+
+  Returns:
+    The diagram with each arrow list's targets in one column.
+  """
+  out = list(lines)
+  r = 0
+  while r < len(out):
+    group = []
+    while r < len(out) and (m := list_row(out[r])) and (not group or m.group("lead") == group[0][1].group("lead")):
+      group.append((r, m))
+      r += 1
+    if len(group) < 2:
+      r += 0 if group else 1
+      continue
+    target = max(m.start("dst") for _, m in group)
+    for row, m in group:
+      grow = target - m.start("dst")
+      if not grow:
+        continue  # already in place: left exactly as drawn
+      arrow = m.group("arrow")
+      out[row] = (
+        f"{m.group('lead')}{m.group('src')} {arrow[:-1]}{'-' * (grow + m.start('arrow') - len(m.group('lead') + m.group('src')) - 1)}> {m.group('dst')}"
+      )
+  return out
