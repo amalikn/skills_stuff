@@ -30,6 +30,8 @@ Last rotated: 20261117_1859
 
 ## Unreleased
 
+- 2026-11-17 write-back from ansible-wifi (chat f516e57d, smc_change playbooks): languages/ansible/learned-connections.md Learned 2026-11-17 (m) (`ansible_ssh_timeout` is the connect timeout behind
+  "banner exchange"; a play var outranks `-T`).
 - 2026-11-17 write-back from ansible-wifi (chat f516e57d, rise 9f17dd64): languages/ansible/learned-lint-and-tests.md Learned 2026-11-17 (a) (a lint delta gate brings a rewritten file's old findings
   in as new) and (b) (`shell` with a pipe: `pipefail` plus `executable: /bin/bash`).
 

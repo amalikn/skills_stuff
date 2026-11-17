@@ -45,3 +45,11 @@ Part of [ansible.md](../ansible.md).
 > ("argument -o: expected one argument", then "A worker was found in a dead state"). Pass such a value as JSON:
 > `-e '{"ansible_ssh_common_args": "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"}'`. Also: an inventory that pins
 > `ansible_python_interpreter=/usr/bin/python3.10` (Ubuntu 22.04) fails every module on 24.04 (python3.12); pin the interpreter per OS.
+
+> **Learned 2026-11-17 (m)** · ansible-core 2.21.6 ssh connection plugin · VERIFIED_PRIMARY (`ansible-doc -t connection ssh`: option `timeout`, default 10, CLI `--timeout`, env
+> `ANSIBLE_TIMEOUT`/`ANSIBLE_SSH_TIMEOUT`, ini `[defaults]`/`[ssh_connection] timeout`, var `ansible_ssh_timeout`; `-vvv` showed `-o ConnectTimeout=60` from `-e ansible_ssh_timeout=60`) ·
+> Source: ansible-wifi smc_change playbooks, 2026-11-17 · Falsifier: `-T 60` changing ConnectTimeout while a play var sets `ansible_ssh_timeout`
+>
+> The connect timeout behind "Connection timed out during banner exchange" is the ssh plugin's `timeout`, 10 s by default. Behind a proxy that takes seconds to hand over (Teleport `tsh
+> proxy ssh`, a satellite link), set `ansible_ssh_timeout` in the play's `vars:` next to `ansible_ssh_args`/`ansible_ssh_retries`. A play var outranks the `-T`/`--timeout` option, so once
+> it is set only `-e ansible_ssh_timeout=N` changes it for one run; say so beside the var.
