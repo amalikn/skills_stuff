@@ -69,6 +69,8 @@ Known to every project here (operator, 2026-11-02):
   engine interlocks (`references/engine-composition.md`).
 - **skill-drawio**: any `.drawio` file or diagram from data. One YAML flow map draws step pages, flowcharts, vertical swimlanes and BPMN (`references/charts-and-trace.md`); `trace_query.py` answers
   from a map before reading the code, and `trace_sync.py` holds a map to the code it cites.
+- **skill-ascii-diagrams** (`specialists/project/skill-ascii-diagrams`; operator, 2026-11-17): any ASCII diagram in a document. `just ascii-flow-render` draws from a JSON spec, `just ascii-fix`
+  repairs a drawn one (diff, then `--apply`; never a GENERATED file), and `ascii-fix --check` gates a project's check.
 - **skill-proxmox** (`specialists/platform/skill-proxmox`; operator, 2026-11-09): invoke it for any Proxmox VE 9.x work (nodes, clusters, storage and Ceph, networking and SDN, VMs and containers,
   migration, access control and API tokens, backups and PBS, HA, upgrades, notifications) and for OpenTofu with the bpg/proxmox provider. It reads by default; any write to a node needs the project's
   authorization and `--apply`. Node names, addresses and VMIDs stay in the project. Reusable Proxmox learning is written back to the pack before the session closes (its `SKILL.md`, Standing write-back
