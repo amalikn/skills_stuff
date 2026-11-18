@@ -25,6 +25,9 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 2026-11-18 `references/data-model.md` section 10: Learned, a Module's `asset_tag` is unique and one serial per Module Type is enforced (3.2.9); a status is usable on a model only when attached to its content type
+- 2026-11-18 `references/lifecycle-and-replacement.md`: Learned (candidate), exchange identity between the position record and the removed unit's record, park unique values first, key unit history to the asset tag
+
 - 2026-11-18 `references/api-and-writers.md`: Learned, read changed objects per model with `last_updated__gte`; the object-changes walk does not scale on a busy instance
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 - 20261110 `references/upgrade-and-troubleshooting.md` new section "Base image upgrades with a frozen constraints file": two Learned 2026-11-10 entries (re-pin base packages before the build; 3.2.3 to 3.2.9 migrations and beat start time; release-note headings for core and apps), from unified-network-controller f3b6570e

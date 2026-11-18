@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261118_1557
+Last rotated: 20261118_2051
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261118_2049 — storage identity readable on x86 and Pi; low-touch description record (name, locid) (v0.14.9 -> v0.15.0)](#20261118_2049--storage-identity-readable-on-x86-and-pi-low-touch-description-record-name-locid-v0149---v0150)
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
 - [20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)](#20261117_1922--smc_change-state-file-timing-connect-timeout-30-s-offline-smcs-fail-incomplete-ssh_handshake_timesh-v0147---v0148)
 - [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
@@ -36,7 +37,6 @@ Last reviewed: 2026-10-27
 - [20261106_1545 — smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 -> v0.12.6)](#20261106_1545--smc_change-export-to-a-company-task-file-tracker-orders-resumed-runs-by-attempt-v0125---v0126)
 - [20261106_1300 — WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 -> v0.12.5)](#20261106_1300--wan-routing-confirmed-live-link-health-per-leg-grafana-tunnel-measured-link-figures-v0124---v0125)
 - [20261106_1029 — Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)](#20261106_1029--pi-clock-with-no-rtc-on-ubuntu-2404-measured-v0123---v0124)
-- [20261105_1758 — URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)](#20261105_1758--url-capture-dns-mechanism-measured-records-plan-proposed-v0122---v0123)
 
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 ->
   v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
@@ -79,6 +79,14 @@ Last reviewed: 2026-10-27
 - [20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)](#20261102_1756--smc_change-skip-probe-or-force-per-smc-close-v0116---v0117)
 
 ---
+
+## 20261118_2049 — storage identity readable on x86 and Pi; low-touch description record (name, locid) (v0.14.9 -> v0.15.0)
+
+- references/07_hardware-overlay.md: Learned 2026-11-18 (VERIFIED_PRIMARY, two boxes): CFast model, serial and world-wide ID through `lsblk` and sysfs on x86; SD card ID, maker, date and serial
+  in sysfs on a Pi; `smartctl` present on both; no package needed.
+- references/02_service-map.md: Learned 2026-11-18 (VERIFIED_PRIMARY, one low-touch box): the per-unit description record in `/var/local/cnmaestro-provisioning/log.<MAC>` (`name`, `locid` from
+  redis `next_locid`, `lot no`, `us`); the management address ends in `locid`; `name` is the RPZ record.
+- From the unified-network-controller asset custody (D17) session of 2026-11-18, read-only reads on the operator's instruction.
 
 ## 20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)
 
@@ -190,9 +198,3 @@ warburton-smc01); `scripts/README.md` updated. From smc-resiliency S3. manifest 
 
 `references/07_hardware-overlay.md`: Learned 2026-11-06, a 24.04 box with no RTC boots at systemd's build date unless `/usr/lib/clock-epoch` sets a floor (systemd 255 reads it); chrony with the
 gateway by address steps a 22.5 h error 16.3 s after boot without DNS (smc-resiliency S2 report section 8, apn 1dc80235). manifest 0.12.3 -> 0.12.4.
-
-## 20261105_1758 — URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)
-
-`references/09_url-capture-pcap.md`: Learned 2026-11-05 (b), what the v2 DNS capture holds (queries only, IPv4 only, a new tcpdump per 5-minute chunk, no drop count), one measured day (mornington 1.8
-M queries, 2.3% to outside resolvers), measured smaller formats (3-6x records, 27-59x daily), the pcapfix cost for 202610 (154,097 files, 143 corrupt incl. 47 v2 chunks; parallel 6.4x faster), macOS
-tcpdump cannot read a pcap from stdin, and the proposed lossless-records plan (not decided). Same entry: v8 promoted over v6 after the 202610 process run (ref 09).

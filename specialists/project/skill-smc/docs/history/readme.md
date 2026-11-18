@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261118_2051.md](changelog-20261118_2051.md) 1 entry, 2026-11-05 to 2026-11-05: URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)
 - [changelog-20261118_1557.md](changelog-20261118_1557.md) 6 entries, 2026-11-02 to 2026-11-05: v8 resumable PCAP fetch, EFS find, Teleport path loss probe (v0.12.1 -> v0.12.2); smc_change Teleport login gate (v0.12.0 -> v0.12.1); Iridium batches 1-3 marked; rise deploy flashes; smc_mark_iridium.py (v0.11.9 -> ...
 - [changelog-20261117_1926.md](changelog-20261117_1926.md) 2 entries, 2026-11-02 to 2026-11-02: update:stats cron standard, port guard after cron starts (v0.11.5 -> v0.11.6); smc_change flows held to the code (v0.11.4 -> v0.11.5)
 - [changelog-20261117_1859.md](changelog-20261117_1859.md) 8 entries, 2026-11-01 to 2026-11-02: smc_change specs, trackers, shared scripts; AVR numbers ruling (v0.11.3 -> v0.11.4); AVR emergency and SMS numbers (v0.11.2 -> v0.11.3); smc_qos back on the meta-package (v0.11.1 -> v0.11.2); Kernel fix reaches rise ...

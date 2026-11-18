@@ -197,6 +197,22 @@ def classify(cmdline, held):
 > return RollbackOutcome("rolled_back", "reachable")
 > ```
 
+> **Learned 2026-11-18** · any language, files rewritten by a post-edit formatter hook · VERIFIED_PRIMARY (one edit of three strings in a 1,400-line governed markdown file came back as 315
+> lines added and 304 removed; a whitespace-insensitive token comparison with HEAD found 52 changed blocks, among them bold spans split across table cells) · Source: unified-network-controller
+> CHANGELOG 20261118_1947, commit b54b707e · Falsifier: a formatter that is idempotent on the committed file, so an edit's diff is the edit.
+>
+> After a tool-mediated edit of a governed file, compare `git diff --numstat` with the size of the edit made. When it is larger, compare tokens, not lines, to tell a re-wrap from damage; restore
+> the file from version control and apply the edit by exact replacement with a match-count guard (abort unless exactly one match), outside the hook. Never bless a whole-file reflow as "formatting".
+>
+> ```python
+> # token comparison against HEAD: every non-equal block is printed
+> old = subprocess.run(["git", "show", "HEAD:./" + path], capture_output=True, text=True).stdout
+> toks = lambda s: re.sub(r"-{3,}", "---", s).split()
+> for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, toks(old), toks(new), autojunk=False).get_opcodes():
+>     if tag != "equal":
+>         print(tag, toks(old)[i1:i2], toks(new)[j1:j2])
+> ```
+
 > **Learned 2026-11-16** · any language, shared CLIs called by hooks · VERIFIED_PRIMARY (the markdown hook `governance/hooks/markdown-wrap-toc.sh` runs
 > `table-reflow/cli.mjs FILE --width 200 --measure-rendered --in-place` on every markdown write; a new path rule made default-on was live for about eight minutes
 > before a side note caught it; ten files were written in that window, none changed) · Source: scripts_stuff `vscode_extensions/shared/table-reflow/cli.mjs`

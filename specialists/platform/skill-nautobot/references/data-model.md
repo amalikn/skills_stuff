@@ -303,6 +303,29 @@ Gotcha: a Module has either `parent_module_bay` (installed) or `location` (spare
 Source: `nautobot/dcim/models/devices.py:1981-2022,2120-2138`, `nautobot/dcim/models/device_components.py:1985-1999`; `docs/user-guide/core-data-model/dcim/module.html`,
 `docs/user-guide/core-data-model/dcim/modulebay.html`.
 
+> **Learned 2026-11-18** · Nautobot 3.2.9 · VERIFIED_PRIMARY (model introspection on one running deployment, read-only) · Source: `nautobot-server nbshell --command` on that deployment (excerpt
+> below; unified-network-controller CHANGELOG 20261118_2043, commit 409ea52e) · Falsifier: a 3.2.9 Module saved with an asset tag another Module holds, or two Modules of one Module Type saved with
+> the same serial.
+>
+> A Module carries its own `asset_tag` (unique, may be empty) and `serial` (not unique alone: constraint `dcim_module_module_type_serial_unique`, one serial per Module Type). A replaceable part
+> (a storage card, a battery) can therefore be an asset in its own right with no custom model, and a clone presenting an existing serial of the same type is refused by core. An InventoryItem's
+> `asset_tag` is unique too, its `serial` is not. A built-in status is usable on a model only when that model's content type is attached to it: `Retired` existed on the deployment and was not
+> among the Device statuses, so list the statuses of the model before designing on a built-in name.
+>
+> ```python
+> # read-only; unified-network-controller, run through its host recipe, commit 409ea52e
+> from nautobot.dcim.models import Device, Module, InventoryItem
+> from nautobot.extras.models import Status
+> from django.contrib.contenttypes.models import ContentType
+> ct = ContentType.objects.get_for_model(Device)
+> print(sorted(Status.objects.filter(content_types=ct).values_list("name", flat=True)))
+> for m in (Module, InventoryItem, Device):
+>     print(m.__name__, [(f.name, getattr(f, "unique", None), f.null) for f in m._meta.get_fields() if f.name in ("serial", "asset_tag", "location")])
+> print([c.name for c in Module._meta.constraints])
+> ```
+>
+> No visual surface: no screenshot.
+
 ## 11. Cables and paths
 
 Decision: a Cable joins two physical terminations (interface, front/rear port, console, power, circuit termination); Nautobot traces end-to-end paths through patch panels and circuits from cables

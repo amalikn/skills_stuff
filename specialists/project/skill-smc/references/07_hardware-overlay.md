@@ -1245,3 +1245,20 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > - BOXER-6404: one 59.6 GiB CFast (Innodisk 3ME3 or Transcend TS64GCFX600), GPT: ESP 1 GiB, `/boot` ext4 2 GiB, LVM 56.6 GiB, `ubuntu-vg` 0 free, root
 >   LV 56.6 GiB at 24 to 33% used (one 98%, pruned since). BOXER-6641: two 119.2 GiB Transcend SATA SSDs, each GPT ESP 1 GiB + ext4 118.2 GiB; the
 >   second is the standby install `smc_disk_failover` boots after 24 h without internet.
+
+> **Learned 2026-11-18** · x86 `rcp` (CFast) and Pi `rct` (SD), one box of each · VERIFIED_PRIMARY (read-only on two production boxes: a sample, not the fleet) · Source: the commands below, run
+> through Teleport for unified-network-controller (its CHANGELOG 20261118_2043, commit 409ea52e) · Falsifier: a box whose `lsblk -d -o SERIAL` is empty, or a Pi with no `cid` under its SD card's
+> sysfs device.
+>
+> Storage identity is readable with what is already on the box, no package needed. An x86 box gives its CFast card's model and serial through `lsblk` and a world-wide ID in sysfs; a Pi gives its SD
+> card's card ID, name, maker ID, manufacture date and serial in sysfs. `smartctl` was present on both. Use: a controller can track the card as an asset of its own and see a card swap or a cloned
+> card.
+>
+> ```sh
+> # read-only
+> lsblk -d -n -o NAME,TYPE,TRAN,SIZE,MODEL,SERIAL
+> cat /sys/block/sda/device/wwid                      # x86 CFast or SSD
+> for f in cid name manfid date serial; do cat /sys/block/mmcblk0/device/$f; done   # Pi SD card
+> ```
+>
+> No visual surface: no screenshot.

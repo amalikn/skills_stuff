@@ -438,3 +438,18 @@ so a hand install would not survive a reboot. The operator decided no SNMP on th
 
 > **Learned 2026-11-02.** `artisan update:stats` is `*/5` by `smc_application`, and that is the standard (operator). Five of 26 rct boxes read held `*/1`, live and in the lower dir. A crontab on an
 > overlay SMC has two copies: `crontab` for live, `/media/root-ro/var/spool/cron/crontabs/root` for the lower dir. Detail: `13_known-issues.md`.
+
+> **Learned 2026-11-18** · `smc_ltp` low-touch box, cnmaestro-provisioning · VERIFIED_PRIMARY (read-only on one production box) · Source: the command below, for unified-network-controller (its
+> CHANGELOG 20261118_2015, commit 45ffdb8f) · Falsifier: a low-touch unit whose management address does not end in its `locid`.
+>
+> Each unit's log `/var/local/cnmaestro-provisioning/log.<MAC>` holds the description record the script wrote: `name` (function and number: `sm-N`, `home-N`, `ap-N`, `3000L-ap-N`, `ap-ep2p-N`),
+> `locid` (an integer from the redis key `next_locid`; the unit's management address ends in it), `lot no`, `us` (the upstream unit's name), `ext`, `mgmt_ip`, `public_ip`. The `name` is also the
+> unit's RPZ record. Name and `locid` together are the position's location and function identity: they describe the slot, not the hardware, and stay when a unit is swapped.
+>
+> ```sh
+> # read-only: the newest description record of one unit, and the counter's key
+> grep -a -o -E '\{[^{}]*"locid"[^{}]*\}' /var/local/cnmaestro-provisioning/log.<MAC> | tail -1
+> redis-cli --scan
+> ```
+>
+> No visual surface: no screenshot.

@@ -35,3 +35,25 @@ unreachable or monitoring binds to the wrong history, hold the replacement in ex
 rollback audit entries. Acceptance requires physical custody, logical service continuity, correct IP/interface and monitoring link, and an operator-visible result.
 For a cross-platform monitoring identity, read OpenWISP [identity and registration](../../skill-openwisp/references/identity-and-registration.md) only when that link
 actually changes.
+
+## Learned
+
+> **Learned 2026-11-18** · design pattern, `reusable_candidate` until a second project uses it · VERIFIED_PRIMARY (one project's app code, read) and USER_STATED (the operator's rule that a Device
+> is a position) · Source: unified-network-controller `nautobot/apps/unc-ownership/unc_ownership/inventory/replacement.py` at commit 409ea52e (excerpt below) · Falsifier: a deployment whose
+> uniqueness rule validates both records of an exchange together, so nothing needs parking.
+>
+> When the Device record is the logical position and a second record carries the removed unit, the two records exchange hardware identity (serial, MACs) in one transaction; nothing is deleted
+> and the returned unit keeps a record with its real serial. Any value that is unique (a serial under a uniqueness rule, core's unique `asset_tag`) is parked empty on one record first, because each
+> save is validated alone and would otherwise find the other record still holding it. History that must follow the physical unit is keyed to an identifier stored with the unit (its asset tag), never
+> to the Device primary key: the unit changes record at every swap. Read the project's replacement code before advising "the Device is the unit" or "the Device is the position": on 2026-11-18 advice
+> given without that read contradicted a built, decided rule and had to be withdrawn.
+>
+> ```python
+> # replacement.py apply_swap, commit 409ea52e: park, then exchange
+> for obj, serial in ((replacement, ""), (in_service, to_position), (replacement, to_staged)):
+>     obj.serial = serial
+>     setattr(obj, ACK_ATTRIBUTE, True)
+>     obj.validated_save()
+> ```
+>
+> No visual surface: no screenshot.
