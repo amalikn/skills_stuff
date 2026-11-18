@@ -34,6 +34,7 @@ Last rotated: 20261118_1754
 
 ## Unreleased
 
+- 2026-11-18 `references/pitfalls.md`: Learned, a check recipe of one line per step hides every failure after the first; run all and fail at the end (unified-network-controller). The bootstrap template is unchanged; fix open
 - 2026-11-18 `references/pitfalls.md`: Learned entry, `history_layout.py` cuts a description inside a Markdown link and leaves a broken link in the generated history index (unified-network-controller audit 16); the script is unchanged, fix open
 - 2026-11-18 `scripts/records/move_sections.py`: a BEGIN/END block marker before the next heading stays in the source instead of moving with the section (orphaned END found in of-si); tests BlockMarkerTest; references/pitfalls.md Learned.
 - 2026-11-18 `scripts/records/budget_plan.py`: a navigation block with no `skill-ai-it-version` marker is reported as skipped by govern and refused by the upgrader, not hinted for an upgrade that cannot run; references/pitfalls.md Learned (from of-si).

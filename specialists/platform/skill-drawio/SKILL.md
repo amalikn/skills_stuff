@@ -96,6 +96,8 @@ Stdlib only (PyYAML at the edge, to read a map). Runnable front ends sit at the 
   boxes take the same symbols (`look.component_shapes`) ([references/visual-style.md](references/visual-style.md)); every look choice is a `drawing.look` key.
 - One map, four views: step pages, `look.flowcharts`, `look.swimlanes` and `look.bpmn` ([references/charts-and-trace.md](references/charts-and-trace.md)). A map carrying a `trace:` block is held to its code by `trace_sync.py` in the
   project's flow check; read it with `trace_query.py` before reading the code.
+- A refactor that moves a public name between engine modules leaves a re-export at the old place (2026-11-18: `HEAD_LINE_H` left `flowmap.pages` for
+  `flowmap.flow_head` in 8a7a276, and unified-network-controller's test reading it errored a week later; `consumer_check` compares drawings, not imports).
 - A refactor of the engine must leave every consumer's drawing byte-identical; prove it with the before and after files.
 - An engine change that alters drawings on purpose runs `just consumer-check` before the push, lists the consumers that change, and tells each one (its hub or session) to run its own flows recipe,
   since its `just check` drifts until then (2026-11-06: taller diamonds pushed without it).

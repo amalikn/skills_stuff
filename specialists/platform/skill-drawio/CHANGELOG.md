@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-18 SKILL.md standing rule: a moved public name keeps a re-export at its old module (UNC test broke on `pages.HEAD_LINE_H` after 8a7a276); no re-export added yet
 - 2026-11-17 ASCII work (operator): `ascii-fix` built here (repair existing diagrams; stage 1 checks and snapping; borders with arrows and tees), then
   the ASCII tools, tests, sources and ROADMAP items moved to skill-ascii-diagrams, whose CHANGELOG holds the detail; a pointer stays in SKILL.md.
 - 2026-11-16 (operator: "ASCII scripts part of drawio as immediate documentation; drawio when explicitly asked"): the ASCII renderer (now in skill-ascii-diagrams) promoted from apn smc-resiliency with its tests (8 tests) and `just ascii-flow-render`; SKILL.md Standing rules: ASCII first; references/data-first-diagrams.md Learned 2026-11-16 with the code excerpt. `ruff.toml` and `just lint` (in `just check`) added for new Python, the 111 existing files excluded (operator: a lint config in every project and skill worked on). Consumers: no engine change.

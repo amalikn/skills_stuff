@@ -363,6 +363,8 @@ Both hit this skill's own runs on 2026-09-27; details in the markdown governance
 - **Reviewers editing markdown trip the formatter hook** (2026-11-18): the post-edit hook re-pads tables and splits long rows, which broke a generated tracker's
   row matching (the generator then wanted 423 rows rewritten). Tell document reviewers to edit tables and generated files by script, and to compare cells
   before and after (`table_cells_diff.py`), or restore and redo.
+- **"Not in the catalog" needs every catalog part read** (2026-11-18): a reviewer compared a live Location Type with the catalog's `location-types.yaml`
+  only; `controllers.yaml` defines it. Grep the whole catalog source before registering a live object as undefined.
 - **Spoke inboxes are claim surfaces** (2026-11-18, unified-network-controller): a hub directive moving plan dates sat unticked for six days while the plan tracker,
   plan timeline, target map, ROADMAP and three `KEEP` blocks kept the old dates and showed two steps LATE. Read every unticked inbox or directive line as a claim against
   the plan surfaces; an unticked directive older than a day is a defect row.

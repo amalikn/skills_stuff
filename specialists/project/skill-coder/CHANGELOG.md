@@ -29,6 +29,7 @@ Last rotated: 20261118_1557
 
 ## Unreleased
 
+- 2026-11-18 `references/tooling-and-runtime.md`: Learned, a closing check recipe runs every step and fails at the end (unified-network-controller)
 - 2026-11-18 `references/testing.md`: Learned, smoke-test a changed read-only script on the real host by piping the module over stdin (no file on the host), with the I/O injected for the offline test (unified-network-controller)
 - 2026-11-18 write-back from apn smc-resiliency (staleness audit 20261118_1715): references/design-patterns.md P-76 (refuse a repeated key when loading YAML;
   `get_single_data()` instead of a suppressed S506).

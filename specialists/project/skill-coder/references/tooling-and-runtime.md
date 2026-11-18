@@ -89,3 +89,8 @@ _spec.loader.exec_module(pt)
 for label, cmd, stdin in todo:
   print(("apply " if a.apply else "plan  ") + label, flush=True)
 ```
+
+> **Learned 2026-11-18** · task runner · VERIFIED_PRIMARY · Source: unified-network-controller justfile `check` and `lint` (commit after d8e02da0) · Falsifier: a just recipe of `@` lines that still runs the steps after a failing one
+> In `just`, each `@cmd` line of a recipe ends the recipe when it fails, so a check made of several steps reports only the first failure. Write the
+> closing check as one shebang recipe that runs every step through a small `step()` wrapper and exits 1 at the end with the failed steps named
+> (excerpt in skill-ai-it `references/pitfalls.md`, same date). Proved red then green: a moved plan date failed the governance step and doc freshness still ran.

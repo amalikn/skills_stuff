@@ -200,3 +200,17 @@ invocation half.
 > The history index cuts each description at a fixed length, and a cut inside a Markdown link leaves `[audit follow-up](../../reports/project-reviews/unc-technical-audit-followup-20261`:
 > a broken link in a live index that the generated block forbids fixing by hand. Cut at a word boundary outside any link, or drop links from descriptions.
 
+> **Learned 2026-11-18** · project `check` recipes · VERIFIED_PRIMARY · Source: unified-network-controller justfile `check` (staleness audit 16) · Falsifier: a project whose check lists every failing step after an early one fails
+> A `check` recipe written as one `@` line per step stops at the first failing step: a governance failure hid 47 overdue documents behind it, found only once
+> the first failures were fixed. Run every step and fail at the end. The project's realisation:
+
+```just
+check: _require-venv
+    #!/usr/bin/env bash
+    failed=()
+    step() { "$@" || failed+=("$(basename "${2:-$1}")"); }
+    step {{py}} scripts/check_governance.py
+    step {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
+    step just lint
+    if [ ${#failed[@]} -gt 0 ]; then echo "check FAILED in: ${failed[*]}" >&2; exit 1; fi
+```

@@ -17,6 +17,7 @@
 
 ## Unreleased
 
+- 2026-11-18 (learned): SKILL.md Tool hazards: a "not in the catalog" finding needs the whole catalog read (a false finding in unified-network-controller audit 16)
 - 2026-11-18 (learned): SKILL.md Tool hazards: Phase 4 split across parallel reviewers and merged by path; reviewers' markdown edits trip the formatter hook on tables
 - 2026-11-18 (feature): `scripts/broken_path_triage.py` (+ test, `just audit-broken-triage`) sorts claim_scan's BROKEN rows; promoted from unified-network-controller audit 16. `ruff.toml` adopted (existing files excluded) with `just lint`
 - 2026-11-18 (learned): SKILL.md Tool hazards: `--keep-snapshot` also keeps `.staleness-audit/` (code and prose disagree; script unchanged, fix open)
