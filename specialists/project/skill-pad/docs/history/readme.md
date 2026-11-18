@@ -17,6 +17,8 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261118_2213.md](changelog/changelog-20261118_2213.md) 1 entry, 2026-11-10 to 2026-11-10: usage proposal moved to docs/ with three diagrams
+- [changelog-20261118_2149.md](changelog/changelog-20261118_2149.md) 1 entry, 2026-11-10 to 2026-11-10: usage proposal reviewed and rewritten; archcore, lint and repomix
 - [changelog-20261111_1224.md](changelog/changelog-20261111_1224.md) 1 entry, 2026-11-10 to 2026-11-10: own skill replaces Pad's skill text; plugin parts rebuilt; governance scaffold
 
 <!-- history-index:end -->

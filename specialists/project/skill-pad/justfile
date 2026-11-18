@@ -58,6 +58,11 @@ check: test lint governance
 conventions *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_conventions.py" {{ARGS}}
 
+# Check Pad items against the writing standard (bold labels, a closing DONE comment, logs attached): refs, or --days N for recent ones. Read-only.
+[no-cd]
+item-check *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_item_check.py" {{ARGS}}
+
 # Export the current folder's workspace to Markdown: plan by default, --out <file> --apply to write.
 [no-cd]
 export *ARGS: _require-venv

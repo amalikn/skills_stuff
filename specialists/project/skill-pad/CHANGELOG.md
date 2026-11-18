@@ -9,10 +9,18 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261118_2149
+Last rotated: 20261118_2213
 ---
 
 # Changelog — skill-pad
+
+## 20261118_2212 — Tickets tell the whole story: bold labels, updates, a closing statement, logs attached; item-check
+
+- Operator, 2026-11-18 (smc-resiliency bench session, on a closed task with a one-line comment): every item carries proper updates, a proper statement when it moves to done, the log
+  files of the work, bold section labels with spacing, and bullets in comments; "add this in the skill pad so that when the skill is used it will enforce that rule", for all projects.
+- `SKILL.md` Rules: "Tickets tell the whole story". `docs/pad-usage-guidelines-20261110_1628.md` 3.3: bold bodies, the bug body, the three duties with an example, DONE and CLOSED types.
+- `conventions/apn-baseline.toml` `writing-standard` rewritten and raised to must; applied to the smc-resiliency and unified-network-controller workspaces (`just conventions`).
+- `scripts/pad_item_check.py` (`just item-check`, test `tests/test_pad_item_check.py`): read-only check of labels, closing comment, update on work in progress, log named but not attached.
 
 ## 20261118_2200 — A run planned and recorded in Pad with fields set at create
 
@@ -187,11 +195,3 @@ Last rotated: 20261118_2149
   `pad_backup.sh` updated.
 - integrations.md: container image `ghcr.io/perpetualsoftware/pad` (pin a version tag, first-run setup URL, PUID/PGID). cli-reference.md: the README
   CLI Reference is a summary of the same tree. Mirror: `references/upstream/github.com/pkgs_container_pad.md`, treated as verbatim by the checker.
-
-## 20261110_1701 — usage proposal moved to docs/ with three diagrams
-
-### Changed
-
-- `docs/pad-usage-guidelines-proposal-20261110_1628.md` (was under references/; operator: "move this under docs folder"): links repointed to
-  `../references/`; ASCII diagrams added for Pad over the trackers, the ask lifecycle, and session start when Pad is down. Pointers in SKILL.md,
-  README, AGENTS and SCRATCHPAD updated.

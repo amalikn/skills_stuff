@@ -75,17 +75,24 @@ id = "writing-standard"
 title = "Write plans, tasks and updates to the apn writing standard"
 trigger = "always"
 scope = "all"
-priority = "should"
+priority = "must"
 category = "documentation"
-content = """Plan body: line 1 `Serves: <tracker entries>`, then `Goal:` (one sentence), `Done when:` (2-4 checkable criteria from the tracker), \
-`Out of scope:`, `Waits on:` (ASK refs or none). Due date in `end_date`. Title: the outcome and its date.
-Task body: line 1 `Serves: <tracker entry>`, then `Why:` (finding and evidence path), `Do:` (next action or steps), `Done when:` (always: tracker \
-updated, just check passes), `Writes: none | repo | production` (production needs an approval ask first), `Refs:` (paths, commits, [[items]]). \
-priority, due_date and parent are fields, never text. Title: verb and object, 70 characters or fewer.
-Updates: --comment on a status change says why in one line; `pad item note` for work done (what, evidence, commit); `pad item decide` for a \
-choice (decision and the repo record); `pad item comment` for the rest: start `YYYY-MM-DD HH:MM AEDT TYPE:` with TYPE one of FINDING, BLOCKED, \
-RISK, CORRECTION, HANDOFF, NEXT; five lines at most; say what is verified and what is not; one event per comment; a correction is a new \
-CORRECTION comment, never an edit.
+content = """Every item must tell its whole story to a reader who has not seen the chat (operator, 2026-11-18).
+Body: each section label bold at the start of its own paragraph, a blank line between sections. Plan: **Serves:** (tracker entries), **Goal:** (one \
+sentence), **Done when:** (2-4 checkable criteria), **Out of scope:**, **Waits on:**. Due date in `end_date`; title: the outcome and its date. \
+Task: **Serves:**, **Why:** (finding and evidence path), **Do:** (steps), **Done when:** (always: tracker updated, just check passes), **Writes:** \
+(none | repo | production; production needs an approval ask first), **Refs:**. Bug: **Seen:**, **Evidence:**, **Cause:**, **Effect:**, **Options:**, \
+**Not verified:**, **Closure:**. priority, due_date and parent are fields, never text. Title: verb and object, 70 characters or fewer.
+Updates: write one when work starts, at each result and at each blocker: `pad item note` for work done, `pad item decide` for a choice, `pad item \
+comment` for the rest, starting `YYYY-MM-DD HH:MM AEDT TYPE:` (FINDING, BLOCKED, RISK, CORRECTION, HANDOFF, NEXT, DONE, CLOSED) and then bullets \
+(- **What:**, - **Result:**, - **Evidence:**, - **Not verified:**, - **Next:**). Complete before short; one event per comment; a correction is a new \
+CORRECTION comment, never an edit. The time comes from `date`, never from memory.
+Done: before the status moves to done, fixed, cancelled or wont-fix, add a DONE: comment (CLOSED: when not everything was done) with bullets: what \
+was done, the result against each done-when line, what could not be done and why, the evidence (paths, commit), what stays open (item refs). The \
+--comment on the status change is one line that points to it.
+Logs: work that produced a log, transcript or capture attaches it (`pad attachment upload <ref> <file>`; a cut of a large file, naming the full \
+path) and the comment names the attachment.
+Check: skill-pad `just item-check <ref>` exits 0 before an item is called done.
 Tags: only prod-write, bench, hub, skill-writeback; tracker IDs are never tags. A new tag is added to the skill-pad guidelines first."""
 
 [[convention]]

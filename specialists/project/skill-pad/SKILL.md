@@ -79,6 +79,16 @@ into that session.
   work is still confirmed in-session.
 - **Confirm before creating or changing items**, unless a loaded convention explicitly opts into autonomous capture. Use issue IDs (`TASK-5`), never slugs. Pass `--op-key` on writes so a retry does
   not apply twice; guard body rewrites with `--expected-seq`; every status change carries `--comment` saying why.
+- **Tickets tell the whole story (operator, 2026-11-18; applies in every project).** A reader who opens one item must learn what happened without the chat:
+  - **Body:** every section label is bold and starts its own paragraph (`**Serves:**`, `**Why:**`, `**Do:**`, `**Done when:**`, `**Writes:**`, `**Refs:**`; a bug: `**Seen:**`, `**Evidence:**`,
+    `**Cause:**`, `**Effect:**`, `**Options:**`, `**Not verified:**`, `**Closure:**`), with a blank line between sections.
+  - **Updates as the work runs:** a comment or note at the start, at each result and at each blocker, written as bullets (`- **What:**`, `- **Result:**`, `- **Evidence:**`, `- **Not verified:**`,
+    `- **Next:**`), complete before short.
+  - **Closing statement:** before an item moves to done (or fixed, cancelled, wont-fix) it gets a `YYYY-MM-DD HH:MM AEDT DONE:` comment (`CLOSED:` when not all was done) with bullets: what was done,
+    the result against each done-when line, what could not be done and why, the evidence, and what stays open with its item refs. The one-line `--comment` on the status change points to it.
+  - **Logs are attached:** work that produced a log, transcript or capture uploads it to the item (`pad attachment upload <ref> <file>`; a cut of a large one, with the full path named) and the
+    comment names the attachment.
+  - **Check before done:** `just -f <skill-pad>/justfile item-check <ref>` (or `--days 1` at closeout) must exit 0. Standard and examples: [docs/pad-usage-guidelines-20261110_1628.md](docs/pad-usage-guidelines-20261110_1628.md) 3.3.
 - **Claim before working an item** (`pad item claim <ref>`); on `lease_held` pick other work, never loop.
 - **Through the CLI only**: never read `~/.pad/pad.db` or `~/.pad/attachments/` directly.
 - Under Codex or another harness set `PAD_AGENT=<name>`, or writes are attributed to the human whose credentials are used.

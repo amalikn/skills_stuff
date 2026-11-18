@@ -95,6 +95,11 @@ skill = "skill-pad"
 reason = "Pad helper used by every apn project with a Pad workspace; lives in the skill (operator, 2026-11-10)"
 
 
+[modules."scripts/pad_item_check.py"]
+status = "promoted"
+skill = "skill-pad"
+reason = "Read-only check of Pad items against the writing standard (bold labels, closing DONE comment, update on work in progress, logs attached); operator 2026-11-18"
+
 [modules."scripts/pad_rewrite.py"]
 status = "promoted"
 skill = "skill-pad"

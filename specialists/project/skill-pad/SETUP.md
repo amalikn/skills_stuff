@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing Pad and skill-pad on the operator's Mac, and checking that each part works
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-18
 Summary: A working setup needs the pad CLI from Homebrew, an initialised local Pad, the two install links, the pack's venv, the backup and link-opener jobs and the presence hooks.
 Depends on: justfile, .mise.toml, scripts/pad_backup.plist, scripts/pad_link_opener.plist
 ---
@@ -27,7 +27,7 @@ Depends on: justfile, .mise.toml, scripts/pad_backup.plist, scripts/pad_link_ope
 
 | Tool       | Version | Pinned in / from                                    |
 | ---------- | ------- | --------------------------------------------------- |
-| pad        | 0.19.2  | `brew install perpetualsoftware/tap/pad`            |
+| pad        | 0.21.0  | `brew install perpetualsoftware/tap/pad` (installed 0.21.0, read 2026-11-18; the CLI map is still v0.19.2) |
 | Python     | 3.14    | `.mise.toml` (venv in the working-cache peer)       |
 | just, mise | current | Homebrew                                            |
 | gh, curl   | current | Homebrew; `gh auth status` for the upstream refresh |

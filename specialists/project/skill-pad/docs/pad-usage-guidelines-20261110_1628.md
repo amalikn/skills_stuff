@@ -179,24 +179,38 @@ plan bodies were one line, task bodies one paragraph, and decisions and work don
 
 **Plan body** (`end_date` holds the date; title = the outcome and its date, e.g. "R2.1 Pi A/B working by Fri 13 Nov"):
 
-```text
-Serves: plan-timeline.yaml R2.1; target-map.yaml S1
-Goal: one sentence, the outcome
-Done when: 2-4 checkable criteria, copied from the tracker
-Out of scope: what this plan will not do
-Waits on: ASK-N (or none)
+```markdown
+**Serves:** plan-timeline.yaml R2.1; target-map.yaml S1
+
+**Goal:** one sentence, the outcome
+
+**Done when:** 2-4 checkable criteria, copied from the tracker
+
+**Out of scope:** what this plan will not do
+
+**Waits on:** ASK-N (or none)
 ```
 
 **Task body** (`priority`, `due_date`, `parent` are fields; title = verb and object, 70 characters or fewer, e.g. "Trim url_capture on three boxes"):
 
-```text
-Serves: bug-tracker N08
-Why: 1-2 sentences, the finding with its evidence path
-Do: the next action, or numbered steps
-Done when: checkable; always "tracker updated, just check passes"
-Writes: none | repo | production (production = an approval ask first)
-Refs: paths, commits, [[related item]]
+```markdown
+**Serves:** bug-tracker N08
+
+**Why:** 1-2 sentences, the finding with its evidence path
+
+**Do:** the next action, or numbered steps
+
+**Done when:** checkable; always "tracker updated, just check passes"
+
+**Writes:** none | repo | production (production = an approval ask first)
+
+**Refs:** paths, commits, [[related item]]
 ```
+
+**Bug body** (fields `tracker_id`, `section`, `severity`, `order`): `**Seen:**`, `**Evidence:**`, `**Cause:**`, `**Effect:**`, `**Options:**`, `**Not verified:**`, `**Closure:**`, the same way.
+
+**Labels are bold and each starts its own paragraph** (operator, 2026-11-18: "there is no proper separation, so it looks like a lot of stuff is jumbled up. At least just bold those
+categories"). Plain `Serves:` lines run together in Pad's view; the bold label and the blank line are what separate the sections.
 
 **Updates: four channels, one job each.**
 
@@ -205,9 +219,30 @@ Refs: paths, commits, [[related item]]
 | `--comment` on a status change | why the status moved      | one line                                                            |
 | `pad item note`                | work done                 | what, evidence, commit (`rise 74d574b0; canary passed 4/4 gates`)   |
 | `pad item decide`              | a choice made             | the decision and a pointer to the repo record                       |
-| `pad item comment`             | everything else, a person | `YYYY-MM-DD HH:MM AEDT TYPE:` then at most five lines; ends `Next:` |
+| `pad item comment`             | everything else, a person | `YYYY-MM-DD HH:MM AEDT TYPE:` then bullets (What, Result, Evidence, Not verified, Next) |
 
-Comment types: `FINDING`, `BLOCKED`, `RISK`, `CORRECTION`, `HANDOFF`, `NEXT`. Each comment holds one event and says what is verified and what is not; a correction is a new `CORRECTION:` comment that
+**An item tells its whole story** (operator, 2026-11-18, after a closed task whose only comment was one line: "I don't have any idea what has happened, why it can't do those
+tests"). Three duties, checked by `just item-check` (`scripts/pad_item_check.py`):
+
+- **Updates as the work runs:** one when work starts, one at each result, one at each blocker. Bullets, complete before short:
+
+  ```markdown
+  2026-11-18 21:25 AEDT FINDING:
+  - **What:** bootloader 2022-04-26 flashed on the bench Pi; plain boot and an armed trial observed
+  - **Result:** both boot partition 3 although slot A (partition 2) is committed; the trial resets once and boots partition 3 plainly
+  - **Evidence:** console-pi4-bench.log 21:18:13 and 21:21:09 to 21:21:37 (attached)
+  - **Not verified:** bootloader 2022-01-25 (next)
+  - **Next:** flash 2022-01-25 and repeat
+  ```
+
+- **A closing statement before done:** a `DONE:` comment (`CLOSED:` when not everything was done): what was done, the result against each done-when line, what could not be done and
+  why, the evidence, what stays open with its item refs. The status change's `--comment` is one line pointing to it.
+- **Logs attached:** `pad attachment upload <ref> <file>` for every log, transcript or capture the work produced (a cut of a large file, naming the full path); the comment names the
+  attachment. `pad attachment list --item <ref>` shows them.
+
+The time in a comment comes from `date`, not from memory or a log line.
+
+Comment types: `FINDING`, `BLOCKED`, `RISK`, `CORRECTION`, `HANDOFF`, `NEXT`, `DONE`, `CLOSED`. Each comment holds one event and says what is verified and what is not; a correction is a new `CORRECTION:` comment that
 leaves the old one in place. Reformatting an old comment to this standard is allowed only after its original text is saved verbatim as a `note` on the same item: Pad keeps item body versions, but not,
 as far as its docs show, the earlier text of an edited comment (done for smc-resiliency's 12 comments, 2026-11-10).
 
