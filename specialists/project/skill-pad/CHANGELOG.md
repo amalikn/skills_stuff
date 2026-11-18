@@ -14,6 +14,11 @@ Last rotated: 20261111_1224
 
 # Changelog — skill-pad
 
+## 20261118_2106 — item update has no --op-key; code paths in item bodies; a question without an Asks collection
+
+- `references/cli-reference.md`: Learned 2026-11-18 (v0.21.0), `item update` rejects `--op-key`; a backticked code path in an item body is checked by the project that exports it; an operator
+  question in a workspace with no Asks collection goes in as a blocking Task. From the unified-network-controller D17 session.
+
 ## 20261118_1742 — CLI at 0.21.0
 
 - `references/cli-reference.md`: Learned 2026-11-18, the installed pad is 0.21.0 (map is v0.19.2); create flags unchanged; a new bug section renders as its own

@@ -118,3 +118,10 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > The installed CLI is 0.21.0 while this file maps v0.19.2: `item create` still takes `--field key=value`, `--op-key`, `--status`, `--content`. A new `section` value on a bug renders
 > as its own generated heading in the project's bug tracker on the next `pad-trackers --apply` (BUG-185 to 191, unified-network-controller). Refresh the map per references/upgrade.md.
 
+> **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad item update BUG-196 --title ... --op-key ...` answered `Error: unknown flag: --op-key`; `pad item update --help` lists no
+> such flag, `pad item create`, `decide` and `comment` do (unified-network-controller) · Falsifier: an `item update --help` that lists `--op-key`.
+> `item update` takes no `--op-key`, so SKILL.md's "pass `--op-key` on writes" cannot be met for an update: a retried update is applied again. Make an update safe to repeat by its content (the
+> same title, body and comment), and guard a body rewrite with `--expected-seq`. A code path written in backticks in an item body is exported into the project's tracker file and is then judged by
+> that project's own checks (a short path failed a path check there): write full project paths in item bodies, or name the script without backticks. A workspace without an Asks collection holds a
+> question for the operator as a Task under its plan, blocking the work it holds up (`pad item block`); the guidelines' Asks collection is created only on the operator's word.
+
