@@ -134,6 +134,22 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > The installed CLI is 0.21.0 while this file maps v0.19.2: `item create` still takes `--field key=value`, `--op-key`, `--status`, `--content`. A new `section` value on a bug renders
 > as its own generated heading in the project's bug tracker on the next `pad-trackers --apply` (BUG-185 to 191, unified-network-controller). Refresh the map per references/upgrade.md.
 
+> **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: commands run in the smc-resiliency workspace (PLAN-56, TASK-57 to 61, BUG-62 to 68; apn f5c16060) ·
+> Falsifier: a create that drops the JSON fields, or `--workspace` writing to the folder's own workspace.
+> A whole run can be put into Pad in a few calls, with every custom field set at create:
+>
+> ```bash
+> pad item create plan "<outcome and date>" --status active --fields-json '{"end_date":"2026-11-20"}' --op-key <key> --content "Serves: ..."
+> pad item create task "<verb and object>" --parent PLAN-56 --priority high --tags '["bench"]' --op-key <key> --content "Serves: ..."
+> pad item create bug "B18-02 <what was seen>" --fields-json '{"tracker_id":"B18-02","section":"Bench run 2026-11-18","severity":"high","order":20}' --op-key <key> --content "..."
+> pad item update TASK-14 --parent PLAN-56 --status in-progress --comment "why"      # moves an existing task under the plan
+> pad item list conventions --workspace unified-network-controller                    # read another workspace from any folder
+> ```
+>
+> Practice the operator asked for the same day ("take inspiration from unc workspace", "capture all the information about a ticket"): plan the run in Pad before starting it; file
+> each finding as a bug in the other workspace's form (`tracker_id`, `section` for the session, `severity`, `order`; body: what was seen with the evidence path, cause, effect, options,
+> closure); put results on the task with `pad item note`, and what was not verified and the state left behind in the same ticket. No visual surface: no screenshot.
+
 > **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad item update BUG-196 --title ... --op-key ...` answered `Error: unknown flag: --op-key`; `pad item update --help` lists no
 > such flag, `pad item create`, `decide` and `comment` do (unified-network-controller) · Falsifier: an `item update --help` that lists `--op-key`.
 > `item update` takes no `--op-key`, so SKILL.md's "pass `--op-key` on writes" cannot be met for an update: a retried update is applied again. Make an update safe to repeat by its content (the

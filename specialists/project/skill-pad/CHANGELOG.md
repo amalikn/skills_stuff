@@ -14,6 +14,11 @@ Last rotated: 20261118_2149
 
 # Changelog — skill-pad
 
+## 20261118_2200 — A run planned and recorded in Pad with fields set at create
+
+- `references/cli-reference.md`: Learned 2026-11-18 (v0.21.0): plan, tasks and bugs created with `--fields-json`, `--parent` and `--tags` in one call each; `item update --parent` moves a
+  task under a plan; `--workspace` reads another workspace; the ticket practice the operator asked for. From the smc-resiliency bench run.
+
 ## 20261118_2149 — pad_decisions.py and a Decisions schema
 
 - `scripts/pad_decisions.py` (`just decisions`, test `tests/test_pad_decisions.py`): mirrors a project's curator ledger and decision log into a `decisions` collection, one item per
