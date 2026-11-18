@@ -73,6 +73,13 @@ class VerifyQuotesTest(unittest.TestCase):
   def test_bold_field_is_not_a_quote(self):
     self.assertEqual(vq.QUOTE.findall('**"Our Business Req" (centre):** text'), [])
 
+  def test_emphasis_in_source_ignored(self):
+    self.assertEqual(vq.check('*"a near-verbatim cleaned transcript"*', "**Note:** a near-verbatim *cleaned* transcript."), [])
+
+  def test_ellipsis_inside_quote_is_not_verbatim(self):
+    probs = vq.check('*"I don\'t want to retrofit…"*', TRANSCRIPT)
+    self.assertTrue(probs and probs[0].startswith("NOT VERBATIM"))
+
 
 if __name__ == "__main__":
   unittest.main()

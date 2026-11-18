@@ -457,6 +457,12 @@ python ~/.agents/scripts/commtracker/verify_quotes.py <tracker.md> "## Meeting 6
 Run after writing a long-transcript entry's key extracts, and again whenever the transcript's speaker labels change: every `*"..."*` must be verbatim in
 the transcript, and a `Name: *"..."*` quote must sit in that speaker's turn. Read-only; exit 1 names each failing quote.
 
+> **Learned 2026-11-18** · writing key extracts · VERIFIED_PRIMARY (observed) · Source: `scripts/verify_quotes.py` on a meeting entry (2 of 23 quotes
+> failed) · Falsifier: a quote with `…` inside its marks passing the check
+> Two ways a faithful extract fails: an ellipsis inside the quote marks (`*"I'm not going to be here later…"*`) is text the speaker did not say, so
+> cut the quote at a word boundary or put `…` between two quotes; and a phrase the source italicises (`*cleaned*`) used to fail when typed plain,
+> so the script now ignores Markdown emphasis on both sides. Run it before filing, not after: it caught both before the entry was committed.
+
 ### toc.py — regenerate Contents TOC
 
 ```bash

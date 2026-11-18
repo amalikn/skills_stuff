@@ -25,18 +25,26 @@ LABEL = re.compile(r"^\*\*([^*\n]+?)(?: \([^)]*\))?:\*\*\s*$")
 TURN_END = re.compile(r"^(#{1,6} |---\s*$|\*\*[^*\n]+\*\*\s*$)")
 
 
+EMPHASIS = re.compile(r"(?<![\w*])(\*{1,2}|_{1,2})(?=\S)(.+?)(?<=\S)\1(?![\w*])")
+
+
 def _norm(text: str) -> str:
-  """Collapse all whitespace runs to one space.
+  """Collapse whitespace runs to one space and drop Markdown emphasis markers (`*x*`, `**x**`, `_x_`), keeping the words.
+
+  A transcript that italicises a word (*cleaned*) still matches a quote typed without the markers (2026-11-18).
 
   Args:
     text: Any text.
 
   Returns:
-    The text with whitespace normalised and trimmed.
+    The text with emphasis markers removed and whitespace normalised and trimmed.
 
   Raises:
     Nothing.
   """
+  prev = None
+  while prev != text:
+    prev, text = text, EMPHASIS.sub(r"\2", text)
   return " ".join(text.split())
 
 
