@@ -5,7 +5,9 @@
 {
   "config": {
     "default": true,
-    "MD013": { "line_length": 200, "tables": false, "code_blocks": false, "headings": false },
+    // Line width is owned by the markdown-wrap-toc hook, which measures visible width without link targets (operator, 2026-10-22).
+    // MD013 counts raw characters, so lines holding links pass the hook and fail here; hand fixes are undone on the next edit (operator, 2026-11-18).
+    "MD013": false,
     "MD060": false,
     "MD024": { "siblings_only": true },
     // Governed markdown carries `---` front matter with a `Title:` key AND a `#` heading (governance naming-and-file-summary-guide.md).

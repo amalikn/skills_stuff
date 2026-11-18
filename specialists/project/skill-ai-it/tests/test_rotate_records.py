@@ -87,6 +87,15 @@ class RotateTest(unittest.TestCase):
         self.assertEqual(missing, [])
         self.assertLessEqual(live.count("\n"), 220)
 
+    def test_archive_has_no_blank_line_runs(self):
+        """Units that end with blank lines must not leave double blanks or a blank last line in the archive (MD012, 2026-11-18)."""
+        lines = ["# Scratchpad", "", "## Current state", ""]
+        for i in range(60):
+            lines += [f"### 2026-0{1 + i % 8}-1{i % 10} — thread {i}", "", f"paragraph {i}", "", "", ""]
+        _live, archive = self.rotate("SCRATCHPAD.md", "\n".join(lines) + "\n")
+        self.assertNotIn("\n\n\n", archive)
+        self.assertTrue(archive.endswith("\n") and not archive.endswith("\n\n"))
+
     def test_a_dated_prose_subsection_rotates_whole(self):
         """A `### <date>` subsection of paragraphs (no bullets) moves as one unit; the newest stay."""
         lines = ["# Scratchpad", "", "## Current state", ""]

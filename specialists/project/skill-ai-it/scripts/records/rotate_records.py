@@ -652,9 +652,11 @@ def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: 
         if units[0].lines[:1] != [section]:
             arc += [section, ""]
         for u in units:
-            arc += relink(u.lines, source_dir, archive_dir)
-        arc.append("")
-    return "\n".join(arc) + "\n"
+            body = relink(u.lines, source_dir, archive_dir)
+            while body and not body[-1].strip():  # a unit's own trailing blanks plus the separator made MD012 runs (2026-11-18)
+                body.pop()
+            arc += body + [""]
+    return "\n".join(arc).rstrip("\n") + "\n"
 
 
 def write_archive(root: pathlib.Path, archive_rel: str, text: str, moved: list[Unit], live: str) -> None:
