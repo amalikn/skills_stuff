@@ -137,6 +137,9 @@ python3 <skill>/scripts/audit_state.py record --phase 1 --key systems_of_record 
 
 Classifying live data as "RESIDUAL, not verifiable from inside the project" is the wrong answer when you can read it: residual is for what cannot be checked, not for what is not a file.
 
+About 1,500 BROKEN rows is normal on a large project: save claim_scan's output and run `scripts/broken_path_triage.py --root . --claims <file>
+[--also <sibling tree>]`, which leaves only gone paths in live files for a person (2026-11-18).
+
 `claim_scan.py` reads the project's own `SIBLING_ROOTS`, `SIBLING_BRANCHES` and `CONDITIONAL_PATHS` from `scripts/check_governance.py` and splits unresolved paths into `ON-BOX` (a system path on a
 managed host), `CONDITIONAL` ("when present", gitignored, or declared) and `BROKEN`, so the residual bucket says what it holds. Claims under a dated heading are marked historical automatically.
 
@@ -354,6 +357,12 @@ Both hit this skill's own runs on 2026-09-27; details in the markdown governance
   beside `just check`) and count both in the register before fixing anything.
 - **`--keep-snapshot` keeps `.staleness-audit/` too** (2026-11-18): `verify_completeness.py`'s `cleanup_snapshots` skips every target when the flag is set,
   though this file says it opts out of the snapshot deletion only. Move the receipts folder out by hand after a passing gate, or the next run refuses to start.
+- **Phase 4 at scale** (2026-11-18, 651 artifacts): sort the worksheet rows by path, split them into four contiguous chunks for parallel reviewers with the same
+  brief (the three prompts, the period's changed facts, read-only), have each return its rows with the Verdict cell filled plus a findings file, and merge back by
+  path; check every merged row is filled before recording `artifacts_reasoned`. Spot-check the H findings yourself: one reviewer's claim needed a real `compile()`.
+- **Reviewers editing markdown trip the formatter hook** (2026-11-18): the post-edit hook re-pads tables and splits long rows, which broke a generated tracker's
+  row matching (the generator then wanted 423 rows rewritten). Tell document reviewers to edit tables and generated files by script, and to compare cells
+  before and after (`table_cells_diff.py`), or restore and redo.
 - **Spoke inboxes are claim surfaces** (2026-11-18, unified-network-controller): a hub directive moving plan dates sat unticked for six days while the plan tracker,
   plan timeline, target map, ROADMAP and three `KEEP` blocks kept the old dates and showed two steps LATE. Read every unticked inbox or directive line as a claim against
   the plan surfaces; an unticked directive older than a day is a defect row.
@@ -407,6 +416,7 @@ skill-staleness-audit/
     ├── claim_scan.py                     # Phase 1/7 — enumerate and verify checkable claims
     ├── artifact_signals.py               # Phase 4 — per-artifact worksheet + gate denominator
     ├── inverse_sweep.py                  # Phase 7 — what exists that no catalog or index names
+    ├── broken_path_triage.py             # Phase 1/7 — sort BROKEN path claims: suffix, moved, gone; live vs history
     ├── audit_report.py                   # Phase 7 — the report, with the evidence embedded, before cleanup
     ├── verify_completeness.py            # Phase 7 — THE GATE; blocks on anything checkable
     └── tests/                            # fixture tests: python3 -m unittest discover -s scripts/tests

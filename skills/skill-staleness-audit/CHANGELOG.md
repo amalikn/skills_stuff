@@ -17,6 +17,8 @@
 
 ## Unreleased
 
+- 2026-11-18 (learned): SKILL.md Tool hazards: Phase 4 split across parallel reviewers and merged by path; reviewers' markdown edits trip the formatter hook on tables
+- 2026-11-18 (feature): `scripts/broken_path_triage.py` (+ test, `just audit-broken-triage`) sorts claim_scan's BROKEN rows; promoted from unified-network-controller audit 16. `ruff.toml` adopted (existing files excluded) with `just lint`
 - 2026-11-18 (learned): SKILL.md Tool hazards: `--keep-snapshot` also keeps `.staleness-audit/` (code and prose disagree; script unchanged, fix open)
 - 2026-11-18 (learned): SKILL.md Tool hazards: skip generated blocks in stamp searches; the gate's strict YAML parse; Edit-tool hook reflow of tables; restore-by-copy mtime; three coverage and claim-scan gaps (smc-resiliency audit 20261118_1715)
 - 2026-11-18 (learned): SKILL.md Tool hazards: a check that stops at its first failure hides later steps; spoke inboxes are claim surfaces; read a system of record per type by `last_updated`, not by its change log (unified-network-controller audit 16)

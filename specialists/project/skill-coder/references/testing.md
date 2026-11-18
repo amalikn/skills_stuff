@@ -344,3 +344,17 @@ p.write_text(orig)   # same text, newer mtime: the derived .pptx check then fail
 >   [ "$d$c" != "00" ] && echo "$f diff=$d checker=$c"; done   # a diff with checker=0 is a restyle to explain
 > ```
 
+> **Learned 2026-11-18** · real-target proof · VERIFIED_PRIMARY · Source: unified-network-controller `wc-local/scripts/nautobot_tools/sor_readback.py` (staleness audit 16 slurp) · Falsifier: a smoke run this way that leaves a file on the host
+> To prove a changed read-only script against production before it is deployed, send the new module over stdin to the host's own interpreter instead of copying it: no file lands
+> on the host, and the run uses the host's environment and tokens. Disable the module's `__main__` guard and call `main()` explicitly. The read-back below went from not finishing
+> in 500 s to 825 objects in 6 s, measured on the target before any commit. Pair it with a pure function that takes the I/O as an argument (`read_by_type(get, ...)`), so the
+> same logic is tested offline with a fake `get`.
+
+```bash
+# project wrapper: host-run.sh sends a local script to `bash -s` on the host
+{ echo 'cd <repo>'; echo "PYTHONPATH=... timeout 200 <venv>/bin/python - <<'PYEOF'"
+  sed 's/^if __name__ == "__main__":$/if False:/' wc-local/scripts/nautobot_tools/sor_readback.py
+  echo 'main(["--since", "2026-10-19T01:05:05Z"])'; echo 'PYEOF'; } > smoke.sh
+HOST_RUN_TIMEOUT=240 infra/apn-unc01/ops/host-run.sh smoke.sh
+```
+

@@ -129,3 +129,11 @@ audit-start scope="whole project": audit-init audit-snapshot audit-templates
     @echo "  Phase 5  checks that CAN FAIL            just audit-negtest-red / audit-negtest-green"
     @echo "  Phase 6  residual-risk register          templates/residual-risk-register.md"
     @echo "  Phase 7  just audit-report, then just audit-verify"
+
+# Sort claim_scan's BROKEN path rows (save its output first): just audit-broken-triage <claims.txt> [--also <dir>] [--all]. Read-only
+audit-broken-triage claims *ARGS:
+    @{{py}} "{{skill_dir}}/scripts/broken_path_triage.py" --root "{{root}}" --claims "{{claims}}" {{ARGS}}
+
+# Lint and format-check the pack's new Python (ruff.toml lists the files that keep their old style). Read-only
+lint:
+    cd "{{skill_dir}}" && uvx ruff check . && uvx ruff format --check .

@@ -259,6 +259,8 @@ files checked against companion rules, the Step 6b result, and the last memory-k
 | "Its edits are write-backs, so I commit them with mine"       | Not while that session is live (`ListAgents` shows it busy): its files may be half-written. Stage only your own lines (skill-coder   |
 |                                                               |   version-control-and-review, two sessions), test the exported index, tell it what you left, and report its files as its own open    |
 |                                                               |   work, not a failed 6b (2026-11-05)                                                                                                 |
+| "Pass 1 lists every peer message"                            | A cross-session message that lands inside a system note mid-turn is not a typed turn: on 2026-11-18 a peer's "pause all git" request |
+|                                                               |   was missing from pass 1 (only its later "split done" showed). Search the transcript for `cross-session-message` and route each one |
 | "Pass 1 lists every approval I gave"                          | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the    |
 |                                                               |   user count with the raw transcript when approvals matter                                                                           |
 | "The reference entry is there, so the write-back is           | Read back the skill's CHANGELOG line and version too: an entry added after the CHANGELOG line was written is not in it (2026-10-26)  |
