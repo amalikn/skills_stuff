@@ -4,7 +4,10 @@
 Standard: SKILL.md, "Transcript and chat turn layout". A turn starts at a speaker label alone on its line (`**Martin:**`, `**Stu (2:15 PM):**`) and
 runs to the next label, heading or `---`. Inside a turn the label and its lines sit together with no blank line and no trailing backslash (operator,
 2026-11-11: the file is read as source); a quote, list or table stays its own block with one blank line around it, and consecutive quote lines become
-one quote. Trailing backslashes left by an earlier layout are removed. A label whose turn holds no plain text (a field label over a list, such as
+one quote; quotes that were separated by a blank line stay separate paragraphs inside it, joined by a bare `>` line (2026-11-18). A line that is
+wholly bold but is not a label (`**End of available recording.**`) and follows a blank line ends the turn rather than joining it; a bold line
+directly under text stays in the turn as a subheading. An indented line under a list item is that item's continuation (2026-11-18). Trailing backslashes left by an
+earlier layout are removed. A label whose turn holds no plain text (a field label over a list, such as
 `**Participants:**`) is left as written. Wording never changes: the script compares every non-blank line, without its trailing backslash, before
 and after, and refuses to write when they differ.
 
@@ -29,6 +32,8 @@ QUOTE = re.compile(r"^>")
 LIST = re.compile(r"^\s*([-*+]|\d+[.)])\s")
 TABLE = re.compile(r"^\s*\|")
 FENCE = re.compile(r"^\s*(```|~~~)")
+MARKER = re.compile(r"^\*\*[^*\n]+\*\*\s*$")  # a wholly bold line, e.g. **End of available recording.**
+BARE_QUOTE = re.compile(r"^>\s*$")
 
 
 def _kind(line: str) -> str:
@@ -52,19 +57,20 @@ def _kind(line: str) -> str:
   return "text"
 
 
-def _ends_turn(line: str) -> bool:
+def _ends_turn(line: str, prev: str = "") -> bool:
   """Tell whether a line closes the current turn.
 
   Args:
     line: The line, without its newline.
+    prev: The line before it; a wholly bold line ends the turn only after a blank line.
 
   Returns:
-    True for a speaker label, a heading, a horizontal rule or a code fence.
+    True for a speaker label, a heading, a horizontal rule, a code fence, or a wholly bold line that is not a label (an end marker).
 
   Raises:
     Nothing.
   """
-  return bool(LABEL.match(line) or HEADING.match(line) or RULE.match(line) or FENCE.match(line))
+  return bool(LABEL.match(line) or HEADING.match(line) or RULE.match(line) or FENCE.match(line) or (MARKER.match(line) and not prev.strip()))
 
 
 def _bare(lines: list[str]) -> list[str]:
@@ -96,16 +102,25 @@ def _render_turn(label: str, body: list[str]) -> list[str] | None:
     Nothing.
   """
   groups: list[tuple[str, list[str]]] = []
+  gap = False
   for line in body:
     if not line.strip():
+      gap = True
       continue
     kind = _kind(line)
-    if groups and groups[-1][0] == kind and kind != "text":
+    if kind == "text" and not gap and line.startswith("  ") and groups and groups[-1][0] == "list":
+      kind = "list"
+    if groups and groups[-1][0] == kind == "quote":
+      if gap and not BARE_QUOTE.match(groups[-1][1][-1]):
+        groups[-1][1].append(">")
+      groups[-1][1].append(line)
+    elif groups and groups[-1][0] == kind and kind != "text":
       groups[-1][1].append(line)
     elif groups and groups[-1][0] == kind == "text":
       groups[-1][1].append(line)
     else:
       groups.append((kind, [line]))
+    gap = False
   if not any(kind == "text" for kind, _ in groups):
     return None
   out: list[str] = []
@@ -152,7 +167,7 @@ def compact(text: str) -> tuple[str, int]:
       i += 1
       continue
     j = i + 1
-    while j < len(lines) and not _ends_turn(lines[j]):
+    while j < len(lines) and not _ends_turn(lines[j], lines[j - 1]):
       j += 1
     body = lines[i + 1 : j]
     new = _render_turn(line, body)
@@ -175,12 +190,12 @@ def wording(text: str) -> list[str]:
     text: Markdown text.
 
   Returns:
-    The stripped, non-blank lines in order.
+    The stripped, non-blank lines in order; a bare `>` line (a paragraph break inside a quote) counts as blank.
 
   Raises:
     Nothing.
   """
-  return [ln.rstrip().rstrip("\\").rstrip() for ln in text.split("\n") if ln.strip()]
+  return [ln.rstrip().rstrip("\\").rstrip() for ln in text.split("\n") if ln.strip() and not BARE_QUOTE.match(ln)]
 
 
 def main(argv: list[str] | None = None) -> int:

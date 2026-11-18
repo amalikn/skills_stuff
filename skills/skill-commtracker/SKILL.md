@@ -432,6 +432,31 @@ python ~/.agents/scripts/commtracker/compact_turns.py <transcript.md> [...] --ap
 
 Applies the **Transcript turn layout** (Step 3). Idempotent; compares every line's wording before and after and writes nothing on a difference (exit 1).
 
+> **Learned 2026-11-18** · compact_turns.py layout edges · VERIFIED_PRIMARY (observed) · Source: `scripts/compact_turns.py` `_render_turn`, `_ends_turn`
+> on a meeting transcript, before the fix · Falsifier: two `>` quotes separated by a blank line rendered as one paragraph after `--apply`
+> The script used to merge two separately quoted utterances into one quote paragraph (they render run together), pull a closing
+> `**End of available recording.**` into the last speaker's turn, and split a list item from its indented continuation. Now: a blank line between quotes
+> becomes a bare `>` line; a wholly bold line after a blank line ends the turn (a bold line directly under text stays, as a subheading); an indented
+> line under a list item stays with it.
+>
+> ```python
+> # scripts/compact_turns.py (2026-11-18)
+> if groups and groups[-1][0] == kind == "quote":
+>   if gap and not BARE_QUOTE.match(groups[-1][1][-1]):
+>     groups[-1][1].append(">")
+> ...
+> return bool(LABEL.match(line) or ... or (MARKER.match(line) and not prev.strip()))
+> ```
+
+### verify_quotes.py — quotes verbatim and correctly attributed
+
+```bash
+python ~/.agents/scripts/commtracker/verify_quotes.py <tracker.md> "## Meeting 6 - " <transcript.md>
+```
+
+Run after writing a long-transcript entry's key extracts, and again whenever the transcript's speaker labels change: every `*"..."*` must be verbatim in
+the transcript, and a `Name: *"..."*` quote must sit in that speaker's turn. Read-only; exit 1 names each failing quote.
+
 ### toc.py — regenerate Contents TOC
 
 ```bash
@@ -478,6 +503,7 @@ Before writing to the thread file, verify:
 - [ ] `**Attachments:**` line present in entry header when attachments exist; omitted when none
 - [ ] For Call/Meeting entries: `**Status:** VERBAL_UNRECORDED` present if there is no transcript (reported speech, not quoted dialogue)
 - [ ] For long transcripts: full text kept in its own source file, not duplicated into the tracker; tracker entry has a `**Source:**` pointer + key extracts + case note
+- [ ] Key extracts pass `scripts/verify_quotes.py` (verbatim, right speaker); re-run it after any speaker-label correction to the transcript
 - [ ] Any date/name in the source conflicts with an already-tracked fact? — confirmed with the user, not assumed
 
 If any check fails, fix it before writing.

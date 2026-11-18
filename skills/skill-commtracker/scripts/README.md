@@ -152,3 +152,16 @@ python ~/.agents/scripts/commtracker/compact_turns.py <transcript.md> [...] [--a
 
 Lays out a transcript per SKILL.md "Transcript turn layout": label and lines together, no blank lines or trailing backslashes inside a turn, quotes/lists/tables kept as their
 own blocks. Preview by default; `--apply` writes. Refuses to write when the wording (non-blank lines) would change. Measured: 11 transcripts, about 8,000 lines, 0.04 s.
+Since 2026-11-18: quotes once separated by a blank line stay separate paragraphs, joined by a bare `>` line; a wholly bold line after a blank line
+(`**End of available recording.**`) ends the turn; a bold line directly under text stays in the turn; an indented line under a list item stays with the item.
+Tests: `tests/test_compact_turns.py` (11).
+
+## verify_quotes.py — Check a tracker entry's quotes against its transcript
+
+```bash
+python ~/.agents/scripts/commtracker/verify_quotes.py <tracker.md> "## Meeting 6 - " <transcript.md>
+```
+
+Reads the entry under that heading (to the next `---` or `## `), and checks each `*"..."*` is verbatim in the transcript (whitespace normalised); a quote
+introduced as `Name: *"..."*` must sit in a `**Name:**` turn. Read-only. Exit 0 pass, 1 a quote missing or misattributed, 2 bad input. Measured: a 24-quote
+entry against a 290-line transcript, 0.05 s. Tests: `tests/test_verify_quotes.py` (7).

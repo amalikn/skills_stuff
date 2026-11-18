@@ -60,6 +60,7 @@ First line.
 Second line.
 
 > "Quoted one."
+>
 > "Quoted two."
 
 After the quote.
@@ -102,6 +103,29 @@ class CompactTest(unittest.TestCase):
     want = "**Malik:**\nWe have:\n\n1. One.\n2. Two.\n\nDone.\n"
     self.assertEqual(ct.compact(src)[0], want)
 
+
+  def test_adjacent_quotes_stay_one_quote(self):
+    src = "**Sandro:**\n\nSaying:\n\n> One.\n> Two.\n\nDone.\n"
+    want = "**Sandro:**\nSaying:\n\n> One.\n> Two.\n\nDone.\n"
+    self.assertEqual(ct.compact(src)[0], want)
+
+  def test_end_marker_not_pulled_into_turn(self):
+    src = "**Martin:**\n\nThanks.\n\n**End of available recording.**\n\n---\n"
+    want = "**Martin:**\nThanks.\n\n**End of available recording.**\n\n---\n"
+    self.assertEqual(ct.compact(src)[0], want)
+
+  def test_quote_break_idempotent(self):
+    once, _ = ct.compact("**A:**\n\nX:\n\n> One.\n\n> Two.\n\nY.\n")
+    self.assertEqual(ct.compact(once), (once, 0))
+
+  def test_bold_subheading_under_text_stays_in_turn(self):
+    src = "**Sandro:**\nWe reset.\n**1. Hours**\nNine to five.\n"
+    self.assertEqual(ct.compact(src), (src, 0))
+
+  def test_list_item_continuation_stays_with_item(self):
+    src = "**Notes:**\n\nIntro.\n\n- One item that\n  wraps here.\n- Two.\n"
+    want = "**Notes:**\nIntro.\n\n- One item that\n  wraps here.\n- Two.\n"
+    self.assertEqual(ct.compact(src)[0], want)
 
 if __name__ == "__main__":
   unittest.main()
