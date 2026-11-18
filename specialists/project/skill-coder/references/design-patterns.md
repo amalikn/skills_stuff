@@ -1826,8 +1826,11 @@ def classify(pack, files):
 ### P-74 Add what the generator cannot write after it saves, and prove it in the consuming application
 
 > **Learned 2026-11-18** · any document generator that lacks a feature the format supports (slide motion, fields, comments) · reusable_candidate ·
-> Source: apn smc-resiliency `scripts/deck/deck_motion.js`, `scripts/deck/build_concept_deck.js` (`tag`, `named`); apn enterprise-strategy `scripts/pptx_motion_check.py` (uncommitted at
+> Source: apn enterprise-strategy `scripts/deck/deck_motion.js`, `scripts/deck/build_markdown_deck.js` (`tag`, `named`; first written in smc-resiliency, moved to the hub 18 Nov 2026); apn enterprise-strategy `scripts/pptx_motion_check.py` (uncommitted at
 > writing; committed in the 18 Nov close) · Falsifier: PowerPoint repairing the file, or reporting fewer effects than the file's `p:bldP` list.
+
+> Second use 2026-11-18: the unified-network-controller concept deck, built by the same shared builder from its own markdown; PowerPoint loaded 15 of 15 slides' motion
+> (VERIFIED_PRIMARY, `just motion-check`). Promoted from reusable_candidate.
 
 Problem: PptxGenJS 3.12 writes no transitions or animations, but the operator wants them dictated by the markdown source; a still render cannot show motion, so a wrong timing tree passes every
 render. Solution: The builder tags the shapes of each part with a name the library does pass through (`objectName` → `p:cNvPr name="build-<group>-<k>"`), saves to a buffer, then reopens the zip
@@ -1839,7 +1842,7 @@ Pitfalls: Keep timing ids unique per slide; one click per group, the rest `withE
 still render proves layout only; an AppleScript variable named `out` clashes with PowerPoint's dictionary; the click order still needs one slideshow run by a person.
 
 ```javascript
-// smc-resiliency scripts/deck/deck_motion.js (18 Nov 2026)
+// enterprise-strategy scripts/deck/deck_motion.js (18 Nov 2026)
 for (const m of xml.matchAll(/<p:cNvPr id="(\d+)" name="build-(\d+)-\d+"/g)) (groups[Number(m[2])] ||= []).push(m[1]);
 const trans = d.transition && d.transition !== "none" ? `<p:transition spd="med">${TRANSITIONS[d.transition]}</p:transition>` : "";
 const motion = trans + timingXml(groups.filter(Boolean));
