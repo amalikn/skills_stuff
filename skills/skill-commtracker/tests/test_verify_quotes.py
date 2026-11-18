@@ -80,6 +80,14 @@ class VerifyQuotesTest(unittest.TestCase):
     probs = vq.check('*"I don\'t want to retrofit…"*', TRANSCRIPT)
     self.assertTrue(probs and probs[0].startswith("NOT VERBATIM"))
 
+  def test_underscore_quotes_checked(self):
+    probs = vq.check('- Martin: _"We are running in the dark."_', TRANSCRIPT)
+    self.assertTrue(probs and probs[0].startswith("NOT VERBATIM"))
+    self.assertEqual(vq.check('- Sandro: _"We\'re running in the dark."_', TRANSCRIPT), [])
+
+  def test_snake_case_is_not_a_quote(self):
+    self.assertEqual(vq.QUOTE.findall('see file_"name"_x and *"real"*')[0][2], "real")
+
 
 if __name__ == "__main__":
   unittest.main()

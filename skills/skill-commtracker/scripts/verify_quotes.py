@@ -2,7 +2,7 @@
 """commtracker/verify_quotes.py — Check that every quote in a tracker entry is verbatim in its transcript, and said by the speaker it is given to.
 
 A tracker entry for a long call or meeting carries key extracts as italic quotes (`*"..."*`, ADR-001: verbatim). This reads one entry (from its
-heading to the next `---` line or `## ` heading), finds every `*"..."*`, and checks it against the transcript with whitespace normalised. When the
+heading to the next `---` line or `## ` heading), finds every `*"..."*` or `_"..."_`, and checks it against the transcript with whitespace normalised. When the
 quote is introduced as `Name: *"..."*`, it also checks that the quote sits inside a turn labelled `**Name:**`. Built after a filing (2026-11-18) where
 the operator relabelled 16 turns and every extract had to be re-attributed by hand.
 
@@ -20,7 +20,8 @@ import sys
 from pathlib import Path
 
 # A speaker is one or two capitalised words right before the colon ("Sandro: ", "Martin Camilleri: "); an opening *" inside **bold** is not a quote.
-QUOTE = re.compile(r'(?:\b([A-Z][a-z]+(?: [A-Z][a-z]+)?): )?(?<!\*)\*"(.+?)"\*(?!\*)', re.S)
+# Italic quotes in either Markdown form, *"..."* or _"..."_ (both since 2026-11-18: an operator's _"..."_ edit slipped past the check).
+QUOTE = re.compile(r'(?:\b([A-Z][a-z]+(?: [A-Z][a-z]+)?): )?(?<![*_\w])([*_])"(.+?)"\2(?![*_\w])', re.S)
 LABEL = re.compile(r"^\*\*([^*\n]+?)(?: \([^)]*\))?:\*\*\s*$")
 TURN_END = re.compile(r"^(#{1,6} |---\s*$|\*\*[^*\n]+\*\*\s*$)")
 
@@ -115,7 +116,7 @@ def check(entry: str, transcript: str) -> list[str]:
   whole = _norm(transcript)
   by_turn = turns(transcript)
   problems: list[str] = []
-  for who, quote in QUOTE.findall(entry):
+  for who, _mark, quote in QUOTE.findall(entry):
     q = _norm(quote)
     if q not in whole:
       problems.append(f"NOT VERBATIM: {q[:80]}")

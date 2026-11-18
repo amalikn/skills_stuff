@@ -164,4 +164,5 @@ python ~/.agents/scripts/commtracker/verify_quotes.py <tracker.md> "## Meeting 6
 
 Reads the entry under that heading (to the next `---` or `## `), and checks each `*"..."*` is verbatim in the transcript (whitespace normalised); a quote
 introduced as `Name: *"..."*` must sit in a `**Name:**` turn. Read-only. Exit 0 pass, 1 a quote missing or misattributed, 2 bad input. Measured: a 24-quote
-entry against a 290-line transcript, 0.05 s. Markdown emphasis (`*x*`, `**x**`) is ignored on both sides (2026-11-18). Tests: `tests/test_verify_quotes.py` (9).
+entry against a 290-line transcript, 0.05 s. Markdown emphasis (`*x*`, `**x**`) is ignored on both sides; quotes in either italic form, `*"..."*` or `_"..."_`, are checked (2026-11-18).
+Tests: `tests/test_verify_quotes.py` (11).

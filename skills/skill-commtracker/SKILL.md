@@ -454,7 +454,7 @@ Applies the **Transcript turn layout** (Step 3). Idempotent; compares every line
 python ~/.agents/scripts/commtracker/verify_quotes.py <tracker.md> "## Meeting 6 - " <transcript.md>
 ```
 
-Run after writing a long-transcript entry's key extracts, and again whenever the transcript's speaker labels change: every `*"..."*` must be verbatim in
+Run after writing a long-transcript entry's key extracts, and again whenever the transcript's speaker labels change: every `*"..."*` or `_"..."_` must be verbatim in
 the transcript, and a `Name: *"..."*` quote must sit in that speaker's turn. Read-only; exit 1 names each failing quote.
 
 > **Learned 2026-11-18** · writing key extracts · VERIFIED_PRIMARY (observed) · Source: `scripts/verify_quotes.py` on a meeting entry (2 of 23 quotes
