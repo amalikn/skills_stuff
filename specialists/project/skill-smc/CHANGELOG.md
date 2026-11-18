@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261117_1926
+Last rotated: 20261118_1557
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
 - [20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)](#20261117_1922--smc_change-state-file-timing-connect-timeout-30-s-offline-smcs-fail-incomplete-ssh_handshake_timesh-v0147---v0148)
 - [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
 - [20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)](#20261117_1044--teleport-self-upgrade-cron-on-every-flavour-v0145---v0146)
@@ -36,14 +37,54 @@ Last reviewed: 2026-10-27
 - [20261106_1300 — WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 -> v0.12.5)](#20261106_1300--wan-routing-confirmed-live-link-health-per-leg-grafana-tunnel-measured-link-figures-v0124---v0125)
 - [20261106_1029 — Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)](#20261106_1029--pi-clock-with-no-rtc-on-ubuntu-2404-measured-v0123---v0124)
 - [20261105_1758 — URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)](#20261105_1758--url-capture-dns-mechanism-measured-records-plan-proposed-v0122---v0123)
+
+- [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 ->
+  v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
+- [20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 ->
+  v0.14.8)](#20261117_1922--smc_change-state-file-timing-connect-timeout-30-s-offline-smcs-fail-incomplete-ssh_handshake_timesh-v0147---v0148)
+- [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 ->
+  v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
+- [20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)](#20261117_1044--teleport-self-upgrade-cron-on-every-flavour-v0145---v0146)
+- [20261116_1859 — Solutions to platforms (no version change)](#20261116_1859--solutions-to-platforms-no-version-change)
+- [20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 ->
+  v0.14.5)](#20261116_1736--fleet-facts-for-a-remote-conversion-boot-partition-free-root-label-x86-disk-layouts-v0144---v0145)
+- [20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)](#20261111_1318--smc_lynis-no_pubkey-7a9a1d9d5b27c6d3-and-apt_key_subkey_probesh-v0143---v0144)
+- [20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)](#20261111_1213--urlcapture-prune-galiwinku-checked-v0142---v0143)
+- [20261111_1105 — urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)](#20261111_1105--urlcapture-prune-first-run-read-uc-old-files-needs-the-cw-proxy-v0141---v0142)
+- [20261110_1355 — koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 ->
+  v0.14.1)](#20261110_1355--koonibba-wrong-teleport-cluster-stale-bastion-keys-url_capture-prune-gaps-root-lv-condition-urlcapture-prune-change-v0140---v0141)
+- [20261110_1225 — Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 ->
+  v0.14.0)](#20261110_1225--fleet-survey-probes-bootloader-census-writers-probe-probe-deadlines-fixed-v0132---v0140)
+- [20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)](#20261110_0202--deployed-pi-fleet-layout-and-root-block-spread-survey-of-6-v0131---v0132)
+- [20261110_0031 — Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 ->
+  v0.13.1)](#20261110_0031--pi-4-on-the-fleet-bootloader-2023-01-11-autoboottxt-on-gpt-and-eeprom-update-path-v0130---v0131)
+- [20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 ->
+  v0.13.0)](#20261109_2300--pi-4-ab-on-a-gpt-card-bootloader-firmware-and-update-traps-smc-resiliency-s1-v0129---v0130)
+- [20261108_0155 — Pi 4 serial console (smc-resiliency S1 bench) (v0.12.8 -> v0.12.9)](#20261108_0155--pi-4-serial-console-smc-resiliency-s1-bench-v0128---v0129)
+- [20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)](#20261106_1630--ansible-wifi-smc_bases-on-ubuntu-2404-and-in-an-image-build-v0127---v0128)
+- [20261106_1605 — Parallels linked clone shares the source's address; Parallels lab behaviour (v0.12.6 ->
+  v0.12.7)](#20261106_1605--parallels-linked-clone-shares-the-sources-address-parallels-lab-behaviour-v0126---v0127)
+- [20261106_1545 — smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 ->
+  v0.12.6)](#20261106_1545--smc_change-export-to-a-company-task-file-tracker-orders-resumed-runs-by-attempt-v0125---v0126)
+- [20261106_1300 — WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 ->
+  v0.12.5)](#20261106_1300--wan-routing-confirmed-live-link-health-per-leg-grafana-tunnel-measured-link-figures-v0124---v0125)
+- [20261106_1029 — Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)](#20261106_1029--pi-clock-with-no-rtc-on-ubuntu-2404-measured-v0123---v0124)
+- [20261105_1758 — URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)](#20261105_1758--url-capture-dns-mechanism-measured-records-plan-proposed-v0122---v0123)
 - [20261105_1634 — v8 resumable PCAP fetch, EFS find, Teleport path loss probe (v0.12.1 -> v0.12.2)](#20261105_1634--v8-resumable-pcap-fetch-efs-find-teleport-path-loss-probe-v0121---v0122)
 - [20261105_1155 — smc_change Teleport login gate (v0.12.0 -> v0.12.1)](#20261105_1155--smc_change-teleport-login-gate-v0120---v0121)
-- [20261104_2130 — Iridium batches 1-3 marked; rise deploy flashes; smc_mark_iridium.py (v0.11.9 -> v0.12.0)](#20261104_2130--iridium-batches-1-3-marked-rise-deploy-flashes-smc_mark_iridiumpy-v0119---v0120)
+- [20261104_2130 — Iridium batches 1-3 marked; rise deploy flashes; smc_mark_iridium.py (v0.11.9 ->
+  v0.12.0)](#20261104_2130--iridium-batches-1-3-marked-rise-deploy-flashes-smc_mark_iridiumpy-v0119---v0120)
 - [20261104_1900 — smc_change self-repair, every-goal success rule, applies_when (v0.11.8 -> v0.11.9)](#20261104_1900--smc_change-self-repair-every-goal-success-rule-applies_when-v0118---v0119)
 - [20261104_1600 — smc_change chaining, per-change state, named value files (v0.11.7 -> v0.11.8)](#20261104_1600--smc_change-chaining-per-change-state-named-value-files-v0117---v0118)
 - [20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)](#20261102_1756--smc_change-skip-probe-or-force-per-smc-close-v0116---v0117)
 
 ---
+
+## 20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)
+
+- references/06_failure-modes.md: Learned 2026-11-18 (USER_STATED): the tstik is a physical board wired to the Pi and restarts a stuck rct SMC by rules such as loss of the internet; the SMC restart
+  sits in the board's AVR firmware, outside the rct-tstik app read on 2026-10-07, so that reading stands. The wh flavours (wh, nbn_wh) have no such board and no automatic restart.
+- From the apn smc-resiliency concept deck session (6128bdd9), where the operator corrected a slide that said nothing restarts any hung SMC.
 
 ## 20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)
 
@@ -155,44 +196,3 @@ gateway by address steps a 22.5 h error 16.3 s after boot without DNS (smc-resil
 `references/09_url-capture-pcap.md`: Learned 2026-11-05 (b), what the v2 DNS capture holds (queries only, IPv4 only, a new tcpdump per 5-minute chunk, no drop count), one measured day (mornington 1.8
 M queries, 2.3% to outside resolvers), measured smaller formats (3-6x records, 27-59x daily), the pcapfix cost for 202610 (154,097 files, 143 corrupt incl. 47 v2 chunks; parallel 6.4x faster), macOS
 tcpdump cannot read a pcap from stdin, and the proposed lossless-records plan (not decided). Same entry: v8 promoted over v6 after the 202610 process run (ref 09).
-
-## 20261105_1634 — v8 resumable PCAP fetch, EFS find, Teleport path loss probe (v0.12.1 -> v0.12.2)
-
-`references/09_url-capture-pcap.md`: Learned 2026-11-05, v7 fetch timeouts and the resumable `ansible-malik/smc_get_pcapv8.yml` (newest staging dir reused automatically, `.partial` tars, resumable
-retried rsync with a 6 h async limit, size check before the staging dir is deleted) and the slow `find` module on the EFS-backed capture store (one `find -maxdepth 2`: 1.65 s). Also commits the
-earlier session's v7 fetch-timestamp paragraph (step 5). `references/03_communication-flows.md`: Learned 2026-11-05, one TCP stream from an AWS Teleport host to the activ8me home line caps at ~1.2
-MB/s because of ~0.25% packet loss on the access leg (AAPT first hop), not Teleport, EC2 or the VM; BBR on the sender gave 10.4 MB/s (test route removed); apn-teleport01 facts (root disk 94%, 383 GB
-of Teleport logs, Teleport 13.4.24). New `scripts/probes/teleport_path_throughput.sh` with `just teleport_path_throughput` (catalogued in `scripts/README.md`), smoke-run on apn-teleport01 (1 min, `-s
-8 -p 3 -n 300`). manifest 0.12.1 -> 0.12.2. Same day 17:04: the first real v8 run passed (17 tars, 10 GB, size-checked, gzip-valid); ref 09 updated (cfca2a5). Later: ref 03 apn-teleport01 disk 93%
-after cleanup; ref 09 promotion approved pending process_files; SKILL.md names the _ansible skills registry as a caller.
-
-## 20261105_1155 — smc_change Teleport login gate (v0.12.0 -> v0.12.1)
-
-`references/19_smc-change-role.md`: new "Teleport login gate" entry. smc_change.yml and smc_change_multiple.yml now include `roles/smc_change/tasks/tsh_login.yml` in their first play
-(`any_errors_fatal`), which runs `files/tsh_login.py` on `tsh status --format=json` and stops the run before any SMC when a target proxy's login is missing, expired or has under
-`smc_change_tsh_min_minutes` (30) left. Found when expired logins made 10 rct SMCs unreachable at "Check the host answers". tsh 12 exits 1 on an expired active profile but still prints the JSON.
-Checked at each run start only; a per-batch re-check is proposed, not decided. Flow parts updated, 16 trace steps accepted as an agent review. manifest 0.12.0 -> 0.12.1.
-
-## 20261104_2130 — Iridium batches 1-3 marked; rise deploy flashes; smc_mark_iridium.py (v0.11.9 -> v0.12.0)
-
-Learned 2026-11-04: `references/19_smc-change-role.md` (25 rct SMCs flagged on rise and master; `smc_rise_deploy.yml` passes `rct_avr_flash: true`, proven on shelfo-crossing-smc01: AVR 2.14 -> 3.07,
-SMSC set; long site names miss four SMCs in `-l`; a host_vars file reverted on disk makes the deploy skip both smc_change imports silently). New `scripts/ansible/smc_mark_iridium.py` with
-`test_smc_mark_iridium.py` (3 tests) and `just smc_mark_iridium` / `just test_smc_mark_iridium`. Reference 18: `playbooks/smc_change_multiple.yml` (the two Iridium imports alone).
-
-## 20261104_1900 — smc_change self-repair, every-goal success rule, applies_when (v0.11.8 -> v0.11.9)
-
-Learned 2026-11-04: `references/19_smc-change-role.md` (cut-off runs repair themselves, lower dir guard, a change passes only when every action's goal holds, `applies_when`, the-crossing-smc01 and
-scrubby-bore-smc01 cases); `smc_change_trace` passes quoted arguments whole. Then: Iridium sites are flashed in advance of the hardware swap; the Thuraya SIM loss is accepted (reference 19).
-
-## 20261104_1600 — smc_change chaining, per-change state, named value files (v0.11.7 -> v0.11.8)
-
-Learned 2026-11-04: `references/19_smc-change-role.md` (`smc_changes` chain in one run, five slots of `smc_change_run.yml`, per-change state dicts and `vars/main.yml` read-through, HELD gate in apply
-and rollback, `variables_files` with grouped `smc_change_vars`, both rct changes in the scripts and variables form, `smc_bases_tstik_avr_version`, check-mode chain on alkngarrija-smc01). Also
-`references/01_overview.md`: `tsh --proxy=<domain> ssh` when a plain `tsh ssh` is denied (operator-confirmed 2026-11-03, written by that day's session and committed here). Later the same day: flows
-brought up to date (0 steps to review), quiet unused chain slots, first real apply on the rewritten role. Then: chains moved to `smc_change_chain.yml`; `smc_change.yml` runs one change with no slots
-(operator decision). Then: the in-process chain withdrawn and archived (operator decision); reference 19 notes it at the top of the section.
-
-## 20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)
-
-Learned 2026-11-02: `references/19_smc-change-role.md` (per-SMC summary and tracker, queue time, nothing-changed path, `probe_first`, `smc_change_probe`, `checks` hash, `target-hash` correction, 39 s
-in-place stop), `references/13_known-issues.md` (a `-l` host absent from the inventory).

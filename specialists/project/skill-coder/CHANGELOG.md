@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261117_1859
+Last rotated: 20261118_1557
 ---
 
 # Changelog
@@ -24,12 +24,13 @@ Last rotated: 20261117_1859
 - [20261101_1937 — Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits](#20261101_1937--learned-jinja-dict-keys-through-json-filtered-loop-index-folded-newlines-crlf-edits)
 - [20261101_0103 — Gate output in recipes](#20261101_0103--gate-output-in-recipes)
 - [20261030_1721 — Pattern P-47 (decide once from facts, persist it); Learned: run_once set_fact freezes templates, 2.21 Jinja quirks](#20261030_1721--pattern-p-47-decide-once-from-facts-persist-it-learned-run_once-set_fact-freezes-templates-221-jinja-quirks)
-- [20261030_1249 — Pattern P-46: audience words at the output boundary, with a leak guard](#20261030_1249--pattern-p-46-audience-words-at-the-output-boundary-with-a-leak-guard)
 
 ---
 
 ## Unreleased
 
+- 2026-11-18 write-back from apn enterprise-strategy and smc-resiliency (chat 6128bdd9): references/design-patterns.md P-74 (add what a generator cannot write after it saves; prove it in
+  the consuming application: slide motion and PowerPoint's own report) and P-75 (learn a person's hand edits: diff against the last build, sort by rule, make habits defaults).
 - 2026-11-17 write-back from ansible-wifi (chat f516e57d): languages/ansible/learned-execution.md Learned 2026-11-17 (n) (note unfinished hosts, fail them in the wrapper's
   last play so they keep the later plays).
 - 2026-11-17 write-back from ansible-wifi (chat f516e57d, smc_change playbooks): languages/ansible/learned-connections.md Learned 2026-11-17 (m) (`ansible_ssh_timeout` is the connect timeout behind
@@ -190,10 +191,3 @@ Learned 2026-10-30 (ansible-wifi chat 0a7b835b, smc_change conditions and loop, 
 
 - `references/design-patterns.md`: Learned 2026-10-30, P-47
 - `languages/ansible.md`: Learned 2026-10-30 (d), (e)
-
-## 20261030_1249 — Pattern P-46: audience words at the output boundary, with a leak guard
-
-Learned 2026-10-30 (apn unified-network-controller, site workbook for the site team) in `references/design-patterns.md` P-46: translate the internal platform's words where the file is written, phrase
-table then fallback, and refuse the write if the term survives.
-
-- `references/design-patterns.md`: Learned 2026-10-30, P-46

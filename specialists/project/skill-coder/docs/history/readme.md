@@ -11,6 +11,7 @@ Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by
 
 ## Change log
 
+- [changelog-20261118_1557.md](changelog-20261118_1557.md) 1 entry, 2026-10-30 to 2026-10-30: Pattern P-46: audience words at the output boundary, with a leak guard
 - [changelog-20261117_1859.md](changelog-20261117_1859.md) 1 entry, 2026-10-30 to 2026-10-30: Learned: filter precedence, free-form shell splitting, import_tasks placement, pipefail with grep -q
 - [changelog-20261117_1101.md](changelog-20261117_1101.md) 5 entries, 2026-10-29 to 2026-10-29: Write-back log index (backfill); Backfilled log line for an existing write-back; Harvest write-back: patterns P-41 to P-45 and twelve Learned entries; Pattern P-40: hold citations by a check (ledger, local store, rules ...
 - [changelog-20261116_1752.md](changelog-20261116_1752.md) 1 entry, 2026-10-29 to 2026-10-29: Pattern P-39: carry a placement over proven edges, narrow by direction

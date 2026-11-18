@@ -91,89 +91,112 @@ reviewer checking a draft for tilt (too technical, no cost, no decision).
 
 ## Source material
 
-| Source                                                                                   | Where                                           | Label                              | Capture            |
-| ---------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------- | ------------------ |
-| The operator's requirements and rulings for this skill (personal use, four lenses, Word  | intake-skill-presentation-20261112_1644.md      | USER_STATED                        | in the intake      |
-|   engine for every document, release 1 scope, mind maps and profitability work)          |                                                 |                                    |                    |
-| A deck-building engagement: requirements, grid, timeline, flow, cost, component and gap  | session of 2026-11-12 and the project           | USER_STATED                        | not needed         |
-|   slides built natively and reviewed by render                                           |   deck builder                                  |                                    |                    |
-| The operator's own deliverables and generators: workbooks, mind maps, Word and PDF       | research/research-20261112_1700.md, sections on | VERIFIED_PRIMARY (local files)     | in the             |
-|   builders, the Word-engine PDF script                                                   |   the operator's deliverables and the           |                                    |   research record  |
-|                                                                                          |   profitability work                            |                                    |                    |
-| Round 1 research: Anthropic office skills, library facts, WCAG, audience skills          | research/research-20261112_1600.md              | VERIFIED_PRIMARY and UNVERIFIED    | in the             |
-|                                                                                          |                                                 |   as labelled                      |   research record  |
-| Round 2 research: five case model, audience primary sources, Word and TOC on macOS,      | research/research-20261112_1700.md              | VERIFIED_PRIMARY, VERIFIED_SECONDARY | in the             |
-|   accessible PDF, office code licences                                                   |                                                 |   and UNVERIFIED as labelled       |   research record  |
-| The five research briefs and the intake that produced them                               | research/briefs/ and the intake                 | USER_STATED                        | kept in the        |
-|                                                                                          |                                                 |                                    |   seed folder      |
-| Licence of the four Anthropic office folders: Apache License 2.0 (LICENSE.txt), no       | gh api and file reads, 2026-11-12               | VERIFIED_PRIMARY                   | in the             |
-|   per-file headers or NOTICE; schema licences unread                                     |                                                 |                                    |   research record  |
+| Source                                                                               | Where                                                      | Label                           | Capture        |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------- | ------------------------------- | -------------- |
+| The operator's requirements and rulings for this skill (personal use, four lenses,   | intake-skill-presentation-20261112_1644.md                 | USER_STATED                     | in the intake  |
+|   Word engine for every document, release 1 scope, mind maps and profitability work) |                                                            |                                 |                |
+| A deck-building engagement: requirements, grid, timeline, flow, cost, component and  | session of 2026-11-12 and the project deck builder         | USER_STATED                     | not needed     |
+|   gap slides built natively and reviewed by render                                   |                                                            |                                 |                |
+| The operator's own deliverables and generators: workbooks, mind maps, Word and PDF   | research/research-20261112_1700.md, sections on the        | VERIFIED_PRIMARY (local files)  | in the         |
+|   builders, the Word-engine PDF script                                               |   operator's deliverables and the profitability work       |                                 |   research     |
+|                                                                                      |                                                            |                                 |   record       |
+| Round 1 research: Anthropic office skills, library facts, WCAG, audience skills      | research/research-20261112_1600.md                         | VERIFIED_PRIMARY and UNVERIFIED | in the         |
+|                                                                                      |                                                            |   as labelled                   |   research     |
+|                                                                                      |                                                            |                                 |   record       |
+| Round 2 research: five case model, audience primary sources, Word and TOC on macOS,  | research/research-20261112_1700.md                         | VERIFIED_PRIMARY,               | in the         |
+|   accessible PDF, office code licences                                               |                                                            |   VERIFIED_SECONDARY and        |   research     |
+|                                                                                      |                                                            |   UNVERIFIED as labelled        |   record       |
+| The five research briefs and the intake that produced them                           | research/briefs/ and the intake                            | USER_STATED                     | kept in the    |
+|                                                                                      |                                                            |                                 |   seed folder  |
+| Licence of the four Anthropic office folders: Apache License 2.0 (LICENSE.txt), no   | gh api and file reads, 2026-11-12                          | VERIFIED_PRIMARY                | in the         |
+|   per-file headers or NOTICE; schema licences unread                                 |                                                            |                                 |   research     |
+|                                                                                      |                                                            |                                 |   record       |
+| A short meeting deck for a first-time senior audience: seven lessons (time per       | research/research-20261116_1754.md                         | USER_STATED, VERIFIED_PRIMARY   | in the         |
+|   slide, backup behind a divider, the hard question early, decisions,                |                                                            |   as labelled                   |   research     |
+|   file properties)                                                                   |                                                            |                                 |   record       |
+| Hand-edit learning (deck_edits, style rules DS1 to DS9), audience profiles,          | research/research-20261118_1443.md; its last table maps    | USER_STATED, VERIFIED_PRIMARY;  | in the         |
+|   technical diagrams (state machine, ladder, storage), transitions and click builds  |   each lesson to its seed section                          |   semi-technical                |   research     |
+|   from markdown, motion checked through PowerPoint, consultation-deck rules,         |                                                            |   profile UNVERIFIED            |   record       |
+|   deliverable-first folders                                                          |                                                            |                                 |                |
 
 All research, captures and part files stay in this seed's folder for good (`research/`, `parts/`); nothing here is deleted or moved after the build.
 
 ## What was learned
 
-| Lesson                                                                                                              | Evidence                          | Becomes                                    |
-| ------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------ |
-| A technical author tilts every deliverable technical; management reads business, cost and risk and sees "complex    | operator 2026-11-12               | the four-lens model, the translation chain |
-|   and expensive". The fix is a fixed overlay of four views on every item, not more explanation.                     |                                   |   and lens_coverage.py                     |
-| A published framework already overlays these views: the five case model (strategic, economic, commercial,           | research record 2, Frameworks     | lenses-and-translation.md mapping table    |
-|   financial, management, each tested by one question); ISO 42010 gives views per stakeholder concern. Use them as   |   that overlay views              |                                            |
-|   the mapping, proportionately.                                                                                     |                                   |                                            |
-| Start from the audience's stated requirements, then show which step delivers each, in which phase and by what date; | engagement 2026-11-12             | story-and-structure.md; the requirement    |
-|   technical detail goes underneath.                                                                                 |                                   |   grid and phase views                     |
-| One message per slide with an action title; Minto's frame is Situation, Complication, Question (not SCQA); a Big    | research record 2,                | story-and-structure.md                     |
-|   Idea is one complete sentence with a point of view and the stakes; storyboard before opening software.            |   Audience methods                |                                            |
-| Never invent a figure. Where a number does not exist, show "to be counted" with an owner and a date, and state the  | operator ruling and the           | honesty-and-evidence.md; a standing rule   |
-|   day a status was read.                                                                                            |   cost slide                      |                                            |
-| Paraphrase what stakeholders said; no verbatim transcript quotes and no meeting-by-meeting narration in             | operator correction 2026-11-12    | honesty-and-evidence.md                    |
-|   management material.                                                                                              |                                   |                                            |
-| A many-to-many mapping drawn as lines collapses into overlaps; a grid with dots has no crossings.                   | operator rejection of a           | views-and-visuals.md                       |
-|                                                                                                                     |   drawn tree                      |                                            |
-| Content is data and layout is code: markdown holds the wording, a data file the figures, a builder the layout; the  | the project's deck, workbook and  | build-from-data.md; a standing rule        |
-|   office file is derived and never hand-edited.                                                                     |   resume builders                 |                                            |
-| Render every page to an image and look; the first deck render had five fault classes (wrapped headline, overlapping | render review 2026-11-12          | render-and-review.md; deck_geometry_check.py |
-|   note, short dashed boxes, colliding headers, empty cards).                                                        |                                   |                                            |
-| PowerPoint may show a cached copy of a re-opened path: render a fresh copy under a new name.                        | observed 2026-11-12               | render_pages.py; render-and-review.md      |
-| A LibreOffice render passing does not prove PowerPoint will open a pptxgenjs file; validate against the schemas and | Anthropic pptx SKILL.md           | powerpoint.md; office_validate.py          |
-|   open once in PowerPoint.                                                                                          |                                   |                                            |
-| pptxgenjs gotchas: hex colours without #, never share an options object between calls, native charts, real bullets, | Anthropic pptx SKILL.md;          | powerpoint.md                              |
-|   notes through addNotes, masters, LAYOUT_WIDE is 13.3 by 7.5 inches.                                               |   PptxGenJS docs                  |                                            |
-| DOCX to PDF goes through Microsoft Word's own PDF engine on macOS (operator rule, now for every document); in       | docx_to_pdf_word.sh header;       | word-documents.md; word_to_pdf.py          |
-|   AppleScript use `active document` inline after `open` (a stored reference fails with -2753); delete Word's lock   |   forum report                    |                                            |
-|   files; the first scripted run raises permission dialogs, so it is not unattended.                                 |                                   |                                            |
-| A table of contents field made by docx-js or python-docx is empty until an application evaluates it; no tested      | research record 2, Word, PDF      | word-documents.md; open question           |
-|   script refreshes it and exports PDF on Word for Mac.                                                              |   and TOC                         |                                            |
-| Word documents for roles are built by cloning a template and replacing text so styles survive, then exporting       | me/career docx_builder.py         | career-documents.md                        |
-|   through Word.                                                                                                     |                                   |                                            |
-| Workbooks: formulas not pasted totals; openpyxl stores no cached values; recalculate headlessly and read the tool's | Anthropic xlsx SKILL.md;          | spreadsheets.md; recalc_check.py           |
-|   JSON, not its exit code; XlsxWriter creates, openpyxl edits.                                                      |   library docs                    |                                            |
-| The operator's analysis workbooks follow a convention: basis in the file name and a timestamp, an Exclusions and    | profitability projects, files and | analysis-workbooks.md                      |
-|   Assumptions block, a column glossary with a formula note per derived column, baseline and what-if columns with a  |   scripts read 2026-11-12         |                                            |
-|   delta, direct and shared costs split, one canonical file named.                                                   |                                   |                                            |
-| Mind maps are a deliverable form: markmap-compatible markdown with the headline in the H1, a blockquote of base     | profitability projects,           | mind-maps.md; mindmap_render.py;           |
-|   facts, a legend, status icons per node, bold key numbers; generated from data for breakdowns and written by hand  |   generators and maps             |   templates/lens-mindmap.md                |
-|   for plans.                                                                                                        |   read 2026-11-12                 |                                            |
-| Superseded dated outputs move to an archive folder beside them during every sweep; only the latest of each report   | vocus AGENTS.md hard rule         | analysis-workbooks.md; archive_dated.py    |
-| Render and review mind maps in the VS Code Markmap extension (gera2ld.markmap-vscode, Open as markmap); the PNG export is the render to look at | one renderer, already installed, so reviews are repeatable | operator tooling, verified 2026-11-12 |
-|   type stays active (operator rule, 2026-06-05).                                                                    |                                   |                                            |
-| Playwright `page.pdf` has tagged and outline off by default; WeasyPrint needs `--pdf-tags` and valid HTML           | library docs, read 2026-11-12     | pdf-output.md (checks deferred)            |
-|   structure; neither guarantees an accessible PDF.                                                                  |                                   |                                            |
-| Existing public office skills are format and visual-design guides; none holds audience, story or lens guidance, so  | research record 1 and 2           | purpose; sources.yaml negative finding     |
-|   that part is new.                                                                                                 |                                   |                                            |
-| Ask the audience and impact questions first and test the draft on a reader with no context; block drafting while    | doc-coauthoring and a coach skill | audience-and-objective-brief.md            |
-|   the audience, purpose or decision is unknown.                                                                     |                                   |                                            |
-| A page of bullet lists was rejected as "very basic". The page that worked reads top to bottom as a story: today as the audience sees it, what we are doing, what they get; what we heard beside the need, requirement and change table; cost, support, the measure and the decision; a timeline; one closing line. | operator rejection and rebuild 2026-11-12 | story-and-structure.md; templates: story one-pager |
-| A list of "what we heard" does not make an audience feel heard. Pair each point, row by row, with what is being done about it, the first dated result and who delivers it. | rebuilt pack, page 1, 2026-11-12 | audience-and-objective-brief.md; heard-and-answer table |
-| Show how workstreams fit in one picture: the audience's solutions across the top, the shared platform as one bar under all of them. Drawn as a sibling column, the platform looks like a third project, not the thing that manages the others. | operator 2026-11-12 ("how all three marry up") | views-and-visuals.md |
-| The audience thinks by product or solution; the author thinks by project. Give a page to each thing the audience named, even when no project owns it, or its loudest requirement has nowhere to land. | assessment against the meeting record 2026-11-12 | audience-and-objective-brief.md; story-and-structure.md |
-| When dates moved, show the plan date beside the date now, with the reasons, including unplanned work that was delivered. State colours alone read as "late" with no cause. | operator 2026-11-12; what-changed slide | honesty-and-evidence.md; plan-versus-now view |
-| A "today" box written by reversing the promised improvements states inferred problems as fact. Head it as the audience's view and keep only lines with a source. | review note 2026-11-12 | honesty-and-evidence.md; a standing rule |
-| When a priority drops, a date still shown for that work reads as a commitment. Mark it for decision or "to agree", and list the decision on the page. | review note 2026-11-12 | honesty-and-evidence.md |
-| End each page with how it will be shown (the measure, baseline "to be counted" with owner and date) and the decision needed from the audience. | rebuilt pack 2026-11-12 | story-and-structure.md |
-| Two deliverables built from the same facts drift apart (a date, a baseline line, a proposal's scope). After changing one, compare every shared fact in the other; a shared facts file would remove the drift. | deck against one-pagers 2026-11-12 | build-from-data.md; shared-facts check (script plan) |
-| A rejected deliverable is rebuilt as a new file with its own data and builder; the earlier one stays as it was for comparison. | operator 2026-11-12 | build-from-data.md |
-| pptxgenjs clips text silently when it wraps past a fixed-height box, and a table row grows over the shape below it. Budget the page line by line, then render and look at every page after each wording change. | render review 2026-11-12, three overflow faults | render-and-review.md; deck_geometry_check.py |
+| Lesson                                                                                                              | Evidence                         | Becomes                                     |
+| ------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------- |
+| A technical author tilts every deliverable technical; management reads business, cost and risk and sees "complex    | operator 2026-11-12              | the four-lens model, the translation chain  |
+|   and expensive". The fix is a fixed overlay of four views on every item, not more explanation.                     |                                  |   and lens_coverage.py                      |
+| A published framework already overlays these views: the five case model (strategic, economic, commercial,           | research record 2, Frameworks    | lenses-and-translation.md mapping table     |
+|   financial, management, each tested by one question); ISO 42010 gives views per stakeholder concern. Use them as   |   that overlay views             |                                             |
+|   the mapping, proportionately.                                                                                     |                                  |                                             |
+| Start from the audience's stated requirements, then show which step delivers each, in which phase and by what date; | engagement 2026-11-12            | story-and-structure.md; the requirement     |
+|   technical detail goes underneath.                                                                                 |                                  |   grid and phase views                      |
+| One message per slide with an action title; Minto's frame is Situation, Complication, Question (not SCQA); a Big    | research record 2,               | story-and-structure.md                      |
+|   Idea is one complete sentence with a point of view and the stakes; storyboard before opening software.            |   Audience methods               |                                             |
+| Never invent a figure. Where a number does not exist, show "to be counted" with an owner and a date, and state the  | operator ruling and the          | honesty-and-evidence.md; a standing rule    |
+|   day a status was read.                                                                                            |   cost slide                     |                                             |
+| Paraphrase what stakeholders said; no verbatim transcript quotes and no meeting-by-meeting narration in             | operator correction 2026-11-12   | honesty-and-evidence.md                     |
+|   management material.                                                                                              |                                  |                                             |
+| A many-to-many mapping drawn as lines collapses into overlaps; a grid with dots has no crossings.                   | operator rejection of a          | views-and-visuals.md                        |
+|                                                                                                                     |   drawn tree                     |                                             |
+| Content is data and layout is code: markdown holds the wording, a data file the figures, a builder the layout; the  | the project's deck, workbook and | build-from-data.md; a standing rule         |
+|   office file is derived and never hand-edited.                                                                     |   resume builders                |                                             |
+| Render every page to an image and look; the first deck render had five fault classes (wrapped headline, overlapping | render review 2026-11-12         | render-and-review.md; deck_geometry_check.py |
+|   note, short dashed boxes, colliding headers, empty cards).                                                        |                                  |                                             |
+| PowerPoint may show a cached copy of a re-opened path: render a fresh copy under a new name.                        | observed 2026-11-12              | render_pages.py; render-and-review.md       |
+| A LibreOffice render passing does not prove PowerPoint will open a pptxgenjs file; validate against the schemas and | Anthropic pptx SKILL.md          | powerpoint.md; office_validate.py           |
+|   open once in PowerPoint.                                                                                          |                                  |                                             |
+| pptxgenjs gotchas: hex colours without #, never share an options object between calls, native charts, real bullets, | Anthropic pptx SKILL.md;         | powerpoint.md                               |
+|   notes through addNotes, masters, LAYOUT_WIDE is 13.3 by 7.5 inches.                                               |   PptxGenJS docs                 |                                             |
+| DOCX to PDF goes through Microsoft Word's own PDF engine on macOS (operator rule, now for every document); in       | docx_to_pdf_word.sh header;      | word-documents.md; word_to_pdf.py           |
+|   AppleScript use `active document` inline after `open` (a stored reference fails with -2753); delete Word's lock   |   forum report                   |                                             |
+|   files; the first scripted run raises permission dialogs, so it is not unattended.                                 |                                  |                                             |
+| A table of contents field made by docx-js or python-docx is empty until an application evaluates it; no tested      | research record 2, Word, PDF     | word-documents.md; open question            |
+|   script refreshes it and exports PDF on Word for Mac.                                                              |   and TOC                        |                                             |
+| Word documents for roles are built by cloning a template and replacing text so styles survive, then exporting       | me/career docx_builder.py        | career-documents.md                         |
+|   through Word.                                                                                                     |                                  |                                             |
+| Workbooks: formulas not pasted totals; openpyxl stores no cached values; recalculate headlessly and read the tool's | Anthropic xlsx SKILL.md;         | spreadsheets.md; recalc_check.py            |
+|   JSON, not its exit code; XlsxWriter creates, openpyxl edits.                                                      |   library docs                   |                                             |
+| The operator's analysis workbooks follow a convention: basis in the file name and a timestamp, an Exclusions and    | profitability projects, files    | analysis-workbooks.md                       |
+|   Assumptions block, a column glossary with a formula note per derived column, baseline and what-if columns with a  |   and scripts read 2026-11-12    |                                             |
+|   delta, direct and shared costs split, one canonical file named.                                                   |                                  |                                             |
+| Mind maps are a deliverable form: markmap-compatible markdown with the headline in the H1, a blockquote of base     | profitability projects,          | mind-maps.md; mindmap_render.py;            |
+|   facts, a legend, status icons per node, bold key numbers; generated from data for breakdowns and written by hand  |   generators and maps            |   templates/lens-mindmap.md                 |
+|   for plans.                                                                                                        |   read 2026-11-12                |                                             |
+| Superseded dated outputs move to an archive folder beside them during every sweep; only the latest of each report   | vocus AGENTS.md hard rule        | analysis-workbooks.md; archive_dated.py     |
+| Render and review mind maps in the VS Code Markmap extension (gera2ld.markmap-vscode, Open as markmap); the PNG     | one renderer, already installed, | operator tooling, verified 2026-11-12       |
+|   export is the render to look at type stays active (operator rule, 2026-06-05).                                    |   so reviews are repeatable      |                                             |
+| Playwright `page.pdf` has tagged and outline off by default; WeasyPrint needs `--pdf-tags` and valid HTML           | library docs, read 2026-11-12    | pdf-output.md (checks deferred)             |
+|   structure; neither guarantees an accessible PDF.                                                                  |                                  |                                             |
+| Existing public office skills are format and visual-design guides; none holds audience, story or lens guidance, so  | research record 1 and 2          | purpose; sources.yaml negative finding      |
+|   that part is new.                                                                                                 |                                  |                                             |
+| Ask the audience and impact questions first and test the draft on a reader with no context; block drafting while    | doc-coauthoring and a            | audience-and-objective-brief.md             |
+|   the audience, purpose or decision is unknown.                                                                     |   coach skill                    |                                             |
+| A page of bullet lists was rejected as "very basic". The page that worked reads top to bottom as a story: today as  | operator rejection and           | story-and-structure.md; templates:          |
+|   the audience sees it, what we are doing, what they get; what we heard beside the need, requirement and change     |   rebuild 2026-11-12             |   story one-pager                           |
+|   table; cost, support, the measure and the decision; a timeline; one closing line.                                 |                                  |                                             |
+| A list of "what we heard" does not make an audience feel heard. Pair each point, row by row, with what is being     | rebuilt pack, page 1, 2026-11-12 | audience-and-objective-brief.md;            |
+|   done about it, the first dated result and who delivers it.                                                        |                                  |   heard-and-answer table                    |
+| Show how workstreams fit in one picture: the audience's solutions across the top, the shared platform as one bar    | operator 2026-11-12 ("how all    | views-and-visuals.md                        |
+|   under all of them. Drawn as a sibling column, the platform looks like a third project, not the thing that manages |   three marry up")               |                                             |
+|   the others.                                                                                                       |                                  |                                             |
+| The audience thinks by product or solution; the author thinks by project. Give a page to each thing the audience    | assessment against the meeting   | audience-and-objective-brief.md;            |
+|   named, even when no project owns it, or its loudest requirement has nowhere to land.                              |   record 2026-11-12              |   story-and-structure.md                    |
+| When dates moved, show the plan date beside the date now, with the reasons, including unplanned work that was       | operator 2026-11-12;             | honesty-and-evidence.md;                    |
+|   delivered. State colours alone read as "late" with no cause.                                                      |   what-changed slide             |   plan-versus-now view                      |
+| A "today" box written by reversing the promised improvements states inferred problems as fact. Head it as the       | review note 2026-11-12           | honesty-and-evidence.md; a standing rule    |
+|   audience's view and keep only lines with a source.                                                                |                                  |                                             |
+| When a priority drops, a date still shown for that work reads as a commitment. Mark it for decision or "to agree",  | review note 2026-11-12           | honesty-and-evidence.md                     |
+|   and list the decision on the page.                                                                                |                                  |                                             |
+| End each page with how it will be shown (the measure, baseline "to be counted" with owner and date) and the         | rebuilt pack 2026-11-12          | story-and-structure.md                      |
+|   decision needed from the audience.                                                                                |                                  |                                             |
+| Two deliverables built from the same facts drift apart (a date, a baseline line, a proposal's scope). After         | deck against                     | build-from-data.md; shared-facts check      |
+|   changing one, compare every shared fact in the other; a shared facts file would remove the drift.                 |   one-pagers 2026-11-12          |   (script plan)                             |
+| A rejected deliverable is rebuilt as a new file with its own data and builder; the earlier one stays as it was      | operator 2026-11-12              | build-from-data.md                          |
+|   for comparison.                                                                                                   |                                  |                                             |
+| pptxgenjs clips text silently when it wraps past a fixed-height box, and a table row grows over the shape below it. | render review 2026-11-12, three  | render-and-review.md; deck_geometry_check.py |
+|   Budget the page line by line, then render and look at every page after each wording change.                       |   overflow faults                |                                             |
 
 ## Vocabulary
 
@@ -220,7 +243,8 @@ All research, captures and part files stay in this seed's folder for good (`rese
 | Keep content as data and rebuild the file     | build-from-data.md              | Markdown source, data module, builder, derived files, naming and versioning, plan then apply, the archive rule,    |
 |                                               |                                 |   previews before sending, repurposing                                                                             |
 | Build a markdown mind map                     | mind-maps.md                    | The markmap form, the data mind map shape (headline, base facts, legend, status icons), hand-written plan maps,    |
-|                                               |                                 |   the four-lens mind map, generating from data, rendering in the VS Code Markmap extension (gera2ld.markmap-vscode), review                                               |
+|                                               |                                 |   the four-lens mind map, generating from data, rendering in the VS Code Markmap extension                         |
+|                                               |                                 |   (gera2ld.markmap-vscode), review                                                                                 |
 | Build or edit a profitability, scenario or    | analysis-workbooks.md           | The operator's workbook convention, basis in the name, assumptions block, formula glossary, baseline and what-if   |
 |   analysis workbook                           |                                 |   columns, canonical file, archiving, recalculation and error scan                                                 |
 | Build or edit a spreadsheet in general        | spreadsheets.md                 | XlsxWriter versus openpyxl, formulas and recalculation, error scan, conventions, RAG sheets, summary sheet first,  |
@@ -254,39 +278,48 @@ All research, captures and part files stay in this seed's folder for good (`rese
 
 ## Scripts plan
 
-| Script               | Does                                                              | Origin                                         | Safety                 | Test                            |
-| -------------------- | ----------------------------------------------------------------- | ---------------------------------------------- | ---------------------- | ------------------------------- |
-| lens_coverage.py     | Reads a content spec (markdown table or list of items tagged by   | new                                            | read-only              | tests/test_lens_coverage.py     |
-|                      |   lens) and reports items missing a lens and the share per lens;  |                                                |                        |                                 |
-|                      |   flags tilt                                                      |                                                |                        |                                 |
-| render_pages.py      | Renders a pptx, docx, xlsx or pdf to page PNGs on a fresh copy    | reuse (the project's render_pptx_pages.py,     | modifies files only    | tests/test_render_pages.py      |
-|                      |   under a new name, with a timeout on every call; PowerPoint renders into its own container (no access prompt) and exports the copy by name (enterprise-strategy 6c262ea9) |   extended to other formats; the Apache-2.0    |   under a              |                                 |
-|                      |                                                                   |   doc skill's render_docx.py)                  |   scratch folder       |                                 |
-| word_to_pdf.py       | Exports a .docx to .pdf through Word's own engine by AppleScript  | reuse (the operator's pdf_export.py            | writes PDFs beside the | tests/test_word_to_pdf.py       |
-|                      |   with the `active document` pattern, removes lock files, reports |   and docx_to_pdf_word.sh)                     |   inputs only          |                                 |
-|                      |   permission dialogs; LibreOffice only when Word is not available |                                                |   with --apply         |                                 |
-| contrast_check.py    | Computes WCAG contrast ratios for colour pairs and for text and   | new                                            | read-only              | tests/test_contrast_check.py    |
-|                      |   fill colours found in a pptx or a palette file                  |                                                |                        |                                 |
-| deck_geometry_check.py | Reads a pptx and reports shapes outside the slide, overlapping    | new                                            | read-only              | tests/test_deck_geometry_check.py |
-|                      |   text boxes, text that cannot fit its box (estimate) and         |                                                |                        |                                 |
-|                      |   small fonts                                                     |                                                |                        |                                 |
-| office_validate.py   | Validates a pptx against the OOXML schemas to catch files         | reuse (Anthropic office validate scripts,      | read-only              | tests/test_office_validate.py   |
-|                      |   PowerPoint refuses; the schemas are referenced, not copied      |   Apache-2.0, licence text kept)               |                        |                                 |
-| recalc_check.py      | Recalculates a workbook headlessly and reports formula errors     | reuse (Anthropic xlsx recalc script,           | modifies the workbook  | tests/test_recalc_check.py      |
-|                      |   from the tool's JSON, not its exit code; sets a timeout         |   Apache-2.0, licence text kept)               |   copy only            |                                 |
-|                      |                                                                   |                                                |   with --apply         |                                 |
-| md_to_docx.py        | Builds a Word document from markdown with real styles and tables; | reuse (the operator's shared converter,        | writes one .docx only  | tests/test_md_to_docx.py        |
-|                      |   the .docx is derived                                            |   promoted into this pack)                     |   with --apply         |                                 |
-| mindmap_render.py    | Writes a markmap mind map from a table (profit or any breakdown   | reuse (the profitability projects' generic     | writes one .md only    | tests/test_mindmap_render.py    |
-|                      |   by group, status icons, legend) or from a lens spec (four-lens  |   mind map generator, generalised)             |   with --apply         |                                 |
-|                      |   map of an initiative)                                           |                                                |                        |                                 |
-| archive_dated.py     | Plans, then moves superseded timestamped report files (md, xlsx,  | new (from the operator's archive rule)         | plan by default; moves | tests/test_archive_dated.py     |
-|                      |   csv with an older stamp on the same slug) into an archive       |                                                |   only with --apply;   |                                 |
-|                      |   folder beside them, keeping the latest                          |                                                |   never deletes        |                                 |
-| drawio_pages.py      | Draws page layouts (cards, tables, milestone lines) to draw.io from the same data as the deck, with the generated banner, page_audit() and a drift check | reuse (enterprise-strategy build_one_pagers_drawio.py on skill-drawio drawio.mxfile, ee9046df) | writes one .drawio only with --write | tests/test_drawio_pages.py |
-| deck_layout.js       | The layout helpers from the deck builder (box, line, table, grid, | reuse (the project's build_strategy_pptx.js and build_brief_pptx.js: layout helpers, masters, notes, text diagrams, markdown wording split; | writes one .pptx only  | tests/test_deck_layout.js       |
-|                      |   timeline bars, chevrons, cards) for building a deck             |   generalised; a spec-driven builder           |   when called          |                                 |
-|                      |   in pptxgenjs                                                    |   is deferred)                                 |   with --apply         |                                 |
+| Script               | Does                                                         | Origin                                                  | Safety             | Test                            |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------- | ------------------ | ------------------------------- |
+| lens_coverage.py     | Reads a content spec (markdown table or list of items tagged | new                                                     | read-only          | tests/test_lens_coverage.py     |
+|                      |   by lens) and reports items missing a lens and the share    |                                                         |                    |                                 |
+|                      |   per lens; flags tilt                                       |                                                         |                    |                                 |
+| render_pages.py      | Renders a pptx, docx, xlsx or pdf to page PNGs on a fresh    | reuse (the project's render_pptx_pages.py, extended to  | modifies files     | tests/test_render_pages.py      |
+|                      |   copy under a new name, with a timeout on every call;       |   other formats; the Apache-2.0 doc                     |   only under a     |                                 |
+|                      |   PowerPoint renders into its own container (no access       |   skill's render_docx.py)                               |   scratch folder   |                                 |
+|                      |   prompt) and exports the copy by name                       |                                                         |                    |                                 |
+|                      |   (enterprise-strategy 6c262ea9)                             |                                                         |                    |                                 |
+| word_to_pdf.py       | Exports a .docx to .pdf through Word's own engine by         | reuse (the operator's pdf_export.py                     | writes PDFs beside | tests/test_word_to_pdf.py       |
+|                      |   AppleScript with the `active document` pattern, removes    |   and docx_to_pdf_word.sh)                              |   the inputs only  |                                 |
+|                      |   lock files, reports permission dialogs; LibreOffice only   |                                                         |   with --apply     |                                 |
+|                      |   when Word is not available                                 |                                                         |                    |                                 |
+| contrast_check.py    | Computes WCAG contrast ratios for colour pairs and for text  | new                                                     | read-only          | tests/test_contrast_check.py    |
+|                      |   and fill colours found in a pptx or a palette file         |                                                         |                    |                                 |
+| deck_geometry_check.py | Reads a pptx and reports shapes outside the slide,           | new                                                     | read-only          | tests/test_deck_geometry_check.py |
+|                      |   overlapping text boxes, text that cannot fit its box       |                                                         |                    |                                 |
+|                      |   (estimate) and small fonts                                 |                                                         |                    |                                 |
+| office_validate.py   | Validates a pptx against the OOXML schemas to catch files    | reuse (Anthropic office validate scripts, Apache-2.0,   | read-only          | tests/test_office_validate.py   |
+|                      |   PowerPoint refuses; the schemas are referenced, not copied |   licence text kept)                                    |                    |                                 |
+| recalc_check.py      | Recalculates a workbook headlessly and reports formula       | reuse (Anthropic xlsx recalc script, Apache-2.0,        | modifies the       | tests/test_recalc_check.py      |
+|                      |   errors from the tool's JSON, not its exit code; sets       |   licence text kept)                                    |   workbook copy    |                                 |
+|                      |   a timeout                                                  |                                                         |   only             |                                 |
+|                      |                                                              |                                                         |   with --apply     |                                 |
+| md_to_docx.py        | Builds a Word document from markdown with real styles and    | reuse (the operator's shared converter, promoted into   | writes one .docx   | tests/test_md_to_docx.py        |
+|                      |   tables; the .docx is derived                               |   this pack)                                            |   only             |                                 |
+|                      |                                                              |                                                         |   with --apply     |                                 |
+| mindmap_render.py    | Writes a markmap mind map from a table (profit or any        | reuse (the profitability projects' generic mind map     | writes one .md     | tests/test_mindmap_render.py    |
+|                      |   breakdown by group, status icons, legend) or from a lens   |   generator, generalised)                               |   only             |                                 |
+|                      |   spec (four-lens map of an initiative)                      |                                                         |   with --apply     |                                 |
+| archive_dated.py     | Plans, then moves superseded timestamped report files (md,   | new (from the operator's archive rule)                  | plan by default;   | tests/test_archive_dated.py     |
+|                      |   xlsx, csv with an older stamp on the same slug) into an    |                                                         |   moves only with  |                                 |
+|                      |   archive folder beside them, keeping the latest             |                                                         |   --apply;         |                                 |
+|                      |                                                              |                                                         |   never deletes    |                                 |
+| drawio_pages.py      | Draws page layouts (cards, tables, milestone lines) to       | reuse (enterprise-strategy build_one_pagers_drawio.py on | writes one .drawio | tests/test_drawio_pages.py      |
+|                      |   draw.io from the same data as the deck, with the generated |   skill-drawio drawio.mxfile, ee9046df)                 |   only             |                                 |
+|                      |   banner, page_audit() and a drift check                     |                                                         |   with --write     |                                 |
+| deck_layout.js       | The layout helpers from the deck builder (box, line, table,  | reuse (the project's build_strategy_pptx.js and         | writes one .pptx   | tests/test_deck_layout.js       |
+|                      |   grid, timeline bars, chevrons, cards) for building a deck  |   build_brief_pptx.js: layout helpers, masters, notes,  |   only when called |                                 |
+|                      |   in pptxgenjs                                               |   text diagrams, markdown wording split; generalised; a |   with --apply     |                                 |
+|                      |                                                              |   spec-driven builder is deferred)                      |                    |                                 |
 
 ## Templates and assets
 
@@ -340,27 +373,29 @@ All research, captures and part files stay in this seed's folder for good (`rese
 
 ## Evidence plan
 
-| Claim                                                                             | Evidence and source                                   | Falsifier                                                |
-| --------------------------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
-| The pptx, docx, xlsx and pdf folders of Anthropic's skills repo are Apache        | each folder's LICENSE.txt and a file                  | a later commit changes a licence or adds a NOTICE        |
-|   License 2.0 with no per-file headers or NOTICE                                  |   search, 2026-11-12                                  |                                                          |
-| A LibreOffice render passing does not prove PowerPoint will open a pptxgenjs file | Anthropic pptx SKILL.md statement about chart XML     | a documented case where a validated, LibreOffice-clean   |
-|                                                                                   |                                                       |   file is refused is absent, or the claim is             |
-|                                                                                   |                                                       |   withdrawn upstream                                     |
-| openpyxl writes formulas without cached values; XlsxWriter creates new files only | Anthropic xlsx SKILL.md and library documentation     | either library changes this behaviour                    |
-|   and stores 0 for an uncached formula                                            |                                                       |                                                          |
-| The five case model names Strategic, Economic, Commercial, Financial and          | Transport Scotland summary of the Treasury guidance   | the combined 2026 guidance renames or restructures       |
-|   Management cases tested by one question each                                    |   (HMT PDF unread)                                    |   the cases                                              |
-| Minto's framework is Situation, Complication, Question                            | the author's own page                                 | the author's page names an answer step                   |
-| A Big Idea is one complete sentence with a point of view and stakes               | storytellingwithdata.com post of 2014-02              | the author revises the definition                        |
-| Word scripting needs `active document` inline after `open`, and scripted PDF      | the operator's script header; a forum report of 2022  | a Word version where a stored document reference works   |
-|   export raises permission dialogs                                                |   to 2023                                             |   and no dialog appears                                  |
-| Playwright `tagged` and `outline` default to false; WeasyPrint needs `--pdf-tags` | Playwright class-page.md and WeasyPrint API reference | a default changes in a later release                     |
-| Re-opening a deck at the same path in PowerPoint can show a cached copy           | observed 2026-11-12                                   | repeated exports from the same path always show the      |
-|                                                                                   |                                                       |   current file                                           |
-| Existing public office skills hold no audience, story or lens guidance            | negative finding of 2026-11-12 from                   | a published skill that teaches audience-driven structure |
-| Mind maps render in the VS Code extension gera2ld.markmap-vscode (command Open as markmap), exported as HTML, SVG or PNG | the installed extension's package.json and readme, 2026-11-12 | the extension is removed, renamed or loses the command; or the operator moves to another renderer |
-|                                                                                   |   anthropics/skills, openai/skills and GitHub search  |   is found                                               |
+| Claim                                                                                | Evidence and source                               | Falsifier                                                 |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------- | --------------------------------------------------------- |
+| The pptx, docx, xlsx and pdf folders of Anthropic's skills repo are Apache License   | each folder's LICENSE.txt and a file              | a later commit changes a licence or adds a NOTICE         |
+|   2.0 with no per-file headers or NOTICE                                             |   search, 2026-11-12                              |                                                           |
+| A LibreOffice render passing does not prove PowerPoint will open a pptxgenjs file    | Anthropic pptx SKILL.md statement about chart XML | a documented case where a validated, LibreOffice-clean    |
+|                                                                                      |                                                   |   file is refused is absent, or the claim is              |
+|                                                                                      |                                                   |   withdrawn upstream                                      |
+| openpyxl writes formulas without cached values; XlsxWriter creates new files only    | Anthropic xlsx SKILL.md and library documentation | either library changes this behaviour                     |
+|   and stores 0 for an uncached formula                                               |                                                   |                                                           |
+| The five case model names Strategic, Economic, Commercial, Financial and Management  | Transport Scotland summary of the Treasury        | the combined 2026 guidance renames or restructures        |
+|   cases tested by one question each                                                  |   guidance (HMT PDF unread)                       |   the cases                                               |
+| Minto's framework is Situation, Complication, Question                               | the author's own page                             | the author's page names an answer step                    |
+| A Big Idea is one complete sentence with a point of view and stakes                  | storytellingwithdata.com post of 2014-02          | the author revises the definition                         |
+| Word scripting needs `active document` inline after `open`, and scripted PDF export  | the operator's script header; a forum report of   | a Word version where a stored document reference works    |
+|   raises permission dialogs                                                          |   2022 to 2023                                    |   and no dialog appears                                   |
+| Playwright `tagged` and `outline` default to false; WeasyPrint needs `--pdf-tags`    | Playwright class-page.md and WeasyPrint           | a default changes in a later release                      |
+|                                                                                      |   API reference                                   |                                                           |
+| Re-opening a deck at the same path in PowerPoint can show a cached copy              | observed 2026-11-12                               | repeated exports from the same path always show the       |
+|                                                                                      |                                                   |   current file                                            |
+| Existing public office skills hold no audience, story or lens guidance               | negative finding of 2026-11-12 from               | a published skill that teaches audience-driven structure  |
+| Mind maps render in the VS Code extension gera2ld.markmap-vscode (command Open as    | the installed extension's package.json and        | the extension is removed, renamed or loses the command;   |
+|   markmap), exported as HTML, SVG or PNG                                             |   readme, 2026-11-12 anthropics/skills,           |   or the operator moves to another renderer is found      |
+|                                                                                      |   openai/skills and GitHub search                 |                                                           |
 
 ## Acceptance scenarios
 

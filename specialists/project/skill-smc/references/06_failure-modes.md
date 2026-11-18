@@ -203,6 +203,13 @@ Iridium code, but RCT is moving to **Iridium**: tested at a few sites, with repl
 visit for it. WH sites have no satellite modem at all. No code path lets an inbound Thuraya message
 trigger a reset. Thuraya commands are sent only from the local web UI (`td` page). The AVR firmware is not in this repo, so an AVR-level SMC watchdog or SMS reset is still unverified.
 
+> **Learned 2026-11-18** · rct booths, tstik board · USER_STATED (operator, apn smc-resiliency session 6128bdd9, 18 Nov 2026) · Source: operator in chat ("if they get stuck the T stick
+> restarts it ... it will restart automatically if there is no communication of the SMC to the internet, and there are different rules"; "that code reads the tstik which is a physical board
+> connected to rpi") · Falsifier: a hung rct SMC that stays down until a visit, or the AVR firmware showing no SMC rail or SMC watchdog
+> The tstik is a physical board wired to the Pi; the `rct-tstik` app on the SMC only reads it and asks it to cut the other rails. The operator states the board itself restarts a stuck rct SMC by
+> rules, such as loss of the internet, so the SMC restart sits in the board's AVR firmware, outside the repo read on 2026-10-07; this does not contradict that reading, which covered the app only.
+> The wh flavours (Wi-Fi hubs: `wh`, `nbn_wh`) have no such board and no automatic restart (operator, 18 Nov 2026: "wh flavors lacks it"). Used in the smc-resiliency concept deck and flow map (component `booth-restart`).
+
 - `watchdog.auto_reboot: 0` in `inventories/{wh,nbn_wh,rct}/group_vars/smc_bases.yml` does **not** stop reboots (corrected 2026-10-07): the template renders it as the string `"0"`, which Python treats
   as true, and the `reboot_after_cleanup` path never checks the flag. The watchdog reboots at overlay >= 80% today, while exporting `rise_watchdog_auto_reboot 0`. It still cannot reboot on a hang.
 - The RISE watchdog is a userspace `systemd` timer. A kernel-level lockup stops it dead along with everything else.

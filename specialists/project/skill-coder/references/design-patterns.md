@@ -108,6 +108,8 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-71 | Anchor-guarded, re-runnable patch of a shipped bundle | Local changes to a vendor's built file (no source) that a reinstall silently wipes |
 | P-72 | A short derived deck: reuse another builder's slides, local wording on top, proof the source did not move | A short version of sent material with new wording, without forking or changing the source |
 | P-73 | A fault put into the standby side, always taken out, with a hard reset the harness owns | A fault case that can leave the target unbootable, or wait for a person to pull the plug |
+| P-74 | Add what the generator cannot write after it saves, and prove it in the consuming application | A format feature the library lacks (slide motion), where a still render cannot prove it |
+| P-75 | Learn a person's hand edits: diff against the last build, sort by rule, make habits defaults | Generated artifacts a person retouches by hand before every use |
 
 ## Patterns
 
@@ -1819,4 +1821,53 @@ def classify(pack, files):
       out.append(("propose", rel))  # written as <file>.proposed on --apply, never over the original
   return out
 # command: render all -> find_leaks -> refuse -> classify -> print plan -> write only with --apply
+```
+
+### P-74 Add what the generator cannot write after it saves, and prove it in the consuming application
+
+> **Learned 2026-11-18** · any document generator that lacks a feature the format supports (slide motion, fields, comments) · reusable_candidate ·
+> Source: apn smc-resiliency `scripts/deck/deck_motion.js`, `scripts/deck/build_concept_deck.js` (`tag`, `named`); apn enterprise-strategy `scripts/pptx_motion_check.py` (uncommitted at
+> writing; committed in the 18 Nov close) · Falsifier: PowerPoint repairing the file, or reporting fewer effects than the file's `p:bldP` list.
+
+Problem: PptxGenJS 3.12 writes no transitions or animations, but the operator wants them dictated by the markdown source; a still render cannot show motion, so a wrong timing tree passes every
+render. Solution: The builder tags the shapes of each part with a name the library does pass through (`objectName` → `p:cNvPr name="build-<group>-<k>"`), saves to a buffer, then reopens the zip
+(the library's own jszip) and inserts `<p:transition>` and a `<p:timing>` main sequence before `</p:sld>`, built from the ids those names carry. The markdown fields are validated in the parser, so
+an unknown value fails the build. Then the consuming application is asked what it loaded (PowerPoint's AppleScript dictionary: effects in the main sequence, entry transition) and compared with the
+file. Why it works: The library stays the source of layout; the post-step touches only elements the library never writes; names are the stable handle between the two steps; the application,
+not a parser, is the judge of whether the XML is accepted. Reuse: Word fields or comments after python-docx, workbook features after a writer that lacks them, SVG metadata after a renderer.
+Pitfalls: Keep timing ids unique per slide; one click per group, the rest `withEffect`; a bullets box builds per paragraph only with `txEl` targets (simpler: one text box per bullet); a
+still render proves layout only; an AppleScript variable named `out` clashes with PowerPoint's dictionary; the click order still needs one slideshow run by a person.
+
+```javascript
+// smc-resiliency scripts/deck/deck_motion.js (18 Nov 2026)
+for (const m of xml.matchAll(/<p:cNvPr id="(\d+)" name="build-(\d+)-\d+"/g)) (groups[Number(m[2])] ||= []).push(m[1]);
+const trans = d.transition && d.transition !== "none" ? `<p:transition spd="med">${TRANSITIONS[d.transition]}</p:transition>` : "";
+const motion = trans + timingXml(groups.filter(Boolean));
+if (motion) xml = xml.replace("</p:sld>", motion + "</p:sld>");
+```
+
+### P-75 Learn a person's hand edits: diff against the last build, sort by rule, make habits defaults
+
+> **Learned 2026-11-18** · any generated artifact a person edits by hand before use (decks, reports, letters) · reusable_candidate ·
+> Source: apn enterprise-strategy `scripts/deck_edits.py` (`compare`, `classify`, `base_for`), `scripts/deck/operator_style.js` (`cardBody`), `.agents/deck-style.md` @ de28b9a2 ·
+> Falsifier: an edit the person makes twice that `deck-edits` reports as "no rule yet" after a rule for it was written.
+
+Problem: The operator retouches every built deck in PowerPoint; retrofitting the edits one by one teaches the builder nothing, and the next deck needs the same edits. Solution: Keep a copy of every
+build in the working cache; a comparison tool reads both decks in presentation order, pairs slides by title, ignores the empty paragraphs the editor adds on save, and sorts each changed block by a
+numbered style rule (lead-sentence break, comma, notes added, slide added, wording). A habit becomes a rule with its example and date; a mechanical rule becomes a builder default in one shared
+module with a test; a one-off is retrofitted with a dated comment. An artifact already sent turns a new default off, proved by a byte-identical rebuild. Why it works: The diff is against what the
+agent produced, so the person's edits are separated from the agent's; rules accumulate where every builder reads them. Reuse: generated reports, letters, workbooks; any human-in-the-loop polish
+step. Pitfalls: Comparing with the committed copy shows the agent's uncommitted rebuild as the person's edits (keep the last build); slides re-ordered by hand need pairing by title, not
+position; PowerPoint saves a deck's lines as paragraphs where the builder wrote "\n" runs, so normalise both to lines first.
+
+```python
+# enterprise-strategy scripts/deck_edits.py (de28b9a2)
+def classify(before: list[str], after: list[str]) -> tuple[str, str]:
+  if _flat(before) == _flat(after):
+    if "" in after and after.count("") > before.count("") and re.search(r"[.!?]$", after[0] if after else ""):
+      return "lead-sentence break", "DS1"
+    return "line breaks only", ""
+  if _flat(before).replace(",", "") == _flat(after).replace(",", ""):
+    return "comma", "DS5"
+  return "wording", ""
 ```
