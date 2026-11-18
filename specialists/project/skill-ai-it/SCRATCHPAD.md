@@ -9,7 +9,7 @@ Summary: Current working state, newest first per section; superseded entries rot
 Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261118_1754
+Last rotated: 20261118_2108
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
@@ -73,6 +73,11 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
 
 ## Open items
 
+- [ ] **20261118_2108** `KEEP` from unified-network-controller (operator, 2026-11-18: keep the additions reverted, raise it here): `adopt_governed_files.py --apply`, run by every slurp, re-added a
+  governed-files paragraph to that project's AGENTS.md and put a 150-line budget on its AI_NAVIGATION.md (166 lines), after the operator had trimmed AGENTS.md (2026-11-11) and moved that text to
+  AI_NAVIGATION, and it baselined three records as over budget mid-run. The adoption standard should recognise text a project has moved out on purpose (a marker or a per-project opt-out), and
+  not baseline a record that the same run is about to rotate. Until then each close in that project reverts it. Also open from the same session: skill-smc's seven audit lines (lines edited
+  after rotation) are not traced.
 - **20261116_1752** Open (found by apn enterprise-strategy's write-back): `just check` fails on 15 review-due documents in this skill (AI_NAVIGATION.md, ARCHITECTURE.md,
   README.md, ROADMAP.md, docs/readme.md and ten more), all due 2026-11-13; they need a real re-read before their dates move. The doc_freshness transcript fix was committed with tests green.
 - [ ] **20261110_1205** budget_plan.py audit reports `LOST` for SCRATCHPAD lines that an earlier rotation had already moved (unified-network-controller,
@@ -84,10 +89,6 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
   **20261019_1817** `KEEP`: this pack's justfile has no `test` recipe and no working-cache venv; `tests/` need PyYAML, so a run with the host `python3`
   reports 7 false failures (`No module named 'yaml'`). Add `bootstrap`/`test` recipes as the packs it generates have.
 
-- [ ] **20261027_2054** Callers failing `just check` for their own reasons (not the scripts move; `just callers-check`): review dates due
-  (cambium-swap, enterprise-strategy, smc-file-writing-analysis, health, japan, of-si, psy-assess), over budget (enterprise-strategy SCRATCHPAD,
-  smc-file-writing-analysis ROADMAP), govcheck `core.py` differs from the template (islam, jdm, uae/atar), no `check` recipe (opticomm, vocus, voip),
-  unified-network-controller flow-map drift (another session's uncommitted flows.yaml). Each is that project's own work.
 - Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).
 
 not overwrite the hand-built checker (521 assertions); it is the reference implementation this capability was generalized from.

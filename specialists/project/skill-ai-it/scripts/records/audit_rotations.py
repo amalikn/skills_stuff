@@ -107,7 +107,11 @@ def audit(project: pathlib.Path, name: str) -> list[str] | None:
     archives = hl.archives(project, name[:-3].lower())  # flat or by-kind layout
     if not archives:
         return None
-    added = git(project, "log", "--diff-filter=A", "--format=%H", "--reverse", "--", str(archives[0].relative_to(project))).split()
+    # The first archive under either layout: regrouping docs/history by kind re-adds the file, and that later commit is not the first
+    # rotation (2026-11-18: 61 lines reported lost in a project regrouped on 2026-11-11).
+    first = sorted({str(archives[0].relative_to(project)), f"{hl.HISTORY}/{archives[0].name}",
+                    f"{hl.HISTORY}/{hl.subdir_for(name[:-3].lower())}/{archives[0].name}"})
+    added = git(project, "log", "--diff-filter=A", "--format=%H", "--reverse", "--", *first).split()
     ref = f"{added[0]}~1" if added else "HEAD"
     before = git(project, "show", f"{ref}:./{name}")
     if not before:
@@ -115,6 +119,8 @@ def audit(project: pathlib.Path, name: str) -> list[str] | None:
     have = Counter(l for l in rotate_records.content_lines((project / name).read_text()) if l.strip())
     have += Counter(l for a in archives for l in a.read_text().split("\n") if l.strip())
     trackers = sorted((project / "docs" / "trackers").glob("open-items-*.md")) if name == "SCRATCHPAD.md" else []
+    # ticked sync items leave SCRATCHPAD.md for docs/history/sync/sync-archive-*.md (apn project_sync.py): archived, not lost
+    trackers += hl.archives(project, "sync-archive") if name == "SCRATCHPAD.md" else []
     # reference docs written by move_sections.py carry "Moved verbatim from `<record>`"; their sections left the record on purpose
     trackers += [d for d in sorted((project / "docs").rglob("*.md")) if "/history/" not in str(d) and d not in trackers
                  and f"Moved verbatim from `{name}`" in d.read_text(errors="replace")[:2000]]

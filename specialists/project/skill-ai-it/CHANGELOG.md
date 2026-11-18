@@ -34,6 +34,10 @@ Last rotated: 20261118_1754
 
 ## Unreleased
 
+- 2026-11-18 `scripts/records/audit_rotations.py`: fixed, the audit took its comparison text from the commit that added the oldest archive file, which a regroup of docs/history by kind re-adds
+  (61 lines reported lost in unified-network-controller); it now asks git for the first add under either layout, and counts `docs/history/sync/sync-archive-*.md` as archived for SCRATCHPAD.
+  `tests/test_audit_rotations_baseline.py`: three cases (fail before, pass after; seven audit tests pass). Found by a read-only side agent of the unified-network-controller D17 session.
+
 - 2026-11-18 `references/pitfalls.md`: Learned, a check recipe of one line per step hides every failure after the first; run all and fail at the end (unified-network-controller). The bootstrap template is unchanged; fix open
 - 2026-11-18 `references/pitfalls.md`: Learned entry, `history_layout.py` cuts a description inside a Markdown link and leaves a broken link in the generated history index (unified-network-controller audit 16); the script is unchanged, fix open
 - 2026-11-18 `scripts/records/move_sections.py`: a BEGIN/END block marker before the next heading stays in the source instead of moving with the section (orphaned END found in of-si); tests BlockMarkerTest; references/pitfalls.md Learned.
