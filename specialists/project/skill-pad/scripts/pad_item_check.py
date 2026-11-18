@@ -15,7 +15,7 @@ Usage:
     python3 pad_item_check.py TASK-57 BUG-66            # these items
     python3 pad_item_check.py --days 2                  # every plan, task and bug touched in the last two days
 Options: --workspace SLUG, --pad PATH, --timeout SECONDS.
-Exit: 0 clean, 1 findings, 2 a pad call failed or bad arguments. Writes nothing. Budget: three pad calls per item (about 0.2 s each); prints its time.
+Exit: 0 clean, 1 findings, 2 a pad call failed or bad arguments. Writes nothing. Budget: three pad calls per item (about 0.2 s each; a rate-limited call is retried up to five times with a growing pause); prints its time.
 """
 
 from __future__ import annotations
@@ -35,6 +35,8 @@ LABELS = {
 }
 CLOSED = {"done", "fixed", "resolved", "shipped", "cancelled", "wont-fix", "declined", "completed"}
 CLOSING = re.compile(r"\b(DONE|CLOSED):")
+RETRIES = 5
+BACKOFF_S = 1.5
 LOG_NAME = re.compile(r"[\w./-]+\.(log|jsonl|out)\b")
 
 
@@ -50,15 +52,19 @@ def pad(args: list[str], timeout: int, binary: str = "pad") -> str:
         stdout.
 
     Raises:
-        RuntimeError: pad failed or timed out.
+        RuntimeError: pad failed, timed out, or stayed rate-limited after the retries.
     """
-    try:
-        p = subprocess.run([binary, *args], capture_output=True, text=True, timeout=timeout)
-    except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
-        raise RuntimeError(f"pad {' '.join(args[:3])}: {exc}") from exc
-    if p.returncode != 0:
-        raise RuntimeError(f"pad {' '.join(args[:3])} exited {p.returncode}: {p.stderr.strip()[-300:]}")
-    return p.stdout
+    for attempt in range(RETRIES):
+        try:
+            p = subprocess.run([binary, *args], capture_output=True, text=True, timeout=timeout)
+        except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
+            raise RuntimeError(f"pad {' '.join(args[:3])}: {exc}") from exc
+        if p.returncode == 0:
+            return p.stdout
+        if "rate_limited" not in p.stderr or attempt == RETRIES - 1:
+            break
+        time.sleep(BACKOFF_S * (attempt + 1))  # the server asks for about a second; a run over many items meets the limit
+    raise RuntimeError(f"pad {' '.join(args[:3])} exited {p.returncode}: {p.stderr.strip()[-300:]}")
 
 
 def fields_of(item: dict) -> dict:

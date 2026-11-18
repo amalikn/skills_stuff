@@ -21,6 +21,8 @@ Last rotated: 20261118_2213
 - `SKILL.md` Rules: "Tickets tell the whole story". `docs/pad-usage-guidelines-20261110_1628.md` 3.3: bold bodies, the bug body, the three duties with an example, DONE and CLOSED types.
 - `conventions/apn-baseline.toml` `writing-standard` rewritten and raised to must; applied to the smc-resiliency and unified-network-controller workspaces (`just conventions`).
 - `scripts/pad_item_check.py` (`just item-check`, test `tests/test_pad_item_check.py`): read-only check of labels, closing comment, update on work in progress, log named but not attached.
+- The checker retries a rate-limited pad call (up to five times, growing pause): its first run over 16 items was refused by the server's limit; three tests. First real run after
+  the fix: 16 items of the smc-resiliency bench run, 0 findings, 3.0 s (before the tickets were rewritten: 7 findings on 3 items).
 
 ## 20261118_2200 — A run planned and recorded in Pad with fields set at create
 

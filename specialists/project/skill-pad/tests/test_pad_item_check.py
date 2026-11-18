@@ -4,6 +4,7 @@ import importlib.util
 import json
 import unittest
 from pathlib import Path
+from unittest import mock
 
 _spec = importlib.util.spec_from_file_location("pad_item_check", Path(__file__).resolve().parents[1] / "scripts" / "pad_item_check.py")
 pic = importlib.util.module_from_spec(_spec)
@@ -62,6 +63,47 @@ class FindingsTests(unittest.TestCase):
         self.assertEqual(pic.missing_labels("bugs", "**Seen:** x\n**Evidence:** p\n**Effect:** e\n**Closure:** c"), [])
         self.assertEqual(pic.missing_labels("plans", "**Serves:** x\n**Goal:** g"), ["Done when", "Out of scope", "Waits on"])
         self.assertEqual(pic.missing_labels("ideas", "anything"), [])
+
+
+class RateLimitTests(unittest.TestCase):
+    """A rate-limited pad call is retried; any other failure is not."""
+
+    def _run(self, results: list) -> tuple[str | None, int]:
+        """Call pic.pad with subprocess.run faked to return `results` in order.
+
+        Args:
+            results: (returncode, stdout, stderr) per call.
+
+        Returns:
+            (stdout or None when it raised, how many calls were made).
+        """
+        calls = []
+
+        def fake(cmd, **kw):
+            """Record the call and hand back the next canned result."""
+            calls.append(cmd)
+            rc, out, err = results[len(calls) - 1]
+            return mock.Mock(returncode=rc, stdout=out, stderr=err)
+
+        with mock.patch.object(pic.subprocess, "run", side_effect=fake), mock.patch.object(pic.time, "sleep"):
+            try:
+                return pic.pad(["item", "show", "TASK-1"], 5), len(calls)
+            except RuntimeError:
+                return None, len(calls)
+
+    def test_a_rate_limited_call_is_retried_until_it_answers(self) -> None:
+        """Two refusals, then the answer."""
+        limited = (1, "", 'pad-structured-error/v1: {"error":{"code":"rate_limited"}}')
+        self.assertEqual(self._run([limited, limited, (0, "{}", "")]), ("{}", 3))
+
+    def test_another_error_is_not_retried(self) -> None:
+        """A missing item fails at once."""
+        self.assertEqual(self._run([(1, "", "not found")]), (None, 1))
+
+    def test_it_gives_up_after_the_retries(self) -> None:
+        """Still limited after RETRIES calls: an error, not a hang."""
+        limited = (1, "", "rate_limited")
+        self.assertEqual(self._run([limited] * pic.RETRIES), (None, pic.RETRIES))
 
 
 if __name__ == "__main__":
