@@ -73,6 +73,13 @@ and shutdown in the lab (observed 2026-11-07).
 | Files missing or stale after `vagrant upload` of a folder          | upload into an existing directory          | upload to a fresh path per run                | USER_STATED,                       |
 |                                                                    |                                            |                                               |   smc-resiliency 2026-11-06        |
 
+> **Learned 2026-11-18** · Vagrant 2.4.x with vagrant-parallels, a guest whose `/etc` is read-only · VERIFIED_PRIMARY (observed once) · Source: smc-resiliency
+> docs/overview/smc-lab-test-record-20261107_1931.md section 24.4 @ f5c16060 · Falsifier: `vagrant up` completing its guest set-up on a read-only `/etc`.
+> `vagrant up` on a multi-machine Vagrantfile stopped at the first machine with `sed: couldn't open temporary file /etc/sedXXXXXX: Read-only file system`: Vagrant's
+> guest set-up (hostname, network files) edits `/etc` in place, and that guest ran an image with a read-only merged `/etc`. The VM itself was running and reachable;
+> the later machines were never started. Start them by name (`vagrant up <machine>`), and for a guest with a read-only `/etc` start it through the provider
+> (`prlctl start`) or keep Vagrant's guest set-up off for that machine. No visual surface: no screenshot.
+
 ## A wedged guest
 
 ```text

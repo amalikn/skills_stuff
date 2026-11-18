@@ -274,6 +274,31 @@ DURABLE JOB STATE ON THE BOX: controller reconciles, never presumes
   > - The watchdog is armed by systemd, so it covers hangs after systemd starts. A failure in the firmware stage or the initramfs, or a broken
   >   trial kernel, leaves the box frozen until power is cycled: either something arms a watchdog earlier, or that failure costs a site visit.
   >   Ask it as a design question before relying on A/B fallback alone.
+
+  > **Learned 2026-11-18** · the gap before userspace, and boot selectors on old bootloaders · VERIFIED_PRIMARY (bench Pi 4, serial console and runner
+  > transcript; vendor release notes) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 24, `lab/logic/s1.py` @ f5c16060 ·
+  > Falsifier: an unstartable kernel resetting by itself with no firmware-armed watchdog, or an old bootloader honouring a selector section its release notes add later.
+  > - The 2026-11-10 question has a measured answer. A trial kernel image that never starts froze the box for the full 240 s wait, twice; only a power cycle
+  >   brought it back. With the watchdog armed by the firmware before it hands over (on a Pi 4 a device-tree property the firmware reads), the same fault was reset
+  >   17 s after the kernel was loaded and the committed slot booted, and a good kernel still booted and committed. Budget: the kernel's own driver must take the
+  >   watchdog over inside the hardware's maximum (about 16 s there), so measure the slowest boot to that point before relying on it.
+  > - A distribution's device tree may not carry the property the vendor firmware looks for: read the live tree on the target, do not infer from the vendor's kernel.
+  > - Check a boot selector against the OLDEST bootloader in the fleet, from its release notes and on a bench unit flashed to it. Two older bootloaders read the same
+  >   selector file, ignored the conditional section a later release added, and booted the last partition named: no error, no trial flag, no fallback. A census of
+  >   bootloader versions comes before the design depends on a selector feature.
+  > - A bootloader update has two paths with different homes on A/B media: self-update by the running bootloader (from the partition it boots) and the boot ROM's
+  >   recovery file (from the first partition). A bootloader too old for self-update ignores an update staged on the slot partition; nothing reports it. Verify the
+  >   version after the reboot and remove the staged files.
+  > - A fault test whose harness power-cycles a silent box must report that as its own outcome. The first run printed PASS for a recovery that needed the outlet:
+  >
+  >   ```python
+  >   def outcome(ok: bool, rescued: int) -> tuple[str, int]:
+  >     if not ok:
+  >       return "FAIL", 1
+  >     return ("ASSISTED", 2) if rescued else ("PASS", 0)
+  >   ```
+  >
+  >   No visual surface: no screenshot.
 - Raspberry Pi (BCM2835 family) watchdog: a 20-bit register counted in 1/65536 s ticks, so the maximum timeout is about 15-16 s; keep the systemd timeout inside it (VERIFIED_PRIMARY [WDT], driver
   source, checked 2026-10-29). Identify each x86 model's watchdog driver separately.
 - Give the single site box an independent power-cycle path as well; software health checks cannot fix a hang.

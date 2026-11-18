@@ -1262,3 +1262,38 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > ```
 >
 > No visual surface: no screenshot.
+
+## Pi 4 bench, 18 Nov 2026: early watchdog, the 2022 bootloaders and EEPROM staging on an A/B card
+
+> **Learned 2026-11-18** · Pi 4B rev 1.5 bench, Ubuntu 24.04 kernel 6.8.0-1064-raspi, Raspberry Pi firmware 1.20260915, bootloaders 2023-01-11, 2022-04-26 and
+> 2022-01-25 · VERIFIED_PRIMARY (serial console, commands read on the box; raspberrypi/firmware issue 1980, raspberrypi/linux PR 6961, rpi-eeprom 2711 release
+> notes) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 24 and its sources folder, apn commit f5c16060 · Falsifier:
+> Ubuntu's Pi device tree carrying `early-watchdog`; a 2022-04-26 or 2022-01-25 bootloader booting `[all]`'s partition on a plain boot.
+> - A trial kernel that never starts (the kernel file overwritten with random bytes) froze the Pi until power was cycled, twice: nothing arms a watchdog before Linux.
+> - From firmware 2025-07-17, `start4.elf` arms the SoC watchdog before the kernel when the watchdog device-tree node has the property `early-watchdog`
+>   (console: `Enabling early watchdog`). Raspberry Pi kernels set it with `dtparam=watchdog`; Ubuntu's `bcm2711-rpi-4-b.dtb` maps that parameter to `status` and has
+>   no such property (`fdtget -t x <dtb> /__overrides__ watchdog` ends `73 74 61 74 75 73`). An overlay adds it:
+>
+>   ```text
+>   /dts-v1/;
+>   /plugin/;
+>   / {
+>     compatible = "brcm,bcm2711";
+>     fragment@0 { target = <&watchdog>; __overlay__ { early-watchdog; }; };
+>   };
+>   dtc -@ -I dts -O dtb -o overlays/smc-early-wdt.dtbo smc-early-wdt.dts ; config.txt: dtoverlay=smc-early-wdt
+>   ```
+>
+>   With it the unstartable kernel was reset 17 s after loading (PM_RSTS 0x20) and the committed slot booted; a good trial booted, `bcm2835-wdt` took over at 2 s
+>   and systemd's 15 s runtime watchdog ran. Proved on bootloader 2023-01-11 only; not in any image yet (operator decision pending).
+> - Bootloaders 2022-04-26 and 2022-01-25 (36 and 10 rct Pis in the 10 Nov census) ignore the `[tryboot]` section and `tryboot_a_b`: both arrive in 2022-10-18
+>   (default 2022-12-01). With `[all] boot_partition=2` then `[tryboot] boot_partition=3` they boot partition 3 on every plain boot; `reboot "0 tryboot"` shows
+>   TRYBOOT, resets once after about 7 s and boots partition 3 plainly. Partition-level A/B as built does not work on them.
+> - `rpi-eeprom-update -d -f <image>` writes to BOOTFS (`/boot/firmware`). Bootloaders from 2022-04-26 self-update from the partition they boot; 2022-01-25 does
+>   not and silently stays as it is. The boot ROM's `recovery.bin` path reads the card's first FAT partition: on a card whose first partition is not the running
+>   boot partition, stage there (`BOOTFS=<mount of partition 1> rpi-eeprom-update -d -f <image>`), check `vcgencmd bootloader_version` after the reboot, and remove
+>   `pieeprom.upd`, `pieeprom.sig` and `RECOVERY.000` from every partition they were written to (a stale `pieeprom.sig` is read at each boot).
+> - Embed the box's EEPROM config in the image first (`rpi-eeprom-config --config cfg.txt --out new.bin pieeprom-<date>.bin`), or the flash resets it.
+> - Old images are in raspberrypi/rpi-eeprom `firmware-2711/old/stable`; check the git blob hash (`git hash-object`) against the repository's.
+>
+> No visual surface: no screenshot.

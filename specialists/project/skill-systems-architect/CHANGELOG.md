@@ -15,6 +15,12 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261118_2152 — Firmware-armed watchdog closes the pre-userspace gap; selectors against the oldest bootloader (v2.3.12 -> v2.3.13)
+
+- `references/edge-appliances.md`: Learned 2026-11-18 under Hangs, watchdogs and power, from the smc-resiliency bench run: an unstartable trial kernel freezes the box until power is
+  cycled unless the firmware arms the watchdog before the kernel (17 s reset measured); a selector feature silently ignored by two older bootloaders; the two bootloader-update paths
+  on A/B media; a harness that rescues the box must report ASSISTED, not PASS (code excerpt).
+
 ## 20261118_2129 — Backup repository on the primary's host is copy 1 only (v2.3.11 -> v2.3.12)
 
 - `references/backup-disaster-recovery.md`: Learned 2026-11-18 under Copy placement, from the Continuum first-slice topology review (operator asked for this pack after it was missed).

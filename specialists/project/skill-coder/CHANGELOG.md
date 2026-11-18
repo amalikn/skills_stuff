@@ -28,6 +28,7 @@ Last rotated: 20261118_2102
 
 ## Unreleased
 
+- 2026-11-18: references/testing.md Learned entry, a fault-test harness that rescues the target must report ASSISTED, not PASS (smc-resiliency bench run).
 - 2026-11-18: references/testing.md Learned entry, a justfile catalog check that read variables as recipes, masked by fake catalog rows (Continuum).
 
 - 2026-11-18 new `scripts/reflow_lossless.py` and `tests/test_reflow_lossless.py` (eight cases), recipe `just reflow-lossless`: proves a re-wrapped markdown file changed no table cell and

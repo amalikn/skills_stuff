@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261118_2051
+Last rotated: 20261118_2159
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261118_2152 — Pi 4 early watchdog, 2022 bootloaders ignore the A/B selector, EEPROM staging on an A/B card (v0.15.0 -> v0.15.1)](#20261118_2152--pi-4-early-watchdog-2022-bootloaders-ignore-the-ab-selector-eeprom-staging-on-an-ab-card-v0150---v0151)
 - [20261118_2049 — storage identity readable on x86 and Pi; low-touch description record (name, locid) (v0.14.9 -> v0.15.0)](#20261118_2049--storage-identity-readable-on-x86-and-pi-low-touch-description-record-name-locid-v0149---v0150)
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
 - [20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)](#20261117_1922--smc_change-state-file-timing-connect-timeout-30-s-offline-smcs-fail-incomplete-ssh_handshake_timesh-v0147---v0148)
@@ -35,8 +36,6 @@ Last reviewed: 2026-10-27
 - [20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)](#20261106_1630--ansible-wifi-smc_bases-on-ubuntu-2404-and-in-an-image-build-v0127---v0128)
 - [20261106_1605 — Parallels linked clone shares the source's address; Parallels lab behaviour (v0.12.6 -> v0.12.7)](#20261106_1605--parallels-linked-clone-shares-the-sources-address-parallels-lab-behaviour-v0126---v0127)
 - [20261106_1545 — smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 -> v0.12.6)](#20261106_1545--smc_change-export-to-a-company-task-file-tracker-orders-resumed-runs-by-attempt-v0125---v0126)
-- [20261106_1300 — WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 -> v0.12.5)](#20261106_1300--wan-routing-confirmed-live-link-health-per-leg-grafana-tunnel-measured-link-figures-v0124---v0125)
-- [20261106_1029 — Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)](#20261106_1029--pi-clock-with-no-rtc-on-ubuntu-2404-measured-v0123---v0124)
 
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 ->
   v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
@@ -79,6 +78,13 @@ Last reviewed: 2026-10-27
 - [20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)](#20261102_1756--smc_change-skip-probe-or-force-per-smc-close-v0116---v0117)
 
 ---
+
+## 20261118_2152 — Pi 4 early watchdog, 2022 bootloaders ignore the A/B selector, EEPROM staging on an A/B card (v0.15.0 -> v0.15.1)
+
+- references/07_hardware-overlay.md: Learned 2026-11-18 (VERIFIED_PRIMARY, bench Pi 4): an unstartable kernel freezes the Pi; the firmware arms the watchdog early only with the
+  `early-watchdog` device-tree property, which Ubuntu's tree lacks (overlay given, 17 s reset measured); bootloaders 2022-04-26 and 2022-01-25 ignore `[tryboot]` and `tryboot_a_b`;
+  where `rpi-eeprom-update` must stage an update for a bootloader without self-update, and the clean-up after.
+- From the smc-resiliency bench run of 2026-11-18 (lab test record section 24).
 
 ## 20261118_2049 — storage identity readable on x86 and Pi; low-touch description record (name, locid) (v0.14.9 -> v0.15.0)
 
@@ -186,15 +192,3 @@ reaches the clone; clone only a stopped VM; `prlctl exec` ends what it started a
 
 `references/19_smc-change-role.md`: new section, Export to a company role (Learned 2026-11-06, local-knowledge-ansible 7056782): `just export_change`, `export_check`, `export_drift`; what is carried
 and left out, the play's own fail gate; and the tracker entry for resumed runs (c7cb38b, written 2026-11-06 earlier, committed 613c1c1). manifest 0.12.5 -> 0.12.6.
-
-## 20261106_1300 — WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 -> v0.12.5)
-
-`references/03_communication-flows.md`: Learned 2026-11-06, rcp routing confirmed on two boxes (per-leg tables and `from` rules by the dhclient hook, main-table multipath default by the portal's
-`gateway.php`, `starlink`-role legs without a table, stale rules); Learned 2026-11-06, the APN Grafana tunnel (`tsh ssh -N -L 53000:localhost:3000 root@apn-prometheus01`). `references/01_overview.md`:
-Learned 2026-11-06, measured round trips and the speedtest medians. `scripts/probes/smc_link_health.sh` measures every WAN leg, binds no-table legs to their device and reports stale rules (live on
-warburton-smc01); `scripts/README.md` updated. From smc-resiliency S3. manifest 0.12.4 -> 0.12.5.
-
-## 20261106_1029 — Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)
-
-`references/07_hardware-overlay.md`: Learned 2026-11-06, a 24.04 box with no RTC boots at systemd's build date unless `/usr/lib/clock-epoch` sets a floor (systemd 255 reads it); chrony with the
-gateway by address steps a 22.5 h error 16.3 s after boot without DNS (smc-resiliency S2 report section 8, apn 1dc80235). manifest 0.12.3 -> 0.12.4.

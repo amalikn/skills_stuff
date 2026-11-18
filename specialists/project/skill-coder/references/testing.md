@@ -164,6 +164,22 @@ check: _require-venv
 > else kill "$WPID" 2>/dev/null; OVERLAP=" INVALID: install ended before the fault fired"; fi
 > ```
 
+> **Learned 2026-11-18** · fault tests whose harness can rescue the target · VERIFIED_PRIMARY (a bench run printed PASS for a recovery that needed the harness's
+> power cycle; a reviewer caught it from the transcript) · Source: smc-resiliency `lab/logic/s1.py` `outcome`, `lab/tests/test_bench.py` @ f5c16060 ·
+> Falsifier: a harness-assisted recovery that is indistinguishable, in the outcome the operator reads, from an unassisted one and still safe to gate on.
+> A harness that restores the system under test when it stops answering (a power cycle, a restart, a retry) so the run can continue must carry that fact into the
+> verdict. Judge the end state and the assistance separately, give the assisted case its own word and exit code, and prove it with a negative test in which the fake
+> target needs the rescue:
+>
+> ```python
+> def outcome(ok: bool, rescued: int) -> tuple[str, int]:
+>   if not ok:
+>     return "FAIL", 1
+>   return ("ASSISTED", 2) if rescued else ("PASS", 0)
+> ```
+>
+> The helper that performs the rescue returns why it acted (`""`, `"cut"` for a fault injected on purpose, `"rescue"`), so a wanted fault is not counted as help.
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with the stub.
