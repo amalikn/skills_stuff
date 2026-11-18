@@ -105,6 +105,7 @@ inputs, outputs and safety labels.
 | `scripts/suppressions.py`  | Inline linter suppressions (`noqa`, `type: ignore`, `shellcheck disable`, `eslint-disable`, ...) |
 | `scripts/group_timeouts.py` | Timed subprocess calls (ssh, a shell) whose children outlive the timeout             |
 | `scripts/process_match.py`  | `pgrep -f` / `pkill -f` patterns not anchored with `^` (they can match their own caller) |
+| `scripts/reflow_lossless.py` | Whether a re-wrapped markdown file changed any table cell or word (it needs table-reflow's `cli.mjs` for tables) |
 | `scripts/language_split.py` | Language files over 200 lines or 25 KB; splits one into `languages/<lang>/` topic files (writes only with `--apply`) |
 | `scripts/scaffold.py`       | Prints a new script and its test skeleton that meet these rules (writes nothing)     |
 

@@ -28,6 +28,9 @@ Last rotated: 20261118_2102
 
 ## Unreleased
 
+- 2026-11-18 new `scripts/reflow_lossless.py` and `tests/test_reflow_lossless.py` (eight cases), recipe `just reflow-lossless`: proves a re-wrapped markdown file changed no table cell and
+  no word (operator, 2026-11-18: a lossless check, accept re-wraps); catalogued in scripts/README.md and SKILL.md; named in the Disputed entry of `references/safety-and-writes.md`
+
 - 2026-11-18 `references/safety-and-writes.md`: Disputed, the same day's formatter-hook entry called a lossless re-wrap damage; compare tables un-wrapped cell by cell, not by tokens; a proven-lossless reflow is committable (unified-network-controller)
 
 - 2026-11-18 `references/safety-and-writes.md`: Learned, a post-edit formatter hook rewrote a governed file far beyond the edit; compare tokens with HEAD, restore, re-apply by guarded exact replacement (unified-network-controller)

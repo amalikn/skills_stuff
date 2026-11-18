@@ -197,15 +197,18 @@ def classify(cmdline, held):
 > return RollbackOutcome("rolled_back", "reachable")
 > ```
 
-> **Disputed 2026-11-18 (same day, by the session that wrote the entry below)** · Conflicts: the Learned 2026-11-18 entry that follows · VERIFIED_PRIMARY (on a copy of the committed file:
-> `table-reflow --unwrap` of the original and of the hook's output give identical tables, 383 rows and 0 differing; prose identical word for word; the hook's output unchanged when run twice) ·
-> Source: unified-network-controller CHANGELOG 20261118_2101 · Falsifier: an unwrap comparison that differs.
+> **Disputed 2026-11-18** · any language, files rewritten by a post-edit formatter hook · VERIFIED_PRIMARY (on a copy of the committed file, un-wrapping the original and the hook's output gives
+> identical tables, 383 rows and none differing, the prose is identical word for word, and the hook's output is unchanged when run twice) · Source: unified-network-controller CHANGELOG
+> 20261118_2103, written by the same session as the entry below · Falsifier: an un-wrapped comparison that differs · Conflicts: the Learned 2026-11-18 entry below (formatter hook)
 >
 > The entry below calls the rewrite damage ("bold spans split across table cells"). It was not: the hook closes and reopens bold on each wrapped line of one cell, and the re-wrap was lossless. The
 > true finding is that the committed file was not in the formatter's normal form, so one edit re-wrapped all of it. A token comparison cannot tell a re-wrap of a table from damage, because a table
 > wraps column by column and the token order changes; compare the tables un-wrapped, row by row and cell by cell, and the prose word by word. What stands from the entry below: compare the diff's
 > size with the edit's, and do not accept or condemn a whole-file reflow before proving which it is. What does not stand: "restore and apply outside the hook" as the default, since that keeps the
 > file out of normal form and repeats the surprise at the next edit; a reflow proven lossless is committable.
+>
+> The comparison is `scripts/reflow_lossless.py` (`just reflow-lossless --git FILE --table-reflow <cli.mjs> --ignore-contents`): exit 0 lossless, 1 with the differing words and rows, 2 when
+> tables are present and cannot be proven. On the file of 2026-11-18 it reports lossless for the table step and for the whole hook, and catches a one-word tamper.
 
 > **Learned 2026-11-18** · any language, files rewritten by a post-edit formatter hook · VERIFIED_PRIMARY (one edit of three strings in a 1,400-line governed markdown file came back as 315
 > lines added and 304 removed; a whitespace-insensitive token comparison with HEAD found 52 changed blocks, among them bold spans split across table cells) · Source: unified-network-controller
