@@ -17,6 +17,7 @@ Last rotated: 20261111_1224
 ## 20261118_2129 — 0.21.0 string flags need =value; continuum workspace set up
 
 - references/cli-reference.md Traps: Learned entry, `--awaits-human=true --tracks-work=false` form; init still writes skill copies (moved to the Trash). From the continuum workspace setup.
+- references/cli-reference.md Traps: Learned entry, `pad item block <source> <target>` means source blocks target.
 
 ## 20261118_2106 — item update has no --op-key; code paths in item bodies; a question without an Asks collection
 

@@ -78,6 +78,11 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > Asks uses the space form and needs this change. `pad workspace init` in 0.21.0 still writes `.claude/skills/pad/` and `.agents/skills/pad/`, and the copy appears in Claude Code's skill
 > list at once; move them to the Trash (`trash`) and remove the empty folders with `rmdir`.
 
+> **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad item block TASK-14 TASK-12` printed "TASK-14 ... now blocks TASK-12" (continuum workspace) · Falsifier: the same
+> command reporting TASK-12 as the blocker.
+> `pad item block <source> <target>` means source blocks target, the reverse of "block TASK-14 by TASK-12". To say the spike blocks the re-estimate, run `pad item block TASK-12 TASK-14`; read
+> the printed sentence, and undo a wrong one with `pad item unblock <source> <target>`.
+
 > **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY (unified-network-controller and smc-resiliency) · Source: `pad item update --help`, CLI
 > errors · Falsifier: a release that accepts these writes or lists disabled items by default. `pad item update --fields-json` refuses the `convention` key ("system metadata ... BUG-2627"): set
 > `trigger`, `status`, `commands` and Pad rewrites its own `convention` block. `pad item list conventions` hides disabled items; add `--all` (a disabled template rule looks deleted). `--fields-json`
