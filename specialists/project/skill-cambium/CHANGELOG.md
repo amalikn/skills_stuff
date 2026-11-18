@@ -11,6 +11,11 @@ Last rotated: 20261029_1751
 
 # Changelog — skill-cambium
 
+## 20261118_1810 — cnMaestro Enterprise guidance of 16 Nov 2026 (no version change)
+
+`references/01_overview.md` new subsection: Cambium's updated guidance read in full (cloud continues past October; Anchor 90-day X trial, renewal by ticket, charging later, lapse to
+Essentials; on-premises split by buyer; licence-free on-prem image withdrawn; paid on-prem X licences not covered). Learned from of-si, 18 Nov 2026.
+
 ## 20261116_1851 — cnMaestro X hosting (no version change)
 
 `references/01_overview.md`: cnMaestro X was hosted by APN in AWS, not in Cambium's cloud, and still needs Cambium's Cloud Anchor (operator, 16 Nov 2026; from apn

@@ -6,8 +6,12 @@ heading to the next `---` line or `## ` heading), finds every `*"..."*` or `_"..
 quote is introduced as `Name: *"..."*`, it also checks that the quote sits inside a turn labelled `**Name:**`. Built after a filing (2026-11-18) where
 the operator relabelled 16 turns and every extract had to be re-attributed by hand.
 
+The source may also be an exported `.eml`: its text/plain parts (the reply and every quoted message under it) are decoded and used as the
+transcript, and each fenced ```text block in the entry (an email body reproduced exactly) must appear in it verbatim. Added 2026-11-18, when a
+filing checked three blocks by hand and a raw .eml failed as a source because quoted-printable soft breaks split the words.
+
 Run:
-  python3 verify_quotes.py <tracker.md> "<heading start, e.g. ## Meeting 6 - >" <transcript.md>
+  python3 verify_quotes.py <tracker.md> "<heading start, e.g. ## Meeting 6 - >" <transcript.md | message.eml>
 
 Safety: read-only; writes nothing. Exit 0 all quotes found and attributed, 1 a quote missing or misattributed, 2 bad input.
 """
@@ -15,6 +19,8 @@ Safety: read-only; writes nothing. Exit 0 all quotes found and attributed, 1 a q
 from __future__ import annotations
 
 import argparse
+import email
+from email import policy
 import re
 import sys
 from pathlib import Path
@@ -24,6 +30,52 @@ from pathlib import Path
 QUOTE = re.compile(r'(?:\b([A-Z][a-z]+(?: [A-Z][a-z]+)?): )?(?<![*_\w])([*_])"(.+?)"\2(?![*_\w])', re.S)
 LABEL = re.compile(r"^\*\*([^*\n]+?)(?: \([^)]*\))?:\*\*\s*$")
 TURN_END = re.compile(r"^(#{1,6} |---\s*$|\*\*[^*\n]+\*\*\s*$)")
+
+
+TEXT_BLOCK = re.compile(r"^```text\n(.*?)\n```\s*$", re.S | re.M)
+
+
+def eml_text(raw: bytes) -> str:
+  """Decode every text/plain part of an exported email, in order, into one text.
+
+  Args:
+    raw: The .eml file's bytes.
+
+  Returns:
+    The decoded plain-text parts joined by blank lines; empty when the message has none.
+
+  Raises:
+    Nothing; a part that cannot be decoded is skipped.
+  """
+  msg = email.message_from_bytes(raw, policy=policy.default)
+  parts: list[str] = []
+  for part in msg.walk():
+    if part.get_content_type() != "text/plain" or part.get_content_disposition() == "attachment":
+      continue
+    try:
+      parts.append(part.get_content())
+    except (LookupError, ValueError):
+      continue
+  return "\n\n".join(parts)
+
+
+def check_blocks(entry: str, source: str) -> tuple[int, list[str]]:
+  """Check that every fenced text block in an entry is verbatim in the source.
+
+  Args:
+    entry: The entry text (see entry_text).
+    source: The source text (a transcript, or the decoded email).
+
+  Returns:
+    The number of blocks checked, and one problem line per block not found.
+
+  Raises:
+    Nothing.
+  """
+  whole = _norm(source)
+  blocks = TEXT_BLOCK.findall(entry)
+  problems = [f"BLOCK NOT VERBATIM: {_norm(b)[:80]}" for b in blocks if _norm(b) not in whole]
+  return len(blocks), problems
 
 
 EMPHASIS = re.compile(r"(?<![\w*])(\*{1,2}|_{1,2})(?=\S)(.+?)(?<=\S)\1(?![\w*])")
@@ -143,7 +195,7 @@ def main(argv: list[str] | None = None) -> int:
   ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
   ap.add_argument("tracker", type=Path)
   ap.add_argument("heading", help='start of the entry heading, e.g. "## Meeting 6 - "')
-  ap.add_argument("transcript", type=Path)
+  ap.add_argument("transcript", type=Path, help="transcript Markdown, or an exported .eml")
   args = ap.parse_args(argv)
   for path in (args.tracker, args.transcript):
     if not path.is_file():
@@ -154,11 +206,17 @@ def main(argv: list[str] | None = None) -> int:
   except ValueError as exc:
     print(f"ERROR: {exc}", file=sys.stderr)
     return 2
+  if args.transcript.suffix.lower() == ".eml":
+    source = eml_text(args.transcript.read_bytes())
+  else:
+    source = args.transcript.read_text(encoding="utf-8")
   count = len(QUOTE.findall(entry))
-  problems = check(entry, args.transcript.read_text(encoding="utf-8"))
+  problems = check(entry, source)
+  blocks, block_problems = check_blocks(entry, source)
+  problems += block_problems
   for line in problems:
     print(line)
-  print(f"{count} quotes checked, {len(problems)} problem(s)")
+  print(f"{count} quotes and {blocks} text blocks checked, {len(problems)} problem(s)")
   return 1 if problems else 0
 
 

@@ -452,10 +452,27 @@ Applies the **Transcript turn layout** (Step 3). Idempotent; compares every line
 
 ```bash
 python ~/.agents/scripts/commtracker/verify_quotes.py <tracker.md> "## Meeting 6 - " <transcript.md>
+python ~/.agents/scripts/commtracker/verify_quotes.py <tracker.md> "## Email 50 - " <communications/emails/message.eml>
 ```
 
 Run after writing a long-transcript entry's key extracts, and again whenever the transcript's speaker labels change: every `*"..."*` or `_"..."_` must be verbatim in
 the transcript, and a `Name: *"..."*` quote must sit in that speaker's turn. Read-only; exit 1 names each failing quote.
+
+Given an `.eml` as the source, it decodes the text/plain parts (the reply and every quoted message under it) and also checks each fenced ` ```text `
+block in the entry (an email body reproduced exactly) verbatim. Run it after filing every email entry, once per entry, against the thread's .eml.
+
+> **Learned 2026-11-18** · verify_quotes.py on email entries · VERIFIED_PRIMARY (observed) · Source: `scripts/verify_quotes.py` `eml_text`,
+> `check_blocks` on a three-email thread · Falsifier: a raw .eml quote that is in the message failing as NOT VERBATIM after this change
+> A raw `.eml` used as the transcript failed a quote that was in the message: quoted-printable soft breaks (`st=` at a line end) split words, so
+> the script must decode the MIME parts first. One exported reply holds the whole thread, so one .eml can be the source for every entry it quotes.
+>
+> ```python
+> # scripts/verify_quotes.py (2026-11-18)
+> for part in msg.walk():
+>   if part.get_content_type() != "text/plain" or part.get_content_disposition() == "attachment":
+>     continue
+>   parts.append(part.get_content())
+> ```
 
 > **Learned 2026-11-18** · writing key extracts · VERIFIED_PRIMARY (observed) · Source: `scripts/verify_quotes.py` on a meeting entry (2 of 23 quotes
 > failed) · Falsifier: a quote with `…` inside its marks passing the check
@@ -510,6 +527,7 @@ Before writing to the thread file, verify:
 - [ ] For Call/Meeting entries: `**Status:** VERBAL_UNRECORDED` present if there is no transcript (reported speech, not quoted dialogue)
 - [ ] For long transcripts: full text kept in its own source file, not duplicated into the tracker; tracker entry has a `**Source:**` pointer + key extracts + case note
 - [ ] Key extracts pass `scripts/verify_quotes.py` (verbatim, right speaker); re-run it after any speaker-label correction to the transcript
+- [ ] Email entries: `scripts/verify_quotes.py` against the `.eml` passes for each entry's text block
 - [ ] Any date/name in the source conflicts with an already-tracked fact? — confirmed with the user, not assumed
 
 If any check fails, fix it before writing.

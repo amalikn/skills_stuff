@@ -91,3 +91,46 @@ class VerifyQuotesTest(unittest.TestCase):
 
 if __name__ == "__main__":
   unittest.main()
+
+
+EML = (
+  b"From: A <a@example.com>\r\nTo: B <b@example.com>\r\nSubject: Re: Plan\r\nMIME-Version: 1.0\r\n"
+  b'Content-Type: multipart/alternative; boundary="x"\r\n\r\n--x\r\n'
+  b"Content-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n"
+  b"Thank you, that is a helpful st=\r\neer. Each person will size their area.\r\n\r\n"
+  b"From: C\r\nWe need the magnitude of the challenge - as part of your implementation\r\n"
+  b"--x\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<p>html only words</p>\r\n--x--\r\n"
+)
+
+EMAIL_TRACKER = """## Email 2 - 20260102 - Reply
+
+```text
+Thank you, that is a helpful steer. Each person
+will size their area.
+```
+
+- Martin: *"as part of your implementation"*
+
+---
+"""
+
+
+class EmlSourceTest(unittest.TestCase):
+  """An .eml source: text/plain parts decoded (soft breaks joined), text blocks checked verbatim."""
+
+  def test_eml_text_decodes_plain_parts_only(self):
+    text = vq.eml_text(EML)
+    self.assertIn("helpful steer.", text)
+    self.assertNotIn("html only", text)
+
+  def test_block_and_quote_pass_against_eml(self):
+    entry = vq.entry_text(EMAIL_TRACKER, "## Email 2 - ")
+    source = vq.eml_text(EML)
+    self.assertEqual(vq.check(entry, source), [])
+    self.assertEqual(vq.check_blocks(entry, source), (1, []))
+
+  def test_changed_block_fails(self):
+    entry = vq.entry_text(EMAIL_TRACKER.replace("helpful steer", "useful steer"), "## Email 2 - ")
+    count, problems = vq.check_blocks(entry, vq.eml_text(EML))
+    self.assertEqual(count, 1)
+    self.assertTrue(problems and problems[0].startswith("BLOCK NOT VERBATIM"))

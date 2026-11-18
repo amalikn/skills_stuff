@@ -9,6 +9,7 @@
 - [Evidence-State Discipline](#evidence-state-discipline)
 - [Wireless Security Posture Across the Fleet](#wireless-security-posture-across-the-fleet)
 - [Where the Live Data Lives](#where-the-live-data-lives)
+- [Who to Ask, and Low Touch After cnMaestro (operator, 6 Oct 2026)](#who-to-ask-and-low-touch-after-cnmaestro-operator-6-oct-2026)
 
 ---
 
@@ -40,28 +41,28 @@ cnMaestro exports and most asset registers say only "XV2", and a device name say
 | XV2-2T0 | `XV2-2T0`                                        | 22                  | 2                    |
 | XV2-22H | `XV2-22H`                                        | 34                  | 3                    |
 
-Seen on 15 units at six sites across both Teleport clusters (unified-network-controller canaries of 2026-09-22 and 2026-09-27). The six of 2026-09-27 were identified by `device-summary.serial_number` equal to the Nautobot serial; the nine
-earlier captures are serial-redacted and are matched by device name.
-On all 15, a serial starting `WL` (WLZA, WLYM, WLZE, WLYB, WLXL) was an XV2-2T0 and one starting `W4ZA` or `W6YJ` an XV2-22H. That is an observation, not a documented Cambium rule: use it to order
-work, never instead of the read. unified-network-controller's `wc-local/scripts/nautobot_tools/resolve_xv2_variants.py` does the read per site and never retypes.
+Seen on 15 units at six sites across both Teleport clusters (unified-network-controller canaries of 2026-09-22 and 2026-09-27). The six of 2026-09-27 were identified by `device-summary.serial_number`
+equal to the Nautobot serial; the nine earlier captures are serial-redacted and are matched by device name. On all 15, a serial starting `WL` (WLZA, WLYM, WLZE, WLYB, WLXL) was an XV2-2T0 and one
+starting `W4ZA` or `W6YJ` an XV2-22H. That is an observation, not a documented Cambium rule: use it to order work, never instead of the read. unified-network-controller's
+`wc-local/scripts/nautobot_tools/resolve_xv2_variants.py` does the read per site and never retypes.
 
 ## DHCP Vendor Class (Option 60) per Family
 
-What a factory-default Cambium unit sends in its DHCP request, and the only thing the SMC's low-touch hook has to tell families apart before any device API is reachable. Read
-2026-09-26 from a production SMC's `dhcpd.leases` and `dhcpd.conf` (umoona-smc01, read-only; 811 Cambium lease blocks) and from the dispatch in ansible-wifi's `cnmaestro-provisioning.py`
-(`big_push`); exercised live in the unified-network-controller `dhcp-lab` with the SMC's own dhcpd version (`VERIFIED`, matching is prefix-based, case as sent):
+What a factory-default Cambium unit sends in its DHCP request, and the only thing the SMC's low-touch hook has to tell families apart before any device API is reachable. Read 2026-09-26 from a
+production SMC's `dhcpd.leases` and `dhcpd.conf` (umoona-smc01, read-only; 811 Cambium lease blocks) and from the dispatch in ansible-wifi's `cnmaestro-provisioning.py` (`big_push`); exercised live in
+the unified-network-controller `dhcp-lab` with the SMC's own dhcpd version (`VERIFIED`, matching is prefix-based, case as sent):
 
-| Vendor class as sent      | Family           | Model named? | Low-touch dispatch (the cnMaestro script)                              |
-| ------------------------- | ---------------- | ------------ | ---------------------------------------------------------------------- |
-| `Cambium-cnPilot R195P`   | cnPilot R-series | Yes          | prefix `Cambium-cnPilot R`; the model follows the prefix               |
-| `Cambium-WiFi-AP`         | Enterprise Wi-Fi | No           | exact; XV2 and E-series are told apart only after the device is read   |
-| `Cambium`                 | ePMP (AP and SM) | No           | exact; AP versus SM and the Force model come from the device, not DHCP |
-| (none of the above)       | cnWave 60 GHz    | n/a          | cnWave is not on the low-touch hook: its units are addressed by hand   |
+| Vendor class as sent    | Family           | Model named? | Low-touch dispatch (the cnMaestro script)                              |
+| ----------------------- | ---------------- | ------------ | ---------------------------------------------------------------------- |
+| `Cambium-cnPilot R195P` | cnPilot R-series | Yes          | prefix `Cambium-cnPilot R`; the model follows the prefix               |
+| `Cambium-WiFi-AP`       | Enterprise Wi-Fi | No           | exact; XV2 and E-series are told apart only after the device is read   |
+| `Cambium`               | ePMP (AP and SM) | No           | exact; AP versus SM and the Force model come from the device, not DHCP |
+| (none of the above)     | cnWave 60 GHz    | n/a          | cnWave is not on the low-touch hook: its units are addressed by hand   |
 
-The SMC matches `substring(option vendor-class-identifier, 0, 7) = "Cambium"` and answers those clients with Option 43 (`vendor-encapsulated-options`) set to the cnMaestro URL and a
-20-second lease; the `on commit` hook then receives MAC, leased address, the vendor class verbatim and the Option 82 remote id (the upstream relay's MAC, or empty). A device family that
-does not name its model in Option 60 is created as an `UNKNOWN` type by the controller's device-seen path until the first read of the device fills it in. Where the hook and the
-controller side live: skill-smc `references/08_ansible-authoring.md` and `unified-network-controller/docs/onboarding/device-seen-events-step4-20260926_1838.md`.
+The SMC matches `substring(option vendor-class-identifier, 0, 7) = "Cambium"` and answers those clients with Option 43 (`vendor-encapsulated-options`) set to the cnMaestro URL and a 20-second lease;
+the `on commit` hook then receives MAC, leased address, the vendor class verbatim and the Option 82 remote id (the upstream relay's MAC, or empty). A device family that does not name its model in
+Option 60 is created as an `UNKNOWN` type by the controller's device-seen path until the first read of the device fills it in. Where the hook and the controller side live: skill-smc
+`references/08_ansible-authoring.md` and `unified-network-controller/docs/onboarding/device-seen-events-step4-20260926_1838.md`.
 
 ## EoL / EoS Snapshot
 
@@ -84,51 +85,67 @@ announced. `cambium-swap` owns the continuity analysis and should log this state
 
 ### Vendor status after the Univastu acquisition (received 2026-10-16, vendor claim)
 
-Source: Cambium marketing email "Announcement: Univastu Acquisition of Cambium Networks' ePMP, Enterprise, and cnMaestro", 16 Oct 2026 (cambium-swap evidence E146, archived copy and source note there).
+Source: Cambium marketing email "Announcement: Univastu Acquisition of Cambium Networks' ePMP, Enterprise, and cnMaestro", 16 Oct 2026 (cambium-swap evidence E146, archived copy and source note
+there).
 
-- **14 Oct 2026: Univastu India Limited** (NSE: UNIVASTU, an engineering, procurement and construction company) completed the acquisition of Cambium Networks: the **ePMP and Enterprise businesses
-  and cnMaestro**. Cambium runs as a standalone Univastu subsidiary and says it will resume production.
+- **14 Oct 2026: Univastu India Limited** (NSE: UNIVASTU, an engineering, procurement and construction company) completed the acquisition of Cambium Networks: the **ePMP and Enterprise businesses and
+  cnMaestro**. Cambium runs as a standalone Univastu subsidiary and says it will resume production.
 - **cnMaestro Cloud "will continue to operate on a go-forward basis"**, with no date or terms. Cambium's earlier Enterprise guidance ("may not support Enterprise devices post the end of October,
   2026", E144) is not withdrawn by name.
 - Not stated: the Cloud Anchor, expired device certificates, onboarding of new devices, and whether cnPilot R195P and cnMatrix sit inside "Enterprise" (`UNKNOWN`).
 
-Consequence for APN's own fleet: ePMP/Force and Enterprise Wi-Fi now have a named owner (Univastu), cnWave has Airspan. The spares-only rule above holds until production and supply are confirmed through
-APN's distributor. Corroborate against a Univastu NSE disclosure before treating this as more than a vendor claim.
+Consequence for APN's own fleet: ePMP/Force and Enterprise Wi-Fi now have a named owner (Univastu), cnWave has Airspan. The spares-only rule above holds until production and supply are confirmed
+through APN's distributor. Corroborate against a Univastu NSE disclosure before treating this as more than a vendor claim.
+
+### Cambium guidance for cnMaestro Enterprise customers, updated 16 Nov 2026 (read 2026-11-18, vendor KB)
+
+Source: Cambium Community knowledge-base post "Guidance for cnMaestro Enterprise Customers - (updated) 16 Nov 2026"
+(`https://community.cambiumnetworks.com/t/guidance-for-cnmaestro-enterprise-customers-updated-16-nov-2026/108849`, Cambium staff, first posted 17 Sep 2026), read in full 18 Nov 2026 from of-si.
+Verbatim:
+
+- Cloud: "the cnMaestro Cloud is operational and continues to support Enterprise devices post the end of October, 2026." This supersedes the E144 warning above.
+- Anchor trial: "Starting 17 Sep 2026, all new anchor accounts will include a 90-day cnMaestro X trial license." On expiry: "The on-premises instances will degrade to Essentials."
+- FAQ, as quoted in the post: "If your on-premises controller is running a 90-day cnMaestro X trial, please open a support ticket and Cambium will issue a 90-day trial renewal for now. Cambium expects
+  to charge for cnMaestro X on-premises at a later date, and details will be announced."
+- Already on-premises: "At this point, you don't have to take any action. In future, you may have to split products with different buyers to a separate instance." Airspan products: keep them together;
+  "Cambium and Airspan are working to split the Cloud based on product ownership." NSE is cloud-only.
+- Withdrawn (struck through in the post): the planned licence-free on-premises image for Wi-Fi and switches with no Anchor dependency, and the line that on-premises "will continue to work, but you
+  will not be able to add or delete any devices" if the Anchor stops. Do not cite either.
+- Not stated: what happens to an existing **paid** cnMaestro X on-premises licence (`UNKNOWN`; ask the vendor through the distributor). Moving back from on-premises to Cloud loses device history and
+  needs matching X Cloud subscriptions for devices added on the trial.
+
+Consequence for APN: low-touch runs on the APN-hosted cnMaestro X (operator, Mark Mortimore in Teams, 18 Nov 2026: "We never used the cloud for Low Touch"), so the cloud statement above does not
+answer whether low-touch keeps X features. Establish first whether the instance holds a paid licence or the Anchor trial, and its expiry: a trial lapses to Essentials, which has no API (see
+Controllers and licences).
 
 ### Continuity exposure: licence fuse, vendor artefacts, cloud-held devices, spares (written back 2026-10-29)
 
 Harvested from `cambium-swap` (apn 5cba35f) for the architect packs; `cambium-swap` stays the owner of the continuity analysis.
 
 > **Learned 2026-10-29** · cnMaestro On-Premises 6.0.0 · VERIFIED-DOC (6.0.0 User Guide, E01) · Source: `cambium-swap/docs/architecture/cloud-anchor.md`
-> (Requirements table; "The 90-day grace period") · Falsifier: TEST-F02 (extended Anchor outage) showing devices stay managed past 90 days.
-> **The Cloud Anchor is a time fuse.** When subscription sync with the Anchor fails, the 6.0.0 guide gives a 90-day grace period; at expiry "all the devices
-> will be moved to the onboarding queue, Cloud connectivity will be unmanaged, and a login prompt will be displayed", and onboarding itself needs the
-> Anchor. The 3.2.0 wording that "intermittently connected" operation is supported is gone from 6.0.0. Edition scope, the exact trigger and whether
-> devices keep forwarding traffic in the queue (expected yes, E24) are open (TEST-F02, TEST-F18). On-premises is not independent of Cambium's cloud.
+> (Requirements table; "The 90-day grace period") · Falsifier: TEST-F02 (extended Anchor outage) showing devices stay managed past 90 days. **The Cloud Anchor is a time fuse.** When subscription sync
+> with the Anchor fails, the 6.0.0 guide gives a 90-day grace period; at expiry "all the devices will be moved to the onboarding queue, Cloud connectivity will be unmanaged, and a login prompt will be
+> displayed", and onboarding itself needs the Anchor. The 3.2.0 wording that "intermittently connected" operation is supported is gone from 6.0.0. Edition scope, the exact trigger and whether devices
+> keep forwarding traffic in the queue (expected yes, E24) are open (TEST-F02, TEST-F18). On-premises is not independent of Cambium's cloud.
 
 > **Learned 2026-10-29** · cnMaestro distribution and upgrades · VERIFIED-DOC / USER_STATED (cambium-swap findings 4-5) · Source: `cambium-swap/README.md`
-> findings 4-5 and the "Urgent" list · Falsifier: a 6.0.0 AMI or an upgrade that completes with Cambium's services unreachable.
-> **Upgrades already depend on Cambium's online services:** the OVA signing root CA expired on 17 Apr 2026 and its fix script downloads from Cambium's
-> registry. AWS AMIs stopped at 5.0.0-r5; 6.0.0 ships as an OVA only. Cambium left AWS Marketplace at 3.2.0, so whether APN's instances carry a
-> Marketplace product code (which would block exporting the instance) is to be confirmed; aws-to-local's plan assumes it does and rebuilds from the
-> OVA with data restored separately (`apn/aws-to-local` REV6 §6.2.9, risks R-017, R-021, R-022), with re-onboarding every device as the hidden cost
-> if devices cannot be moved. Current official MIBs are login-gated. Keep a local copy of firmware for every deployed model and cnMaestro version, the
-> root-CA fix script and the MIBs while the services answer (operator rule: keep every device's vendor material).
+> findings 4-5 and the "Urgent" list · Falsifier: a 6.0.0 AMI or an upgrade that completes with Cambium's services unreachable. **Upgrades already depend on Cambium's online services:** the OVA
+> signing root CA expired on 17 Apr 2026 and its fix script downloads from Cambium's registry. AWS AMIs stopped at 5.0.0-r5; 6.0.0 ships as an OVA only. Cambium left AWS Marketplace at 3.2.0, so
+> whether APN's instances carry a Marketplace product code (which would block exporting the instance) is to be confirmed; aws-to-local's plan assumes it does and rebuilds from the OVA with data
+> restored separately (`apn/aws-to-local` REV6 §6.2.9, risks R-017, R-021, R-022), with re-onboarding every device as the hidden cost if devices cannot be moved. Current official MIBs are login-gated.
+> Keep a local copy of firmware for every deployed model and cnMaestro version, the root-CA fix script and the MIBs while the services answer (operator rule: keep every device's vendor material).
 
 > **Learned 2026-10-29** · cnMaestro Cloud-held devices · VERIFIED-DOC (Cambium migration guidance, E23) · Source:
-> `cambium-swap/docs/migration/exit-strategy.md` "Near-term decision"; `docs/reports/status-reviews/cloud-eol-continuity-decision-analysis-20260920_1100.md`
-> · Falsifier: a device list, profile or per-device mapping recovered after the Cloud stopped serving.
-> Devices on the Cambium-hosted Cloud had no APN-side recovery: the export and the URL move (for R-series a `cns_static_url` override pushed through
-> the AP Group) run through the Cloud UI and work only while it works. On 2026-09-20 the exposure was about 108 Cloud-managed Enterprise devices, not
-> the 3,174-device estate (a floor: switches were never inventoried). Since 6 Oct every device is on `apn-cnmaestro01` (Who to Ask section below), so
-> this is the record of the move, and the lesson for any SaaS controller: export inventory, profiles and per-device controller mappings while the UI
-> works. Moving to on-premises swaps a cloud dependency for a local one; it does not remove the dependency.
+> `cambium-swap/docs/migration/exit-strategy.md` "Near-term decision"; `docs/reports/status-reviews/cloud-eol-continuity-decision-analysis-20260920_1100.md` · Falsifier: a device list, profile or
+> per-device mapping recovered after the Cloud stopped serving. Devices on the Cambium-hosted Cloud had no APN-side recovery: the export and the URL move (for R-series a `cns_static_url` override
+> pushed through the AP Group) run through the Cloud UI and work only while it works. On 2026-09-20 the exposure was about 108 Cloud-managed Enterprise devices, not the 3,174-device estate (a floor:
+> switches were never inventoried). Since 6 Oct every device is on `apn-cnmaestro01` (Who to Ask section below), so this is the record of the move, and the lesson for any SaaS controller: export
+> inventory, profiles and per-device controller mappings while the UI works. Moving to on-premises swaps a cloud dependency for a local one; it does not remove the dependency.
 
 > **Learned 2026-10-29** · spares under the Anchor · UNKNOWN until TEST-F13 · Source: `cambium-swap/docs/operations/spare-device-strategy.md` ·
-> Falsifier: TEST-F13 (onboard, store, block the Anchor, power on, move role) passing.
-> Pre-onboarding spares while the Anchor works is a hypothesis: the 90-day fuse may return spares to the onboarding queue too, each device holds an X
-> tier slot, and firmware drifts in storage. Do not buy spares in quantity until TEST-F13 passes. Spares on hand per model: `UNKNOWN`
-> (`spares_on_hand` in `cambium-swap/inventory/device-family-matrix.csv`).
+> Falsifier: TEST-F13 (onboard, store, block the Anchor, power on, move role) passing. Pre-onboarding spares while the Anchor works is a hypothesis: the 90-day fuse may return spares to the onboarding
+> queue too, each device holds an X tier slot, and firmware drifts in storage. Do not buy spares in quantity until TEST-F13 passes. Spares on hand per model: `UNKNOWN` (`spares_on_hand` in
+> `cambium-swap/inventory/device-family-matrix.csv`).
 
 ## Evidence-State Discipline
 
@@ -183,31 +200,30 @@ Read the file, not this pack's memory of it, before acting on a specific device 
 
 `USER_STATED` by the operator for the enterprise-strategy clarification register.
 
-| Person   | Area                                                                                                                         |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Germain  | NOC — Cambium devices and the Wi-Fi dashboard                                                                                |
-| Mark     | NOC — desktop RF study for every site deployment: from the map and Google Earth, an RF plan placing towers, external APs,    |
-|          |   Force 300 links and other radios                                                                                           |
-| Brendan  | The field team                                                                                                               |
-| Gravolin | Level 2 engineer on the SMC, radio and network; primary engineer on low touch; supports the field team on site               |
-| Rob      | Electronics, research for new hardware, and radio                                                                            |
+| Person   | Area                                                                                                                                                       |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Germain  | NOC — Cambium devices and the Wi-Fi dashboard                                                                                                              |
+| Mark     | NOC — desktop RF study for every site deployment: from the map and Google Earth, an RF plan placing towers, external APs, Force 300 links and other radios |
+| Brendan  | The field team                                                                                                                                             |
+| Gravolin | Level 2 engineer on the SMC, radio and network; primary engineer on low touch; supports the field team on site                                             |
+| Rob      | Electronics, research for new hardware, and radio                                                                                                          |
 
-- **Low touch when cnMaestro goes.** Nothing should change for the field team or the NOC: the Unified Network Controller takes over the steps cnMaestro performs in the low-touch chain today
-  (claim, approve, the device names in the SMC's RPZ zone). The chain itself is described in skill-smc (`references/08_ansible-authoring.md`).
+- **Low touch when cnMaestro goes.** Nothing should change for the field team or the NOC: the Unified Network Controller takes over the steps cnMaestro performs in the low-touch chain today (claim,
+  approve, the device names in the SMC's RPZ zone). The chain itself is described in skill-smc (`references/08_ansible-authoring.md`).
 - **Install time.** A low-touch install takes more than two days on site.
-- **Controllers and licences.** Every Cambium device has moved to cnMaestro Essentials on `apn-cnmaestro01`, which is now the only instance. A cnMaestro X licence is held but unused. Cloud
-  Anchor is still used but ends at the end of October 2026, and its licences lapse with it. This supersedes the earlier `cw-cnmaestro01` and `lt-cnmaestro` entries in
-  [02_device-access-and-vault.md](02_device-access-and-vault.md); the operator confirmed both are retired (6 Oct 2026).
-- **Low-touch lost on Essentials (operator, 6 Oct 2026; confirmed 16 Nov 2026, `USER_STATED`).** Essentials has no API, so the low-touch onboarding and automation that cnMaestro
-  X provided are lost: new and replacement devices are no longer set up automatically. Moving back to cnMaestro X is possible (the licence is held; cnMaestro X was hosted by APN in AWS, not in Cambium's
-  cloud, but it still needs Cambium's Cloud Anchor: operator, 16 Nov 2026), but the operator recommends against it to reduce dependence on one vendor; the program plans low-touch through the Unified Network Controller instead (apn enterprise-strategy, 17 Nov 2026 meeting deck).
+- **Controllers and licences.** Every Cambium device has moved to cnMaestro Essentials on `apn-cnmaestro01`, which is now the only instance. A cnMaestro X licence is held but unused. Cloud Anchor is
+  still used but ends at the end of October 2026, and its licences lapse with it. This supersedes the earlier `cw-cnmaestro01` and `lt-cnmaestro` entries in [02_device-access-and-vault.md](02_device-access-and-vault.md); the operator
+  confirmed both are retired (6 Oct 2026).
+- **Low-touch lost on Essentials (operator, 6 Oct 2026; confirmed 16 Nov 2026, `USER_STATED`).** Essentials has no API, so the low-touch onboarding and automation that cnMaestro X provided are lost:
+  new and replacement devices are no longer set up automatically. Moving back to cnMaestro X is possible (the licence is held; cnMaestro X was hosted by APN in AWS, not in Cambium's cloud, but it
+  still needs Cambium's Cloud Anchor: operator, 16 Nov 2026), but the operator recommends against it to reduce dependence on one vendor; the program plans low-touch through the Unified Network
+  Controller instead (apn enterprise-strategy, 17 Nov 2026 meeting deck).
 - **Firmware.** Upgrades go through cnMaestro.
 - **NOC views.** Daily troubleshooting uses signal/SNR, client and radio-statistics views (Germain or Adam to confirm the full list).
 - **Replacements.** When a model or vendor runs out of stock, Rob researches and recommends the replacement. MikroTik and UniFi are being looked at; hardware is ordered, not yet tested.
 - **Asset registers.** The NOC maintains the site asset registers.
-- **RF planning.** Mark's desktop study uses Google Earth and Google Maps; Cambium LINKPlanner only rarely.
-  Learned 2026-10-16, VERIFIED_PRIMARY ([LINKPlanner 6.4.3 best-server analysis](https://lp.cambiumnetworks.com/doc/best_server_analysis.html)):
-  best-server analysis ranks eligible network devices by predicted link performance per subscriber site; it is not an overlap of drawn sector
-  footprints, so a footprint intersection must never be labelled best-server or interference.
+- **RF planning.** Mark's desktop study uses Google Earth and Google Maps; Cambium LINKPlanner only rarely. Learned 2026-10-16, VERIFIED_PRIMARY ([LINKPlanner 6.4.3 best-server analysis](https://lp.cambiumnetworks.com/doc/best_server_analysis.html)): best-server
+  analysis ranks eligible network devices by predicted link performance per subscriber site; it is not an overlap of drawn sector footprints, so a footprint intersection must never be labelled
+  best-server or interference.
 - **Low-touch sites.** 8 production `smc_ltp` sites; `pia` is not low touch, although the `big_push` branch lists it.
 
