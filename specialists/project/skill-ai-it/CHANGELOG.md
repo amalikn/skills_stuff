@@ -34,6 +34,8 @@ Last rotated: 20261118_1754
 
 ## Unreleased
 
+- 2026-11-18: `scripts/markdown/wrap_added.py` (`just wrap-added`) and `tests/test_wrap_added.py`, promoted from Continuum: wrap only the long lines a diff added.
+
 - 2026-11-18 `scripts/records/audit_rotations.py`: fixed, the audit took its comparison text from the commit that added the oldest archive file, which a regroup of docs/history by kind re-adds
   (61 lines reported lost in unified-network-controller); it now asks git for the first add under either layout, and counts `docs/history/sync/sync-archive-*.md` as archived for SCRATCHPAD.
   `tests/test_audit_rotations_baseline.py`: three cases (fail before, pass after; seven audit tests pass). Found by a read-only side agent of the unified-network-controller D17 session.

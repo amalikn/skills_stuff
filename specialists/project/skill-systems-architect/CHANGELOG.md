@@ -15,6 +15,10 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261118_2129 — Backup repository on the primary's host is copy 1 only (v2.3.11 -> v2.3.12)
+
+- `references/backup-disaster-recovery.md`: Learned 2026-11-18 under Copy placement, from the Continuum first-slice topology review (operator asked for this pack after it was missed).
+
 ## 20261118_2124 — Asset identity beside a position-based source of truth (v2.3.10 -> v2.3.11)
 
 - `references/fleet-management.md`: Learned 2026-11-18, an asset ID that moves with the unit; an ID register needs an issue log outside its database to survive a restore; a storage card is an asset

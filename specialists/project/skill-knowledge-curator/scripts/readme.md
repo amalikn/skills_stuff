@@ -60,6 +60,14 @@ Summary: >-
 
 `decision_sheet.py` (`just decision-sheet`) turns a saved `kc review` queue into a tick-box Markdown sheet: one question per open conflict, one box per `kc decide` action with its claim id, an Other box and a Notes line; optional `--recs` JSON marks one option `(Recommended)` with a reason and lists "why now" questions first. Exit 1 when a position has no unique claim id. Read-only on the project; writes `--out`.
 
+`sheet_decisions.py` (`just sheet-decisions`) reads a ticked decision sheet into one `kc decide` call per ticked conflict question: the bracket gives the action and claim, the text after it the scope note,
+corrected statement or deferral reason, `Other:` becomes CORRECTED, and the Notes paragraph the reason. Unticked questions stay open; two ticks refuse the run; contract-gap questions are listed only.
+Plan by default; `--apply` dry-runs every call through kc first and writes nothing unless all pass. Safety: `review-required`. 1 s budget (measured 0.04 s for 44 questions).
+
+`mark_resolved.py` (`just mark-resolved`) marks decided conflicts on authored pages: a note `Resolved <date>: \`<dr-id>\` (<summary>).` on conflict-table rows, list items that cite the id anywhere in
+their block, and `### cf-` sections (replacing their `Status: open` paragraph); `Deferred` for DEFER. Idempotent; wraps lengthened prose at 200 columns, never tables; `--report` lists prose that still
+calls a marked conflict open, for a hand edit. Plan by default; `--apply` writes. Safety: `review-required`. 1 s budget (measured 0.07 s over 85 pages).
+
 `restate_byte_copies.py <project>` (`just restate-copies`) prints the claim and context records that bring byte-identical files level, for `kc claims --file`; read-only.
 
 `llm_probe.py [--base URL] [--model ID]` (`just llm-probe [ID]`) lists a local OpenAI-compatible server's models and times the two kc verify control pairs on one; read-only,

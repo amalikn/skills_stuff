@@ -72,6 +72,12 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 
 ## Traps
 
+> **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad collection create "Asks" ... --awaits-human true --tracks-work false` -> `Error: accepts 1 arg(s), received 2`;
+> the same with `--awaits-human=true --tracks-work=false` created the collection (continuum workspace) · Falsifier: the space form accepted by a later release.
+> `--awaits-human` and `--tracks-work` are string flags in 0.21.0, and the space-separated form is read as extra arguments; write them as `--flag=value`. The README's collection command for
+> Asks uses the space form and needs this change. `pad workspace init` in 0.21.0 still writes `.claude/skills/pad/` and `.agents/skills/pad/`, and the copy appears in Claude Code's skill
+> list at once; move them to the Trash (`trash`) and remove the empty folders with `rmdir`.
+
 > **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY (unified-network-controller and smc-resiliency) · Source: `pad item update --help`, CLI
 > errors · Falsifier: a release that accepts these writes or lists disabled items by default. `pad item update --fields-json` refuses the `convention` key ("system metadata ... BUG-2627"): set
 > `trigger`, `status`, `commands` and Pad rewrites its own `convention` block. `pad item list conventions` hides disabled items; add `--all` (a disabled template rule looks deleted). `--fields-json`

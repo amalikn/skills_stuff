@@ -83,6 +83,20 @@ orders of magnitude (UNVERIFIED as targets); measure your own in a drill.
 - Pull the off-site copy from the backup side, so production credentials cannot reach it.
 - Escrow encryption keys and the backup catalog apart from production and apart from each other.
 
+> **Learned 2026-11-18** · backup repository on the primary's host · UNVERIFIED (design review, nothing deployed) · Source: Continuum first-slice review, flow map
+> `docs/architecture/diagrams/first-slice/parts/components-data-and-offhost.yaml` (tools_stuff 2026-11-18) · Falsifier: a design where the snapshot store shares the host yet survives its loss.
+> A snapshot store (restic on S3, here SeaweedFS) placed on the same single host as the coordinator and its database is copy 1 only: losing that host loses live state and every checkpoint at
+> once. Draw it in the same failure domain and list the missing off-host copy, pulled from the backup side, as an open decision; a design that calls it "backups" without that copy overstates
+> recovery. A single-node secrets store on the same host (OpenBao) adds a second question: who holds the unseal keys after a reboot.
+>
+> ```yaml
+> - id: offsite-copy
+>   name: Off-host backup copy (gap)
+>   depends_on: [seaweedfs]
+>   notes: 3-2-1 needs a copy off the VPS, pulled from the backup side. No decision yet.
+>   status: {state: proposed, since: "2026-11-18"}
+> ```
+
 ```text
 Backup isolation: production admin must not be able to delete copy 2 or copy 3
 

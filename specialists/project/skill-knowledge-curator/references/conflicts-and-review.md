@@ -108,6 +108,17 @@ checkboxes ... an option for other as well"). `scripts/decision_sheet.py` builds
 for recommendations, mark one option `(Recommended)` per question with a one-line reason; it is advice, the operator still decides, and nothing is recorded until a box is ticked and `kc decide` runs.
 Never regenerate a sheet the operator has started filling in: check for ticks first, then edit in place.
 
+> **Disputed 2026-11-18** · question delivery · USER_STATED · Source: Continuum session 2026-11-18 ("Ask me questions, I'm not going through the sheet") · Conflicts: the 2026-11-05
+> preference above · Falsifier: an operator who asks for the sheet back.
+> The same operator later preferred questions in chat, four at a time with options and one `(Recommended)` each, over filling in the sheet. Ask in chat when the operator says so; the sheet stays
+> the record: tick each answer into it with a dated note naming whether the recommendation was followed and the options weighed, then `just sheet-decisions` reads it into `kc decide`, and
+> `just mark-resolved` marks the decided conflicts on the pages. Answers with no conflict (contract gaps) go to a dated answers file, not to kc.
+
+> **Learned 2026-11-18** · decisions_to_adrs re-renders · VERIFIED_PRIMARY · Source: Continuum, `decisions_to_adrs.py --stamp ... ` plan listing 7 unrelated ADRs as `update` · Falsifier: a re-render
+> without `--tag` that leaves ADRs first rendered with `--tag <project>` unchanged.
+> The renderer's `--tag` defaults to `decision`. ADRs first rendered with `--tag <project>` show as `update` on every later run without it (new tag and a new `Last reviewed`), which would re-stamp
+> ADRs nobody re-read. Pass the same `--tag` every time and read the plan before `--apply`: only the groups you changed should be listed.
+
 No answer means `REVIEW_REQUIRED`, never default approval; no scheduled run may simulate consent. A partial answer applies only to the conflict it names.
 
 ## Decision record

@@ -76,6 +76,16 @@ decisions-to-adrs *ARGS: _require-venv
 decision-sheet *ARGS: _require-venv
     @{{py}} scripts/decision_sheet.py "$@"
 
+# Ticked decision sheet to kc decide calls: just sheet-decisions --project <p> --sheet sheet.md [--actor NAME] [--answer-suffix TEXT] [--apply] (plan by default; --apply dry-runs all first).
+[positional-arguments]
+sheet-decisions *ARGS: _require-venv
+    @{{py}} scripts/sheet_decisions.py "$@"
+
+# Mark decided conflicts on authored pages: just mark-resolved --project <p> --summaries s.json --pages 'docs/**/*.md' [--report] [--apply] (plan by default).
+[positional-arguments]
+mark-resolved *ARGS: _require-venv
+    @{{py}} scripts/mark_resolved.py "$@"
+
 # Claims for each document's Status line and whole-file banner; --relations pairs a current-like Status under a superseded banner (read-only).
 [positional-arguments]
 status-claims project *ARGS: _require-venv

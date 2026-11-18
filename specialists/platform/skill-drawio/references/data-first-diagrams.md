@@ -361,6 +361,12 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 >     @{{drawio_py}} "{{drawio}}/render_flowmap.py" --root docs/vagrant-flows --map vagrant_flows.yaml --write
 > ```
 
+> **Learned 2026-11-18** · flow-style YAML in a map's `drawing:` block · VERIFIED_PRIMARY · Source: Continuum `docs/architecture/diagrams/first-slice/parts/master.yaml`, render output
+> `problem: $.drawing.tiers[1]: unknown key \`internet)\`` · Falsifier: a tier name with a comma that loads unquoted.
+> A tier name with a comma inside a flow mapping (`{name: Endpoints (macOS and Linux, internet), groups: [...]}`) is split by YAML at the comma, and the renderer reports an unknown key named after
+> the fragment, which does not say "quote it". Quote any name with a comma or colon: `{name: "Endpoints (macOS and Linux, internet)", ...}`. Screenshot of the rendered overview:
+> `references/screenshots/20261118-continuum-first-slice/`.
+
 ## ASCII diagrams in Markdown, first
 
 ASCII diagrams moved to **skill-ascii-diagrams** on 2026-11-17 (operator); the two entries below are kept as history, its references hold the current rules.

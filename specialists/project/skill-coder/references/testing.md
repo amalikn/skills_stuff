@@ -44,6 +44,16 @@ Summary: >-
 
 ## Checks that can fail
 
+> **Learned 2026-11-18** · catalog checks over a justfile · VERIFIED_PRIMARY · Source: Continuum `scripts/govcheck/checks/catalogs.py:91` (tools_stuff b6370ba..), probe recipe test · Falsifier: a
+> justfile whose `name := value` line the corrected pattern reads as a recipe.
+> A recipe pattern like `^([\w-]+)(?: [^\n:]*)?:` also matches variable assignments (`py := ...`) and `set dotenv-load := false`, so the check demanded catalog rows for `py`, `wc`, `set`. Six fake
+> rows ("read-only governance inspection") had been added to satisfy it, which hid the false positive and would hide a real one. Fix the pattern, not the catalog: skip `:=` with a lookahead,
+> remove the fake rows, and prove the check still fails on a probe recipe.
+>
+> ```python
+> recipes = set(re.findall(r"^([\w-]+)(?: [^\n:]*)?:(?!=)", read("justfile"), re.M))  # `name := value` is a variable, not a recipe
+> ```
+
 A governance check, lint rule or validator lands with a negative test that turns it red on a crafted bad input. Why: a check that cannot fail is not coverage (skill-ai-it governance-check doctrine).
 When a check starts in warn mode, its count is held by a shrink-only baseline and switches to fail mode at a named milestone.
 

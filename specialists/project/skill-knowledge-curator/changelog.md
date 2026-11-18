@@ -12,6 +12,12 @@ Budget: 200 lines, 25 KB
 
 # Changelog
 
+## 2026-11-18
+
+- `scripts/sheet_decisions.py` (`just sheet-decisions`) and `scripts/mark_resolved.py` (`just mark-resolved`), promoted from Continuum's decision pass; tests `tests/test_sheet_decisions.py`,
+  `tests/test_mark_resolved.py`; catalogued in scripts/readme.md.
+- references/conflicts-and-review.md: Disputed entry (questions in chat, sheet as the record) and Learned entry (`decisions_to_adrs --tag` re-stamping).
+
 ## Contents
 
 - [2026-11-05 — kc roots, kc verify on a local model, documented-evolution](#2026-11-05--kc-roots-kc-verify-on-a-local-model-documented-evolution)
