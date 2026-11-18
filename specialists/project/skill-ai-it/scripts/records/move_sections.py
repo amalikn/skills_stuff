@@ -36,6 +36,7 @@ sys.modules.setdefault("rotate_records", rr)
 _spec.loader.exec_module(rr)
 
 HEADING = re.compile(r"^(#{2,4}) (.+?)\s*$")
+BLOCK_MARKER = re.compile(r"^\s*<!--\s*(BEGIN|END)\b")  # managed-block markers stay in the source
 ANY_HEADING = re.compile(r"^#{1,6} (.+?)\s*$")
 TOC_ENTRY = re.compile(r"^\s*- \[(.+?)\]\(#[^)]*\)\s*$")
 IN_PAGE = re.compile(r"\]\(#([\w\-]+)\)")
@@ -93,6 +94,13 @@ def sections(lines: list[str]) -> dict[str, tuple[int, int]]:
     out: dict[str, tuple[int, int]] = {}
     for k, (a, level) in enumerate(heads):
         b = next((j for j, lv in heads[k + 1:] if lv <= level), len(lines))
+        # A block marker in the blank-and-marker tail before the next heading belongs to the file, not the section: moving it
+        # orphaned a navigation block's END marker in of-si AGENTS.md (2026-11-11, found 2026-11-18).
+        tail = b
+        while tail - 1 > a and (not lines[tail - 1].strip() or BLOCK_MARKER.match(lines[tail - 1])):
+            tail -= 1
+        if any(BLOCK_MARKER.match(x) for x in lines[tail:b]):
+            b = tail
         out.setdefault(HEADING.match(lines[a]).group(2), (a, b))
     return out
 

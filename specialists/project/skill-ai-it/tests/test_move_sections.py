@@ -190,5 +190,18 @@ class PointerAndLinkTest(unittest.TestCase):
         self.assertIn("- [Reference moved out](#reference-moved-out)", text)
 
 
+
+class BlockMarkerTest(unittest.TestCase):
+    """A managed-block marker before the next heading stays in the source (2026-11-18)."""
+
+    def test_begin_marker_not_moved(self):
+        lines = ["# T", "", "## Moved", "text", "", "<!-- BEGIN skill-ai-it:navigation -->", "", "## Kept", "x"]
+        a, b = ms.sections(lines)["Moved"]
+        self.assertEqual(lines[a:b], ["## Moved", "text"])
+
+    def test_plain_tail_unchanged(self):
+        lines = ["## Moved", "text", "", "## Next"]
+        self.assertEqual(ms.sections(lines)["Moved"], (0, 3))
+
 if __name__ == "__main__":
     unittest.main()

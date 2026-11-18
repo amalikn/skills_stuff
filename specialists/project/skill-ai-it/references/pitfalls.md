@@ -177,3 +177,21 @@ invocation half.
 > else:  # govern skips a block with no version marker and the upgrader refuses it
 >     print("  navigation block has no skill-ai-it-version marker (hand-edited or legacy): ... review it by hand under /skill-ai-it refresh")
 > ```
+
+> **Learned 2026-11-18** · move_sections and managed-block markers · VERIFIED_PRIMARY (observed) · Source: of-si AGENTS.md, move of 2026-11-11 (commit
+> 1a8d87c) left `<!-- END skill-ai-it:navigation -->` with no BEGIN; the BEGIN line was found at the end of the destination reference doc · Falsifier:
+> a moved section's destination ending in a `<!-- BEGIN` or `<!-- END` line.
+> A section ran to the next heading, so a block marker sitting in the blank lines before that heading moved with it. `sections()` now ends a section
+> at its last content line when its tail holds a BEGIN/END marker (tests/test_move_sections.py BlockMarkerTest). After any move, grep both files for
+> `skill-ai-it:` markers: an orphaned END makes the upgrader and validator misread the file. A hand-edited block can be declared project-owned with
+> `<!-- skill-ai-it:manual reason="..." -->` (references/managed-blocks.md); a version marker would instead let the next upgrade replace it.
+>
+> ```python
+> # scripts/records/move_sections.py sections() (2026-11-18)
+> tail = b
+> while tail - 1 > a and (not lines[tail - 1].strip() or BLOCK_MARKER.match(lines[tail - 1])):
+>     tail -= 1
+> if any(BLOCK_MARKER.match(x) for x in lines[tail:b]):
+>     b = tail
+> ```
+
