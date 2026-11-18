@@ -195,3 +195,8 @@ invocation half.
 >     b = tail
 > ```
 
+> **Learned 2026-11-18** · scripts/records/history_layout.py · VERIFIED_PRIMARY · Source: unified-network-controller `docs/history/readme.md:259` (staleness audit 16) · Falsifier: a
+> regenerated index whose descriptions never end inside `[text](` or a URL
+> The history index cuts each description at a fixed length, and a cut inside a Markdown link leaves `[audit follow-up](../../reports/project-reviews/unc-technical-audit-followup-20261`:
+> a broken link in a live index that the generated block forbids fixing by hand. Cut at a word boundary outside any link, or drop links from descriptions.
+

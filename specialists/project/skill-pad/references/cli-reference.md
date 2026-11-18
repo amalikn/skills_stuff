@@ -113,3 +113,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > statuses (fixed, wont-fix); Feature Requests and Tech Debt declare none, so add terminal_options (shipped/declined, resolved) or they never
 > close. The schemas used: conventions/collection-schemas/. An agent once answered "Pad has no collection types" from the CLI docs alone: check the
 > web UI source before saying a feature does not exist.
+
+> **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad help item create --format md` header `version: 0.21.0 (9bc5523 2026-11-18T01:06:08Z)` · Falsifier: `pad --version` below 0.21
+> The installed CLI is 0.21.0 while this file maps v0.19.2: `item create` still takes `--field key=value`, `--op-key`, `--status`, `--content`. A new `section` value on a bug renders
+> as its own generated heading in the project's bug tracker on the next `pad-trackers --apply` (BUG-185 to 191, unified-network-controller). Refresh the map per references/upgrade.md.
+

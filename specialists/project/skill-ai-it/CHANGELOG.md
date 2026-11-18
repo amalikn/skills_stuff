@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261112_1656
+Last rotated: 20261118_1754
 ---
 
 # Changelog — skill-ai-it
@@ -30,11 +30,11 @@ Last rotated: 20261112_1656
 - [20261105_1725 — agents_chain check: AGENTS.md chains for Claude Code and Codex](#20261105_1725--agents_chain-check-agentsmd-chains-for-claude-code-and-codex)
 - [20261103_1741 — mirror_skills: one client's skills linked into another](#20261103_1741--mirror_skills-one-clients-skills-linked-into-another)
 - [20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class](#20261029_2015--pitfalls-one-route-for-cross-project-messages-route-facts-by-class)
-- [20261027_2055 — Slurp close: callers-check, write-backs, coherence](#20261027_2055--slurp-close-callers-check-write-backs-coherence)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
 
+- 2026-11-18 `references/pitfalls.md`: Learned entry, `history_layout.py` cuts a description inside a Markdown link and leaves a broken link in the generated history index (unified-network-controller audit 16); the script is unchanged, fix open
 - 2026-11-18 `scripts/records/move_sections.py`: a BEGIN/END block marker before the next heading stays in the source instead of moving with the section (orphaned END found in of-si); tests BlockMarkerTest; references/pitfalls.md Learned.
 - 2026-11-18 `scripts/records/budget_plan.py`: a navigation block with no `skill-ai-it-version` marker is reported as skipped by govern and refused by the upgrader, not hinted for an upgrade that cannot run; references/pitfalls.md Learned (from of-si).
 - 2026-11-17 `templates/skill-pack/tests/test_package_contract.py.tmpl` registers the checker in `sys.modules` before loading it (`@dataclass` failed); references/new-skill.md Learned (from skill-ascii-diagrams, 71b26f9).
@@ -177,15 +177,6 @@ marker in a trusted folder holding untrusted repos). Smoke-run on three real fol
   facts to projects). `references/readme.md` line count updated.
 - Skipped as already covered: gates that fail on uncovered growth and stay stdlib-only (`patterns/governance-checks.md`, Coverage self-policing and the harness contract); architecture docs drifting
   from runtime config and README links to missing docs (path resolution, derived-artifact staleness, "text matching does not verify behaviour").
-
-## 20261027_2055 — Slurp close: callers-check, write-backs, coherence
-
-- Slurp close: `just callers-check` added (runs `just check` in every project or skill whose justfile calls this package; flags path errors apart from the project's own findings; 0 path errors, about
-  43 s). ARCHITECTURE Key decisions: scripts in family folders, callers repointed (operator).
-- Write-backs: skill-coder pattern P-32 (repoint callers after a move) and a write_gates entry (local writes need `write_patterns`), plus the missing P-31 index row; skill-staleness-audit tool hazards
-  (the gate's YAML step SKIPPED under a host python3; Phase 4 counts rows, not judgements).
-- Coherence pass after the audit: `scripts/README.md` checker row names the dependency check; ROADMAP Ideas: ship `check_declared_dependencies` in the template. Other repos touched by the repoint
-  (apn, me, tools_stuff, governance) are left uncommitted: the commit was asked for skills_stuff.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

@@ -9,7 +9,7 @@ Summary: Current working state, newest first per section; superseded entries rot
 Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261110_2029
+Last rotated: 20261118_1754
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
@@ -88,7 +88,6 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
   (cambium-swap, enterprise-strategy, smc-file-writing-analysis, health, japan, of-si, psy-assess), over budget (enterprise-strategy SCRATCHPAD,
   smc-file-writing-analysis ROADMAP), govcheck `core.py` differs from the template (islam, jdm, uae/atar), no `check` recipe (opticomm, vocus, voip),
   unified-network-controller flow-map drift (another session's uncommitted flows.yaml). Each is that project's own work.
-- [ ] **20261027_2054** skill-knowledge-curator is untracked in skills_stuff (another session's new skill); its justfile was repointed here, not committed.
 - Older open items are tracked in [open-items-20261010_1830.md](docs/trackers/open-items-20261010_1830.md).
 
 not overwrite the hand-built checker (521 assertions); it is the reference implementation this capability was generalized from.

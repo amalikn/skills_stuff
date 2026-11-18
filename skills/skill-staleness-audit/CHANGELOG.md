@@ -17,7 +17,9 @@
 
 ## Unreleased
 
+- 2026-11-18 (learned): SKILL.md Tool hazards: `--keep-snapshot` also keeps `.staleness-audit/` (code and prose disagree; script unchanged, fix open)
 - 2026-11-18 (learned): SKILL.md Tool hazards: skip generated blocks in stamp searches; the gate's strict YAML parse; Edit-tool hook reflow of tables; restore-by-copy mtime; three coverage and claim-scan gaps (smc-resiliency audit 20261118_1715)
+- 2026-11-18 (learned): SKILL.md Tool hazards: a check that stops at its first failure hides later steps; spoke inboxes are claim surfaces; read a system of record per type by `last_updated`, not by its change log (unified-network-controller audit 16)
 - 2026-11-01 (feature): `scripts/inverse_sweep.py` honours `.inverse-sweep-immutable` (with a reason) for immutable source subtrees, found auditing Continuum `docs/research`; two tests in `scripts/tests/test_gate_and_scanners.py`; `SKILL.md` Phase 7.
 
 - 20261029 `patterns/check-hardening.md` (Derive, never author): derived figures are recomputed from their inputs,

@@ -349,6 +349,16 @@ Both hit this skill's own runs on 2026-09-27; details in the markdown governance
 - **The Phase 4 gate counts filled rows, not judgements** (2026-10-27, skill-ai-it): 22 test files given one stock line by a script passed it;
   a side agent caught it. Write each verdict from that file's own evidence (what it loads, whether it reads the clock or the live tree,
   what it does not cover); for tests, profile each file before writing its row.
+- **A project check that stops at its first failing step hides the rest** (2026-11-18, unified-network-controller): the baseline showed 5 failures; once they were fixed,
+  the doc-freshness step it had never reached failed on 47 overdue documents and blocked every commit. Take the baseline from every step on its own (here `just stale`
+  beside `just check`) and count both in the register before fixing anything.
+- **`--keep-snapshot` keeps `.staleness-audit/` too** (2026-11-18): `verify_completeness.py`'s `cleanup_snapshots` skips every target when the flag is set,
+  though this file says it opts out of the snapshot deletion only. Move the receipts folder out by hand after a passing gate, or the next run refuses to start.
+- **Spoke inboxes are claim surfaces** (2026-11-18, unified-network-controller): a hub directive moving plan dates sat unticked for six days while the plan tracker,
+  plan timeline, target map, ROADMAP and three `KEEP` blocks kept the old dates and showed two steps LATE. Read every unticked inbox or directive line as a claim against
+  the plan surfaces; an unticked directive older than a day is a defect row.
+- **Reading a system of record by its change log can stop scaling** (2026-11-18): `?time__gte=` on Nautobot's object changes timed out at 60 s and 500 s once a
+  collector wrote every cycle; per object type, `?last_updated__gte=<since>&limit=1` for the count and one page as the sample read 825 objects in 22 s.
 - **A stamp search must skip generated blocks** (2026-11-18, smc-resiliency): a decision check that looked for a stamp anywhere in the plan tracker counted the
   tracker's generated Stages table, which restates the target map, so a decision passed as recorded while the design never got it. Strip `BEGIN/END GENERATED`
   blocks before searching, and derive "governing" from the project's own follow-or-input table rather than a whole folder.

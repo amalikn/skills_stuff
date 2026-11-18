@@ -25,6 +25,7 @@ Applied to: AI_NAVIGATION.md, context-map.yaml, AGENTS.md, scripts/README.md, ju
 
 ## Unreleased
 
+- 2026-11-18 `references/api-and-writers.md`: Learned, read changed objects per model with `last_updated__gte`; the object-changes walk does not scale on a busy instance
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 - 20261110 `references/upgrade-and-troubleshooting.md` new section "Base image upgrades with a frozen constraints file": two Learned 2026-11-10 entries (re-pin base packages before the build; 3.2.3 to 3.2.9 migrations and beat start time; release-note headings for core and apps), from unified-network-controller f3b6570e
 - 20261109 `references/upgrade-and-troubleshooting.md` narrowing entry: removing a model from a grant removes view too; check readers (REST, include=computed_fields, GraphQL, Jobs), not only writers

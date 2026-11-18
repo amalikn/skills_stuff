@@ -82,3 +82,16 @@ for r in rows:
         seen.add((r["id"], far))
 ```
 
+> **Learned 2026-11-18** · Nautobot 3.2.9 REST · VERIFIED_PRIMARY · Source: unified-network-controller staleness audit 16, two reads on its production instance · Falsifier: an
+> `/api/extras/object-changes/?time__gte=` walk over a busy month finishing in under a minute
+> To ask "what changed since a date", walking `/api/extras/object-changes/?time__gte=<date>` pages through every change record, and an instance with a collector writing
+> every cycle holds far more of those than objects: it ran past 60 s and 500 s. Asking each model instead (`/api/dcim/devices/?last_updated__gte=<date>&limit=1` for the
+> count, one page as the sample) read 825 changed objects across nine models in 22 s. Use the change log for who-changed-what, `last_updated__gte` for which objects.
+
+```python
+# sketch of the per-model read (project probe, not committed)
+for typ, ep in ENDPOINTS.items():
+  n = get(f"{ep}?last_updated__gte={SINCE}&limit=1&depth=0")["count"]
+  page = get(f"{ep}?last_updated__gte={SINCE}&limit=60&depth=0")["results"] if n else []
+```
+

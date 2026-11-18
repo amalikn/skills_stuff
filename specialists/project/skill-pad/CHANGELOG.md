@@ -14,6 +14,11 @@ Last rotated: 20261111_1224
 
 # Changelog — skill-pad
 
+## 20261118_1742 — CLI at 0.21.0
+
+- `references/cli-reference.md`: Learned 2026-11-18, the installed pad is 0.21.0 (map is v0.19.2); create flags unchanged; a new bug section renders as its own
+  generated heading. Map refresh per `references/upgrade.md` still to do.
+
 ## 20261111_1223 — .pad.toml rewrite behaviour tested
 
 - `references/workspace-context.md`: Learned 2026-11-11, `pad workspace link` refuses a linked folder; `switch` rewrites `.pad.toml`, keeping

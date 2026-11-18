@@ -1,5 +1,10 @@
 # Changelog — skill-project-coherence
 
+## 2026-11-18 — unticked hub directives are duties
+
+- Mandatory Start step 4 now reads the project's hub inbox: each unticked directive is a duty, ticked and answered in the same pass. Found in
+  unified-network-controller's staleness audit 16, where a 12 Nov plan-date directive had reached none of five plan surfaces by 18 Nov.
+
 ## 2026-10-21 — a banner not worded "Superseded" leaves its file active
 
 - `stale_refs.py` classes a file `history-superseded` only when its top carries `> **Superseded <date>** by ...`. smc-resiliency's banners read

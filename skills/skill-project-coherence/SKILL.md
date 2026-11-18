@@ -58,7 +58,9 @@ rate card, updating a data source, resolving an investigation item.
      d=$(dirname "$d")
    done
    ```
-Each hit is a duty ("update the wiki project page when creating new project areas"). Put the triggered ones in the scope declaration's `Duties:` line; each is done or reported as not done.
+Each hit is a duty ("update the wiki project page when creating new project areas"). Also read the project's
+   hub inbox, if it has one (`project-sync:inbox` in SCRATCHPAD): every unticked directive is a duty, and a change that settles one ticks it and sends the hub its
+   `to es:` line in the same pass (2026-11-18, unified-network-controller: a date directive sat six days while five plan surfaces kept the old dates). Put the triggered ones in the scope declaration's `Duties:` line; each is done or reported as not done.
 
 ---
 
