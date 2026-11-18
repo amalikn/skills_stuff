@@ -128,6 +128,13 @@ fields once the device reports them.
 - Evidence: `unified-network-controller/docs/field-ownership/field-ownership-model-20260923_1336.md` (section 4).
 - Applies to: [Source of truth and field ownership](../../../skill-systems-architect/references/fleet-management.md#source-of-truth-and-field-ownership).
 
+**D3a. A position's identity at a low-touch site; a unit's asset ID (added 2026-11-18).** The provisioning record gives each unit a `name` (function and number) and a `locid` (a per-site counter;
+the management address ends in it); the device name in the source of truth is the site prefix plus that name. Both describe the slot and stay at a swap. The operator decided on 2026-11-18 that a
+unit also carries an asset ID that the controller issues and never reuses, exchanged with the serial at a swap; nothing of that is built. How a site that is not low-touch carries a `locid` was not
+read.
+- Evidence: `unified-network-controller/docs/architecture/decisions/tech-stack-options-register-20260920_1241.md` (D17, rows 3, 11 and 12); one low-touch site box read on 2026-11-18.
+- Applies to: [Overlap and migration](../../references/addressing-and-ipv6.md#overlap-and-migration).
+
 **D3. Position, not unit; held swap.** Monitoring joins on the Nautobot record ID; a swap is held, then acknowledged by an operator job that moves identity and sends the old unit to Decommissioning.
 - Evidence: `unified-network-controller/docs/field-ownership/field-ownership-model-20260923_1336.md` (section 5).
 - Applies to: [Source of truth and field ownership](../../../skill-systems-architect/references/fleet-management.md#source-of-truth-and-field-ownership).

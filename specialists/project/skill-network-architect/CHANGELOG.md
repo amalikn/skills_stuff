@@ -11,6 +11,13 @@ Kind: log
 
 # Changelog
 
+## 20261118_2124 — Position identity where addressing repeats; APN D3a (v2.3.1 -> v2.3.2)
+
+- `references/addressing-and-ipv6.md`: Learned 2026-11-18, key a position by site and name where sites reuse a prefix; what stays with the position and what moves with the unit; a record outside
+  every site holds no address.
+- `operator/apn/oss-bss-and-fleet-data.md`: D3a, the low-touch `name` and `locid` as the position's identity and the decided asset ID for the unit. From a design review for
+  unified-network-controller (D17), on the operator's instruction to use this pack.
+
 ## 20261110_1248 — APN fleet survey facts in operator/apn (v2.3.0 -> v2.3.1)
 
 - operator/apn/site-boxes-and-platforms.md: Learned 2026-11-10 before "Hangs, power and detection" (bootloader census, nbn_wh writable root, undervoltage, x86 watchdog and write rates, census misses).

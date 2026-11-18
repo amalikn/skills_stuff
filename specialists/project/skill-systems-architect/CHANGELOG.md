@@ -15,6 +15,11 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261118_2124 — Asset identity beside a position-based source of truth (v2.3.10 -> v2.3.11)
+
+- `references/fleet-management.md`: Learned 2026-11-18, an asset ID that moves with the unit; an ID register needs an issue log outside its database to survive a restore; a storage card is an asset
+  that must be erased before it leaves; a no-deletion rule against a one-pass backfill. From a design review for unified-network-controller (D17), on the operator's instruction to use this pack.
+
 ## 20261116_1735 — Remote single-disk conversion: tool limits and per-platform paths (v2.3.9 -> v2.3.10)
 
 - references/edge-appliances.md, Image layout and updates: Learned 2026-11-16 beside the 2026-11-10 conversion entry: upstream tool limits read verbatim

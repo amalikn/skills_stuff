@@ -147,6 +147,25 @@ STRANGLER REPLACEMENT OF A CONTROLLER: adopt by read-back, legacy keeps its keys
 - Replacing a legacy system bit by bit is the strangler fig pattern. VERIFIED_PRIMARY, [strangler-fig], checked 2026-10-29.
 - Never write the legacy controller's control settings while it is in service. Leaving it is a separate decision.
 
+> **Learned 2026-11-18** · asset identity beside a position-based source of truth · VERIFIED_PRIMARY (design review of one project's asset custody design against its running swap code) and
+> UNVERIFIED (nothing of the design is built) · Source: unified-network-controller `docs/architecture/site-model/asset-custody-and-history-design-20261118_2024.md` section 17, commit ee368ffe
+> and the closeout commit after it · Falsifier: an estate where a unit never changes record, or an ID register kept outside the database it describes.
+>
+> When the device record is a position, a unit's own identity (an asset ID) lives on whichever record carries the unit now and is exchanged with the serial at a swap; history that must follow the
+> unit is keyed to that ID, never to the record's key. Three rules the review added: (1) an ID register stored in the same database as its issues is rolled back by a restore while labels printed
+> since still exist, so each issue is also appended to a log outside the database and the counter is set from that log after any restore; (2) a removable storage card is an asset in its own right
+> and holds the box's configuration and keys, so it cannot go for repair or be scrapped without an erase-or-destroy record; (3) a rule that forbids deleting a labelled record meets a one-pass
+> backfill that labels every record, mistakes included: clear suspects before the backfill and allow an approved void afterwards, and read every existing delete path before the rule is switched on.
+>
+> ```text
+> # design excerpt (section 17, S1): the register and a restore
+> issue an ID  -> row in the register (database)  AND  line in the issue log (outside the database, with the off-host backup)
+> restore      -> counter := highest number in the issue log, never the restored table's
+> test         -> restore an older backup, issue one ID, prove it is above every label printed since
+> ```
+>
+> No visual surface: no screenshot.
+
 ## Lifecycle and recovery
 
 - Make the controller host rebuildable from code (image, configuration, bootstrap). Prove it by destroy, rebuild and diff of a site against the earlier state; onboarding from the live network then

@@ -97,6 +97,26 @@ map does, and a byte-for-byte comparison is a valid drift check.
 - Run the layout audits on every routed page in the renderer's tests and assert every list is empty ([layout-audits.md](layout-audits.md)).
 - Give the command line three modes, as UNC does: no flag validates and reports drift (exit 1 on a problem or stale file); `--write` renders; `--list` prints one line per flow and writes nothing.
 
+> **Learned 2026-11-18** · decision pages and proposed flows · VERIFIED_PRIMARY (one project: a decision was recorded in its register through four commits while the map's decision page still
+> said "evaluate"; the project's check passed every time) · Source: unified-network-controller `docs/flows/parts/decisions-access-assets-api.yaml` before and after its closeout commit of 2026-11-18
+> · Falsifier: a project whose check compares each decision page's `decision` and option statuses with its decision register.
+>
+> A decision page is data about decisions, and nothing holds it to the register that owns them: the drift check compares the drawing with the map, and the trace holds flows to code. So a decision
+> taken in the register must be carried into the map in the same pass: the page's `decisions` line, the group's `decision`, each option's `status` (the chosen one, and the others to `rejected`,
+> not left `open`), any proposed component that named a dropped option, and each proposed flow that used it. `reusable_candidate`: a check that reads the register's status line per layer and fails
+> when a decision page for that layer has no `chosen` option.
+>
+> ```yaml
+> # docs/flows/parts/decisions-access-assets-api.yaml after the change (excerpt)
+> decision: "native Nautobot with unc_ownership models (operator 2026-11-18, register D17 rows 1 to 26); the warehouse front end is open: ..."
+> options:
+>   - {id: native, status: chosen}
+>   - {id: baserow, status: rejected}
+>   - {id: inventree, status: evaluate}
+> ```
+>
+> Screenshot: `references/screenshots/20261118-decision-page-after-a-register-decision/`.
+
 > **Learned 2026-10-21** · Options page · VERIFIED_PRIMARY · Source: `scripts/flowmap/options.py`, `tests/test_options_page.py` · Falsifier: a map without `options` whose drawing changes, or an Options page audit fault
 > A map may carry an optional `options` block (schema `$defs/options`): groups (one question each, an optional `decision`) of options (status
 > `chosen`, `evaluate`, `open` or `rejected`; `steps`, `pros`, `cons`) plus free `decisions`. It renders as the page after the Overview: a colour legend, a decision column chained

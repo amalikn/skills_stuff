@@ -16,6 +16,9 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-18 `references/data-first-diagrams.md`: Learned, a decision page is not held to the decision register: carry a register decision into the page, its option statuses, proposed components and
+  proposed flows in the same pass (unified-network-controller); screenshot added
+
 - 2026-11-18 SKILL.md standing rule: a moved public name keeps a re-export at its old module (UNC test broke on `pages.HEAD_LINE_H` after 8a7a276); no re-export added yet
 - 2026-11-17 ASCII work (operator): `ascii-fix` built here (repair existing diagrams; stage 1 checks and snapping; borders with arrows and tees), then
   the ASCII tools, tests, sources and ROADMAP items moved to skill-ascii-diagrams, whose CHANGELOG holds the detail; a pointer stays in SKILL.md.

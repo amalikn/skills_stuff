@@ -95,6 +95,22 @@ IPv4 mirror: site /16-/22 from RFC 1918; segment = measured hosts + growth;
 - Renumbering: stage secondary addresses, update reservations, DNS, rules and monitoring, keep the old path until acceptance.
 - Lower DNS TTLs before renumbering. Keep current internet defaults unless the approved plan changes them.
 
+> **Learned 2026-11-18** · identifiers at sites whose addressing repeats · VERIFIED_PRIMARY (one low-touch site box read; an estate with one IPAM namespace per site) · Source:
+> unified-network-controller
+> `docs/architecture/site-model/asset-custody-and-history-design-20261118_2024.md` section 17 (N1 to N3) · Falsifier: an estate whose management addresses are unique across sites.
+>
+> Where sites reuse the same management prefix, an address or a per-site counter never identifies a position alone: key a position by site and name, and keep the counter as an attribute. Name,
+> DNS record, management address, VLAN and port, links and the monitoring join belong to the position; serial, MACs, asset ID and components belong to the unit. A record parked outside every site
+> (a warehouse, a vehicle, a repairer) holds no address and no DNS record, and a check should report any that does.
+>
+> ```text
+> # design excerpt (section 17, N2): what moves at a swap
+> stays with the position : name, DNS/RPZ record, management address, VLAN and port, links, monitoring join
+> moves with the unit     : asset ID, serial, MACs, components
+> ```
+>
+> No visual surface: no screenshot.
+
 ```text
 Overlapping offices joined through translated prefixes
 +-----------------------+   +---------------------+

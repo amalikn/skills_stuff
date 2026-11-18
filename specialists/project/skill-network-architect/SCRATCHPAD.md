@@ -12,6 +12,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- **20261118_2124** v2.3.2: `references/addressing-and-ipv6.md` gained the position-identity entry and `operator/apn/oss-bss-and-fleet-data.md` item D3a, from a design review for unified-network-controller (D17) that the operator asked this pack to do; nothing else changed.
+
 - 20261110_0025: v2.3.0: write-back from smc-resiliency S1 (bench Pi 4) and the APN operator context extended (see CHANGELOG 20261110_0025); not pushed until the operator's closeout push.
 
 - v2.2.0: research-deepened, source-checked references on one backbone; 21 references, 19 templates with filled examples, 11 helpers;
