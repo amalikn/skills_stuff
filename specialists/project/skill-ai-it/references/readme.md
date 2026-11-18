@@ -28,6 +28,6 @@ Last reviewed: 2026-11-11
 - [pad-workspace.md](pad-workspace.md) (63 lines) The Pad workspace question at bootstrap and refresh; repos sharing a workspace.
 - [package-layout.md](package-layout.md) (78 lines) Skill package layout.
 - [phases-1-3.md](phases-1-3.md) (114 lines) Phases 1 to 3: inventory, understand, infer.
-- [pitfalls.md](pitfalls.md) (163 lines) Pitfalls observed in practice.
+- [pitfalls.md](pitfalls.md) (179 lines) Pitfalls observed in practice.
 - [target-map-and-timeline.md](target-map-and-timeline.md) (219 lines) Target map, plan timeline and the plan tracker page: generated trackers, id links, anchor checks, adoption, wiring.
 - [script-task-inventory.md](script-task-inventory.md) (224 lines) Script and task inventory.

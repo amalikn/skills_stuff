@@ -161,3 +161,19 @@ invocation half.
 > The markdown hook re-wraps the whole file at 200 columns on every Edit or Write, not only the edited lines. In a file with long unwrapped lines
 > and a line budget, or with generated blocks guarded by a content hash (skill-pad tracker markers), make the change from Bash (a short Python
 > replace), which the hook does not touch, and check the line count before committing.
+
+> **Learned 2026-11-18** · govern and budget_plan on a navigation block with no version marker · VERIFIED_PRIMARY (observed) · Source: of-si refresh,
+> `templates/justfile` govern (runs the upgrade only when AI_NAVIGATION.md has `skill-ai-it-version`) and `scripts/records/budget_plan.py` (hinted
+> the upgrade for any non-compact block); the upgrader's dry run said REFUSED · Falsifier: govern upgrading a block that has no version marker.
+> A hand-edited or legacy navigation block (no `skill-ai-it-version:` marker) is skipped by govern and refused by the upgrader, yet budget_plan told
+> the operator to run the upgrade first, with a bare `python` that is 3.9 without PyYAML on this Mac. budget_plan now says the block is skipped and
+> must be reviewed by hand under refresh. A dry run there also warned that merging `update_rules` re-serialises context-map.yaml and loses its
+> comments: review that diff before any apply.
+>
+> ```python
+> # scripts/records/budget_plan.py (2026-11-18)
+> if "skill-ai-it-version" in text:
+>     print("  first: <python 3.11+ with PyYAML> .../upgrade_navigation_control_layer.py --project-root . --dry-run ...")
+> else:  # govern skips a block with no version marker and the upgrader refuses it
+>     print("  navigation block has no skill-ai-it-version marker (hand-edited or legacy): ... review it by hand under /skill-ai-it refresh")
+> ```

@@ -325,7 +325,12 @@ def main(argv: list[str] | None = None) -> int:
             text = p.read_text()
             if ("skill-ai-it:navigation" in text and "skill-ai-it-version: 2026-10-10-compact" not in text
                     and "skill-ai-it:manual" not in text):  # a project-owned block is never replaced (jdm, 2026-10-10)
-                print("  first: python <skill-ai-it>/scripts/navigation/upgrade_navigation_control_layer.py --project-root . (the managed block is now compact)")
+                if "skill-ai-it-version" in text:
+                    print("  first: <python 3.11+ with PyYAML> <skill-ai-it>/scripts/navigation/upgrade_navigation_control_layer.py --project-root . --dry-run"
+                          " (the managed block is now compact)")
+                else:  # govern skips a block with no version marker and the upgrader refuses it (2026-11-18)
+                    print("  navigation block has no skill-ai-it-version marker (hand-edited or legacy): the upgrader refuses it and govern skips it;"
+                          " review it by hand under /skill-ai-it refresh")
             for k, (head, n) in enumerate(reference_like(text)[:3], 1):
                 slug = name[:-3].lower().replace("_", "-")
                 print(f"  suggest (confirm it is reference, not rules): just move-sections --source {name} "

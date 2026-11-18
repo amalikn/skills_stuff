@@ -35,6 +35,7 @@ Last rotated: 20261112_1656
 
 ## Unreleased
 
+- 2026-11-18 `scripts/records/budget_plan.py`: a navigation block with no `skill-ai-it-version` marker is reported as skipped by govern and refused by the upgrader, not hinted for an upgrade that cannot run; references/pitfalls.md Learned (from of-si).
 - 2026-11-17 `templates/skill-pack/tests/test_package_contract.py.tmpl` registers the checker in `sys.modules` before loading it (`@dataclass` failed); references/new-skill.md Learned (from skill-ascii-diagrams, 71b26f9).
 - 2026-11-17 `scripts/records/rotate_records.py` never rotates a CHANGELOG's `## Unreleased` (git blame dated the heading oldest); test reproduces it; references/files-records.md Learned (7f8791b).
 - 2026-11-16 references/target-map-and-timeline.md Learned: a CHANGELOG entry naming a target's mention after its review stops the render until the target is reviewed (smc-resiliency write-back).
