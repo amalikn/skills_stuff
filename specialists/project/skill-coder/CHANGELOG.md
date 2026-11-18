@@ -29,6 +29,8 @@ Last rotated: 20261118_1557
 
 ## Unreleased
 
+- 2026-11-18 write-back from apn smc-resiliency (staleness audit 20261118_1715): references/design-patterns.md P-76 (refuse a repeated key when loading YAML;
+  `get_single_data()` instead of a suppressed S506).
 - 2026-11-18 write-back from apn enterprise-strategy and smc-resiliency (chat 6128bdd9): references/design-patterns.md P-74 (add what a generator cannot write after it saves; prove it in
   the consuming application: slide motion and PowerPoint's own report) and P-75 (learn a person's hand edits: diff against the last build, sort by rule, make habits defaults).
 - 2026-11-17 write-back from ansible-wifi (chat f516e57d): languages/ansible/learned-execution.md Learned 2026-11-17 (n) (note unfinished hosts, fail them in the wrapper's

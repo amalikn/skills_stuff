@@ -110,6 +110,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-73 | A fault put into the standby side, always taken out, with a hard reset the harness owns | A fault case that can leave the target unbootable, or wait for a person to pull the plug |
 | P-74 | Add what the generator cannot write after it saves, and prove it in the consuming application | A format feature the library lacks (slide motion), where a still render cannot prove it |
 | P-75 | Learn a person's hand edits: diff against the last build, sort by rule, make habits defaults | Generated artifacts a person retouches by hand before every use |
+| P-76 | Refuse a repeated key when loading YAML | Any hand-edited YAML a program reads as data (contracts, catalogues, configs) |
 
 ## Patterns
 
@@ -1873,4 +1874,42 @@ def classify(before: list[str], after: list[str]) -> tuple[str, str]:
   if _flat(before).replace(",", "") == _flat(after).replace(",", ""):
     return "comma", "DS5"
   return "wording", ""
+```
+
+### P-76 Refuse a repeated key when loading YAML
+
+> **Learned 2026-11-18** · Python, any YAML read as data · VERIFIED_PRIMARY (a contract carried two `status_note` keys for a day; the strict loader refused it, red and green) ·
+> Source: apn smc-resiliency `scripts/icd/contract.py` (`_UniqueKeyLoader`, `_unique_mapping`, `_load_yaml`), staleness audit 20261118_1715 ·
+> Falsifier: a YAML file with a repeated key in one mapping that `_load_yaml` parses without error.
+
+Problem: YAML's specification says mapping keys are unique, but PyYAML's `safe_load` keeps the last of two equal keys without a word, so a hand edit that adds a key a second time silently
+drops the first value, and every check built on the loaded data passes. Solution: Load through one seam that subclasses `SafeLoader` and replaces the mapping constructor with one that
+raises on a key already seen in that mapping, naming the key and line; every reader of the data goes through that seam. Why it works: The loss happens inside the parser, so only the
+parser can see it; refusing there makes the defect loud at the first load, in every tool and test that reads the file. Reuse: config files, catalogues and registries edited by hand;
+Ansible-style variable files read by your own tools; any YAML-as-data contract. Pitfalls: Calling `yaml.load(..., Loader=...)` trips security linters (S506) though the loader is safe; use
+`loader.get_single_data()` and `dispose()` instead of silencing the linter. Merge keys (`<<`) need handling if the files use them. A restore-by-copy in a negative test bumps the file's
+mtime, so mtime-based derived checks then fail; re-render (or touch after the renderer reports it current).
+
+```python
+# smc-resiliency scripts/icd/contract.py (staleness audit 2026-11-18)
+class _UniqueKeyLoader(yaml.SafeLoader):
+  """PyYAML's safe loader, refusing a mapping that repeats a key."""
+
+def _unique_mapping(loader, node, deep=False):
+  seen = set()
+  for key_node, _ in node.value:
+    key = loader.construct_object(key_node, deep=deep)
+    if key in seen:
+      raise ValueError(f"duplicate key {key!r} at line {key_node.start_mark.line + 1}")
+    seen.add(key)
+  return loader.construct_mapping(node, deep=deep)
+
+_UniqueKeyLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _unique_mapping)
+
+def _load_yaml(path):
+  loader = _UniqueKeyLoader(path.read_text(encoding="utf-8"))
+  try:
+    return loader.get_single_data()
+  finally:
+    loader.dispose()
 ```

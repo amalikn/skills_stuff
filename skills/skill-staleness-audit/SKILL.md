@@ -349,6 +349,18 @@ Both hit this skill's own runs on 2026-09-27; details in the markdown governance
 - **The Phase 4 gate counts filled rows, not judgements** (2026-10-27, skill-ai-it): 22 test files given one stock line by a script passed it;
   a side agent caught it. Write each verdict from that file's own evidence (what it loads, whether it reads the clock or the live tree,
   what it does not cover); for tests, profile each file before writing its row.
+- **A stamp search must skip generated blocks** (2026-11-18, smc-resiliency): a decision check that looked for a stamp anywhere in the plan tracker counted the
+  tracker's generated Stages table, which restates the target map, so a decision passed as recorded while the design never got it. Strip `BEGIN/END GENERATED`
+  blocks before searching, and derive "governing" from the project's own follow-or-input table rather than a whole folder.
+- **The gate's strict YAML parse sees what the project cannot** (2026-11-18, smc-resiliency): a contract YAML carried a repeated key for a day; PyYAML's `safe_load`
+  kept the last one silently and 1250 project checks passed. Move a duplicate-key loader into the project's own seam (skill-coder P-76) as the Phase 5 check.
+- **Editing a large governed Markdown file with the Edit tool lets the wrap hook re-lay-out its tables** (2026-11-18, smc-resiliency): a three-line addition became a
+  552-line diff in a governing design. Restore from HEAD when it was clean, re-apply by script (which the hook does not see), and wrap your own prose to the limit by hand.
+- **A negative test that restores by copy bumps the file's mtime** (2026-11-18): mtime-based derived checks ("older than its input") then fail on an unchanged file;
+  re-render, or touch the output after the renderer reports it current.
+- **Coverage and claim-scan gaps seen** (2026-11-18, smc-resiliency): `coverage_manifest.py` leaves systemd `.timer` units, `Vagrantfile` and extensionless template
+  lists unclassified; `claim_scan.py` reports as BROKEN the paths a YAML source writes relative to the folder its rendered view lives in. Classify and triage by hand
+  until the rules learn them.
 - **An unquoted heredoc (`<<EOF`) runs every backticked word as a command.** Write markdown with `<<'EOF'`, or with the Write tool, and read the result back.
 
 ## Skill package layout
