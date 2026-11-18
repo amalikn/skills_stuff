@@ -126,6 +126,9 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Audit and preflight
 
+- [ ] `scripts/records/rotate_records.py`: archives it writes lack `Authority` and `Scope`, which skill-pad's governance requires (front-matter check failed on
+  `docs/history/changelog/changelog-20261118_2149.md`, fixed by hand; reported from continuum 2026-11-18). Write both keys (Authority: record; Scope: <project> <record> entries rotated out on <stamp>).
+
 - [ ] (2026-11-05) `budget_plan.py --apply` audit reports `LOST` SCRATCHPAD lines (85 in local-knowledge ansible-wifi-root-governance, 6 in skill-smc) and exits 1, yet every line of the committed SCRATCHPAD and CHANGELOG is still in the files or `docs/history/` (checked line by line, whitespace-normalised); skill-smc's SCRATCHPAD was not even changed. The audit seems to compare against an older baseline: find what it compares and stop the false fail.
   Recurred 2026-11-06 15:55 (ansible-wifi-root-governance, same 85): the only changed old line was the front-matter `Last rotated`; every other line of the committed SCRATCHPAD was found in SCRATCHPAD.md or `docs/**` (whitespace-normalised). Exit 1 again; `just check` passed.
 - [ ] **`upgrade_navigation_control_layer.py` writes without `--apply`** (found 2026-10-21, unified-network-controller): it writes unless

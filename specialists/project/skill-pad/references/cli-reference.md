@@ -83,6 +83,11 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > `pad item block <source> <target>` means source blocks target, the reverse of "block TASK-14 by TASK-12". To say the spike blocks the re-estimate, run `pad item block TASK-12 TASK-14`; read
 > the printed sentence, and undo a wrong one with `pad item unblock <source> <target>`.
 
+> **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad item list decisions --format json` returned `[]` right after a create; with `--all` it returned the item
+> (status `accepted`, a terminal option) · Falsifier: a default list that shows terminal-status items.
+> `pad item list` leaves out items whose status is terminal, so a sync that matches existing items must pass `--all` or it creates duplicates. The list JSON carries no body; read it with
+> `pad item show <ref> --format json` (`content`).
+
 > **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY (unified-network-controller and smc-resiliency) · Source: `pad item update --help`, CLI
 > errors · Falsifier: a release that accepts these writes or lists disabled items by default. `pad item update --fields-json` refuses the `convention` key ("system metadata ... BUG-2627"): set
 > `trigger`, `status`, `commands` and Pad rewrites its own `convention` block. `pad item list conventions` hides disabled items; add `--all` (a disabled template rule looks deleted). `--fields-json`

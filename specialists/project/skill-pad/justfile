@@ -63,6 +63,11 @@ conventions *ARGS: _require-venv
 export *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_export.py" {{ARGS}}
 
+# Mirror the current folder's decisions (.kc ledger and decision log) into its workspace's `decisions` collection: plan by default, --apply writes to Pad.
+[no-cd]
+decisions *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_decisions.py" {{ARGS}}
+
 # [read-only for projects] Pad upgrade test: rewrite a scratch .pad.toml through `pad workspace switch` and report what Pad kept (run before a new Pad version is used): just pad-toml-probe <slug> <other-slug>
 [positional-arguments]
 pad-toml-probe *ARGS: _require-venv

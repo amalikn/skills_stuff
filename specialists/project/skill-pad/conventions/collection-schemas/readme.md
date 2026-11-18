@@ -18,5 +18,6 @@ Use with `pad collection create "<Name>" --schema @<file> --icon <icon> --layout
 | `bugs.json`             | Bugs             | fixed, wont-fix (wont-fix)      | web template Bug Tracker, plus tracker_id, section, order            |
 | `feature-requests.json` | Feature Requests | shipped, declined (declined)    | web template Feature Requests (declares none), plus section, order   |
 | `tech-debt.json`        | Tech Debt        | resolved                        | web template Tech Debt (declares none), plus section, order          |
+| `decisions.json`        | Decisions        | accepted, superseded, rejected (rejected) | web template Decisions, plus decision_ref and recommendation; filled by `scripts/pad_decisions.py` |
 
 `section` and `order` let `scripts/pad_tracker.py` rebuild the Markdown tracker files exactly. Templates: [../../references/upstream/v0.19.2/web_src_lib_components_collections_collection-templates.ts](../../references/upstream/v0.19.2/web_src_lib_components_collections_collection-templates.ts).

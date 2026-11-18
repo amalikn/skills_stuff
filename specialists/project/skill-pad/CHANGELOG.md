@@ -9,10 +9,17 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261111_1224
+Last rotated: 20261118_2149
 ---
 
 # Changelog — skill-pad
+
+## 20261118_2149 — pad_decisions.py and a Decisions schema
+
+- `scripts/pad_decisions.py` (`just decisions`, test `tests/test_pad_decisions.py`): mirrors a project's curator ledger and decision log into a `decisions` collection, one item per
+  decision with every version; matched on `decision_ref`, changed bodies rewritten. `conventions/collection-schemas/decisions.json`. From continuum (operator, 2026-11-18: decisions out of
+  versions.toml into a dedicated Pad section).
+- references/cli-reference.md trap: `pad item list` hides closed statuses (accepted is closed in this schema); pass `--all` to see them.
 
 ## 20261118_2129 — 0.21.0 string flags need =value; continuum workspace set up
 
@@ -183,17 +190,3 @@ Last rotated: 20261111_1224
 - `docs/pad-usage-guidelines-proposal-20261110_1628.md` (was under references/; operator: "move this under docs folder"): links repointed to
   `../references/`; ASCII diagrams added for Pad over the trackers, the ask lifecycle, and session start when Pad is down. Pointers in SKILL.md,
   README, AGENTS and SCRATCHPAD updated.
-
-## 20261110_1659 — usage proposal reviewed and rewritten; archcore, lint and repomix
-
-### Added
-
-- `.archcore/` (archcore init) with three ADRs (own skill, no plugin; rewrite not vendor; live feed via Monitor) and `index.guide.md`, pointing at ARCHITECTURE.md Key decisions.
-- `.markdownlint-cli2.jsonc` (mirror excluded), `repomix.config.json`, `.gitignore` for `.ai-context/` (operator: gitignore).
-- cli-reference.md Traps: a `--fields` status select has no closed states, so custom words such as `answered` never close.
-
-### Changed
-
-- `references/pad-usage-guidelines-proposal-20261110_1628.md` moved back from the pack root and rewritten (operator: "rewrite it"): closable Asks schema via
-  `--schema` and `--tracks-work false`, site names removed, one joint trial review through UNC TASK-20, no tracker-ID tags, dates in fields, status apart
-  from the claim, degraded mode and restore test, tracker drift as a script. Still a draft; routed from SKILL.md as not in force.
