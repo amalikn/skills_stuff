@@ -197,6 +197,16 @@ def classify(cmdline, held):
 > return RollbackOutcome("rolled_back", "reachable")
 > ```
 
+> **Disputed 2026-11-18 (same day, by the session that wrote the entry below)** · Conflicts: the Learned 2026-11-18 entry that follows · VERIFIED_PRIMARY (on a copy of the committed file:
+> `table-reflow --unwrap` of the original and of the hook's output give identical tables, 383 rows and 0 differing; prose identical word for word; the hook's output unchanged when run twice) ·
+> Source: unified-network-controller CHANGELOG 20261118_2101 · Falsifier: an unwrap comparison that differs.
+>
+> The entry below calls the rewrite damage ("bold spans split across table cells"). It was not: the hook closes and reopens bold on each wrapped line of one cell, and the re-wrap was lossless. The
+> true finding is that the committed file was not in the formatter's normal form, so one edit re-wrapped all of it. A token comparison cannot tell a re-wrap of a table from damage, because a table
+> wraps column by column and the token order changes; compare the tables un-wrapped, row by row and cell by cell, and the prose word by word. What stands from the entry below: compare the diff's
+> size with the edit's, and do not accept or condemn a whole-file reflow before proving which it is. What does not stand: "restore and apply outside the hook" as the default, since that keeps the
+> file out of normal form and repeats the surprise at the next edit; a reflow proven lossless is committable.
+
 > **Learned 2026-11-18** · any language, files rewritten by a post-edit formatter hook · VERIFIED_PRIMARY (one edit of three strings in a 1,400-line governed markdown file came back as 315
 > lines added and 304 removed; a whitespace-insensitive token comparison with HEAD found 52 changed blocks, among them bold spans split across table cells) · Source: unified-network-controller
 > CHANGELOG 20261118_1947, commit b54b707e · Falsifier: a formatter that is idempotent on the committed file, so an edit's diff is the edit.

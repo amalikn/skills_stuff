@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261118_1557
+Last rotated: 20261118_2102
 ---
 
 # Changelog
@@ -23,11 +23,12 @@ Last rotated: 20261118_1557
 - [20261101_2307 — Learned: a predicate answering a second question](#20261101_2307--learned-a-predicate-answering-a-second-question)
 - [20261101_1937 — Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits](#20261101_1937--learned-jinja-dict-keys-through-json-filtered-loop-index-folded-newlines-crlf-edits)
 - [20261101_0103 — Gate output in recipes](#20261101_0103--gate-output-in-recipes)
-- [20261030_1721 — Pattern P-47 (decide once from facts, persist it); Learned: run_once set_fact freezes templates, 2.21 Jinja quirks](#20261030_1721--pattern-p-47-decide-once-from-facts-persist-it-learned-run_once-set_fact-freezes-templates-221-jinja-quirks)
 
 ---
 
 ## Unreleased
+
+- 2026-11-18 `references/safety-and-writes.md`: Disputed, the same day's formatter-hook entry called a lossless re-wrap damage; compare tables un-wrapped cell by cell, not by tokens; a proven-lossless reflow is committable (unified-network-controller)
 
 - 2026-11-18 `references/safety-and-writes.md`: Learned, a post-edit formatter hook rewrote a governed file far beyond the edit; compare tokens with HEAD, restore, re-apply by guarded exact replacement (unified-network-controller)
 
@@ -189,11 +190,3 @@ Learned 2026-11-01 in `languages/ansible.md`, from ansible-wifi smc_change.
 ## 20261101_0103 — Gate output in recipes
 
 - `references/testing.md`: Learned 2026-11-01, a gate must keep its output in the recipe (Continuum).
-
-## 20261030_1721 — Pattern P-47 (decide once from facts, persist it); Learned: run_once set_fact freezes templates, 2.21 Jinja quirks
-
-Learned 2026-10-30 (ansible-wifi chat 0a7b835b, smc_change conditions and loop, local-knowledge-ansible 7ef59c7) in `references/design-patterns.md` P-47 and `languages/ansible.md` (d: a run_once
-`set_fact` renders host templates once, use a lookup-backed default; e: empty macro returns None, boolean `when`, no `length` test, JSON out of Jinja blocks).
-
-- `references/design-patterns.md`: Learned 2026-10-30, P-47
-- `languages/ansible.md`: Learned 2026-10-30 (d), (e)
