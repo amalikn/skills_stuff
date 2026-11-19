@@ -11,6 +11,11 @@ Kind: log
 
 # Changelog
 
+## 20261120_0255 — APN: a bench Pi needs the field's uplink shape, not an untagged LAN lease (v2.3.6 -> v2.3.7)
+
+- `operator/apn/site-boxes-and-platforms.md` lab-proof entry 41: the field interface-activation hook loops when untagged eth0 gets a DHCP lease on the
+  bench; carry internet on tagged VLAN 522 as a site does (smc-resiliency B20-02, lab test record 27).
+
 ## 20261119_2214 — Containers: isolating CI jobs on a developer Mac (v2.3.5 -> v2.3.6)
 
 - `references/datacenter-cloud-containers.md` Learned 2026-11-19: host.docker.internal exposes loopback-published Mac services to any bridge; an internal network plus an

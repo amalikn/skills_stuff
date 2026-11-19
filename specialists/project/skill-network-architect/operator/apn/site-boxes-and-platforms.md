@@ -311,6 +311,15 @@ Recent decisions or `SMC/docs/history/`.
       `references/07_hardware-overlay.md` (the warehouse field image)
     - Applies: [Supply and configuration chain](../../../skill-systems-architect/references/provisioning-and-lifecycle.md#supply-and-configuration-chain)
 
+41. A bench Pi needs the field's uplink shape, not a LAN lease on untagged eth0 (20261120, B20-02): the field hook bounces eth0 and vlan522 on every
+    networkd "configured" event, which never recurs in the field (no DHCP on untagged eth0, internet on VLAN 522 from the modem) but loops on a bench
+    LAN that answers DHCP untagged (eth0 down 29 times a minute, NTP and Teleport lost). The bench should carry internet to the Pi on tagged VLAN 522,
+    as a site does; until then a bench card runs with the hook disabled and `smc_network` skipped.
+    - Why: a bench uplink unlike the field's changes control-plane behaviour, not only timing (rule bench-link-is-not-the-field).
+    - Evidence: `SMC/docs/overview/smc-lab-test-record-20261107_1931.md` (section 27); `SMC/docs/trackers/bug-tracker.md` (B20-02); skill-smc
+      `references/06_failure-modes.md` (interface-activation hook loop)
+    - Applies: [Supply and configuration chain](../../../skill-systems-architect/references/provisioning-and-lifecycle.md#supply-and-configuration-chain)
+
 ## Withheld evidence paths
 
 - The flash-wear executive summary under `APN/smc-file-writing-analysis/docs/audits/` carries a site or node code in its file name; it is cited by folder only (item 5).

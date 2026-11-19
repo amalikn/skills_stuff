@@ -327,6 +327,17 @@ DURABLE JOB STATE ON THE BOX: controller reconciles, never presumes
   and classify each outage with boot evidence before blaming connectivity.
 - Run boxes in UTC; apply a per-site zone only in schedules and reports.
 
+  > **Learned 2026-11-20** · hardware watchdog timeout against storage stalls · VERIFIED_PRIMARY (bench Pi 4, field image, serial console and
+  > journal) · Source: smc-resiliency lab test record 27, Pad BUG-101 · Falsifier: a box with a stalling card that never misses a 15 s feed under load
+  > - A short hardware watchdog also resets a box that is only stalled. With `RuntimeWatchdogSec=15` (the Pi watchdog's ceiling), a card that
+  >   timed out on DISCARD (`mmc_erase: erase error -110`, `Card stuck being busy!`) left PID 1 blocked past its feed during an Ansible run; the
+  >   bootloader reported a watchdog reset (`PM_RSTS` 0x20) and no panic was printed. The timeout cannot be raised past the hardware's maximum,
+  >   so treat media that stall that long as a storage fault to detect and report (erase and I/O errors in telemetry), not a timeout to tune.
+  > - Separate the two halves when proving a freeze fix: `kernel.panic=N` alone must reboot a crashed kernel (watchdog off for that case), and
+  >   the watchdog alone must reset a frozen userspace (SCHED_FIFO 99 loops on every CPU with RT throttling off starve PID 1 while the kernel stays
+  >   up). A test with both on cannot say which one acted.
+  > - A deliberate crash drops the page cache: `sync` before any fault test, or a recent boot-file edit is lost (a FAT cmdline.txt came back 0 bytes).
+
 ## Telemetry spool and time
 
 ```text
