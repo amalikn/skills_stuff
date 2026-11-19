@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261119_1539 — Local container networks reach host loopback (v2.3.3 -> v2.3.4)
+
+- `references/security-and-segmentation.md`: Learned entry from continuum-app (b6dbded): on OrbStack a container's own bridge network reaches every 127.0.0.1-published Mac service through host.docker.internal; probe before trusting it as isolation.
+
 ## 20261119_1325 — WireGuard-based overlays compared for a small self-hosted estate (v2.3.2 -> v2.3.3)
 
 - `references/wan-and-remote-access.md`: Learned 2026-11-19 from Continuum DL-019: plain WireGuard, NetBird ports and licences, Headscale with closed Tailscale GUI clients, Firezone self-hosting stance.

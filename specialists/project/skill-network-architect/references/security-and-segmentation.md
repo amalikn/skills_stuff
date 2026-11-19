@@ -209,6 +209,14 @@ Each limit, its consequence, the design response and the evidence:
 Change rules: precompute the semantic rule diff, keep old policy and OOB access, canary the smallest scope. Test from real sources (wired, each SSID, VPN, each site type), both families, new and
 established sessions, DNS, NAT and return path. Log without capturing credentials or needless payload. Never disable host-key checks or bypass authentication to make automation pass.
 
+> **Learned 2026-11-19** · Local container networks and host loopback (OrbStack) · VERIFIED_PRIMARY (probe) · Source: continuum-app `scripts/ci_network_probe.sh` (b6dbded)
+> · Falsifier: the same probe showing host.docker.internal closed for loopback-published ports.
+> A container on its own user-defined bridge network is not isolated from the developer machine: on OrbStack, `host.docker.internal` reaches every service the Mac publishes on
+> 127.0.0.1 (databases, a dev secrets store, an identity provider), while the bridge gateway address does not. A local CI runner (act) that executes third-party build code on such a
+> network can therefore talk to those services. Treat "own network" as no boundary on a developer machine: probe what a job can reach (`nc -z` from a throwaway container to each
+> loopback-published port via host.docker.internal and the gateway), and isolate with an internal network or a separate runtime when the reachable set includes secrets.
+> The same mechanism serves the reverse need: an OrbStack Linux machine reaches the Mac's loopback services as `host.orb.internal`, though the Mac itself cannot resolve that name.
+
 ## Worked example
 
 Question: which guest-SSID abuse path ranks first at a branch, and how many tests does its zone matrix need?
