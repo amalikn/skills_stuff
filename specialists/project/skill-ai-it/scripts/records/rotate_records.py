@@ -634,7 +634,9 @@ def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: 
         The archive text.
     """
     dates = sorted(u.when for u in moved if u.when)
-    arc = ["---", f"Title: {title} archive {stamp_now}", "Category: archive", "Status: archived", f"Source: {live}",
+    # Authority and Scope: the governance front-matter standard requires them; a project's check failed on an archive without them (skill-pad, 2026-11-19).
+    arc = ["---", f"Title: {title} archive {stamp_now}", "Category: archive", "Status: archived", "Authority: record",
+           f"Scope: Entries rotated out of {live}, verbatim", f"Source: {live}",
            f"Covers: {dates[0]:%Y-%m-%d %H:%M} to {dates[-1]:%Y-%m-%d %H:%M}", f"Last reviewed: {now:%Y-%m-%d}",
            f"Summary: {len(moved)} entries rotated out of {live} on {stamp_now} to keep it within its budget; verbatim except relative links."
            " Read the index first; open an entry only when a live record cites it or the history is the question.", "---", "",

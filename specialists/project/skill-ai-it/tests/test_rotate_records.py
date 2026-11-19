@@ -94,6 +94,8 @@ class RotateTest(unittest.TestCase):
             lines += [f"### 2026-0{1 + i % 8}-1{i % 10} — thread {i}", "", f"paragraph {i}", "", "", ""]
         _live, archive = self.rotate("SCRATCHPAD.md", "\n".join(lines) + "\n")
         self.assertNotIn("\n\n\n", archive)
+        self.assertIn("\nAuthority: record\n", archive)
+        self.assertIn("\nScope: Entries rotated out of SCRATCHPAD.md, verbatim\n", archive)
         self.assertTrue(archive.endswith("\n") and not archive.endswith("\n\n"))
 
     def test_a_dated_prose_subsection_rotates_whole(self):
