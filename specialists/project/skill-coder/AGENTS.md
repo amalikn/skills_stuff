@@ -8,6 +8,7 @@ Last reviewed: 2026-11-19
 Summary: >-
   Agent guidance for maintaining and using skill-coder: artifact roles, the runtime rule for its helpers, the code map, the write-back obligation
   and the gates to run before calling work complete.
+Budget: 150 lines, 12 KB
 ---
 
 @../../../AGENTS.md
@@ -83,7 +84,7 @@ rule stays in that project. The calling session owes this whether or not its pro
 
 ## Governance coherence checks
 
-This project's governance claims are executable. [`scripts/check_governance.py`](scripts/check_governance.py) turns them into assertions and `<RUNNER CHECK COMMAND>` gates on them. It is stdlib-only
+This project's governance claims are executable. [`scripts/check_governance.py`](scripts/check_governance.py) turns them into assertions and `just check` gates on them. It is stdlib-only
 and exits non-zero on any failure.
 
 **Run it before claiming any durable change is complete**, and after any change that adds, moves, renames, or retires a file. It is cheap and it is the only thing standing between this project's

@@ -43,7 +43,7 @@ Detail and order: UNC's [retirement assessment](/Volumes/Data/_ai/_project/proje
   1686; design-principles.md 48; engine-composition.md 188; testing.md 313 and 318; tooling-and-runtime.md 81). Some look well formed, so check the parser's header join (six lines, " ·" at a line end)
   before rewriting entries. design-patterns.md P-65 (2026-11-10) only lacked its `· Source:` field and was fixed in the same closeout. **State 2026-11-19 (full scan, not first failure):** 13 malformed
   headers (languages/rust.md 61, `(recurred)` is not a one-letter suffix; design-patterns.md 1101, 1119, 1330, 1344, 1362, 1382; design-principles.md 48; engine-composition.md 162;
-  generated-artifacts.md 97; refactoring-and-promotion.md 135; testing.md 304; tooling-and-runtime.md 99) and 5 entries with no CHANGELOG line (design-patterns.md 2026-11-05 ×2, errors-and-timeouts.md
+  generated-artifacts.md 97; refactoring-and-promotion.md 135; testing.md 304; tooling-and-runtime.md 99) and 6 entries with no CHANGELOG line (design-patterns.md 2026-11-05 ×2, errors-and-timeouts.md
   2026-11-10, generated-artifacts.md 2026-11-12, security.md 2026-11-09 ×2). testing.md also repeats labels (2026-10-20 (b), 2026-11-02, 11-08, 11-09, 11-18 twice each). Line numbers drift; rescan
   before fixing.
 - [ ] **Ansible and YAML size** — `code_size.py` measures no `.yml` files; decide a task-file limit once `languages/ansible.md` has a source.

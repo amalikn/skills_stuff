@@ -6,6 +6,7 @@ Authority: local-supplement
 Scope: Context entrypoint for AI agents in skill-coder
 Last reviewed: 2026-11-16
 Summary: Where project truth lives, what to read first, what is authoritative and what must be updated after work; a router, not the knowledge store.
+Budget: 150 lines, 12 KB
 ---
 
 # AI Navigation — skill-coder
@@ -49,7 +50,7 @@ archives. `SCRATCHPAD.md` is transient unless marked `KEEP` or promoted.
 ## Project context files
 
 High: `AGENTS.md`, `CLAUDE.md`, this file, `context-map.yaml`; highest when present: `.archcore/`. Medium-high: `CHANGELOG.md`, `ARCHITECTURE.md`, `ROADMAP.md`. Medium: `memory-bank/`. Low:
-`SCRATCHPAD.md`. On need only: `docs/history/` (rotated records, `just history <term>`) and `docs/trackers/` (open items). Generated, never truth: `.ai-context/`. Full table:
+`SCRATCHPAD.md`. On need only: `docs/history/` (rotated records, one folder per kind; `just history <term>`) and `docs/trackers/` (open items). Generated, never truth: `.ai-context/`. Full table:
 [reference](/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it/patterns/navigation/read-order-and-sources.md#project-context-files).
 
 ## Task routing
