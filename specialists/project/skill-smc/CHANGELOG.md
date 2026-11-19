@@ -51,6 +51,7 @@ Last reviewed: 2026-10-27
   also gains the 2026-10-20 netplan entry it lacked.
 - Ref 13: Bitbucket entry, fleet trust not rolled out (records show alkngarrija-smc01 only; Pad TASK-21). Earlier the same day: "Now live" entry (`743576a2`).
 - Ref 18: the smc_bases converge-and-skip plan and the ansible-wifi Pad workspace links (this pack has its own `.pad.toml`, `45d20393`).
+- Ref 13 (18:45): smc_change tstik runs depend on the branch: rise (old address) fails every clone and rollback, iridium fails where known_hosts lacks ssh.bitbucket.org.
 
 ## 20261119_1650 — Periodic review; 90-day window; identifiers redacted; smc_update_php.yml retired (v0.15.7 -> v0.15.8)
 

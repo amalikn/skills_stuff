@@ -1757,6 +1757,18 @@ match supplied host pattern`. A `-l` of that host alone stops with "no hosts to 
     13:19). smc_bases adds the `ssh.bitbucket.org` line only on a build, so SMCs in service most likely still lack it, and their next clone from the new address (the rct-tstik-iridium-update spec
     reads the smc_bases repo variables) fails with "Host key verification failed". Read before the next Iridium or tstik batch: `just trust <hosts>` in `files/changes/bitbucket-ssh-hostname/`
     (read-only, 3 lines per name when done); a fleet read from the slurp was refused by the agent's permission check, so no SMC beyond the records was read. Pad: ansible-wifi TASK-21.
+  - **smc_change tstik runs depend on the branch (2026-11-19, VERIFIED from the spec):** `rct-tstik-iridium-update` takes `TSTIK_REPO` from `smc_bases_telemetry_iridium_git.repo` and its rollback from
+    `smc_bases_telemetry_git.repo` (`files/changes/rct-tstik-iridium-update/variables.yml:104-110`), and `scripts/tstik_clone.sh` clones with ssh's default host-key check (only ServerAlive options in
+    `GIT_SSH_COMMAND`). Run from `rise` (still `git@bitbucket.org`), both the update and its rollback clone fail on every SMC ("We have moved our SSH host"); run from `iridium`, they fail on any SMC
+    without the `ssh.bitbucket.org` known_hosts line. Until TASK-18 and TASK-21 land, run tstik changes from `iridium` and only on SMCs `just trust` shows ready.
+    ```sh
+    # local-knowledge-ansible roles/smc_change/files/changes/rct-tstik-iridium-update/scripts/tstik_clone.sh
+    if [ -z "$(git config --get core.sshCommand 2>/dev/null)" ] && [ -z "${GIT_SSH_COMMAND:-}" ]; then
+      GIT_SSH_COMMAND='ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=8'   # no StrictHostKeyChecking override
+      export GIT_SSH_COMMAND
+    fi
+    git clone -q -b "$TSTIK_BRANCH" "$TSTIK_REPO" "$new"
+    ```
 
 ## 2026-11-10 — `smc_system` never grew the root LV on nbn_accelerate (FIXED on rise `0fc086ca`, unpushed)
 
