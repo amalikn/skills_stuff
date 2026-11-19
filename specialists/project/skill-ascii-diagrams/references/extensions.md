@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-ascii-diagrams canonical reference; claims carry evidence labels and cite sources.yaml
 Scope: What was researched and set aside
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: >-
   Upstream ASCII tools researched on 2026-11-17, their licences, what each could give, why it is not used yet and how to enable it.
 ---

@@ -5,10 +5,10 @@ Status: current
 Authority: >-
   skill-ascii-diagrams canonical reference; claims carry evidence labels and cite sources.yaml
 Scope: Check diagrams and read the findings
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: >-
   The findings `just ascii-fix` reports and what each means: broken edges (with fan-out branches told apart), arrows that miss their box, wide characters and
-  tabs in drawn blocks; what a ```text block of command output is not.
+  tabs in drawn blocks; what a ```text block of command output is not; `ascii-fix --check` as a read-only gate in a project's closing check.
 ---
 
 # Checking diagrams
@@ -53,5 +53,5 @@ What the checks report and how to act on each finding. Repairing: [fixing-diagra
 
 ## Further reading
 
-- `scripts/ascii/checks.py` (snapping and checks) and `edge_issues()` in `scripts/ascii_fix.py`.
+- `scripts/ascii/checks.py` (snapping and checks, including `edge_issues()`).
 - ilia-pluzhnikov/box-diagram `skills/box-diagram/validate.py` (MIT, Copyright (c) 2026 Ilya P), verbatim in `documents/ascii-sources-20261117/`.

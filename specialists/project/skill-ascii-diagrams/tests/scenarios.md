@@ -4,7 +4,7 @@ Category: test-scenarios
 Status: draft
 Authority: canonical
 Scope: Prompts and the behaviour skill-ascii-diagrams must show; run by hand or by an eval harness
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: Acceptance scenarios from the seed, including one that must not trigger the skill and one where the agent must stop and ask; the Result column records the last run.
 ---
 

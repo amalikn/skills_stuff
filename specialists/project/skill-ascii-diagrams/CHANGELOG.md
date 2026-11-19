@@ -25,3 +25,7 @@ Last reviewed: 2026-11-17
   references written from the seed's lessons; `sources.yaml` claims C-AD01 to C-AD04; ROADMAP from skill-drawio's ASCII items; pack contract 0 errors, 0 warnings.
 - History before the move (skill-drawio CHANGELOG): the renderer promoted 2026-11-16; `ascii-fix` built 2026-11-17 and corrected over real documents (grid
   dividers, glued connectors, generated files refused, fan-out branches, borders carrying arrows and tees, ragged-row tails); stage 1 checks and snapping.
+
+## 20261119_1640 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, stale status statements and body rules aligned with their Learned entries and the code. Review window now 90 days (`--window-days 90` in the justfile).

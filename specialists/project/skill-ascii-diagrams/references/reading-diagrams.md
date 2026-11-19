@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-ascii-diagrams canonical reference; claims carry evidence labels and cite sources.yaml
 Scope: How diagrams are read (boxes, borders, grids, connectors)
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: >-
   How the tools recognise a box in a character grid today (top border, corner columns, bottom border; tees and arrows on borders; grids; branch lines;
   nested boxes) and the stage-3 plan for reading any hand-drawn diagram into a graph.

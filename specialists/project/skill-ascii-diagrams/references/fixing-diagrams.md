@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-ascii-diagrams canonical reference; claims carry evidence labels and cite sources.yaml
 Scope: Repair an existing diagram
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: >-
   How `just ascii-fix` repairs a hand-drawn diagram: what it fixes, what it never touches, its guards (words unchanged, no edge finding added, generated files
   refused) and the opt-in style change `--even-widths`.
@@ -38,8 +38,8 @@ report: [checking-diagrams.md](checking-diagrams.md). Not covered here: see the 
 - **Connectors snap.** A single-arrow connector whose rows stray a column or two from its first row is moved back into that column. `VERIFIED_PRIMARY`.
 - **Arrow lists line up.** Two or more consecutive rows with the same indent, each `source ---label--> target` (a one-dash `->` counts), get their targets in
   the list's rightmost target column by lengthening the shorter arrows; arrows never shrink, and a row already in place is left as drawn. Not lists: rows
-  inside a box (`|`), chains (`a --> b --> c`), and rows whose targets end in full stops (sentences of pseudologic, not a diagram). `USER_STATED`
-  (operator, 2026-11-17), `VERIFIED_PRIMARY` (each exclusion found as a false match in a sweep over real documents).
+  inside a box (`|`), chains (`a --> b --> c`, or a row whose source already holds an arrow, a chain continued), and rows whose targets end in full
+  stops (sentences of pseudologic, not a diagram). `USER_STATED` (operator, 2026-11-17), `VERIFIED_PRIMARY` (each exclusion found as a false match in a sweep over real documents).
 - **Two guards.** The diagram's words stay in the same order, and the fix leaves no more edge or arrow findings than the drawing had; if either fails the
   block is left as it was and the reason is printed. `VERIFIED_PRIMARY` (C-AD02; both guards mutation-tested).
 - **Never a generated file.** A file with a `GENERATED` banner is not written: fix the diagram in its source (the YAML or template it renders from) and

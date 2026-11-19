@@ -4,7 +4,7 @@ Category: catalogue
 Status: current
 Authority: canonical
 Scope: Every script and task in skill-ascii-diagrams with inputs, outputs and safety
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: >-
   Two front ends (draw from a spec, fix existing diagrams) and the `ascii` package they share; all stdlib Python 3.11 or later, read-only unless `--apply`.
 ---
@@ -40,4 +40,4 @@ pack>/scripts/ascii_fix.py docs/design.md`. Moved from skill-drawio on 2026-11-1
 | `scripts/ascii_fix.py`         | Front end: repairs existing ASCII diagrams at their edges; read-only unless `--apply`; refuses GENERATED files                                      | `write-gated` |
 | `scripts/ascii/__init__.py`    | Package `ascii`: shared logic of the front ends                                                                                                     | `safe`        |
 | `scripts/ascii/checks.py`      | Checks and connector snapping: wide characters and tabs, arrows missing their box, straying connectors (ideas from box-diagram and asciiflow,       | `safe`        |
-|                                |   both MIT)                                                                                                                                         |               |
+|                                |   both MIT); the box edge check `edge_issues()` and arrow-list alignment `align_arrows()`                                                           |               |

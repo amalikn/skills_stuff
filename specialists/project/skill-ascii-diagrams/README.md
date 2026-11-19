@@ -4,7 +4,7 @@ Category: readme
 Status: current
 Authority: canonical
 Scope: Root README.md of skill-ascii-diagrams
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: "ASCII diagrams in documents: draw from a spec, repair hand-drawn ones, check edges and arrows"
 Budget: 200 lines, 25 KB
 ---
@@ -25,7 +25,7 @@ hand-drawn diagram back into that graph (stage 3). ASCII is the immediate diagra
 - [references/](references/readme.md): one focused file per topic.
 - [sources.yaml](sources.yaml) and [compatibility.yaml](compatibility.yaml): the claims the pack makes with their falsifiers, and the environments tested.
 - [tests/](tests/scenarios.md): behaviour scenarios and the package contract test.
-- [docs/](docs/): session records and history.
+- [documents/](documents/ascii-sources-20261117/readme.md): verbatim upstream source captures; [ROADMAP.md](ROADMAP.md) and [CHANGELOG.md](CHANGELOG.md): planned work and history.
 
 ## Run
 

@@ -4,7 +4,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-ascii-diagrams pack: canonical, cross-project source of its reusable knowledge
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: Agent guidance for maintaining and using skill-ascii-diagrams: artifact roles, the package contract, the write-back obligation, and the gates to run before calling work complete.
 Budget: 150 lines, 12 KB
 ---

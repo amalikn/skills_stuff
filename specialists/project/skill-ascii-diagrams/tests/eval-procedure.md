@@ -4,7 +4,7 @@ Category: test-procedure
 Status: draft
 Authority: canonical
 Scope: How the scenarios in scenarios.md are run and scored
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: Run each scenario in a fresh session with the skill installed, score pass or fail against the expected behaviour, and record the date, model and result.
 ---
 

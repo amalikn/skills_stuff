@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-ascii-diagrams canonical reference; claims carry evidence labels and cite sources.yaml
 Scope: Draw a new diagram for a document
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: >-
   Drawing a new ASCII diagram from a JSON spec with `just ascii-flow-render`: parts (chain, grid, box, text, columns), widths, arrows under the box centre,
   exits, plain ASCII within about 80 columns.
@@ -15,7 +15,8 @@ Summary: >-
 
 ## Scope
 
-Draw a new ASCII diagram for a document. Repairing an existing one: [fixing-diagrams.md](fixing-diagrams.md). A graph laid out automatically: [graph-layout.md](graph-layout.md) (planned). Not covered here: see the non-goals in [SKILL.md](../SKILL.md#role-and-non-goals).
+Draw a new ASCII diagram for a document. Repairing an existing one: [fixing-diagrams.md](fixing-diagrams.md). A graph laid out automatically: [graph-layout.md](graph-layout.md) (planned).
+Not covered here: see the non-goals in [SKILL.md](../SKILL.md#role-and-non-goals).
 
 ## Contents of this reference
 

@@ -5,7 +5,7 @@ Status: draft
 Authority: >-
   skill-ascii-diagrams canonical reference; claims carry evidence labels and cite sources.yaml
 Scope: Lay out a graph of boxes and links (stage 2, planned)
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: >-
   The stage-2 plan: a spec of boxes and links laid out in layered rows with barycentre ordering, arrows in channels with one track each, ports spread on box
   sides, A* routing on the character grid with a crossing penalty, and crossing-cutting swaps. Not built yet.

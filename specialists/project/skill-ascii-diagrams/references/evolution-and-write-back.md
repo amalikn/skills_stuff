@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-ascii-diagrams canonical reference; claims carry evidence labels and cite sources.yaml
 Scope: skill-ascii-diagrams: how the pack learns from each engagement
-Last reviewed: 2026-11-17
+Last reviewed: 2026-11-19
 Summary: The standing write-back contract: engagement classes, the Learned and Disputed entry format, evidence with every entry, research captures, release reconciliation and script promotion.
 ---
 
