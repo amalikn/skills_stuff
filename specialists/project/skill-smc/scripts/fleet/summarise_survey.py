@@ -202,16 +202,18 @@ def counts(rows: list[dict[str, str]], keys: tuple[str, ...]) -> str:
 
 
 def census(text: str) -> str:
-  """Tally pi_bootloader_census.sh output: bootloaders per flavour, bootloader by board revision, undervoltage, and the boxes that did not answer.
+  """Tally pi_bootloader_census.sh output: bootloaders per flavour, bootloader by board revision, memory size per flavour, undervoltage, and the boxes that did not answer.
 
   Args:
-    text: the census output (`<flavour> <host> bootloader=... model=... throttled=...` or `<flavour> <host> unreachable ...`).
+    text: the census output (`<flavour> <host> bootloader=... model=... throttled=... [mem_kb=...]` or `<flavour> <host> unreachable ...`);
+      a line without mem_kb (censuses before 2026-11-19) counts as memory `unread`.
 
   Returns:
     Markdown lines.
   """
   per = collections.Counter()
   board = collections.Counter()
+  mem = collections.Counter()
   silent, uv_seen, uv_now = [], collections.Counter(), []
   for line in text.splitlines():
     parts = line.split()
@@ -223,6 +225,8 @@ def census(text: str) -> str:
     f = dict(p.split("=", 1) for p in parts[2:] if "=" in p)
     per[(parts[0], f.get("bootloader", ""))] += 1
     board[(f.get("bootloader", ""), f.get("model", "")[-3:])] += 1
+    kb = f.get("mem_kb", "")
+    mem[(parts[0], f"{round(int(kb) / 1048576)} GB" if kb.isdigit() else "unread")] += 1
     t = int(f.get("throttled") or "0", 16)
     if t & 0x10000:
       uv_seen[parts[0]] += 1
@@ -231,6 +235,7 @@ def census(text: str) -> str:
   out = ["## Pi bootloader census", "", "| Flavour | Bootloader | Boxes |", "|---|---|---|"]
   out += [f"| {fl} | {bl} | {n} |" for (fl, bl), n in sorted(per.items())]
   out += ["", "- bootloader by board revision: " + ", ".join(f"{bl} rev {rev} x{n}" for (bl, rev), n in sorted(board.items()))]
+  out += ["- memory per flavour (MemTotal rounded to whole GB): " + ", ".join(f"{fl} {gb} x{n}" for (fl, gb), n in sorted(mem.items()))]
   out += [f"- undervoltage since boot: {dict(uv_seen) or 0}; now: {', '.join(uv_now) or 'none'}"]
   out += [f"- did not answer ({len(silent)}): {', '.join(sorted(silent)) or 'none'}", ""]
   return "\n".join(out)

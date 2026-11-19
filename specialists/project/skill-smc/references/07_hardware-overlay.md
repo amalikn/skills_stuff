@@ -1297,3 +1297,16 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > - Old images are in raspberrypi/rpi-eeprom `firmware-2711/old/stable`; check the git blob hash (`git hash-object`) against the repository's.
 >
 > No visual surface: no screenshot.
+
+> **Learned 2026-11-19** · same bench Pi 4B and card, bootloader 2023-01-11 with the `smc-early-wdt` overlay in both slots, then 2022-04-26 and 2022-01-25 · VERIFIED_PRIMARY
+> (serial console and runner transcript) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 25 · Falsifier: a healthy boot whose systemd starts
+> late being reset by the early watchdog on this kernel; a 2022 bootloader not taking an update staged on partition 1.
+> - Once the firmware has armed the watchdog, the kernel's `bcm2835-wdt` driver keeps it fed from its probe until systemd opens it: with systemd held back 30 s
+>   (`init=` a script that sleeps, then execs systemd), systemd opened the watchdog about 41 s after the arm and nothing reset the box. The only unprotected window is
+>   from the arm to the driver's probe, about 5 s on every boot read (2.9 s to the kernel, then 2.0 s), against a limit of about 16 s.
+> - With the overlay in both slots a trial kernel of random bytes was reset alone on both tries and rejected at MAX_TRIES 2: no power cycle needed.
+> - An update staged on partition 1 (`BOOTFS=<p1 mount> rpi-eeprom-update -d -f <image>`) took 2022-04-26 and 2022-01-25 to 2023-01-11. Afterwards partition 1 held
+>   `RECOVERY.000`, `pieeprom.upd` and `pieeprom.sig` (the bootloader renames only `recovery.bin`), to be removed once the version reads right.
+> - `pi_bootloader_census.sh` now also prints `mem_kb` (MemTotal) per Pi, and `summarise_survey.py --census` tallies memory per flavour in whole GB.
+>
+> No visual surface: no screenshot.

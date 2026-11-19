@@ -60,6 +60,18 @@ class Parse(unittest.TestCase):
     self.assertIn("2022-01-25 rev 1.4 x1", out)
     self.assertIn("now: a", out)
     self.assertIn("did not answer (1): c", out)
+    self.assertIn("rct unread x2", out)
+
+  def test_census_memory(self) -> None:
+    """mem_kb is rounded to whole GB per flavour; a non-numeric value counts as unread, never as a size."""
+    text = ("rct a bootloader=2023-01-11 model=Raspberry_Pi_4_Model_B_Rev_1.5 throttled=0x0 mem_kb=7995432\n"
+            "rct b bootloader=2023-01-11 model=Raspberry_Pi_4_Model_B_Rev_1.4 throttled=0x0 mem_kb=3884320\n"
+            "wh c bootloader=2023-01-11 model=Raspberry_Pi_4_Model_B_Rev_1.5 throttled=0x0 mem_kb=\n")
+    out = ss.census(text)
+    self.assertIn("rct 8 GB x1", out)
+    self.assertIn("rct 4 GB x1", out)
+    self.assertIn("wh unread x1", out)
+    self.assertNotIn("wh 0 GB", out)
 
 
 if __name__ == "__main__":

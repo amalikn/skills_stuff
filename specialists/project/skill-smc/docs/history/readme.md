@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261119_1158.md](changelog-20261119_1158.md) 1 entry, 2026-11-06 to 2026-11-06: smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 -> v0.12.6)
 - [changelog-20261118_2159.md](changelog-20261118_2159.md) 2 entries, 2026-11-06 to 2026-11-06: WAN routing confirmed live; link health per leg; Grafana tunnel; measured link figures (v0.12.4 -> v0.12.5); Pi clock with no RTC on Ubuntu 24.04 measured (v0.12.3 -> v0.12.4)
 - [changelog-20261118_2051.md](changelog-20261118_2051.md) 1 entry, 2026-11-05 to 2026-11-05: URL capture DNS mechanism measured; records plan proposed (v0.12.2 -> v0.12.3)
 - [changelog-20261118_1557.md](changelog-20261118_1557.md) 6 entries, 2026-11-02 to 2026-11-05: v8 resumable PCAP fetch, EFS find, Teleport path loss probe (v0.12.1 -> v0.12.2); smc_change Teleport login gate (v0.12.0 -> v0.12.1); Iridium batches 1-3 marked; rise deploy flashes; smc_mark_iridium.py (v0.11.9 -> ...

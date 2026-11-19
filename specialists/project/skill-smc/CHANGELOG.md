@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261118_2159
+Last rotated: 20261119_1158
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261119_1205 — early watchdog fed by the kernel driver from its probe; EEPROM update from partition 1 on both 2022 bootloaders; census reads memory (v0.15.1 -> v0.15.2)](#20261119_1205--early-watchdog-fed-by-the-kernel-driver-from-its-probe-eeprom-update-from-partition-1-on-both-2022-bootloaders-census-reads-memory-v0151---v0152)
 - [20261118_2152 — Pi 4 early watchdog, 2022 bootloaders ignore the A/B selector, EEPROM staging on an A/B card (v0.15.0 -> v0.15.1)](#20261118_2152--pi-4-early-watchdog-2022-bootloaders-ignore-the-ab-selector-eeprom-staging-on-an-ab-card-v0150---v0151)
 - [20261118_2049 — storage identity readable on x86 and Pi; low-touch description record (name, locid) (v0.14.9 -> v0.15.0)](#20261118_2049--storage-identity-readable-on-x86-and-pi-low-touch-description-record-name-locid-v0149---v0150)
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
@@ -35,7 +36,6 @@ Last reviewed: 2026-10-27
 - [20261108_0155 — Pi 4 serial console (smc-resiliency S1 bench) (v0.12.8 -> v0.12.9)](#20261108_0155--pi-4-serial-console-smc-resiliency-s1-bench-v0128---v0129)
 - [20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)](#20261106_1630--ansible-wifi-smc_bases-on-ubuntu-2404-and-in-an-image-build-v0127---v0128)
 - [20261106_1605 — Parallels linked clone shares the source's address; Parallels lab behaviour (v0.12.6 -> v0.12.7)](#20261106_1605--parallels-linked-clone-shares-the-sources-address-parallels-lab-behaviour-v0126---v0127)
-- [20261106_1545 — smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 -> v0.12.6)](#20261106_1545--smc_change-export-to-a-company-task-file-tracker-orders-resumed-runs-by-attempt-v0125---v0126)
 
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 ->
   v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
@@ -78,6 +78,13 @@ Last reviewed: 2026-10-27
 - [20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)](#20261102_1756--smc_change-skip-probe-or-force-per-smc-close-v0116---v0117)
 
 ---
+
+## 20261119_1205 — early watchdog fed by the kernel driver from its probe; EEPROM update from partition 1 on both 2022 bootloaders; census reads memory (v0.15.1 -> v0.15.2)
+
+- references/07_hardware-overlay.md: Learned 2026-11-19 (VERIFIED_PRIMARY, bench Pi 4): a slow healthy boot (systemd 30 s late) is not reset by the early watchdog, the kernel driver
+  feeds it from about 5 s after the arm; broken trial kernel reset alone with the overlay; partition-1 EEPROM staging works from 2022-04-26 and 2022-01-25, files left on p1.
+- scripts/fleet/pi_bootloader_census.sh prints `mem_kb`; summarise_survey.py census tallies memory per flavour (test added). Not yet run on the fleet: Teleport certificate expired.
+- From the smc-resiliency bench run of 2026-11-19 (lab test record section 25).
 
 ## 20261118_2152 — Pi 4 early watchdog, 2022 bootloaders ignore the A/B selector, EEPROM staging on an A/B card (v0.15.0 -> v0.15.1)
 
@@ -187,8 +194,3 @@ documentation, VERIFIED_PRIMARY).
 
 `references/11_vagrant-lab.md` 12.7: Learned 2026-11-06 (smc-resiliency SM clone): a linked clone keeps the machine-id, so DHCP hands it the source's address and `vagrant ssh <source>` silently
 reaches the clone; clone only a stopped VM; `prlctl exec` ends what it started and has no shell; a restart turns NIC offloads back on. manifest 0.12.6 -> 0.12.7.
-
-## 20261106_1545 — smc_change export to a company task file; tracker orders resumed runs by attempt (v0.12.5 -> v0.12.6)
-
-`references/19_smc-change-role.md`: new section, Export to a company role (Learned 2026-11-06, local-knowledge-ansible 7056782): `just export_change`, `export_check`, `export_drift`; what is carried
-and left out, the play's own fail gate; and the tracker entry for resumed runs (c7cb38b, written 2026-11-06 earlier, committed 613c1c1). manifest 0.12.5 -> 0.12.6.
