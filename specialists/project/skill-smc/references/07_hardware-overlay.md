@@ -1342,3 +1342,40 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 >
 > No visual surface: no screenshot.
 
+## The warehouse field image: what a site Pi ships with (rct-iridium, read 2026-11-19)
+
+> **Learned 2026-11-19** · warehouse image `generic-rct01-iridium-20241121.img` (rct with Iridium; the warehouse also keeps rct, wh and nbn_wh images) ·
+> VERIFIED_PRIMARY (read offline on the Mac with e2fsprogs debugfs at the root partition's byte offset; nothing mounted) · Source: smc-resiliency
+> lab/field_images.toml, decision 20261119_1756 · Falsifier: a box shipped from this image reading other values on first boot.
+>
+> - **What it is:** Ubuntu 22.04.1 with ansible-wifi already run once in the warehouse; the site playbook runs on top of it in the field. MBR, p1 FAT
+>   `system-boot` 256 MiB, p2 ext4 `writable` about 6.9 GiB (`root=LABEL=writable`, cmdline `ipv6.disable=1 ... fixrtc quiet splash`).
+> - **Versions shipped:** kernel 5.15.0-1065-raspi (1012 still installed), systemd 249.11-0ubuntu3.4, libc6 2.35-0ubuntu3.8 with libc-bin and locales at
+>   3.1 (mismatched), cloud-init 22.2 but `/etc/cloud/cloud-init.disabled` present, overlayroot installed and off (`overlayroot=""`). Deployed hubs read
+>   systemd 3.7 and kernel 1078, x86 3.15: boxes drift after shipping through apt and ansible in the field.
+> - **Teleport identity:** `/etc/teleport.yaml` has a static `auth_token`, labels `env: "prod"`, `site: "generic"`, `flavor: "rct"`, and no `nodename`;
+>   `/var/lib/teleport` is empty. A box joins at its first Teleport start under its **hostname**, so a box never renamed appears as
+>   `generic-rct01-iridium-20241121` (one such node is in teleport.apn.au). Rename before Teleport first starts.
+> - **Network as shipped:** untagged `eth0` is `activation-mode: manual` (no address); VLAN 500 `bridge_500` (10.255.0.1/24, 192.168.5.100/24) and
+>   VLAN 501 `bridge_501` (10.0.0.1/23) carry the site networks, with isc-dhcp-server on both; `vlan521` 192.168.100.50/24; `vlan522` manual;
+>   `lo` also 10.254.0.1/32.
+> - **Firewall:** INPUT sends tcp 22, 80 and 4949 to chain `MANAGEMENT`, which accepts `bridge_500` and one company /24 and drops the rest; a box on
+>   an untagged LAN cannot be reached by SSH until that LAN is added to `MANAGEMENT` before its DROP.
+> - **Enabled at boot:** teleport, autossh-teleport (forwards local 60853 to the tunnel host's 853, DNS over TLS for stubby), autossh-teleport-openssh,
+>   autossh-prometheus, iperf55200 to 55209, hostapd, squid, unbound, stubby, apache2, postfix, ipset, fqdn2ip, netfilter-persistent, plus the apt timers.
+>
+> A bench copy changes only what `just lab field-prep` lists (smc-resiliency `lab/field_images.toml`); each edit must match exactly once:
+>
+> ```toml
+> # smc-resiliency lab/field_images.toml (commit 2f892694)
+> [[overlay.ansible-wifi-pi.replace]]
+> file = "/etc/netplan/00-ansible.yaml"
+> old = "    eth0:\n      activation-mode: manual\n"
+> new = "    eth0:\n      dhcp4: true\n"
+>
+> [[overlay.ansible-wifi-pi.replace]]
+> file = "/etc/iptables/rules.v4"
+> old = "-A MANAGEMENT -j DROP\n"
+> new = "-A MANAGEMENT -s {bench_cidr} -j ACCEPT\n-A MANAGEMENT -j DROP\n"
+> ```
+

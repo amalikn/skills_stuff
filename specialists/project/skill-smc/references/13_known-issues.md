@@ -1786,3 +1786,17 @@ nbn_accelerate boxes already had VG free 0 (grown some other way, UNVERIFIED how
 
 **`smc_bases.yml --tags <role tag>` is not narrow.** `--list-tasks` with `--tags rsync_url_capture` also lists `smc_rise_enable_overlay`'s `always` tasks (initramfs update, `Reboot Helper`,
 `end_play`). Run `--list-tasks` before any tagged `smc_bases.yml` run on production, and deploy one role's file through `smc_change` instead (references/19_smc-change-role.md).
+
+## 2026-11-19 — root's SSH key and password are the same on every SMC read, Pi and x86 (OPEN, critical)
+
+> **Learned 2026-11-19** · fleet, read-only over Teleport (`scripts/probes/smc_root_key_probe.sh`) · VERIFIED_PRIMARY · Source: smc-resiliency B19-06
+> (Pad BUG-99) · Falsifier: two boxes printing different `key=` or `pw=` values.
+
+- **Seen:** the warehouse image holds `/root/.ssh/id_rsa` and a root password hash; `sshd -T` reads `permitrootlogin yes`, `passwordauthentication yes`.
+- **Evidence:** one key fingerprint in the image and on 11 of 11 boxes read (eight site SMCs, Pi and x86, a warehouse box, a box still named after the
+  image); the digest of root's shadow field is equal on the five boxes the probe read (Pi and x86), so the password is shared too.
+- **Cause:** boxes are cloned from one image and nothing makes root's key or password per box afterwards; ansible-wifi (ffd62722) has no task for either.
+- **Effect:** one box, card or image gives root's key and password for every box wherever SSH is reachable.
+- **Re-check:** `just smc_root_key_probe <proxy> <node>...`; closure is different values per box. The fix is the operator's (per-box secrets in the
+  image build or first boot, no private key in the image, `PermitRootLogin prohibit-password`).
+

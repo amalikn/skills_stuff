@@ -332,8 +332,9 @@ def check_version_single_source() -> None:
         return
     prefix = f"{parts[0]}.{parts[1]}"
     # Not preceded or followed by a digit or dot: "10.0.2.0" (an IP in 08_ansible-authoring.md) contains "0.2.0" and is not a
-    # version stamp. Found 2026-10-07 when the pack moved to 0.2.0.
-    pattern = re.compile(rf"(?<![\d.])v?{re.escape(prefix)}\.\d+(?![\d.]*\d)")
+    # version stamp. Found 2026-10-07 when the pack moved to 0.2.0. Nor is a Debian package file name ("fatrace_0.16.3-1" in
+    # 07_hardware-overlay.md): an underscore before the number disqualifies it. Found 2026-11-19 when the pack moved to 0.16.0.
+    pattern = re.compile(rf"(?<![\d._])v?{re.escape(prefix)}\.\d+(?![\d.]*\d)")
 
     surfaces = list(VERSION_STAMP_SURFACES) + [
         p.relative_to(ROOT).as_posix() for p in members("references", "*.md")

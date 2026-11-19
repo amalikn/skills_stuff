@@ -279,6 +279,10 @@ pi_bootloader_census *ARGS:
 smc_freeze_probe proxy +nodes:
     @bash scripts/probes/smc_freeze_probe.sh --proxy "{{proxy}}" {{nodes}}
 
+# Is root's SSH key and password the same on every box? Fingerprint and a digest only, never the secret (read-only). Example: just smc_root_key_probe teleport.apn.au warehouse-rct01
+smc_root_key_probe proxy +nodes:
+    @bash scripts/probes/smc_root_key_probe.sh --proxy "{{proxy}}" {{nodes}}
+
 # What writes on an SMC: processes, folders changed in 24 h, journal, cron, undervoltage (read-only). Example: just smc_writers_probe teleport.apn.au canteen-creek-smc01
 smc_writers_probe proxy +nodes:
     @bash scripts/probes/smc_writers_probe.sh --proxy "{{proxy}}" {{nodes}}

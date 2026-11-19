@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1555
+Last rotated: 20261119_1852
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261119_1852 — smc_root_key_probe.sh; the warehouse field image read; root's key and password shared fleet-wide (v0.15.9 -> v0.16.0)](#20261119_1852--smc_root_key_probesh-the-warehouse-field-image-read-roots-key-and-password-shared-fleet-wide-v0159---v0160)
 - [20261119_1830 — role_rerun_cost.py promoted; Ookla rate limit; Bitbucket fleet trust gap (v0.15.8 -> v0.15.9)](#20261119_1830--role_rerun_costpy-promoted-ookla-rate-limit-bitbucket-fleet-trust-gap-v0158---v0159)
 - [20261119_1650 — Periodic review; 90-day window; identifiers redacted; smc_update_php.yml retired (v0.15.7 -> v0.15.8)](#20261119_1650--periodic-review-90-day-window-identifiers-redacted-smc_update_phpyml-retired-v0157---v0158)
 - [20261119_1648 — topology_variance.py promoted; vars guard matches on command text (v0.15.6 -> v0.15.7)](#20261119_1648--topology_variancepy-promoted-vars-guard-matches-on-command-text-v0156---v0157)
@@ -39,9 +40,16 @@ Last reviewed: 2026-10-27
 - [20261110_1225 — Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0)](#20261110_1225--fleet-survey-probes-bootloader-census-writers-probe-probe-deadlines-fixed-v0132---v0140)
 - [20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)](#20261110_0202--deployed-pi-fleet-layout-and-root-block-spread-survey-of-6-v0131---v0132)
 - [20261110_0031 — Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)](#20261110_0031--pi-4-on-the-fleet-bootloader-2023-01-11-autoboottxt-on-gpt-and-eeprom-update-path-v0130---v0131)
-- [20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)](#20261109_2300--pi-4-ab-on-a-gpt-card-bootloader-firmware-and-update-traps-smc-resiliency-s1-v0129---v0130)
 
 ---
+
+## 20261119_1852 — smc_root_key_probe.sh; the warehouse field image read; root's key and password shared fleet-wide (v0.15.9 -> v0.16.0)
+
+- New scripts/probes/smc_root_key_probe.sh (`just smc_root_key_probe`), catalogued in scripts/README.md; smoke run on five boxes, Pi and x86.
+- references/07_hardware-overlay.md: the warehouse field image section (versions, Teleport joins under the hostname, network and MANAGEMENT chain, enabled units).
+- references/13_known-issues.md: root's SSH key and password shared on every box read (smc-resiliency B19-06, OPEN, critical).
+- scripts/check_governance.py version-single-source: an underscore before a number (a Debian package file name such as fatrace_0.16.3-1) is not a
+  version stamp; found when the pack moved to 0.16.0; tested both ways (v0.16.3 and 0.16.0 still flagged).
 
 ## 20261119_1830 — role_rerun_cost.py promoted; Ookla rate limit; Bitbucket fleet trust gap (v0.15.8 -> v0.15.9)
 
@@ -188,9 +196,3 @@ survives SIGALRM); they now fork and send TERM then KILL. `references/07_hardwar
 
 `references/07_hardware-overlay.md`: Learned 2026-11-10: 2023-01-11 reads autoboot.txt on GPT and runs the full tryboot chain; an EEPROM update staged on the selected boot partition is applied; where
 the 2023 image is (VERIFIED_PRIMARY, bench console).
-
-## 20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)
-
-`references/07_hardware-overlay.md`: Learned 2026-11-09: autoboot.txt and tryboot on GPT (bootloader 2026-01-09), Ubuntu 24.04.5 start4.elf cannot boot partition 2 (firmware 1.20260915 can),
-flash-kernel copies it back, rpi-eeprom-update auto-upgrades, vcgencmd exits 0 without root, PARTITION_WALK stops at 8, the watchdog only after systemd, a NoCloud seed per root (VERIFIED_PRIMARY,
-bench console).

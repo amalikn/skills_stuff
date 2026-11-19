@@ -34,7 +34,7 @@ folder; tests sit beside the script they test.
 |            |                                                 |   [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh), [role_rerun_cost.py](ansible/role_rerun_cost.py), [test_role_rerun_cost.py](ansible/test_role_rerun_cost.py) |
 | `access/`  | getting onto a box: Teleport tunnel and         | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [ssh_handshake_time.sh](access/ssh_handshake_time.sh), [test_ssh_handshake_time.sh](access/test_ssh_handshake_time.sh), [teleport_sessions.py](access/teleport_sessions.py) |
 |            |   sessions, the autossh backdoor                |                                                                                                                                       |
-| `probes/`  | read-only probes of named boxes over Teleport   | [ata_settings_read.py](probes/ata_settings_read.py), [smc_freeze_probe.sh](probes/smc_freeze_probe.sh), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_resiliency_probe.sh](probes/pi_resiliency_probe.sh), [smc_writers_probe.sh](probes/smc_writers_probe.sh), | , [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh), [apt_key_subkey_probe.sh](probes/apt_key_subkey_probe.sh), [test_apt_key_subkey_probe.py](probes/test_apt_key_subkey_probe.py) |
+| `probes/`  | read-only probes of named boxes over Teleport   | [ata_settings_read.py](probes/ata_settings_read.py), [smc_freeze_probe.sh](probes/smc_freeze_probe.sh), [smc_root_key_probe.sh](probes/smc_root_key_probe.sh), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_resiliency_probe.sh](probes/pi_resiliency_probe.sh), [smc_writers_probe.sh](probes/smc_writers_probe.sh), | , [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh), [apt_key_subkey_probe.sh](probes/apt_key_subkey_probe.sh), [test_apt_key_subkey_probe.py](probes/test_apt_key_subkey_probe.py) |
 |  |  |   [pi_identity_probe.sh](probes/pi_identity_probe.sh), [site_device_probe.sh](probes/site_device_probe.sh), [x86_resiliency_probe.sh](probes/x86_resiliency_probe.sh), [smc_link_health.sh](probes/smc_link_health.sh), [smc_gateway_loss.sh](probes/smc_gateway_loss.sh), |  |
 |  |  |   [smc_gateway_loss_remote.sh](probes/smc_gateway_loss_remote.sh), [test_smc_gateway_loss.py](probes/test_smc_gateway_loss.py), [test_smc_link_health.py](probes/test_smc_link_health.py), [overlay-usage-breakdown.sh](probes/overlay-usage-breakdown.sh), [dns_capture_top.sh](probes/dns_capture_top.sh) |  |
 | `capture/` | evidence capture from boxes and                 | [collect-smc-evidence.sh](capture/collect-smc-evidence.sh), [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh), [test_with_deadline.sh](capture/test_with_deadline.sh), [tstik-capture.sh](capture/tstik-capture.sh), [audit-pin-activation.sh](capture/audit-pin-activation.sh), |
@@ -831,6 +831,13 @@ Added 2026-11-19 (smc-resiliency B19-03, B19-04). `probes/smc_freeze_probe.sh --
 (driver, state, timeout), watchdog modules and blacklists, systemd RuntimeWatchdogUSec, kernel.panic and the lockup and hung-task panics, the watchdog core's open_timeout and the kernel options behind
 them; on a Pi also model, command line, overlayroot and tstik units. **read-only**; 20 s per box. Smoke run 2026-11-19 on alpurrurulam-smc01 matched the hand read. No offline test yet (needs a
 stand-in tsh, as test_apt_key_subkey_probe.py has).
+
+### `smc_root_key_probe.sh`
+
+Added 2026-11-19 (smc-resiliency B19-06). `probes/smc_root_key_probe.sh --proxy <proxy> [--deadline 60] <node>...` prints one line per box: root's SSH key
+fingerprint, root's password hash type and the first 12 hex of the sha256 of its shadow field (equal values mean the same password; the hash is never printed),
+authorized_keys count, sshd's permitrootlogin and passwordauthentication, OS, arch and systemd. **read-only**; about 10 s per box. Smoke run 2026-11-19 on five
+boxes (Pi and x86) plus an unknown name (reported unreachable, exit 1). No offline test yet (needs a stand-in tsh).
 
 ### `pi_bootloader_census.sh` and `smc_writers_probe.sh`
 
