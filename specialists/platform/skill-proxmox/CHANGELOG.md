@@ -57,6 +57,10 @@ docs, edk2 sources, one installed-source excerpt). Lab facts read only, on one P
 - 20261107 Learned 2026-11-07 (k) in `references/upgrade-and-troubleshooting.md`: a 9.1.5 node's pending 9.2 stack and repository state.
 - 20261107 Learned 2026-11-07 (l) in `references/monitoring-and-metrics.md`: node report runtime and budget.
 
+## 20261119_1648 — Version of record PVE 9.2 (lab pve-manager 9.2.26); QEMU note resolved
+
+AGENTS.md version of record moves from 9.1.5 to 9.2 (lab node on pve-manager 9.2.26 after its 2026-11-07 upgrade); compatibility.yaml gains pve-9-2-26-lab-20261107. operations-cookbook.md keeps Verified against 9.1.5 and states it was not re-verified on 9.2. upgrade-and-troubleshooting.md notes that 9.2 shipped QEMU 11.0 and pve-qemu-kvm 11.1.x is a later update, so Learned (k) and the release table agree. VERIFIED_PRIMARY: https://pve.proxmox.com/wiki/Roadmap and the pve-no-subscription Packages.gz index, retrieved 2026-11-19.
+
 ## 20261119_1631 — Periodic review; 90-day review window
 
 - Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now 90 days (`--window-days 90` in the justfile).

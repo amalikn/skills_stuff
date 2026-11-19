@@ -20,7 +20,9 @@ Budget: 150 lines, 12 KB
 - **Entry:** [SKILL.md](SKILL.md) is the activation surface (role and non-goals, routing, write-back contract) and must route every file in `references/`; [AI_NAVIGATION.md](AI_NAVIGATION.md) mirrors its routing table. Load only the
   reference the task needs.
 - **Decisions:** [.archcore/index.guide.md](.archcore/index.guide.md) (pack boundary, bpg not Telmate, search order, version of record, dated latest claims, live-node writes, project boundary, memory channel `proxmox`, live-probe plan) outranks this file.
-- **Evidence:** claims in [sources.yaml](sources.yaml), environments in [compatibility.yaml](compatibility.yaml); a lab observation is not a production guarantee. Version of record: Proxmox VE 9.1.5 (lab, observed 2026-11-07).
+- **Evidence:** claims in [sources.yaml](sources.yaml), environments in [compatibility.yaml](compatibility.yaml); a lab observation is not a production guarantee. Version of record: Proxmox VE 9.2
+  (lab node on pve-manager 9.2.26 after its 2026-11-07 upgrade; 9.2 and 9.2.26 VERIFIED_PRIMARY 2026-11-19 from the PVE Roadmap and the pve-no-subscription package index). The cookbook and most
+  Learned entries were verified on 9.1.5 (2026-11-07).
 - **Captures:** `documents/research-sources-<YYYYMMDD>/` holds verbatim pages, indexed in its `readme.md` and with sha256 in [documents/readme.md](documents/readme.md), both rows in the same pass. Captures are exempt from
   the redaction scan except for private keys.
 - **Helpers:** `scripts/` is tested and stdlib-only; a new helper needs a test in `tests/test_helpers.py` and an entry in [scripts/README.md](scripts/README.md). Reads by default; a write prints its plan and needs

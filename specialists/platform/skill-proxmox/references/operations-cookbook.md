@@ -10,7 +10,8 @@ Summary: Exact, verified syntax for common tasks: orienting on a node, pvesh API
 
 # Operations cookbook
 
-Verified against: Proxmox VE 9.1.5 (lab node, read-only, 2026-11-07) and the current 9.x documentation fetched 2026-11-07.
+Verified against: Proxmox VE 9.1.5 (lab node, read-only, 2026-11-07) and the current 9.x documentation fetched 2026-11-07. The lab node was upgraded to 9.2.26 the same day; this cookbook has not been
+re-verified on 9.2.
 
 Exact syntax for the tasks that come up most. Every command here is a read unless marked **write**; a write needs the engaging project's authorization and a plan printed first. Sources are verbatim
 captures in [documents/research-sources-20261107/](../documents/research-sources-20261107/readme.md).

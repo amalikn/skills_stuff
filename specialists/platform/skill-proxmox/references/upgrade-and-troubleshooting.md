@@ -86,6 +86,10 @@ Repositories](../documents/research-sources-20261107/pve-wiki-package-repositori
 
 `VERIFIED_PRIMARY` (Roadmap release notes, captured 2026-11-07).
 
+QEMU 11.0 is what 9.2 shipped with (Roadmap, "Proxmox VE 9.2 ... QEMU 11.0"); `pve-qemu-kvm` 11.1.x arrived later as an ordinary update, so Learned 2026-11-07 (k)'s "10.1 to 11.1"
+is the pending package in November, not a conflict. `VERIFIED_PRIMARY` (https://pve.proxmox.com/wiki/Roadmap and
+http://download.proxmox.com/debian/pve/dists/trixie/pve-no-subscription/binary-amd64/Packages.gz listing `pve-qemu-kvm` 11.0.0-1 to 11.1.3-2 and `pve-manager` 9.2.26, retrieved 2026-11-19).
+
 ## Known issues worth checking
 
 Open Proxmox bugzilla entries found on 2026-11-07 (status as captured; check the live tracker before relying on one):

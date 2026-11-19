@@ -57,3 +57,11 @@ environments:
     evidence_locator: "documents/research-sources-20261109: pages fetched with curl and kept verbatim"
     validation_layer: official_documented
     result: pass
+  - id: pve-9-2-26-lab-20261107
+    product: Proxmox VE
+    product_version: 9.2.26
+    components: [pve-manager 9.2.26, kernel 7.0.14]
+    observed_at: "2026-11-07"
+    evidence_locator: "Same lab node after its 9.1.5 to 9.2.26 full-upgrade (references/upgrade-and-troubleshooting.md Learned 2026-11-07, smc-resiliency SCRATCHPAD 20261107_1617 and node log); Learned entries in access-control.md and qemu-vms.md observed on it. Version VERIFIED_PRIMARY: https://pve.proxmox.com/wiki/Roadmap (9.2 released 2026-05-21, QEMU 11.0) and http://download.proxmox.com/debian/pve/dists/trixie/pve-no-subscription/binary-amd64/Packages.gz (pve-manager 9.2.26), retrieved 2026-11-19. Cookbook not re-verified on it"
+    validation_layer: observed_install
+    result: pass
