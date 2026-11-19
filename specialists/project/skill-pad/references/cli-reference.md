@@ -175,3 +175,9 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > With a signed-in user it created the workspace and wrote `.pad.toml` (`workspace = "skills"`) without a browser or a prompt, and it still wrote `.claude/skills/pad/SKILL.md` and
 > `.agents/skills/pad/SKILL.md` (delete both, Rules). One `.pad.toml` at a repo root serves every folder under it, so a monorepo of packs shares one workspace. The `conventions` recipe split a
 > spaced `--trackers` value until it used `[positional-arguments]` and `"$@"` (fixed the same day); the other `*ARGS` recipes still pass `{{ARGS}}` unquoted.
+
+> **Learned 2026-11-19** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: smc-resiliency workspace, `pad item show TASK-24 --format md` (rc 1), `pad item list bugs --format json`, `pad collection show tech-debt`, `pad help item history|restore|patch --format md` · Falsifier: `item show --format md` accepted, or `item list` JSON carrying `content`
+> Format names differ by command: `pad item show` takes `table|json|markdown` and refuses `md`; `pad help` takes `md`. `item show --format json` returns `fields` as a JSON string (parse it twice).
+> `pad item list --format json` returns a list with `content_preview`, not `content`: a body check must call `item show` per item (a count of `Serves:` lines from `list` came back 0 while TASK-24 has one).
+> There is no `pad collection show`. Undo: `pad item history --full` keeps body versions only and restoring one is web-UI only; `pad item patch --undo <patch-id>` inverts one patch (refused if the
+> text moved); `pad item restore` only un-archives a soft-deleted item. Fields, status and comments have no CLI undo, so a sync keeps its own before-image journal ([pad-markdown-sync-plan](../docs/pad-markdown-sync-plan-20261119_1845.md) 3.4).

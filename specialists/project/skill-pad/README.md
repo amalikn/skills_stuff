@@ -44,6 +44,7 @@ Operator, 2026-11-10: manage Pad's skill centrally like the other skills (symlin
 | `conventions/collection-schemas/` | agents creating collections     | Asks, Bugs, Feature Requests, Tech Debt, Decisions schemas; index [readme.md](conventions/collection-schemas/readme.md) |
 | `scripts/`                      | the operator's Mac                | see [Scripts](#scripts) and [scripts/README.md](scripts/README.md)                                        |
 | `docs/pad-usage-guidelines-20261110_1628.md` | operator         | guidelines in force (operator, 2026-11-10): asks, plans, tasks, writing standard, tags |
+| `docs/pad-markdown-sync-plan-20261119_1845.md` | operator    | proposed 2026-11-19: one owner per record type, markdown keys, sync with journal and revert, link checks, script gaps G1-G18, collections to add |
 
 Operator, 2026-11-10: "develop our own skill and not rely on the plugin"; Pad's generated `.claude/skills/pad/` and `.agents/skills/pad/` copies were
 extracted into the references and removed. Install and first run: [SETUP.md](SETUP.md); how the parts fit: [ARCHITECTURE.md](ARCHITECTURE.md).

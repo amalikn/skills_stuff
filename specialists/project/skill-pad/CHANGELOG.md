@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1821
+Last rotated: 20261119_1850
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261119_1849 — Markdown and Pad sync plan; peer sessions consulted](#20261119_1849--markdown-and-pad-sync-plan-peer-sessions-consulted)
 - [20261119_1820 — ansible-wifi workspace: adapted conventions file, one workspace for three folders](#20261119_1820--ansible-wifi-workspace-adapted-conventions-file-one-workspace-for-three-folders)
 - [20261119_1648 — SKILL.md names installed CLI 0.21.0; --op-key rule names the commands that take it](#20261119_1648--skillmd-names-installed-cli-0210---op-key-rule-names-the-commands-that-take-it)
 - [20261119_1631 — Periodic review; 90-day review window](#20261119_1631--periodic-review-90-day-review-window)
@@ -38,9 +39,21 @@ Last rotated: 20261119_1821
 - [20261110_2055 — tracker import spike noted for the trial review](#20261110_2055--tracker-import-spike-noted-for-the-trial-review)
 - [20261110_2031 — slurp close: session record, write-backs, collection schemas](#20261110_2031--slurp-close-session-record-write-backs-collection-schemas)
 - [20261110_2020 — UNC moved: bugs, feature requests and tech debt in Pad in both workspaces](#20261110_2020--unc-moved-bugs-feature-requests-and-tech-debt-in-pad-in-both-workspaces)
-- [20261110_2014 — bugs, feature requests and tech debt in Pad (smc-resiliency done)](#20261110_2014--bugs-feature-requests-and-tech-debt-in-pad-smc-resiliency-done)
 
 ---
+
+## 20261119_1849 — Markdown and Pad sync plan; peer sessions consulted
+
+Operator asked whether skill-pad has the scripts projects need to work with Pad, whether markdown needs a mapping to Pad items, and for a plan
+with a reversible script (markdown edited, Pad updated, markdown regenerated). Three live sessions consulted (smc-resiliency-44, ansible-wifi-47,
+continuum-32) on sync, revert and script gaps.
+
+- New `docs/pad-markdown-sync-plan-20261119_1845.md` (proposed): one owner per record type, keys in the markdown, sync cycle, journal and
+  revert, conflicts, link checks, script constraints, collections review (keep, leave empty, add Asks, Decisions, Risks, Handoffs, Runs), gaps
+  G1-G18, stages S0-S6, decisions D1-D9. Indexed in README and SKILL.md.
+- `references/cli-reference.md`: Learned 2026-11-19 (format names per command, `item list` has no body, no `collection show`, what Pad can undo).
+- No script added: the probes run were one-off; their reusable logic is planned as padlib (G1) and pad_links.py (G7).
+- Pad read only (collections, playbooks, items, history); nothing written to Pad.
 
 ## 20261119_1820 — ansible-wifi workspace: adapted conventions file, one workspace for three folders
 
@@ -185,12 +198,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
   bugs (implements).
 - Both workspaces: trackers-truth conventions (CONVE-9, CONVE-24) and the baseline gain the Pad exception; pad-owned-trackers applied to UNC.
 - Guidelines: principle 1 exception; 3.1 lists Bugs, Feature Requests, Tech Debt.
-
-## 20261110_2014 — bugs, feature requests and tech debt in Pad (smc-resiliency done)
-
-### Added
-
-- `scripts/pad_tracker.py` (import and export of a Markdown tracker as a file generated from a Pad collection; hand-edited blocks refused; 4 tests).
-- Convention `pad-owned-trackers` (always, must; exception to trackers-truth) in the baseline, now seven; applied to smc-resiliency.
-- smc-resiliency: collections Bugs (BUG), Feature Requests (FR), Tech Debt (TD) from Pad's web templates plus section, order and declared closed states (the Feature Requests and Tech Debt templates
-  declare none); 16 bugs and 1 feature imported, round trip identical; commit gate runs `just pad-trackers`; tasks link to their bugs (implements). UNC next.
