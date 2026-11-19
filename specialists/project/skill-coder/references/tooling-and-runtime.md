@@ -42,6 +42,30 @@ project's pin outranks this skill's defaults, and a suggestion that ignores it b
 
 Source: governance `storage-routing-guide.md` (2026-04-23). A project's own layout wins where it states one.
 
+> **Learned 2026-11-19** · local CI with act (nektos/act 0.2.98) on macOS with OrbStack · VERIFIED_PRIMARY (observed, each tested) · Source: continuum-app
+> `justfile` ci-linux, `.github/workflows/ci.yml` (tools_stuff/continuum-app 9e12562) · Falsifier: a later act honouring the flag in .actrc.
+> 1. `--container-daemon-socket -` works only on the command line: in `.actrc` (either `=-` or `-`) act 0.2.98 still mounts the Docker socket, so a job can control every container on the
+>    machine. Test with a step that runs `docker ps`, matching only the step's output lines (act echoes the command text).
+> 2. act's default network is the host's: the job can talk to every container. `--network <own>` isolates it, but service containers are then not reachable by name; run the database in the job.
+> 3. `catthehacker/ubuntu:act-latest` lacks rustup and protoc, and its Python is externally managed (PEP 668): install the toolchain with an action, protoc from apt, Python tools in a venv.
+> 4. Pin every action to a commit SHA and the image by digest: on act, CI runs third-party code on your own machine.
+>
+> ```text
+> ci-linux:
+>     docker network inspect continuum-act >/dev/null 2>&1 || docker network create continuum-act >/dev/null
+>     {{run}} act push -j ci --rm --container-daemon-socket - --network continuum-act
+> ```
+
+> **Learned 2026-11-19** · project-pinned CLI tools through mise, installed into the working cache · USER_STATED (operator: "that is the standard we follow in all the projects") ·
+> Source: continuum-app `.mise.toml`, `justfile` · Falsifier: none, a rule.
+> Pin tools in `.mise.toml` (`act = "0.2.98"`, `jj = "0.47.1"`) and point mise's data at the project's working cache, not `~/.local/share/mise` or Homebrew; recipes run the tools
+> through `mise exec --` so no shell activation is needed.
+>
+> ```text
+> export MISE_DATA_DIR := if os() == "macos" { "/Volumes/Data/_ai/_tool/tools-working-cache/<project>/mise" } else { env_var_or_default("MISE_DATA_DIR", "") }
+> run := if os() == "macos" { "mise exec --" } else { "" }
+> ```
+
 ## The task catalog
 
 - Every runnable task is a recipe in the project's task runner (`justfile`, `Makefile`, `package.json` scripts), listed by `just --list` or equivalent. Why: agents run catalogued tasks only; an

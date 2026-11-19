@@ -14,6 +14,10 @@ Last rotated: 20261119_1136
 
 # Changelog — skill-pad
 
+## 20261119_1325 — Comment edits can be refused by the server
+
+- `references/cli-reference.md`: Learned 2026-11-19: `comment-edit` refused (no `item_scoped_comment_writes`); fallback, a new formatted comment.
+
 ## 20261119_1136 — Decision-log process rows mirrored to Pad
 
 - `scripts/pad_decisions.py`: `process` rows of a decision log are mirrored as well as `architecture` rows (category `decision-log-process`); the operator wants every decision

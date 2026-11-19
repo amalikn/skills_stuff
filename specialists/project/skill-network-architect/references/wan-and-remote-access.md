@@ -122,6 +122,13 @@ in:  hub --> site: X  (no mapping exists until the site sends first)
 keepalive interval < carrier mapping timeout (measure it)
 ```
 
+> **Learned 2026-11-19** · self-hosted WireGuard-based overlays for a small estate · VERIFIED_PRIMARY (each project's repo or docs, read 2026-11-19) · Source: Continuum DL-019
+> (tools_stuff/continuum docs/architecture-review/DECISION-LOG.md) · Falsifier: a project changing its licence or self-hosting stance.
+> Plain WireGuard with static peers needs nothing public but its UDP port and fits a handful of peers. NetBird self-hosted needs TCP 443 and UDP 3478 public and a public domain (management,
+> signal, relay; docs.netbird.io quickstart); clients BSD-3, server AGPL-3, mobile apps GPL-3. Headscale (BSD-3) works with Tailscale clients, but Tailscale's macOS, iOS and Windows GUI
+> wrappers are not open source (tailscale/tailscale README). Firezone (Apache-2.0) states production self-hosting is not officially supported. A "nothing public but WireGuard" rule and a
+> self-hosted NetBird cannot both hold on one host: put NetBird's server on its own small host or accept its ports.
+
 ## Patterns and anti-patterns
 
 | Pattern                                 | Use when                             | Anti-pattern                   | Why it fails                                  |

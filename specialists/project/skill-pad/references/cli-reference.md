@@ -70,6 +70,17 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 - Database: `PAD_DB_PATH` > `PAD_DATA_DIR/pad.db` > `~/.pad/pad.db`; `PAD_DB_DRIVER=postgres` for Postgres.
 - `PAD_AGENT=<name>` (or `agent_name` in `.pad.toml`) names the agent under harnesses other than Claude Code.
 
+> **Learned 2026-11-19** · `pad item comment-edit` and `pad_rewrite.py` comment rewrites · VERIFIED_PRIMARY (observed) · Source: Continuum workspace,
+> `just rewrite spec.json --apply` (pad_rewrite.py) · Falsifier: the same server accepting `comment-edit` again.
+> The server can stop advertising `item_scoped_comment_writes`; then every comment edit fails with "this server does not support editing or deleting comments from the CLI".
+> The same edits had worked that morning. Body rewrites still apply. Fallback that keeps the writing standard: add the formatted statement as a new comment (`pad item comment <ref>
+> --stdin`), leave the old one as history; `item-check` then passes because a `DONE:` comment exists.
+>
+> ```text
+> pad_rewrite: pad item comment-edit TASK-26 failed: Error: this server does not support editing or deleting comments from the CLI
+> (it does not advertise item_scoped_comment_writes); upgrade the server, or use the web UI
+> ```
+
 ## Traps
 
 > **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad collection create "Asks" ... --awaits-human true --tracks-work false` -> `Error: accepts 1 arg(s), received 2`;

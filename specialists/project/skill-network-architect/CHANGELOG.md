@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261119_1325 — WireGuard-based overlays compared for a small self-hosted estate (v2.3.2 -> v2.3.3)
+
+- `references/wan-and-remote-access.md`: Learned 2026-11-19 from Continuum DL-019: plain WireGuard, NetBird ports and licences, Headscale with closed Tailscale GUI clients, Firezone self-hosting stance.
+
 ## 20261118_2124 — Position identity where addressing repeats; APN D3a (v2.3.1 -> v2.3.2)
 
 - `references/addressing-and-ipv6.md`: Learned 2026-11-18, key a position by site and name where sites reuse a prefix; what stays with the position and what moves with the unit; a record outside

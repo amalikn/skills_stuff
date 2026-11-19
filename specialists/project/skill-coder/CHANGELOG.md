@@ -28,6 +28,7 @@ Last rotated: 20261118_2102
 
 ## Unreleased
 
+- 2026-11-19: references/tooling-and-runtime.md Learned entries, act on macOS (socket flag only on the command line, host network, image gaps, pinning) and mise into the working cache; languages/rust.md Learned entry, sqlx 0.9 dynamic SQL, temporalio macros and missing_docs, per-test databases (Continuum).
 - 2026-11-19: languages/rust.md Learned entry under Feature unification, a dependency's default features enabling reqwest `rustls-no-provider` (runtime panic on a green build; Continuum P1 spike).
 - 2026-11-18: references/testing.md Learned entry, a fault-test harness that rescues the target must report ASSISTED, not PASS (smc-resiliency bench run).
 - 2026-11-18: references/testing.md Learned entry, a justfile catalog check that read variables as recipes, masked by fake catalog rows (Continuum).

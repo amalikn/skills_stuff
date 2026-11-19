@@ -58,6 +58,12 @@ The Rust API Guidelines (checklist and documentation chapter), The Rust Programm
 > reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls"] }  # "rustls" brings the provider jsonschema's defaults assumed
 > ```
 
+> **Learned 2026-11-19** · sqlx 0.9 dynamic SQL; temporalio 1.2 macros; per-test databases · VERIFIED_PRIMARY (compiler and test runs) · Source: continuum-app
+> `crates/continuum-store/src/testdb.rs`, `apps/coordinator/src/workflow.rs` (tools_stuff/continuum-app 9e22774) · Falsifier: a later sqlx accepting a `&str` built at run time.
+> sqlx 0.9 `execute` wants a `'static` SQL string; built SQL (a generated database name) goes through `sqlx::raw_sql(sqlx::AssertSqlSafe(format!(...)))`, never with input in it.
+> The temporalio `#[workflow_methods]` and `#[activities]` macros emit undocumented associated constants, so `missing_docs = deny` fails: allow it for that module with a comment.
+> Give each database test its own database and drop it at the end (`DROP DATABASE ... WITH (FORCE)` after closing the pool); otherwise every run leaves databases behind.
+
 ## Open items
 
 - Async runtime and timeout patterns (for example `tokio::time::timeout`): UNVERIFIED stub.
