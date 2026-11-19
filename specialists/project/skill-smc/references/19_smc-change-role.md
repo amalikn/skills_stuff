@@ -190,7 +190,7 @@ As of 2026-10-23 (a snapshot; later status is in the dated sections below, from 
 - warehouse-smc01: packages at .28 by unattended-upgrades, apache still on the deleted old libphp (`verify` fails `stale`).
 - Pi canary warehouse-rct01 off Teleport since about 13:45 (backdoor up); the overlay path is `UNVERIFIED`.
 - Not yet run: an `apply` with the cleanup stage (the agent's apply was refused by the auto-mode classifier; operator to run it).
-- `playbooks/smc_update_php.yml` stays until the role's overlay apply path is proven.
+- `playbooks/smc_update_php.yml` was retired 2026-11-19 (operator approved): the overlay apply path is proven (Learned 2026-10-23; production apply 2026-10-26).
 
 ## Pitfalls it already handles
 

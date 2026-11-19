@@ -80,8 +80,6 @@ symlinked tree (ruff, shfmt, djlint) get the physical path of the local-only rol
 | spec `php-cve-2026-109618`                       | php8.1 to 8.1.2-1ubuntu2.28 on rcp, nbn_accelerate, rct, wh (nbn_wh | as above                                                                      |
 |                                                  |   only when allowed)                                              |                                                                               |
 | spec `php-ini-upload-progress-off`               | interim php.ini mitigation (assessment 5.1)                       | as above                                                                      |
-| `playbooks/smc_update_php.yml`                   | the single-file predecessor of the PHP spec; keep until the       | `ansible-playbook ... smc_update_php.yml -l <h> -e smc_php_mode=check`        |
-|                                                  |   role's apply path is proven, then retire                        |                                                                               |
 | `playbooks/smc_change_multiple.yml`              | the two Iridium imports of `smc_rise_deploy.yml` alone (2026-11-04): | `ansible-playbook -i inventories/rct/prod smc_change_multiple.yml -l <h>`     |
 |                                                  |   rct-tstik-iridium-update with `rct_avr_flash: true`, then       |   (apply; no check mode)                                                      |
 |                                                  |   rct-avr-smsc; gate rct + `smc_bases_iridium` true only          |                                                                               |
