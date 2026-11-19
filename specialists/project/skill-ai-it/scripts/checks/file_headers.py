@@ -43,7 +43,7 @@ INDEX_NAMES = {"readme.md", "README.md", "CHANGELOG.md", "CLAUDE.md", "__init__.
 LOCK_NAMES = {"pnpm-lock.yaml", "pnpm-workspace.yaml.lock", "poetry.lock", "uv.lock", "Cargo.lock"}
 #: Verbatim or generated material: captures, pulled sources, backups, archives and rendered views carry no header of their own.
 SKIP_PARTS = ("-sources-", "/captures/", "/backups/", "/archive/", "/history/", "/node_modules/", "/.venv/", "/vendor-sources/", "/__pycache__/",
-              "/migrations/", "/evidence/", "/vendor/", "/fixtures/", "/upstream/")
+              "/migrations/", "/evidence/", "/vendor/", "/fixtures/", "/upstream/", "/.ai-context/")  # .ai-context: generated Repomix packs (2026-11-19)
 
 
 def _keys_from_lines(lines: list[str]) -> dict[str, str]:

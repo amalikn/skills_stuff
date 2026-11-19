@@ -17,6 +17,7 @@ Last rotated: 20261119_1648
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261119_1706 — file_headers: generated .ai-context packs need no header](#20261119_1706--file_headers-generated-ai-context-packs-need-no-header)
 - [20261119_1700 — freshness_survey.py: review dates across many projects](#20261119_1700--freshness_surveypy-review-dates-across-many-projects)
 - [20261119_1647 — Identifiers redacted from pack text (operator)](#20261119_1647--identifiers-redacted-from-pack-text-operator)
 - [20261119_1638 — Periodic review; 90-day window; rotation no longer overwrites a same-minute archive](#20261119_1638--periodic-review-90-day-window-rotation-no-longer-overwrites-a-same-minute-archive)
@@ -90,6 +91,10 @@ Last rotated: 20261119_1648
   gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261119_1706 — file_headers: generated .ai-context packs need no header
+
+- `scripts/checks/file_headers.py` SKIP_PARTS adds `/.ai-context/` (generated Repomix packs, never truth): skill-coder's check went red on `no-header` the moment its pack was first tracked (2026-11-19). Test `GeneratedContextPacks` (fails without the fix). Packs that baselined the finding now hold a resolved entry that govern prunes.
 
 ## 20261119_1700 — freshness_survey.py: review dates across many projects
 

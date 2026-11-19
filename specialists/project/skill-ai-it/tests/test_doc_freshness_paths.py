@@ -86,3 +86,19 @@ class LockFiles(unittest.TestCase):
       names = [p.name for p in df.file_headers.tracked(repo, [])]
       self.assertNotIn("pnpm-lock.yaml", names)
       self.assertIn("notes.yaml", names)
+
+
+class GeneratedContextPacks(unittest.TestCase):
+  """A Repomix pack under .ai-context/ is generated support, never truth, and needs no header (skill-coder, 2026-11-19)."""
+
+  def test_ai_context_pack_is_not_tracked_for_headers(self):
+    with tempfile.TemporaryDirectory() as d:
+      repo = Path(d)
+      subprocess.run(["git", "init", "-q", str(repo)], check=True, timeout=30)
+      (repo / ".ai-context").mkdir()
+      (repo / ".ai-context" / "governance-pack.md").write_text("This file is a merged representation of the codebase.\n")
+      (repo / "notes.md").write_text("# Notes\n")
+      subprocess.run(["git", "-C", str(repo), "add", "."], check=True, timeout=30)
+      names = [p.name for p in df.file_headers.tracked(repo, [])]
+      self.assertNotIn("governance-pack.md", names)
+      self.assertIn("notes.md", names)
