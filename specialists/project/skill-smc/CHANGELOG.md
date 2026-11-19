@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1158
+Last rotated: 20261119_1232
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261119_1250 — correction: the kernel feeds an armed watchdog for ever before userspace (open_timeout 0); watchdog.open_timeout=60 resets a stuck trial; census: every Pi 8 GB (v0.15.2 -> v0.15.3)](#20261119_1250--correction-the-kernel-feeds-an-armed-watchdog-for-ever-before-userspace-open_timeout-0-watchdogopen_timeout60-resets-a-stuck-trial-census-every-pi-8-gb-v0152---v0153)
 - [20261119_1205 — early watchdog fed by the kernel driver from its probe; EEPROM update from partition 1 on both 2022 bootloaders; census reads memory (v0.15.1 -> v0.15.2)](#20261119_1205--early-watchdog-fed-by-the-kernel-driver-from-its-probe-eeprom-update-from-partition-1-on-both-2022-bootloaders-census-reads-memory-v0151---v0152)
 - [20261118_2152 — Pi 4 early watchdog, 2022 bootloaders ignore the A/B selector, EEPROM staging on an A/B card (v0.15.0 -> v0.15.1)](#20261118_2152--pi-4-early-watchdog-2022-bootloaders-ignore-the-ab-selector-eeprom-staging-on-an-ab-card-v0150---v0151)
 - [20261118_2049 — storage identity readable on x86 and Pi; low-touch description record (name, locid) (v0.14.9 -> v0.15.0)](#20261118_2049--storage-identity-readable-on-x86-and-pi-low-touch-description-record-name-locid-v0149---v0150)
@@ -35,7 +36,6 @@ Last reviewed: 2026-10-27
 - [20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)](#20261109_2300--pi-4-ab-on-a-gpt-card-bootloader-firmware-and-update-traps-smc-resiliency-s1-v0129---v0130)
 - [20261108_0155 — Pi 4 serial console (smc-resiliency S1 bench) (v0.12.8 -> v0.12.9)](#20261108_0155--pi-4-serial-console-smc-resiliency-s1-bench-v0128---v0129)
 - [20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)](#20261106_1630--ansible-wifi-smc_bases-on-ubuntu-2404-and-in-an-image-build-v0127---v0128)
-- [20261106_1605 — Parallels linked clone shares the source's address; Parallels lab behaviour (v0.12.6 -> v0.12.7)](#20261106_1605--parallels-linked-clone-shares-the-sources-address-parallels-lab-behaviour-v0126---v0127)
 
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 ->
   v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
@@ -78,6 +78,11 @@ Last reviewed: 2026-10-27
 - [20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)](#20261102_1756--smc_change-skip-probe-or-force-per-smc-close-v0116---v0117)
 
 ---
+
+## 20261119_1250 — correction: the kernel feeds an armed watchdog for ever before userspace (open_timeout 0); watchdog.open_timeout=60 resets a stuck trial; census: every Pi 8 GB (v0.15.2 -> v0.15.3)
+
+- references/07_hardware-overlay.md: the 2026-11-19 entry corrected in place (it called the arm-to-probe window the only unprotected one); open_timeout
+  facts (kernel docs, raspi config) and the bench result; no hard-lockup detector on the Pi 4; the fleet census (311 of 318, all 8 GB; 45 rct on 2022 bootloaders).
 
 ## 20261119_1205 — early watchdog fed by the kernel driver from its probe; EEPROM update from partition 1 on both 2022 bootloaders; census reads memory (v0.15.1 -> v0.15.2)
 
@@ -189,8 +194,3 @@ documentation, VERIFIED_PRIMARY).
 
 `references/08_ansible-authoring.md`: Learned 2026-11-06 (smc-resiliency S3 step 8): python3.10 pin, netaddr and ansible.posix on the controller, `smc_setup` sources.list, `smc_sshd` service name and
 60 x 60 s retries, `smc_network` reboot and netplan. manifest 0.12.7 -> 0.12.8.
-
-## 20261106_1605 — Parallels linked clone shares the source's address; Parallels lab behaviour (v0.12.6 -> v0.12.7)
-
-`references/11_vagrant-lab.md` 12.7: Learned 2026-11-06 (smc-resiliency SM clone): a linked clone keeps the machine-id, so DHCP hands it the source's address and `vagrant ssh <source>` silently
-reaches the clone; clone only a stopped VM; `prlctl exec` ends what it started and has no shell; a restart turns NIC offloads back on. manifest 0.12.6 -> 0.12.7.

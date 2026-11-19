@@ -1302,11 +1302,18 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > (serial console and runner transcript) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 25 · Falsifier: a healthy boot whose systemd starts
 > late being reset by the early watchdog on this kernel; a 2022 bootloader not taking an update staged on partition 1.
 > - Once the firmware has armed the watchdog, the kernel's `bcm2835-wdt` driver keeps it fed from its probe until systemd opens it: with systemd held back 30 s
->   (`init=` a script that sleeps, then execs systemd), systemd opened the watchdog about 41 s after the arm and nothing reset the box. The only unprotected window is
->   from the arm to the driver's probe, about 5 s on every boot read (2.9 s to the kernel, then 2.0 s), against a limit of about 16 s.
+>   (`init=` a script that sleeps, then execs systemd), systemd opened the watchdog about 41 s after the arm and nothing reset the box. The arm to the probe takes
+>   about 5 s (2.9 s to the kernel, then 2.0 s), against a limit of about 16 s. Corrected the same day: the feeding has no end by default. Linux's watchdog core pings a
+>   running hardware watchdog until userspace opens it, for ever when `watchdog.open_timeout` is 0 (kernel Documentation/watchdog/watchdog-parameters.rst; Ubuntu raspi
+>   6.8 has `CONFIG_WATCHDOG_OPEN_TIMEOUT=0`), so a trial stuck in the initramfs (root missing) stayed dark for 240 s until power was cut; with
+>   `watchdog.open_timeout=60` on the kernel command line it was reset 61 s after `/init` started and the firmware returned to the committed slot. Earlier text here said
+>   the arm-to-probe window was the only unprotected one; that was wrong.
 > - With the overlay in both slots a trial kernel of random bytes was reset alone on both tries and rejected at MAX_TRIES 2: no power cycle needed.
 > - An update staged on partition 1 (`BOOTFS=<p1 mount> rpi-eeprom-update -d -f <image>`) took 2022-04-26 and 2022-01-25 to 2023-01-11. Afterwards partition 1 held
 >   `RECOVERY.000`, `pieeprom.upd` and `pieeprom.sig` (the bootloader renames only `recovery.bin`), to be removed once the version reads right.
+>   - Every Pi 4 boot logs `watchdog: Hard watchdog permanently disabled`: no hard-lockup detector on the Pi 4, so only the soft-lockup detector, the hung-task check,
+>     `panic=` and the hardware watchdog can turn a freeze into a reset there.
+>   - Census 2026-11-19 (read-only, 318 listed Pis, 311 answered, 618 s): every Pi answering is an 8 GB board; 45 rct on 2022 bootloaders (35 on 2022-04-26, 10 on 2022-01-25).
 > - `pi_bootloader_census.sh` now also prints `mem_kb` (MemTotal) per Pi, and `summarise_survey.py --census` tallies memory per flavour in whole GB.
 >
 > No visual surface: no screenshot.
