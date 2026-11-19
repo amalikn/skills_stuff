@@ -34,6 +34,7 @@ Last rotated: 20261118_1754
 
 ## Unreleased
 
+- 2026-11-19 · `scripts/adoption/adopt_governed_files.py` `fix_justfile`: without a `py :=` line, `ai_it :=` now goes after the leading comment block; above it, the justfile header lost its summary and `govern` baselined a no-header finding (continuum-app). Test `test_ai_it_goes_below_the_header_comment` fails without the change.
 - 2026-11-19 · `scripts/records/rotate_records.py`: archive front matter now carries `Authority: record` and `Scope`, which the governance header standard requires (skill-pad's check failed on a fresh archive). `test_archive_has_no_blank_line_runs` asserts both.
 - 2026-11-19 · `scripts/checks/file_headers.py`: package-manager lock files (`LOCK_NAMES`: pnpm-lock.yaml and others) are generated data and leave the header check; a tracked `pnpm-lock.yaml` failed continuum's `just check` with no-header. Test `LockFiles` in `tests/test_doc_freshness_paths.py` fails without the change.
 - 2026-11-18 · `scripts/records/rotate_records.py` `archive_text`: trims each unit's trailing blank lines and ends the archive with one newline (archives failed MD012 in continuum after every `just budget --apply`); regression test `test_archive_has_no_blank_line_runs` (fails without the fix). `templates/.markdownlint-cli2.jsonc`: MD013 off, the markdown-wrap-toc hook owns width and measures it without link targets (operator, 2026-11-18). Open: the rotation audit reports a heading as LOST that is in neither the live record nor HEAD (`20261118_2150` in continuum); not investigated.

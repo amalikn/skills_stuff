@@ -208,7 +208,13 @@ def fix_justfile(text: str, roadmap: bool = False) -> str:
     if not re.search(r"^ai_it\s*:=", text, re.M):
         m = re.search(r"^py\s*:=.*$", text, re.M)
         line = f'ai_it := "{SKILL}"'
-        text = text[:m.end()] + "\n" + line + text[m.end():] if m else line + "\n" + text
+        if m:
+            text = text[:m.end()] + "\n" + line + text[m.end():]
+        else:
+            # After the leading comment block: that block is the justfile's header, and a line above it hides the summary (continuum-app, 2026-11-19).
+            head = re.match(r"(?:#[^\n]*\n)*", text)
+            end = head.end() if head else 0
+            text = text[:end] + ("\n" if end else "") + line + "\n" + ("\n" if end else "") + text[end:].lstrip("\n")
     if re.search(r"^check(?=[ \t:])", text, re.M) and "doc_freshness.py" not in text:
         m = re.search(r"^check(?=[ \t:])[^\n]*\n((?:[ \t]+[^\n]*\n)+)", text, re.M)
         if m:

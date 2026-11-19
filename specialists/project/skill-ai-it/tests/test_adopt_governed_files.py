@@ -69,6 +69,12 @@ class AdoptTest(unittest.TestCase):
             self.assertRegex(text, r"(?m)^check:\n    @\{\{py\}\} \"\{\{ai_it\}\}/scripts/checks/doc_freshness.py\" --project-root \. --check$")
             self.assertEqual(adopt.justfile_gaps(text), [])
 
+    def test_ai_it_goes_below_the_header_comment(self):
+        """Without a py variable, ai_it lands after the leading comment block, so the header summary survives (2026-11-19)."""
+        text = "# Project tasks summary line.\n# List tasks: just --list\n\nci:\n    echo ok\n"
+        fixed = adopt.fix_justfile(text)
+        self.assertTrue(fixed.startswith("# Project tasks summary line.\n# List tasks: just --list\n\nai_it := "), fixed[:120])
+
     def test_aligned_ai_it_and_missing_require_venv(self):
         text = 'py        := "python3"\nai_it     := "/x"\n\ncheck:\n    @echo c doc_freshness.py\n'
         fixed = adopt.fix_justfile(text)
