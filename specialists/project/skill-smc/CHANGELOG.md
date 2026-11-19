@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_0358
+Last rotated: 20261120_0435
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_0440 — lint-baseline-refresh.sh fixed: no delete before generate, output taken from the project root, git common dir (v0.16.3 -> v0.16.4)](#20261120_0440--lint-baseline-refreshsh-fixed-no-delete-before-generate-output-taken-from-the-project-root-git-common-dir-v0163---v0164)
 - [20261120_0400 — rise deploy on a stage Iridium bench Pi; controller symlinks; cost per task (v0.16.2 -> v0.16.3)](#20261120_0400--rise-deploy-on-a-stage-iridium-bench-pi-controller-symlinks-cost-per-task-v0162---v0163)
 - [20261120_0250 — clone rename fixed; check-mode limits, --diff leaks the join token, the interface-activation hook loop (v0.16.1 -> v0.16.2)](#20261120_0250--clone-rename-fixed-check-mode-limits---diff-leaks-the-join-token-the-interface-activation-hook-loop-v0161---v0162)
 - [20261120_0050 — bench Pi inventoried on iridium and rise; Pi field image has no serial console and mounts root with discard (v0.16.0 -> v0.16.1)](#20261120_0050--bench-pi-inventoried-on-iridium-and-rise-pi-field-image-has-no-serial-console-and-mounts-root-with-discard-v0160---v0161)
@@ -38,9 +39,15 @@ Last reviewed: 2026-10-27
 - [20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)](#20261116_1736--fleet-facts-for-a-remote-conversion-boot-partition-free-root-label-x86-disk-layouts-v0144---v0145)
 - [20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)](#20261111_1318--smc_lynis-no_pubkey-7a9a1d9d5b27c6d3-and-apt_key_subkey_probesh-v0143---v0144)
 - [20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)](#20261111_1213--urlcapture-prune-galiwinku-checked-v0142---v0143)
-- [20261111_1105 — urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)](#20261111_1105--urlcapture-prune-first-run-read-uc-old-files-needs-the-cw-proxy-v0141---v0142)
 
 ---
+
+## 20261120_0440 — lint-baseline-refresh.sh fixed: no delete before generate, output taken from the project root, git common dir (v0.16.3 -> v0.16.4)
+
+- scripts/ansible/lint-baseline-refresh.sh: deleted the baseline before generating (a failed run left none), looked for ansible-lint's output in .git/
+  (it writes `.ansible-lint-ignore` in the project root, left as a stray untracked file), and broke in a linked worktree. Now it takes the output
+  from the root and restores the root file, writes to the git common dir as the delta gate reads it, keeps `.prev`, merges by default (`--replace`).
+  Smoke run on an ansible-wifi iridium worktree: 3932 entries in 45 s (smc-resiliency 20261120).
 
 ## 20261120_0400 — rise deploy on a stage Iridium bench Pi; controller symlinks; cost per task (v0.16.2 -> v0.16.3)
 
@@ -188,8 +195,3 @@ kaltjiti-fergon-smc01.
 ## 20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)
 
 `references/19_smc-change-role.md`: galiwinku's check result; the applies wait for the operator.
-
-## 20261111_1105 — urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)
-
-`references/19_smc-change-role.md`: Learned 2026-11-11, the canary's first cron prune (13 GB to two months, root 49% to 26%) and `tsh_each.sh`'s apn-cluster default
-(`PROXY=teleport.communitywifi.net.au` for nbn_accelerate boxes); the read recipe is `uc-old-files` (was `months`, `590716b`).
