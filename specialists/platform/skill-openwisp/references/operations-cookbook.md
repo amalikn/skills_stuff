@@ -3,8 +3,10 @@ Title: OpenWISP operations cookbook
 Category: skill-reference
 Status: current
 Authority: Installed OpenWISP images 26.09.0 (modules 1.3) and InfluxDB 1.8.10 source and version-matched official documentation; the cited lines win over this summary
-Scope: Exact, version-matched syntax for OpenWISP REST auth, controller devices, monitoring pushes and backfill, InfluxDB, Celery workers, custom metrics and checks, notifications, organizations, docker-openwisp settings and management commands
-Last reviewed: 2026-10-05
+Scope: >-
+  Exact, version-matched syntax for OpenWISP REST auth, controller devices, monitoring pushes and backfill, InfluxDB, Celery workers, custom metrics and
+  checks, notifications, organizations, docker-openwisp settings and management commands
+Last reviewed: 2026-11-19
 Summary: Ten verified recipes with a gotcha and a source line each, cited to the installed 26.09.0 image source and the versioned 26.09 docs; re-verify on any version change.
 ---
 
@@ -176,8 +178,8 @@ Live read on 2026-10-05: database `openwisp`; retention policies `autogen` 26280
 `memory`, `traffic`, `wifi_clients`, `data_collected`, `device_data`, plus custom keys); device series carry tags `content_type` and `object_id` (the device UUID), and per-interface or per-peer
 metrics add their `main_tags` (for example `ifname`).
 
-Gotcha: `device_data` (the raw status document) is written to the `short` policy, so it disappears after 24 hours while charts persist; query `short.device_data` explicitly. Its tag is `pk`, not `object_id`. If the InfluxDB HTTP auth
-is on, add `-username`/`-password` from the environment rather than the command line.
+Gotcha: `device_data` (the raw status document) is written to the `short` policy, so it disappears after 24 hours while charts persist; query `short.device_data` explicitly.
+Its tag is `pk`, not `object_id`. If the InfluxDB HTTP auth is on, add `-username`/`-password` from the environment rather than the command line.
 
 Source: `/opt/openwisp/openwisp/settings.py:216-226`, `$P/openwisp_monitoring/device/settings.py:55-56`, `$P/openwisp_monitoring/device/utils.py:4-21`
 (`SHORT_RP = "short"`, `DEFAULT_RP = "autogen"`), `$P/openwisp_monitoring/device/base/models.py:155,264` (`device_data` written with
@@ -212,7 +214,8 @@ docker exec <celery-monitoring-container> tail -n 50 /opt/openwisp/logs/celery_m
   `OPENWISP_CELERY_*_COMMAND_FLAGS`.
 
 Gotcha: a plain container restart can leave a stale `/opt/openwisp/celery*.pid`; the detached worker then refuses to start, pushes still return 200 and `write_device_metrics` piles up unprocessed.
-Clearing pidfiles and restarting are writes to the running platform: get the operator's go-ahead first, then clear the pidfiles before restarting (only `celerybeat.pid` is removed by the start script). A Redis `MISCONF` (RDB snapshot cannot persist) also kills writes; check `redis-cli INFO persistence`.
+Clearing pidfiles and restarting are writes to the running platform: get the operator's go-ahead first, then clear the pidfiles before restarting
+(only `celerybeat.pid` is removed by the start script). A Redis `MISCONF` (RDB snapshot cannot persist) also kills writes; check `redis-cli INFO persistence`.
 
 Source: `/opt/openwisp/openwisp/celery.py:25-124`, `/opt/openwisp/init_command.sh:77-123`, `/opt/openwisp/openwisp/settings.py:181-185`, `$P/openwisp_monitoring/device/tasks.py:83-84`,
 `$P/openwisp_monitoring/monitoring/tasks.py:36-72`; https://openwisp.io/docs/26.09/docker/user/settings.html.

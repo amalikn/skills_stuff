@@ -4,7 +4,7 @@ Category: skill-reference
 Status: current
 Authority: Installed OpenWISP images 26.09.0 (openwisp-radius 1.3, openwisp-monitoring 1.3) source and the versioned 26.09 documentation; the cited lines win over this summary
 Scope: openwisp-radius with FreeRADIUS, organisation RADIUS settings, users and groups, registration, captive portal integration, accounting, and monitoring Wi-Fi sessions
-Last reviewed: 2026-10-05
+Last reviewed: 2026-11-19
 Summary: How a public Wi-Fi sign-up and terms-acceptance flow maps onto openwisp-radius and FreeRADIUS, what this install has switched on, and what monitoring's Wi-Fi sessions do and do not record.
 ---
 

@@ -4,7 +4,7 @@ Category: skill-reference
 Status: current
 Authority: Installed OpenWISP 26.09.0 image source (controller 1.3 connection app, firmware-upgrader 1.3) and the versioned 26.09 docs; cited lines win
 Scope: Credentials, DeviceConnection, the command API, config push over SSH, connection failures, firmware categories, builds, images, upgrades, the firmware queue and safety
-Last reviewed: 2026-10-05
+Last reviewed: 2026-11-19
 Summary: How OpenWISP reaches a device over SSH to run commands, trigger config fetches and reflash firmware, verified against the installed 26.09.0 source, with the safety rails each step has.
 ---
 

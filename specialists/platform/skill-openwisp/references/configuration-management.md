@@ -4,7 +4,7 @@ Category: skill-reference
 Status: current
 Authority: Installed OpenWISP images 26.09.0 (openwisp-controller 1.3, netjsonconfig 1.3) source and the versioned 26.09 documentation; the cited lines win over this summary
 Scope: Templates, configuration variables, netjsonconfig backends, config status, checksum fetch, the openwisp-config agent, auto-registration, device groups, VPN automation and subnet division
-Last reviewed: 2026-10-05
+Last reviewed: 2026-11-19
 Summary: How OpenWISP builds, versions and delivers device configuration, verified against the installed 26.09.0 source, and what none of it does for closed-firmware devices.
 ---
 

@@ -5,9 +5,9 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-openwisp platform pack — canonical, cross-project source of reusable OpenWISP product knowledge
-Last reviewed: 20261005_1600
-Summary: Agent guidance for maintaining and using skill-openwisp: artifact roles, the package contract, the write-back obligation, the boundary with skill-nautobot, and the gates to run before calling
-work complete.
+Last reviewed: 2026-11-19
+Summary: Agent guidance for maintaining and using skill-openwisp: artifact roles, the package contract, the write-back obligation, the boundary with skill-nautobot, the gates to run before calling
+work complete, and the skill-coder rule for code changes.
 
 # AGENTS.md
 

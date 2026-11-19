@@ -4,8 +4,10 @@ Category: skill-reference
 Status: current
 Authority: Installed OpenWISP 26.09.0 images (/opt/openwisp, modules 1.3), PostgreSQL 15.8 and InfluxDB 1.8.10 tool usage, and the versioned 26.09 docs; cited lines win
 Scope: docker-openwisp and ansible-openwisp2, process roles, PostGIS, Redis and InfluxDB, scaling knobs, backup, restore order and verification, and geo data
-Last reviewed: 2026-10-05
-Summary: What each OpenWISP process and store holds, how to back it up and restore it in a safe order, and how geo data is modelled, verified against the installed 26.09.0 images.
+Last reviewed: 2026-11-19
+Summary: >-
+  What each OpenWISP process and store holds, how to back it up and restore it in a safe order, and how geo data is modelled, verified against the installed
+  26.09.0 images. Learned entries add session and CSRF cookie settings for serving by IP or beside another Django app, and restarting nginx after the API.
 ---
 
 # OpenWISP deployment, backup, recovery and geo
@@ -112,7 +114,7 @@ Decision: map every symptom to the process that owns it before restarting anythi
 - Each worker writes its log to `/opt/openwisp/logs/celery*.log`; the container's foreground process is `tail -f` of those logs.
 
 Gotcha: because workers are started `--detach` and the container's PID 1 is `tail`, a dead worker leaves the container Up. Prove liveness with `celery -A openwisp inspect ping` and `ps`, not with
-`docker ps`.
+`docker ps`. nginx resolves the API container's address only at start: restart nginx after the API (Learned 2026-10-13 at the end).
 
 Source: `/opt/openwisp/init_command.sh` (module branches); `/opt/openwisp/uwsgi.ini`; `/opt/openwisp/celery.py`; `docker inspect` of the websocket container (command `supervisord ... daphne.conf`) and
 its `ps` (read-only, 2026-10-05); https://openwisp.io/docs/26.09/docker/user/architecture.html (snapshot `documents/openwisp-26.09-docker-architecture.html`).

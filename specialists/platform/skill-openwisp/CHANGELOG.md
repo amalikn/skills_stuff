@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-19 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; body rules aligned with their Learned entries, Summaries and Scopes updated, dated "not installed" statements scoped to the image they describe. Review window now 90 days (`--window-days 90` in the justfile).
+
 ## 2026-10-07 — deterministic navigation-control upgrade
 
 <!-- skill-ai-it-upgrade: 2026-10-07-snake-case-recipes-v1 -->
