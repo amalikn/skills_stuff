@@ -8,7 +8,6 @@ Last reviewed: 2026-11-19
 Summary: >-
   skill-smc's structure: activation surface (SKILL.md), navigation index (RUNBOOK.md), numbered references 01-19, manifest, justfile, .archcore/ rules, the Claude Code symlink install,
   key decisions (progressive disclosure, scripts by job, branch reach, short SKILL.md) and related workspaces.
-Review by: 2026-11-26
 ---
 
 # Architecture — skill-smc

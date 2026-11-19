@@ -6,7 +6,6 @@ Authority: canonical
 Scope: Root README.md of skill-goal-guard
 Last reviewed: 2026-11-19
 Summary: "Front door for people: what the project is, quick start, folder index and where the detail lives."
-Review by: 2026-11-26
 Budget: 200 lines, 25 KB
 ---
 

@@ -8,7 +8,6 @@ Last reviewed: 2026-11-19
 Summary: >-
   Router for skill-smc, not the knowledge store: read order, source priority, task-to-reference routing (references 01-19), project context files, update rules, drift handling,
   generated context, companion consistency and compaction recovery.
-Review by: 2026-11-26
 ---
 
 # AI Navigation — skill-smc

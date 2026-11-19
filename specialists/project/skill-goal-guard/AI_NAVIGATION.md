@@ -8,7 +8,6 @@ Last reviewed: 2026-11-19
 Summary: >-
   Agent entrypoint (skill-ai-it managed block): read order, source priority, context files, task routing, script navigation, governance checks,
   companion consistency, drift handling, update rules, generated context, compaction recovery, audit and the answer contract.
-Review by: 2026-11-26
 ---
 
 # AI Navigation — skill-goal-guard

@@ -6,7 +6,6 @@ Authority: canonical
 Scope: Root README.md of skill-smc
 Last reviewed: 2026-11-19
 Summary: Canonical specialist pack for SMC (Site Management Controller) box operations and ansible-wifi authoring.
-Review by: 2026-11-26
 Budget: 200 lines, 25 KB
 ---
 

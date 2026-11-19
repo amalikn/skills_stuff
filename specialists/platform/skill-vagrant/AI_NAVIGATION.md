@@ -6,7 +6,6 @@ Authority: local-supplement
 Scope: Root AI_NAVIGATION.md of skill-vagrant
 Last reviewed: 2026-11-19
 Summary: "Router for agents working on skill-vagrant: read order, source priority, task and domain routing to the fourteen references, checks, and pack artifacts."
-Review by: 2026-12-09
 Budget: 150 lines, 12 KB
 ---
 

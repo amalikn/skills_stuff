@@ -1,5 +1,5 @@
 Title: Baseline v2 Unsatisfied-Gate Failure Classification
-Category: routing-evaluation-analysis
+Category: routing-evaluation-report
 Status: current
 Scope: The 22 gate-unsatisfied hard failures in Baseline v2, classified before any capability-taxonomy change
 Last reviewed: 20260901_2015

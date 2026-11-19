@@ -8,7 +8,6 @@ Last reviewed: 2026-11-19
 Summary: >-
   Canonical, cross-project platform pack for Proxmox VE 9.x: nodes and clusters, storage, networking and SDN, VMs and containers, access control and API tokens, the API and CLIs, backups, HA,
   upgrades, security, metrics, and OpenTofu with the bpg/proxmox provider; folder index, key files and governance pointers.
-Review by: 2026-12-09
 Budget: 200 lines, 25 KB
 ---
 
