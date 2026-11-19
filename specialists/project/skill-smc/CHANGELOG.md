@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261119_1830 — role_rerun_cost.py promoted; Ookla rate limit; Bitbucket fleet trust gap (v0.15.8 -> v0.15.9)](#20261119_1830--role_rerun_costpy-promoted-ookla-rate-limit-bitbucket-fleet-trust-gap-v0158---v0159)
 - [20261119_1650 — Periodic review; 90-day window; identifiers redacted; smc_update_php.yml retired (v0.15.7 -> v0.15.8)](#20261119_1650--periodic-review-90-day-window-identifiers-redacted-smc_update_phpyml-retired-v0157---v0158)
 - [20261119_1648 — topology_variance.py promoted; vars guard matches on command text (v0.15.6 -> v0.15.7)](#20261119_1648--topology_variancepy-promoted-vars-guard-matches-on-command-text-v0156---v0157)
 - [20261119_1638 — smc_inventory_add: every flavor, templates owned by the skill, Iridium written as plain true (v0.15.5 -> v0.15.6)](#20261119_1638--smc_inventory_add-every-flavor-templates-owned-by-the-skill-iridium-written-as-plain-true-v0155---v0156)
@@ -41,6 +42,15 @@ Last reviewed: 2026-10-27
 - [20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)](#20261109_2300--pi-4-ab-on-a-gpt-card-bootloader-firmware-and-update-traps-smc-resiliency-s1-v0129---v0130)
 
 ---
+
+## 20261119_1830 — role_rerun_cost.py promoted; Ookla rate limit; Bitbucket fleet trust gap (v0.15.8 -> v0.15.9)
+
+- `scripts/ansible/role_rerun_cost.py` promoted (recipes `role_rerun_cost`, `role_rerun_cost_test`; catalogue rows; 3 offline tests): tasks per role and always-working patterns of a
+  playbook's roles. First run on iridium: smc_bases + smc_prometheus 588 tasks, 22 per-item package loops; 0.25 s.
+- Ref 06: Ookla rate limit (rc 173) at the old speedtest license step; the fix `35276a62` was rise-only until 2026-11-19 (iridium `11daa2b5`, master `48bf6839`). Contents block
+  also gains the 2026-10-20 netplan entry it lacked.
+- Ref 13: Bitbucket entry, fleet trust not rolled out (records show alkngarrija-smc01 only; Pad TASK-21). Earlier the same day: "Now live" entry (`743576a2`).
+- Ref 18: the smc_bases converge-and-skip plan and the ansible-wifi Pad workspace links (this pack has its own `.pad.toml`, `45d20393`).
 
 ## 20261119_1650 — Periodic review; 90-day window; identifiers redacted; smc_update_php.yml retired (v0.15.7 -> v0.15.8)
 

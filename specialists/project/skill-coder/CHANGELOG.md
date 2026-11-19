@@ -31,6 +31,8 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-19: languages/ansible/learned-lint-and-tests.md Learned 2026-11-19, a one-line edit inside an old task brings all its findings into an ansible-lint delta gate.
+- 2026-11-19: languages/ansible/learned-execution.md Learned 2026-11-19 (o), `git` with `update: no` never fetches and never rewrites the remote URL; updating on repoints it.
 - 2026-11-19: languages/shell/learned-safety.md Disputed 2026-11-19, the `rc=$?` EXIT-trap snippet still exits 0 on macOS `/bin/sh` after a `set -u` failure; use a finished flag.
 - 2026-11-19: languages/python/learned-other.md Learned 2026-11-19, `__doc__` is `str | None` (argparse description fallback).
 - 2026-11-19: references/version-control-and-review.md Learned 2026-11-19, `--cacheinfo` path from the repo top; commit from a private index when another session's entries are staged; then reset your

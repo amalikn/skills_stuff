@@ -102,3 +102,11 @@ lower dir) and more specs exist under `files/changes/` (apt-info-no-update, bitb
 > **Learned 2026-10-26** · VERIFIED_PRIMARY · local-only `roles/smc_change` now contains controller journals, explicit safe resume,
 > read-only assess and phase timing; `justfile` catalogs four recovery fixtures. Source: role README and `references/19_smc-change-role.md`,
 > Interrupted-change recovery section. No new diagnostic script was added to this pack; the helpers are runtime implementation owned by the role.
+
+> **Learned 2026-11-19** · VERIFIED_PRIMARY · Source: local-knowledge-ansible `08fccaa`; `pad bootstrap` from each folder · Falsifier: a folder below resolving to
+> another Pad workspace. Two things built here: (1) `plans/smc-bases-converge-skip-plan-20261119_1808.md`, approved, not started: cut no-change re-runs of
+> smc_bases over satellite (Phase 0 lab baseline on malik-rct01 with `tc netem`; Phase 1 cheaper tasks; Phase 2 a per-role stamp + probe skip gate; Phase
+> 3 pinned checksums; Phase 4 canary). Measured input: `just role_rerun_cost` (this pack). (2) Pad workspace `ansible-wifi` (operator, 2026-11-19), shared by
+> this folder, the ansible-wifi clone and this pack: `.pad.toml` here (tracked), a separate real file in `ansible-wifi-root-governance/.pad.toml`
+> symlinked into the clone (excluded in `.git/info/exclude`, like AGENTS.md; separate so a rewrite through the clone never touches this folder's file),
+> and `skill-smc/.pad.toml` in skills_stuff (overrides the `skills` link for this pack only). Plan PLAN-12 with TASK-13..17; follow-ups TASK-18..21.

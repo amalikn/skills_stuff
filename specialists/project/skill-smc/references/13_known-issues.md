@@ -1753,6 +1753,10 @@ match supplied host pattern`. A `-l` of that host alone stops with "no hosts to 
     Jenkins is not fixed anywhere merged. Older SMCs need no remote rewrite: the Ubuntu wifi, community-backend and tstik clones delete `dest` and re-clone, and the kohana clone is `update: no`, which
     never fetches (ansible-core `modules/git.py`: the `elif not update:` branch returns before `set_remote_url`). The operator's clone and controllers need `git remote set-url origin
     git@ssh.bitbucket.org:activ8me/ansible-wifi.git` and a known_hosts line for the new name (done on the Mac 2026-11-19).
+  - **Fleet trust not rolled out (2026-11-19, VERIFIED from the run records):** the `bitbucket-ssh-hostname` smc_change's `tracker-summary.csv` holds one host, alkngarrija-smc01 (applied 2026-11-09
+    13:19). smc_bases adds the `ssh.bitbucket.org` line only on a build, so SMCs in service most likely still lack it, and their next clone from the new address (the rct-tstik-iridium-update spec
+    reads the smc_bases repo variables) fails with "Host key verification failed". Read before the next Iridium or tstik batch: `just trust <hosts>` in `files/changes/bitbucket-ssh-hostname/`
+    (read-only, 3 lines per name when done); a fleet read from the slurp was refused by the agent's permission check, so no SMC beyond the records was read. Pad: ansible-wifi TASK-21.
 
 ## 2026-11-10 — `smc_system` never grew the root LV on nbn_accelerate (FIXED on rise `0fc086ca`, unpushed)
 

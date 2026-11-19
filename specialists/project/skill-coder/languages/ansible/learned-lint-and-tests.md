@@ -41,3 +41,11 @@ Part of [ansible.md](../ansible.md).
 >
 > The shell module runs `/bin/sh`, which is dash on Ubuntu, and older dash has no `pipefail`, so `set -o pipefail;` alone may fail there. Add it and `args: executable: /bin/bash`. Check what the
 > pipeline's new exit status does to the task: `screen -ls` exits non-zero even when it lists sessions, harmless only because the task had `failed_when: false`.
+
+> **Learned 2026-11-19** · ansible-lint delta gates, task granularity · VERIFIED_PRIMARY · Source: ansible-wifi `.git/hooks/pre-push` on iridium, push of the Bitbucket host
+> change (`ffd62722`); first push refused with 8 findings, second passed · Falsifier: a gate that reports only the edited line's own findings
+>
+> A one-line edit inside an old task (here only the repo URL string) makes the gate treat the whole task as new, so every finding the task always had comes in: `fqcn[action-core]`,
+> `name[casing]`, `latest[git]`. A mechanical find-and-replace across old tasks therefore costs a lint fix per touched task. Fix the cheap ones in the same commit (FQCN, a capital
+> letter in the name; check nothing references the old task name, e.g. `--start-at-task`), and leave a task untouched when its fix would change behaviour (here `latest[git]` would
+> have needed an invented `version:` on a dead CentOS-only task), never an inline `noqa`.

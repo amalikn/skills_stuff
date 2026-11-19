@@ -142,6 +142,15 @@ role_stale_facts role *ARGS: _require-venv
 role_stale_facts_test: _require-venv
     @{{py}} -m unittest scripts/ansible/test_role_stale_facts.py
 
+# What a no-change re-run costs: tasks per role and always-working patterns (per-item package loops, delete-then-clone, apt refresh). Read-only.
+# Example: just role_rerun_cost --playbook smc_bases.yml --playbook smc_prometheus.yml
+role_rerun_cost *ARGS: _require-venv
+    @{{py}} scripts/ansible/role_rerun_cost.py --repo "{{ansible_wifi_repo}}" {{ARGS}}
+
+# Offline test of role_rerun_cost.py on a fixture repo; <1 s.
+role_rerun_cost_test: _require-venv
+    @{{py}} -m unittest scripts/ansible/test_role_rerun_cost.py
+
 # One ansible-playbook per SMC, all at once (plan unless --apply), so a stalled SMC never holds the others; nohup, a log per SMC.
 # Example: just smc_change_parallel --apply gumbarnun gurrbalgun banana-well   (CHANGES SMCs with --apply; refuses an SMC already being run)
 smc_change_parallel *ARGS:

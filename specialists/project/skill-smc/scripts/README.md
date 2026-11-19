@@ -31,7 +31,7 @@ folder; tests sit beside the script they test.
 | `ansible/` | ansible-wifi repo work: change reach,           | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), |
 |            |   smc_change records, inventory adds, lint      |   [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_change_parallel.sh](ansible/smc_change_parallel.sh), [role_stale_facts.py](ansible/role_stale_facts.py), [test_role_stale_facts.py](ansible/test_role_stale_facts.py), [test_smc_change_parallel.py](ansible/test_smc_change_parallel.py), |
 |            |   gates, local-knowledge index                  |   [smc_inventory_add.py](ansible/smc_inventory_add.py), [test_smc_inventory_add.py](ansible/test_smc_inventory_add.py), [topology_variance.py](ansible/topology_variance.py), [test_topology_variance.py](ansible/test_topology_variance.py), [smc_mark_iridium.py](ansible/smc_mark_iridium.py), |
-|            |                                                 |   [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh) |
+|            |                                                 |   [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh), [role_rerun_cost.py](ansible/role_rerun_cost.py), [test_role_rerun_cost.py](ansible/test_role_rerun_cost.py) |
 | `access/`  | getting onto a box: Teleport tunnel and         | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [ssh_handshake_time.sh](access/ssh_handshake_time.sh), [test_ssh_handshake_time.sh](access/test_ssh_handshake_time.sh), [teleport_sessions.py](access/teleport_sessions.py) |
 |            |   sessions, the autossh backdoor                |                                                                                                                                       |
 | `probes/`  | read-only probes of named boxes over Teleport   | [ata_settings_read.py](probes/ata_settings_read.py), [smc_freeze_probe.sh](probes/smc_freeze_probe.sh), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_resiliency_probe.sh](probes/pi_resiliency_probe.sh), [smc_writers_probe.sh](probes/smc_writers_probe.sh), | , [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh), [apt_key_subkey_probe.sh](probes/apt_key_subkey_probe.sh), [test_apt_key_subkey_probe.py](probes/test_apt_key_subkey_probe.py) |
@@ -67,6 +67,8 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 |                                     |                        |                         |   from the flavour — that mistake is what it exists to prevent                                              |
 | [local_knowledge_index.sh](ansible/local_knowledge_index.sh) | Local files only       | **read-only**           | Lists repo symlinks into the local-knowledge folder (and their ignore status), recent entries per folder,   |
 |                                     |                        |                         |   uncommitted changes. ~1 s. `just local_knowledge_index`                                                   |
+| [role_rerun_cost.py](ansible/role_rerun_cost.py) | Local files only       | **read-only**           | Tasks per role and always-working patterns of a playbook's roles (re-run cost on a slow link); reads |
+|                                     |                        |                         |   role task files only, never vars. 0.25 s. `just role_rerun_cost`                                       |
 | [smc_change_compare_records.py](ansible/smc_change_compare_records.py) | Local files only       | **read-only**           | Pairs two sets of smc_change run records by host, change and mode and reports IDENTICAL or the differences, |
 |                                     |                        |                         |   volatile fields ignored. <0.1 s. `just smc_change_compare`                                                |
 | [ansible_change_reach.py](ansible/ansible_change_reach.py) | Local ansible-wifi     | **read-only**           | Per commit: on the deploy branch (and origin) or not, the branches holding it, and whether a cherry-pick    |
@@ -601,6 +603,15 @@ Lists an Ansible role's facts that can carry over between two runs of the role i
 read with `is defined` or `| default(`. Host facts outlive an `import_playbook`, and `meta: clear_facts` keeps `set_fact` values. With `--reset-file`, the facts that file sets count as reset.
 **Safety: read-only**, reads files. Exit 0 nothing open, 1 open facts, 2 bad usage. On smc_change (2026-11-05, `--reset-file tasks/load_spec.yml`) 11 stay open by design: re-set every run before use
 (stage and phase clocks, start, queue, probe source, journal, rollback-only `rb_*`). Recipes: `just role_stale_facts`, `just role_stale_facts_test`.
+
+### `role_rerun_cost.py`
+
+What a no-change re-run of a playbook costs on a slow link: named tasks per role (`roles/<role>/tasks/*.yml`, comments skipped) and the patterns that work on every run: per-item package loops,
+`update_cache` without `cache_valid_time`, `get_url` without `checksum`, `command`/`shell`/`expect` against their `creates:` guards, git checkouts and `state: absent` (a delete before a re-clone).
+Roles come from `--playbook` (`roles:` lists) or `--role`; `--json` for a machine reading. **Safety: read-only**, reads role task files only, never vars. Exit 0 printed, 2 bad usage or missing role.
+Runtime: 0.25 s for smc_bases + smc_prometheus (33 roles). First run 2026-11-19 on iridium: 588 tasks, 22 per-item package loops, 2 apt refreshes without `cache_valid_time`, 4 downloads without
+checksum, 65 command/shell/expect with 6 `creates:`. Origin: the smc_bases converge-and-skip plan (local-knowledge-ansible `plans/smc-bases-converge-skip-plan-20261119_1808.md`). Recipes: `just
+role_rerun_cost`, `just role_rerun_cost_test`.
 
 ### `smc_change_parallel.sh`
 

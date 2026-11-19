@@ -4,6 +4,8 @@
 
 - [6. Failure Mode Reference](#6-failure-mode-reference)
 - [A full `netplan apply` leaves isc-dhcp-server in systemd's start limit (2026-09-27)](#a-full-netplan-apply-leaves-isc-dhcp-server-in-systemds-start-limit-2026-09-27)
+- [A netplan change to a VLAN, bond or bridge does not take effect until a reboot (2026-10-20)](#a-netplan-change-to-a-vlan-bond-or-bridge-does-not-take-effect-until-a-reboot-2026-10-20)
+- [Ookla rate limit fails a deploy at the speedtest license step (rc 173, 2026-11-03 and 2026-11-19)](#ookla-rate-limit-fails-a-deploy-at-the-speedtest-license-step-rc-173-2026-11-03-and-2026-11-19)
 
 ---
 
@@ -676,3 +678,29 @@ public function sendData($data, $length = 0)
   ```
 
   At the next cisofy key rotation, compare `gpg --show-keys` of the key URL with the pinned id and bump it.
+
+## Ookla rate limit fails a deploy at the speedtest license step (rc 173, 2026-11-03 and 2026-11-19)
+
+> **Learned 2026-11-19** · Speedtest by Ookla 1.2.0.84 (aarch64 Pi, rct) · VERIFIED_PRIMARY · Source: smc_bases run on haji-ali-smc01, 2026-11-19 17:56;
+> read-only probes on the same SMC 17:58; ansible-wifi `35276a62` (rise, 2026-11-04) · Falsifier: a `speedtest -L` or `-V` that writes
+> `/root/.config/ookla/speedtest-cli.json` while Ookla answers "Limit reached"
+> `smc_speedtest_exporter` used to accept Ookla's license with `expect: speedtest --format json`, which runs a full speed test. When Ookla
+> rate-limits the site's public IP the CLI exits **173** with "Limit reached: Too many requests received. You may run the Speedtest CLI on a
+> single computer for personal, non-commercial use only" and the whole deploy stops. Nothing on the SMC gets past it while the limit lasts:
+> `speedtest --accept-license --accept-gdpr -L` (server list) also returns 173, `-V` makes no request, and the license file is written only after
+> a successful request (absent on haji-ali after all three). The exporter needs no separate step: it passes `--accept-license --accept-gdpr`
+> on every run, so the task was removed. Speed-test metrics for a limited site stay empty until Ookla lifts the limit (duration not published).
+> **Branch reach:** the fix sat on `rise` only from 2026-11-04; it reached `iridium` (`11daa2b5`) and `master` (`48bf6839`) on 2026-11-19 after
+> haji-ali failed on `iridium`. Check `just ansible_change_reach 35276a62` before a run from another branch.
+>
+> ```yaml
+> # ansible-wifi roles/smc_speedtest_exporter/tasks/main.yml, removed by 35276a62
+> - name: Accept the Ookla speedtest cli license
+>   expect:
+>     command: speedtest --format json      # a full speed test: rc 173 when Ookla rate-limits the IP
+>     responses:
+>       'Do you accept the license\? \[type YES to accept\]: ': "YES"
+>     creates: /root/.config/ookla/speedtest-cli.json
+> # roles/smc_speedtest_exporter/files/speedtest_exporter.py (unchanged): every run accepts it
+> cmd = ["speedtest", "--format=json-pretty", "--progress=no", "--accept-license", "--accept-gdpr", "--interface=" + interface]
+> ```
