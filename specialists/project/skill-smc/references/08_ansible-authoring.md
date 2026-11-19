@@ -65,8 +65,9 @@ Use `scripts/ansible/smc_inventory_add.py` (`just smc_inventory_add ...`), plan 
 - Site name is the host without its `-smcNN` suffix (`map-smc01` -> `map`, `php-rct-smc01` -> `php-rct`).
 - **The templates live in this skill since 2026-11-19** (operator: "make this generator part of skill-smc ... able to manage different flavors"): `templates/inventory/common/` (group_vars, host_vars,
   the standard one-NIC topology) and `templates/inventory/nbn_accelerate/topology_vars.j2` (sized x86 layout). Topology per flavor, VERIFIED_PRIMARY by a content survey of every topology file on
-  2026-11-19 (table below). The tool prints the NIC names and VLAN IDs it will write; match them with `tsh ssh root@<host> ip -br link` before a run. rcp host_vars also need the VoIP keys
-  (`smc_bases_sip_*`, `smc_bases_extension_*`, `smc_bases_main_did`) by hand: the tool does not write secrets.
+  2026-11-19, branch `iridium` (table below; re-run with `just topology_variance`: on `master` the same day rcp had 34 files in 25 layouts). The tool prints the NIC names and VLAN IDs it will write;
+  match them with `tsh ssh root@<host> ip -br link` before a run. rcp host_vars also need the VoIP keys (`smc_bases_sip_*`, `smc_bases_extension_*`, `smc_bases_main_did`) by hand: the tool does not
+  write secrets.
 - **The repo's generator templates are wrong in two ways (2026-11-19):** rct `host_vars.j2` writes `smc_bases_iridium: "{{ smc_bases_iridium }}"`, a string `"True"`, where all 52 existing Iridium
   host_vars carry a plain `true`; and every topology template has a trailing space after `subnets:` and two spaces after `last:` (twice), which the ansible-lint delta gate in the pre-push hook blocks
   on `iridium` (the `rise` gate passed it). The fleet's own topology files carry the same whitespace, so a clone is tidied before writing. The tool refuses a quoted Iridium value, an empty interface

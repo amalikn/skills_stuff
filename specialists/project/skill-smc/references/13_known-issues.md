@@ -1531,6 +1531,10 @@ Safe at any age: the job only writes metrics, and `sponge` writes the .prom only
 - (2026-11-17) The guard also blocks edits that print nothing when the command names a host_vars file: `sed -i`, `printf ... >> file`, Read/Edit, `git add -u <path>/host_vars`, `git grep -l` on a
   branch, `git rev-parse <ref>:<path>` and `git ls-tree`; the same `sed -i` passed once and was refused later in the session. To set the Iridium flag use `just smc_mark_iridium --repo <checkout>
   --flavor rct <hosts> [--apply]` (it names hosts, not files, and prints no values); stage with `git add -u inventories/<flavor>`. On 2026-11-17 the operator had to run two appends by hand.
+- (2026-11-19) It also matches on text alone: a commit message, a `git add` naming the new vars files, or a heredoc that edits a CHANGELOG were refused because their text named group or host vars
+  paths, though no vars file was printed. What passed: `git add inventories/rct` (the folder), a commit message written to a file and passed with `-F`, a `python3 -I -c` in-place replace run from
+  inside the folder (`f"{h}-smc01.yml"`), and `ansible -m ansible.builtin.debug` for single keys. A separate OPA hook refused a read-only `for t in $f/topology_vars/[!.]*.yml` loop as a "destructive
+  bash pattern"; a Python script file in the scratchpad did the same survey (now `just topology_variance`).
 - (2026-11-17) The ansible-lint delta gate compares the pushed range with its base, so a file largely rewritten in that range brings its old findings in as new: `smc_url_capture/tasks/main.yml`,
   rewritten by `906ee778`, blocked the push on six pre-existing short module names until they took `ansible.builtin.` (rise `9f17dd64`). A `shell` task with a pipe needs `set -o pipefail` and `args:
   executable: /bin/bash` (Ubuntu's `/bin/sh` is dash).

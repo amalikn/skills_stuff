@@ -171,3 +171,12 @@ Part of [python.md](../python.md).
 >     struct.pack("!BBH", 0x81, 0x80 | 126, n) if n < 1 << 16 else struct.pack("!BBQ", 0x81, 0x80 | 127, n)
 >   return head + mask + bytes(b ^ mask[i % 4] for i, b in enumerate(data))
 > ```
+
+> **Learned 2026-11-19** · Python, a CLI that takes its argparse description from the module docstring · VERIFIED_PRIMARY (pyright reported `"splitlines" is not a known attribute of "None"`
+> in the editor; 0 errors after the change, and `python3 -OO` prints `--help`) · Source: skills_stuff `specialists/project/skill-smc/scripts/ansible/smc_inventory_add.py` @ 57816c98 · Falsifier: a
+> type checker that types a module's `__doc__` as `str`, or `python -OO` keeping docstrings.
+> `__doc__` is `str | None`: `python -OO` strips docstrings and a module may have none, so `__doc__.splitlines()[0]` fails the type check and crashes under `-OO`. Give it a fallback in place.
+>
+> ```python
+> p = argparse.ArgumentParser(description=(__doc__ or "Add one new SMC to an ansible-wifi inventory.").splitlines()[0])
+> ```

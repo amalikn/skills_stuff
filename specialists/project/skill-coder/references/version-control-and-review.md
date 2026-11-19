@@ -101,6 +101,19 @@ Summary: >-
 > `AGENTS.md` had lived only on this disk for nine days and every fresh clone failed one test. Export the index (`git checkout-index -a --prefix=<dir>/`) and test there
 > before a push; a fixture a local exclude hides is added with `git add -f`, and a pattern meant for real guidance files is anchored (`/AGENTS.md`) or scoped.
 
+> **Learned 2026-11-19** · git, a shared index that already holds another session's staged entries · VERIFIED_PRIMARY (skills_stuff 57816c98 committed 12 paths while a staged rename of
+> another session stayed staged and out of the commit) · Source: skill-smc CHANGELOG 20261119_1638 · Falsifier: a commit made this way that contains a path not in the entries file
+> Two refinements of the 2026-10-26 entry. `git update-index --cacheinfo <mode>,<sha>,<path>` takes the path from the repo top, not the current folder: from a subfolder it fails with exit 128 until
+> the `git rev-parse --show-prefix` is put in front. And when the shared index also holds another session's staged files, a plain `git commit` takes them and a pathspec commit takes the working
+> tree (both sessions' hunks); commit from a private index built from HEAD plus only your staged entries, and the shared index keeps the other session's entries staged.
+>
+> ```bash
+> git diff --cached --name-only -- <your folder> > mine.txt
+> git ls-files -s -- $(cat mine.txt) > entries.txt
+> GIT_INDEX_FILE=/scratch/idx git read-tree HEAD && GIT_INDEX_FILE=/scratch/idx git update-index --index-info < entries.txt
+> GIT_INDEX_FILE=/scratch/idx git commit -F msg.txt
+> ```
+
 ## Gate on the exit code
 
 Gate a commit, push or deploy on the validation command's own exit code, never through a pipe or a `;`:

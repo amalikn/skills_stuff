@@ -177,6 +177,15 @@ smc_inventory_add *args: _require-venv
 test_smc_inventory_add: _require-venv
     @{{py}} scripts/ansible/test_smc_inventory_add.py
 
+# Group each flavor's topology_vars files by layout (names and whitespace normalised): the standard layout and the sites off it. Read-only.
+# Example: just topology_variance --show 3 rct rcp
+topology_variance *args: _require-venv
+    @{{py}} scripts/ansible/topology_variance.py {{args}}
+
+# Offline test for topology_variance.py.
+test_topology_variance: _require-venv
+    @{{py}} scripts/ansible/test_topology_variance.py
+
 # Mark SMCs as Iridium (smc_bases_iridium: true) in an ansible-wifi checkout. Plan only unless args include --apply.
 # Example: just smc_mark_iridium --repo /Volumes/Data/_ansible/ansible-wifi --flavor rct host-a,host-b
 smc_mark_iridium *args: _require-venv
