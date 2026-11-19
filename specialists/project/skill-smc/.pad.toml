@@ -1,0 +1,3 @@
+# Pad workspace link: ties this folder to the operator's Pad workspace "ansible-wifi", shared by the ansible-wifi clone, this local-knowledge folder and skill-smc
+# (operator, 2026-11-19). Repo trackers and plans stay the truth; tasks live in pad.db under ~/.pad, backed up nightly by skill-pad scripts/pad_backup.sh.
+workspace = "ansible-wifi"
