@@ -74,6 +74,13 @@ Source: governance `storage-routing-guide.md` (2026-04-23). A project's own layo
 > missing file and reports a miss. Prune by count after each run, newest first by modification time, never touching `cache/tmp` (uploads in progress). On macOS `~/.cache` and `/Volumes/Data`
 > can share one APFS container, so a cache in the home folder fills the data volume too.
 
+> **Learned 2026-11-19** · act 0.2.98 cache server and proxies · VERIFIED_PRIMARY (`act --help`; job logs through Squid) · Source: continuum-app `justfile` `ci-linux` (a1fefdd) · Falsifier: act binding
+> to loopback by default, or `@actions/cache` sending plain HTTP through the proxy
+> act's cache server binds by default to the machine's outbound (LAN) address, so other hosts on the LAN can reach it. Bind it to loopback on a fixed port and give jobs an external URL:
+> `--cache-server-addr 127.0.0.1 --cache-server-port 18790 --cache-server-external-url http://host.docker.internal:18790`. Behind a forward proxy the cache client tunnels with CONNECT even
+> to that `http://` URL ("tunneling socket could not be established, statusCode=403" until CONNECT to the cache port was allowed). Pass both cases of the proxy variables with `--env` and keep
+> `localhost,127.0.0.1` in NO_PROXY for services inside the job.
+
 > **Learned 2026-11-19** · project-pinned CLI tools through mise, installed into the working cache · USER_STATED (operator: "that is the standard we follow in all the projects") ·
 > Source: continuum-app `.mise.toml`, `justfile` · Falsifier: none, a rule. Pin tools in `.mise.toml` (`act = "0.2.98"`, `jj = "0.47.1"`) and point mise's data at the project's working cache, not
 > `~/.local/share/mise` or Homebrew; recipes run the tools through `mise exec --` so no shell activation is needed.

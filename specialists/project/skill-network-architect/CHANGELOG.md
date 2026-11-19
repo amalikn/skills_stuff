@@ -11,6 +11,11 @@ Kind: log
 
 # Changelog
 
+## 20261119_2214 — Containers: isolating CI jobs on a developer Mac (v2.3.5 -> v2.3.6)
+
+- `references/datacenter-cloud-containers.md` Learned 2026-11-19: host.docker.internal exposes loopback-published Mac services to any bridge; an internal network plus an
+  allowlisting forward proxy isolates CI; build the allowlist from a logged discovery run (continuum-app DL-034).
+
 ## 20261119_1855 — APN: the warehouse field image as the bench base, its network as shipped (v2.3.4 -> v2.3.5)
 
 - `operator/apn/site-boxes-and-platforms.md` item 40: the shipped site Pi (untagged eth0 unaddressed, VLAN 500/501 bridges, MANAGEMENT chain, Teleport by

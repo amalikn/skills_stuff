@@ -108,6 +108,20 @@ egress:    | pod |-->| SNAT to node IP |-->| NAT gateway / firewall |-->| extern
 service:   client --> Service VIP (kube-proxy or eBPF DNAT) --> one EndpointSlice pod
 ```
 
+> **Learned 2026-11-19** · Docker on a developer Mac (OrbStack): isolating CI jobs that run third-party build code · VERIFIED_PRIMARY (probes from containers, OrbStack, Docker Compose 5.8.0) ·
+> Source: continuum-app `scripts/ci_proxy.sh`, `ci/squid/` (a1fefdd), probe `scripts/ci_network_probe.sh` · Falsifier: a container on a `--internal` network resolving or reaching
+> `host.docker.internal`
+> A container on an ordinary user-defined bridge reaches every service the Mac publishes on 127.0.0.1 through `host.docker.internal` (the bridge gateway itself was closed), so "loopback only"
+> does not keep dev services from CI jobs. A `docker network create --internal` network removes that: `host.docker.internal` no longer resolves, and the internet is unreachable too. Give such a
+> job its downloads through a forward proxy on two networks (the internal one and an egress one) with an exact-host allowlist, deny and log the rest, and probe both ways: an allowed host
+> answers 200 through the proxy; a non-listed host, each dev service port through the proxy, and every direct route fail. Build the allowlist from a logged discovery run (allow all, log
+> hosts), not from memory: one job needed 14 hosts, including apt sources baked into its image.
+>
+> ```text
+> job (internal net) --HTTPS_PROXY--> squid (internal + egress) --allowlist--> internet
+>                                       '--> host.docker.internal:<cache port> only
+> ```
+
 ## Patterns and anti-patterns
 
 | Pattern                             | Use when                           | Anti-pattern                         | Why it fails                              |
