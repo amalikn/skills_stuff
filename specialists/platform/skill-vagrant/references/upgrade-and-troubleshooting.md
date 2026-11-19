@@ -91,6 +91,9 @@ and shutdown in the lab (observed 2026-11-07).
 > ```
 >
 > Read the guest clock **before** blaming a service inside it: an `x509` error carrying a future date is the clock, not the certificate. No visual surface: no screenshot.
+>
+> Fixed at the source in that lab: `ansible-apn/Vagrantfile` @ 8de6b11 adds a `$CLOCK_GUARD` provisioner with `run: "always"` — `systemctl unmask chrony`,
+> `systemctl enable --now chrony`, restart if not active, then print the guest clock — so every `vagrant up` re-asserts it, not just the first boot.
 
 > **Learned 2026-11-18** · Vagrant 2.4.x with vagrant-parallels, a guest whose `/etc` is read-only · VERIFIED_PRIMARY (observed once) · Source: smc-resiliency
 > docs/overview/smc-lab-test-record-20261107_1931.md section 24.4 @ f5c16060 · Falsifier: `vagrant up` completing its guest set-up on a read-only `/etc`.
