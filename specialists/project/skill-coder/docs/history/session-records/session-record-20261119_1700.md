@@ -185,6 +185,9 @@ See the list appended below (35 commits across skills_stuff, governance and loca
 - Second close (operator: "slurp close again"): Step 6b re-run over the whole chat after the push; writeback-status showed every engaged skill clean except skill-coder's untracked
   regenerated `.ai-context/` (committed with this update, as eight other packs track theirs); freshness survey after the last commit (baseline ignored): 0 overdue in 15 packs; skill-smc 1, its `scripts/README.md` (another session's file, no `Last reviewed`, baselined; in its SCRATCHPAD follow-ups).
 
+- After the second close: tracking skill-coder's `.ai-context/` turned its check red (`no-header` on the generated pack, seen only once tracked); fixed in skill-ai-it file_headers SKIP_PARTS
+  with a test (`2a5d56c0`); skill-coder check 0, both packs' tests 0; pushed.
+
 ## Follow-ups by owner
 
 - **Operator:** history rewrite for the redacted identifiers (or accept: private repos); whether company-domain packs (skill-smc, skill-cambium) keep site data; Go/Rust indentation rule; ADR-007
