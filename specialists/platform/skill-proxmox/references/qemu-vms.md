@@ -4,8 +4,10 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/qemu-vms.md
-Last reviewed: 2026-11-07
-Summary: VM definition: q35, CPU, OVMF and the EFI disk, boot order, disks and import, cloud-init, guest agent, serial console, templates, clones, migration, resource mappings and virtiofs.
+Last reviewed: 2026-11-19
+Summary: >-
+  VM definition: q35, CPU, virtual watchdog, OVMF and the EFI disk, boot order, disks and import, cloud-init, guest agent, serial console, templates, clones, migration, resource
+  mappings and virtiofs.
 ---
 
 # QEMU VMs
@@ -34,7 +36,9 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
 - `machine: q35` gives a PCIe topology; PCIe passthrough and vIOMMU need it. i440fx remains the default machine type. `VERIFIED_PRIMARY`.
 - CPU type: the backend default is `kvm64`; the GUI default for new VMs is `x86-64-v2-AES`. Pick the oldest `x86-64-v*` level every node in the cluster supports so live migration keeps working.
   `VERIFIED_PRIMARY` (qm chapter, CPU Type).
-- A virtual watchdog is available: `watchdog: model=i6300esb|ib700,action=reset|...`. `VERIFIED_PRIMARY` (qm.conf).
+- A virtual watchdog is available: `watchdog: model=i6300esb|ib700,action=reset|...`. `VERIFIED_PRIMARY` (qm.conf). The guest still needs its driver loaded (Ubuntu's cloud
+  kernel ships none and its deny-list blocks auto-loading), and a q35 guest already has the ICH9 TCO timer through `iTCO_wdt` without this device (Learned 2026-11-07 (b) and
+  2026-11-08, below).
 
 ## UEFI: OVMF and the EFI disk
 
@@ -69,7 +73,8 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
   master `QemuBootOrderLib.c`, `BdsPlatform.c` calls `SetBootOrderFromQemu` each boot).
 - **OVMF honours `BootNext`** as the UEFI spec says: BDS caches it, deletes the variable before booting the option, then boots it, so a one-shot trial falls back to `BootOrder` at the next reset.
   `VERIFIED_PRIMARY` (edk2 master `BdsEntry.c`). That Proxmox's packaged OVMF matches edk2 master here is `VERIFIED_SECONDARY` (same upstream, not diffed).
-- Consequence for A/B or boot-slot tests in a VM: put every slot's disk in `boot: order=`, or the firmware deletes the other slot's entry; and remember this rewrite is OVMF behaviour that real
+- Consequence for A/B or boot-slot tests in a VM: put every slot's disk in `boot: order=`, or the firmware deletes the other slot's entry (an entry whose file is missing or
+  not loadable is deleted too: recreate it before arming a trial, Learned 2026-11-07 (b) below); and remember this rewrite is OVMF behaviour that real
   hardware firmware does not have.
 
 ## Disks and import
@@ -150,7 +155,8 @@ placed or migrated where the mapping exists. Types: `/cluster/mapping/pci`, `/cl
 
 ## Worked example config
 
-The smc-resiliency x86 lab (`spike/x86/tofu/main.tf`, uncommitted on 2026-11-07) creates this VM through OpenTofu; `qm config` on the lab node read back (2026-11-07, keys and IDs trimmed):
+The smc-resiliency x86 lab (`spike/x86/tofu/main.tf`, uncommitted on 2026-11-07; now `lab/infra/proxmox/tofu/main.tf`) creates this VM through OpenTofu; `qm config` on the lab node read back
+(2026-11-07, keys and IDs trimmed):
 
 ```text
 bios: ovmf

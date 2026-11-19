@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/monitoring-and-metrics.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: Health reads, external metric servers, the notification system (targets, matchers, events, templates), and the pack's read-only node report.
 ---
 

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/opentofu-bpg-provider.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: OpenTofu with the bpg/proxmox provider: versions, token authentication, when the ssh block is needed, import_from versus download_file, a UEFI VM resource, lock file and state.
 ---
 
@@ -128,7 +128,8 @@ PVE stores: [qemu-vms.md](qemu-vms.md#worked-example-config).
 
 ## Worked example
 
-smc-resiliency `spike/x86/` (uncommitted on 2026-11-07): `x86_lab.sh` (`setup | init | plan | up | down | ip`, writes only with `--apply`), `pve_lab_setup.sh` (the root step) and `tofu/*.tf`. The
+smc-resiliency `spike/x86/` (uncommitted on 2026-11-07; since moved to `lab/infra/proxmox/`): `x86_lab.sh` (`setup | init | plan | up | down | ip`, writes only with `--apply`), `pve_lab_setup.sh`
+(the root step) and `tofu/*.tf`. The
 wrapper's core:
 
 ```bash

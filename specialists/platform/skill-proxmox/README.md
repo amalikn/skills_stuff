@@ -4,8 +4,10 @@ Category: readme
 Status: current
 Authority: canonical
 Scope: Root README.md of skill-proxmox
-Last reviewed: 2026-11-07
-Summary: "Canonical, cross-project platform pack for Proxmox VE 9.x: nodes and clusters, storage, networking and SDN, VMs and containers, access control and API tokens, the API and CLIs, backups,..."
+Last reviewed: 2026-11-19
+Summary: >-
+  Canonical, cross-project platform pack for Proxmox VE 9.x: nodes and clusters, storage, networking and SDN, VMs and containers, access control and API tokens, the API and CLIs, backups, HA,
+  upgrades, security, metrics, and OpenTofu with the bpg/proxmox provider; folder index, key files and governance pointers.
 Review by: 2026-12-09
 Budget: 200 lines, 25 KB
 ---
@@ -23,8 +25,10 @@ engaging project. Its structure mirrors [skill-nautobot](../skill-nautobot/READM
 ## Folder index
 
 - [references/](references/) — focused content files, one per domain; routed from [SKILL.md](SKILL.md) and [AI_NAVIGATION.md](AI_NAVIGATION.md)
-- [documents/](documents/) — verbatim source captures. Index: [documents/readme.md](documents/readme.md); per-date folder index: [documents/research-sources-20261107/readme.md](documents/research-sources-20261107/readme.md)
+- [documents/](documents/) — verbatim source captures. Index: [documents/readme.md](documents/readme.md); per-date folder indexes:
+  [documents/research-sources-20261107/readme.md](documents/research-sources-20261107/readme.md), [documents/research-sources-20261109/readme.md](documents/research-sources-20261109/readme.md)
 - [scripts/](scripts/) — tested stdlib-only helpers and the governance checker. Index: [scripts/README.md](scripts/README.md)
+- [docs/](docs/) — time-bound session records (`<slug>-YYYYMMDD_hhmm.md`)
 - [tests/](tests/) — offline package contract, helper tests, scenarios, evaluation procedure
 - [.archcore/](.archcore/) — durable decisions, rules and plans (10 documents, accepted 2026-11-09). Index: [.archcore/index.guide.md](.archcore/index.guide.md)
 

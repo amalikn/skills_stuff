@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/capability-extension.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: Search order before building around Proxmox VE: core, Proxmox products (PBS, Datacenter Manager), the bpg provider, supported seams, then FOSS; common needs and where each is met.
 ---
 

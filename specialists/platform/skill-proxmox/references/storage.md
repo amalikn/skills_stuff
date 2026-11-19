@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/storage.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: Storage types and content types in storage.cfg, the import content type, hyperconverged Ceph with pveceph, and how to choose a storage.
 ---
 

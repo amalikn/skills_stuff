@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/ha-and-replication.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: ha-manager requirements, managing resources, 9.x placement rules, fencing and maintenance mode, and ZFS storage replication with pvesr.
 ---
 

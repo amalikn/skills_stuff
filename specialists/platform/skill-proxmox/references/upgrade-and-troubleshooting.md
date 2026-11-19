@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/upgrade-and-troubleshooting.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: Package repositories, minor updates, the 8-to-9 upgrade, what changed in 9.0 to 9.2 (including arm64), known issues, and triage.
 ---
 

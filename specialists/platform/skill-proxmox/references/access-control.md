@@ -4,8 +4,10 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/access-control.md
-Last reviewed: 2026-11-07
-Summary: Users, realms, roles, privileges, ACLs, pools, two-factor authentication and privilege-separated API tokens, with the least-privilege pattern for automation and the token audit.
+Last reviewed: 2026-11-19
+Summary: >-
+  Users, realms, roles, privileges, ACLs, pools, two-factor authentication and privilege-separated API tokens, with the least-privilege pattern for automation (per-VMID grants on 9.2),
+  the token audit.
 ---
 
 # Access control
@@ -91,7 +93,8 @@ breaking changes).
 3. One **user** in the `pve` realm with no password.
 4. One **privilege-separated token** (`--privsep 1`, with `--expire` when the work has an end).
 5. ACLs to **both** the user and the token: the role on `/pool/<pool>`, each `/storage/<id>` it writes, `/sdn/zones/localnetwork` for plain bridges and `/sdn/zones/<zone>`
-   for each SDN zone its guests join; the read role on `/nodes`.
+   for each SDN zone its guests join; the read role on `/nodes`. On 9.2 also the role on `/vms/<id>` for each ID in the automation's range: a pool ACL does not
+   cover a VM while it is being created (Learned 2026-11-07, PVE 9.2.26, below).
 6. The secret goes straight from `token add` into a password manager in the same command and is never printed or written to disk.
 7. Split by capability when several tools share a node: a read-only audit role (`VM.Audit`, `Datastore.Audit`, `Sys.Audit`,
    `Pool.Audit`, `SDN.Audit`) for pollers, a lifecycle role for provisioning, a console role, a backup role, each on its own token.
@@ -101,7 +104,8 @@ breaking changes).
 
 ## Worked example: an OpenTofu identity
 
-smc-resiliency's x86 lab (`spike/x86/pve_lab_setup.sh`, uncommitted on 2026-11-07, re-read after its zone ACL was added; host and password-manager paths removed) applies the pattern; plan by
+smc-resiliency's x86 lab (`spike/x86/pve_lab_setup.sh`, uncommitted on 2026-11-07, since moved to `lab/infra/proxmox/pve_lab_setup.sh`, re-read after its zone ACL was added; host and password-manager
+paths removed) applies the pattern; plan by
 default, writes only with `--apply`, every step
 skips what exists:
 

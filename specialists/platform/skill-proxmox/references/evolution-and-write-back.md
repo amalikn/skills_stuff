@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/evolution-and-write-back.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: The standing write-back contract: Learned entry format, evidence with every entry, release reconciliation, promoting a project script, and the project layer.
 ---
 

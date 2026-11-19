@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/backup-and-restore.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: vzdump modes and targets, Proxmox Backup Server 4.x (S3 datastores, encrypted sync), prune-backups retention, restores, and what a backup is not.
 ---
 

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/networking-and-sdn.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: ifupdown2 Linux bridges, VLAN-aware bridges, SDN zones and VNets, DHCP with PVE IPAM, and the SDN.Use permissions guests need on networks.
 ---
 
@@ -56,6 +56,7 @@ iface vmbr0 inet manual
 ```
 
 ## SDN zones and VNets
+
 | Zone   | How it isolates                              | Spans nodes                  | Needs                                             |
 | ------ | -------------------------------------------- | ---------------------------- | ------------------------------------------------- |
 | Simple | Isolated bridge, no physical port            | No (traffic local per node)  | NAT or routing for outside access                 |
@@ -84,7 +85,8 @@ iface vmbr0 inet manual
   the per-VNet config beside `ethers`; read the SDN side with `pvesh get /cluster/sdn/zones`, `/cluster/sdn/vnets` and
   `/cluster/sdn/vnets/<vnet>/subnets`. Neighbour tables on `vmbr0` (`ip neigh show dev vmbr0`) never see a guest on a VNet.
 - Pin the NIC's MAC (`mac_address` in the provider's `network_device`) so the IPAM binding, and so the address, survives destroy and
-  recreate. A small range reuses addresses: clear stale `known_hosts` entries for a reused address before trusting a host-key warning.
+  recreate while the VM runs: PVE IPAM drops the binding when a VM stops and may hand its address to another, so size the subnet for the most VMs
+  that run at once (Learned 2026-11-07, isolated bridge, below). A small range reuses addresses: clear stale `known_hosts` entries for a reused address before trusting a host-key warning.
 
 ## Permissions on networks
 

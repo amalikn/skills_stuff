@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/architecture-and-cluster.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: Node stack, pmxcfs and /etc/pve, Corosync clusters and quorum, QDevice, removing a node, arm64 hosts, and design rules for node identity.
 ---
 

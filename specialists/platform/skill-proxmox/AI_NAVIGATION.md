@@ -4,8 +4,8 @@ Category: navigation
 Status: current
 Authority: local-supplement
 Scope: Root AI_NAVIGATION.md of skill-proxmox
-Last reviewed: 2026-11-07
-Summary: This file is a router, not the full knowledge store.
+Last reviewed: 2026-11-19
+Summary: Routes read order, sources, tasks and pack domains.
 Review by: 2026-12-09
 Budget: 150 lines, 12 KB
 ---

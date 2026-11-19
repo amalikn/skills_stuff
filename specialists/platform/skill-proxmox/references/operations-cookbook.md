@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/operations-cookbook.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: Exact, verified syntax for common tasks: orienting on a node, pvesh API calls, users and tokens, storage, VMs, containers and updates, each marked read or write.
 ---
 
@@ -90,7 +90,7 @@ qm config <vmid>; qm status <vmid>; qm pending <vmid>                           
 qm set <vmid> --efidisk0 <storage>:1,format=qcow2,efitype=4m,pre-enrolled-keys=0  # write
 qm set <vmid> --scsi0 <storage>:0,import-from=<storage>:import/<file>.qcow2       # write: import a disk image
 qm set <vmid> --serial0 socket --vga serial0                                      # write: serial console
-qm set <vmid> --boot order=scsi0;net0                                             # write
+qm set <vmid> --boot 'order=scsi0;net0'                                           # write
 qm terminal <vmid>                                                                # attach to serial0
 qm guest cmd <vmid> network-get-interfaces                                       # read, needs the guest agent
 qm template <vmid>; qm clone <template> <newid> --name <n> [--full]               # writes

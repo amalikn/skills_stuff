@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/api-and-cli.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: The REST API as the one interface, authentication with tickets and tokens, the pvesh, pveum, qm, pct and pvesm CLIs, tasks, and safe readers and writers.
 ---
 

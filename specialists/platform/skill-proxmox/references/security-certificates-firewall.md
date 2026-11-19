@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/security-certificates-firewall.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: Node certificates and ACME, the PVE firewall and its nftables backend, and a hardening checklist.
 ---
 

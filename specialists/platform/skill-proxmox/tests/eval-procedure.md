@@ -4,7 +4,7 @@ Category: test-guide
 Status: current
 Authority: canonical
 Scope: skill-proxmox tests/eval-procedure.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: How to run and grade the client evaluation matrix for skill-proxmox: invocation modes, what to record, and the pass, partial and fail rubric.
 ---
 

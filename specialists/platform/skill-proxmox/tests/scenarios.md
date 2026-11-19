@@ -4,18 +4,43 @@ Category: test-guide
 Status: current
 Authority: canonical
 Scope: skill-proxmox tests/scenarios.md
-Last reviewed: 2026-11-07
-Summary: Scenario bank for skill-proxmox evaluation: each prompt with its expected first reference, decision points and prohibited conclusions.
+Last reviewed: 2026-11-19
+Summary: >-
+  Scenario bank for skill-proxmox evaluation (P-S01 to P-S20): each prompt with its expected first reference, decision points and prohibited conclusions.
 ---
 
 # Proxmox VE scenarios
 
 Each scenario passes only when the expected first reference, decision points and prohibited conclusions are met.
 
+## Contents
+
+- [P-S01 — Least-privilege OpenTofu identity](#p-s01--least-privilege-opentofu-identity)
+- [P-S02 — Getting a cloud image without widening the token](#p-s02--getting-a-cloud-image-without-widening-the-token)
+- [P-S03 — Applying updates](#p-s03--applying-updates)
+- [P-S04 — A second boot entry disappears](#p-s04--a-second-boot-entry-disappears)
+- [P-S05 — Unauthorized production mutation](#p-s05--unauthorized-production-mutation)
+- [P-S06 — import_from fails](#p-s06--import_from-fails)
+- [P-S07 — Token cannot see or use a bridge](#p-s07--token-cannot-see-or-use-a-bridge)
+- [P-S08 — HA on two nodes](#p-s08--ha-on-two-nodes)
+- [P-S09 — Choosing a backup mode](#p-s09--choosing-a-backup-mode)
+- [P-S10 — Node health before work](#p-s10--node-health-before-work)
+- [P-S11 — Browser certificate warning](#p-s11--browser-certificate-warning)
+- [P-S12 — Privileged container from automation](#p-s12--privileged-container-from-automation)
+- [P-S13 — A missing feature](#p-s13--a-missing-feature)
+- [P-S14 — Engagement closeout](#p-s14--engagement-closeout)
+- [P-S15 — Configuration writes fail on one node](#p-s15--configuration-writes-fail-on-one-node)
+- [P-S16 — An agent-less VM's address](#p-s16--an-agent-less-vms-address)
+- [P-S17 — Sizing a hyperconverged Ceph pool](#p-s17--sizing-a-hyperconverged-ceph-pool)
+- [P-S18 — Alerting on failed backups and fencing](#p-s18--alerting-on-failed-backups-and-fencing)
+- [P-S19 — Live-migrating a VM with a passed-through device](#p-s19--live-migrating-a-vm-with-a-passed-through-device)
+- [P-S20 — Removing a node and checking current releases](#p-s20--removing-a-node-and-checking-current-releases)
+
 ## P-S01 — Least-privilege OpenTofu identity
 
 Prompt: Set up an identity for OpenTofu to create lab VMs on one node. Trigger: yes. First reference: `access-control.md`, then `opentofu-bpg-provider.md` and `networking-and-sdn.md`. Pool, custom
-role, Sys.Audit read role, password-less user, `--privsep 1` token, ACLs to user and token on the pool, storages and SDN zones, secret straight to a password manager. Prohibit `PVEAdmin` or
+role, Sys.Audit read role, password-less user, `--privsep 1` token, ACLs to user and token on the pool, storages and SDN zones (on 9.2 also `/vms/<id>` for the VMID range), secret straight to a
+password manager. Prohibit `PVEAdmin` or
 `Administrator` on `/`, a `privsep 0` token, or printing the secret.
 
 ## P-S02 — Getting a cloud image without widening the token

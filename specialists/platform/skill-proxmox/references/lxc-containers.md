@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: skill-proxmox references/lxc-containers.md
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: pct containers from pveam and OCI templates, privileged versus unprivileged, automation limits, and when to choose a VM instead.
 ---
 

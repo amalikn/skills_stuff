@@ -4,7 +4,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-proxmox platform pack — canonical, cross-project source of reusable Proxmox VE and bpg/proxmox knowledge
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: >-
   Agent guidance for maintaining and using skill-proxmox: artifact roles, the package contract, the write-back obligation, and the gates to
   run before calling work complete; scope and decisions are linked, not restated.
