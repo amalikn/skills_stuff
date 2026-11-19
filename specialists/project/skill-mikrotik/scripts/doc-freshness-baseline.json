@@ -1,3 +1,4 @@
 {
- "no-header:RUNBOOK.md": "2026-10-10"
+  "no-header:450gmk3_v1.1.py": "450gmk3_v1.1.py: the team's provisioning script, a verbatim read-only reference (AGENTS.md; sha256 1f346831 in references/06_provisioning.md); a header would change its bytes",
+  "no-header:RUNBOOK.md": "2026-10-10"
 }

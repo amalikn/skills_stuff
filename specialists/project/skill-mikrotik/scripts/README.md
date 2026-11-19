@@ -4,8 +4,8 @@ Category: script-inventory
 Status: current
 Authority: local-supplement
 Scope: Reusable tooling for MikroTik devices behind SMC boxes
-Last reviewed: 2026-10-08
-Summary: Read-only RouterOS access through a Teleport port-forward, a fleet survey, a deep per-site capture, and the pack's governance checker.
+Last reviewed: 2026-11-19
+Summary: Read-only RouterOS access through a Teleport port-forward, a fleet survey and its summary, a deep per-site capture, SNMP through the SMC, MIB and vendor-page helpers, firmware fetch, the approval-gated MAC reset and SNMP community tools, and the pack's governance checker.
 ---
 
 # scripts/
@@ -20,6 +20,7 @@ Raw output goes to the investigation folder you name (under `local-knowledge-ans
 |                            |   a flavor                                 |                                |   parallel sites                                                                          |
 | `mikrotik_site_capture.sh` | One site's switch and AP                   | **read-only**                  | Full log, port monitor, bridge layout, `/export terse` (secrets hidden by RouterOS 7);    |
 |                            |                                            |                                |   `WAIT_UP=1` waits for the SMC                                                           |
+| `survey_summary.py`        | A survey CSV (and Prometheus SMC uptime)   | **read-only**                  | Ranges, outliers, devices power-cycled since their SMC booted; `just summary`             |
 | `check_governance.py`      | This pack's own files                      | **read-only**                  | Stdlib only; `just check`                                                                 |
 | `mib_oids.py`              | A local MIB file                           | **read-only**                  | MIKROTIK-MIB object name -> numeric OID, syntax, units, status; optional name regex       |
 | `confluence_fetch.py`      | help.mikrotik.com (web)                    | **read-only**                  | One documentation page by Confluence id, saved as text with its source and version line   |

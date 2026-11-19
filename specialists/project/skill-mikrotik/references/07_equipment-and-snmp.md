@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: The two MikroTik models in the fleet, their vendor specs, SNMP state and MIBs, firmware status, and the vendor sources kept in this pack
-Last reviewed: 2026-10-08
+Last reviewed: 2026-11-19
 Summary: >-
   RB450Gx4 switch and Metal 52 ac AP: specs from MikroTik's pages, SNMP read-only on the canary units and off elsewhere, MIBs for RouterOS 7.8 and 7.24.5, no changelog fix for the
   IPQ-4019 kernel failures, and the cpu-frequency warning. The OID list is snmp-oid-registry.yaml.
@@ -106,7 +106,7 @@ say the default became auto in later versions and the warning goes when the sett
 ## MAC address commands
 
 VERIFIED_PRIMARY, `references/vendor-sources-20261007_1640/ros-ethernet.txt`: "reset-mac-address ([id, name]) | Reset MAC address to manufacturers default." and "orig-mac-address (read-only: MAC)
-| Original Media Access Control number of an interface." The page states no version, so the command on 7.8 is still to be shown on a unit (known issue 11).
+| Original Media Access Control number of an interface." The page states no version; the command was shown on 7.8 at glen-hill on 2026-10-08 (known issue 11).
 `references/vendor-sources-20261007_1640/ros-bridging-and-switching.txt`: "admin-mac … only has an effect when auto-mac is set to no", "The current MAC address and its priority level are saved
 and will be reused after a reboot", and "it is recommended to disable "auto-mac" and manually specifying the MAC address by using "admin-mac"."
 

@@ -4,8 +4,8 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Failure signatures involving the site MikroTik, with the evidence that confirmed each
-Last reviewed: 2026-10-07
-Summary: Whole-trunk silence at arrkapa, SMC-port link flapping at delye, and how TSTIK power-cycles show in switch uptime.
+Last reviewed: 2026-11-19
+Summary: Whole-trunk silence at arrkapa (a switch kernel-failure and watchdog reboot loop), SMC-port link flapping at delye, how TSTIK power-cycles show in switch uptime, and fleet link-down patterns.
 ---
 
 # MikroTik Failure Modes
@@ -15,6 +15,8 @@ Summary: Whole-trunk silence at arrkapa, SMC-port link flapping at delye, and ho
 - [Whole trunk silent while the SMC keeps transmitting (arrkapa, rct, 2026-10-02 onward)](#whole-trunk-silent-while-the-smc-keeps-transmitting-arrkapa-rct-2026-10-02-onward)
 - [SMC-port link flapping (delye, rct, 2026-08-17/18)](#smc-port-link-flapping-delye-rct-2026-08-1718)
 - [Switch uptime shorter than the SMC's](#switch-uptime-shorter-than-the-smcs)
+- [Port-level link-down patterns across the fleet (rct survey 2026-10-07)](#port-level-link-down-patterns-across-the-fleet-rct-survey-2026-10-07)
+- [Switch kernel failure and watchdog reboot loop (arrkapa 2026-10, batavia-downs earlier)](#switch-kernel-failure-and-watchdog-reboot-loop-arrkapa-2026-10-batavia-downs-earlier)
 
 ## Whole trunk silent while the SMC keeps transmitting (arrkapa, rct, 2026-10-02 onward)
 
@@ -51,7 +53,7 @@ How to spot it: ether1 `link-downs` in the thousands in `scripts/mikrotik_fleet_
 
 The `rct` TSTIK app cuts the switch rail for 10 s when the switch or AP stops answering pings for ~11 minutes, and every ~71 minutes while the internet ping fails. A switch whose uptime is much
 shorter than the SMC's has been power-cycled; on `rct` that is the first explanation to test. Confirm against the SMC's `/var/www/html/rct-tstik/storage/logs/laravel.log*` ("Resetting Switch", UTC
-timestamps) with skill-smc `scripts/tstik-capture.sh`.
+timestamps) with skill-smc `scripts/capture/tstik-capture.sh`.
 
 ## Port-level link-down patterns across the fleet (rct survey 2026-10-07)
 

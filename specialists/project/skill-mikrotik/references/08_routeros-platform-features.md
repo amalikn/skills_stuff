@@ -6,10 +6,10 @@ Authority: >-
   MikroTik documentation and product pages read 2026-10-22 (manual.mikrotik.com, mikrotik.com, upgrade.mikrotik.com); vendor pages stay authoritative.
   Nothing here was tried on a device.
 Scope: Containers, device-mode, Netinstall, remote access, packet capture and candidate models, for any project weighing a MikroTik router in place of an SMC
-Last reviewed: 2026-11-05
+Last reviewed: 2026-11-19
 Summary: >-
   What RouterOS 7 offers natively for running applications (containers), installing and resetting (Netinstall, device-mode), reaching the router and the
-  devices behind it over CGNAT and satellite, and which current models can carry containers. Written back from enterprise-strategy's RouterOS future study.
+  devices behind it over CGNAT and satellite, packet capture and DNS visibility, and which current models can carry containers. Written back from enterprise-strategy's RouterOS future study.
 ---
 
 # RouterOS platform features for a router-as-site-box evaluation

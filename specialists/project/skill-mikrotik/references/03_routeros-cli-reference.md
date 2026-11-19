@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Read-only RouterOS 7 commands used by this pack, what their fields mean, and gotchas
-Last reviewed: 2026-10-08
+Last reviewed: 2026-11-19
 Summary: Commands for identity, uptime, health, ports, link history, bridge/VLAN layout, logs and config export on RouterOS 7.8, with parsing notes.
 ---
 

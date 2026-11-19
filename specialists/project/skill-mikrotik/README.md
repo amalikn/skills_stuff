@@ -4,7 +4,7 @@ Category: specialist-pack
 Status: current
 Authority: local-supplement
 Scope: MikroTik site switches and APs behind SMC boxes
-Last reviewed: 2026-10-07
+Last reviewed: 2026-11-19
 Summary: Entry point for humans. Agents start at SKILL.md; the navigation index is RUNBOOK.md.
 ---
 

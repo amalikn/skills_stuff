@@ -5,7 +5,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-mikrotik specialist pack — canonical source for MikroTik site switch and AP knowledge in the SMC fleet
-Last reviewed: 20261007
+Last reviewed: 2026-11-19
 Summary: Agent guidance for maintaining and using skill-mikrotik: structure, reference routing, write-back and self-evolution loop, boundaries with skill-smc and skill-cambium.
 
 # AGENTS.md
@@ -58,7 +58,7 @@ Invoking this skill from any project (ansible-wifi, local-knowledge-ansible, uni
 
 ## Project-coherence checklist
 
-1. Reference files (content) — `references/01..05`.
+1. Reference files (content) — `references/01..08`, `references/firmware-manifest.yaml`, `references/snmp-oid-registry.yaml`.
 2. Navigation — `RUNBOOK.md` routing table, `SKILL.md` References list, `scripts/README.md` catalogue, `justfile` recipes.
 3. Metadata — `manifest.json`, `CHANGELOG.md`, `SCRATCHPAD.md`.
 4. Neighbours — skill-smc and skill-cambium Related Skills rows, ansible-wifi `AGENTS.md` invoke rule.

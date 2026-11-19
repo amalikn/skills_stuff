@@ -6,10 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261105_1950
+Last rotated: 20261119_1631
 ---
 
 # Changelog
+
+## 20261119_1631 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now 90 days (`--window-days 90` in the justfile).
 
 ## 20261116_1815 — Resolved: switches by flavor (no version change)
 
@@ -185,13 +189,3 @@ VERIFIED-OBSERVED 2026-10-08 from unified-network-controller work over Teleport 
   known issue 14 updated.
 - `scripts/mikrotik-snmp-community.py`: redacts every community name in its output except `public`. Before this, a run with the read-write entry printed
   the read-only community in clear (operator's terminal, 2026-10-07).
-
-## 20261007_1901 — SNMP verified on amuroona; GPS recorded per type (v0.1.12 -> v0.1.13)
-
-- Operational (operator approved): SNMP enabled read-only on amuroona's switch (10.255.0.5, 18:51) and AP (10.255.0.20, 18:53); default `public`
-  disabled; vault community allowed from the SMC only. No write was made: adding a read-write community for the write test was refused by this
-  session's permission check.
-- `references/snmp-oid-registry.yaml`: 25 OIDs verified on the switch and 21 on the AP (moved from `candidates`, with values); empty tables noted; a
-  `gps` block per type (operator: check every vendor's devices for GPS): neither gives coordinates.
-- `references/07_equipment-and-snmp.md` SNMP section and known issue 14 rewritten from the results (gauge temperature in whole degrees, PoE state only,
-  sysObjectID not a model key, AP radio at 2.4 GHz).

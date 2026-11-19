@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: The Raspberry Pi provisioning script that builds each RB450Gx4 site switch, what it sets, and the issues it leaves on every unit
-Last reviewed: 2026-10-08
+Last reviewed: 2026-11-19
 Summary: A Pi script (450gmk3_v1.1.py, kept here as a read-only reference) upgrades each new switch to RouterOS 7.8 over SFTP and sends two SSH command batches. The batches pin the cloned port MACs and set logging, time, services and PoE.
 ---
 

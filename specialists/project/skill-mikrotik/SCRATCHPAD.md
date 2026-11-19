@@ -4,7 +4,7 @@ Category: working-memory
 Status: current
 Authority: local-supplement
 Scope: Current state and next actions for the skill-mikrotik pack
-Last reviewed: 2026-10-07
+Last reviewed: 2026-11-19
 Summary: Where the pack stands, what is running, and what to do next. Overwrite the state section each session; keep it short.
 ---
 
@@ -37,8 +37,8 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 7. Ask which Python the Pi runs, or read `mikrotik/450g.log` there, to confirm or rule out the str/bytes crash (known issue 17); count v1.0 and v1.1
    switches with `/file print` in the next read-only survey (known issue 16).
 8. Any change to the provisioning flow goes into our own script under `scripts/`; `450gmk3_v1.1.py` stays untouched (operator, 2026-10-08).
-9. Commit the v0.1.21 doc edits together with the concurrent session's work; keep `firmware-files/` (494 MB) out of git unless the operator decides how to
-   store it (GitHub rejects files over 100 MB).
+9. ~~Commit the v0.1.21 doc edits together with the concurrent session's work; keep `firmware-files/` (494 MB) out of git unless the operator decides how to
+   store it (GitHub rejects files over 100 MB).~~ Done: the operator decided to commit the firmware files (2026-10-08, `references/07_equipment-and-snmp.md`, Firmware).
 10. ~~Settle which switches are TP-Link~~ Resolved 16 Nov 2026 (operator): x86 flavors TP-Link, RPi flavors RB450Gx4; `references/01_overview.md`.
 
 ## Recent decisions

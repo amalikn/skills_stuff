@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Open questions, unverified assumptions and coverage gaps for MikroTik devices in the SMC fleet
-Last reviewed: 2026-10-07
+Last reviewed: 2026-11-19
 Summary: What the pack does not know yet. Read before acting; close or update items as evidence arrives.
 ---
 
@@ -16,7 +16,8 @@ wraps an item across rows.
 1. **Closed 2026-10-07:** arrkapa switch read at 16:02; it is in a kernel-failure / watchdog reboot loop (`04_failure-modes.md`). Open part: why
    batavia-downs logged the same signature earlier (11 entries) and whether it recurs.
 2. **Layout outside `rct` only partly known.** `wh` has the same RB450Gx4 on 48 V and no MikroTik AP (laramba, canteen-creek, 2026-10-07); its full port map and the VLAN 502 sub-interface are not
-   captured; `nbn_wh`, `rcp`, `nbn_accelerate` not checked. Close: `FLAVOR=wh scripts/mikrotik_fleet_survey.sh`, then `scripts/mikrotik_site_capture.sh` on one `wh` site.
+   captured; `nbn_wh`, `rcp`, `nbn_accelerate` not checked (operator, 16 Nov 2026: `rcp` and `nbn_accelerate` use TP-Link switches, outside this pack;
+   `nbn_wh` uses the RB450Gx4; `01_overview.md`). Close: `FLAVOR=wh scripts/mikrotik_fleet_survey.sh`, then `scripts/mikrotik_site_capture.sh` on one `wh` site.
 3. **Device clock source and timezone.** Log timestamps have no year, which blocks correlation with SMC and TSTIK logs. The provisioning script sets
    `Australia/Melbourne` and NTP servers `10.255.0.1` (the SMC) and `139.180.160.82` (`06_provisioning.md`); not yet read back from a device. Close:
    `/system clock print`, `/system ntp client print` on a few devices, and whether the SMC answers NTP. Seen at arrkapa (VERIFIED-OBSERVED 2026-10-07): the switch clock was about 8 h 25 min slow at 16:02 AEDT

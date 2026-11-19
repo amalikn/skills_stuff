@@ -4,8 +4,8 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Models, firmware, port and VLAN layout, power, and fleet ranges for the MikroTik devices behind SMC boxes
-Last reviewed: 2026-10-08
-Summary: rct sites run an RB450Gx4 switch and a Metal 52 ac AP on RouterOS 7.8 from a ~24-28 V bus; wh sites run the same switch on ~48 V with no MikroTik AP. Port map, VLANs and fleet ranges.
+Last reviewed: 2026-11-19
+Summary: rct sites run an RB450Gx4 switch and a Metal 52 ac AP on RouterOS 7.8 from a ~24-28 V bus; wh sites run the same switch on ~48 V with no MikroTik AP. x86 flavors use TP-Link switches (outside this pack). Port map, VLANs, fleet ranges and the cloned port MACs.
 ---
 
 # MikroTik Devices in the SMC Fleet
@@ -14,8 +14,11 @@ Summary: rct sites run an RB450Gx4 switch and a Metal 52 ac AP on RouterOS 7.8 f
 
 - [Devices per flavor](#devices-per-flavor)
 - [Switch port and VLAN layout (rct, delye)](#switch-port-and-vlan-layout-rct-delye)
+  - [Site design (Mk3 connection diagram)](#site-design-mk3-connection-diagram)
 - [Power](#power)
 - [Fleet ranges (rct survey 2026-10-07)](#fleet-ranges-rct-survey-2026-10-07)
+- [Cloned MAC addresses (all 294 rct switches, 2026-10-07)](#cloned-mac-addresses-all-294-rct-switches-2026-10-07)
+- [One AP per rct site](#one-ap-per-rct-site)
 
 ## Devices per flavor
 
@@ -122,7 +125,7 @@ identity names a unit: the serial is the only identity.
   - **Existing fleet:** `/interface ethernet reset-mac-address [find]` returns each port to its `orig-mac-address`; then confirm each bridge's `mac-address`
     follows (the Bridging docs say a bridge keeps its saved auto MAC until a higher-priority source appears, so a reboot or an explicit
     `auto-mac=no admin-mac=<that unit's ether1 orig MAC>` may be needed). The docs show `reset-mac-address` for wireless (`/interface/wireless
-    reset-mac-address`) and list `orig-mac-address` for Ethernet; the Ethernet form is unconfirmed on a device (known issue 11), so the first switch is also
+    reset-mac-address`) and list `orig-mac-address` for Ethernet; the Ethernet form was unconfirmed on a device (known issue 11), so the first switch was also
     the test.
     Tested 2026-10-08 on glen-hill (known issue 11): the command works on 7.8 and the bridges follow without a reboot or `admin-mac`.
   - **Rollout:** the change moves the switch's MAC on every VLAN, so the SMC and APs re-learn it (ARP), a brief blip. One switch first, then a small canary,

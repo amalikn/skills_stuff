@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: How to reach the MikroTik switch and AP behind an SMC without exposing the password
-Last reviewed: 2026-10-07
+Last reviewed: 2026-11-19
 Summary: KeePass entry, Teleport port-forward through the SMC, local sshpass client, read-only guard, and why no secret may run on the SMC.
 ---
 
