@@ -174,6 +174,17 @@ earlier slurp of this conversation), so the whole chat is covered. Summary entri
 
 See the list appended below (35 commits across skills_stuff, governance and local-knowledge-ansible), plus the closeout commit and push.
 
+## Persistence and second close
+
+- First close: skills_stuff `a7ee5fe7` and wiki_stuff `55ecc56` (skill-coder page, its index and log lines only) committed and pushed (`git -C <repo> push origin HEAD`); before the push,
+  skill-coder and skill-drawio check and test exited 0, skill-ai-it test 0 and check 1 on its pre-existing size findings only.
+- Not pushed, by the operator's push-scope rule (only the active repo and the wiki): governance `2f8de8f` (review window in the Freshness keys) and local-knowledge-ansible `0c22e11`
+  (smc_update_php.yml retired). Push them on the operator's word.
+- memory-keeper (channel skills_stuff): `skills_stuff.review-20261119`, `.review-window`, `.decisions-20261119`, `.incidents-20261119`, `.scripts-20261119`, `.open-followups`,
+  `session.closeout.20261119.skills-review`; project-context skills_stuff: 3 notes and 8 decisions; checkpoints `slurp-20261119-skills-review` in both.
+- Second close (operator: "slurp close again"): Step 6b re-run over the whole chat after the push; writeback-status showed every engaged skill clean except skill-coder's untracked
+  regenerated `.ai-context/` (committed with this update, as eight other packs track theirs); freshness survey after the last commit (baseline ignored): 0 overdue in 15 packs; skill-smc 1, its `scripts/README.md` (another session's file, no `Last reviewed`, baselined; in its SCRATCHPAD follow-ups).
+
 ## Follow-ups by owner
 
 - **Operator:** history rewrite for the redacted identifiers (or accept: private repos); whether company-domain packs (skill-smc, skill-cambium) keep site data; Go/Rust indentation rule; ADR-007
