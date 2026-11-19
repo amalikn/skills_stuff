@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261119_1650 — Periodic review; 90-day window; identifiers redacted; smc_update_php.yml retired (v0.15.7 -> v0.15.8)](#20261119_1650--periodic-review-90-day-window-identifiers-redacted-smc_update_phpyml-retired-v0157---v0158)
 - [20261119_1648 — topology_variance.py promoted; vars guard matches on command text (v0.15.6 -> v0.15.7)](#20261119_1648--topology_variancepy-promoted-vars-guard-matches-on-command-text-v0156---v0157)
 - [20261119_1638 — smc_inventory_add: every flavor, templates owned by the skill, Iridium written as plain true (v0.15.5 -> v0.15.6)](#20261119_1638--smc_inventory_add-every-flavor-templates-owned-by-the-skill-iridium-written-as-plain-true-v0155---v0156)
 - [20261119_1554 — smc_freeze_probe.sh; deployed Pi package and freeze state; pin-kernel quirk (v0.15.4 -> v0.15.5)](#20261119_1554--smc_freeze_probesh-deployed-pi-package-and-freeze-state-pin-kernel-quirk-v0154---v0155)
@@ -40,6 +41,12 @@ Last reviewed: 2026-10-27
 - [20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)](#20261109_2300--pi-4-ab-on-a-gpt-card-bootloader-firmware-and-update-traps-smc-resiliency-s1-v0129---v0130)
 
 ---
+
+## 20261119_1650 — Periodic review; 90-day window; identifiers redacted; smc_update_php.yml retired (v0.15.7 -> v0.15.8)
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19 (two were hidden by the baseline); reference ranges 01-19, spec and run-record paths, live status of smc_change. Review window now 90 days (`--window-days 90`).
+- Identifiers redacted (operator): a person's name and the SMSC and destination numbers in refs 02, 06 and 19 replaced with placeholders.
+- `playbooks/smc_update_php.yml` retired (operator; overlay apply proven): refs 18 and 19.
 
 ## 20261119_1648 — topology_variance.py promoted; vars guard matches on command text (v0.15.6 -> v0.15.7)
 
