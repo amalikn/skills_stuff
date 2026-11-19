@@ -6,10 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261102_0002
+Last rotated: 20261119_1640
 ---
 
 # Changelog
+
+## 20261119_1640 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, stale status statements and body rules aligned with their Learned entries and the code. Review window now 90 days (`--window-days 90` in the justfile).
 
 ## 20261102_0002 — Learned: say what a briefed figure counts
 
@@ -150,48 +154,3 @@ build, and an index row pointing at a document that does not exist fails it too.
 Routing was rewired away from the deleted file in `context-map.yaml` (authority order, governance route, and the archcore `index:` key), `repomix.config.json`, and the `AI_NAVIGATION.md` update-rules
 table. The row naming the candidates file in `AI_NAVIGATION.md`'s context table was **left alone**: it sits inside the managed `skill-ai-it:navigation` block, which is regenerated wholesale, so
 editing it would be discarded on the next `nav-upgrade`. The registered `CONDITIONAL_PATHS` entry is the sanctioned escape hatch for exactly that case.
-
-## 20260923_1222 — governance and navigation scaffold
-
-<!-- skill-ai-it-upgrade: 2026-08-11-governance-checks-layer-v1 -->
-
-Bootstrapped the AI governance and navigation layer with `skill-ai-it`, then ran its deterministic navigation-control upgrade. No package behaviour changed: `references/`, `schemas/`, the three
-package scripts and every example suite are untouched.
-
-Added `AGENTS.md`, `CLAUDE.md`, `AI_NAVIGATION.md`, `context-map.yaml`, `SCRATCHPAD.md`, `justfile`, `.mise.toml`, `requirements.txt`, `.gitignore`, `.markdownlint-cli2.jsonc`,
-`repomix.config.json`, `ARCHCORE_PROMOTION_CANDIDATES.md`, and `scripts/check_governance.py`. Ran `archcore init`, which created `.archcore/settings.json` only — no Archcore content was written, and
-promotion remains an operator decision.
-
-**Two coherence defects were found and fixed, not papered over.**
-
-1. The package version had drifted. `CHANGELOG.md` shipped 0.1.1 — the corrected renderer is present in `scripts/render_report.py` — while `SKILL.md` frontmatter and `README.md` both still advertised
-   0.1.0, so a loading agent read a version whose known defect was already fixed. Both pointers were corrected, and the three-surface restatement is now a registered assertion: the next bump must
-   touch all three or `just check` fails.
-2. `AGENTS.md` imported `@../AGENTS.md`, which does not exist — `skills/` carries no policy file, so the nearest parent is two levels up. Corrected to `@../../AGENTS.md`. The broken link was in the
-   file that defines the import chain, and nothing would have reported it.
-
-Also corrected: several bare filenames in prose (`scripts/render_report.py`, `scripts/validate_suite.py`) that resolved nowhere, and an illustrative suite filename in `SKILL.md` that read as a file in
-this repo.
-
-**Runtimes are now pinned and addressed by path.** Python 3.14.5 and Node 26.2.0 in `.mise.toml`; the venv lives in the working-cache peer at
-`/Volumes/Data/_ai/_skills/skills-working-cache/skills/skill-eval-manager/.venv`, never in this repo. The host interpreter is 3.14.7, so a bare `python3` recipe would have run a different interpreter
-than the pin claims and passed silently. `just runtimes` makes the resolved interpreter visible in under a second.
-
-**Governance claims are now executable.** `scripts/check_governance.py` carries 179 assertions, including three tuned to this package's own stated rules: every checked-in `report.md` must be newer
-than the suite and history it was rendered from (the package's own "reports are derived" gate, which it was not applying to itself); every script must be cataloged in `scripts/README.md` with a safety
-label, in both directions; and the version must be stated identically on its three surfaces. The derived-freshness check was deliberately broken and observed to fail before being restored.
-
-New task catalog: `just validate-template`, `just validate-examples`, `just validate-negatives`, `just validate-all`, `just check`, `just runtimes`, `just preflight`. `validate-negatives` asserts that
-every fixture under `examples/validation-failures/` still fails validation — a fixture that starts passing is a validator regression, not a fixture to repair.
-
-Verification run at 20260923_1222: `just validate-all` passed (3 suites valid, 4 negative fixtures correctly rejected), `just check` reported 179 passed, `just nav-validate` reported 0 failures and 0
-warnings, `markdownlint-cli2` reported 0 errors across 21 files.
-
-The deterministic upgrader's regenerated navigation block was initially thinner than the template this project was bootstrapped from, and dropped the task-routing, drift-handling, update-rules and
-answer-contract sections. That turned out to be a defect in `skill-ai-it` itself — an inlined copy of the block in the skill package's upgrade script had drifted nine sections behind
-its navigation template since 2026-08-11 — and was fixed at source the same day: all three builders now read their templates, and a self-test asserts a required-section floor. This project was
-re-upgraded onto managed block version `2026-09-23-template-sourced-blocks-v1`, restoring the generic sections inside the markers.
-
-The package-specific drift handling, update rules and answer-contract addition remain below the END marker as `###` subsections of *Package-specific routing*, so they extend the generic sections
-rather than colliding with them, and a future upgrade cannot reach them. Re-verified after the re-upgrade: `just check` 189 passed, `just nav-validate` 0 warnings and 0 failures, `just lint-md` 0
-errors, `just validate-all` green, and a second consecutive `just nav-upgrade` left `AI_NAVIGATION.md` byte-identical.

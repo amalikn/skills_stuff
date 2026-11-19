@@ -5,7 +5,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: Repo-local agent behaviour for the skill-eval-manager package under skills_stuff/skills/
-Last reviewed: 20260923_1222
+Last reviewed: 2026-11-19
 Summary: Local policy for authoring, validating, and recording against the eval-management skill package.
 
 # AGENTS.md
@@ -37,7 +37,7 @@ the method, the portable data contracts, the recordkeeping scripts, and the work
 - Fixtures under [examples/validation-failures/](examples/validation-failures/) are deliberately invalid and must keep failing validation. `just validate-negatives` asserts this; a fixture that starts
   passing is a validator regression, not a fixture to fix.
 - When adding a validator rule, demonstrate a deliberate failure case before calling it done. This is stated in the [SKILL.md](SKILL.md) quality gate and applies to this repo's own scripts too.
-- The package version is stated in four places — `SKILL.md` frontmatter, `README.md`, the top [CHANGELOG.md](CHANGELOG.md) heading, and the `package-version` pattern in
+- The package version is stated in four places — `SKILL.md` frontmatter, `README.md`, the [CHANGELOG.md](CHANGELOG.md) release heading, and the `package-version` pattern in
   `CONSTANT_SURFACES` in [scripts/check_governance.py](scripts/check_governance.py). A bump touches all four in one pass; `just check` fails on the first three until the fourth is
   bumped, and says only that a surface "no longer states it". Do not write the live version into any other file, `SCRATCHPAD.md` history included — the sync check rejects it.
 - Time-bound documents use `<slug>-YYYYMMDD_hhmm.md`. Stable entrypoints keep their exact names.
@@ -49,7 +49,7 @@ the method, the portable data contracts, the recordkeeping scripts, and the work
 
 Any project that invokes this skill and learns something about **evaluation method** — a validator gap, a falsifiability method the permitted six could not cover, a verdict the closed five could not
 express honestly, an oracle that looked independent and was not, a layer vocabulary that generalizes — must write it back here before the session closes. This is the [SKILL.md](SKILL.md) standing
-write-back contract in enforceable form. Concretely: `skill-slurp-chat` and `project-coherence`, run in any project that wrote or maintained an eval suite this session, must check for unpromoted
+write-back contract in enforceable form. Concretely: `skill-slurp-chat` and `skill-project-coherence`, run in any project that wrote or maintained an eval suite this session, must check for unpromoted
 method knowledge before closing out. If either closes a session without this check, treat the closeout as incomplete.
 
 **Closeout self-check:** did this session (a) find a suite that `scripts/validate_suite.py` judged wrongly in either direction, (b) need a falsifiability method, verdict, or contract element the
