@@ -121,6 +121,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-75 | Learn a person's hand edits: diff against the last build, sort by rule, make habits defaults | Generated artifacts a person retouches by hand before every use |
 | P-76 | Refuse a repeated key when loading YAML | Any hand-edited YAML a program reads as data (contracts, catalogues, configs) |
 | P-77 | Exact-commit pre-push gate | A local CI gate that passes on the working folder, not on the commit being pushed |
+| P-78 | Offline image overlay as data, each edit point matched exactly once | A golden disk image needs a small, listed, repeatable change per copy, without booting or mounting it |
 
 ## Patterns
 
@@ -1922,6 +1923,43 @@ done
 
 **Pitfalls.** A relative sibling path silently becomes "absent, skipped" (pass it in). Services started from the worktree's compose file can be recreated because mount paths
 differ, so readiness checks must wait (a live Keycloak test failed until it waited for the realm). A commit pushed by another process skips the hook: run the hook by hand on it.
+
+### P-78 Offline image overlay as data, each edit point matched exactly once
+
+> **Learned 2026-11-19** · python + e2fsprogs, macOS · VERIFIED_PRIMARY (two independent builds of the same overlay matched file for file, e2fsck clean) ·
+> Source: smc-resiliency lab/logic/fieldprep.py, lab/adapters/ext4img.py, lab/field_images.toml (commit 2f892694) · Falsifier: an edit applied to a copy
+> whose source text differs from the one the overlay was written against. reusable_candidate until a second project uses it.
+
+```text
+Problem:      a shipped disk image must become a slightly different copy (name, label, network, services off), for several image flavours, on a host that
+              cannot mount the image's file system (macOS, ext4) and without booting it.
+Solution:     the overlay is data: per flavour, text replacements (file, old, new) and links to remove. The engine reads the partition table from the file
+              (MBR or GPT), finds the root by its file-system label, and reaches it as `<image>?offset=<bytes>` with debugfs (read: `-R`, write: one `-w -f`
+              batch). Plan mode reads the source and requires every `old` to match exactly once and every link to exist; apply copies the source to a new
+              file, writes the new text keeping each file's mode and owner, removes the links, runs `e2fsck -fn`, and reads every edit back.
+Why it works: an edit point that matches zero or two times means the image is not the one the overlay was written for, so it refuses instead of guessing;
+              the source is never written; the same plan refuses an already-edited copy (re-run safe).
+Reuse:        golden VM or SD-card images given per-site identity; appliance images prepared for a lab; any build where the image is the input and the
+              build host cannot loop-mount it.
+Pitfalls:     debugfs `write` takes the host file's owner (uid 501): set mode, uid and gid with `sif` after each write. Its `-f` session prints
+              `Allocated inode: N` on success, so error detection must allow that line. An LVM root is not reachable this way: refuse with that reason.
+              Read the partition table from the file, never trust a fixed offset.
+Realised in:  python -> smc-resiliency lab/logic/fieldprep.py with lab/adapters/ext4img.py (commit 2f892694)
+Evidence:     VERIFIED_PRIMARY: shell and Python builds of the same overlay agreed on all five files, modes and enabled units; e2fsck -fn clean.
+```
+
+```python
+# smc-resiliency lab/logic/fieldprep.py (commit 2f892694), the edit rule
+for r in replaces:
+  text = new.get(r["file"], files[r["file"]])
+  n = text.count(r["old"])
+  if n != 1:
+    raise LabError(f"{r['file']}: edit point {r['old']!r} matches {n} times, want 1")
+  new[r["file"]] = text.replace(r["old"], r["new"].format(hostname=p.hostname, bench_cidr=p.bench_cidr, teleport_env=p.teleport_env))
+# lab/logic/fieldprep.py _write: keep the replaced file's mode and owner
+cmds += [f"rm {path}"] if path != MARKER else []
+cmds += [f"write {local} {path}", f"sif {path} mode 0100{m['mode'][-3:]}", f"sif {path} uid {m['uid']}", f"sif {path} gid {m['gid']}"]
+```
 
 ## Language realisations
 

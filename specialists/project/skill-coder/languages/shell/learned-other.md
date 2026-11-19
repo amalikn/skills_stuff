@@ -41,3 +41,9 @@ Part of [shell.md](../shell.md).
 > In `s#old#new#`, a `#` inside the replacement (a YAML comment, say) ends the replacement early. sed then reads the rest as flags, and
 > `w <file>` writes the matched lines to a file named after the rest of the comment, in the current folder. Pick a delimiter that cannot occur in
 > the text, or make the edit in Python with an exact-match assert, and run `git status` afterwards to catch stray files.
+
+> **Learned 2026-11-19** · bash, `grep -c` · VERIFIED_PRIMARY (a fleet probe printed `0` then `0` on two lines and lost the rest of its line) · Source:
+> skill-smc scripts/probes/smc_root_key_probe.sh (first version) · Falsifier: `grep -c` exiting 0 on no match.
+> `grep -c` prints `0` **and** exits 1 when nothing matches, so `n=$(grep -c pat file || echo 0)` holds two lines. Use `n=$(grep -c pat file); n=${n:-0}`
+> (the empty case is only a missing file).
+

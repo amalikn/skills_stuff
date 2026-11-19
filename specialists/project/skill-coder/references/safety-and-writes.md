@@ -54,6 +54,28 @@ Summary: >-
 > "exceptions": {"scripts/plans/target_map.py": "validates by default; writes the tracker and embeds only with --write"}
 > ```
 
+> **Learned 2026-11-19** · shell, macOS, root-run device write · VERIFIED_PRIMARY (accepted the registered card; refused a 988 GB and a 2 TB data
+> disk, the internal disk, an image outside the image store, a `/dev/` path, an unknown option and a write without root; three refusals kept as negative
+> tests, one proved by a mutant) · Source: smc-resiliency lab/payloads/lab_flash_guarded.sh (commit 42af8ebd), promoted from the entry parked there on
+> 2026-11-19 · Falsifier: a write that reaches a disk the guard should refuse.
+> A destructive device write re-reads the target's identity at execution, not at plan time (whole physical disk, not internal, removable or external,
+> USB or SD, a size ceiling, an exact size from an allowlist, a denylist of known disks), and reads back exactly the image's length (a whole-block count
+> rounds down and never matches). When an agent is to run it as root through a one-path NOPASSWD sudoers line, the allowlist lives **inside the installed
+> root-owned copy**, never in a file the agent can edit, and the script calls only system binaries by absolute path with a fixed PATH: a tool under
+> `/opt/homebrew` is user-writable, so root running it is an escalation. The editable source is installed by the operator; adding a medium is an
+> edit and a re-install.
+>
+> ```bash
+> # smc-resiliency lab/payloads/lab_flash_guarded.sh (commit 42af8ebd)
+> PATH=/usr/bin:/bin:/usr/sbin:/sbin
+> ALLOWED_SIZES=(31914983424 31266439168) # the registered lab cards
+> [ "$(key "$DISK" Internal)" = false ] || refuse "$DISK is internal"
+> size=$(key "$DISK" TotalSize)
+> for d in "${DENY_SIZES[@]}"; do [ "$size" != "$d" ] || refuse "$DISK has the size of a denied disk ($d bytes)"; done
+> blocks=$(((IMG_BYTES + BS - 1) / BS))
+> got=$(dd if="/dev/r$DISK" bs=$BS count=$blocks 2>/dev/null | head -c "$IMG_BYTES" | shasum -a 256 | cut -d' ' -f1)
+> ```
+
 ## The write chain
 
 ```text

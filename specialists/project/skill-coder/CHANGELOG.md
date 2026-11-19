@@ -31,6 +31,10 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-19: references/design-patterns.md P-78 offline image overlay as data, each edit point matched exactly once (smc-resiliency fieldprep).
+- 2026-11-19: references/safety-and-writes.md Learned 2026-11-19, a root-run device write keeps its allowlist in the root-owned install and calls
+  system binaries only (promoted from smc-resiliency's parked entry).
+- 2026-11-19: languages/shell/learned-other.md Learned 2026-11-19, `grep -c` prints 0 and exits 1 on no match, so `|| echo 0` doubles the output.
 - 2026-11-19: languages/ansible/learned-lint-and-tests.md Learned 2026-11-19, a one-line edit inside an old task brings all its findings into an ansible-lint delta gate.
 - 2026-11-19: languages/ansible/learned-execution.md Learned 2026-11-19 (o), `git` with `update: no` never fetches and never rewrites the remote URL; updating on repoints it.
 - 2026-11-19: languages/shell/learned-safety.md Disputed 2026-11-19, the `rc=$?` EXIT-trap snippet still exits 0 on macOS `/bin/sh` after a `set -u` failure; use a finished flag.
