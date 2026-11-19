@@ -16,6 +16,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261119_1551.md](changelog/changelog-20261119_1551.md) 2 entries, 2026-10-29 to 2026-11-03: mirror_skills: one client's skills linked into another; Pitfalls: one route for cross-project messages; route facts by class
 - [changelog-20261118_1754.md](changelog/changelog-20261118_1754.md) 1 entry, 2026-10-27 to 2026-10-27: Slurp close: callers-check, write-backs, coherence
 - [changelog-20261112_1656.md](changelog/changelog-20261112_1656.md) 1 entry, 2026-10-27 to 2026-10-27: Scripts in family folders; callers repointed; skill-coder gates in check
 - [changelog-20261112_1552.md](changelog/changelog-20261112_1552.md) 1 entry, 2026-10-27 to 2026-10-27: Staleness audit: dependency claim derived, stale KEEP lines superseded

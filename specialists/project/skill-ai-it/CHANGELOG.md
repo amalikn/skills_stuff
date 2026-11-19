@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261118_1754
+Last rotated: 20261119_1551
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,7 @@ Last rotated: 20261118_1754
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261119_1551 — rotation_verify.py: did this rotation move every removed line](#20261119_1551--rotation_verifypy-did-this-rotation-move-every-removed-line)
 - [20261112_1700 — new-skill: Learned entry on prompt templates under the formatter](#20261112_1700--new-skill-learned-entry-on-prompt-templates-under-the-formatter)
 - [20261112_1656 — new-skill: Deferred and extensions section, stamped template dates, brief front matter](#20261112_1656--new-skill-deferred-and-extensions-section-stamped-template-dates-brief-front-matter)
 - [20261112_1552 — new-skill: intake, research briefs, seed folder with research and parts](#20261112_1552--new-skill-intake-research-briefs-seed-folder-with-research-and-parts)
@@ -28,8 +29,6 @@ Last rotated: 20261118_1754
 - [20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs](#20261105_2139--promote-quoted-front-matter-last-reviewed-decisions_to_adrs)
 - [20261105_2047 — adopt_governed_files: check recipe matched by exact name](#20261105_2047--adopt_governed_files-check-recipe-matched-by-exact-name)
 - [20261105_1725 — agents_chain check: AGENTS.md chains for Claude Code and Codex](#20261105_1725--agents_chain-check-agentsmd-chains-for-claude-code-and-codex)
-- [20261103_1741 — mirror_skills: one client's skills linked into another](#20261103_1741--mirror_skills-one-clients-skills-linked-into-another)
-- [20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class](#20261029_2015--pitfalls-one-route-for-cross-project-messages-route-facts-by-class)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -71,6 +70,10 @@ Last rotated: 20261118_1754
 - scripts/adoption/adopt_governed_files.py: FILE_BUDGETS: AGENTS.md and AI_NAVIGATION.md get `Budget: 150 lines, 12 KB` as README gets its own (operator, 2026-11-06: governance files read whole carry a budget; doc_freshness enforces it, grandfather_sizes keeps a file already over from failing); scripts/records/budget_plan.py reports those files against their stated budget; test asserts AGENTS.md gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261119_1551 — rotation_verify.py: did this rotation move every removed line
+
+- New `scripts/records/rotation_verify.py` (`just rotation-verify`), 3 offline tests: every content line the uncommitted change removed from a record is in docs/history/, whitespace-folded. The narrow check run by hand four times on 2026-11-19 (continuum, skill-pad, skill-coder) while audit_rotations.py reported phantom LOST lines (ROADMAP item stays open).
 
 ## 20261112_1700 — new-skill: Learned entry on prompt templates under the formatter
 
@@ -176,20 +179,6 @@ New `scripts/checks/agents_chain.py` (+ `tests/test_agents_chain.py`, 6 tests; r
 and Codex (project-root markers, `project_doc_max_bytes`) load for a folder, with missing imports, cycles, a cut file, files Codex cannot see and Codex trust spread.
 `references/files-readme-agents-claude.md`: Learned 2026-11-05, AGENTS.md chains across folders, Claude Code vs Codex (inline block plus `.codex-root` marker; trust follows the project root; never a
 marker in a trusted folder holding untrusted repos). Smoke-run on three real folders, 0.05-0.42 s.
-
-## 20261103_1741 — mirror_skills: one client's skills linked into another
-
-- `scripts/install/mirror_skills.py` (new, catalogued, `just mirror-skills`) with `tests/test_mirror_skills.py`: links each skill in a source install folder to its resolved canonical folder in a
-  target folder; plan by default, `--apply` writes, `--prune` drops stale links, real folders are never touched. First use: 128 skills linked from ~/.claude/skills into ~/.continue/skills for Continue
-  2.0.0 (vibeshell left as a real folder).
-- Continue 2.0.0 follows a symlinked skill folder: its walker skips only entries whose VS Code type is exactly SymbolicLink (a broken link).
-
-## 20261029_2015 — Pitfalls: one route for cross-project messages; route facts by class
-
-- `references/pitfalls.md`: two entries from the 2026-10-29 harvest of a multi-project workspace root (hub-and-spoke messages with a directive register; device facts to domain packs, site and decision
-  facts to projects). `references/readme.md` line count updated.
-- Skipped as already covered: gates that fail on uncovered growth and stay stdlib-only (`patterns/governance-checks.md`, Coverage self-policing and the harness contract); architecture docs drifting
-  from runtime config and README links to missing docs (path resolution, derived-artifact staleness, "text matching does not verify behaviour").
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

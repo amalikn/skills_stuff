@@ -300,6 +300,10 @@ rotate *ARGS: _require-venv
 budget *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root . {{ARGS}}
 
+# After a rotation: is every line the uncommitted change removed from CHANGELOG.md (or ARGS --record X) in docs/history/? Read-only; exit 1 lists the missing
+rotation-verify *ARGS: _require-venv
+    @{{py}} "{{ai_it}}/scripts/records/rotation_verify.py" --project-root . {{ARGS}}
+
 # Add a CHANGELOG entry in this project's own heading style and order, with its Contents line: plan by default, `--apply` to write
 [positional-arguments]
 changelog-entry *ARGS: _require-venv

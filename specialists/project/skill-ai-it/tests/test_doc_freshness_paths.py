@@ -86,4 +86,3 @@ class LockFiles(unittest.TestCase):
       names = [p.name for p in df.file_headers.tracked(repo, [])]
       self.assertNotIn("pnpm-lock.yaml", names)
       self.assertIn("notes.yaml", names)
-
