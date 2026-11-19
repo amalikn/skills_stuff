@@ -25,21 +25,18 @@ Summary: >-
 
 - One logical change per commit; a refactor and a behaviour change are separate commits. Why: each can be reviewed and reverted alone.
 - Commit or push only when the user asks; "commit and push" covers only the repo being worked in (operator lesson `feedback_commit_push_scope`).
-- Preserve unrelated work in a dirty tree: stage only the files the change owns, and commit by pathspec where other sessions share the clone (Learned
-  2026-10-20 below). Why: someone else's half-done work is not yours to commit.
+- Preserve unrelated work in a dirty tree: stage only the files the change owns, and commit by pathspec where other sessions share the clone (Learned 2026-10-20 below). Why: someone else's half-done
+  work is not yours to commit.
 - Follow the project's message convention. Where none exists, Conventional Commits (`feat:`, `fix:`, a `BREAKING CHANGE:` footer) is a reasonable default (VERIFIED_PRIMARY, v1.0.0). Use the
   attribution the project's or user's rules require.
 - Avoid apostrophes in a heredoc commit body passed through a shell tool; write around contractions. Why: they break shell parsing (operator lesson).
 
 > **Learned 2026-10-20** · git, a repo shared by concurrent sessions · VERIFIED_PRIMARY · Source: apn commits b64a075 and 951a7dc (smc-resiliency CHANGELOG 20261020 slurp entry) · Falsifier: two sessions where one's `git add` never ends up in the other's commit
-> The index is shared by every session working in one clone. `git add <paths> && git commit` lets another session's commit, made in the same
-> second, take what this session staged: here a unified-network-controller commit carried smc-resiliency's files under its own message, and this
-> session's commit then found nothing to commit. Commit by pathspec, which commits exactly the named paths whatever else is staged, and check
-> the result with `git show --stat HEAD` before pushing. A new file needs `git add -N` (intent to add) first so the pathspec can name it.
-> Never amend or split the other session's commit; record where the work landed.
-> Confirmed 2026-11-05 (skills_stuff `e248189`, undone with `git reset --soft HEAD~1` before any push, recommitted as `d40e972` by pathspec): the
-> same sweep happened twice in one evening, once by this rule's reader skipping it and once by a third session (`0379df3`). The rule held both times
-> it was followed.
+> The index is shared by every session working in one clone. `git add <paths> && git commit` lets another session's commit, made in the same second, take what this session staged: here a
+> unified-network-controller commit carried smc-resiliency's files under its own message, and this session's commit then found nothing to commit. Commit by pathspec, which commits exactly the named
+> paths whatever else is staged, and check the result with `git show --stat HEAD` before pushing. A new file needs `git add -N` (intent to add) first so the pathspec can name it. Never amend or split
+> the other session's commit; record where the work landed. Confirmed 2026-11-05 (skills_stuff `e248189`, undone with `git reset --soft HEAD~1` before any push, recommitted as `d40e972` by pathspec):
+> the same sweep happened twice in one evening, once by this rule's reader skipping it and once by a third session (`0379df3`). The rule held both times it was followed.
 >
 > ```bash
 > # smc-resiliency, 2026-10-20 (after the race)
@@ -50,12 +47,10 @@ Summary: >-
 > ```
 
 > **Learned 2026-10-21** · git, one repo shared by several projects and sessions · VERIFIED_PRIMARY · Source: apn `scripts/project_commit.py` and `scripts/project_sync_selftest.sh` (uncommitted at writing; apn CHANGELOGs 20261021_1338) · Falsifier: a self-test run where the commit carries a
-> second project's changed file, or a failed check still moves HEAD
-> Make the pathspec rule a tool when several projects share one clone: one recipe per project that runs the project's check, takes an exclusive
-> lock shared by all of them (flock on a file outside the repo), stages only its folder (`git add -A -- <folder>`, so new and deleted files are
-> covered without `-N`), commits with the folder as pathspec (git's `--only` mode leaves anything another session staged elsewhere staged and out
-> of the commit), then pushes. On a rejected push, rebase onto the upstream only when the whole tree is clean; another session's dirty files mean
-> stop and report, never `--autostash` over them. The self-test proves isolation against a throwaway bare remote.
+> second project's changed file, or a failed check still moves HEAD Make the pathspec rule a tool when several projects share one clone: one recipe per project that runs the project's check, takes an
+> exclusive lock shared by all of them (flock on a file outside the repo), stages only its folder (`git add -A -- <folder>`, so new and deleted files are covered without `-N`), commits with the folder
+> as pathspec (git's `--only` mode leaves anything another session staged elsewhere staged and out of the commit), then pushes. On a rejected push, rebase onto the upstream only when the whole tree is
+> clean; another session's dirty files mean stop and report, never `--autostash` over them. The self-test proves isolation against a throwaway bare remote.
 >
 > ```python
 > # apn scripts/project_commit.py (2026-10-21)
@@ -66,14 +61,12 @@ Summary: >-
 > ```
 
 > **Learned 2026-10-20** · git rebase onto a diverged remote · VERIFIED_PRIMARY · Source: vagrant_stuff commits 08c81b3 and 62f03f1 (smc-resiliency CHANGELOG 20261020 push entry) · Falsifier: a `rebase -X theirs` whose result equals the local branch file for file when the remote changed other hunks
-> In a rebase, `-X theirs` means the commits being replayed (the local side) win **conflicting** hunks only; a remote hunk the local side never
-> touched still applies without a word. Here a three-year-old remote line pointed a synced folder at a path that does not exist, and it landed
-> in a file the operator had asked to keep local. Before the rebase, branch the local head as a backup; after it, diff every file both sides
-> changed against that backup and restore any line the operator did not choose. `--autostash` re-applies uncommitted edits onto the new base,
-> so check the working copy too. On a real conflict, `git rebase --abort` and ask which side wins; never pick it.
-> Compare the **whole repo**, not the files you suspect: the autostash commit (`git rebase` prints its hash) is the exact pre-rebase working
-> tree, so `git diff --name-status <autostash> HEAD | awk '$1!="A"'` lists every existing file the remote changed. The first check here looked at
-> one file and missed four (a box image switched, guest-tool settings commented out); a side agent caught it (vagrant_stuff 7adb82c).
+> In a rebase, `-X theirs` means the commits being replayed (the local side) win **conflicting** hunks only; a remote hunk the local side never touched still applies without a word. Here a
+> three-year-old remote line pointed a synced folder at a path that does not exist, and it landed in a file the operator had asked to keep local. Before the rebase, branch the local head as a backup;
+> after it, diff every file both sides changed against that backup and restore any line the operator did not choose. `--autostash` re-applies uncommitted edits onto the new base, so check the working
+> copy too. On a real conflict, `git rebase --abort` and ask which side wins; never pick it. Compare the **whole repo**, not the files you suspect: the autostash commit (`git rebase` prints its hash)
+> is the exact pre-rebase working tree, so `git diff --name-status <autostash> HEAD | awk '$1!="A"'` lists every existing file the remote changed. The first check here looked at one file and missed
+> four (a box image switched, guest-tool settings commented out); a side agent caught it (vagrant_stuff 7adb82c).
 >
 > ```bash
 > git branch backup/pre-rebase-$(date +%Y%m%d_%H%M) HEAD
@@ -82,12 +75,10 @@ Summary: >-
 > ```
 
 > **Learned 2026-10-26** · git, two sessions editing the same files · VERIFIED_PRIMARY · Source: skills_stuff 661075a and cf059eb (smc-resiliency CHANGELOG 20261026_1440) · Falsifier: a blob staged this way whose commit differs from HEAD plus only the intended hunks
-> When another live session has unrelated hunks in the same files (here e2e.py, visual-style.md, CHANGELOG.md), `git add -p` is interactive and
-> unavailable to an agent, and a stash takes the other session's work with it. Build the content you mean to commit (HEAD plus your own edits) in a
-> scratch file, write it as a blob and point the index at it; the working tree, with both sessions' edits, is left alone. Then apply
-> `git diff --cached --binary` to a scratch worktree at HEAD and run the tests and check there, so the commit is proved on its own, not on the
-> mixed working tree (the shared tree's half-written edits failed the tests mid-session). Agree the split by file and hunk with the other session
-> first, and let it commit on top.
+> When another live session has unrelated hunks in the same files (here e2e.py, visual-style.md, CHANGELOG.md), `git add -p` is interactive and unavailable to an agent, and a stash takes the other
+> session's work with it. Build the content you mean to commit (HEAD plus your own edits) in a scratch file, write it as a blob and point the index at it; the working tree, with both sessions' edits,
+> is left alone. Then apply `git diff --cached --binary` to a scratch worktree at HEAD and run the tests and check there, so the commit is proved on its own, not on the mixed working tree (the shared
+> tree's half-written edits failed the tests mid-session). Agree the split by file and hunk with the other session first, and let it commit on top.
 >
 > ```bash
 > git show HEAD:path/file.py > /scratch/file.mine.py && <apply only your edits to it>
@@ -96,23 +87,27 @@ Summary: >-
 > ```
 
 > **Learned 2026-11-05** · git, local excludes · VERIFIED_PRIMARY · Source: skills_stuff skill-knowledge-curator `tests/fixtures/pilot/AGENTS.md` (untracked since cdce4fa, force-added
-> 2026-11-05) · Falsifier: a test export from `git checkout-index -a --prefix=<dir>/` that holds a file `git ls-files` does not list
-> The staged-tree test above also catches what was never committed: `.git/info/exclude` held `AGENTS.md` (meant for repo-local guidance), so a test fixture named
-> `AGENTS.md` had lived only on this disk for nine days and every fresh clone failed one test. Export the index (`git checkout-index -a --prefix=<dir>/`) and test there
-> before a push; a fixture a local exclude hides is added with `git add -f`, and a pattern meant for real guidance files is anchored (`/AGENTS.md`) or scoped.
+> 2026-11-05) · Falsifier: a test export from `git checkout-index -a --prefix=<dir>/` that holds a file `git ls-files` does not list The staged-tree test above also catches what was never committed:
+> `.git/info/exclude` held `AGENTS.md` (meant for repo-local guidance), so a test fixture named `AGENTS.md` had lived only on this disk for nine days and every fresh clone failed one test. Export the
+> index (`git checkout-index -a --prefix=<dir>/`) and test there before a push; a fixture a local exclude hides is added with `git add -f`, and a pattern meant for real guidance files is anchored
+> (`/AGENTS.md`) or scoped.
 
 > **Learned 2026-11-19** · git, a shared index that already holds another session's staged entries · VERIFIED_PRIMARY (skills_stuff 57816c98 committed 12 paths while a staged rename of
-> another session stayed staged and out of the commit) · Source: skill-smc CHANGELOG 20261119_1638 · Falsifier: a commit made this way that contains a path not in the entries file
-> Two refinements of the 2026-10-26 entry. `git update-index --cacheinfo <mode>,<sha>,<path>` takes the path from the repo top, not the current folder: from a subfolder it fails with exit 128 until
-> the `git rev-parse --show-prefix` is put in front. And when the shared index also holds another session's staged files, a plain `git commit` takes them and a pathspec commit takes the working
-> tree (both sessions' hunks); commit from a private index built from HEAD plus only your staged entries, and the shared index keeps the other session's entries staged.
+> another session stayed staged and out of the commit) · Source: skill-smc CHANGELOG 20261119_1638 · Falsifier: a commit made this way that contains a path not in the entries file Two refinements of
+> the 2026-10-26 entry. `git update-index --cacheinfo <mode>,<sha>,<path>` takes the path from the repo top, not the current folder: from a subfolder it fails with exit 128 until the `git rev-parse
+> --show-prefix` is put in front. And when the shared index also holds another session's staged files, a plain `git commit` takes them and a pathspec commit takes the working tree (both sessions'
+> hunks); commit from a private index built from HEAD plus only your staged entries, and the shared index keeps the other session's entries staged.
 >
 > ```bash
 > git diff --cached --name-only -- <your folder> > mine.txt
 > git ls-files -s -- $(cat mine.txt) > entries.txt
 > GIT_INDEX_FILE=/scratch/idx git read-tree HEAD && GIT_INDEX_FILE=/scratch/idx git update-index --index-info < entries.txt
 > GIT_INDEX_FILE=/scratch/idx git commit -F msg.txt
+> git reset -q -- $(cat mine.txt)   # shared index: point your paths at the new HEAD
 > ```
+>
+> The last line matters when your blobs were never staged in the shared index (wiki_stuff b496fa3, 2026-11-19): it still holds the old versions of your paths, and the next plain commit by anyone
+> reverts your commit silently. `git reset -- <paths>` sets only those entries to HEAD and leaves the other session's staged and working changes alone.
 
 ## Gate on the exit code
 
@@ -129,10 +124,9 @@ a failed backup (operator lesson `feedback_gate_on_check_exit_code`). `set -o pi
 manual).
 
 > **Learned 2026-10-27** · git 2.40+ · VERIFIED_PRIMARY · Source: skill-smc `scripts/ansible/ansible_change_reach.py` `cherry_pick_state`, offline test `test_ansible_change_reach.py` (clean and conflict cases) · Falsifier: a `merge-tree` exit 0 for a commit whose `git cherry-pick` conflicts
-> "Is this fix on the deploy branch, and would it apply?" is answered without a checkout: `git merge-base --is-ancestor <c> <branch>` for reach, and
-> `git merge-tree --write-tree --merge-base <c>^ <branch> <c>` simulates the cherry-pick in the object store (exit 0 clean, 1 conflict, other =
-> unknown, e.g. git older than 2.40). A list of branches holding a commit is read whole: a `| head -3` on `git branch --contains` once hid the
-> pushed remotes and a report said "not pushed".
+> "Is this fix on the deploy branch, and would it apply?" is answered without a checkout: `git merge-base --is-ancestor <c> <branch>` for reach, and `git merge-tree --write-tree --merge-base <c>^
+> <branch> <c>` simulates the cherry-pick in the object store (exit 0 clean, 1 conflict, other = unknown, e.g. git older than 2.40). A list of branches holding a commit is read whole: a `| head -3` on
+> `git branch --contains` once hid the pushed remotes and a report said "not pushed".
 >
 > ```python
 > code, _out, err = run(["git", "merge-tree", "--write-tree", "--merge-base", f"{commit}^", base, commit], repo)
@@ -171,8 +165,8 @@ manual).
 ## Definition of done
 
 - [ ] Layer and location right; no new raw I/O outside a seam, no literals, no missing timeouts.
-- [ ] Tests at the right level pass and the project's closing check passes, each gated on its own exit code (neither covers the other); after the
-      first commit of new files the check runs again before the push.
+- [ ] Tests at the right level pass and the project's closing check passes, each gated on its own exit code (neither covers the other); after the first commit of new files the check runs again before
+  the push.
 - [ ] Dry run or characterisation compared where behaviour must not change.
 - [ ] Change-log entry, with measured runtime where the code repeats.
 - [ ] Script catalog, promotion register and any registers the project keeps are updated.
@@ -183,11 +177,9 @@ manual).
 Adapted from a governed project's definition of done (unified-network-controller, design section 15).
 
 > **Learned 2026-10-29** · commits, any language · VERIFIED_PRIMARY · Source: unified-network-controller e6dee23 (committed with 14 failing
-> tests) and b275c7c (the fix), its `just commit-gate` · Falsifier: a gate that runs the suite.
-> Know what the commit gate runs before trusting it. A gate that runs governance and freshness checks but not the tests passes a commit whose
-> own test modules fail: a reader change (`cable_links` reading the site's devices a second time) broke a "read the devices once" guard in 14
-> tests, and the gate committed and pushed it. Run the test modules covering the changed code (or the whole suite when it fits the budget)
-> before the commit command, gated on their exit code, whatever the gate does.
+> tests) and b275c7c (the fix), its `just commit-gate` · Falsifier: a gate that runs the suite. Know what the commit gate runs before trusting it. A gate that runs governance and freshness checks but
+> not the tests passes a commit whose own test modules fail: a reader change (`cable_links` reading the site's devices a second time) broke a "read the devices once" guard in 14 tests, and the gate
+> committed and pushed it. Run the test modules covering the changed code (or the whole suite when it fits the budget) before the commit command, gated on their exit code, whatever the gate does.
 
 ```bash
 PYTHONPATH=.:wc-local/scripts "$PY" -m unittest -q tests.test_structure_confirmation tests.test_topology tests.test_colocation \
@@ -195,8 +187,8 @@ PYTHONPATH=.:wc-local/scripts "$PY" -m unittest -q tests.test_structure_confirma
 ```
 
 > **Learned 2026-11-05** · checks that read only tracked files · VERIFIED_PRIMARY · Source: tools_stuff continuum `53da28e` (pushed red) then `7557b62` (Continuum CHANGELOG 20261105_2131) · Falsifier: a freshness or catalog check that reports an untracked new file before its first commit
-> A check built on `git ls-files` or `git log` sees new files only after they are committed, so it can pass before the commit and fail after it. After the first commit of new files, run the
-> check again and read its exit code before pushing; never put the post-commit check and the push in one command.
+> A check built on `git ls-files` or `git log` sees new files only after they are committed, so it can pass before the commit and fail after it. After the first commit of new files, run the check
+> again and read its exit code before pushing; never put the post-commit check and the push in one command.
 >
 > ```bash
 > # continuum, 2026-11-05 (after the red push)
@@ -205,11 +197,9 @@ PYTHONPATH=.:wc-local/scripts "$PY" -m unittest -q tests.test_structure_confirma
 > ```
 
 > **Learned 2026-11-11** · commits in a pack or project with both tests and a check · VERIFIED_PRIMARY · Source: skills_stuff 7c86de8 (skill-drawio, pages.py
-> pushed to 406 lines with only `just test` run) and 8a7a276 (split into flowmap/flow_head.py) · Falsifier: a size, catalogue or freshness rule that the tests
-> also enforce, so running them alone would have caught it.
-> Tests passing is not the definition of done when the repo also has a check: the check holds rules the tests do not (module size budgets, catalogue coverage,
-> doc freshness, a write-back entry's header form). Run both before every commit and gate on each exit code; here a 400-line module budget and a malformed
-> Learned header both reached commits that had passed the tests.
+> pushed to 406 lines with only `just test` run) and 8a7a276 (split into flowmap/flow_head.py) · Falsifier: a size, catalogue or freshness rule that the tests also enforce, so running them alone would
+> have caught it. Tests passing is not the definition of done when the repo also has a check: the check holds rules the tests do not (module size budgets, catalogue coverage, doc freshness, a
+> write-back entry's header form). Run both before every commit and gate on each exit code; here a 400-line module budget and a malformed Learned header both reached commits that had passed the tests.
 >
 > ```bash
 > just test && just check && git commit -F - -- <paths>   # each step gates the next; never `just test | tail && git commit`
