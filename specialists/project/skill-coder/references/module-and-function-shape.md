@@ -3,11 +3,12 @@ Title: Module and function shape
 Category: reference
 Status: current
 Authority: local-supplement
-Scope: Size budgets, single responsibility, naming and the shrink-only ratchet for existing oversize code
-Last reviewed: 2026-10-19
+Scope: Size budgets, single responsibility, grouping modules into packages, naming, typed records and the shrink-only ratchet for existing oversize code
+Last reviewed: 2026-11-19
 Summary: >-
   Modules under 400 lines and functions under 60 by default, older oversize code held by a shrink-only ratchet, one
-  responsibility per module, names in the domain's words, and front-end handlers that hold no logic.
+  responsibility per module, families of three or more modules grouped into a package, names in the domain's words,
+  typed records over loose maps, and front-end handlers that hold no logic.
 ---
 
 # Module and function shape
@@ -27,8 +28,8 @@ Summary: >-
 | Language      | Module: warn / must split | Function: warn / must split | Source                                                                                                                     |
 | ------------- | ------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Default (any) | 300 / 400                 | 40 / 60                     | Operator; the hard limits are a governed project's rule R34                                                                |
-| Shell         | 100 / 200                 | 30 / 40                     | Operator; past about 100 lines a script belongs in a structured language (Google Shell Style Guide, UNVERIFIED             |
-|               |                           |                             |   until captured)                                                                                                          |
+| Shell         | 100 / 200                 | 30 / 40                     | Operator; past about 100 lines a script belongs in a structured language (Google Shell Style Guide, VERIFIED_PRIMARY,      |
+|               |                           |                             |   C-C55)                                                                                                                   |
 
 `scripts/code_size.py` applies both tiers (`DEFAULT_LIMITS`, `LANG_LIMITS`); a project sets its own per language or file suffix in `code-map.toml` `[limits.<language>]` (`module`, `function`,
 `warn_module`, `warn_function`).

@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Secure coding for any language - input, injection, secrets, access, cryptography, supply chain
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   OWASP-informed secure coding: validate input by allowlist at trust boundaries, parameterise every query and command,
-  keep secrets out of code and logs, least privilege, safe defaults, and supply-chain hygiene (pins, hashes, provenance).
+  keep secrets out of code and logs, least privilege, safe defaults, and supply-chain hygiene (pins, hashes, provenance); a disposable tool config
+  must not fall back to a vendor's cloud default.
 ---
 
 # Security
@@ -61,7 +62,8 @@ The Python subprocess documentation warns about shell injection when `shell=True
 
 ## Supply chain
 
-- Pin dependencies and actions (by version and, for build tooling, by digest or hash). OpenSSF Scorecard's Pinned-Dependencies check scores this (VERIFIED_PRIMARY).
+- Pin dependencies and actions (by version and, for build tooling, by digest or hash; CI actions by commit SHA). OpenSSF Scorecard's Pinned-Dependencies check scores this (VERIFIED_PRIMARY).
+- Compare a downloaded release with its pinned digest before unpacking it; printing a hash checks nothing (Learned 2026-11-09 below).
 - Give CI tokens the least permission (Scorecard Token-Permissions) and avoid workflow patterns that run untrusted code with secrets (Dangerous-Workflow).
 - Prefer releases with provenance; SLSA build levels describe increasing guarantees against tampering, with Build L3 requiring a hardened build platform (VERIFIED_PRIMARY, SLSA 1.0).
 - Review lock-file diffs. Why: Software Supply Chain Failures is A03 in the OWASP Top 10:2025.
@@ -72,11 +74,10 @@ A01 Broken Access Control; A02 Security Misconfiguration; A03 Software Supply Ch
 or Data Integrity Failures; A09 Security Logging and Alerting Failures; A10 Mishandling of Exceptional Conditions.
 
 > **Learned 2026-10-20** · gpg 2.5 in a script · VERIFIED_PRIMARY · Source: smc-resiliency scripts/make_release_key.sh (commit 4d6e1b0); gpg exit 2 with a deep GNUPGHOME, success under `$HOME/.k.XXXX` · Falsifier: gpg-agent starting with a GNUPGHOME path over about 100 characters on macOS
-> A throwaway keyring for making a key keeps the private key out of `~/.gnupg`, but gpg-agent's socket lives in GNUPGHOME and a Unix socket path
-> has a hard limit (about 104 bytes on macOS), so a GNUPGHOME under a deep session scratchpad fails with exit 2 and nothing useful on stderr. Use a
-> short `mktemp -d "$HOME/.k.XXXX"`, pass the passphrase with `--passphrase-file` (mode 600 in the work folder) rather than on the command line,
-> keep the revocation certificate gpg writes at key creation before removing the folder, and `gpgconf --kill all` for each throwaway keyring.
-> `--gen-revoke` refuses `--batch`; answer it through `--command-fd 0` without `--batch` if a certificate must be made later.
+> A throwaway keyring for making a key keeps the private key out of `~/.gnupg`, but gpg-agent's socket lives in GNUPGHOME and a Unix socket path has a hard limit (about 104 bytes on macOS), so a
+> GNUPGHOME under a deep session scratchpad fails with exit 2 and nothing useful on stderr. Use a short `mktemp -d "$HOME/.k.XXXX"`, pass the passphrase with `--passphrase-file` (mode 600 in the work
+> folder) rather than on the command line, keep the revocation certificate gpg writes at key creation before removing the folder, and `gpgconf --kill all` for each throwaway keyring. `--gen-revoke`
+> refuses `--batch`; answer it through `--command-fd 0` without `--batch` if a certificate must be made later.
 >
 > ```bash
 > # smc-resiliency scripts/make_release_key.sh (excerpt)
@@ -88,10 +89,9 @@ or Data Integrity Failures; A09 Security Logging and Alerting Failures; A10 Mish
 > ```
 
 > **Learned 2026-11-09** · supply chain (a tool built from a release tarball) · VERIFIED_PRIMARY · Source: `gh api repos/rauc/rauc/releases/tags/v1.15.2 --jq '.assets[] | {name, digest}'` (2026-11-09) and smc-resiliency `lab/payloads/rauc_build.sh`, `spike/build/build_mkosi.sh` `syft_verified`, commit f923adbe · Falsifier: a release API that lists no digest
-> Printing a downloaded tarball's sha256 checks nothing. GitHub's releases API gives each asset a `digest` (`sha256:<hex>`): pin it in the
-> script with its source and date, compare before unpacking, and remove a mismatch so a bad cache is not reused. A cached tool trusted through a
-> marker file ("this tarball was checked") passes after the executable is replaced and the marker kept; keep the checked tarball and compare the
-> executable with the one inside it, at setup and again before use.
+> Printing a downloaded tarball's sha256 checks nothing. GitHub's releases API gives each asset a `digest` (`sha256:<hex>`): pin it in the script with its source and date, compare before unpacking,
+> and remove a mismatch so a bad cache is not reused. A cached tool trusted through a marker file ("this tarball was checked") passes after the executable is replaced and the marker kept; keep the
+> checked tarball and compare the executable with the one inside it, at setup and again before use.
 >
 > ```bash
 > rauc_tarball() {
@@ -103,11 +103,9 @@ or Data Integrity Failures; A09 Security Logging and Alerting Failures; A10 Mish
 > ```
 
 > **Learned 2026-11-09** · disposable config for a CLI that has a cloud default · VERIFIED_PRIMARY (twice on one day: a disposable Cline CLI data dir
-> without a complete provider entry sent its first request, system prompt included, to api.openai.com; the 401 reply named OpenAI) · Source: tools_stuff
-> `cline/scripts/prompt_cost.py` (`disposable_settings`, the HTTPS_PROXY guard) · Falsifier: a CLI that refuses to start when its provider entry is incomplete
-> A CLI pointed at a local endpoint through a hand-made config can silently fall back to its vendor's default URL when the entry is missing a field it
-> requires (here `updatedAt` and `tokenSource`), so local-only data leaves the machine. When you point a tool at a local endpoint for a test: copy
-> the real entry's shape (not its secrets), put only a dummy key in it, refuse a non-local base URL in code, route HTTPS to a dead proxy
-> (`HTTPS_PROXY=http://127.0.0.1:9`, `NO_PROXY=127.0.0.1,localhost`; whether a given runtime honours it is to be verified), and check the
-> output for the vendor's host name.
+> without a complete provider entry sent its first request, system prompt included, to api.openai.com; the 401 reply named OpenAI) · Source: tools_stuff `cline/scripts/prompt_cost.py`
+> (`disposable_settings`, the HTTPS_PROXY guard) · Falsifier: a CLI that refuses to start when its provider entry is incomplete A CLI pointed at a local endpoint through a hand-made config can
+> silently fall back to its vendor's default URL when the entry is missing a field it requires (here `updatedAt` and `tokenSource`), so local-only data leaves the machine. When you point a tool at a
+> local endpoint for a test: copy the real entry's shape (not its secrets), put only a dummy key in it, refuse a non-local base URL in code, route HTTPS to a dead proxy
+> (`HTTPS_PROXY=http://127.0.0.1:9`, `NO_PROXY=127.0.0.1,localhost`; whether a given runtime honours it is to be verified), and check the output for the vendor's host name.
 

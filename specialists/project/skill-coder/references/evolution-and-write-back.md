@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: How engagements in any project feed reusable coding knowledge back into this skill, and how it is kept current
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
-  Standing write-back contract: classify every engagement at closeout, add dated Learned or Disputed entries with evidence
-  and a falsifier plus a CHANGELOG line, route project or language facts to their owner, and reconcile at release.
+  Standing write-back contract: classify every engagement at closeout, add dated Learned or Disputed entries with evidence,
+  a falsifier, a code excerpt (and a screenshot for a visual surface) plus a CHANGELOG line, park entries in the calling
+  project when this source is not writable, route project or language facts to their owner, and reconcile at release.
 ---
 
 # Evolution and write-back
@@ -42,8 +43,11 @@ Put the entry in the file a future reader would open for that task (the routing 
 ```
 
 A contradiction uses `> **Disputed YYYY-MM-DD**` with the same fields plus `Conflicts: <claim ID or section>`. The evidence label is one of `VERIFIED_PRIMARY`, `VERIFIED_SECONDARY`, `UNVERIFIED` or
-`USER_STATED`. The CHANGELOG line names the file and the same date. The pack's checks are expected to fail on a malformed entry or on an entry with no matching CHANGELOG line (UNVERIFIED until the
-coordinator's checker implements it).
+`USER_STATED`. The CHANGELOG line names the file and the same date. `tests/test_package_contract.py` (run by `just test`) fails on a malformed entry, on a Disputed entry naming no conflict, and on
+an entry with no CHANGELOG line (in `CHANGELOG.md` or a rotated `docs/history/changelog-*.md`) naming its file and date.
+
+A general design a project's code solved in a non-obvious way is also owed, as a pattern in [design-patterns.md](design-patterns.md) headed by a `Learned` line (`SKILL.md`, Standing write-back
+contract).
 
 If this skill's source cannot be written (read-only path, no authorisation), put the same entry in the engaging project's governed docs under the heading `## skill-coder write-back candidates`, and
 link it from that project's index; the next engagement with write access promotes it.

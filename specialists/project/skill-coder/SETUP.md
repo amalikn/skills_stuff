@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing and running skill-coder, both as a pack under development and its helpers against a project
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: >-
   A working setup needs mise, just and Python 3.11 or later; the helpers are stdlib-only and run with the target project's own interpreter, and the pack's
   venv in the skills working cache is only for its own recipes and fallback runs.
@@ -40,11 +40,11 @@ and names the ones it could not test.
 
 ## Using it from a project
 
-The skill is installed as directory symlinks back to this folder: `~/.claude/skills/skill-coder`, `~/.codex/skills/skill-coder` and `~/.hermes/skills/domain/skill-coder`. It is invoked by name until
-it is made the default ([ROADMAP.md](ROADMAP.md)).
+The skill is installed as directory symlinks back to this folder: `~/.claude/skills/skill-coder`, `~/.codex/skills/skill-coder` and `~/.hermes/skills/domain/skill-coder`. Since 2026-10-20 it is the
+default for any code work (global `~/.agents/AGENTS.md`).
 
-- Run a helper with the project's own interpreter, from the project root: `<project python> <this pack>/scripts/code_size.py --project-root . --list` (any helper; catalogue in
-  [scripts/README.md](scripts/README.md)). Nothing is installed into the project.
+- Run a helper with the project's own interpreter, from the project root: `<project python> <this pack>/scripts/code_size.py --project-root . --list` (any helper; catalogue in [scripts/README.md](scripts/README.md)).
+  Nothing is installed into the project.
 - Copy [templates/code-map.toml](templates/code-map.toml) to the project root to record its decisions (scan roots, limits, layers, naming exceptions).
 - On adoption, record today's findings once with each helper's `--write-baseline`; after that only new findings fail.
 - When the project has no Python 3.11 or later, use this pack's recipes as the fallback (`just code-size --project-root <path>` and so on).
@@ -63,4 +63,4 @@ every one shows as a failure, which is expected before adoption.
 - `venv missing at ... — run: just bootstrap`: the working-cache venv is not built yet; run `just bootstrap`.
 - A helper refuses to run: the interpreter is older than 3.11; use the project's newer one or this pack's recipe.
 - Every finding fails on a project: it has no baseline; record one with `--write-baseline` when adopting, never to hide new code.
-- `python 3.11: not installed through mise, NOT TESTED` from `just test-matrix`: `mise install python@3.11`, then run it again.
+- `python@3.11: not installed through mise, NOT TESTED` from `just test-matrix`: `mise install python@3.11`, then run it again.

@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Data and configuration files - YAML, JSON and TOML - including catalogs, registers and CI configuration
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   A header in each file's native form, explicit booleans and quoted ambiguous strings in YAML, unique keys everywhere,
-  yamllint and a schema check, safe loaders only, stable key order for generated files, and data files as the single home of facts.
+  yamllint, taplo and biome and a schema check, safe loaders only, stable key order for generated files, and data files as the
+  single home of facts.
 ---
 
 # YAML, JSON and TOML override
@@ -21,6 +22,8 @@ YAML 1.2.2 specification, yamllint rules documentation, RFC 8259 (JSON), TOML 1.
 | Job | Tool | Note |
 | --- | --- | --- |
 | YAML lint | yamllint (`truthy`, `key-duplicates` and the project's rule set) | VERIFIED_PRIMARY |
+| TOML lint and format | taplo (`taplo lint`, `taplo fmt --check`, `.taplo.toml` at the root) | Operator rule 2026-10-23 (USER_STATED); settings in Learned 2026-10-23 and 2026-11-07 below |
+| JSON lint and format | biome (`biome check`, `biome.jsonc` at the root) | Operator rule 2026-10-23 (USER_STATED); settings in Learned 2026-10-23 below |
 | Schema | A JSON Schema or the program's own loader check, run in the closing check | UNVERIFIED stub for a tool choice |
 | Format | The project's formatter, if any | Do not reflow a generated file by hand |
 

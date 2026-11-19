@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: How to shape a program of any size and language before writing its code
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Layers with dependencies pointing inward, thin front ends, earned abstraction, data decides and code executes, one seam per
   external system, native first and reuse before build with a search order, and stdlib in the core.
@@ -46,11 +46,10 @@ project (unified-network-controller) and are generic.
 |     |   the core                |                                                                                                           |   (see [dependencies.md](dependencies.md))             |
 
 > **Learned 2026-11-11** · principle 4, search scopes · `reusable_candidate` · Source: apn `scripts/project_sync.py` (commit cc69e7c1), hub register
-> showed an acknowledged directive as unacknowledged · Falsifier: a case where two lookups must search different places on purpose (then name both scopes and why).
-> When two functions look for the same thing (here: whether a sync-id was delivered, and whether it was ticked), they share one function that lists the
-> places to look. Here one used `rglob` (any depth) and the other `glob` (one level); the gap stayed hidden until a partner moved its archive files one
-> folder deeper, and the second lookup then reported the item gone. A test fixture should carry every folder layout the readers must accept (flat and
-> one folder per kind), since a layout move by another project is exactly what breaks a copied search scope.
+> showed an acknowledged directive as unacknowledged · Falsifier: a case where two lookups must search different places on purpose (then name both scopes and why). When two functions look for the same
+> thing (here: whether a sync-id was delivered, and whether it was ticked), they share one function that lists the places to look. Here one used `rglob` (any depth) and the other `glob` (one level);
+> the gap stayed hidden until a partner moved its archive files one folder deeper, and the second lookup then reported the item gone. A test fixture should carry every folder layout the readers must
+> accept (flat and one folder per kind), since a layout move by another project is exactly what breaks a copied search scope.
 >
 > ```python
 > def sync_files(project: str) -> list[pathlib.Path]:

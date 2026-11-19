@@ -4,13 +4,23 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: JavaScript and TypeScript code for Node and the browser
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   TypeScript with strict on, typescript-eslint, the project's formatter, TSDoc or JSDoc comments with param and returns,
-  strict equality, no any at seams, the Node version pinned by engines, and argument-array child processes.
+  strict equality, no any at seams, the Node version pinned by engines, and argument-array child processes; Learned entries
+  on Playwright browser tests, VS Code extension bundles and soft wrap, and pptxgenjs units and defaults.
 ---
 
 # JavaScript and TypeScript override
+
+## Contents
+
+- [Authoritative sources](#authoritative-sources)
+- [Tools](#tools)
+- [Core rule mapping](#core-rule-mapping)
+- [Size and limit tweaks](#size-and-limit-tweaks)
+- [Learned](#learned)
+- [Open items](#open-items)
 
 ## Authoritative sources
 
@@ -53,23 +63,21 @@ The Google TypeScript Style Guide, the TypeScript `tsconfig` reference (`strict`
 ## Learned
 
 > **Learned 2026-11-06** · JavaScript, Playwright browser tests · VERIFIED_PRIMARY (Edge with playwright-core: a synthetic canvas tap crashed the
-> renderer in about half the runs; real mouse clicks passed 8 of 8; a hidden-by-filter checkbox timed out a role locator) · Source: apn
-> unified-network-controller `tests/test_topology_elk.py`, `tests/test_coverage_comparison.py` (d49d2043) · Falsifier: a synthetic `cy.emit('tap')`
-> stable over many runs.
+> renderer in about half the runs; real mouse clicks passed 8 of 8; a hidden-by-filter checkbox timed out a role locator) · Source: apn unified-network-controller `tests/test_topology_elk.py`,
+> `tests/test_coverage_comparison.py` (d49d2043) · Falsifier: a synthetic `cy.emit('tap')` stable over many runs.
 
-- Drive a canvas library (Cytoscape) with real mouse clicks at a node's rendered position, not a synthetic `emit('tap')`: the synthetic event with no
-  position crashed Chromium's renderer in about half the runs.
-- `getByRole` skips hidden elements by default: to assert the state of a row a search filter hid, pass `includeHidden: true`, or the locator waits
-  out its timeout.
+- Drive a canvas library (Cytoscape) with real mouse clicks at a node's rendered position, not a synthetic `emit('tap')`: the synthetic event with no position crashed Chromium's renderer in about half
+  the runs.
+- `getByRole` skips hidden elements by default: to assert the state of a row a search filter hid, pass `includeHidden: true`, or the locator waits out its timeout.
 - Serve test scripts with a charset (`text/javascript; charset=utf-8`): a "·" in hover text came out garbled without it.
 - A browser test that needs a browser module skips without it (`skipUnless(os.environ.get(...))`), so the plain suite does not crash on `require(undefined)`.
 
 > **Learned 2026-11-12** · JavaScript, pptxgenjs 3.12.0 text margins · VERIFIED_PRIMARY (library source `valToPts(slideItemObj.options.margin)` for text boxes; table cells read a margin
-> below 1 as inches; the slide XML showed `lIns="109728"` after the fix) · Source: apn enterprise-strategy `scripts/build_strategy_pptx.js` (a3e29af7) · Falsifier: a pptxgenjs text box whose
-> `margin: 0.12` renders a visible inset.
+> below 1 as inches; the slide XML showed `lIns="109728"` after the fix) · Source: apn enterprise-strategy `scripts/build_strategy_pptx.js` (a3e29af7) · Falsifier: a pptxgenjs text box whose `margin:
+> 0.12` renders a visible inset.
 
-- Units differ inside one library: a pptxgenjs text box takes `margin` in points, a table cell takes it in inches when below 1. Keep inches in the call sites and convert in the one helper
-  that adds text (`margin: (o.margin ?? 0.08) * 72`), so every card gets the same inset; a passing build does not show it, only a render does.
+- Units differ inside one library: a pptxgenjs text box takes `margin` in points, a table cell takes it in inches when below 1. Keep inches in the call sites and convert in the one helper that adds
+  text (`margin: (o.margin ?? 0.08) * 72`), so every card gets the same inset; a passing build does not show it, only a render does.
 
 ```js
 // apn enterprise-strategy scripts/build_strategy_pptx.js (a3e29af7)
@@ -83,12 +91,12 @@ function box(s, text, x, y, w, h, o = {}) {
 > unpatched one; a missing `vscode.Position` surfaced as a clear TypeError, fixed by adding it to the stub) · Source: scripts_stuff `vscode_extensions/scripts/mermaid-zoom-patch/test-mermaid-zoom.js`
 > (uncommitted, 2026-11-16) · Falsifier: a bundle whose top-level code calls a `vscode` API at load time with a return value the proxy cannot fake.
 
-- Load a shipped extension bundle without VS Code by intercepting `require("vscode")` with `Module._load`, and back the stub with a permissive `Proxy` so every API the bundle touches at
-  load time is a harmless no-op; give real classes only for what the test asserts (`Range`, `Position`, `CodeLens`, `MarkdownString`) and record registrations (`registerCommand`,
-  `registerCodeLensProvider`, `createWebviewPanel`). Expose internals by appending `module.exports.__t = { ... }` to a temp copy of the bundle; replace a webview-only function by
-  reassigning its name in that appended text. This proves wiring, not rendering: say so in the report.
-- Compile a generated inline script without running it with `new (require("vm").Script)(code)`; the agent harness's security hook rejects `new Function(...)` in a file write, and also flags a
-  regex `.exec(` as `child_process.exec` (use `String.prototype.match`).
+- Load a shipped extension bundle without VS Code by intercepting `require("vscode")` with `Module._load`, and back the stub with a permissive `Proxy` so every API the bundle touches at load time is a
+  harmless no-op; give real classes only for what the test asserts (`Range`, `Position`, `CodeLens`, `MarkdownString`) and record registrations (`registerCommand`, `registerCodeLensProvider`,
+  `createWebviewPanel`). Expose internals by appending `module.exports.__t = { ... }` to a temp copy of the bundle; replace a webview-only function by reassigning its name in that appended text. This
+  proves wiring, not rendering: say so in the report.
+- Compile a generated inline script without running it with `new (require("vm").Script)(code)`; the agent harness's security hook rejects `new Function(...)` in a file write, and also flags a regex
+  `.exec(` as `child_process.exec` (use `String.prototype.match`).
 
 ```js
 // scripts_stuff vscode_extensions/scripts/mermaid-zoom-patch/test-mermaid-zoom.js (uncommitted, 2026-11-16)
@@ -103,22 +111,21 @@ Module._load = function (request, ...rest) {
 ```
 
 > **Learned 2026-11-16** · JavaScript/TypeScript, VS Code extensions · VERIFIED_PRIMARY (microsoft/vscode `main`, `src/vs/editor/browser/view/domLineBreaksComputer.ts`:
-> `LineInjectedText.applyInjectedText(context.getLineContent(lineNumber), injectedTexts)` is what gets measured) · Source: that file, read 2026-11-16 ·
-> Falsifier: a VS Code release whose wrapping honours decoration CSS or exposes an API for wrap points.
+> `LineInjectedText.applyInjectedText(context.getLineContent(lineNumber), injectedTexts)` is what gets measured) · Source: that file, read 2026-11-16 · Falsifier: a VS Code release whose wrapping
+> honours decoration CSS or exposes an API for wrap points.
 
-- A decoration that hides text (`textDecoration: "none; display: none;"`, the usual trick for hiding a markdown link's `](target)`) changes what is drawn, not
-  where VS Code soft-wraps: wrapping measures the raw line plus injected text (`before`/`after` content counts, hidden characters still count). An extension
-  cannot make soft wrap follow the visible width; only folding removes text from layout, and it works on whole lines. Plan around it: hard-wrap the source
-  by visible width and turn soft wrap off for that language, or shorten the raw text (reference-style links).
+- A decoration that hides text (`textDecoration: "none; display: none;"`, the usual trick for hiding a markdown link's `](target)`) changes what is drawn, not where VS Code soft-wraps: wrapping measures the
+  raw line plus injected text (`before`/`after` content counts, hidden characters still count). An extension cannot make soft wrap follow the visible width; only folding removes text from layout, and
+  it works on whole lines. Plan around it: hard-wrap the source by visible width and turn soft wrap off for that language, or shorten the raw text (reference-style links).
 
 > **Learned 2026-11-16** · JavaScript, Node scripts and pptxgenjs · VERIFIED_PRIMARY (pptxgenjs 3.12.0 `dist/pptxgen.cjs.js`: the constructor sets
-> `this._company = 'PptxGenJS'` and `this._subject = 'PptxGenJS Presentation'`; a deck built without setting them showed both in File > Properties) · Source: that
-> file in apn enterprise-strategy's working cache, read 2026-11-16 · Falsifier: a pptxgenjs release whose defaults are empty.
+> `this._company = 'PptxGenJS'` and `this._subject = 'PptxGenJS Presentation'`; a deck built without setting them showed both in File > Properties) · Source: that file in apn enterprise-strategy's
+> working cache, read 2026-11-16 · Falsifier: a pptxgenjs release whose defaults are empty.
 
-- A Node build script that another script may `require` ends with `if (require.main === module) main();`, so importing it for its functions does not run
-  its build (and overwrite its output) as a side effect; export what reuse needs with `module.exports`.
-- pptxgenjs writes its own name into every deck's properties unless told otherwise: set `pres.company = ""` and `pres.subject = ""` (or real values) next to
-  `new pptxgen()`, and check a built deck's `docProps/app.xml` and `docProps/core.xml`, not only its slides, before it leaves the team.
+- A Node build script that another script may `require` ends with `if (require.main === module) main();`, so importing it for its functions does not run its build (and overwrite its output) as a side
+  effect; export what reuse needs with `module.exports`.
+- pptxgenjs writes its own name into every deck's properties unless told otherwise: set `pres.company = ""` and `pres.subject = ""` (or real values) next to `new pptxgen()`, and check a built deck's
+  `docProps/app.xml` and `docProps/core.xml`, not only its slides, before it leaves the team.
 
 ## Open items
 

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Go modules, libraries and commands
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Effective Go and Go Code Review Comments; gofmt, go vet and golangci-lint; doc comments on every exported name; errors as
   values wrapped with %w and tested with errors.Is or errors.As; a Context first with timeouts; table-driven tests.

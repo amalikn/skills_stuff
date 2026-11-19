@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261119_1538
+Last rotated: 20261119_1554
 ---
 
 # Changelog
@@ -21,33 +21,40 @@ Last rotated: 20261119_1538
 - [20261102_1132 — Learned: one write frame for many fields](#20261102_1132--learned-one-write-frame-for-many-fields)
 - [20261101_2353 — Learned: guard first and dry-run a gate that hides records](#20261101_2353--learned-guard-first-and-dry-run-a-gate-that-hides-records)
 - [20261101_2307 — Learned: a predicate answering a second question](#20261101_2307--learned-a-predicate-answering-a-second-question)
-- [20261101_1937 — Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits](#20261101_1937--learned-jinja-dict-keys-through-json-filtered-loop-index-folded-newlines-crlf-edits)
 
 ---
 
 ## Unreleased
 
-- 2026-11-19: languages/rust.md, the `rustls-no-provider` unification recurred from a sibling workspace member (rule tightened), and a new section "Tests, build scripts and limits" (sqlx `migrate!` build script, `#[tokio::test]` starvation, jsonwebtoken leeway and algorithm, Unix socket path length); references/testing.md, mutation checks that never mutated; references/design-patterns.md, exact-commit pre-push gate (continuum-app).
-- 2026-11-19: references/tooling-and-runtime.md Learned entries, act on macOS (socket flag only on the command line, host network, image gaps, pinning) and mise into the working cache; languages/rust.md Learned entry, sqlx 0.9 dynamic SQL, temporalio macros and missing_docs, per-test databases (Continuum).
+- 2026-11-19: periodic review (30-day doc-freshness): 31 files re-read in full and dated 2026-11-19, plus SETUP.md; body rules aligned with their Learned entries, Summaries, Scopes and
+  Contents fixed, lifted UNVERIFIED labels where captures and tests now exist, ROADMAP restated (default since 2026-10-20; write-back test red, full scan). No Learned or Disputed entry changed.
+- 2026-11-19: languages/rust.md, the `rustls-no-provider` unification recurred from a sibling workspace member (rule tightened), and a new section "Tests, build scripts and limits" (sqlx `migrate!`
+  build script, `#[tokio::test]` starvation, jsonwebtoken leeway and algorithm, Unix socket path length); references/testing.md, mutation checks that never mutated; references/design-patterns.md,
+  exact-commit pre-push gate (continuum-app).
+- 2026-11-19: references/tooling-and-runtime.md Learned entries, act on macOS (socket flag only on the command line, host network, image gaps, pinning) and mise into the working cache;
+  languages/rust.md Learned entry, sqlx 0.9 dynamic SQL, temporalio macros and missing_docs, per-test databases (Continuum).
 - 2026-11-19: languages/rust.md Learned entry under Feature unification, a dependency's default features enabling reqwest `rustls-no-provider` (runtime panic on a green build; Continuum P1 spike).
 - 2026-11-18: references/testing.md Learned entry, a fault-test harness that rescues the target must report ASSISTED, not PASS (smc-resiliency bench run).
 - 2026-11-18: references/testing.md Learned entry, a justfile catalog check that read variables as recipes, masked by fake catalog rows (Continuum).
 
-- 2026-11-18 new `scripts/reflow_lossless.py` and `tests/test_reflow_lossless.py` (eight cases), recipe `just reflow-lossless`: proves a re-wrapped markdown file changed no table cell and
-  no word (operator, 2026-11-18: a lossless check, accept re-wraps); catalogued in scripts/README.md and SKILL.md; named in the Disputed entry of `references/safety-and-writes.md`
+- 2026-11-18 new `scripts/reflow_lossless.py` and `tests/test_reflow_lossless.py` (eight cases), recipe `just reflow-lossless`: proves a re-wrapped markdown file changed no table cell and no word
+  (operator, 2026-11-18: a lossless check, accept re-wraps); catalogued in scripts/README.md and SKILL.md; named in the Disputed entry of `references/safety-and-writes.md`
 
-- 2026-11-18 `references/safety-and-writes.md`: Disputed, the same day's formatter-hook entry called a lossless re-wrap damage; compare tables un-wrapped cell by cell, not by tokens; a proven-lossless reflow is committable (unified-network-controller)
+- 2026-11-18 `references/safety-and-writes.md`: Disputed, the same day's formatter-hook entry called a lossless re-wrap damage; compare tables un-wrapped cell by cell, not by tokens; a proven-lossless
+  reflow is committable (unified-network-controller)
 
-- 2026-11-18 `references/safety-and-writes.md`: Learned, a post-edit formatter hook rewrote a governed file far beyond the edit; compare tokens with HEAD, restore, re-apply by guarded exact replacement (unified-network-controller)
+- 2026-11-18 `references/safety-and-writes.md`: Learned, a post-edit formatter hook rewrote a governed file far beyond the edit; compare tokens with HEAD, restore, re-apply by guarded exact
+  replacement (unified-network-controller)
 
 - 2026-11-18 `references/tooling-and-runtime.md`: Learned, a closing check recipe runs every step and fails at the end (unified-network-controller)
-- 2026-11-18 `references/testing.md`: Learned, smoke-test a changed read-only script on the real host by piping the module over stdin (no file on the host), with the I/O injected for the offline test (unified-network-controller)
-- 2026-11-18 write-back from apn smc-resiliency (staleness audit 20261118_1715): references/design-patterns.md P-76 (refuse a repeated key when loading YAML;
-  `get_single_data()` instead of a suppressed S506).
-- 2026-11-18 write-back from apn enterprise-strategy and smc-resiliency (chat 6128bdd9): references/design-patterns.md P-74 (add what a generator cannot write after it saves; prove it in
-  the consuming application: slide motion and PowerPoint's own report) and P-75 (learn a person's hand edits: diff against the last build, sort by rule, make habits defaults).
-- 2026-11-17 write-back from ansible-wifi (chat f516e57d): languages/ansible/learned-execution.md Learned 2026-11-17 (n) (note unfinished hosts, fail them in the wrapper's
-  last play so they keep the later plays).
+- 2026-11-18 `references/testing.md`: Learned, smoke-test a changed read-only script on the real host by piping the module over stdin (no file on the host), with the I/O injected for the offline test
+  (unified-network-controller)
+- 2026-11-18 write-back from apn smc-resiliency (staleness audit 20261118_1715): references/design-patterns.md P-76 (refuse a repeated key when loading YAML; `get_single_data()` instead of a
+  suppressed S506).
+- 2026-11-18 write-back from apn enterprise-strategy and smc-resiliency (chat 6128bdd9): references/design-patterns.md P-74 (add what a generator cannot write after it saves; prove it in the consuming
+  application: slide motion and PowerPoint's own report) and P-75 (learn a person's hand edits: diff against the last build, sort by rule, make habits defaults).
+- 2026-11-17 write-back from ansible-wifi (chat f516e57d): languages/ansible/learned-execution.md Learned 2026-11-17 (n) (note unfinished hosts, fail them in the wrapper's last play so they keep the
+  later plays).
 - 2026-11-17 write-back from ansible-wifi (chat f516e57d, smc_change playbooks): languages/ansible/learned-connections.md Learned 2026-11-17 (m) (`ansible_ssh_timeout` is the connect timeout behind
   "banner exchange"; a play var outranks `-T`).
 - 2026-11-17 write-back from ansible-wifi (chat f516e57d, rise 9f17dd64): languages/ansible/learned-lint-and-tests.md Learned 2026-11-17 (a) (a lint delta gate brings a rewritten file's old findings
@@ -190,7 +197,3 @@ Last rotated: 20261119_1538
 ## 20261101_2307 — Learned: a predicate answering a second question
 
 `references/testing.md`, from skill-knowledge-curator (2026-11-01).
-
-## 20261101_1937 — Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits
-
-Learned 2026-11-01 in `languages/ansible.md`, from ansible-wifi smc_change.

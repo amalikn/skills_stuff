@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Changing structure without changing behaviour, moving code with shims, and promoting project code into a reusable skill
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   A refactor changes no behaviour and proves it with a before-and-after comparison; moved code leaves a shim and a
-  moved-paths entry; scripts carry a promotion status and reusable ones move to a skill as a tested engine behind a thin wrapper.
+  moved-paths entry, and every string path and by-path reader is repointed; scripts carry a promotion status and reusable ones move to a skill as a
+  tested engine behind a thin wrapper, the receiving pack gaining a lint config if it has none.
 ---
 
 # Refactoring and promotion
@@ -33,10 +34,10 @@ Martin Fowler defines a refactoring as "a change made to the internal structure 
 
 When a module or script moves:
 
-1. Leave a shim at the old path that imports or calls the new one, so existing callers keep working.
+1. Leave a shim at the old path that imports or calls the new one, so existing callers keep working. An untracked prototype with no callers needs no shim, only step 2 (Learned 2026-10-27).
 2. Add an entry to a moved-paths record (old path, new path, date) that a check reads.
-3. Update every string reference too: path literals passed to runners, scheduler wrappers, usage lines in docstrings, task-runner recipes and documentation. Why: an import check and a faked subprocess
-   test do not see string paths (a governed project's staleness audit, 2026-10-05).
+3. Update every string reference too: path literals passed to runners, scheduler wrappers, usage lines in docstrings, task-runner recipes and documentation, and every reader that opens the file by
+   path (scanners, line counters, checks; Learned 2026-10-21 (b)). Why: an import check and a faked subprocess test do not see string paths (a governed project's staleness audit, 2026-10-05).
 4. Remove the shim and the entry when no caller remains.
 
 > **Learned 2026-10-27** · any language, moving a script · CANDIDATE (reusable_candidate) · Source: skills_stuff commit 1dff9c8 (skill-goal-guard `scripts/readme.md`, Moved paths) · Falsifier: a move whose per-file hashes and output hash match although a caller still uses the old path
@@ -50,13 +51,12 @@ When a module or script moves:
 > ```
 
 > **Learned 2026-11-12** · moving scripts and their outputs into subfolders, any language · VERIFIED_PRIMARY (apn enterprise-strategy d7bc439e: 34 files moved,
-> 64 files repointed, every deck rebuilt from its new place) · Source: project_stuff/scripts/move_and_repoint.py (12 Nov 2026, committed with this write-back's session) · Falsifier: a move where a text
-> rewrite catches a path built from parts, or a path pattern that refuses "." and still matches a path ending a sentence
-> Three things a text rewrite of "scripts/x" paths misses, each met in one move: (1) a path at the end of a sentence ("from scripts/x.js."): a lookahead `(?![\w.-])` that
-> protects "x.json" from "x.js" also refuses the full stop, so allow "." when whitespace or the end follows; (2) relative markdown links in a file that itself moved: resolve
-> each link against the file's old folder and rewrite it from the new one; (3) paths built from parts (`path.join(ROOT, "slides", name)`, `Path(__file__).parent.parent`):
-> fix the root anchor and the output folder by hand. Prove the move by running every builder from its new place; a builder that regenerates committed history (two October
-> decks here) gets its output restored to the committed bytes, not committed as a change.
+> 64 files repointed, every deck rebuilt from its new place) · Source: project_stuff/scripts/move_and_repoint.py (12 Nov 2026, committed with this write-back's session) · Falsifier: a move where a
+> text rewrite catches a path built from parts, or a path pattern that refuses "." and still matches a path ending a sentence Three things a text rewrite of "scripts/x" paths misses, each met in one
+> move: (1) a path at the end of a sentence ("from scripts/x.js."): a lookahead `(?![\w.-])` that protects "x.json" from "x.js" also refuses the full stop, so allow "." when whitespace or the end
+> follows; (2) relative markdown links in a file that itself moved: resolve each link against the file's old folder and rewrite it from the new one; (3) paths built from parts (`path.join(ROOT,
+> "slides", name)`, `Path(__file__).parent.parent`): fix the root anchor and the output folder by hand. Prove the move by running every builder from its new place; a builder that regenerates committed
+> history (two October decks here) gets its output restored to the committed bytes, not committed as a change.
 
 ```python
 # project_stuff/scripts/move_and_repoint.py: a root path not inside a longer path, a sentence's full stop allowed after it
@@ -81,7 +81,8 @@ asked (operator, 2026-10-07).
 
 **How.**
 
-1. The engine goes to the skill's `scripts/` with generic inputs, offline tests, a docstring header, an entry in that folder's README and a task-runner recipe.
+1. The engine goes to the skill's `scripts/` with generic inputs, offline tests, a docstring header, an entry in that folder's README and a task-runner recipe. A receiving pack with no lint config
+   gets one in the same pass, its existing files excluded (Learned 2026-11-16).
 2. The project script becomes a thin wrapper that keeps its command line and defaults and loads the engine through one seam (one module that knows where the skill lives). Why: one place to change when
    the skill moves or its revision pin changes.
 3. Before-and-after outputs of the read-only or dry-run modes must match. Why: promotion is a refactor.
@@ -92,11 +93,10 @@ asked (operator, 2026-10-07).
 Engines a project imports run in the project's interpreter and the project pins the skill revision; see [runtime-boundaries.md](runtime-boundaries.md).
 
 > **Learned 2026-10-20** · adopting `code-map.toml` in a project with its own checks · VERIFIED_PRIMARY (unified-network-controller: layers, 13 write-gate exceptions, 11 write patterns and 198 module statuses moved; equality asserted against the old files; `just check` 8,699 to 8,701 checks pass; four negative cases each fail) · Source: unified-network-controller `scripts/govcheck/config.py`, `code-map.toml` (2026-10-20) · Falsifier: a
-> project whose old register cannot be expressed in the map's sections without loss
-> Move the decisions, keep the project's checks: the project's checker reads the map instead of its constants, and calls `code_map.load` once so an
-> unknown section fails. Generate the map from the old sources and assert equality before deleting them; write the full write-pattern list
-> (`write_patterns` plus `apply_pattern`) so this pack's `write_gates.py` sees the same writes; record each retired path in the project's
-> moved-paths map so dated records still resolve. Baselines and progress trackers stay out (decisions only).
+> project whose old register cannot be expressed in the map's sections without loss Move the decisions, keep the project's checks: the project's checker reads the map instead of its constants, and
+> calls `code_map.load` once so an unknown section fails. Generate the map from the old sources and assert equality before deleting them; write the full write-pattern list (`write_patterns` plus
+> `apply_pattern`) so this pack's `write_gates.py` sees the same writes; record each retired path in the project's moved-paths map so dated records still resolve. Baselines and progress trackers stay
+> out (decisions only).
 >
 > ```python
 > # unified-network-controller scripts/govcheck/config.py (2026-10-20, commit 9970c48)
@@ -108,14 +108,12 @@ Engines a project imports run in the project's interpreter and the project pins 
 > ```
 
 > **Learned 2026-10-20 (b)** · moving modules into packages and a folder up a level, Python with a framework that imports by name · VERIFIED_PRIMARY (two moves in one project, each deployed) · Source: unified-network-controller decisions A-21 and A-22 (commits af71572, e4a92af, 03e4a8e) · Falsifier: a move proved by these steps that still breaks a caller
-> Prove a move unchanged on four counts, each run before and after: the test count and result; the rendered outputs byte for byte, the
-> "before" rendered from HEAD in a `git worktree` so the comparison needs no stash; the built artefact importing every module in its real
-> runtime; the closing check. Write the rewrite as one script that maps old to new once and runs once: a second pass is not idempotent when
-> a new name contains an old one (`drift.py` into package `drift/` turned `unc_ownership.drift.network` into `.drift.drift.network`), and a
-> half-run leaves a mixed tree, so reset to HEAD and rerun rather than repair. Search separately for what a text rewrite cannot see: names
-> built at run time (`f"from {pkg}.ownership import"`), paths climbed from `__file__` (`parents[2] / "nautobot"` needs one more level), a
-> packaging list kept by hand, and anything a framework keys by module path (Nautobot Jobs). A dated record keeps its old paths; map a moved
-> folder once by prefix rather than every file:
+> Prove a move unchanged on four counts, each run before and after: the test count and result; the rendered outputs byte for byte, the "before" rendered from HEAD in a `git worktree` so the comparison
+> needs no stash; the built artefact importing every module in its real runtime; the closing check. Write the rewrite as one script that maps old to new once and runs once: a second pass is not
+> idempotent when a new name contains an old one (`drift.py` into package `drift/` turned `unc_ownership.drift.network` into `.drift.drift.network`), and a half-run leaves a mixed tree, so reset to
+> HEAD and rerun rather than repair. Search separately for what a text rewrite cannot see: names built at run time (`f"from {pkg}.ownership import"`), paths climbed from `__file__` (`parents[2] /
+> "nautobot"` needs one more level), a packaging list kept by hand, and anything a framework keys by module path (Nautobot Jobs). A dated record keeps its old paths; map a moved folder once by prefix
+> rather than every file:
 >
 > ```python
 > def _moved_exists(tok, moved):                 # govcheck paths.py (e4a92af): exact entries first, then a moved folder's prefix
@@ -127,12 +125,10 @@ Engines a project imports run in the project's interpreter and the project pins 
 > No visual surface.
 
 > **Learned 2026-10-21** · promoting a project script into a skill and switching the project to it · VERIFIED_PRIMARY · Source: skill-ai-it `scripts/plans/target_map.py`, `scripts/plans/plan_timeline.py` and unified-network-controller `scripts/govcheck/skill_scripts.py` (commit pending) · Falsifier: a promoted script whose pilot output changes, or a project check that imports a skill module by bare name and gets its own file
-> Promote in three moves and prove each: (1) replace `ROOT = Path(__file__).parents[N]` with a `--project-root` argument and pass the root into
-> every entry point; (2) move every project-shaped string (headers, an explanatory sentence, a data path) into the project's data with the pilot's
-> value, and render new behaviour only when it is used, so the pilot renders byte for byte (compare old and new scripts on the same inputs, several
-> dates for anything clock-driven); (3) in the project's checks, load the skill script by path under a prefixed module name rather than inserting
-> the skill's folder on `sys.path`, where its module names can shadow the project's. Delete the project copy only after the recipes and checks run
-> the skill copy and the rendered files are unchanged.
+> Promote in three moves and prove each: (1) replace `ROOT = Path(__file__).parents[N]` with a `--project-root` argument and pass the root into every entry point; (2) move every project-shaped string
+> (headers, an explanatory sentence, a data path) into the project's data with the pilot's value, and render new behaviour only when it is used, so the pilot renders byte for byte (compare old and new
+> scripts on the same inputs, several dates for anything clock-driven); (3) in the project's checks, load the skill script by path under a prefixed module name rather than inserting the skill's folder
+> on `sys.path`, where its module names can shadow the project's. Delete the project copy only after the recipes and checks run the skill copy and the rendered files are unchanged.
 
 ```python
 # unified-network-controller scripts/govcheck/skill_scripts.py (commit pending)
@@ -144,16 +140,15 @@ spec.loader.exec_module(module)
 ```
 
 > **Learned 2026-10-21 (b)** · moving definitions out of a file · VERIFIED_PRIMARY (unified-network-controller code architecture stage 2: the T6 measure read `adapters/protocol.py` by path and would have gone on passing while checking none of the moved records) · Source: unified-network-controller `adapters/t6/measure.py` and `src/unc/core/records/observation.py` (2026-10-21, uncommitted at writing) · Falsifier: a move after which every by-path reader was found by the import graph alone
-> Before moving definitions out of a file, find its readers by path as well as its importers: AST scanners, line counters, docstring
-> baselines and checks that open the file. An import graph shows only importers; a by-path reader keeps passing on the shim and silently
-> checks less. Grep for the file's path and name, point each reader at both files (or the new one), and compare its output before and after.
+> Before moving definitions out of a file, find its readers by path as well as its importers: AST scanners, line counters, docstring baselines and checks that open the file. An import graph shows only
+> importers; a by-path reader keeps passing on the shim and silently checks less. Grep for the file's path and name, point each reader at both files (or the new one), and compare its output before and
+> after.
 
 > **Learned 2026-11-16** · promoting a script into a pack with no lint config · VERIFIED_PRIMARY · Source: skill-drawio `ruff.toml` and
-> `scripts/ascii_flow_render.py` (promoted from apn smc-resiliency, 2026-11-16) · Falsifier: `ruff format --check` reformatting an excluded file
-> The receiving pack indented with four spaces and had no lint config. Do not re-indent the promoted file to match: add the pack's `ruff.toml` from
-> `templates/ruff.toml` (two spaces), list every existing Python file under `extend-exclude` with `force-exclude = true`, and run `just lint` in
-> `just check`; the new file is checked, the old ones keep their style until a reformat is decided. ruff then caught B905 (`zip()` without
-> `strict=`) in the promoted code: two lists built from the same parts take `strict=True`.
+> `scripts/ascii_flow_render.py` (promoted from apn smc-resiliency, 2026-11-16) · Falsifier: `ruff format --check` reformatting an excluded file The receiving pack indented with four spaces and had no
+> lint config. Do not re-indent the promoted file to match: add the pack's `ruff.toml` from `templates/ruff.toml` (two spaces), list every existing Python file under `extend-exclude` with
+> `force-exclude = true`, and run `just lint` in `just check`; the new file is checked, the old ones keep their style until a reformat is decided. ruff then caught B905 (`zip()` without `strict=`) in
+> the promoted code: two lists built from the same parts take `strict=True`.
 
 ```toml
 # skill-drawio ruff.toml (2026-11-16), head; 111 existing files follow under extend-exclude

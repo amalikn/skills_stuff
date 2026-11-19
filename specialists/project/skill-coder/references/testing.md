@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: What to test, at which level, and how to make tests and checks trustworthy
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
-  Test first for bugs, characterisation before refactoring, a negative test proving each check can fail, fakes per
-  contract with a shared contract suite, deterministic output, drift checks for generated files, and real-target proof.
+  Test first for bugs, characterisation before refactoring, a negative test proving each check can fail (and that the proof itself
+  took effect), fakes per contract with a shared contract suite, deterministic output, verdicts that prove their own cause and setup,
+  and real-target proof.
 ---
 
 # Testing
@@ -56,6 +57,8 @@ Summary: >-
 
 A governance check, lint rule or validator lands with a negative test that turns it red on a crafted bad input. Why: a check that cannot fail is not coverage (skill-ai-it governance-check doctrine).
 When a check starts in warn mode, its count is held by a shrink-only baseline and switches to fail mode at a named milestone.
+The proof is checked too: confirm the bad input really took effect (count a mutation's replacements, assert a fixture edit matched) and that it left
+nothing behind (plant into a copy, or restore and confirm the original is back), as the Learned entries below found.
 
 > **Learned 2026-10-20** · any project · VERIFIED_PRIMARY · Source: unified-network-controller `tests/test_topology_preview_scripts.py`, `wc-local/scripts/nautobot_tools/app_verify.py` (both fixed 2026-10-20) · Falsifier: a mirror tool kept in step with its source for months with no test tying them
 > A helper that mirrors product inputs (a preview page that loads the page's scripts, a verifier that builds the product's image) drifts silently when the product changes, and a stale mirror passes
@@ -182,7 +185,8 @@ check: _require-venv
 
 ## Proof against the real target
 
-- Before claiming a capability works, verify it against a real target (an isolated or spare one), not only a mock. Why: a stub only proves the code agrees with the stub.
+- Before claiming a capability works, verify it against a real target (an isolated or spare one; a read-only proof may run against production, Learned
+  2026-11-18 below), not only a mock. Why: a stub only proves the code agrees with the stub.
 - Report success at the outcome the operator sees (stored, visible, healthy), not at "the call returned 200" ([safety-and-writes.md](safety-and-writes.md)).
 - A single success is a candidate, not a rule, until a second environment, the official docs or the source agrees ([evolution-and-write-back.md](evolution-and-write-back.md)).
 

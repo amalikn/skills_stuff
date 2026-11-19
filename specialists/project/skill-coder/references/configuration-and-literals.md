@@ -3,11 +3,12 @@ Title: Configuration and literals
 Category: reference
 Status: current
 Authority: local-supplement
-Scope: Where settings, paths, hosts, tokens and version pins live, and what may appear as a literal in code
-Last reviewed: 2026-10-19
+Scope: Where settings, paths, hosts, tokens, version pins and catalog data live, what may appear as a literal in code, and checking a directive against the deployed version
+Last reviewed: 2026-11-19
 Summary: >-
   No absolute paths, hostnames, URLs or tokens in code; one settings module reads the environment and config files;
-  version pins recorded in one place and changed together with the pin they mirror.
+  version pins recorded in one place and changed together with the pin they mirror; facts in catalog data, not code tables;
+  a directive checked against the deployed version's docs; first-boot templating renders persistent state into files.
 ---
 
 # Configuration and literals

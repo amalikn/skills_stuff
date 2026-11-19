@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Code that changes anything outside its own process - files, databases, devices, remote systems
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Read by default, plan then --apply, write gates the code enforces, credentials never in code, one writer per record,
-  idempotent writes, record only after the target confirms, fail closed, and canary before batch.
+  idempotent writes, record only after the target confirms, fail closed, and canary before batch; Learned entries on process
+  matching, freeing locks, scratch files, crash-safe writes, verified rollback, formatter hooks and shared-tool defaults.
 ---
 
 # Safety and writes
@@ -66,6 +67,7 @@ Summary: >-
 ```
 
 The plan is the same code path as the apply with writes turned off, so the dry run proves what the apply will do. Why: a separate "preview" function drifts from the real one.
+A rollback is a write too: it reports "restored" only after reading the prestate back (Learned 2026-11-08, transaction recovery, below).
 
 ## Deleting
 

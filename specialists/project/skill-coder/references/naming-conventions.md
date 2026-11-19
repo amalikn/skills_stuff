@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: skill-coder — which case convention each language and each kind of name uses, with its primary source
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   The mapping of language and element to naming convention, verified against primary sources on 2026-10-19. One rule underneath: code files and
   identifiers follow their language; names people type at a command line follow the CLI convention (kebab-case); a tool's own schema wins for its names.
@@ -86,4 +86,5 @@ cannot differ. Every row is VERIFIED_PRIMARY unless its source says otherwise; t
 
 - New names follow the mapping. An existing name that breaks it is renamed when next touched, with every reference updated in the same change ([safety-and-writes.md](safety-and-writes.md), "Changing
   an identifier"); a typed command's old name stays working through a transition when callers outside the repository may use it.
-- skill-ai-it's `check_file_naming` enforces snake_case for code files under `scripts/`; task-runner recipe names are not yet checked.
+- skill-ai-it's `check_file_naming` enforces snake_case for code files under `scripts/`; this pack's `scripts/naming_check.py` checks code file names and `just`
+  recipe names against `naming.toml` as a shrink-only ratchet (`just naming-check`).

@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Anything that runs repeatedly or at scale - jobs, collectors, loops over many items, page views over many records, check suites
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Runtime is an acceptance criterion: state a budget, measure per phase on a real run, design for scale in the first slice
-  (reuse connections, batch per host, bounded parallelism, probe first), count failure paths and re-measure when input grows.
+  (reuse connections, batch per host, bounded parallelism, probe first), count failure paths and re-measure when input grows;
+  a check suite has a budget and each heavy check its own, and a long job's progress is watched unfiltered.
 ---
 
 # Efficiency and measurement

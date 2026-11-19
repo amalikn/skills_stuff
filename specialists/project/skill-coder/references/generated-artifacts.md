@@ -4,13 +4,20 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Files produced by a generator from a hand-edited source - rendered docs, diagrams, catalogs, code, lock files
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Data first: a hand-edited source, a generator, and a generated file with a banner that is never edited by hand; a drift
-  check fails when the generated file differs from a fresh render; edit the source, then render once.
+  check fails when the generated file differs from a fresh render; edit the source, then render once. A second format is a generated view, a
+  second renderer reads the first one's data module, and clock-dependent pages render in the commit gate.
 ---
 
 # Generated artifacts
+
+## Contents
+
+- [The pattern](#the-pattern)
+- [When the user has hand-edited a generated file](#when-the-user-has-hand-edited-a-generated-file)
+- [Lock files](#lock-files)
 
 ## The pattern
 
@@ -27,9 +34,9 @@ Summary: >-
 | Rule | Why |
 | --- | --- |
 | Find the true source before editing anything that looks generated; edit the source, never the output | A hand edit to output is lost at the next render |
-| The generated file carries a banner naming its source and the command that renders it | The next reader knows not to edit it |
+| The generated file carries a banner naming its source and the command that renders it (a task-runner recipe; in an XML comment never `--`, Learned 2026-10-23 (b)) | The next reader knows not to edit it |
 | The generator is deterministic: sorted keys, stable ordering, no timestamps in output unless the source holds them | Drift checks need stable bytes |
-| A check renders to memory and compares with the committed file; a difference fails | Output cannot drift from source unnoticed |
+| A check renders to memory and compares with the committed file; a difference fails (a page that follows today's date is rendered in the commit gate instead, Learned 2026-10-21) | Output cannot drift from source unnoticed |
 | Render once, after all source edits, before the closing check | Repeated renders between edits waste time and hide which edit changed what |
 | A large source is split into parts with an include list; the generator assembles them | One small file per concern is easier to change |
 | A drawing, guide or catalog that has a data source is rendered from it, never drawn or written by hand | Data can be checked; a drawing cannot (a governed project: flows and team guides are data first) |

@@ -3,11 +3,12 @@ Title: Errors and timeouts
 Category: reference
 Status: current
 Authority: local-supplement
-Scope: Error types, translation at seams, exit codes, timeouts on every external call, retries and failure-path cost
-Last reviewed: 2026-10-19
+Scope: Error types, translation at seams, exit codes, timeouts on every external call, retries, failure-path cost, bounded fetching and absent values
+Last reviewed: 2026-11-19
 Summary: >-
   Typed errors translated at the seam, never swallowed and never matched on a tool's message text outside its seam; a
-  timeout on every network call and subprocess; bounded retries; a silent target costs one short probe.
+  timeout on every network call and subprocess that ends the whole process group; bounded retries; a silent target costs one short probe;
+  fan-out fetchers are capped from their first version, and absent, zero and filtered-empty values never render the same.
 ---
 
 # Errors and timeouts
@@ -44,16 +45,15 @@ Language idioms differ (exceptions in Python and TypeScript, error values in Go,
 - Every network call and subprocess has a timeout, taken from settings, not a literal at the call site. Why: a call without a timeout can hang a scheduled job forever (a governed project found 16 of
   96 calls without one; rule R15). The pack's `scripts/call_timeouts.py` finds Python calls without one.
 - Size the timeout to the answer: a reachability probe is short; a bulk export is long and stated.
-- A timeout ends everything the call started. `subprocess.run(timeout=)` kills only its own child: an `ssh` through a ProxyCommand, `scp`,
-  `rsync` or a shell leaves its children running. Start such a command in its own session and end the process group on timeout. Why: proxies
-  piled up on a host after each timed-out read (Learned below). The pack's `scripts/group_timeouts.py` finds the Python calls that do not.
-- The same holds for a `Popen` stopped by hand at a deadline: start it with `start_new_session=True` and end the group, SIGTERM first so the child
-  can close what it detached (an `ssh -f` forward leaves the group and is found only by the child's own record of it), then SIGKILL after a
-  grace. `group_timeouts.py` counts a `Popen` stopped with `.kill()`/`.terminate()` that did not start its own session.
-- A program stopped from outside (its SIGTERM handler about to exit) also ends the children it started in sessions of their own, which its
-  caller's group kill cannot reach: keep them in a registry and end each group before cleaning up by name. Measured on a live host
-  (2026-10-20): without it, one `ssh -f` still connecting at the stop outlived it; with it the handler reported "ended 1 start(s) in flight,
-  closed 23 forward(s)" and nothing was left. Unified-network-controller `src/unc/drivers/transports/process.py` `end_all` (commit 3f3bfcb):
+- A timeout ends everything the call started. `subprocess.run(timeout=)` kills only its own child: an `ssh` through a ProxyCommand, `scp`, `rsync` or a shell leaves its children running. Start such a
+  command in its own session and end the process group on timeout. Why: proxies piled up on a host after each timed-out read (Learned below). The pack's `scripts/group_timeouts.py` finds the Python
+  calls that do not.
+- The same holds for a `Popen` stopped by hand at a deadline: start it with `start_new_session=True` and end the group, SIGTERM first so the child can close what it detached (an `ssh -f` forward
+  leaves the group and is found only by the child's own record of it), then SIGKILL after a grace. `group_timeouts.py` counts a `Popen` stopped with `.kill()`/`.terminate()` that did not start its own
+  session.
+- A program stopped from outside (its SIGTERM handler about to exit) also ends the children it started in sessions of their own, which its caller's group kill cannot reach: keep them in a registry and
+  end each group before cleaning up by name. Measured on a live host (2026-10-20): without it, one `ssh -f` still connecting at the stop outlived it; with it the handler reported "ended 1 start(s) in
+  flight, closed 23 forward(s)" and nothing was left. Unified-network-controller `src/unc/drivers/transports/process.py` `end_all` (commit 3f3bfcb):
 
   ```python
   with _ACTIVE_LOCK:                       # run() adds each child on start and removes it on exit
@@ -63,11 +63,10 @@ Language idioms differ (exceptions in Python and TypeScript, error values in Go,
   ```
 
 > **Learned 2026-10-20** · Python subprocess, ssh through a ProxyCommand (Teleport `tsh proxy ssh`) · VERIFIED_PRIMARY (reproduced with `ProxyCommand=sleep`: after `run(timeout=1)` the sleep was still alive; with the group runner it was gone; run on macOS and on the Linux host) · Source: unified-network-controller `src/unc/drivers/transports/process.py`, `tests/test_transport_process.py` (commit 3efcb27) · Falsifier: an ssh release that ends its ProxyCommand when ssh itself is killed with SIGKILL
-> `ssh` starts the ProxyCommand as its own child; SIGKILL to ssh cannot pass anything on, so the proxy stays until its own idle exit (ten
-> minutes and more seen, host load rising with each timed-out read). Start the child with `start_new_session=True`, and on timeout signal the
-> group (SIGTERM, then SIGKILL after a short grace); reap the leader before testing the group, and on macOS treat EPERM from `killpg(pgid, 0)`
-> as "gone" (a group holding only the leader's zombie answers EPERM). Move every such call site in one pass, and move any test that patched
-> `subprocess.run` to the new seam, or it silently runs the real command.
+> `ssh` starts the ProxyCommand as its own child; SIGKILL to ssh cannot pass anything on, so the proxy stays until its own idle exit (ten minutes and more seen, host load rising with each timed-out
+> read). Start the child with `start_new_session=True`, and on timeout signal the group (SIGTERM, then SIGKILL after a short grace); reap the leader before testing the group, and on macOS treat EPERM
+> from `killpg(pgid, 0)` as "gone" (a group holding only the leader's zombie answers EPERM). Move every such call site in one pass, and move any test that patched `subprocess.run` to the new seam, or
+> it silently runs the real command.
 >
 > ```python
 > # unified-network-controller src/unc/drivers/transports/process.py (commit 3efcb27)
@@ -93,8 +92,8 @@ Language idioms differ (exceptions in Python and TypeScript, error values in Go,
 
 ## Failure paths cost too
 
-A target that does not answer must cost one short timeout, not one per field or per retry. Measure failure paths along with the happy path
-([efficiency-and-measurement.md](efficiency-and-measurement.md)). Why: in a scheduled collector, silent units dominated the cycle time (governance "Efficiency is part of done").
+A target that does not answer must cost one short timeout, not one per field or per retry. Measure failure paths along with the happy path ([efficiency-and-measurement.md](efficiency-and-measurement.md)). Why: in a scheduled
+collector, silent units dominated the cycle time (governance "Efficiency is part of done").
 
 ## Unknown third-party errors
 
@@ -104,20 +103,17 @@ agent should have found (lesson `feedback_proactive_upstream_research`).
 ## Bounded fetching and absent values
 
 > **Learned 2026-10-29** · fetchers that can fan out (scrapers, API walkers) · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal research project) · Source: project_stuff/me vehicle-import track `scripts/README.md` (prestige_auction_search row); RFC 6585 section 4 (429) · Falsifier: an uncapped fetcher that has run at scale without throttling or a ban
-> Any fetcher that can fan out needs, from its first version: hard caps on results and detail fetches (here 500 and 250), an explicit
-> confirmation with an ETA above a threshold (here 200), jitter and paced batches (50 per batch, random 30-60 s gaps), and exponential
-> backoff on 429 and 5xx. Parse the site's own vocabulary (status values) live rather than hard-coding it.
+> Any fetcher that can fan out needs, from its first version: hard caps on results and detail fetches (here 500 and 250), an explicit confirmation with an ETA above a threshold (here 200), jitter and
+> paced batches (50 per batch, random 30-60 s gaps), and exponential backoff on 429 and 5xx. Parse the site's own vocabulary (status values) live rather than hard-coding it.
 
 > **Learned 2026-10-29 (b)** · output of missing, zero and filtered-empty values · VERIFIED_SECONDARY (harvest 2026-10-29 of a personal research project) · Source: project_stuff/me vehicle-import track `scripts/README.md` (fx_rate, prestige_auction_search rows) · Falsifier: a report where a missing value, a zero and an empty filter result render the same and nobody was misled
-> Absent, zero and filtered-empty must never render the same. A missing rate fails rather than printing nothing or 0; a filtered query
-> that returns nothing says so (and may fall back to the unfiltered set, saying it did), because "empty after the filter" is
-> indistinguishable from "no data" otherwise.
+> Absent, zero and filtered-empty must never render the same. A missing rate fails rather than printing nothing or 0; a filtered query that returns nothing says so (and may fall back to the unfiltered
+> set, saying it did), because "empty after the filter" is indistinguishable from "no data" otherwise.
 
 > **Learned 2026-11-08** · core (derived state and delivery) · VERIFIED_PRIMARY · Source: unified-network-controller audit follow-up `docs/reports/project-reviews/unc-technical-audit-followup-20261108_1255.md` (offline fake-target probes), code at e873366b, `wc-local/scripts/alarming/engine.py:122-156` · Falsifier: an unreadable
-> input cannot yield a "recovered" projection, and a failed recovery notice survives a restart for retry.
-> When an unreadable input holds its alarms instead of clearing them, every projection derived from alarms must see the held ones too, or it
-> reports healthy while the alarm is held. A notification's delivery needs its own durable pending record: removing the alarm and saving state
-> before the send succeeds loses the recovery notice on a failed delivery, with nothing left to retry.
+> input cannot yield a "recovered" projection, and a failed recovery notice survives a restart for retry. When an unreadable input holds its alarms instead of clearing them, every projection derived
+> from alarms must see the held ones too, or it reports healthy while the alarm is held. A notification's delivery needs its own durable pending record: removing the alarm and saving state before the
+> send succeeds loses the recovery notice on a failed delivery, with nothing left to retry.
 >
 > ```python
 > # Anti-pattern, sanitized excerpt (engine.py at e873366b).
@@ -128,10 +124,9 @@ agent should have found (lesson `feedback_proactive_upstream_research`).
 > ```
 
 > **Learned 2026-11-09 (b)** · Python urllib streaming downloads · VERIFIED_PRIMARY (reproduced once, fixed the same hour) · Source: skill-vagrant box archive session 2026-11-09, `archive_boxes.py` `download()` (scratchpad, one-off; procedure in skill-vagrant references/boxes-and-pinning.md) · Falsifier: a short body that makes `resp.read()` raise instead of returning b""
-> A streamed download can end early with no exception: a `while chunk := resp.read(n)` loop stopped at exactly 9 MiB of a 19.2 MB zip from
-> download.mikrotik.com, exit 0, and the file looked fine until a zip test. A sha256 written afterwards fingerprints the truncated file, and a
-> resumable job then skips it as done. Compare the bytes written with `Content-Length` before renaming the `.part` file, and verify the
-> archive's structure (zip test, `tar -tf`) for anything kept long-term.
+> A streamed download can end early with no exception: a `while chunk := resp.read(n)` loop stopped at exactly 9 MiB of a 19.2 MB zip from download.mikrotik.com, exit 0, and the file looked fine until
+> a zip test. A sha256 written afterwards fingerprints the truncated file, and a resumable job then skips it as done. Compare the bytes written with `Content-Length` before renaming the `.part` file,
+> and verify the archive's structure (zip test, `tar -tf`) for anything kept long-term.
 >
 > ```python
 > with urllib.request.urlopen(url, timeout=READ_TIMEOUT_S) as resp, part.open("wb") as f:
@@ -144,8 +139,7 @@ agent should have found (lesson `feedback_proactive_upstream_research`).
 > ```
 
 > **Learned 2026-11-10** · stopping the process that holds an `flock` · VERIFIED_PRIMARY · Source: smc-resiliency `spike/onbox/smcagent/siteops.py`
-> `render`/`_signal_holder` @ 6f45ec65, test `RenderStopsHungChange` · Falsifier: a dead holder keeping its flock.
-> A fallback that must not run inside a live transaction waits for its lock, and a holder that hangs alive then blocks the fallback for good. Record
-> the holder's PID in the lock file once the lock is taken (open the file without truncating, `a+`, so a waiter never erases it), and when the wait
-> ends send TERM, then KILL, judging success by **taking the lock**, not by the PID: a killed child stays a zombie until its parent reaps it, so
-> `kill(pid, 0)` still answers, while its lock is released at death. Never signal yourself or PID 1.
+> `render`/`_signal_holder` @ 6f45ec65, test `RenderStopsHungChange` · Falsifier: a dead holder keeping its flock. A fallback that must not run inside a live transaction waits for its lock, and a
+> holder that hangs alive then blocks the fallback for good. Record the holder's PID in the lock file once the lock is taken (open the file without truncating, `a+`, so a waiter never erases it), and
+> when the wait ends send TERM, then KILL, judging success by **taking the lock**, not by the PID: a killed child stays a zombie until its parent reaps it, so `kill(pid, 0)` still answers, while its
+> lock is released at death. Never signal yourself or PID 1.

@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Bash and POSIX sh scripts, task-runner recipe bodies and wrapper scripts
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
-  Bash for executables with set -euo pipefail, ShellCheck on every script, quote every expansion, function comment blocks
-  with Globals, Arguments, Outputs and Returns, and rewrite in a structured language past about 100 lines.
+  Bash for executables with set -euo pipefail, ShellCheck and shfmt on every script, quote every expansion, function comment blocks
+  with Globals, Arguments, Outputs and Returns, and rewrite in a structured language past about 100 lines; Learned entries
+  (processes and timeouts, safety, format and lint, POSIX sh) in shell/ topic files.
 ---
 
 # Shell override
@@ -29,7 +30,7 @@ The Google Shell Style Guide, the GNU Bash manual (The Set Builtin), the ShellCh
 | Job    | Tool                                                                | Note                                                                      |
 | ------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Lint   | ShellCheck                                                          | Google recommends it "for all scripts, large or small" (VERIFIED_PRIMARY) |
-| Format | shfmt                                                               | UNVERIFIED: no source fetched; use if the project configures it           |
+| Format | shfmt (`shfmt -i 2 -ci -d`, or `.editorconfig`)                     | Operator rule 2026-10-23 (USER_STATED); see shell/learned-format-and-lint |
 | Tests  | bats, or a test in the project's main language that runs the script | UNVERIFIED stub                                                           |
 
 ## Core rule mapping
@@ -48,6 +49,8 @@ The Google Shell Style Guide, the GNU Bash manual (The Set Builtin), the ShellCh
 | documentation-and-headers   | No inline `# shellcheck disable=`; fix the cause; a project-wide `.shellcheckrc` entry carries a comment saying why                                                    |
 |   (suppression)             |                                                                                                                                                                        |
 
+A deadline is harder than the row above suggests: macOS has no `timeout`, and a timeout can leave a child (ssh, tsh) running. Read [shell/learned-processes-and-timeouts.md](shell/learned-processes-and-timeouts.md) before writing one.
+
 ## Size and limit tweaks
 
 | Item          | Value                                                         | Reason                                                                                                               |
@@ -55,19 +58,18 @@ The Google Shell Style Guide, the GNU Bash manual (The Set Builtin), the ShellCh
 | Script length | About 100 lines, or any non-trivial control flow: rewrite in  | Google: "you should rewrite it in a more structured language now. Bear in mind that scripts grow"                    |
 |               |   a structured language                                       |   (VERIFIED_PRIMARY). Tightens the core 400-line module budget                                                       |
 | Line length   | 80                                                            | Google Shell Style Guide (VERIFIED_PRIMARY); a project's own setting wins                                            |
-| Indentation   | Two spaces per level                                          | Operator rule 2026-10-23, every                                                                                      |
-|               |                                                               |   language (USER_STATED); Google also uses 2                                                                         |
+| Indentation   | Two spaces per level                                          | Operator rule 2026-10-23, every language (USER_STATED); Google also uses 2                                           |
 | Function      | Core 60 lines                                                 | No change                                                                                                            |
 
 ## Topic files
 
 The rest of this override lives in [shell/](shell/) (split 2026-11-07 by scripts/language_split.py: one topic per file).
 
-| File | Blocks |
-| --- | --- |
-| [learned-format-and-lint.md](shell/learned-format-and-lint.md) | 2 |
-| [learned-other.md](shell/learned-other.md) | 2 |
-| [learned-processes-and-timeouts.md](shell/learned-processes-and-timeouts.md) | 11 |
-| [learned-safety.md](shell/learned-safety.md) | 3 |
-| [open-items.md](shell/open-items.md) | 3 |
-| [posix-sh.md](shell/posix-sh.md) | 1 |
+| File                              | Blocks |
+| --------------------------------- | ------ |
+| [learned-format-and-lint.md](shell/learned-format-and-lint.md) | 2      |
+| [learned-other.md](shell/learned-other.md) | 2      |
+| [learned-processes-and-timeouts.md](shell/learned-processes-and-timeouts.md) | 11     |
+| [learned-safety.md](shell/learned-safety.md) | 3      |
+| [open-items.md](shell/open-items.md) | 3      |
+| [posix-sh.md](shell/posix-sh.md)  | 1      |

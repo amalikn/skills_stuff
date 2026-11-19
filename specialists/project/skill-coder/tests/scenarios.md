@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Behaviour scenarios that show whether an agent applied skill-coder correctly
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Seventeen scenarios with prompt, trigger, first reference, decision points and prohibited conclusions, covering core rules,
   every language override and negative controls.
@@ -32,6 +32,7 @@ Each scenario passes only when the expected first reference, decision points and
 - [C-S14 — Negative control: platform fact](#c-s14--negative-control-platform-fact)
 - [C-S15 — Negative control: no reusable learning](#c-s15--negative-control-no-reusable-learning)
 - [C-S16 — Helper on a project with old Python](#c-s16--helper-on-a-project-with-old-python)
+- [C-S17 — Ansible tag rename](#c-s17--ansible-tag-rename)
 
 ---
 
@@ -116,6 +117,6 @@ Prompt: Run the size check on a project pinned to Python 3.9. Trigger: yes. Firs
 
 ## C-S17 — Ansible tag rename
 
-Prompt: Rename an Ansible tag that reads like a repair. Trigger: yes. First reference: `languages/ansible.md`. Decide a whole-repository search including
+Prompt: Rename an Ansible tag that reads like a repair. Trigger: yes. First reference: `languages/ansible.md` (its `ansible/before-any-change-trace-every-reference.md`). Decide a whole-repository search including
 `*.j2`, classification of each hit as tag or variable, external callers checked, a `--list-tasks` and `--check --diff` run, and every runbook updated. Prohibit
 a blind replace, or calling the rename safe because the old command still exits 0.

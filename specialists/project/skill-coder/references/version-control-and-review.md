@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Commits, change logs, versions, review and the definition of done for any code change
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
-  Small commits gated on the check's own exit code (never through a pipe or a semicolon), a change-log entry per change,
-  SemVer for released interfaces, a review checklist, and a definition of done that includes measured runtime.
+  Small commits gated on the check's own exit code (never through a pipe or a semicolon), pathspec commits in a clone shared
+  by concurrent sessions, tests and the check both run before a commit, a change-log entry per change, SemVer for released
+  interfaces, a review checklist, and a definition of done that includes measured runtime.
 ---
 
 # Version control and review
@@ -24,7 +25,8 @@ Summary: >-
 
 - One logical change per commit; a refactor and a behaviour change are separate commits. Why: each can be reviewed and reverted alone.
 - Commit or push only when the user asks; "commit and push" covers only the repo being worked in (operator lesson `feedback_commit_push_scope`).
-- Preserve unrelated work in a dirty tree: stage only the files the change owns. Why: someone else's half-done work is not yours to commit.
+- Preserve unrelated work in a dirty tree: stage only the files the change owns, and commit by pathspec where other sessions share the clone (Learned
+  2026-10-20 below). Why: someone else's half-done work is not yours to commit.
 - Follow the project's message convention. Where none exists, Conventional Commits (`feat:`, `fix:`, a `BREAKING CHANGE:` footer) is a reasonable default (VERIFIED_PRIMARY, v1.0.0). Use the
   attribution the project's or user's rules require.
 - Avoid apostrophes in a heredoc commit body passed through a shell tool; write around contractions. Why: they break shell parsing (operator lesson).
@@ -156,7 +158,8 @@ manual).
 ## Definition of done
 
 - [ ] Layer and location right; no new raw I/O outside a seam, no literals, no missing timeouts.
-- [ ] Tests at the right level pass; the project's closing check passes, gated on its exit code.
+- [ ] Tests at the right level pass and the project's closing check passes, each gated on its own exit code (neither covers the other); after the
+      first commit of new files the check runs again before the push.
 - [ ] Dry run or characterisation compared where behaviour must not change.
 - [ ] Change-log entry, with measured runtime where the code repeats.
 - [ ] Script catalog, promotion register and any registers the project keeps are updated.

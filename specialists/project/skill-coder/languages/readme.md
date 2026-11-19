@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: The per-language override layer of skill-coder and the contract each file follows
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   How a language file may tighten, loosen with a stated reason, or add tool commands to a core rule, the precedence of
   project rules over both, and the list of language files.
@@ -51,16 +51,14 @@ Open items. Evidence that is thin is marked UNVERIFIED and left as an editable s
 | [hcl.md](hcl.md)         | OpenTofu and Terraform configuration                        |
 | [sql.md](sql.md)         | SQL queries, migrations and SQL embedded in other languages |
 | [yaml-json-toml.md](yaml-json-toml.md) | Data and configuration files                                |
-| [ansible.md](ansible.md) | Ansible playbooks, roles, inventories and Jinja2 templates |
+| [ansible.md](ansible.md) | Ansible playbooks, roles, inventories and Jinja2 templates  |
 
 ## When a language file splits into a folder
 
-An agent loads a language file whole, so each stays within 200 lines and 25 KB (operator, 2026-11-07: no large single file per language).
-Past that, `scripts/language_split.py --lang <name> --apply` splits it: `<name>.md` stays the entry (front matter, sources, tools, the
-core rule mapping, size tweaks and an index of topic files), and every other section and each `Learned` entry moves to
-`<name>/<topic>.md`, routed by the language's keyword map (keyword lists, first match wins; for example [ansible/topics.toml](ansible/topics.toml)). The split writes only when no word is lost, and
-inbound links to `<name>.md` keep working. A new `Learned` entry for a split language goes to the topic file it fits, named in the entry's
-index; add a keyword to that map when it fits none. `just check` fails while any language file or topic file is over budget. Split
-today: `ansible/`, `shell/`.
+An agent loads a language file whole, so each stays within 200 lines and 25 KB (operator, 2026-11-07: no large single file per language). Past that, `scripts/language_split.py --lang <name> --apply`
+splits it: `<name>.md` stays the entry (front matter, sources, tools, the core rule mapping, size tweaks and an index of topic files), and every other section and each `Learned` entry moves to
+`<name>/<topic>.md`, routed by the language's keyword map (keyword lists, first match wins; for example [ansible/topics.toml](ansible/topics.toml)). The split writes only when no word is lost, and inbound links to
+`<name>.md` keep working. A new `Learned` entry for a split language goes to the topic file it fits, named in the entry's index; add a keyword to that map when it fits none. `just check` fails while
+any language file or topic file is over budget. Split today: `ansible/`, `python/`, `shell/`.
 
 To add a language, copy the shape of an existing file, add a row here, add a scenario to `../tests/scenarios.md`, and add a CHANGELOG line.

@@ -4,18 +4,18 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Python 3 scripts, packages and services
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
-  PEP 8, PEP 257 and Google-style docstrings with Args, Returns and Raises; ruff for lint and format; pytest or unittest;
-  subprocess.run with a timeout and an argument list; frozen dataclasses and Protocols at seams; the src layout.
+  PEP 8, PEP 257 and Google-style docstrings with Args, Returns and Raises; ruff for lint and format with two-space indentation;
+  pytest or unittest; subprocess.run with a timeout and an argument list; frozen dataclasses and Protocols at seams; the src
+  layout and regular packages; further Learned entries in python/ topic files.
 ---
 
 # Python override
 
 > **Learned 2026-11-11** · ruff 0.17 formats Markdown · VERIFIED_PRIMARY · Source: skill-ai-it `ruff format --check .` with ruff 0.17.3 (skills_stuff 21af81e)
-> reported "4 files would be reformatted", all `.md` files (Python blocks inside Markdown) · Falsifier: a ruff 0.17 run that leaves `.md` alone without a setting
-> `ruff format --check .` also checks code blocks in Markdown files. A pack that lints only its Python adds `"*.md"` to `extend-exclude` in `ruff.toml`;
-> otherwise adopting ruff on an old pack fails on prose files no one meant to format.
+> reported "4 files would be reformatted", all `.md` files (Python blocks inside Markdown) · Falsifier: a ruff 0.17 run that leaves `.md` alone without a setting `ruff format --check .` also checks
+> code blocks in Markdown files. A pack that lints only its Python adds `"*.md"` to `extend-exclude` in `ruff.toml`; otherwise adopting ruff on an old pack fails on prose files no one meant to format.
 
 > **Learned 2026-11-02** · ruff through a symlinked path · VERIFIED_PRIMARY · Source: ansible-wifi, `uvx ruff format` on a file under a git-excluded symlink · Falsifier: ruff finding the config through the symlink
 > ruff run on a path through a symlinked folder missed the project's `ruff.toml` and reformatted a two-space test file to four. Pass `--config` with the physical path, and read the diff of a format
@@ -40,7 +40,7 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 | --------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Interpreter     | The project's pin (`.mise.toml`, `requires-python`); operator default 3.14 for        | Address by path; see core tooling                                                          |
 |                 |   new work                                                                            |                                                                                            |
-| Format and lint | ruff (`ruff format`, `ruff check`); start from `templates/ruff.toml`                   | ruff's pydocstyle setting accepts `convention = "google"` (VERIFIED_PRIMARY, ruff FAQ)     |
+| Format and lint | ruff (`ruff format`, `ruff check`); start from `templates/ruff.toml`                  | ruff's pydocstyle setting accepts `convention = "google"` (VERIFIED_PRIMARY, ruff FAQ)     |
 | Types           | The project's type checker (mypy or pyright)                                          | UNVERIFIED: no source fetched; follow the project's config                                 |
 | Tests           | pytest, or `unittest` where the project is stdlib-only                                | pytest fixtures with `yield` give set-up and teardown (VERIFIED_PRIMARY)                   |
 | Packaging       | `pyproject.toml`; the src layout                                                      | The src layout stops tests importing the working copy by accident (VERIFIED_PRIMARY, PyPA) |
@@ -90,25 +90,25 @@ Python Packaging User Guide (src layout), ruff and pytest documentation. Copies:
 
 ## Size and limit tweaks
 
-| Item                | Value                                                                                                                  | Reason                                                |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Line length         | The project's ruff setting; PEP 8 says 79 (72 for docstrings and comments), Google says 80; the operator's projects    | Follow the project's config; do not reflow code to    |
-|                     |   commonly allow longer                                                                                                |   change it                                           |
-| Indentation         | Two spaces per level: ruff `indent-width = 2` with `indent-style = "space"` in the project ruff.toml                   | Operator rule 2026-10-23 (USER_STATED); overrides     |
-|                     |   (operator rule, every language)                                                                                      |   PEP 8 (4) by design                                 |
-| Format and lint     | `ruff format` and `ruff check` are the Python tools, as yamllint is for YAML; a project keeps one ruff.toml at         | Operator rule 2026-10-23                              |
-|                     |   its root                                                                                                             |   (USER_STATED)                                       |
-| Module and function | Core defaults (400 and 60)                                                                                             | No change                                             |
+| Item                | Value                                                                                                          | Reason                                                        |
+| ------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Line length         | The project's ruff setting; PEP 8 says 79 (72 for docstrings and comments), Google says 80; the operator's     | Follow the project's config; do not reflow code to change it  |
+|                     |   projects commonly allow longer                                                                               |                                                               |
+| Indentation         | Two spaces per level: ruff `indent-width = 2` with `indent-style = "space"` in the project ruff.toml (operator | Operator rule 2026-10-23 (USER_STATED); overrides PEP 8 (4)   |
+|                     |   rule, every language)                                                                                        |   by design                                                   |
+| Format and lint     | `ruff format` and `ruff check` are the Python tools, as yamllint is for YAML; a project keeps one ruff.toml at | Operator rule 2026-10-23 (USER_STATED)                        |
+|                     |   its root                                                                                                     |                                                               |
+| Module and function | Core defaults (400 and 60)                                                                                     | No change                                                     |
 
 > **Learned 2026-11-02** · Python, rebuild-from-source writers · VERIFIED_PRIMARY (negative test: fails with the lock removed) · Source: ansible-wifi `roles/smc_change/files/tests/test_tracker.py` · Falsifier: a platform where `flock` on a folder fails.
-> An atomic file swap stops a torn file, not a lost update: a rebuild that read earlier can replace a newer one. Take the lock before the read. `flock` on the folder leaves no lock file and dies with its holder.
-> A race test by timing passed with the lock removed, so prove it deterministically: inside the read, assert a second non-blocking `flock` fails.
+> An atomic file swap stops a torn file, not a lost update: a rebuild that read earlier can replace a newer one. Take the lock before the read. `flock` on the folder leaves no lock file and dies with
+> its holder. A race test by timing passed with the lock removed, so prove it deterministically: inside the read, assert a second non-blocking `flock` fails.
 
 ## Topic files
 
 The rest of this override lives in [python/](python/) (split 2026-11-07 by scripts/language_split.py: one topic per file).
 
-| File | Blocks |
-| --- | --- |
-| [learned-other.md](python/learned-other.md) | 12 |
-| [open-items.md](python/open-items.md) | 2 |
+| File             | Blocks |
+| ---------------- | ------ |
+| [learned-other.md](python/learned-other.md) | 12     |
+| [open-items.md](python/open-items.md) | 2      |

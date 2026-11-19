@@ -4,11 +4,12 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Ansible playbooks, roles, inventories and Jinja2 templates
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Trace every reference (templates included) and classify tag versus variable before a change, because a renamed tag fails
   silently; check and diff mode as the dry run; idempotence proven by a second run; FQCN; no_log and Vault for secrets;
-  narrow become; handlers; one host then a canary; ansible-lint, yamllint and Molecule.
+  narrow become; handlers; one host then a canary; ansible-lint, yamllint, djlint (lint only), ansible-inventory and Molecule;
+  Learned entries by topic in ansible/.
 ---
 
 # Ansible override
@@ -38,6 +39,8 @@ For a data-driven engine built on a role (a spec language, the template as an in
 | ---------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | Lint       | ansible-lint, at the profile the project sets (`min` up to `production`) | Profiles gradually increase rule strictness (VERIFIED_PRIMARY)                                            |
 | YAML lint  | yamllint                                                                 | See [yaml-json-toml.md](yaml-json-toml.md)                                                                |
+| Templates  | djlint `--lint` only on Jinja2 templates, never `--reformat`             | Operator rule 2026-10-23 (USER_STATED); settings in [yaml-json-toml.md](yaml-json-toml.md)                |
+| Inventory  | `ansible-inventory -i <file> --list` on every inventory                  | Operator rule 2026-10-23 (USER_STATED); fails on a source that does not parse, reads only                 |
 | Role tests | Molecule                                                                 | Tests collections, playbooks and roles; supports the latest two major Ansible versions (VERIFIED_PRIMARY) |
 | Dry run    | `ansible-playbook --check --diff`                                        | See the mapping below                                                                                     |
 | Version    | The project's pin of `ansible-core` and collections (`requirements.yml`) | Read the docs for that version                                                                            |
@@ -77,13 +80,13 @@ For a data-driven engine built on a role (a spec language, the template as an in
 
 The rest of this override lives in [ansible/](ansible/) (split 2026-11-07 by scripts/language_split.py: one topic per file).
 
-| File | Blocks |
-| --- | --- |
-| [before-any-change-trace-every-reference.md](ansible/before-any-change-trace-every-reference.md) | 4 |
-| [learned-connections.md](ansible/learned-connections.md) | 3 |
-| [learned-execution.md](ansible/learned-execution.md) | 5 |
-| [learned-lint-and-tests.md](ansible/learned-lint-and-tests.md) | 3 |
-| [learned-other.md](ansible/learned-other.md) | 1 |
-| [learned-templating.md](ansible/learned-templating.md) | 14 |
-| [learned-tooling.md](ansible/learned-tooling.md) | 2 |
-| [open-items.md](ansible/open-items.md) | 7 |
+| File                                       | Blocks |
+| ------------------------------------------ | ------ |
+| [before-any-change-trace-every-reference.md](ansible/before-any-change-trace-every-reference.md) | 4      |
+| [learned-connections.md](ansible/learned-connections.md) | 3      |
+| [learned-execution.md](ansible/learned-execution.md) | 5      |
+| [learned-lint-and-tests.md](ansible/learned-lint-and-tests.md) | 3      |
+| [learned-other.md](ansible/learned-other.md) | 1      |
+| [learned-templating.md](ansible/learned-templating.md) | 14     |
+| [learned-tooling.md](ansible/learned-tooling.md) | 2      |
+| [open-items.md](ansible/open-items.md)     | 7      |

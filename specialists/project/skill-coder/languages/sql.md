@@ -4,10 +4,10 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: SQL queries, views, migrations and SQL embedded in other languages
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Bind parameters always; SQLFluff with the project's dialect; uppercase reserved keywords and explicit column lists and
-  joins; migrations forward-only with a tested rollback; a header comment on every SQL file.
+  joins; an applied migration is never hand-edited; a header comment on every SQL file; money cast to a numeric type at ingestion.
 ---
 
 # SQL override
@@ -50,10 +50,8 @@ The OWASP SQL Injection Prevention Cheat Sheet, the SQLFluff documentation (gett
 ## Ingestion typing
 
 > **Learned 2026-10-29** · SQL over imported CSV (DuckDB, SQLite, PostgreSQL) · VERIFIED_SECONDARY (harvest 2026-10-29 of voip-analysis) · Source: voip-analysis `.archcore/rules/rule-001-price-filter.md` · Falsifier: a text money column compared with a number that keeps
-> every row it should
-> Money that arrives as text (`$20`, `1,250.00`) breaks filters silently: a bare `price > 0` on the text column dropped every row. Cast
-> money to a numeric type at ingestion (strip the currency sign and thousands separator first), and assert the row count after every
-> filter, so a filter that removes everything or nothing fails loudly.
+> every row it should Money that arrives as text (`$20`, `1,250.00`) breaks filters silently: a bare `price > 0` on the text column dropped every row. Cast money to a numeric type at ingestion (strip
+> the currency sign and thousands separator first), and assert the row count after every filter, so a filter that removes everything or nothing fails loudly.
 >
 > ```sql
 > CAST(REPLACE(REPLACE(price, '$', ''), ',', '') AS DECIMAL(12, 2)) AS price

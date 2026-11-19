@@ -3,11 +3,12 @@ Title: Documentation and headers
 Category: reference
 Status: current
 Authority: local-supplement
-Scope: File purpose headers, docstrings or doc comments with Args, Returns and Raises, and comments that explain why
-Last reviewed: 2026-10-19
+Scope: File purpose headers, runnable-script headers (summary, run, safety), docstrings or doc comments with Args, Returns and Raises, comments that explain why, inline suppression and long documents
+Last reviewed: 2026-11-19
 Summary: >-
-  Every file states its purpose in its native header; every module, class and function documents its parameters, what it
-  returns and when it raises; comments explain why, not what; enforced by a docstring ratchet.
+  Every file states its purpose in its native header, and a runnable script's header also says how to run it and what it
+  touches; every module, class and function documents its parameters, what it returns and when it raises; comments explain
+  why, not what; no inline linter suppression; enforced by docstring, header and suppression ratchets.
 ---
 
 # Documentation and headers
