@@ -4,7 +4,7 @@ Category: architecture
 Status: current
 Authority: canonical
 Scope: How skill-pad's parts connect: the skill, its references and mirror, the Pad CLI and server, the projects, the backup and export paths
-Last reviewed: 2026-11-18
+Last reviewed: 2026-11-19
 Summary: >-
   skill-pad is a CLI-driven skill over a local Pad server whose data lives in tools_stuff/pad on the Data volume; repo trackers stay the truth, Pad items point at them, and
   exports and nightly backups keep copies outside Pad.
@@ -32,7 +32,8 @@ verbatim under `references/upstream/` and rewritten into topic references the sk
 | `scripts/pad_tracker.py`           | a Bugs or Features tracker file generated from its Pad collection: `import`, `export` (commit gate), `links` |
 | `scripts/pad_rewrite.py`           | applies a reviewed JSON spec of Pad item rewrites (bodies by seq, comments, notes, decisions); shared `pad` call |
 | `scripts/pad_item_check.py`        | read-only check of items against the writing standard: bold labels, a closing DONE comment, an update on work in progress, logs attached (`just item-check`) |
-| `scripts/pad_decisions.py`         | mirrors a project's curator ledger and decision log into a `decisions` collection (`just decisions`)       |
+| `scripts/pad_decisions.py`         | mirrors a project's curator ledger and decision log (architecture and process rows) into a `decisions` collection (`just decisions`) |
+| `scripts/pad_toml_probe.py`        | upgrade test: rewrites a scratch `.pad.toml` through Pad and reports what Pad kept                          |
 | `scripts/pad_link_opener.py` + `.plist` | 127.0.0.1:47800 redirect from an http link in Pad to `vscode://file/<path>:<line>` (launchd `au.malik.pad-link-opener`, kept alive) |
 | `scripts/pad_backup.sh` + `.plist` | nightly `pad db backup` to OneDrive `pad_backups` (launchd `au.malik.pad-backup`, 02:30, newest 30)        |
 | `scripts/pad_monitor.sh`           | the live push/watch feed for one session, run under Claude Code's Monitor tool by `connect`                |
