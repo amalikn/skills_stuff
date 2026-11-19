@@ -105,6 +105,24 @@ loop {
 
 What to notice: `let _ = ...` deliberately ignores a result (killing a process that already exited can fail harmlessly). `.into()` converts the string into the function's error type.
 
+### Cleaning up with Drop
+
+When a value goes out of scope Rust runs its `Drop` implementation, so cleanup can be tied to ownership instead of remembered: the artefact tests start an OPA server and it is
+always stopped, even when an assertion fails half-way (Python needs `try/finally` or a context manager for the same).
+
+```rust
+// apps/coordinator/tests/artefact.rs
+struct OpaServer(Child, String);          // a tuple struct: the process and its URL
+impl Drop for OpaServer {
+  fn drop(&mut self) {
+    let _ = self.0.kill();                // runs automatically when the test ends, pass or fail
+    let _ = self.0.wait();
+  }
+}
+```
+
+Read next: [Running code on cleanup with Drop](https://doc.rust-lang.org/book/ch15-03-drop.html).
+
 ## 11. Tests
 
 Unit tests sit in a `#[cfg(test)] mod tests` block at the bottom of the file they test; integration tests are files in `tests/`. A test that returns `Result` can use `?`.
