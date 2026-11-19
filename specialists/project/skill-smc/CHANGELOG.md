@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1852
+Last rotated: 20261120_0049
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_0050 — bench Pi inventoried on iridium and rise; Pi field image has no serial console and mounts root with discard (v0.16.0 -> v0.16.1)](#20261120_0050--bench-pi-inventoried-on-iridium-and-rise-pi-field-image-has-no-serial-console-and-mounts-root-with-discard-v0160---v0161)
 - [20261119_1852 — smc_root_key_probe.sh; the warehouse field image read; root's key and password shared fleet-wide (v0.15.9 -> v0.16.0)](#20261119_1852--smc_root_key_probesh-the-warehouse-field-image-read-roots-key-and-password-shared-fleet-wide-v0159---v0160)
 - [20261119_1830 — role_rerun_cost.py promoted; Ookla rate limit; Bitbucket fleet trust gap (v0.15.8 -> v0.15.9)](#20261119_1830--role_rerun_costpy-promoted-ookla-rate-limit-bitbucket-fleet-trust-gap-v0158---v0159)
 - [20261119_1650 — Periodic review; 90-day window; identifiers redacted; smc_update_php.yml retired (v0.15.7 -> v0.15.8)](#20261119_1650--periodic-review-90-day-window-identifiers-redacted-smc_update_phpyml-retired-v0157---v0158)
@@ -39,24 +40,30 @@ Last reviewed: 2026-10-27
 - [20261110_1355 — koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)](#20261110_1355--koonibba-wrong-teleport-cluster-stale-bastion-keys-url_capture-prune-gaps-root-lv-condition-urlcapture-prune-change-v0140---v0141)
 - [20261110_1225 — Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0)](#20261110_1225--fleet-survey-probes-bootloader-census-writers-probe-probe-deadlines-fixed-v0132---v0140)
 - [20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)](#20261110_0202--deployed-pi-fleet-layout-and-root-block-spread-survey-of-6-v0131---v0132)
-- [20261110_0031 — Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)](#20261110_0031--pi-4-on-the-fleet-bootloader-2023-01-11-autoboottxt-on-gpt-and-eeprom-update-path-v0130---v0131)
 
 ---
+
+## 20261120_0050 — bench Pi inventoried on iridium and rise; Pi field image has no serial console and mounts root with discard (v0.16.0 -> v0.16.1)
+
+- references/08_ansible-authoring.md: Learned 2026-11-20, adding a bench or renamed SMC (a name with vars files can belong to another box; a generic image's site ID 181; the same entry on iridium and
+  rise through `--repo`; `smc_rename.yml` needs the ansible-apn controller for its python3.10 local step).
+- references/07_hardware-overlay.md: Learned 2026-11-20, the Pi field image has no serial console (cmdline `console=tty1` only), root is mounted with online discard (a no-name card failed DISCARD;
+  smc-resiliency Pad BUG-101), and a FAT edit is lost to a crash before writeback.
 
 ## 20261119_1852 — smc_root_key_probe.sh; the warehouse field image read; root's key and password shared fleet-wide (v0.15.9 -> v0.16.0)
 
 - New scripts/probes/smc_root_key_probe.sh (`just smc_root_key_probe`), catalogued in scripts/README.md; smoke run on five boxes, Pi and x86.
 - references/07_hardware-overlay.md: the warehouse field image section (versions, Teleport joins under the hostname, network and MANAGEMENT chain, enabled units).
 - references/13_known-issues.md: root's SSH key and password shared on every box read (smc-resiliency B19-06, OPEN, critical).
-- scripts/check_governance.py version-single-source: an underscore before a number (a Debian package file name such as fatrace_0.16.3-1) is not a
-  version stamp; found when the pack moved to 0.16.0; tested both ways (v0.16.3 and 0.16.0 still flagged).
+- scripts/check_governance.py version-single-source: an underscore before a number (a Debian package file name such as fatrace_0.16.3-1) is not a version stamp; found when the pack moved to 0.16.0;
+  tested both ways (v0.16.3 and 0.16.0 still flagged).
 
 ## 20261119_1830 — role_rerun_cost.py promoted; Ookla rate limit; Bitbucket fleet trust gap (v0.15.8 -> v0.15.9)
 
-- `scripts/ansible/role_rerun_cost.py` promoted (recipes `role_rerun_cost`, `role_rerun_cost_test`; catalogue rows; 3 offline tests): tasks per role and always-working patterns of a
-  playbook's roles. First run on iridium: smc_bases + smc_prometheus 588 tasks, 22 per-item package loops; 0.25 s.
-- Ref 06: Ookla rate limit (rc 173) at the old speedtest license step; the fix `35276a62` was rise-only until 2026-11-19 (iridium `11daa2b5`, master `48bf6839`). Contents block
-  also gains the 2026-10-20 netplan entry it lacked.
+- `scripts/ansible/role_rerun_cost.py` promoted (recipes `role_rerun_cost`, `role_rerun_cost_test`; catalogue rows; 3 offline tests): tasks per role and always-working patterns of a playbook's roles.
+  First run on iridium: smc_bases + smc_prometheus 588 tasks, 22 per-item package loops; 0.25 s.
+- Ref 06: Ookla rate limit (rc 173) at the old speedtest license step; the fix `35276a62` was rise-only until 2026-11-19 (iridium `11daa2b5`, master `48bf6839`). Contents block also gains the
+  2026-10-20 netplan entry it lacked.
 - Ref 13: Bitbucket entry, fleet trust not rolled out (records show alkngarrija-smc01 only; Pad TASK-21). Earlier the same day: "Now live" entry (`743576a2`).
 - Ref 18: the smc_bases converge-and-skip plan and the ansible-wifi Pad workspace links (this pack has its own `.pad.toml`, `45d20393`).
 - Ref 13 (18:45): smc_change tstik runs depend on the branch: rise (old address) fails every clone and rollback, iridium fails where known_hosts lacks ssh.bitbucket.org.
@@ -191,8 +198,3 @@ survives SIGALRM); they now fork and send TERM then KILL. `references/07_hardwar
 ## 20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)
 
 `references/07_hardware-overlay.md`: Learned 2026-11-10: 22.04.1, MBR 62 GB, overlayroot, 5.6-6.9 GB used, bootloader 2023-01-11, and how far the ext4 root's blocks spread (read-only, Teleport).
-
-## 20261110_0031 — Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)
-
-`references/07_hardware-overlay.md`: Learned 2026-11-10: 2023-01-11 reads autoboot.txt on GPT and runs the full tryboot chain; an EEPROM update staged on the selected boot partition is applied; where
-the 2023 image is (VERIFIED_PRIMARY, bench console).

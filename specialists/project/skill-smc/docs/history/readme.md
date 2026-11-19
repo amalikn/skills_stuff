@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261120_0049.md](changelog-20261120_0049.md) 1 entry, 2026-11-10 to 2026-11-10: Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)
 - [changelog-20261119_1852.md](changelog-20261119_1852.md) 1 entry, 2026-11-09 to 2026-11-09: Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)
 - [changelog-20261119_1555.md](changelog-20261119_1555.md) 1 entry, 2026-11-08 to 2026-11-08: Pi 4 serial console (smc-resiliency S1 bench) (v0.12.8 -> v0.12.9)
 - [changelog-20261119_1303.md](changelog-20261119_1303.md) 1 entry, 2026-11-06 to 2026-11-06: ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)

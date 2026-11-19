@@ -62,6 +62,10 @@
 - [What writes into /etc at run time, and the read-only /etc of the new image (2026-10-20)](#what-writes-into-etc-at-run-time-and-the-read-only-etc-of-the-new-image-2026-10-20)
 - [Executables under /etc and other new-image constraints from the S2 spike (2026-10-20)](#executables-under-etc-and-other-new-image-constraints-from-the-s2-spike-2026-10-20)
 - [snapd, clock and NTP drift state on a rebuild of the writable area (2026-10-21)](#snapd-clock-and-ntp-drift-state-on-a-rebuild-of-the-writable-area-2026-10-21)
+- [Firmware access from the OS: x86 UEFI and Pi EEPROM (read 2026-10-22)](#firmware-access-from-the-os-x86-uefi-and-pi-eeprom-read-2026-10-22)
+- [Pi 4 A/B boot on a GPT card: bootloader, firmware and update traps (smc-resiliency S1 bench, 2026-11-09)](#pi-4-ab-boot-on-a-gpt-card-bootloader-firmware-and-update-traps-smc-resiliency-s1-bench-2026-11-09)
+- [Pi 4 bench, 18 Nov 2026: early watchdog, the 2022 bootloaders and EEPROM staging on an A/B card](#pi-4-bench-18-nov-2026-early-watchdog-the-2022-bootloaders-and-eeprom-staging-on-an-ab-card)
+- [The warehouse field image: what a site Pi ships with (rct-iridium, read 2026-11-19)](#the-warehouse-field-image-what-a-site-pi-ships-with-rct-iridium-read-2026-11-19)
 
 - Hardware differences: x86 vs Raspberry Pi
 - NBN Accelerate / NBN WH hardware inventory (first live fleet sweep)
@@ -126,6 +130,18 @@ flavor-exclusive gates (`inventory_dir.split('/')|last == '<flavor>'`) or invent
 applies to "all x86" or "all RPi" without checking whether it's gated by `ansible_architecture`, `hotspot_flavor`, or an exact flavor/group name — see `08_ansible-authoring.md` "Flavor/Cluster
 Conditional Branching" for the full selector-mechanism reference.
 
+> **Learned 2026-11-20** · Pi field image (warehouse rct-iridium, generic-rct01-iridium-20241121) · VERIFIED_PRIMARY (read on a bench card
+> booted from it) · Source: smc-resiliency CHANGELOG 20261120_0022, Pad BUG-101 · Falsifier: a deployed Pi whose /proc/cmdline carries `console=serial0` or whose card logs no erase error
+> - **No serial console on the Pi field image.** `config.txt` has `enable_uart=1`, but `cmdline.txt` is
+> `... console=tty1 root=LABEL=writable ... quiet splash` and `serial-getty@ttyS0` is inactive. A USB-serial adapter on GPIO 14/15 shows only the bootloader (EEPROM `BOOT_UART=1`) up to `Starting
+> start4.elf`, then nothing, and no login. Adding `console=serial0,115200` before `console=tty1` gives the kernel and a login. Kernel panics and watchdog resets on a deployed Pi therefore leave no
+> serial trace.
+> - **Root is mounted with online discard** (`rw,relatime,discard,errors=remount-ro`) and `fstrim.timer` is enabled. A no-name card (C2 bench)
+> answered with `mmc_erase: erase error -110`, an I/O error on a DISCARD and `mmc0: Card stuck being busy!` within 46 s of boot. Fleet cards are not yet read for the same lines (`dmesg | grep -c
+> "erase error"` on a few Pis, read-only).
+> - **A FAT edit followed by a crash is lost:** a `cmdline.txt` edit made 6 minutes before a sysrq crash came back 0 bytes (FAT writeback); `sync`
+> before any deliberate fault, and after any boot-file change.
+
 ### Ubuntu Core suitability assessment (2026-09-17)
 
 **Design recommendation — not implemented or canary-tested:** retain Ubuntu Server LTS as the standard OS for new Raspberry Pi SMCs; do not introduce Ubuntu Core into the current SMC appliance fleet.
@@ -143,9 +159,7 @@ Before reconsidering Core, create a separate greenfield appliance design and can
 model/gadget/image and refresh policy, and prove on a Pi under realistic constrained-link conditions: hostapd/AP mode, DHCP/DNS, netfilter/traffic control, routing/failover, Teleport reverse access,
 telemetry, storage-health collection, updates and recovery. Treat an existing SMC migration as out of scope until that canary has passed; it should not be used as an SD-card reliability shortcut.
 
-**Sources:** Canonical, [Ubuntu Core documentation](https://documentation.ubuntu.com/core/) (last updated 2026-04-21); [Using Ubuntu
-Core](https://documentation.ubuntu.com/core/how-to-guides/using-ubuntu-core/) (last updated 2026-08-21); [Snap
-confinement](https://documentation.ubuntu.com/security/security-features/privilege-restriction/snap-confinement/) (retrieved 2026-09-17).
+**Sources:** Canonical, [Ubuntu Core documentation](https://documentation.ubuntu.com/core/) (last updated 2026-04-21); [Using Ubuntu Core](https://documentation.ubuntu.com/core/how-to-guides/using-ubuntu-core/) (last updated 2026-08-21); [Snap confinement](https://documentation.ubuntu.com/security/security-features/privilege-restriction/snap-confinement/) (retrieved 2026-09-17).
 
 ### Other OS alternatives assessment (2026-09-17)
 
@@ -169,8 +183,7 @@ the same Server release that has been ARM-canary-qualified for the fleet; OS rel
 **VERIFIED_PRIMARY (retrieved 2026-09-17):** Raspberry Pi OS is Debian-based and supports APT-managed packages, including Pi kernel and firmware updates; OpenWrt is a Linux distribution for embedded
 devices, typically wireless routers. The suitability decisions above are an inference from those models and the verified SMC workload, not claims of general-purpose superiority.
 
-**Sources:** Raspberry Pi, [Raspberry Pi OS documentation](https://www.raspberrypi.com/documentation/computers/os.html) (retrieved 2026-09-17); OpenWrt, [Documentation
-overview](https://openwrt.org/docs/start) (retrieved 2026-09-17).
+**Sources:** Raspberry Pi, [Raspberry Pi OS documentation](https://www.raspberrypi.com/documentation/computers/os.html) (retrieved 2026-09-17); OpenWrt, [Documentation overview](https://openwrt.org/docs/start) (retrieved 2026-09-17).
 
 ### Storage health monitoring — two different tools, clarified 2026-07-13
 
@@ -316,20 +329,17 @@ hardware, just the first time it's been inventoried for this specific cluster.
 Read 2026-10-22 for enterprise-strategy's RouterOS future study, from smc-resiliency's firmware-access probe (live, 20261022_1506; sources in
 `smc-resiliency/docs/os-lifecycle/firmware-access-probe-sources-20261022_1506/`) and Prometheus (7-day window, both clusters). `VERIFIED-OBSERVED`.
 
-| Model        | Cores | rcp boxes | nbn_accelerate boxes | Total | 7-day CPU average / peak (rcp, with Asterisk) | Peak RAM used |
-| ------------ | ----- | --------- | -------------------- | ----- | --------------------------------------------- | ------------- |
-| BOXER-6404   | 4     | 11        | 17                   | 28    | 5–13% / 13–40%                                | 17–29%        |
-| BOXER-6641   | 6     | 8         | 11                   | 19    | 7–13% / 15–23%                                | 11–14%        |
+| Model      | Cores | rcp boxes | nbn_accelerate boxes | Total | 7-day CPU average / peak (rcp, with Asterisk) | Peak RAM used |
+| ---------- | ----- | --------- | -------------------- | ----- | --------------------------------------------- | ------------- |
+| BOXER-6404 | 4     | 11        | 17                   | 28    | 5–13% / 13–40%                                | 17–29%        |
+| BOXER-6641 | 6     | 8         | 11                   | 19    | 7–13% / 15–23%                                | 11–14%        |
 
-- Counts include non-site boxes (rcp: warehouse-smc01, nocprov-smc01; nbn_accelerate: a test box, and aurukun has three). ansible-wifi has no small or
-  large x86 concept; both models are in both flavours. The "small box / big box" wording in `01_overview.md` (x86 as "small") is not a model class.
-- Prometheus has no process metrics (no process-exporter), so Asterisk's or Squid's own CPU and RAM are not measurable from it; per-process cost needs
-  a `ps` on the box.
-- Asterisk resident memory, measured 2026-10-22 on all 17 rcp boxes (`collect-smc-evidence-full.sh --only voip`, `asterisk-rss`; operator approved):
-  77–153 MB per box, about 100 MB typical (warburton 153, mornington 130, tjuntjuntjara 127, bidyadanga 119); full source build with
-  `autoload=yes`. umoona-smc01 and nocprov-smc01 had no Asterisk process. `VERIFIED-OBSERVED`
-- Anomalies seen 2026-10-22: koonibba-smc01 (nbn_accelerate, 6404) root 98% full, warakurna-smc01 65%; warehouse-smc01 has 3 GB RAM; nocprov,
-  wangkatjungka and warehouse have no node_exporter series.
+- Counts include non-site boxes (rcp: warehouse-smc01, nocprov-smc01; nbn_accelerate: a test box, and aurukun has three). ansible-wifi has no small or large x86 concept; both models are in both
+  flavours. The "small box / big box" wording in `01_overview.md` (x86 as "small") is not a model class.
+- Prometheus has no process metrics (no process-exporter), so Asterisk's or Squid's own CPU and RAM are not measurable from it; per-process cost needs a `ps` on the box.
+- Asterisk resident memory, measured 2026-10-22 on all 17 rcp boxes (`collect-smc-evidence-full.sh --only voip`, `asterisk-rss`; operator approved): 77–153 MB per box, about 100 MB typical (warburton
+  153, mornington 130, tjuntjuntjara 127, bidyadanga 119); full source build with `autoload=yes`. umoona-smc01 and nocprov-smc01 had no Asterisk process. `VERIFIED-OBSERVED`
+- Anomalies seen 2026-10-22: koonibba-smc01 (nbn_accelerate, 6404) root 98% full, warakurna-smc01 65%; warehouse-smc01 has 3 GB RAM; nocprov, wangkatjungka and warehouse have no node_exporter series.
 
 **Kernel/OS version drift, live-confirmed — corroborates the already-documented "no automated kernel-update pipeline for cw-cluster" structural finding** (`01_overview.md` "APN Cluster vs NBN
 Accelerate Cluster"): most BOXER-6404 hosts run `5.15.0-117-generic`, but `koonibba-smc01` is on `5.15.0-79-generic` (significantly older) and `warakurna-smc01` is on `5.15.0-133-generic`
@@ -520,7 +530,9 @@ the instruction and was removed the same evening (`apt-get remove --purge fping`
 with the command passed as separate ssh arguments is re-joined on the box, so `command -v` tested nothing and reported yes everywhere; pass the whole remote command as one string. Still not in any
 ansible-wifi role, so a reimaged box loses it: the durable fix is a package entry in the base role.
 
-**What "don't touch nbn_wh" means (operator, 2026-10-22).** No changes on `bungardi-smc01` or `darlngunaya-smc01`: no installs, upgrades, config edits or restarts without an explicit operator decision. Exploratory, read-only commands are always allowed on both. On 2026-10-22 both were reached that way through the autossh backdoor (`cw-teleport01`, ports 60016 / 60018): Teleport's service was active on each box, but the cluster held no reverse tunnel for either.
+**What "don't touch nbn_wh" means (operator, 2026-10-22).** No changes on `bungardi-smc01` or `darlngunaya-smc01`: no installs, upgrades, config edits or restarts without an explicit operator
+decision. Exploratory, read-only commands are always allowed on both. On 2026-10-22 both were reached that way through the autossh backdoor (`cw-teleport01`, ports 60016 / 60018): Teleport's service
+was active on each box, but the cluster held no reverse tunnel for either.
 
 **fping approval per flavour, and the install guard (2026-09-27, operator: "I am fine with installing fping to rcp and nbn_accelerate flavors when needed").** fping may be installed wherever it is
 missing on any `rcp` or `nbn_accelerate` box; any other package, or any other flavour, needs the box chosen one by one. unified-network-controller's `wc-local/scripts/smc/smc_package_check.py` builds
@@ -639,9 +651,8 @@ of activity at that moment is normal steady-state, not an anomaly, and does not 
 
 **Phase 3 effectiveness re-confirmed with the corrected filter:** Phase 3 node (journald volatile
 + Fluent Bit pos tmpfs + sidecar redirect) showed 0 `systemd-journal` write events in a 60s true-write
-capture; a non-Phase-3 node showed 32 direct writes to `/var/log/journal/.../system.journal` in the same window, and ~3.7x more total true writes overall. Full detail:
-[log-audit-results.md](../../../../../../_project/project_stuff/apn/smc-file-writing-analysis/docs/log-audit-results.md) (2026-07-09 12:37 AEST entry). `scripts/wear_fatrace_remote.sh` in that project
-was corrected to use the true-write filter.
+capture; a non-Phase-3 node showed 32 direct writes to `/var/log/journal/.../system.journal` in the same window, and ~3.7x more total true writes overall. Full detail: [log-audit-results.md](../../../../../../_project/project_stuff/apn/smc-file-writing-analysis/docs/log-audit-results.md) (2026-07-09
+12:37 AEST entry). `scripts/wear_fatrace_remote.sh` in that project was corrected to use the true-write filter.
 
 ---
 
@@ -657,8 +668,7 @@ syscall-heavy buffered-write files, and is closer to accurate for writers that `
 
 **How to apply:** treat fatrace counts as a relative/comparative signal (did this go up or down after a fix) and a lock-contention/CPU-churn proxy — never as a literal physical-write or SSD-wear
 number. Comparing counts captured with different methodologies (e.g. a 60s×5-sampled full total vs a continuous-window top-N-sum) is also invalid — they're different metrics, not just different
-samples of the same one. Full detail:
-[smc-file-writing-analysis/.archcore/rules/RULE-011-fatrace-write-count-syscall-not-physical-io.md](../../../../../../_project/project_stuff/apn/smc-file-writing-analysis/.archcore/rules/RULE-011-fatrace-write-count-syscall-not-physical-io.md).
+samples of the same one. Full detail: [smc-file-writing-analysis/.archcore/rules/RULE-011-fatrace-write-count-syscall-not-physical-io.md](../../../../../../_project/project_stuff/apn/smc-file-writing-analysis/.archcore/rules/RULE-011-fatrace-write-count-syscall-not-physical-io.md).
 
 ### fatrace excludes tmpfs entirely — every sweep in this project is real-disk-only (confirmed 2026-07-24)
 
@@ -973,8 +983,7 @@ about 10% of 3.9G, ~390M; see the 2026-09-03 jarlmadangah-burru measurement). Th
 ## Raspberry Pi SMC identity, ports and bootloader (rct and wh, 2026-10-08)
 
 VERIFIED-OBSERVED 2026-10-08, read-only over Teleport apn on 20-mile-smc01 and adjamarragu-smc01 (`rct`) and areyonga-smc01 and glen-hill-smc01 (`wh`). Vendor documents, the per-box captures and the
-firmware manifest are in [vendor-sources-raspberry-pi-20261008_1043/](vendor-sources-raspberry-pi-20261008_1043/readme.md); the EEPROM images are committed (not gitignored, operator 2026-10-08) in
-[firmware-files/raspberry-pi/](../firmware-files/raspberry-pi/).
+firmware manifest are in [vendor-sources-raspberry-pi-20261008_1043/](vendor-sources-raspberry-pi-20261008_1043/readme.md); the EEPROM images are committed (not gitignored, operator 2026-10-08) in [firmware-files/raspberry-pi/](../firmware-files/raspberry-pi/).
 
 **Identity.** There is no DMI: `dmidecode` prints nothing. The model is in `/proc/device-tree/model` (`Raspberry Pi 4 Model B Rev 1.5`) and `/proc/cpuinfo` `Revision: d03115`, which the official
 revision-codes table decodes as Model 4B, Revision 1.5, 8 GB, Sony UK, BCM2711. The SoC serial is in `/proc/device-tree/serial-number` and equals the cpuinfo `Serial` (for example `10000000624bb9a3`);
@@ -989,10 +998,9 @@ everything rides the one port into the MikroTik switch (skill-mikrotik). On arey
 **SD card identity and size (2026-10-21, `VERIFIED_PRIMARY`).** Asked by smc-resiliency (the storage CID as UNC's lookup key). Read-only over `tsh ssh --proxy=teleport.apn.au` on random current Pis
 (djirrbiyuk, kusi-block, charlotte-waters, babungi, then five more for size), all `Raspberry Pi 4 Model B Rev 1.5`: the card sits on the direct MMC path, so `/sys/block/mmcblk0/device/` exposes `cid`,
 `csd`, `serial`, `manfid`, `oemid`, `name`, `date` and the rest. Every card read is the same unbranded part: `manfid` 0x000000, `oemid` 0x5342, `name` `AFNI0`, size 62,277,025,792 bytes (a 64 GB
-card), manufacture month and year differ per card (read truncated); `serial` differs per card. So a CID is readable fleet-wide, but the
-manufacturer field identifies nothing: use the full CID as the key, never `manfid`, and pair it with the SoC serial (above). Values were printed truncated to six characters; no full CID was
-recorded. Command (ad hoc: no catalogued script reads the MMC fields; `pi_identity_probe.sh`
-could gain them):
+card), manufacture month and year differ per card (read truncated); `serial` differs per card. So a CID is readable fleet-wide, but the manufacturer field identifies nothing: use the full CID as the
+key, never `manfid`, and pair it with the SoC serial (above). Values were printed truncated to six characters; no full CID was recorded. Command (ad hoc: no catalogued script reads the MMC fields;
+`pi_identity_probe.sh` could gain them):
 
 ```bash
 # read-only, per host, with a kill deadline around tsh
@@ -1003,8 +1011,8 @@ lsblk -bdno NAME,SIZE /dev/mmcblk0
 
 Screenshot: not applicable (no visual surface).
 
-**Probe.** [`scripts/probes/pi_identity_probe.sh`](../scripts/probes/pi_identity_probe.sh) (`just pi_identity_probe <proxy> <node>...`) reads all of the above in one read-only pass: device-tree model and serial,
-cpuinfo, dmidecode, os-release, NICs with MAC, driver and speed, bridges, VLANs and memory. Name the proxy; it is never guessed.
+**Probe.** [`scripts/probes/pi_identity_probe.sh`](../scripts/probes/pi_identity_probe.sh) (`just pi_identity_probe <proxy> <node>...`) reads all of the above in one read-only pass: device-tree model and serial, cpuinfo, dmidecode,
+os-release, NICs with MAC, driver and speed, bridges, VLANs and memory. Name the proxy; it is never guessed.
 
 **SNMP.** No `snmpd` on any of the four (20-mile has only the net-snmp client package, `snmp` 5.9.1). The root is overlayroot, so a plain `apt install snmpd` would vanish at the next reboot (section
 8). Operator decision 2026-10-08: no SNMP agent on the Pis for now; the x86 canary in `02_service-map.md` (snmpd on the SMC) stays x86 only.
@@ -1093,15 +1101,15 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 > Screenshot: not applicable (no visual surface).
 
 > **Learned 2026-11-06** · Pi clock with no RTC on the 24.04 image · VERIFIED_PRIMARY (lab VM) · Source: smc-resiliency S2 report section 8 (T0 to T2,
-> commit 1dc80235 in the apn repo), spike VM `smc-pi-spike01` (Ubuntu 24.04 arm64, systemd 255.4-1ubuntu8.18, chrony 4.5-1ubuntu4.2) booted with
-> `efi=noruntime module_blacklist=rtc_pl031` so it has no RTC, as a Pi · Falsifier: a 24.04 Pi with no `/usr/lib/clock-epoch` booting later than
-> its systemd package's build date, or chrony with a gateway server by address failing to step a day-sized error without DNS.
+> commit 1dc80235 in the apn repo), spike VM `smc-pi-spike01` (Ubuntu 24.04 arm64, systemd 255.4-1ubuntu8.18, chrony 4.5-1ubuntu4.2) booted with `efi=noruntime module_blacklist=rtc_pl031` so it has no
+> RTC, as a Pi · Falsifier: a 24.04 Pi with no `/usr/lib/clock-epoch` booting later than its systemd package's build date, or chrony with a gateway server by address failing to step a day-sized error
+> without DNS.
 > - With no RTC and no time source, systemd lifts the clock only to its own build time ("System time before build time, advancing clock."): on that
->   VM 2026-10-12, 24 days behind; an image freezes that date, so a box a year into the field boots a year behind.
+> VM 2026-10-12, 24 days behind; an image freezes that date, so a box a year into the field boots a year behind.
 > - systemd 255 reads `/usr/lib/clock-epoch` (string in `libsystemd-shared-255.so`) and advances the clock to its mtime: touched to the release's
->   build time, every boot starts at or after the release (T1: 2026-11-04 13:00 UTC, 22.5 h behind).
+> build time, every boot starts at or after the release (T1: 2026-11-04 13:00 UTC, 22.5 h behind).
 > - chrony with `server <gateway address> iburst prefer` and `makestep 1 -1` stepped 80,985 s 16.3 s after kernel start with the public pools and
->   DNS blocked (T2). Installing chrony on 24.04 removes systemd-timesyncd.
+> DNS blocked (T2). Installing chrony on 24.04 removes systemd-timesyncd.
 > - Restarting chrony on every config change (a restart list) drops sync for a moment; with no floor, a clock health check fails until it resyncs.
 >
 > Code (smc-resiliency `spike/onbox/smcbox/health.py`, commit 1dc80235):
@@ -1117,32 +1125,32 @@ Read-only over `tsh ssh --proxy=teleport.apn.au root@<host>` on 2026-10-15 for u
 > **Learned 2026-10-22** · Ubuntu 24.04 site config rendered into a confext · VERIFIED_PRIMARY · Source: smc-resiliency S2 report section 6 (S2-8 to S2-15), spike VM `smc-pi-spike01` (Ubuntu 24.04 arm64, systemd 255), code `spike/onbox/smcbox/site.py` (uncommitted at writing; smc-resiliency commit pending) · Falsifier: `dhcpd -t -cf /run/...` passing under the stock AppArmor profile, or systemd-confext.service enabled on a stock 24.04 install
 > Rendering an SMC's site config into `/run` and merging it as a confext on 24.04 needs four things the stock image does not give:
 > - **dhcpd's AppArmor profile** only lets `dhcpd` read under `/etc/dhcp`, so `dhcpd -t -cf <rendered file>` fails; run the syntax check in a
->   private mount namespace with the rendered file bind-mounted at `/etc/dhcp/dhcpd.conf`.
+> private mount namespace with the rendered file bind-mounted at `/etc/dhcp/dhcpd.conf`.
 > - **`unbound-checkconf`** fails unless `/run/unbound` exists (the pidfile directory); create it first.
 > - **netplan's systemd generator runs before the confext merge**, so at boot it sees the base `/etc/netplan`; a `netplan apply` after the merge
->   is needed for the rendered netplan to take effect.
+> is needed for the rendered netplan to take effect.
 > - **`systemd-confext.service` is disabled** on a stock 24.04 install; with `/etc` read-only the units that enable it must ship in `/usr/lib`.
 > Measured on the VM: render and checks 0.3 s; merged 5.4 s after kernel start. Screenshot: not applicable (no visual surface).
 
 ## Firmware access from the OS: x86 UEFI and Pi EEPROM (read 2026-10-22)
 
-Read-only over Teleport with `scripts/probes/x86_resiliency_probe.sh` (UEFI lines added 2026-10-22) on all 47 x86 SMCs (19 rcp, 28 nbn_accelerate) and
-`scripts/probes/pi_identity_probe.sh` (EEPROM lines added 2026-10-22) on six Pi canaries (rct, wh, nbn_wh, both clusters). `VERIFIED_PRIMARY` for that day;
-raw output in smc-resiliency `docs/os-lifecycle/firmware-access-probe-sources-20261022_1506/`.
+Read-only over Teleport with `scripts/probes/x86_resiliency_probe.sh` (UEFI lines added 2026-10-22) on all 47 x86 SMCs (19 rcp, 28 nbn_accelerate) and `scripts/probes/pi_identity_probe.sh` (EEPROM
+lines added 2026-10-22) on six Pi canaries (rct, wh, nbn_wh, both clusters). `VERIFIED_PRIMARY` for that day; raw output in smc-resiliency
+`docs/os-lifecycle/firmware-access-probe-sources-20261022_1506/`.
 
-| Model | BIOS builds in service (boxes) | ESRT capsule entry | ROM |
-| --- | --- | --- | --- |
-| AAEON BOXER-6404 | B404BM10 2015-07-16 (2), B404BM14 2019-02-19 (10), B404BM16 2022-05-18 (16) | 1, system firmware, version field `1`, flags 0 | AMI, 1 MB, socketed |
-| AAEON BOXER-6641 | B641HM17 2021-09-08 (15), B641HM20 2024-09-19 (4) | none | AMI, 16 MB, socketed |
+| Model            | BIOS builds in service (boxes)                                              | ESRT capsule entry                             | ROM                  |
+| ---------------- | --------------------------------------------------------------------------- | ---------------------------------------------- | -------------------- |
+| AAEON BOXER-6404 | B404BM10 2015-07-16 (2), B404BM14 2019-02-19 (10), B404BM16 2022-05-18 (16) | 1, system firmware, version field `1`, flags 0 | AMI, 1 MB, socketed  |
+| AAEON BOXER-6641 | B641HM17 2021-09-08 (15), B641HM20 2024-09-19 (4)                           | none                                           | AMI, 16 MB, socketed |
 
-- Every x86 box boots UEFI with `/sys/firmware/efi/efivars` mounted read-write, so `BootNext` and `BootOrder` are settable from Linux (what
-  `smc_disk_failover` relies on). `SecureBoot`=0 and `SetupMode`=1 everywhere: no platform key enrolled. No `/dev/efi_capsule_loader`, no
-  `/dev/watchdog` (the watchdog drivers ship but none is loaded). fwupd is installed on 46 of 47 (not burringurrah-smc01).
-- Only the BOXER-6404 advertises a UEFI capsule update path (ESRT); whether AAEON publishes capsules for it is `UNVERIFIED`. The BOXER-6641 has no
-  OS-visible update path: vendor tool or bench. BIOS setup items (power on after AC loss and the like) are not visible from Linux without AMI's tool.
-- Pi canaries: Pi 4B rev 1.5 (`d03115`), EEPROM 2023-01-11 17:40:52, config only `BOOT_UART=0`, `WAKE_ON_GPIO=1`, `POWER_OFF_ON_HALT=0` (no
-  `BOOT_ORDER`, no `BOOT_WATCHDOG_TIMEOUT`), `autoboot.txt` absent, BCM2835 watchdog present. `rpi-eeprom-update` reports the bundled image as
-  2022-01-25, older than the running EEPROM, so a box cannot update its EEPROM from its own package: a newer EEPROM has to come with the card.
+- Every x86 box boots UEFI with `/sys/firmware/efi/efivars` mounted read-write, so `BootNext` and `BootOrder` are settable from Linux (what `smc_disk_failover` relies on). `SecureBoot`=0 and
+  `SetupMode`=1 everywhere: no platform key enrolled. No `/dev/efi_capsule_loader`, no `/dev/watchdog` (the watchdog drivers ship but none is loaded). fwupd is installed on 46 of 47 (not
+  burringurrah-smc01).
+- Only the BOXER-6404 advertises a UEFI capsule update path (ESRT); whether AAEON publishes capsules for it is `UNVERIFIED`. The BOXER-6641 has no OS-visible update path: vendor tool or bench. BIOS
+  setup items (power on after AC loss and the like) are not visible from Linux without AMI's tool.
+- Pi canaries: Pi 4B rev 1.5 (`d03115`), EEPROM 2023-01-11 17:40:52, config only `BOOT_UART=0`, `WAKE_ON_GPIO=1`, `POWER_OFF_ON_HALT=0` (no `BOOT_ORDER`, no `BOOT_WATCHDOG_TIMEOUT`), `autoboot.txt`
+  absent, BCM2835 watchdog present. `rpi-eeprom-update` reports the bundled image as 2022-01-25, older than the running EEPROM, so a box cannot update its EEPROM from its own package: a newer EEPROM
+  has to come with the card.
 
 The probes' remote lines (excerpt; source `scripts/probes/x86_resiliency_probe.sh`, `scripts/probes/pi_identity_probe.sh`, as of commit of 2026-10-22; version in `manifest.json`):
 
@@ -1155,10 +1163,9 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 ```
 
 > **Learned 2026-11-08** · Pi 4B SMC (rct, wh, nbn_wh) serial console · VERIFIED_PRIMARY · Source: Raspberry Pi documentation (config_txt/boot.adoc `enable_uart`, `uart_2ndstage`; raspberry-pi/eeprom-bootloader.adoc `BOOT_UART`; configuration/interfaces.adoc primary UART), read 2026-11-08 via context7 `/raspberrypi/documentation`; smc-resiliency `lab/adapters/console.py`, commit 60ce8b3a · Falsifier: a Pi 4 whose bootloader prints nothing on GPIO 14 with BOOT_UART=1
-> A Pi 4's primary UART is GPIO 14 (TX, pin 8) and GPIO 15 (RX, pin 10), 115200 8N1; use a 3.3 V adapter only. Three switches show the three boot
-> stages: `BOOT_UART=1` in the EEPROM config (the bootloader: partition and tryboot choices), `uart_2ndstage=1` in config.txt (start.elf), and
-> `enable_uart=1` with `console=serial0,115200` and no `quiet` in cmdline.txt (the kernel). The fleet canaries read `BOOT_UART=0` (above), so turning it
-> on is an EEPROM change: operator consent first. smc-resiliency records the console on the Mac with `just lab console <target> --apply`:
+> A Pi 4's primary UART is GPIO 14 (TX, pin 8) and GPIO 15 (RX, pin 10), 115200 8N1; use a 3.3 V adapter only. Three switches show the three boot stages: `BOOT_UART=1` in the EEPROM config (the
+> bootloader: partition and tryboot choices), `uart_2ndstage=1` in config.txt (start.elf), and `enable_uart=1` with `console=serial0,115200` and no `quiet` in cmdline.txt (the kernel). The fleet
+> canaries read `BOOT_UART=0` (above), so turning it on is an EEPROM change: operator consent first. smc-resiliency records the console on the Mac with `just lab console <target> --apply`:
 >
 > ```python
 > attrs[0], attrs[1], attrs[3] = 0, 0, 0  # no input or output processing, raw
@@ -1171,26 +1178,25 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 ## Pi 4 A/B boot on a GPT card: bootloader, firmware and update traps (smc-resiliency S1 bench, 2026-11-09)
 
 > **Learned 2026-11-09** · Pi 4B (rev 1.5, 8 GB) bench, Ubuntu 24.04.5 raspi · VERIFIED_PRIMARY (serial console with `BOOT_UART=1` and
-> `uart_2ndstage=1`; commands read on the box) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 19, apn commits
-> 4e086c18 and 01cf282c · Falsifier: Ubuntu's packaged start4.elf booting partition 2 of a GPT card, or the bootloader ignoring autoboot.txt on GPT.
+> `uart_2ndstage=1`; commands read on the box) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 19, apn commits 4e086c18 and 01cf282c · Falsifier: Ubuntu's packaged
+> start4.elf booting partition 2 of a GPT card, or the bootloader ignoring autoboot.txt on GPT.
 > - `autoboot.txt` with `tryboot_a_b=1` works on a GPT card with bootloader 2026-01-09: `Read autoboot.txt bytes 256`, `Select partition ...
->   C(boot_partition) 2 ... result 2`; `reboot "0 tryboot"` gives `result 3`; the next plain reboot is back on 2 (the flag is one-shot; the box
->   reads it at `/proc/device-tree/chosen/bootloader/tryboot`, the partition at `.../partition`, both 4-byte big-endian). A 256-byte autoboot.txt
->   padded by a comment line is read. The fleet's 2023-01-11 bootloader is not yet run.
+> C(boot_partition) 2 ... result 2`; `reboot "0 tryboot"` gives `result 3`; the next plain reboot is back on 2 (the flag is one-shot; the box reads it at `/proc/device-tree/chosen/bootloader/tryboot`,
+> the partition at `.../partition`, both 4-byte big-endian). A 256-byte autoboot.txt padded by a comment line is read. The fleet's 2023-01-11 bootloader is not yet run.
 > - Ubuntu 24.04.5's start4.elf (Firmware f4e2138c, Feb 29 2024) chooses partition 2 and then cannot open its files:
->   `Failed to open command line file 'cmdline.txt'`, `No compatible kernel found`, and the box stays frozen until power is cycled (nothing resets
->   it before Linux). Raspberry Pi firmware 1.20260915 (start4.elf, fixup4.dat from github.com/raspberrypi/firmware at that tag) boots it.
+> `Failed to open command line file 'cmdline.txt'`, `No compatible kernel found`, and the box stays frozen until power is cycled (nothing resets it before Linux). Raspberry Pi firmware 1.20260915
+> (start4.elf, fixup4.dat from github.com/raspberrypi/firmware at that tag) boots it.
 > - Ubuntu's flash-kernel copies the packaged firmware from `/usr/lib/linux-firmware-raspi` into /boot/firmware (`/usr/share/flash-kernel/functions`
->   line 859), so a kernel or firmware update puts the failing start4.elf back. A box relying on newer firmware holds linux-firmware-raspi,
->   flash-kernel and the raspi kernel packages, or the image replaces the packaged files.
+> line 859), so a kernel or firmware update puts the failing start4.elf back. A box relying on newer firmware holds linux-firmware-raspi, flash-kernel and the raspi kernel packages, or the image
+> replaces the packaged files.
 > - `rpi-eeprom-update.service` is enabled on Ubuntu 24.04 raspi and upgrades the bootloader at boot; mask it to pin a version.
 > - `vcgencmd` without root prints `Can't open device file: /dev/vcio` on stdout and exits 0: `vcgencmd bootloader_config > file` then holds the
->   error text. Read EEPROM state with sudo and check the content, never the exit code.
+> error text. Read EEPROM state with sudo and check the content, never the exit code.
 > - `PARTITION_WALK` (default 1) checks partitions 1 to 8 only and does not read autoboot.txt while walking (Raspberry Pi eeprom-bootloader docs).
 > - The BCM2835 watchdog's maximum is 15 s and systemd arms it (`RuntimeWatchdogSec`); a hang before systemd, or a firmware stage that fails,
->   gets no reset.
+> gets no reset.
 > - Ubuntu raspi's cloud-init reads NoCloud from the filesystem labelled `system-boot`; two boot slots cannot share the label, so each root carries
->   its own seed in `/var/lib/cloud/seed/nocloud/`.
+> its own seed in `/var/lib/cloud/seed/nocloud/`.
 >
 > ```bash
 > # smc-resiliency lab/payloads/s1_card_build.sh @ 01cf282c: per slot
@@ -1204,51 +1210,50 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > **Learned 2026-11-10** · Pi 4B, the fleet bootloader 2023-01-11 (version 8ba17717) · VERIFIED_PRIMARY (bench Pi 4 serial console) · Source:
 > smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 20 · Falsifier: a 2023-01-11 box not reading autoboot.txt on GPT.
 > - The fleet's bootloader reads a 256-byte autoboot.txt on p1 of a GPT card and runs the same chain as 2026-01-09: one-shot tryboot to the other
->   slot, back after a plain reboot, commit, panic fallback, and a watchdog reset of a hung trial back to the committed slot.
+> slot, back after a plain reboot, commit, panic fallback, and a watchdog reset of a hung trial back to the committed slot.
 > - An EEPROM update staged by `rpi-eeprom-update -f` on the selected boot partition (p3, chosen by autoboot.txt) was applied by the bootloader
->   (`Updating bootloader EEPROM ... BOOT-EEPROM: UPDATED`), and the config embedded with `rpi-eeprom-config --config ... --out` survived the
->   downgrade. The image is `pieeprom-2023-01-11.bin` in github.com/raspberrypi/rpi-eeprom firmware-2711/old/critical (same bytes in old/stable).
+> (`Updating bootloader EEPROM ... BOOT-EEPROM: UPDATED`), and the config embedded with `rpi-eeprom-config --config ... --out` survived the downgrade. The image is `pieeprom-2023-01-11.bin` in
+> github.com/raspberrypi/rpi-eeprom firmware-2711/old/critical (same bytes in old/stable).
 
 > **Learned 2026-11-10** · deployed Pi fleet, rct and wh (read-only survey of 3 rct and 3 wh boxes over Teleport) · VERIFIED_PRIMARY · Source:
-> smc-resiliency SCRATCHPAD open item 20261110_0145, raw on malik1tb lab-evidence/20261110/fleet-survey · Falsifier: a deployed Pi with GPT or a
-> second root partition.
+> smc-resiliency SCRATCHPAD open item 20261110_0145, raw on malik1tb lab-evidence/20261110/fleet-survey · Falsifier: a deployed Pi with GPT or a second root partition.
 > - All six: Pi 4B rev 1.5, 7.8 GB RAM; Ubuntu 22.04.1, kernel 5.15.0-1078-raspi; card `AFNI0` 62,277,025,792 bytes, MBR: p1 FAT `system-boot`
->   256 MB, p2 ext4 `writable` 57.7 GB filling the card; `/` is overlayroot (lower `/media/root-ro`, upper in RAM, about 3.9 GB); the root holds
->   5.6 to 6.9 GB; bootloader 2023-01-11 with `BOOT_UART=0`, no `autoboot.txt`.
+> 256 MB, p2 ext4 `writable` 57.7 GB filling the card; `/` is overlayroot (lower `/media/root-ro`, upper in RAM, about 3.9 GB); the root holds 5.6 to 6.9 GB; bootloader 2023-01-11 with `BOOT_UART=0`,
+> no `autoboot.txt`.
 > - The ext4 root spreads blocks up to the card's end (dumpe2fs group counts): 0.6 to 1.4 GiB of data sits above 35 GiB and 1.3 to 4.4 GiB above
->   8 GiB; rct boxes hold two to three times more high up than wh. A shrink of a deployed root moves that much data.
+> 8 GiB; rct boxes hold two to three times more high up than wh. A shrink of a deployed root moves that much data.
 
 
 > **Learned 2026-11-10** · deployed fleet, all Pi flavours and both x86 flavours (read-only: 79 boxes probed, 306 of 312 Pis censused, 10 writer
-> probes) · VERIFIED_PRIMARY · Source: smc-resiliency `docs/overview/smc-fleet-survey-20261110_1145.md` and its sources folder (raw output),
-> commit 6f45ec65 · Falsifier: a later census showing the 2022 bootloaders updated, or nbn_wh with overlayroot enabled.
+> probes) · VERIFIED_PRIMARY · Source: smc-resiliency `docs/overview/smc-fleet-survey-20261110_1145.md` and its sources folder (raw output), commit 6f45ec65 · Falsifier: a later census showing the
+> 2022 bootloaders updated, or nbn_wh with overlayroot enabled.
 > - Pi bootloaders are not uniform: 260 on 2023-01-11, 36 rct on 2022-04-26, 10 rct on 2022-01-25. Every Rev 1.4 board (11) runs a 2022
->   bootloader; nothing updates the EEPROM in the field (`vcgencmd bootloader_version`).
+> bootloader; nothing updates the EEPROM in the field (`vcgencmd bootloader_version`).
 > - nbn_wh Pis run a writable root: `/etc/overlayroot.conf` has `overlayroot_cfgdisk="disabled" overlayroot=""`. Their cards take 5 to 6 GB a
->   day (cron jobs and the journal), against 10 to 20 MB a day on overlayroot rct and wh.
+> day (cron jobs and the journal), against 10 to 20 MB a day on overlayroot rct and wh.
 > - Undervoltage since boot on 8 of 306 Pis (`vcgencmd get_throttled` bit 16; 5 wh, 3 rct); the kernel logs "Undervoltage detected" (not
->   "under-voltage") every few seconds while it lasts.
+> "under-voltage") every few seconds while it lasts.
 > - x86 (BOXER-6404 BIOS B404BM14, BOXER-6641 B641HM20; Ubuntu 22.04.1, .3 and .4): every box ships `iTCO_wdt.ko` but none loads a watchdog or
->   sets `RuntimeWatchdogSec`. Cron jobs (php `kohana status:*` every 1 to 5 minutes, `url_capturev1.sh` every 2, blocklist rebuilds) and the
->   journal write up to 30 GB and 7 GB a day on nbn_accelerate (galiwinku, 366 days up); fluent-bit about 2 GB a day on an rcp box.
+> sets `RuntimeWatchdogSec`. Cron jobs (php `kohana status:*` every 1 to 5 minutes, `url_capturev1.sh` every 2, blocklist rebuilds) and the journal write up to 30 GB and 7 GB a day on nbn_accelerate
+> (galiwinku, 366 days up); fluent-bit about 2 GB a day on an rcp box.
 > - `/proc/<pid>/io` write_bytes of cron includes its reaped jobs, so cron's figure is the total of everything cron started.
 > - Probes: `scripts/probes/pi_resiliency_probe.sh`, `smc_writers_probe.sh`, `scripts/fleet/pi_bootloader_census.sh`; `tsh` survives SIGALRM, so a
->   deadline must fork and send TERM then KILL (all probes fixed).
+> deadline must fork and send TERM then KILL (all probes fixed).
 
 > **Learned 2026-11-16** · deployed fleet, boot partition free for a conversion, root reference, x86 disk layouts (re-read of the 2026-11-10 survey raw output) ·
-> VERIFIED_PRIMARY · Source: smc-resiliency `docs/overview/smc-fleet-survey-sources-20261110_1145/` (`rct.txt`, `wh.txt`, `nbn_wh.txt`, `rcp.txt`,
-> `boxes.csv`) · Falsifier: a deployed Pi whose `cmdline.txt` names `root=PARTUUID=`, or a BOXER-6404 with free extents in `ubuntu-vg`.
+> VERIFIED_PRIMARY · Source: smc-resiliency `docs/overview/smc-fleet-survey-sources-20261110_1145/` (`rct.txt`, `wh.txt`, `nbn_wh.txt`, `rcp.txt`, `boxes.csv`) · Falsifier: a deployed Pi whose
+> `cmdline.txt` names `root=PARTUUID=`, or a BOXER-6404 with free extents in `ubuntu-vg`.
 > - Pi `/boot/firmware` (p1 FAT `system-boot`, 253 MB): 138 to 140 MB free on all 38 rct and wh read; the two nbn_wh have 116 and 26 MB. Enough for a
->   maintenance kernel and initramfs on rct and wh, not on the fuller nbn_wh.
+> maintenance kernel and initramfs on rct and wh, not on the fuller nbn_wh.
 > - `cmdline.txt` names the root by label on all 41 Pis read: `root=LABEL=writable rootfstype=ext4`, so new PARTUUIDs (an MBR-to-GPT conversion) do
->   not break the root reference.
+> not break the root reference.
 > - BOXER-6404: one 59.6 GiB CFast (Innodisk 3ME3 or Transcend TS64GCFX600), GPT: ESP 1 GiB, `/boot` ext4 2 GiB, LVM 56.6 GiB, `ubuntu-vg` 0 free, root
->   LV 56.6 GiB at 24 to 33% used (one 98%, pruned since). BOXER-6641: two 119.2 GiB Transcend SATA SSDs, each GPT ESP 1 GiB + ext4 118.2 GiB; the
->   second is the standby install `smc_disk_failover` boots after 24 h without internet.
+> LV 56.6 GiB at 24 to 33% used (one 98%, pruned since). BOXER-6641: two 119.2 GiB Transcend SATA SSDs, each GPT ESP 1 GiB + ext4 118.2 GiB; the second is the standby install `smc_disk_failover` boots
+> after 24 h without internet.
 
 > **Learned 2026-11-18** · x86 `rcp` (CFast) and Pi `rct` (SD), one box of each · VERIFIED_PRIMARY (read-only on two production boxes: a sample, not the fleet) · Source: the commands below, run
-> through Teleport for unified-network-controller (its CHANGELOG 20261118_2043, commit 409ea52e) · Falsifier: a box whose `lsblk -d -o SERIAL` is empty, or a Pi with no `cid` under its SD card's
-> sysfs device.
+> through Teleport for unified-network-controller (its CHANGELOG 20261118_2043, commit 409ea52e) · Falsifier: a box whose `lsblk -d -o SERIAL` is empty, or a Pi with no `cid` under its SD card's sysfs
+> device.
 >
 > Storage identity is readable with what is already on the box, no package needed. An x86 box gives its CFast card's model and serial through `lsblk` and a world-wide ID in sysfs; a Pi gives its SD
 > card's card ID, name, maker ID, manufacture date and serial in sysfs. `smartctl` was present on both. Use: a controller can track the card as an asset of its own and see a card swap or a cloned
@@ -1266,13 +1271,13 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 ## Pi 4 bench, 18 Nov 2026: early watchdog, the 2022 bootloaders and EEPROM staging on an A/B card
 
 > **Learned 2026-11-18** · Pi 4B rev 1.5 bench, Ubuntu 24.04 kernel 6.8.0-1064-raspi, Raspberry Pi firmware 1.20260915, bootloaders 2023-01-11, 2022-04-26 and
-> 2022-01-25 · VERIFIED_PRIMARY (serial console, commands read on the box; raspberrypi/firmware issue 1980, raspberrypi/linux PR 6961, rpi-eeprom 2711 release
-> notes) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 24 and its sources folder, apn commit f5c16060 · Falsifier:
-> Ubuntu's Pi device tree carrying `early-watchdog`; a 2022-04-26 or 2022-01-25 bootloader booting `[all]`'s partition on a plain boot.
+> 2022-01-25 · VERIFIED_PRIMARY (serial console, commands read on the box; raspberrypi/firmware issue 1980, raspberrypi/linux PR 6961, rpi-eeprom 2711 release notes) · Source: smc-resiliency
+> docs/overview/smc-lab-test-record-20261107_1931.md section 24 and its sources folder, apn commit f5c16060 · Falsifier: Ubuntu's Pi device tree carrying `early-watchdog`; a 2022-04-26 or 2022-01-25
+> bootloader booting `[all]`'s partition on a plain boot.
 > - A trial kernel that never starts (the kernel file overwritten with random bytes) froze the Pi until power was cycled, twice: nothing arms a watchdog before Linux.
 > - From firmware 2025-07-17, `start4.elf` arms the SoC watchdog before the kernel when the watchdog device-tree node has the property `early-watchdog`
->   (console: `Enabling early watchdog`). Raspberry Pi kernels set it with `dtparam=watchdog`; Ubuntu's `bcm2711-rpi-4-b.dtb` maps that parameter to `status` and has
->   no such property (`fdtget -t x <dtb> /__overrides__ watchdog` ends `73 74 61 74 75 73`). An overlay adds it:
+> (console: `Enabling early watchdog`). Raspberry Pi kernels set it with `dtparam=watchdog`; Ubuntu's `bcm2711-rpi-4-b.dtb` maps that parameter to `status` and has no such property (`fdtget -t x <dtb>
+> /__overrides__ watchdog` ends `73 74 61 74 75 73`). An overlay adds it:
 >
 >   ```text
 >   /dts-v1/;
@@ -1284,45 +1289,44 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 >   dtc -@ -I dts -O dtb -o overlays/smc-early-wdt.dtbo smc-early-wdt.dts ; config.txt: dtoverlay=smc-early-wdt
 >   ```
 >
->   With it the unstartable kernel was reset 17 s after loading (PM_RSTS 0x20) and the committed slot booted; a good trial booted, `bcm2835-wdt` took over at 2 s
->   and systemd's 15 s runtime watchdog ran. Proved on bootloader 2023-01-11 only; not in any image yet (operator decision pending).
+> With it the unstartable kernel was reset 17 s after loading (PM_RSTS 0x20) and the committed slot booted; a good trial booted, `bcm2835-wdt` took over at 2 s and systemd's 15 s runtime watchdog ran.
+> Proved on bootloader 2023-01-11 only; not in any image yet (operator decision pending).
 > - Bootloaders 2022-04-26 and 2022-01-25 (36 and 10 rct Pis in the 10 Nov census) ignore the `[tryboot]` section and `tryboot_a_b`: both arrive in 2022-10-18
->   (default 2022-12-01). With `[all] boot_partition=2` then `[tryboot] boot_partition=3` they boot partition 3 on every plain boot; `reboot "0 tryboot"` shows
->   TRYBOOT, resets once after about 7 s and boots partition 3 plainly. Partition-level A/B as built does not work on them.
+> (default 2022-12-01). With `[all] boot_partition=2` then `[tryboot] boot_partition=3` they boot partition 3 on every plain boot; `reboot "0 tryboot"` shows TRYBOOT, resets once after about 7 s and
+> boots partition 3 plainly. Partition-level A/B as built does not work on them.
 > - `rpi-eeprom-update -d -f <image>` writes to BOOTFS (`/boot/firmware`). Bootloaders from 2022-04-26 self-update from the partition they boot; 2022-01-25 does
->   not and silently stays as it is. The boot ROM's `recovery.bin` path reads the card's first FAT partition: on a card whose first partition is not the running
->   boot partition, stage there (`BOOTFS=<mount of partition 1> rpi-eeprom-update -d -f <image>`), check `vcgencmd bootloader_version` after the reboot, and remove
->   `pieeprom.upd`, `pieeprom.sig` and `RECOVERY.000` from every partition they were written to (a stale `pieeprom.sig` is read at each boot).
+> not and silently stays as it is. The boot ROM's `recovery.bin` path reads the card's first FAT partition: on a card whose first partition is not the running boot partition, stage there
+> (`BOOTFS=<mount of partition 1> rpi-eeprom-update -d -f <image>`), check `vcgencmd bootloader_version` after the reboot, and remove `pieeprom.upd`, `pieeprom.sig` and `RECOVERY.000` from every
+> partition they were written to (a stale `pieeprom.sig` is read at each boot).
 > - Embed the box's EEPROM config in the image first (`rpi-eeprom-config --config cfg.txt --out new.bin pieeprom-<date>.bin`), or the flash resets it.
 > - Old images are in raspberrypi/rpi-eeprom `firmware-2711/old/stable`; check the git blob hash (`git hash-object`) against the repository's.
 >
 > No visual surface: no screenshot.
 
 > **Learned 2026-11-19** · same bench Pi 4B and card, bootloader 2023-01-11 with the `smc-early-wdt` overlay in both slots, then 2022-04-26 and 2022-01-25 · VERIFIED_PRIMARY
-> (serial console and runner transcript) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 25 · Falsifier: a healthy boot whose systemd starts
-> late being reset by the early watchdog on this kernel; a 2022 bootloader not taking an update staged on partition 1.
+> (serial console and runner transcript) · Source: smc-resiliency docs/overview/smc-lab-test-record-20261107_1931.md section 25 · Falsifier: a healthy boot whose systemd starts late being reset by the
+> early watchdog on this kernel; a 2022 bootloader not taking an update staged on partition 1.
 > - Once the firmware has armed the watchdog, the kernel's `bcm2835-wdt` driver keeps it fed from its probe until systemd opens it: with systemd held back 30 s
->   (`init=` a script that sleeps, then execs systemd), systemd opened the watchdog about 41 s after the arm and nothing reset the box. The arm to the probe takes
->   about 5 s (2.9 s to the kernel, then 2.0 s), against a limit of about 16 s. Corrected the same day: the feeding has no end by default. Linux's watchdog core pings a
->   running hardware watchdog until userspace opens it, for ever when `watchdog.open_timeout` is 0 (kernel Documentation/watchdog/watchdog-parameters.rst; Ubuntu raspi
->   6.8 has `CONFIG_WATCHDOG_OPEN_TIMEOUT=0`), so a trial stuck in the initramfs (root missing) stayed dark for 240 s until power was cut; with
->   `watchdog.open_timeout=60` on the kernel command line it was reset 61 s after `/init` started and the firmware returned to the committed slot. Earlier text here said
->   the arm-to-probe window was the only unprotected one; that was wrong.
+> (`init=` a script that sleeps, then execs systemd), systemd opened the watchdog about 41 s after the arm and nothing reset the box. The arm to the probe takes about 5 s (2.9 s to the kernel, then
+> 2.0 s), against a limit of about 16 s. Corrected the same day: the feeding has no end by default. Linux's watchdog core pings a running hardware watchdog until userspace opens it, for ever when
+> `watchdog.open_timeout` is 0 (kernel Documentation/watchdog/watchdog-parameters.rst; Ubuntu raspi 6.8 has `CONFIG_WATCHDOG_OPEN_TIMEOUT=0`), so a trial stuck in the initramfs (root missing) stayed
+> dark for 240 s until power was cut; with `watchdog.open_timeout=60` on the kernel command line it was reset 61 s after `/init` started and the firmware returned to the committed slot. Earlier text
+> here said the arm-to-probe window was the only unprotected one; that was wrong.
 > - With the overlay in both slots a trial kernel of random bytes was reset alone on both tries and rejected at MAX_TRIES 2: no power cycle needed.
 > - An update staged on partition 1 (`BOOTFS=<p1 mount> rpi-eeprom-update -d -f <image>`) took 2022-04-26 and 2022-01-25 to 2023-01-11. Afterwards partition 1 held
->   `RECOVERY.000`, `pieeprom.upd` and `pieeprom.sig` (the bootloader renames only `recovery.bin`), to be removed once the version reads right.
+> `RECOVERY.000`, `pieeprom.upd` and `pieeprom.sig` (the bootloader renames only `recovery.bin`), to be removed once the version reads right.
 >   - Every Pi 4 boot logs `watchdog: Hard watchdog permanently disabled`: no hard-lockup detector on the Pi 4, so only the soft-lockup detector, the hung-task check,
->     `panic=` and the hardware watchdog can turn a freeze into a reset there.
+> `panic=` and the hardware watchdog can turn a freeze into a reset there.
 >   - Census 2026-11-19 (read-only, 318 listed Pis, 311 answered, 618 s): every Pi answering is an 8 GB board; 45 rct on 2022 bootloaders (35 on 2022-04-26, 10 on 2022-01-25).
 > - `pi_bootloader_census.sh` now also prints `mem_kb` (MemTotal) per Pi, and `summarise_survey.py --census` tallies memory per flavour in whole GB.
 >
 > No visual surface: no screenshot.
 
 > **Learned 2026-11-19** · deployed x86 SMCs: two rcp (PBA-CFLS01, BIOS B641HM20 and B641HM17, kernel 5.15.0-101 and -164) and one nbn_accelerate (BOXER-6404, B404BM14,
-> 5.15.0-117) · VERIFIED_PRIMARY (read-only over Teleport; three boxes, not the fleet) · Source: smc-resiliency Pad B19-03; raw on malik1tb lab-evidence/20261119/x86-freeze-read ·
-> Falsifier: a deployed x86 SMC with /dev/watchdog present or kernel.panic non-zero from the fleet build.
+> 5.15.0-117) · VERIFIED_PRIMARY (read-only over Teleport; three boxes, not the fleet) · Source: smc-resiliency Pad B19-03; raw on malik1tb lab-evidence/20261119/x86-freeze-read · Falsifier: a
+> deployed x86 SMC with /dev/watchdog present or kernel.panic non-zero from the fleet build.
 > - No watchdog device or module (`iTCO_wdt` and `it87_wdt` are modules, blacklisted by Ubuntu), systemd `RuntimeWatchdogUSec=0`, `kernel.panic=0` (a panic halts for
->   ever), soft- and hard-lockup and hung-task panics off (`nmi_watchdog=1` only detects), `watchdog.open_timeout` 0, no `watchdog` package. A frozen x86 SMC needs a visit.
+> ever), soft- and hard-lockup and hung-task panics off (`nmi_watchdog=1` only detects), `watchdog.open_timeout` 0, no `watchdog` package. A frozen x86 SMC needs a visit.
 > - The Pi counterpart: new Pi image has the hardware watchdog fed by systemd, the early watchdog and `panic=10`; the Pi 4 has no hard-lockup detector.
 >
 > No visual surface: no screenshot.
@@ -1330,39 +1334,38 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > **Learned 2026-11-19** · deployed Pi SMCs (rct, wh, nbn_wh), package and freeze state · VERIFIED_PRIMARY (read-only over Teleport on 2 to 5 boxes per fact, not the fleet) · Source: smc-resiliency
 > CHANGELOG 20261119_1540, Pad B19-04, lab/media.toml · Falsifier: a deployed Pi with a watchdog fed, kernel.panic non-zero, or a systemd other than 249.11-0ubuntu3.7.
 > - Freeze: /dev/watchdog0 (BCM2835) present but inactive, RuntimeWatchdogUSec=0, kernel.panic=0, all lockup and hung-task panics off. rise-watchdog.timer runs rise_watchdog.py every 20 s
->   (RISE v2.1.0: memory, disk, load and unit checks) with WATCHDOG_AUTO_REBOOT="0", so it never reboots. Read with `scripts/probes/smc_freeze_probe.sh`.
+> (RISE v2.1.0: memory, disk, load and unit checks) with WATCHDOG_AUTO_REBOOT="0", so it never reboots. Read with `scripts/probes/smc_freeze_probe.sh`.
 > - Packages: installed from Ubuntu 22.04.1 (base-files 12ubuntu4.2, so /etc/os-release still says 22.04.1) and partly updated since: five hubs share systemd 249.11-0ubuntu3.7, cloud-init
->   23.1.2, kernel 5.15.0-1078-raspi; libc6 3.6 or 3.8; 862 to 870 packages per box. unattended-upgrades disabled, Periodic settings "0".
+> 23.1.2, kernel 5.15.0-1078-raspi; libc6 3.6 or 3.8; 862 to 870 packages per box. unattended-upgrades disabled, Periodic settings "0".
 > - Kernel freeze: the four 1078 kernel packages are apt-mark held, and /etc/apt/preferences.d/pin-kernel pins `version 5.15.0-1078-raspi*` at 1001 (never matches: the package version
->   is 5.15.0-1078.81) and every linux-image*/linux-modules*/linux-raspi* at -1; the -1 rule and the holds do the freezing.
+> is 5.15.0-1078.81) and every linux-image*/linux-modules*/linux-raspi* at -1; the -1 rule and the holds do the freezing.
 > - Writes: node exporter's apt_info.py runs every 5 min on every box and was the largest single writer in an hour on an nbn_wh box (158 MB of 725 MB); daily figures stay the cards'
->   long-run counters (4.0 and 6.7 GB a day on the two nbn_wh boxes).
+> long-run counters (4.0 and 6.7 GB a day on the two nbn_wh boxes).
 > - Playbook versus box: mosquitto runs on bungardi-smc01 (nbn_wh) although smc_mqtt is gated to nbn_accelerate and rcp (survey writers-cw.txt, R28 research agent): installed by hand or
->   an older playbook, unverified which.
+> an older playbook, unverified which.
 >
 > No visual surface: no screenshot.
 
 ## The warehouse field image: what a site Pi ships with (rct-iridium, read 2026-11-19)
 
 > **Learned 2026-11-19** · warehouse image `generic-rct01-iridium-20241121.img` (rct with Iridium; the warehouse also keeps rct, wh and nbn_wh images) ·
-> VERIFIED_PRIMARY (read offline on the Mac with e2fsprogs debugfs at the root partition's byte offset; nothing mounted) · Source: smc-resiliency
-> lab/field_images.toml, decision 20261119_1756 · Falsifier: a box shipped from this image reading other values on first boot.
+> VERIFIED_PRIMARY (read offline on the Mac with e2fsprogs debugfs at the root partition's byte offset; nothing mounted) · Source: smc-resiliency lab/field_images.toml, decision 20261119_1756 ·
+> Falsifier: a box shipped from this image reading other values on first boot.
 >
 > - **What it is:** Ubuntu 22.04.1 with ansible-wifi already run once in the warehouse; the site playbook runs on top of it in the field. MBR, p1 FAT
->   `system-boot` 256 MiB, p2 ext4 `writable` about 6.9 GiB (`root=LABEL=writable`, cmdline `ipv6.disable=1 ... fixrtc quiet splash`).
+> `system-boot` 256 MiB, p2 ext4 `writable` about 6.9 GiB (`root=LABEL=writable`, cmdline `ipv6.disable=1 ... fixrtc quiet splash`).
 > - **Versions shipped:** kernel 5.15.0-1065-raspi (1012 still installed), systemd 249.11-0ubuntu3.4, libc6 2.35-0ubuntu3.8 with libc-bin and locales at
->   3.1 (mismatched), cloud-init 22.2 but `/etc/cloud/cloud-init.disabled` present, overlayroot installed and off (`overlayroot=""`). Deployed hubs read
->   systemd 3.7 and kernel 1078, x86 3.15: boxes drift after shipping through apt and ansible in the field.
+> 3.1 (mismatched), cloud-init 22.2 but `/etc/cloud/cloud-init.disabled` present, overlayroot installed and off (`overlayroot=""`). Deployed hubs read systemd 3.7 and kernel 1078, x86 3.15: boxes
+> drift after shipping through apt and ansible in the field.
 > - **Teleport identity:** `/etc/teleport.yaml` has a static `auth_token`, labels `env: "prod"`, `site: "generic"`, `flavor: "rct"`, and no `nodename`;
->   `/var/lib/teleport` is empty. A box joins at its first Teleport start under its **hostname**, so a box never renamed appears as
->   `generic-rct01-iridium-20241121` (one such node is in teleport.apn.au). Rename before Teleport first starts.
+> `/var/lib/teleport` is empty. A box joins at its first Teleport start under its **hostname**, so a box never renamed appears as `generic-rct01-iridium-20241121` (one such node is in
+> teleport.apn.au). Rename before Teleport first starts.
 > - **Network as shipped:** untagged `eth0` is `activation-mode: manual` (no address); VLAN 500 `bridge_500` (10.255.0.1/24, 192.168.5.100/24) and
->   VLAN 501 `bridge_501` (10.0.0.1/23) carry the site networks, with isc-dhcp-server on both; `vlan521` 192.168.100.50/24; `vlan522` manual;
->   `lo` also 10.254.0.1/32.
+> VLAN 501 `bridge_501` (10.0.0.1/23) carry the site networks, with isc-dhcp-server on both; `vlan521` 192.168.100.50/24; `vlan522` manual; `lo` also 10.254.0.1/32.
 > - **Firewall:** INPUT sends tcp 22, 80 and 4949 to chain `MANAGEMENT`, which accepts `bridge_500` and one company /24 and drops the rest; a box on
->   an untagged LAN cannot be reached by SSH until that LAN is added to `MANAGEMENT` before its DROP.
+> an untagged LAN cannot be reached by SSH until that LAN is added to `MANAGEMENT` before its DROP.
 > - **Enabled at boot:** teleport, autossh-teleport (forwards local 60853 to the tunnel host's 853, DNS over TLS for stubby), autossh-teleport-openssh,
->   autossh-prometheus, iperf55200 to 55209, hostapd, squid, unbound, stubby, apache2, postfix, ipset, fqdn2ip, netfilter-persistent, plus the apt timers.
+> autossh-prometheus, iperf55200 to 55209, hostapd, squid, unbound, stubby, apache2, postfix, ipset, fqdn2ip, netfilter-persistent, plus the apt timers.
 >
 > A bench copy changes only what `just lab field-prep` lists (smc-resiliency `lab/field_images.toml`); each edit must match exactly once:
 >

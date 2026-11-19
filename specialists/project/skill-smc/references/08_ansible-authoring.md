@@ -113,6 +113,19 @@ while tail > 0 and (not lines[tail - 1].strip() or lines[tail - 1].lstrip().star
 lines[tail:tail] = ["", f"[{site}:children]", f"{site}_smc_bases"]  # before any trailing "# End of File" comment
 ```
 
+> **Learned 2026-11-20** · adding a bench or renamed SMC · VERIFIED_PRIMARY · Source: ansible-wifi iridium 665b667c and rise 1b18756a (bench Pi
+> malik-bench-rct01), smc-resiliency CHANGELOG 20261120 · Falsifier: a rename that runs from the Mac without an interpreter override
+> - **A name already in host_vars can belong to another box.** `malik-rct02` had tracked 2025 host_vars and a `malik` topology for a Vagrant VM (an
+> `eth1` switch, a Parallels management subnet), and no line in any group. Running smc_bases against such vars rewrites netplan for NICs the real box lacks. Pick a name with no host_vars and its own
+> site (the tool derives the site from the host and refuses an existing one: pass `--site`).
+> - **A box still on a generic image carries its site ID.** The warehouse field image's autossh uses port 50181 (site ID 181, shared by three generic
+> host_vars). `--siteid-from-box` returns that ID; `--allow-shared-siteid` keeps it knowingly.
+> - **The same entry on two branches:** `stage` differs between `iridium` and `rise`, so cherry-picking the commit conflicts. Run the tool again with
+> `--repo <a rise worktree>` and compare the topology files' sha256 (identical here).
+> - **`smc_rename.yml` (and any play with a `delegate_to: 127.0.0.1` step) needs the Linux controller:** the rct inventory pins
+> `ansible_python_interpreter=/usr/bin/python3.10`, which the Mac lacks ("module interpreter '/usr/bin/python3.10' was not found"). Run from `ansible-apn` (`/home/vagrant/ansible-wifi`); its tsh login
+> expires on its own and needs the operator's sign-in.
+
 ### Task key order: `when:` goes LAST, with `tags:` after it (operator convention, 2026-08-27)
 
 **House convention for every task written in `ansible-wifi`.** Put `when:` at the **end** of the task, and where a task also carries `tags:`, `tags:` follows `when:`.
