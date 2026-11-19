@@ -72,6 +72,25 @@ and shutdown in the lab (observed 2026-11-07).
 |   macOS upgrade (Sequoia 15.5)                                     |   terminal app access to the VM network    |   Network: allow the terminal and editor      |   fix, VERIFIED_SECONDARY)         |
 | Files missing or stale after `vagrant upload` of a folder          | upload into an existing directory          | upload to a fresh path per run                | USER_STATED,                       |
 |                                                                    |                                            |                                               |   smc-resiliency 2026-11-06        |
+| `x509: certificate has expired or is not yet valid: current time   | guest clock drifted far into the future;   | `date -u`; `systemctl is-enabled chrony`;     | USER_STATED, lab 2026-11-19        |
+|   2126-…` on any TLS client in the guest                            |   chrony disabled, Time Sync only at boot  |   `timedatectl`                               |   (`ansible-apn`)                  |
+
+> **Learned 2026-11-19** · Vagrant 2.4.x with vagrant-parallels, an Ubuntu guest 167 days up (`ansible-apn`) · VERIFIED_PRIMARY (observed once) · Source:
+> `/Volumes/Data/_vagrant/vagrant_stuff/ansible-apn` (host-local lab VM, no commit) · Falsifier: a guest with `chrony` enabled that still reports a future clock.
+> `tsh login` in the guest failed on its first ping: `tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time
+> 2126-01-21T17:39:25+11:00`. The guest clock was **100 years** fast: `chrony.service` was `inactive (dead)` and `disabled`, so nothing corrected it, and Parallels
+> Time Synchronization (`prlctl list -i` → `Time Synchronization: (+)`) only applies at boot. Neither `date -s` nor `timedatectl set-time` could step it
+> (`cannot set date: Invalid argument` — the kernel rejects a jump that large), and `timedatectl` refused while NTP was "enabled" over a masked `systemd-timesyncd`.
+> `vagrant reload` resynced at boot; enabling chrony keeps it right.
+>
+> ```bash
+> # in the guest, after the reload
+> sudo systemctl enable --now chrony
+> sudo chronyc -n tracking        # Reference ID non-zero, Leap status: Normal
+> timedatectl | grep -E 'System clock|NTP service'   # synchronized: yes
+> ```
+>
+> Read the guest clock **before** blaming a service inside it: an `x509` error carrying a future date is the clock, not the certificate. No visual surface: no screenshot.
 
 > **Learned 2026-11-18** · Vagrant 2.4.x with vagrant-parallels, a guest whose `/etc` is read-only · VERIFIED_PRIMARY (observed once) · Source: smc-resiliency
 > docs/overview/smc-lab-test-record-20261107_1931.md section 24.4 @ f5c16060 · Falsifier: `vagrant up` completing its guest set-up on a read-only `/etc`.

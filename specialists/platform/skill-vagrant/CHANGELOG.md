@@ -14,6 +14,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-19: references/upgrade-and-troubleshooting.md triage row + Learned entry: a guest clock 100 years fast (chrony disabled, Time Sync only at boot) breaks every TLS client inside it; `vagrant reload` resyncs, `systemctl enable --now chrony` keeps it right.
+
 - 2026-11-19: references/parallels-prlctl.md Learned entry: compact estimate and shrink sequence, prlctl exec quoting, IdentitiesOnly with the Vagrant key.
 - 2026-11-18: references/upgrade-and-troubleshooting.md Learned entry, `vagrant up` stops at a guest whose `/etc` is read-only and never starts the later machines (smc-resiliency).
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
