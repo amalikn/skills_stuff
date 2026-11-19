@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261118_2102
+Last rotated: 20261119_1538
 ---
 
 # Changelog
@@ -22,12 +22,12 @@ Last rotated: 20261118_2102
 - [20261101_2353 — Learned: guard first and dry-run a gate that hides records](#20261101_2353--learned-guard-first-and-dry-run-a-gate-that-hides-records)
 - [20261101_2307 — Learned: a predicate answering a second question](#20261101_2307--learned-a-predicate-answering-a-second-question)
 - [20261101_1937 — Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits](#20261101_1937--learned-jinja-dict-keys-through-json-filtered-loop-index-folded-newlines-crlf-edits)
-- [20261101_0103 — Gate output in recipes](#20261101_0103--gate-output-in-recipes)
 
 ---
 
 ## Unreleased
 
+- 2026-11-19: languages/rust.md, the `rustls-no-provider` unification recurred from a sibling workspace member (rule tightened), and a new section "Tests, build scripts and limits" (sqlx `migrate!` build script, `#[tokio::test]` starvation, jsonwebtoken leeway and algorithm, Unix socket path length); references/testing.md, mutation checks that never mutated; references/design-patterns.md, exact-commit pre-push gate (continuum-app).
 - 2026-11-19: references/tooling-and-runtime.md Learned entries, act on macOS (socket flag only on the command line, host network, image gaps, pinning) and mise into the working cache; languages/rust.md Learned entry, sqlx 0.9 dynamic SQL, temporalio macros and missing_docs, per-test databases (Continuum).
 - 2026-11-19: languages/rust.md Learned entry under Feature unification, a dependency's default features enabling reqwest `rustls-no-provider` (runtime panic on a green build; Continuum P1 spike).
 - 2026-11-18: references/testing.md Learned entry, a fault-test harness that rescues the target must report ASSISTED, not PASS (smc-resiliency bench run).
@@ -194,7 +194,3 @@ Last rotated: 20261118_2102
 ## 20261101_1937 — Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits
 
 Learned 2026-11-01 in `languages/ansible.md`, from ansible-wifi smc_change.
-
-## 20261101_0103 — Gate output in recipes
-
-- `references/testing.md`: Learned 2026-11-01, a gate must keep its output in the recipe (Continuum).

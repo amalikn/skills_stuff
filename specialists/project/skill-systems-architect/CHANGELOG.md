@@ -15,6 +15,10 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261119_1539 — TLS edge client-certificate anchors; Keycloak issuer across networks (v2.3.14 -> v2.3.15)
+
+- `references/security-and-service-identity.md`: two Learned entries from continuum-app (b25dbf8): the edge trusts only the device intermediate for client certificates (with code excerpt); a fixed Keycloak hostname with a dynamic back channel for clients on other networks.
+
 ## 20261119_1109 — Keyless verification of a pulled restic copy; S3 gateway open by default (v2.3.13 -> v2.3.14)
 
 - `references/backup-disaster-recovery.md`: Learned 2026-11-19 under Copy placement and isolation, from Continuum TASK-30: restic content-hash file names let the off-site side verify a

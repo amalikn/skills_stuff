@@ -11,6 +11,7 @@ Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by
 
 ## Change log
 
+- [changelog-20261119_1538.md](changelog-20261119_1538.md) 1 entry, 2026-11-01 to 2026-11-01: Gate output in recipes
 - [changelog-20261118_2102.md](changelog-20261118_2102.md) 1 entry, 2026-10-30 to 2026-10-30: Pattern P-47 (decide once from facts, persist it); Learned: run_once set_fact freezes templates, 2.21 Jinja quirks
 - [changelog-20261118_1557.md](changelog-20261118_1557.md) 1 entry, 2026-10-30 to 2026-10-30: Pattern P-46: audience words at the output boundary, with a leak guard
 - [changelog-20261117_1859.md](changelog-20261117_1859.md) 1 entry, 2026-10-30 to 2026-10-30: Learned: filter precedence, free-form shell splitting, import_tasks placement, pipefail with grep -q

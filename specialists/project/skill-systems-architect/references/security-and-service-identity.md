@@ -132,6 +132,25 @@ Legend: --> issue, present or revoke   PEP = policy enforcement point
 - SPIFFE/SPIRE delivers SVIDs through the Workload API (VERIFIED_PRIMARY [N4], checked 2026-10-29).
 - Certificates: record issuer hierarchy, trust distribution, expiry monitoring, automated renewal, revocation and CA disaster recovery.
 
+> **Learned 2026-11-19** · Client-certificate trust anchors at a TLS edge · VERIFIED_PRIMARY (built and tested) · Source: continuum-app `caddy/Caddyfile`, `scripts/dev_pki.py`
+> (b25dbf8); Caddy client_auth docs (caddyserver.com, read 2026-11-19) · Falsifier: an edge that checks the leaf's issuer or EKU beyond the chain.
+> When devices and servers share one root, the edge's client-certificate pool must hold only the **device intermediate**, not the root: with the root as anchor, any
+> certificate under it (the edge's own server certificate, another service's) verifies as a device. Give devices and servers separate intermediates, mark device roles client-only
+> and server roles server-only, and have the backend match the forwarded certificate fingerprint against the one recorded at enrolment, trusting that header only from the edge.
+>
+> ```caddy
+> client_auth {
+> 	mode require_and_verify
+> 	trust_pool file /edge/device-ca.pem   # the device intermediate only
+> }
+> ```
+
+> **Learned 2026-11-19** · Keycloak issuer for clients on different networks · VERIFIED_PRIMARY (Keycloak 26.8 docs, hostname v2; live test) · Source: continuum-app `compose.yaml`
+> (b25dbf8) · Falsifier: a Keycloak version where the issuer follows the request host with a full-URL `hostname`.
+> Keycloak puts its frontend URL in every token's `iss`. Clients that reach it by different names (a VM by `host.orb.internal`, the Mac by `localhost`) get different issuers unless
+> `hostname` is a fixed full URL; then `hostname-backchannel-dynamic=true` lets back-channel calls (device authorization, token) arrive by any name while the issuer and the
+> approval link stay on the one URL a browser can open. Pick that URL by where the person approves, not where the agent runs.
+
 ## Secrets and break-glass
 
 Lifecycle: create -> store (vault of record) -> distribute (runtime fetch, never git) -> use -> rotate -> revoke -> destroy.

@@ -1913,3 +1913,30 @@ def _load_yaml(path):
   finally:
     loader.dispose()
 ```
+
+## Exact-commit pre-push gate
+
+> **Learned 2026-11-19** · reusable_candidate · VERIFIED_PRIMARY (gate runs: drift and a readiness flake caught on the exact commit) · Source: continuum-app `.githooks/pre-push`
+> (ca723dd), DL-024 · Falsifier: a local CI runner that tests the pushed object rather than the folder.
+
+**Problem.** A local CI runner (act, a test script) tests whatever is in the working folder: uncommitted edits and untracked files pass the gate, and an edit made while the push
+runs changes the result. A green gate did not prove the pushed commit.
+
+**Solution.** The pre-push hook reads the pushed SHAs from stdin, checks each out into one persistent worktree outside the repo, removes untracked files except the build cache, and
+runs the checks there. Paths the checks reach outside the repo (a sibling design repo) are passed as variables, because they no longer resolve relatively.
+
+```sh
+while read -r _l local_sha _r _rs; do
+  [ "$local_sha" = 0000000000000000000000000000000000000000 ] && continue
+  if [ -e "$wt/.git" ]; then git -C "$wt" checkout -q --detach "$local_sha"; else git -C "$repo" worktree add -q --detach "$wt" "$local_sha"; fi
+  git -C "$wt" clean -q -fdx -e target
+  CONTINUUM_DIR=$(cd "$repo/../continuum" && pwd); export CONTINUUM_DIR
+  (cd "$wt" && just ci && just ci-linux)
+done
+```
+
+**Why it works.** The tested tree is the commit; the folder can be edited freely during a long gate; keeping the worktree (and its `target/`) makes the second run incremental.
+
+**Pitfalls.** A relative sibling path silently becomes "absent, skipped" (pass it in). Services started from the worktree's compose file can be recreated because mount paths
+differ, so readiness checks must wait (a live Keycloak test failed until it waited for the realm). A commit pushed by another process skips the hook: run the hook by hand on it.
+

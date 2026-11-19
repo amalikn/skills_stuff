@@ -384,3 +384,9 @@ p.write_text(orig)   # same text, newer mtime: the derived .pptx check then fail
 HOST_RUN_TIMEOUT=240 infra/apn-unc01/ops/host-run.sh smoke.sh
 ```
 
+> **Learned 2026-11-19** · Mutation checks that never mutated · VERIFIED_PRIMARY (two runs) · Source: continuum-app session 2026-11-19 (TASK-178 step-up check)
+> · Falsifier: a mutation tool that reports when its pattern matched nothing.
+> "Break the code, watch the test fail" can pass for the wrong reason: a `sed` substitution aimed at `if !actor.auth_time` matched nothing because rustfmt had split the
+> expression over two lines, so the "mutated" run passed and looked like proof that the test was weak. Count the replacements and refuse to run when the count is 0
+> (`re.subn(...)`, assert n == 1), and restore from a copy taken before the edit. The same applies to the restore: confirm the original is back (`grep -c` or a diff).
+

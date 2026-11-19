@@ -28,6 +28,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
   ../skill-network-architect/operator/apn/.
 - Committed in skills_stuff up to b6f399f; push pending (operator).
 
+- 2026-11-19: v2.3.15, two identity write-backs from continuum-app TASK-164 (edge client-certificate anchor, Keycloak issuer across networks).
+
 ## Next actions
 
 - 2026-11-11 (v2.3.7): edge-appliances read-only root entry is design reasoning; promote to VERIFIED once smc-resiliency records the R28 outcome with scheduled writers run in a trial.
