@@ -2,9 +2,11 @@
 Title: Goal Guard Test Catalog and Crosswalk
 Category: reference
 Status: current
-Authority: consolidated from the v1.7 handoff test tables (T, P, H, D, F, M, S series), research pack 03 (GG series) and the v0.1 unit tests; specified tests, none run except the 10 v0.1 unit tests
+Authority: >-
+  consolidated from the v1.7 handoff test tables (T, P, H, D, F, M, S series), research pack 03 (GG series) and the v0.1 unit tests; specified tests,
+  of which T01, T02, T04-T07, T11, T15 and a few GG cases have fixtures in the pack's tests since 2026-10-27; the 10 v0.1 unit tests were removed with the prototype
 Scope: Every test series, which phase it gates, duplicates merged, and the ID collision with the backlog
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   146 specified tests (plus 10 v0.1 unit tests) across eight series collapse to one pilot set grouped by capability; duplicates are listed once with all their IDs;
   backlog items are renamed B-01..B-19 here to end the clash with GG-001.. tests.
@@ -25,6 +27,9 @@ Summary: >-
 | S01-S08                                             | 8     | Snapshot and restore                                        | handoff §37.5              |
 | GG-001..012, 101..112, 201..210, 301..310, 401..425 | 69    | Decisions, portfolio, robustness, Vikunja, Thekedar-derived | pack 03                    |
 | v0.1 unit tests                                     | 10    | Prototype CLI (pass, 2026-10-27)                            | `tests/test_goal_guard.py` |
+
+The v0.1 unit tests and `tests/test_goal_guard.py` were removed with the step-4 rewrite (2026-10-27, in git history; [../scripts/readme.md](../scripts/readme.md), moved paths); their cases are
+re-expressed in `tests/test_decide.py` and `tests/test_rank.py`, and `test_cycle` and `test_wip` below name the historical tests.
 
 **ID collision fixed here:** the research backlog's items `GG-01`..`GG-19` (pack 05) are cited in this pack as `B-01`..`B-19`; `GG-` followed by three digits is always a test.
 

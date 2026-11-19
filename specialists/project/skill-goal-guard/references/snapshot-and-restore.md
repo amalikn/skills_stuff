@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §37.3-37.5 and kickoff (portable recovery proof); research pack 04 rollout and M5 hardening
 Scope: Portable per-project task snapshots, manifests, offline read-only use and dry-run/clean-instance restore
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   One project snapshot plus a parent manifest, checksummed and atomically replacing only a complete export; offline read-only use with its age shown;
   restore proven by dry run and into a clean test instance; project portability is not full Vikunja disaster recovery.

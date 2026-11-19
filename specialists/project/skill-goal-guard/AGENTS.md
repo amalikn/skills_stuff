@@ -4,10 +4,11 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-goal-guard pack — canonical source of Goal Guard's MVP scope gate, portfolio focus rules, references and code
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
-  Agent guidance for maintaining and using skill-goal-guard: layout, naming and source rules, the skill-coder rule for all code, its dependencies
-  and consumers, the cross-project write-back trigger, the checks to run, and what must never be claimed before the pilot proves it.
+  Agent guidance for maintaining and using skill-goal-guard: layout, naming and source rules, the skill-coder rule for all code, the Archcore
+  pointer index, the UNVERIFIED rule for Vikunja and client behaviour, its dependencies and consumers, the cross-project write-back trigger,
+  the checks to run, and the governance tooling status.
 ---
 
 @../../../AGENTS.md
@@ -15,7 +16,7 @@ Summary: >-
 # AGENTS.md
 
 - Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries
-  live in `docs/history/`, read only on need (`just history <term>`, `just history-show <stamp>`). Large Markdown: `just outline <file>`,
+  live in `docs/history/` (created by the first `just rotate --apply`; none rotated yet, 2026-11-19), read only on need (`just history <term>`, `just history-show <stamp>`). Large Markdown: `just outline <file>`,
   then `just section <file> "<title>"` or a ranged Read.
 
 <!-- BEGIN MANAGED: skill-ai-it:navigation -->

@@ -6,7 +6,7 @@ Authority: >-
   consolidated from the v1.7 handoff §9, §28, §32, research pack 00, 02 (C10-C12) and 06 (Thekedar); hook capabilities are as the sources
   report them, UNVERIFIED against the installed Claude Code and Codex versions
 Scope: Where the gate runs, which client blocks, honesty about advisory paths, the Archcore rule, and the Thekedar mechanisms adopted
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   The gate runs at handoff and at supported pre-action hooks; a skill, AGENTS.md or Archcore rule alone enforces nothing. Claude Code's PreToolUse
   is the first adapter; every unintercepted path is declared advisory; protected writes are enforced at Goal Guard's writer, not the hook.
@@ -66,6 +66,9 @@ Archcore inheritance into nested folders is unproven (handoff §18, P08, F04); t
 | Completion record    | Changed, deliberately unchanged, evidence per criterion                                                 | pilot                        | GG-419          |
 | Bounded fix loop     | Attempts and time budget, then BLOCKED/REVIEW                                                           | later                        | GG-420          |
 | Doctor               | Hook wiring, schema, stale leases, payload fixtures; never writes the production ledger                 | minimal in pilot             | GG-421          |
+
+The pilot hook already applies a narrow file check: a PROCEED covers only the resolved paths in its proposal's `proposed_files`, for a bounded time and the current contract revision (Learned
+2026-10-27, below; `scripts/goal_guard_lib/hook.py`). Globs, symlink policy and the full file-scope guard stay later (feature #9 in [feature-inventory.md](feature-inventory.md)).
 
 Not imported: the orchestrator, the 109 specialist agents, the reviewer pipeline, the writable task Markdown as state, the `.thekedar/**` self-edit exemption (pack 06 §1, §6). Copying source requires
 the pinned upstream commit, file SHAs and an MIT notice (GG-425).

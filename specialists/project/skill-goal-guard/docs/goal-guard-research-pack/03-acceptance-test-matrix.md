@@ -4,7 +4,7 @@ Category: test-matrix
 Status: proposed, not decided
 Authority: specified tests, none executed against the v0.1 prototype
 Scope: GG-001..GG-425 decision, portfolio, robustness, Vikunja and Thekedar-derived tests
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Specifies the GG test series, golden-set thresholds and per-milestone release gates; distinct from the handoff's T/P/H/D/F/M/S series.
 ---
 

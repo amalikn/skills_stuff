@@ -6,13 +6,27 @@ Authority: >-
   consolidated from the v1.7 handoff §17.2, §25, §27, §37 and research pack 00 and 04; Vikunja product facts are as the research pack reports them
   (vikunja.io docs read 2026-10-27), checked against the local 2.7.1 instance where marked (deployed 2026-10-27)
 Scope: Local deployment, version and API inventory, entity mapping, read path, write path, webhooks, MCP and the platform exit gate
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Vikunja is the live task authority and runs locally (2.7.1, deployed 2026-10-27); first read its version and /api/v2/openapi.json, then read tasks and relations for one
   project, map IDs, and only later write through an attributable, policy-checked path. Webhooks are not retried, so poll to reconcile.
 ---
 
 # Vikunja integration
+
+## Contents
+
+- [Position](#position)
+- [Deployment (operator, 2026-10-27: local)](#deployment-operator-2026-10-27-local)
+- [Facts to verify on the instance (UNVERIFIED here)](#facts-to-verify-on-the-instance-unverified-here)
+- [Mapping](#mapping)
+- [Stages](#stages)
+- [Degraded mode](#degraded-mode)
+- [Security](#security)
+- [Platform exit gate](#platform-exit-gate)
+- [Learned](#learned)
+
+---
 
 ## Position
 
@@ -42,6 +56,9 @@ token permission presets, due-date timezone behaviour (handoff §17.2, pack 04 o
 | Saved filters can span projects; projects nest                                  | Portfolio views                                                                                                    |
 | Webhooks signed (HMAC-SHA256, `X-Vikunja-Signature`), sent once, no retry       | Poll reconciliation is mandatory (GG-303)                                                                          |
 | AGPLv3, self-hostable                                                           | Licence of the platform, not of Goal Guard                                                                          |
+
+Partly checked since: the instance's own 2.7.1 OpenAPI document confirms the v2 `items` pagination envelope and the relation kinds, not yet exercised with a token (Learned 2026-10-27, below).
+The rest of the table stays UNVERIFIED until observed.
 
 ## Mapping
 

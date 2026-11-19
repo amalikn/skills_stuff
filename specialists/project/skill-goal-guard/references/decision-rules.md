@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §4, §6-8, §17.5, §26, research pack 02 and 06, and the v0.1 prototype; conflicts 2 and 3 settled here
 Scope: PROCEED / PARK / REVIEW / BLOCK, the order checks run in, fail modes and the policy clause index
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   One ordered rule set for the four verdicts: deterministic contract checks first, then semantic necessity; pre-registered blockers proceed, newly
   discovered dependencies go to REVIEW; missing or unapproved baselines BLOCK scope-changing work while read-only inspection stays open.

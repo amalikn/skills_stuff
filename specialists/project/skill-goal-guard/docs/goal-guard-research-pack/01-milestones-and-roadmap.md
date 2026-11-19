@@ -4,7 +4,7 @@ Category: roadmap
 Status: proposed, not decided
 Authority: research proposal; Vikunja placement at M3 conflicts with the v1.7 pilot scope
 Scope: M0-M5 milestone gates, deliverables, acceptance and effort ranges
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Six outcome-based gates from contract freeze to hardening, estimated at 70-120 h, with a Thekedar refinement inside M1/M2.
 ---
 

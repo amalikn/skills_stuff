@@ -4,7 +4,7 @@ Category: plan
 Status: proposed, not decided
 Authority: research proposal; task-ownership sections superseded by the v1.7 handoff (Vikunja owns live tasks; operator, 2026-10-27)
 Scope: Component/task register C01-C20, sequencing, priority rules, data design and decision classes
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Stable work IDs C01-C20 with dependencies and effort, the minimal execution path and the policy classification model.
 ---
 

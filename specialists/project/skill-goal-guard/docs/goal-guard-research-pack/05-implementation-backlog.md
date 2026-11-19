@@ -4,7 +4,7 @@ Category: backlog
 Status: proposed, not decided
 Authority: research proposal; item IDs GG-01..GG-19 are backlog items, not GG-0xx tests
 Scope: Sprints A-D for Codex/Claude Code with release gates
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Ordered backlog from decision engine to agent observation, visualisation and autonomy, with Thekedar reuse as acceptance subtasks.
 ---
 

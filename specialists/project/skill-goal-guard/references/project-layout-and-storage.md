@@ -6,7 +6,7 @@ Authority: >-
   consolidated from the v1.7 handoff §5, §18, §30-37 and research pack 02 (C09) and 06; workspace facts read on disk 2026-10-27; conflict 5 (storage)
   settled here
 Scope: The skill package, .gg/ records per level, existing target-map.yaml and code-map.toml, runtime state placement, and the shared apn repository
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   One canonical skill package; small reviewable .gg/ records holding references, approvals and decisions; volatile state and caches outside the
   repos; target-map.yaml and code-map.toml read only. The apn projects share one Git repository, which the per-project design must account for.
@@ -67,6 +67,9 @@ consolidated rule: `.gg/` is created only after the pilot inventory shows no exi
 | Logs, pid files, sockets                                             | `/Volumes/Data/_ai/_skills/skills-runtime/skill-goal-guard/{logs,run}/`                                 |
 | Durable state (SQLite journal, large or sensitive snapshot payloads) | `/Volumes/Data/_ai/_skills/skills-data/skill-goal-guard/` (proposed; follows the storage-routing guide) |
 | Tokens                                                               | Secret store, never files in a repo                                                                     |
+
+The tools take the data and runtime peers from `GG_DATA_DIR` and `GG_RUNTIME_DIR`, defaulting to the paths above (`scripts/goal_guard_lib/settings.py`); the data peer folder does not exist yet
+(2026-11-19).
 
 Add narrow `.gitignore` entries for local state, never `/.gg/` wholesale (handoff §33). A `.gg/` manifest may point to an external payload when Git is the wrong place for it (handoff §37.3.6).
 

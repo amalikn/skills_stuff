@@ -4,7 +4,7 @@ Category: catalog
 Status: current
 Authority: local-supplement; operator decisions recorded 2026-10-27, workspace facts read on disk 2026-10-27
 Scope: Every file in skill-goal-guard, the operator decisions, where each source conflict was settled and the checked workspace facts
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Index of the skill pack (SKILL.md, references, scripts, tests) and of the verbatim source documents under docs/, with the operator decisions and a
   pointer to where each of the eight source conflicts is settled.

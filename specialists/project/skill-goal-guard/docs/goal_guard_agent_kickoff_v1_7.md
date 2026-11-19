@@ -4,7 +4,7 @@ Category: agent-kickoff
 Status: current
 Authority: operator instruction for the pilot; derives from the v1.7 handoff
 Scope: First end-to-end Goal Guard enforcement pilot in project_stuff/apn
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Ordered tasks, stop conditions and completion gate for one hub milestone, one spoke, one Vikunja link, one agent adapter and one snapshot/restore proof.
 ---
 

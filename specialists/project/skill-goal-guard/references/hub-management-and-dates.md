@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §22-29 (Enterprise-Strategy hub, management plan traceability, dual deadlines, migration)
 Scope: Enterprise-Strategy hub and spokes, management-plan to Vikunja traceability, the four date kinds, Excel, and the Markdown-plan cutover gate
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Enterprise-Strategy stays the APN hub; spokes check its revision at handoff and material changes; management commitments are immutable baselines
   separate from the owner's internal target, the forecast and the evidenced actual; Excel is a dated snapshot; cutover from Markdown is gated.

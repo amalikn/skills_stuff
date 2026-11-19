@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §1-2, §5-6, §8, §10, research pack 01 M0, 05 B-01 and 06 (task template)
 Scope: The MVP contract fields, planning exit, approval, revisions, deferred ideas and the completion gate
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   An implementation handoff needs an owner-approved MVP contract with testable criteria and exclusions; changes create a new revision through an
   explicit request and owner decision; ideas are parked, and delivery needs evidence for every criterion.

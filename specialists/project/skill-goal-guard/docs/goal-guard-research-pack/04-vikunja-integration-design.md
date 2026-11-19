@@ -2,9 +2,9 @@
 Title: Goal Guard Vikunja Integration Design
 Category: integration-design
 Status: proposed, not decided
-Authority: research proposal; projection-only model task-ownership sections superseded by the v1.7 handoff (Vikunja owns live tasks; operator, 2026-10-27)
+Authority: research proposal; the projection-only model and task-ownership sections are superseded by the v1.7 handoff (Vikunja owns live tasks; operator, 2026-10-27)
 Scope: Vikunja entity mapping, API v2/MCP access, sync stages, deployment and security
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Staged Vikunja integration (export-only, webhook observe, mediated bidirectional) with field mapping and rollout/rollback steps.
 ---
 

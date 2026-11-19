@@ -4,9 +4,9 @@ Category: plan
 Status: current
 Authority: the v1.7 kickoff and handoff §19, §23.6, §29, §35, §37.5, re-expressed with the real workspace paths read 2026-10-27; operator chose the full v1.7 pilot (2026-10-27)
 Scope: Prerequisites, ordered steps, owner decisions, stop conditions, prototype gaps and the completion gate for the first end-to-end pilot
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
-  Nine ordered steps from local Vikunja deployment and a read-only inventory to an observed allowed and blocked action in one apn spoke, one
+  Ten ordered steps (0-9) from local Vikunja deployment and a read-only inventory to an observed allowed and blocked action in one apn spoke, one
   traced milestone with an Excel sample, and one snapshot restore; owner decisions block the write steps; a missing proof means PARTIAL.
 ---
 
@@ -78,7 +78,7 @@ email before any baseline is registered (handoff §23.1, H08). Candidate pilot m
 ## Prototype gaps fixed in step 4
 
 Built 2026-10-27 under skill-coder: `goal_guard.py` (baseline, BLOCK, the decision order, the ranking pipeline, Vikunja reads, `decisions.jsonl`) plus the tools for steps 6-8 (draft hook, doctor,
-trace, snapshot/restore, Excel sample); `just check` green (71 tests). Catalogue and live checks still open: [../scripts/readme.md](../scripts/readme.md).
+trace, snapshot/restore, Excel sample); `just check` green (71 tests then; 79 since the governance checker's tests were added the same day). Catalogue and live checks still open: [../scripts/readme.md](../scripts/readme.md).
 
 What step 4 did not do, stated plainly:
 

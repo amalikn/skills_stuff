@@ -4,8 +4,10 @@ Category: navigation
 Status: current
 Authority: local-supplement
 Scope: Root AI_NAVIGATION.md of skill-goal-guard
-Last reviewed: 2026-10-27
-Summary: AGENTS.md, then this file, then context-map.yaml, then the newest CHANGELOG.md entries, then relevant .archcore/ and memory-bank/ files if present, then the docs and code the task needs....
+Last reviewed: 2026-11-19
+Summary: >-
+  Agent entrypoint (skill-ai-it managed block): read order, source priority, context files, task routing, script navigation, governance checks,
+  companion consistency, drift handling, update rules, generated context, compaction recovery, audit and the answer contract.
 Review by: 2026-11-26
 ---
 

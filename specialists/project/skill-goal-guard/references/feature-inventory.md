@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: consolidated from every source document; dispositions follow the operator decisions of 2026-10-27 (Vikunja authority, full v1.7 pilot)
 Scope: Every feature and idea proposed across the handoff, research pack, Thekedar matrix and v0.1 prototype, with one disposition each
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   One table of 53 features and ideas, each marked Pilot, Later (L1-L5), Parked or Rejected, with its source; the pilot set is the v1.7 kickoff
   scope and nothing outside it is built until its gate passes.
@@ -84,3 +84,6 @@ against. Goal Guard applies its own rule here: a feature enters a phase only whe
 | 51  | Thekedar orchestrator, specialist catalogue, reviewer pipeline                                       | pack 06                      | Rejected                                    |
 | 52  | Knowledge Curator changes                                                                            | handoff §10, §15             | Rejected                                    |
 | 53  | Restricting brainstorming                                                                            | handoff §2                   | Rejected                                    |
+
+Row 9 note: the pilot hook already limits each PROCEED to the resolved paths its proposal named (`proposed_files`; [enforcement-and-hooks.md](enforcement-and-hooks.md), Learned 2026-10-27); the
+general file-scope allowlist with globs and canonicalisation tests (GG-404, GG-405) stays L1.

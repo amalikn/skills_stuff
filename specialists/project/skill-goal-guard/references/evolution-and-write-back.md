@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement; entry format and evidence rule follow skill-coder and skill-drawio (operator, 2026-10-19 and 2026-10-20)
 Scope: What a session that used or touched Goal Guard owes this pack at closeout, and the entry format
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Any session that gated, ranked, traced or changed Goal Guard work writes a dated Learned entry into the reference a future reader would open, plus
   one changelog line, with a code excerpt or screenshot as evidence; entries that cannot be written here are parked in the project.

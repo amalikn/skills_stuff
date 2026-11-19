@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: consolidated from the v1.7 handoff §17.3-17.4, research pack 00, 02 and the v0.1 readme; conflict 4 (ranking) settled here
 Scope: Task, project and portfolio What's Next, the deterministic ranking pipeline, WIP and interrupt/resume
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Three-level What's Next from live Vikunja data: filter to eligible work, honour owner overrides and incidents, then deadline, Vikunja priority,
   dependency order, due date and stable ID; one operator focus, agents counted separately; the v0.1 weighted score is retired.

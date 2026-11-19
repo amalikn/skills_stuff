@@ -4,7 +4,7 @@ Category: design-decision
 Status: proposed, not decided
 Authority: research proposal; task-ownership sections superseded by the v1.7 handoff (Vikunja owns live tasks; operator, 2026-10-27)
 Scope: Goal Guard v0.x architecture, authorities, product rules and go/no-go gates
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Recommends a portable skill plus deterministic policy CLI, an event journal and a later Vikunja projection; adds the Thekedar selective-extraction decision.
 ---
 
