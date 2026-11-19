@@ -31,6 +31,11 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-19: languages/shell/learned-safety.md Disputed 2026-11-19 entry reordered to the entry format (Conflicts last; `just test` caught it) and its source cited as commit 0ffd12f.
+- 2026-11-19: languages/rust/ folder (operator: Rust needs its own folder and a readable guide): rust.md split by topic (topics.toml; learned-cargo-and-builds, learned-crates,
+  learned-async-and-tests, learned-platform, open-items); five new Learned entries (axum body limit, spawn_blocking, clippy result_large_err, lints in tests, Command timeout);
+  guide-basics.md and guide-services.md, an operator reading guide from continuum-app's code with checked links; standing rule in rust.md to grow both.
+- 2026-11-19: scripts/language_split.py wrote a hard-coded 2026-11-07 into split files' Last reviewed and index line; now today's date.
 - 2026-11-19: references/module-and-function-shape.md Learned 2026-11-19, over the hard limit split along a seam (or move to Python or Rust), never squeeze (operator); root-run shell sources a
   root-owned library only after an owner and mode check.
 - 2026-11-19: languages/shell/learned-safety.md Learned 2026-11-19, `| head -c` under pipefail kills the reader with SIGPIPE and set -e skips the compare; macOS mounts a freshly written FAT partition

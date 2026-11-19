@@ -13,6 +13,7 @@ Exit: 0 ok or split; 1 over budget (--check) or the word check failed; 2 bad arg
 from __future__ import annotations
 
 import argparse
+import datetime
 import re
 import sys
 import tomllib
@@ -100,7 +101,7 @@ def front(lang: str, stem: str) -> str:
     The fenced front matter block.
   """
   return (f"---\nTitle: {lang} override - {stem.replace('-', ' ')}\nCategory: reference\nStatus: current\nAuthority: local-supplement\n"
-          f"Scope: one topic of languages/{lang}.md (split by scripts/language_split.py)\nLast reviewed: 2026-11-07\n"
+          f"Scope: one topic of languages/{lang}.md (split by scripts/language_split.py)\nLast reviewed: {datetime.date.today().isoformat()}\n"
           f"Summary: The {stem.replace('-', ' ')} part of the {lang} override; the entry file holds the tools and the core rule mapping.\n---\n\n")
 
 
@@ -147,7 +148,7 @@ def split(lang: str, apply: bool) -> int:
       else:
         stem = slug(title)
       files.setdefault(stem, []).append(blk)
-  index = ["## Topic files\n\n", f"The rest of this override lives in [{lang}/]({lang}/) (split 2026-11-07 by scripts/language_split.py: one topic per file).\n\n",
+  index = ["## Topic files\n\n", f"The rest of this override lives in [{lang}/]({lang}/) (split {datetime.date.today().isoformat()} by scripts/language_split.py: one topic per file).\n\n",
            "| File | Blocks |\n| --- | --- |\n"] + [f"| [{s}.md]({lang}/{s}.md) | {len(b)} |\n" for s, b in sorted(files.items())]
   kept = [t for t, _ in secs if t.lower() in KEEP and t.lower() != "contents"] + ["Topic files"]
   toc = "## Contents\n\n" + "".join(f"- [{t}](#{slug(t)})\n" for t in kept) + "\n"

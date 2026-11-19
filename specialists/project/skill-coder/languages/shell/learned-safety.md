@@ -20,11 +20,12 @@ Part of [shell.md](../shell.md).
 > trap 'rc=$?; rm -f "$f"; exit "$rc"' EXIT   # keeps the step's exit code
 > ```
 
-> **Disputed 2026-11-19** · POSIX sh, `trap ... EXIT` · VERIFIED_PRIMARY (macOS `/bin/sh` and dash on Ubuntu, OrbStack `continuum-linux`) · Conflicts: the Learned 2026-11-02 `trap ... EXIT` entry
-> above (its snippet "keeps the step's exit code") · Source: continuum-app `.githooks/pre-push` (TD-196, DL-037), uncommitted at time of writing · Falsifier: macOS `/bin/sh -c 'set -eu; f(){ rc=$?;
-> exit "$rc"; }; trap f EXIT; : "${X:?}"'` returning non-zero Saving `$?` does not help on macOS `/bin/sh`: after a `set -u` or `${X:?}` failure, `$?` is already 0 when the EXIT trap runs, so the
-> snippet above exits 0 (dash exits 2). A plain `false` under `set -e` is reported correctly by both (1), so a test with `false` does not catch it. Where a false pass matters (a gate, a pre-push
-> hook), set a flag on the last line and refuse to exit 0 without it. Measured on both shells: `false`, `${X:?}` and an unset `$Y` give 1 (macOS) and 1/2/2 (dash); only the completed run gives 0.
+> **Disputed 2026-11-19** · POSIX sh, `trap ... EXIT` · VERIFIED_PRIMARY (macOS `/bin/sh` and dash on Ubuntu, OrbStack `continuum-linux`) · Source: continuum-app `.githooks/pre-push` (TD-196,
+> DL-037), commit 0ffd12f · Falsifier: macOS `/bin/sh -c 'set -eu; f(){ rc=$?; exit "$rc"; }; trap f EXIT; : "${X:?}"'` returning non-zero · Conflicts: the Learned 2026-11-02 `trap
+> ... EXIT` entry above (its snippet "keeps the step's exit code")
+> Saving `$?` does not help on macOS `/bin/sh`: after a `set -u` or `${X:?}` failure, `$?` is already 0 when the EXIT trap runs, so the snippet above exits 0 (dash exits 2). A plain `false` under
+> `set -e` is reported correctly by both (1), so a test with `false` does not catch it. Where a false pass matters (a gate, a pre-push hook), set a flag on the last line and refuse to exit 0 without
+> it. Measured on both shells: `false`, `${X:?}` and an unset `$Y` give 1 (macOS) and 1/2/2 (dash); only the completed run gives 0.
 >
 > ```sh
 > finished=0

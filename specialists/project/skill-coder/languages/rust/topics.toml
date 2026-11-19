@@ -1,0 +1,6 @@
+# Where each `> **Learned` block of languages/rust.md goes when scripts/language_split.py splits it (first match wins).
+[topics]
+learned-cargo-and-builds = ["feature unification", "cargo clean", "CARGO_TARGET_DIR", "target folder", "Cargo feature"]
+learned-async-and-tests = ["tokio", "blocking child", "#[tokio::test]"]
+learned-crates = ["sqlx", "jsonwebtoken", "temporalio", "reqwest", "rustls"]
+learned-platform = ["socket", "SUN_LEN"]
