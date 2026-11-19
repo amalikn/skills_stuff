@@ -20,9 +20,28 @@ Part of [shell.md](../shell.md).
 > trap 'rc=$?; rm -f "$f"; exit "$rc"' EXIT   # keeps the step's exit code
 > ```
 
+> **Disputed 2026-11-19** · POSIX sh, `trap ... EXIT` · VERIFIED_PRIMARY (macOS `/bin/sh` and dash on Ubuntu, OrbStack `continuum-linux`) · Conflicts: the Learned 2026-11-02 `trap ... EXIT` entry
+> above (its snippet "keeps the step's exit code") · Source: continuum-app `.githooks/pre-push` (TD-196, DL-037), uncommitted at time of writing · Falsifier: macOS `/bin/sh -c 'set -eu; f(){ rc=$?;
+> exit "$rc"; }; trap f EXIT; : "${X:?}"'` returning non-zero Saving `$?` does not help on macOS `/bin/sh`: after a `set -u` or `${X:?}` failure, `$?` is already 0 when the EXIT trap runs, so the
+> snippet above exits 0 (dash exits 2). A plain `false` under `set -e` is reported correctly by both (1), so a test with `false` does not catch it. Where a false pass matters (a gate, a pre-push
+> hook), set a flag on the last line and refuse to exit 0 without it. Measured on both shells: `false`, `${X:?}` and an unset `$Y` give 1 (macOS) and 1/2/2 (dash); only the completed run gives 0.
+>
+> ```sh
+> finished=0
+> on_exit() {
+>   rc=$?
+>   [ "$finished" = 1 ] || [ "$rc" -ne 0 ] || rc=1   # macOS sh: $? is 0 after a set -u failure
+>   cleanup || echo "cleanup failed (result unchanged)" >&2
+>   exit "$rc"
+> }
+> trap on_exit EXIT
+> # ... the work ...
+> finished=1
+> ```
+
 > **Learned 2026-11-02** · POSIX sh, crontab rewrite · VERIFIED_PRIMARY (offline test with stub commands) · Source: ansible-wifi `roles/smc_change/files/tests/test_spec_stats_cron.py`, commit 70bb516 ·
-> Falsifier: a `crontab` that refuses empty input.
-> `crontab -l | sed ... | crontab -` installs an empty crontab when the read fails, even under `set -e`, as a pipeline reports its last command. Write to a file, check the wanted line is in it, then install it:
+> Falsifier: a `crontab` that refuses empty input. `crontab -l | sed ... | crontab -` installs an empty crontab when the read fails, even under `set -e`, as a pipeline reports its last command. Write
+> to a file, check the wanted line is in it, then install it:
 >
 > ```sh
 > crontab -l > "$t"
@@ -32,6 +51,5 @@ Part of [shell.md](../shell.md).
 > ```
 
 > **Learned 2026-11-02** · any guard around a scheduled job · VERIFIED_PRIMARY (production log: two runs of one job in the same second) · Source: ansible-wifi `files/changes/rct-avr-smsc/scripts/smsc_prove_page.sh`, commit 70bb516 ·
-> Falsifier: a scheduler that shows the job in the process table before its tick.
-> A guard that stops at the tick plus a process check leaves a gap: the job is not in the process table until the scheduler has started it. Hold off for a few seconds after the tick too, and read the
-> schedule on the box, as a box can differ from what the code deploys.
+> Falsifier: a scheduler that shows the job in the process table before its tick. A guard that stops at the tick plus a process check leaves a gap: the job is not in the process table until the
+> scheduler has started it. Hold off for a few seconds after the tick too, and read the schedule on the box, as a box can differ from what the code deploys.

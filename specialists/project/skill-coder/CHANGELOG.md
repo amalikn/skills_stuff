@@ -31,6 +31,7 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-19: languages/shell/learned-safety.md Disputed 2026-11-19, the `rc=$?` EXIT-trap snippet still exits 0 on macOS `/bin/sh` after a `set -u` failure; use a finished flag.
 - 2026-11-19: languages/python/learned-other.md Learned 2026-11-19, `__doc__` is `str | None` (argparse description fallback).
 - 2026-11-19: references/version-control-and-review.md Learned 2026-11-19, `--cacheinfo` path from the repo top; commit from a private index when another session's entries are staged; then reset your
   paths in the shared index.
@@ -41,7 +42,8 @@ Last rotated: 20261119_1601
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
 ## 20261119_1734 — Go and Rust keep their formatter's indentation (operator)
 
-- languages/go.md and languages/rust.md: an Indentation row loosens the two-space rule with its reason (gofmt cannot be set otherwise; the tool default wins, operator 2026-11-19); SKILL.md's standing rule names the exception; sources.yaml C-C86 (USER_STATED).
+- languages/go.md and languages/rust.md: an Indentation row loosens the two-space rule with its reason (gofmt cannot be set otherwise; the tool default wins, operator 2026-11-19); SKILL.md's standing
+  rule names the exception; sources.yaml C-C86 (USER_STATED).
 
 ## 20261119_1659 — Learned: stop-at-first tests, minute-stamped names, diff before re-render
 
@@ -51,8 +53,11 @@ Last rotated: 20261119_1601
 
 ## 20261119_1657 — Write-back test reads every entry; topic-file headers repaired; scripts promoted
 
-- `tests/test_package_contract.py` test_write_back_entries_logged now collects every problem (it stopped at the first and hid 19 for a week) and reads `languages/<lang>/` topic files (split 2026-11-07, never checked since); an entry moved by the split may be logged under its parent `<lang>.md`.
-- Headers repaired, no body words changed: languages/ansible/learned-execution.md Learned 2026-11-05 (ii) -> (k), (iii) -> (l); languages/shell/learned-format-and-lint.md 2026-11-05 (ii) -> (k) (the format takes one letter; archived log lines still say ii/iii); two-space blockquote lines made one-space (execution, shell format-and-lint, shell other); languages/ansible/learned-lint-and-tests.md 2026-11-17 (b) evidence parenthesised; languages/ansible/learned-templating.md 2026-11-06 (k) and the shell entry falsifier rejoined; languages/python/learned-other.md 2026-11-06 label CANDIDATE.
+- `tests/test_package_contract.py` test_write_back_entries_logged now collects every problem (it stopped at the first and hid 19 for a week) and reads `languages/<lang>/` topic files (split
+  2026-11-07, never checked since); an entry moved by the split may be logged under its parent `<lang>.md`.
+- Headers repaired, no body words changed: languages/ansible/learned-execution.md Learned 2026-11-05 (ii) -> (k), (iii) -> (l); languages/shell/learned-format-and-lint.md 2026-11-05 (ii) -> (k) (the
+  format takes one letter; archived log lines still say ii/iii); two-space blockquote lines made one-space (execution, shell format-and-lint, shell other); languages/ansible/learned-lint-and-tests.md
+  2026-11-17 (b) evidence parenthesised; languages/ansible/learned-templating.md 2026-11-06 (k) and the shell entry falsifier rejoined; languages/python/learned-other.md 2026-11-06 label CANDIDATE.
 - Logged late: languages/python/learned-other.md Learned 2026-11-06 (hand-written list items), 2026-11-12 (sibling imports; markdown tables with a formatter), 2026-11-16 (local WebSocket API).
 
 ## 20261119_1646 — design-patterns: misplaced patterns moved into Patterns; exact-commit gate is P-77
