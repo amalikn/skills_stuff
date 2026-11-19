@@ -6,9 +6,10 @@ Authority: >-
   Official draw.io style reference and mxfile.xsd, the drawio-tools codec source, and the installed draw.io desktop 32.5.5 bundle; copies in
   documents/drawio-sources-20261019/ win over this summary
 Scope: >-
-  The XML a generator writes and a reader parses: mxfile, diagram, mxGraphModel and root; root cells 0 and 1; layers; UserObject wrappers; page links; HTML
-  labels; edge waypoints and pinned ports; group-relative geometry; compressed and uncompressed pages
-Last reviewed: 2026-10-19
+  The XML a generator writes and a reader parses: mxfile, diagram, mxGraphModel and root; root cells 0 and 1; layers; UserObject wrappers; page links; tags,
+  tooltips and frozen cells; HTML labels; edge waypoints and pinned ports (mirrored on flipped shapes); group-relative geometry; compressed and
+  uncompressed pages; a hand-built time chart
+Last reviewed: 2026-11-19
 Summary: The draw.io XML structure with each rule a generator relies on, verified against the official style reference, the schema and the codec source.
 ---
 

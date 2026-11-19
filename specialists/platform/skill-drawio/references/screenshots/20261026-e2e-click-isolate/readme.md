@@ -4,8 +4,8 @@ Category: screenshot-index
 Status: current
 Authority: skill-drawio write-back, 2026-10-26
 Scope: references/visual-style.md, Learned 2026-10-26 (click to isolate)
-Last reviewed: 2026-10-26
-Summary: The End-to-end page with look e2e_click_isolate on, in draw.io's 32.5.5 viewer (headless Edge), before and after clicking one arrow label.
+Last reviewed: 2026-11-19
+Summary: The End-to-end page with look e2e_click_isolate on (renamed click_isolate the same day), in draw.io's 32.5.5 viewer (headless Edge), before and after clicking one arrow label.
 ---
 
 | Image                                | Shows                                                                                  | Taken from |

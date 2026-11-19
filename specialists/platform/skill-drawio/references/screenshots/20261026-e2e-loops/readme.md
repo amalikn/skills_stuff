@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: skill-drawio write-back, 2026-10-26
 Scope: references/visual-style.md, Learned 2026-10-26 (self-loops)
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: unified-network-controller with look e2e_loops on: steps that stay in their box drawn as loops on its top or bottom edge.
 ---
 

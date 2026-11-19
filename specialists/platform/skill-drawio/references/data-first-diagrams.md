@@ -4,9 +4,10 @@ Category: skill-reference
 Status: current
 Authority: Operator rules recorded in unified-network-controller (UNC) and enterprise-strategy, and the skill's own renderer code; the cited files win over this summary
 Scope: >-
-  How a project keeps a draw.io drawing as a rendering of a data map: the YAML map, its JSON Schema, the deterministic renderer, the generated banner, the
-  drift check in `just check`, and the separate rule for drawings an operator edits by hand
-Last reviewed: 2026-10-19
+  How a project keeps a draw.io drawing as a rendering of a data map: the YAML map (written in parts and assembled), its JSON Schema, the deterministic
+  renderer, decision pages, the generated banner, the drift check in `just check`, page layouts without flows, and the separate rule for drawings an
+  operator edits by hand; the ASCII entries kept as history point to skill-ascii-diagrams
+Last reviewed: 2026-11-19
 Summary: A generated drawing is rendered from a YAML map and checked for drift; an operator's hand-edited drawing is source and is only patched, never regenerated.
 ---
 
@@ -26,6 +27,7 @@ out that pattern as UNC built it, in a form any project can copy. Claim IDs refe
 - [Hand-edited drawings are source](#hand-edited-drawings-are-source)
 - [Deciding which kind a drawing is](#deciding-which-kind-a-drawing-is)
 - [Checklist for a new data-first drawing](#checklist-for-a-new-data-first-drawing)
+- [ASCII diagrams in Markdown, first](#ascii-diagrams-in-markdown-first)
 
 ## The rule
 
@@ -59,7 +61,9 @@ The opposite case is a drawing an operator has edited in draw.io themselves. Tha
 | Audits          | inside the renderer                               | `scripts/drawio/audit.py`                            | Layout faults a reviewer must never see ([layout-audits.md](layout-audits.md)) |
 | Drift check     | `check_flow_map` in `scripts/check_governance.py` | the renderer's `evaluate()`                          | Fails when the file on disk differs from a fresh render     |
 
-The skill's modules are being refactored while this is written; module names may change, and the table names what was present on 2026-10-19.
+The skill's modules are being refactored while this is written; module names may change, and the table names what was present on 2026-10-19. The map is now written in parts
+(`docs/flows/parts/master.yaml` and its parts,
+assembled into `docs/flows/flows.yaml` by `scripts/assemble_flowmap.py`; Learned 2026-10-27 below).
 
 ## The map
 
@@ -95,11 +99,13 @@ map does, and a byte-for-byte comparison is a valid drift check.
 - Write uncompressed XML (`compressed="false"`), so the drawing diffs in review ([file-format.md](file-format.md)).
 - Route every edge yourself with explicit waypoints; static export does not route around shapes ([layout-and-routing.md](layout-and-routing.md)).
 - Run the layout audits on every routed page in the renderer's tests and assert every list is empty ([layout-audits.md](layout-audits.md)).
-- Give the command line three modes, as UNC does: no flag validates and reports drift (exit 1 on a problem or stale file); `--write` renders; `--list` prints one line per flow and writes nothing.
+- Give the command line three modes, as UNC does: no flag validates and reports drift (exit 1 on a problem or stale file); `--write` renders; `--list` prints one line per flow and writes nothing. The
+  pack's `render_flowmap.py` adds `--audit`, which runs the layout audits on the
+  rendered pages.
 
-> **Learned 2026-11-18** · decision pages and proposed flows · VERIFIED_PRIMARY (one project: a decision was recorded in its register through four commits while the map's decision page still
-> said "evaluate"; the project's check passed every time) · Source: unified-network-controller `docs/flows/parts/decisions-access-assets-api.yaml` before and after its closeout commit of 2026-11-18
-> · Falsifier: a project whose check compares each decision page's `decision` and option statuses with its decision register.
+> **Learned 2026-11-18** · decision pages and proposed flows · VERIFIED_PRIMARY · Source: unified-network-controller `docs/flows/parts/decisions-access-assets-api.yaml` before and after its closeout commit of
+> 2026-11-18 (one project: a decision was recorded in its register through four commits while the map's decision page still said "evaluate"; the
+> project's check passed every time) · Falsifier: a project whose check compares each decision page's `decision` and option statuses with its decision register.
 >
 > A decision page is data about decisions, and nothing holds it to the register that owns them: the drift check compares the drawing with the map, and the trace holds flows to code. So a decision
 > taken in the register must be carried into the map in the same pass: the page's `decisions` line, the group's `decision`, each option's `status` (the chosen one, and the others to `rejected`,
@@ -200,7 +206,8 @@ map does, and a byte-for-byte comparison is a valid drift check.
 
 ## The banner and the drift check
 
-`drawio.mxfile.banner()` writes an XML comment between the declaration and `<mxfile>` naming the generator, the source map, the command that regenerates the file and the check that fails when it is out
+`drawio.mxfile.banner()` writes an XML comment between the declaration and `<mxfile>` naming the generator, the source map, the command that regenerates the file and the check that fails when it is
+out
 of step [C-D02]:
 
 ```xml
@@ -267,6 +274,7 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 ## Checklist for a new data-first drawing
 
 - [ ] Map in YAML with a stable name, an `updated` field and comments where a value needs a reason.
+- [ ] Map written in parts (`parts/master.yaml` plus one part per component group and flow family), assembled by `assemble_flowmap.py`; only the parts are edited.
 - [ ] Schema in the `schema_lite` subset, with a test that a deliberately bad map fails.
 - [ ] Reference check for every code path the map cites.
 - [ ] Deterministic renderer writing uncompressed XML with the GENERATED banner.
@@ -369,7 +377,9 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 
 ## ASCII diagrams in Markdown, first
 
-ASCII diagrams moved to **skill-ascii-diagrams** on 2026-11-17 (operator); the two entries below are kept as history, its references hold the current rules.
+ASCII diagrams moved to **skill-ascii-diagrams** on 2026-11-17 (operator); the two entries below are kept as history, its references hold the current rules, and `scripts/ascii_flow_render.py` and
+`scripts/ascii_fix.py` (with `tests/test_ascii_fix.py`)
+named below now live in that pack.
 
 > **Learned 2026-11-16** · ASCII flows for documents · VERIFIED_PRIMARY · Source: apn smc-resiliency remote conversion plan and OpenRemote assessment
 > (18 diagrams drawn, `ascii_box_check.py` clean) · Falsifier: a drawn chain whose `|` edges or arrows leave their column under the edge checker

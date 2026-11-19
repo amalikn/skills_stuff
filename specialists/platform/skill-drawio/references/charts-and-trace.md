@@ -4,11 +4,12 @@ Category: skill-reference
 Status: current
 Authority: Operator requests of 2026-11-02 and the skill's own code; external sources in documents/drawio-sources-20261102/
 Scope: >-
-  Regular flowcharts, vertical swimlanes and BPMN pages drawn from a flow map; reading a map instead of the code; and holding a map to the code with
-  review stamps, coverage and word checks
-Last reviewed: 2026-11-02
+  Regular flowcharts, vertical swimlanes and BPMN pages drawn from a flow map, and a family chained on one folded step page; reading a map instead of
+  the code; and holding a map to the code with review stamps, coverage and word checks
+Last reviewed: 2026-11-19
 Summary: >-
-  One map draws four views (lanes left to right, flowchart, vertical swimlanes, BPMN). A map is trusted because a change in cited code marks its steps
+  One map draws four views (lanes left to right, flowchart, vertical swimlanes, BPMN), and can chain a family's flows on one folded step page. A map is trusted because a change in cited code marks its
+  steps
   suspect until someone reviews them, and uncited code is reported.
 ---
 
@@ -50,7 +51,11 @@ drawing:
 
 Lanes and BPMN run left to right by default (operator, 2026-11-02: screens are wide); an entry ending `:vertical` (`smsc-steps:vertical`, `family:hosts:vertical`) keeps that page upright.
 
-In a family chart a flow joins the chain only if its trigger kind is `after`: a rollback has a command of its own and never follows the proof.
+`look.step_pages` takes the same entries and draws them as one step page (lanes), folded serpentine, placed just before the family's first flow page, its tab
+`<look.chart_tab>: <family name>` (operator, 2026-11-06; Learned 2026-11-06 below).
+
+In a family chart a flow joins the chain only if its trigger kind is `after` (a family with `chain: all` joins every flow in map order, 2026-11-06): a rollback has a command of its own and never
+follows the proof.
 
 ## What the map must say
 
@@ -65,23 +70,32 @@ No new data is needed; better data draws better.
 - In a lane an arrow heading to a lane on the left leaves by the box's left side, so it does not cross the step's own stop (operator, 2026-11-02).
 - A diamond's arrow to the box directly below it goes straight down, whichever branch it is; on a lane page each two-way diamond is drawn both ways and keeps the one
   with fewer crossings, then bends, then length (operator, 2026-11-02).
-- On a plain flowchart an arrow within the main column and any arrow back up runs in a channel beside the column. Arrows that overlap split left and right, each taking the nearer free channel (operator, 2026-11-02); a lane page keeps its gutters.
+- On a plain flowchart an arrow within the main column and any arrow back up runs in a channel beside the column. Arrows that overlap split left and right, each taking the nearer free channel
+  (operator, 2026-11-02); a lane page keeps its gutters.
 - Chart, lane and BPMN arrows carry the step pages' own bold label, on the line.
 
-BPMN pages keep the step pages' colours: tasks and gateways in the actor's colours, shaded lanes, green and red branches, a red stop. BPMN mapping: start and end events, an error end event for a stop, a task for a step, a call activity for a step that runs a flow, an exclusive gateway for a decision, a sequence flow for every arrow.
+BPMN pages keep the step pages' colours: tasks and gateways in the actor's colours, shaded lanes, green and red branches, a red stop. BPMN mapping: start and end events, an error end event for a stop,
+a task for a step, a call activity for a step that runs a flow, an exclusive gateway for a decision, a sequence flow for every arrow.
 Nothing the map does not state is drawn, so no message flows. A gateway keeps its question inside the diamond: BPMN allows an exclusive gateway without its X.
 
-A step's `branches` key holds decisions its words only state, each with a `question` and tagged `outcomes` (`run: ` into the step, `skip: ` past it, `stop: ` to a stop). Charts, lanes and BPMN draw a diamond
-before the step; step pages ignore the key, so their numbers and End-to-end labels stay put. Writing every decision as a real step would have renumbered 37 reviewed pages. Outcomes that all go one way draw nothing.
+A step's `branches` key holds decisions its words only state, each with a `question` and tagged `outcomes` (`run: ` into the step, `skip: ` past it, `stop: ` to a stop). Charts, lanes and BPMN draw a
+diamond
+before the step; step pages ignore the key, so their numbers and End-to-end labels stay put. Writing every decision as a real step would have renumbered 37 reviewed pages. Outcomes that all go one way
+draw nothing.
 
-A very wide step page folds with `layout: {fold: lane, fold_after: 4}` on the flow: a run of more than four steps by one actor snakes back and forth inside that actor's lane, which grows taller, and every lane
-appears once (operator, 2026-11-02). Notes keep to their step's column, stacked under the lanes. Only a flow with no branches folds this way; any other keeps its normal page. `serpentine` and `z` fold the whole flow into rows instead.
+A very wide step page folds with `layout: {fold: lane, fold_after: 4}` on the flow: a run of more than four steps by one actor snakes back and forth inside that actor's lane, which grows taller, and
+every lane
+appears once (operator, 2026-11-02). Notes keep to their step's column, stacked under the lanes. Only a flow with no branches folds this way; any other keeps its normal page. `serpentine` and `z` fold
+the whole flow into rows instead.
 
-`look.label_clearance` (px, default 6) keeps a flow page's arrow labels that far from other arrows: a label stopping 1 px short of a line passes the audit but reads as overlapping. Charts, lanes and BPMN always keep 6 px.
+`look.label_clearance` (px, default 6) keeps a flow page's arrow labels that far from other arrows: a label stopping 1 px short of a line passes the audit but reads as overlapping. Charts, lanes and
+BPMN always keep 6 px.
 
-`look.route_under` (on by default) adds, per arrow, a track just below the lowest box between its ends, which can be inside a lane. The router already scores every way out of a diamond, so a long branch takes this track, and its sibling the near exit, whenever that draws cleaner; no map names a route (operator, 2026-11-02: build this into the code, not by hand).
+`look.route_under` (on by default) adds, per arrow, a track just below the lowest box between its ends, which can be inside a lane. The router already scores every way out of a diamond, so a long
+branch takes this track, and its sibling the near exit, whenever that draws cleaner; no map names a route (operator, 2026-11-02: build this into the code, not by hand).
 
-`look.run_spacing` (px, default 40) prices parallel arrows that sit closer than that and long runs that hug a lane boundary, so the router spreads into open space, and keeps arrows off the top and bottom corners a decision holds for its own branches.
+`look.run_spacing` (px, default 40) prices parallel arrows that sit closer than that and long runs that hug a lane boundary, so the router spreads into open space, and keeps arrows off the top and
+bottom corners a decision holds for its own branches.
 
 ## Read the map before the code
 
@@ -136,7 +150,8 @@ Accept only after reading the diff against the step. Bulk `all` is for a first b
 
 ## What a pass does not prove
 
-On smc_change the stamp means an agent review: agents wrote the corrections, a script applied them, about five were re-checked in the code, and branch tags began as keyword matches. One reviewer's to-do note reached a step that way. The `by` field says so. Check the code before relying on a chart for a live change.
+On smc_change the stamp means an agent review: agents wrote the corrections, a script applied them, about five were re-checked in the code, and branch tags began as keyword matches. One reviewer's
+to-do note reached a step that way. The `by` field says so. Check the code before relying on a chart for a live change.
 
 It proves every cited change was looked at, not that the words are right; an accept can be careless. Whole-file references over-flag: one edit to a shared task file raised 14 steps on smc_change, so
 cite a symbol where one exists. Ansible task files have no symbol yet, because a task name holds spaces and `code_ref` does not allow them.

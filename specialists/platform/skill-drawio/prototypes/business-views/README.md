@@ -4,7 +4,7 @@ Category: prototypes
 Status: proposed
 Authority: working
 Scope: Hand-drawing scripts kept so the operator can choose which business views become generated skill-drawio views
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   One-off scripts that drew the enterprise-strategy business views on 11 Nov 2026 (roadmap matrix, benefit network, solution scorecard, requirement
   tree, site shapes, cost drivers, and a Gantt from a skill-drawio session); none is an engine view yet; the next session decides which to adopt.

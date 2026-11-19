@@ -4,7 +4,7 @@ Category: reference-screenshots
 Status: current
 Authority: evidence
 Scope: skill-drawio references/visual-style.md Learned 2026-11-06 entries
-Last reviewed: 2026-11-06
+Last reviewed: 2026-11-19
 Summary: Renders after the step_chars 38 recalibration and the End-to-end legend step-page links; lab maps only, nothing to redact.
 ---
 

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Evidence for the Learned 2026-10-26 entry "a change on a page of its own" in references/visual-style.md
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: Exports of ansible-wifi's smc_change flow map (role internals, no site names or addresses) showing an own_page family.
 ---
 

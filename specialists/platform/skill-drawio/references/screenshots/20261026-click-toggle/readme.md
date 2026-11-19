@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: skill-drawio write-back, 2026-10-26
 Scope: references/visual-style.md, Learned 2026-10-26 (click toggle, transient)
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: look click_isolate in draw.io's 32.5.5 viewer (headless Edge): one Overview colour shown alone, and the example E2E page back to normal after a second click.
 ---
 

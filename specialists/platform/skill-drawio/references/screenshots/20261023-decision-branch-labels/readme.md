@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: skill-drawio write-back, 2026-10-23
 Scope: references/visual-style.md Learned 2026-10-23
-Last reviewed: 2026-10-23
+Last reviewed: 2026-11-19
 Summary: Apply page of the smc_change flow map after the fix; every branch out of a diamond carries its case.
 ---
 

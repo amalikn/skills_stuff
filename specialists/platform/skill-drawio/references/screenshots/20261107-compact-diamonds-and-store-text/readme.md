@@ -4,7 +4,7 @@ Category: reference-screenshots
 Status: current
 Authority: evidence
 Scope: skill-drawio references/visual-style.md Learned 2026-11-07 entries (decision diamonds fit their text; text inside a store step)
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: Before and after crops of three smc-resiliency decision diamonds and one store step; lab maps only, nothing to redact.
 ---
 

@@ -4,7 +4,7 @@ Category: reference-screenshots
 Status: current
 Authority: evidence
 Scope: A flow page after the skipping-arrow rule, for the Learned entry in references/layout-and-routing.md
-Last reviewed: 2026-10-21
+Last reviewed: 2026-11-19
 Summary: Step 6 to step 8 climbs in step 8's column instead of crossing step 7; lab map, no site names.
 ---
 

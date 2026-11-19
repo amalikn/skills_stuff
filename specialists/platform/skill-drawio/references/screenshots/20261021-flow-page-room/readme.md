@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: evidence
 Scope: Render reviewed on 2026-10-21 after the operator's review of smc-resiliency's commissioning flow page
-Last reviewed: 2026-10-21
+Last reviewed: 2026-11-19
 Summary: The commissioning flow page after column_gap, planned lane room for runs, sized lane-head symbols and filled notes.
 ---
 

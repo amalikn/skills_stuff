@@ -4,7 +4,7 @@ Category: skill-reference
 Status: current
 Authority: Renders of smc-resiliency's S2 flow map (a lab design, no site data); the before image is the operator's screenshot, the after exported with scripts/drawio_export.py
 Scope: Overview groups "Outside the box" and "Storage on the box" before and after drawing.group_columns and group_layout
-Last reviewed: 2026-10-20
+Last reviewed: 2026-11-19
 Summary: Two Overview groups of unlinked boxes in the default three-column grid, then stacked (vertical) and in a 2 by 2 grid (grid 2).
 ---
 

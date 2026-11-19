@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: How engagements in any project feed reusable draw.io knowledge back into this skill, and how it is kept current
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Standing write-back contract: classify every engagement at closeout, add dated Learned or Disputed entries with evidence and a falsifier plus a
-  CHANGELOG line, park entries in the project when this source cannot be written, and reconcile at release.
+  CHANGELOG line kept short within the CHANGELOG budget, a code excerpt and a screenshot as evidence, park entries in the project when this source
+  cannot be written, and reconcile at release.
 ---
 
 # Evolution and write-back
@@ -19,6 +20,7 @@ Adapted from skill-coder `references/evolution-and-write-back.md` (operator, 202
 - [Standing write-back contract](#standing-write-back-contract)
 - [Entry format](#entry-format)
 - [Projects that use this skill](#projects-that-use-this-skill)
+- [Evidence with every entry](#evidence-with-every-entry)
 - [Release reconciliation](#release-reconciliation)
 
 ## Standing write-back contract

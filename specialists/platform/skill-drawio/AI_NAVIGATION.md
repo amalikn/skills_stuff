@@ -4,7 +4,7 @@ Category: navigation
 Status: current
 Authority: local-supplement
 Scope: Context entrypoint for AI agents in skill-drawio
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: Where project truth lives, what to read first, what is authoritative and what must be updated after work; a router, not the knowledge store.
 ---
 

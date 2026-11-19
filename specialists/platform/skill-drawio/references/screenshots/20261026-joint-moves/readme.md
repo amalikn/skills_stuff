@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Evidence for the Learned 2026-10-26 entry "joint moves in the End-to-end search" in references/visual-style.md
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: ansible-wifi smc_change E2E pages after the joint-move search (role internals only, no site names or addresses).
 ---
 

@@ -5,8 +5,8 @@ Status: current
 Authority: Operator rules recorded in UNC (2026-10-19), the renderer's palette and styles, and W3C WCAG 2.2 for contrast; the cited sources win over this summary
 Scope: >-
   Colour, contrast, line weight, layers, legends and label weight for draw.io drawings a generator produces, so every arrow family is distinguishable, readable
-  and can be hidden
-Last reviewed: 2026-10-19
+  and can be hidden; also shapes, tooltips and tags, click isolation, End-to-end page options, folding, and box and diamond sizing
+Last reviewed: 2026-11-19
 Summary: Distinct colours at 4.5:1 or better on the background, one neutral grey for secondary arrows, one layer per colour or family, legends and bold labels.
 ---
 
@@ -32,6 +32,8 @@ Rules from UNC's flow-map renderer and the operator's reviews of it, generalised
   follow (operator, 2026-10-23: "extend the color palette"): chocolate, sky, maroon, pine, fuchsia, ultramarine, mustard, bronze, plum, jade, picked farthest-first by CIEDE2000, each at least 13.8
   from every other colour and the thin grey, above the first ten's closest pair (green and olive, 13.1). Twenty is the ceiling at that bar (the next pick measured 11.9); a drawing that needs more than
   twenty colours repeats them, so split it or group families rather than adding near-duplicates.
+- With `look.e2e_layers: flow`, flow colours are spread by distance among flows that share boxes (`flowmap.colours.spread_colours`, on by default), not
+  taken in palette order; a flow may pin `colour: "#rrggbb"` (Learned 2026-11-06 below).
 - **One neutral thin grey for every secondary arrow** (UNC: `#4b5563` for arrows inside a group), so no secondary arrow is mistaken for a primary one [C-D30].
 - A dot on a box in an arrow's colour marks a box that feeds that arrow; stack several dots down the box's right edge and keep a text margin so they never sit on the label.
 
@@ -146,7 +148,9 @@ This also makes the export testable: exporting the base layer alone (`--layers 0
 - draw.io tags on generated cells, for the Tags dialog (select, hide or show across layers): `flow-<id>`, `family-<id>`, `step-arrow`, `connector`, `back-arrow`, `kind-<kind>`, `group-<group>`,
   `gate`, `decision`, `fails`, `runs-flow-<id>` (`drawio.cell`; operator, 2026-10-23).
 - Every generated cell is frozen (`drawio.mxfile.FROZEN`: `movable`, `resizable`, `rotatable`, `bendable`, `editable`, `deletable` all 0): nothing is dragged, resized, re-bent, retyped or deleted by
-  mistake, yet every box and arrow stays clickable and hoverable; layers are never locked, which would block clicks (operator, 2026-10-23).
+  mistake, yet every box and arrow stays clickable and hoverable; layers are never locked, which would block clicks (operator, 2026-10-23). Superseded for the
+  base layer and the clickable layers: the editor runs a link on a single click only on a locked layer, so those are locked (2026-10-26), and
+  `look.lock_base_layer` is on by default (operator, 2026-11-11; SKILL.md, Standing rules).
 - Tooltips are HTML (draw.io sanitises and renders them): a bold title, bold field names, bullets for several items, and commands, paths, file names and snake_case names in code font
   (`flowmap.tips.tip_html`, `code_spans`; operator, 2026-10-23). Paths, file names, flags and snake_case are found automatically; a command such as `tsh ssh` or `apt-get update` is not, so the map
   marks it with backticks (quote a YAML value that starts with one); boxes and notes honour the same backticks (operator, 2026-10-23: "apt get or tsh ssh" had no format).

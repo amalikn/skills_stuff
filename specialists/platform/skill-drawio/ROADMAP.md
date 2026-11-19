@@ -8,7 +8,7 @@ Summary: Current phase and open milestones; done items move to docs/history (jus
 Kind: roadmap
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (roadmap-*.md, `just rotate`)
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 ---
 
 # Roadmap — skill-drawio
@@ -21,7 +21,8 @@ Last reviewed: 2026-10-19
 - [Completed](#completed)
 - [Engine performance review (2026-10-28) `OPEN`](#engine-performance-review-2026-10-28-open)
 - [Layout quality analysis (2026-10-28, operator) `OPEN`](#layout-quality-analysis-2026-10-28-operator-open)
-- [Overview in-group (thin) arrows (2026-10-29, operator: "Are arrows within a box on the overview page all ready optimized?") `OPEN`](#overview-in-group-thin-arrows-2026-10-29-operator-are-arrows-within-a-box-on-the-overview-page-all-ready-optimized-open)
+- [Overview in-group (thin) arrows (2026-10-29, operator: "Are arrows within a box on the overview page all ready optimized?")
+  `OPEN`](#overview-in-group-thin-arrows-2026-10-29-operator-are-arrows-within-a-box-on-the-overview-page-all-ready-optimized-open)
 - [Box placement research (2026-10-28, operator: "search them, don't incorporate at this stage") `OPEN`](#box-placement-research-2026-10-28-operator-search-them-dont-incorporate-at-this-stage-open)
 - [Diagram-type sources to keep (2026-11-11, operator: "keep note of the two links") `OPEN`](#diagram-type-sources-to-keep-2026-11-11-operator-keep-note-of-the-two-links-open)
 
@@ -30,12 +31,14 @@ Last reviewed: 2026-10-19
 ## Current phase
 
 **2026-10-19.** Version 0.1.0 is built, installed (Claude, Codex, Hermes) and fully adopted by one project: unified-network-controller renders its flow map with `render_flowmap.py` from its map's
-`drawing:` block and reads its as-built drawings with `drawio.read`, with no draw.io code of its own. Open work is proving the engine on a second project and closing the version and evidence gaps
-below.
+`drawing:` block and reads its as-built drawings with `drawio.read`, with no draw.io code of its own. Since then smc-resiliency, the smc_change role and goal-guard render through it too
+(`consumers.yaml`); open work is closing the version and evidence
+gaps below.
 
 ## Adoption in unified-network-controller
 
-Detail and order: UNC's [retirement assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/reports/project-reviews/skill-drawio-and-skill-coder-retirement-assessment-20261019_1841.md).
+Detail and order: UNC's [retirement
+assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/docs/reports/project-reviews/skill-drawio-and-skill-coder-retirement-assessment-20261019_1841.md).
 
 - [x] **As-built reader** — UNC `wc-local/scripts/site_onboarding/asbuilt_read.py` becomes a thin caller of `scripts/drawio/read.py` (its KMZ part stays there). Done when both site as-built sets read
   the same before and after.
@@ -68,7 +71,8 @@ Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `ju
 ## Engine performance review (2026-10-28) `OPEN`
 
 Read-only review, nothing applied; the operator approves each item: `docs/performance-review-20261028_2317.md`. Measured A+B+C+D+G together: UNC render 17.5 -> 5.95 s, byte-identical. Order: B, F, C,
-A, H, E, D+G, then the shared crossing/search engine.
+A, H, E, D+G, then the shared crossing/search engine. Applied 2026-10-29 (CHANGELOG 20261029): B, F, C, H, D, byte-identical, UNC 18.3 -> 10.1 s; E reverted (0.3 s,
+module size); A and G not applied (operator: "time efficiency is not problem here"). Still open: the shared crossing/search engine.
 
 ## Layout quality analysis (2026-10-28, operator) `OPEN`
 
@@ -104,8 +108,10 @@ https://google-melange.com/archive/gsoc/2013/orgs/ogdf/projects/pawel_schmidt.ht
 
 ## Diagram-type sources to keep (2026-11-11, operator: "keep note of the two links") `OPEN`
 
-- [draw.io diagram types](https://www.drawio.com/docs/diagram-types/): the catalogue of types draw.io documents. Read 2026-11-11 by category headings only (`VERIFIED_PRIMARY` for the list; per-type articles not opened).
-- [jgraph/drawio-diagrams, examples](https://github.com/jgraph/drawio-diagrams/tree/dev/examples) (branch `dev`, 75 entries listed 2026-11-11): real `.drawio` files for network, rack, sequence, UML deployment/component/timing, BPMN, Gantt and timeline. Candidate
+- [draw.io diagram types](https://www.drawio.com/docs/diagram-types/): the catalogue of types draw.io documents. Read 2026-11-11 by category headings only (`VERIFIED_PRIMARY` for the list; per-type
+  articles not opened).
+- [jgraph/drawio-diagrams, examples](https://github.com/jgraph/drawio-diagrams/tree/dev/examples) (branch `dev`, 75 entries listed 2026-11-11): real `.drawio` files for network, rack, sequence, UML
+  deployment/component/timing, BPMN, Gantt and timeline. Candidate
   ground truth for shape style keys.
 - Operator's fit shortlist (advice, `UNVERIFIED` against the files): network topology, rack, sequence and timing, deployment/component, swimlane and BPMN choreography, dependency graph.
 - Not done: files not yet downloaded to `documents/` (verbatim, with a `readme.md` index); engine support for sequence, ER, rack and Gantt not checked.
@@ -113,4 +119,5 @@ https://google-melange.com/archive/gsoc/2013/orgs/ogdf/projects/pawel_schmidt.ht
   skill-drawio views). Drawing: enterprise-strategy `docs/flows/drawio/program-gantt-20261111_2103.drawio`. Promotion to `scripts/` needs tests, a recipe, a catalogue row and Args/Returns docstrings
   (skill-coder).
 - Open (not from this session): `just check` fails doc freshness on SETUP.md (justfile changed 2026-11-11, after Last reviewed 2026-11-07); `just test` fails because `scripts/flowmap/flow_head.py`
-  (another session's uncommitted file) has no tests. Neither touched here.
+  (another session's uncommitted file) has no tests. Neither touched here. Both cleared by 2026-11-19: SETUP.md was re-reviewed 2026-11-17, and `flow_head.py` is committed with tests
+  (`tests/test_layout_rules.py`, `tests/test_straight_first.py`).

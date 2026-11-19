@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: evidence
 Scope: Renders reviewed on 2026-10-21 when look.component_shapes was adopted
-Last reviewed: 2026-10-21
+Last reviewed: 2026-11-19
 Summary: Exports of smc-resiliency (lab map) and unified-network-controller pages after component boxes took their lane-head symbols.
 ---
 

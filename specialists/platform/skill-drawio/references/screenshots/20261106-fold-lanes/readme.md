@@ -4,7 +4,7 @@ Category: screenshots
 Status: current
 Authority: evidence
 Scope: references/visual-style.md Learned 2026-11-06 (look.fold_lanes)
-Last reviewed: 2026-11-06
+Last reviewed: 2026-11-19
 Summary: A 20-step tech-stack flow, one step per lane, folded serpentine at 5 a row, before and after rows drew only their own lanes.
 ---
 

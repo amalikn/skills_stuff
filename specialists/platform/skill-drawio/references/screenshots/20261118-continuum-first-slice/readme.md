@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: evidence
 Scope: Exports of the Continuum first-slice flow map (a proposal, nothing deployed), 2026-11-18
-Last reviewed: 20261118_2129
+Last reviewed: 2026-11-19
 Summary: Overview and handoff flow pages exported with scripts/drawio_export.py after a clean audit; evidence for the Learned entry on quoting flow-style tier names.
 ---
 

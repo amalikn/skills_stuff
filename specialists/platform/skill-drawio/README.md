@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: local-supplement
 Scope: skill-drawio pack — draw.io practice and the data-first diagram engine for any project
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: Entry index for skill-drawio, with what the pack is for, its folders and key files, and where governance lives.
 Budget: 200 lines, 25 KB
 ---
@@ -30,7 +30,7 @@ unified-network-controller's flow map and promoted here on 2026-10-19; that proj
 ## Folder index
 
 - [references/](references/) — one focused file per topic; routed from [SKILL.md](SKILL.md) and [AI_NAVIGATION.md](AI_NAVIGATION.md)
-- [scripts/](scripts/) — front ends, the `drawio` and `flowmap` packages, the governance checker. Index: [scripts/README.md](scripts/README.md)
+- [scripts/](scripts/) — front ends, the `drawio`, `flowmap` and `flowtrace` packages, the governance checker. Index: [scripts/README.md](scripts/README.md)
 - [schemas/](schemas/) — the generic flow-map JSON Schema
 - [examples/](examples/) — a worked map and its rendered drawing
 - [tests/](tests/) — contract and engine tests
@@ -55,4 +55,4 @@ unified-network-controller's flow map and promoted here on 2026-10-19; that proj
 - AI navigation entrypoint: [AI_NAVIGATION.md](AI_NAVIGATION.md)
 - Machine-readable context map: [context-map.yaml](context-map.yaml)
 - Canonical governance root: [/Volumes/Data/_ai/governance/README.md](/Volumes/Data/_ai/governance/README.md)
-- [this](this) Open items moved out of `SCRATCHPAD.md` (live tracker: review, close, decide or drop).
+- [docs/trackers/open-items-20261028_2305.md](docs/trackers/open-items-20261028_2305.md) Open items moved out of `SCRATCHPAD.md` (live tracker: review, close, decide or drop).

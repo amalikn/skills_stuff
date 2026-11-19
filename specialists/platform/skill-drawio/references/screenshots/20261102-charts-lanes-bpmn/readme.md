@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: Rendered from the invented example map
 Scope: The three views of one flow
-Last reviewed: 2026-11-02
+Last reviewed: 2026-11-19
 Summary: The example shop's Checkout flow as a flowchart, in vertical swimlanes and in BPMN.
 ---
 

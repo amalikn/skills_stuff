@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: skill-drawio write-back, 2026-10-26
 Scope: references/visual-style.md, Learned 2026-10-26 (step totals and label font)
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: unified-network-controller with look e2e_step_total sub and e2e_label_font 12: arrow labels x.y with the step count lowered after them, and legend step counts.
 ---
 

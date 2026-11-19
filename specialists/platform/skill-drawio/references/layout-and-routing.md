@@ -5,8 +5,9 @@ Status: current
 Authority: The skill's renderer code (scripts/flowmap/, scripts/drawio/mxfile.py, scripts/drawio/route.py) as read on 2026-10-19; the code wins over this summary
 Scope: >-
   How a generator places boxes and routes arrows so a static draw.io export is clean: layered rows, barycentre ordering, channels and tracks, port spreading,
-  interval track assignment, crossing-cutting local search, label placement and text-fit sizing
-Last reviewed: 2026-10-20
+  interval track assignment, crossing-cutting local search and placement searches checked on real routes, flow-page routing (Learned entries), label
+  placement and text-fit sizing
+Last reviewed: 2026-11-19
 Summary: The layout techniques the flow-map renderer uses, each with its constant, so another generator can reuse them and pass the layout audits.
 ---
 
@@ -46,7 +47,8 @@ a zero-length run never reaches the file.
 
 Inside a group, `layout_group()` turns "what needs what" into rows [C-D23]:
 
-1. A box's depth is 0 when it needs nothing in its group, else one more than the deepest box it needs (`overview_layout.depth`). The deepest box goes in the top row, so a box sits above what it needs and arrows
+1. A box's depth is 0 when it needs nothing in its group, else one more than the deepest box it needs (`overview_layout.depth`). The deepest box goes in the top row, so a box sits above what it needs
+   and arrows
    point down.
 2. Boxes with no link inside the group go in a grid below the layered rows, `OV_GRID_COLS` (3) to a row.
 3. An arrow that skips rows gets a placeholder **slot** in each row it passes through, so the ordering step treats it as a chain of short hops and leaves a gap for it.
@@ -73,13 +75,18 @@ ordered by the barycentre of the components it meets in the flows (`_neighbours`
 Arrows never run through a box row; they run in **channels**: the gap between two rows or two columns of boxes or groups. Within a channel each arrow gets its own **track**, a fixed x (vertical
 channel) or y (horizontal channel) [C-D24].
 
-- Overview: thick group-to-group arrows. Adjacent rows drop straight or turn once in the gap between them; only an arrow that skips a row uses a column channel (`overview_layout.far_channels`: leave through one
+- Overview: thick group-to-group arrows. Adjacent rows drop straight or turn once in the gap between them; only an arrow that skips a row uses a column channel (`overview_layout.far_channels`: leave
+  through one
   row gap, run along a column gap, arrive through another row gap). Channels are at least `OV_CHANNEL` (210) wide and grow so tracks stay `OV_SP` (24) apart with `OV_MIN_HEAD` (34) clear at each side.
 - Thin arrows inside a group get one track per arrow in each row gap, `OV_THIN_SP` (16) apart, and the last drop into a box is at least `OV_MIN_THIN` (22).
 - `drawio.route.track()` centres the tracks on the channel's middle: track k of n sits at `centre + (k - (n - 1) / 2) * spacing`.
-- End-to-end page: a link to a column on the right leaves its box's right side and enters the target's left side (mirrored for the left). A link inside one column always uses the channel on that column's right, never the left: the last column gets a right-hand channel when it has such links (operator, 2026-10-26). One channel gives a straight line (same row) or a "z" with one
+- End-to-end page: a link to a column on the right leaves its box's right side and enters the target's left side (mirrored for the left). A link inside one column always uses the channel on that
+  column's right, never the left: the last column gets a right-hand channel when it has such links (operator, 2026-10-26). The first
+  column is the exception: its in-column links take a channel on its left (`look.e2e_left_channel`, on by default; Learned 2026-11-07 below). One channel gives a straight line (same row) or a "z" with
+  one
   track; two channels give a "far" route along a horizontal **corridor** next to the source row (`_plan`), or a "row" route the crossing search may pick: down
-  its first channel to the entry port, then straight along the target's row when no box or port sits on that row in between (`crossing_search.row_free`). Channels are at least `E2E_MIN_CH` (100) wide, corridors `E2E_MIN_CORR` (48), and tracks
+  its first channel to the entry port, then straight along the target's row when no box or port sits on that row in between (`crossing_search.row_free`). Channels are at least `E2E_MIN_CH` (100) wide,
+  corridors `E2E_MIN_CORR` (48), and tracks
   `E2E_SP` (24) apart.
 
 > **Learned 2026-10-19** · flowmap End-to-end · VERIFIED_PRIMARY · Source: scripts/flowmap/e2e_grid.py `nch`; tests/test_layout_rules.py
@@ -169,7 +176,8 @@ channel) or y (horizontal channel) [C-D24].
 
 Several arrows leaving or entering one box edge get separate **ports** along it, ordered by where each arrow's other end is, so they do not cross at the box [C-D25].
 
-- `drawio.route.spread()` gives n arrows on an edge the fractions `(i + shift) / (n + 2)` for top and bottom edges (shift 1 on top, 2 on bottom) and `(i + 1) / (n + 1)` for sides. The top and bottom shifts
+- `drawio.route.spread()` gives n arrows on an edge the fractions `(i + shift) / (n + 2)` for top and bottom edges (shift 1 on top, 2 on bottom) and `(i + 1) / (n + 1)` for sides. The top and bottom
+  shifts
   interleave, so a stub rising from a group below never meets one dropping from a group above at the same x.
 - Groups of different heights joined side to side spread their ports over the part of the edges both groups share.
 - On the End-to-end page ports sit `E2E_PORT_SP` (24) apart around the row's middle; a row is as tall as its largest pool of ports, and each box covers its own ports with `E2E_BOX_PAD` (18) to spare
@@ -178,7 +186,8 @@ Several arrows leaving or entering one box edge get separate **ports** along it,
 
 ## Interval tracks
 
-When many vertical runs share a channel, they can share a track as long as their spans do not come close. `drawio.route.interval_tracks()` is the classic left-edge greedy interval colouring: sort runs by their low
+When many vertical runs share a channel, they can share a track as long as their spans do not come close. `drawio.route.interval_tracks()` is the classic left-edge greedy interval colouring: sort runs
+by their low
 end; put each on the first track whose last run ended at least `sep` before this one starts, else open a new track [C-D24]. It is deterministic (sorted input, first fit) and uses the fewest tracks for
 interval graphs. `_channels()` uses it with `sep = E2E_SP`; corridors let two links share a track when a column lies between their spans.
 
@@ -192,11 +201,15 @@ After the first placement, `flowmap.e2e.EndToEnd._improve()` cuts crossings by l
    (`_runs_ok`).
 4. Repeat up to four passes, stopping early when a pass changes nothing.
 
+`_improve()` now calls `flowmap.crossing_search.improve`, which adds joint port-and-track moves, row moves, a joint track swap as polish and band-box swaps
+(`look.e2e_band_search`); the Learned entries below give each one's rule and measurement.
+
 It is cheap because only the links touched by a swap are re-routed and re-counted, and deterministic because the swap order is fixed (sorted keys).
 
 ## Untwisting close hops
 
-draw.io draws a hop (`jumpStyle=arc`) where an edge crosses another; two hops closer than `2 * jumpSize + 6` merge into a double twist [C-D15]. `drawio.route.untwist()` fixes this for thin arrows inside a
+draw.io draws a hop (`jumpStyle=arc`) where an edge crosses another; two hops closer than `2 * jumpSize + 6` merge into a double twist [C-D15]. `drawio.route.untwist()` fixes this for thin arrows
+inside a
 group: for each horizontal run, find the vertical runs it crosses; where two neighbouring crossings are too close, slide one vertical run sideways (the later one right, else the earlier one left) by
 just enough, never more than `limit` (16) from where it started. A run in a slot stays clear of the boxes beside the slot; a run leaving or entering a box slides its port along the box edge and stays
 at least 12 inside the corners. It stops when nothing moves, or after 60 rounds. The arc-clash audit then confirms the result.
@@ -208,7 +221,8 @@ A label that belongs to an arrow (a count, a `flow.step` number) goes on that ar
 - Try the arrow's runs longest first, skipping runs too short for the label (overview: under 60; End-to-end: under twice the label width).
 - On each run, try fractions in a fixed order: overview `0.5, 0.35, 0.65, 0.25, 0.75`; End-to-end `0.5, 0.35, 0.65, 0.2, 0.8, 0.42, 0.58, 0.28, 0.72`.
 - Accept the first spot whose rectangle touches no other arrow, overlaps no placed label and (End-to-end) no box.
-- If nothing is clear, fall back to the longest run's middle and let the label audit report it, rather than hiding the failure.
+- If nothing is clear, fall back to the longest run's middle and let the label audit report it, rather than hiding the failure. On the End-to-end page two labels that
+  still overlap are placed again, the clashing arrows first (Learned 2026-11-07 below).
 
 Overview counts are 18 pt bold in the arrow's colour on a white label background; End-to-end step labels are `E2E_LABEL_W` x `E2E_LABEL_H` (38 x 16) and bold.
 
@@ -266,7 +280,7 @@ draw.io wraps text at render time, but a generator must size boxes before that, 
 
 - `wrapped_lines(text, width)` counts lines word by word at a fixed characters-per-line budget; a token longer than the budget is counted as spanning whole lines.
 - The budget is conservative because bold text is wider: overview boxes 26 characters per line at font 10 in about 180 units (`OV_CHARS`), End-to-end boxes 27 (`E2E_CHARS`), flow notes 44
-  (`NOTE_CHARS`). Line heights are 13, 14 and 15. Measure with an export when a new font size or width is introduced.
+  (`NOTE_CHARS`). Line heights are 13, 14 and 13. Measure with an export when a new font size or width is introduced.
 - A box's height is its wrapped line count times the line height plus padding, with a minimum (`E2E_MIN_H` 60). A group is only as tall as its content; a row is as tall as its tallest box.
 - `soft_breaks()` gives tokens of `LONG_TOKEN` (24) characters or more a zero-width space after each `/ _ . : -`, so a long code path can wrap inside its shape instead of overflowing it. Shorter words
   are unchanged.
@@ -317,7 +331,7 @@ function deal(cap) {                                                  // rows un
 | `E2E_BW`, `E2E_MIN_H`, `E2E_PORT_SP`, `E2E_SP`                 | 210, 60, 24, 24    | End-to-end box width, minimum height, port and track spacing                      |
 | `E2E_MIN_CH`, `E2E_MIN_CORR`, `E2E_JUMP`                       | 100, 48, 6         | Minimum channel and corridor, hop size                                            |
 | `E2E_CHARS`, `E2E_LINE_H`, `E2E_BOX_PAD`                       | 27, 14, 18         | End-to-end text budget, line height, port padding                                 |
-| `NOTE_CHARS`, `NOTE_LINE_H`                                    | 44, 15             | Flow note text budget and line height                                             |
+| `NOTE_CHARS`, `NOTE_LINE_H`                                    | 44, 13             | Flow note text budget and line height                                             |
 | `LONG_TOKEN`                                                   | 24                 | Shortest token given soft breaks                                                  |
 
 > **Learned 2026-10-20** · flow map authoring · VERIFIED_PRIMARY · Source: smc-resiliency docs/flows/flows.yaml (commits 4d6e1b0, 31ab9eb); `render_flowmap.py --audit` and page exports

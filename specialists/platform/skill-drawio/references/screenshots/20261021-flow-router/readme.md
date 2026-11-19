@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: evidence
 Scope: smc-resiliency flow pages rendered by the candidate router, 2026-10-21
-Last reviewed: 2026-10-21
+Last reviewed: 2026-11-19
 Summary: Decision branches on separate corners in green and red, entries spread over sides, no shared runs or crossings.
 ---
 

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Evidence for the Learned 2026-10-29 entry on real-route placement guards in references/layout-and-routing.md
-Last reviewed: 2026-10-29
+Last reviewed: 2026-11-19
 Summary: >-
   unified-network-controller's Overview page exported at 0.6 scale with the desktop CLI (component and group names only, no addresses or
   credentials): before, the map's own group placement; after, overview_group_search and overview_row_search on with the shared-run guard.

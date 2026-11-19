@@ -2,11 +2,11 @@
 Title: Layout audits
 Category: skill-reference
 Status: current
-Authority: scripts/drawio/audit.py as read on 2026-10-19 and the UNC flow-map tests that prove each audit can fail; the code wins over this summary
+Authority: scripts/drawio/audit.py as read on 2026-10-19 and the tests that prove each audit can fail (moved here from UNC); the code wins over this summary
 Scope: >-
   The checks a routed draw.io drawing must pass before a person sees it: what each audit catches, its threshold, how a generator runs it, and the rule that every
   audit has a test showing it can fail
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: Eight geometric audits (box crossings, diagonals, shared runs, short heads, labels on arrows, label overlaps, arc clashes, missing layers) with thresholds.
 ---
 
@@ -88,7 +88,7 @@ When adding an audit:
 2. Add the key to `AUDIT_KEYS`, so `faults()` reports it in order.
 3. Run it on every real page the generator draws; fix the layout, not the threshold, unless the threshold itself was wrong (and record why).
 
-When the skill's own `tests/` gains these cases (the scripts are being refactored as this is written), they belong there; until then the UNC tests are the proof.
+These cases now live in this pack's `tests/` (moved 2026-10-19, above); new ones go there too.
 
 ## Limits
 
@@ -96,6 +96,8 @@ When the skill's own `tests/` gains these cases (the scripts are being refactore
   look ([export-and-self-review.md](export-and-self-review.md)).
 - They assume orthogonal routes; curved or diagonal edges are reported as `diagonal` and otherwise not checked.
 - Edges routed by draw.io itself (`Page.edge()`) are not recorded and are not audited.
+- `page_audit()` counts a page's note cards (`shape=note`) as boxes for `box_crossings` since 2026-11-07 (`NoteAuditTests` in `tests/test_straight_first.py`), so
+  an edge through the notes band (Learned 2026-11-06 below) is now reported.
 
 > **Learned 2026-11-06** · flow pages, the notes band · VERIFIED_PRIMARY · Source: smc-resiliency flow `vm-render` (apn 1dc80235), repro rendered with
 > `render_flowmap.py --write` then `--audit` · Falsifier: `--audit` reporting a fault on [the repro](screenshots/20261106-notes-band-crossing/readme.md)

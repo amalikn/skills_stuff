@@ -6,10 +6,12 @@ Authority: >-
   The draw.io desktop command-line help (32.5.5, captured 2026-10-19), exports run against it the same day, macOS sips help, and the operator's
   self-review rule; the captured help wins over this summary
 Scope: >-
-  Exporting draw.io pages to PNG from the desktop command line (page, layers, scale, timeout), cropping exports for zoomed review, and the self-review loop every
+  Exporting draw.io pages to PNG from the desktop command line (page, layers, scale, timeout), cropping exports for zoomed review, contact sheets for many pages, and the self-review loop every
   rendered drawing passes before it is shown to the operator
-Last reviewed: 2026-10-19
-Summary: draw.io desktop CLI export flags verified on 32.5.5, always run under a timeout, then a self-review loop of export, crop, trace, fix and re-render.
+Last reviewed: 2026-11-19
+Summary: >-
+  draw.io desktop CLI export flags verified on 32.5.5, always run under a timeout, contact sheets for drawings with many pages, then a self-review loop of
+  export, crop, trace, fix and re-render.
 ---
 
 # Export and self-review
@@ -109,9 +111,9 @@ lines are thin.
 A drawing with dozens of pages is reviewed as contact sheets: every page exported to PNG, then tiled ten to a sheet. Count the sheets and look at every
 one before claiming the pages were reviewed: a contact-sheet command that exits 0 does not prove every page is on a sheet.
 
-> **Learned 2026-11-13** · contact sheets of different-sized page exports · `reusable_candidate` (one project; FFmpeg 9.0.2 on macOS) · Source: smc-resiliency
+> **Learned 2026-11-13** · contact sheets of different-sized page exports · UNVERIFIED · Source: smc-resiliency
 > `docs/overview/smc-project-state-review-20261113_1600.md`, skill-drawio write-back candidates; evidence `flow-review-1635/contact-01.png` (failed run) and `review-01.png`
-> to `review-05.png` (corrected) under the project's malik1tb lab evidence for 20261113 · Falsifier: 50 different-sized inputs give five complete 10-page sheets with
+> to `review-05.png` (corrected) under the project's malik1tb lab evidence for 20261113 (`reusable_candidate`: one project; FFmpeg 9.0.2 on macOS) · Falsifier: 50 different-sized inputs give five complete 10-page sheets with
 > FFmpeg's default filter reinitialisation on the same version.
 > With pages of different sizes the first run made one sheet holding only page 50 and empty cells, and still exited 0. Input-size changes resetting the filter
 > state are the candidate cause (`UNVERIFIED`). Turning filter reinitialisation off and evaluating scale and pad per frame gave five sheets covering all 50 pages:
@@ -141,7 +143,8 @@ Never present a first render. Before any drawing (or screenshot, chart or page) 
 ```
 
 1. Run the layout audits in tests first ([layout-audits.md](layout-audits.md)); they catch geometry, not rendering.
-2. Export every page you changed, at scale 2 for dense pages.
+2. Export every page you changed, at scale 2 for dense pages; a page over about 8,000 px tall clips even at scale 1, so export it at 0.5 for the whole view
+   (Learned 2026-10-23 below).
 3. Crop the densest areas and look at each crop.
 4. Trace each arrow from its source to its head: does it take a needless bend or detour, cross a box, a label or another arrow's run, or hop where it should not?
 5. Export the base layer alone and each colour layer alone; each must show what its name says.

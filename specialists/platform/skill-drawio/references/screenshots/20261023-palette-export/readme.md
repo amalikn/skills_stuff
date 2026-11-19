@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: skill-drawio write-back, 2026-10-23
 Scope: references/visual-style.md and references/export-and-self-review.md, Learned 2026-10-23
-Last reviewed: 2026-10-23
+Last reviewed: 2026-11-19
 Summary: unified-network-controller End-to-end page (31 flows, look e2e_layers flow) after the palette grew to 20 hues, and the same page exported at scale 1 (clipped) and 0.5 (whole).
 ---
 

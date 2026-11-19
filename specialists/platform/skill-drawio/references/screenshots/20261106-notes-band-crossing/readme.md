@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Evidence for the Learned 2026-11-06 entry in references/layout-audits.md (Limits)
-Last reviewed: 2026-11-06
+Last reviewed: 2026-11-19
 Summary: >-
   smc-resiliency flow page "4. VM: render site config from identity" (a lab VM flow, no site names or addresses), rendered with skill-drawio on
   2026-11-06: once with the defect, once after the map's step order was corrected.

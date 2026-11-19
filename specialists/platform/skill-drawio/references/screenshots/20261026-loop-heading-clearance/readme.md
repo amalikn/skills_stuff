@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: skill-drawio write-back, 2026-10-26
 Scope: references/visual-style.md, Learned 2026-10-26 (loops keep clear of headings)
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: smc-resiliency's x86 family E2E page before and after loops.\_room counted the tier heading as an obstacle.
 ---
 

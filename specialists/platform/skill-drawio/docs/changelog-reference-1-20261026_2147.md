@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from CHANGELOG.md
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: >-
   A section moved verbatim from CHANGELOG.md to keep it within budget; durable reference, not working state.
 ---

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: evidence
 Scope: One export for the Learned entry of 2026-11-18 in references/data-first-diagrams.md
-Last reviewed: 2026-11-18
+Last reviewed: 2026-11-19
 Summary: One exported page showing a decision page whose options carry chosen, not chosen and to-evaluate statuses after the register decided.
 ---
 

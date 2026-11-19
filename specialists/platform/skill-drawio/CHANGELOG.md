@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-drawio; the release heading holds the version of record.
-Last rotated: 20261026_1533
+Last rotated: 20261119_1635
 ---
 
 # Changelog
@@ -151,10 +151,12 @@ Last rotated: 20261026_1533
 - 20261026 E2E in-column links always go right (last column too); far links may run along a free target row (`row_move`); Learned 2026-10-26 in references/layout-and-routing.md
 - 20261026 Release 0.2.0 cut to keep this file within 200 lines and 25 KB (operator, 2026-10-26); 0.1.0 rotated to docs/history
 
-## Reference moved out
+## 20261119_1635 — Periodic review; 90-day review window; tracker path; write-back headers
 
-Sections moved verbatim from this file (read on need; a citation by section name resolves there):
-- [docs/changelog-reference-1-20261026_2147.md](docs/changelog-reference-1-20261026_2147.md): 0.2.0 — 2026-10-26.
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries (`NOTE_LINE_H` 13, base-layer lock supersedes "never locked"). Review window now 90 days (`--window-days 90`).
+- The stray root file `this` (a rotation tracker named from "this file") moved to `docs/trackers/open-items-20261028_2305.md`; closed items dropped, SCRATCHPAD header made a path.
+- Write-back headers repaired (no words changed): references/data-first-diagrams.md Learned 2026-11-18, references/export-and-self-review.md Learned 2026-11-13. Logged late: references/data-first-diagrams.md Learned 2026-11-17 (ASCII fix, now in skill-ascii-diagrams).
+- AGENTS.md governance block: check command filled in (`just check`).
 
 ## 20261102_1347 — Learned: skip branch in its own lane; drift is not truth
 
@@ -163,15 +165,3 @@ Sections moved verbatim from this file (read on need; a citation by section name
 ## 20261028_2318 — Engine performance review (read-only)
 
 docs/performance-review-20261028_2317.md: profile of three consumers, hotspots A-I with in-memory proven byte-identical gains (UNC render 17.5 -> 5.95 s with A+B+C+D+G), crossing-count and search duplication, ranked shortlist. Nothing applied; operator approves each item (ROADMAP).
-
-## 20261028_2306 — Placement searches: E2E columns, overview rows and group grid
-
-- `scripts/flowmap/placement.py` (new): placement searches after barycentre, opt-in look keys `e2e_row_search`, `overview_row_search`,
-  `overview_group_search` (schema, profile defaults false). Overview group placement: candidates from a hill climb and 24 seeded restarts,
-  each routed for real, the fewest thick-arrow crossings kept (never worse than the map own placement; pinned groups stay). UNC overview
-  245 -> 130 crossings; smc_change E2E 93 -> 43, PHP E2E 31 -> 13. Tests: `tests/test_placement_search.py`. Research of Graphviz dot,
-  ELK layered, libavoid, ILP crossing minimisation in ROADMAP (not adopted).
-
-## 20261026_2147 — Flow maps: quote yes/no decision labels
-
-- `references/data-first-diagrams.md`: Learned 2026-10-26 - bare yes/no in a step's `when` parse as booleans and fail the schema; quote them (local-knowledge-ansible `76b0f86`).

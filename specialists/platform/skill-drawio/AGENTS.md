@@ -4,7 +4,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-drawio pack — canonical, cross-project source of draw.io practice and the data-first diagram engine
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
   Agent guidance for maintaining and using skill-drawio: artifact roles, the engine's consumers and the byte-identity rule, the write-back obligation
   and the gates to run before calling work complete.
@@ -47,7 +47,7 @@ Read [context-map.yaml](context-map.yaml) only when changing routing or companio
 - Code follows skill-coder (`/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-coder/SKILL.md`): modules under 400 lines and functions
   under 60, Args/Returns/Raises docstrings, stdlib only with PyYAML imported at the edge, `REQUIRES_PYTHON`, a timeout on every subprocess, `--write`
   or `--apply` on every write. `just self-check` (inside `just check`) runs skill-coder's helpers on this pack against [code-map.toml](code-map.toml).
-- Runnable front ends sit at the top of `scripts/`; the library is the `drawio` and `flowmap` packages (skill-coder, "Grouping modules into packages").
+- Runnable front ends sit at the top of `scripts/`; the library is the `drawio`, `flowmap` and `flowtrace` packages (skill-coder, "Grouping modules into packages").
   Every module is catalogued in [scripts/README.md](scripts/README.md) and every front end has a recipe.
 - Every rule says why and cites its source in [sources.yaml](sources.yaml); draw.io behaviour names the version it was seen on
   ([compatibility.yaml](compatibility.yaml)). Unverified material is labelled `UNVERIFIED`.
@@ -61,7 +61,7 @@ Read [context-map.yaml](context-map.yaml) only when changing routing or companio
 ## Engine consumers and the byte-identity rule
 
 unified-network-controller renders its flow map with this pack's `render_flowmap.py` (its profile is the `drawing:` block in its
-`docs/flows/flows.yaml`; no project wrapper since 2026-10-19), and its as-built reader re-exports `drawio.read`. A change
+map's master part, assembled into `docs/flows/flows.yaml`; no project wrapper since 2026-10-19), and its as-built reader re-exports `drawio.read`. A change
 to `scripts/drawio/` or `scripts/flowmap/` that is meant to change nothing must leave every consumer's drawing byte-identical: render before and
 after, compare with `cmp`, and run the consumer's `just test` and `just check`. A change that does alter drawings is a release with a CHANGELOG
 entry, rendered samples reviewed by the operator, and each consumer re-rendered in the same pass.
@@ -85,7 +85,7 @@ in that project.
 
 ## Governance coherence checks
 
-This project's governance claims are executable. [`scripts/check_governance.py`](scripts/check_governance.py) turns them into assertions and `<RUNNER CHECK COMMAND>` gates on them. It is stdlib-only
+This project's governance claims are executable. [`scripts/check_governance.py`](scripts/check_governance.py) turns them into assertions and `just check` gates on them. It is stdlib-only
 and exits non-zero on any failure.
 
 **Run it before claiming any durable change is complete**, and after any change that adds, moves, renames, or retires a file. It is cheap and it is the only thing standing between this project's

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Evidence for the Learned 2026-10-26 entries "End-to-end row moves" and "End-to-end in-column links on the right" in references/layout-and-routing.md
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: ansible-wifi smc_change E2E pages after row moves and the right-hand in-column rule landed (role internals only, no site names or addresses).
 ---
 

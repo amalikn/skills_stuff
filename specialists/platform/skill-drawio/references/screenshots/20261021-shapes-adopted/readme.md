@@ -4,7 +4,7 @@ Category: reference-screenshots
 Status: current
 Authority: evidence
 Scope: Flow and Options pages after the shape vocabulary was adopted, for the entry in references/visual-style.md
-Last reviewed: 2026-10-21
+Last reviewed: 2026-11-19
 Summary: Two exports from smc-resiliency's lab map (no site names): a flow page with derived shapes and its legend, and the Options page top.
 ---
 

@@ -4,7 +4,7 @@ Category: screenshot-index
 Status: current
 Authority: evidence
 Scope: First render of option_pages, 2026-10-21
-Last reviewed: 2026-10-21
+Last reviewed: 2026-11-19
 Summary: One of smc-resiliency's three subject pages after its single Options page was split; the tab carries the subject, not "Options".
 ---
 

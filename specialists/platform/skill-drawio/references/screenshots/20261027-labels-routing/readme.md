@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Evidence for the Learned 2026-10-27 entries on decision corners, uncross tiers, E2E joint tracks, decision sizing and arrow labels in references/layout-and-routing.md
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   ansible-wifi smc_change and smc-resiliency flow pages rendered during the 2026-10-27 operator review (role internals and firmware steps
   only, no site names or addresses); some were taken before the later label changes, as noted per file.

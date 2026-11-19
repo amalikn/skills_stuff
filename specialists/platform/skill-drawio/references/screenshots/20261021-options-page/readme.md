@@ -4,7 +4,7 @@ Category: reference-screenshots
 Status: current
 Authority: evidence
 Scope: The flowmap Options page as first rendered, for the Learned entry in references/data-first-diagrams.md
-Last reviewed: 2026-10-21
+Last reviewed: 2026-11-19
 Summary: One crop of the Options page rendered from a project map; no site names, addresses or serials appear.
 ---
 

@@ -4,7 +4,7 @@ Category: skill-reference
 Status: current
 Authority: Renders of smc-resiliency's S2 flow map (a lab design, no site data) exported with scripts/drawio_export.py
 Scope: Before and after drawio.route.gap_order on one Overview group
-Last reviewed: 2026-10-20
+Last reviewed: 2026-11-19
 Summary: Two crops of the Overview page's "On the SMC" group, before and after thin-arrow tracks were ordered to cut crossings.
 ---
 

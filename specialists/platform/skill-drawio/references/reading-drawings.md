@@ -8,7 +8,7 @@ Authority: >-
 Scope: >-
   Getting text, boxes and connections out of a .drawio file someone else drew: decompressing pages, both cell element kinds, HTML labels to text, group offsets,
   connection paths, and matching free-standing port labels and captions to the line or picture they describe
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: How to read a hand-drawn draw.io file as data by decompressing pages, resolving group offsets, stripping HTML labels, building line paths and matching port labels to lines.
 ---
 
@@ -41,6 +41,9 @@ A drawing read this way is evidence, not something to regenerate ([data-first-di
 | Geometry    | `read.box`, `read.origin`      | Page-coordinate rectangles               |
 | Paths       | `read.wire`, `read._end`       | Each line's polyline in page coordinates |
 | Meaning     | UNC `unc.tasks.asbuilt.drawings` | Units, ports and uplinks                 |
+
+From the command line, `just drawio-read <file>` (`scripts/drawio_read.py`) prints a drawing's boxes and connections without changing it; `--json <out>` also writes
+them as JSON, with shapes and line paths when `--geometry` is given.
 
 ## 1. Decompress each page
 
@@ -136,7 +139,8 @@ Hand drawings often put a port name ("SWP 5", "LAN 3") in a small separate text 
 - **Which end**: give the port to the end of the line whose box holds ports (a switch, a router, a site controller), ranked by kind; when both ends could, the end nearer the label wins.
 - **Captions**: a picture with no label takes the nearest unwired text box within reach (UNC: 40 units, box-to-box gap). A text box that has its own line is a unit, not a caption.
 
-Tune the reach to the drawing's scale, and test against several real drawings; the UNC rules were checked against a number of site drawings before being trusted.
+`read.match_labels` (reach 35 by default) and `read.distance_to_path` implement the port-label rule. Tune the reach to the drawing's scale, and test against several real drawings; the UNC rules were
+checked against a number of site drawings before being trusted.
 
 ## Pitfalls
 

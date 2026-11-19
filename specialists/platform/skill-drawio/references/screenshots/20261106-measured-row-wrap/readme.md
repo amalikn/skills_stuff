@@ -4,7 +4,7 @@ Category: screenshots
 Status: current
 Authority: evidence
 Scope: references/layout-and-routing.md Learned 2026-11-06 (measured row wrap)
-Last reviewed: 2026-11-06
+Last reviewed: 2026-11-19
 Summary: An anonymised fixture topology (generated names) before and after wrapping rows by measured widths.
 ---
 
