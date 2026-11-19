@@ -39,6 +39,8 @@ COMMENT_TYPES = {".yaml", ".yml", ".sh", ".toml", ".just", ".cfg", ".ini"}
 HEADER_TYPES = {".md", ".py"} | COMMENT_TYPES
 #: Folder indexes and convention-locked entry points are routing, not documents; their first heading is their header.
 INDEX_NAMES = {"readme.md", "README.md", "CHANGELOG.md", "CLAUDE.md", "__init__.py"}
+#: Package-manager lock files are generated data in a header-bearing suffix; the tool rewrites them and drops any comment (Continuum pnpm-lock.yaml, 2026-11-19).
+LOCK_NAMES = {"pnpm-lock.yaml", "pnpm-workspace.yaml.lock", "poetry.lock", "uv.lock", "Cargo.lock"}
 #: Verbatim or generated material: captures, pulled sources, backups, archives and rendered views carry no header of their own.
 SKIP_PARTS = ("-sources-", "/captures/", "/backups/", "/archive/", "/history/", "/node_modules/", "/.venv/", "/vendor-sources/", "/__pycache__/",
               "/migrations/", "/evidence/", "/vendor/", "/fixtures/", "/upstream/")
@@ -160,7 +162,8 @@ def tracked(root: pathlib.Path, scopes: list[str]) -> list[pathlib.Path]:
         p = root / rel
         # p.is_file(): a tracked file deleted in the working tree (a move not yet committed, 2026-10-21) has no header to read.
         if (rel and p.is_file() and (p.suffix in HEADER_TYPES or p.name == "justfile") and not any(s in "/" + rel for s in SKIP_PARTS)
-                and not p.name.endswith("-baseline.json")):  # machine-written ratchet data
+                and not p.name.endswith("-baseline.json")  # machine-written ratchet data
+                and p.name not in LOCK_NAMES):
             out.append(p)
     return sorted(out)
 

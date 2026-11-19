@@ -71,3 +71,19 @@ class ContentChangeDate(unittest.TestCase):
 
 if __name__ == "__main__":
   unittest.main()
+
+
+class LockFiles(unittest.TestCase):
+  """A tracked package-manager lock file is generated data and needs no header (2026-11-19)."""
+
+  def test_lock_file_is_not_tracked_for_headers(self):
+    with tempfile.TemporaryDirectory() as d:
+      repo = Path(d)
+      subprocess.run(["git", "init", "-q", str(repo)], check=True, timeout=30)
+      (repo / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
+      (repo / "notes.yaml").write_text("key: value\n")
+      subprocess.run(["git", "-C", str(repo), "add", "."], check=True, timeout=30)
+      names = [p.name for p in df.file_headers.tracked(repo, [])]
+      self.assertNotIn("pnpm-lock.yaml", names)
+      self.assertIn("notes.yaml", names)
+
