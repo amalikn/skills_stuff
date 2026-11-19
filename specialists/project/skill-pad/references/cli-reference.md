@@ -23,8 +23,8 @@ Built from `pad help --all --format json` on v0.19.2 (22e50fe, 2026-11-08), VERI
 
 ## Looking up flags
 
-The repo README's "CLI Reference" (also shown on the GHCR package page) is a 176-line summary of the same tree; on `main` after 0.19.2 it adds
-`--stdin` to `pad item comment` (not in the installed binary yet). The binary stays the authority.
+The repo README's "CLI Reference" (also shown on the GHCR package page) is a 176-line summary of the same tree; on `main` after 0.19.2 it adds `--stdin` to `pad item comment` (not in the installed
+binary yet). The binary stays the authority.
 
 `pad help <group> [command] --format md|json|llm` (cmdhelp v0.1, `pad help --capabilities`); `pad <group> <command> --help` for the human form. `pad agent guide <topic>` prints Pad's own agent
 guidance for the installed version (`context-loading`, `items`, `before-performing-work`, `role-awareness`, `multi-step-workflows`, `all`).
@@ -71,10 +71,9 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 - `PAD_AGENT=<name>` (or `agent_name` in `.pad.toml`) names the agent under harnesses other than Claude Code.
 
 > **Learned 2026-11-19** · `pad item comment-edit` and `pad_rewrite.py` comment rewrites · VERIFIED_PRIMARY (observed) · Source: Continuum workspace,
-> `just rewrite spec.json --apply` (pad_rewrite.py) · Falsifier: the same server accepting `comment-edit` again.
-> The server can stop advertising `item_scoped_comment_writes`; then every comment edit fails with "this server does not support editing or deleting comments from the CLI".
-> The same edits had worked that morning. Body rewrites still apply. Fallback that keeps the writing standard: add the formatted statement as a new comment (`pad item comment <ref>
-> --stdin`), leave the old one as history; `item-check` then passes because a `DONE:` comment exists.
+> `just rewrite spec.json --apply` (pad_rewrite.py) · Falsifier: the same server accepting `comment-edit` again. The server can stop advertising `item_scoped_comment_writes`; then every comment edit
+> fails with "this server does not support editing or deleting comments from the CLI". The same edits had worked that morning. Body rewrites still apply. Fallback that keeps the writing standard: add
+> the formatted statement as a new comment (`pad item comment <ref> --stdin`), leave the old one as history; `item-check` then passes because a `DONE:` comment exists.
 >
 > ```text
 > pad_rewrite: pad item comment-edit TASK-26 failed: Error: this server does not support editing or deleting comments from the CLI
@@ -83,21 +82,26 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 
 ## Traps
 
+> **Learned 2026-11-19** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: continuum workspace (TASK-164, TASK-171, TD-191); `pad attachment --help` · Falsifier: a later release with
+> an attachment delete, comments in `item show --format json`, or a declared priority on Tech Debt. Three traps met closing work: (1) `pad attachment` has no delete or replace (attach, download, list,
+> show, upload, view): a wrong file attached stays, so check a log's content before `upload` and, if one slips through, upload the right file and add a `CORRECTION:` comment naming both. (2) `pad item
+> show <ref> --format json` carries no comments; list them, with their ids, by `pad item comments <ref> --format json` (needed to rewrite one with `pad_rewrite.py`). (3) `pad item create tech-debt ...
+> --priority medium` prints "1 field not declared by this collection's schema, stored as-is: priority": Tech Debt has no priority field in this workspace, so the value is kept but not shown as a
+> field. Back-to-back calls also meet `rate_limited` (retry after about 1 s): pause between bulk calls or use the retrying scripts.
+
 > **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad collection create "Asks" ... --awaits-human true --tracks-work false` -> `Error: accepts 1 arg(s), received 2`;
-> the same with `--awaits-human=true --tracks-work=false` created the collection (continuum workspace) · Falsifier: the space form accepted by a later release.
-> `--awaits-human` and `--tracks-work` are string flags in 0.21.0, and the space-separated form is read as extra arguments; write them as `--flag=value`. The README's collection command for
-> Asks uses the space form and needs this change. `pad workspace init` in 0.21.0 still writes `.claude/skills/pad/` and `.agents/skills/pad/`, and the copy appears in Claude Code's skill
-> list at once; move them to the Trash (`trash`) and remove the empty folders with `rmdir`.
+> the same with `--awaits-human=true --tracks-work=false` created the collection (continuum workspace) · Falsifier: the space form accepted by a later release. `--awaits-human` and `--tracks-work` are
+> string flags in 0.21.0, and the space-separated form is read as extra arguments; write them as `--flag=value`. The README's collection command for Asks uses the space form and needs this change.
+> `pad workspace init` in 0.21.0 still writes `.claude/skills/pad/` and `.agents/skills/pad/`, and the copy appears in Claude Code's skill list at once; move them to the Trash (`trash`) and remove the
+> empty folders with `rmdir`.
 
 > **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad item block TASK-14 TASK-12` printed "TASK-14 ... now blocks TASK-12" (continuum workspace) · Falsifier: the same
-> command reporting TASK-12 as the blocker.
-> `pad item block <source> <target>` means source blocks target, the reverse of "block TASK-14 by TASK-12". To say the spike blocks the re-estimate, run `pad item block TASK-12 TASK-14`; read
-> the printed sentence, and undo a wrong one with `pad item unblock <source> <target>`.
+> command reporting TASK-12 as the blocker. `pad item block <source> <target>` means source blocks target, the reverse of "block TASK-14 by TASK-12". To say the spike blocks the re-estimate, run `pad
+> item block TASK-12 TASK-14`; read the printed sentence, and undo a wrong one with `pad item unblock <source> <target>`.
 
 > **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad item list decisions --format json` returned `[]` right after a create; with `--all` it returned the item
-> (status `accepted`, a terminal option) · Falsifier: a default list that shows terminal-status items.
-> `pad item list` leaves out items whose status is terminal, so a sync that matches existing items must pass `--all` or it creates duplicates. The list JSON carries no body; read it with
-> `pad item show <ref> --format json` (`content`).
+> (status `accepted`, a terminal option) · Falsifier: a default list that shows terminal-status items. `pad item list` leaves out items whose status is terminal, so a sync that matches existing items
+> must pass `--all` or it creates duplicates. The list JSON carries no body; read it with `pad item show <ref> --format json` (`content`).
 
 > **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY (unified-network-controller and smc-resiliency) · Source: `pad item update --help`, CLI
 > errors · Falsifier: a release that accepts these writes or lists disabled items by default. `pad item update --fields-json` refuses the `convention` key ("system metadata ... BUG-2627"): set
@@ -114,40 +118,33 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > plugin) but run normally.
 
 > **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY · Source: `pad help collection create --format md` (`--fields`: "use --schema for
-> terminal_options"), repo `CLAUDE.md` Data Model (fallback name list), smc-resiliency bootstrap schemas · Falsifier: a collection created with
-> `--fields "status:select:open,answered"` whose `answered` items leave `pad project next` and the needs-you inbox.
-> A status select created with the `--fields` DSL has no `terminal_options`, so Pad decides "closed" from a global name list (rejected, cancelled,
-> wontfix, duplicate, declined, abandoned, disabled); `answered`, `done`-like custom words stay open forever. Create any workflow collection with
-> `--schema` and set `terminal_options` (and `abandoned_options` for values that close without delivering), as the templates do (tasks: done and
-> cancelled; plans: completed).
+> terminal_options"), repo `CLAUDE.md` Data Model (fallback name list), smc-resiliency bootstrap schemas · Falsifier: a collection created with `--fields "status:select:open,answered"` whose
+> `answered` items leave `pad project next` and the needs-you inbox. A status select created with the `--fields` DSL has no `terminal_options`, so Pad decides "closed" from a global name list
+> (rejected, cancelled, wontfix, duplicate, declined, abandoned, disabled); `answered`, `done`-like custom words stay open forever. Create any workflow collection with `--schema` and set
+> `terminal_options` (and `abandoned_options` for values that close without delivering), as the templates do (tasks: done and cancelled; plans: completed).
 
 > **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY (rate limit, observed) and UNVERIFIED (comment history) · Source: `pad item note`
-> burst error `rate_limited` with `retry_after_seconds: 1`; docs_api.md comment edit and delete routes · Falsifier: a burst of 12 notes accepted
-> without a wait; an API or CLI read that returns an edited comment's earlier text.
-> Pad rate-limits bursts of writes: back off by `retry_after_seconds` (scripts/pad_rewrite.py retries up to 5 times). `pad item history` keeps item
-> body versions, but nothing found keeps the earlier text of an edited comment: save a comment's original as a note before editing it.
+> burst error `rate_limited` with `retry_after_seconds: 1`; docs_api.md comment edit and delete routes · Falsifier: a burst of 12 notes accepted without a wait; an API or CLI read that returns an
+> edited comment's earlier text. Pad rate-limits bursts of writes: back off by `retry_after_seconds` (scripts/pad_rewrite.py retries up to 5 times). `pad item history` keeps item body versions, but
+> nothing found keeps the earlier text of an edited comment: save a comment's original as a note before editing it.
 
 > **Learned 2026-11-10** · Pad CLI v0.19.2 · VERIFIED_PRIMARY · Source: `update_conflict` (expected_seq 53, actual 110) after `pad item note`
-> writes on the same item · Falsifier: a note that leaves the item's seq unchanged.
-> `pad item note`, `decide` and comment writes move the item's `seq`, so a body update guarded by a seq read before them is refused. Write the body
-> first, or re-read the seq (and check the body is unchanged) before the guarded write.
+> writes on the same item · Falsifier: a note that leaves the item's seq unchanged. `pad item note`, `decide` and comment writes move the item's `seq`, so a body update guarded by a seq read before
+> them is refused. Write the body first, or re-read the seq (and check the body is unchanged) before the guarded write.
 
 > **Learned 2026-11-10** · Pad v0.19.2 web UI and CLI · VERIFIED_PRIMARY · Source: web/src/lib/components/collections/collection-templates.ts at
-> v0.19.2 (mirrored), the operator's screenshot of the New Collection dialog; `pad help collection create` · Falsifier: a `--template` flag on
-> `pad collection create`, or a Feature Requests or Tech Debt template that declares terminal_options.
-> The web UI's New Collection dialog offers templates (Blank, Bug Tracker, Feature Requests, Meeting Notes, Decisions, Tech Debt, OKRs, Sprint
-> Backlog, Knowledge Base); the CLI has none, so an agent recreates one with `--schema` from that file. Only Bug Tracker declares its closed
-> statuses (fixed, wont-fix); Feature Requests and Tech Debt declare none, so add terminal_options (shipped/declined, resolved) or they never
-> close. The schemas used: conventions/collection-schemas/. An agent once answered "Pad has no collection types" from the CLI docs alone: check the
-> web UI source before saying a feature does not exist.
+> v0.19.2 (mirrored), the operator's screenshot of the New Collection dialog; `pad help collection create` · Falsifier: a `--template` flag on `pad collection create`, or a Feature Requests or Tech
+> Debt template that declares terminal_options. The web UI's New Collection dialog offers templates (Blank, Bug Tracker, Feature Requests, Meeting Notes, Decisions, Tech Debt, OKRs, Sprint Backlog,
+> Knowledge Base); the CLI has none, so an agent recreates one with `--schema` from that file. Only Bug Tracker declares its closed statuses (fixed, wont-fix); Feature Requests and Tech Debt declare
+> none, so add terminal_options (shipped/declined, resolved) or they never close. The schemas used: conventions/collection-schemas/. An agent once answered "Pad has no collection types" from the CLI
+> docs alone: check the web UI source before saying a feature does not exist.
 
 > **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad help item create --format md` header `version: 0.21.0 (9bc5523 2026-11-18T01:06:08Z)` · Falsifier: `pad --version` below 0.21
-> The installed CLI is 0.21.0 while this file maps v0.19.2: `item create` still takes `--field key=value`, `--op-key`, `--status`, `--content`. A new `section` value on a bug renders
-> as its own generated heading in the project's bug tracker on the next `pad-trackers --apply` (BUG-185 to 191, unified-network-controller). Refresh the map per references/upgrade.md.
+> The installed CLI is 0.21.0 while this file maps v0.19.2: `item create` still takes `--field key=value`, `--op-key`, `--status`, `--content`. A new `section` value on a bug renders as its own
+> generated heading in the project's bug tracker on the next `pad-trackers --apply` (BUG-185 to 191, unified-network-controller). Refresh the map per references/upgrade.md.
 
 > **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: commands run in the smc-resiliency workspace (PLAN-56, TASK-57 to 61, BUG-62 to 68; apn f5c16060) ·
-> Falsifier: a create that drops the JSON fields, or `--workspace` writing to the folder's own workspace.
-> A whole run can be put into Pad in a few calls, with every custom field set at create:
+> Falsifier: a create that drops the JSON fields, or `--workspace` writing to the folder's own workspace. A whole run can be put into Pad in a few calls, with every custom field set at create:
 >
 > ```bash
 > pad item create plan "<outcome and date>" --status active --fields-json '{"end_date":"2026-11-20"}' --op-key <key> --content "Serves: ..."
@@ -157,14 +154,14 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > pad item list conventions --workspace unified-network-controller                    # read another workspace from any folder
 > ```
 >
-> Practice the operator asked for the same day ("take inspiration from unc workspace", "capture all the information about a ticket"): plan the run in Pad before starting it; file
-> each finding as a bug in the other workspace's form (`tracker_id`, `section` for the session, `severity`, `order`; body: what was seen with the evidence path, cause, effect, options,
-> closure); put results on the task with `pad item note`, and what was not verified and the state left behind in the same ticket. No visual surface: no screenshot.
+> Practice the operator asked for the same day ("take inspiration from unc workspace", "capture all the information about a ticket"): plan the run in Pad before starting it; file each finding as a bug
+> in the other workspace's form (`tracker_id`, `section` for the session, `severity`, `order`; body: what was seen with the evidence path, cause, effect, options, closure); put results on the task
+> with `pad item note`, and what was not verified and the state left behind in the same ticket. No visual surface: no screenshot.
 
 > **Learned 2026-11-18** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad item update BUG-196 --title ... --op-key ...` answered `Error: unknown flag: --op-key`; `pad item update --help` lists no
-> such flag, `pad item create`, `decide` and `comment` do (unified-network-controller) · Falsifier: an `item update --help` that lists `--op-key`.
-> `item update` takes no `--op-key`, so SKILL.md's "pass `--op-key` on writes" cannot be met for an update: a retried update is applied again. Make an update safe to repeat by its content (the
-> same title, body and comment), and guard a body rewrite with `--expected-seq`. A code path written in backticks in an item body is exported into the project's tracker file and is then judged by
-> that project's own checks (a short path failed a path check there): write full project paths in item bodies, or name the script without backticks. A workspace without an Asks collection holds a
-> question for the operator as a Task under its plan, blocking the work it holds up (`pad item block`); the guidelines' Asks collection is created only on the operator's word.
+> such flag, `pad item create`, `decide` and `comment` do (unified-network-controller) · Falsifier: an `item update --help` that lists `--op-key`. `item update` takes no `--op-key`, so SKILL.md's
+> "pass `--op-key` on writes" cannot be met for an update: a retried update is applied again. Make an update safe to repeat by its content (the same title, body and comment), and guard a body rewrite
+> with `--expected-seq`. A code path written in backticks in an item body is exported into the project's tracker file and is then judged by that project's own checks (a short path failed a path check
+> there): write full project paths in item bodies, or name the script without backticks. A workspace without an Asks collection holds a question for the operator as a Task under its plan, blocking the
+> work it holds up (`pad item block`); the guidelines' Asks collection is created only on the operator's word.
 

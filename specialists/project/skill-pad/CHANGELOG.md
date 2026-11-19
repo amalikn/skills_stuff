@@ -14,6 +14,10 @@ Last rotated: 20261119_1434
 
 # Changelog — skill-pad
 
+## 20261119_1550 — CLI traps: no attachment delete, comments not in item show, Tech Debt priority
+
+- `references/cli-reference.md` Traps: Learned 2026-11-19 (Pad 0.21.0, continuum workspace): no attachment delete or replace (correct with a CORRECTION comment); comments only through `pad item comments`; Tech Debt stores `--priority` undeclared; rate limits on back-to-back calls.
+
 ## 20261119_1434 — Body layout for every collection: pad_format_spec.py
 
 - New `scripts/pad_format_spec.py` (`just format-spec OUT`): writes a `pad_rewrite.py` spec that bolds known section labels, starts each on its own paragraph and joins hard-wrapped lines; lists, tables, code and words untouched (an item whose words would change is skipped). 7 tests in `tests/test_pad_format_spec.py`; a no-op reformat fails 3.
