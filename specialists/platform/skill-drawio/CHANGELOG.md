@@ -16,6 +16,7 @@ Last rotated: 20261026_1533
 
 ## Unreleased
 
+- 2026-11-19: contact sheets (export ref).
 - 2026-11-18: data-first-diagrams.md: quote tier names with commas (Continuum).
 
 - 2026-11-18 `references/data-first-diagrams.md`: Learned, a decision page is not held to the decision register: carry a register decision into the page, its option statuses, proposed components and

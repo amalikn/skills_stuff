@@ -23,6 +23,7 @@ Claim IDs refer to [sources.yaml](../sources.yaml). The CLI help is copied verba
 - [Flags that matter](#flags-that-matter)
 - [Run it under a timeout](#run-it-under-a-timeout)
 - [Zoomed crops with sips](#zoomed-crops-with-sips)
+- [Contact sheets for many pages](#contact-sheets-for-many-pages)
 - [The self-review loop](#the-self-review-loop)
 - [What to look for](#what-to-look-for)
 
@@ -102,6 +103,26 @@ lines are thin.
 > An offset of `0 0` is read as no offset: `sips --cropOffset 0 0 -c 1000 944` returned the centred crop, byte-identical to one without
 > `--cropOffset`, while `--cropOffset 1 1` returned the top of the page. To crop from the top or left edge, use 1, not 0.
 
+
+## Contact sheets for many pages
+
+A drawing with dozens of pages is reviewed as contact sheets: every page exported to PNG, then tiled ten to a sheet. Count the sheets and look at every
+one before claiming the pages were reviewed: a contact-sheet command that exits 0 does not prove every page is on a sheet.
+
+> **Learned 2026-11-13** · contact sheets of different-sized page exports · `reusable_candidate` (one project; FFmpeg 9.0.2 on macOS) · Source: smc-resiliency
+> `docs/overview/smc-project-state-review-20261113_1600.md`, skill-drawio write-back candidates; evidence `flow-review-1635/contact-01.png` (failed run) and `review-01.png`
+> to `review-05.png` (corrected) under the project's malik1tb lab evidence for 20261113 · Falsifier: 50 different-sized inputs give five complete 10-page sheets with
+> FFmpeg's default filter reinitialisation on the same version.
+> With pages of different sizes the first run made one sheet holding only page 50 and empty cells, and still exited 0. Input-size changes resetting the filter
+> state are the candidate cause (`UNVERIFIED`). Turning filter reinitialisation off and evaluating scale and pad per frame gave five sheets covering all 50 pages:
+>
+> ```sh
+> ffmpeg -n -reinit_filter 0 -framerate 1 -start_number 1 -i 'drawing-p%d.png' \
+>   -vf 'scale=500:650:force_original_aspect_ratio=decrease:eval=frame,pad=500:700:(ow-iw)/2:(oh-ih)/2:color=white:eval=frame,tile=5x2' \
+>   -frames:v 5 -threads 1 'review-%02d.png'
+> ```
+>
+> `-frames:v` is the page count divided by ten, rounded up; check the sheet count equals it.
 
 ## The self-review loop
 
