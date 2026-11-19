@@ -246,6 +246,10 @@ sample_fleet inventories *ARGS: _require-venv
 pi_bootloader_census *ARGS:
     @bash scripts/fleet/pi_bootloader_census.sh {{ARGS}}
 
+# What turns a frozen SMC (Pi or x86) into a reboot: watchdog, systemd, kernel panic settings (read-only). Example: just smc_freeze_probe teleport.apn.au alpurrurulam-smc01
+smc_freeze_probe proxy +nodes:
+    @bash scripts/probes/smc_freeze_probe.sh --proxy "{{proxy}}" {{nodes}}
+
 # What writes on an SMC: processes, folders changed in 24 h, journal, cron, undervoltage (read-only). Example: just smc_writers_probe teleport.apn.au canteen-creek-smc01
 smc_writers_probe proxy +nodes:
     @bash scripts/probes/smc_writers_probe.sh --proxy "{{proxy}}" {{nodes}}

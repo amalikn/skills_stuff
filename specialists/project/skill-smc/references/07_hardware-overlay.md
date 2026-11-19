@@ -1327,3 +1327,18 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 >
 > No visual surface: no screenshot.
 
+> **Learned 2026-11-19** · deployed Pi SMCs (rct, wh, nbn_wh), package and freeze state · VERIFIED_PRIMARY (read-only over Teleport on 2 to 5 boxes per fact, not the fleet) · Source: smc-resiliency
+> CHANGELOG 20261119_1540, Pad B19-04, lab/media.toml · Falsifier: a deployed Pi with a watchdog fed, kernel.panic non-zero, or a systemd other than 249.11-0ubuntu3.7.
+> - Freeze: /dev/watchdog0 (BCM2835) present but inactive, RuntimeWatchdogUSec=0, kernel.panic=0, all lockup and hung-task panics off. rise-watchdog.timer runs rise_watchdog.py every 20 s
+>   (RISE v2.1.0: memory, disk, load and unit checks) with WATCHDOG_AUTO_REBOOT="0", so it never reboots. Read with `scripts/probes/smc_freeze_probe.sh`.
+> - Packages: installed from Ubuntu 22.04.1 (base-files 12ubuntu4.2, so /etc/os-release still says 22.04.1) and partly updated since: five hubs share systemd 249.11-0ubuntu3.7, cloud-init
+>   23.1.2, kernel 5.15.0-1078-raspi; libc6 3.6 or 3.8; 862 to 870 packages per box. unattended-upgrades disabled, Periodic settings "0".
+> - Kernel freeze: the four 1078 kernel packages are apt-mark held, and /etc/apt/preferences.d/pin-kernel pins `version 5.15.0-1078-raspi*` at 1001 (never matches: the package version
+>   is 5.15.0-1078.81) and every linux-image*/linux-modules*/linux-raspi* at -1; the -1 rule and the holds do the freezing.
+> - Writes: node exporter's apt_info.py runs every 5 min on every box and was the largest single writer in an hour on an nbn_wh box (158 MB of 725 MB); daily figures stay the cards'
+>   long-run counters (4.0 and 6.7 GB a day on the two nbn_wh boxes).
+> - Playbook versus box: mosquitto runs on bungardi-smc01 (nbn_wh) although smc_mqtt is gated to nbn_accelerate and rcp (survey writers-cw.txt, R28 research agent): installed by hand or
+>   an older playbook, unverified which.
+>
+> No visual surface: no screenshot.
+
