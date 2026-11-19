@@ -192,7 +192,9 @@ class PackageContractTests(unittest.TestCase):
             self.assertEqual(hashlib.sha256(snapshot.read_bytes()).hexdigest(), expected_hash, name)
 
     def test_write_back_entries_are_well_formed_and_logged(self) -> None:
-        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        """Every Learned entry has a log line naming its file and date, in CHANGELOG.md or a rotated archive under docs/history/ (2026-11-19: rotation hid them)."""
+        logs = [ROOT / "CHANGELOG.md", *sorted((ROOT / "docs" / "history").rglob("changelog-*.md"))]
+        changelog = "\n".join(path.read_text(encoding="utf-8") for path in logs)
         for reference in sorted((ROOT / "references").glob("*.md")):
             for _kind, date, _line in _learned_entries(reference.read_text(encoding="utf-8")):
                 logged = [line for line in changelog.splitlines() if date in line and reference.name in line]
