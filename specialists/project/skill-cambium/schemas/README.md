@@ -4,7 +4,7 @@ Category: device-reference
 Status: current — fleet sweep complete across all 36 sites
 Authority: primary — derived from live devices, supersedes MIB mirrors for response shape
 Scope: The response contract for every Cambium device family in the APN estate
-Last reviewed: 2026-10-29
+Last reviewed: 2026-11-19
 Summary: Machine-readable contracts for what each Cambium device family actually returns, derived from live observation rather than vendor documentation, with per-site conformance as the mechanism for finding divergence.
 ---
 

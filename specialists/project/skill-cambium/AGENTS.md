@@ -5,8 +5,8 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-cambium specialist pack — canonical source for Cambium device-fleet operational knowledge
-Last reviewed: 20260917
-Summary: Agent guidance for maintaining and using the skill-cambium specialist pack. Covers specialist structure, reference routing, cross-pack boundary with skill-smc, and update discipline.
+Last reviewed: 2026-11-19
+Summary: Agent guidance for maintaining and using the skill-cambium specialist pack. Covers specialist structure, reference and schema routing, script cataloguing, cross-pack boundary with skill-smc, the cross-project write-back trigger, and update discipline.
 
 # AGENTS.md
 
@@ -50,6 +50,7 @@ Summary: Agent guidance for maintaining and using the skill-cambium specialist p
 | `device-inventory.csv` schema change, extraction workflow fact                                 | `references/04_device-inventory-schema.md`                             |
 | New coverage gap, staleness risk, unvalidated assumption                                       | `references/05_known-issues.md`                                        |
 | Device REST API / SSH CLI data point, adapter method, config-backup or write-ops boundary fact | `references/06_device-api-cli-reference.md`                            |
+| Device response shape (fields, types, per-family contract), a sweep run or divergence finding  | `schemas/` (README, SWEEP-LOG; DIVERGENCE.md is generated)             |
 | New reusable Cambium-domain script or tool                                                     | `scripts/` — see Tier 1b below                                         |
 | No existing file fits                                                                          | Propose a new numbered file; add the `RUNBOOK.md` row in the same pass |
 
@@ -63,7 +64,7 @@ every one of these must land in the same pass, or the script is invisible to the
 
 | Step                          | Update                                                                                                                                                               |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Move the file                 | `scripts/<name>`, with a header comment stating where it came from and why it belongs here (see the two existing scripts for the pattern)                            |
+| Move the file                 | `scripts/<name>`, with a header comment stating where it came from and why it belongs here (see the two scripts named above for the pattern)                         |
 | Catalog it                    | `scripts/README.md` Raw Script Inventory — purpose, inputs, outputs, safety label(s), idempotency, when to use                                                       |
 | Route to it                   | `RUNBOOK.md` — a routing row if the script answers a task type; `justfile` — a recipe if it should run via `just`                                                    |
 | Prove the catalog is enforced | Run `scripts/check_governance.py` — it fails on any file under `scripts/` not named in `scripts/README.md` (this is a real, executed check, not a                    |

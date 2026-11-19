@@ -6,10 +6,14 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261029_1751
+Last rotated: 20261119_1631
 ---
 
 # Changelog — skill-cambium
+
+## 20261119_1631 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now 90 days (`--window-days 90` in the justfile).
 
 ## 20261118_1810 — cnMaestro Enterprise guidance of 16 Nov 2026 (no version change)
 
@@ -188,17 +192,3 @@ references/01_overview.md (RF planning) gains a Learned 2026-10-16 entry from LI
 
 - 05_known-issues.md: sm-55 `send_lldp: SIOCG-IF-INDEX failed for eth1`; R195P `cdpd-cp` listen heard nothing; R195P LLDP tooling; no router
   logs centrally. From unified-network-controller D10, read-only at old-looma and through Graylog.
-
-## 20261009_1048 — An ePMP radio's role is its mode, not its model: cambiumSubModeType (v0.6.50 -> v0.6.51)
-
-- snmp-oid-registry.yaml: `cambiumSubModeType` (.1.3.6.1.4.1.17713.21.1.1.33.0; 4 ePTP Slave, 5 ePTP Master), and that an ePTP master answers the station
-  and bridge tables like a 3000L while the slave answers neither.
-- 05_known-issues.md: the "Force 300 has no bridge table" note scoped to the SM.
-- From unified-network-controller D10 at old-looma (read-only SNMP): an ePTP pair held as two PtMP SMs, so no reader read it.
-
-## 20261009_0330 — Which SM an R195P hangs from: the 3000L bridge table and Option 82, not the units (v0.6.49 -> v0.6.50)
-
-- snmp-oid-registry.yaml: 3000L `cambiumAPBridgeTable` and IF-MIB counters (they lag); Force 300 IF-MIB counters; R195P IF-MIB negative.
-- 05_known-issues.md: the R195P section corrected: the AP's bridge table and the router's Wi-Fi clients joined with the SMC's Option 82 leases name the SM; old-looma names disagree for some routers.
-- 06_device-api-cli-reference.md: a burst trace on cnWave port counters (tower 4's CN nic2 carries 3000L-ap-5).
-- From unified-network-controller D10, read-only at old-looma (ICMP only for the bursts).

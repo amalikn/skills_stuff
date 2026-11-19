@@ -4,7 +4,7 @@ Category: device-reference
 Status: current
 Authority: primary — the run record behind the contract in this tree
 Scope: Every sweep run that produced or corrected the device response schemas, with its settings, result and defects
-Last reviewed: 2026-10-29
+Last reviewed: 2026-11-19
 Summary: Per-run record of the five sweeps of 2026-09-20 — what each run was configured to do, what it produced, what it got wrong, and why two of them had to be discarded and repeated.
 ---
 
