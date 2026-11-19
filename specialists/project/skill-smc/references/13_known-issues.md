@@ -1744,6 +1744,15 @@ match supplied host pattern`. A `-l` of that host alone stops with "no hosts to 
   the 31 `git@bitbucket.org:` lines, Jenkins clones ansible-wifi through `ssh://bitbucket.org/...` in `roles/jenkins_core/templates/` (26 active lines on rise), and both `smc_application` and
   `jenkins_core` add a known_hosts entry for `bitbucket.org` only. Both halves are needed: the SMCs must trust the new name (`bitbucket-ssh-hostname`) and every address must use it. Fix branches
   prepared, not merged: `fix/bitbucket-ssh-hostname-rise`, `fix/bitbucket-ssh-hostname-master`. Count all forms with `git grep -lE '(git@|ssh://)bitbucket\.org'` (skip collections/).
+  - **Now live, 2026-11-19 (VERIFIED_PRIMARY: Bitbucket's reply)**: `bitbucket.org` refuses SSH outright ("We have moved our SSH host to ssh.bitbucket.org. The old host bitbucket.org doesn't accept
+    SSH connections"). First casualty: the `smc_bases.yml` deploy of haji-ali-smc01 on `iridium`, task `git clone '...rct-tstik.git'` (rc 128). From haji-ali, `git ls-remote
+    git@ssh.bitbucket.org:activ8me/{rct-tstik,wifi}.git` authenticates with the SMC's existing key; `ssh-keyscan ssh.bitbucket.org` gives the same ED25519 key the role pins for `bitbucket.org`. Fixed
+    on `iridium` only (`ffd62722`, pushed): the five smc_bases group variables and `smc_application` use `git@ssh.bitbucket.org:`, plus a known_hosts task for the new name; the `bitbucket.org`
+    known_hosts tasks stay (harmless, the host refuses SSH). The pre-push ansible-lint delta gate flags every touched task: live ones got FQCN and capitalised names; the CentOS-only kohana clone keeps
+    its old text (fixing `latest[git]` would invent a `version:`). `rise`/`master` still need the fix branches merged (expect a conflict in `smc_application/tasks/main.yml`: task names differ), and
+    Jenkins is not fixed anywhere merged. Older SMCs need no remote rewrite: the Ubuntu wifi, community-backend and tstik clones delete `dest` and re-clone, and the kohana clone is `update: no`, which
+    never fetches (ansible-core `modules/git.py`: the `elif not update:` branch returns before `set_remote_url`). The operator's clone and controllers need `git remote set-url origin
+    git@ssh.bitbucket.org:activ8me/ansible-wifi.git` and a known_hosts line for the new name (done on the Mac 2026-11-19).
 
 ## 2026-11-10 — `smc_system` never grew the root LV on nbn_accelerate (FIXED on rise `0fc086ca`, unpushed)
 
