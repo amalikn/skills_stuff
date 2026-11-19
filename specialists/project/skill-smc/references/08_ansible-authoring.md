@@ -63,6 +63,8 @@ Use `scripts/ansible/smc_inventory_add.py` (`just smc_inventory_add ...`), plan 
 | `topology_vars/<site>.yml`               | the flavor's topology from the skill template or a sibling, host renamed |
 
 - Site name is the host without its `-smcNN` suffix (`map-smc01` -> `map`, `php-rct-smc01` -> `php-rct`).
+- An Eclipse site name does not set the flavor: "RCP - Haji Ali Homstead" is a Raspberry Pi rct site, named for the RCP project it was awarded under (operator, 2026-11-19). Take the flavor from the
+  hardware (Pi: rct, wh, nbn_wh; x86: rcp, nbn_accelerate), asked or read from the SMC, not from a word in the name.
 - **The templates live in this skill since 2026-11-19** (operator: "make this generator part of skill-smc ... able to manage different flavors"): `templates/inventory/common/` (group_vars, host_vars,
   the standard one-NIC topology) and `templates/inventory/nbn_accelerate/topology_vars.j2` (sized x86 layout). Topology per flavor, VERIFIED_PRIMARY by a content survey of every topology file on
   2026-11-19, branch `iridium` (table below; re-run with `just topology_variance`: on `master` the same day rcp had 34 files in 25 layouts). The tool prints the NIC names and VLAN IDs it will write;

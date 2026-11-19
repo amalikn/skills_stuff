@@ -44,7 +44,8 @@ Last reviewed: 2026-10-27
 
 ## 20261119_1650 — Periodic review; 90-day window; identifiers redacted; smc_update_php.yml retired (v0.15.7 -> v0.15.8)
 
-- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19 (two were hidden by the baseline); reference ranges 01-19, spec and run-record paths, live status of smc_change. Review window now 90 days (`--window-days 90`).
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19 (two were hidden by the baseline); reference ranges 01-19, spec and run-record paths, live status of
+  smc_change. Review window now 90 days (`--window-days 90`).
 - Identifiers redacted (operator): a person's name and the SMSC and destination numbers in refs 02, 06 and 19 replaced with placeholders.
 - `playbooks/smc_update_php.yml` retired (operator; overlay apply proven): refs 18 and 19.
 
@@ -54,6 +55,7 @@ Last reviewed: 2026-10-27
 - references/13_known-issues.md: 2026-11-19, the vars guard refuses commands whose text names group or host vars paths (commit message, `git add` of new files, CHANGELOG heredoc), with what passed; an
   OPA hook refused a read-only `[!.]*.yml` loop.
 - references/08_ansible-authoring.md: the topology survey figures are from branch `iridium`; master differs (rcp 34 files, 25 layouts).
+- (added 16:58) references/08_ansible-authoring.md: an Eclipse site name does not set the flavor ("RCP - Haji Ali Homstead" is a Pi rct site named for its RCP project; operator).
 
 ## 20261119_1638 — smc_inventory_add: every flavor, templates owned by the skill, Iridium written as plain true (v0.15.5 -> v0.15.6)
 
