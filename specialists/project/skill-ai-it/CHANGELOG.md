@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1551
+Last rotated: 20261119_1605
 ---
 
 # Changelog — skill-ai-it
@@ -27,8 +27,6 @@ Last rotated: 20261119_1551
 - [20261111_1135 — archcore, ruff, code map, templates and the Pad question](#20261111_1135--archcore-ruff-code-map-templates-and-the-pad-question)
 - [20261111_1125 — docs/history by kind, generated index with summaries, migration](#20261111_1125--docshistory-by-kind-generated-index-with-summaries-migration)
 - [20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs](#20261105_2139--promote-quoted-front-matter-last-reviewed-decisions_to_adrs)
-- [20261105_2047 — adopt_governed_files: check recipe matched by exact name](#20261105_2047--adopt_governed_files-check-recipe-matched-by-exact-name)
-- [20261105_1725 — agents_chain check: AGENTS.md chains for Claude Code and Codex](#20261105_1725--agents_chain-check-agentsmd-chains-for-claude-code-and-codex)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -182,19 +180,6 @@ have. [references/files-history.md](references/files-history.md).
 
 references/generation-policy.md, promote step: quote front-matter values (an unquoted colon fails `archcore status`), give each proposed document `Last reviewed` (tracked-only freshness check), render
 decision ADRs with skill-knowledge-curator `decisions_to_adrs.py`, and clear the candidates file from every reference in the same pass. Found in the Continuum promotion, 2026-11-05.
-
-## 20261105_2047 — adopt_governed_files: check recipe matched by exact name
-
-The six `^check\b` patterns in `scripts/adoption/adopt_governed_files.py` also matched `check-links:` and `check-contracts:` (a hyphen is a word boundary). In Continuum (2026-11-05) a `check-links`
-recipe above `check` made the roles gate look missing, and the fix would have edited the wrong recipe. Now `^check(?=[ \t:])`. New test `test_hyphenated_check_recipes_are_not_the_check_recipe` fails
-on the old pattern; 222 tests pass.
-
-## 20261105_1725 — agents_chain check: AGENTS.md chains for Claude Code and Codex
-
-New `scripts/checks/agents_chain.py` (+ `tests/test_agents_chain.py`, 6 tests; recipe `just agents-chain <folder>`; catalogued in `scripts/README.md`): which AGENTS.md files Claude Code (`@` imports)
-and Codex (project-root markers, `project_doc_max_bytes`) load for a folder, with missing imports, cycles, a cut file, files Codex cannot see and Codex trust spread.
-`references/files-readme-agents-claude.md`: Learned 2026-11-05, AGENTS.md chains across folders, Claude Code vs Codex (inline block plus `.codex-root` marker; trust follows the project root; never a
-marker in a trusted folder holding untrusted repos). Smoke-run on three real folders, 0.05-0.42 s.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

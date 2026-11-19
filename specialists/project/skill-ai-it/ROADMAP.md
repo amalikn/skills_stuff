@@ -75,10 +75,10 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   text, and fall back to a `.proposed` file rather than rewriting the live one. Done when a test upgrades a commented `context-map.yaml` and every
   comment survives. Unblocks the unstamped-projects item above.
 
-- [ ] **`rotate_records.py` reads prose as a tracker path** (2026-10-27, ansible-wifi session): skill-coder's SCRATCHPAD front matter says
-  `Open items tracker: this file, Open items`; `scripts/records/rotate_records.py:771` takes the first word, so `just rotate --apply` moved its open
-  items into a new file named `this`, staged it, and linked it from SCRATCHPAD (undone by hand). Fix: treat a value that is not a path ending
-  in `.md` (or that says "this file") as "no separate tracker"; add a regression test with that front matter.
+- [ ] **`budget_plan.py` moves a CHANGELOG's `## Unreleased` out as reference** (2026-11-19, skill-coder govern; undone by hand): `move_sections` moved the live
+  159-line Unreleased to `docs/changelog-reference-1-*.md`; write-backs add under it and skill-coder's contract test reads only CHANGELOG and `docs/history/`.
+  `rotate_records.py` already protects it. Fix: never move Unreleased; when it alone holds a log over budget, report "cut a release"; add a regression test.
+  (The prose-as-tracker-path item that stood here is fixed: 4484e209, 2026-11-19.)
 
 - [ ] **`budget_plan.py --apply` audit reports LOST lines that were never in the file** (2026-10-27, ansible-wifi governance): after rotating
   SCRATCHPAD it printed `85 line(s) lost, e.g. '**Newest thread (2026-10-07, 13:36) ...'` and exited 1, but that line was not in SCRATCHPAD at
