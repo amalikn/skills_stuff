@@ -99,3 +99,16 @@ searched in the transcript (one peer answer arrived inside a system note). No su
 ## Dependency reviews
 
 No `Last reviewed` date changed on an existing document; the new plan and this record carry today's date as written.
+
+## Second close (20261119_1852)
+
+Walked again after the first close's commit, over the whole chat; no new operator message since. New since the first close:
+
+| #   | Item                                                                                                      | Type      | Governed file                     | Status |
+| --- | --------------------------------------------------------------------------------------------------------- | --------- | --------------------------------- | ------ |
+| 20  | First commit attempt refused by the attribution hook (a Co-Authored-By trailer from a system reminder); recommitted without it, per the operator rule | incident | this record | resolved |
+| 21  | skills_stuff `227ce5cb` pushed (skill-pad only, by pathspec); skill-ai-it untouched after two reverted edits (its SCRATCHPAD and ROADMAP at budget) | repo change | this record; skill-pad SCRATCHPAD | done |
+| 22  | wiki_stuff `951305e` pushed: skill-pad page and its log line only; continuum's log line and page left to that session | repo change | this record | done |
+| 23  | `just stale` in skill-pad: 0 findings after the commit                                                    | check     | this record                       | done   |
+
+Step 6b passed on the second walk: every operator and peer message has a row; skill write-back (skill-pad) committed and pushed; no sub-agents.
