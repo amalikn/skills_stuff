@@ -15,6 +15,11 @@ Kind: log
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261119_1109 — Keyless verification of a pulled restic copy; S3 gateway open by default (v2.3.13 -> v2.3.14)
+
+- `references/backup-disaster-recovery.md`: Learned 2026-11-19 under Copy placement and isolation, from Continuum TASK-30: restic content-hash file names let the off-site side verify a
+  pulled copy without the key; copy-never-delete; check the snapshot's pack set, not only the snapshot file; SeaweedFS S3 is open without `-s3.config`.
+
 ## 20261118_2152 — Firmware-armed watchdog closes the pre-userspace gap; selectors against the oldest bootloader (v2.3.12 -> v2.3.13)
 
 - `references/edge-appliances.md`: Learned 2026-11-18 under Hangs, watchdogs and power, from the smc-resiliency bench run: an unstartable trial kernel freezes the box until power is

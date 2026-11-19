@@ -46,6 +46,18 @@ The Rust API Guidelines (checklist and documentation chapter), The Rust Programm
 | Module and function | Core defaults                                                         | No change          |
 | Line length         | rustfmt's `max_width` (default 100, UNVERIFIED in the fetched README) | Do not hand-format |
 
+## Feature unification
+
+> **Learned 2026-11-19** · Cargo feature unification across dependencies · VERIFIED_PRIMARY (observed: build and `cargo tree`) · Source: Continuum P1 spike
+> `spikes/p1-coordinator/rust/Cargo.toml` (tools_stuff 5585b29), jsonschema 0.61.2, reqwest 0.13.5 · Falsifier: the same dependency set starting without the panic.
+> A dependency's default features can switch on a feature of a shared crate that your own manifest turned off. Here `jsonschema`'s defaults enabled `reqwest/rustls-no-provider`, so a
+> plain-HTTP client panicked at start ("No rustls crypto provider is configured") although the build was green. Before trusting a `default-features = false` line, run
+> `cargo tree -i <crate> -e features` to see who enables what, then either enable a provider feature or turn off the dependency's defaults. Test by starting the binary, not only by building.
+>
+> ```toml
+> reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls"] }  # "rustls" brings the provider jsonschema's defaults assumed
+> ```
+
 ## Open items
 
 - Async runtime and timeout patterns (for example `tokio::time::timeout`): UNVERIFIED stub.

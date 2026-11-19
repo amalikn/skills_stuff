@@ -97,6 +97,20 @@ orders of magnitude (UNVERIFIED as targets); measure your own in a drill.
 >   status: {state: proposed, since: "2026-11-18"}
 > ```
 
+> **Learned 2026-11-19** · off-site copy of a content-addressed backup repository · VERIFIED_PRIMARY (restic 0.19.1 docs, References, Repository Format; SeaweedFS wiki
+> S3-Configuration, edited 2026-10-31; both read 2026-11-19) · Source: Continuum TASK-30 design `docs/architecture-review/nas-pull-design-20261118_2206.md` (tools_stuff 6fec9a4) · Falsifier: a
+> restic file whose name is not the SHA-256 of its bytes; a SeaweedFS S3 gateway that denies anonymous access with no config file.
+> restic names every repository file except `config` by the SHA-256 of its content and never rewrites a file, so a pulled copy can be checked with `sha256sum` against the file names without
+> the repository key: the off-site side can verify integrity while holding ciphertext only, keeping the key apart (escrow rule above). Pull with copy-never-delete so a compromised primary
+> cannot prune the copy. For completeness, a key holder computes the packs a snapshot needs from the index and checks the off-site list covers them; "the snapshot file is there" alone
+> can pass a partial copy. A self-hosted S3 gateway may be open by default: SeaweedFS `weed s3` without `-s3.config` is "Default Effect: Allow"; give the puller a read-only identity
+> (`Read:<bucket>`) and bind the gateway to the private tunnel.
+>
+> ```text
+> pull:   rclone copy vps-s3:restic /nas/restic      # never sync: no deletes propagate
+> verify: for f in data/*/* index/* snapshots/*; do [ "$(sha256sum < "$f" | cut -c1-64)" = "$(basename "$f")" ] || echo "BAD $f"; done
+> ```
+
 ```text
 Backup isolation: production admin must not be able to delete copy 2 or copy 3
 

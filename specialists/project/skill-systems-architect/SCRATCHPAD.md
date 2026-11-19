@@ -12,6 +12,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- **20261119_1109** v2.3.14: `references/backup-disaster-recovery.md` keyless verification of a pulled restic copy and SeaweedFS S3 open by default (Continuum TASK-30).
 - **20261118_2124** v2.3.11: `references/fleet-management.md` gained the asset-identity entry (ID register and restore, storage card as an asset, no-deletion against a backfill), from a design review for unified-network-controller (D17) that the operator asked this pack to do; nothing else changed.
 
 - 20261116_1735: v2.3.10: edge-appliances, remote single-disk conversion tool limits and per-platform paths (from smc-resiliency).
