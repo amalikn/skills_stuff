@@ -24,6 +24,7 @@ Open items tracker: docs/trackers/open-items-20261027_1749.md
 
 ## Open items — KEEP
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): empty docs/goal-guard/ folders left over; examples/project_stuff/apn/demo-hub/plan.md not re-dated because its sha256 is pinned in demo-spoke/.gg/mappings.yaml (re-pin both together).
 - D3 risk: a signing key in the ssh-agent could let an agent sign approvals; settle before pilot step 5 (proposed: hardware key or per-use prompt; not decided).
 - D4: confirm which plan revision was issued (2026-10-14 email) before registering a baseline.
 - Housekeeping deferred by the operator: install symlinks and `/skill-gg` alias, skill-ai-it bootstrap, empty `docs/goal-guard/{scripts,tests,examples}` folders, odd-named test dump in

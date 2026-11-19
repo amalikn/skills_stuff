@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-drawio; the release heading holds the version of record.
-Last rotated: 20261119_1635
+Last rotated: 20261119_1659
 ---
 
 # Changelog
@@ -151,6 +151,11 @@ Last rotated: 20261119_1635
 - 20261026 E2E in-column links always go right (last column too); far links may run along a free target row (`row_move`); Learned 2026-10-26 in references/layout-and-routing.md
 - 20261026 Release 0.2.0 cut to keep this file within 200 lines and 25 KB (operator, 2026-10-26); 0.1.0 rotated to docs/history
 
+## 20261119_1659 — compare_drawings.py; Learned: consumer drawings after a renderer change
+
+- `scripts/compare_drawings.py` (`just compare-drawings`): two drawings compared per page, labels apart from style and geometry, compressed pages read; exit 1 on a label change. Tests in `tests/test_compare_drawings.py`.
+- references/data-first-diagrams.md Learned 2026-11-19: a renderer change turns consumer flows-check red; compare before re-rendering.
+
 ## 20261119_1635 — Periodic review; 90-day review window; tracker path; write-back headers
 
 - Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries (`NOTE_LINE_H` 13, base-layer lock supersedes "never locked"). Review window now 90 days (`--window-days 90`).
@@ -161,7 +166,3 @@ Last rotated: 20261119_1635
 ## 20261102_1347 — Learned: skip branch in its own lane; drift is not truth
 
 `references/layout-audits.md`, from ansible-wifi (2026-11-02).
-
-## 20261028_2318 — Engine performance review (read-only)
-
-docs/performance-review-20261028_2317.md: profile of three consumers, hotspots A-I with in-memory proven byte-identical gains (UNC render 17.5 -> 5.95 s with A+B+C+D+G), crossing-count and search duplication, ranked shortlist. Nothing applied; operator approves each item (ROADMAP).

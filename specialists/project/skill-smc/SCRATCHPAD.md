@@ -8,7 +8,7 @@ Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Rec
 Open items tracker: docs/trackers/open-items-20261010_1821.md
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261027_2015
+Last rotated: 20261119_1700
 Authority: working-state
 Scope: Working state between sessions
 Last reviewed: 2026-10-27
@@ -108,9 +108,9 @@ manual step someone has to remember**, with no tooling or enforcement — the co
 
 ## Open items
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): ref 18 Layout table lacks callback_plugins/; ref 17:57 kintore-smc01 not registered in Teleport not re-checked live; ref 17:107 a blockquoted code line inside a Learned entry lacks its `> ` prefix; scripts/README.md has Status current and no Last reviewed (baselined); local-knowledge-ansible .archcore adr-007 needs an amendment for the smc_update_php.yml retirement (proposed, not hand-edited).
 - [ ] **2026-10-27 `KEEP`, proposed, not decided:** `updated_at` format — the version rule says `YYYYMMDD_hhmm`, the manifest uses `YYYY-MM-DD`; no check.
 - [ ] **2026-10-27 `KEEP`, proposed, not decided:** drop tracker items 5 (inventory enforcement check) and 10 ("validate 13_known-issues").
-- [ ] **2026-10-27 `KEEP`, operator's branch-merge work:** `0c51cb1`, `4889af8`, `c19a61fa`, `17583da3` not on `rise`; 25 `rise-multi` commits unpushed.
 - Older open items are tracked in [open-items-20261010_1821.md](docs/trackers/open-items-20261010_1821.md).
 - [x] **2026-10-07 `KEEP`:** commit `fbc0aff` is labelled "skill-smc 0.1.98" but committed manifest 0.1.99. Closed 2026-10-08: pushed, so it stays as a known
   mislabel; CHANGELOG 20261007_1625 records the real content.

@@ -137,6 +137,11 @@ repoint-paths map +ARGS: _require-venv
 stale: _require-venv
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --window-days 90
 
+# Read-only: review dates across many projects (overdue now, due by a date, early Review by), e.g. just freshness-survey --scan /Volumes/Data/_ai/_skills/skills_stuff --window-days 90 --by 2027-01-01
+[positional-arguments]
+freshness-survey *args: _require-venv
+    @{{py}} "{{ai_it}}/scripts/checks/freshness_survey.py" "$@"
+
 # Run safe local preflight checks
 preflight: runtimes audit-scripts check lint-md
 

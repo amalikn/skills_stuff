@@ -429,3 +429,8 @@ return out, edge_issues(out)
 
 No screenshot: the output is text in the document itself.
 
+
+> **Learned 2026-11-19** · consumer drawings after a renderer change · VERIFIED_PRIMARY · Source: skill-vagrant and skill-goal-guard `flows-check`, `scripts/compare_drawings.py` (2026-11-19) · Falsifier: a consumer whose committed drawing still matches its render after a renderer change
+> A renderer change (the base-layer lock default of 2026-11-11, renamed edge ids, layout and title changes) turns every consumer's `flows-check` red without any change to
+> its map. Before re-rendering over the committed drawing, run `just compare-drawings committed.drawio scratch.drawio` against a render into a scratch copy: exit 0 means
+> no label text changed; on exit 1 read the listed labels. Both consumers' only text changes were the renderer's own generated titles ("End-to-end flow" -> "E2E flow").

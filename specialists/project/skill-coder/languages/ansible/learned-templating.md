@@ -137,8 +137,8 @@ Part of [ansible.md](../ansible.md).
 > ```
 
 > **Learned 2026-11-06 (k)** · ansible-lint 26.10.1 (ansible-core 2.21.5) production profile, PyYAML 6.0.3 · VERIFIED_PRIMARY (generated task files went from 51 findings
-> to 0) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/export_tasks.py` `tidy_name`, `join_templates` (7056782) · Falsifier:
-> a name with one template at its end flagged by `name[template]`, or `{{ (a) ~ (b) }}` rendering differently from `{{ a }}{{ b }}`.
+> to 0) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/export_tasks.py` `tidy_name`, `join_templates` (7056782)
+> · Falsifier: a name with one template at its end flagged by `name[template]`, or `{{ (a) ~ (b) }}` rendering differently from `{{ a }}{{ b }}`.
 > Generating task YAML for ansible-lint: `name[template]` wants at most one template, at the end, so move a name's templates to its end as one
 > expression (`text - {{ (x) ~ ' ' ~ (y) }}`) and capitalise it (`name[casing]`). PyYAML cannot fold a string with no spaces, so `{{ a }}{{ b }}` runs
 > stay over the line limit: join them as `{{ (a) ~ (b) }}` (parentheses keep `if/else` and filters bound; same rendered text, tested under Jinja).

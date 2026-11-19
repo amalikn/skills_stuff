@@ -35,7 +35,7 @@ Part of [ansible.md](../ansible.md).
 > A delta gate matches findings by file and line content against the base. When a commit in the pushed range rewrites most of a file, its untouched-looking old findings (short module names here) come
 > in as new and block the push. Fix them in that file in the same push (here `ansible.builtin.` on all ten tasks); lint the whole file before pushing a rewrite.
 
-> **Learned 2026-11-17 (b)** · `ansible.builtin.shell` with a pipe on Ubuntu 22.04 targets · UNVERIFIED for dash (ansible-lint `risky-shell-pipe` is VERIFIED_PRIMARY; whether
+> **Learned 2026-11-17 (b)** · `ansible.builtin.shell` with a pipe on Ubuntu 22.04 targets · UNVERIFIED (for dash: ansible-lint `risky-shell-pipe` is VERIFIED_PRIMARY; whether
 > 22.04's dash accepts `pipefail` was not checked on an SMC) · Source: ansible-wifi `roles/smc_url_capture/tasks/v1_teardown.yml` (rise 9f17dd64) · Falsifier: `set -o pipefail` succeeding under the
 > target's `/bin/sh`
 >

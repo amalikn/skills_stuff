@@ -27,17 +27,17 @@ Part of [shell.md](../shell.md).
 > **Learned 2026-11-09** · shell, ssh and macOS tooling · VERIFIED_PRIMARY (smc-resiliency S1 bench, transcript spike/out/s1-pi4-bench.log) ·
 > Source: smc-resiliency lab/adapters/transports.py @ 01cf282c and later · Falsifier: the behaviours below not reproducing on the same versions.
 > - A tool that prints its error on stdout and exits 0 (`vcgencmd` without root: `Can't open device file: /dev/vcio`) makes `cmd > file && next`
->   carry the error text forward as data. Check the content (an expected key or shape), not only the exit code.
+>  carry the error text forward as data. Check the content (an expected key or shape), not only the exit code.
 > - ssh with `StrictHostKeyChecking=no` and a saved key that no longer matches (an A/B box: each slot has its own host key) disables password
->   authentication silently; use `UserKnownHostsFile=/dev/null` for such lab boxes only. A ControlPath must be under 104 bytes. An agent holding
->   many keys exhausts the server's MaxAuthTries before the password: `SSH_AUTH_SOCK=` with `-o PubkeyAuthentication=no` or `IdentitiesOnly=yes`.
+>  authentication silently; use `UserKnownHostsFile=/dev/null` for such lab boxes only. A ControlPath must be under 104 bytes. An agent holding
+>  many keys exhausts the server's MaxAuthTries before the password: `SSH_AUTH_SOCK=` with `-o PubkeyAuthentication=no` or `IdentitiesOnly=yes`.
 > - A password helper (`SSH_ASKPASS` with `SSH_ASKPASS_REQUIRE=force`) keeps a vault password out of argv, output and logs.
 > - macOS: `screen` 4.00.03 has no `-Logfile` (`-L` writes `screenlog.0` in the working folder); `sync FILE` ignores the file and syncs everything
->   (slow); a `sudo` prompt behind `ssh ... | sudo dd` can sit hidden until Enter is pressed.
+>  (slow); a `sudo` prompt behind `ssh ... | sudo dd` can sit hidden until Enter is pressed.
 > - Typing into a console by fixed sleeps sends a password at the wrong prompt and echoes it into the log; wait for each prompt on screen first.
 
->  **Learned 2026-11-05** · BSD and GNU sed, `s` with a custom delimiter · VERIFIED_PRIMARY (macOS sed wrote two stray files into a role folder) ·
->  Source: this session's edit of an Ansible test fixture · Falsifier: a replacement holding the delimiter changes only the text
->  In `s#old#new#`, a `#` inside the replacement (a YAML comment, say) ends the replacement early. sed then reads the rest as flags, and
->  `w <file>` writes the matched lines to a file named after the rest of the comment, in the current folder. Pick a delimiter that cannot occur in
->  the text, or make the edit in Python with an exact-match assert, and run `git status` afterwards to catch stray files.
+> **Learned 2026-11-05** · BSD and GNU sed, `s` with a custom delimiter · VERIFIED_PRIMARY (macOS sed wrote two stray files into a role folder) ·
+> Source: this session's edit of an Ansible test fixture · Falsifier: a replacement holding the delimiter changes only the text
+> In `s#old#new#`, a `#` inside the replacement (a YAML comment, say) ends the replacement early. sed then reads the rest as flags, and
+> `w <file>` writes the matched lines to a file named after the rest of the comment, in the current folder. Pick a delimiter that cannot occur in
+> the text, or make the edit in Python with an exact-match assert, and run `git status` afterwards to catch stray files.

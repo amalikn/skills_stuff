@@ -20,6 +20,7 @@ tests. The skill-ai-it governance layer (navigation, context map, justfile, gove
 
 ## Open items
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): data-model.md §5 table row 'Only physical interfaces take cables' should add 'and not wireless' (Learned (p), §11); operations-cookbook.md:294 cites wc_ownership/ (now unc_ownership; historical citation); several Learned headers over 200 columns.
 - [ ] Live, version-pinned behavioural probes on a disposable install — `compatibility.yaml` rows above `observed_install` stay `pending_live_test` until then (handoff 2026-10-02).
 - [ ] Full client evaluation matrix (Claude Code with authentication, Codex) per [tests/eval-procedure.md](tests/eval-procedure.md); release claims stay PARTIAL until it runs.
 - [ ] skill-ai-it template drift (fix in skill-ai-it, not here): its `context-map.yaml` template lacks `skill_ai_it_version` and `update_rules.governance_navigation`

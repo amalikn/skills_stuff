@@ -39,6 +39,7 @@ same pass as this note (2026-09-17, staleness audit).
 
 ## Open items
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): schemas/DIVERGENCE.md lists model `?` for the ePMP counters observations, so ipv4_address and lan_mac_address look model-specific (add a model field to the observations or the generator); README:177 calls ePMP AP `wireless_link` null-or-object while DIVERGENCE shows 0 of 39 records.
 - **20261116_1754** Open (found by apn enterprise-strategy's write-back): `just check` fails on AGENTS.md's overdue review (due 2026-10-17); it needs a real re-read before its date moves.
 - [ ] Run `/skill-ai-it refresh` here: the navigation validator fails on stale managed blocks (`AGENTS.md` navigation, `scripts/README.md` scripts at the 2026-08-11 stamp) and
   warns on the `context-map.yaml` version (found 2026-10-05, v0.6.32).

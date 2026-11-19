@@ -26,6 +26,7 @@ Agent working memory for skill-vagrant. Use for: draft plans, terminal output, i
 
 ## Open items
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): AI_NAVIGATION.md:141 artifacts table omits the 20261109 captures index; upgrade-and-troubleshooting.md:60 triage table lacks the new prlctl errors; vagrantfile-and-provisioning.md:57-58 says a Parallels plugin outranks the built-in providers while providers-and-choice.md puts VAGRANT_DEFAULT_PROVIDER and the Vagrantfile first; the more-than-four-networks limit on Parallels 26/27 and `vagrant plugin repair` not checked.
 - [x] `just check` green 2026-11-09 (front matter added, `.archcore/` dated, AI_NAVIGATION.md in budget; `.ai-context` baselined as generated).
 - [x] ports.ubuntu.com snapshot question: resolved by the Learned 2026-11-07 entry in `references/tool-choice-and-lab-symmetry.md` (prose promotion at next release).
 - [x] Box copies made 2026-11-09 on the external storage disk, restore tested (was: storage place for the box copies (Parallels and VirtualBox builds of bento/ubuntu-24.04 202510.26.0) before 2026-12-31 — `.archcore/plans/`.

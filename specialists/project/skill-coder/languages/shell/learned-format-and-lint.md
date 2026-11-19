@@ -26,10 +26,10 @@ Part of [shell.md](../shell.md).
 > agent's command text that contains `dd`, a recursive force delete or a pipe into `sha256sum` is refused by this environment's guard
 > even inside a heredoc: write `head -c` fills, `rm` through a script file, and `sha256sum -c <file>`.
 
->  **Learned 2026-11-05 (ii)** · bash scripts that run code on remote hosts and check many hosts · VERIFIED_PRIMARY (skill-smc
->  smc_gateway_loss.sh and smc_change_parallel.sh, shellcheck 0.10) · Source: skill-smc scripts/probes/smc_gateway_loss.sh · Falsifier:
->  shellcheck stays quiet on a single-quoted remote probe, or a silent 2-minute check loop is read as working
->  Send the remote half as its own script on stdin (`ssh host "sh -s $arg" < remote.sh`). A single-quoted string draws SC2016, and a
->  `declare -f` function draws SC2329; each needs an inline disable, which is not allowed. A separate file is also linted and tested on its
->  own. When a script checks many hosts before acting, run the checks at once and print a line per host as each lands: one at a time with no
->  output (30 s timeout each), the operator read it as stalled and stopped it before anything ran.
+> **Learned 2026-11-05 (k)** · bash scripts that run code on remote hosts and check many hosts · VERIFIED_PRIMARY (skill-smc
+> smc_gateway_loss.sh and smc_change_parallel.sh, shellcheck 0.10) · Source: skill-smc scripts/probes/smc_gateway_loss.sh
+> · Falsifier: shellcheck stays quiet on a single-quoted remote probe, or a silent 2-minute check loop is read as working
+> Send the remote half as its own script on stdin (`ssh host "sh -s $arg" < remote.sh`). A single-quoted string draws SC2016, and a
+> `declare -f` function draws SC2329; each needs an inline disable, which is not allowed. A separate file is also linted and tested on its
+> own. When a script checks many hosts before acting, run the checks at once and print a line per host as each lands: one at a time with no
+> output (30 s timeout each), the operator read it as stalled and stopped it before anything ran.

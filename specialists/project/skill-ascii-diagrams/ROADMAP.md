@@ -18,6 +18,7 @@ Summary: >-
 
 ## Open
 
+- [ ] **Review follow-ups (periodic review 2026-11-19)**: the research folder rule says research-sources-<date> but the folder is ascii-sources-<date>, and its readme has none of the required sha256s; code-map.toml is required but missing; SKILL.md does not mention `ascii-fix --check`; aafigure's licence and the Unicode width counts not checked.
 - [ ] **Stage 2: graph renderer** ([graph-layout.md](references/graph-layout.md)): a spec of boxes and links laid out with skill-drawio's rules (layered rows, barycentre order, channels
   with one track per arrow, port spreading, crossing-cutting swaps; reused by import) and A* routing on the character grid after mermaid-ascii `getPath` and `mergePath` (MIT), with a crossing
   penalty; logic in `scripts/ascii/`.

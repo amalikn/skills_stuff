@@ -237,3 +237,17 @@ def classify(cmdline, held):
   skill scripts). A default change there is a write to every file those callers touch. Ship the new behaviour behind an opt-in flag, prove it with a
   before/after run over real files with the flag off (expect zero changes) and on, and let the operator decide whether the hooks pass the flag.
 - To find what a live window already touched, use a file saved just before the change as the mtime marker: `find <roots> -name '*.md' -newer <marker>`.
+
+> **Learned 2026-11-19** · output files named by a timestamp · VERIFIED_PRIMARY (two packs lost CHANGELOG entries; restored from git) · Source: skill-ai-it `scripts/records/rotate_records.py` `free_archive_name` and test `test_a_second_rotation_in_the_same_minute_keeps_the_first_archive` · Falsifier: two writes in the same stamp period that both survive without an existence check
+> A name stamped to the minute (`changelog-20261119_1628.md`) is not unique: two rotations in one minute wrote the same archive, the second overwrote the first, and the entries
+> the first had moved out of the live file were gone from both. Before writing a stamped file, check it does not exist and add a suffix (`-2`, `-3`) when it does; update any
+> pattern that recognises the stamped names (`-\d{8}_\d{4}(?:-\d+)?\.md$`). Prove it with a test that pre-creates the names, not with two quick runs that may straddle a minute.
+>
+> ```python
+> # skill-ai-it scripts/records/rotate_records.py (2026-11-19)
+> def free_archive_name(root: pathlib.Path, base: str) -> str:
+>   rel, n = f"{base}.md", 2
+>   while (root / rel).exists():
+>     rel, n = f"{base}-{n}.md", n + 1
+>   return rel
+> ```

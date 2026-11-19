@@ -18,6 +18,7 @@ Last rotated: 20261107_1723
 
 ## Open items
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): decide Go (gofmt tabs) and Rust (rustfmt 4) against the two-space rule (a stated loosening or a tightening); scripts/language_split.py misses `>  **Learned` (two spaces) and files a Learned body under the section title, and shell/topics.toml names learned-remote and learned-quoting with no files; Learned headers that run into their body (ansible learned-lint-and-tests 15-16 and 20-22, hcl.md 49, shell learned-format-and-lint 15-16, shell learned-safety 15-16); POSIX.1-2024 `set -o pipefail` not checked (posix-sh.md); efficiency-and-measurement 2026-11-09 `cut`/`head` line-buffering claim not checked (GNU stdbuf); documentation-and-headers and C-C13/C-C82 cite auto-memory feedback_no_noqa.md as source (promote the rule to governance); AI_NAVIGATION managed block names files the pack lacks.
 - KEEP enforcement of skill-coder on every code change (operator, 2026-11-11, unified-network-controller session: "shouldn't we be making it
   mandatory that whenever any code change needs to happen, skill coder should be used"; all four layers chosen, built in a dedicated session).
   Today a hook only checks that skill-coder was loaded, not that the code follows it; that session wrote two scripts and a plan's script

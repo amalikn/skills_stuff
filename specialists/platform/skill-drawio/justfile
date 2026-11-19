@@ -276,6 +276,11 @@ viewer-click *args:
 drawio-read *args: _require-venv
     @{{py}} scripts/drawio_read.py "$@"
 
+# Read-only: what a re-render would change, cell by cell (labels vs style and geometry); exit 1 when a label differs, e.g. just compare-drawings committed.drawio scratch.drawio
+[positional-arguments]
+compare-drawings *args: _require-venv
+    @{{py}} scripts/compare_drawings.py "$@"
+
 # Add values to flow-style lists in a YAML map without losing comments: plan by default, --apply to write, e.g. just yaml-list-patch map.yaml --list components --field depends_on --spec adds.json
 [positional-arguments]
 yaml-list-patch *args: _require-venv

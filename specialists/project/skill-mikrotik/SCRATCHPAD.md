@@ -27,6 +27,7 @@ Summary: Where the pack stands, what is running, and what to do next. Overwrite 
 
 ## Next actions
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): evidence labels mixed (SKILL.md lists VERIFIED-OBSERVED/-DOC; files also use VERIFIED-SOURCE, VERIFIED-CODE, VERIFIED_PRIMARY/SECONDARY); SKILL.md's skill-smc `metrics/` paths are `scripts/metrics/`; Current state dates from 2026-10-07. 450gmk3_v1.1.py restored to its original bytes 2026-11-19 (0c11906e had added a docstring).
 1. arrkapa switch must be replaced (kernel-failure / watchdog reboot loop, found 16:02); build the spare with the Pi script minus its five `mac-address=` commands. Watch batavia-downs.
 2. Survey `wh` (known issue 2).
 3. Cloned-MAC remedy proven on glen-hill (known issue 11); the rest one switch at a time with `just mac_reset` (`--apply` per operator go-ahead).

@@ -181,9 +181,26 @@ class PackageContract(unittest.TestCase):
         """Every Learned or Disputed entry has a CHANGELOG line naming its file and date, in CHANGELOG.md or a rotated docs/history file."""
         logs = [ROOT / "CHANGELOG.md", *sorted((ROOT / "docs" / "history").glob("changelog-*.md"))]
         changelog = "\n".join(p.read_text(encoding="utf-8") for p in logs)
-        for path in sorted([*(ROOT / "references").glob("*.md"), *(ROOT / "languages").glob("*.md")]):
-            for _kind, date in learned_entries(path.read_text(encoding="utf-8")):
-                self.assertTrue([ln for ln in changelog.splitlines() if date in ln and path.name in ln], f"{path.name} {date} not logged")
+        # Every problem is collected, not only the first (2026-11-19: a stop-at-first test hid 13 malformed and 6 unlogged entries for a week),
+        # and the language topic folders split out on 2026-11-07 are read too.
+        problems = []
+        for path in sorted([*(ROOT / "references").glob("*.md"), *(ROOT / "languages").rglob("*.md")]):
+            lines = _without_fences(path.read_text(encoding="utf-8")).splitlines()
+            heads = [i for i, ln in enumerate(lines) if re.match(r"^> {1,2}\*\*(?:Learned|Disputed)\b", ln)]
+            for n, i in enumerate(heads):
+                window = lines[i:min(i + 6, heads[n + 1] if n + 1 < len(heads) else len(lines))]
+                window[0] = re.sub(r"^>  ", "> ", window[0])
+                try:
+                    entries = learned_entries("\n".join(window))
+                except AssertionError as exc:
+                    problems.append(f"{path.relative_to(ROOT)}:{i + 1}: {exc}"[:160])
+                    continue
+                # An entry moved into languages/<lang>/ by the split was logged under its parent file, <lang>.md.
+                names = {path.name, f"{path.parent.name}.md"} if path.parent.parent.name == "languages" else {path.name}
+                problems += [f"{path.relative_to(ROOT)} {date} not logged" for _kind, date in entries
+                             if not [ln for ln in changelog.splitlines() if date in ln and any(nm in ln for nm in names)]]
+        self.maxDiff = None
+        self.assertEqual(problems, [])
 
     def test_helpers_portable_tested_and_documented(self) -> None:
         """Each helper is tested, stdlib-only, declares REQUIRES_PYTHON, parses at that grammar and documents every function."""

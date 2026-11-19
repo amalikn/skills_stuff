@@ -145,3 +145,8 @@ diff. Why: a hand-edited lock file can claim a version the resolver never chose.
 > day, month = int(m.group(1) or 1), MONTHS[m.group(2)]
 > year = int(m.group(3)) if m.group(3) else start.year + (month < start.month)
 > ```
+
+> **Learned 2026-11-19** · deciding whether a re-render may overwrite a committed drawing · VERIFIED_PRIMARY (an ad-hoc diff reported 201 cells and 0 label changes; the full one 462 cells and 1) · Source: skill-drawio `scripts/compare_drawings.py` on skill-vagrant and skill-goal-guard flows, 2026-11-19 · Falsifier: a diff that ignored compressed pages and still counted every cell
+> Before overwriting a generated file that people may have edited, diff it at the level of meaning (labels apart from style and geometry), with the format's own reader:
+> draw.io stores some pages compressed, and a diff that parsed only plain `mxCell`s saw half the drawing and reported no label change when the generated titles had changed.
+> Label changes are the ones to look at; geometry and style changes alone are a renderer upgrade.

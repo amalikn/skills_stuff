@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261119_1659.md](changelog-20261119_1659.md) 1 entry, 2026-10-28 to 2026-10-28: Engine performance review (read-only)
 - [changelog-20261119_1635.md](changelog-20261119_1635.md) 2 entries, 2026-10-26 to 2026-10-28: Placement searches: E2E columns, overview rows and group grid; Flow maps: quote yes/no decision labels
 - [changelog-20261026_1533.md](changelog-20261026_1533.md) 1 entry, 2026-10-19 to 2026-10-19: 2026-10-19
 

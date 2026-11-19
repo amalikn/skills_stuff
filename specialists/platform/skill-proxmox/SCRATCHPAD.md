@@ -33,6 +33,7 @@ done; `.archcore/` accepted; AGENTS.md trimmed and tracked in Git.
 
 ## Open items
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): tests/eval-procedure.md:17 'all three positive elements' follows a list of five; Learned headers run into their body at architecture-and-cluster.md:89 and storage.md:99; upgrade-and-troubleshooting.md Learned says `Enabled: false` where the body says `Enabled: no`; cookbook not re-verified on 9.2.
 - [ ] Live probes on a disposable node for the `UNVERIFIED` items: `pvesh set /cluster/sdn` apply form, live restore from PBS, hook-script phase names, the task list's errors filter, the disks list
   endpoint, Ubuntu cloud image without qemu-guest-agent.
 - [ ] Client evaluation matrix per [tests/eval-procedure.md](tests/eval-procedure.md) (with and without the skill), scenarios P-S01 to P-S20.

@@ -116,7 +116,7 @@ Part of [python.md](../python.md).
 >     break
 > ```
 
-> **Learned 2026-11-06** (promoted 2026-11-11 from enterprise-strategy's parked candidates) · Python, parsing hand-written list items · reusable_candidate ·
+> **Learned 2026-11-06** · Python, parsing hand-written list items · CANDIDATE (reusable_candidate; promoted 2026-11-11 from enterprise-strategy's parked candidates) ·
 > Source: apn scripts/project_sync.py `OUT_ITEM` @ 2683a323 · Falsifier: a hand-stamped line is left alone again.
 > A line format people type by hand gets the decorations they habitually add (here a leading `**YYYYMMDD_hhmm**` copied from ticked lines).
 > Accept the decoration as optional in the pattern and drop it, rebuilding the line on write; a refusal that recurs (30 Oct and 6 Nov) is the

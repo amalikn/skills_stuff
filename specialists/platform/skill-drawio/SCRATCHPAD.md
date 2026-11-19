@@ -18,6 +18,7 @@ Last rotated: 20261106_1032
 
 ## Open items
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): references/file-format.md:60 says the UNC tests assert layer order (no such test found in the pack); some Learned entries still name scripts/ascii_*.py from before skill-ascii-diagrams took them.
 - 20261102 chart-php-steps arc_clashes on `cli~0-close` (smc_change_flows_check exits 1). Plain flowchart: real spanning and the measured swap. `just check` runs no unit tests: add them.
 
 - Older open items are tracked in [open-items-20261028_2305.md](docs/trackers/open-items-20261028_2305.md).

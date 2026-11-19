@@ -387,3 +387,23 @@ HOST_RUN_TIMEOUT=240 infra/apn-unc01/ops/host-run.sh smoke.sh
 > matched nothing because rustfmt had split the expression over two lines, so the "mutated" run passed and looked like proof that the test was weak. Count the replacements and refuse to run when the
 > count is 0 (`re.subn(...)`, assert n == 1), and restore from a copy taken before the edit. The same applies to the restore: confirm the original is back (`grep -c` or a diff).
 
+
+> **Learned 2026-11-19 (b)** · a contract test over many entries or files · VERIFIED_PRIMARY (skill-coder `tests/test_package_contract.py`, this session) · Source: skill-coder test_write_back_entries_logged before and after 2026-11-19 · Falsifier: a stop-at-first test whose first failure was the only one
+> A test that raises on the first bad entry reports one problem and hides the rest: it stayed red for a week on one header while 13 malformed and 6 unlogged entries sat behind it,
+> and every fix revealed "the next" one. Collect every problem into a list and assert the list is empty (set `maxDiff = None` so the whole list prints). Re-read the test's
+> globs whenever files are split or moved: after a language file was split into `languages/<lang>/` topic files the test still globbed `languages/*.md`, so 7 malformed
+> headers in the topic files were never checked; and entries a split moves keep log lines that name the old file.
+>
+> ```python
+> # skill-coder tests/test_package_contract.py (2026-11-19)
+> problems = []
+> for path in sorted([*(ROOT / "references").glob("*.md"), *(ROOT / "languages").rglob("*.md")]):
+>     ...
+>     try:
+>         entries = learned_entries("\n".join(window))
+>     except AssertionError as exc:
+>         problems.append(f"{path.relative_to(ROOT)}:{i + 1}: {exc}"[:160])
+>         continue
+> self.maxDiff = None
+> self.assertEqual(problems, [])
+> ```

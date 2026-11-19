@@ -27,6 +27,7 @@ Open items tracker: docs/trackers/open-items-20261027_2022.md
 
 ## Open items — KEEP
 
+- Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): workflow.md project-files tree (a code block) lacks .kc/aliases.jsonl and .kc/verify/; scripts/readme lacks the verify-omlx and pilot-inventory recipes; errors.py docstring cites invocation-contract.md for exit codes (they are in workflow.md).
 - `candidates` 1.9 s at 3,496 claims, within budget; `kc drift` precision is low, advisory only.
 - Not built: P5, P6, P7, P17, P22-P24 (references/feature-inventory.md, Fixes). P25's predicate list came from Continuum's counts; `must` stays in conflict detection.
 - Continuum recorded the operator rulings of 2026-11-01 21:41 (55 decided, 45 open); `cf-73c4a38aa4` left open by the operator. `cl-1334d9309fb3` successor repaired live (`dr-bc8472c67d49`, P27).

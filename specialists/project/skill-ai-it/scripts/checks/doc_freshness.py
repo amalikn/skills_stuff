@@ -7,7 +7,8 @@ loads whole keep growing, and a file without a header must be opened to be judge
 (`file_headers.py`, the governance "File headers" standard):
 
 1. `review-due`: a living markdown document (`Status: current`, `draft` or `proposed`, Category not point-in-time) past `Review by`, else
-   `Last reviewed` + 30 days. Reports, reviews, audits, sources and evidence describe a moment and never expire.
+   `Last reviewed` + the window (30 days by default; `--window-days`, skill packs pass 90). Reports, reviews, audits, sources and evidence
+   describe a moment and never expire.
 2. `superseded-in-place`: `Status: superseded ...` outside an `archive/` folder (move it with `move_doc.py`).
 3. `dependency-changed`: a file named under `Depends on` changed content after the document's `Last reviewed` (a commit that only rewrote link
    targets or backticked paths does not count; 2026-11-11).
