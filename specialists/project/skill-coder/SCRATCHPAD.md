@@ -8,7 +8,7 @@ Last reviewed: 2026-10-19
 Kind: state
 Budget: 200 lines, 25 KB
 Keep: KEEP-marked items only
-Open items tracker: this file, Open items
+Open items tracker: docs/trackers/open-items-20261119_1559.md
 Summary: Transient working state for skill-coder; durable facts move to references, sources.yaml or CHANGELOG.
 Archive: docs/history/ (`--find`, `--show`)
 Last rotated: 20261107_1723
@@ -18,7 +18,6 @@ Last rotated: 20261107_1723
 
 ## Open items
 
-- Older open items are tracked in [this](this).
 - KEEP enforcement of skill-coder on every code change (operator, 2026-11-11, unified-network-controller session: "shouldn't we be making it
   mandatory that whenever any code change needs to happen, skill coder should be used"; all four layers chosen, built in a dedicated session).
   Today a hook only checks that skill-coder was loaded, not that the code follows it; that session wrote two scripts and a plan's script

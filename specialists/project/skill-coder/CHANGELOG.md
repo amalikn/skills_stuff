@@ -26,6 +26,7 @@ Last rotated: 20261119_1554
 
 ## Unreleased
 
+- 2026-11-19: references/configuration-and-literals.md, Learned 2026-11-19 (header values used as paths); testing.md production proof needs authorisation; stray `this` removed.
 - 2026-11-19: periodic review (30-day doc-freshness): 31 files re-read in full and dated 2026-11-19, plus SETUP.md; body rules aligned with their Learned entries, Summaries, Scopes and
   Contents fixed, lifted UNVERIFIED labels where captures and tests now exist, ROADMAP restated (default since 2026-10-20; write-back test red, full scan). No Learned or Disputed entry changed.
 - 2026-11-19: languages/rust.md, the `rustls-no-provider` unification recurred from a sibling workspace member (rule tightened), and a new section "Tests, build scripts and limits" (sqlx `migrate!`

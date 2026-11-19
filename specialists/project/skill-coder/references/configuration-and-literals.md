@@ -68,3 +68,17 @@ helper:
 > `write_files` (network config, the forwarder's startup config, a per-VM HA config with role and priority from the IaC variables) and left
 > `runcmd` to apply them. `write_files` runs on first boot only, so a later edit still needs a direct change or a redeploy. Add a reboot
 > test that checks the config, routes and daemons all come back.
+
+## Header and config values used as paths
+
+> **Learned 2026-11-19** · free-text header or config values that a tool later uses as a path · VERIFIED_PRIMARY (regression test) · Source: skill-ai-it `scripts/records/rotate_records.py` and `tests/test_rotate_records.py` (fix of 2026-11-19) · Falsifier: a tool that writes to a header-named path and never meets a prose value there
+> A governed-file header `Open items tracker: this file, Open items` was written as prose; the rotator took its first word as the tracker path, created a file named `this` at the project root and
+> linked it from the live file, unnoticed for twelve days. A value that becomes a write target is checked for its shape (relative, inside the project, expected suffix) before any write; a value that
+> fails is ignored with a message naming it, never written to. The regression test feeds the prose value and asserts no file appears.
+>
+> ```python
+> # scripts/records/rotate_records.py (skill-ai-it, 2026-11-19)
+> if tracker_rel and (not tracker_rel.endswith(".md") or os.path.isabs(tracker_rel) or ".." in pathlib.PurePosixPath(tracker_rel).parts):
+>   print(f"{live}: Open items tracker value {tracker_rel!r} is not a markdown path inside the project; open items stay in place")
+>   tracker_rel = ""
+> ```

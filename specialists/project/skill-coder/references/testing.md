@@ -22,13 +22,13 @@ Summary: >-
 
 ## Levels
 
-| Layer | Test kind | Why |
-| --- | --- | --- |
-| Core, pure policy, data | Unit tests, no network, no fixtures beyond values | Fast and exact; most tests live here (the test pyramid, VERIFIED_SECONDARY, Fowler) |
-| Drivers and parsers | Fixture tests on recorded real output | The parser is checked against what the target really says |
-| Services | Tests on fakes of each contract | Use cases test without outside systems |
-| Seams to outside systems | A shared contract suite every implementation (real and fake) passes | The fake cannot drift from the real thing |
-| Whole program | A few end-to-end or smoke runs, read-only | Wiring is checked without a broad slow suite |
+| Layer                    | Test kind                                                           | Why                                                                                 |
+| ------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Core, pure policy, data  | Unit tests, no network, no fixtures beyond values                   | Fast and exact; most tests live here (the test pyramid, VERIFIED_SECONDARY, Fowler) |
+| Drivers and parsers      | Fixture tests on recorded real output                               | The parser is checked against what the target really says                           |
+| Services                 | Tests on fakes of each contract                                     | Use cases test without outside systems                                              |
+| Seams to outside systems | A shared contract suite every implementation (real and fake) passes | The fake cannot drift from the real thing                                           |
+| Whole program            | A few end-to-end or smoke runs, read-only                           | Wiring is checked without a broad slow suite                                        |
 
 ## Rules
 
@@ -46,19 +46,17 @@ Summary: >-
 ## Checks that can fail
 
 > **Learned 2026-11-18** · catalog checks over a justfile · VERIFIED_PRIMARY · Source: Continuum `scripts/govcheck/checks/catalogs.py:91` (tools_stuff b6370ba..), probe recipe test · Falsifier: a
-> justfile whose `name := value` line the corrected pattern reads as a recipe.
-> A recipe pattern like `^([\w-]+)(?: [^\n:]*)?:` also matches variable assignments (`py := ...`) and `set dotenv-load := false`, so the check demanded catalog rows for `py`, `wc`, `set`. Six fake
-> rows ("read-only governance inspection") had been added to satisfy it, which hid the false positive and would hide a real one. Fix the pattern, not the catalog: skip `:=` with a lookahead,
-> remove the fake rows, and prove the check still fails on a probe recipe.
+> justfile whose `name := value` line the corrected pattern reads as a recipe. A recipe pattern like `^([\w-]+)(?: [^\n:]*)?:` also matches variable assignments (`py := ...`) and `set dotenv-load :=
+> false`, so the check demanded catalog rows for `py`, `wc`, `set`. Six fake rows ("read-only governance inspection") had been added to satisfy it, which hid the false positive and would hide a real
+> one. Fix the pattern, not the catalog: skip `:=` with a lookahead, remove the fake rows, and prove the check still fails on a probe recipe.
 >
 > ```python
 > recipes = set(re.findall(r"^([\w-]+)(?: [^\n:]*)?:(?!=)", read("justfile"), re.M))  # `name := value` is a variable, not a recipe
 > ```
 
 A governance check, lint rule or validator lands with a negative test that turns it red on a crafted bad input. Why: a check that cannot fail is not coverage (skill-ai-it governance-check doctrine).
-When a check starts in warn mode, its count is held by a shrink-only baseline and switches to fail mode at a named milestone.
-The proof is checked too: confirm the bad input really took effect (count a mutation's replacements, assert a fixture edit matched) and that it left
-nothing behind (plant into a copy, or restore and confirm the original is back), as the Learned entries below found.
+When a check starts in warn mode, its count is held by a shrink-only baseline and switches to fail mode at a named milestone. The proof is checked too: confirm the bad input really took effect (count
+a mutation's replacements, assert a fixture edit matched) and that it left nothing behind (plant into a copy, or restore and confirm the original is back), as the Learned entries below found.
 
 > **Learned 2026-10-20** · any project · VERIFIED_PRIMARY · Source: unified-network-controller `tests/test_topology_preview_scripts.py`, `wc-local/scripts/nautobot_tools/app_verify.py` (both fixed 2026-10-20) · Falsifier: a mirror tool kept in step with its source for months with no test tying them
 > A helper that mirrors product inputs (a preview page that loads the page's scripts, a verifier that builds the product's image) drifts silently when the product changes, and a stale mirror passes
@@ -168,11 +166,10 @@ check: _require-venv
 > ```
 
 > **Learned 2026-11-18** · fault tests whose harness can rescue the target · VERIFIED_PRIMARY (a bench run printed PASS for a recovery that needed the harness's
-> power cycle; a reviewer caught it from the transcript) · Source: smc-resiliency `lab/logic/s1.py` `outcome`, `lab/tests/test_bench.py` @ f5c16060 ·
-> Falsifier: a harness-assisted recovery that is indistinguishable, in the outcome the operator reads, from an unassisted one and still safe to gate on.
-> A harness that restores the system under test when it stops answering (a power cycle, a restart, a retry) so the run can continue must carry that fact into the
-> verdict. Judge the end state and the assistance separately, give the assisted case its own word and exit code, and prove it with a negative test in which the fake
-> target needs the rescue:
+> power cycle; a reviewer caught it from the transcript) · Source: smc-resiliency `lab/logic/s1.py` `outcome`, `lab/tests/test_bench.py` @ f5c16060 · Falsifier: a harness-assisted recovery that is
+> indistinguishable, in the outcome the operator reads, from an unassisted one and still safe to gate on. A harness that restores the system under test when it stops answering (a power cycle, a
+> restart, a retry) so the run can continue must carry that fact into the verdict. Judge the end state and the assistance separately, give the assisted case its own word and exit code, and prove it
+> with a negative test in which the fake target needs the rescue:
 >
 > ```python
 > def outcome(ok: bool, rescued: int) -> tuple[str, int]:
@@ -185,8 +182,8 @@ check: _require-venv
 
 ## Proof against the real target
 
-- Before claiming a capability works, verify it against a real target (an isolated or spare one; a read-only proof may run against production, Learned
-  2026-11-18 below), not only a mock. Why: a stub only proves the code agrees with the stub.
+- Before claiming a capability works, verify it against a real target (an isolated or spare one; a read-only proof may run against production where the project authorises it, leaving nothing on the
+  host: Learned 2026-11-18 below, a candidate until a second project agrees), not only a mock. Why: a stub only proves the code agrees with the stub.
 - Report success at the outcome the operator sees (stored, visible, healthy), not at "the call returned 200" ([safety-and-writes.md](safety-and-writes.md)).
 - A single success is a candidate, not a rule, until a second environment, the official docs or the source agrees ([evolution-and-write-back.md](evolution-and-write-back.md)).
 
@@ -351,11 +348,10 @@ p.write_text(orig)   # same text, newer mtime: the derived .pptx check then fail
 > ```
 
 > **Learned 2026-11-17 (b)** · mutation checks in Python (break the code, expect red, restore) · VERIFIED_PRIMARY · Source: skill-drawio
-> `scripts/ascii_fix.py` mutation of `if held:` to `if True:`, commit 421877e · Falsifier: a restored module that runs its restored code with the cache prefix set.
-> Python reuses a cached `.pyc` when the source's mtime (whole seconds) and size match. A mutation of the same length (`if held:` to `if True:`), tested
-> and restored within the same second, leaves the mutated bytecode in the cache, so the restored code keeps failing (or a broken one keeps passing).
-> With `PYTHONPYCACHEPREFIX` set the cache sits outside the folder, so `__pycache__` looks empty. Run mutation tests with `python3 -B` and `touch` the
-> source after restoring it.
+> `scripts/ascii_fix.py` mutation of `if held:` to `if True:`, commit 421877e · Falsifier: a restored module that runs its restored code with the cache prefix set. Python reuses a cached `.pyc` when
+> the source's mtime (whole seconds) and size match. A mutation of the same length (`if held:` to `if True:`), tested and restored within the same second, leaves the mutated bytecode in the cache, so
+> the restored code keeps failing (or a broken one keeps passing). With `PYTHONPYCACHEPREFIX` set the cache sits outside the folder, so `__pycache__` looks empty. Run mutation tests with `python3 -B`
+> and `touch` the source after restoring it.
 >
 > ```bash
 > cp mod.py /tmp/keep.py && sed -i '' 's/if held:/if True:/' mod.py && python3 -B -m unittest tests.test_mod   # must go red
@@ -363,11 +359,10 @@ p.write_text(orig)   # same text, newer mtime: the derived .pptx check then fail
 > ```
 
 > **Learned 2026-11-17 (c)** · testing a repair tool (a fixer, formatter or migrator) on real input · VERIFIED_PRIMARY · Source: skill-ascii-diagrams
-> `scripts/ascii_fix.py`, commits 49231b4 to 5b2224a · Falsifier: a repair tool whose unit tests passed and whose real-corpus sweep found nothing new.
-> Unit tests built from the cases you thought of passed every time; each real defect was found by sweeping a corpus of real files and comparing the tool
-> with an independent checker, file by file: a diff where the checker reported nothing was a restyle or a misread (chained boxes widened, a grid divider read
-> as a bottom, a generated file written, a list of sentences aligned), and a finding the checker lacked was either a true positive it missed or a new false
-> one. Give the tool a no-worse guard against that checker, run the sweep after every rule change, and turn each surprise into a fixture before fixing it.
+> `scripts/ascii_fix.py`, commits 49231b4 to 5b2224a · Falsifier: a repair tool whose unit tests passed and whose real-corpus sweep found nothing new. Unit tests built from the cases you thought of
+> passed every time; each real defect was found by sweeping a corpus of real files and comparing the tool with an independent checker, file by file: a diff where the checker reported nothing was a
+> restyle or a misread (chained boxes widened, a grid divider read as a bottom, a generated file written, a list of sentences aligned), and a finding the checker lacked was either a true positive it
+> missed or a new false one. Give the tool a no-worse guard against that checker, run the sweep after every rule change, and turn each surprise into a fixture before fixing it.
 >
 > ```bash
 > for f in docs/*/*.md; do out=$(python3 -B fix.py "$f"); d=$(grep -c '^[-+][^-+]' <<<"$out"); c=$(python3 check.py "$f" | grep -c 'loses'); \
@@ -375,10 +370,9 @@ p.write_text(orig)   # same text, newer mtime: the derived .pptx check then fail
 > ```
 
 > **Learned 2026-11-18** · real-target proof · VERIFIED_PRIMARY · Source: unified-network-controller `wc-local/scripts/nautobot_tools/sor_readback.py` (staleness audit 16 slurp) · Falsifier: a smoke run this way that leaves a file on the host
-> To prove a changed read-only script against production before it is deployed, send the new module over stdin to the host's own interpreter instead of copying it: no file lands
-> on the host, and the run uses the host's environment and tokens. Disable the module's `__main__` guard and call `main()` explicitly. The read-back below went from not finishing
-> in 500 s to 825 objects in 6 s, measured on the target before any commit. Pair it with a pure function that takes the I/O as an argument (`read_by_type(get, ...)`), so the
-> same logic is tested offline with a fake `get`.
+> To prove a changed read-only script against production before it is deployed, send the new module over stdin to the host's own interpreter instead of copying it: no file lands on the host, and the
+> run uses the host's environment and tokens. Disable the module's `__main__` guard and call `main()` explicitly. The read-back below went from not finishing in 500 s to 825 objects in 6 s, measured
+> on the target before any commit. Pair it with a pure function that takes the I/O as an argument (`read_by_type(get, ...)`), so the same logic is tested offline with a fake `get`.
 
 ```bash
 # project wrapper: host-run.sh sends a local script to `bash -s` on the host
@@ -389,8 +383,7 @@ HOST_RUN_TIMEOUT=240 infra/apn-unc01/ops/host-run.sh smoke.sh
 ```
 
 > **Learned 2026-11-19** · Mutation checks that never mutated · VERIFIED_PRIMARY (two runs) · Source: continuum-app session 2026-11-19 (TASK-178 step-up check)
-> · Falsifier: a mutation tool that reports when its pattern matched nothing.
-> "Break the code, watch the test fail" can pass for the wrong reason: a `sed` substitution aimed at `if !actor.auth_time` matched nothing because rustfmt had split the
-> expression over two lines, so the "mutated" run passed and looked like proof that the test was weak. Count the replacements and refuse to run when the count is 0
-> (`re.subn(...)`, assert n == 1), and restore from a copy taken before the edit. The same applies to the restore: confirm the original is back (`grep -c` or a diff).
+> · Falsifier: a mutation tool that reports when its pattern matched nothing. "Break the code, watch the test fail" can pass for the wrong reason: a `sed` substitution aimed at `if !actor.auth_time`
+> matched nothing because rustfmt had split the expression over two lines, so the "mutated" run passed and looked like proof that the test was weak. Count the replacements and refuse to run when the
+> count is 0 (`re.subn(...)`, assert n == 1), and restore from a copy taken before the edit. The same applies to the restore: confirm the original is back (`grep -c` or a diff).
 
