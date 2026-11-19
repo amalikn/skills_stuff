@@ -294,3 +294,12 @@ Baselines:
 [a7url]: https://developer.apple.com/help/account/certificates/mdm-vendor-csr-signing-certificate
 
 [m2url]: https://github.com/micromdm/micromdm/blob/main/docs/user-guide/quickstart.md
+
+> **Learned 2026-11-19** · writing SD cards from macOS · VERIFIED_PRIMARY (bench card writes on the operator's Mac)
+> Source: smc-resiliency lab/media.toml and malik1tb lab-evidence/20261119/flash-c2 ·
+> Falsifier: a root shell from `osascript ... with administrator privileges` that opens /dev/rdiskN for writing on the same macOS.
+> - A root process started through `osascript ... with administrator privileges` could neither read an image on an external volume nor open /dev/rdiskN ("Operation not permitted"): privacy
+>   controls (TCC) need Full Disk Access, which the user's Terminal has; `sudo dd` in that Terminal worked.
+> - Right after a raw write macOS mounts the card's new FAT partition and adds `.Spotlight-V100` and `.fseventsd`, so a whole-card read-back hash differs from a correct write. Read back only
+>   regions macOS cannot mount (or unmount before reading and compare the FAT partition file by file).
+> - A Mac's USB card reader does not expose an SD card's CID; read it on the box (`/sys/block/mmcblk0/device/cid`).

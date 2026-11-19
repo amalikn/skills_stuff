@@ -445,3 +445,11 @@ Measurement and hardware:
   bits (VERIFIED_PRIMARY, checked 2026-10-29).
 - [smartmontools](https://www.smartmontools.org/): read this for SMART attributes, `smartctl` and the drive database.
 - [JEDEC JESD218 SSD endurance](https://www.jedec.org/standards-documents/docs/jesd218b01): read this for how TBW endurance ratings are defined.
+
+> **Learned 2026-11-19** · edge-box bench practice · USER_STATED (operator) and VERIFIED_PRIMARY (bench)
+> Source: smc-resiliency rules bench-link-is-not-the-field and both-platforms-always; lab/media.toml ·
+> Falsifier: a link-dependent result that holds unchanged on a satellite-shaped link (then shaping was unnecessary for that case).
+> - A bench on a fast LAN proves only link-independent behaviour (firmware, boot, watchdog, storage); anything that reaches a controller, delivers releases or times out on the network is tested
+>   on a link shaped like the field's (tc netem) and its record names the profile.
+> - Track every boot medium by its hardware identity (SD CID, disk serial) with a physical label tying the card in the hand to its entry; a card whose CID name says 16 GB while it reports 32 GB,
+>   with an unassigned maker ID, is no-name and may be fake-capacity: check with a full write and read (f3) before wear or fill tests.

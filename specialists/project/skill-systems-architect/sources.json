@@ -1601,6 +1601,14 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-edf8421d",
+   "title": "launchpad.net",
+   "url": "https://launchpad.net/ubuntu/+archive/primary/+files/",
+   "evidence": "CITED",
+   "note": "cited in references/linux-unix.md",
+   "generated": true
+  },
+  {
    "id": "C-1260f6c6",
    "title": "cafurl",
    "url": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/",

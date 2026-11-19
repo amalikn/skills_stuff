@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-19: linux-unix.md (watchdog open_timeout gap, Ubuntu panic and lockup defaults, cloud-init 22.2 chpasswd, Launchpad +files), macos-and-endpoints.md (TCC raw-disk writes, automount read-back), edge-appliances.md (bench link versus field, media identity); from smc-resiliency.
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
 ## 20261119_1539 — TLS edge client-certificate anchors; Keycloak issuer across networks (v2.3.14 -> v2.3.15)

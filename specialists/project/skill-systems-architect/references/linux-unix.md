@@ -242,3 +242,18 @@ Network receive path:
 [s1url]: https://www.freedesktop.org/software/systemd/man/latest/journald.conf.html
 
 [s2url]: https://www.freedesktop.org/software/systemd/man/latest/systemd-timesyncd.service.html
+
+> **Learned 2026-11-19** · Linux watchdog, panic and lockup defaults on Ubuntu (raspi 5.15/6.8, generic 5.15/6.8) · VERIFIED_PRIMARY · Source: kernel Documentation/watchdog/watchdog-parameters.rst
+> and admin-guide/sysctl/kernel.rst (fetched 2026-11-19); smc-resiliency lab test record sections 25 and 26 (apn commits ba8e8c11, 51fa3f2f); read-only reads of deployed boxes
+> Falsifier: a box where a hardware watchdog started by firmware is reset while no userspace has opened it, with open_timeout 0.
+> - The watchdog core pings a running hardware watchdog (WDOG_HW_RUNNING, e.g. armed by firmware) until userspace opens /dev/watchdog; `watchdog.open_timeout` caps that and 0 (Ubuntu's
+>   CONFIG_WATCHDOG_OPEN_TIMEOUT) means for ever. A boot stuck between the driver's probe and systemd (initramfs waiting for a root) is never reset: on a bench Pi it stayed dark until power was cut;
+>   with `watchdog.open_timeout=60` on the kernel command line it reset 61 s after /init. A healthy boot with systemd 30 s late was not reset under that cap.
+> - Ubuntu defaults leave a frozen box frozen: `kernel.panic=0` (a panic halts for ever; on an x86 VM 441 s until a hypervisor reset, with `kernel.panic=10` back in 34 s), softlockup_panic,
+>   hardlockup_panic, hung_task_panic and panic_on_oops all 0; the x86 chipset watchdog drivers (iTCO_wdt, it87_wdt) are modules Ubuntu blacklists, and systemd RuntimeWatchdogUSec is 0.
+>   `hung_task_panic=1` rebooted a VM whose writer was stuck on a frozen filesystem (cause inferred: no journal across boots). The Pi 4 has no hard-lockup detector ("Hard watchdog permanently
+> disabled").
+> - cloud-init 22.2 (Ubuntu 22.04.1) rejects `chpasswd: users:` (a 22.3 form) and treats the whole cloud-config as invalid; `chpasswd: list: ["user:<hash>"]` works on both. A new NoCloud
+>   `instance-id` in meta-data makes cloud-init run the per-instance modules again.
+> - Superseded Ubuntu .debs stay downloadable by file name from Launchpad: `https://launchpad.net/ubuntu/+archive/primary/+files/<pkg>_<version>_<arch>.deb` (303 to the librarian), useful to pin a
+>   bench box to a fleet's exact versions when the archive index has moved on.
