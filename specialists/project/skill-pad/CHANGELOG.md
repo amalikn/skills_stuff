@@ -14,6 +14,10 @@ Last rotated: 20261119_1631
 
 # Changelog — skill-pad
 
+## 20261119_1648 — SKILL.md names installed CLI 0.21.0; --op-key rule names the commands that take it
+
+SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the references and the upstream mirror stay mapped from v0.19.2. The --op-key rule now lists the 0.21.0 commands that accept it (item create, patch, comment, note, decide, copy, chat send, push) and says item update has none, read from pad help --format md on 2026-11-19 (references/cli-reference.md Learned 2026-11-18).
+
 ## 20261119_1631 — Periodic review; 90-day review window
 
 - Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now 90 days (`--window-days 90` in the justfile).
