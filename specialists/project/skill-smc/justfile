@@ -39,6 +39,13 @@ check: _require-venv
     @{{py}} scripts/check_governance.py
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
     @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
+    @just lint_py
+
+# Lint and format-check Python with ruff (ruff.toml: files that predate 2026-11-19 are excluded until a reformat is decided)
+lint_py:
+    @uvx ruff check --no-cache .
+    @uvx ruff format --no-cache --check .
+
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
@@ -161,10 +168,15 @@ ansible_change_reach +args: _require-venv
 local_knowledge_index days="14":
     @bash scripts/ansible/local_knowledge_index.sh --days "{{days}}"
 
-# Add a new SMC to an ansible-wifi inventory (3 groups + group/host/topology vars). Plan only unless args include --apply.
-# Example: just smc_inventory_add --flavor rct --env stage --host php-rct-smc01 --siteid-from-box
+# Add a new SMC to an ansible-wifi inventory, any flavor (rct, wh, nbn_wh, nbn_accelerate, rcp): 3 groups + group/host/topology vars from
+# templates/inventory/. Plan only unless args include --apply. x86 flavors need --size small|big (or --topology-from <site>, nbn_accelerate --booth).
+# Example: just smc_inventory_add --flavor rct --env prod --host haji-ali-smc01 --siteid 663 --iridium
 smc_inventory_add *args: _require-venv
     @{{py}} scripts/ansible/smc_inventory_add.py {{args}}
+
+# Offline tests for smc_inventory_add.py (every flavor, Iridium flag, output faults, refusals); needs ansible-playbook on PATH.
+test_smc_inventory_add: _require-venv
+    @{{py}} scripts/ansible/test_smc_inventory_add.py
 
 # Mark SMCs as Iridium (smc_bases_iridium: true) in an ansible-wifi checkout. Plan only unless args include --apply.
 # Example: just smc_mark_iridium --repo /Volumes/Data/_ansible/ansible-wifi --flavor rct host-a,host-b

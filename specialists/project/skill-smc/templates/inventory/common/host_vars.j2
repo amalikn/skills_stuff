@@ -1,0 +1,11 @@
+{#
+  host_vars/<host>.yml for a new SMC, any flavor (rendered by scripts/ansible/smc_inventory_add.py).
+  Input variables:
+    eclipse_site_ID: <eclipse_site_ID>
+    smc_bases_iridium: true | false   (written only when true, as a plain YAML boolean like every existing site)
+  #}
+---
+site_eclipse_siteid: {{ eclipse_site_ID }}
+{% if smc_bases_iridium | bool %}
+smc_bases_iridium: true
+{% endif %}

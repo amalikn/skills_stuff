@@ -14,6 +14,7 @@
 - [Two silent-failure gotchas found in `smc_system`/`smc_update_kernel` (2026-09-01/03)](#two-silent-failure-gotchas-found-in-smc_systemsmc_update_kernel-2026-09-0103)
 - [`smc_dhcpd` on branch `unc-virtual-smc-malik-rcp01`: debounced restart hook and a start limit (2026-09-27)](#smc_dhcpd-on-branch-unc-virtual-smc-malik-rcp01-debounced-restart-hook-and-a-start-limit-2026-09-27)
 - [What a low-touch SMC keeps per device, and where it comes from (read 2026-09-27, branch `unc-virtual-smc-malik-rcp01`)](#what-a-low-touch-smc-keeps-per-device-and-where-it-comes-from-read-2026-09-27-branch-unc-virtual-smc-malik-rcp01)
+- [Two failures from one RISE run on `rct` (2026-10-07, branch `unc-virtual-smc-malik-rcp01`)](#two-failures-from-one-rise-run-on-rct-2026-10-07-branch-unc-virtual-smc-malik-rcp01)
 
 - Operational learning capture
 - Task key order (`when:` last, `tags:` after it) — and why ansible-lint disagrees
@@ -49,8 +50,8 @@ For any SMC incident/debug fix in `ansible-wifi` that changes behavior, defaults
 
 ### Adding a new SMC to an inventory (operator, 2026-10-23)
 
-Use `scripts/ansible/smc_inventory_add.py` (`just smc_inventory_add ...`), plan first, then `--apply`. Do not hand-copy another site's files.
-Every site, prod or stage, is the same six pieces (VERIFIED_PRIMARY, `inventories/rct/prod` arrkapa and every other site, 2026-10-23):
+Use `scripts/ansible/smc_inventory_add.py` (`just smc_inventory_add ...`), plan first, then `--apply`. Do not hand-copy another site's files. Every site, prod or stage, is the same six pieces
+(VERIFIED_PRIMARY, `inventories/rct/prod` arrkapa and every other site, 2026-10-23):
 
 | Piece                                    | Content                                                                  |
 | ---------------------------------------- | ------------------------------------------------------------------------ |
@@ -58,24 +59,40 @@ Every site, prod or stage, is the same six pieces (VERIFIED_PRIMARY, `inventorie
 | `[smc_bases:children]`                   | a `<site>_smc_bases` line                                                |
 | `[<site>:children]`                      | `<site>_smc_bases`                                                       |
 | `group_vars/<site>.yml`                  | `site_name: <site>`                                                      |
-| `host_vars/<host>.yml`                   | `site_eclipse_siteid: <id>` (rct: `smc_bases_iridium` when Iridium)      |
-| `topology_vars/<site>.yml`               | the flavor's standard topology from the generator template, host renamed |
+| `host_vars/<host>.yml`                   | `site_eclipse_siteid: <id>` (`smc_bases_iridium: true` when Iridium)     |
+| `topology_vars/<site>.yml`               | the flavor's topology from the skill template or a sibling, host renamed |
 
 - Site name is the host without its `-smcNN` suffix (`map-smc01` -> `map`, `php-rct-smc01` -> `php-rct`).
-- The templates live in `roles/smc_generate_smc_files/templates/<flavor>/` (rct, wh, nbn_accelerate, plus `topology_vars_booth.j2`). There are none
-  for rcp or nbn_wh: add those by hand from a sibling site and diff every `vlanid` against the box (see the cloning risk below).
-- The generator role itself (`smc_generate_smc_files`, CSV input `smc_name,eclipse_site_ID,site_name[,smc_size]`) rewrites the whole inventory file through
-  a JSON round-trip, so it reorders groups and drops comments; the script renders the same templates and inserts text instead.
-- Site ID: `site_eclipse_siteid` sets the backdoor port (50000 + id). Read it from the box when nobody has it: `--siteid-from-box` takes the
-  `autossh -R <port>:127.0.0.1:22` port. A box built from a generic image can still carry that image's ID: on 2026-10-23 php-rct-smc01 held 181, the
-  ID in the `generic-rct01*` host vars, so two boxes on one image would fight for one bastion port. The script refuses a shared ID until
-  `--allow-shared-siteid`. The operator kept 181 for the bench unit php-rct-smc01 (2026-10-23).
-- Check the live box before trusting the standard topology: `ip -br addr` should show lo `10.254.0.1/32`, bridge_500 `10.255.0.1/24` +
-  `192.168.5.100/24`, bridge_501 `10.0.0.1/23`, vlan521 `192.168.100.50/24`, vlan522 (rct standard; matched on php-rct-smc01, 2026-10-23).
-- Then `./lint_new.sh` in the repo and a read-only run (`smc_change.yml -l <host>` defaults to check mode). The hidden topology cache
-  (`topology_vars/.<site>.yml`) appears on the first playbook run that loads the vars plugin.
-- Reading inventory vars from a shell trips the ansible-vars guard hook (`ansible-inventory --host`, `cat`/`cp`/`diff` on a vars file). Read single
-  keys with `ansible -i <inv> <host> -m ansible.builtin.debug -a "msg={{ site_name }}"`, or compare with `cmp -s`.
+- **The templates live in this skill since 2026-11-19** (operator: "make this generator part of skill-smc ... able to manage different flavors"): `templates/inventory/common/` (group_vars, host_vars,
+  the standard one-NIC topology) and `templates/inventory/nbn_accelerate/topology_vars.j2` (sized x86 layout). Topology per flavor, VERIFIED_PRIMARY by a content survey of every topology file on
+  2026-11-19 (table below). The tool prints the NIC names and VLAN IDs it will write; match them with `tsh ssh root@<host> ip -br link` before a run. rcp host_vars also need the VoIP keys
+  (`smc_bases_sip_*`, `smc_bases_extension_*`, `smc_bases_main_did`) by hand: the tool does not write secrets.
+- **The repo's generator templates are wrong in two ways (2026-11-19):** rct `host_vars.j2` writes `smc_bases_iridium: "{{ smc_bases_iridium }}"`, a string `"True"`, where all 52 existing Iridium
+  host_vars carry a plain `true`; and every topology template has a trailing space after `subnets:` and two spaces after `last:` (twice), which the ansible-lint delta gate in the pre-push hook blocks
+  on `iridium` (the `rise` gate passed it). The fleet's own topology files carry the same whitespace, so a clone is tidied before writing. The tool refuses a quoted Iridium value, an empty interface
+  name or trailing whitespace in its output.
+
+| Flavor          | Topology source                                              | Survey (files, distinct layouts once names are normalised) |
+| --------------- | ------------------------------------------------------------ | ---------------------------------------------------------- |
+| rct, wh, nbn_wh | `common/topology_vars.j2`                                    | rct 315 of 328 one layout; wh 27 of 28; nbn_wh both sites  |
+| nbn_accelerate  | `--size small` or `big` (sized template), or `--booth`       | 36 files, 20 layouts: check NICs and VLANs against the SMC |
+| rcp             | `--size small` or `big` clones `rcp/topology_vars/<size>.yml` | 24 files, 19 layouts (NIC names, count of internet VLANs)  |
+| any             | `--topology-from <site>` clones that site, host renamed      | when the SMC's hardware matches a sibling, not a standard  |
+
+- The generator role itself (`smc_generate_smc_files`, CSV input `smc_name,eclipse_site_ID,site_name[,smc_size]`) rewrites the whole inventory file through a JSON round-trip, so it reorders groups and
+  drops comments; the script inserts text instead.
+- `--iridium` works for every flavor (each flavor's `group_vars` defines the default); it writes `smc_bases_iridium: true` under the site ID.
+- A new site goes on every branch a run uses: on 2026-11-19 haji-ali, jodetluk and nulawan were committed on `iridium` and cherry-picked to `rise` (the two branches had drifted 20/101 commits, the
+  inventory change applied clean).
+- Site ID: `site_eclipse_siteid` sets the backdoor port (50000 + id). Read it from the box when nobody has it: `--siteid-from-box` takes the `autossh -R <port>:127.0.0.1:22` port. A box built from a
+  generic image can still carry that image's ID: on 2026-10-23 php-rct-smc01 held 181, the ID in the `generic-rct01*` host vars, so two boxes on one image would fight for one bastion port. The script
+  refuses a shared ID until `--allow-shared-siteid`. The operator kept 181 for the bench unit php-rct-smc01 (2026-10-23).
+- Check the live box before trusting the standard topology: `ip -br addr` should show lo `10.254.0.1/32`, bridge_500 `10.255.0.1/24` + `192.168.5.100/24`, bridge_501 `10.0.0.1/23`, vlan521
+  `192.168.100.50/24`, vlan522 (rct standard; matched on php-rct-smc01, 2026-10-23).
+- Then `./lint_new.sh` in the repo and a read-only run (`smc_change.yml -l <host>` defaults to check mode). The hidden topology cache (`topology_vars/.<site>.yml`) appears on the first playbook run
+  that loads the vars plugin.
+- Reading inventory vars from a shell trips the ansible-vars guard hook (`ansible-inventory --host`, `cat`/`cp`/`diff` on a vars file). Read single keys with `ansible -i <inv> <host> -m
+  ansible.builtin.debug -a "msg={{ site_name }}"`, or compare with `cmp -s`.
 
 Insertion logic (`scripts/ansible/smc_inventory_add.py` in this pack):
 
@@ -249,29 +266,24 @@ unified-network-controller's onboarding reads it with `test -e` and treats absen
 machinery (zone file of 355 bytes dated 16 Sep, header only; BIND and `isc-dhcp-server` active; the `on commit` provisioning line) but is in no `smc_ltp` group; the operator approved converting it to
 low-touch through the stage inventory and testing freely on it (keep connectivity; back up its R195 at 10.255.11.1 and XV2 at 10.255.0.212 first).
 
-**Corrected 2026-09-29 (unified-network-controller, CHANGELOG 20260929_1819): nbn low-touch exists, on `big_push` only.** Daniel's `7cfb7a38` puts
-daniel-test-nbn-smc01 in `[daniel-test-nbn_smc_ltp]` under `smc_ltp:children` in `inventories/nbn_accelerate/stage`, and `9e60b1c9` (with later edits to
-`338f90cf`) adds `inventories/nbn_accelerate/group_vars/smc_ltp.yml`: host `nbn.prod.apn-services.com.au`, address 52.63.121.56 (the address in the test box's
-option 43; `lt-cnmaestro.communitywifi.net.au` in `9e60b1c9`, renamed by `4431e2dc` on 2026-01-19, when rcp's big_push host became
-`wifi.prod.apn-services.com.au`, 3.105.84.178; the working tree's rcp file still names `lt-cnmaestro.apn.au`). Unlike rcp's static `client_secret`, big_push's `smc_ltp.yml` play first POSTs `/wifi-dashboard/smc/v1/sites/<site_eclipse_siteid>/access-keys`
-on that host with a master `ltp_api_token` and registers `client_secret` from the reply, and the `smc_cnmaestro_provisioning` role differs there too; on a
-branch without that play, `smc_ltp.yml --check` fails with `'client_secret' is undefined`. The test box has the `on commit` line but no
-`/usr/local/lib/cnmaestro-provisioning/`, so the hook has nothing to run. Its stage inventory (siteid 9001, tunnel port 59001; topology read from the box:
-521/522/621 on `enp3s0`, 531/532/631 on `enp4s0`, WAN `enp1s0`) is on `unc-virtual-smc-malik-rcp01`, uncommitted; `smc_bases.yml --check` renders its
-`dhcpd.conf` identical and netplan four blank lines apart. Conversion not pursued (operator, 2026-09-29).
+**Corrected 2026-09-29 (unified-network-controller, CHANGELOG 20260929_1819): nbn low-touch exists, on `big_push` only.** Daniel's `7cfb7a38` puts daniel-test-nbn-smc01 in `[daniel-test-nbn_smc_ltp]`
+under `smc_ltp:children` in `inventories/nbn_accelerate/stage`, and `9e60b1c9` (with later edits to `338f90cf`) adds `inventories/nbn_accelerate/group_vars/smc_ltp.yml`: host
+`nbn.prod.apn-services.com.au`, address 52.63.121.56 (the address in the test box's option 43; `lt-cnmaestro.communitywifi.net.au` in `9e60b1c9`, renamed by `4431e2dc` on 2026-01-19, when rcp's
+big_push host became `wifi.prod.apn-services.com.au`, 3.105.84.178; the working tree's rcp file still names `lt-cnmaestro.apn.au`). Unlike rcp's static `client_secret`, big_push's `smc_ltp.yml` play
+first POSTs `/wifi-dashboard/smc/v1/sites/<site_eclipse_siteid>/access-keys` on that host with a master `ltp_api_token` and registers `client_secret` from the reply, and the
+`smc_cnmaestro_provisioning` role differs there too; on a branch without that play, `smc_ltp.yml --check` fails with `'client_secret' is undefined`. The test box has the `on commit` line but no
+`/usr/local/lib/cnmaestro-provisioning/`, so the hook has nothing to run. Its stage inventory (siteid 9001, tunnel port 59001; topology read from the box: 521/522/621 on `enp3s0`, 531/532/631 on
+`enp4s0`, WAN `enp1s0`) is on `unc-virtual-smc-malik-rcp01`, uncommitted; `smc_bases.yml --check` renders its `dhcpd.conf` identical and netplan four blank lines apart. Conversion not pursued
+(operator, 2026-09-29).
 
-**The low-touch contract, read end to end (2026-09-30, unified-network-controller
-`docs/reports/device-families/cnmaestro-low-touch-contract-20260930_0319.md`).** `cnmaestro-provisioning.py` (big_push, 4,514 lines) runs on every
-20 s provisioning-VLAN lease as a daemon, one per MAC. It calls `https://<fqdn>/wifi-dashboard/smc/v1/cnmaestro<cnMaestro v2 resource>` with the
-site access key as bearer: `GET /devices/<mac>` (state, product, mode, parent), `GET /devices?managed_account=&network=` (the site snapshot every
-allocation is made against), `PUT /devices/<mac>` to approve (name, account, network, `approved`, description JSON with `us`, auto variables,
-`locid`, `name`; AP group or template; variables as strings; overrides; software version) or to reconfigure (a `job_id`, polled on `/jobs/<id>`),
-`DELETE` for a replacement. Order per unit: vendor class -> family (`Cambium-cnPilot R`, `Cambium-WiFi-AP`, `Cambium`); wait for registered,
-online, upstream fully onboarded, Sidekick done; new (configuration from description, then the unit, then the model default; variables likewise;
-lowest free auto values skipping .0/.255), replacement (the unit's replaced MAC: R195P SNMP `.1.3.6.1.4.1.41010.1.13.3.0`, XV2 `location`, ePMP
-Sidekick JSON at `.1.3.6.1.4.1.17713.21.3.5.4.0`) or reset (onboarded but not at `mgmt_ip`); then `_update_dns` rebuilds `db.cambium-rpz`
-(`<name>` and `<name>-public` A records) and reloads named. It logs in to factory units with defaults hardcoded in the script. UNC's
-replacement is `unc_provision.py` (same project).
+**The low-touch contract, read end to end (2026-09-30, unified-network-controller `docs/reports/device-families/cnmaestro-low-touch-contract-20260930_0319.md`).** `cnmaestro-provisioning.py`
+(big_push, 4,514 lines) runs on every 20 s provisioning-VLAN lease as a daemon, one per MAC. It calls `https://<fqdn>/wifi-dashboard/smc/v1/cnmaestro<cnMaestro v2 resource>` with the site access key
+as bearer: `GET /devices/<mac>` (state, product, mode, parent), `GET /devices?managed_account=&network=` (the site snapshot every allocation is made against), `PUT /devices/<mac>` to approve (name,
+account, network, `approved`, description JSON with `us`, auto variables, `locid`, `name`; AP group or template; variables as strings; overrides; software version) or to reconfigure (a `job_id`,
+polled on `/jobs/<id>`), `DELETE` for a replacement. Order per unit: vendor class -> family (`Cambium-cnPilot R`, `Cambium-WiFi-AP`, `Cambium`); wait for registered, online, upstream fully onboarded,
+Sidekick done; new (configuration from description, then the unit, then the model default; variables likewise; lowest free auto values skipping .0/.255), replacement (the unit's replaced MAC: R195P
+SNMP `.1.3.6.1.4.1.41010.1.13.3.0`, XV2 `location`, ePMP Sidekick JSON at `.1.3.6.1.4.1.17713.21.3.5.4.0`) or reset (onboarded but not at `mgmt_ip`); then `_update_dns` rebuilds `db.cambium-rpz`
+(`<name>` and `<name>-public` A records) and reloads named. It logs in to factory units with defaults hardcoded in the script. UNC's replacement is `unc_provision.py` (same project).
 
 **Verified on umoona-smc01, read-only, 2026-09-26 (unified-network-controller supplement Step 4 baseline).** The `on commit` block in the live `/etc/dhcp/dhcpd.conf` is byte-for-byte the
 `dhcpd.conf.j2` block on `master`, and `git diff master origin/big_push -- roles/smc_dhcpd/templates/dhcpd.conf.j2` is empty: the hook did not change between the branches, only the script did (the box
@@ -471,10 +483,9 @@ status.json/graylog-sidecar/journald fixes were rolled out — not the `apt_info
 (2026-07-15, ansible-wifi commit `0c51cb1`); **not yet rolled to rct/wh** — same gap exists there too, but that's outside the smc-file-writing-analysis project's scope. Worth flagging to whoever owns
 that flavor.
 
-**Branch reach, checked 2026-10-27 (`just ansible_change_reach 0c51cb1 4889af8`):** neither commit is on `rise` or `origin/rise` (ansible-wifi
-67a44aa3); both sit on `rise-multi` and other side branches. The 2026-07-15 rollout was live, so the 12 rcp boxes keep the mask and the patched
-`apt_info.py` until a play redeploys them, but `rise` has no mask task and its `roles/smc_node_exporter/files/apt_info.py` still calls
-`cache.update()` on every run. A `smc_system` or `smc_node_exporter` run from `rise` brings the 5-minute `apt update` back; a new box built from
+**Branch reach, checked 2026-10-27 (`just ansible_change_reach 0c51cb1 4889af8`):** neither commit is on `rise` or `origin/rise` (ansible-wifi 67a44aa3); both sit on `rise-multi` and other side
+branches. The 2026-07-15 rollout was live, so the 12 rcp boxes keep the mask and the patched `apt_info.py` until a play redeploys them, but `rise` has no mask task and its
+`roles/smc_node_exporter/files/apt_info.py` still calls `cache.update()` on every run. A `smc_system` or `smc_node_exporter` run from `rise` brings the 5-minute `apt update` back; a new box built from
 `rise` never gets the mask. Treat both as unmerged until the pending branch merge lands.
 
 **Validation:**
@@ -1029,10 +1040,10 @@ change to fleet behavior.
 
 ### Skill Runtime Paths
 
-- **skill-smc's own scripts** run from `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`, built by `just bootstrap` at the pack root from the `.mise.toml` pin
-  (Python 3.14.5 when built, 2026-10-07). `just runtimes` prints what the recipes resolve to.
-- **ansible-wifi has no venv here** (verified 2026-09-26): the checkout has none and no working-cache venv exists for it. Homebrew provides `/opt/homebrew/bin/ansible-playbook`
-  (core 2.21.4), `ansible-lint` and `yamllint`. Use those until an ansible-wifi venv is built, and build one before relying on pinned tool versions.
+- **skill-smc's own scripts** run from `/Volumes/Data/_ai/_skills/skills-working-cache/skill-smc/.venv`, built by `just bootstrap` at the pack root from the `.mise.toml` pin (Python 3.14.5 when built,
+  2026-10-07). `just runtimes` prints what the recipes resolve to.
+- **ansible-wifi has no venv here** (verified 2026-09-26): the checkout has none and no working-cache venv exists for it. Homebrew provides `/opt/homebrew/bin/ansible-playbook` (core 2.21.4),
+  `ansible-lint` and `yamllint`. Use those until an ansible-wifi venv is built, and build one before relying on pinned tool versions.
 - Ephemeral logs, pid files and sockets go under `/Volumes/Data/_ai/_skills/skills-runtime/<skill>/`.
 
 ### Canonical Source Rules
@@ -1040,8 +1051,8 @@ change to fleet behavior.
 1. `inventories/*/topology_vars/<site>.yml` — canonical topology source. Edit these.
 2. `inventories/*/topology_vars/.<site>.yml` — generated cache (mtime-gated). Never edit.
 3. `roles/smc_generate_smc_files/templates/` — future-site generator templates. Changes here must stay consistent with manual edits to existing sites.
-4. The `topology_vars` vars plugin turns each canonical file into `topology_interfaces`, `topology_bridges` and `topology_vrfs` per host. A `group_vars` or plugin change
-   reaches every flavor; one `topology_vars/<site>.yml` reaches one site.
+4. The `topology_vars` vars plugin turns each canonical file into `topology_interfaces`, `topology_bridges` and `topology_vrfs` per host. A `group_vars` or plugin change reaches every flavor; one
+   `topology_vars/<site>.yml` reaches one site.
 
 ### Design Assessment: Do Not Use Helm for `generic_big.yml` (2026-10-02)
 
@@ -1049,8 +1060,8 @@ change to fleet behavior.
 Kubernetes consumption path. `vars_plugins/topology_vars.py` uses `yaml.safe_load` directly, processes every `topology_vars/*.yml`, and does not render Helm or Jinja first. Adopting Helm would
 therefore add a separate values/chart/render/CI lifecycle while retaining the plugin's schema and the need to verify the rendered result. It would not simplify runtime consumption.
 
-**Immediate finding — resolve the duplicate source before any templating.** Both `inventories/rcp/topology_vars/generic-big01.yml` and
-`inventories/rcp/topology_vars/generic_big.yml` define `inventory.hosts.smc01.name: generic-big01`. They are otherwise equivalent after flattening, except for DHCP ranges:
+**Immediate finding — resolve the duplicate source before any templating.** Both `inventories/rcp/topology_vars/generic-big01.yml` and `inventories/rcp/topology_vars/generic_big.yml` define
+`inventory.hosts.smc01.name: generic-big01`. They are otherwise equivalent after flattening, except for DHCP ranges:
 
 | Source | Management DHCP range | Public DHCP range |
 | --- | --- | --- |
@@ -1070,21 +1081,20 @@ transformations and their dependencies.
 `internet03+` and default-VRF attachments from `wan_pair_count` (earlier called `wan_services`): 521/532, 523/534, 525/536, 527/538. Two fixed physical internet interfaces remain outside the count;
 the generic total is `2 + 2 × wan_pair_count` internet-role interfaces. The count does not infer live connectivity, NIC names or exceptional policy.
 
-**Runtime contract and comparison.** Interfaces, bridges, VRFs and DHCP scopes are dictionaries, not the lists shown in the supplied example. A WAN VLAN keeps `interface: switch01`,
-`name: vlan521` and `sub: false`; LAN subinterface naming follows the physical parent. A replacement must preserve address arithmetic, nested DHCP expansion, bridge/VRF references, host attributes and
-virtual gateways where relevant. CUE can export inventory JSON; materialized YAML was a migration choice. Jsonnet is another candidate; Kapitan can orchestrate either. No tested comparison proves a
-winner. CUE unification does not provide last-write-wins override semantics.
+**Runtime contract and comparison.** Interfaces, bridges, VRFs and DHCP scopes are dictionaries, not the lists shown in the supplied example. A WAN VLAN keeps `interface: switch01`, `name: vlan521`
+and `sub: false`; LAN subinterface naming follows the physical parent. A replacement must preserve address arithmetic, nested DHCP expansion, bridge/VRF references, host attributes and virtual
+gateways where relevant. CUE can export inventory JSON; materialized YAML was a migration choice. Jsonnet is another candidate; Kapitan can orchestrate either. No tested comparison proves a winner.
+CUE unification does not provide last-write-wins override semantics.
 
-**Integration safeguards.** Inventory output needs host declarations/group membership alongside `_meta.hostvars`. Preserve prod/stage, host/group variables and `inventory_dir`-based flavor
-selectors; isolate competing old-plugin outputs only for migrated fixtures/sites. A controller-side adapter needs argument handling, stable paths, failure propagation and JSON-only stdout.
-Compare complete variables and rendered network/DHCP/firewall/monitoring outputs, not only four maps or serialized bytes. Two generic profiles do not prove fleet-wide compatibility. The related
-Nautobot controller workspace exists; its current rollout state was not assessed.
+**Integration safeguards.** Inventory output needs host declarations/group membership alongside `_meta.hostvars`. Preserve prod/stage, host/group variables and `inventory_dir`-based flavor selectors;
+isolate competing old-plugin outputs only for migrated fixtures/sites. A controller-side adapter needs argument handling, stable paths, failure propagation and JSON-only stdout. Compare complete
+variables and rendered network/DHCP/firewall/monitoring outputs, not only four maps or serialized bytes. Two generic profiles do not prove fleet-wide compatibility. The related Nautobot controller
+workspace exists; its current rollout state was not assessed.
 
-**Consolidated design.** [RCP topology authoring and integration plan](/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/plans/topology-authoring-kapitan-vs-cue-plan-20261002_1115.md).
-Status: proposal/documentation only; no adapter implemented, topology/cache mutation or live deployment.
+**Consolidated design.** [RCP topology authoring and integration plan](/Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi/plans/topology-authoring-kapitan-vs-cue-plan-20261002_1115.md). Status: proposal/documentation only; no adapter implemented, topology/cache mutation or live deployment.
 
-**Validation evidence.** `ANSIBLE_LOCAL_TEMP=/tmp/ansible-wifi-topology-check /opt/homebrew/Cellar/ansible/14.4.0_1/libexec/bin/python` instantiated `Topology(...).flatten()` separately for each
-file; `glob.glob` confirmed the observed order. No inventory run was used, so generated cache files were not refreshed during the assessment.
+**Validation evidence.** `ANSIBLE_LOCAL_TEMP=/tmp/ansible-wifi-topology-check /opt/homebrew/Cellar/ansible/14.4.0_1/libexec/bin/python` instantiated `Topology(...).flatten()` separately for each file;
+`glob.glob` confirmed the observed order. No inventory run was used, so generated cache files were not refreshed during the assessment.
 
 ### Design Recommendation (Not Yet Implemented): Bond Doubled RCP/NBN-Accelerate Internet Circuits
 
@@ -1120,11 +1130,10 @@ bonds:
 today.
 
 **Known implementation risk — verify before any fleet rollout.** Bonding a VLAN device as a bond slave (VLAN created first, then enslaved) is the reverse of netplan's own documented bond-then-VLAN
-pattern and has documented systemd-networkd boot-time race bugs: [systemd #7020]( https://github.com/systemd/systemd/issues/7020) and [systemd #15280](
-https://github.com/systemd/systemd/issues/15280). Ubuntu 20.04/22.04 SMCs use systemd-networkd as the netplan renderer by default, so this applies directly — comparable in kind to the netplan
-0.104→0.107 VRF syntax incompatibility already found on rocket-bore-smc01/yimidarra-smc01 (elsewhere in this file). **Do not roll out fleet-wide on reasoning alone** — canary one non-critical circuit
-at one site, reboot 3× minimum, confirm `cat /proc/net/bonding/bond_internetNN` survives each reboot, and confirm active-backup failover by physically unplugging the primary leg's cable before
-trusting the pattern.
+pattern and has documented systemd-networkd boot-time race bugs: [systemd #7020]( https://github.com/systemd/systemd/issues/7020) and [systemd #15280]( https://github.com/systemd/systemd/issues/15280).
+Ubuntu 20.04/22.04 SMCs use systemd-networkd as the netplan renderer by default, so this applies directly — comparable in kind to the netplan 0.104→0.107 VRF syntax incompatibility already found on
+rocket-bore-smc01/yimidarra-smc01 (elsewhere in this file). **Do not roll out fleet-wide on reasoning alone** — canary one non-critical circuit at one site, reboot 3× minimum, confirm `cat
+/proc/net/bonding/bond_internetNN` survives each reboot, and confirm active-backup failover by physically unplugging the primary leg's cable before trusting the pattern.
 
 **Rollout scope note:** this is a schema change. `type: bond` is not currently a recognized interface type in `topology_vars`/`roles/smc_generate_smc_files` — only `ethernet | vlan | bridge |
 loopback` are — and `interfacecheckv2.sh` role-filtering/VRF attachment need to point at the bond interface, not its two legs, once added. Scope the change to RCP/NBN-Accelerate only; this dual-switch
@@ -1228,10 +1237,9 @@ rm inventories/<flavor>/topology_vars/.<site>.yml
 find inventories/<flavor>/topology_vars/ -name '.*.yml' -delete
 ```
 
-**A cache is not the source, and branches differ in which sites they hold (2026-10-14).** `rise` has no `inventories/rcp/topology_vars/yakanarra.yml`
-(nor wangkatjungka's); both are on `big_push`, and a Mac checkout on `rise` held only their gitignored `.<site>.yml` caches. A tool that lists sites
-from one ref must read their topology_vars from the same ref (`git show <ref>:inventories/<flavor>/topology_vars/<site>.yml`), never the working
-tree: unified-network-controller's uplink labels failed for yakanarra this way (its CHANGELOG 20261014_2338, fixed cc72a25).
+**A cache is not the source, and branches differ in which sites they hold (2026-10-14).** `rise` has no `inventories/rcp/topology_vars/yakanarra.yml` (nor wangkatjungka's); both are on `big_push`, and
+a Mac checkout on `rise` held only their gitignored `.<site>.yml` caches. A tool that lists sites from one ref must read their topology_vars from the same ref (`git show
+<ref>:inventories/<flavor>/topology_vars/<site>.yml`), never the working tree: unified-network-controller's uplink labels failed for yakanarra this way (its CHANGELOG 20261014_2338, fixed cc72a25).
 
 ### Inventory Path Convention
 
@@ -1300,8 +1308,8 @@ scripts/ansible/lint-baseline-refresh.sh
 scripts/ansible/ansible-lint-delta-gate.sh <changed-file1> <changed-file2> ...
 ```
 
-Both lint scripts above are promoted, generalized copies at `skill-smc/scripts/ansible/lint-baseline-refresh.sh` and `skill-smc/scripts/ansible/ansible-lint-delta-gate.sh` — see `skill-smc/scripts/README.md` for the
-full mechanism (baseline-ignore file format, changed-line detection, why pre-existing violations in untouched lines are not blocking).
+Both lint scripts above are promoted, generalized copies at `skill-smc/scripts/ansible/lint-baseline-refresh.sh` and `skill-smc/scripts/ansible/ansible-lint-delta-gate.sh` — see
+`skill-smc/scripts/README.md` for the full mechanism (baseline-ignore file format, changed-line detection, why pre-existing violations in untouched lines are not blocking).
 
 ### Pre-push gate: four stages, three different rule sets (established 2026-08-18)
 
@@ -1327,16 +1335,15 @@ Properties worth knowing before you fight it:
 - **Order matters.** Fix findings on your own lines first, refresh the baseline second, do whitespace last. A blanket whitespace pass early expands the changed-line set and drags hundreds of inherited
   findings into the blocking set — that mistake turned a 43-finding job into a 404-finding one.
 - yamllint has no baseline, so inherited whitespace defects in a file you touch block the push even though they predate you. That cleanup is unavoidable; keep it whitespace-only and in its own commit.
-  **Superseded 2026-10-07:** the shared `.yamllint` (`local-knowledge-ansible/ansible-wifi/ansible-wifi-root-governance/.yamllint`) now disables `trailing-spaces`,
-  `new-line-at-end-of-file`, `new-lines` and `empty-lines`, allows extra spaces after a colon (topology_vars alignment, emitted by the generator templates), disables `document-start`, and
-  ignores `collections/` and the hidden `topology_vars/.*.yml` cache. Repo-wide errors went from 2,444 to 0 once the last 14 real ones were fixed (commit `c6dc4206`). Whitespace no longer
-  blocks a push.
+  **Superseded 2026-10-07:** the shared `.yamllint` (`local-knowledge-ansible/ansible-wifi/ansible-wifi-root-governance/.yamllint`) now disables `trailing-spaces`, `new-line-at-end-of-file`,
+  `new-lines` and `empty-lines`, allows extra spaces after a colon (topology_vars alignment, emitted by the generator templates), disables `document-start`, and ignores `collections/` and the hidden
+  `topology_vars/.*.yml` cache. Repo-wide errors went from 2,444 to 0 once the last 14 real ones were fixed (commit `c6dc4206`). Whitespace no longer blocks a push.
 - A file that did not parse at the base commit has no findings in the baseline. Fixing its syntax makes every finding in it appear at once and the gate blocks on all of them
   (`roles/smc_rise_overlay/tasks/main.yml`, 2026-10-07). Compare ansible-lint output at base and head before assuming you introduced anything.
-- **Pushing from an agent or any non-terminal shell:** the syntax-check stage fails with `ERROR: Ansible requires blocking IO on stdin/stdout/stderr. Non-blocking file handles
-  detected: <stderr>` even though the playbook is fine. ssh (the push transport) puts the stdio it shares with the hook into non-blocking mode when it is not a terminal; redirecting
-  stderr to a file does not help. Push under a pseudo-terminal: `script -q <logfile> git push origin <branch> </dev/null`. From an interactive terminal the problem does not occur.
-  Never use `--no-verify` for this (2026-10-07, ansible-core 2.17 in the hook venv).
+- **Pushing from an agent or any non-terminal shell:** the syntax-check stage fails with `ERROR: Ansible requires blocking IO on stdin/stdout/stderr. Non-blocking file handles detected: <stderr>` even
+  though the playbook is fine. ssh (the push transport) puts the stdio it shares with the hook into non-blocking mode when it is not a terminal; redirecting stderr to a file does not help. Push under
+  a pseudo-terminal: `script -q <logfile> git push origin <branch> </dev/null`. From an interactive terminal the problem does not occur. Never use `--no-verify` for this (2026-10-07, ansible-core 2.17
+  in the hook venv).
 
 **Fixed 2026-09-27 (unified-network-controller session; ansible-wifi's hook is untracked, `.git/hooks/pre-push`, old copy kept as `pre-push.bak-20260927`):** three defects made stacked or
 non-checked-out branches unpushable without `--no-verify`. (1) The gate linted `HEAD`, not the pushed commit: the hook now lints each pushed commit, in a temporary detached worktree when it is not the
@@ -1346,23 +1353,19 @@ remote branch that has the fewest commits between it and the pushed commit, pass
 line. Tested by feeding the hook `git push`'s stdin lines (stacked branch: 12 files, no new violations; a local-only commit: base is its stacked branch, not master; `fix/routing-issue` pushed while
 another branch is checked out: its own 23 inherited `main.yml` findings, not the checked-out branch's). Other clones still carry the old hook.
 
-**Never push ansible-wifi from a linked git worktree (2026-09-30, unified-network-controller session).** The hook's first step, the knowledge
-capture (skill-repo-knowledge-capture's `repo_knowledge_capture.sh`), runs `git -C <history dir>` without clearing `GIT_DIR`, and git sets
-`GIT_DIR` for a hook run from a linked worktree. So its git commands acted on ansible-wifi itself: it wrote `user.name` and `user.email`
-(`repo-knowledge-capture`, `repo-knowledge-capture@local.invalid`) into ansible-wifi's local config, and committed the snapshot tree onto the
-worktree's checked-out branch (one commit, 4,704 files changed, local only; the push itself sent the right commit). Seen when a commit was
-cherry-picked onto big_push in a scratch worktree and pushed from there. Recovery: reset that local branch to the pushed commit, remove the
-worktree, and unset the two local config keys (check with `git config --local --get user.name`; empty is right, the global identity then
-applies). The snapshot folder is still written, but its history commit does not land in the local-knowledge repo. Push from the main checkout;
-to push a branch that is not checked out, `git push origin <branch>` from there works, and the hook lints it in its own temporary worktree.
-The helper was fixed the same evening (skill-repo-knowledge-capture, its 2026-09-30 release: it clears git's repo-locating variables first; reproduced and
-retested in a throwaway repo), but not retested with a real ansible-wifi push from a worktree, so the rule stands.
+**Never push ansible-wifi from a linked git worktree (2026-09-30, unified-network-controller session).** The hook's first step, the knowledge capture (skill-repo-knowledge-capture's
+`repo_knowledge_capture.sh`), runs `git -C <history dir>` without clearing `GIT_DIR`, and git sets `GIT_DIR` for a hook run from a linked worktree. So its git commands acted on ansible-wifi itself: it
+wrote `user.name` and `user.email` (`repo-knowledge-capture`, `repo-knowledge-capture@local.invalid`) into ansible-wifi's local config, and committed the snapshot tree onto the worktree's checked-out
+branch (one commit, 4,704 files changed, local only; the push itself sent the right commit). Seen when a commit was cherry-picked onto big_push in a scratch worktree and pushed from there. Recovery:
+reset that local branch to the pushed commit, remove the worktree, and unset the two local config keys (check with `git config --local --get user.name`; empty is right, the global identity then
+applies). The snapshot folder is still written, but its history commit does not land in the local-knowledge repo. Push from the main checkout; to push a branch that is not checked out, `git push
+origin <branch>` from there works, and the hook lints it in its own temporary worktree. The helper was fixed the same evening (skill-repo-knowledge-capture, its 2026-09-30 release: it clears git's
+repo-locating variables first; reproduced and retested in a throwaway repo), but not retested with a real ansible-wifi push from a worktree, so the rule stands.
 
-**Which ref unified-network-controller reads (2026-09-30).** Its tools read ansible-wifi at `origin/big_push` with `git show` and `git ls-tree`,
-whatever branch is checked out, so a site whose inventory is only on a working branch does not exist for them (wangkatjungka, until its
-inventory commit was cherry-picked onto big_push as `756e86b6`). `UNC_ANSIBLE_WIFI_REF=<ref>` overrides the ref for one command; the
-project's governance check has its own pin with no override. big_push and `unc-virtual-smc-malik-rcp01` have diverged (36 and 95 commits; 30
-sites' topology_vars differ), so the override is for one site's commands, not a way to move the project to another branch.
+**Which ref unified-network-controller reads (2026-09-30).** Its tools read ansible-wifi at `origin/big_push` with `git show` and `git ls-tree`, whatever branch is checked out, so a site whose
+inventory is only on a working branch does not exist for them (wangkatjungka, until its inventory commit was cherry-picked onto big_push as `756e86b6`). `UNC_ANSIBLE_WIFI_REF=<ref>` overrides the ref
+for one command; the project's governance check has its own pin with no override. big_push and `unc-virtual-smc-malik-rcp01` have diverged (36 and 95 commits; 30 sites' topology_vars differ), so the
+override is for one site's commands, not a way to move the project to another branch.
 
 ### The hook's ansible venv is under-provisioned (corrected 2026-08-18)
 
@@ -1379,8 +1382,8 @@ note that the bypass **also skips `repo_knowledge_capture`**, so no governance s
 
 ### OPA Policy Layer (deployment governance gate)
 
-`ansible-wifi` carries an [Open Policy Agent](https://www.openpolicyagent.org/) layer under `opa/` that enforces fleet deployment rules independent of `ansible-lint`/`yamllint` — it checks semantic
-correctness (is this deployment safe/consistent), not syntax.
+`ansible-wifi` carries an [Open Policy Agent](https://www.openpolicyagent.org/) layer under `opa/` that enforces fleet deployment rules independent of `ansible-lint`/`yamllint` — it checks semantic correctness (is this deployment
+safe/consistent), not syntax.
 
 ```
 opa/
@@ -2029,8 +2032,8 @@ The per-device records an `rcp` low-touch box holds are projections of two sourc
   `cns_static_url=https://apn-cnmaestro01.apn.au/`, `DBID_RANDOM_NUM=23552`; one variant explains all 200 files). `smc_generate_extensions` reads
   `smc_bases_extension_start`/`_count`/`_site_short_name`: mowanjum-smc01, generic-rcp01 and generic-rcp02 set `smc_bases_extension_end` instead, so the role cannot render them. Low-touch sites start
   their CSV at 1000 while `smc_ltp.yml`'s cnMaestro auto-extension ranges start at x001. Kalumburu, mowanjum, horn-island and mornington R195Ps sit on an older 10.255.1.x/22 layout the arithmetic
-  never produced. unified-network-controller's `wc-local/scripts/smc/smc_extensions_intent.py` renders both file sets from a Nautobot extension plan, byte-identical to ansible-wifi (30 rcp plans; all 400
-  malik configs against real Ansible).
+  never produced. unified-network-controller's `wc-local/scripts/smc/smc_extensions_intent.py` renders both file sets from a Nautobot extension plan, byte-identical to ansible-wifi (30 rcp plans; all
+  400 malik configs against real Ansible).
 - **No DHCP reservations.** `/etc/dhcp/dhcpd.conf` carries no `host`/`fixed-address` entries; a device's static `mgmt_ip` is pushed by cnMaestro as a template variable at onboarding.
 - **DNS A records for devices** live in `/etc/bind/db.cambium-rpz`, rebuilt by `cnmaestro-provisioning.py` `_update_dns()` (`roles/smc_cnmaestro_provisioning/files/cnmaestro-provisioning.py` line 2855
   on `big_push`, called at line 3258; an earlier "2407 to 2431" was wrong, corrected 2026-09-27): copy `db.rpz.template`, append `<name> IN A <mgmt_ip>` and `<name>-public IN A <public_ip>` for every
@@ -2060,13 +2063,12 @@ Both surfaced on `honeymoon-bay-smc01` and `pago-point-smc01` (`rct`, Raspberry 
 
 ### `vars_plugins/topology_vars.py` loads only one inventory's `topology_vars/` per run (OPEN, not fixed)
 
-**Symptom:** `AnsibleUndefinedVariable: {{ topology_interfaces }}: 'topology_interfaces' is undefined` in `smc_node_exporter` ("Generate and copy ...
-my_node_network_device_info.prom"), on hosts whose topology files are valid. The operator ran with two inventories, `-i` rct and `-i` wh.
+**Symptom:** `AnsibleUndefinedVariable: {{ topology_interfaces }}: 'topology_interfaces' is undefined` in `smc_node_exporter` ("Generate and copy ... my_node_network_device_info.prom"), on hosts whose
+topology files are valid. The operator ran with two inventories, `-i` rct and `-i` wh.
 
-**Cause:** the plugin caches flattened topology in a module-level global, `HOST_TOPOLOGY_VARS={}`, and fills it only while it is empty
-(`if HOST_TOPOLOGY_VARS == {}:` in `VarsModule.get_vars`, around lines 646-678). Ansible creates one plugin instance per inventory source, but the global is
-shared, so the first host the plugin sees decides which `<inventory>/topology_vars/` directory is loaded. Every host from the other inventory gets no
-`topology_*` variables. With `-i rct -i wh` the rct hosts were the ones left out. `topology_vars_dir_process()` also calls `os.chdir()` into that directory,
+**Cause:** the plugin caches flattened topology in a module-level global, `HOST_TOPOLOGY_VARS={}`, and fills it only while it is empty (`if HOST_TOPOLOGY_VARS == {}:` in `VarsModule.get_vars`, around
+lines 646-678). Ansible creates one plugin instance per inventory source, but the global is shared, so the first host the plugin sees decides which `<inventory>/topology_vars/` directory is loaded.
+Every host from the other inventory gets no `topology_*` variables. With `-i rct -i wh` the rct hosts were the ones left out. `topology_vars_dir_process()` also calls `os.chdir()` into that directory,
 which changes the working directory for the whole process.
 
 **Reproduced (2026-10-07):**
@@ -2076,64 +2078,59 @@ ansible-inventory --playbook-dir . -i inventories/rct/prod --host honeymoon-bay-
 ansible-inventory --playbook-dir . -i inventories/rcp/prod -i inventories/rct/prod --host honeymoon-bay-smc01  # absent
 ```
 
-`--playbook-dir .` is required: `ansible.cfg` has no `vars_plugins` path, so the plugin is found only as `vars_plugins/` next to the playbook. Without that
-flag `ansible-inventory` never loads it and every host shows no topology variables, which looks like the same bug but is not.
+`--playbook-dir .` is required: `ansible.cfg` has no `vars_plugins` path, so the plugin is found only as `vars_plugins/` next to the playbook. Without that flag `ansible-inventory` never loads it and
+every host shows no topology variables, which looks like the same bug but is not.
 
 **Workaround:** run one inventory per `ansible-playbook` invocation. The operator re-ran with rct only and it passed.
 
-**Proposed fix (not applied):** key the cache by directory, `HOST_TOPOLOGY_VARS[topology_vars_dir]`, load each directory the first time it is seen, look the
-host up in that directory's dict, and drop the `os.chdir()` in favour of joined paths. Single-inventory runs behave the same; the `.<site>.yml` cache files
-keep their format. The plugin is shared by all seven flavours, so validate with the two commands above plus a single-inventory `--list` on each flavour.
+**Proposed fix (not applied):** key the cache by directory, `HOST_TOPOLOGY_VARS[topology_vars_dir]`, load each directory the first time it is seen, look the host up in that directory's dict, and drop
+the `os.chdir()` in favour of joined paths. Single-inventory runs behave the same; the `.<site>.yml` cache files keep their format. The plugin is shared by all seven flavours, so validate with the two
+commands above plus a single-inventory `--list` on each flavour.
 
 ### `smc_update_kernel` "Unhold kernel packages" fails when the target kernel is not installed (regression, fixed in `623ef64e` on `rise`)
 
-**Symptom (first RISE run that needed an upgrade after 2026-09-03):** `Failed to find package 'linux-image-5.15.0-1078-raspi' to perform selection
-'install'`, the same for `linux-modules`, `linux-modules-extra` and `linux-headers` of `1078`. The `1065` items succeeded. The target comes from
-`smc_bases_target_kernel: "5.15.0-1078-raspi"` in `inventories/rct/group_vars/smc_bases.yml`.
+**Symptom (first RISE run that needed an upgrade after 2026-09-03):** `Failed to find package 'linux-image-5.15.0-1078-raspi' to perform selection 'install'`, the same for `linux-modules`,
+`linux-modules-extra` and `linux-headers` of `1078`. The `1065` items succeeded. The target comes from `smc_bases_target_kernel: "5.15.0-1078-raspi"` in `inventories/rct/group_vars/smc_bases.yml`.
 
-**Cause:** `ansible.builtin.dpkg_selections` runs `dpkg --get-selections <pkg>` and fails when dpkg has never seen the package (`dpkg_selections.py` lines
-78-80, ansible-core 2.21.4). The repo availability check passed, so the packages were in apt, but they were not yet installed. Before commit `848e9841`
-(2026-09-03, which moved the playbook body into the role) the live playbook unheld only `current_kernel_pkgs`. The consolidation took the unhold loop from
-the orphaned role copy, which also includes `target_kernel_pkgs`. Including target packages is still reasonable: a half-finished earlier run may have left
-them installed and held.
+**Cause:** `ansible.builtin.dpkg_selections` runs `dpkg --get-selections <pkg>` and fails when dpkg has never seen the package (`dpkg_selections.py` lines 78-80, ansible-core 2.21.4). The repo
+availability check passed, so the packages were in apt, but they were not yet installed. Before commit `848e9841` (2026-09-03, which moved the playbook body into the role) the live playbook unheld
+only `current_kernel_pkgs`. The consolidation took the unhold loop from the orphaned role copy, which also includes `target_kernel_pkgs`. Including target packages is still reasonable: a half-finished
+earlier run may have left them installed and held.
 
 **State after the failure:** nothing installed. The `1065` packages were unheld (`linux-headers` reported `changed`), and both boxes kept running `1065`.
 
-**Fix (in `roles/smc_update_kernel/tasks/main.yml`, committed `623ef64e` on branch `rise`, 2026-10-07):** a new task, "Query dpkg for known kernel packages", runs
-`dpkg-query -W -f '${Package} ${db:Status-Status}\n'` over target plus current packages with `failed_when: false`, because rc is 1 when any package is
-unknown while stdout still lists the known ones. "Unhold" loops over every package dpkg lists. "Mark kernel packages as auto" loops only over lines ending in
-` installed`, so `apt-mark` never runs on a missing package. The unhold task now uses the FQCN `ansible.builtin.dpkg_selections`.
+**Fix (in `roles/smc_update_kernel/tasks/main.yml`, committed `623ef64e` on branch `rise`, 2026-10-07):** a new task, "Query dpkg for known kernel packages", runs `dpkg-query -W -f '${Package}
+${db:Status-Status}\n'` over target plus current packages with `failed_when: false`, because rc is 1 when any package is unknown while stdout still lists the known ones. "Unhold" loops over every
+package dpkg lists. "Mark kernel packages as auto" loops only over lines ending in ` installed`, so `apt-mark` never runs on a missing package. The unhold task now uses the FQCN
+`ansible.builtin.dpkg_selections`.
 
-**Validated:** expressions rendered against sample `dpkg-query` output; `ansible-playbook --syntax-check -i inventories/rct/prod smc_update_kernel.yml`
-passed; `ansible-lint` showed no findings on the changed lines. **Not yet validated on a Pi**, including the `${db:Status-Status}` field on the fleet's dpkg.
-On re-run, the unhold step should list only `1065` packages on a fresh upgrade. If `1078` appears there, an earlier attempt already installed it.
+**Validated:** expressions rendered against sample `dpkg-query` output; `ansible-playbook --syntax-check -i inventories/rct/prod smc_update_kernel.yml` passed; `ansible-lint` showed no findings on the
+changed lines. **Not yet validated on a Pi**, including the `${db:Status-Status}` field on the fleet's dpkg. On re-run, the unhold step should list only `1065` packages on a fresh upgrade. If `1078`
+appears there, an earlier attempt already installed it.
 
-**General lesson:** `dpkg_selections` works only on packages already in dpkg's database. Filter its loop through `dpkg-query` first. `apt-mark` on a package
-that is not installed carries the same risk.
+**General lesson:** `dpkg_selections` works only on packages already in dpkg's database. Filter its loop through `dpkg-query` first. `apt-mark` on a package that is not installed carries the same
+risk.
 
 ### Rendering a role's template outside the role: copy the task's options (2026-10-20)
 
 > **Learned 2026-10-20** · ansible-core 2.21.5 · VERIFIED_PRIMARY · Source: smc-resiliency `spike/render_site.sh` against ansible-wifi f3a5dca8 ·
-> Falsifier: `netplan.yml.j2` rendering cleanly without `lstrip_blocks`
-> The smc_network and smc_dhcpd template tasks set `lstrip_blocks: yes`; a render without it produced an unparseable netplan file, while the live
-> file (honeymoon-bay, written 2026-10-04) is clean. A render outside the role must also pass the role vars `smc_bases.yml` passes
-> (`interfaces: '{{ topology_interfaces }}'`, `dhcp_scopes: '{{ topology_dhcp_scopes }}'`, `bridges`, `portal_fqdn`, `portal_address`; the role
-> defaults are null placeholders) and load role defaults at role precedence (a throwaway role whose `defaults/main.yml` links the real one),
-> never `include_vars`, which would outrank the inventory. The topology plugin is found with `ANSIBLE_VARS_PLUGINS=<ansible-wifi>/vars_plugins`.
+> Falsifier: `netplan.yml.j2` rendering cleanly without `lstrip_blocks` The smc_network and smc_dhcpd template tasks set `lstrip_blocks: yes`; a render without it produced an unparseable netplan file,
+> while the live file (honeymoon-bay, written 2026-10-04) is clean. A render outside the role must also pass the role vars `smc_bases.yml` passes (`interfaces: '{{ topology_interfaces }}'`,
+> `dhcp_scopes: '{{ topology_dhcp_scopes }}'`, `bridges`, `portal_fqdn`, `portal_address`; the role defaults are null placeholders) and load role defaults at role precedence (a throwaway role whose
+> `defaults/main.yml` links the real one), never `include_vars`, which would outrank the inventory. The topology plugin is found with `ANSIBLE_VARS_PLUGINS=<ansible-wifi>/vars_plugins`.
 
 ### Lookups run on the controller: `date -Is` breaks from macOS; PHP installs pinned against the ondrej PPA (2026-10-30)
 
 > **Learned 2026-10-30** · controller-side lookups; pinned PHP build · VERIFIED_PRIMARY (macOS `date -Is` → "invalid argument 's' for -I", rc 1;
-> local render equal to `date -Iseconds`) · Source: ansible-wifi `fb6ae80b` on `rise` (roles/smc_rise_watchdog/tasks/main.yml,
-> roles/smc_application/vars/php.yml, tasks/ubuntu-php-install-configure.yml, tasks/ubuntu-php-cve-2026-109618.yml) · Falsifier: a pipe lookup
-> that runs on the SMC, or an smc_application reinstall that lands a sury build
+> local render equal to `date -Iseconds`) · Source: ansible-wifi `fb6ae80b` on `rise` (roles/smc_rise_watchdog/tasks/main.yml, roles/smc_application/vars/php.yml,
+> tasks/ubuntu-php-install-configure.yml, tasks/ubuntu-php-cve-2026-109618.yml) · Falsifier: a pipe lookup that runs on the SMC, or an smc_application reinstall that lands a sury build
 > - `lookup('pipe', ...)` always runs on the machine running Ansible. `date -Is` is GNU only; BSD `date` on macOS takes `-Iseconds`. It is also
->   the controller's clock. For a value about the SMC use facts: the watchdog bootstrap timestamp is now built from `ansible_facts.date_time`
->   (local time with offset, which its schema wants; `date_time.iso8601` is UTC). Needs `gather_facts`.
+> the controller's clock. For a value about the SMC use facts: the watchdog bootstrap timestamp is now built from `ansible_facts.date_time` (local time with offset, which its schema wants;
+> `date_time.iso8601` is UTC). Needs `gather_facts`.
 > - `ubuntu-php-install-configure.yml` adds `ppa:ondrej/php`; an unpinned `php8.1-*` install takes the sury build, whose version string compares
->   newer than Ubuntu's `8.1.2-1ubuntu2.x` (so "older than target" checks pass it; its CVE status UNVERIFIED), and the reinstall removed
->   `libapache2-mod-php8.1` without putting it back. Now every package is pinned to `php_build` (8.1.2-1ubuntu2.28), deps first because
->   `custom_apt_install.yml` installs one package at a time, mod_php last; a reinstall fails unless every php8.1 build equals `php_build`.
+> newer than Ubuntu's `8.1.2-1ubuntu2.x` (so "older than target" checks pass it; its CVE status UNVERIFIED), and the reinstall removed `libapache2-mod-php8.1` without putting it back. Now every
+> package is pinned to `php_build` (8.1.2-1ubuntu2.28), deps first because `custom_apt_install.yml` installs one package at a time, mod_php last; a reinstall fails unless every php8.1 build equals
+> `php_build`.
 >
 > ```yaml
 > # roles/smc_rise_watchdog/tasks/main.yml (ansible-wifi fb6ae80b)
@@ -2153,17 +2150,17 @@ that is not installed carries the same risk.
 ### `smc_bases.yml` against Ubuntu 24.04 and an image build (2026-11-06)
 
 > **Learned 2026-11-06** · ansible-wifi 074f9312 on Ubuntu 24.04.3 arm64 (smc-resiliency S3 step 8) · VERIFIED_PRIMARY · Source: `spike/build/run_roles.sh`
-> runs `roles-chroot-d` and `roles-buildvm-d` (malik-rct01's stage variables, stub secrets, ansible 14.5.0 core 2.21.5, netaddr 1.3.0) ·
-> Falsifier: the same commit running these roles clean on 24.04 with the inventory unchanged
+> runs `roles-chroot-d` and `roles-buildvm-d` (malik-rct01's stage variables, stub secrets, ansible 14.5.0 core 2.21.5, netaddr 1.3.0) · Falsifier: the same commit running these roles clean on 24.04
+> with the inventory unchanged
 > - The rct inventory pins `ansible_python_interpreter=/usr/bin/python3.10` (22.04); on 24.04 (python3.12) every module fails until it is overridden.
->   The pin belongs per OS, not per flavour.
+> The pin belongs per OS, not per flavour.
 > - The controller needs `netaddr`, or `vars_plugins/topology_vars.py` is skipped with only a warning ("cannot load: No module named 'netaddr'").
 > - `ansible.posix` (`selinux` in `smc_system`) is not in bare ansible-core: use the `ansible` package as the operator's Mac does (14.5.0).
 > - `smc_setup` assumes `/etc/apt/sources.list` ("Disable cdrom deb" fails on a root with deb822 sources or none, as in a mkosi root).
 > - `smc_sshd` asks for service `sshd`; 24.04 names it `ssh` ("Could not find the requested service sshd"). Its two package tasks retry
->   `retries: 60, delay: 60`: a failing install waits up to an hour each, silently; a build needs a short cap.
+> `retries: 60, delay: 60`: a failing install waits up to an hour each, silently; a build needs a short cap.
 > - `smc_network` adds a kernel argument and reboots ("Reboot to apply kernel arg"), rewrites netplan (`99-manual.yaml`) and runs
->   `convert-networkd-leases.py`, which failed on a fresh VM: a runtime-render role, never in an image build.
+> `convert-networkd-leases.py`, which failed on a fresh VM: a runtime-render role, never in an image build.
 > - `smc_autossh` and `smc_system` ran clean on the build VM (autossh is per-site bootstrap; system is build).
 > Role classes for the read-only image (build, runtime-render, bootstrap/identity, legacy) are kept in smc-resiliency's S3 report 4.2.
 >

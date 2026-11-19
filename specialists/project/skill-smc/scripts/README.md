@@ -26,27 +26,27 @@ Scripts sit in job folders (arranged 2026-10-27; operator). The governance files
 this README) and the two sub-justfiles (`fleet-health.justfile`, `routing-diagnostics.justfile`) stay at `scripts/`. A script that writes evidence resolves the pack root two levels up from its own
 folder; tests sit beside the script they test.
 
-| Folder     | For                                                 | Files                                                                                                                             |
-| ---------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `ansible/` | ansible-wifi repo work: change reach, smc_change    | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), |
-|            |   records, inventory adds, lint gates,              |   [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_change_parallel.sh](ansible/smc_change_parallel.sh), [role_stale_facts.py](ansible/role_stale_facts.py), [test_role_stale_facts.py](ansible/test_role_stale_facts.py), |
-|            |   local-knowledge index                             |   [test_smc_change_parallel.py](ansible/test_smc_change_parallel.py), [smc_inventory_add.py](ansible/smc_inventory_add.py), [smc_mark_iridium.py](ansible/smc_mark_iridium.py), [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), |
-|            |                                                     |   [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh)      |
-| `access/`  | getting onto a box: Teleport tunnel and sessions,   | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [ssh_handshake_time.sh](access/ssh_handshake_time.sh), [test_ssh_handshake_time.sh](access/test_ssh_handshake_time.sh), [teleport_sessions.py](access/teleport_sessions.py) |
-|            |   the autossh backdoor                              |                                                                                                                                   |
-| `probes/`  | read-only probes of named boxes over Teleport       | [ata_settings_read.py](probes/ata_settings_read.py), [smc_freeze_probe.sh](probes/smc_freeze_probe.sh), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_resiliency_probe.sh](probes/pi_resiliency_probe.sh), [smc_writers_probe.sh](probes/smc_writers_probe.sh), | , [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh), [apt_key_subkey_probe.sh](probes/apt_key_subkey_probe.sh), [test_apt_key_subkey_probe.py](probes/test_apt_key_subkey_probe.py) |
+| Folder     | For                                                | Files                                                                                                                              |
+| ---------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `ansible/` | ansible-wifi repo work: change reach, smc_change   | [ansible_change_reach.py](ansible/ansible_change_reach.py), [test_ansible_change_reach.py](ansible/test_ansible_change_reach.py), [smc_change_runs_table.py](ansible/smc_change_runs_table.py), [test_smc_change_runs_table.py](ansible/test_smc_change_runs_table.py), |
+|            |   records, inventory adds, lint gates,             |   [smc_change_compare_records.py](ansible/smc_change_compare_records.py), [smc_change_parallel.sh](ansible/smc_change_parallel.sh), [role_stale_facts.py](ansible/role_stale_facts.py), [test_role_stale_facts.py](ansible/test_role_stale_facts.py), |
+|            |   local-knowledge index                            |   [test_smc_change_parallel.py](ansible/test_smc_change_parallel.py), [smc_inventory_add.py](ansible/smc_inventory_add.py), [test_smc_inventory_add.py](ansible/test_smc_inventory_add.py), [smc_mark_iridium.py](ansible/smc_mark_iridium.py), [test_smc_mark_iridium.py](ansible/test_smc_mark_iridium.py), |
+|            |                                                    |   [ansible-lint-delta-gate.sh](ansible/ansible-lint-delta-gate.sh), [lint-baseline-refresh.sh](ansible/lint-baseline-refresh.sh), [local_knowledge_index.sh](ansible/local_knowledge_index.sh) |
+| `access/`  | getting onto a box: Teleport tunnel and sessions,  | [backdoor_exec.sh](access/backdoor_exec.sh), [backdoor-watch.sh](access/backdoor-watch.sh), [teleport-tunnel.sh](access/teleport-tunnel.sh), [ssh_handshake_time.sh](access/ssh_handshake_time.sh), [test_ssh_handshake_time.sh](access/test_ssh_handshake_time.sh), [teleport_sessions.py](access/teleport_sessions.py) |
+|            |   the autossh backdoor                             |                                                                                                                                    |
+| `probes/`  | read-only probes of named boxes over Teleport      | [ata_settings_read.py](probes/ata_settings_read.py), [smc_freeze_probe.sh](probes/smc_freeze_probe.sh), [php_package_probe.sh](probes/php_package_probe.sh), [apt_lock_probe.sh](probes/apt_lock_probe.sh), [pi_resiliency_probe.sh](probes/pi_resiliency_probe.sh), [smc_writers_probe.sh](probes/smc_writers_probe.sh), | , [rct_avr_probe.sh](probes/rct_avr_probe.sh), [teleport_path_throughput.sh](probes/teleport_path_throughput.sh), [apt_key_subkey_probe.sh](probes/apt_key_subkey_probe.sh), [test_apt_key_subkey_probe.py](probes/test_apt_key_subkey_probe.py) |
 |  |  |   [pi_identity_probe.sh](probes/pi_identity_probe.sh), [site_device_probe.sh](probes/site_device_probe.sh), [x86_resiliency_probe.sh](probes/x86_resiliency_probe.sh), [smc_link_health.sh](probes/smc_link_health.sh), [smc_gateway_loss.sh](probes/smc_gateway_loss.sh), |  |
 |  |  |   [smc_gateway_loss_remote.sh](probes/smc_gateway_loss_remote.sh), [test_smc_gateway_loss.py](probes/test_smc_gateway_loss.py), [test_smc_link_health.py](probes/test_smc_link_health.py), [overlay-usage-breakdown.sh](probes/overlay-usage-breakdown.sh), [dns_capture_top.sh](probes/dns_capture_top.sh) |  |
-| `capture/` | evidence capture from boxes and                     | [collect-smc-evidence.sh](capture/collect-smc-evidence.sh), [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh), [test_with_deadline.sh](capture/test_with_deadline.sh), [tstik-capture.sh](capture/tstik-capture.sh), [audit-pin-activation.sh](capture/audit-pin-activation.sh), |
-|            |   pin-activation diagnosis                          |   [correlate-pin-activation.sh](capture/correlate-pin-activation.sh), [pin-funnel-hourly.sh](capture/pin-funnel-hourly.sh), [pin-fleet-check.sh](capture/pin-fleet-check.sh) |
-| `fleet/`   | fleet-wide sweeps and package installs              | [collect-fleet-health.sh](fleet/collect-fleet-health.sh), [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh), [install_packages.sh](fleet/install_packages.sh), [sample_fleet.py](fleet/sample_fleet.py), |
-|            |                                                     |   [summarise_survey.py](fleet/summarise_survey.py), [pi_bootloader_census.sh](fleet/pi_bootloader_census.sh)                      |
-| `metrics/` | Prometheus and Graylog queries and the analyses     | [smc_prom.py](metrics/smc_prom.py), [smc_graylog.py](metrics/smc_graylog.py), [graylog-health.sh](metrics/graylog-health.sh), [fleet-reboot-timeline.py](metrics/fleet-reboot-timeline.py), [fleet-resource-profile.py](metrics/fleet-resource-profile.py), [predark-snapshot.py](metrics/predark-snapshot.py), |
-|            |   built on them (the analyses import                |   [undervoltage-profile.py](metrics/undervoltage-profile.py), [vlan-traffic-timeline.py](metrics/vlan-traffic-timeline.py)        |
-|            |   `smc_prom`/`smc_graylog` from this folder)        |                                                                                                                                   |
-| `routing/` | WAN-routing drift and                               | [analyse-routing-drift.py](routing/analyse-routing-drift.py), [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) |
-|            |   topology/interface cross-checks                   |                                                                                                                                   |
-| `switch/`  | TP-Link site switch access through an SMC           | [tplink-switch.sh](switch/tplink-switch.sh), [tplink_cli_driver.py](switch/tplink_cli_driver.py), [ssh_handshake_probe.py](switch/ssh_handshake_probe.py), [test_ssh_handshake_probe.py](switch/test_ssh_handshake_probe.py) |
+| `capture/` | evidence capture from boxes and                    | [collect-smc-evidence.sh](capture/collect-smc-evidence.sh), [collect-smc-evidence-full.sh](capture/collect-smc-evidence-full.sh), [test_with_deadline.sh](capture/test_with_deadline.sh), [tstik-capture.sh](capture/tstik-capture.sh), [audit-pin-activation.sh](capture/audit-pin-activation.sh), |
+|            |   pin-activation diagnosis                         |   [correlate-pin-activation.sh](capture/correlate-pin-activation.sh), [pin-funnel-hourly.sh](capture/pin-funnel-hourly.sh), [pin-fleet-check.sh](capture/pin-fleet-check.sh) |
+| `fleet/`   | fleet-wide sweeps and package installs             | [collect-fleet-health.sh](fleet/collect-fleet-health.sh), [survey_snmp_tooling.sh](fleet/survey_snmp_tooling.sh), [install_packages.sh](fleet/install_packages.sh), [sample_fleet.py](fleet/sample_fleet.py), |
+|            |                                                    |   [summarise_survey.py](fleet/summarise_survey.py), [pi_bootloader_census.sh](fleet/pi_bootloader_census.sh)                       |
+| `metrics/` | Prometheus and Graylog queries and the analyses    | [smc_prom.py](metrics/smc_prom.py), [smc_graylog.py](metrics/smc_graylog.py), [graylog-health.sh](metrics/graylog-health.sh), [fleet-reboot-timeline.py](metrics/fleet-reboot-timeline.py), [fleet-resource-profile.py](metrics/fleet-resource-profile.py), [predark-snapshot.py](metrics/predark-snapshot.py), |
+|            |   built on them (the analyses import               |   [undervoltage-profile.py](metrics/undervoltage-profile.py), [vlan-traffic-timeline.py](metrics/vlan-traffic-timeline.py)         |
+|            |   `smc_prom`/`smc_graylog` from this folder)       |                                                                                                                                    |
+| `routing/` | WAN-routing drift and                              | [analyse-routing-drift.py](routing/analyse-routing-drift.py), [analyse-topology-interface-match.py](routing/analyse-topology-interface-match.py) |
+|            |   topology/interface cross-checks                  |                                                                                                                                    |
+| `switch/`  | TP-Link site switch access through an SMC          | [tplink-switch.sh](switch/tplink-switch.sh), [tplink_cli_driver.py](switch/tplink_cli_driver.py), [ssh_handshake_probe.py](switch/ssh_handshake_probe.py), [test_ssh_handshake_probe.py](switch/test_ssh_handshake_probe.py) |
 
 **These are deliberately separate copies from the investigation folder's originals, not symlinks.** Promotion is a review checkpoint, not a relocation — the copies here are genericized (no hardcoded
 site lists, `OUTDIR_ROOT` override, etc.) and are meant to diverge from whatever an investigation folder's working copy does next. When an investigation script changes in a way worth having
@@ -93,8 +93,8 @@ everywhere, diff it against the promoted copy and re-apply deliberately (see e.g
 |                                     |                        |   authentication        |   IPSSH-6.6.0 switch from TPSSH                                                                             |
 |                                     |                        |   attempted)            |                                                                                                             |
 | [smc_inventory_add.py](ansible/smc_inventory_add.py) | ansible-wifi inventory | **modifies-state** (plan by | Adds a new SMC the way every site is added: `[<site>_smc_bases]`, `smc_bases:children`, `[<site>:children]` |
-|                                     |   files; tsh read of   |   default,              |   and group/host/topology vars rendered from the repo's generator templates. Refuses an existing host, site |
-|                                     |   one box              |   `--apply` writes)     |   or file; flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add`             |
+|                                     |   files; tsh read of   |   default,              |   and group/host/topology vars from skill templates, any flavor. Refuses an existing host, site or file;    |
+|                                     |   one box              |   `--apply` writes)     |   flags a shared site ID; can read the ID from the box. ~2 s. `just smc_inventory_add`                      |
 | [smc_mark_iridium.py](ansible/smc_mark_iridium.py) | ansible-wifi host vars | **modifies-state** (plan by | Adds `smc_bases_iridium: true` after `site_eclipse_siteid:` for each listed host; leaves a host already     |
 |                                     |   files (any checkout  |   default,              |   true alone; refuses a missing file or another value and then writes nothing. Prints no file content. <1   |
 |                                     |   or worktree)         |   `--apply` writes)     |   s. `just smc_mark_iridium`                                                                                |
@@ -625,10 +625,18 @@ Read-only; about 1 s on the full folder (7,000+ files per big folder). Backgroun
 
 ### `smc_inventory_add.py`
 
-Added 2026-10-23 (operator: adding a new SMC to the inventory must be straightforward, not guessed each time). `smc_inventory_add.py --flavor <rct|wh|nbn_accelerate> --env <stage|prod> --host <host>
-(--siteid N | --siteid-from-box) [--site S] [--iridium] [--booth] [--allow-shared-siteid] [--apply]`. Renders `roles/smc_generate_smc_files/templates/<flavor>/*.j2` through `ansible-playbook` (same
-engine as the generator role, so identical output) and inserts the three groups by text, because the generator role itself round-trips the whole inventory through JSON. Proven 2026-10-23 on
-php-rct-smc01: output byte-identical to the hand-made files; refuses a second apply. Background: `../references/08_ansible-authoring.md` (Adding a new SMC to an inventory).
+Added 2026-10-23 (operator: adding a new SMC to the inventory must be straightforward, not guessed each time). `smc_inventory_add.py --flavor <rct|wh|nbn_wh|nbn_accelerate|rcp> --env <stage|prod>
+--host <host> (--siteid N | --siteid-from-box) [--site S] [--iridium] [--booth] [--allow-shared-siteid] [--apply]`. Renders `roles/smc_generate_smc_files/templates/<flavor>/*.j2` through
+`ansible-playbook` (same engine as the generator role, so identical output) and inserts the three groups by text, because the generator role itself round-trips the whole inventory through JSON. Proven
+2026-10-23 on php-rct-smc01: output byte-identical to the hand-made files; refuses a second apply. Background: `../references/08_ansible-authoring.md` (Adding a new SMC to an inventory).
+
+Reworked 2026-11-19 (operator: "make this generator part of skill-smc ... able to manage different flavors"). Flavors rct, wh, nbn_wh, nbn_accelerate and rcp. Templates now live in this skill,
+`../templates/inventory/` (`common/` for group_vars, host_vars and the standard one-NIC topology; `nbn_accelerate/` for the sized x86 topology), not in the repo's generator role, whose rct
+`host_vars.j2` wrote `smc_bases_iridium: "True"` (a string; the fleet writes `true`) and whose topology templates carried trailing spaces the pre-push lint blocks. New options: `--size small|big`
+(nbn_accelerate NIC names; for rcp it clones the repo's `rcp/topology_vars/<size>.yml` reference profile), `--topology-from <site>` (clone a sibling's layout, host renamed, whitespace tidied),
+`--templates <dir>`. Before writing it refuses quoted Iridium values, empty interface names and trailing whitespace, and prints the NIC names and VLAN IDs to check against the SMC. Proven 2026-11-19:
+the rct render is byte-identical to the committed haji-ali-smc01 files; plan runs on every flavor against the real repo. `test_smc_inventory_add.py` (`just test_smc_inventory_add`, 8 tests, about 15
+s: ansible renders).
 
 ### `smc_mark_iridium.py`
 
@@ -802,10 +810,10 @@ just summarise_survey rct=rct.txt rcp=rcp.txt
 
 ### `smc_freeze_probe.sh`
 
-Added 2026-11-19 (smc-resiliency B19-03, B19-04). `probes/smc_freeze_probe.sh --proxy <proxy> [--deadline 120] <node>...` reads what turns a frozen Pi or x86 SMC
-into a reboot: watchdog devices (driver, state, timeout), watchdog modules and blacklists, systemd RuntimeWatchdogUSec, kernel.panic and the lockup and hung-task panics,
-the watchdog core's open_timeout and the kernel options behind them; on a Pi also model, command line, overlayroot and tstik units. **read-only**; 20 s per box. Smoke run
-2026-11-19 on alpurrurulam-smc01 matched the hand read. No offline test yet (needs a stand-in tsh, as test_apt_key_subkey_probe.py has).
+Added 2026-11-19 (smc-resiliency B19-03, B19-04). `probes/smc_freeze_probe.sh --proxy <proxy> [--deadline 120] <node>...` reads what turns a frozen Pi or x86 SMC into a reboot: watchdog devices
+(driver, state, timeout), watchdog modules and blacklists, systemd RuntimeWatchdogUSec, kernel.panic and the lockup and hung-task panics, the watchdog core's open_timeout and the kernel options behind
+them; on a Pi also model, command line, overlayroot and tstik units. **read-only**; 20 s per box. Smoke run 2026-11-19 on alpurrurulam-smc01 matched the hand read. No offline test yet (needs a
+stand-in tsh, as test_apt_key_subkey_probe.py has).
 
 ### `pi_bootloader_census.sh` and `smc_writers_probe.sh`
 

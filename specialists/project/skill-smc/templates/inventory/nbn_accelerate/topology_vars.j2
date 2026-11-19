@@ -1,0 +1,178 @@
+{#
+  topology_vars/<site>.yml for an nbn_accelerate x86 SMC; NIC names follow smc_size (small: enp1s0..enp4s0, big: eno1, enp3s0, enp2s0, enp1s0).
+  Input variables:
+    smc_name: <smc_name>
+    smc_size: < small | big >
+  #}
+---
+
+inventory:
+  hosts:
+    smc01:
+      name: {{ smc_name }}
+      interfaces:
+        portal:
+          name: lo
+          type: loopback
+          addresses: 10.254.0.1/32
+        internet01:
+          name: {{ 'enp1s0' if smc_size == 'small' else 'eno1' if smc_size == 'big' else '' }}
+          role: internet
+        internet02:
+          name: {{ 'enp2s0' if smc_size == 'small' else 'enp3s0' if smc_size == 'big' else '' }}
+          role: internet
+        internet03:
+          type: vlan
+          vlanid: 521
+          role: internet
+          interface: switch01
+        internet04:
+          type: vlan
+          vlanid: 532
+          role: internet
+          interface: switch02
+        internet05:
+          type: vlan
+          vlanid: 523
+          role: internet
+          interface: switch01
+        internet06:
+          type: vlan
+          vlanid: 534
+          role: internet
+          interface: switch02
+        starlink01:
+          type: vlan
+          vlanid: 621
+          role: starlink
+          interface: switch01
+        starlink02:
+          type: vlan
+          vlanid: 631
+          role: starlink
+          interface: switch02
+        management:
+          name: bridge_500
+          type: bridge
+          macaddress: 72:77:77:00:00:01
+        public:
+          name: bridge_501
+          type: bridge
+          macaddress: 72:77:77:00:00:01
+        switch01:
+          name: {{ 'enp3s0' if smc_size == 'small' else 'enp2s0' if smc_size == 'big' else '' }}
+        switch02:
+          name: {{ 'enp4s0' if smc_size == 'small' else 'enp1s0' if smc_size == 'big' else '' }}
+        switch01_management:
+          type: vlan
+          sub: true
+          vlanid: 500
+          interface: switch01
+        switch02_management:
+          type: vlan
+          sub: true
+          vlanid: 500
+          interface: switch02
+        switch01_public:
+          type: vlan
+          sub: true
+          vlanid: 501
+          interface: switch01
+        switch02_public:
+          type: vlan
+          sub: true
+          vlanid: 501
+          interface: switch02
+        switch01_provisioning:
+          type: vlan
+          sub: true
+          vlanid: 502
+          interface: switch01
+        switch02_provisioning:
+          type: vlan
+          sub: true
+          vlanid: 502
+          interface: switch02
+switching:
+  bridges:
+    smc01:
+      management:
+        name: bridge_500
+        attachments:
+          - interface: switch01_management
+          - interface: switch02_management
+      public:
+        name: bridge_501
+        attachments:
+          - interface: switch01_public
+          - interface: switch02_public
+      provisioning:
+        name: bridge_502
+        attachments:
+          - interface: switch01_provisioning
+          - interface: switch02_provisioning
+layer3:
+  links:
+    management:
+      role: management
+      subnets: 10.255.0.0/19
+      attachments:
+        - host: smc01
+          interface: management
+          addresses: +1
+      gateways:
+        internet:
+          type: real
+          host: smc01
+      dhcp_scopes:
+        host: smc01
+        ranges:
+          first: +2560
+          last: +2814
+        name_servers:
+          - 8.8.8.8
+          - 8.8.4.4
+        gateways: internet
+    public:
+      role: user
+      subnets: 10.0.0.0/18
+      attachments:
+        - host: smc01
+          interface: public
+          addresses: +1
+      gateways:
+        internet:
+          type: real
+          host: smc01
+      dhcp_scopes:
+        host: smc01
+        ranges:
+          first: +8192
+          last: -2
+        gateways: internet
+    provisioning:
+      role: provisioning
+      subnets: 192.168.11.0/24
+      attachments:
+        - host: smc01
+          interface: provisioning
+          addresses: +100
+  vrfs:
+    smc01:
+      default:
+        attachments:
+          - interface: portal
+          - interface: internet01
+          - interface: internet02
+          - interface: internet03
+          - interface: internet04
+          - interface: internet05
+          - interface: internet06
+          - interface: starlink01
+          - interface: starlink02
+          - interface: management
+            link: management
+          - interface: public
+            link: public
+          - interface: provisioning
+            link: provisioning

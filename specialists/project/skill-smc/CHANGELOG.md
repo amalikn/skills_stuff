@@ -79,6 +79,15 @@ Last reviewed: 2026-10-27
 
 ---
 
+## 20261119_1638 — smc_inventory_add: every flavor, templates owned by the skill, Iridium written as plain true (v0.15.5 -> v0.15.6)
+
+- templates/inventory/ (new): common/ group_vars, host_vars and standard topology; nbn_accelerate/ sized topology. The repo generator's rct host_vars wrote `smc_bases_iridium: "True"` and its topology
+  templates failed the pre-push lint.
+- scripts/ansible/smc_inventory_add.py: flavors rct, wh, nbn_wh, nbn_accelerate, rcp; `--size`, `--topology-from`, `--templates`; refuses quoted Iridium, empty NIC names, trailing whitespace; prints
+  NICs and VLAN IDs to check. New test_smc_inventory_add.py (8 tests, `just test_smc_inventory_add`).
+- ruff.toml (new, existing Python excluded) and `just lint_py`, run by `just check`.
+- references/08_ansible-authoring.md: topology survey per flavor, generator template faults, branch placement; scripts/README.md catalogue.
+
 ## 20261119_1554 — smc_freeze_probe.sh; deployed Pi package and freeze state; pin-kernel quirk (v0.15.4 -> v0.15.5)
 
 - New scripts/probes/smc_freeze_probe.sh (`just smc_freeze_probe`), catalogued in scripts/README.md; smoke run on a real hub.

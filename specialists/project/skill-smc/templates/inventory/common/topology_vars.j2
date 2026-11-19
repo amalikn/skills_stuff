@@ -1,0 +1,121 @@
+{#
+  topology_vars/<site>.yml: the standard one-NIC SMC layout for rct, wh, nbn_wh and nbn_accelerate booth sites
+  (the layout of 315 rct sites, 27 wh and both nbn_wh sites on 2026-11-19, without their trailing-space lint faults).
+  Input variables:
+    smc_name: <smc_name>
+  #}
+---
+
+inventory:
+  hosts:
+    smc01:
+      name: {{ smc_name }}
+      interfaces:
+        portal:
+          name: lo
+          type: loopback
+          addresses: 10.254.0.1/32
+        switch:
+          name: eth0
+          role: internet
+        internet02:
+          type: vlan
+          vlanid: 522
+          role: internet
+          interface: switch
+        nbn_modem:
+          type: vlan
+          vlanid: 521
+          interface: switch
+        management:
+          name: bridge_500
+          type: bridge
+          macaddress: 72:77:77:00:00:01
+        public:
+          name: bridge_501
+          type: bridge
+          macaddress: 72:77:77:00:00:01
+        switch_management:
+          type: vlan
+          sub: true
+          vlanid: 500
+          interface: switch
+        switch_public:
+          type: vlan
+          sub: true
+          vlanid: 501
+          interface: switch
+switching:
+  bridges:
+    smc01:
+      management:
+        name: bridge_500
+        attachments:
+          - interface: switch_management
+      public:
+        name: bridge_501
+        attachments:
+          - interface: switch_public
+layer3:
+  links:
+    nbn_modem:
+      role: nbn-modem
+      subnets: 192.168.100.0/24
+      attachments:
+        - host: smc01
+          interface: nbn_modem
+          addresses: +50
+    management:
+      role: management
+      subnets:
+        - 10.255.0.0/24
+        - 192.168.5.0/24
+      attachments:
+        - host: smc01
+          interface: management
+          addresses:
+            - +1
+            - +100
+      gateways:
+        internet:
+          type: real
+          host: smc01
+      dhcp_scopes:
+        host: smc01
+        ranges:
+          first: +100
+          last: +110
+        name_servers:
+          - 8.8.8.8
+          - 8.8.4.4
+        gateways: internet
+    public:
+      role: user
+      subnets: 10.0.0.0/23
+      attachments:
+        - host: smc01
+          interface: public
+          addresses: +1
+      gateways:
+        internet:
+          type: real
+          host: smc01
+      dhcp_scopes:
+        host: smc01
+        ranges:
+          first: +10
+          last: -2
+        gateways: internet
+  vrfs:
+    smc01:
+      default:
+        attachments:
+          - interface: portal
+          - interface: switch
+          - interface: internet02
+          - interface: management
+            link: management
+          - interface: public
+            link: public
+          - interface: nbn_modem
+            link: nbn_modem

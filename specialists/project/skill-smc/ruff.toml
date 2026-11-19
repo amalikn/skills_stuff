@@ -1,0 +1,46 @@
+# Lint and format this project's Python with ruff (skill-coder: one linter per language, configured once at the root, for new files only).
+# Run by `just lint_py` (inside `just check`). Adopted 2026-11-19 from skill-coder templates/ruff.toml.
+# Files that exist when this is adopted keep their style: list each under extend-exclude, and remove one only when its reformat is decided.
+# A new file is never added to the list. Never silence a rule inline (no noqa); fix it.
+target-version = "py311"   # the oldest Python the project supports (its pin, requires-python)
+indent-width = 2           # operator, 2026-10-23: two spaces in every language
+line-length = 160
+extend-exclude = [
+  "*.md",                  # ruff 0.17 also formats code blocks in Markdown (skill-coder languages/python.md, Learned 2026-11-11)
+  # existing files on 2026-11-19, kept in their style until a reformat is decided:
+  "scripts/access/teleport_sessions.py",
+  "scripts/ansible/ansible_change_reach.py",
+  "scripts/ansible/role_stale_facts.py",
+  "scripts/ansible/smc_change_compare_records.py",
+  "scripts/ansible/smc_change_runs_table.py",
+  "scripts/ansible/smc_mark_iridium.py",
+  "scripts/ansible/test_ansible_change_reach.py",
+  "scripts/ansible/test_role_stale_facts.py",
+  "scripts/ansible/test_smc_change_parallel.py",
+  "scripts/ansible/test_smc_change_runs_table.py",
+  "scripts/ansible/test_smc_mark_iridium.py",
+  "scripts/check_governance.py",
+  "scripts/fleet/sample_fleet.py",
+  "scripts/fleet/summarise_survey.py",
+  "scripts/fleet/test_summarise_survey.py",
+  "scripts/metrics/fleet-reboot-timeline.py",
+  "scripts/metrics/fleet-resource-profile.py",
+  "scripts/metrics/predark-snapshot.py",
+  "scripts/metrics/smc_graylog.py",
+  "scripts/metrics/smc_prom.py",
+  "scripts/metrics/undervoltage-profile.py",
+  "scripts/metrics/vlan-traffic-timeline.py",
+  "scripts/probes/ata_settings_read.py",
+  "scripts/probes/test_apt_key_subkey_probe.py",
+  "scripts/probes/test_rct_avr_probe.py",
+  "scripts/probes/test_smc_gateway_loss.py",
+  "scripts/probes/test_smc_link_health.py",
+  "scripts/routing/analyse-routing-drift.py",
+  "scripts/routing/analyse-topology-interface-match.py",
+  "scripts/switch/ssh_handshake_probe.py",
+  "scripts/switch/test_ssh_handshake_probe.py",
+  "scripts/switch/tplink_cli_driver.py",
+]
+
+[lint]
+select = ["E4", "E7", "E9", "F", "B", "I"]   # the skills' common set: errors, pyflakes, bugbear, import order
