@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: Vagrantfile load order, multi-machine, the Parallels provider block, customize events (post-import vs every boot), provisioners, triggers, cloud-init, disk size, linting.
 ---
 
@@ -124,8 +124,8 @@ A `vagrant up` of a machine that is already running boots nothing and runs none 
 ## cloud-init
 
 `config.vm.cloud_init` attaches user data (`text/cloud-config`, `text/x-shellscript` and the other listed content types; the only `type` is `:user_data`) from a `path` or `inline` (VERIFIED_PRIMARY,
-[vagrant-cloud-init-configuration.md], [vagrant-cloud-init-usage.md]). HashiCorp's examples use the VirtualBox provider; whether vagrant-parallels 2.4.9 delivers cloud-init data is UNVERIFIED (no
-statement in its docs; bento issue 1655 reports "cloud init not working" on a bento box, [vp-issue-1655.md]). For Parallels labs, shell provisioners are the proven path.
+[vagrant-cloud-init-configuration.md], [vagrant-cloud-init-usage.md]). HashiCorp's examples use the VirtualBox provider; vagrant-parallels does not deliver cloud-init data (lab run on 2.4.10, Learned
+2026-11-09 below; no statement in its docs; bento issue 1655 reports "cloud init not working" on a bento box, [vp-issue-1655.md]). For Parallels labs, shell provisioners are the proven path.
 
 > **Learned 2026-11-09** · vagrant-parallels 2.4.10, bento/ubuntu-24.04 202510.26.0 · VERIFIED_PRIMARY (lab run) · Source: skill-vagrant scratch lab (skills-runtime/skill-vagrant/scratch-lab, bento/ubuntu-24.04 202510.26.0, Parallels 27, vagrant-parallels 2.4.10), 2026-11-09; vagrant-parallels 2.4.10 gem source (no cloud-init code) · Falsifier: a vagrant-parallels release that attaches a NoCloud seed for `config.vm.cloud_init`
 > `config.vm.cloud_init` does nothing under vagrant-parallels: with `VAGRANT_EXPERIMENTAL=cloud_init,disks`, `vagrant up` exited 0 and printed no

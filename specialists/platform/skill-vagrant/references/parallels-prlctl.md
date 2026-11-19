@@ -5,8 +5,8 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
-Summary: prlctl and prlsrvctl for a lab: editions with a CLI, JSON inventory, exec without the network and its quoting, exec after a reset, console capture, power commands, Parallels Tools.
+Last reviewed: 2026-11-19
+Summary: prlctl and prlsrvctl for a lab: editions with a CLI, JSON inventory, exec without the network and its quoting, exec after a reset, console capture, power commands, Parallels Tools, compacting an expanding disk.
 ---
 
 # Parallels prlctl
@@ -63,6 +63,9 @@ writes under `/usr/local` without sudo). Pass the whole command line as one argu
 onvm() { timeout "$1" prlctl exec "$VM" "bash -c $(printf %q "$2")"; }
 put() { base64 < "$1" | timeout 60 prlctl exec "$VM" "bash -c 'base64 -d > $2 && chmod $3 $2'"; }   # stdin is passed through
 ```
+
+Keep that string short: a long one fails to open a session ("Unable to open new session", "PrlJob_Wait: Invalid argument"), so files and long scripts go over stdin; a
+plain command with no shell syntax also works as separate arguments, which prlctl joins into one line (Learned 2026-11-07, 2026-11-08 and 2026-11-19 below).
 
 Every exec gets its own deadline: an exec into a wedged guest does not return by itself (USER_STATED, lab 2026-11-07: "`prlctl exec` hangs or errors when a guest is wedged").
 

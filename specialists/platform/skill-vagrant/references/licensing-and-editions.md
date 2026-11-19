@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: Vagrant licence by version (MIT, BUSL 1.1 for 2.4.0 to 2.4.9, MIT on main since 2026-11-02), what BUSL allowed, the registry vs the CLI, and the Parallels editions that have a CLI.
 ---
 

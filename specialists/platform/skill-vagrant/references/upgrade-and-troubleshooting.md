@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: Upgrade order for Parallels Desktop, vagrant-parallels and Vagrant, a symptom-to-cause triage table with sources, and the steps for a wedged guest starting with a console capture.
 ---
 

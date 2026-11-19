@@ -5,13 +5,34 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant evaluation
-Last reviewed: 2026-11-09
-Summary: Evaluation scenarios V-S01 to V-S14: prompt, trigger, first reference, required decisions and prohibited conclusions for each claim the pack makes.
+Last reviewed: 2026-11-19
+Summary: Evaluation scenarios V-S01 to V-S18: prompt, trigger, first reference, required decisions and prohibited conclusions for each claim the pack makes.
 ---
 
 # Vagrant scenarios
 
 Each scenario passes only when the expected first reference, decision points and prohibited conclusions are met. Lab names and addresses in prompts are placeholders.
+
+## Contents
+
+- [V-S01 — Make the lab rebuild the same VM](#v-s01--make-the-lab-rebuild-the-same-vm)
+- [V-S02 — Two VMs, one address](#v-s02--two-vms-one-address)
+- [V-S03 — Prove which VM answered](#v-s03--prove-which-vm-answered)
+- [V-S04 — Guest does not answer](#v-s04--guest-does-not-answer)
+- [V-S05 — A disk appears on every boot](#v-s05--a-disk-appears-on-every-boot)
+- [V-S06 — A NIC the image under test configures](#v-s06--a-nic-the-image-under-test-configures)
+- [V-S07 — Describe the Mac lab in OpenTofu](#v-s07--describe-the-mac-lab-in-opentofu)
+- [V-S08 — Can we use Vagrant](#v-s08--can-we-use-vagrant)
+- [V-S09 — Exact command](#v-s09--exact-command)
+- [V-S10 — Shared folders broke after a Parallels update](#v-s10--shared-folders-broke-after-a-parallels-update)
+- [V-S11 — The project copy drifted](#v-s11--the-project-copy-drifted)
+- [V-S12 — Closeout](#v-s12--closeout)
+- [V-S13 — The box registry closes](#v-s13--the-box-registry-closes)
+- [V-S14 — Negative control](#v-s14--negative-control)
+- [V-S15 — Which provider came up](#v-s15--which-provider-came-up)
+- [V-S16 — VirtualBox private network on a Mac](#v-s16--virtualbox-private-network-on-a-mac)
+- [V-S17 — VirtualBox licence](#v-s17--virtualbox-licence)
+- [V-S18 — QEMU on macOS 27](#v-s18--qemu-on-macos-27)
 
 ## V-S01 — Make the lab rebuild the same VM
 

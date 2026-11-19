@@ -4,20 +4,23 @@ Category: readme
 Status: current
 Authority: canonical
 Scope: Root README.md of skill-vagrant
-Last reviewed: 2026-11-07
-Summary: "Canonical, cross-project platform pack for local lab VMs with Vagrant and the Parallels provider on macOS Apple silicon: boxes and pins, Vagrantfiles, networks, linked clones and..."
+Last reviewed: 2026-11-19
+Summary: >-
+  Canonical, cross-project platform pack for local lab VMs with Vagrant on macOS Apple silicon (Parallels by default, VirtualBox, QEMU, libvirt): provider
+  choice, boxes and pins, Vagrantfiles, networks, linked clones and machine-id, prlctl, lab guards, tool choice and licensing.
 Review by: 2026-12-09
 Budget: 200 lines, 25 KB
 ---
 
 # skill-vagrant
 
-Canonical, cross-project platform pack for local lab VMs with Vagrant and the Parallels provider on macOS Apple silicon: boxes and pins, Vagrantfiles, networks, linked clones and machine-id, prlctl,
+Canonical, cross-project platform pack for local lab VMs with Vagrant on macOS Apple silicon, with Parallels as the default provider
+beside VirtualBox, QEMU and libvirt: providers and choice, boxes and pins, Vagrantfiles, networks, linked clones and machine-id, prlctl,
 lab guards, tool choice and licensing.
 
 ## Purpose
 
-Reusable, evidence-graded Vagrant and Parallels knowledge for any project that runs a local lab. Each engagement writes verified reusable findings back here; VM names, lab addresses and stages stay in
+Reusable, evidence-graded Vagrant and provider knowledge for any project that runs a local lab. Each engagement writes verified reusable findings back here; VM names, lab addresses and stages stay in
 the engaging project. The counterpart pack for the x86 lab is [skill-proxmox](../skill-proxmox/SKILL.md); the structure mirrors [skill-nautobot](../skill-nautobot/README.md).
 
 ## Folder index

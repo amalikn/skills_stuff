@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: Rules for lab drivers: plan by default and --apply, an in-guest wrong-VM marker, deadlines and keepalives, quoting once, hash what arrived, disk fill, host guards, Vagrantfile copy checks.
 ---
 

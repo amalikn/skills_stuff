@@ -5,8 +5,8 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
-Summary: Pin an exact box version and arm64 architecture, bento history (fixed machine-ids), the HCP Vagrant registry closing on 2026-12-31 and keeping the pinned box, safe box removal.
+Last reviewed: 2026-11-19
+Summary: Pin an exact box version and arm64 architecture, bento history (fixed machine-ids), the HCP Vagrant registry closing on 2026-12-31 and keeping the pinned box (repackaged copies, direct archive downloads), safe box removal.
 ---
 
 # Boxes and pinning

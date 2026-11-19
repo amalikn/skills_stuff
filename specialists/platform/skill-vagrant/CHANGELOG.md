@@ -79,6 +79,10 @@ knowledge").
 - Lab learnings recorded (USER_STATED 2026-11-07): `prlctl exec` hangs on a wedged guest (take `prlctl capture`), errors after a reset until Tools return, `dd` blocked by a hook (use `head -c`),
   `timeout 30"cmd"` read as one word ("invalid time interval"), a linked clone shares the machine-id.
 
+## 20261119_1631 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now 90 days (`--window-days 90` in the justfile).
+
 ## 20261107_1616 — deterministic navigation-control upgrade
 
 <!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->

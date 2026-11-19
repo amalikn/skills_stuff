@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: How Vagrant networks map to Parallels Shared, Host-Only and Bridged; a second adapter the lab owns; one DHCP lease for two VMs (machine-id DUID); synced folder failures by version.
 ---
 

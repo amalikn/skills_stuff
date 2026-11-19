@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: Vagrant's built-in VirtualBox provider on macOS Apple silicon (VirtualBox 7.1 and 7.2)
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: >-
   VirtualBox under Vagrant on an Apple silicon Mac: which versions run arm64 guests, Vagrant's support by version, provider options, macOS
   host-only networks and their allowed range, internal networks, VBoxManage equivalents of prlctl, and the Extension Pack licence.
@@ -13,7 +13,7 @@ Summary: >-
 
 # VirtualBox
 
-VirtualBox is Vagrant's built-in, documented default provider ([vagrant-providers-default.md]). On this Mac it runs beside Parallels: VirtualBox 7.2.22 (upgraded from 7.2.10 that day) with the Oracle Extension Pack 7.2.10, arm64
+VirtualBox is Vagrant's built-in, documented default provider ([vagrant-providers-default.md]). On this Mac it runs beside Parallels: VirtualBox 7.2.22 (upgraded from 7.2.10 that day) with the Oracle Extension Pack 7.2.22, arm64
 bento boxes for it, and one lab (observed 2026-11-09). Captures named `[file]` are in [documents/research-sources-20261109/](../documents/research-sources-20261109/readme.md) unless another folder is named.
 
 ## Contents

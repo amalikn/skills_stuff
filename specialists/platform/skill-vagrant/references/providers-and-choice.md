@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: Vagrant providers on macOS Apple silicon (Parallels, VirtualBox, QEMU, libvirt) and how a lab picks one
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: >-
   Which Vagrant provider fits a lab on an Apple silicon Mac, what each needs and lacks, how Vagrant picks a provider, how one Vagrantfile serves
   several, and the exec, console and power commands of each side by side.

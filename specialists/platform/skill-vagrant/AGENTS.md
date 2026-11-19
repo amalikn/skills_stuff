@@ -3,15 +3,15 @@ Title: skill-vagrant Agent Policy
 Category: agent-governance-guide
 Status: current
 Authority: local-supplement
-Scope: skill-vagrant platform pack — canonical, cross-project source of reusable Vagrant and Parallels lab knowledge
-Last reviewed: 20261107_1700
-Summary: "Agent guidance for maintaining and using skill-vagrant: artifact roles, the package contract, the write-back obligation, the boundary with skill-proxmox, and the gates to run before"
+Scope: skill-vagrant platform pack — canonical, cross-project source of reusable Vagrant lab knowledge (Parallels, VirtualBox, QEMU and libvirt providers)
+Last reviewed: 2026-11-19
+Summary: >-
+  Agent guidance for maintaining and using skill-vagrant: artifact roles, the package contract, the write-back obligation, the boundary with skill-proxmox,
+  and the gates to run before calling work complete.
 Budget: 150 lines, 12 KB
 ---
 
 @../../../AGENTS.md
-
-calling work complete.
 
 # AGENTS.md
 
@@ -31,10 +31,12 @@ calling work complete.
 
 - [SKILL.md](SKILL.md) is the agent-facing activation surface: role, boundaries, orient-first commands, task routing and the standing write-back contract. It must route every file in `references/`.
 - `references/` is the content source. Load only the reference the task needs; [AI_NAVIGATION.md](AI_NAVIGATION.md) mirrors the routing table.
-- Scope: local lab VMs on macOS Apple silicon with Vagrant and the Parallels provider (boxes, Vagrantfiles, networks, clones, prlctl, lab guards, licensing). Not Proxmox or OpenTofu — that is
+- Scope: local lab VMs on macOS Apple silicon with Vagrant and its providers: Parallels by default, VirtualBox, vagrant-qemu, and vagrant-libvirt against a Linux
+  host (boxes, Vagrantfiles, networks, clones, prlctl, lab guards, licensing). Not Proxmox or OpenTofu — that is
   [skill-proxmox](../skill-proxmox/SKILL.md) — and not what runs inside the guest. Choose the primary pack by the object being changed.
 - Evidence discipline: every load-bearing claim lives in [sources.yaml](sources.yaml) with an evidence rung, source type, reference and scenario; environment facts live in
-  [compatibility.yaml](compatibility.yaml). An observed install is not behavioural proof. Versions of record: Vagrant 2.4.9, vagrant-parallels 2.4.9, prlctl 27.1.0 (see `compatibility.yaml`).
+  [compatibility.yaml](compatibility.yaml). An observed install is not behavioural proof. Versions of record: Vagrant 2.4.9,
+  vagrant-parallels 2.4.10 (2.4.9 until 2026-11-09), prlctl 27.1.0, VirtualBox 7.2.22, vagrant-qemu 0.7.0 (see `compatibility.yaml`).
 - `documents/research-sources-<YYYYMMDD>/` holds verbatim captures with a provenance header; adding or replacing one requires a row with its sha256 in that folder's `readme.md`.
 - `scripts/` holds tested, stdlib-only, read-only helpers. A new helper needs tests in `tests/test_helpers.py` and an entry in [scripts/README.md](scripts/README.md) in the same pass; one that
   changes a VM needs a plan by default, `--apply`, a fixed lab VM name and a deadline on every call.

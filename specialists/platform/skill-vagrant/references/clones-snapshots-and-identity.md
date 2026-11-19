@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: Vagrant linked clones vs prlctl lab clones, what a copy shares (machine-id, host keys), how to keep a clone off the source's network or give it a new identity, snapshots.
 ---
 
@@ -65,8 +65,8 @@ Choices, safest first:
 1. **No shared network for the clone** (the smc-resiliency rule since 2026-11-06): disconnect the adapters it shares with the source; reach it by `prlctl exec`. Nothing to regenerate, nothing to
    forget.
 2. **New identity in the clone** before it joins a shared network: empty `/etc/machine-id` (and check `/var/lib/dbus/machine-id` is a link to it, not a copy, because systemd falls back to it when the
-   file is empty), then reboot; systemd writes a new ID (semantics VERIFIED_PRIMARY, [machine-id-man.md]; the procedure on a Parallels clone is UNVERIFIED until a lab runs it and records the new
-   lease).
+   file is empty), then reboot; systemd writes a new ID (semantics VERIFIED_PRIMARY, [machine-id-man.md]; the procedure was verified on a Parallels 27 clone, which took a new lease: Learned 2026-11-09
+   below).
 3. **Fix the box**: for many machines from one box, use a box version whose image ships without a fixed ID (the bento regressions are listed in [boxes-and-pinning.md](boxes-and-pinning.md#bento-boxes)).
 
 A new MAC alone does not help: the DUID does not use the MAC unless `DUIDType=link-layer` or `ClientIdentifier=mac` is configured (VERIFIED_PRIMARY, [networkd-conf-man.md], [systemd-network-man.md]).

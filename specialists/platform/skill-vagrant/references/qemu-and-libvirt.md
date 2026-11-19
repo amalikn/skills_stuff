@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: the vagrant-qemu provider on macOS Apple silicon and the vagrant-libvirt provider against a Linux libvirt host
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: >-
   vagrant-qemu on an Apple silicon Mac (defaults, boxes, networking modes and their root needs, synced folders, disks, serial console, the macOS 27
   port-check fix in 0.6.4) and vagrant-libvirt driven from the Mac against a remote Linux KVM host over qemu+ssh.

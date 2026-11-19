@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant evaluation
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: How to run a with- and without-skill evaluation of skill-vagrant in fresh contexts, the grading scale and the knowledge-value rubric; read-only VM commands only.
 ---
 

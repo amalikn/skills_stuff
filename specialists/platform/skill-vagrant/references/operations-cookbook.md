@@ -5,7 +5,7 @@ Status: current
 Authority: >-
   skill-vagrant canonical reference; claims carry evidence labels and cite captures in documents/
 Scope: skill-vagrant: local Vagrant and Parallels labs on macOS Apple silicon
-Last reviewed: 2026-11-09
+Last reviewed: 2026-11-19
 Summary: Exact vagrant, prlctl and prlsrvctl syntax for lab sessions with a deadline on every call and writes marked; verified against Vagrant 2.4.9, vagrant-parallels 2.4.9, prlctl 27.1.0.
 ---
 
