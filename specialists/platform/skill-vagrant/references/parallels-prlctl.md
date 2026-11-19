@@ -131,3 +131,9 @@ reference p.10 and [parallels-cli-utility.md]). Changing a Parallels network cha
 > Also on such a guest, when /etc is a read-only merge: `lvextend` fails with `Cannot archive volume group metadata ... to read-only filesystem` (rc 5) after printing that the size changed; `--config
 > 'backup { archive = 0 backup = 0 }'` makes the one change.
 
+> **Learned 2026-11-19** · Parallels Desktop on macOS, Ubuntu arm64 guests · VERIFIED_PRIMARY · Source: smc-resiliency build VM cleanup (CHANGELOG 20261119_1540) · Falsifier: an expanding .hdd that shrinks
+> after files are deleted in the guest with no trim and no compact.
+> - An expanding `harddisk1.hdd` keeps the most the guest ever wrote. `prl_disk_tool compact --info --buildmap --hdd <hdd>` estimates the result without changing anything (used versus allocated
+>   1 MiB blocks): run it first. Real shrink: delete in the guest, `fstrim -av`, stop the VM, `prl_disk_tool compact --hdd <hdd>` (24 GB to 6.4 GB in 11 s after 18.8 GiB trimmed).
+> - `prlctl exec <vm> '<long quoted command>'` failed with "PrlJob_Wait: Invalid argument"; plain argument lists (`prlctl exec vm du -xh --max-depth=2 /`) work.
+> - `scp`/`ssh` with the Vagrant key failed with "Too many authentication failures" while an agent offered other keys: add `-o IdentitiesOnly=yes` (key path from `vagrant ssh-config <vm>`).

@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-19: references/parallels-prlctl.md Learned entry: compact estimate and shrink sequence, prlctl exec quoting, IdentitiesOnly with the Vagrant key.
 - 2026-11-18: references/upgrade-and-troubleshooting.md Learned entry, `vagrant up` stops at a guest whose `/etc` is read-only and never starts the later machines (smc-resiliency).
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 - 2026-11-09 second slurp close: commits 528db87, 8ede37f (tools_stuff), 2845c17 (wiki_stuff) pushed, vagrant_stuff 35f6247 pushed; docs/session-record-20261109_1244.md Second close section.
