@@ -9,10 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1434
+Last rotated: 20261119_1552
 ---
 
 # Changelog — skill-pad
+
+## 20261119_1551 — CLI traps from smc-resiliency: octet-stream attachments refused, dash-led comment text
+
+- `references/cli-reference.md`: Learned 2026-11-19 (Pad 0.21.0, smc-resiliency): `attachment upload` refuses application/octet-stream (strip a console log to text first); a comment whose text starts with `-` needs `--`; body rewrite with `--stdin --replace`.
 
 ## 20261119_1550 — CLI traps: no attachment delete, comments not in item show, Tech Debt priority
 
@@ -189,11 +193,3 @@ Last rotated: 20261119_1434
 - Operator answered Q1 to Q6: Asks collection, current focus only, no roles, answers on the ask or in chat (both), roll out to smc-resiliency and
   UNC together, keep the OneDrive backup. Proposal renamed `docs/pad-usage-guidelines-20261110_1628.md` (Status current); rollout reworked for both
   workspaces (smc-resiliency canary first within each step); SKILL.md, AGENTS, README and SCRATCHPAD now treat it as in force.
-
-## 20261110_1724 — pad_conventions --only; writing-standard live in both workspaces
-
-### Added
-
-- `scripts/pad_conventions.py --only ID[,ID]` (`select_entries`, test added; unknown id exits 2): plans or applies only the named entries.
-- Applied `--only writing-standard` to smc-resiliency (CONVE-32) and unified-network-controller (CONVE-25); read back `same`; their own wording of
-  the other conventions left untouched.

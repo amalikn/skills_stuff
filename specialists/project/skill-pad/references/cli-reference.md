@@ -165,3 +165,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > there): write full project paths in item bodies, or name the script without backticks. A workspace without an Asks collection holds a question for the operator as a Task under its plan, blocking the
 > work it holds up (`pad item block`); the guidelines' Asks collection is created only on the operator's word.
 
+> **Learned 2026-11-19** · Pad CLI v0.21.0 (the pack documents v0.19.2) · VERIFIED_PRIMARY · Source: smc-resiliency session 19 Nov (TASK-71, TASK-55) · Falsifier: an upload of a binary-looking .log accepted, or a comment starting with "-" accepted without `--`.
+> - `pad attachment upload` refuses a file sniffed as application/octet-stream (a serial console log with control bytes): strip to printable text first
+>   (`LC_ALL=C tr -cd '\11\12\15\40-\176'`) and keep the raw log elsewhere.
+> - `pad item comment <ref> "- **What:** ..."` fails ("unknown shorthand flag"): text starting with "-" needs `pad item comment <ref> -- "<text>"`.
+> - Body rewrites: `pad item update <ref> --stdin --replace` (a blank stdin is refused, nothing sent).
