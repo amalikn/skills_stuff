@@ -4,7 +4,7 @@ Category: architecture
 Status: current
 Authority: canonical
 Scope: How skill-pad's parts connect: the skill, its references and mirror, the Pad CLI and server, the projects, the backup and export paths
-Last reviewed: 2026-11-19
+Last reviewed: 2026-11-20
 Summary: >-
   skill-pad is a CLI-driven skill over a local Pad server whose data lives in tools_stuff/pad on the Data volume; repo trackers stay the truth, Pad items point at them, and
   exports and nightly backups keep copies outside Pad.

@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1850
+Last rotated: 20261120_0250
 ---
 
 # Changelog — skill-pad
@@ -39,7 +39,6 @@ Last rotated: 20261119_1850
 - [20261111_1054 — Pad link opener: repo links in Pad open in VS Code](#20261111_1054--pad-link-opener-repo-links-in-pad-open-in-vs-code)
 - [20261110_2055 — tracker import spike noted for the trial review](#20261110_2055--tracker-import-spike-noted-for-the-trial-review)
 - [20261110_2031 — slurp close: session record, write-backs, collection schemas](#20261110_2031--slurp-close-session-record-write-backs-collection-schemas)
-- [20261110_2020 — UNC moved: bugs, feature requests and tech debt in Pad in both workspaces](#20261110_2020--unc-moved-bugs-feature-requests-and-tech-debt-in-pad-in-both-workspaces)
 
 ---
 
@@ -195,13 +194,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 ### Notes
 
 - Flows: smc-resiliency and UNC rendered and traced; nothing of this session's changes is described there; UNC's 157 unstamped steps are its own.
-
-## 20261110_2020 — UNC moved: bugs, feature requests and tech debt in Pad in both workspaces
-
-### Changed
-
-- UNC: Bugs (73, nested as children), Feature Requests (84, 49 children) imported, round trip identical; TASK-21 and TASK-22 moved to Tech Debt (TD-21, TD-22) and TD-183 points at the refactor tracker
-  (a generated inventory read by check_script_structure, so it stays a file); commit gate runs `just pad-trackers`; AGENTS.md rule and task text point at Pad; 34 bug IDs set; tasks linked to their
-  bugs (implements).
-- Both workspaces: trackers-truth conventions (CONVE-9, CONVE-24) and the baseline gain the Pad exception; pad-owned-trackers applied to UNC.
-- Guidelines: principle 1 exception; 3.1 lists Bugs, Feature Requests, Tech Debt.

@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261120_0250.md](changelog/changelog-20261120_0250.md) 1 entry, 2026-11-10 to 2026-11-10: UNC moved: bugs, feature requests and tech debt in Pad in both workspaces
 - [changelog-20261119_1850.md](changelog/changelog-20261119_1850.md) 1 entry, 2026-11-10 to 2026-11-10: bugs, feature requests and tech debt in Pad (smc-resiliency done)
 - [changelog-20261119_1821.md](changelog/changelog-20261119_1821.md) 5 entries, 2026-11-10 to 2026-11-10: closed items on the standard; output order fix; original comment texts kept; rate-limit retries; smc-resiliency comments rewritten to the comment standard; open Pad items rewritten to the writing standard; ...
 - [changelog-20261119_1631.md](changelog/changelog-20261119_1631.md) 1 entry, 2026-11-10 to 2026-11-10: Pad usage guidelines in force (Q1 to Q6 answered)
