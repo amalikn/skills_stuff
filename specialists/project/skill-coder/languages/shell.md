@@ -70,6 +70,6 @@ The rest of this override lives in [shell/](shell/) (split 2026-11-07 by scripts
 | [learned-format-and-lint.md](shell/learned-format-and-lint.md) | 3      |
 | [learned-other.md](shell/learned-other.md) | 4      |
 | [learned-processes-and-timeouts.md](shell/learned-processes-and-timeouts.md) | 13     |
-| [learned-safety.md](shell/learned-safety.md) | 3      |
+| [learned-safety.md](shell/learned-safety.md) | 4      |
 | [open-items.md](shell/open-items.md) | 3      |
 | [posix-sh.md](shell/posix-sh.md)  | 1      |

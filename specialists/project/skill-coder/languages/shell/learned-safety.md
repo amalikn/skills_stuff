@@ -53,3 +53,21 @@ Part of [shell.md](../shell.md).
 > **Learned 2026-11-02** · any guard around a scheduled job · VERIFIED_PRIMARY (production log: two runs of one job in the same second) · Source: ansible-wifi `files/changes/rct-avr-smsc/scripts/smsc_prove_page.sh`, commit 70bb516 ·
 > Falsifier: a scheduler that shows the job in the process table before its tick. A guard that stops at the tick plus a process check leaves a gap: the job is not in the process table until the
 > scheduler has started it. Hold off for a few seconds after the tick too, and read the schedule on the box, as a box can differ from what the code deploys.
+
+> **Learned 2026-11-19** · Bash under `set -euo pipefail` · VERIFIED_PRIMARY (rc 141 on a real 7.7 GB card write; a guard test reproduces it) · Source: smc-resiliency
+> lab/payloads/lab_flash_io.sh `readback_sha`, 20261119_2340 · Falsifier: a pipeline whose early-exiting reader leaves the writer alive and the status 0. A read-back like `reader | head -c N | shasum`
+> fails when the reader still has bytes to write after `head` has its N: the reader dies of SIGPIPE (141), `pipefail` makes the pipeline fail, and `set -e` exits before the compare runs, so nothing is
+> reported and no cleanup happens. Turn pipefail off for that pipeline only, in a subshell, and let the compare be the check: a short or failed read gives a different hash. Separately, on macOS a
+> card's new FAT partition is auto-mounted between a raw write and its read-back, and Spotlight and fseventsd change it: write sector 0 (the partition table) last, with the rest written and compared
+> first.
+>
+> ```bash
+> # lab/payloads/lab_flash_io.sh
+> readback_sha() {
+>   local blocks=$((($2 + BS - 1) / BS))
+>   (
+>     set +o pipefail
+>     dd if="$1" bs=$BS count=$blocks 2>/dev/null | head -c "$2" | shasum -a 256 | cut -d' ' -f1
+>   )
+> }
+> ```

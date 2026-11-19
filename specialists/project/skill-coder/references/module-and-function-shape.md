@@ -13,6 +13,17 @@ Summary: >-
 
 # Module and function shape
 
+## Contents
+
+- [Size budgets](#size-budgets)
+- [The shrink-only ratchet](#the-shrink-only-ratchet)
+- [Single responsibility](#single-responsibility)
+- [Grouping modules into packages](#grouping-modules-into-packages)
+- [Naming](#naming)
+- [Typed records over loose maps](#typed-records-over-loose-maps)
+
+---
+
 ## Size budgets
 
 | Unit                                                           | Default budget      | Why                                                           |
@@ -28,14 +39,34 @@ Summary: >-
 | Language      | Module: warn / must split | Function: warn / must split | Source                                                                                                                     |
 | ------------- | ------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Default (any) | 300 / 400                 | 40 / 60                     | Operator; the hard limits are a governed project's rule R34                                                                |
-| Shell         | 100 / 200                 | 30 / 40                     | Operator; past about 100 lines a script belongs in a structured language (Google Shell Style Guide, VERIFIED_PRIMARY,      |
-|               |                           |                             |   C-C55)                                                                                                                   |
+| Shell         | 100 / 200                 | 30 / 40                     | Operator; past about 100 lines a script belongs in a structured language (Google Shell Style Guide,                        |
+|               |                           |                             |   VERIFIED_PRIMARY, C-C55)                                                                                                 |
 
 `scripts/code_size.py` applies both tiers (`DEFAULT_LIMITS`, `LANG_LIMITS`); a project sets its own per language or file suffix in `code-map.toml` `[limits.<language>]` (`module`, `function`,
 `warn_module`, `warn_function`).
 
 The numbers are the operator's defaults (a governed project, unified-network-controller, rule R34; skill-ai-it checker structure). A language override may adjust them with a stated reason
 ([../languages/readme.md](../languages/readme.md)); a project's own numbers win.
+
+**Over the limit: split, never squeeze** (operator, 2026-11-19: "There is no point in doing unnecessary compromises just to squeeze it within the limit. If it is not happening, you should always think
+of doing splits. And if you think it's not doable properly in batch script, you can always move to Python or Rust"). A unit over its hard limit is split along a real seam into modules the entry point
+calls or sources, as Python code is split into imported modules. Never trim it under the line count: no merged comment lines, no folded test hooks, no weaker check swapped in for a shorter one. When
+the language cannot split cleanly, move the unit to Python or Rust ([../languages/shell.md](../languages/shell.md)).
+
+> **Learned 2026-11-19** · shell, root-run scripts · VERIFIED_PRIMARY · Source: smc-resiliency lab/payloads/lab_flash_guarded.sh and lab_flash_io.sh
+> (split 20261119_2340) · Falsifier: a split that makes the root-run entry point source a file the unprivileged user can write A guarded root script grew past 200 lines. Squeezing it first replaced a
+> tested sha256 compare with a `cmp` line that broke the write test. The fix was a split: the guards stay in the entry point, and the I/O functions move to a library installed root-owned at a fixed
+> path. The entry point sources it only after checking it is owned by root and not group- or world-writable. Tests source the library directly, so no test hooks stay in the root script.
+>
+> ```bash
+> # lab/payloads/lab_flash_guarded.sh (smc-resiliency, uncommitted at 20261119_2340)
+> load_io() {
+>   [ -f "$IO_LIB" ] && [ ! -L "$IO_LIB" ] || refuse "$IO_LIB missing: install it beside lab-flash (scripts/README.md)"
+>   [ "$(stat -f %u "$IO_LIB")" = 0 ] || refuse "$IO_LIB is not owned by root"
+>   [ $((0$(stat -f %Lp "$IO_LIB") & 022)) -eq 0 ] || refuse "$IO_LIB is writable by group or others"
+>   . "$IO_LIB"
+> }
+> ```
 
 ## The shrink-only ratchet
 
@@ -79,9 +110,8 @@ part of the skill-coder logic"): yes, when the split produces a family of module
 ## Naming
 
 - **Code files and identifiers follow their language; typed commands (CLI commands, long options, task-runner recipes) are kebab-case; a tool's own parser wins for its names** (operator, 2026-10-19,
-  replacing the 2026-10-07 snake_case-for-recipes clause of governance [`coding-guide.md`](/Volumes/Data/_ai/governance/categories/coding-guide.md)). The full verified mapping, language by language:
-  [naming-conventions.md](naming-conventions.md). An existing name that breaks it is renamed when next touched, with every reference updated in the same change
-  ([safety-and-writes.md](safety-and-writes.md), "Changing an identifier").
+  replacing the 2026-10-07 snake_case-for-recipes clause of governance [`coding-guide.md`](/Volumes/Data/_ai/governance/categories/coding-guide.md)). The full verified mapping, language by language: [naming-conventions.md](naming-conventions.md). An existing name that breaks it is
+  renamed when next touched, with every reference updated in the same change ([safety-and-writes.md](safety-and-writes.md), "Changing an identifier").
 - Use the domain's words, not a tool's or vendor's, outside the seam that talks to that tool. Why: names outlive tools.
 - Name for what a thing is or does, not how: `pending_orders`, not `list2`; a boolean reads as a question (`is_reachable`). Why: the reader should not need the body to know the meaning.
 - Follow the language's case convention exactly (each override names it). Why: mixed conventions read as different things.
