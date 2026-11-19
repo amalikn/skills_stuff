@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: pointer
 Scope: The numbered reference files, registries and vendor-source folders under references/
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Points to RUNBOOK.md, which routes every reference file; this folder keeps no second list so the four enforced catalogs stay the only ones.
 ---
 

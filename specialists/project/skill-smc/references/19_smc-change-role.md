@@ -6,10 +6,12 @@ Authority: local-supplement
 Scope: >-
   roles/smc_change and smc_change.yml (source local-knowledge-ansible/ansible-wifi, symlinked into the ansible-wifi checkout); usable from any
   project that changes SMC boxes
-Last reviewed: 2026-10-26
+Last reviewed: 2026-11-19
 Summary: >-
   How to run smc_change, write a change spec, read its stages, gates and run records, how it persists a change on overlayroot Pis, what it
-  leaves on a box (nothing, after a success), how to roll back, how to extend it, and what is proven so far.
+  leaves on a box (nothing, after a success), how to roll back, how to extend it, and what is proven so far; then the dated record of recovery and
+  resume, runs per flavor, facts and conditions, the withdrawn chain, self-repair, export to a company role and the per-change findings (PHP CVE,
+  Iridium AVR flash and SMSC, urlcapture-prune, bitbucket-ssh-hostname).
 ---
 
 # smc_change role
@@ -110,7 +112,8 @@ verify:
 ```
 
 Action types: `apt_pin` (packages, version), `template` and `copy` (src, dest, owner, group, mode), `ini` (path, section, option, value), `command` (cmd, check, chroot; on an overlay box `chroot` is
-required). Other specs: `php-ini-upload-progress-off` (an `ini` action).
+required). Other specs: `php-ini-upload-progress-off` (an `ini` action); later ones (`etc-hosts-hostname`, `rct-tstik-iridium-update`, `rct-avr-smsc`, `bitbucket-ssh-hostname`,
+`urlcapture-prune`, `apt-info-no-update`) are in `files/changes/` and the dated sections below.
 
 ## What it checks
 
@@ -123,7 +126,9 @@ probe hits the default vhost, `10_captive-portal.md` 11.8).
 
 The lower dir `/media/root-ro` is remounted rw for the write phase and always back to ro. File actions write to both paths; `apt_pin` installs live, then `dpkg -i` of the same .debs in a chroot of the
 lower dir with `policy-rc.d` returning 101, and refuses to go on unless the lower dir's dpkg database shows the version, so a box is never rebooted onto the old build. Then one reboot (operator choice
-over the two- reboot disable/enable-overlay path). `UNVERIFIED` until the warehouse-rct01 canary. Core (source `roles/smc_change/tasks/actions/apt_pin.yml`):
+over the two- reboot disable/enable-overlay path). `UNVERIFIED` until the warehouse-rct01 canary; since proven on overlay SMCs (php-rct-smc01, Learned 2026-10-23 below; production RCT
+apply 2026-10-26, lower dir at the new build), and the reboot policy has changed since (`overlay_fallback`, lower-dir-first installs: sections below).
+Core (source `roles/smc_change/tasks/actions/apt_pin.yml`):
 
 ```yaml
 - name: Install the .debs inside the chroot
@@ -178,7 +183,7 @@ The split was proven behaviour-neutral: four runs (check and verify on warehouse
 
 ## Status and open items
 
-As of 2026-10-23:
+As of 2026-10-23 (a snapshot; later status is in the dated sections below, from "Interrupted-change recovery" on):
 
 - nocprov-smc01 (x86 stage bench box): `apply` by the operator moved php8.1 .18 to .28, all gates passed (before the cleanup stage existed, so its backup, 7 host-side records, dpkg-repack and 7 cached
   .debs are still on it).
@@ -556,7 +561,7 @@ Source: local-knowledge-ansible ansible-wifi CHANGELOG 20261027_1042; runbook `p
 Groups carry over too: `group_by` cannot remove a host, so a host the first change had to do stayed in `smc_change_todo` and was run again by the second. `ansible.builtin.meta: clear_facts` does not
 clear `set_fact` values (tested). Fix (held patch `plans/smc-change-free-timeouts-20261105/`): `load_spec.yml` resets about 30 per-change facts at each prepare, readers test by value, and the groups
 are per change (`smc_change_todo_<change>`; a play's `hosts:` can be templated from `import_playbook` vars, tested). Until it is live, run a second change for an SMC in its own process
-(`smc_change.yml -e smc_change=<name>`).
+(`smc_change.yml -e smc_change=<name>`). It went live 2026-11-05 17:40 (heading above), so this workaround applies only to a role older than that.
 
 - **Slow serial batches, strategy free and action time limits (2026-11-05; live since 17:40)**: an rct serial-10 run of `smc_change_multiple.yml` took 87 min for batch 1. Per-SMC system logs
   (garimba-smc01) showed its own work was quick: AVR flash 73 s (systemd unit 12:24:53-12:26:06), rct-tstik clone 32 s. It then sat idle 35 min, because under the default `linear` strategy every SMC

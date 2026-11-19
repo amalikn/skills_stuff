@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: /Volumes/Data/_ansible/local-knowledge-ansible/ansible-wifi and how it is wired into the ansible-wifi checkout
-Last reviewed: 2026-10-23
+Last reviewed: 2026-11-19
 Summary: >-
   What lives in the local-only ansible-wifi knowledge folder, how its playbooks, roles and governance files appear in the ansible-wifi repo without
   reaching Bitbucket, what operator tooling is built there (smc_change role), and the standing rule to read it at the start of SMC work.
@@ -72,11 +72,11 @@ symlinked tree (ruff, shfmt, djlint) get the physical path of the local-only rol
 | Item                                             | What it is                                                        | Run                                                                           |
 | ------------------------------------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | `roles/smc_change/` + `playbooks/smc_change.yml` | generic change role: one spec per change in                       | `ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <h>`        |
-|                                                  |   `files/changes/<name>.yml`; before-probe, guard, backup,        |   `-e smc_change=<spec> [-e smc_change_mode=apply]`; default mode `check`     |
+|                                                  |   `files/changes/<name>/<name>.yml`; before-probe, guard, backup, |   `-e smc_change=<spec> [-e smc_change_mode=apply]`; default mode `check`     |
 |                                                  |   actions (apt_pin, template, copy, ini, command) live and in the |   (read only)                                                                 |
 |                                                  |   overlayroot lower dir, restart, reboot, after-probe and gates.  |                                                                               |
 |                                                  |   Every run's JSON record lands in                                |                                                                               |
-|                                                  |   `roles/smc_change/runs/<spec>/`. README in the role; skill-smc guide: `19_smc-change-role.md`.            |                                                                               |
+|                                                  |   `files/changes/<spec>/runs/<flavor>/`. README in the role; skill-smc guide: `19_smc-change-role.md`.      |                                                                               |
 | spec `php-cve-2026-109618`                       | php8.1 to 8.1.2-1ubuntu2.28 on rcp, nbn_accelerate, rct, wh (nbn_wh | as above                                                                      |
 |                                                  |   only when allowed)                                              |                                                                               |
 | spec `php-ini-upload-progress-off`               | interim php.ini mitigation (assessment 5.1)                       | as above                                                                      |
@@ -87,7 +87,9 @@ symlinked tree (ruff, shfmt, djlint) get the physical path of the local-only rol
 |                                                  |   rct-avr-smsc; gate rct + `smc_bases_iridium` true only          |                                                                               |
 
 State on 2026-10-23: the role's `check` and `verify` modes ran on warehouse-smc01, nocprov-smc01 (x86) and warehouse-rct01 (Pi, overlay off). `apply` has not run anywhere; the overlay lower-dir chroot
-path is `UNVERIFIED` until a canary on warehouse-rct01 with its overlay enabled.
+path is `UNVERIFIED` until a canary on warehouse-rct01 with its overlay enabled. Since then `apply` has run in production (RCT PHP apply 2026-10-26, packages updated live and in the
+lower dir) and more specs exist under `files/changes/` (apt-info-no-update, bitbucket-ssh-hostname, etc-hosts-hostname, rct-avr-smsc, rct-tstik-iridium-update, urlcapture-prune):
+`19_smc-change-role.md` is the current record.
 
 ## Learned
 

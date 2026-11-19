@@ -4,9 +4,11 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-smc specialist pack — canonical source for SMC box operational knowledge and ansible-wifi authoring
-Last reviewed: 20260731_1300
-Summary: Agent guidance for maintaining and using the skill-smc specialist pack. Covers specialist structure, reference routing, and update discipline. Cross-repo trigger rule broadened 2026-07-31 to
-  cover the whole local-knowledge-ansible/ansible-wifi tree (current and future subfolders) and both skill-slurp-chat and project-coherence as mandatory feed-back trigger points.
+Last reviewed: 2026-11-19
+Summary: >-
+  Agent guidance for maintaining and using the skill-smc specialist pack. Covers specialist structure, reference routing, scripts layout and recipes, update discipline, the project-coherence tier
+  order, governance checks and the skill-coder rule for code changes. Cross-repo trigger rule broadened 2026-07-31 to cover the whole local-knowledge-ansible/ansible-wifi tree (current and future
+  subfolders) and both skill-slurp-chat and project-coherence as mandatory feed-back trigger points.
 ---
 
 @../../../AGENTS.md

@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: index
 Scope: Staleness audit reports for skill-smc
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: One row per audit report; each report embeds its own evidence block.
 ---
 

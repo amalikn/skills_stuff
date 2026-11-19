@@ -4,7 +4,7 @@ Category: readme
 Status: current
 Authority: canonical
 Scope: Root README.md of skill-smc
-Last reviewed: 2026-10-07
+Last reviewed: 2026-11-19
 Summary: Canonical specialist pack for SMC (Site Management Controller) box operations and ansible-wifi authoring.
 Review by: 2026-11-26
 Budget: 200 lines, 25 KB
@@ -21,7 +21,7 @@ URL-capture PCAP processing, captive portal, content filtering, and hardware/ove
 
 ## Folder index
 
-- [references/](references/) — numbered progressive-disclosure reference files (`01_` to `16_`) plus machine-readable registries (content source)
+- [references/](references/) — numbered progressive-disclosure reference files (`01_` to `19_`) plus machine-readable registries (content source)
 - [scripts/](scripts/) — read-only diagnostics and the governance checker; catalog in [scripts/README.md](scripts/README.md)
 - [.archcore/](.archcore/) — durable rules, ADR, and spec for this pack
 

@@ -6,10 +6,10 @@ Authority: >-
   Read-only observations of live units over Teleport apn, 2026-10-08; vendor documents in vendor-sources-dallas-delta-20261008_1043/ stay authoritative for
   vendor claims.
 Scope: The Dallas Delta Corp VoIP ATA behind the MikroTik switch at rct sites, reached from the SMC on 192.168.5.0/24
-Last reviewed: 2026-10-08
+Last reviewed: 2026-11-19
 Summary: >-
-  Identity, address, management surface (web UI only, no SNMP, no SSH), SIP registration readout, which settings are site-unique, and the quirks seen when
-  reading the rct site ATA.
+  Identity, address, management surface (web UI only, no SNMP, no SSH), SIP registration readout, which settings are site-unique, the quirks seen when
+  reading the rct site ATA, and the S11 generation (DDC_VoIP-BIA) with its scripted reads and the page markers that identify both generations.
 ---
 
 # rct Site ATA — Dallas Delta DDC_VoIP-m
@@ -20,6 +20,7 @@ Summary: >-
 - [Management surface](#management-surface)
 - [Settings and SIP registration](#settings-and-sip-registration)
 - [Reading quirks and unreachable units](#reading-quirks-and-unreachable-units)
+- [The S11 generation (20-mile, 2026-10-20)](#the-s11-generation-20-mile-2026-10-20)
 - [Vendor sources](#vendor-sources)
 
 All facts VERIFIED-OBSERVED 2026-10-08, read-only from the site's SMC over Teleport apn, unless labelled otherwise. No PIN, password or SIP secret is recorded here.
@@ -28,7 +29,7 @@ All facts VERIFIED-OBSERVED 2026-10-08, read-only from the site's SMC over Telep
 
 - Dallas Delta Corp `DDC_VoIP-m`, firmware `042112`. Web page title `DDC_VoIP Login`; the page source carries the comment `Dallas Delta Corp VoIP telephone Feb 2009 ver2.0`.
 - Address `192.168.5.253/24`, gateway `192.168.5.100` (the second address on the SMC's `bridge_500`, kept for this unit; `03_communication-flows.md`, rct Site Addressing).
-- Cabled to the MikroTik switch's `ether4` (skill-mikrotik reads it from the bridge host table). 20-mile's unit is MAC `38:B1:9E:D0:02:14`.
+- Cabled to the MikroTik switch's `ether4` (skill-mikrotik reads it from the bridge host table). 20-mile's unit is MAC `38:B1:9E:D0:02:14` and is the S11 DDC_VoIP-BIA, not a DDC_VoIP-m (see "The S11 generation" below).
 
 ## Management surface
 
@@ -69,7 +70,8 @@ VERIFIED-OBSERVED 2026-10-20, read-only from 20-mile-smc01 over Teleport apn, on
   `{"i": {checkboxes}, "n": {field: value}}` with the same field names as DDC_VoIP-m's form (`user_number`, `sip_proxy`; the SIP password is in there,
   so parse it on the box). Before `/auth` they return 404. `/dotest`, `/getrst` and `POST /settings` also exist; they test, reset or write, so a
   reader never calls them.
-- A marker matching both generations' pages is "Dallas Delta Corp" (DDC_VoIP-m's comment and the S11 footer).
+- A marker matching both generations' pages is "Dallas Delta Corp" (DDC_VoIP-m's comment and the S11 footer). On S11 it sits only in the footer near the page's end, so a reader that
+  keeps only the start of a page should match "DDC_VoIP" first (Learned 2026-10-20 (b) below).
 - adjamarragu's DDC_VoIP-m now reports MAC `00:18:1F:01:F1:6A`, not the `00-18-1F-01-E6-16` read on 2026-10-08: the unit may have been replaced
   (UNVERIFIED; same model and firmware 042112, registered).
 

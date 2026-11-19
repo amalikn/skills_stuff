@@ -4,8 +4,10 @@ Category: architecture
 Status: current
 Authority: canonical
 Scope: Root ARCHITECTURE.md of skill-smc
-Last reviewed: 2026-10-07
-Summary: skill-smc is a multi-file specialist pack following the canonical specialists/project/ pattern. It separates an agent-facing activation surface (SKILL.md) from a progressive-disclosure...
+Last reviewed: 2026-11-19
+Summary: >-
+  skill-smc's structure: activation surface (SKILL.md), navigation index (RUNBOOK.md), numbered references 01-19, manifest, justfile, .archcore/ rules, the Claude Code symlink install,
+  key decisions (progressive disclosure, scripts by job, branch reach, short SKILL.md) and related workspaces.
 Review by: 2026-11-26
 ---
 
@@ -14,15 +16,15 @@ Review by: 2026-11-26
 ## Overview
 
 skill-smc is a multi-file specialist pack following the canonical `specialists/project/` pattern. It separates an agent-facing activation surface (SKILL.md) from a progressive-disclosure reference
-layer (references/01–13) via a navigation index (RUNBOOK.md). Durable pack rules, the structural ADR, and a file-roles spec live in `.archcore/`.
+layer (references/01–19) via a navigation index (RUNBOOK.md). Durable pack rules, the structural ADR, and a file-roles spec live in `.archcore/`.
 
 ## Components
 
 | Component | Role |
 |---|---|
 | `SKILL.md` | Agent activation surface: triggers, the write-back contract, a short access paragraph and decision tree, and pointers to numbered references |
-| `RUNBOOK.md` | Navigation index: 48-line table mapping task types to specific reference files. Not a content source. |
-| `references/01_overview.md` – `references/13_known-issues.md` | Numbered progressive-disclosure content files. Each covers one domain. Loaded on demand. |
+| `RUNBOOK.md` | Navigation index: a routing table mapping task types to specific reference files. Not a content source. |
+| `references/01_overview.md` – `references/19_smc-change-role.md` | Numbered progressive-disclosure content files. Each covers one domain. Loaded on demand. |
 | `manifest.json` | Machine-readable specialist metadata: version, scope boundary, stable facts, known constraints |
 | `justfile` + `.mise.toml` | Task catalog; recipes run Python from the working-cache venv pinned by `.mise.toml` (`just bootstrap`, `just check`) |
 | `.archcore/` | Durable pack truth: 3 rules, 1 ADR, 1 spec |

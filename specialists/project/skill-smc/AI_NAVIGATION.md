@@ -4,8 +4,10 @@ Category: navigation
 Status: current
 Authority: local-supplement
 Scope: Root AI_NAVIGATION.md of skill-smc
-Last reviewed: 2026-10-23
-Summary: This file is a router, not the knowledge store.
+Last reviewed: 2026-11-19
+Summary: >-
+  Router for skill-smc, not the knowledge store: read order, source priority, task-to-reference routing (references 01-19), project context files, update rules, drift handling,
+  generated context, companion consistency and compaction recovery.
 Review by: 2026-11-26
 ---
 
@@ -15,7 +17,7 @@ Purpose: context entrypoint for AI agents working on the skill-smc specialist pa
 
 This file is a router, not the knowledge store.
 
-<!-- BEGIN skill-ai-it:navigation --> <!-- skill-ai-it:manual reason="task->reference routing table (13 files) and specialist-pack file-role priority order are project-specific; the generic template
+<!-- BEGIN skill-ai-it:navigation --> <!-- skill-ai-it:manual reason="task->reference routing table (19 files) and specialist-pack file-role priority order are project-specific; the generic template
 has no equivalent and would delete them" -->
 
 ## Contents
@@ -106,6 +108,9 @@ When sources conflict:
 | `references/14_pin-activation-diagnosis.md`        | Pin validity vs pin issuance diagnosis, fleet case study                | Content     |
 | `references/15_cambium-asset-registers.md`         | Pointer only — full content in skill-cambium; site_name join point here | Content     |
 | `references/16_tplink-site-switches.md`            | TP-Link switches behind the SMC; `tplink-switch.sh`                     | Content     |
+| `references/17_site-ata-dallas-delta.md`           | rct site ATA: web UI, no SNMP, SIP registration                         | Content     |
+| `references/18_local-knowledge-ansible.md`         | Local-only ansible-wifi knowledge folder, repo symlinks                 | Content     |
+| `references/19_smc-change-role.md`                 | smc_change role: change specs, gates, run records                       | Content     |
 | `references/snmp-oid-registry-tplink.yaml`         | Verified TP-Link switch OIDs the controller uses (machine-readable)     | Content     |
 | `references/tplink-site-switches.yaml`             | One record per TP-Link switch, with structured evidence                 | Content     |
 | `references/tplink-snmp-enablement-survey-*.csv`   | TP-Link SNMP enablement per switch                                      | Content     |
