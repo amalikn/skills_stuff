@@ -51,14 +51,18 @@ def git(root: pathlib.Path, *args: str) -> str:
 
 
 def text_only(line: str) -> str:
-    """A line with its markdown link targets blanked, so a relinked line still matches its original.
+    """A line with its markdown link targets blanked and its task checkbox cleared, so a relinked or ticked line still matches its original.
+
+    A sync inbox item leaves SCRATCHPAD.md ticked (`- [x]`) for docs/history/sync/ while the record before held it open (`- [ ]`); ticking is not a loss
+    (smc-resiliency BUG-68, 2026-11-19).
 
     Args:
         line: one line.
 
     Returns:
-        The line with every `](target)` replaced by `]()`.
+        The line with every `](target)` replaced by `]()` and a leading `[x]` or `[X]` checkbox written as `[ ]`.
     """
+    line = re.sub(r"^(\s*[-*+] )\[[xX]\]", r"\1[ ]", line)
     return re.sub(r"\]\([^)]*\)", "]()", line)
 
 

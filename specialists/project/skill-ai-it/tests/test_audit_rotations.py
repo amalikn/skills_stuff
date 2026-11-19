@@ -31,6 +31,17 @@ class SplitTest(unittest.TestCase):
         self.assertEqual(ar.split_tails(BEFORE, {"## Next actions", ""}, moved), [])
 
 
+class TextOnlyTest(unittest.TestCase):
+    """text_only() matches a line to its archived form."""
+
+    def test_ticked_checkbox_matches_the_open_one(self):
+        self.assertEqual(ar.text_only("- [x] **20261020_0949** from unc: text"), ar.text_only("- [ ] **20261020_0949** from unc: text"))
+
+    def test_other_text_still_differs(self):
+        self.assertNotEqual(ar.text_only("- [x] **20261020_0949** from unc: text"), ar.text_only("- [ ] **20261020_0950** from unc: text"))
+        self.assertNotEqual(ar.text_only("text [x] inside"), ar.text_only("text [ ] inside"))
+
+
 class BaselineTest(unittest.TestCase):
     """baseline() reads accepted lines per record and rejects a malformed row."""
 

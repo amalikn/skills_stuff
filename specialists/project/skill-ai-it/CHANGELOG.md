@@ -34,6 +34,8 @@ Last rotated: 20261118_1754
 
 ## Unreleased
 
+- 2026-11-19 · `scripts/records/audit_rotations.py` `text_only`: a ticked task checkbox (`- [x]`) matches the open one, so a sync inbox item archived ticked under
+  docs/history/sync/ is no longer reported lost (smc-resiliency BUG-68: 6 lines; `just budget --apply`'s audit now OK there); two tests in `tests/test_audit_rotations.py`.
 - 2026-11-19 · `scripts/adoption/adopt_governed_files.py` `fix_justfile`: without a `py :=` line, `ai_it :=` now goes after the leading comment block; above it, the justfile header lost its summary and `govern` baselined a no-header finding (continuum-app). Test `test_ai_it_goes_below_the_header_comment` fails without the change.
 - 2026-11-19 · `scripts/records/rotate_records.py`: archive front matter now carries `Authority: record` and `Scope`, which the governance header standard requires (skill-pad's check failed on a fresh archive). `test_archive_has_no_blank_line_runs` asserts both.
 - 2026-11-19 · `scripts/checks/file_headers.py`: package-manager lock files (`LOCK_NAMES`: pnpm-lock.yaml and others) are generated data and leave the header check; a tracked `pnpm-lock.yaml` failed continuum's `just check` with no-header. Test `LockFiles` in `tests/test_doc_freshness_paths.py` fails without the change.
