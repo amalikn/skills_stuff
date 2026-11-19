@@ -2,7 +2,7 @@ Title: Personas index
 Category: library-index
 Status: current
 Scope: The judgement contracts Agent Stack routes to
-Last reviewed: 20260903_2200
+Last reviewed: 2026-11-19
 Summary: One row per persona, derived from each file's own frontmatter, so a persona added without an index row fails the coverage gate.
 
 # Personas

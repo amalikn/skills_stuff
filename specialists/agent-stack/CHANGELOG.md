@@ -13,6 +13,7 @@ Last rotated: 20261010_1808
 
 ## Contents
 
+- [20261119_1640 — Periodic review; 90-day review window](#20261119_1640--periodic-review-90-day-review-window)
 - [20261010_1805 — Governed-file standard: recipes, SCRATCHPAD rotated, checker split into scripts/govcheck](#20261010_1805--governed-file-standard-recipes-scratchpad-rotated-checker-split-into-scriptsgovcheck)
 - [20260905_0036 — quick_validate.py enforces the agentskills.io name/directory match](#20260905_0036--quick_validatepy-enforces-the-agentskillsio-namedirectory-match)
 - [20260904_1710 — Scoped staleness audit on the new survey document; a stale entry found in the standing 2026-09-01 residual register](#20260904_1710--scoped-staleness-audit-on-the-new-survey-document-a-stale-entry-found-in-the-standing-2026-09-01-residual-register)
@@ -23,6 +24,10 @@ Last rotated: 20261010_1808
 - [20260904_1155 — Sentry Skills / Prompt Optimizer row upgraded from recommendation to adopted record](#20260904_1155--sentry-skills--prompt-optimizer-row-upgraded-from-recommendation-to-adopted-record)
 - [20260904_1150 — Six proposed archcore documents accepted by the operator](#20260904_1150--six-proposed-archcore-documents-accepted-by-the-operator)
 - [20260901_1315](#20260901_1315)
+
+## 20261119_1640 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, stale status statements and body rules aligned with their Learned entries and the code. Review window now 90 days (`--window-days 90` in the justfile).
 
 ## 20261010_1805 — Governed-file standard: recipes, SCRATCHPAD rotated, checker split into scripts/govcheck
 
@@ -193,4 +198,3 @@ Verified: `just governance` (1111 checks) and `just preflight` (51 tests) both g
   Both template paths are relative to the skill package directory named above, not to this repo.
 - Verified: `just preflight` green — interpreter resolving to the working-cache venv (3.14.5), contract validation PASS (52 capabilities; 15 personas; 37 skills), 334 governance checks PASS, routing
   corpus PASS (60 cases), 37 unit tests PASS. The suite grew from 32 to 37 with the update's routing-behaviour tests. <!-- count:asat -->
-

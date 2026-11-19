@@ -3,7 +3,7 @@ Category: project-memory
 Status: current
 Authority: local-supplement
 Scope: Durable knowledge required before changing Agent Stack routing — architecture, settled decisions, measured baselines, metric definitions, and traps already hit
-Last reviewed: 20260901_2015
+Last reviewed: 2026-11-19
 Summary: What a future agent must know before touching the routing layer, including why each decision was made and which measurements are load-bearing.
 
 # MEMORY.md — Agent Stack Routing
@@ -322,10 +322,10 @@ Each of these cost real work. They are cheap to avoid twice.
 
 - **The development corpus is FROZEN (2026-09-02).** With closure it scores 50/60 and production-tier models reach ~80% live. Do not tune against it further — past this point a better score on these
   60 is evidence of fitting the corpus rather than of better routing. Add a case only to cover a NEW routing concept.
-- **Next evidence must come from outside it:** an unseen holdout authored without reference to these cases, and replay against real project tasks. Then shadow it on real work.
-- **Audit findings A1 and A2** — upstream sync apply is non-atomic, and sync follows symlinks through `is_file`/`copy2` so a supplied symlink can escape the intended roots. Both P1 in the audit, both
-  maintenance-plane rather than routing-quality, and best fixed together since both concern sync failure behaviour. Do these before calling Agent Stack broadly production-ready.
+- **Next evidence must come from outside it:** an unseen holdout authored without reference to these cases, and replay against real project tasks. Then shadow it on real work. Holdout 24 is
+  spent (above); a second follows [plan 0003](.archcore/plans/0003-holdout-two-protocol.md).
+- **Audit findings A1 and A2** (sync apply non-atomic; sync followed symlinks out of its roots): **closed 2026-09-02** ([ADR 0009](.archcore/adr/0009-sync-apply-is-atomic.md),
+  [rule 0010](.archcore/rules/0010-sync-refuses-symlinks.md)), and moot since upstream sync was retired 2026-09-03.
 - **`atar-supplier` ownership** is settled for now — all three arms choose `research-thompson` and pass since closure landed — but the wording genuinely supports a CFO reading ("supplier selection
   materially driven by economics"). Revisit only if real-task replay shows the models drifting back to CFO.
-- Two staleness-audit residuals remain formally unaccepted: a vendored TypeScript config is JSONC and unparseable by a strict loader, and the inverse sweep flags package-internal resource directories
-  this project catalogues by package. Receipts are archived under the working cache.
+- One staleness-audit residual remains unaccepted: a vendored TypeScript config is JSONC (the inverse-sweep `personas/` item was resolved 2026-09-03); receipts are in the working cache.

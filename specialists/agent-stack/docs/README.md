@@ -2,7 +2,7 @@ Title: Working documents index
 Category: document-index
 Status: current
 Scope: Non-governance markdown produced by the work — audits, proposals, failure classifications and evaluation records
-Last reviewed: 20260904_0735
+Last reviewed: 2026-11-19
 Summary: Index of the project's working documents, grouped into subfolders by content once the flat list grew past a dozen files. Kept out of the root so the root carries only governance and contract
   entrypoints.
 
@@ -20,6 +20,7 @@ These are **evidence and working artifacts, not policy.** Durable decisions live
 - [Routing evaluation](#routing-evaluation)
 - [Reliability adaptation](#reliability-adaptation)
 - [Off-topic](#off-topic)
+- [Trackers](#trackers)
 - [History](#history)
 
 Reorganised 2026-09-04 from a single flat table into these four subfolders, once the flat list passed a dozen files and grouping by content became more useful than one long table. Coverage is enforced
@@ -61,6 +62,10 @@ Filed here at operator request even though it does not bear on Agent Stack's own
 | Document                                                   | What it is                                                                                 |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | [off-topic/vertical-agent-framework-survey-20260903_2126.md](off-topic/vertical-agent-framework-survey-20260903_2126.md) | Fact-check of a separate proposed stack for building new vertical domain-specialist agents |
+
+## Trackers
+
+[trackers/open-items-20261010_1821.md](trackers/open-items-20261010_1821.md) holds SCRATCHPAD items still open after a week, moved there by `just rotate --apply`.
 
 ## History
 

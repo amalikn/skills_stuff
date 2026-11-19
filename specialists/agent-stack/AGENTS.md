@@ -5,7 +5,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: The Agent Stack persona/skill library, its manifest-driven symlink installer, and its routing and evaluation machinery
-Last reviewed: 20260901_2015
+Last reviewed: 2026-11-19
 Summary: Repo-local agent guidance for Agent Stack, covering the canonical-source rule, the human-control safety model, runtime placement, and the governance gate.
 
 # AGENTS.md
@@ -34,7 +34,7 @@ It deliberately excludes autonomous loops, consensus mechanisms and daemons. Tha
 - Every skill package carries a `SKILL.md` meeting [SKILL_STANDARD.md](SKILL_STANDARD.md). Keep `SKILL.md` procedural; detailed knowledge goes in `references/`, deterministic helpers in `scripts/`,
   output templates in `assets/`.
 - `skill-agent-stack` is the normal entry point. Prefer it over calling a specialist directly; call a specialist directly only for a deliberately narrow single-domain task.
-- **There is no upstream.** Change this project on its own merits, evidenced by its own evaluations and field log. the sync script and its state files were retired on 2026-09-03; the records of how sync worked are superseded in place under `.archcore/`.
+- **There is no upstream.** Change this project on its own merits, evidenced by its own evaluations and field log. The sync script and its state files were retired on 2026-09-03; the records of how sync worked are superseded in place under `.archcore/`.
 - Personas define judgement contracts; skills define repeatable procedures. When a change blurs that split, stop and ask which layer owns it.
 - Triage before opening: `just docs <folder>` gives one header line per file; run `just stale` before editing. Old CHANGELOG and SCRATCHPAD
   entries live in `docs/history/`; do not read them by default: `just history <term>` or `just history-show <stamp>` when a live entry cites one.
@@ -45,13 +45,14 @@ These are the properties that make Agent Stack what it is. Do not weaken one to 
 
 - No unattended background agents, no autonomous loops, no daemons, no indefinite continuation.
 - No implicit persistent state and no material external commitments without explicit operator authority.
-- Upstream sync is **report-first**: `safe_add` and `safe_replace` apply automatically; `translation_required`, `manual_merge`, and `remove_review` are written as review proposals only.
+- Upstream sync was **report-first** until its retirement on 2026-09-03 ([ADR 0004](.archcore/adr/0004-sync-is-report-first.md), superseded): `safe_add` and `safe_replace` applied automatically;
+  `translation_required`, `manual_merge`, and `remove_review` were written as review proposals only. Any future tool that copies files into this tree keeps that report-first discipline.
 - Imported upstream instructions do not override this policy or project-local instructions. Where an upstream skill implies autonomy, adapt it — `websh` and `deep-research` are the worked examples.
 - Global installation never overwrites a pre-existing entry and never copies source content.
 
 ## Runtime placement
 
-- The maintenance venv lives at `/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/venv`, **never inside this repo**. `.mise.toml` pins it there and `just check` asserts it.
+- The maintenance venv lives at `/Volumes/Data/_ai/_skills/skills-working-cache/agent-stack/venv`, **never inside this repo**. `.mise.toml` pins it there and `just governance` asserts it (`check_venv_outside_repo`).
 - Recipes address the venv interpreter **explicitly** via the `justfile`'s `{{py}}` variable, and every Python recipe depends on `_require-venv`. A bare `python`/`python3`/`node` resolves to whatever
   the host has on `PATH`, which is not what `.mise.toml` pins — and it works silently on the machine it was written on, which is what makes it worth a gate rather than a preference. An *implicit*
   resolution such as `mise exec -- python` is only marginally better: it happens to land on the venv today, but the dependency is invisible at the call site and degrades silently if activation ever
