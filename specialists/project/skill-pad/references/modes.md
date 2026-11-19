@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: The five typed modes of skill-pad and the presence hooks, rebuilt from Pad's Claude Code plugin with the CLI and Claude Code's own tools
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   Step-by-step procedures for skill-pad's modes. They replace Pad's plugin skills (/pad:status, :capture, :onboard, :connect, :disconnect), its
   monitor and its presence hooks (operator, 2026-11-10: own skill, no plugin). Every mode starts with the preflight in SKILL.md.

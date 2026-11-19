@@ -6,11 +6,12 @@ Authority: >-
   In force: the operator answered section 7 on 2026-11-10 (Q1 to Q6). Pad facts are VERIFIED_PRIMARY against CLI v0.19.2 and the upstream sources
   in references/upstream/ unless marked otherwise.
 Scope: How agents and the operator use Pad in apn project workspaces; rolled out to smc-resiliency and unified-network-controller together
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   Pad holds two things: every ask of the operator, in an Asks collection routed to the needs-you inbox, and the agent's current-focus queue of plans
   and tasks that point at the repo trackers. Rewritten 2026-11-10 after a review against both live workspaces: closable Asks schema, no tracker tags,
-  dates in fields, a degraded mode when Pad is down, and one joint trial review.
+  dates in fields, a degraded mode when Pad is down, and one joint trial review. The writing standard (3.3) gained bold labels, running
+  updates, a closing statement and attached logs on 2026-11-18, checked by item-check.
 ---
 
 # Pad usage guidelines
@@ -208,6 +209,7 @@ plan bodies were one line, task bodies one paragraph, and decisions and work don
 ```
 
 **Bug body** (fields `tracker_id`, `section`, `severity`, `order`): `**Seen:**`, `**Evidence:**`, `**Cause:**`, `**Effect:**`, `**Options:**`, `**Not verified:**`, `**Closure:**`, the same way.
+Asks, feature requests and tech debt bodies take the same bold labels and blank lines (Learned 2026-11-19 below).
 
 **Labels are bold and each starts its own paragraph** (operator, 2026-11-18: "there is no proper separation, so it looks like a lot of stuff is jumbled up. At least just bold those
 categories"). Plain `Serves:` lines run together in Pad's view; the bold label and the blank line are what separate the sections.

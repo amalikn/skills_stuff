@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: How Pad reaches agents other than through this skill (local and remote MCP, client setup), and why the operator uses skill-pad instead of Pad's plugin
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   Pad's MCP surface (local stdio and remote mcp.getpad.dev), the client install commands and their state on this Mac, self-hosting pointers, and a
   comparison of Pad's official Claude Code plugin with skill-pad, which replaced it (operator, 2026-11-10).

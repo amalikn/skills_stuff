@@ -4,10 +4,10 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: Creating, querying, updating and editing Pad items safely from an agent, with the commands for each
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   Extracted from Pad's skill text (v0.19.2) and its development guide: intent-to-command routing for items, status comments, partial patches,
-  guarded whole-body writes and idempotency keys, work leases, reminders, notes and decisions, dependencies, attachments, collections and moves.
+  guarded whole-body writes and idempotency keys, work leases, reminders, notes and decisions, dependencies, attachments, collections and moves, and repo links in item bodies.
 ---
 
 # Items, safe edits, leases, reminders and attachments
@@ -89,7 +89,8 @@ register`; an unregistered session falls back to its agent name.
 
 - `pad item note <ref> "what you did" [--details ...|--stdin]`: an implementation note, addressed to the record.
 - `pad item decide <ref> "what you chose" [--rationale ...|--stdin]`: a decision-log entry; use it when a choice would otherwise live only in chat.
-- `pad item comment <ref> "..." [--reply-to <id>]`, `comments`, `comment-edit` (correct your own in place), `comment-delete`: addressed to a person.
+- `pad item comment <ref> "..." [--reply-to <id>]`, `comments`, `comment-edit` (correct your own in place), `comment-delete`: addressed to a person. A server can stop accepting comment edits; then add a new comment
+  ([cli-reference.md](cli-reference.md), Learned 2026-11-19).
 - Reminders: `remind --remind-at <RFC3339>` (a bare date is refused on purpose), `reminders`, `ack <reminder-id>`, `unremind`. A fired reminder stays in `project next`/`ready` until acknowledged;
   finishing the item does NOT acknowledge it.
 - `pad item star|unstar|starred` for quick access; `pad tag list` for tags in use.
@@ -116,6 +117,8 @@ pad attachment upload <item-ref|-> <path> [--filename "..."]
 pad attachment attach <id> <item-ref>       # bind an unattached upload to an item
 pad attachment download <id> <out-path>
 ```
+
+There is no attachment delete or replace, and an upload sniffed as application/octet-stream is refused: [cli-reference.md](cli-reference.md), Traps (v0.21.0).
 
 ## Collections
 

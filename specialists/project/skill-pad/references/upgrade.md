@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: Updating the Pad CLI, the upstream mirror and skill-pad's own text when Pad releases a new version
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   The upgrade procedure: brew upgrade, refresh the mirror into references/upstream/<version>/ with scripts/pad_upstream_refresh.sh, diff Pad's skill
   and plugin texts between versions, and carry what changed into skill-pad's references by hand.

@@ -4,10 +4,10 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: Every pad command group at v0.19.2 with the commands agents use, how to look up exact flags, and CLI behaviours met in use
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   A map of the 24 command groups and 184 commands of pad v0.19.2, marked by who should run them, plus cmdhelp lookups and traps learned in the
-  operator's projects. The installed binary is the authority for flags.
+  operator's projects (through v0.21.0). The installed binary is the authority for flags.
 ---
 
 # The pad CLI
@@ -23,8 +23,8 @@ Built from `pad help --all --format json` on v0.19.2 (22e50fe, 2026-11-08), VERI
 
 ## Looking up flags
 
-The repo README's "CLI Reference" (also shown on the GHCR package page) is a 176-line summary of the same tree; on `main` after 0.19.2 it adds `--stdin` to `pad item comment` (not in the installed
-binary yet). The binary stays the authority.
+The repo README's "CLI Reference" (also shown on the GHCR package page) is a 176-line summary of the same tree; on `main` after 0.19.2 it adds `--stdin` to `pad item comment` (not in the 0.19.2
+binary; used with 0.21.0, Learned 2026-11-19 below). The binary stays the authority.
 
 `pad help <group> [command] --format md|json|llm` (cmdhelp v0.1, `pad help --capabilities`); `pad <group> <command> --help` for the human form. `pad agent guide <topic>` prints Pad's own agent
 guidance for the installed version (`context-loading`, `items`, `before-performing-work`, `role-awareness`, `multi-step-workflows`, `all`).

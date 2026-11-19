@@ -4,10 +4,10 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: Loading a Pad workspace's context, following its conventions, role awareness, and what to do when loading fails
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   Extracted from Pad's own skill text (v0.19.2, skills/pad/SKILL.md and the .agents variant) into the operator's words: the bootstrap blob, convention
-  loading by trigger, item briefs, roles, the onboarding offer, built-in updates, attribution, and the safe handling of a failed bootstrap.
+  loading by trigger, item briefs, roles, the onboarding offer, built-in updates, attribution, the safe handling of a failed bootstrap, and what workspace link and switch do to .pad.toml.
 ---
 
 # Workspace context, conventions and roles

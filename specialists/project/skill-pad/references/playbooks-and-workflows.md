@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: Routing to Pad playbooks by slug, trigger and typed decision, binding their arguments, creating them, and the ideation, plan, decompose, status, standup and retro workflows
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   Extracted from Pad's skill text (v0.19.2) and development guide: the three routing rungs for playbooks, argument binding, the activation gotcha,
   library activation, and the multi-step workflows the skill drives.

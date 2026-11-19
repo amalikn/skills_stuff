@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261119_1631.md](changelog/changelog-20261119_1631.md) 1 entry, 2026-11-10 to 2026-11-10: Pad usage guidelines in force (Q1 to Q6 answered)
 - [changelog-20261119_1552.md](changelog/changelog-20261119_1552.md) 1 entry, 2026-11-10 to 2026-11-10: pad_conventions --only; writing-standard live in both workspaces
 - [changelog-20261119_1434.md](changelog/changelog-20261119_1434.md) 1 entry, 2026-11-10 to 2026-11-10: writing standard for plans, tasks, updates and tags
 - [changelog-20261119_1136.md](changelog/changelog-20261119_1136.md) 1 entry, 2026-11-10 to 2026-11-10: Pad data moved to tools_stuff/pad; container image facts

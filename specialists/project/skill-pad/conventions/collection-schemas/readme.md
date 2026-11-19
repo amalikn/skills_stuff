@@ -4,8 +4,8 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: The CollectionSchema JSON files for the collections the apn workspaces add to Pad's startup template
-Last reviewed: 2026-11-10
-Summary: Asks, Bugs, Feature Requests and Tech Debt schemas: Pad's web templates plus section and order fields and declared closed statuses.
+Last reviewed: 2026-11-19
+Summary: Asks, Bugs, Feature Requests, Tech Debt and Decisions schemas: Pad's web templates plus section and order fields and declared closed statuses.
 ---
 
 # Pad collection schemas

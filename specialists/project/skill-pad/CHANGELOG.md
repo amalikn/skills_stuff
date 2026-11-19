@@ -9,10 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1552
+Last rotated: 20261119_1631
 ---
 
 # Changelog — skill-pad
+
+## 20261119_1631 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now 90 days (`--window-days 90` in the justfile).
 
 ## 20261119_1609 — Workspace init from an agent shell; conventions recipe quoting
 
@@ -189,11 +193,3 @@ Last rotated: 20261119_1552
 
 - SETUP.md: Git tracks the live pad.db in tools_stuff (operator); no stash, checkout, restore, clean or branch switch there while Pad runs, and
   `pad/` is committed only with the server stopped. Rule kept in tools_stuff `.agents/pad-data.md` (operator chose a rule over untracking).
-
-## 20261110_1936 — Pad usage guidelines in force (Q1 to Q6 answered)
-
-### Changed
-
-- Operator answered Q1 to Q6: Asks collection, current focus only, no roles, answers on the ask or in chat (both), roll out to smc-resiliency and
-  UNC together, keep the OneDrive backup. Proposal renamed `docs/pad-usage-guidelines-20261110_1628.md` (Status current); rollout reworked for both
-  workspaces (smc-resiliency canary first within each step); SKILL.md, AGENTS, README and SCRATCHPAD now treat it as in force.

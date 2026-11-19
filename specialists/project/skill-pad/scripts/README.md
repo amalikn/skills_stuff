@@ -4,8 +4,8 @@ Category: script-catalog
 Status: current
 Authority: canonical
 Scope: Every script in skill-pad/scripts: what it does, inputs, outputs, safety, recipe
-Last reviewed: 2026-11-10
-Summary: Catalogue of the Pad helper scripts (conventions, export, backup, live monitor, upstream refresh) and the governance checker, with their recipes and safety labels.
+Last reviewed: 2026-11-19
+Summary: Catalogue of the Pad helper scripts (conventions, export, backup, live monitor, upstream refresh, tracker, decisions, rewrite, item check, format spec, link opener, .pad.toml probe) and the governance checker, with their recipes and safety labels.
 ---
 
 # skill-pad scripts
@@ -16,7 +16,7 @@ folder's `.pad.toml`. Tests: `just test` (offline, fake pad).
 | Script                    | What it does                                                                                           | Safety                             | Recipe                     |
 | ------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------- | -------------------------- |
 | `pad_conventions.py`      | Applies `conventions/apn-baseline.toml` to one workspace: rewrites the template's four,                | plan; writes Pad with `--apply`    | `conventions`              |
-|                           |   adds `trackers-truth`                                                                                |                                    |   (project folder)         |
+|                           |   creates the other three                                                                              |                                    |   (project folder)         |
 | `pad_toml_probe.py`       | Pad upgrade test: switches a scratch `.pad.toml` away and back and reports whether Pad still keeps the workspace, unknown tables and other files (comments are known to be deleted) | writes a temporary folder only     | `pad-toml-probe`           |
 | `pad_export.py`           | One workspace's items as a Markdown page in its project; rewrites only when an item changed            | plan; writes the file              | `export` (project folder)  |
 |                           |                                                                                                        |   with `--apply`                   |                            |
@@ -29,7 +29,7 @@ folder's `.pad.toml`. Tests: `just test` (offline, fake pad).
 |                           |   guide, release notes)                                                                                |   with `--apply`                   |                            |
 | `pad_rewrite.py`          | Applies a reviewed JSON spec to Pad items: bodies (guarded by seq), titles, tags, comment type prefixes, note and decide entries (idempotent keys) | plan; writes Pad with `--apply` | `rewrite SPEC` (project folder) |
 | `pad_item_check.py`       | Checks items against the writing standard: bold section labels, a closing `DONE:` comment on closed work, an update on work in progress, a log named but not attached | read-only; exit 1 on findings | `item-check [REF ...] [--days N]` (project folder) |
-| `pad_format_spec.py`      | Writes a `pad_rewrite.py` spec laying item bodies out to the writing standard (bold labels, own paragraphs, hard wraps joined; words unchanged); read-only in Pad (`just format-spec OUT`) |
+| `pad_format_spec.py`      | Writes a `pad_rewrite.py` spec laying item bodies out to the writing standard (bold labels, own paragraphs, hard wraps joined; words unchanged) | read-only in Pad | `format-spec OUT` |
 | `pad_tracker.py`          | Keeps a Markdown tracker as a file generated from a Pad collection: `import` (items created, round trip proved), `export` (marked blocks; a hand edit is refused) and `links` (relative repo links in Pad bodies become opener links; the export turns them back) | plan; writes Pad and the file with `--apply` | `tracker CMD FILE` (project folder) |
 | `pad_link_opener.py`      | Localhost service (127.0.0.1:47800) that redirects `/open/<absolute path>?f=L<n>` to `vscode://file/<path>:<n>`, so repo links in Pad open in VS Code (Pad strips vscode:// links); `url <path>` prints a link | read-only; serves redirects only, for existing paths under `/Volumes/Data` | `link-opener [status\|install\|uninstall\|restart]`, `link-url PATH` |
 | `check_governance.py`     | The pack's governance claims as assertions (`govcheck/` package: core, config, helpers, checks         | read-only                          | `governance`, `check`      |

@@ -4,7 +4,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: Maintaining the skill-pad pack (the operator's own Pad skill, its references, upstream mirror, conventions baseline and scripts)
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   Rules for agents changing skill-pad: SKILL.md is the operator's own text routed to topic references, the upstream mirror is verbatim and never edited,
   scripts follow skill-coder, and every change ends with just check.
@@ -49,7 +49,7 @@ place, add a CHANGELOG entry, update SCRATCHPAD current state, run `just check`,
 ## Coherence checklist
 
 1. Content: `references/*.md` (each linked from SKILL.md), `conventions/apn-baseline.toml`.
-2. Navigation: SKILL.md References and routing table, `references/readme.md`, `scripts/README.md`, `justfile` recipes, README Layout table.
+2. Navigation: SKILL.md References and routing table, `references/upstream/readme.md`, `scripts/README.md`, `justfile` recipes, README Layout table.
 3. Records: `CHANGELOG.md`, `SCRATCHPAD.md`; ARCHITECTURE and SETUP when a component or install step changes.
 4. Neighbours: projects with a Pad workspace (unified-network-controller, smc-resiliency) when the baseline or setup steps change.
 

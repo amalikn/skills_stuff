@@ -4,11 +4,12 @@ Category: skill-install
 Status: current
 Authority: canonical; the operator's own Pad skill, conventions baseline and scripts (this folder is the one copy)
 Scope: The /pad skill for Claude Code and for Codex, Cursor, Windsurf and OpenCode, the apn convention baseline, and the Pad backup and export scripts
-Last reviewed: 2026-11-10
+Last reviewed: 2026-11-19
 Summary: >-
   Pad (github.com/PerpetualSoftware/pad) is the operator's personal project-management layer over each project's trackers. This folder (renamed from
   skills_stuff/pad on 2026-11-10) holds the operator's own Pad skill (SKILL.md and references, no Pad-shipped skill file), the conventions every apn
-  workspace carries, the scripts that back Pad up, export a workspace and run the live feed, and a verbatim mirror of Pad's documentation.
+  workspace carries, the scripts that back Pad up, export a workspace, generate trackers from Pad collections, check and rewrite items to the
+  writing standard and run the live feed, and a verbatim mirror of Pad's documentation.
 Budget: 200 lines, 25 KB
 ---
 
@@ -40,6 +41,7 @@ Operator, 2026-11-10: manage Pad's skill centrally like the other skills (symlin
 | `references/upstream/`          | agents, readers                   | verbatim Pad sources: repo at tag v0.19.2, getpad.dev pages, CLI help; index [readme.md](references/upstream/readme.md) |
 | `references/examples/`          | readers                           | a worked setup message sent to a project (2026-11-10)                                                     |
 | `conventions/apn-baseline.toml` | every apn project workspace       | applied by `scripts/pad_conventions.py`                                                                   |
+| `conventions/collection-schemas/` | agents creating collections     | Asks, Bugs, Feature Requests, Tech Debt, Decisions schemas; index [readme.md](conventions/collection-schemas/readme.md) |
 | `scripts/`                      | the operator's Mac                | see [Scripts](#scripts) and [scripts/README.md](scripts/README.md)                                        |
 | `docs/pad-usage-guidelines-20261110_1628.md` | operator         | guidelines in force (operator, 2026-11-10): asks, plans, tasks, writing standard, tags |
 
@@ -67,13 +69,13 @@ install` or `pad agent update` here or in a home folder.
 | pad-owned-trackers | Bugs, feature requests and tech debt live in Pad; their tracker files are generated | always | (new, 2026-11-10) |
 
 Apply to a workspace, from the project folder: `python3 <this folder>/scripts/pad_conventions.py --project <name> --trackers "<its trackers>"` (plan), then `--apply`. It rewrites the template's four
-in place, creates the fifth, and leaves any other convention alone. A project may keep richer wording of its own: the plan shows `update ... content` for those; apply only when the baseline text
+in place, creates the other three, and leaves any other convention alone. A project may keep richer wording of its own: the plan shows `update ... content` for those; apply only when the baseline text
 should win. To add one new entry without touching the rest, pass `--only <id>` (2026-11-10: how `writing-standard` reached both workspaces).
 
 ## Scripts
 
-Catalogue with safety labels and recipes: [scripts/README.md](scripts/README.md) (conventions, export, backup, live monitor, upstream refresh, governance
-checker). Tests: `just test`. The old scripts_stuff paths (`bash/pad_backup.sh`, `python/pad_export/pad_export.py`) are symlinks to these until every
+Catalogue with safety labels and recipes: [scripts/README.md](scripts/README.md) (conventions, export, backup, live monitor, upstream refresh, tracker generation, decisions mirror, item rewrite, format spec and
+writing-standard check, link opener, `.pad.toml` probe, governance checker). Tests: `just test`. The old scripts_stuff paths (`bash/pad_backup.sh`, `python/pad_export/pad_export.py`) are symlinks to these until every
 project points here.
 
 ## Setting Pad up in a project
@@ -82,7 +84,7 @@ Learned in unified-network-controller, 2026-11-10:
 
 1. `pad auth whoami` reports a user, then `pad workspace init <name> --template startup` in the project folder (`pad init` only on a machine not yet set up).
 2. Delete the `.claude/skills/pad/` and `.agents/skills/pad/` copies Pad writes into the project; this folder serves every project. Keep `.pad.toml` and give it a `#` comment header (governance
-   freshness checks refuse a file without a summary).
+   freshness checks refuse a file without a summary). `pad workspace switch` deletes that comment: [references/workspace-context.md](references/workspace-context.md), Learned 2026-11-11.
 3. Apply the conventions baseline (above). The startup template's commit conventions contradict a single-branch repo with its own commit recipe.
 4. Seed plans and tasks that each name their tracker entry; pass `--op-key` on every create so a rerun does not duplicate.
 5. Keep a readable copy in Git: a `pad-export` recipe calling `scripts/pad_export.py --out <trackers>/pad-focus.md --apply`, run non-fatally in the project's commit gate (`-@` in just) so it never
