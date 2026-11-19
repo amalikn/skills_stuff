@@ -17,6 +17,7 @@ Last rotated: 20261119_1601
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261119_1646 — design-patterns: misplaced patterns moved into Patterns; exact-commit gate is P-77](#20261119_1646--design-patterns-misplaced-patterns-moved-into-patterns-exact-commit-gate-is-p-77)
 - [20261119_1631 — Periodic review; 90-day review window](#20261119_1631--periodic-review-90-day-review-window)
 - [20261119_1601 — deterministic navigation-control upgrade](#20261119_1601--deterministic-navigation-control-upgrade)
 - [20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records](#20261102_1347--learned-exit-trap-exit-code-ruff-through-a-symlink-tracker-from-records)
@@ -27,11 +28,17 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-19: languages/python/learned-other.md Learned 2026-11-19, `__doc__` is `str | None` (argparse description fallback).
+- 2026-11-19: references/version-control-and-review.md Learned 2026-11-19, `--cacheinfo` path from the repo top; commit from a private index when another session's entries are staged.
 - 2026-11-19: logged late (no line existed): references/design-patterns.md Learned 2026-11-05, model judgement call and MCP pilot chaining (two entries).
 - 2026-11-19: logged late: references/errors-and-timeouts.md Learned 2026-11-10, stopping the process that holds an `flock`.
 - 2026-11-19: logged late: references/generated-artifacts.md Learned 2026-11-12, a second easier-to-read format of a data file (JSON source, YAML view).
 - 2026-11-19: logged late: references/security.md Learned 2026-11-09, release digest before unpacking and disposable config for a CLI with a cloud default (two entries).
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
+## 20261119_1646 — design-patterns: misplaced patterns moved into Patterns; exact-commit gate is P-77
+
+- 2026-11-19: references/design-patterns.md (operator: "Renumber design patterns"), P-59, P-60, P-63, P-64, P-68, P-69, P-74, P-75 and P-76 moved verbatim from under Language realisations into Patterns in number order; the exact-commit pre-push gate section is now P-77 with an Index row; Language realisations is the last section. No existing P number changed; the old anchor #exact-commit-pre-push-gate had no links.
+
 ## 20261119_1631 — Periodic review; 90-day review window
 
 - Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now 90 days (`--window-days 90` in the justfile).

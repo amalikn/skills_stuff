@@ -24,7 +24,6 @@ language file and link the two.
 - [Index](#index)
 - [Patterns](#patterns)
 - [Language realisations](#language-realisations)
-- [Exact-commit pre-push gate](#exact-commit-pre-push-gate)
 
 ## Entry format
 
@@ -121,6 +120,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-74 | Add what the generator cannot write after it saves, and prove it in the consuming application | A format feature the library lacks (slide motion), where a still render cannot prove it |
 | P-75 | Learn a person's hand edits: diff against the last build, sort by rule, make habits defaults | Generated artifacts a person retouches by hand before every use |
 | P-76 | Refuse a repeated key when loading YAML | Any hand-edited YAML a program reads as data (contracts, catalogues, configs) |
+| P-77 | Exact-commit pre-push gate | A local CI gate that passes on the working folder, not on the commit being pushed |
 
 ## Patterns
 
@@ -1349,6 +1349,79 @@ for key in sorted(set(active) - set(alarms)):
     record = active.pop(key)              # a good read says it is gone: clear and notify
 ```
 
+### P-59 Export a spec to plain code, with provenance and an edit guard
+
+> **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (18 offline tests; two real specs exported, ansible-lint production profile
+> and `--syntax-check` pass) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/export_tasks.py`, `export_render.py` (commit 7056782) · Falsifier: an exported file that still needs
+> the engine to run, or a regenerate that overwrote a hand edit without being told to. `reusable_candidate` until a second project uses it.
+
+- **Problem:** changes are proven with a personal or test engine (P-01, change as data), but the place they must end up (a company repo, another team) may not depend on that engine. Copying by hand
+  drifts, and a generator that silently overwrites loses the other side's edits.
+- **Solution:** (1) map each spec key to plain code from what the engine *does* with it (read its code, not an old hand copy); (2) rewrite the engine's names to the export's own (`engine_vars.` to
+  `<change>.`, engine paths to the export's folder); (3) **refuse** to write while any engine name is left in the output, and refuse spec features not yet mapped, naming them; (4) plan by default,
+  write on `--apply`; (5) record a sha256 of every source and every written file; a drift check reports "source changed" and "target edited", and a regenerate refuses to overwrite a target whose hash
+  is neither the last export nor the new one, until told to; (6) state in the output's header what the engine gave that the plain code does not.
+- **Why it works:** the refusal makes "no dependency" a checked property, not a hope; the two hashes tell the three cases apart (in step, source moved, target hand-edited) without a diff; regenerating
+  only on request keeps the other side in control.
+- **Reuse:** a DSL or spec compiled to Terraform, SQL migrations, CI pipeline files or Kubernetes manifests handed to another team; scaffolding a vendor's config from an internal model; any generator
+  whose output people may edit.
+- **Pitfalls:** the engine's safety that lives above a single change (a batch fail gate) cannot be carried in a file and must be named for the caller (here: the play must set `max_fail_percentage: 0`
+  and `serial`); helper scripts often depend on the engine's runtime layout (a backup folder they look up by glob), so the export recreates that layout; output formatting to pass the target's linter
+  may change values, so the dump is read back and compared with the data, and a mismatch refuses the export; a rollback that takes the newest backup breaks once a no-op rerun writes a backup of the
+  new values, so make the backup only when a read-only pre-check says an action will change something (567a61d). Related: P-01, P-12 (plan, print, then apply).
+- **Realised in:** Python, excerpt below.
+
+```python
+# ansible-wifi/roles/smc_change/files/export_tasks.py (local-knowledge-ansible, 7056782)
+FORBIDDEN = re.compile(r"smc_change_[A-Za-z]\w*|files/changes/|roles/smc_change|smc_change\.yml")
+left = sorted({m for rel, data in out.items() if rel.endswith(".yml") for m in FORBIDDEN.findall(code_lines(data.decode()))})
+if left:
+  raise export_render.Refused(f"the output still needs smc_change: {', '.join(left)}")
+
+def hand_edited(repo, record, outputs):
+  edited = []
+  for rel, data in outputs.items():
+    path = repo / rel
+    if path.is_file():
+      now = sha(path.read_bytes())
+      if now != sha(data) and now != (record.get("written") or {}).get(rel):
+        edited.append(rel)          # neither the last export nor this one: kept unless --overwrite-edits
+  return edited
+
+body = yaml.dump(data, Dumper=IndentDumper, sort_keys=False, width=DUMP_WIDTH)
+if yaml.safe_load(body) != data:    # folding for the linter must not change a command
+  raise export_render.Refused("the task file does not read back as written (YAML folding)")
+```
+
+### P-60 Order resumed records by attempt, not by transaction start
+
+> **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (a regression test that fails on the old order; the fixed tracker moved two
+> sites from `failed` to `passed` and 38 `last_run` values) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/tracker.py` (commit c7cb38b) · Falsifier: a summary whose "latest"
+> row is not the newest attempt. `reusable_candidate` until a second project uses it.
+
+- **Problem:** a resumable job writes one record per attempt but carries the *transaction's* start time in each, so a reader that sorts by `start` places a late resume before attempts that ran in
+  between, and "latest state" picks an older failed attempt.
+- **Solution:** keep both stamps in every record (`start` for the transaction, `attempt_start` for this attempt, falling back to `start` on old records); order runs, and take "last run", by
+  `attempt_start`; keep "state since" on the transaction start.
+- **Why it works:** each question gets its own clock: when did this change begin on the target, and which attempt is newest.
+- **Reuse:** retried CI jobs, resumable migrations, sagas, any summary built from per-attempt rows of a long transaction.
+- **Pitfalls:** tests built only from fresh runs (attempt equals start) pass the bug; add a fixture with an old `start`, a newer `attempt_start` and another run between them. Related: P-03
+  (write-ahead journal), P-04 (done ledger).
+- **Realised in:** Python.
+
+```python
+# ansible-wifi/roles/smc_change/files/tracker.py (local-knowledge-ansible, c7cb38b)
+"attempt_start": record.get("attempt_start") or record.get("start", ""),
+return sorted(rows, key=lambda row: (str(row.get("attempt_start") or row.get("start", "")), str(row.get("host", ""))))
+"last_run": last.get("attempt_start") or last.get("start", ""),
+```
+
+> **Learned 2026-11-07 (c)** · JWS without a crypto library; P-59 refinement · VERIFIED_PRIMARY · Source: smc-resiliency `spike/onbox/smcbox/jws.py`
+> (`sign`, tested byte for byte against RFC 8037 appendix A.4), `scripts/interfaces.py` (`view_state`) · Falsifier: a signature that differs from the RFC vector, or a drift check that cannot tell a
+> hand edit from a source change A box with only the standard library signs compact JWS (alg EdDSA) by building `base64url(header).base64url(payload)` itself and signing it with `openssl pkeyutl -sign
+> -rawin`; the RFC's test vector is the independent check. A generated view (P-59) carries `sources-sha256` and `view-sha256` in its banner, so the drift check tells "the source changed" from "someone
+> edited the view".
+
 ### P-61 One test logic for every target: a contract, adapters, and a profile chosen by what the box reports
 
 > **Learned 2026-11-07** · design pattern, Python · VERIFIED_PRIMARY (the same eight end-to-end cases passed on an arm64 Vagrant VM and an
@@ -1401,6 +1474,70 @@ want = {"cid": own_cid, "production_pub_sha256": _sha(own_pub.strip()), "recipie
         "release": ans.get("release", "")}
 want.update({f"{part}_sha256": _sha(str(ans.get(part, ""))) for part in ("cert", "varset", "sealed")})
 return doc, [f"binding {k} does not match" for k, v in want.items() if doc.get(k) != v]
+```
+
+### P-63 Agent benchmark: known answers in a throwaway copy, a watch on real repos
+
+> **Learned 2026-11-09** · design pattern, any language driving an agent CLI · VERIFIED_PRIMARY (baseline 3/5, tuned 12/15, Qwen3.8-27B 8-bit 15/15; the submodule
+> blind spot found by a concurrent edit the watch missed, then a negative test) · Source: tools_stuff `cline/scripts/bench.py` (`prepare`, `watched_repos`, `repo_state`, `run_task`),
+> `cline/bench/tasks.toml` · Falsifier: a task that passes with a wrong answer, or a real-repo edit during a run that the watch does not report Pattern P-63, written generically below.
+> `reusable_candidate` until a second project uses it.
+
+- **Problem:** a model, prompt or tool profile for a coding agent is chosen on impression from one task, and an agent run "in a copy" can still reach and edit the live repositories through its shell.
+- **Solution:** a small task file of **known-answer** tasks drawn from real failures (a misread flag, a claim made without searching, an invented timing, a duplicated finding, a failing unit test to
+  fix). Each task runs headless in a **throwaway copy** (`git archive` of HEAD, or a fixture folder with a private git snapshot so "files that must not change" can be checked). Scoring is by fixed
+  checks only: regexes the answer must and must not contain, "no number without the command that produced it", a post command (`unittest`), unchanged files. Around each task, snapshot every real repo
+  **and, recursively, every submodule in it** (porcelain status set plus a hash of `git diff`) and fail the task when they differ. Run each task `--repeat N` (3 or more before choosing), scale
+  timeouts per model (`--timeout-scale`) and label a timeout as time, not skill.
+- **Why it works:** known answers make the score independent of the judge; the copy keeps the task's own edits away from live work; the watch catches the agent leaving the copy; repeats separate luck
+  from skill.
+- **Reuse:** comparing local and cloud models for an agent, tuning a tool profile or rules, regression-checking an agent harness upgrade.
+- **Pitfalls:** a parent repo shows a dirty submodule as one unchanging ` M <path>` line and its diff as a constant `-dirty`, so a watch on the parent alone misses every edit inside a submodule
+  (2026-11-09: an edit in a submodule mid-run passed unseen; fixed with `git submodule foreach --recursive`, 22 repos, about 4 s a snapshot). Another session writing during a run trips the watch: read
+  the paths before blaming the model. Tasks taken from one project's history can leak their answers through that project's records: copy HEAD from before the fix, or use a fixture.
+- **Realised in:** Python (stdlib, `tomllib`, subprocess with timeouts).
+
+```python
+# tools_stuff cline/scripts/bench.py (20261109; watched_repos added after the blind spot)
+def watched_repos() -> list[Path]:
+  repos = []
+  for repo in REAL_REPOS:
+    if not (repo / ".git").exists():
+      continue
+    repos.append(repo)
+    out = sh(["git", "-C", str(repo), "submodule", "foreach", "--quiet", "--recursive", "echo $displaypath"], repo).stdout
+    repos += [repo / line.strip() for line in out.splitlines() if line.strip() and (repo / line.strip() / ".git").exists()]
+  return repos
+# per task: before = repo_state(); run the agent in the copy; touched = repo_changes(before, repo_state()); fails += touched
+```
+
+### P-64 A fixed-length record overwritten in place
+
+> **Learned 2026-11-09** · any language writing small state to FAT or another filesystem without a safe rename · VERIFIED_PRIMARY (smc-resiliency
+> S1V: a power cut mid-rewrite left a 0-byte file with temp-file-and-rename on vfat; after this pattern the file survived the same cut at full length, and the Pi firmware read it) · Source:
+> smc-resiliency spike/release/rauc/tryboot_backend.sh @ 4e086c18 · Falsifier: a cut during the in-place write leaving the file shorter than its fixed length. `reusable_candidate` until a second
+> project uses it.
+
+Problem: A small file that another program must always be able to read (a boot selector, a counter) lives on a filesystem where
+write-temp-then-rename is not crash-safe: a cut between the steps leaves the name pointing at an empty or missing file.
+Solution: Give the file a fixed length (pad with a comment line to N bytes, N within one sector). Write it once by rename at install; afterwards open it without truncating and overwrite all N bytes
+  from offset 0, then fsync. Any other length means it is not
+ours yet: write it the install way. The reader validates the content and a boot-time check rewrites a bad file from known state.
+Why it works: Size and directory entry never change after the first write, so only one data sector is rewritten; a cut leaves old or new bytes, never a 0-byte name. The validator covers a torn sector.
+Reuse: Pi autoboot.txt and config flags on the boot FAT; a retry counter on an EFI partition; a small marker on a USB stick read by firmware.
+Pitfalls: The first write of a new medium still takes the rename path unless the image ships the file at its fixed length (found 2026-11-09: set-up wrote a shorter file). vfat renumbers inodes at each
+  mount, so prove in-place writes within one boot.
+Realised in: shell -> spike/release/rauc/tryboot_backend.sh (smc-resiliency, 4e086c18)
+
+```bash
+pad=$((SIZE - ${#body} - 3))
+body=$(printf '%s\n#%*s' "$body" "$pad" '')
+if [ -f "$SELECTION" ] && [ "$(wc -c <"$SELECTION")" -eq "$SIZE" ]; then
+  printf '%s\n' "$body" 1<>"$SELECTION"     # open read-write, no truncate: overwrite in place
+  sync "$SELECTION" 2>/dev/null || sync
+else
+  printf '%s\n' "$body" >"$tmp" && sync "$tmp" && mv "$tmp" "$SELECTION"   # first write only
+fi
 ```
 
 ### P-65 One version record, its pins found by pattern
@@ -1481,6 +1618,65 @@ def fix(m):                                            # one ](target) in a file
   if not (old_target.exists() or old_target in moves):
     return m.group(0)                                  # already broken: leave it, report it
   return f"]({os.path.relpath(new_target, new_dir)}{sep}{anchor})"
+```
+
+### P-68 Baseline beside forecast in a generated report
+
+> **Learned 2026-11-06** · any report rendered from a fixed plan · CANDIDATE (reusable_candidate; promoted 2026-11-11 from enterprise-strategy's parked candidates) ·
+> Source: apn enterprise-strategy/scripts/weekly_update_xlsx.py `add_stages_sheet` @ 7347fc4e · Falsifier: a reader who takes the copied plan date as current after a slip, with the forecast shown
+> beside it.
+
+Problem: A status report is generated from a fixed plan, and dates slip. Overwriting the plan's dates loses the agreed baseline, and the next render from the plan undoes the edit anyway. Solution:
+Copy the plan's dates unchanged (the baseline) and add the forecast as separate columns fed from the period's own data file, coloured by state. A period with no forecasts renders exactly as before; a
+forecast naming an unknown stage fails the run. Why it works: The plan stays the single source of the baseline, the forecast has one home per period, and the reader sees the slip as a pair. Reuse:
+Project plans, release trains, SLA reports against a contract date, budget against actual. Pitfalls: A typo in a stage key silently drops a forecast unless unknown keys fail the run. Realised in:
+Python -> enterprise-strategy/scripts/weekly_update_xlsx.py (7347fc4e)
+
+```python
+forecasts = {str(k): v for k, v in (week.get("stages") or {}).items()}
+unknown += sorted(set(forecasts) - {str(r[0]) for r in stages[1:]})
+extra = [("Forecast", 14), ("Note", 50)] if forecasts else []
+st.append(list(stages[0]) + [name for name, _ in extra])
+for row in stages[1:]:
+  fc = forecasts.get(str(row[0]))
+  st.append(list(row) + ([fc["forecast"], cell_text(fc.get("note"))] if fc else [None] * len(extra)))
+```
+
+### P-69 A seed, a plan-first scaffold and a guard on the shared output
+
+> **Learned 2026-11-12** · any generator that builds a shared package from a written design · CANDIDATE (reusable_candidate) ·
+> Source: skill-ai-it `scripts/skills/skill_scaffold.py` `find_leaks`, `classify` and `skill_intake.py` `cmd_research_briefs` @ d3132c2 · Falsifier: a generated shared package that still carries a
+> name its guard listed.
+
+Problem: New packages built by copying a sibling drift apart and lose what the work that produced them taught; a generator that writes at once overwrites hand edits, and anything private in the design
+(project, customer or people names) can leak into an artifact many projects read, or into a search query sent to an outside service. Solution: Write the design as a seed (a parameter block and tables,
+with an unfilled marker a check refuses) kept in its own folder with its research and draft parts. The scaffold renders every file in memory, scans the rendered text for the seed's forbidden terms as
+whole words and refuses before any write, then classifies each file as create, skip (identical) or propose (a different file exists: write a `.proposed` beside it) and prints the plan; only `--apply`
+writes. A contract check runs on the result. The seed and its research are never copied into the output. Why it works: The lessons live in one place that outlives the build; a refusal costs nothing
+before the write; a rerun is safe because nothing a person wrote is replaced; the guard protects both the output and the outgoing research briefs. Reuse: New skill packs, projects started from
+templates, service or module scaffolds, any export that must stay free of one customer's names. Pitfalls: Substring matching flags "Rob" inside "robust" (match whole words); a brief that lists the
+forbidden words to tell a researcher what to avoid must be excluded from its own scan; a formatter that wraps table rows breaks a naive table parser (merge continuation rows, see the Python learned
+entry); a seed that names the private terms must stay outside the shared output. Realised in: Python -> skill-ai-it/scripts/skills/skill_scaffold.py and skill_intake.py (d3132c2)
+
+```python
+def find_leaks(files, terms):
+  out = []
+  for rel, text in files.items():
+    out += [f"{rel}: {t}" for t in terms if re.search(rf"(?<!\w){re.escape(t)}(?!\w)", text, re.I)]
+  return out
+
+def classify(pack, files):
+  out = []
+  for rel, text in files.items():
+    target = pack / rel
+    if not target.exists():
+      out.append(("create", rel))
+    elif target.read_text(encoding="utf-8") == text:
+      out.append(("skip", rel))
+    else:
+      out.append(("propose", rel))  # written as <file>.proposed on --apply, never over the original
+  return out
+# command: render all -> find_leaks -> refuse -> classify -> print plan -> write only with --apply
 ```
 
 ### P-70 Physical map as data, with the consumer named on each slot
@@ -1611,229 +1807,6 @@ run(t, f"mkdir -p {m} && mount {BOOTS[trial]} {m} && {{ {name}; echo kernel=$k; 
 # lab/logic/s1.py _bounded: breaker(True); try: ...run the trial... finally: breaker(False)
 ```
 
-## Language realisations
-
-Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project
-does.
-
-| Pattern | Ansible (`languages/ansible.md`)                                     | Python (`languages/python.md`)                                  |
-| ------- | -------------------------------------------------------------------- | --------------------------------------------------------------- |
-| P-01    | built: `include_tasks` per action type, `<type>_rollback` in reverse | built: probe check registry `register(Check(...))`              |
-| P-03    | built: journal and recovery tasks; Learned (e) drop-proof waits      | built: `recovery.py` pure classification over the journal       |
-| P-05    | built: no-serial first play + `group_by`; Learned (g), (j)           | suggested: build the plan once, then a bounded worker pool      |
-| P-06    | built: `async` + `poll: 0` + await; Learned (e), (i)                 | suggested: detached job id + idempotent status poll             |
-| P-09    | built: joined probe piped on stdin                                   | built: `files/probe/NN_*.py` parts joined into one program      |
-| P-12    | built: `--check` before apply                                        | built: `smc_change_runs_by_flavor.py` `plan()` then `--apply`   |
-
-> **Learned 2026-10-28** · optimise the real outcome, not a proxy · VERIFIED_PRIMARY (skill-drawio overview group placement, UNC overview: 245 crossings) · Source: skill-drawio `scripts/flowmap/placement.py` (`group_candidates`, `best_cells`) · Falsifier: a search on a
-> proxy score that keeps improving the real measure as it searches harder A cheap proxy can rank candidates but must not choose: scoring group placements by straight-line crossings gave 131 real
-> crossings with 12 restarts and 182 with 40 (the proxy improved, the drawing got worse); a channel-path proxy gave 192 and 171. Generate candidates with the proxy (several seeded starts, as Graphviz
-> and ELK do), then evaluate each with the real computation and keep the best; include the current state as a candidate so the result is never worse: 130 real crossings, stable.
-
-```python
-best, best_n = current, real_cost(current)
-for cand in candidates(current)[1:]:          # proxy-ranked, current first
-    n = real_cost(cand)                       # the real thing (here: route and count)
-    if n < best_n:
-        best, best_n = cand, n
-```
-
-### P-59 Export a spec to plain code, with provenance and an edit guard
-
-> **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (18 offline tests; two real specs exported, ansible-lint production profile
-> and `--syntax-check` pass) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/export_tasks.py`, `export_render.py` (commit 7056782) · Falsifier: an exported file that still needs
-> the engine to run, or a regenerate that overwrote a hand edit without being told to. `reusable_candidate` until a second project uses it.
-
-- **Problem:** changes are proven with a personal or test engine (P-01, change as data), but the place they must end up (a company repo, another team) may not depend on that engine. Copying by hand
-  drifts, and a generator that silently overwrites loses the other side's edits.
-- **Solution:** (1) map each spec key to plain code from what the engine *does* with it (read its code, not an old hand copy); (2) rewrite the engine's names to the export's own (`engine_vars.` to
-  `<change>.`, engine paths to the export's folder); (3) **refuse** to write while any engine name is left in the output, and refuse spec features not yet mapped, naming them; (4) plan by default,
-  write on `--apply`; (5) record a sha256 of every source and every written file; a drift check reports "source changed" and "target edited", and a regenerate refuses to overwrite a target whose hash
-  is neither the last export nor the new one, until told to; (6) state in the output's header what the engine gave that the plain code does not.
-- **Why it works:** the refusal makes "no dependency" a checked property, not a hope; the two hashes tell the three cases apart (in step, source moved, target hand-edited) without a diff; regenerating
-  only on request keeps the other side in control.
-- **Reuse:** a DSL or spec compiled to Terraform, SQL migrations, CI pipeline files or Kubernetes manifests handed to another team; scaffolding a vendor's config from an internal model; any generator
-  whose output people may edit.
-- **Pitfalls:** the engine's safety that lives above a single change (a batch fail gate) cannot be carried in a file and must be named for the caller (here: the play must set `max_fail_percentage: 0`
-  and `serial`); helper scripts often depend on the engine's runtime layout (a backup folder they look up by glob), so the export recreates that layout; output formatting to pass the target's linter
-  may change values, so the dump is read back and compared with the data, and a mismatch refuses the export; a rollback that takes the newest backup breaks once a no-op rerun writes a backup of the
-  new values, so make the backup only when a read-only pre-check says an action will change something (567a61d). Related: P-01, P-12 (plan, print, then apply).
-- **Realised in:** Python, excerpt below.
-
-```python
-# ansible-wifi/roles/smc_change/files/export_tasks.py (local-knowledge-ansible, 7056782)
-FORBIDDEN = re.compile(r"smc_change_[A-Za-z]\w*|files/changes/|roles/smc_change|smc_change\.yml")
-left = sorted({m for rel, data in out.items() if rel.endswith(".yml") for m in FORBIDDEN.findall(code_lines(data.decode()))})
-if left:
-  raise export_render.Refused(f"the output still needs smc_change: {', '.join(left)}")
-
-def hand_edited(repo, record, outputs):
-  edited = []
-  for rel, data in outputs.items():
-    path = repo / rel
-    if path.is_file():
-      now = sha(path.read_bytes())
-      if now != sha(data) and now != (record.get("written") or {}).get(rel):
-        edited.append(rel)          # neither the last export nor this one: kept unless --overwrite-edits
-  return edited
-
-body = yaml.dump(data, Dumper=IndentDumper, sort_keys=False, width=DUMP_WIDTH)
-if yaml.safe_load(body) != data:    # folding for the linter must not change a command
-  raise export_render.Refused("the task file does not read back as written (YAML folding)")
-```
-
-### P-60 Order resumed records by attempt, not by transaction start
-
-> **Learned 2026-11-06** · design pattern, any language · VERIFIED_PRIMARY (a regression test that fails on the old order; the fixed tracker moved two
-> sites from `failed` to `passed` and 38 `last_run` values) · Source: local-knowledge-ansible `ansible-wifi/roles/smc_change/files/tracker.py` (commit c7cb38b) · Falsifier: a summary whose "latest"
-> row is not the newest attempt. `reusable_candidate` until a second project uses it.
-
-- **Problem:** a resumable job writes one record per attempt but carries the *transaction's* start time in each, so a reader that sorts by `start` places a late resume before attempts that ran in
-  between, and "latest state" picks an older failed attempt.
-- **Solution:** keep both stamps in every record (`start` for the transaction, `attempt_start` for this attempt, falling back to `start` on old records); order runs, and take "last run", by
-  `attempt_start`; keep "state since" on the transaction start.
-- **Why it works:** each question gets its own clock: when did this change begin on the target, and which attempt is newest.
-- **Reuse:** retried CI jobs, resumable migrations, sagas, any summary built from per-attempt rows of a long transaction.
-- **Pitfalls:** tests built only from fresh runs (attempt equals start) pass the bug; add a fixture with an old `start`, a newer `attempt_start` and another run between them. Related: P-03
-  (write-ahead journal), P-04 (done ledger).
-- **Realised in:** Python.
-
-```python
-# ansible-wifi/roles/smc_change/files/tracker.py (local-knowledge-ansible, c7cb38b)
-"attempt_start": record.get("attempt_start") or record.get("start", ""),
-return sorted(rows, key=lambda row: (str(row.get("attempt_start") or row.get("start", "")), str(row.get("host", ""))))
-"last_run": last.get("attempt_start") or last.get("start", ""),
-```
-
-> **Learned 2026-11-07 (c)** · JWS without a crypto library; P-59 refinement · VERIFIED_PRIMARY · Source: smc-resiliency `spike/onbox/smcbox/jws.py`
-> (`sign`, tested byte for byte against RFC 8037 appendix A.4), `scripts/interfaces.py` (`view_state`) · Falsifier: a signature that differs from the RFC vector, or a drift check that cannot tell a
-> hand edit from a source change A box with only the standard library signs compact JWS (alg EdDSA) by building `base64url(header).base64url(payload)` itself and signing it with `openssl pkeyutl -sign
-> -rawin`; the RFC's test vector is the independent check. A generated view (P-59) carries `sources-sha256` and `view-sha256` in its banner, so the drift check tells "the source changed" from "someone
-> edited the view".
-
-### P-63 Agent benchmark: known answers in a throwaway copy, a watch on real repos
-
-> **Learned 2026-11-09** · design pattern, any language driving an agent CLI · VERIFIED_PRIMARY (baseline 3/5, tuned 12/15, Qwen3.8-27B 8-bit 15/15; the submodule
-> blind spot found by a concurrent edit the watch missed, then a negative test) · Source: tools_stuff `cline/scripts/bench.py` (`prepare`, `watched_repos`, `repo_state`, `run_task`),
-> `cline/bench/tasks.toml` · Falsifier: a task that passes with a wrong answer, or a real-repo edit during a run that the watch does not report Pattern P-63, written generically below.
-> `reusable_candidate` until a second project uses it.
-
-- **Problem:** a model, prompt or tool profile for a coding agent is chosen on impression from one task, and an agent run "in a copy" can still reach and edit the live repositories through its shell.
-- **Solution:** a small task file of **known-answer** tasks drawn from real failures (a misread flag, a claim made without searching, an invented timing, a duplicated finding, a failing unit test to
-  fix). Each task runs headless in a **throwaway copy** (`git archive` of HEAD, or a fixture folder with a private git snapshot so "files that must not change" can be checked). Scoring is by fixed
-  checks only: regexes the answer must and must not contain, "no number without the command that produced it", a post command (`unittest`), unchanged files. Around each task, snapshot every real repo
-  **and, recursively, every submodule in it** (porcelain status set plus a hash of `git diff`) and fail the task when they differ. Run each task `--repeat N` (3 or more before choosing), scale
-  timeouts per model (`--timeout-scale`) and label a timeout as time, not skill.
-- **Why it works:** known answers make the score independent of the judge; the copy keeps the task's own edits away from live work; the watch catches the agent leaving the copy; repeats separate luck
-  from skill.
-- **Reuse:** comparing local and cloud models for an agent, tuning a tool profile or rules, regression-checking an agent harness upgrade.
-- **Pitfalls:** a parent repo shows a dirty submodule as one unchanging ` M <path>` line and its diff as a constant `-dirty`, so a watch on the parent alone misses every edit inside a submodule
-  (2026-11-09: an edit in a submodule mid-run passed unseen; fixed with `git submodule foreach --recursive`, 22 repos, about 4 s a snapshot). Another session writing during a run trips the watch: read
-  the paths before blaming the model. Tasks taken from one project's history can leak their answers through that project's records: copy HEAD from before the fix, or use a fixture.
-- **Realised in:** Python (stdlib, `tomllib`, subprocess with timeouts).
-
-```python
-# tools_stuff cline/scripts/bench.py (20261109; watched_repos added after the blind spot)
-def watched_repos() -> list[Path]:
-  repos = []
-  for repo in REAL_REPOS:
-    if not (repo / ".git").exists():
-      continue
-    repos.append(repo)
-    out = sh(["git", "-C", str(repo), "submodule", "foreach", "--quiet", "--recursive", "echo $displaypath"], repo).stdout
-    repos += [repo / line.strip() for line in out.splitlines() if line.strip() and (repo / line.strip() / ".git").exists()]
-  return repos
-# per task: before = repo_state(); run the agent in the copy; touched = repo_changes(before, repo_state()); fails += touched
-```
-
-### P-64 A fixed-length record overwritten in place
-
-> **Learned 2026-11-09** · any language writing small state to FAT or another filesystem without a safe rename · VERIFIED_PRIMARY (smc-resiliency
-> S1V: a power cut mid-rewrite left a 0-byte file with temp-file-and-rename on vfat; after this pattern the file survived the same cut at full length, and the Pi firmware read it) · Source:
-> smc-resiliency spike/release/rauc/tryboot_backend.sh @ 4e086c18 · Falsifier: a cut during the in-place write leaving the file shorter than its fixed length. `reusable_candidate` until a second
-> project uses it.
-
-Problem: A small file that another program must always be able to read (a boot selector, a counter) lives on a filesystem where
-write-temp-then-rename is not crash-safe: a cut between the steps leaves the name pointing at an empty or missing file.
-Solution: Give the file a fixed length (pad with a comment line to N bytes, N within one sector). Write it once by rename at install; afterwards open it without truncating and overwrite all N bytes
-  from offset 0, then fsync. Any other length means it is not
-ours yet: write it the install way. The reader validates the content and a boot-time check rewrites a bad file from known state.
-Why it works: Size and directory entry never change after the first write, so only one data sector is rewritten; a cut leaves old or new bytes, never a 0-byte name. The validator covers a torn sector.
-Reuse: Pi autoboot.txt and config flags on the boot FAT; a retry counter on an EFI partition; a small marker on a USB stick read by firmware.
-Pitfalls: The first write of a new medium still takes the rename path unless the image ships the file at its fixed length (found 2026-11-09: set-up wrote a shorter file). vfat renumbers inodes at each
-  mount, so prove in-place writes within one boot.
-Realised in: shell -> spike/release/rauc/tryboot_backend.sh (smc-resiliency, 4e086c18)
-
-```bash
-pad=$((SIZE - ${#body} - 3))
-body=$(printf '%s\n#%*s' "$body" "$pad" '')
-if [ -f "$SELECTION" ] && [ "$(wc -c <"$SELECTION")" -eq "$SIZE" ]; then
-  printf '%s\n' "$body" 1<>"$SELECTION"     # open read-write, no truncate: overwrite in place
-  sync "$SELECTION" 2>/dev/null || sync
-else
-  printf '%s\n' "$body" >"$tmp" && sync "$tmp" && mv "$tmp" "$SELECTION"   # first write only
-fi
-```
-
-### P-68 Baseline beside forecast in a generated report
-
-> **Learned 2026-11-06** · any report rendered from a fixed plan · CANDIDATE (reusable_candidate; promoted 2026-11-11 from enterprise-strategy's parked candidates) ·
-> Source: apn enterprise-strategy/scripts/weekly_update_xlsx.py `add_stages_sheet` @ 7347fc4e · Falsifier: a reader who takes the copied plan date as current after a slip, with the forecast shown
-> beside it.
-
-Problem: A status report is generated from a fixed plan, and dates slip. Overwriting the plan's dates loses the agreed baseline, and the next render from the plan undoes the edit anyway. Solution:
-Copy the plan's dates unchanged (the baseline) and add the forecast as separate columns fed from the period's own data file, coloured by state. A period with no forecasts renders exactly as before; a
-forecast naming an unknown stage fails the run. Why it works: The plan stays the single source of the baseline, the forecast has one home per period, and the reader sees the slip as a pair. Reuse:
-Project plans, release trains, SLA reports against a contract date, budget against actual. Pitfalls: A typo in a stage key silently drops a forecast unless unknown keys fail the run. Realised in:
-Python -> enterprise-strategy/scripts/weekly_update_xlsx.py (7347fc4e)
-
-```python
-forecasts = {str(k): v for k, v in (week.get("stages") or {}).items()}
-unknown += sorted(set(forecasts) - {str(r[0]) for r in stages[1:]})
-extra = [("Forecast", 14), ("Note", 50)] if forecasts else []
-st.append(list(stages[0]) + [name for name, _ in extra])
-for row in stages[1:]:
-  fc = forecasts.get(str(row[0]))
-  st.append(list(row) + ([fc["forecast"], cell_text(fc.get("note"))] if fc else [None] * len(extra)))
-```
-
-### P-69 A seed, a plan-first scaffold and a guard on the shared output
-
-> **Learned 2026-11-12** · any generator that builds a shared package from a written design · CANDIDATE (reusable_candidate) ·
-> Source: skill-ai-it `scripts/skills/skill_scaffold.py` `find_leaks`, `classify` and `skill_intake.py` `cmd_research_briefs` @ d3132c2 · Falsifier: a generated shared package that still carries a
-> name its guard listed.
-
-Problem: New packages built by copying a sibling drift apart and lose what the work that produced them taught; a generator that writes at once overwrites hand edits, and anything private in the design
-(project, customer or people names) can leak into an artifact many projects read, or into a search query sent to an outside service. Solution: Write the design as a seed (a parameter block and tables,
-with an unfilled marker a check refuses) kept in its own folder with its research and draft parts. The scaffold renders every file in memory, scans the rendered text for the seed's forbidden terms as
-whole words and refuses before any write, then classifies each file as create, skip (identical) or propose (a different file exists: write a `.proposed` beside it) and prints the plan; only `--apply`
-writes. A contract check runs on the result. The seed and its research are never copied into the output. Why it works: The lessons live in one place that outlives the build; a refusal costs nothing
-before the write; a rerun is safe because nothing a person wrote is replaced; the guard protects both the output and the outgoing research briefs. Reuse: New skill packs, projects started from
-templates, service or module scaffolds, any export that must stay free of one customer's names. Pitfalls: Substring matching flags "Rob" inside "robust" (match whole words); a brief that lists the
-forbidden words to tell a researcher what to avoid must be excluded from its own scan; a formatter that wraps table rows breaks a naive table parser (merge continuation rows, see the Python learned
-entry); a seed that names the private terms must stay outside the shared output. Realised in: Python -> skill-ai-it/scripts/skills/skill_scaffold.py and skill_intake.py (d3132c2)
-
-```python
-def find_leaks(files, terms):
-  out = []
-  for rel, text in files.items():
-    out += [f"{rel}: {t}" for t in terms if re.search(rf"(?<!\w){re.escape(t)}(?!\w)", text, re.I)]
-  return out
-
-def classify(pack, files):
-  out = []
-  for rel, text in files.items():
-    target = pack / rel
-    if not target.exists():
-      out.append(("create", rel))
-    elif target.read_text(encoding="utf-8") == text:
-      out.append(("skip", rel))
-    else:
-      out.append(("propose", rel))  # written as <file>.proposed on --apply, never over the original
-  return out
-# command: render all -> find_leaks -> refuse -> classify -> print plan -> write only with --apply
-```
-
 ### P-74 Add what the generator cannot write after it saves, and prove it in the consuming application
 
 > **Learned 2026-11-18** · any document generator that lacks a feature the format supports (slide motion, fields, comments) · CANDIDATE (reusable_candidate) ·
@@ -1924,7 +1897,7 @@ def _load_yaml(path):
     loader.dispose()
 ```
 
-## Exact-commit pre-push gate
+### P-77 Exact-commit pre-push gate
 
 > **Learned 2026-11-19** · reusable_candidate · VERIFIED_PRIMARY (gate runs: drift and a readiness flake caught on the exact commit) · Source: continuum-app `.githooks/pre-push`
 > (ca723dd), DL-024 · Falsifier: a local CI runner that tests the pushed object rather than the folder.
@@ -1949,4 +1922,31 @@ done
 
 **Pitfalls.** A relative sibling path silently becomes "absent, skipped" (pass it in). Services started from the worktree's compose file can be recreated because mount paths
 differ, so readiness checks must wait (a live Keycloak test failed until it waited for the realm). A commit pushed by another process skips the hook: run the hook by hand on it.
+
+## Language realisations
+
+Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project
+does.
+
+| Pattern | Ansible (`languages/ansible.md`)                                     | Python (`languages/python.md`)                                  |
+| ------- | -------------------------------------------------------------------- | --------------------------------------------------------------- |
+| P-01    | built: `include_tasks` per action type, `<type>_rollback` in reverse | built: probe check registry `register(Check(...))`              |
+| P-03    | built: journal and recovery tasks; Learned (e) drop-proof waits      | built: `recovery.py` pure classification over the journal       |
+| P-05    | built: no-serial first play + `group_by`; Learned (g), (j)           | suggested: build the plan once, then a bounded worker pool      |
+| P-06    | built: `async` + `poll: 0` + await; Learned (e), (i)                 | suggested: detached job id + idempotent status poll             |
+| P-09    | built: joined probe piped on stdin                                   | built: `files/probe/NN_*.py` parts joined into one program      |
+| P-12    | built: `--check` before apply                                        | built: `smc_change_runs_by_flavor.py` `plan()` then `--apply`   |
+
+> **Learned 2026-10-28** · optimise the real outcome, not a proxy · VERIFIED_PRIMARY (skill-drawio overview group placement, UNC overview: 245 crossings) · Source: skill-drawio `scripts/flowmap/placement.py` (`group_candidates`, `best_cells`) · Falsifier: a search on a
+> proxy score that keeps improving the real measure as it searches harder A cheap proxy can rank candidates but must not choose: scoring group placements by straight-line crossings gave 131 real
+> crossings with 12 restarts and 182 with 40 (the proxy improved, the drawing got worse); a channel-path proxy gave 192 and 171. Generate candidates with the proxy (several seeded starts, as Graphviz
+> and ELK do), then evaluate each with the real computation and keep the best; include the current state as a candidate so the result is never worse: 130 real crossings, stable.
+
+```python
+best, best_n = current, real_cost(current)
+for cand in candidates(current)[1:]:          # proxy-ranked, current first
+    n = real_cost(cand)                       # the real thing (here: route and count)
+    if n < best_n:
+        best, best_n = cand, n
+```
 
