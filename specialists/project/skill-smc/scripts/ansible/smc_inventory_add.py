@@ -251,6 +251,24 @@ def render(tdir, flavor, files, values, out):
   return {key: os.path.join(out, f"{key}.yml") for key in files}
 
 
+def rename_hosts(text, from_site, host):
+  """Replace every whole host name of a site in a topology text with the new host name.
+
+  The whole token is replaced: `generic-rct01-iridium-20241121` becomes the new host, not `<host>-iridium-20241121`. A `\\b` after the digits
+  matched inside such a name and kept the suffix, so the topology vars plugin keyed the clone under a name no host had and every topology
+  variable was undefined for the new box (malik-bench-rct01, 2026-11-20).
+
+  Args:
+    text: the topology_vars file text.
+    from_site: the source site (hosts are `<from_site>-smcNN`, `-rctNN` or `-whNN`, with any suffix).
+    host: the new hostname.
+
+  Returns:
+    (new text, number of names replaced).
+  """
+  return re.subn(rf"(?<![\w.-]){re.escape(from_site)}-(?:smc|rct|wh)\d+[\w.-]*(?![\w.-])", host, text)
+
+
 def clone_topology(repo, flavor, from_site, host, out):
   """Copy a sibling site's topology_vars with its host renamed to the new one.
 
@@ -270,7 +288,7 @@ def clone_topology(repo, flavor, from_site, host, out):
   src = Path(repo, "inventories", flavor, "topology_vars", f"{from_site}.yml")
   if not src.is_file():
     sys.exit(f"REFUSED: no {src.relative_to(repo)} to clone")
-  new, n = re.subn(rf"\b{re.escape(from_site)}-(smc|rct|wh)\d+\b", host, src.read_text())
+  new, n = rename_hosts(src.read_text(), from_site, host)
   if not n:
     sys.exit(f"REFUSED: {src.relative_to(repo)} names no {from_site}-smcNN host to rename; copy it by hand")
   # Fleet files carry trailing spaces and "key:  value"; YAML ignores both, the pre-push lint does not.

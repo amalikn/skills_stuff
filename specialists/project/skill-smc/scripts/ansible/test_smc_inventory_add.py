@@ -163,5 +163,22 @@ class OutputFaultsTest(unittest.TestCase):
     self.assertEqual(len(faults), 3, faults)
 
 
+class RenameHostsTest(unittest.TestCase):
+  """The clone rename replaces whole host names, suffixes included (malik-bench-rct01, 2026-11-20)."""
+
+  def test_suffixed_generic_name_replaced_whole(self) -> None:
+    """A generic image host with a date suffix becomes exactly the new host."""
+    new, n = m.rename_hosts("hosts:\n  smc01:\n    name: generic-rct01-iridium-20241121\n", "generic", "malik-bench-rct01")
+    self.assertEqual(n, 1)
+    self.assertIn("name: malik-bench-rct01\n", new)
+    self.assertNotIn("iridium", new)
+
+  def test_plain_name_replaced_neighbours_kept(self) -> None:
+    """A plain <site>-smc01 is replaced; another site's host and a longer site name are not."""
+    new, n = m.rename_hosts("a: jigalong-smc01\nb: jigalong-west-smc01\nc: xjigalong-smc01\n", "jigalong", "new-smc01")
+    self.assertEqual(n, 1)
+    self.assertEqual(new, "a: new-smc01\nb: jigalong-west-smc01\nc: xjigalong-smc01\n")
+
+
 if __name__ == "__main__":
   unittest.main()
