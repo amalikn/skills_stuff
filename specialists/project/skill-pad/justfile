@@ -189,6 +189,11 @@ section *ARGS: _require-venv
 rewrite SPEC *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_rewrite.py" "{{SPEC}}" {{ARGS}}
 
+# Write a rewrite spec that lays item bodies out to the writing standard (bold labels, own paragraphs, hard wraps joined; words unchanged). Read-only in Pad; apply with `just rewrite`.
+[no-cd]
+format-spec OUT *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_format_spec.py" --out "{{OUT}}" {{ARGS}}
+
 # Import a Markdown tracker into a Pad collection, or export it back (run from the project folder): plan by default, --apply to write.
 # e.g. just -f <this>/justfile tracker export docs/trackers/bug-tracker.md --collection bugs --kind bugs --apply
 [no-cd]

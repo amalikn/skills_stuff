@@ -9,10 +9,16 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1136
+Last rotated: 20261119_1434
 ---
 
 # Changelog — skill-pad
+
+## 20261119_1434 — Body layout for every collection: pad_format_spec.py
+
+- New `scripts/pad_format_spec.py` (`just format-spec OUT`): writes a `pad_rewrite.py` spec that bolds known section labels, starts each on its own paragraph and joins hard-wrapped lines; lists, tables, code and words untouched (an item whose words would change is skipped). 7 tests in `tests/test_pad_format_spec.py`; a no-op reformat fails 3.
+- Operator 2026-11-19: 'Formatting of all the pad entries for this project are not correct'. In continuum, 19 of 43 items (all Asks, FRs, TDs; TASK-178 hard-wrapped) rewritten, rescan 0; TASK-166 and TASK-171 closing comments rewritten as `DONE:` bullets; item-check 0 findings.
+- Learned entry in docs/pad-usage-guidelines-20261110_1628.md 3.3: the standard covers Asks, FRs and TDs; never draft a body in a file the markdown hook reflows; Pad stores `_` as `\\_` in some bodies.
 
 ## 20261119_1325 — Comment edits can be refused by the server
 
@@ -187,11 +193,3 @@ Last rotated: 20261119_1136
 - `scripts/pad_conventions.py --only ID[,ID]` (`select_entries`, test added; unknown id exits 2): plans or applies only the named entries.
 - Applied `--only writing-standard` to smc-resiliency (CONVE-32) and unified-network-controller (CONVE-25); read back `same`; their own wording of
   the other conventions left untouched.
-
-## 20261110_1719 — writing standard for plans, tasks, updates and tags
-
-### Added
-
-- `writing-standard` convention (always, should) in `conventions/apn-baseline.toml`, now six conventions; README table and tests updated (operator: yes).
-- Proposal section 3.3 (Writing standard): plan and task body templates, four update channels, comment types, tags; 3.8 lists the new convention;
-  section 3 renumbered without letter suffixes (operator).

@@ -242,6 +242,9 @@ tests"). Three duties, checked by `just item-check` (`scripts/pad_item_check.py`
 
 The time in a comment comes from `date`, not from memory or a log line.
 
+> **Learned 2026-11-19** · Pad CLI (continuum workspace) · VERIFIED (19 items rewritten, rescan 0 left) · Source: continuum ASK-15 to ASK-180, FR, TD items; `scripts/pad_format_spec.py` · Falsifier: a body written by `pad_format_spec.py` that Pad shows run together
+> The standard covers Asks, feature requests and tech debt too, not only plans, tasks and bugs: their `Serves:` / `Question:` / `Options to weigh:` lines need the same bold label and blank line. Write a body on stdin from a file no markdown formatter touches: a body drafted in a file the markdown hook reflows comes back hard-wrapped mid-sentence. Pad stores `_` in some bodies as `\_`; compare with it folded. To bring a workspace to the layout: `just format-spec spec.json`, review, `just rewrite spec.json --apply`.
+
 Comment types: `FINDING`, `BLOCKED`, `RISK`, `CORRECTION`, `HANDOFF`, `NEXT`, `DONE`, `CLOSED`. Each comment holds one event and says what is verified and what is not; a correction is a new `CORRECTION:` comment that
 leaves the old one in place. Reformatting an old comment to this standard is allowed only after its original text is saved verbatim as a `note` on the same item: Pad keeps item body versions, but not,
 as far as its docs show, the earlier text of an edited comment (done for smc-resiliency's 12 comments, 2026-11-10).
