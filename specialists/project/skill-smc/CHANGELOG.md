@@ -16,7 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
-- [20261120_0455 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)](#20261120_0455--rise-re-run-disables-the-overlay-the-pre-push-hooks-venv-and-worktree-smc_graylog-not-idempotent-v0164---v0165)
+- [20261120_0451 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)](#20261120_0451--rise-re-run-disables-the-overlay-the-pre-push-hooks-venv-and-worktree-smc_graylog-not-idempotent-v0164---v0165)
 - [20261120_0440 — lint-baseline-refresh.sh fixed: no delete before generate, output taken from the project root, git common dir (v0.16.3 -> v0.16.4)](#20261120_0440--lint-baseline-refreshsh-fixed-no-delete-before-generate-output-taken-from-the-project-root-git-common-dir-v0163---v0164)
 - [20261120_0400 — rise deploy on a stage Iridium bench Pi; controller symlinks; cost per task (v0.16.2 -> v0.16.3)](#20261120_0400--rise-deploy-on-a-stage-iridium-bench-pi-controller-symlinks-cost-per-task-v0162---v0163)
 - [20261120_0250 — clone rename fixed; check-mode limits, --diff leaks the join token, the interface-activation hook loop (v0.16.1 -> v0.16.2)](#20261120_0250--clone-rename-fixed-check-mode-limits---diff-leaks-the-join-token-the-interface-activation-hook-loop-v0161---v0162)
@@ -42,7 +42,7 @@ Last reviewed: 2026-10-27
 
 ---
 
-## 20261120_0455 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)
+## 20261120_0451 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)
 
 - references/08_ansible-authoring.md: a re-run of smc_rise_deploy on an overlay box turns overlayroot off, reboots and deploys (not a no-change
   run; operator correction); the pre-push hook needs the controller's full ansible package and lints a worktree without the untracked lint configs
