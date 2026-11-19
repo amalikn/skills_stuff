@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_0435
+Last rotated: 20261120_0451
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_0455 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)](#20261120_0455--rise-re-run-disables-the-overlay-the-pre-push-hooks-venv-and-worktree-smc_graylog-not-idempotent-v0164---v0165)
 - [20261120_0440 — lint-baseline-refresh.sh fixed: no delete before generate, output taken from the project root, git common dir (v0.16.3 -> v0.16.4)](#20261120_0440--lint-baseline-refreshsh-fixed-no-delete-before-generate-output-taken-from-the-project-root-git-common-dir-v0163---v0164)
 - [20261120_0400 — rise deploy on a stage Iridium bench Pi; controller symlinks; cost per task (v0.16.2 -> v0.16.3)](#20261120_0400--rise-deploy-on-a-stage-iridium-bench-pi-controller-symlinks-cost-per-task-v0162---v0163)
 - [20261120_0250 — clone rename fixed; check-mode limits, --diff leaks the join token, the interface-activation hook loop (v0.16.1 -> v0.16.2)](#20261120_0250--clone-rename-fixed-check-mode-limits---diff-leaks-the-join-token-the-interface-activation-hook-loop-v0161---v0162)
@@ -38,9 +39,14 @@ Last reviewed: 2026-10-27
 - [20261116_1859 — Solutions to platforms (no version change)](#20261116_1859--solutions-to-platforms-no-version-change)
 - [20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)](#20261116_1736--fleet-facts-for-a-remote-conversion-boot-partition-free-root-label-x86-disk-layouts-v0144---v0145)
 - [20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)](#20261111_1318--smc_lynis-no_pubkey-7a9a1d9d5b27c6d3-and-apt_key_subkey_probesh-v0143---v0144)
-- [20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)](#20261111_1213--urlcapture-prune-galiwinku-checked-v0142---v0143)
 
 ---
+
+## 20261120_0455 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)
+
+- references/08_ansible-authoring.md: a re-run of smc_rise_deploy on an overlay box turns overlayroot off, reboots and deploys (not a no-change
+  run; operator correction); the pre-push hook needs the controller's full ansible package and lints a worktree without the untracked lint configs
+  when the pushed commit is not HEAD; smc_graylog reports changed=3 on every run (smc-resiliency 20261120).
 
 ## 20261120_0440 — lint-baseline-refresh.sh fixed: no delete before generate, output taken from the project root, git common dir (v0.16.3 -> v0.16.4)
 
@@ -191,7 +197,3 @@ material says "recover themselves" for SMC recovery (operator, 16 Nov 2026; from
 `references/06_failure-modes.md` (`ec58b08`): cisofy's 2025-10-22 signing subkey; `apt_key` with `url` alone does not import it on SMCs holding the older key, so the role pins the subkey `id`
 (ansible-wifi master `9d504a89`, rise `c4d2ef51`). New read-only `scripts/probes/apt_key_subkey_probe.sh` (recipes `apt_key_subkey_probe`, `apt_key_subkey_probe_test`), smoke-run on
 kaltjiti-fergon-smc01.
-
-## 20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)
-
-`references/19_smc-change-role.md`: galiwinku's check result; the applies wait for the operator.

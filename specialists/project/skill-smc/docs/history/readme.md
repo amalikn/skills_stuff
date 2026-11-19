@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261120_0451.md](changelog-20261120_0451.md) 1 entry, 2026-11-11 to 2026-11-11: urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)
 - [changelog-20261120_0435.md](changelog-20261120_0435.md) 1 entry, 2026-11-11 to 2026-11-11: urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)
 - [changelog-20261120_0358.md](changelog-20261120_0358.md) 1 entry, 2026-11-10 to 2026-11-10: koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)
 - [changelog-20261120_0245.md](changelog-20261120_0245.md) 2 entries, 2026-11-10 to 2026-11-10: Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0); Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)

@@ -142,6 +142,17 @@ lines[tail:tail] = ["", f"[{site}:children]", f"{site}_smc_bases"]  # before any
 > - **smc_rise_deploy on an rct stage Iridium host stops at the tstik spec** (`rct-tstik-iridium-update`): `'dict object' has no attribute 'env'`
 >   while rendering the spec, before any change; prod hosts carry the missing key. A bench Pi without a tstik board or Iridium modem runs it with
 >   `-e smc_bases_iridium=false`, which skips the AVR flash and SMSC plays only (malik-bench-rct01, 2026-11-20: ok=335 changed=94 failed=0).
+> - **A re-run of smc_rise_deploy on an overlay box is not a no-change run:** its first play sets `disable_overlay: true` for every host, and the
+>   imports pass it on (`allow_disable_overlay` into smc_update_kernel and stage 1's smc_rise_disable_overlay), so overlayroot is turned off, the box
+>   reboots, the stages deploy on the persistent root and smc_rise_enable_overlay turns it back on (malik-bench-rct01, 2026-11-20: root plain ext4
+>   mid-run). The "End play if overlay is active" guards in the stages do not stop it. To time a hub's no-change re-run, use a playbook that keeps
+>   the overlay (e.g. smc_prometheus.yml), not this one.
+> - **The pre-push hook (ansible-wifi .git/hooks/pre-push):** its syntax check runs in the skills-runtime venv, which needs the same `ansible` package
+>   as the controller (11.9.0 with ansible-core 2.18.8), not ansible-core alone: ansible-wifi uses `selinux` (ansible.posix, smc_system) and
+>   `openssl_privatekey` (community.crypto, smc_squid), and the repo's `collections/` holds only community.general. When the pushed commit is not
+>   the checked-out HEAD, the hook lints a temporary worktree that lacks the untracked `.yamllint` and `.ansible-lint` symlinks, so yamllint falls
+>   back to strict defaults (80 columns, LF only) and refuses CRLF files such as smc_bases.yml: push with the branch checked out.
+> - **smc_graylog is not idempotent:** two runs on an installed bench Pi each report changed=3; the apt cache refresh is 40 to 49 s of its 2 minutes.
 > - **The controller VM cannot follow `smc_change.yml`**: it is a symlink to an absolute `/Volumes/Data/...` path, and ansible-apn mounts that
 >   tree at `/home/vagrant/Data`. A `/Volumes/Data -> /home/vagrant/Data` link in the VM fixes every such symlink (not yet in the Vagrantfile).
 > - **Cost per task on a fast link:** 324 tasks in 40 min (7.4 s each) over 100 Mbps; SSH reuse through Teleport works (1.19 s first, 0.33 to 0.40 s
