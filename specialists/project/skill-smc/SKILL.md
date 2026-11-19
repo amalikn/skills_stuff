@@ -69,6 +69,10 @@ surface is not live yet, the entry says "screenshot pending: <page>, after <depl
 SMC boxes and the `ansible-wifi` repo that builds them. An SMC is an x86 PC (`rcp`, `nbn_accelerate`) or an ARM64 Raspberry Pi (`rct`, `wh`, `nbn_wh`) on Ubuntu 22.04, acting as
 a site's WiFi hotspot and gateway: DHCP, DNS, captive portal, filtering, monitoring exporters, sometimes VoIP and HA. Seven inventory flavors in two projects (`references/01_overview.md`).
 
+**Both platforms, always (operator, 2026-11-19).** Any SMC question, design, test or finding is answered for the Pi and the x86 SMCs together. Where something
+is limited to one platform, say so and give the other platform's counterpart or alternative (Pi EEPROM and boot watchdog; x86 BIOS, its update path and any
+firmware watchdog). Example: on 19 Nov the Pi watchdog work led to a read of three x86 boxes, which had no watchdog and `kernel.panic=0` (07_hardware-overlay).
+
 **Overlayroot runs on the Pi and WH boxes only** (operator, 2026-09-22): writes there land in tmpfs and vanish on reboot unless the lower dir is remounted read-write. x86 boxes have a
 plain ext4 root. Check before assuming a change persisted (`references/07_hardware-overlay.md`).
 

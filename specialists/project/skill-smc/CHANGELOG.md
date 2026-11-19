@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1232
+Last rotated: 20261119_1303
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261119_1303 — both platforms always (operator); deployed x86 SMCs have no watchdog and kernel.panic 0 (v0.15.3 -> v0.15.4)](#20261119_1303--both-platforms-always-operator-deployed-x86-smcs-have-no-watchdog-and-kernelpanic-0-v0153---v0154)
 - [20261119_1250 — correction: the kernel feeds an armed watchdog for ever before userspace (open_timeout 0); watchdog.open_timeout=60 resets a stuck trial; census: every Pi 8 GB (v0.15.2 -> v0.15.3)](#20261119_1250--correction-the-kernel-feeds-an-armed-watchdog-for-ever-before-userspace-open_timeout-0-watchdogopen_timeout60-resets-a-stuck-trial-census-every-pi-8-gb-v0152---v0153)
 - [20261119_1205 — early watchdog fed by the kernel driver from its probe; EEPROM update from partition 1 on both 2022 bootloaders; census reads memory (v0.15.1 -> v0.15.2)](#20261119_1205--early-watchdog-fed-by-the-kernel-driver-from-its-probe-eeprom-update-from-partition-1-on-both-2022-bootloaders-census-reads-memory-v0151---v0152)
 - [20261118_2152 — Pi 4 early watchdog, 2022 bootloaders ignore the A/B selector, EEPROM staging on an A/B card (v0.15.0 -> v0.15.1)](#20261118_2152--pi-4-early-watchdog-2022-bootloaders-ignore-the-ab-selector-eeprom-staging-on-an-ab-card-v0150---v0151)
@@ -35,7 +36,6 @@ Last reviewed: 2026-10-27
 - [20261110_0031 — Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)](#20261110_0031--pi-4-on-the-fleet-bootloader-2023-01-11-autoboottxt-on-gpt-and-eeprom-update-path-v0130---v0131)
 - [20261109_2300 — Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)](#20261109_2300--pi-4-ab-on-a-gpt-card-bootloader-firmware-and-update-traps-smc-resiliency-s1-v0129---v0130)
 - [20261108_0155 — Pi 4 serial console (smc-resiliency S1 bench) (v0.12.8 -> v0.12.9)](#20261108_0155--pi-4-serial-console-smc-resiliency-s1-bench-v0128---v0129)
-- [20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)](#20261106_1630--ansible-wifi-smc_bases-on-ubuntu-2404-and-in-an-image-build-v0127---v0128)
 
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 ->
   v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
@@ -78,6 +78,11 @@ Last reviewed: 2026-10-27
 - [20261102_1756 — smc_change skip, probe or force; per-SMC close (v0.11.6 -> v0.11.7)](#20261102_1756--smc_change-skip-probe-or-force-per-smc-close-v0116---v0117)
 
 ---
+
+## 20261119_1303 — both platforms always (operator); deployed x86 SMCs have no watchdog and kernel.panic 0 (v0.15.3 -> v0.15.4)
+
+- SKILL.md: every SMC answer covers the Pi and x86, or names the other platform's alternative (operator, 2026-11-19).
+- references/07_hardware-overlay.md: Learned 2026-11-19, three deployed x86 SMCs read: no watchdog, kernel.panic 0, lockup and hung-task panics off.
 
 ## 20261119_1250 — correction: the kernel feeds an armed watchdog for ever before userspace (open_timeout 0); watchdog.open_timeout=60 resets a stuck trial; census: every Pi 8 GB (v0.15.2 -> v0.15.3)
 
@@ -189,8 +194,3 @@ bench console).
 
 `references/07_hardware-overlay.md`: Learned 2026-11-08: the primary UART pins, `BOOT_UART`, `uart_2ndstage`, `enable_uart` with `console=serial0`, and the lab's console recorder (Raspberry Pi
 documentation, VERIFIED_PRIMARY).
-
-## 20261106_1630 — ansible-wifi smc_bases on Ubuntu 24.04 and in an image build (v0.12.7 -> v0.12.8)
-
-`references/08_ansible-authoring.md`: Learned 2026-11-06 (smc-resiliency S3 step 8): python3.10 pin, netaddr and ansible.posix on the controller, `smc_setup` sources.list, `smc_sshd` service name and
-60 x 60 s retries, `smc_network` reboot and netplan. manifest 0.12.7 -> 0.12.8.

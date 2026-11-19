@@ -1317,3 +1317,13 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > - `pi_bootloader_census.sh` now also prints `mem_kb` (MemTotal) per Pi, and `summarise_survey.py --census` tallies memory per flavour in whole GB.
 >
 > No visual surface: no screenshot.
+
+> **Learned 2026-11-19** · deployed x86 SMCs: two rcp (PBA-CFLS01, BIOS B641HM20 and B641HM17, kernel 5.15.0-101 and -164) and one nbn_accelerate (BOXER-6404, B404BM14,
+> 5.15.0-117) · VERIFIED_PRIMARY (read-only over Teleport; three boxes, not the fleet) · Source: smc-resiliency Pad B19-03; raw on malik1tb lab-evidence/20261119/x86-freeze-read ·
+> Falsifier: a deployed x86 SMC with /dev/watchdog present or kernel.panic non-zero from the fleet build.
+> - No watchdog device or module (`iTCO_wdt` and `it87_wdt` are modules, blacklisted by Ubuntu), systemd `RuntimeWatchdogUSec=0`, `kernel.panic=0` (a panic halts for
+>   ever), soft- and hard-lockup and hung-task panics off (`nmi_watchdog=1` only detects), `watchdog.open_timeout` 0, no `watchdog` package. A frozen x86 SMC needs a visit.
+> - The Pi counterpart: new Pi image has the hardware watchdog fed by systemd, the early watchdog and `panic=10`; the Pi 4 has no hard-lockup detector.
+>
+> No visual surface: no screenshot.
+
