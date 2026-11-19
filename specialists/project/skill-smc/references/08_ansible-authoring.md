@@ -125,6 +125,20 @@ lines[tail:tail] = ["", f"[{site}:children]", f"{site}_smc_bases"]  # before any
 > - **`smc_rename.yml` (and any play with a `delegate_to: 127.0.0.1` step) needs the Linux controller:** the rct inventory pins
 > `ansible_python_interpreter=/usr/bin/python3.10`, which the Mac lacks ("module interpreter '/usr/bin/python3.10' was not found"). Run from `ansible-apn` (`/home/vagrant/ansible-wifi`); its tsh login
 > expires on its own and needs the operator's sign-in.
+> - **The clone kept a generic host's suffix** (fixed in the tool, skill-smc f7a2c057): `--topology-from generic` renamed
+> `generic-rct01-iridium-20241121` to `malik-bench-rct01-iridium-20241121`, so the topology vars plugin keyed it under a name no host has and every `topology_*` variable was undefined (smc_network
+> failed at rt_tables). Read the `name:` under `inventory.hosts` in a cloned file.
+
+> **Learned 2026-11-20** · `--check` and `--diff` on the SMC playbooks · VERIFIED_PRIMARY · Source: runs on a bench Pi from ansible-apn (ansible-core
+> 2.18.8), iridium at 07d03869; logs in smc-resiliency spike/out/ansible-*-20261120.log · Falsifier: a check run of these playbooks that reaches its end on an unchanged box
+> - **Check mode cannot preview three of them end to end:** `smc_bases.yml` aborts at its overlay guard (the read-only `mount | grep` probe is
+> skipped under `--check`, then the abort fires on the skipped result; fixed by `check_mode: false` on the probe, branch `local/bases-check-mode`), and later at `smc_teleport : Read
+> /tmp/teleport.yaml` (the template step wrote nothing). `smc_rename.yml` fails at once (its `ansible-inventory` command is skipped). `smc_prometheus.yml` fails extracting an archive the download step
+> did not fetch.
+> - **`--diff` writes the Teleport join token into the run log** (`auth_token:` in `/etc/teleport.yaml`'s diff from smc_teleport). Mask a log
+> before keeping it: `sed -E 's/(auth_token:[[:space:]]*).*/\1<masked>/'`.
+> - **`ansible`/`ansible-inventory` do not show topology vars**: the plugin loads only from `vars_plugins/` beside a playbook, so check
+> `topology_interfaces` with a throwaway playbook in the repo root, not an ad-hoc command.
 
 ### Task key order: `when:` goes LAST, with `tags:` after it (operator convention, 2026-08-27)
 

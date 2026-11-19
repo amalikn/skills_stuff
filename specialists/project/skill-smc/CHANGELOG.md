@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_0049
+Last rotated: 20261120_0245
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_0250 — clone rename fixed; check-mode limits, --diff leaks the join token, the interface-activation hook loop (v0.16.1 -> v0.16.2)](#20261120_0250--clone-rename-fixed-check-mode-limits---diff-leaks-the-join-token-the-interface-activation-hook-loop-v0161---v0162)
 - [20261120_0050 — bench Pi inventoried on iridium and rise; Pi field image has no serial console and mounts root with discard (v0.16.0 -> v0.16.1)](#20261120_0050--bench-pi-inventoried-on-iridium-and-rise-pi-field-image-has-no-serial-console-and-mounts-root-with-discard-v0160---v0161)
 - [20261119_1852 — smc_root_key_probe.sh; the warehouse field image read; root's key and password shared fleet-wide (v0.15.9 -> v0.16.0)](#20261119_1852--smc_root_key_probesh-the-warehouse-field-image-read-roots-key-and-password-shared-fleet-wide-v0159---v0160)
 - [20261119_1830 — role_rerun_cost.py promoted; Ookla rate limit; Bitbucket fleet trust gap (v0.15.8 -> v0.15.9)](#20261119_1830--role_rerun_costpy-promoted-ookla-rate-limit-bitbucket-fleet-trust-gap-v0158---v0159)
@@ -38,10 +39,16 @@ Last reviewed: 2026-10-27
 - [20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)](#20261111_1213--urlcapture-prune-galiwinku-checked-v0142---v0143)
 - [20261111_1105 — urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)](#20261111_1105--urlcapture-prune-first-run-read-uc-old-files-needs-the-cw-proxy-v0141---v0142)
 - [20261110_1355 — koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)](#20261110_1355--koonibba-wrong-teleport-cluster-stale-bastion-keys-url_capture-prune-gaps-root-lv-condition-urlcapture-prune-change-v0140---v0141)
-- [20261110_1225 — Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0)](#20261110_1225--fleet-survey-probes-bootloader-census-writers-probe-probe-deadlines-fixed-v0132---v0140)
-- [20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)](#20261110_0202--deployed-pi-fleet-layout-and-root-block-spread-survey-of-6-v0131---v0132)
 
 ---
+
+## 20261120_0250 — clone rename fixed; check-mode limits, --diff leaks the join token, the interface-activation hook loop (v0.16.1 -> v0.16.2)
+
+- scripts/ansible/smc_inventory_add.py: `rename_hosts` replaces whole host names (a generic image's `-iridium-20241121` suffix was kept, so no topology vars reached the host); two tests in
+  test_smc_inventory_add.py (10 pass).
+- references/08_ansible-authoring.md: Learned 2026-11-20, check mode stops smc_bases, smc_rename and smc_prometheus; `--diff` writes the Teleport join token into logs (mask before keeping); topology
+  vars show only in a playbook run.
+- references/06_failure-modes.md: Learned 2026-11-20, the interface-activation hook loops when untagged eth0 gets a DHCP lease (smc-resiliency BUG-102).
 
 ## 20261120_0050 — bench Pi inventoried on iridium and rise; Pi field image has no serial console and mounts root with discard (v0.16.0 -> v0.16.1)
 
@@ -188,13 +195,3 @@ kaltjiti-fergon-smc01.
 2026-11-10, a changed bastion key disables the backdoor's forwarding under `StrictHostKeyChecking=no`; verified fix and fleet sweep; `backdoor-watch.sh` misses a site ID kept in group vars (fix
 pending). `references/09_url-capture-pcap.md`: the on-box prune, three boxes without it, server check before deleting (`da4a328`). `references/13_known-issues.md`: `smc_system` root-LV condition
 (ansible-wifi `0fc086ca`) and the `smc_bases.yml --tags` always-task hazard (`da4a328`). `references/19_smc-change-role.md`: change `urlcapture-prune`, the first template action (`14eabeb`).
-
-## 20261110_1225 — Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0)
-
-New: `scripts/probes/pi_resiliency_probe.sh`, `scripts/probes/smc_writers_probe.sh`, `scripts/fleet/sample_fleet.py`, `scripts/fleet/summarise_survey.py`, `scripts/fleet/pi_bootloader_census.sh`
-(catalogued, recipes in the justfile). `x86_resiliency_probe.sh` also prints OS, partitions, I/O since boot and SMART. Fix: the `perl alarm; exec tsh` deadline in four probes never cut a hung tsh (Go
-survives SIGALRM); they now fork and send TERM then KILL. `references/07_hardware-overlay.md`: Learned 2026-11-10: bootloader census, nbn_wh writable root, undervoltage, x86 watchdog and write rates.
-
-## 20261110_0202 — Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)
-
-`references/07_hardware-overlay.md`: Learned 2026-11-10: 22.04.1, MBR 62 GB, overlayroot, 5.6-6.9 GB used, bootloader 2023-01-11, and how far the ext4 root's blocks spread (read-only, Teleport).

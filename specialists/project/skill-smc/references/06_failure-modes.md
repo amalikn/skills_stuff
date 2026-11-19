@@ -62,24 +62,23 @@ Fix:   Identify what is filling /media/root-rw/overlay
 
 ### Domain-Specific Host DNS Resolution Delay (non-`smc_ltp` hosts)
 
-| Field                      | Value                                                                                                                                                                   |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Error text                 | `ping <fqdn>` / `getaddrinfo(AF_UNSPEC)` from the SMC itself stalls ~15s before resolving; direct IP and single-record `dig` are fast; delay is domain-specific         |
-|                            |   (reproduces on domains with an A record + AAAA NODATA, not on domains with no AAAA-eligible answer path)                                                              |
-| Typical context            | Any non-`smc_ltp` host performing a combined A+AAAA lookup (`getaddrinfo(AF_UNSPEC)`) — this is glibc's default behavior for most name resolution, not something the    |
-|                            |   caller opts into                                                                                                                                                      |
-| Cause class                | Architecture exposure, not a code bug: `DNSStubListener=no` (unconditional, `roles/smc_network/templates/resolved.conf.j2`) means host glibc talks directly to          |
-|                            |   `external_dns_servers` over raw UDP — bypassing systemd-resolved's stub *and* unbound/stubby entirely (see `02_service-map.md`). On some WAN paths, one leg (typically |
-|                            |   AAAA) of the near-simultaneous A/AAAA query pair fails to return; isolated queries and TCP both succeed, ruling out general DNS reachability                          |
-| First confirmed on         | garimba-smc01 (rct), 2026-07-03; not reproduced on yuelamu-10mile-smc01 (same fleet, different WAN path)                                                                |
-| Immediate checks           | `time ping <fqdn>` from the box; compare `dig +tcp` (expected to succeed) against default `getaddrinfo` (may stall); packet capture on the WAN interface during the     |
-|                            |   stall to see which query type's response is missing                                                                                                                   |
-| Mitigation (not            | Point host resolution at systemd-resolved's stub (`127.0.0.53`) instead of the raw uplink file — this changes resolver *implementation* and appears to route around the |
-|   yet fleet-validated)     |   WAN-path condition, but does **not** prove the underlying condition is fixed. Do not roll out fleet-wide without live validation — see `13_known-issues.md`           |
-| Source-of-truth files      | `roles/smc_network/templates/resolved.conf.j2`, `roles/smc_network/tasks/ubuntu.yml:196-214`,                                                                           |
-|                            |   `roles/smc_dns/templates/unbound.conf.j2`, `roles/smc_dns/files/stubby.yml`                                                                                           |
-| Full RCA                   | `local-knowledge-ansible/ansible-wifi/issues/garimba-smc01/garimba-smc01-dns-resolution-rca-20260703_1158.md` (revision 3, with two rounds of validation-prompt         |
-|                            |   corrections) + companion docs under `issues/garimba-smc01/docs/reports/`                                                                                              |
+| Field                    | Value                                                                                                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Error text               | `ping <fqdn>` / `getaddrinfo(AF_UNSPEC)` from the SMC itself stalls ~15s before resolving; direct IP and single-record `dig` are fast; delay is domain-specific           |
+|                          |   (reproduces on domains with an A record + AAAA NODATA, not on domains with no AAAA-eligible answer path)                                                                |
+| Typical context          | Any non-`smc_ltp` host performing a combined A+AAAA lookup (`getaddrinfo(AF_UNSPEC)`) — this is glibc's default behavior for most name resolution, not something the      |
+|                          |   caller opts into                                                                                                                                                        |
+| Cause class              | Architecture exposure, not a code bug: `DNSStubListener=no` (unconditional, `roles/smc_network/templates/resolved.conf.j2`) means host glibc talks directly to            |
+|                          |   `external_dns_servers` over raw UDP — bypassing systemd-resolved's stub *and* unbound/stubby entirely (see `02_service-map.md`). On some WAN paths, one leg (typically  |
+|                          |   AAAA) of the near-simultaneous A/AAAA query pair fails to return; isolated queries and TCP both succeed, ruling out general DNS reachability                            |
+| First confirmed on       | garimba-smc01 (rct), 2026-07-03; not reproduced on yuelamu-10mile-smc01 (same fleet, different WAN path)                                                                  |
+| Immediate checks         | `time ping <fqdn>` from the box; compare `dig +tcp` (expected to succeed) against default `getaddrinfo` (may stall); packet capture on the WAN interface during the stall |
+|                          |   to see which query type's response is missing                                                                                                                           |
+| Mitigation (not          | Point host resolution at systemd-resolved's stub (`127.0.0.53`) instead of the raw uplink file — this changes resolver *implementation* and appears to route around the   |
+|   yet fleet-validated)   |   WAN-path condition, but does **not** prove the underlying condition is fixed. Do not roll out fleet-wide without live validation — see `13_known-issues.md`             |
+| Source-of-truth files    | `roles/smc_network/templates/resolved.conf.j2`, `roles/smc_network/tasks/ubuntu.yml:196-214`, `roles/smc_dns/templates/unbound.conf.j2`, `roles/smc_dns/files/stubby.yml` |
+| Full RCA                 | `local-knowledge-ansible/ansible-wifi/issues/garimba-smc01/garimba-smc01-dns-resolution-rca-20260703_1158.md` (revision 3, with two rounds of validation-prompt           |
+|                          |   corrections) + companion docs under `issues/garimba-smc01/docs/reports/`                                                                                                |
 
 ### Captive Portal Dead at Bootstrap — `Directory APPPATH/cache must be writable`
 
@@ -104,25 +103,35 @@ Fix:   Identify what is filling /media/root-rw/overlay
 
 ### Disk Path Failure Forcing Root Read-Only (x86 `nbn_accelerate`, active disk path)
 
-| Field                                | Value                                                                                                                                                         |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Error text                           | `/dev/sdb2 on / type ext4 (ro,relatime)`; `mount -o remount,rw /` fails with `cannot remount /dev/sdb2 read-write, is write-protected` (rc=32); most binaries |
-|                                      |   (`efibootmgr`, `lsblk`, `blkid`, `findmnt`, `dmesg`) fail with `Input/output error`, not a PATH issue                                                       |
-| Typical context                      | amata-smc01 (nbn_accelerate, x86, BOXER-6641 class)                                                                                                           |
-| Cause class                          | Physical storage-path failure on the active root disk (`sdb`) — SSD fault and/or SATA link/cable/backplane/power instability. **Not** overlayroot behavior, not a |
-|                                      |   PATH issue, not an Ansible playbook logic error                                                                                                             |
-| Error signature (from device log,    | `ata4.00: failed command: WRITE FPDMA QUEUED`, repeated `COMRESET failed`, `ata4.00: disabled`, `blk_update_request: I/O error, dev sdb`,                     |
-|   ~2026-04-25 10:37:08)              |   `EXT4-fs ... I/O error while writing superblock`, `EXT4-fs (sdb2): Remounting filesystem read-only`, `hostbyte=DID_BAD_TARGET`                              |
-| What was evaluated                   | `smc_disk_failover` role: uses `efibootmgr -n` (BootNext, one-time) after a prolonged internet-failure count — **not a guaranteed safe immediate failover under** |
-|                                      |   **active I/O corruption**, and EFI tooling itself was unreliable on this host because of the ongoing I/O errors                                             |
-| Operational decision guidance        | 1) Reboot is a reasonable first attempt, outage risk acknowledged. 2) If a short RW window appears post-reboot: `efibootmgr -v` → set one-time boot to the    |
-|                                      |   alternate Ubuntu entry (`efibootmgr -n <id>`) → reboot quickly. 3) If tooling fails or host stays RO: BIOS/UEFI console boot to the alternate SSD manually. |
-|                                      |   4) After a successful alternate boot: set permanent `BootOrder` with the alternate first (`efibootmgr -o ...`), verify Teleport/autossh, then               |
-|                                      |   replace/repair the failed disk path before reintroducing it to the boot order                                                                               |
-| Status                               | **Open as of 2026-04-30 — not yet recovered.** ROADMAP backlog for this host still lists: recover via reboot/failover, re-establish the PIN/session enforcement |
-|                                      |   chain (`ECLIPSE_*` mark population + `netfilter-persistent`) once writable, validate month-rollover PIN behavior post-recovery, and capture final incident  |
-|                                      |   closeout. Baseline content filtering was confirmed still active during the degradation window — do not assume a fully down box means filtering is also down |
-| Full incident capture                | `local-knowledge-ansible/ansible-wifi/issues/amata-smc01/2026-04-30-amata-smc01-storage-incident.md` + `amata-error.log`                                      |
+| Field                             | Value                                                                                                                                                            |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Error text                        | `/dev/sdb2 on / type ext4 (ro,relatime)`; `mount -o remount,rw /` fails with `cannot remount /dev/sdb2 read-write, is write-protected` (rc=32); most binaries    |
+|                                   |   (`efibootmgr`, `lsblk`, `blkid`, `findmnt`, `dmesg`) fail with `Input/output error`, not a PATH issue                                                          |
+| Typical context                   | amata-smc01 (nbn_accelerate, x86, BOXER-6641 class)                                                                                                              |
+| Cause class                       | Physical storage-path failure on the active root disk (`sdb`) — SSD fault and/or SATA link/cable/backplane/power instability. **Not** overlayroot behavior, not a |
+|                                   |   PATH issue, not an Ansible playbook logic error                                                                                                                |
+| Error signature (from device log, | `ata4.00: failed command: WRITE FPDMA QUEUED`, repeated `COMRESET failed`, `ata4.00: disabled`, `blk_update_request: I/O error, dev sdb`,                        |
+|   ~2026-04-25 10:37:08)           |   `EXT4-fs ... I/O error while writing superblock`, `EXT4-fs (sdb2): Remounting filesystem read-only`, `hostbyte=DID_BAD_TARGET`                                 |
+| What was evaluated                | `smc_disk_failover` role: uses `efibootmgr -n` (BootNext, one-time) after a prolonged internet-failure count — **not a guaranteed safe immediate failover under** |
+|                                   |   **active I/O corruption**, and EFI tooling itself was unreliable on this host because of the ongoing I/O errors                                                |
+| Operational decision guidance     | 1) Reboot is a reasonable first attempt, outage risk acknowledged. 2) If a short RW window appears post-reboot: `efibootmgr -v` → set one-time boot to the       |
+|                                   |   alternate Ubuntu entry (`efibootmgr -n <id>`) → reboot quickly. 3) If tooling fails or host stays RO: BIOS/UEFI console boot to the alternate SSD manually. 4) |
+|                                   |   After a successful alternate boot: set permanent `BootOrder` with the alternate first (`efibootmgr -o ...`), verify Teleport/autossh, then replace/repair the  |
+|                                   |   failed disk path before reintroducing it to the boot order                                                                                                     |
+| Status                            | **Open as of 2026-04-30 — not yet recovered.** ROADMAP backlog for this host still lists: recover via reboot/failover, re-establish the PIN/session enforcement  |
+|                                   |   chain (`ECLIPSE_*` mark population + `netfilter-persistent`) once writable, validate month-rollover PIN behavior post-recovery, and capture final incident     |
+|                                   |   closeout. Baseline content filtering was confirmed still active during the degradation window — do not assume a fully down box means filtering is also down    |
+| Full incident capture             | `local-knowledge-ansible/ansible-wifi/issues/amata-smc01/2026-04-30-amata-smc01-storage-incident.md` + `amata-error.log`                                         |
+
+### Link Churn from the Interface-Activation Hook when untagged eth0 gets DHCP (rct bench, 2026-11-20)
+
+> **Learned 2026-11-20** · rct field image, bench · VERIFIED_PRIMARY (hook text read; counts from systemd-networkd's journal) · Source:
+> smc-resiliency Pad BUG-102, lab test record 27 · Falsifier: a box with a DHCP lease on untagged eth0 and the hook executable that shows no repeated `eth0: Link DOWN`
+> `/etc/networkd-dispatcher/configured.d/00-interface-activation.sh` (rendered by smc_network) runs `ip link set <if> down; ip link set <if> up` for eth0 and vlan522 at every networkd "configured"
+> event. In the field untagged eth0 has no DHCP server, so nothing re-raises the event. A box whose untagged eth0 does get a lease (the bench LAN; any site switch that leaks an untagged DHCP server)
+> loops: lease, configured, bounce, lease. Seen: eth0 down 29 times a minute, ntpd never syncing (clock stuck at the image's date), Teleport "Failed to connect to Auth Server", SSH "timed out during
+> banner exchange". Quick read: `journalctl -u systemd-networkd --since -60s | grep -c "eth0: Link DOWN"`. Stop it on a lab box: `chmod -x` the hook (smc_network restores it). A field box with this
+> count above a few is worth a check of the switch port.
 
 ### Ansible Failure: `iptables-restore` references missing `restricted` set
 
@@ -136,16 +145,16 @@ Fix:   Identify what is filling /media/root-rw/overlay
 
 ### Ansible Failure: loop receives scalar package name
 
-| Field          | Value                                                                                                                                                                               |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Error text     | `Invalid data passed to 'loop' ... got this instead: php8.1-cli`                                                                                                                    |
-| Typical task   | `smc_application : Collect archive size for each pkg (bytes)`                                                                                                                       |
-| Cause class    | Jinja type-check bug in helper normalization                                                                                                                                        |
-| Immediate      | `roles/_helpers/custom_apt_install.yml` package normalization logic                                                                                                                 |
-|   check        |                                                                                                                                                                                     |
-| Resolution     | First-attempt fix (`is sequence` normalization, see `05_troubleshooting.md` Tier 10) hit a second incompatibility under `--check` mode (`Package unavailable`). **Actual applied fix** |
-|                |   **(old-looma/umoona, 2026-07-29): wholesale-replaced** `roles/_helpers/custom_apt_install.yml` and `custom_apt_update_cache.yml` with their `rise-multi` versions (simpler        |
-|                |   `apt-cache policy` check, no size-collection step) rather than patching in place                                                                                                  |
+| Field         | Value                                                                                                                                                                                |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Error text    | `Invalid data passed to 'loop' ... got this instead: php8.1-cli`                                                                                                                     |
+| Typical task  | `smc_application : Collect archive size for each pkg (bytes)`                                                                                                                        |
+| Cause class   | Jinja type-check bug in helper normalization                                                                                                                                         |
+| Immediate     | `roles/_helpers/custom_apt_install.yml` package normalization logic                                                                                                                  |
+|   check       |                                                                                                                                                                                      |
+| Resolution    | First-attempt fix (`is sequence` normalization, see `05_troubleshooting.md` Tier 10) hit a second incompatibility under `--check` mode (`Package unavailable`). **Actual applied fix** |
+|               |   **(old-looma/umoona, 2026-07-29): wholesale-replaced** `roles/_helpers/custom_apt_install.yml` and `custom_apt_update_cache.yml` with their `rise-multi` versions (simpler         |
+|               |   `apt-cache policy` check, no size-collection step) rather than patching in place                                                                                                   |
 
 ---
 
@@ -196,21 +205,20 @@ once.
 reset logic is not AVR firmware. It is the `rct-tstik` Laravel app on the SMC itself (`php artisan update:stats`, cron every minute), which pings the phone UI (192.168.5.253), Sky Muster NTD
 (192.168.100.1), MikroTik switch (10.255.0.5), AP (10.255.0.20) and 8.8.8.8/1.1.1.1, and asks the AVR to cut a rail for 10 s: phone after 11 failed UI runs; NTD after 11 failed modem runs or 35 failed
 internet runs; **switch** after 11 failed switch or AP runs, or 71 failed internet runs. The code never power-cycles the SMC, and it stops entirely if the SMC hangs. Whether the AVR firmware has its
-own watchdog for the SMC is not established. History: `storage/logs/laravel.log*` (UTC, size-rotated, about a week); capture with `scripts/capture/tstik-capture.sh`. It masks this failure mode entirely — an
-`rct` box in the same state self-recovers within minutes and nobody opens a ticket. `wh` has no equivalent, and nothing in software substitutes for it:
+own watchdog for the SMC is not established. History: `storage/logs/laravel.log*` (UTC, size-rotated, about a week); capture with `scripts/capture/tstik-capture.sh`. It masks this failure mode
+entirely — an `rct` box in the same state self-recovers within minutes and nobody opens a ticket. `wh` has no equivalent, and nothing in software substitutes for it:
 
 Rechecked 2026-10-07 at Bitbucket `activ8me/rct-tstik` head `8e3f5b0` (2026-08-06): `IOManager::ResetPower` switches the phone UI, NTD, LAN switch, Thuraya modem, Aux1, Aux2 and external I2C rails. No
-rail is named for the SMC. The code calls the satellite modem **Thuraya** (backup phone: emergency number, SMS settings) and has no
-Iridium code, but RCT is moving to **Iridium**: tested at a few sites, with replacement at all RCT sites started (USER_STATED 2026-10-07). RCT sites need a
-visit for it. WH sites have no satellite modem at all. No code path lets an inbound Thuraya message
-trigger a reset. Thuraya commands are sent only from the local web UI (`td` page). The AVR firmware is not in this repo, so an AVR-level SMC watchdog or SMS reset is still unverified.
+rail is named for the SMC. The code calls the satellite modem **Thuraya** (backup phone: emergency number, SMS settings) and has no Iridium code, but RCT is moving to **Iridium**: tested at a few
+sites, with replacement at all RCT sites started (USER_STATED 2026-10-07). RCT sites need a visit for it. WH sites have no satellite modem at all. No code path lets an inbound Thuraya message trigger
+a reset. Thuraya commands are sent only from the local web UI (`td` page). The AVR firmware is not in this repo, so an AVR-level SMC watchdog or SMS reset is still unverified.
 
 > **Learned 2026-11-18** · rct booths, tstik board · USER_STATED (operator, apn smc-resiliency session 6128bdd9, 18 Nov 2026) · Source: operator in chat ("if they get stuck the T stick
-> restarts it ... it will restart automatically if there is no communication of the SMC to the internet, and there are different rules"; "that code reads the tstik which is a physical board
-> connected to rpi") · Falsifier: a hung rct SMC that stays down until a visit, or the AVR firmware showing no SMC rail or SMC watchdog
-> The tstik is a physical board wired to the Pi; the `rct-tstik` app on the SMC only reads it and asks it to cut the other rails. The operator states the board itself restarts a stuck rct SMC by
-> rules, such as loss of the internet, so the SMC restart sits in the board's AVR firmware, outside the repo read on 2026-10-07; this does not contradict that reading, which covered the app only.
-> The wh flavours (Wi-Fi hubs: `wh`, `nbn_wh`) have no such board and no automatic restart (operator, 18 Nov 2026: "wh flavors lacks it"). Used in the smc-resiliency concept deck and flow map (component `booth-restart`).
+> restarts it ... it will restart automatically if there is no communication of the SMC to the internet, and there are different rules"; "that code reads the tstik which is a physical board connected
+> to rpi") · Falsifier: a hung rct SMC that stays down until a visit, or the AVR firmware showing no SMC rail or SMC watchdog The tstik is a physical board wired to the Pi; the `rct-tstik` app on the
+> SMC only reads it and asks it to cut the other rails. The operator states the board itself restarts a stuck rct SMC by rules, such as loss of the internet, so the SMC restart sits in the board's AVR
+> firmware, outside the repo read on 2026-10-07; this does not contradict that reading, which covered the app only. The wh flavours (Wi-Fi hubs: `wh`, `nbn_wh`) have no such board and no automatic
+> restart (operator, 18 Nov 2026: "wh flavors lacks it"). Used in the smc-resiliency concept deck and flow map (component `booth-restart`).
 
 - `watchdog.auto_reboot: 0` in `inventories/{wh,nbn_wh,rct}/group_vars/smc_bases.yml` does **not** stop reboots (corrected 2026-10-07): the template renders it as the string `"0"`, which Python treats
   as true, and the `reboot_after_cleanup` path never checks the flag. The watchdog reboots at overlay >= 80% today, while exporting `rise_watchdog_auto_reboot 0`. It still cannot reboot on a hang.
@@ -325,8 +333,8 @@ Enable a hardware watchdog on every flavor that lacks one:
   and `.timeout` defaults to that maximum. Any `RuntimeWatchdogSec` above it is clamped to the nearest supported value, so set it at or below 15 s.
 - **Persistence on overlayroot:** the `systemd` drop-in and any module-load config must be written to the lower dir (`/media/root-ro`) or they vanish on the first reboot — the reboot the watchdog
   itself causes. Not yet tested on any `wh` box.
-- The SMC resiliency plan (since 2026-10-14 in the `apn/smc-resiliency` project) scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does
-  not cover it. Options note: `smc-resiliency/docs/recovery/smc-hang-recovery-options-20261006_1214.md`.
+- The SMC resiliency plan (since 2026-10-14 in the `apn/smc-resiliency` project) scopes recovery from **failed updates** only; this hang is not update-related, so that plan as written does not cover
+  it. Options note: `smc-resiliency/docs/recovery/smc-hang-recovery-options-20261006_1214.md`.
 
 ---
 
@@ -342,18 +350,15 @@ mount lands at 50% of RAM — consistent with the existing "`overlay.size_ratio`
 
 #### kupungarri, dark 2026-10-05: tech LED report, and the "reboot" was a spare disk (2026-10-09)
 
-- **On site (`USER_STATED`, operator relaying the techs, 2026-10-09):** solid red LED, no green, before the techs restarted it. On the Pi 4
-  (this site's board is a Pi 4 Model B Rev 1.5) red is the power LED and green is SD activity, so the board had power but the system was not
-  running. Read: a hang, not a lost supply (inference, `UNVERIFIED` against Raspberry Pi documentation).
-- **What came back was not the disk that went dark (`VERIFIED-OBSERVED`, Teleport + Prometheus, 2026-10-09).** The dark unit ran kernel
-  `5.15.0-1078-raspi` with overlayroot on `/`. The box online at boot 2026-10-09 15:37 AEDT booted as `generic-wh01-20240408` (2024 spare image,
-  kernel `1070`), root rw ext4, `/etc/overlayroot.conf` the package default (`overlayroot=""`), journal jumping from 2025-01-16 to today, and was
-  renamed by an `ansible-hostname` run at 15:41:22. RISE is not applied; `isc-dhcp-server6`, `rc-local` and `hciuart` failed at boot.
-  Whether only the SD card or the whole unit changed is unknown: no Pi serial was recorded for the old unit (the running one is `100000007bb53770`).
-- **Consequence:** no evidence from the hung boot. Its logs were in the tmpfs upper layer, Graylog had no SMC logs 2026-09-12 to 10-07, and
-  the old disk is off site.
-- **Rule:** after any tech "reboot" of a dark box, run `scripts/probes/pi_identity_probe.sh` before trusting the box: `boot_hostname=generic-wh01-*`,
-  a different kernel, or `root_fs` on ext4 where RISE ran means a spare went in and RISE must be re-run. Ask the techs to return the old SD card.
+- **On site (`USER_STATED`, operator relaying the techs, 2026-10-09):** solid red LED, no green, before the techs restarted it. On the Pi 4 (this site's board is a Pi 4 Model B Rev 1.5) red is the
+  power LED and green is SD activity, so the board had power but the system was not running. Read: a hang, not a lost supply (inference, `UNVERIFIED` against Raspberry Pi documentation).
+- **What came back was not the disk that went dark (`VERIFIED-OBSERVED`, Teleport + Prometheus, 2026-10-09).** The dark unit ran kernel `5.15.0-1078-raspi` with overlayroot on `/`. The box online at
+  boot 2026-10-09 15:37 AEDT booted as `generic-wh01-20240408` (2024 spare image, kernel `1070`), root rw ext4, `/etc/overlayroot.conf` the package default (`overlayroot=""`), journal jumping from
+  2025-01-16 to today, and was renamed by an `ansible-hostname` run at 15:41:22. RISE is not applied; `isc-dhcp-server6`, `rc-local` and `hciuart` failed at boot. Whether only the SD card or the whole
+  unit changed is unknown: no Pi serial was recorded for the old unit (the running one is `100000007bb53770`).
+- **Consequence:** no evidence from the hung boot. Its logs were in the tmpfs upper layer, Graylog had no SMC logs 2026-09-12 to 10-07, and the old disk is off site.
+- **Rule:** after any tech "reboot" of a dark box, run `scripts/probes/pi_identity_probe.sh` before trusting the box: `boot_hostname=generic-wh01-*`, a different kernel, or `root_fs` on ext4 where
+  RISE ran means a spare went in and RISE must be re-run. Ask the techs to return the old SD card.
 
 ### Daily Winter Power Loss at Solar Sites — dark before dawn, boots mid-morning (`wh`, 2026-10-07)
 
@@ -367,7 +372,7 @@ Not a hang and not software. Report: `local-knowledge-ansible/ansible-wifi/issue
 | Logs             | Last Graylog lines routine (health 100%, mem 29%), **no shutdown sequence**; after boot `systemd-resolved: Clock change detected` (no RTC, so a cold start)           |
 | Resources before | Normal (`predark-snapshot.py`): mem 23–36%, load < 1.3, overlay 22–43%                                                                                                |
 | Cause            | Solar battery flat before dawn, load reconnects when PV recovers (operator: canteen-creek has known battery problems). On-box watchdogs cannot help                   |
-| Detect           | `scripts/metrics/fleet-reboot-timeline.py`: `DARK->boot` events repeating at the same clock time                                                                              |
+| Detect           | `scripts/metrics/fleet-reboot-timeline.py`: `DARK->boot` events repeating at the same clock time                                                                      |
 
 The 2026-08-28 census filed outages under six hours as "ordinary remote-site connectivity". At these four sites most of them are power losses; classify with `fleet-reboot-timeline.py` before assuming
 connectivity.
@@ -576,12 +581,10 @@ physical SMC: the count of links that flap under a real reload there.
 ## A netplan change to a VLAN, bond or bridge does not take effect until a reboot (2026-10-20)
 
 > **Learned 2026-10-20** · systemd-networkd 255 (Ubuntu 24.04; 249 on 22.04 works the same way, `UNVERIFIED` on a site) · VERIFIED_PRIMARY ·
-> Source: networkctl(1) on the smc-resiliency spike VM; smc-resiliency `docs/pi/pi-spike-s2-config-swap-20261020_1856.md` S2-1 · Falsifier: a
-> `netplan apply` that changes an existing VLAN's id on a running box
-> networkctl(1): "even if an existing .netdev is modified or removed, systemd-networkd does not update or remove the netdev." So an ansible-wifi
-> run that changes a VLAN id, a bond mode or a bridge setting through `netplan apply` leaves the old device running; the change bites at the next
-> reboot, when nobody is checking. Deleting the device after `networkctl reload` is not enough: networkd recreated it from the old definition.
-> What works: write the new config (`netplan generate`), delete the changed devices, restart systemd-networkd, then `netplan apply`.
+> Source: networkctl(1) on the smc-resiliency spike VM; smc-resiliency `docs/pi/pi-spike-s2-config-swap-20261020_1856.md` S2-1 · Falsifier: a `netplan apply` that changes an existing VLAN's id on a
+> running box networkctl(1): "even if an existing .netdev is modified or removed, systemd-networkd does not update or remove the netdev." So an ansible-wifi run that changes a VLAN id, a bond mode or
+> a bridge setting through `netplan apply` leaves the old device running; the change bites at the next reboot, when nobody is checking. Deleting the device after `networkctl reload` is not enough:
+> networkd recreated it from the old definition. What works: write the new config (`netplan generate`), delete the changed devices, restart systemd-networkd, then `netplan apply`.
 >
 > ```python
 > # smc-resiliency spike/onbox/smcbox/activate.py (apply_runtime)
@@ -593,25 +596,21 @@ physical SMC: the count of links that flap under a real reload there.
 > ```
 
 > **Learned 2026-10-23** · tstik "Unable to read the data from AVR" · VERIFIED_PRIMARY · Source: php-rct-smc01 `storage/logs/laravel.log`,
-> journal; 20-mile-smc01 comparison; operator confirmed no AVR on the unit · Falsifier: a box with an AVR fitted that logs only empty reads with this
-> serial setup
-> `Total Read Data[]` then `Unable to read the data from AVR` on every `update:stats` run means nothing answers on `/dev/ttyS0` (19200 baud, mini
-> UART, `enable_uart=1`). On the bench Pi php-rct-smc01 no AVR is fitted (operator, 2026-10-23), so it is expected there; a working box logs bytes,
-> e.g. `Total Read Data[126,2,129,3,1,122]` (20-mile-smc01: 0 failures, 346,826 good reads), with the identical UART config and the same harmless
-> `bcm2835-aux-uart ... not valid maps for state default` boot line. Check by hand: `cd /var/www/html/rct-tstik && php artisan update:stats`
-> then `tail storage/logs/laravel.log`; `php artisan self:tests` also rebuilds the self-tests page; never `avr:update` (flashes the AVR).
-> A Pi has no RTC: a box powered on after months off shows one boot spanning the gap until "Clock change detected" in the journal, so a
-> "792-day uptime" there is the saved clock, not a running box.
+> journal; 20-mile-smc01 comparison; operator confirmed no AVR on the unit · Falsifier: a box with an AVR fitted that logs only empty reads with this serial setup `Total Read Data[]` then `Unable to
+> read the data from AVR` on every `update:stats` run means nothing answers on `/dev/ttyS0` (19200 baud, mini UART, `enable_uart=1`). On the bench Pi php-rct-smc01 no AVR is fitted (operator,
+> 2026-10-23), so it is expected there; a working box logs bytes, e.g. `Total Read Data[126,2,129,3,1,122]` (20-mile-smc01: 0 failures, 346,826 good reads), with the identical UART config and the same
+> harmless `bcm2835-aux-uart ... not valid maps for state default` boot line. Check by hand: `cd /var/www/html/rct-tstik && php artisan update:stats` then `tail storage/logs/laravel.log`; `php artisan
+> self:tests` also rebuilds the self-tests page; never `avr:update` (flashes the AVR). A Pi has no RTC: a box powered on after months off shows one boot spanning the gap until "Clock change detected"
+> in the journal, so a "792-day uptime" there is the saved clock, not a running box.
 
 > **Learned 2026-10-28** · AVR firmware flash with py_avrloader · VERIFIED_PRIMARY (tester output, loader source); cause UNVERIFIED ·
 > Source: tester report 2026-10-28 (aeroplane-1-smc01), `py_avrloader.py` from APN NOC, smc_change record aeroplane-1-smc01 20261028_114544 ·
 > Falsifier: a flash timed clear of cron's `update:stats` that still fails with "Protocol Error"
-> `python3 py_avrloader.py -d /dev/ttyS0 -u -f Firmware_Debug_V3.07_Flash.enc` failed once at block 13 ("Protocol Error, cancelling update request",
-> "Firmware Transfer Failed", AVR stayed 2.11) and passed when run again 10 s later (AVR 3.7). Likely cause: root cron runs `artisan update:stats`
-> every 5 minutes and it talks to the AVR on the same `/dev/ttyS0`. The vendor loader exits 0 on every path, retries the version request forever
-> (hangs without an AVR) and opens the port at `com_baud=19500` (tstik itself uses 19200). `py_avrloader_v2.py` (APN NOC) adds exit codes
-> (3 port, 4 no AVR, 5 mode refused, 6 transfer failed: run again, 7 no return to application, 8 reset) and prints the minor as two digits (3.07).
-> The tester's copies in `/home` had gone by the next check: live-only writes on an overlayroot SMC vanish at reboot; use the smc_change spec.
+> `python3 py_avrloader.py -d /dev/ttyS0 -u -f Firmware_Debug_V3.07_Flash.enc` failed once at block 13 ("Protocol Error, cancelling update request", "Firmware Transfer Failed", AVR stayed 2.11) and
+> passed when run again 10 s later (AVR 3.7). Likely cause: root cron runs `artisan update:stats` every 5 minutes and it talks to the AVR on the same `/dev/ttyS0`. The vendor loader exits 0 on every
+> path, retries the version request forever (hangs without an AVR) and opens the port at `com_baud=19500` (tstik itself uses 19200). `py_avrloader_v2.py` (APN NOC) adds exit codes (3 port, 4 no AVR, 5
+> mode refused, 6 transfer failed: run again, 7 no return to application, 8 reset) and prints the minor as two digits (3.07). The tester's copies in `/home` had gone by the next check: live-only
+> writes on an overlayroot SMC vanish at reboot; use the smc_change spec.
 
 ```python
 # py_avrloader_v2.py (change folder rct-tstik-iridium-update, 2026-10-28)
@@ -626,16 +625,13 @@ physical SMC: the count of links that flap under a real reload there.
     return EXIT_NO_AVR
 ```
 
-> **Learned 2026-10-28 (later)** · rct-tstik and the AVR loader collide on `/dev/ttyS0` · VERIFIED_PRIMARY · Source: warehouse-rct01 (stage, Pi 4,
-> no overlayroot) 01:34:52-01:35:31 UTC, `laravel.log`, `stty`, rct-tstik 1318c7b `app/Services/SerialIIO.php` · Falsifier: an `update:stats`
-> run overlapping loader traffic with all 24 reads good
-> Eleven loader version queries looped across the 01:35 `update:stats` run: all 11 answered (`AVR version=3.06`), but that tstik run logged
-> 0 good reads, 2 empty and 1 "Unable to read the data from AVR" (01:30 and 01:40 runs: 24 good). Nothing locks the port, and tstik
-> re-runs `stty -F /dev/ttyS0 19200 ...` plus an input flush before every send; the loader opens at 19500 and leaves `stty` showing speed 0.
-> Unshared, the port is clean (177,057 good reads, 1 empty, 0 failures since 2026-10-02). So a flash crossing a `*/5` minute shares the port
-> with `update:stats`: pause tstik's cron (or cron) for a flash. ttyS0 is the mini UART (8250, `mmio:0xFE215040`), `enable_uart=1`, core 500 MHz.
-> Frame: `7e`, payload length, command, payload, `0xFF - sum(command..payload) mod 256` (reply `7e 02 11 03 06 e5` = version 3.06).
-> Full record: ansible-wifi local-knowledge `roles/smc_change/files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update-20261028_1221.md` Part 4.
+> **Learned 2026-10-28 (later)** · rct-tstik and the AVR loader collide on `/dev/ttyS0` · VERIFIED_PRIMARY · Source: warehouse-rct01 (stage, Pi 4, no overlayroot) 01:34:52-01:35:31 UTC, `laravel.log`,
+> `stty`, rct-tstik 1318c7b `app/Services/SerialIIO.php` · Falsifier: an `update:stats` run overlapping loader traffic with all 24 reads good Eleven loader version queries looped across the 01:35
+> `update:stats` run: all 11 answered (`AVR version=3.06`), but that tstik run logged 0 good reads, 2 empty and 1 "Unable to read the data from AVR" (01:30 and 01:40 runs: 24 good). Nothing locks the
+> port, and tstik re-runs `stty -F /dev/ttyS0 19200 ...` plus an input flush before every send; the loader opens at 19500 and leaves `stty` showing speed 0. Unshared, the port is clean (177,057 good
+> reads, 1 empty, 0 failures since 2026-10-02). So a flash crossing a `*/5` minute shares the port with `update:stats`: pause tstik's cron (or cron) for a flash. ttyS0 is the mini UART (8250,
+> `mmio:0xFE215040`), `enable_uart=1`, core 500 MHz. Frame: `7e`, payload length, command, payload, `0xFF - sum(command..payload) mod 256` (reply `7e 02 11 03 06 e5` = version 3.06). Full record:
+> ansible-wifi local-knowledge `roles/smc_change/files/changes/rct-tstik-iridium-update/rct-tstik-iridium-update-20261028_1221.md` Part 4.
 
 ```php
 // app/Services/SerialIIO.php (rct-tstik 1318c7b)
@@ -645,28 +641,24 @@ public function sendData($data, $length = 0)
 ```
 
 > **Learned 2026-10-28 (c)** · AVR V3.07 on a Thuraya control board loses the SIM · USER_STATED (a team member, relayed by the operator, with Stats
-> page screenshots) · Source: change record `rct-tstik-iridium-update-20261028_1221.md` 5.6-5.7 (local-knowledge-ansible) · Falsifier: a
-> Thuraya-equipped board on V3.07 whose Stats page still shows IridiumSIMSerial and passes the self test
-> V3.07 is for Iridium. On a control board that still has the Thuraya module, after V2.14 -> V3.07 the board's SIM is no longer detected
-> (IridiumSIMSerial and IridiumSIMISMI empty, TimePosStatus c -> 0), the self test fails "Thuraya SIM Fail", and a build from the generic
-> image by coordinates no longer works (the new build's site drop-down mitigates it); Stats page and Dashboard telemetry stay fine. The
-> Iridium board has its own SIM holder. Fleet (operator, 2026-10-28): 27 RCT SMCs on V3.07 (the Iridium sites, e.g. frasier-downs-pivot,
-> kusi-block, midgelmaya, naja-naja, shovellers-block, mooloowa), malupirti-smc01 V3.06 (offline), every other RCT SMC V2.14. tstik's Stats
-> page and the vendor loader print 3.07 as "3.7". The smc_change spec flashes only with `-e rct_avr_flash=true` and only where that SMC's inventory sets `smc_bases_iridium: true` (a batch never reaches a Thuraya site); set the flag before a flash run, since without it the flash is skipped and the run still passes (the AVR gate line says "flash skipped"), so confirm the AVR version: flash a site after its
-> Iridium equipment is in. Firmware files V2.14Test, V3.04, V3.06, V3.07: change folder `firmwares/`. `FirmwareV2.14Test.enc` is the build the fleet's V2.14 AVRs run (a team member, 2026-10-28), so the spec's AVR rollback restores it.
+> page screenshots) · Source: change record `rct-tstik-iridium-update-20261028_1221.md` 5.6-5.7 (local-knowledge-ansible) · Falsifier: a Thuraya-equipped board on V3.07 whose Stats page still shows
+> IridiumSIMSerial and passes the self test V3.07 is for Iridium. On a control board that still has the Thuraya module, after V2.14 -> V3.07 the board's SIM is no longer detected (IridiumSIMSerial and
+> IridiumSIMISMI empty, TimePosStatus c -> 0), the self test fails "Thuraya SIM Fail", and a build from the generic image by coordinates no longer works (the new build's site drop-down mitigates it);
+> Stats page and Dashboard telemetry stay fine. The Iridium board has its own SIM holder. Fleet (operator, 2026-10-28): 27 RCT SMCs on V3.07 (the Iridium sites, e.g. frasier-downs-pivot, kusi-block,
+> midgelmaya, naja-naja, shovellers-block, mooloowa), malupirti-smc01 V3.06 (offline), every other RCT SMC V2.14. tstik's Stats page and the vendor loader print 3.07 as "3.7". The smc_change spec
+> flashes only with `-e rct_avr_flash=true` and only where that SMC's inventory sets `smc_bases_iridium: true` (a batch never reaches a Thuraya site); set the flag before a flash run, since without it
+> the flash is skipped and the run still passes (the AVR gate line says "flash skipped"), so confirm the AVR version: flash a site after its Iridium equipment is in. Firmware files V2.14Test, V3.04,
+> V3.06, V3.07: change folder `firmwares/`. `FirmwareV2.14Test.enc` is the build the fleet's V2.14 AVRs run (a team member, 2026-10-28), so the spec's AVR rollback restores it.
 
-- **Site-link loss at a few rct sites, not Sky Muster-wide (2026-11-05)**: `scripts/probes/smc_gateway_loss.sh` across 20 rct SMCs found 16 with 0 %
-  loss to their gateway (the satellite first hop, RTT 570-630 ms). gurrbalgun showed 25 %, gumbarnun 10 % and banana-well 5 %, and goojarr-goonyool
-  did not answer (`smc_link_health.sh` earlier: 27 % at the first hop, 40 % to the proxy, 4,947 backdoor ssh restarts). Each site has its own
-  gateway /24, so a shared-upstream fault would show as many sites at once; here it was four. Effect: their smc_change clones of rct-tstik ran at
-  3-4 KB/s, and Teleport dropped their sessions mid-run. Before a change on such a site, run the survey; raise a persistent one with the link provider.
-- **smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 on SMCs with the older cisofy key (2026-11-11)**: cisofy added signing subkey
-  `3E82FB7C68F57341349ED2C17A9A1D9D5B27C6D3` to primary `84FAA998...FEBB7D1812576482` on 2025-10-22. SMCs that imported the key before that
-  (old role: keyserver id `013baa07...`, itself a 2021 subkey of the same primary) fail at "Add cisofy-lynis source repository" with
-  `NO_PUBKEY 7A9A1D9D5B27C6D3` (kaltjiti-fergon-smc01; `apt-key list` there showed only the 2021 subkeys). `apt_key` with `url` alone does not fix it:
-  it takes the primary fingerprint from the download, finds it present and imports nothing. Pinning `id` to the new subkey forces the import.
-  Tested in ubuntu:22.04 against a keyring missing the subkey (url only: fails; url plus id: role key, repo and install tasks pass).
-  ansible-wifi master `9d504a89`, rise `c4d2ef51`:
+- **Site-link loss at a few rct sites, not Sky Muster-wide (2026-11-05)**: `scripts/probes/smc_gateway_loss.sh` across 20 rct SMCs found 16 with 0 % loss to their gateway (the satellite first hop, RTT
+  570-630 ms). gurrbalgun showed 25 %, gumbarnun 10 % and banana-well 5 %, and goojarr-goonyool did not answer (`smc_link_health.sh` earlier: 27 % at the first hop, 40 % to the proxy, 4,947 backdoor
+  ssh restarts). Each site has its own gateway /24, so a shared-upstream fault would show as many sites at once; here it was four. Effect: their smc_change clones of rct-tstik ran at 3-4 KB/s, and
+  Teleport dropped their sessions mid-run. Before a change on such a site, run the survey; raise a persistent one with the link provider.
+- **smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 on SMCs with the older cisofy key (2026-11-11)**: cisofy added signing subkey `3E82FB7C68F57341349ED2C17A9A1D9D5B27C6D3` to primary
+  `84FAA998...FEBB7D1812576482` on 2025-10-22. SMCs that imported the key before that (old role: keyserver id `013baa07...`, itself a 2021 subkey of the same primary) fail at "Add cisofy-lynis source
+  repository" with `NO_PUBKEY 7A9A1D9D5B27C6D3` (kaltjiti-fergon-smc01; `apt-key list` there showed only the 2021 subkeys). `apt_key` with `url` alone does not fix it: it takes the primary fingerprint
+  from the download, finds it present and imports nothing. Pinning `id` to the new subkey forces the import. Tested in ubuntu:22.04 against a keyring missing the subkey (url only: fails; url plus id:
+  role key, repo and install tasks pass). ansible-wifi master `9d504a89`, rise `c4d2ef51`:
 
   ```yaml
   # roles/smc_lynis/tasks/main.yml (ansible-wifi rise c4d2ef51)
@@ -677,21 +669,18 @@ public function sendData($data, $length = 0)
       state: present
   ```
 
-  At the next cisofy key rotation, compare `gpg --show-keys` of the key URL with the pinned id and bump it.
+At the next cisofy key rotation, compare `gpg --show-keys` of the key URL with the pinned id and bump it.
 
 ## Ookla rate limit fails a deploy at the speedtest license step (rc 173, 2026-11-03 and 2026-11-19)
 
 > **Learned 2026-11-19** · Speedtest by Ookla 1.2.0.84 (aarch64 Pi, rct) · VERIFIED_PRIMARY · Source: smc_bases run on haji-ali-smc01, 2026-11-19 17:56;
-> read-only probes on the same SMC 17:58; ansible-wifi `35276a62` (rise, 2026-11-04) · Falsifier: a `speedtest -L` or `-V` that writes
-> `/root/.config/ookla/speedtest-cli.json` while Ookla answers "Limit reached"
-> `smc_speedtest_exporter` used to accept Ookla's license with `expect: speedtest --format json`, which runs a full speed test. When Ookla
-> rate-limits the site's public IP the CLI exits **173** with "Limit reached: Too many requests received. You may run the Speedtest CLI on a
-> single computer for personal, non-commercial use only" and the whole deploy stops. Nothing on the SMC gets past it while the limit lasts:
-> `speedtest --accept-license --accept-gdpr -L` (server list) also returns 173, `-V` makes no request, and the license file is written only after
-> a successful request (absent on haji-ali after all three). The exporter needs no separate step: it passes `--accept-license --accept-gdpr`
-> on every run, so the task was removed. Speed-test metrics for a limited site stay empty until Ookla lifts the limit (duration not published).
-> **Branch reach:** the fix sat on `rise` only from 2026-11-04; it reached `iridium` (`11daa2b5`) and `master` (`48bf6839`) on 2026-11-19 after
-> haji-ali failed on `iridium`. Check `just ansible_change_reach 35276a62` before a run from another branch.
+> read-only probes on the same SMC 17:58; ansible-wifi `35276a62` (rise, 2026-11-04) · Falsifier: a `speedtest -L` or `-V` that writes `/root/.config/ookla/speedtest-cli.json` while Ookla answers
+> "Limit reached" `smc_speedtest_exporter` used to accept Ookla's license with `expect: speedtest --format json`, which runs a full speed test. When Ookla rate-limits the site's public IP the CLI
+> exits **173** with "Limit reached: Too many requests received. You may run the Speedtest CLI on a single computer for personal, non-commercial use only" and the whole deploy stops. Nothing on the
+> SMC gets past it while the limit lasts: `speedtest --accept-license --accept-gdpr -L` (server list) also returns 173, `-V` makes no request, and the license file is written only after a successful
+> request (absent on haji-ali after all three). The exporter needs no separate step: it passes `--accept-license --accept-gdpr` on every run, so the task was removed. Speed-test metrics for a limited
+> site stay empty until Ookla lifts the limit (duration not published). **Branch reach:** the fix sat on `rise` only from 2026-11-04; it reached `iridium` (`11daa2b5`) and `master` (`48bf6839`) on
+> 2026-11-19 after haji-ali failed on `iridium`. Check `just ansible_change_reach 35276a62` before a run from another branch.
 >
 > ```yaml
 > # ansible-wifi roles/smc_speedtest_exporter/tasks/main.yml, removed by 35276a62
