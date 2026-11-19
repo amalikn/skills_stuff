@@ -48,6 +48,7 @@ Effective Go, Go Code Review Comments, the Google Go Style Guide (Decisions), th
 | Function    | Core 60 lines, loosened to about 80 where explicit `if err != nil`              | Error handling adds lines without adding ideas (UNVERIFIED judgement; tighten if the                 |
 |             |   handling dominates                                                            |   project prefers)                                                                                   |
 | Line length | No fixed limit; gofmt decides layout                                            | Go style has no line-length rule (UNVERIFIED for the Google guide's exact wording)                   |
+| Indentation | Tabs, as gofmt writes them                                                      | Loosens the core two-space rule: gofmt cannot be set otherwise; Effective Go "We use tabs for indentation and `gofmt` emits them by default" (VERIFIED_PRIMARY); operator, 2026-11-19: the tool default wins (USER_STATED) |
 
 ## Open items
 

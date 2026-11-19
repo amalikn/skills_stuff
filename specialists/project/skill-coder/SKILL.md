@@ -136,7 +136,7 @@ A language file never removes a safety rule. A loosening without a reason is voi
 - A project or skill worked on that has no lint config gets one in the same session, from `templates/ruff.toml` (or the language's
   tool), its existing files listed as excluded and a lint recipe run by the project's check (operator, 2026-11-16: "add lint config in every
   project and skill when you work on it, if it is missing").
-- Indent with two spaces in every language (operator, 2026-10-23); Python is formatted and linted with ruff (`indent-width = 2`), as YAML
+- Indent with two spaces in every language whose formatter can be set to it (operator, 2026-10-23; Go and Rust keep gofmt's and rustfmt's defaults, operator 2026-11-19: languages/go.md, rust.md); Python is formatted and linted with ruff (`indent-width = 2`), as YAML
   is with yamllint. Existing tracked code keeps its indentation until a reformat is decided.
 - Label load-bearing claims `VERIFIED_PRIMARY`, `VERIFIED_SECONDARY`, `UNVERIFIED` or `USER_STATED`; never present a guess as a fact.
 

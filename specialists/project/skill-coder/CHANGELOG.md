@@ -17,6 +17,7 @@ Last rotated: 20261119_1601
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261119_1734 — Go and Rust keep their formatter's indentation (operator)](#20261119_1734--go-and-rust-keep-their-formatters-indentation-operator)
 - [20261119_1659 — Learned: stop-at-first tests, minute-stamped names, diff before re-render](#20261119_1659--learned-stop-at-first-tests-minute-stamped-names-diff-before-re-render)
 - [20261119_1657 — Write-back test reads every entry; topic-file headers repaired; scripts promoted](#20261119_1657--write-back-test-reads-every-entry-topic-file-headers-repaired-scripts-promoted)
 - [20261119_1646 — design-patterns: misplaced patterns moved into Patterns; exact-commit gate is P-77](#20261119_1646--design-patterns-misplaced-patterns-moved-into-patterns-exact-commit-gate-is-p-77)
@@ -38,6 +39,10 @@ Last rotated: 20261119_1601
 - 2026-11-19: logged late: references/generated-artifacts.md Learned 2026-11-12, a second easier-to-read format of a data file (JSON source, YAML view).
 - 2026-11-19: logged late: references/security.md Learned 2026-11-09, release digest before unpacking and disposable config for a CLI with a cloud default (two entries).
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
+## 20261119_1734 — Go and Rust keep their formatter's indentation (operator)
+
+- languages/go.md and languages/rust.md: an Indentation row loosens the two-space rule with its reason (gofmt cannot be set otherwise; the tool default wins, operator 2026-11-19); SKILL.md's standing rule names the exception; sources.yaml C-C86 (USER_STATED).
+
 ## 20261119_1659 — Learned: stop-at-first tests, minute-stamped names, diff before re-render
 
 - references/testing.md Learned 2026-11-19 (b): a contract test collects every problem and re-reads its globs after a split.

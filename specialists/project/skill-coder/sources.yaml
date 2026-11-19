@@ -596,3 +596,10 @@ claims:
     source_type: official_documentation
     evidence: "https://pip.pypa.io/en/stable/topics/secure-installs/ retrieved 2026-10-19; copy documents/research-sources-20261019/pip-hash-checking.txt"
     reference: references/dependencies.md
+  - id: C-C86
+    statement: "Go and Rust keep their formatter's default indentation (gofmt tabs, rustfmt's tab_spaces); the two-space rule covers languages whose formatter can be set to it."
+    kind: generic_invariant
+    evidence_status: USER_STATED
+    source_type: user_policy
+    evidence: "Operator, 2026-11-19, answer 'Tool default wins' to the Go/Rust indentation question after the periodic review; Effective Go copy documents/research-sources-20261019/effective-go.txt line 108 for gofmt's tabs."
+    reference: languages/go.md

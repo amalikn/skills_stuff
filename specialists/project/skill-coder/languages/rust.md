@@ -57,6 +57,7 @@ The Rust API Guidelines (checklist and documentation chapter), The Rust Programm
 | ------------------- | --------------------------------------------------------------------- | ------------------ |
 | Module and function | Core defaults                                                         | No change          |
 | Line length         | rustfmt's `max_width` (default 100, UNVERIFIED in the fetched README) | Do not hand-format |
+| Indentation         | rustfmt's default (`tab_spaces`; its value is not in the stored README, UNVERIFIED) | Loosens the core two-space rule: the formatter's default wins, no `rustfmt.toml` override (operator, 2026-11-19, USER_STATED) |
 
 ## Feature unification
 

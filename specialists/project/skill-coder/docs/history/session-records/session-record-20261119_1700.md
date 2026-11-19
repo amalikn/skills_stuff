@@ -190,8 +190,9 @@ See the list appended below (35 commits across skills_stuff, governance and loca
 
 ## Follow-ups by owner
 
-- **Operator:** history rewrite for the redacted identifiers (or accept: private repos); whether company-domain packs (skill-smc, skill-cambium) keep site data; Go/Rust indentation rule; ADR-007
-  amendment in local-knowledge-ansible (Archcore promote).
+- **Operator (decided after the close, 2026-11-19):** history rewrite for the redacted identifiers: accept, no rewrite (private repos); skill-smc and skill-cambium keep
+  their site data (company fleet packs, by design); Go and Rust keep their formatter's indentation (go.md, rust.md, C-C86); governance 2f8de8f pushed (0c22e11 was already
+  pushed by another session). **Still open:** ADR-007 amendment in local-knowledge-ansible (Archcore promote).
 - **skill-ai-it:** budget_plan must not move Unreleased; rotate/check line-count off by one; adoption `Review by` +30 ignores the project window; embedded template copies drifted; self-check size
   findings; the rest in its SCRATCHPAD.
 - **Each pack:** its SCRATCHPAD "Review follow-ups (periodic review 2026-11-19)" line.
