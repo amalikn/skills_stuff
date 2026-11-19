@@ -5,8 +5,10 @@ A compaction summary is lossy: it drops mid-turn messages, question answers, exa
 its last slurp, the slurp reads the transcript itself. This prints, in order and with timestamps:
 
 - compaction points (where the context was summarised);
-- pass 1, every user message: typed turns, messages sent while the agent worked, and answers to AskUserQuestion;
-- pass 2, every action that may have a side effect: Bash commands (by description and first line), files written or edited, and MCP writes;
+- pass 1, every user message: typed turns, messages sent while the agent worked, and answers to AskUserQuestion; plus every message another
+  session sent in (`peer`, from its `<cross-session-message>` tag: these start with `<` and were dropped before 2026-11-19);
+- pass 2, every action that may have a side effect: Bash commands (by description and first line), files written or edited, MCP writes, and
+  messages sent to other sessions (`send`, SendMessage: a reply to a peer is an outward action, 2026-11-19);
   a sub-agent's own side effects are listed too, prefixed `sub-`;
 - pass 3, every sub-agent the session spawned (`<session>/subagents/agent-*.jsonl`, operator 2026-10-29: "when you're slurping you need to
   slurp information from the sub agents as well"): its type and task, and the start of its final report, which the parent only summarised.
@@ -28,6 +30,7 @@ import pathlib
 import re
 import sys
 
+PEER = re.compile(r'<cross-session-message from="([^"]*)"(?: from-name="([^"]*)")?[^>]*>\s*(.*?)(?:</cross-session-message>|\Z)', re.S)
 MID = re.compile(r"The user sent a new message while you were working:\n(.*?)(?:\n\nThis is how|\Z)", re.S)
 WRITE_TOOLS = {"Write", "Edit", "NotebookEdit"}
 MCP_WRITE = re.compile(r"save|record|add_|create|update|delete|push|commit|write|checkpoint", re.I)
@@ -144,7 +147,7 @@ def events(path: pathlib.Path, since: str = ""):
         since: ISO time prefix; earlier events are skipped.
 
     Yields:
-        (timestamp, kind, text) with kind `compaction`, `user`, `mid`, `answer`, `bash`, `file`, `mcp` or Codex `tool`.
+        (timestamp, kind, text) with kind `compaction`, `user`, `mid`, `answer`, `peer`, `bash`, `file`, `mcp`, `send` or Codex `tool`.
     """
     seen: set[str] = set()
     queued: dict[str, int] = {}   # mid-turn texts not yet delivered as a typed turn; a typed turn consumes one copy instead of being listed twice
@@ -174,7 +177,13 @@ def events(path: pathlib.Path, since: str = ""):
                 yield ts, "tool", name + (" [" + ", ".join(nested) + "]" if nested else "")
             continue
         if d.get("type") == "queue-operation" and d.get("operation") == "enqueue":
-            t = typed_text(str(d.get("content") or ""))
+            raw = str(d.get("content") or "")
+            for sender, name, body in PEER.findall(raw):   # a peer session's message: listed once, by sender and text
+                key = ("peer", sender, body.strip())
+                if key not in seen:
+                    seen.add(key)
+                    yield ts, "peer", f"{name or sender}: {body.strip()}"
+            t = typed_text(raw)
             if t and not t.startswith("<") and t not in seen:
                 seen.add(t)
                 queued[t] = queued.get(t, 0) + 1
@@ -235,6 +244,9 @@ def events(path: pathlib.Path, since: str = ""):
                     yield ts, "file", f"{name} {inp.get('file_path', '')}"
                 elif name.startswith("mcp__") and MCP_WRITE.search(name.split("__")[-1]):
                     yield ts, "mcp", name
+                elif name == "SendMessage":
+                    first = (inp.get("message") or "").strip().splitlines()[:1]
+                    yield ts, "send", f"to {inp.get('to', '')}: {inp.get('summary') or (first[0] if first else '(no message: idle subscription)')}"
 
 
 def subagent_events(path: pathlib.Path, since: str = ""):
@@ -318,8 +330,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--pass", dest="which", choices=["1", "2", "3"], help="only pass 1 (user), 2 (side effects) or 3 (sub-agents)")
     args = ap.parse_args(argv)
     path = args.transcript or default_transcript(pathlib.Path.cwd())
-    keep = {"1": {"compaction", "user", "mid", "answer"},
-            "2": {"compaction", "bash", "file", "mcp", "tool", "sub-bash", "sub-file", "sub-mcp", "sub-tool"},
+    keep = {"1": {"compaction", "user", "mid", "answer", "peer"},
+            "2": {"compaction", "bash", "file", "mcp", "send", "tool", "sub-bash", "sub-file", "sub-mcp", "sub-tool"},
             "3": {"subagent"}}.get(args.which)
     print(f"transcript: {path}")
     if args.reports:

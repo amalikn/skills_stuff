@@ -31,6 +31,8 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-19: languages/rust.md Learned 2026-11-19, `cargo clean --target-dir` needs `--manifest-path` outside a package and refuses a folder without CACHEDIR.TAG; target folders only grow.
+- 2026-11-19: references/tooling-and-runtime.md Learned 2026-11-19, act 0.2.98 keeps cache archives 7 days unused; deleting archive files is safe; prune by count.
 - 2026-11-19: references/design-patterns.md P-78 offline image overlay as data, each edit point matched exactly once (smc-resiliency fieldprep).
 - 2026-11-19: references/safety-and-writes.md Learned 2026-11-19, a root-run device write keeps its allowlist in the root-owned install and calls
   system binaries only (promoted from smc-resiliency's parked entry).

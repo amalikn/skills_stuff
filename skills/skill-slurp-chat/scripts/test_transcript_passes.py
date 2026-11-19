@@ -179,3 +179,26 @@ class TypedTextTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PeerMessageTest(unittest.TestCase):
+    """Messages from other sessions (pass 1) and replies sent to them (pass 2), added 2026-11-19 after a close missed both."""
+
+    def test_incoming_peer_message_is_pass_one_once(self) -> None:
+        """A queued cross-session message is listed once as `peer`, even when queued twice."""
+        body = '<cross-session-message from="uds:/tmp/x.sock" from-name="peer-a" from-mode="prompting">\nPlease answer Q1.\n</cross-session-message>'
+        rows = [{"type": "queue-operation", "operation": "enqueue", "timestamp": "2026-11-19T07:38:01Z", "content": body},
+                {"type": "queue-operation", "operation": "enqueue", "timestamp": "2026-11-19T07:38:02Z", "content": body, "reason": "x"}]
+        got = [(k, t) for _, k, t in tp.events(write_transcript(rows))]
+        self.assertEqual(got, [("peer", "peer-a: Please answer Q1.")])
+
+    def test_ordinary_tag_turn_is_not_a_peer(self) -> None:
+        """A queued item that is not a cross-session message yields no peer line (the check can fail)."""
+        rows = [{"type": "queue-operation", "operation": "enqueue", "timestamp": "2026-11-19T07:38:01Z", "content": "<task-notification>done</task-notification>"}]
+        self.assertEqual([k for _, k, _ in tp.events(write_transcript(rows))], [])
+
+    def test_send_message_is_pass_two(self) -> None:
+        """SendMessage is an outward action: `send` with its recipient and summary."""
+        rows = [{"type": "assistant", "timestamp": "2026-11-19T07:45:30Z", "message": {"content": [
+            {"type": "tool_use", "name": "SendMessage", "input": {"to": "peer-a", "summary": "Reply on sync", "message": "Answer.\nMore."}}]}}]
+        self.assertEqual([(k, t) for _, k, t in tp.events(write_transcript(rows))], [("send", "to peer-a: Reply on sync")])

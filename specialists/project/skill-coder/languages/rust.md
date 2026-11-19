@@ -53,11 +53,13 @@ The Rust API Guidelines (checklist and documentation chapter), The Rust Programm
 
 ## Size and limit tweaks
 
-| Item                | Value                                                                 | Reason             |
-| ------------------- | --------------------------------------------------------------------- | ------------------ |
-| Module and function | Core defaults                                                         | No change          |
-| Line length         | rustfmt's `max_width` (default 100, UNVERIFIED in the fetched README) | Do not hand-format |
-| Indentation         | rustfmt's default (`tab_spaces`; its value is not in the stored README, UNVERIFIED) | Loosens the core two-space rule: the formatter's default wins, no `rustfmt.toml` override (operator, 2026-11-19, USER_STATED) |
+| Item                | Value                                                                | Reason                                                                                                  |
+| ------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Module and function | Core defaults                                                        | No change                                                                                               |
+| Line length         | rustfmt's `max_width` (default 100, UNVERIFIED in the                | Do not hand-format                                                                                      |
+|                     |   fetched README)                                                    |                                                                                                         |
+| Indentation         | rustfmt's default (`tab_spaces`; its value is not in the stored      | Loosens the core two-space rule: the formatter's default wins, no `rustfmt.toml` override (operator,    |
+|                     |   README, UNVERIFIED)                                                |   2026-11-19, USER_STATED)                                                                              |
 
 ## Feature unification
 
@@ -118,6 +120,19 @@ The Rust API Guidelines (checklist and documentation chapter), The Rust Programm
 > **Learned 2026-11-19** · Unix socket path length · VERIFIED_PRIMARY (macOS error "path must be shorter than SUN_LEN") · Source: continuum-app
 > `crates/continuum-adapter-host/src/lib.rs` (182e164) · Falsifier: none expected; sockaddr_un is fixed. A Unix socket path must fit sockaddr_un: 104 bytes on macOS, 108 on Linux. macOS temp folders
 > (`/var/folders/...`) plus a UUID exceed it. Check the length before binding and fail with a clear message; tests use a short folder such as `/tmp/<prefix>-<12 hex>`.
+
+> **Learned 2026-11-19** · `cargo clean --target-dir` from a script; build-folder growth · VERIFIED_PRIMARY (cargo 1.100.0 runs) · Source: continuum-app `scripts/target_size_cap.sh` (0aa992a) ·
+> Falsifier: `cargo clean --target-dir D` succeeding outside any package, or cleaning a folder with no `CACHEDIR.TAG`
+> A Cargo target folder only grows: each build adds artifacts and none are removed (20 GiB after a day of agent builds; 0.9 to 5.7 GiB in two builds after a clean). A script that caps it must pass
+> `--manifest-path`: run outside a package, `cargo clean --target-dir D` fails "could not find `Cargo.toml`" (exit 101). Cargo also refuses a folder without `CACHEDIR.TAG` ("cleaning has been aborted
+> to prevent accidental deletion of unrelated files"), a free guard against a wrong path; test the clean on a copy that carries the tag.
+>
+> ```sh
+> manifest=$(cd "$(dirname "$0")/.." && pwd)/Cargo.toml
+> kib=$(du -sk "$dir" | cut -f1)
+> [ "$kib" -gt $((cap * 1048576)) ] || exit 0
+> cargo clean --manifest-path "$manifest" --target-dir "$dir"
+> ```
 
 ## Open items
 

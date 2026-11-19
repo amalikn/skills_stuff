@@ -67,6 +67,13 @@ Source: governance `storage-routing-guide.md` (2026-04-23). A project's own layo
 >     {{run}} act push -j ci --rm --container-daemon-socket - --network continuum-act
 > ```
 
+> **Learned 2026-11-19** · act 0.2.98 local Actions cache (`~/.cache/actcache`) · VERIFIED_PRIMARY · Source: nektos/act v0.2.98 `pkg/artifactcache/handler.go:203-209, 433-436`; continuum-app
+> `scripts/act_cache_prune.sh` (0ffd12f) · Falsifier: a later act that prunes archives by count, or a restore failing after an archive file was deleted
+> A cache step (`Swatinem/rust-cache`) saves a new archive (0.3 to 1.1 GiB for a Rust workspace) whenever its key changes, under `cache/<id>/<id>`; act removes one only after 7 days unused
+> (`keepUnused`), so several pushes a day fill a disk (5.1 GiB in a day; a push failed "No space left on device"). Deleting archive files is safe: on lookup act drops the index record of a
+> missing file and reports a miss. Prune by count after each run, newest first by modification time, never touching `cache/tmp` (uploads in progress). On macOS `~/.cache` and `/Volumes/Data`
+> can share one APFS container, so a cache in the home folder fills the data volume too.
+
 > **Learned 2026-11-19** · project-pinned CLI tools through mise, installed into the working cache · USER_STATED (operator: "that is the standard we follow in all the projects") ·
 > Source: continuum-app `.mise.toml`, `justfile` · Falsifier: none, a rule. Pin tools in `.mise.toml` (`act = "0.2.98"`, `jj = "0.47.1"`) and point mise's data at the project's working cache, not
 > `~/.local/share/mise` or Homebrew; recipes run the tools through `mise exec --` so no shell activation is needed.

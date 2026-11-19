@@ -234,47 +234,49 @@ Then: the boundary used (which slurp), whether the passes came from the transcri
 files checked against companion rules, the Step 6b result, and the last memory-keeper and project-context timestamps.
 
 ## Red flags — stop and route the item
-| Thought                                                       | Reality                                                                                                                              |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| "The scripts were throwaway, nobody asked"                    | Step 5a is mandatory: judge each; promote the likely-reused ones, unprompted                                                         |
-| "No repo file changed, so no change-log entry."               | Operational events are durable; the change log is where the next agent looks.                                                        |
-| "It is in memory-keeper, so it is captured."                  | Memory is not the project's record. Step 6 applies.                                                                                  |
-| "Nobody decided it, so there is nothing to save."             | An undecided proposal is saved as open, or it is lost.                                                                               |
-| "The rule is obvious from the code."                          | Agents read the rules file, not the code. Write the rule.                                                                            |
-| "The status file will be updated next session."               | A stale status source misleads the next reader now.                                                                                  |
-| "The time is about HH:MM."                                    | Run `date`.                                                                                                                          |
-| "The compaction summary covers the early part"                | It is lossy. Run `scripts/transcript_passes.py` on the raw transcript                                                                |
-| "The agents' reports were in the chat, so they are captured"  | Relayed is not recorded. Read `--reports`; route each flagged item to a file (2026-11-01: 64 proposals missed)                       |
-| "Pass 3 shows each agent's report"                            | It shows one line. `--reports` prints them whole                                                                                     |
-| "The close was earlier; these decisions came after"           | Work after a close reopens it: slurp it before the commit                                                                            |
-| "I saved a summary earlier, so that work is done"             | A mid-session note is not a slurp; the boundary is the last slurp (Step 2)                                                           |
-| "I wrote CHANGELOG entries as I worked, so it is covered"     | Not until each operator message is traced to one (6b); a 2026-10-20 rename and a half-done review had none                           |
-| "Close only needs the delta since the last slurp"             | Close re-runs 6b over the whole chat: an item an earlier slurp missed stays missed                                                   |
-| "The early part of the chat is covered"                       | Walk it in order (Step 3); early incidents and ops are the ones that get lost                                                        |
-| "One row for all the decisions is enough"                     | One decision, one row, one record_decision                                                                                           |
-| "The skill was not invoked, so nothing is owed"               | Touching its domain engaged it; Step 5b applies                                                                                      |
-| "The skill file is written; committing is another repo"       | Uncommitted is not written back; commit it in the skills repo (Step 5b)                                                              |
-| "Another session's edits are in that skill file, so I leave   | They are write-backs under the same contract: commit them with yours (say so in the message) or ask; never report 6b passed with a   |
-|   it dirty"                                                   |   dirty skill (2026-10-26)                                                                                                           |
-| "Its edits are write-backs, so I commit them with mine"       | Not while that session is live (`ListAgents` shows it busy): its files may be half-written. Stage only your own lines (skill-coder   |
-|                                                               |   version-control-and-review, two sessions), test the exported index, tell it what you left, and report its files as its own open    |
-|                                                               |   work, not a failed 6b (2026-11-05)                                                                                                 |
-| "Pass 1 lists every peer message"                            | A cross-session message that lands inside a system note mid-turn is not a typed turn: on 2026-11-18 a peer's "pause all git" request |
-|                                                               |   was missing from pass 1 (only its later "split done" showed). Search the transcript for `cross-session-message` and route each one |
-| "Pass 1 lists every approval I gave"                          | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the    |
-|                                                               |   user count with the raw transcript when approvals matter                                                                           |
-| "The reference entry is there, so the write-back is           | Read back the skill's CHANGELOG line and version too: an entry added after the CHANGELOG line was written is not in it (2026-10-26)  |
-|   read back"                                                  |                                                                                                                                      |
-| "The changed file is recorded; its index can wait"            | Companion rules are part of the slurp (Step 6)                                                                                       |
-| "No compaction, so I can walk it from context"                | Run `transcript_passes.py` on every slurp of a long session (2026-10-20: two slurps missed four items)                               |
-| "It is in memory and this project's change log"               | Each item also lands in the record of the repo that owns it: a skill's ROADMAP or SCRATCHPAD, `governance/change-log.md`             |
-| "The question I asked was not answered"                       | An unanswered question is an undecided proposal: SCRATCHPAD Open items                                                               |
-| "Other repos' trackers are not this slurp's job"              | Work that makes another repo's ROADMAP item true is a status change there (Step 6)                                                   |
-| "Freshness fails; set Last reviewed and it passes"            | Only after a full re-read against sources: an impact check is not a review. Review it (or delegate) with a dated note, or say only   |
-|                                                               |   an impact check was done and ask (2026-11-06: ten dates set that way, reviewed for real the same evening)                          |
-| "It is in the commit message"                                 | A commit message is not the record: a refused commit, a re-dated file or a retried push goes in the CHANGELOG too (2026-10-21: two   |
-|                                                               |   incidents found only in commit messages)                                                                                           |
-| "The outbox lines are written; sync them"                     | Reread each line before `just sync-projects --apply`: a hub line is program-facing, so it states the evidence level ("pinned in      |
-|                                                               |   versions.yaml", not "running on the host"; "unverified" until access is read) and carries only what the operator scoped            |
-|                                                               |   (2026-11-09: a hub line said "confirms" from a source pin and passed an unrequested critique of another project; a                 |
-|                                                               |   correction followed)                                                                                                               |
+| Thought                                                     | Reality                                                                                                                                |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| "The scripts were throwaway, nobody asked"                  | Step 5a is mandatory: judge each; promote the likely-reused ones, unprompted                                                           |
+| "No repo file changed, so no change-log entry."             | Operational events are durable; the change log is where the next agent looks.                                                          |
+| "It is in memory-keeper, so it is captured."                | Memory is not the project's record. Step 6 applies.                                                                                    |
+| "Nobody decided it, so there is nothing to save."           | An undecided proposal is saved as open, or it is lost.                                                                                 |
+| "The rule is obvious from the code."                        | Agents read the rules file, not the code. Write the rule.                                                                              |
+| "The status file will be updated next session."             | A stale status source misleads the next reader now.                                                                                    |
+| "The time is about HH:MM."                                  | Run `date`.                                                                                                                            |
+| "The compaction summary covers the early part"              | It is lossy. Run `scripts/transcript_passes.py` on the raw transcript                                                                  |
+| "The agents' reports were in the chat, so they              | Relayed is not recorded. Read `--reports`; route each flagged item to a file (2026-11-01: 64 proposals missed)                         |
+|   are captured"                                             |                                                                                                                                        |
+| "Pass 3 shows each agent's report"                          | It shows one line. `--reports` prints them whole                                                                                       |
+| "The close was earlier; these decisions came after"         | Work after a close reopens it: slurp it before the commit                                                                              |
+| "I saved a summary earlier, so that work is done"           | A mid-session note is not a slurp; the boundary is the last slurp (Step 2)                                                             |
+| "I wrote CHANGELOG entries as I worked, so it is covered"   | Not until each operator message is traced to one (6b); a 2026-10-20 rename and a half-done review had none                             |
+| "Close only needs the delta since the last slurp"           | Close re-runs 6b over the whole chat: an item an earlier slurp missed stays missed                                                     |
+| "The early part of the chat is covered"                     | Walk it in order (Step 3); early incidents and ops are the ones that get lost                                                          |
+| "One row for all the decisions is enough"                   | One decision, one row, one record_decision                                                                                             |
+| "The skill was not invoked, so nothing is owed"             | Touching its domain engaged it; Step 5b applies                                                                                        |
+| "The skill file is written; committing is another repo"     | Uncommitted is not written back; commit it in the skills repo (Step 5b)                                                                |
+| "Another session's edits are in that skill file, so I leave | They are write-backs under the same contract: commit them with yours (say so in the message) or ask; never report 6b passed with a     |
+|   it dirty"                                                 |   dirty skill (2026-10-26)                                                                                                             |
+| "Its edits are write-backs, so I commit them with mine"     | Not while that session is live (`ListAgents` shows it busy): its files may be half-written. Stage only your own lines (skill-coder     |
+|                                                             |   version-control-and-review, two sessions), test the exported index, tell it what you left, and report its files as its own open      |
+|                                                             |   work, not a failed 6b (2026-11-05)                                                                                                   |
+| "Pass 1 lists every peer message"                           | A cross-session message that lands inside a system note mid-turn is not a typed turn: on 2026-11-18 a peer's "pause all git" request   |
+|                                                             |   was missing from pass 1 (only its later "split done" showed). Search the transcript for `cross-session-message` and route each one   |
+|                                                             |   Since 2026-11-19 pass 1 lists queued peer messages as `peer` and pass 2 lists SendMessage replies as `send`; still grep: a peer      |
+|                                                             |   message embedded in a tool result is not parsed                                                                                      |
+| "Pass 1 lists every approval I gave"                        | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the user |
+|                                                             |   count with the raw transcript when approvals matter                                                                                  |
+| "The reference entry is there, so the write-back is         | Read back the skill's CHANGELOG line and version too: an entry added after the CHANGELOG line was written is not in it (2026-10-26)    |
+|   read back"                                                |                                                                                                                                        |
+| "The changed file is recorded; its index can wait"          | Companion rules are part of the slurp (Step 6)                                                                                         |
+| "No compaction, so I can walk it from context"              | Run `transcript_passes.py` on every slurp of a long session (2026-10-20: two slurps missed four items)                                 |
+| "It is in memory and this project's change log"             | Each item also lands in the record of the repo that owns it: a skill's ROADMAP or SCRATCHPAD, `governance/change-log.md`               |
+| "The question I asked was not answered"                     | An unanswered question is an undecided proposal: SCRATCHPAD Open items                                                                 |
+| "Other repos' trackers are not this slurp's job"            | Work that makes another repo's ROADMAP item true is a status change there (Step 6)                                                     |
+| "Freshness fails; set Last reviewed and it passes"          | Only after a full re-read against sources: an impact check is not a review. Review it (or delegate) with a dated note, or say only an  |
+|                                                             |   impact check was done and ask (2026-11-06: ten dates set that way, reviewed for real the same evening)                               |
+| "It is in the commit message"                               | A commit message is not the record: a refused commit, a re-dated file or a retried push goes in the CHANGELOG too (2026-10-21: two     |
+|                                                             |   incidents found only in commit messages)                                                                                             |
+| "The outbox lines are written; sync them"                   | Reread each line before `just sync-projects --apply`: a hub line is program-facing, so it states the evidence level ("pinned in        |
+|                                                             |   versions.yaml", not "running on the host"; "unverified" until access is read) and carries only what the operator scoped (2026-11-09: |
+|                                                             |   a hub line said "confirms" from a source pin and passed an unrequested critique of another project; a correction followed)           |
