@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1639
+Last rotated: 20261119_1648
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,7 @@ Last rotated: 20261119_1639
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261119_1647 — Identifiers redacted from pack text (operator)](#20261119_1647--identifiers-redacted-from-pack-text-operator)
 - [20261119_1638 — Periodic review; 90-day window; rotation no longer overwrites a same-minute archive](#20261119_1638--periodic-review-90-day-window-rotation-no-longer-overwrites-a-same-minute-archive)
 - [20261119_1551 — rotation_verify.py: did this rotation move every removed line](#20261119_1551--rotation_verifypy-did-this-rotation-move-every-removed-line)
 - [20261112_1700 — new-skill: Learned entry on prompt templates under the formatter](#20261112_1700--new-skill-learned-entry-on-prompt-templates-under-the-formatter)
@@ -26,7 +27,6 @@ Last rotated: 20261119_1639
 - [20261111_1259 — central project tooling plan, the skill's flow map, md_examples_check](#20261111_1259--central-project-tooling-plan-the-skills-flow-map-md_examples_check)
 - [20261111_1213 — history_migrate: check gate, dirty-reference refusal, survey](#20261111_1213--history_migrate-check-gate-dirty-reference-refusal-survey)
 - [20261111_1135 — archcore, ruff, code map, templates and the Pad question](#20261111_1135--archcore-ruff-code-map-templates-and-the-pad-question)
-- [20261111_1125 — docs/history by kind, generated index with summaries, migration](#20261111_1125--docshistory-by-kind-generated-index-with-summaries-migration)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -89,6 +89,10 @@ Last rotated: 20261119_1639
   gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261119_1647 — Identifiers redacted from pack text (operator)
+
+- Company domain, a project name and a person's name replaced with generic placeholders (operator, 2026-11-19: redact identifiers in pack text).
 
 ## 20261119_1638 — Periodic review; 90-day window; rotation no longer overwrites a same-minute archive
 
@@ -169,19 +173,6 @@ to link a Pad workspace (a suggested name; repos may share one).
 - Added [references/pad-workspace.md](references/pad-workspace.md) and its SKILL.md step: with no `.pad.toml`, ask once (folder name suggested, existing workspaces offered, `pad workspace link <slug>` shares one; VERIFIED_PRIMARY
   `pad workspace --help` v0.19.2); "no" recorded in AGENTS.md.
 - Proposed, not built: a project `ruff.toml` template belongs with skill-coder (owner of lint rules).
-
-## 20261111_1125 — docs/history by kind, generated index with summaries, migration
-
-Operator, 2026-11-11: docs/history gets one subfolder per kind (changelog, scratchpad, roadmap, session-records, sync) as the standard, and its index a summary line per file like the session records
-have. [references/files-history.md](references/files-history.md).
-
-- Added `scripts/records/history_layout.py` (layout, archive lookup in both layouts, link rewrite, generated index keeping hand-written descriptions) and `scripts/records/history_migrate.py` (`just
-  history-migrate <project> [--apply]`: git mv, links inside and references elsewhere repointed, another project's same-name archive untouched, `.remember/` skipped, links verified); tests
-  `tests/test_history_layout.py` (5).
-- Changed: rotate_records.py, roadmap_trim.py, audit_rotations.py and target_map.py write and read through the layout; roadmap_trim.py now relinks moved items (it never did); rotate_records.py relinks
-  the archive index rows too (a row could keep a root-relative link that never resolved). Older tests read archives recursively. 234 tests pass.
-- Migrated: this pack's own docs/history (58 files) and smc-resiliency's (151 files, the canary).
-- Open: 24 doc-freshness reviews came due before this change (AGENTS.md, patterns/navigation/*, the open-items tracker and others); not bumped without a re-read.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

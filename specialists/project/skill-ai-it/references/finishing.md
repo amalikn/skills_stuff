@@ -44,7 +44,7 @@ After creating/updating files in the target folder:
 ## Conventions Baked In
 
 - `@` import in AGENTS.md = nearest parent AGENTS.md; absolute if global, relative if same repo
-- Internal domain default for APN projects: `apn.net.au`
+- Internal domain default: the one the parent AGENTS.md names (e.g. `example.internal`)
 - Time-bound doc naming: `<slug>-YYYYMMDD_hhmm.md`
 - Governance pointer chain always ends at: `/Volumes/Data/_ai/governance/README.md`
 - Never overwrite existing AGENTS.md — append missing sections only

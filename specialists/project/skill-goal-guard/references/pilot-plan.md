@@ -45,7 +45,7 @@ one snapshot with one restore proof. Nothing beyond this until the pilot report 
 | `workstreams/continuity/unc-and-smc-project-plan-20261005_1605.md`                  | Full plan; `## Milestones` table with stable IDs M1-M11 (dates, owner project, `Dated` or `Proposed`); front   |
 |                                                                                     |   matter `Status: draft`                                                                                       |
 | `workstreams/continuity/unc-and-smc-project-plan-short-20261005_2031.{md,docx,pdf}` | Short version; the docx/pdf may be what was issued                                                             |
-| `communications/emails/enterprise-strategy-plan-martin-20261014_1733.eml`           | Plan sent to management 2026-10-14; shows what was issued                                                      |
+| `communications/emails/enterprise-strategy-plan-<recipient>-20261014_1733.eml`           | Plan sent to management 2026-10-14; shows what was issued                                                      |
 | `workstreams/continuity/weekly-updates/weekly-update-20261023_1100.xlsx`            | Latest weekly update workbook; candidate for the "issued Excel"                                                |
 
 Open point for step 1: the plan says `draft` while `Dated` rows come from "the project's adopted plan", so which revision is the protected management baseline must be confirmed from the 2026-10-14

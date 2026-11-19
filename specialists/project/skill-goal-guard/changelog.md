@@ -181,6 +181,10 @@ Budget: 200 lines, 25 KB
 - Workspace facts read: `apn/` is one Git repository holding enterprise-strategy, unified-network-controller and smc-resiliency; `target-map.yaml` and `code-map.toml` in UNC and SMC; no `.archcore/`
   in SMC; no `.gg/` anywhere.
 
+## 20261119_1647 — Identifiers redacted from pack text (operator)
+
+- Company domain, a project name and a person's name replaced with generic placeholders (operator, 2026-11-19: redact identifiers in pack text).
+
 ## 20261119_1640 — Periodic review; 90-day review window
 
 - Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, stale status statements and body rules aligned with their Learned entries and the code. Review window now 90 days (`--window-days 90` in the justfile).

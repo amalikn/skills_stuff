@@ -71,7 +71,7 @@ Read the **3–5 most informative files** in the target folder. Priority order:
 Read parent AGENTS.md to extract:
 
 - `@` import chain (for AGENTS.md inheritance)
-- Internal domain (e.g. `apn.net.au`)
+- Internal domain (e.g. `example.internal`)
 - Naming conventions, routing rules
 
 Read parent `AI_NAVIGATION.md` / `context-map.yaml` if present to extract:
@@ -98,11 +98,11 @@ From inventory + content reads, determine:
 
 | Field                 | How to infer                                                                                                                                                                 |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Project name          | Folder name, formatted (e.g. `aurukun-fni` → "Aurukun FNI")                                                                                                                  |
+| Project name          | Folder name, formatted (e.g. `site-fni` → "Site FNI")                                                                                                                      |
 | Purpose               | From README, code comments, config descriptions, or folder name semantics                                                                                                    |
 | Technology stack      | From file extensions, package manifests, imports                                                                                                                             |
 | Participants          | From git log (`git log --format="%an" \| sort -u`), email headers in EML files, or existing docs                                                                             |
-| Internal domain       | From parent AGENTS.md; default `apn.net.au` for APN projects                                                                                                                 |
+| Internal domain       | From parent AGENTS.md (e.g. `example.internal`)                                                                                                                                 |
 | Subfolder roles       | From subfolder names and their contents                                                                                                                                      |
 | Project type          | Code / docs / ops / comms / mixed (drives conditional file creation)                                                                                                         |
 | Governance            | Presence/quality of README, AGENTS, CLAUDE, SCRATCHPAD, CHANGELOG, AI_NAVIGATION, context-map, roadmap, architecture docs                                                    |

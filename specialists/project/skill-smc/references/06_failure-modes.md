@@ -642,7 +642,7 @@ public function sendData($data, $length = 0)
     $this->openSerialIO("/dev/ttyS0", 19200, 1, 8, 0);   // stty + serialflush before every message
 ```
 
-> **Learned 2026-10-28 (c)** · AVR V3.07 on a Thuraya control board loses the SIM · USER_STATED (Chris Blair, relayed by the operator, with Stats
+> **Learned 2026-10-28 (c)** · AVR V3.07 on a Thuraya control board loses the SIM · USER_STATED (a team member, relayed by the operator, with Stats
 > page screenshots) · Source: change record `rct-tstik-iridium-update-20261028_1221.md` 5.6-5.7 (local-knowledge-ansible) · Falsifier: a
 > Thuraya-equipped board on V3.07 whose Stats page still shows IridiumSIMSerial and passes the self test
 > V3.07 is for Iridium. On a control board that still has the Thuraya module, after V2.14 -> V3.07 the board's SIM is no longer detected
@@ -651,7 +651,7 @@ public function sendData($data, $length = 0)
 > Iridium board has its own SIM holder. Fleet (operator, 2026-10-28): 27 RCT SMCs on V3.07 (the Iridium sites, e.g. frasier-downs-pivot,
 > kusi-block, midgelmaya, naja-naja, shovellers-block, mooloowa), malupirti-smc01 V3.06 (offline), every other RCT SMC V2.14. tstik's Stats
 > page and the vendor loader print 3.07 as "3.7". The smc_change spec flashes only with `-e rct_avr_flash=true` and only where that SMC's inventory sets `smc_bases_iridium: true` (a batch never reaches a Thuraya site); set the flag before a flash run, since without it the flash is skipped and the run still passes (the AVR gate line says "flash skipped"), so confirm the AVR version: flash a site after its
-> Iridium equipment is in. Firmware files V2.14Test, V3.04, V3.06, V3.07: change folder `firmwares/`. `FirmwareV2.14Test.enc` is the build the fleet's V2.14 AVRs run (Chris Blair, 2026-10-28), so the spec's AVR rollback restores it.
+> Iridium equipment is in. Firmware files V2.14Test, V3.04, V3.06, V3.07: change folder `firmwares/`. `FirmwareV2.14Test.enc` is the build the fleet's V2.14 AVRs run (a team member, 2026-10-28), so the spec's AVR rollback restores it.
 
 - **Site-link loss at a few rct sites, not Sky Muster-wide (2026-11-05)**: `scripts/probes/smc_gateway_loss.sh` across 20 rct SMCs found 16 with 0 %
   loss to their gateway (the satellite first hop, RTT 570-630 ms). gurrbalgun showed 25 %, gumbarnun 10 % and banana-well 5 %, and goojarr-goonyool

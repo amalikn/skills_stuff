@@ -1101,7 +1101,7 @@ smc_change_probe=true`, then resume rct-avr-smsc.
 arguments whole (`--by "name"`).
 
 **Iridium sites are flashed in advance (operator, 2026-11-04).** Sites are configured before the technician swaps the Thuraya hardware for Iridium: `smc_bases_iridium: true` is set ahead and now means
-planned for Iridium, then rct-tstik-iridium-update flashes AVR 3.07 (`just flash`) and rct-avr-smsc sets the numbers. The Thuraya board SIM loss from 3.07 (Chris Blair, 2026-10-28) is accepted:
+planned for Iridium, then rct-tstik-iridium-update flashes AVR 3.07 (`just flash`) and rct-avr-smsc sets the numbers. The Thuraya board SIM loss from 3.07 (a team member, 2026-10-28) is accepted:
 Thuraya is not really working. Spec comments that say the flash must never reach a Thuraya site are to be reworded.
 
 **Batches 1-3 marked on rise and master (2026-11-04 20:23).** 25 rct SMCs carry `smc_bases_iridium: true` on both branches (rise `6f869a12`, master `9cbe85ee`, unpushed), set with
@@ -1112,7 +1112,7 @@ local-knowledge-ansible `plans/iridium-flash-batches-runbook-20261104_2023.md`.
 
 **Rise deploy chain proven on shelfo-crossing-smc01 (2026-11-04 20:50-21:01).** One `smc_rise_deploy.yml -l shelfo-crossing-smc01` run: the rct-tstik-iridium-update import passed in 8 min (record
 `conditions.cond.flash_wanted = True`, so a `vars:` key on `import_playbook` reaches the spec; `avr_version` 2.14 -> 3.07, the 3.04/3.06 firmware copies SKIPPED by their `avr_at_*` conditions), then
-rct-avr-smsc passed in 3 min (SMSC +61415011740 -> +61418706700; emergency 000 and destination +61410004795 already right). Read a run's outcome from
+rct-avr-smsc passed in 3 min (SMSC <SMSC-A, Pivotel> -> <SMSC-B>; emergency 000 and destination <destination number> already right). Read a run's outcome from
 `runs/rct/records/<host>-<spec>-apply-<stamp>.json` (`result`, `gates`, `actions`, `conditions.facts`, `facts_after`):
 
 ```python

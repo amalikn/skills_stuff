@@ -16,6 +16,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261119_1648.md](changelog/changelog-20261119_1648.md) 1 entry, 2026-11-11 to 2026-11-11: docs/history by kind, generated index with summaries, migration
 - [changelog-20261119_1639.md](changelog/changelog-20261119_1639.md) 1 entry, 2026-11-05 to 2026-11-05: promote: quoted front matter, Last reviewed, decisions_to_adrs
 - [changelog-20261119_1605.md](changelog/changelog-20261119_1605.md) 2 entries, 2026-11-05 to 2026-11-05: adopt_governed_files: check recipe matched by exact name; agents_chain check: AGENTS.md chains for Claude Code and Codex
 - [changelog-20261119_1551.md](changelog/changelog-20261119_1551.md) 2 entries, 2026-10-29 to 2026-11-03: mirror_skills: one client's skills linked into another; Pitfalls: one route for cross-project messages; route facts by class
