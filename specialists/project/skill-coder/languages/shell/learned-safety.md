@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: one topic of languages/shell.md (split by scripts/language_split.py)
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: The learned safety part of the shell override; the entry file holds the tools and the core rule mapping.
 ---
 

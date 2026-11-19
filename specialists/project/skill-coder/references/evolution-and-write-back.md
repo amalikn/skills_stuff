@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: How engagements in any project feed reusable coding knowledge back into this skill, and how it is kept current
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Standing write-back contract: classify every engagement at closeout, add dated Learned or Disputed entries with evidence,
   a falsifier, a code excerpt (and a screenshot for a visual surface) plus a CHANGELOG line, park entries in the calling

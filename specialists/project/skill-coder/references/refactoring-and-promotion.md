@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Changing structure without changing behaviour, moving code with shims, and promoting project code into a reusable skill
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   A refactor changes no behaviour and proves it with a before-and-after comparison; moved code leaves a shim and a
   moved-paths entry, and every string path and by-path reader is repointed; scripts carry a promotion status and reusable ones move to a skill as a

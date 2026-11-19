@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Secure coding for any language - input, injection, secrets, access, cryptography, supply chain
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   OWASP-informed secure coding: validate input by allowlist at trust boundaries, parameterise every query and command,
   keep secrets out of code and logs, least privilege, safe defaults, and supply-chain hygiene (pins, hashes, provenance); a disposable tool config

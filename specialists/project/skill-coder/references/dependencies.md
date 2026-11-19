@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Adding, using and upgrading third-party libraries and tools
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Standard library in the core and third-party code at the edges; each dependency names the seam that uses it, its version
   range and the test that fails if an upgrade changes the behaviour relied on; declared, isolated, pinned and locked.

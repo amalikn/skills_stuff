@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Ansible playbooks, roles, inventories and Jinja2 templates
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Trace every reference (templates included) and classify tag versus variable before a change, because a renamed tag fails
   silently; check and diff mode as the dry run; idempotence proven by a second run; FQCN; no_log and Vault for secrets;
@@ -84,10 +83,10 @@ The rest of this override lives in [ansible/](ansible/) (split 2026-11-07 by scr
 | File                                       | Blocks |
 | ------------------------------------------ | ------ |
 | [before-any-change-trace-every-reference.md](ansible/before-any-change-trace-every-reference.md) | 4      |
-| [learned-connections.md](ansible/learned-connections.md) | 3      |
-| [learned-execution.md](ansible/learned-execution.md) | 5      |
-| [learned-lint-and-tests.md](ansible/learned-lint-and-tests.md) | 3      |
-| [learned-other.md](ansible/learned-other.md) | 1      |
+| [learned-connections.md](ansible/learned-connections.md) | 4      |
+| [learned-execution.md](ansible/learned-execution.md) | 9      |
+| [learned-lint-and-tests.md](ansible/learned-lint-and-tests.md) | 5      |
+| [learned-other.md](ansible/learned-other.md) | 2      |
 | [learned-templating.md](ansible/learned-templating.md) | 14     |
 | [learned-tooling.md](ansible/learned-tooling.md) | 2      |
 | [open-items.md](ansible/open-items.md)     | 7      |

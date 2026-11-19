@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: one topic of languages/shell.md (split by scripts/language_split.py)
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: The learned processes and timeouts part of the shell override; the entry file holds the tools and the core rule mapping.
 ---
 
@@ -27,6 +27,9 @@ Part of [shell.md](../shell.md).
 > # right: a bracket the pattern matches but its own text does not
 > ssh host "pkill -f '[/]tmp/x/run.sh'; nohup /tmp/x/run.sh >/tmp/x/log 2>&1 &"
 > ```
+
+The bracket form above was later found to fail as well (2026-10-26 to 2026-10-28): anchor every `pgrep -f` / `pkill -f` pattern with `^` at the start of the target's own command line and check it with
+`scripts/process_match.py` ([SKILL.md](../../SKILL.md), standing rules; [references/safety-and-writes.md](../../references/safety-and-writes.md)).
 
 > **Learned 2026-10-20** · bash on macOS, tsh 17/18 · VERIFIED_PRIMARY · Source: skill-smc scripts/overlay-usage-breakdown.sh `with_deadline` (skills_stuff 01f5bb3) · Falsifier: `perl -e 'alarm 60; exec @ARGV' tsh ssh ...` ending at 60 s
 > macOS has no `timeout(1)`, and `perl -e 'alarm N; exec @ARGV' cmd` did not stop `tsh ssh` (it ran 2 min 50 s past a 60 s alarm). A watcher does:
@@ -82,6 +85,8 @@ Part of [shell.md](../shell.md).
 > perl -e 'alarm 150; exec @ARGV' just unc01::run -c 'journalctl -u unc-collector.service --since "2026-10-20 21:00" --no-pager'
 > ```
 
+The alarm-then-exec form above does not stop a program that catches SIGALRM (Go programs such as `tsh`); use the fork form in the 2026-11-10 entry below.
+
 > **Learned 2026-10-22** · bash, stdin redirections on one command · VERIFIED_PRIMARY (a probe run as `tsh ssh host "bash -s" <<<"$PROBE" </dev/null` printed nothing on every host; without the trailing `</dev/null` it ran) · Source: skill-smc `scripts/php_package_probe.sh` (skills_stuff cecfe50, its draft in a session scratchpad) · Falsifier: a shell where the first of two stdin redirections wins
 > Redirections apply left to right, so a later `</dev/null` replaces an earlier here-string or `< script` as stdin: `bash -s` then reads nothing and exits 0 with no output. When a command takes its
 > script on stdin, give it exactly one stdin redirection:
@@ -109,27 +114,22 @@ Part of [shell.md](../shell.md).
 > ```
 
 > **Learned 2026-11-06** · editing a script a job is running · VERIFIED_PRIMARY · Source: apn smc-resiliency S3 batch, `spike/vm/s3/s3_case.sh`
-> edited while a background batch executed it, 2026-11-06 · Falsifier: bash reading a whole script before running it
-> Bash reads a script as it runs, by byte offset. Editing a script while a job executes it can make the job run a mix of old and new lines
-> (this one survived by luck: the edit landed after the running command). Edit a copy and swap it in between runs, or wait for the job; a batch
-> that calls the script anew per case is safe between cases, never during one. Also from that session: `prlctl exec <vm> "VAR=x cmd"` runs no
-> shell (wrap it in `bash -c`), and a helper that derives an argument from a remote command (`$(prlctl exec ... | sed ...)`) must refuse an
-> empty result: an empty slot name made a "wipe" print its usage and the next case ran on an unwiped slot.
+> edited while a background batch executed it, 2026-11-06 · Falsifier: bash reading a whole script before running it Bash reads a script as it runs, by byte offset. Editing a script while a job
+> executes it can make the job run a mix of old and new lines (this one survived by luck: the edit landed after the running command). Edit a copy and swap it in between runs, or wait for the job; a
+> batch that calls the script anew per case is safe between cases, never during one. Also from that session: `prlctl exec <vm> "VAR=x cmd"` runs no shell (wrap it in `bash -c`), and a helper that
+> derives an argument from a remote command (`$(prlctl exec ... | sed ...)`) must refuse an empty result: an empty slot name made a "wipe" print its usage and the next case ran on an unwiped slot.
 
 > **Learned 2026-11-10** · a script sent to a remote shell on stdin (`ssh host bash -s < script`) · VERIFIED_PRIMARY · Source: unified-network-controller
-> `infra/apn-unc01/ops/host-run.sh` running a restore proof on apn-unc01, 2026-11-10 (the run printed nothing and exited 0) · Falsifier: a child that
-> reads stdin leaving the rest of a `bash -s` script unread.
-> When a script reaches bash on stdin, any command inside it that reads stdin (`docker compose exec -T`, `ssh`, `psql`, `read`, a `while read` loop)
-> consumes the rest of the script: bash then finds end of input and exits 0 with the later lines never run, and no error anywhere. Either close stdin
-> on every such command (`< /dev/null`), or copy the script to the host and run it as a file with stdin closed:
-> `echo <base64> | base64 -d > /tmp/x.sh && bash /tmp/x.sh < /dev/null`. A wrapper that sends scripts this way says so in its header.
+> `infra/apn-unc01/ops/host-run.sh` running a restore proof on apn-unc01, 2026-11-10 (the run printed nothing and exited 0) · Falsifier: a child that reads stdin leaving the rest of a `bash -s` script
+> unread. When a script reaches bash on stdin, any command inside it that reads stdin (`docker compose exec -T`, `ssh`, `psql`, `read`, a `while read` loop) consumes the rest of the script: bash then
+> finds end of input and exits 0 with the later lines never run, and no error anywhere. Either close stdin on every such command (`< /dev/null`), or copy the script to the host and run it as a file
+> with stdin closed: `echo <base64> | base64 -d > /tmp/x.sh && bash /tmp/x.sh < /dev/null`. A wrapper that sends scripts this way says so in its header.
 
 > **Learned 2026-11-10** · a deadline on a Go program (`tsh`, and any Go CLI) · VERIFIED_PRIMARY · Source: smc-resiliency fleet survey, skill-smc
-> `scripts/probes/*_probe.sh` @ 2f57ab5: a `tsh ssh` hung 6 minutes under a 120 s `perl -e 'alarm shift; exec @ARGV'` deadline; reproduced with a child
-> that ignores SIGALRM (old form ran 8 s past a 2 s deadline and exited 0) · Falsifier: a Go binary dying on SIGALRM.
-> `alarm` then `exec` delivers SIGALRM to the program itself; the Go runtime catches it, so the call never ends and the wrapper even reports success.
-> Fork, alarm in the parent, and on expiry send TERM, wait up to 5 s, then KILL; pass the child's exit code through, 124 on timeout (GNU `timeout -k`
-> semantics without depending on coreutils):
+> `scripts/probes/*_probe.sh` @ 2f57ab5: a `tsh ssh` hung 6 minutes under a 120 s `perl -e 'alarm shift; exec @ARGV'` deadline; reproduced with a child that ignores SIGALRM (old form ran 8 s past a 2
+> s deadline and exited 0) · Falsifier: a Go binary dying on SIGALRM. `alarm` then `exec` delivers SIGALRM to the program itself; the Go runtime catches it, so the call never ends and the wrapper even
+> reports success. Fork, alarm in the parent, and on expiry send TERM, wait up to 5 s, then KILL; pass the child's exit code through, 124 on timeout (GNU `timeout -k` semantics without depending on
+> coreutils):
 >
 > ```bash
 > perl -e '$d=shift; defined(my $p=fork) or die "fork: $!"; if(!$p){exec @ARGV; exit 127}
@@ -137,5 +137,5 @@ Part of [shell.md](../shell.md).
 >   alarm $d; waitpid($p,0); exit($? & 127 ? 128+($? & 127) : $?>>8)' "$deadline" tsh ssh --proxy="$proxy" "root@$node" "$REMOTE" </dev/null
 > ```
 >
-> Recurrence 2026-11-10 of the 2026-11-06 entry above (editing a script a job is running): editing the probe while a survey batch ran it made bash
-> fail with `unexpected EOF` after the last box (exit 2, every result already written).
+> Recurrence 2026-11-10 of the 2026-11-06 entry above (editing a script a job is running): editing the probe while a survey batch ran it made bash fail with `unexpected EOF` after the last box (exit
+> 2, every result already written).

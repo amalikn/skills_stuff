@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: one topic of languages/python.md (split by scripts/language_split.py)
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: The learned other part of the python override; the entry file holds the tools and the core rule mapping.
 ---
 
@@ -104,7 +104,7 @@ Part of [python.md](../python.md).
 > Splitting front matter with `src.split("\n---", 1)[0]` drops the newline that ends the last front-matter line, so a line regex such as
 > `^description: >-\n((?:  .*\n)+)` stops one line short: the dry run reported 466 old characters for a 620-character description, and an apply would have left the old
 > last line under the new text. Keep the newline (`+ "\n"`), compare the dry run's old length with the listing, then parse the result with `yaml.safe_load` and assert
-> the field equals the intended text. Rewriting a JSON config with `json.dumps` can silently re-escape the whole file (`–` vs `–`): before writing, check that
+> the field equals the intended text. Rewriting a JSON config with `json.dumps` can silently re-escape the whole file (`\u2013` vs `–`): before writing, check that
 > loading and dumping the untouched file reproduces it byte for byte, choose `ensure_ascii` per file to match, and only then apply the change, so the diff holds the change alone.
 >
 > ```python

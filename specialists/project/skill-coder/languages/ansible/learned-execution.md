@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: one topic of languages/ansible.md (split by scripts/language_split.py)
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: The learned execution part of the ansible override; the entry file holds the tools and the core rule mapping.
 ---
 
@@ -81,6 +81,46 @@ Part of [ansible.md](../ansible.md).
 > With the default linear strategy every task finishes on all hosts of a batch before the next starts, so a per-host timer between stage
 > markers measures the batch's wall-clock for that stage: the slowest host (or one reboot) sets every host's line. Measure per-host work
 > with a task-timing callback, not stage markers, and size budgets per batch.
+
+>  **Learned 2026-11-05 (i)** · ansible-core 2.21.5, a gate as a run_once task · VERIFIED_PRIMARY (prod rct inventory, check mode, two and three hosts:
+>  recap `failed=1` on the first host, `ok=1 failed=0` on the other, no later play) · Source: local-knowledge-ansible
+>  `ansible-wifi/roles/smc_change/tasks/tsh_login.yml`, `playbooks/smc_change.yml` first play (uncommitted 2026-11-05) · Falsifier: a recap in which
+>  every host of the play shows failed=1 after one run_once assert fails
+>  A `run_once` assert that fails marks only the first host failed; the other hosts stay `ok`. A run-wide gate therefore needs `any_errors_fatal: true`
+>  on its play, so the failure ends the run instead of leaving later plays to the other hosts.
+>
+>  ```yaml
+>  - name: Check the Teleport logins this run needs
+>    hosts: smc_bases
+>    gather_facts: false
+>    any_errors_fatal: true            # the run_once failure inside ends the whole run
+>    tasks:
+>      - name: Check the Teleport logins this run needs
+>        ansible.builtin.include_role: {name: smc_change, tasks_from: tsh_login.yml}   # run_once command + assert
+>  ```
+
+>  **Learned 2026-11-05 (ii)** · ansible-core 2.21.5, `strategy: free` with `serial` · VERIFIED_PRIMARY (four local dummy hosts, serial 2, and a
+>  check-mode run on two production hosts) · Source: local-knowledge-ansible plans/smc-change-free-timeouts-20261105 · Falsifier: under free, a
+>  failed host with `max_fail_percentage: 0` stops the next batch, or `pause` runs per host
+>  Under `free`, Ansible warns that `run_once` and `any_errors_fatal` are not supported, and it refuses `ansible.builtin.pause` outright ("bypasses
+>  the host loop"). It also ignores `max_fail_percentage`: with one failed host, linear stopped the run but free started the next batch. Before
+>  switching a play to free, grep its tasks for `pause`, `run_once`, `any_errors_fatal` and cross-host reads. Use `ansible.builtin.wait_for:
+>  {timeout: N}` delegated to localhost for a wait, and rebuild any first-failure stop as a gate that reads the run's own results before each host
+>  starts. Also: YAML 1.1 reads an unquoted `20261105_120000` as the integer 20261105120000 (underscores are digit separators), so quote stamps.
+>  ```yaml
+>  - name: Let client traffic reach the changed box   # was ansible.builtin.pause, refused under strategy free
+>    ansible.builtin.wait_for: {timeout: "{{ soak_left | int }}"}
+>    delegate_to: localhost
+>  ```
+
+>  **Learned 2026-11-05 (iii)** · ansible-core 2.21.5, one role imported twice with `import_playbook` in one run · VERIFIED_PRIMARY (dummy hosts;
+>  a production run where the second change skipped a host as done, citing the first change's record) · Source: local-knowledge-ansible
+>  plans/smc-change-free-timeouts-20261105 · Falsifier: a `set_fact` from the first import is undefined in the second
+>  Host facts (`set_fact`, registered results) and `group_by` groups outlive an `import_playbook`. A role that sets a flag only when it holds, and
+>  tests it with `is defined`, inherits the first run's value in the second; a host also stays in a group the first run put it in. Ansible
+>  cannot unset a fact or remove a host from a group, and `meta: clear_facts` leaves `set_fact` values (tested). So reset each per-run flag at
+>  the run's start to a value its readers treat as "not set" (`''` or `{}` tested by length, `~` by `is none`), and name groups per run
+>  (`todo_{{ change }}`): a play's `hosts:` can be templated from `import_playbook` vars (tested).
 
 > **Learned 2026-11-17 (n)** · ansible-core 2.21 multi-play playbooks (import_playbook chains) · VERIFIED_PRIMARY (local test: six local hosts, deferred mode ran the later play
 > on all six, then failed the three unfinished ones; standalone mode failed them at once) · Source: local-knowledge-ansible `playbooks/smc_change.yml`, `smc_change_multiple.yml`,

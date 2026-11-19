@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: one topic of languages/ansible.md (split by scripts/language_split.py)
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: The before any change trace every reference part of the ansible override; the entry file holds the tools and the core rule mapping.
 ---
 
@@ -24,7 +24,7 @@ path):
 5. Verify selection with `--list-tasks` and behaviour with a `--check --diff` dry run; `--syntax-check` and `--list-tasks` do not show that a selected task is destructive.
 6. **Decide the transition explicitly.** When every caller is inside the repository, rename in one change and update them all. When a caller may sit outside it (another repository, a job template, a
    scheduler, an operator's notes), list both names for one transition (`tags: [<new>, <old>]`), record the old name and its removal condition in the change log, and remove it once no caller remains.
-   This is the shim rule for code moves ([references/refactoring-and-promotion.md](../references/refactoring-and-promotion.md)) applied to a tag: the old name keeps working until nothing uses it, and
+   This is the shim rule for code moves ([references/refactoring-and-promotion.md](../../references/refactoring-and-promotion.md)) applied to a tag: the old name keeps working until nothing uses it, and
    it is never left in place without a recorded end (USER_STATED: the operator's renames keep an old name readable during a transition, 2026-10-19).
 
 **A renamed tag fails silently.** Ansible does not warn on an unmatched tag: the old command still exits 0 and runs only the tasks tagged `always`, while selecting none of the intended ones. After a

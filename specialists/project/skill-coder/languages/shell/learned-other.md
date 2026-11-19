@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: one topic of languages/shell.md (split by scripts/language_split.py)
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: The learned other part of the shell override; the entry file holds the tools and the core rule mapping.
 ---
 
@@ -36,3 +36,8 @@ Part of [shell.md](../shell.md).
 >   (slow); a `sudo` prompt behind `ssh ... | sudo dd` can sit hidden until Enter is pressed.
 > - Typing into a console by fixed sleeps sends a password at the wrong prompt and echoes it into the log; wait for each prompt on screen first.
 
+>  **Learned 2026-11-05** · BSD and GNU sed, `s` with a custom delimiter · VERIFIED_PRIMARY (macOS sed wrote two stray files into a role folder) ·
+>  Source: this session's edit of an Ansible test fixture · Falsifier: a replacement holding the delimiter changes only the text
+>  In `s#old#new#`, a `#` inside the replacement (a YAML comment, say) ends the replacement early. sed then reads the rest as flags, and
+>  `w <file>` writes the matched lines to a file named after the rest of the comment, in the current folder. Pick a delimiter that cannot occur in
+>  the text, or make the edit in Python with an exact-match assert, and run `git status` afterwards to catch stray files.

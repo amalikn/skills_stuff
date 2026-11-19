@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: The per-language override layer of skill-coder and the contract each file follows
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   How a language file may tighten, loosen with a stated reason, or add tool commands to a core rule, the precedence of
   project rules over both, and the list of language files.

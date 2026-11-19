@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Reusable solutions found in one project's code, stated so a project in another domain can apply them
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Pattern catalogue: problem, solution, why it works, how to reuse it elsewhere, pitfalls, and its realisation per language with a source
-  excerpt. First entries come from the ansible-wifi smc_change engine (change orchestration over unreliable links); none needs that domain.
+  excerpt. First entries come from the ansible-wifi smc_change engine (change orchestration over unreliable links); later ones from a network controller,
+  a device resiliency lab, diagram, document and agent tooling. None needs its source domain.
 ---
 
 # Design patterns harvested from projects
@@ -23,6 +24,7 @@ language file and link the two.
 - [Index](#index)
 - [Patterns](#patterns)
 - [Language realisations](#language-realisations)
+- [Exact-commit pre-push gate](#exact-commit-pre-push-gate)
 
 ## Entry format
 
@@ -97,11 +99,19 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-52 | Check what actually runs, not what is on disk               | Faults that hide at a join                                                 |
 | P-53 | A seam is an environment variable and stdout                | Components tied by shared code or files                                    |
 | P-54 | Documents held to code by review stamps                     | Docs going stale unnoticed                                                 |
+| P-55 | State a run can empty: one dict per run, old names read through | A role run twice in one process reading the last run's facts |
+| P-56 | Trust a model's verdict only after it answers known controls | A model judge that inverts its labels or fails silently |
+| P-57 | Group by each item's most widely shared key | Single-link chaining merging unrelated groups |
 | P-58 | Hold changes while blind; recover by self-undoing trials    | A device that cannot tell its own bad change from an outage                |
 | P-59 | Export a spec to plain code, with provenance and an edit guard | Hand-copying a change from an engine into a repo that must not depend on it |
 | P-60 | Order resumed records by attempt, not by transaction start  | A resume sorted before attempts that ran ahead of it                        |
+| P-61 | One test logic for every target: a contract, adapters, a profile | One test script per platform, and no tests on physical boxes |
+| P-62 | Bind a multi-part answer with one signature over its parts and the request | Separately protected parts swapped or replayed while each check passes |
 | P-63 | Agent benchmark: known answers in a throwaway copy, a watch on real repos | Choosing a model or config for an agent by impression, or letting the run touch live work |
 | P-64 | A fixed-length record overwritten in place | A small state file on a filesystem without atomic rename (FAT) that a power cut must never leave empty |
+| P-65 | One version record, its pins found by pattern | Version pins copied across many files with nothing tying them together |
+| P-66 | A localhost redirect for a link scheme a web app strips | A web UI that drops the custom scheme a link needs |
+| P-67 | Move files and repoint every reference by resolving links | Moved files breaking links, or name matching touching namesakes |
 | P-68 | Baseline beside forecast in a generated report | A status report rendered from a fixed plan whose dates slip week by week |
 | P-69 | A seed, a plan-first scaffold and a guard on the shared output | Generating a new shared package from a written design without leaking names or overwriting hand edits |
 | P-70 | Physical map as data, with the consumer named on each slot | A switch, port or outlet acted on by name must never act on the wrong box |
@@ -257,7 +267,7 @@ smc_change_target: >-
 - **Why it works:** batches are built from the partitioned list, so every slot is real work; a spec error costs seconds, not a fleet.
 - **Reuse:** CI matrices (skip unchanged packages), crawlers (skip fresh pages), bulk API jobs (skip already-synced records).
 - **Pitfalls:** a framework's "run once" can mean once per batch, not per run (Ansible `run_once`); keep the per-target part (values that read each target's variables) out of the once stage.
-- **Realised in:** Ansible, `playbooks/smc_change.yml` first play + `tasks/pending.yml` (live), `tasks/prepare.yml` (patch `plans/smc-change-resume-20261027_1038/`); see `languages/ansible.md` Learned
+- **Realised in:** Ansible, `playbooks/smc_change.yml` first play + `tasks/pending.yml` (live), `tasks/prepare.yml` (patch `plans/smc-change-resume-20261027_1038/`); see `languages/ansible/learned-execution.md` Learned
   2026-10-27 (g).
 - **Evidence:** VERIFIED_PRIMARY for the partition; prepare stage tested in a scratch copy (2026-10-27), not yet live.
 
@@ -272,7 +282,7 @@ smc_change_target: >-
 - **Why it works:** the work no longer depends on the session; the poll is idempotent.
 - **Reuse:** remote builds, database dumps over VPN, OTA updates.
 - **Pitfalls:** a retried start can launch a second job (guard with a lock or check-before-start).
-- **Realised in:** Ansible, `async`/`poll: 0` + `tasks/await_job.yml`; `ansible_ssh_retries: 8` (see `languages/ansible.md` (e), (i)).
+- **Realised in:** Ansible, `async`/`poll: 0` + `tasks/await_job.yml`; `ansible_ssh_retries: 8` (see `languages/ansible/learned-execution.md` 2026-10-26 (e), `languages/ansible/learned-connections.md` 2026-10-27 (i)).
 
 ### P-07 Evidence tree by a stable partition key
 
@@ -342,7 +352,7 @@ smc_change_target: >-
 - **Problem:** a bulk move fails on item 1 of 198, after a related setting already changed, and the state is unclear.
 - **Solution:** compute the full list of moves first; print it (dry run is the default); refuse when any item is ambiguous or unsafe; apply only on `--apply`; resolve paths to absolute before calling
   tools that change directory.
-- **Realised in:** Python, `scripts/smc_change_runs_by_flavor.py` (`plan()` then `move()`); see `languages/python.md` Learned 2026-10-27.
+- **Realised in:** Python, `scripts/smc_change_runs_by_flavor.py` (`plan()` then `move()`); see `languages/python/learned-other.md` Learned 2026-10-27.
 
 ```python
 moves, problems = plan(runs, inv, args.with_active)

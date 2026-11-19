@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Pinned interpreters and CLI tools, virtual environments outside the repo, the task-runner catalog and script safety labels, local CI runs
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Interpreters pinned (mise) and addressed by path, never the bare one on PATH; the venv lives in a working-cache peer
   outside the repo; runtime state in a runtime peer; every runnable task is a catalogued recipe with a safety label; the closing check runs

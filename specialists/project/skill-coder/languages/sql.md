@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: SQL queries, views, migrations and SQL embedded in other languages
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Bind parameters always; SQLFluff with the project's dialect; uppercase reserved keywords and explicit column lists and
   joins; an applied migration is never hand-edited; a header comment on every SQL file; money cast to a numeric type at ingestion.

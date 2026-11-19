@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Anything that runs repeatedly or at scale - jobs, collectors, loops over many items, page views over many records, check suites
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Runtime is an acceptance criterion: state a budget, measure per phase on a real run, design for scale in the first slice
   (reuse connections, batch per host, bounded parallelism, probe first), count failure paths and re-measure when input grows;

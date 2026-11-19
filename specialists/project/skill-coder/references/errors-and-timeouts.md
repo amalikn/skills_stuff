@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Error types, translation at seams, exit codes, timeouts on every external call, retries, failure-path cost, bounded fetching and absent values
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Typed errors translated at the seam, never swallowed and never matched on a tool's message text outside its seam; a
   timeout on every network call and subprocess that ends the whole process group; bounded retries; a silent target costs one short probe;

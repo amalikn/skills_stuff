@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: OpenTofu or Terraform configuration (HCL) in any project
-Last reviewed: 2026-11-07
+Last reviewed: 2026-11-19
 Summary: >-
   OpenTofu config is declarative infrastructure: providers pinned with a committed lock file, state and plugin data outside the repo,
   secrets only from the environment, `tofu fmt` and tflint as the linters, a plan before every apply, writes behind the project's gate.

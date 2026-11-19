@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: JavaScript and TypeScript code for Node and the browser
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   TypeScript with strict on, typescript-eslint, the project's formatter, TSDoc or JSDoc comments with param and returns,
   strict equality, no any at seams, the Node version pinned by engines, and argument-array child processes; Learned entries

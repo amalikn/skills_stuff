@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: How YAML, a configuration tool, Python, shell, templates, records and flow maps are joined into one safe engine; the seams between them, not the parts
-Last reviewed: 2026-11-02
+Last reviewed: 2026-11-19
 Summary: >-
   The thinking behind a multi-language change engine: give each language the one job it is best at, make every seam a small data contract, and check
-  each seam offline. Read with design-patterns.md, which holds the parts; this file holds how they interlock.
+  each seam offline. Read with design-patterns.md, which holds the parts; this file holds how they interlock. A Learned entry adds how a device's
+  boot stages pick the language.
 ---
 
 # Composing an engine from many languages

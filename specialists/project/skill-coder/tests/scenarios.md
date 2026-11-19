@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Behaviour scenarios that show whether an agent applied skill-coder correctly
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Seventeen scenarios with prompt, trigger, first reference, decision points and prohibited conclusions, covering core rules,
   every language override and negative controls.

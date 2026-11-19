@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Python 3 scripts, packages and services
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   PEP 8, PEP 257 and Google-style docstrings with Args, Returns and Raises; ruff for lint and format with two-space indentation;
   pytest or unittest; subprocess.run with a timeout and an argument list; frozen dataclasses and Protocols at seams; the src
@@ -111,5 +110,5 @@ The rest of this override lives in [python/](python/) (split 2026-11-07 by scrip
 
 | File             | Blocks |
 | ---------------- | ------ |
-| [learned-other.md](python/learned-other.md) | 12     |
+| [learned-other.md](python/learned-other.md) | 15     |
 | [open-items.md](python/open-items.md) | 2      |

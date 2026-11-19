@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Data and configuration files - YAML, JSON and TOML - including catalogs, registers and CI configuration
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   A header in each file's native form, explicit booleans and quoted ambiguous strings in YAML, unique keys everywhere,
   yamllint, taplo and biome and a schema check, safe loaders only, stable key order for generated files, and data files as the

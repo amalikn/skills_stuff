@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Where settings, paths, hosts, tokens, version pins and catalog data live, what may appear as a literal in code, and checking a directive against the deployed version
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   No absolute paths, hostnames, URLs or tokens in code; one settings module reads the environment and config files;
   version pins recorded in one place and changed together with the pin they mirror; facts in catalog data, not code tables;

@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: skill-coder — which case convention each language and each kind of name uses, with its primary source
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   The mapping of language and element to naming convention, verified against primary sources on 2026-10-19. One rule underneath: code files and
   identifiers follow their language; names people type at a command line follow the CLI convention (kebab-case); a tool's own schema wins for its names.

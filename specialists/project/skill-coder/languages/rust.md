@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Rust crates, libraries and binaries
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Rust API Guidelines; rustfmt via cargo fmt and Clippy; doc comments with Errors, Panics and Safety sections and examples;
   Result for recoverable errors and the question-mark operator; meaningful error types; cargo test including doc tests;

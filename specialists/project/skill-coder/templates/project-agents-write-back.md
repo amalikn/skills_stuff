@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: The line a project adds to its AGENTS.md so its agents write programming lessons back to skill-coder
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: Copy the block below into a project's AGENTS.md (its required-skills or working-rules section); it adds the trigger without restating the contract.
 ---
 

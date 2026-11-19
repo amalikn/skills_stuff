@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: skill-coder pack — canonical, cross-project source of reusable programming practice
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Agent guidance for maintaining and using skill-coder: artifact roles, the runtime rule for its helpers, the code map, the write-back obligation
   and the gates to run before calling work complete.

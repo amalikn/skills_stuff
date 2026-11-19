@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: How to shape a program of any size and language before writing its code
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Layers with dependencies pointing inward, thin front ends, earned abstraction, data decides and code executes, one seam per
   external system, native first and reuse before build with a search order, and stdlib in the core.

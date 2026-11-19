@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: What to test, at which level, and how to make tests and checks trustworthy
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   Test first for bugs, characterisation before refactoring, a negative test proving each check can fail (and that the proof itself
   took effect), fakes per contract with a shared contract suite, deterministic output, verdicts that prove their own cause and setup,

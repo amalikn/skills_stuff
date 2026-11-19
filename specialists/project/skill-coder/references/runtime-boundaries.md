@@ -5,7 +5,6 @@ Status: current
 Authority: local-supplement
 Scope: Which environment applies this skill's rules and runs its helper scripts, and how a project consumes skill code
 Last reviewed: 2026-11-19
-Review by: 2027-05-19
 Summary: >-
   The default is the target project's own environment and tooling; skill helpers are stdlib-only, need Python 3.11, read
   code as files and run with the project's interpreter by path; the skill's pinned interpreter is a fallback only.

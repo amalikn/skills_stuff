@@ -17,6 +17,7 @@ Last rotated: 20261119_1601
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261119_1631 — Periodic review; 90-day review window](#20261119_1631--periodic-review-90-day-review-window)
 - [20261119_1601 — deterministic navigation-control upgrade](#20261119_1601--deterministic-navigation-control-upgrade)
 - [20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records](#20261102_1347--learned-exit-trap-exit-code-ruff-through-a-symlink-tracker-from-records)
 - [20261102_1132 — Learned: one write frame for many fields](#20261102_1132--learned-one-write-frame-for-many-fields)
@@ -31,6 +32,10 @@ Last rotated: 20261119_1601
 - 2026-11-19: logged late: references/generated-artifacts.md Learned 2026-11-12, a second easier-to-read format of a data file (JSON source, YAML view).
 - 2026-11-19: logged late: references/security.md Learned 2026-11-09, release digest before unpacking and disposable config for a CLI with a cloud default (two entries).
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
+## 20261119_1631 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now 90 days (`--window-days 90` in the justfile).
+
 ## 20261119_1601 — deterministic navigation-control upgrade
 
 <!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->
