@@ -189,6 +189,22 @@ class TrackerTest(RotateTest):
         self.assertNotIn("still open", live)
         self.assertIn("open-items.md", live)
 
+    def test_a_tracker_value_that_is_not_a_markdown_path_is_ignored(self):
+        """skill-coder, 2026-11-07: `Open items tracker: this file, Open items` made a file named `this` at the root and linked it from the live file."""
+        text = scratchpad(20).replace("# Scratchpad\n", "---\nTitle: Scratchpad\nOpen items tracker: this file, Open items\n---\n# Scratchpad\n", 1)
+        text = text.replace("- [ ] **20260901_0900** still open, never rotated", "- [ ] **20260901_0900** still open\n- [ ] **20260905_0900** a\n- [ ] **20260906_0900** b\n- [ ] **20260907_0900** c")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / "SCRATCHPAD.md").write_text(text)
+            run = subprocess.run([sys.executable, str(SCRIPT), "--project-root", str(root), "--apply", "SCRATCHPAD.md"], check=True, capture_output=True, text=True)
+            live = (root / "SCRATCHPAD.md").read_text()
+            made = sorted(p.name for p in root.iterdir())
+        self.assertNotIn("this", made)
+        self.assertIn("still open", live)
+        self.assertNotIn("Older open items are tracked in", live)
+        self.assertIn("not a markdown path", run.stdout + run.stderr)
+
     def test_project_sync_blocks_never_move(self):
         """Outbox and inbox lines between project-sync markers stay put however old (smc-resiliency, 2026-10-20: an unsent outbox line and an
         unanswered inbox item were moved to the tracker, so the sync never sent the one and reported 0 open for the other)."""

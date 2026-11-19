@@ -775,6 +775,10 @@ def main(argv: list[str] | None = None) -> int:
 
     section_keep = {k.strip(): int(v) for k, _, v in (p.partition("=") for p in head.get("keep", "").split(",")) if v.strip().isdigit()}
     tracker_rel = head.get("open items tracker", "").split(" ")[0].strip("`")
+    # The value must be a relative markdown path; prose ("this file, Open items") once became a file named `this` (skill-coder, 2026-11-07).
+    if tracker_rel and (not tracker_rel.endswith(".md") or os.path.isabs(tracker_rel) or ".." in pathlib.PurePosixPath(tracker_rel).parts):
+        print(f"{live}: Open items tracker value {tracker_rel!r} is not a markdown path inside the project; open items stay in place")
+        tracker_rel = ""
     after = choose(rec, kind, now, keep_days, min_keep, pinned, cited_stamps(root), (budget_lines, budget_bytes), preview,
                    section_keep=section_keep, open_days=7 if tracker_rel else None)
     units = [u for _, items in rec.blocks for u in items if isinstance(u, Unit)]
