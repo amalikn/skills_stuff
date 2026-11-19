@@ -14,6 +14,10 @@ Last rotated: 20261119_1552
 
 # Changelog — skill-pad
 
+## 20261119_1609 — Workspace init from an agent shell; conventions recipe quoting
+
+- `references/cli-reference.md` Learned 2026-11-19 (Pad 0.21.0, skills_stuff): `pad workspace init` works without a terminal when signed in and still writes two skill copies; one root `.pad.toml` serves a whole repo. `justfile` `conventions` passes arguments with `[positional-arguments]` and `"$@"`, so a spaced `--trackers` value is no longer split.
+
 ## 20261119_1551 — CLI traps from smc-resiliency: octet-stream attachments refused, dash-led comment text
 
 - `references/cli-reference.md`: Learned 2026-11-19 (Pad 0.21.0, smc-resiliency): `attachment upload` refuses application/octet-stream (strip a console log to text first); a comment whose text starts with `-` needs `--`; body rewrite with `--stdin --replace`.

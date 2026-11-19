@@ -55,8 +55,9 @@ check: test lint governance
 # e.g. cd <project> && just -f <this>/justfile conventions --project unc --trackers "docs/trackers/"
 # Apply the apn conventions baseline to the workspace of the current folder: plan by default, add --apply to write.
 [no-cd]
+[positional-arguments]
 conventions *ARGS: _require-venv
-    @{{py}} "{{justfile_directory()}}/scripts/pad_conventions.py" {{ARGS}}
+    @{{py}} "{{justfile_directory()}}/scripts/pad_conventions.py" "$@"
 
 # Check Pad items against the writing standard (bold labels, a closing DONE comment, logs attached): refs, or --days N for recent ones. Read-only.
 [no-cd]

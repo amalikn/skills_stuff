@@ -170,3 +170,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 >   (`LC_ALL=C tr -cd '\11\12\15\40-\176'`) and keep the raw log elsewhere.
 > - `pad item comment <ref> "- **What:** ..."` fails ("unknown shorthand flag"): text starting with "-" needs `pad item comment <ref> -- "<text>"`.
 > - Body rewrites: `pad item update <ref> --stdin --replace` (a blank stdin is refused, nothing sent).
+
+> **Learned 2026-11-19** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad workspace init skills --template startup` run from the skills_stuff repo root by an agent, no terminal, `pad auth whoami` a real user · Falsifier: the same command opening a browser or waiting for input when signed in
+> With a signed-in user it created the workspace and wrote `.pad.toml` (`workspace = "skills"`) without a browser or a prompt, and it still wrote `.claude/skills/pad/SKILL.md` and
+> `.agents/skills/pad/SKILL.md` (delete both, Rules). One `.pad.toml` at a repo root serves every folder under it, so a monorepo of packs shares one workspace. The `conventions` recipe split a
+> spaced `--trackers` value until it used `[positional-arguments]` and `"$@"` (fixed the same day); the other `*ARGS` recipes still pass `{{ARGS}}` unquoted.
