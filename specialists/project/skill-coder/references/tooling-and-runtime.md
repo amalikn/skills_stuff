@@ -92,6 +92,12 @@ Source: governance `storage-routing-guide.md` (2026-04-23). A project's own layo
 
 ## The task catalog
 
+> **Learned 2026-11-19** · just `export` variables and direct tool calls · VERIFIED_PRIMARY (observed twice in one project) · Source: continuum-app `justfile` line `export CARGO_TARGET_DIR`,
+> `AGENTS.md` (2026-11-19) · Falsifier: a direct `cargo` call in the repo honouring the justfile's CARGO_TARGET_DIR
+> A justfile `export` reaches only the commands just runs. An agent that calls `cargo` (or any tool) directly in the same folder gets the tool's default, so a governed
+> build-cache path silently becomes `./target` (2.1 GiB, gitignored, unnoticed until a disk check). Run tools through recipes, or export the variable in the shell first,
+> and say so in the project's AGENTS.md.
+
 - Every runnable task is a recipe in the project's task runner (`justfile`, `Makefile`, `package.json` scripts), listed by `just --list` or equivalent. Why: agents run catalogued tasks only; an
   uncatalogued script has unknown safety.
 - Each script has a row in the scripts catalog (`scripts/README.md`) with inputs, outputs and a safety label: read-only, writes local files, writes remote (needs `--apply`), destructive (needs the

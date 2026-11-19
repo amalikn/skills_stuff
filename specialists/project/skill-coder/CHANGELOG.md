@@ -31,6 +31,7 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-19: references/tooling-and-runtime.md Learned 2026-11-19, a justfile `export` does not reach direct tool calls (stray ./target).
 - 2026-11-19: references/tooling-and-runtime.md Learned 2026-11-19, act's cache server binds to the LAN address by default; loopback + external URL; its client CONNECTs through a proxy.
 - 2026-11-19: languages/rust.md Learned 2026-11-19, `cargo clean --target-dir` needs `--manifest-path` outside a package and refuses a folder without CACHEDIR.TAG; target folders only grow.
 - 2026-11-19: references/tooling-and-runtime.md Learned 2026-11-19, act 0.2.98 keeps cache archives 7 days unused; deleting archive files is safe; prune by count.
